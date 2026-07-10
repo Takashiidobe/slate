@@ -8,9 +8,10 @@
 //! passing scoped locals to functions.
 //!
 //! Everything it emits is restricted to the subset Slate can translate today
-//! (int-only arithmetic with `+`/`++`/`+=`, comparisons, `for`/`while`, arrays,
-//! structs, unions, `sizeof`, `volatile`, static globals, enum constants, and
-//! `printf("%d\n", ...)`).
+//! (int arithmetic with `+`/`++`/`+=`, `float`/`double` arithmetic with
+//! `+`/`-`/`*`/`/`, comparisons, `for`/`while`, arrays, structs, unions,
+//! `sizeof`, `volatile`, static globals, enum constants, and
+//! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
 //!
 //! Correctness rests on one invariant: the generated program must be
 //! well-defined C with no UB, because the differential harness compares it to
@@ -101,6 +102,7 @@ struct Gen {
     has_struct: bool,
     has_union: bool,
     has_global: bool,
+    has_float: bool,
 }
 
 /// Generate a complete, self-contained C program for `seed`.
@@ -116,6 +118,7 @@ pub fn generate(seed: u64) -> String {
         has_struct: false,
         has_union: false,
         has_global: false,
+        has_float: false,
     };
     g.program();
     g.out
@@ -127,6 +130,7 @@ impl Gen {
         self.has_struct = self.rng.chance(70);
         self.has_union = self.rng.chance(60);
         self.has_global = self.rng.chance(70);
+        self.has_float = self.rng.chance(70);
 
         self.line("#include <stdio.h>");
         self.blank();
@@ -395,6 +399,9 @@ impl Gen {
         if self.has_union {
             self.emit_union_use();
         }
+        if self.has_float {
+            self.emit_float_use();
+        }
         self.emit_array_use();
 
         self.line("return 0;");
@@ -446,8 +453,29 @@ impl Gen {
         }
     }
 
+    // Floats print through the same libc::printf on both sides, so `%f` output
+    // is byte-identical; identical IEEE-754 f64 ops in the same order agree.
+    // Divisors are held nonzero to keep every value well-defined and finite.
+    fn emit_float_use(&mut self) {
+        let a = self.rng.int_in(1, CONST_MAX);
+        let b = self.rng.int_in(1, CONST_MAX);
+        self.line(&format!("double da = {a}.0;"));
+        self.line(&format!("double db = {b};"));
+        self.line("double dc = (da + db) * 2.0 - db / 4.0;");
+        self.printf_float("dc");
+        self.printf_float("da / db");
+
+        let c = self.rng.int_in(1, CONST_MAX);
+        self.line(&format!("float fa = {c}.5f;"));
+        self.printf_float("fa * 1.5f");
+    }
+
     fn printf(&mut self, expr: &str) {
         self.line(&format!("printf(\"%d\\n\", {expr});"));
+    }
+
+    fn printf_float(&mut self, expr: &str) {
+        self.line(&format!("printf(\"%f\\n\", {expr});"));
     }
 
     // ----- scope / emission helpers -----
@@ -550,6 +578,7 @@ mod tests {
                 has_struct: false,
                 has_union: false,
                 has_global: false,
+                has_float: false,
             };
             g.program();
             for f in &g.funcs {

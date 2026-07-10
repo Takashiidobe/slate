@@ -315,6 +315,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.load" => self.lower_load(op),
             "cir.const" => self.lower_const(op),
             "cir.add" => self.lower_binary(op, "+"),
+            "cir.fadd" => self.lower_binary(op, "+"),
+            "cir.fsub" => self.lower_binary(op, "-"),
+            "cir.fmul" => self.lower_binary(op, "*"),
+            "cir.fdiv" => self.lower_binary(op, "/"),
             "cir.inc" => self.lower_inc(op),
             "cir.cmp" => self.lower_cmp(op),
             "cir.get_global" => self.lower_get_global(op),
@@ -456,9 +460,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(result) = op.results.first() else {
             return;
         };
-        let value = attr_str(op, "value")
-            .and_then(parse_cir_int)
+        let raw = attr_str(op, "value").unwrap_or("");
+        let value = parse_cir_int(raw)
             .map(|n| n.to_string())
+            .or_else(|| parse_cir_fp(raw))
             .unwrap_or_else(|| "0".into());
         self.materialize(result, value, op_result_type(op));
     }
@@ -836,6 +841,10 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> S
         "i64".into()
     } else if ty == "!u64i" || ty == "!cir.int<u, 64>" {
         "u64".into()
+    } else if ty == "!cir.float" {
+        "f32".into()
+    } else if ty == "!cir.double" {
+        "f64".into()
     } else if let Some(inner) = ty
         .strip_prefix("!cir.ptr<")
         .and_then(|s| s.strip_suffix('>'))
@@ -883,7 +892,11 @@ fn op_type_return(ty: &str) -> Option<&str> {
 }
 
 fn default_value(ty: &str) -> &'static str {
-    if ty == "bool" { "false" } else { "0" }
+    match ty {
+        "bool" => "false",
+        "f32" | "f64" => "0.0",
+        _ => "0",
+    }
 }
 
 fn default_c_value(ty: &crate::c_ast::CType) -> &'static str {
@@ -898,6 +911,18 @@ fn parse_cir_int(s: &str) -> Option<i64> {
     let rest = &s[start..];
     let end = rest.find('>')?;
     rest[..end].parse().ok()
+}
+
+fn parse_cir_fp(s: &str) -> Option<String> {
+    let start = s.find("#cir.fp<")? + "#cir.fp<".len();
+    let rest = &s[start..];
+    let end = rest.find('>')?;
+    let text = rest[..end].trim();
+    // rust has no hex-float literal syntax; leave those unsupported for now
+    if text.starts_with("0x") || text.starts_with("0X") {
+        return None;
+    }
+    Some(text.to_string())
 }
 
 fn parse_cir_const_array(s: &str) -> Option<Vec<u8>> {
@@ -994,8 +1019,34 @@ mod tests {
         assert_eq!(rust_type("!s16i"), "i16");
         assert_eq!(rust_type("!u8i"), "u8");
         assert_eq!(rust_type("!s64i"), "i64");
+        assert_eq!(rust_type("!cir.float"), "f32");
+        assert_eq!(rust_type("!cir.double"), "f64");
+        assert_eq!(rust_type("!cir.ptr<!cir.double>"), "*mut f64");
         assert_eq!(rust_type("!rec_Pair"), "Pair");
         assert_eq!(rust_type("!cir.union<\"Pair\" {!s32i, !s32i}>"), "Pair");
         assert_eq!(rust_type("!cir.array<!s32i x 3>"), "[i32; 3]");
+    }
+
+    #[test]
+    fn parses_floating_point_constants() {
+        assert_eq!(
+            parse_cir_fp("#cir.fp<1.500000e+00> : !cir.float").as_deref(),
+            Some("1.500000e+00")
+        );
+        assert_eq!(
+            parse_cir_fp("#cir.fp<2.250000e+00> : !cir.double").as_deref(),
+            Some("2.250000e+00")
+        );
+        // hex-float literals have no rust syntax and stay unsupported
+        assert_eq!(parse_cir_fp("#cir.fp<0x7FF0000000000000>"), None);
+        assert_eq!(parse_cir_fp("#cir.int<0> : !s32i"), None);
+    }
+
+    #[test]
+    fn floating_point_types_default_to_zero_point_zero() {
+        assert_eq!(default_value("f32"), "0.0");
+        assert_eq!(default_value("f64"), "0.0");
+        assert_eq!(default_value("i32"), "0");
+        assert_eq!(default_value("bool"), "false");
     }
 }
