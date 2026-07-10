@@ -32,6 +32,7 @@ small C subset. This is the supported fixture-level surface today:
 - fixed-size local `int` arrays with indexed stores and loads, emitted as Rust
   arrays.
 - `sizeof` expressions that Clang lowers to integer CIR constants.
+- volatile CIR loads and stores, emitted with Rust volatile pointer intrinsics.
 - source-level context loaded from Clang's JSON AST.
 
 Output is intentionally ugly, temp-heavy, `libc`-backed Rust. Correctness is
@@ -48,6 +49,7 @@ The current fixtures are:
 - `arrays.c` — fixed-size local arrays and indexed element access.
 - `sizeof.c` — `sizeof` over primitive, array, struct, union, and expression
   forms.
+- `volatile.c` — volatile local stores and loads.
 
 Generated Rust for inspection is written with:
 

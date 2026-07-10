@@ -332,7 +332,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let value = self.render_operand(&op.operands[0]);
         let ptr = &op.operands[1];
-        if let Some(member) = self.member_ptrs.get(ptr).cloned() {
+        if attr_bool(op, "is_volatile") {
+            let addr = self.store_address(ptr);
+            self.emit_line(&format!(
+                "unsafe {{ std::ptr::write_volatile({addr}, {value}); }}"
+            ));
+        } else if let Some(member) = self.member_ptrs.get(ptr).cloned() {
             self.emit_line(&format!(
                 "unsafe {{ {}.{} = {value}; }}",
                 member.base, member.field
@@ -357,7 +362,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(ptr) = op.operands.first() else {
             return;
         };
-        let value = if let Some(member) = self.member_ptrs.get(ptr) {
+        let value = if attr_bool(op, "is_volatile") {
+            format!(
+                "unsafe {{ std::ptr::read_volatile({}) }}",
+                self.load_address(ptr)
+            )
+        } else if let Some(member) = self.member_ptrs.get(ptr) {
             format!("unsafe {{ {}.{} }}", member.base, member.field)
         } else if let Some(element) = self.element_ptrs.get(ptr) {
             format!("{}[({}) as usize]", element.base, element.index)
@@ -367,6 +377,36 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             format!("unsafe {{ *{} }}", self.render_operand(ptr))
         };
         self.materialize(result, value, op_result_type(op));
+    }
+
+    fn load_address(&self, ptr: &str) -> String {
+        if let Some(member) = self.member_ptrs.get(ptr) {
+            format!("std::ptr::addr_of!({}.{})", member.base, member.field)
+        } else if let Some(element) = self.element_ptrs.get(ptr) {
+            format!(
+                "std::ptr::addr_of!({}[({}) as usize])",
+                element.base, element.index
+            )
+        } else if let Some(slot) = self.slots.get(ptr) {
+            format!("std::ptr::addr_of!({slot})")
+        } else {
+            self.render_operand(ptr)
+        }
+    }
+
+    fn store_address(&self, ptr: &str) -> String {
+        if let Some(member) = self.member_ptrs.get(ptr) {
+            format!("std::ptr::addr_of_mut!({}.{})", member.base, member.field)
+        } else if let Some(element) = self.element_ptrs.get(ptr) {
+            format!(
+                "std::ptr::addr_of_mut!({}[({}) as usize])",
+                element.base, element.index
+            )
+        } else if let Some(slot) = self.slots.get(ptr) {
+            format!("std::ptr::addr_of_mut!({slot})")
+        } else {
+            self.render_operand(ptr)
+        }
     }
 
     fn lower_const(&mut self, op: &Op) {
@@ -673,6 +713,10 @@ fn attr_str<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
 
 fn attr_int(op: &Op, key: &str) -> Option<i64> {
     op.attrs.get(key).and_then(Attr::as_int)
+}
+
+fn attr_bool(op: &Op, key: &str) -> bool {
+    op.attrs.contains_key(key)
 }
 
 fn op_result_type(op: &Op) -> Option<&str> {

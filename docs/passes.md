@@ -48,6 +48,8 @@ The lowerer currently handles the fixture subset:
 - fixed-size CIR arrays, emitted as Rust arrays with basic `cir.get_element`
   indexed loads and stores.
 - `sizeof` expressions when Clang has folded them to CIR integer constants.
+- `cir.load` and `cir.store` with `is_volatile`, emitted as
+  `std::ptr::read_volatile` and `std::ptr::write_volatile`.
 
 Unknown CIR ops emit a `todo!("cir.xyz")` expression and a diagnostic. That is
 intentional: failing loudly is better than silently dropping semantics.
@@ -63,6 +65,7 @@ Current C fixture coverage:
 | `structs.c` | struct declaration, integer fields, field writes, field reads |
 | `arrays.c` | fixed-size local arrays, indexed stores, indexed loads |
 | `sizeof.c` | `sizeof` over primitive, array, struct, union, and expression forms |
+| `volatile.c` | volatile local stores and loads |
 
 ## Stage notes
 

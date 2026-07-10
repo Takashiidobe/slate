@@ -62,3 +62,16 @@ fn generated_differential() {
         );
     }
 }
+
+#[test]
+fn volatile_uses_rust_volatile_intrinsics() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-volatile");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("volatile.c");
+    let generated = tmp.join("volatile.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate volatile fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated volatile rust");
+    assert!(rust.contains("std::ptr::read_volatile"));
+    assert!(rust.contains("std::ptr::write_volatile"));
+}

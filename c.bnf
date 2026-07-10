@@ -3,7 +3,7 @@
 # This is intentionally smaller than grammar.cf and should only include C that
 # Slate can currently translate.
 
-<program> ::= <include> "\n" <enum_decl> "\n" <union_decl> "\n" <struct_decl> "\n" <helper_fn> "\n" <loop_fn> "\n" <array_fn> "\n" <union_fn> "\n" <struct_fn> "\n" <sizeof_fn> "\n" <main_fn> ;
+<program> ::= <include> "\n" <enum_decl> "\n" <union_decl> "\n" <struct_decl> "\n" <helper_fn> "\n" <loop_fn> "\n" <array_fn> "\n" <union_fn> "\n" <struct_fn> "\n" <sizeof_fn> "\n" <volatile_fn> "\n" <main_fn> ;
 
 <include> ::= "#include <stdio.h>\n" ;
 
@@ -25,7 +25,9 @@
 
 <sizeof_fn> ::= "static int sizeof_mix(void) {\n    int values[3];\n    return sizeof(int) + sizeof(values) + sizeof(struct FuzzStruct) + sizeof(union FuzzPair);\n}\n" ;
 
-<main_fn> ::= "int main(void) {\n" <printf_helper> <printf_loop> <printf_array> <printf_union> <printf_struct> <printf_sizeof> <printf_enum> "    return 0;\n}\n" ;
+<volatile_fn> ::= "static int volatile_local(int value) {\n    volatile int slot = value;\n    slot = slot + " <small_int> ";\n    return slot;\n}\n" ;
+
+<main_fn> ::= "int main(void) {\n" <printf_helper> <printf_loop> <printf_array> <printf_union> <printf_struct> <printf_sizeof> <printf_volatile> <printf_enum> "    return 0;\n}\n" ;
 
 <printf_helper> ::= "    printf(\"%d\\n\", helper(" <small_int> ", " <small_int> "));\n" ;
 <printf_loop> ::= "    printf(\"%d\\n\", loop_sum(" <loop_bound> "));\n" ;
@@ -33,6 +35,7 @@
 <printf_union> ::= "    printf(\"%d\\n\", union_pick(" <small_int> ", " <small_int> "));\n" ;
 <printf_struct> ::= "    printf(\"%d\\n\", struct_sum(" <small_int> ", " <small_int> "));\n" ;
 <printf_sizeof> ::= "    printf(\"%d\\n\", sizeof_mix());\n" ;
+<printf_volatile> ::= "    printf(\"%d\\n\", volatile_local(" <small_int> "));\n" ;
 <printf_enum> ::= "    printf(\"%d\\n\", " <enum_value> ");\n" ;
 
 <small_int> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
