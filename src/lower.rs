@@ -7,13 +7,13 @@ use crate::rust_ast::{Item, Program};
 use std::collections::BTreeMap;
 
 /// Lower a parsed CIR module (with the C AST as an oracle) to a Rust program.
-pub fn lower(cir: &Module, _c: &Unit, ctx: &mut Ctx) -> Program {
+pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
     let mut lowerer = Lowerer {
         ctx,
         aliases: cir.aliases.clone(),
         strings: BTreeMap::new(),
     };
-    lowerer.lower_module(cir)
+    lowerer.lower_module(cir, c)
 }
 
 struct Lowerer<'a> {
@@ -57,10 +57,16 @@ impl Val {
 }
 
 impl<'a> Lowerer<'a> {
-    fn lower_module(&mut self, module: &Module) -> Program {
+    fn lower_module(&mut self, module: &Module, c: &Unit) -> Program {
         let mut items = vec![Item::Raw(
-            "#![allow(dead_code, unused, non_snake_case)]".into(),
+            "#![allow(dead_code, unused, non_snake_case, non_upper_case_globals)]".into(),
         )];
+
+        for enm in &c.enums {
+            if let Some(text) = self.lower_enum(enm) {
+                items.push(Item::Raw(text));
+            }
+        }
 
         let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
             self.ctx
@@ -103,6 +109,21 @@ impl<'a> Lowerer<'a> {
             bytes.push(0);
             self.strings.insert(name.to_string(), bytes);
         }
+    }
+
+    fn lower_enum(&mut self, enm: &crate::c_ast::Enum) -> Option<String> {
+        if enm.variants.is_empty() {
+            return None;
+        }
+        let mut text = String::new();
+        for variant in &enm.variants {
+            text.push_str(&format!(
+                "const {}: i32 = {};\n",
+                sanitize_ident(&variant.name),
+                variant.value
+            ));
+        }
+        Some(text)
     }
 
     fn lower_func(&mut self, op: &Op) -> Option<String> {

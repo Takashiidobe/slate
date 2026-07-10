@@ -15,18 +15,54 @@ independently verified.
 
 ## Current state
 
-The current implementation can translate and compile a small C subset:
+The current implementation can translate, compile, and differentially test a
+small C subset. This is the supported fixture-level surface today:
 
-- `int` functions, parameters, locals, returns, and `main`.
+- functions with `int` parameters, locals, return values, and `main`.
+- target-lowered CIR integer widths mapped to Rust primitives such as `i32`.
 - integer constants, loads/stores, addition, increment, and comparisons.
 - calls, including `printf` lowered through `libc::printf`.
 - string literals used by `printf`.
 - `for` loops represented as conservative Rust `loop { ... break ... }`.
+- C enum constants with implicit values and explicit `= number` values, emitted
+  as Rust integer `const` items.
 - source-level context loaded from Clang's JSON AST.
 
 Output is intentionally ugly, temp-heavy, `libc`-backed Rust. Correctness is
 verified by **differential testing**: compile and run both the original C and the
 generated Rust, compare stdout + exit code.
+
+The current fixtures are:
+
+- `add.c` — integer functions, locals, calls, and addition.
+- `loop_sum.c` — structured `for` loop lowering.
+- `enums.c` — enum constants with implicit and explicit values.
+
+Generated Rust for inspection is written with:
+
+```bash
+cargo run -- emit-fixtures
+```
+
+That command writes ignored files under `tests/fixtures.generated/`. The checked
+fixtures under `tests/fixtures/` are C-only.
+
+## Not handled yet
+
+Important gaps remain:
+
+- target-complete C integer modeling beyond the CIR widths already emitted.
+- unsigned arithmetic behavior and casts beyond the currently exercised cases.
+- pointers, arrays, structs/unions, field access, and pointer arithmetic.
+- global variables other than constant strings used by `printf`.
+- `if`, `while`, `switch`, `break`, `continue`, and `goto`.
+- more arithmetic, bitwise, logical, and assignment operators.
+- function prototypes, declarations across translation units, typedefs, and
+  headers beyond what Clang resolves for the fixture.
+- floating point, chars as values, string operations, varargs beyond direct
+  `printf` calls.
+- idiomatic Rust cleanup such as `println!`, temp removal, references, slices,
+  and safe ownership.
 
 ## Pipeline
 
@@ -50,6 +86,8 @@ location (`file:line:col`):
 
 ## Docs
 
+- [adding-features.md](adding-features.md) — how to add C coverage or a Rust
+  fixup.
 - [architecture.md](architecture.md) — sources, IRs, pipeline, shared context.
 - [passes.md](passes.md) — the pass catalog: what runs, in what order, how.
 - [idiomatization.md](idiomatization.md) — the `unsafe`/`libc` → idiomatic ladder.
@@ -59,3 +97,6 @@ location (`file:line:col`):
 Requires a CIR-enabled Clang (`CLANG_ENABLE_CIR=ON`). Local build lives at
 `~/llvm-project/build-cir/bin/{clang,cir-opt}`; overridable via `SLATE_CLANG`
 and `SLATE_CIR_OPT`.
+
+Target selection can be shared across the CIR and AST Clang invocations with
+`SLATE_TARGET=<triple>` and extra flags in `SLATE_CLANG_ARGS`.

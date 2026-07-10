@@ -7,7 +7,20 @@ use std::process::Command;
 /// A parsed C translation unit.
 #[derive(Debug, Default, Clone)]
 pub struct Unit {
+    pub enums: Vec<Enum>,
     pub functions: Vec<Function>,
+}
+
+#[derive(Debug, Clone)]
+pub struct Enum {
+    pub name: Option<String>,
+    pub variants: Vec<EnumVariant>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EnumVariant {
+    pub name: String,
+    pub value: i64,
 }
 
 #[derive(Debug, Clone)]
@@ -126,9 +139,23 @@ pub fn parse(src: &str) -> Result<Unit, String> {
 pub fn parse_json(json: &str, source_file: &str) -> Result<Unit, String> {
     let root: Value =
         serde_json::from_str(json).map_err(|e| format!("parse clang AST JSON: {e}"))?;
+    let mut enums = Vec::new();
     let mut functions = Vec::new();
+    collect_enums(&root, source_file, &mut enums);
     collect_functions(&root, source_file, &mut functions);
-    Ok(Unit { functions })
+    Ok(Unit { enums, functions })
+}
+
+fn collect_enums(node: &Value, source_file: &str, out: &mut Vec<Enum>) {
+    if kind(node) == Some("EnumDecl") && is_source_node(node, source_file) {
+        if let Some(enm) = extract_enum(node) {
+            out.push(enm);
+        }
+        return;
+    }
+    for child in children(node) {
+        collect_enums(child, source_file, out);
+    }
 }
 
 fn collect_functions(node: &Value, source_file: &str, out: &mut Vec<Function>) {
@@ -141,6 +168,31 @@ fn collect_functions(node: &Value, source_file: &str, out: &mut Vec<Function>) {
     for child in children(node) {
         collect_functions(child, source_file, out);
     }
+}
+
+fn extract_enum(node: &Value) -> Option<Enum> {
+    let name = node.get("name").and_then(Value::as_str).map(str::to_string);
+    let mut next_value = 0;
+    let mut variants = Vec::new();
+    for child in children(node) {
+        if kind(child) != Some("EnumConstantDecl") {
+            continue;
+        }
+        let name = child.get("name")?.as_str()?.to_string();
+        let value = enum_constant_value(child).unwrap_or(next_value);
+        next_value = value + 1;
+        variants.push(EnumVariant { name, value });
+    }
+    Some(Enum { name, variants })
+}
+
+fn enum_constant_value(node: &Value) -> Option<i64> {
+    children(node)
+        .iter()
+        .find(|child| kind(child) == Some("ConstantExpr"))
+        .and_then(|child| child.get("value"))
+        .and_then(Value::as_str)
+        .and_then(|value| value.parse().ok())
 }
 
 fn extract_function(node: &Value) -> Option<Function> {
@@ -536,6 +588,67 @@ mod tests {
         let main_body = unit.functions[1].body.as_ref().unwrap();
         assert!(
             matches!(main_body[0], Stmt::Expr(Expr::Call { ref name, .. }) if name == "printf")
+        );
+    }
+
+    #[test]
+    fn extracts_enum_values_from_clang_json() {
+        let ast = r#"
+{
+  "kind": "TranslationUnitDecl",
+  "inner": [
+    {
+      "kind": "EnumDecl",
+      "name": "Basic",
+      "loc": {"file": "enums.c", "line": 1, "col": 6},
+      "inner": [
+        {"kind": "EnumConstantDecl", "name": "BasicZero", "type": {"qualType": "int"}},
+        {"kind": "EnumConstantDecl", "name": "BasicOne", "type": {"qualType": "int"}},
+        {"kind": "EnumConstantDecl", "name": "BasicFive", "type": {"qualType": "int"}, "inner": [
+          {"kind": "ConstantExpr", "value": "5", "type": {"qualType": "int"}}
+        ]},
+        {"kind": "EnumConstantDecl", "name": "BasicSix", "type": {"qualType": "int"}},
+        {"kind": "EnumConstantDecl", "name": "BasicNegative", "type": {"qualType": "int"}, "inner": [
+          {"kind": "ConstantExpr", "value": "-2", "type": {"qualType": "int"}}
+        ]},
+        {"kind": "EnumConstantDecl", "name": "BasicNegativeNext", "type": {"qualType": "int"}}
+      ]
+    }
+  ]
+}
+"#;
+
+        let unit = parse_json(ast, "enums.c").unwrap();
+        assert_eq!(unit.enums.len(), 1);
+        assert_eq!(unit.enums[0].name.as_deref(), Some("Basic"));
+        assert_eq!(
+            unit.enums[0].variants,
+            [
+                EnumVariant {
+                    name: "BasicZero".into(),
+                    value: 0,
+                },
+                EnumVariant {
+                    name: "BasicOne".into(),
+                    value: 1,
+                },
+                EnumVariant {
+                    name: "BasicFive".into(),
+                    value: 5,
+                },
+                EnumVariant {
+                    name: "BasicSix".into(),
+                    value: 6,
+                },
+                EnumVariant {
+                    name: "BasicNegative".into(),
+                    value: -2,
+                },
+                EnumVariant {
+                    name: "BasicNegativeNext".into(),
+                    value: -1,
+                },
+            ]
         );
     }
 }
