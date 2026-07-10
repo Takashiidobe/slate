@@ -208,7 +208,7 @@ fn random_seed() -> u64 {
 /// generated `.c`/`.generated.rs` are also left under `target/cgen-fuzz/`.
 #[test]
 fn generator_differential() {
-    let cases: u64 = std::env::var("SLATE_FUZZ_CASES")
+    let cases_n: u64 = std::env::var("SLATE_FUZZ_CASES")
         .ok()
         .and_then(|s| s.parse().ok())
         .unwrap_or(8);
@@ -224,8 +224,10 @@ fn generator_differential() {
     let tmp = manifest.join("target/cgen-fuzz");
     std::fs::create_dir_all(&tmp).expect("create cgen fuzz dir");
 
+    let mut cases = Vec::new();
+    let mut seeds = Vec::new();
     let mut failures = Vec::new();
-    for i in 0..cases {
+    for i in 0..cases_n {
         let seed = match base {
             Some(b) => b.wrapping_add(i),
             None => random_seed(),
@@ -236,15 +238,27 @@ fn generator_differential() {
         let program = support::cgen::generate(seed);
         std::fs::write(&c_src, program).expect("write generated c");
 
-        match support::translate(&c_src, &rs_src)
-            .and_then(|()| support::compare(&name, &c_src, &rs_src, &tmp))
-        {
+        match support::translate(&c_src, &rs_src) {
+            Ok(()) => {
+                seeds.push(seed);
+                cases.push(support::Case {
+                    name,
+                    c_src,
+                    rs_src,
+                });
+            }
+            Err(e) => {
+                eprintln!("FAIL  {name}  (replay with SLATE_FUZZ_SEED={seed} SLATE_FUZZ_CASES=1)");
+                failures.push(format!("[seed {seed}] {e}"));
+            }
+        }
+    }
+
+    for ((name, result), seed) in support::compare_batch(&cases, &tmp).into_iter().zip(&seeds) {
+        match result {
             Ok(()) => eprintln!("ok    {name}"),
             Err(e) => {
-                eprintln!(
-                    "FAIL  {name}  (replay with SLATE_FUZZ_SEED={seed} SLATE_FUZZ_CASES=1, see {})",
-                    c_src.display()
-                );
+                eprintln!("FAIL  {name}  (replay with SLATE_FUZZ_SEED={seed} SLATE_FUZZ_CASES=1)");
                 failures.push(format!("[seed {seed}] {e}"));
             }
         }
@@ -254,7 +268,7 @@ fn generator_differential() {
         panic!(
             "{} of {} generated programs failed:\n\n{}",
             failures.len(),
-            cases,
+            cases_n,
             failures.join("\n\n")
         );
     }

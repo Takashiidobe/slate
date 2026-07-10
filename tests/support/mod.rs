@@ -50,6 +50,9 @@ edition = "2024"
 
 [dependencies]
 libc = "0.2"
+
+[profile.dev]
+overflow-checks = false
 "#
         ),
     )
@@ -72,6 +75,115 @@ libc = "0.2"
         ));
     }
     Ok(target_dir.join("debug").join(package))
+}
+
+/// One differential case: a name plus its C source and translated Rust source.
+pub struct Case {
+    pub name: String,
+    pub c_src: PathBuf,
+    pub rs_src: PathBuf,
+}
+
+/// A cargo bin target name derived from a case name (alnum/underscore only).
+fn bin_name(name: &str) -> String {
+    name.chars()
+        .map(|c| if c.is_ascii_alphanumeric() { c } else { '_' })
+        .collect()
+}
+
+/// Compile every case's Rust as its own binary target inside a single shared
+/// crate, so `libc` is built once and all programs compile in one parallel
+/// `cargo build` instead of one cold crate (and one libc rebuild) per case.
+/// Then compile each C source and compare stdout + exit code. Results are
+/// returned in input order.
+///
+/// If the batched build fails (e.g. a program does not compile), it falls back
+/// to the per-case path so the failing case gets an exact error.
+pub fn compare_batch(cases: &[Case], work_dir: &Path) -> Vec<(String, Result<(), String>)> {
+    let project = work_dir.join("batch_cargo");
+    let bin_dir = project.join("src/bin");
+    let _ = std::fs::remove_dir_all(&project);
+
+    let batch_bins = build_batch(cases, &project, &bin_dir);
+    let target_dir = project.join("target");
+
+    cases
+        .iter()
+        .map(|case| {
+            let result = (|| {
+                let bn = bin_name(&case.name);
+                let rs_bin = match &batch_bins {
+                    Ok(()) => target_dir.join("debug").join(&bn),
+                    // fall back to an isolated build to pinpoint this case
+                    Err(_) => compile_rs_cargo(&case.rs_src, work_dir, &format!("{bn}_rs"))?,
+                };
+                let c_bin = work_dir.join(format!("{}_c", bn));
+                compile_c(&case.c_src, &c_bin)?;
+                compare_runs(&run(&c_bin)?, &run(&rs_bin)?)
+            })();
+            (case.name.clone(), result)
+        })
+        .collect()
+}
+
+/// Write one crate with a `src/bin/<name>.rs` per case and build them together.
+fn build_batch(cases: &[Case], project: &Path, bin_dir: &Path) -> Result<(), String> {
+    std::fs::create_dir_all(bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
+    std::fs::write(
+        project.join("Cargo.toml"),
+        r#"[package]
+name = "slate_batch"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+libc = "0.2"
+
+# clang compiles the C side at -O0, where signed overflow wraps two's-complement
+# (and unsigned wrap is defined). Disable Rust's overflow checks so both sides
+# wrap identically instead of panicking. Division by zero / INT_MIN by -1 still
+# trap on both sides, so the generator keeps divisors to nonzero constants.
+[profile.dev]
+overflow-checks = false
+"#,
+    )
+    .map_err(|e| format!("write Cargo.toml: {e}"))?;
+
+    for case in cases {
+        let dest = bin_dir.join(format!("{}.rs", bin_name(&case.name)));
+        std::fs::copy(&case.rs_src, &dest)
+            .map_err(|e| format!("copy {} to batch crate: {e}", case.rs_src.display()))?;
+    }
+
+    let o = Command::new(cargo())
+        .args(["build", "--quiet", "--manifest-path"])
+        .arg(project.join("Cargo.toml"))
+        .arg("--target-dir")
+        .arg(project.join("target"))
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", cargo()))?;
+    if o.status.success() {
+        Ok(())
+    } else {
+        Err(String::from_utf8_lossy(&o.stderr).into_owned())
+    }
+}
+
+fn compare_runs(c: &Run, r: &Run) -> Result<(), String> {
+    if c.exit != r.exit {
+        return Err(format!(
+            "exit code differs: C={:?} Rust={:?}",
+            c.exit, r.exit
+        ));
+    }
+    if c.stdout != r.stdout {
+        return Err(format!(
+            "stdout differs:\n--- C ---\n{}\n--- Rust ---\n{}",
+            String::from_utf8_lossy(&c.stdout),
+            String::from_utf8_lossy(&r.stdout),
+        ));
+    }
+    Ok(())
 }
 
 pub fn run(bin: &Path) -> Result<Run, String> {
@@ -97,27 +209,4 @@ pub fn translate(c_src: &Path, rs_out: &Path) -> Result<(), String> {
         ));
     }
     std::fs::write(rs_out, o.stdout).map_err(|e| format!("write {}: {e}", rs_out.display()))
-}
-
-pub fn compare(name: &str, c_src: &Path, rs_src: &Path, tmp: &Path) -> Result<(), String> {
-    let c_bin = tmp.join(format!("{name}_c"));
-    compile_c(c_src, &c_bin)?;
-    let rs_bin = compile_rs_cargo(rs_src, tmp, &format!("{name}_rs"))?;
-    let c = run(&c_bin)?;
-    let r = run(&rs_bin)?;
-
-    if c.exit != r.exit {
-        return Err(format!(
-            "exit code differs: C={:?} Rust={:?}",
-            c.exit, r.exit
-        ));
-    }
-    if c.stdout != r.stdout {
-        return Err(format!(
-            "stdout differs:\n--- C ---\n{}\n--- Rust ---\n{}",
-            String::from_utf8_lossy(&c.stdout),
-            String::from_utf8_lossy(&r.stdout),
-        ));
-    }
-    Ok(())
 }

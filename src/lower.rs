@@ -88,7 +88,7 @@ impl Val {
 impl<'a> Lowerer<'a> {
     fn lower_module(&mut self, module: &Module, c: &Unit) -> Program {
         let mut items = vec![Item::Raw(
-            "#![allow(dead_code, unused, non_snake_case, non_upper_case_globals)]".into(),
+            "#![allow(dead_code, unused, non_snake_case, non_upper_case_globals, arithmetic_overflow)]".into(),
         )];
 
         for enm in &c.enums {
@@ -314,7 +314,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.store" => self.lower_store(op),
             "cir.load" => self.lower_load(op),
             "cir.const" => self.lower_const(op),
-            "cir.add" => self.lower_int_add(op),
+            "cir.add" => self.lower_int_arith(op, "+"),
+            "cir.sub" => self.lower_int_arith(op, "-"),
+            "cir.mul" => self.lower_int_arith(op, "*"),
+            "cir.div" => self.lower_int_arith(op, "/"),
+            "cir.rem" => self.lower_int_arith(op, "%"),
             "cir.fadd" => self.lower_binary(op, "+"),
             "cir.fsub" => self.lower_binary(op, "-"),
             "cir.fmul" => self.lower_binary(op, "*"),
@@ -484,10 +488,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    // C unsigned overflow wraps (defined); Rust `+` panics in debug. Emit
-    // wrapping arithmetic for unsigned types so both agree. Signed overflow is
-    // UB in C, so plain `+` stays for signed and keeps output C-shaped.
-    fn lower_int_add(&mut self, op: &Op) {
+    // The batch crate builds with `overflow-checks = false`, so plain `+`/`-`/`*`
+    // wrap two's-complement just like clang's `-O0` C — no `wrapping_*` needed.
+    // `/` and `%` still trap on div-by-zero and INT_MIN/-1 on both sides, so the
+    // generator avoids those.
+    fn lower_int_arith(&mut self, op: &Op, rust_op: &str) {
         let Some(result) = op.results.first() else {
             return;
         };
@@ -497,12 +502,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let lhs = self.render_operand(&op.operands[0]);
         let rhs = self.render_operand(&op.operands[1]);
         let ty = op_result_type(op);
-        let expr = if self.is_unsigned(ty) {
-            format!("({lhs}).wrapping_add({rhs})")
-        } else {
-            format!("({lhs} + {rhs})")
-        };
-        self.materialize(result, expr, ty);
+        self.materialize(result, format!("({lhs} {rust_op} {rhs})"), ty);
     }
 
     fn lower_inc(&mut self, op: &Op) {
@@ -514,17 +514,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let value = self.render_operand(value);
         let ty = op_result_type(op);
-        let expr = if self.is_unsigned(ty) {
-            format!("({value}).wrapping_add(1)")
-        } else {
-            format!("({value} + 1)")
-        };
-        self.materialize(result, expr, ty);
-    }
-
-    fn is_unsigned(&self, ty: Option<&str>) -> bool {
-        ty.map(|t| self.parent.rust_type(t).starts_with('u'))
-            .unwrap_or(false)
+        self.materialize(result, format!("({value} + 1)"), ty);
     }
 
     fn lower_cmp(&mut self, op: &Op) {
