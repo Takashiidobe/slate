@@ -24,7 +24,8 @@ After adding the fixture, decide what kind of work it is.
 ## Baseline Language Feature
 
 A baseline feature lets Slate translate more C programs. Examples include a new
-C operator, `if`, `while`, arrays, structs, pointers, globals, or enum types.
+C operator, `if`, `while`, arrays, structs, pointers, globals, enum types, or
+broader union support.
 
 Use this path when the generated Rust does not compile, contains `todo!`, drops
 semantics, or produces different output from the C program.
