@@ -50,9 +50,11 @@ small C subset. This is the supported fixture-level surface today:
 - C pointers for locals, parameters, address-of, dereference, and basic pointer
   arithmetic, emitted as raw Rust pointers.
 - `sizeof` expressions that Clang lowers to integer CIR constants.
-- volatile-qualified primitive scalar locals, parameters, fields, returns, and
-  globals, emitted through CIR volatile loads/stores with Rust volatile pointer
-  intrinsics.
+- type-qualified primitive scalar locals, parameters, fields, returns, globals,
+  and restrict-qualified pointer parameters. `volatile` operations are emitted
+  through CIR volatile loads/stores with Rust volatile pointer intrinsics;
+  `const`, `restrict`, and `_Atomic` are normalized to the same baseline Rust
+  storage types as their unqualified forms.
 - file-scope `static` integer and floating globals with constant initializers,
   emitted as `static mut`.
 - `typedef` aliases for otherwise supported types, resolved through Clang's
@@ -82,6 +84,8 @@ The current fixtures are:
 - `volatile.c` — volatile local stores and loads.
 - `volatile_qualified_types.c` — volatile-qualified primitive params, fields,
   returns, and globals.
+- `type_qualifiers.c` — const, restrict, and `_Atomic` primitive and pointer
+  type qualifiers.
 - `static_globals.c` — file-scope static integer global loads and stores.
 - `non_int_globals.c` — file-scope static `char`/`unsigned char`/`float`/`double`
   globals plus non-int params and returns.

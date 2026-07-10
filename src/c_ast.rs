@@ -456,6 +456,10 @@ fn parse_function_qual_type(s: &str) -> (CType, Vec<CType>) {
 fn parse_c_type(s: &str) -> CType {
     let s = s.trim();
     let s = strip_type_qualifiers(s);
+    if let Some(inner) = s.strip_prefix("_Atomic(").and_then(|s| s.strip_suffix(')')) {
+        return parse_c_type(inner);
+    }
+    let s = strip_trailing_type_qualifiers(s);
     if s == "void" {
         CType::Void
     } else if let Some(inner) = s.strip_suffix('*') {
@@ -490,11 +494,33 @@ fn strip_type_qualifiers(mut s: &str) -> &str {
     loop {
         let stripped = s
             .strip_prefix("volatile ")
-            .or_else(|| s.strip_prefix("volatile\t"));
+            .or_else(|| s.strip_prefix("volatile\t"))
+            .or_else(|| s.strip_prefix("const "))
+            .or_else(|| s.strip_prefix("const\t"))
+            .or_else(|| s.strip_prefix("restrict "))
+            .or_else(|| s.strip_prefix("restrict\t"))
+            .or_else(|| s.strip_prefix("_Atomic "))
+            .or_else(|| s.strip_prefix("_Atomic\t"));
         let Some(next) = stripped else {
             return s.trim();
         };
         s = next.trim_start();
+    }
+}
+
+fn strip_trailing_type_qualifiers(mut s: &str) -> &str {
+    'outer: loop {
+        let trimmed = s.trim_end();
+        for qualifier in ["volatile", "const", "restrict", "_Atomic"] {
+            if let Some(head) = trimmed.strip_suffix(qualifier) {
+                let head = head.trim_end();
+                if head.ends_with('*') || head.chars().last().is_some_and(char::is_whitespace) {
+                    s = head;
+                    continue 'outer;
+                }
+            }
+        }
+        return trimmed;
     }
 }
 
@@ -1130,7 +1156,7 @@ mod tests {
     }
 
     #[test]
-    fn strips_volatile_qualifier_from_source_types() {
+    fn strips_type_qualifiers_from_source_types() {
         assert_eq!(
             parse_c_type("volatile int"),
             CType::Int {
@@ -1152,6 +1178,41 @@ mod tests {
                 signed: false,
                 bits: 64
             }
+        );
+        assert_eq!(
+            parse_c_type("const int"),
+            CType::Int {
+                signed: true,
+                bits: 32
+            }
+        );
+        assert_eq!(
+            parse_c_type("restrict int"),
+            CType::Int {
+                signed: true,
+                bits: 32
+            }
+        );
+        assert_eq!(
+            parse_c_type("_Atomic int"),
+            CType::Int {
+                signed: true,
+                bits: 32
+            }
+        );
+        assert_eq!(
+            parse_c_type("_Atomic(unsigned long)"),
+            CType::Int {
+                signed: false,
+                bits: 64
+            }
+        );
+        assert_eq!(
+            parse_c_type("const int *restrict"),
+            CType::Ptr(Box::new(CType::Int {
+                signed: true,
+                bits: 32
+            }))
         );
     }
 }
