@@ -14,14 +14,14 @@ Readability is recovered later by Rust fixups, not during baseline lowering.
 
 ## Current pipeline
 
-| Stage | In -> Out | How | Status |
-| --- | --- | --- | --- |
-| **emit-cir** | C -> CIR text | `clang -fclangir -emit-cir` piped to `cir-opt --mlir-print-op-generic` | implemented |
-| **parse-cir** | CIR text -> generic Op-tree + locs | recursive-descent parser over MLIR generic form | implemented |
-| **load-ast** | C -> compact source context + raw JSON | `clang -Xclang -ast-dump=json -fsyntax-only` | implemented |
-| **lower** | CIR + AST context -> Rust source | match `op.name`; materialize temps; use `libc` / `unsafe` | implemented |
-| **main-normalize** | C `main` return -> process exit | emit `std::process::exit(code)` | implemented inside lower |
-| **generated-diff** | C + generated Rust -> output comparison | build generated Rust with Cargo + `libc`, compare stdout + exit code | implemented |
+| Stage              | In -> Out                               | How                                                                    | Status                   |
+| ------------------ | --------------------------------------- | ---------------------------------------------------------------------- | ------------------------ |
+| **emit-cir**       | C -> CIR text                           | `clang -fclangir -emit-cir` piped to `cir-opt --mlir-print-op-generic` | implemented              |
+| **parse-cir**      | CIR text -> generic Op-tree + locs      | recursive-descent parser over MLIR generic form                        | implemented              |
+| **load-ast**       | C -> compact source context + raw JSON  | `clang -Xclang -ast-dump=json -fsyntax-only`                           | implemented              |
+| **lower**          | CIR + AST context -> Rust source        | match `op.name`; materialize temps; use `libc` / `unsafe`              | implemented              |
+| **main-normalize** | C `main` return -> process exit         | emit `std::process::exit(code)`                                        | implemented inside lower |
+| **generated-diff** | C + generated Rust -> output comparison | build generated Rust with Cargo + `libc`, compare stdout + exit code   | implemented              |
 
 Current code path:
 
@@ -59,18 +59,18 @@ intentional: failing loudly is better than silently dropping semantics.
 
 Current C fixture coverage:
 
-| Fixture | Covered behavior |
-| --- | --- |
-| `add.c` | `int` functions, params, locals, addition, returns, calls |
-| `loop_sum.c` | `for` loops, comparisons, increments, compound addition |
-| `while_loop.c` | `while` loops, comparisons, increments, compound addition |
-| `enums.c` | enum constants, implicit values, explicit positive and negative values |
-| `unions.c` | union declaration, integer fields, field writes, field reads |
-| `structs.c` | struct declaration, integer fields, field writes, field reads |
-| `arrays.c` | fixed-size local arrays, indexed stores, indexed loads |
-| `sizeof.c` | `sizeof` over primitive, array, struct, union, and expression forms |
-| `volatile.c` | volatile local stores and loads |
-| `static_globals.c` | file-scope static integer global loads and stores |
+| Fixture            | Covered behavior                                                       |
+| ------------------ | ---------------------------------------------------------------------- |
+| `add.c`            | `int` functions, params, locals, addition, returns, calls              |
+| `loop_sum.c`       | `for` loops, comparisons, increments, compound addition                |
+| `while_loop.c`     | `while` loops, comparisons, increments, compound addition              |
+| `enums.c`          | enum constants, implicit values, explicit positive and negative values |
+| `unions.c`         | union declaration, integer fields, field writes, field reads           |
+| `structs.c`        | struct declaration, integer fields, field writes, field reads          |
+| `arrays.c`         | fixed-size local arrays, indexed stores, indexed loads                 |
+| `sizeof.c`         | `sizeof` over primitive, array, struct, union, and expression forms    |
+| `volatile.c`       | volatile local stores and loads                                        |
+| `static_globals.c` | file-scope static integer global loads and stores                      |
 
 ## Stage notes
 

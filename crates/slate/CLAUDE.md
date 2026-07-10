@@ -3,6 +3,7 @@
 This file provides instructions and context for AI coding agents working on this project.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
+
 ## Beads Issue Tracker
 
 This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
@@ -44,27 +45,93 @@ bd close <id>         # Complete work
 7. **Hand off** - Provide context for next session
 
 **CRITICAL RULES:**
+
 - Work is NOT complete until `git push` succeeds
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
 <!-- END BEADS INTEGRATION -->
 
+## What Slate Is
+
+Slate translates C to Rust by lowering **ClangIR (CIR)** — Clang's MLIR-based IR
+— rather than LLVM IR, so it keeps structured control flow, integer signedness,
+and named locals. It is transpilation, not decompilation. Correctness is the only
+bar and is checked by **differential testing**: compile and run both the C and
+the generated Rust, then require identical stdout and exit code.
+
+For the current supported C subset (and what is _not_ handled yet), see
+[docs/README.md](docs/README.md); `c.bnf` is a one-screen reference grammar of
+that subset.
+
+## Toolchain (prerequisite)
+
+Nothing works without a **CIR-enabled Clang** (`CLANG_ENABLE_CIR=ON`). Tool paths
+default to a local build and are overridable via environment variables:
+
+| Var                                 | Default                                | Role                                     |
+| ----------------------------------- | -------------------------------------- | ---------------------------------------- |
+| `SLATE_CLANG`                       | `~/llvm-project/build-cir/bin/clang`   | emit CIR + Clang AST JSON                |
+| `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt` | CIR → MLIR generic form                  |
+| `SLATE_CC`                          | `clang` (from `PATH`)                  | compile the C side of differential tests |
+| `SLATE_CARGO`                       | `cargo`                                | compile the generated Rust               |
+| `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                      | shared target triple / extra clang flags |
 
 ## Build & Test
 
-_Add your build and test commands here_
-
 ```bash
-# Example:
-# npm install
-# npm test
+cargo test                                 # unit + differential + fuzz
+cargo fmt                                   # required before finishing
+
+cargo run -- translate tests/fixtures/add.c # C -> Rust on stdout
+cargo run -- emit-cir   tests/fixtures/add.c # inspect the CIR the lowerer sees
+cargo run -- emit-fixtures                   # regenerate tests/fixtures.generated/ (git-ignored)
+
+# fuzzer: random seeds each run; SLATE_FUZZ_SEED=<n> to replay, SLATE_FUZZ_CASES=<n> for count
+cargo test --test bnf_fuzz generator_differential -- --nocapture
 ```
 
 ## Architecture Overview
 
-_Add a brief overview of your project architecture_
+```
+C ──emit──► CIR ──parse──► Op-tree ──lower──► Rust source
+│  clang|cir-opt                    ▲
+└──ast-dump=json──────► Clang AST ──┘
+verified:  run(C).{stdout,exit} == run(Rust).{stdout,exit}
+```
+
+CIR is the primary lowering input; the Clang AST is the source-fact oracle, and
+the two are joined by **source location**. `src/lower.rs` holds the `cir.*`
+handlers; `src/c_ast.rs` extracts source facts from Clang JSON; `src/cir/`
+parses the generic-form CIR op-tree. Do not add pass-scheduling machinery until a
+feature needs it.
+
+Read these before making changes — they are the real playbook:
+
+- **[docs/adding-features.md](docs/adding-features.md)** — the workflow for
+  adding coverage (baseline language feature vs. Rust fixup). Start here when
+  adding a feature.
+- [docs/architecture.md](docs/architecture.md) — sources, the two IRs, the
+  pipeline, and why CIR over LLVM IR.
+- [docs/passes.md](docs/passes.md) — the pass catalog: what runs, in what order.
+- [docs/idiomatization.md](docs/idiomatization.md) — the `unsafe`/`libc` →
+  idiomatic ladder.
+- [docs/fuzzing.md](docs/fuzzing.md) — the stateful C-subset generator behind
+  differential fuzzing (`tests/support/cgen.rs`).
+- [docs/README.md](docs/README.md) — the supported-subset surface.
 
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+- **Every feature starts with a C fixture** in `tests/fixtures/` (C-only), driven
+  by `cargo test --test differential generated_differential`.
+- **Transliterate first, idiomatize later.** Baseline Rust may be ugly:
+  `#[repr(C)]`, raw pointers, explicit temps, `libc`, and `unsafe` are all
+  acceptable. Make it correct first; recover idiom in separate, verified fixups.
+- **Correctness lives in baseline lowering, never in a fixup.** A fixup must be
+  optional in spirit — disabling it still leaves correct Rust.
+- **The generator only emits what Slate can translate.** When you extend the
+  supported subset, extend `tests/support/cgen.rs` (and `c.bnf`) to match; keep
+  every generated program well-defined (no UB) so C and Rust agree.
+- Run `cargo fmt` and `cargo test` before finishing.
+
+See [AGENTS.md](AGENTS.md) for shell/tooling notes.
