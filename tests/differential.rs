@@ -75,3 +75,16 @@ fn volatile_uses_rust_volatile_intrinsics() {
     assert!(rust.contains("std::ptr::read_volatile"));
     assert!(rust.contains("std::ptr::write_volatile"));
 }
+
+#[test]
+fn file_scope_static_emits_rust_static_mut() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-static-globals");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("static_globals.c");
+    let generated = tmp.join("static_globals.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate static globals fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated static globals rust");
+    assert!(rust.contains("static mut counter: i32 = 2;"));
+    assert!(!rust.contains("*counter"));
+}

@@ -24,6 +24,7 @@ small C subset. This is the supported fixture-level surface today:
 - calls, including `printf` lowered through `libc::printf`.
 - string literals used by `printf`.
 - `for` loops represented as conservative Rust `loop { ... break ... }`.
+- `while` loops represented as conservative Rust `loop { ... break ... }`.
 - C enum constants with implicit values and explicit `= number` values, emitted
   as Rust integer `const` items.
 - simple C unions with integer fields, emitted as `#[repr(C)] union` plus
@@ -33,6 +34,8 @@ small C subset. This is the supported fixture-level surface today:
   arrays.
 - `sizeof` expressions that Clang lowers to integer CIR constants.
 - volatile CIR loads and stores, emitted with Rust volatile pointer intrinsics.
+- file-scope `static int` globals with constant initializers, emitted as
+  `static mut`.
 - source-level context loaded from Clang's JSON AST.
 
 Output is intentionally ugly, temp-heavy, `libc`-backed Rust. Correctness is
@@ -43,6 +46,7 @@ The current fixtures are:
 
 - `add.c` — integer functions, locals, calls, and addition.
 - `loop_sum.c` — structured `for` loop lowering.
+- `while_loop.c` — structured `while` loop lowering.
 - `enums.c` — enum constants with implicit and explicit values.
 - `unions.c` — basic union declaration, field writes, and field reads.
 - `structs.c` — basic struct declaration, field writes, and field reads.
@@ -50,6 +54,7 @@ The current fixtures are:
 - `sizeof.c` — `sizeof` over primitive, array, struct, union, and expression
   forms.
 - `volatile.c` — volatile local stores and loads.
+- `static_globals.c` — file-scope static integer global loads and stores.
 
 Generated Rust for inspection is written with:
 
@@ -68,8 +73,9 @@ Important gaps remain:
 - unsigned arithmetic behavior and casts beyond the currently exercised cases.
 - pointers, broader aggregate coverage, field access beyond the current simple
   record cases, and pointer arithmetic.
-- global variables other than constant strings used by `printf`.
-- `if`, `while`, `switch`, `break`, `continue`, and `goto`.
+- globals beyond file-scope `static int` with constant initializers and constant
+  strings used by `printf`.
+- `if`, `switch`, `break`, `continue`, and `goto`.
 - more arithmetic, bitwise, logical, and assignment operators.
 - function prototypes, declarations across translation units, typedefs, and
   headers beyond what Clang resolves for the fixture.
@@ -105,6 +111,8 @@ location (`file:line:col`):
 - [architecture.md](architecture.md) — sources, IRs, pipeline, shared context.
 - [passes.md](passes.md) — the pass catalog: what runs, in what order, how.
 - [idiomatization.md](idiomatization.md) — the `unsafe`/`libc` → idiomatic ladder.
+- [fuzzing.md](fuzzing.md) — the stateful C-subset generator behind differential
+  fuzzing.
 
 ## Toolchain
 

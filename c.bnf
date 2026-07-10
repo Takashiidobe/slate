@@ -1,45 +1,72 @@
-# Slate-supported C subset for differential fuzzing.
-# Syntax: <rule> ::= "terminal" <rule> | "other terminal" ;
-# This is intentionally smaller than grammar.cf and should only include C that
-# Slate can currently translate.
+# Reference grammar for the C subset Slate translates.
+#
+# This is documentation, not a program generator: the fuzzer is
+# tests/support/cgen.rs, which maintains scope/type state that a
+# context-free grammar cannot express. This file records *which syntax*
+# Slate supports, in one screen. The bnf_fuzz tests check that it parses
+# and that every referenced rule is defined.
+#
+# Syntax: <rule> ::= alt | alt ;   terminals in "quotes", rules in <angles>.
+# It is intentionally smaller than a full C grammar and covers only what
+# Slate can currently lower (see docs/README.md).
 
-<program> ::= <include> "\n" <enum_decl> "\n" <union_decl> "\n" <struct_decl> "\n" <helper_fn> "\n" <loop_fn> "\n" <array_fn> "\n" <union_fn> "\n" <struct_fn> "\n" <sizeof_fn> "\n" <volatile_fn> "\n" <main_fn> ;
+<program> ::= <include> <decl_list> <function_list> ;
 
-<include> ::= "#include <stdio.h>\n" ;
+<include> ::= "#include <stdio.h>" ;
 
-<enum_decl> ::= "enum FuzzEnum {\n    FuzzZero,\n    FuzzOne,\n    FuzzFive = " <five> ",\n    FuzzSix,\n    FuzzNegative = -2,\n    FuzzNegativeNext\n};\n" ;
+# ----- top-level declarations -----
 
-<union_decl> ::= "union FuzzPair {\n    int left;\n    int right;\n};\n" ;
+<decl_list> ::= <decl> <decl_list> | <decl> ;
+<decl> ::= <enum_decl> | <struct_decl> | <union_decl> | <global_decl> ;
 
-<struct_decl> ::= "struct FuzzStruct {\n    int left;\n    int right;\n};\n" ;
+<enum_decl> ::= "enum" <ident> "{" <enumerator_list> "};" ;
+<enumerator_list> ::= <enumerator> "," <enumerator_list> | <enumerator> ;
+<enumerator> ::= <ident> | <ident> "=" <int> ;
 
-<helper_fn> ::= "static int helper(int a, int b) {\n    int c = a + b;\n    return c;\n}\n" ;
+<struct_decl> ::= "struct" <ident> "{" <field_list> "};" ;
+<union_decl> ::= "union" <ident> "{" <field_list> "};" ;
+<field_list> ::= <field> <field_list> | <field> ;
+<field> ::= "int" <ident> ";" ;
 
-<loop_fn> ::= "static int loop_sum(int n) {\n    int total = 0;\n    for (int i = 1; i <= n; i++) {\n        total += i;\n    }\n    return total;\n}\n" ;
+<global_decl> ::= "static" "int" <ident> "=" <int> ";" ;
 
-<array_fn> ::= "static int array_pick(int index) {\n    int values[3];\n    values[0] = " <small_int> ";\n    values[1] = " <small_int> ";\n    values[2] = values[0] + values[1];\n    return values[index];\n}\n" ;
+# ----- functions -----
 
-<union_fn> ::= "static int union_pick(int a, int b) {\n    union FuzzPair p;\n    p.left = a;\n    p.right = b;\n    return p.left;\n}\n" ;
+<function_list> ::= <function> <function_list> | <function> ;
+<function> ::= <ret_type> <ident> "(" <param_list> ")" "{" <stmt_list> "}" ;
+<ret_type> ::= "int" | "void" ;
+<param_list> ::= "void" | <params> ;
+<params> ::= <param> "," <params> | <param> ;
+<param> ::= "int" <ident> ;
 
-<struct_fn> ::= "static int struct_sum(int a, int b) {\n    struct FuzzStruct p;\n    p.left = a;\n    p.right = b;\n    return p.left + p.right;\n}\n" ;
+# ----- statements -----
 
-<sizeof_fn> ::= "static int sizeof_mix(void) {\n    int values[3];\n    return sizeof(int) + sizeof(values) + sizeof(struct FuzzStruct) + sizeof(union FuzzPair);\n}\n" ;
+<stmt_list> ::= <stmt> <stmt_list> | <stmt> ;
+<stmt> ::= <declaration> | <assignment> | <compound_assignment> | <for_loop> | <while_loop> | <call_stmt> | <return_stmt> ;
 
-<volatile_fn> ::= "static int volatile_local(int value) {\n    volatile int slot = value;\n    slot = slot + " <small_int> ";\n    return slot;\n}\n" ;
+<declaration> ::= <type> <ident> "=" <expr> ";" ;
+<assignment> ::= <lvalue> "=" <expr> ";" ;
+<compound_assignment> ::= <lvalue> "+=" <expr> ";" ;
+<for_loop> ::= "for" "(" "int" <ident> "=" <expr> ";" <expr> ";" <ident> "++" ")" "{" <stmt_list> "}" ;
+<while_loop> ::= "while" "(" <expr> ")" "{" <stmt_list> "}" ;
+<call_stmt> ::= <call> ";" ;
+<return_stmt> ::= "return" <expr> ";" | "return" ";" ;
 
-<main_fn> ::= "int main(void) {\n" <printf_helper> <printf_loop> <printf_array> <printf_union> <printf_struct> <printf_sizeof> <printf_volatile> <printf_enum> "    return 0;\n}\n" ;
+# ----- expressions -----
 
-<printf_helper> ::= "    printf(\"%d\\n\", helper(" <small_int> ", " <small_int> "));\n" ;
-<printf_loop> ::= "    printf(\"%d\\n\", loop_sum(" <loop_bound> "));\n" ;
-<printf_array> ::= "    printf(\"%d\\n\", array_pick(" <array_index> "));\n" ;
-<printf_union> ::= "    printf(\"%d\\n\", union_pick(" <small_int> ", " <small_int> "));\n" ;
-<printf_struct> ::= "    printf(\"%d\\n\", struct_sum(" <small_int> ", " <small_int> "));\n" ;
-<printf_sizeof> ::= "    printf(\"%d\\n\", sizeof_mix());\n" ;
-<printf_volatile> ::= "    printf(\"%d\\n\", volatile_local(" <small_int> "));\n" ;
-<printf_enum> ::= "    printf(\"%d\\n\", " <enum_value> ");\n" ;
+<expr> ::= <int> | <lvalue> | <call> | <sizeof> | "(" <expr> "+" <expr> ")" | "(" <expr> <cmp_op> <expr> ")" ;
+<lvalue> ::= <ident> | <ident> "." <ident> | <ident> "[" <expr> "]" ;
+<cmp_op> ::= "<" | "<=" | ">" | ">=" | "==" | "!=" ;
+<call> ::= <ident> "(" ")" | <ident> "(" <arg_list> ")" ;
+<arg_list> ::= <expr> "," <arg_list> | <expr> ;
+<sizeof> ::= "sizeof" "(" <sizeof_arg> ")" ;
+<sizeof_arg> ::= "int" | <ident> | "struct" <ident> | "union" <ident> ;
 
-<small_int> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
-<loop_bound> ::= "0" | "1" | "2" | "3" | "4" | "5" ;
-<array_index> ::= "0" | "1" | "2" ;
-<five> ::= "5" ;
-<enum_value> ::= "FuzzZero" | "FuzzOne" | "FuzzFive" | "FuzzSix" | "FuzzNegative" | "FuzzNegativeNext" ;
+# ----- types and lexical tokens -----
+
+<type> ::= "int" | "volatile int" ;
+
+# Lexical placeholders: a real lexer supplies identifiers and integer
+# literals. They are single productions here so the grammar is self-contained.
+<ident> ::= "name" ;
+<int> ::= "0" ;

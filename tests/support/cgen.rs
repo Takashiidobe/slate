@@ -1,0 +1,563 @@
+//! A stateful, csmith-style generator for Slate's supported C subset.
+//!
+//! Unlike the BNF expander (which stitches fixed template fragments together),
+//! this generator maintains *generation state* — a stack of scopes holding the
+//! variables that are currently declared, plus the signatures of functions
+//! emitted so far — and composes expressions from whatever is live. That lets it
+//! exercise variable scope, expression composition, reusable declarations, and
+//! passing scoped locals to functions.
+//!
+//! Everything it emits is restricted to the subset Slate can translate today
+//! (int-only arithmetic with `+`/`++`/`+=`, comparisons, `for`/`while`, arrays,
+//! structs, unions, `sizeof`, `volatile`, static globals, enum constants, and
+//! `printf("%d\n", ...)`).
+//!
+//! Correctness rests on one invariant: the generated program must be
+//! well-defined C with no UB, because the differential harness compares it to
+//! the translated Rust and the Rust is built in debug mode (where `i32`
+//! overflow *panics* while C wraps). To guarantee that, the generator carries a
+//! conservative upper bound on the absolute value of every variable and every
+//! expression, and never builds an operation whose bound could exceed
+//! [`VALUE_CAP`]. Array indices are always in range and every variable is
+//! initialized before it is read.
+
+#![allow(dead_code)]
+
+/// Never let a tracked value bound exceed this; well under `i32::MAX` so no
+/// addition can overflow.
+const VALUE_CAP: i64 = 1_000_000;
+/// Integer literals stay in `0..=CONST_MAX`.
+const CONST_MAX: i64 = 9;
+/// Function parameters are assumed to receive values in `0..=PARAM_MAX`.
+const PARAM_MAX: i64 = 20;
+/// Budget for a top-level declaration initializer.
+const DECL_BUDGET: i64 = 200;
+/// Budget for a loop step / compound-assignment right-hand side.
+const STEP_BUDGET: i64 = 6;
+/// Maximum expression tree depth.
+const MAX_DEPTH: usize = 3;
+
+/// Deterministic LCG. Same generator, same seed => byte-identical program.
+struct Rng {
+    state: u64,
+}
+
+impl Rng {
+    fn new(seed: u64) -> Self {
+        Self {
+            state: seed ^ 0x9e37_79b9_7f4a_7c15,
+        }
+    }
+
+    fn next(&mut self) -> u64 {
+        self.state = self
+            .state
+            .wrapping_mul(6364136223846793005)
+            .wrapping_add(1442695040888963407);
+        self.state
+    }
+
+    /// Uniform in `0..n` (n must be > 0).
+    fn below(&mut self, n: usize) -> usize {
+        (self.next() >> 33) as usize % n
+    }
+
+    /// Uniform in `lo..=hi`.
+    fn int_in(&mut self, lo: i64, hi: i64) -> i64 {
+        if hi <= lo {
+            return lo;
+        }
+        lo + (self.next() >> 33) as i64 % (hi - lo + 1)
+    }
+
+    /// True with probability `percent`/100.
+    fn chance(&mut self, percent: u64) -> bool {
+        self.next() % 100 < percent
+    }
+}
+
+#[derive(Clone)]
+struct Var {
+    name: String,
+    max_abs: i64,
+}
+
+#[derive(Clone)]
+struct FuncSig {
+    name: String,
+    arity: usize,
+    ret_max_abs: i64,
+}
+
+struct Gen {
+    rng: Rng,
+    out: String,
+    indent: usize,
+    scopes: Vec<Vec<Var>>,
+    funcs: Vec<FuncSig>,
+    var_counter: usize,
+    // top-level feature flags, decided per program
+    has_enum: bool,
+    has_struct: bool,
+    has_union: bool,
+    has_global: bool,
+}
+
+/// Generate a complete, self-contained C program for `seed`.
+pub fn generate(seed: u64) -> String {
+    let mut g = Gen {
+        rng: Rng::new(seed),
+        out: String::new(),
+        indent: 0,
+        scopes: Vec::new(),
+        funcs: Vec::new(),
+        var_counter: 0,
+        has_enum: false,
+        has_struct: false,
+        has_union: false,
+        has_global: false,
+    };
+    g.program();
+    g.out
+}
+
+impl Gen {
+    fn program(&mut self) {
+        self.has_enum = self.rng.chance(60);
+        self.has_struct = self.rng.chance(70);
+        self.has_union = self.rng.chance(60);
+        self.has_global = self.rng.chance(70);
+
+        self.line("#include <stdio.h>");
+        self.blank();
+
+        if self.has_enum {
+            self.emit_enum_decl();
+        }
+        if self.has_struct {
+            self.emit_struct_decl();
+        }
+        if self.has_union {
+            self.emit_union_decl();
+        }
+        if self.has_global {
+            self.emit_global_decl();
+        }
+
+        // The static-counter function is emitted verbatim and, crucially, is
+        // *not* registered in `funcs`, so random expressions never call it and
+        // the global's value stays exactly `init + call count`.
+        if self.has_global {
+            self.emit_bump_fn();
+        }
+
+        let helper_count = self.rng.int_in(2, 4) as usize;
+        for i in 0..helper_count {
+            self.emit_helper(i);
+        }
+
+        self.emit_main();
+    }
+
+    // ----- top-level declarations (mirrors the proven fixture shapes) -----
+
+    fn emit_enum_decl(&mut self) {
+        self.line("enum FuzzEnum {");
+        self.line("    FuzzZero,");
+        self.line("    FuzzOne,");
+        self.line("    FuzzFive = 5,");
+        self.line("    FuzzSix,");
+        self.line("    FuzzNeg = -2,");
+        self.line("    FuzzNegNext");
+        self.line("};");
+        self.blank();
+    }
+
+    fn emit_struct_decl(&mut self) {
+        self.line("struct FuzzStruct {");
+        self.line("    int left;");
+        self.line("    int right;");
+        self.line("};");
+        self.blank();
+    }
+
+    fn emit_union_decl(&mut self) {
+        self.line("union FuzzPair {");
+        self.line("    int left;");
+        self.line("    int right;");
+        self.line("};");
+        self.blank();
+    }
+
+    fn emit_global_decl(&mut self) {
+        let init = self.rng.int_in(0, CONST_MAX);
+        self.line(&format!("static int fuzz_counter = {init};"));
+        self.blank();
+    }
+
+    fn emit_bump_fn(&mut self) {
+        self.line("static int fuzz_bump(void) {");
+        self.line("    fuzz_counter = fuzz_counter + 1;");
+        self.line("    return fuzz_counter;");
+        self.line("}");
+        self.blank();
+    }
+
+    // ----- helper functions -----
+
+    fn emit_helper(&mut self, idx: usize) {
+        let name = format!("fuzz_fn{idx}");
+        let arity = self.rng.int_in(0, 3) as usize;
+
+        self.push_scope();
+        let params: Vec<String> = (0..arity)
+            .map(|i| {
+                let p = format!("p{i}");
+                self.declare(&p, PARAM_MAX);
+                format!("int {p}")
+            })
+            .collect();
+        let sig = if params.is_empty() {
+            "void".to_string()
+        } else {
+            params.join(", ")
+        };
+        self.line(&format!("static int {name}({sig}) {{"));
+        self.indent = 1;
+
+        // Always start with a declaration so there is something in scope.
+        self.emit_decl_stmt();
+        let extra = self.rng.int_in(1, 3);
+        for _ in 0..extra {
+            self.emit_helper_stmt();
+        }
+
+        let (ret_expr, ret_max) = self.gen_expr(0, VALUE_CAP);
+        self.line(&format!("return {ret_expr};"));
+
+        self.indent = 0;
+        self.line("}");
+        self.blank();
+        self.pop_scope();
+
+        self.funcs.push(FuncSig {
+            name,
+            arity,
+            ret_max_abs: ret_max,
+        });
+    }
+
+    fn emit_helper_stmt(&mut self) {
+        match self.rng.below(4) {
+            0 => self.emit_decl_stmt(),
+            1 => self.emit_assign_stmt(),
+            2 => self.emit_compound_stmt(),
+            _ => self.emit_for_stmt(),
+        }
+    }
+
+    fn emit_decl_stmt(&mut self) {
+        let name = self.fresh("v");
+        let (expr, max) = self.gen_expr(0, DECL_BUDGET);
+        self.line(&format!("int {name} = {expr};"));
+        self.declare(&name, max);
+    }
+
+    fn emit_assign_stmt(&mut self) {
+        let Some(target) = self.pick_var(VALUE_CAP) else {
+            return self.emit_decl_stmt();
+        };
+        let (expr, max) = self.gen_expr(0, DECL_BUDGET);
+        self.line(&format!("{} = {expr};", target.name));
+        self.set_max_abs(&target.name, max);
+    }
+
+    fn emit_compound_stmt(&mut self) {
+        let Some(target) = self.pick_var(VALUE_CAP - STEP_BUDGET) else {
+            return self.emit_decl_stmt();
+        };
+        let (expr, max) = self.gen_expr(0, STEP_BUDGET);
+        self.line(&format!("{} += {expr};", target.name));
+        self.set_max_abs(&target.name, target.max_abs + max);
+    }
+
+    /// `int acc = 0; for (int i = 0; i <= N; i++) { acc += <step>; }`
+    fn emit_for_stmt(&mut self) {
+        let acc = self.fresh("acc");
+        self.line(&format!("int {acc} = 0;"));
+        self.declare(&acc, 0);
+
+        let bound = self.rng.int_in(0, 5);
+        let idx = self.fresh("i");
+        self.line(&format!(
+            "for (int {idx} = 0; {idx} <= {bound}; {idx}++) {{"
+        ));
+        self.indent += 1;
+
+        self.push_scope();
+        self.declare(&idx, bound);
+        let (step, step_max) = self.gen_expr(0, STEP_BUDGET);
+        self.line(&format!("{acc} += {step};"));
+        self.pop_scope();
+
+        self.indent -= 1;
+        self.line("}");
+
+        let acc_max = ((bound + 1) * step_max).min(VALUE_CAP);
+        self.set_max_abs(&acc, acc_max);
+    }
+
+    // ----- expressions -----
+
+    /// Returns `(c_text, max_abs)`; `max_abs` is a conservative bound on the
+    /// absolute value of the expression, always `<= budget` and `<= VALUE_CAP`.
+    fn gen_expr(&mut self, depth: usize, budget: i64) -> (String, i64) {
+        let budget = budget.clamp(0, VALUE_CAP);
+        if depth >= MAX_DEPTH || budget < 2 {
+            return self.gen_leaf(budget);
+        }
+        match self.rng.below(5) {
+            0 | 1 => self.gen_leaf(budget),
+            2 | 3 => {
+                // addition: split the budget so the sum stays within it
+                let (le, lm) = self.gen_expr(depth + 1, budget / 2);
+                let (re, rm) = self.gen_expr(depth + 1, budget - lm);
+                (format!("({le} + {re})"), lm + rm)
+            }
+            _ => self.gen_call(depth, budget),
+        }
+    }
+
+    fn gen_leaf(&mut self, budget: i64) -> (String, i64) {
+        if self.rng.chance(50) {
+            if let Some(v) = self.pick_var(budget) {
+                return (v.name, v.max_abs);
+            }
+        }
+        let c = self.rng.int_in(0, CONST_MAX.min(budget));
+        (c.to_string(), c)
+    }
+
+    fn gen_call(&mut self, depth: usize, budget: i64) -> (String, i64) {
+        let callable: Vec<FuncSig> = self
+            .funcs
+            .iter()
+            .filter(|f| f.ret_max_abs <= budget)
+            .cloned()
+            .collect();
+        if callable.is_empty() {
+            return self.gen_leaf(budget);
+        }
+        let f = callable[self.rng.below(callable.len())].clone();
+        // Arguments are kept within the callee's assumed parameter range so the
+        // recorded return bound stays valid.
+        let args: Vec<String> = (0..f.arity)
+            .map(|_| self.gen_expr(depth + 1, PARAM_MAX).0)
+            .collect();
+        (format!("{}({})", f.name, args.join(", ")), f.ret_max_abs)
+    }
+
+    // ----- main -----
+
+    fn emit_main(&mut self) {
+        self.push_scope();
+        self.line("int main(void) {");
+        self.indent = 1;
+
+        // A couple of scoped locals main can pass to functions.
+        self.emit_decl_stmt();
+        if self.rng.chance(70) {
+            self.emit_decl_stmt();
+        }
+        if self.rng.chance(50) {
+            self.emit_for_stmt();
+        }
+
+        // Print each helper's result, feeding scoped values as arguments.
+        let funcs = self.funcs.clone();
+        for f in &funcs {
+            let args: Vec<String> = (0..f.arity)
+                .map(|_| self.gen_expr(0, PARAM_MAX).0)
+                .collect();
+            self.printf(&format!("{}({})", f.name, args.join(", ")));
+        }
+
+        if self.has_global {
+            self.printf("fuzz_bump()");
+            self.printf("fuzz_bump()");
+        }
+        if self.has_enum {
+            self.printf("FuzzFive");
+        }
+        if self.has_struct {
+            self.emit_struct_use();
+        }
+        if self.has_union {
+            self.emit_union_use();
+        }
+        self.emit_array_use();
+
+        self.line("return 0;");
+        self.indent = 0;
+        self.line("}");
+        self.pop_scope();
+    }
+
+    fn emit_struct_use(&mut self) {
+        let a = self.rng.int_in(0, CONST_MAX);
+        let b = self.rng.int_in(0, CONST_MAX);
+        self.line("struct FuzzStruct s;");
+        self.line(&format!("s.left = {a};"));
+        self.line(&format!("s.right = {b};"));
+        self.printf("(s.left + s.right)");
+    }
+
+    fn emit_union_use(&mut self) {
+        let a = self.rng.int_in(0, CONST_MAX);
+        self.line("union FuzzPair u;");
+        self.line(&format!("u.left = {a};"));
+        self.printf("u.left");
+    }
+
+    fn emit_array_use(&mut self) {
+        let n = self.rng.int_in(2, 4);
+        self.line(&format!("int arr[{n}];"));
+        for i in 0..n {
+            let v = self.rng.int_in(0, CONST_MAX);
+            self.line(&format!("arr[{i}] = {v};"));
+        }
+        let idx = self.rng.int_in(0, n - 1);
+        self.printf(&format!("arr[{idx}]"));
+
+        // sizeof over primitive + the array is a compile-time constant on both
+        // sides, so C and translated Rust agree.
+        if self.rng.chance(50) {
+            self.line("int sz = sizeof(int) + sizeof(arr);");
+            self.printf("sz");
+        }
+
+        // a volatile local, exercised like the volatile fixture
+        if self.rng.chance(50) {
+            let init = self.rng.int_in(0, CONST_MAX);
+            let bump = self.rng.int_in(0, CONST_MAX);
+            self.line(&format!("volatile int slot = {init};"));
+            self.line(&format!("slot = slot + {bump};"));
+            self.printf("slot");
+        }
+    }
+
+    fn printf(&mut self, expr: &str) {
+        self.line(&format!("printf(\"%d\\n\", {expr});"));
+    }
+
+    // ----- scope / emission helpers -----
+
+    fn push_scope(&mut self) {
+        self.scopes.push(Vec::new());
+    }
+
+    fn pop_scope(&mut self) {
+        self.scopes.pop();
+    }
+
+    fn declare(&mut self, name: &str, max_abs: i64) {
+        let max_abs = max_abs.clamp(0, VALUE_CAP);
+        self.scopes.last_mut().expect("scope").push(Var {
+            name: name.to_string(),
+            max_abs,
+        });
+    }
+
+    fn set_max_abs(&mut self, name: &str, max_abs: i64) {
+        let max_abs = max_abs.clamp(0, VALUE_CAP);
+        for scope in self.scopes.iter_mut().rev() {
+            if let Some(v) = scope.iter_mut().find(|v| v.name == name) {
+                v.max_abs = max_abs;
+                return;
+            }
+        }
+    }
+
+    fn fresh(&mut self, prefix: &str) -> String {
+        let name = format!("{prefix}{}", self.var_counter);
+        self.var_counter += 1;
+        name
+    }
+
+    /// A random in-scope variable whose value bound fits within `budget`.
+    fn pick_var(&mut self, budget: i64) -> Option<Var> {
+        let candidates: Vec<Var> = self
+            .scopes
+            .iter()
+            .flatten()
+            .filter(|v| v.max_abs <= budget)
+            .cloned()
+            .collect();
+        if candidates.is_empty() {
+            None
+        } else {
+            Some(candidates[self.rng.below(candidates.len())].clone())
+        }
+    }
+
+    fn line(&mut self, text: &str) {
+        for _ in 0..self.indent {
+            self.out.push_str("    ");
+        }
+        self.out.push_str(text);
+        self.out.push('\n');
+    }
+
+    fn blank(&mut self) {
+        self.out.push('\n');
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deterministic_for_a_seed() {
+        assert_eq!(generate(1), generate(1));
+        assert_ne!(generate(1), generate(2));
+    }
+
+    #[test]
+    fn emits_expected_skeleton() {
+        let src = generate(7);
+        assert!(src.contains("#include <stdio.h>"));
+        assert!(src.contains("int main(void) {"));
+        assert!(src.contains("static int fuzz_fn0("));
+        // multi-function: at least two helpers plus main
+        assert!(src.matches("static int fuzz_fn").count() >= 2);
+        assert!(src.contains("printf(\"%d\\n\""));
+    }
+
+    #[test]
+    fn never_exceeds_value_cap() {
+        // The bound tracker must keep every recorded max under the cap for a
+        // wide sweep of seeds; if it did not, silent overflow could slip in.
+        for seed in 0..256u64 {
+            let mut g = Gen {
+                rng: Rng::new(seed),
+                out: String::new(),
+                indent: 0,
+                scopes: Vec::new(),
+                funcs: Vec::new(),
+                var_counter: 0,
+                has_enum: false,
+                has_struct: false,
+                has_union: false,
+                has_global: false,
+            };
+            g.program();
+            for f in &g.funcs {
+                assert!(
+                    f.ret_max_abs <= VALUE_CAP,
+                    "seed {seed}: return bound too large"
+                );
+            }
+        }
+    }
+}

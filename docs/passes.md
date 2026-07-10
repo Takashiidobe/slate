@@ -36,7 +36,8 @@ The lowerer currently handles the fixture subset:
 - `cir.func`, `cir.alloca`, `cir.store`, `cir.load`, `cir.const`.
 - `cir.add`, `cir.inc`, `cir.cmp`.
 - `cir.get_global`, `cir.cast`, `cir.call`.
-- `cir.scope`, `cir.for`, `cir.condition`, `cir.yield`, `cir.return`.
+- `cir.scope`, `cir.for`, `cir.while`, `cir.condition`, `cir.yield`,
+  `cir.return`.
 - global constant strings used by `printf`.
 - CIR integer aliases such as `!s32i = !cir.int<s, 32>`, mapped to Rust integer
   primitives.
@@ -50,6 +51,8 @@ The lowerer currently handles the fixture subset:
 - `sizeof` expressions when Clang has folded them to CIR integer constants.
 - `cir.load` and `cir.store` with `is_volatile`, emitted as
   `std::ptr::read_volatile` and `std::ptr::write_volatile`.
+- file-scope `cir.global` integers with constant initializers, emitted as Rust
+  `static mut` items.
 
 Unknown CIR ops emit a `todo!("cir.xyz")` expression and a diagnostic. That is
 intentional: failing loudly is better than silently dropping semantics.
@@ -60,12 +63,14 @@ Current C fixture coverage:
 | --- | --- |
 | `add.c` | `int` functions, params, locals, addition, returns, calls |
 | `loop_sum.c` | `for` loops, comparisons, increments, compound addition |
+| `while_loop.c` | `while` loops, comparisons, increments, compound addition |
 | `enums.c` | enum constants, implicit values, explicit positive and negative values |
 | `unions.c` | union declaration, integer fields, field writes, field reads |
 | `structs.c` | struct declaration, integer fields, field writes, field reads |
 | `arrays.c` | fixed-size local arrays, indexed stores, indexed loads |
 | `sizeof.c` | `sizeof` over primitive, array, struct, union, and expression forms |
 | `volatile.c` | volatile local stores and loads |
+| `static_globals.c` | file-scope static integer global loads and stores |
 
 ## Stage notes
 
@@ -111,12 +116,13 @@ The next baseline features should be added one fixture at a time:
 
 - More scalar operations: subtraction, multiplication, division, modulo, bitwise
   ops, logical ops, unary negation, and explicit casts.
-- Full control flow: `if`, `while`, `break`, `continue`, `switch`, and `goto`.
+- Full control flow: `if`, `break`, `continue`, `switch`, and `goto`.
 - Aggregate types: broader arrays, broader structs and unions, more field
   access, initialization, and layout-sensitive tests.
 - Pointers: address-of, dereference, pointer arithmetic, null, arrays as
   pointers, and const-correctness.
-- Globals: non-string globals, static locals, initialization, and linkage.
+- Globals: static locals, non-integer globals, richer initialization, and
+  linkage.
 - Source model: typedefs, named enum types as variable types, prototypes, and
   header-origin declarations.
 - Target model: signedness and width for all C integer spellings, enum

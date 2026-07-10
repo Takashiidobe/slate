@@ -16,6 +16,7 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
             .iter()
             .map(|record| (record.name.clone(), record.clone()))
             .collect(),
+        globals: BTreeMap::new(),
         strings: BTreeMap::new(),
     };
     lowerer.lower_module(cir, c)
@@ -25,6 +26,7 @@ struct Lowerer<'a> {
     ctx: &'a mut Ctx,
     aliases: BTreeMap<String, String>,
     records: BTreeMap<String, crate::c_ast::Record>,
+    globals: BTreeMap<String, GlobalVar>,
     strings: BTreeMap<String, Vec<u8>>,
 }
 
@@ -51,6 +53,13 @@ struct MemberPtr {
 struct ElementPtr {
     base: String,
     index: String,
+}
+
+#[derive(Debug, Clone)]
+struct GlobalVar {
+    name: String,
+    ty: String,
+    init: String,
 }
 
 #[derive(Debug, Clone)]
@@ -103,8 +112,14 @@ impl<'a> Lowerer<'a> {
         let ops = region_ops(module_op);
         for op in &ops {
             if op.name == "cir.global" {
-                self.collect_global_string(op);
+                self.collect_global(op);
             }
+        }
+        for global in self.globals.values() {
+            items.push(Item::Raw(format!(
+                "static mut {}: {} = {};\n",
+                global.name, global.ty, global.init
+            )));
         }
 
         for op in ops {
@@ -123,7 +138,7 @@ impl<'a> Lowerer<'a> {
         Program { items }
     }
 
-    fn collect_global_string(&mut self, op: &Op) {
+    fn collect_global(&mut self, op: &Op) {
         let Some(name) = attr_str(op, "sym_name") else {
             return;
         };
@@ -133,6 +148,17 @@ impl<'a> Lowerer<'a> {
         if let Some(mut bytes) = parse_cir_const_array(raw) {
             bytes.push(0);
             self.strings.insert(name.to_string(), bytes);
+        } else if let Some(init) = parse_cir_int(raw) {
+            let ty = self.rust_type(attr_str(op, "sym_type").unwrap_or("!s32i"));
+            let name = sanitize_ident(name);
+            self.globals.insert(
+                name.clone(),
+                GlobalVar {
+                    name,
+                    ty,
+                    init: init.to_string(),
+                },
+            );
         }
     }
 
@@ -299,6 +325,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.return" => self.lower_return(op),
             "cir.scope" => self.lower_scope(op),
             "cir.for" => self.lower_for(op),
+            "cir.while" => self.lower_while(op),
             "cir.yield" | "cir.condition" => {}
             other => {
                 self.parent
@@ -337,6 +364,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_line(&format!(
                 "unsafe {{ std::ptr::write_volatile({addr}, {value}); }}"
             ));
+        } else if let Some(global) = self.global_name(ptr) {
+            self.emit_line(&format!("unsafe {{ {global} = {value}; }}"));
         } else if let Some(member) = self.member_ptrs.get(ptr).cloned() {
             self.emit_line(&format!(
                 "unsafe {{ {}.{} = {value}; }}",
@@ -367,6 +396,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 "unsafe {{ std::ptr::read_volatile({}) }}",
                 self.load_address(ptr)
             )
+        } else if let Some(global) = self.global_name(ptr) {
+            format!("unsafe {{ {global} }}")
         } else if let Some(member) = self.member_ptrs.get(ptr) {
             format!("unsafe {{ {}.{} }}", member.base, member.field)
         } else if let Some(element) = self.element_ptrs.get(ptr) {
@@ -389,6 +420,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             )
         } else if let Some(slot) = self.slots.get(ptr) {
             format!("std::ptr::addr_of!({slot})")
+        } else if let Some(global) = self.global_name(ptr) {
+            format!("std::ptr::addr_of!({global})")
         } else {
             self.render_operand(ptr)
         }
@@ -404,9 +437,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             )
         } else if let Some(slot) = self.slots.get(ptr) {
             format!("std::ptr::addr_of_mut!({slot})")
+        } else if let Some(global) = self.global_name(ptr) {
+            format!("std::ptr::addr_of_mut!({global})")
         } else {
             self.render_operand(ptr)
         }
+    }
+
+    fn global_name(&self, ptr: &str) -> Option<String> {
+        let Some(Val::Global(name)) = self.values.get(ptr) else {
+            return None;
+        };
+        let name = sanitize_ident(name);
+        self.parent.globals.contains_key(&name).then_some(name)
     }
 
     fn lower_const(&mut self, op: &Op) {
@@ -600,6 +643,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.emit_line("}");
         self.lower_region_ops(&op.regions[1]);
         self.lower_region_ops(&op.regions[2]);
+        self.indent -= 1;
+        self.emit_line("}");
+    }
+
+    fn lower_while(&mut self, op: &Op) {
+        if op.regions.len() < 2 {
+            self.emit_expr("todo!(\"cir.while\")".into());
+            return;
+        }
+        self.emit_line("loop {");
+        self.indent += 1;
+        let cond = self.lower_condition_region(&op.regions[0]);
+        self.emit_line(&format!("if !({cond}) {{"));
+        self.indent += 1;
+        self.emit_line("break;");
+        self.indent -= 1;
+        self.emit_line("}");
+        self.lower_region_ops(&op.regions[1]);
         self.indent -= 1;
         self.emit_line("}");
     }
