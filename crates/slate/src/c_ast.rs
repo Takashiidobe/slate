@@ -59,6 +59,7 @@ pub struct Decl {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CType {
     Void,
+    Bool,
     Int { signed: bool, bits: u32 },
     Float { bits: u32 },
     Ptr(Box<CType>),
@@ -465,6 +466,8 @@ fn parse_c_type(s: &str) -> CType {
         CType::Record(name.trim().to_string())
     } else if let Some(name) = s.strip_prefix("struct ") {
         CType::Record(name.trim().to_string())
+    } else if s == "_Bool" || s == "bool" {
+        CType::Bool
     } else if s == "float" {
         CType::Float { bits: 32 }
     } else if s == "double" {
@@ -1083,5 +1086,33 @@ mod tests {
         let unit = parse_json(ast, "non_int_fields.c").unwrap();
         assert_eq!(unit.records[0].fields[0].ty, CType::Float { bits: 32 });
         assert_eq!(unit.records[0].fields[1].ty, CType::Float { bits: 64 });
+    }
+
+    #[test]
+    fn extracts_bool_types_from_clang_json() {
+        let ast = r#"
+{
+  "kind": "TranslationUnitDecl",
+  "inner": [
+    {
+      "kind": "FunctionDecl",
+      "name": "use_bool",
+      "loc": {"file": "bool.c", "line": 1, "col": 13},
+      "range": {"begin": {"file": "bool.c"}, "end": {"file": "bool.c"}},
+      "type": {"qualType": "_Bool (_Bool, bool)"},
+      "inner": [
+        {"kind": "ParmVarDecl", "name": "a", "type": {"qualType": "_Bool"}},
+        {"kind": "ParmVarDecl", "name": "b", "type": {"qualType": "bool"}},
+        {"kind": "CompoundStmt", "inner": []}
+      ]
+    }
+  ]
+}
+"#;
+
+        let unit = parse_json(ast, "bool.c").unwrap();
+        assert_eq!(unit.functions[0].ret, CType::Bool);
+        assert_eq!(unit.functions[0].params[0].ty, CType::Bool);
+        assert_eq!(unit.functions[0].params[1].ty, CType::Bool);
     }
 }
