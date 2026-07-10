@@ -378,6 +378,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.complex.imag" => self.lower_complex_part(op, "im"),
             "cir.inc" => self.lower_inc(op),
             "cir.cmp" => self.lower_cmp(op),
+            "cir.select" => self.lower_select(op),
+            "cir.ternary" => self.lower_ternary(op),
             "cir.get_global" => self.lower_get_global(op),
             "cir.get_member" => self.lower_get_member(op),
             "cir.get_element" => self.lower_get_element(op),
@@ -527,6 +529,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let raw = attr_str(op, "value").unwrap_or("");
+        // MLIR may print a const as an attribute alias (e.g. `#false`); expand it.
+        let raw = self.parent.aliases.get(raw).map_or(raw, String::as_str);
         let result_ty = op_result_type(op);
         if let Some((re, im)) = parse_cir_const_complex(raw) {
             self.materialize(
@@ -534,6 +538,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 format!("Complex {{ re: {re}, im: {im} }}"),
                 result_ty,
             );
+            return;
+        }
+        if let Some(b) = parse_cir_bool(raw) {
+            self.materialize(result, b.to_string(), result_ty);
             return;
         }
         let value = parse_cir_int(raw)
@@ -573,6 +581,76 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let value = format!("{}.{field}", self.render_operand(src));
         self.materialize(result, value, op_result_type(op));
+    }
+
+    // cir.select(cond, t, f) is a pure value pick; all three operands are already
+    // materialized, so it collapses to a Rust `if` expression.
+    fn lower_select(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 3 {
+            return;
+        }
+        let cond = self.render_operand(&op.operands[0]);
+        let t = self.render_operand(&op.operands[1]);
+        let f = self.render_operand(&op.operands[2]);
+        self.materialize(
+            result,
+            format!("if {cond} {{ {t} }} else {{ {f} }}"),
+            op_result_type(op),
+        );
+    }
+
+    // cir.ternary has two value-yielding regions; clang emits it for the NaN-recovery
+    // arm of complex `*` (the taken branch calls __muldc3). Lower to an `if` whose
+    // block bodies run each region's ops and tail-yield the region result.
+    fn lower_ternary(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(cond) = op.operands.first() else {
+            return;
+        };
+        if op.regions.len() < 2 {
+            self.emit_expr("todo!(\"cir.ternary\")".into());
+            return;
+        }
+        let cond = self.render_operand(cond);
+        let name = self.next_temp();
+        let ty = op_result_type(op)
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or_else(|| "i32".into());
+        self.emit_line(&format!("let {name}: {ty} = if {cond} {{"));
+        self.indent += 1;
+        let t = self.lower_yield_region(&op.regions[0]);
+        self.emit_line(&t);
+        self.indent -= 1;
+        self.emit_line("} else {");
+        self.indent += 1;
+        let f = self.lower_yield_region(&op.regions[1]);
+        self.emit_line(&f);
+        self.indent -= 1;
+        self.emit_line("};");
+        self.values.insert(result.to_string(), Val::Expr(name));
+    }
+
+    // Lower every op in a region, capturing the terminating cir.yield's operand as
+    // the region's tail value instead of lowering the yield itself.
+    fn lower_yield_region(&mut self, region: &Region) -> String {
+        let mut yielded = String::new();
+        for block in &region.blocks {
+            for op in &block.ops {
+                if op.name == "cir.yield" {
+                    if let Some(operand) = op.operands.first() {
+                        yielded = self.render_operand(operand);
+                    }
+                } else {
+                    self.lower_op(op);
+                }
+            }
+        }
+        yielded
     }
 
     fn lower_binary(&mut self, op: &Op, rust_op: &str) {
@@ -803,6 +881,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .collect::<Vec<_>>();
         let expr = if callee == "printf" {
             format!("unsafe {{ libc::printf({}) }}", args.join(", "))
+        } else if is_complex_runtime_call(&callee) {
+            self.parent.uses_complex.set(true);
+            format!("unsafe {{ {callee}({}) }}", args.join(", "))
         } else {
             format!("{callee}({})", args.join(", "))
         };
@@ -1100,8 +1181,15 @@ fn is_long_double(ty: &str) -> bool {
 
 const COMPLEX_TY: &str = "Complex<";
 
+// clang lowers complex `*`/`/` to the libgcc runtime (__mul?c3/__div?c3), reached
+// directly for `/` and via a NaN-recovery branch for `*`. We call the same symbols
+// so results are bit-identical; #[repr(C)] {re, im} matches the return ABI.
+fn is_complex_runtime_call(name: &str) -> bool {
+    matches!(name, "__muldc3" | "__divdc3" | "__mulsc3" | "__divsc3")
+}
+
 // C `_Complex` has no native Rust type; a #[repr(C)] pair matches its two-scalar
-// layout. Arithmetic beyond +/- (mul/div via __muldc3) is out of scope for now.
+// layout, and the extern runtime routines back `*`/`/`.
 const COMPLEX_PRELUDE: &str = "\
 #[repr(C)]
 #[derive(Clone, Copy)]
@@ -1113,6 +1201,12 @@ impl<T: core::ops::Add<Output = T>> core::ops::Add for Complex<T> {
 impl<T: core::ops::Sub<Output = T>> core::ops::Sub for Complex<T> {
     type Output = Complex<T>;
     fn sub(self, o: Complex<T>) -> Complex<T> { Complex { re: self.re - o.re, im: self.im - o.im } }
+}
+unsafe extern \"C\" {
+    fn __muldc3(a: f64, b: f64, c: f64, d: f64) -> Complex<f64>;
+    fn __divdc3(a: f64, b: f64, c: f64, d: f64) -> Complex<f64>;
+    fn __mulsc3(a: f32, b: f32, c: f32, d: f32) -> Complex<f32>;
+    fn __divsc3(a: f32, b: f32, c: f32, d: f32) -> Complex<f32>;
 }
 ";
 
@@ -1265,6 +1359,17 @@ fn parse_cir_int(s: &str) -> Option<i64> {
     let rest = &s[start..];
     let end = rest.find('>')?;
     rest[..end].parse().ok()
+}
+
+fn parse_cir_bool(s: &str) -> Option<bool> {
+    let start = s.find("#cir.bool<")? + "#cir.bool<".len();
+    let rest = &s[start..];
+    let end = rest.find('>')?;
+    match rest[..end].trim() {
+        "true" => Some(true),
+        "false" => Some(false),
+        _ => None,
+    }
 }
 
 fn parse_cir_fp(s: &str) -> Option<String> {
