@@ -13,7 +13,7 @@
 <program> ::= <include_list> <decl_list> <function_list> ;
 
 <include_list> ::= <include> <include_list> | <include> ;
-<include> ::= "#include <stdio.h>" | "#include <stdint.h>" | "#include <stddef.h>" ;
+<include> ::= "#include <stdio.h>" | "#include <stdint.h>" | "#include <stddef.h>" | "#include <stdbool.h>" ;
 
 # ----- top-level declarations -----
 
@@ -72,10 +72,11 @@
 # ----- types and lexical tokens -----
 
 <type> ::= <base_type> | <pointer_type> ;
-<base_type> ::= <int_type> | "volatile int" | "float" | "double" | <char_type> | <ident> ;
+<base_type> ::= <int_type> | "volatile int" | "float" | "double" | <char_type> | <bool_type> | <ident> ;
 <pointer_type> ::= <base_type> "*" ;
 <int_type> ::= "int" | "unsigned int" | "short" | "unsigned short" | "long" | "unsigned long" | "long long" | "unsigned long long" ;
 <char_type> ::= "char" | "signed char" | "unsigned char" ;
+<bool_type> ::= "_Bool" | "bool" ;
 
 # Lexical placeholders: a real lexer supplies identifiers and numeric
 # literals. They are single productions here so the grammar is self-contained.

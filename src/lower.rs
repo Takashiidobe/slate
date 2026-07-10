@@ -257,6 +257,7 @@ impl<'a> Lowerer<'a> {
 fn c_type_to_rust(ty: &crate::c_ast::CType) -> String {
     match ty {
         crate::c_ast::CType::Void => "()".into(),
+        crate::c_ast::CType::Bool => "bool".into(),
         crate::c_ast::CType::Int {
             signed: true,
             bits: 8,
@@ -641,6 +642,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(src) = op.operands.first() else {
             return;
         };
+        let result_ty = op_result_type(op).unwrap_or("");
+        let operand_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
+            .into_iter()
+            .next()
+            .unwrap_or("");
         let value = match self.values.get(src).cloned() {
             Some(Val::Global(name)) => Val::Global(name),
             _ if self
@@ -650,10 +656,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             {
                 Val::Expr(format!("{}.as_mut_ptr()", self.render_operand(src)))
             }
+            _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(format!(
+                "({} != {})",
+                self.render_operand(src),
+                zero_for_cir_type(operand_ty)
+            )),
+            _ if result_ty == operand_ty => Val::Expr(self.render_operand(src)),
             _ => Val::Expr(format!(
                 "{} as {}",
                 self.render_operand(src),
-                self.parent.rust_type(op_result_type(op).unwrap_or(""))
+                self.parent.rust_type(result_ty)
             )),
         };
         self.values.insert(result.clone(), value);
@@ -1029,8 +1041,17 @@ fn default_value(ty: &str) -> &'static str {
 
 fn default_c_value(ty: &crate::c_ast::CType) -> &'static str {
     match ty {
+        crate::c_ast::CType::Bool => "false",
         crate::c_ast::CType::Float { .. } => "0.0",
         crate::c_ast::CType::Record(_) => "Default::default()",
+        _ => "0",
+    }
+}
+
+fn zero_for_cir_type(ty: &str) -> &'static str {
+    match rust_type(ty).as_str() {
+        "f32" | "f64" => "0.0",
+        "bool" => "false",
         _ => "0",
     }
 }
@@ -1154,6 +1175,12 @@ mod tests {
         assert_eq!(rust_type("!rec_Pair"), "Pair");
         assert_eq!(rust_type("!cir.union<\"Pair\" {!s32i, !s32i}>"), "Pair");
         assert_eq!(rust_type("!cir.array<!s32i x 3>"), "[i32; 3]");
+    }
+
+    #[test]
+    fn maps_source_bool_type_to_rust_bool() {
+        assert_eq!(c_type_to_rust(&crate::c_ast::CType::Bool), "bool");
+        assert_eq!(default_c_value(&crate::c_ast::CType::Bool), "false");
     }
 
     #[test]

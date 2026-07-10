@@ -26,6 +26,8 @@ small C subset. This is the supported fixture-level surface today:
 - `short`, `long`, and `long long` (with their `unsigned` variants) locals,
   params, and return values, mapped to Rust `i16`/`i64`/`u16`/`u32`/`u64` by CIR
   width, printed with the width-correct `printf` conversion (`%u`, `%ld`, ...).
+- `_Bool` and `bool` locals, parameters, and return values, mapped to Rust
+  `bool`, including integer-to-bool and comparison-to-bool conversions.
 - `<stdint.h>` fixed-width integer typedefs and `<stddef.h>` `size_t`, resolved
   through Clang desugared type facts and CIR integer widths.
 - integer overflow left to wrap two's-complement: the generated Rust builds with
@@ -90,6 +92,8 @@ The current fixtures are:
 - `unsigned.c` — `unsigned int` arithmetic with defined wrapping overflow.
 - `longs.c` — `long`/`unsigned long` locals, params, and return values.
 - `longlong.c` — `long long`/`unsigned long long` locals, params, and return.
+- `bool.c` — `_Bool`/`bool` locals, params, returns, integer conversions, and
+  comparison conversions.
 - `sub.c` — signed subtraction and defined unsigned wrapping subtraction.
 - `mul.c` — signed multiplication and defined unsigned wrapping multiplication.
 - `div.c` — signed/unsigned division, truncating toward zero.
@@ -109,7 +113,7 @@ fixtures under `tests/fixtures/` are C-only.
 Important gaps remain:
 
 - target-complete C integer modeling beyond the CIR widths already emitted
-  (e.g. `_Bool` and `__int128`).
+  (e.g. `__int128`).
 - bitwise, logical, and assignment operators beyond `+=`; wider arithmetic and
   casts beyond the currently exercised cases.
 - broader aggregate coverage beyond primitive scalar fields.

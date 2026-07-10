@@ -11,7 +11,7 @@
 //! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
 //! `float`/`double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`,
 //! arrays, pointers, structs, unions, typedef aliases, fixed-width typedefs,
-//! `sizeof`, `volatile`, static globals, enum constants, and
+//! `_Bool`/`bool`, `sizeof`, `volatile`, static globals, enum constants, and
 //! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
 //!
 //! Correctness rests on keeping the two sides in agreement on the operations
@@ -110,6 +110,7 @@ struct Gen {
     has_wideint: bool,
     has_typedef: bool,
     has_fixed_width: bool,
+    has_bool: bool,
 }
 
 /// Generate a complete, self-contained C program for `seed`.
@@ -130,6 +131,7 @@ pub fn generate(seed: u64) -> String {
         has_wideint: false,
         has_typedef: false,
         has_fixed_width: false,
+        has_bool: false,
     };
     g.program();
     g.out
@@ -146,7 +148,11 @@ impl Gen {
         self.has_wideint = self.rng.chance(70);
         self.has_typedef = self.rng.chance(70);
         self.has_fixed_width = self.rng.chance(70);
+        self.has_bool = self.rng.chance(70);
 
+        if self.has_bool {
+            self.line("#include <stdbool.h>");
+        }
         if self.has_fixed_width {
             self.line("#include <stddef.h>");
             self.line("#include <stdint.h>");
@@ -174,6 +180,9 @@ impl Gen {
         }
         if self.has_float {
             self.emit_float_fn();
+        }
+        if self.has_bool {
+            self.emit_bool_fns();
         }
 
         // The static-counter function is emitted verbatim and, crucially, is
@@ -274,6 +283,18 @@ impl Gen {
     fn emit_float_fn(&mut self) {
         self.line("static double fuzz_double_mix(double a, double b) {");
         self.line("    return a + b * 2.0;");
+        self.line("}");
+        self.blank();
+    }
+
+    fn emit_bool_fns(&mut self) {
+        self.line("static bool fuzz_bool_from_int(int x) {");
+        self.line("    bool b = x;");
+        self.line("    return b;");
+        self.line("}");
+        self.blank();
+        self.line("static int fuzz_bool_param(_Bool flag) {");
+        self.line("    return flag;");
         self.line("}");
         self.blank();
     }
@@ -558,6 +579,9 @@ impl Gen {
         if self.has_fixed_width {
             self.emit_fixed_width_use();
         }
+        if self.has_bool {
+            self.emit_bool_use();
+        }
         self.emit_array_use();
         self.emit_pointer_use();
 
@@ -764,6 +788,13 @@ impl Gen {
         self.printf_fmt("%lu", "fw_wide");
     }
 
+    fn emit_bool_use(&mut self) {
+        self.printf("fuzz_bool_from_int(0)");
+        self.printf("fuzz_bool_from_int(5)");
+        self.printf("fuzz_bool_param(0)");
+        self.printf("fuzz_bool_param(2)");
+    }
+
     fn printf(&mut self, expr: &str) {
         self.line(&format!("printf(\"%d\\n\", {expr});"));
     }
@@ -889,6 +920,7 @@ mod tests {
                 has_wideint: false,
                 has_typedef: false,
                 has_fixed_width: false,
+                has_bool: false,
             };
             g.program();
             for f in &g.funcs {
@@ -962,5 +994,14 @@ mod tests {
         assert!(corpus.contains("*ptr = *ptr + "));
         assert!(corpus.contains("int *walk = pointer_values;"));
         assert!(corpus.contains("*(walk + "));
+    }
+
+    #[test]
+    fn emits_bool_uses() {
+        let corpus = (0..512u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("#include <stdbool.h>"));
+        assert!(corpus.contains("static bool fuzz_bool_from_int(int x)"));
+        assert!(corpus.contains("static int fuzz_bool_param(_Bool flag)"));
+        assert!(corpus.contains("fuzz_bool_param(2)"));
     }
 }
