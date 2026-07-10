@@ -41,6 +41,8 @@ The lowerer currently handles the fixture subset:
 - global constant strings used by `printf`.
 - CIR integer aliases such as `!s32i = !cir.int<s, 32>`, mapped to Rust integer
   primitives.
+- fixed-width `<stdint.h>` typedefs and `<stddef.h>` `size_t`, resolved through
+  Clang `desugaredQualType` and then lowered by CIR integer width.
 - source enum constants from Clang AST, emitted as Rust `const` items.
 - source union records from Clang AST, emitted as `#[repr(C)] union` items with
   primitive scalar fields and basic `cir.get_member` field access.
@@ -77,6 +79,7 @@ Current C fixture coverage:
 | `volatile.c`       | volatile local stores and loads                                        |
 | `static_globals.c` | file-scope static integer global loads and stores                      |
 | `non_int_globals.c` | file-scope static non-int globals plus non-int params and returns      |
+| `stdint_types.c`   | `<stdint.h>` fixed-width typedefs and `<stddef.h>` `size_t`             |
 
 ## Stage notes
 
