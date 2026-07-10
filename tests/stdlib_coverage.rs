@@ -20,7 +20,7 @@ use std::path::{Path, PathBuf};
 ///   slate-61j  extern globals + FILE streams (stdout/stderr)
 ///   slate-aeo  struct-returning libc fns + libc aggregate typedefs (div_t)
 ///   slate-kaf  CIR builtin math ops (cir.abs/ceil/fabs/floor/round/trunc)
-///   slate-6c2  cir.copy aggregate/array init (qsort, char[] = "literal")
+///   slate-3tw  void* casts/loads in comparator functions (qsort)
 const KNOWN_UNSUPPORTED: &[&str] = &[
     // math/* — CIR builtin math ops, not libm calls (slate-kaf)
     "math/ceil",
@@ -35,12 +35,7 @@ const KNOWN_UNSUPPORTED: &[&str] = &[
     "stdlib/abs",   // slate-kaf (cir.abs)
     "stdlib/labs",  // slate-kaf (cir.abs)
     "stdlib/div",   // slate-aeo (div_t)
-    "stdlib/qsort", // slate-6c2 (cir.copy)
-    // string/* — char[] = "literal" needs cir.copy aggregate init (slate-6c2)
-    "string/memmove",
-    "string/strcat",
-    "string/strncat",
-    "string/strncpy",
+    "stdlib/qsort", // slate-3tw (void* comparator casts; cir.copy init now works)
 ];
 
 fn stdlib_dir() -> PathBuf {

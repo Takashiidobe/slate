@@ -55,7 +55,9 @@ small C subset. This is the supported fixture-level surface today:
   unsafe field reads/writes.
 - simple C structs with primitive scalar fields, emitted as `#[repr(C)] struct`.
 - fixed-size local arrays of primitive scalar element types with indexed stores
-  and loads, emitted as Rust arrays.
+  and loads, emitted as Rust arrays. Aggregate initializers (`int a[5]={..}`,
+  `char s[6]="hi"`, `{0}` zero-init) lower the resulting `cir.copy` to a Rust
+  array-literal assignment.
 - C pointers for locals, parameters, address-of, dereference, and basic pointer
   arithmetic, emitted as raw Rust pointers.
 - C function pointer locals and parameters for direct assignment and indirect
@@ -88,6 +90,7 @@ The current fixtures are:
   fields.
 - `arrays.c` — fixed-size local arrays and indexed element access.
 - `array_types.c` — fixed-size local `char` and `double` arrays.
+- `array_init.c` — aggregate array initializers (int list, string, partial, zero).
 - `pointers.c` — pointer locals/params, address-of, dereference, and pointer
   arithmetic.
 - `function_pointers.c` — function pointer locals, parameters, assignment, and
