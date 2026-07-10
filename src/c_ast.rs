@@ -824,7 +824,7 @@ mod tests {
       "name": "FuzzPair",
       "tagUsed": "union",
       "completeDefinition": true,
-      "loc": {"file": "target/bnf-fuzz/bnf_seed_0000.c", "line": 1, "col": 7},
+      "loc": {"file": "tests/fixtures/union_after_include.c", "line": 1, "col": 7},
       "inner": [
         {"kind": "FieldDecl", "name": "left", "type": {"qualType": "int"}},
         {"kind": "FieldDecl", "name": "right", "type": {"qualType": "int"}}
@@ -836,7 +836,7 @@ mod tests {
 
         let unit = parse_json(
             ast,
-            "/home/takashi/Projects/slate/target/bnf-fuzz/bnf_seed_0000.c",
+            "/home/takashi/Projects/slate/tests/fixtures/union_after_include.c",
         )
         .unwrap();
         assert_eq!(unit.records.len(), 1);
@@ -865,7 +865,7 @@ mod tests {
       "name": "HeaderPair",
       "tagUsed": "union",
       "completeDefinition": true,
-      "loc": {"line": 12, "col": 7, "includedFrom": {"file": "target/bnf-fuzz/bnf_seed_0000.c"}},
+      "loc": {"line": 12, "col": 7, "includedFrom": {"file": "tests/fixtures/union_after_include.c"}},
       "inner": [
         {"kind": "FieldDecl", "name": "left", "type": {"qualType": "int"}}
       ]
@@ -874,7 +874,7 @@ mod tests {
 }
 "#;
 
-        let unit = parse_json(ast, "target/bnf-fuzz/bnf_seed_0000.c").unwrap();
+        let unit = parse_json(ast, "tests/fixtures/union_after_include.c").unwrap();
         assert_eq!(unit.records.len(), 1);
         assert_eq!(unit.records[0].name, "FuzzPair");
     }
