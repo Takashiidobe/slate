@@ -49,6 +49,8 @@ small C subset. This is the supported fixture-level surface today:
   and loads, emitted as Rust arrays.
 - C pointers for locals, parameters, address-of, dereference, and basic pointer
   arithmetic, emitted as raw Rust pointers.
+- C function pointer locals and parameters for direct assignment and indirect
+  calls, emitted as nullable `Option<fn(...) -> ...>` values.
 - `sizeof` expressions that Clang lowers to integer CIR constants.
 - type-qualified primitive scalar locals, parameters, fields, returns, globals,
   and restrict-qualified pointer parameters. `volatile` operations are emitted
@@ -79,6 +81,8 @@ The current fixtures are:
 - `array_types.c` — fixed-size local `char` and `double` arrays.
 - `pointers.c` — pointer locals/params, address-of, dereference, and pointer
   arithmetic.
+- `function_pointers.c` — function pointer locals, parameters, assignment, and
+  indirect calls.
 - `sizeof.c` — `sizeof` over primitive, array, struct, union, and expression
   forms.
 - `volatile.c` — volatile local stores and loads.
