@@ -14,10 +14,12 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
         records: c
             .records
             .iter()
-            .map(|record| (record.name.clone(), record.clone()))
+            .map(|record| (sanitize_ident(&record.name), record.clone()))
             .collect(),
         globals: BTreeMap::new(),
         strings: BTreeMap::new(),
+        uses_long_double: std::cell::Cell::new(false),
+        uses_complex: std::cell::Cell::new(false),
     };
     lowerer.lower_module(cir, c)
 }
@@ -28,6 +30,8 @@ struct Lowerer<'a> {
     records: BTreeMap<String, crate::c_ast::Record>,
     globals: BTreeMap<String, GlobalVar>,
     strings: BTreeMap<String, Vec<u8>>,
+    uses_long_double: std::cell::Cell<bool>,
+    uses_complex: std::cell::Cell<bool>,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -135,6 +139,13 @@ impl<'a> Lowerer<'a> {
             }
         }
 
+        if self.uses_long_double.get() {
+            items.insert(1, Item::Raw(LONG_DOUBLE_PRELUDE.to_string()));
+        }
+        if self.uses_complex.get() {
+            items.insert(1, Item::Raw(COMPLEX_PRELUDE.to_string()));
+        }
+
         Program { items }
     }
 
@@ -179,10 +190,14 @@ impl<'a> Lowerer<'a> {
             return None;
         }
         let mut text = match record.kind {
-            RecordKind::Struct => {
-                format!("#[repr(C)]\nstruct {} {{\n", sanitize_ident(&record.name))
-            }
-            RecordKind::Union => format!("#[repr(C)]\nunion {} {{\n", sanitize_ident(&record.name)),
+            RecordKind::Struct => format!(
+                "#[repr(C)]\n#[derive(Clone, Copy)]\nstruct {} {{\n",
+                sanitize_ident(&record.name)
+            ),
+            RecordKind::Union => format!(
+                "#[repr(C)]\n#[derive(Clone, Copy)]\nunion {} {{\n",
+                sanitize_ident(&record.name)
+            ),
         };
         for field in &record.fields {
             text.push_str(&format!(
@@ -246,11 +261,22 @@ impl<'a> Lowerer<'a> {
     }
 
     fn rust_type(&self, cir_ty: &str) -> String {
-        rust_type_with_aliases(cir_ty, &self.aliases)
+        let ty = rust_type_with_aliases(cir_ty, &self.aliases);
+        if ty.contains(LONG_DOUBLE_TY) {
+            self.uses_long_double.set(true);
+        }
+        if ty.contains(COMPLEX_TY) {
+            self.uses_complex.set(true);
+        }
+        ty
     }
 
     fn rust_c_type(&self, ty: &crate::c_ast::CType) -> String {
-        c_type_to_rust(ty)
+        let rust = c_type_to_rust(ty);
+        if rust.contains(LONG_DOUBLE_TY) {
+            self.uses_long_double.set(true);
+        }
+        rust
     }
 }
 
@@ -293,7 +319,7 @@ fn c_type_to_rust(ty: &crate::c_ast::CType) -> String {
         crate::c_ast::CType::Int { .. } => "i32".into(),
         crate::c_ast::CType::Float { bits: 32 } => "f32".into(),
         crate::c_ast::CType::Float { bits: 64 } => "f64".into(),
-        crate::c_ast::CType::Float { bits: 80 } => "f64".into(),
+        crate::c_ast::CType::Float { bits: 80 } => LONG_DOUBLE_TY.into(),
         crate::c_ast::CType::Float { .. } => "f64".into(),
         crate::c_ast::CType::Ptr(inner) => format!("*mut {}", c_type_to_rust(inner)),
         crate::c_ast::CType::FuncPtr { ret, params } => {
@@ -345,6 +371,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.fsub" => self.lower_binary(op, "-"),
             "cir.fmul" => self.lower_binary(op, "*"),
             "cir.fdiv" => self.lower_binary(op, "/"),
+            "cir.complex.add" => self.lower_binary(op, "+"),
+            "cir.complex.sub" => self.lower_binary(op, "-"),
+            "cir.complex.create" => self.lower_complex_create(op),
+            "cir.complex.real" => self.lower_complex_part(op, "re"),
+            "cir.complex.imag" => self.lower_complex_part(op, "im"),
             "cir.inc" => self.lower_inc(op),
             "cir.cmp" => self.lower_cmp(op),
             "cir.get_global" => self.lower_get_global(op),
@@ -496,10 +527,51 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let raw = attr_str(op, "value").unwrap_or("");
+        let result_ty = op_result_type(op);
+        if let Some((re, im)) = parse_cir_const_complex(raw) {
+            self.materialize(
+                result,
+                format!("Complex {{ re: {re}, im: {im} }}"),
+                result_ty,
+            );
+            return;
+        }
         let value = parse_cir_int(raw)
             .map(|n| n.to_string())
             .or_else(|| parse_cir_fp(raw))
             .unwrap_or_else(|| "0".into());
+        let value = if result_ty.is_some_and(is_long_double) {
+            format!("{LONG_DOUBLE_TY}({value})")
+        } else {
+            value
+        };
+        self.materialize(result, value, result_ty);
+    }
+
+    fn lower_complex_create(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let re = self.render_operand(&op.operands[0]);
+        let im = self.render_operand(&op.operands[1]);
+        self.materialize(
+            result,
+            format!("Complex {{ re: {re}, im: {im} }}"),
+            op_result_type(op),
+        );
+    }
+
+    fn lower_complex_part(&mut self, op: &Op, field: &str) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(src) = op.operands.first() else {
+            return;
+        };
+        let value = format!("{}.{field}", self.render_operand(src));
         self.materialize(result, value, op_result_type(op));
     }
 
@@ -665,6 +737,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             {
                 Val::Expr(format!("{}.as_mut_ptr()", self.render_operand(src)))
             }
+            _ if is_long_double(result_ty) && !is_long_double(operand_ty) => Val::Expr(format!(
+                "{LONG_DOUBLE_TY}({} as f64)",
+                self.render_operand(src)
+            )),
+            _ if is_long_double(operand_ty) && result_ty == "!cir.bool" => {
+                Val::Expr(format!("({}.0 != 0.0)", self.render_operand(src)))
+            }
+            _ if is_long_double(operand_ty) && !is_long_double(result_ty) => Val::Expr(format!(
+                "({}.0 as {})",
+                self.render_operand(src),
+                self.parent.rust_type(result_ty)
+            )),
             _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(format!(
                 "({} != {})",
                 self.render_operand(src),
@@ -916,6 +1000,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
             }
         }
+        if is_long_double(ty) || ty == LONG_DOUBLE_TY {
+            return format!("{LONG_DOUBLE_TY}(0.0)");
+        }
+        if let Some(inner) = ty
+            .strip_prefix(COMPLEX_TY)
+            .and_then(|s| s.strip_suffix('>'))
+        {
+            let d = default_value(inner);
+            return format!("Complex {{ re: {d}, im: {d} }}");
+        }
         if let Some((inner, len)) = parse_cir_array_type(ty) {
             return format!("[{}; {len}]", default_value(&inner));
         }
@@ -985,6 +1079,43 @@ fn parse_function_type(s: &str) -> (Vec<String>, Option<String>) {
     (params, Some(ret.trim().to_string()))
 }
 
+const LONG_DOUBLE_TY: &str = "LongDouble";
+
+// x86-64 SysV wants size 16 / align 16 for long double; align(16) on an f64
+// newtype gives that layout while arithmetic stays f64-precision (tier 1).
+const LONG_DOUBLE_PRELUDE: &str = "\
+#[repr(C, align(16))]
+#[derive(Clone, Copy)]
+struct LongDouble(f64);
+impl core::ops::Add for LongDouble { type Output = LongDouble; fn add(self, o: LongDouble) -> LongDouble { LongDouble(self.0 + o.0) } }
+impl core::ops::Sub for LongDouble { type Output = LongDouble; fn sub(self, o: LongDouble) -> LongDouble { LongDouble(self.0 - o.0) } }
+impl core::ops::Mul for LongDouble { type Output = LongDouble; fn mul(self, o: LongDouble) -> LongDouble { LongDouble(self.0 * o.0) } }
+impl core::ops::Div for LongDouble { type Output = LongDouble; fn div(self, o: LongDouble) -> LongDouble { LongDouble(self.0 / o.0) } }
+impl core::ops::Neg for LongDouble { type Output = LongDouble; fn neg(self) -> LongDouble { LongDouble(-self.0) } }
+";
+
+fn is_long_double(ty: &str) -> bool {
+    ty.starts_with("!cir.long_double")
+}
+
+const COMPLEX_TY: &str = "Complex<";
+
+// C `_Complex` has no native Rust type; a #[repr(C)] pair matches its two-scalar
+// layout. Arithmetic beyond +/- (mul/div via __muldc3) is out of scope for now.
+const COMPLEX_PRELUDE: &str = "\
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct Complex<T> { re: T, im: T }
+impl<T: core::ops::Add<Output = T>> core::ops::Add for Complex<T> {
+    type Output = Complex<T>;
+    fn add(self, o: Complex<T>) -> Complex<T> { Complex { re: self.re + o.re, im: self.im + o.im } }
+}
+impl<T: core::ops::Sub<Output = T>> core::ops::Sub for Complex<T> {
+    type Output = Complex<T>;
+    fn sub(self, o: Complex<T>) -> Complex<T> { Complex { re: self.re - o.re, im: self.im - o.im } }
+}
+";
+
 fn rust_type(cir_ty: &str) -> String {
     rust_type_with_aliases(cir_ty, &BTreeMap::new())
 }
@@ -1018,8 +1149,13 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> S
         "f32".into()
     } else if ty == "!cir.double" {
         "f64".into()
-    } else if ty.starts_with("!cir.long_double<") {
-        "f64".into()
+    } else if is_long_double(ty) {
+        LONG_DOUBLE_TY.into()
+    } else if let Some(inner) = ty
+        .strip_prefix("!cir.complex<")
+        .and_then(|s| s.strip_suffix('>'))
+    {
+        format!("Complex<{}>", rust_type_with_aliases(inner, aliases))
     } else if let Some(inner) = ty
         .strip_prefix("!cir.ptr<")
         .and_then(|s| s.strip_suffix('>'))
@@ -1108,6 +1244,7 @@ fn default_value(ty: &str) -> &'static str {
 fn default_c_value(ty: &crate::c_ast::CType) -> &'static str {
     match ty {
         crate::c_ast::CType::Bool => "false",
+        crate::c_ast::CType::Float { bits: 80 } => "LongDouble(0.0)",
         crate::c_ast::CType::Float { .. } => "0.0",
         crate::c_ast::CType::Record(_) => "Default::default()",
         crate::c_ast::CType::FuncPtr { .. } => "None",
@@ -1140,6 +1277,16 @@ fn parse_cir_fp(s: &str) -> Option<String> {
         return None;
     }
     Some(text.to_string())
+}
+
+// `#cir.const_complex<#cir.fp<re> : ty, #cir.fp<im> : ty>` -> (re, im) literals.
+fn parse_cir_const_complex(s: &str) -> Option<(String, String)> {
+    let start = s.find("#cir.const_complex<")? + "#cir.const_complex<".len();
+    let inner = &s[start..];
+    let re = parse_cir_fp(inner)?;
+    let comma = inner.find(',')?;
+    let im = parse_cir_fp(&inner[comma..])?;
+    Some((re, im))
 }
 
 fn parse_cir_const_array(s: &str) -> Option<Vec<u8>> {
@@ -1199,7 +1346,72 @@ fn sanitize_ident(s: &str) -> String {
             out.push('_');
         }
     }
-    if out.is_empty() { "_tmp".into() } else { out }
+    if out.is_empty() {
+        return "_tmp".into();
+    }
+    // `crate`/`self`/`Self`/`super` can't be raw identifiers, so mangle them instead.
+    if matches!(out.as_str(), "crate" | "self" | "Self" | "super") {
+        out.push('_');
+    } else if is_rust_keyword(&out) {
+        out = format!("r#{out}");
+    }
+    out
+}
+
+fn is_rust_keyword(s: &str) -> bool {
+    matches!(
+        s,
+        "as" | "break"
+            | "const"
+            | "continue"
+            | "crate"
+            | "else"
+            | "enum"
+            | "extern"
+            | "false"
+            | "fn"
+            | "for"
+            | "if"
+            | "impl"
+            | "in"
+            | "let"
+            | "loop"
+            | "match"
+            | "mod"
+            | "move"
+            | "mut"
+            | "pub"
+            | "ref"
+            | "return"
+            | "self"
+            | "Self"
+            | "static"
+            | "struct"
+            | "super"
+            | "trait"
+            | "true"
+            | "type"
+            | "unsafe"
+            | "use"
+            | "where"
+            | "while"
+            | "async"
+            | "await"
+            | "dyn"
+            | "abstract"
+            | "become"
+            | "box"
+            | "do"
+            | "final"
+            | "macro"
+            | "override"
+            | "priv"
+            | "typeof"
+            | "unsized"
+            | "virtual"
+            | "yield"
+            | "try"
+    )
 }
 
 fn split_top_level_arrow(s: &str) -> Option<(&str, &str)> {
@@ -1259,7 +1471,7 @@ mod tests {
         assert_eq!(rust_type("!s64i"), "i64");
         assert_eq!(rust_type("!cir.float"), "f32");
         assert_eq!(rust_type("!cir.double"), "f64");
-        assert_eq!(rust_type("!cir.long_double<!cir.f80>"), "f64");
+        assert_eq!(rust_type("!cir.long_double<!cir.f80>"), "LongDouble");
         assert_eq!(rust_type("!cir.ptr<!cir.double>"), "*mut f64");
         assert_eq!(
             rust_type("!cir.ptr<!cir.func<(!s32i, !s32i) -> !s32i>>"),
@@ -1321,15 +1533,30 @@ mod tests {
     }
 
     #[test]
-    fn maps_source_long_double_type_to_rust_f64() {
+    fn maps_source_long_double_type_to_rust_long_double() {
         assert_eq!(
             c_type_to_rust(&crate::c_ast::CType::Float { bits: 80 }),
-            "f64"
+            "LongDouble"
         );
         assert_eq!(
             default_c_value(&crate::c_ast::CType::Float { bits: 80 }),
-            "0.0"
+            "LongDouble(0.0)"
         );
+    }
+
+    #[test]
+    fn escapes_rust_keyword_identifiers() {
+        assert_eq!(sanitize_ident("box"), "r#box");
+        assert_eq!(sanitize_ident("match"), "r#match");
+        assert_eq!(sanitize_ident("type"), "r#type");
+        // these four cannot be raw identifiers, so they mangle with a trailing underscore
+        assert_eq!(sanitize_ident("crate"), "crate_");
+        assert_eq!(sanitize_ident("self"), "self_");
+        assert_eq!(sanitize_ident("Self"), "Self_");
+        assert_eq!(sanitize_ident("super"), "super_");
+        // non-keywords and contextual keywords stay untouched
+        assert_eq!(sanitize_ident("value"), "value");
+        assert_eq!(sanitize_ident("union"), "union");
     }
 
     #[test]

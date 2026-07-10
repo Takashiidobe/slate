@@ -10,6 +10,7 @@
 //! Everything it emits is restricted to the subset Slate can translate today
 //! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
 //! `float`/`double`/`long double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`,
+//! `double _Complex` `+`/`-` with `__real__`/`__imag__` extraction,
 //! arrays, pointers, structs, unions, typedef aliases, fixed-width typedefs,
 //! `_Bool`/`bool`, `sizeof`, type qualifiers, static globals, enum constants, and
 //! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
@@ -114,6 +115,7 @@ struct Gen {
     has_qualified_types: bool,
     has_function_pointer: bool,
     has_long_double: bool,
+    has_complex: bool,
 }
 
 /// Generate a complete, self-contained C program for `seed`.
@@ -138,6 +140,7 @@ pub fn generate(seed: u64) -> String {
         has_qualified_types: false,
         has_function_pointer: false,
         has_long_double: false,
+        has_complex: false,
     };
     g.program();
     g.out
@@ -158,6 +161,7 @@ impl Gen {
         self.has_qualified_types = self.rng.chance(70);
         self.has_function_pointer = self.rng.chance(70);
         self.has_long_double = self.rng.chance(70);
+        self.has_complex = self.rng.chance(70);
 
         if self.has_bool {
             self.line("#include <stdbool.h>");
@@ -206,6 +210,9 @@ impl Gen {
         }
         if self.has_long_double {
             self.emit_long_double_fn();
+        }
+        if self.has_complex {
+            self.emit_complex_fn();
         }
 
         // The static-counter function is emitted verbatim and, crucially, is
@@ -386,6 +393,17 @@ impl Gen {
         self.line("static int fuzz_long_double_mix(long double a, long double b) {");
         self.line("    long double c = (a + b) / 2.0L;");
         self.line("    return (int)(c * 3.0L);");
+        self.line("}");
+        self.blank();
+    }
+
+    // Complex mul/div lower to __muldc3/__divdc3 (external runtime), so the
+    // generator sticks to `+`/`-` and real/imag extraction.
+    fn emit_complex_fn(&mut self) {
+        self.line("static int fuzz_complex_mix(double _Complex a, double _Complex b) {");
+        self.line("    double _Complex c = a + b;");
+        self.line("    double _Complex d = a - b;");
+        self.line("    return (int)__real__ c + (int)__imag__ d;");
         self.line("}");
         self.blank();
     }
@@ -682,6 +700,9 @@ impl Gen {
         if self.has_long_double {
             self.emit_long_double_use();
         }
+        if self.has_complex {
+            self.emit_complex_use();
+        }
         self.emit_array_use();
         self.emit_pointer_use();
 
@@ -804,6 +825,15 @@ impl Gen {
         self.line("long double ldb = 5.0L;");
         self.printf("fuzz_long_double_mix(lda, ldb)");
         self.printf("(int)((long double)7 / 2.0L)");
+    }
+
+    fn emit_complex_use(&mut self) {
+        self.line("double _Complex cplxa = __builtin_complex(3.0, 5.0);");
+        self.line("double _Complex cplxb = __builtin_complex(1.0, 2.0);");
+        self.printf("fuzz_complex_mix(cplxa, cplxb)");
+        self.line("double _Complex cplxs = cplxa + cplxb;");
+        self.printf("(int)__real__ cplxs");
+        self.printf("(int)__imag__ cplxs");
     }
 
     // Floats print through the same libc::printf on both sides, so `%f` output
@@ -1049,6 +1079,7 @@ mod tests {
                 has_qualified_types: false,
                 has_function_pointer: false,
                 has_long_double: false,
+                has_complex: false,
             };
             g.program();
             for f in &g.funcs {
@@ -1167,5 +1198,17 @@ mod tests {
         assert!(corpus.contains("long double lda = 3.0L;"));
         assert!(corpus.contains("fuzz_long_double_mix(lda, ldb)"));
         assert!(corpus.contains("(int)((long double)7 / 2.0L)"));
+    }
+
+    #[test]
+    fn emits_complex_uses() {
+        let corpus = (0..512u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(
+            corpus.contains("static int fuzz_complex_mix(double _Complex a, double _Complex b)")
+        );
+        assert!(corpus.contains("double _Complex c = a + b;"));
+        assert!(corpus.contains("double _Complex cplxa = __builtin_complex(3.0, 5.0);"));
+        assert!(corpus.contains("fuzz_complex_mix(cplxa, cplxb)"));
+        assert!(corpus.contains("(int)__real__ cplxs"));
     }
 }
