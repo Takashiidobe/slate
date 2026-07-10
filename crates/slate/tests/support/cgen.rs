@@ -11,7 +11,7 @@
 //! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
 //! `float`/`double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`,
 //! arrays, pointers, structs, unions, typedef aliases, fixed-width typedefs,
-//! `_Bool`/`bool`, `sizeof`, `volatile`, static globals, enum constants, and
+//! `_Bool`/`bool`, `sizeof`, type qualifiers, static globals, enum constants, and
 //! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
 //!
 //! Correctness rests on keeping the two sides in agreement on the operations
@@ -111,7 +111,7 @@ struct Gen {
     has_typedef: bool,
     has_fixed_width: bool,
     has_bool: bool,
-    has_volatile_qualified: bool,
+    has_qualified_types: bool,
 }
 
 /// Generate a complete, self-contained C program for `seed`.
@@ -133,7 +133,7 @@ pub fn generate(seed: u64) -> String {
         has_typedef: false,
         has_fixed_width: false,
         has_bool: false,
-        has_volatile_qualified: false,
+        has_qualified_types: false,
     };
     g.program();
     g.out
@@ -151,7 +151,7 @@ impl Gen {
         self.has_typedef = self.rng.chance(70);
         self.has_fixed_width = self.rng.chance(70);
         self.has_bool = self.rng.chance(70);
-        self.has_volatile_qualified = self.rng.chance(70);
+        self.has_qualified_types = self.rng.chance(70);
 
         if self.has_bool {
             self.line("#include <stdbool.h>");
@@ -175,13 +175,13 @@ impl Gen {
         if self.has_union {
             self.emit_union_decl();
         }
-        if self.has_volatile_qualified {
-            self.emit_volatile_struct_decl();
+        if self.has_qualified_types {
+            self.emit_qualified_struct_decl();
         }
         if self.has_global {
             self.emit_global_decl();
-        } else if self.has_volatile_qualified {
-            self.emit_volatile_global_decl();
+        } else if self.has_qualified_types {
+            self.emit_qualified_global_decls();
         }
         if self.has_char {
             self.emit_char_fn();
@@ -192,8 +192,8 @@ impl Gen {
         if self.has_bool {
             self.emit_bool_fns();
         }
-        if self.has_volatile_qualified {
-            self.emit_volatile_fns();
+        if self.has_qualified_types {
+            self.emit_qualified_fns();
         }
 
         // The static-counter function is emitted verbatim and, crucially, is
@@ -262,8 +262,8 @@ impl Gen {
         self.blank();
     }
 
-    fn emit_volatile_struct_decl(&mut self) {
-        self.line("struct FuzzVolatile {");
+    fn emit_qualified_struct_decl(&mut self) {
+        self.line("struct FuzzQualified {");
         self.line("    volatile int count;");
         self.line("    volatile double weight;");
         self.line("};");
@@ -273,8 +273,8 @@ impl Gen {
     fn emit_global_decl(&mut self) {
         let init = self.rng.int_in(0, CONST_MAX);
         self.line(&format!("static int fuzz_counter = {init};"));
-        if self.has_volatile_qualified {
-            self.emit_volatile_global_decl();
+        if self.has_qualified_types {
+            self.emit_qualified_global_decls();
         }
         if self.has_char {
             let ch = self.rng.int_in(0, 63);
@@ -287,10 +287,16 @@ impl Gen {
         self.blank();
     }
 
-    fn emit_volatile_global_decl(&mut self) {
+    fn emit_qualified_global_decls(&mut self) {
         let fp = self.rng.int_in(1, CONST_MAX);
         self.line(&format!(
             "static volatile double fuzz_volatile_global = {fp}.5;"
+        ));
+        let bias = self.rng.int_in(1, CONST_MAX);
+        self.line(&format!("static const int fuzz_const_bias = {bias};"));
+        let atomic = self.rng.int_in(1, CONST_MAX);
+        self.line(&format!(
+            "static _Atomic int fuzz_atomic_counter = {atomic};"
         ));
     }
 
@@ -302,13 +308,27 @@ impl Gen {
         self.blank();
     }
 
-    fn emit_volatile_fns(&mut self) {
+    fn emit_qualified_fns(&mut self) {
         self.line("static volatile int fuzz_volatile_return(int value) {");
         self.line("    return value + 1;");
         self.line("}");
         self.blank();
         self.line("static double fuzz_volatile_param(volatile double value) {");
         self.line("    return value + 0.5;");
+        self.line("}");
+        self.blank();
+        self.line("static int fuzz_const_param(const int value) {");
+        self.line("    const int local_bias = 2;");
+        self.line("    return value + local_bias + fuzz_const_bias;");
+        self.line("}");
+        self.blank();
+        self.line("static int fuzz_restrict_param(int *restrict value) {");
+        self.line("    return *value + 1;");
+        self.line("}");
+        self.blank();
+        self.line("static int fuzz_atomic_param(_Atomic int value) {");
+        self.line("    _Atomic int local = value + fuzz_atomic_counter;");
+        self.line("    return local;");
         self.line("}");
         self.blank();
     }
@@ -622,8 +642,8 @@ impl Gen {
         if self.has_bool {
             self.emit_bool_use();
         }
-        if self.has_volatile_qualified {
-            self.emit_volatile_qualified_use();
+        if self.has_qualified_types {
+            self.emit_qualified_type_use();
         }
         self.emit_array_use();
         self.emit_pointer_use();
@@ -838,12 +858,16 @@ impl Gen {
         self.printf("fuzz_bool_param(2)");
     }
 
-    fn emit_volatile_qualified_use(&mut self) {
-        self.line("struct FuzzVolatile vf;");
+    fn emit_qualified_type_use(&mut self) {
+        self.line("struct FuzzQualified vf;");
         self.line("vf.count = fuzz_volatile_return(4);");
         self.line("vf.weight = fuzz_volatile_param(fuzz_volatile_global);");
         self.printf("vf.count");
         self.printf_float("vf.weight");
+        self.printf("fuzz_const_param(3)");
+        self.line("int restrict_value = 8;");
+        self.printf("fuzz_restrict_param(&restrict_value)");
+        self.printf("fuzz_atomic_param(5)");
     }
 
     fn printf(&mut self, expr: &str) {
@@ -972,7 +996,7 @@ mod tests {
                 has_typedef: false,
                 has_fixed_width: false,
                 has_bool: false,
-                has_volatile_qualified: false,
+                has_qualified_types: false,
             };
             g.program();
             for f in &g.funcs {
@@ -1058,12 +1082,18 @@ mod tests {
     }
 
     #[test]
-    fn emits_volatile_qualified_uses() {
+    fn emits_qualified_type_uses() {
         let corpus = (0..512u64).map(generate).collect::<Vec<_>>().join("\n");
         assert!(corpus.contains("volatile double weight;"));
         assert!(corpus.contains("static volatile double fuzz_volatile_global"));
+        assert!(corpus.contains("static const int fuzz_const_bias"));
+        assert!(corpus.contains("static _Atomic int fuzz_atomic_counter"));
         assert!(corpus.contains("static volatile int fuzz_volatile_return(int value)"));
         assert!(corpus.contains("static double fuzz_volatile_param(volatile double value)"));
+        assert!(corpus.contains("static int fuzz_const_param(const int value)"));
+        assert!(corpus.contains("static int fuzz_restrict_param(int *restrict value)"));
+        assert!(corpus.contains("static int fuzz_atomic_param(_Atomic int value)"));
         assert!(corpus.contains("vf.weight = fuzz_volatile_param(fuzz_volatile_global);"));
+        assert!(corpus.contains("fuzz_restrict_param(&restrict_value)"));
     }
 }
