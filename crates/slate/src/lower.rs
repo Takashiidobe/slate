@@ -293,6 +293,7 @@ fn c_type_to_rust(ty: &crate::c_ast::CType) -> String {
         crate::c_ast::CType::Int { .. } => "i32".into(),
         crate::c_ast::CType::Float { bits: 32 } => "f32".into(),
         crate::c_ast::CType::Float { bits: 64 } => "f64".into(),
+        crate::c_ast::CType::Float { bits: 80 } => "f64".into(),
         crate::c_ast::CType::Float { .. } => "f64".into(),
         crate::c_ast::CType::Ptr(inner) => format!("*mut {}", c_type_to_rust(inner)),
         crate::c_ast::CType::FuncPtr { ret, params } => {
@@ -1017,6 +1018,8 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> S
         "f32".into()
     } else if ty == "!cir.double" {
         "f64".into()
+    } else if ty.starts_with("!cir.long_double<") {
+        "f64".into()
     } else if let Some(inner) = ty
         .strip_prefix("!cir.ptr<")
         .and_then(|s| s.strip_suffix('>'))
@@ -1256,6 +1259,7 @@ mod tests {
         assert_eq!(rust_type("!s64i"), "i64");
         assert_eq!(rust_type("!cir.float"), "f32");
         assert_eq!(rust_type("!cir.double"), "f64");
+        assert_eq!(rust_type("!cir.long_double<!cir.f80>"), "f64");
         assert_eq!(rust_type("!cir.ptr<!cir.double>"), "*mut f64");
         assert_eq!(
             rust_type("!cir.ptr<!cir.func<(!s32i, !s32i) -> !s32i>>"),
@@ -1313,6 +1317,18 @@ mod tests {
                 ],
             }),
             "Option<fn(i32, i32) -> i32>"
+        );
+    }
+
+    #[test]
+    fn maps_source_long_double_type_to_rust_f64() {
+        assert_eq!(
+            c_type_to_rust(&crate::c_ast::CType::Float { bits: 80 }),
+            "f64"
+        );
+        assert_eq!(
+            default_c_value(&crate::c_ast::CType::Float { bits: 80 }),
+            "0.0"
         );
     }
 
