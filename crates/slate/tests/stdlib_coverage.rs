@@ -16,75 +16,31 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 /// `header/name` probe ids that do not yet translate+run correctly. Each entry
-/// is tracked by a bead; remove it once the probe passes. Root cause for most:
-/// slate emits bare calls to external libc symbols with no `extern "C"` decl.
-///   slate-4t0  external libc function calls (stdio/string/stdlib/math/ctype)
+/// is tracked by a bead; remove it once the probe passes.
 ///   slate-61j  extern globals + FILE streams (stdout/stderr)
 ///   slate-aeo  struct-returning libc fns + libc aggregate typedefs (div_t)
-///   slate-kaf  cir.abs builtin (abs/labs)
-///   slate-6c2  cir.copy aggregate/array init (qsort)
-///   slate-2tt  errno via __errno_location
-///   slate-dm0  cir.if conditional control flow (assert)
+///   slate-kaf  CIR builtin math ops (cir.abs/ceil/fabs/floor/round/trunc)
+///   slate-6c2  cir.copy aggregate/array init (qsort, char[] = "literal")
 const KNOWN_UNSUPPORTED: &[&str] = &[
-    // ctype/* — glibc classification via __ctype_b_loc/__ctype_toupper_loc (slate-4t0)
-    "ctype/isalnum",
-    "ctype/isalpha",
-    "ctype/isdigit",
-    "ctype/islower",
-    "ctype/ispunct",
-    "ctype/isspace",
-    "ctype/isupper",
-    "ctype/tolower",
-    "ctype/toupper",
-    // math/* — libm calls (slate-4t0)
+    // math/* — CIR builtin math ops, not libm calls (slate-kaf)
     "math/ceil",
-    "math/cos",
-    "math/exp",
     "math/fabs",
     "math/floor",
-    "math/fmod",
-    "math/log",
-    "math/pow",
     "math/round",
-    "math/sin",
-    "math/sqrt",
     "math/trunc",
-    // misc
-    "misc/assert", // slate-dm0 (cir.if) + slate-4t0 (__assert_fail)
-    "misc/errno",  // slate-2tt
-    // stdio/* — slate-4t0; fputs/fprintf also slate-61j (stdout/FILE)
+    // stdio/* — FILE streams stdout/stderr (slate-61j)
     "stdio/fprintf",
     "stdio/fputs",
-    "stdio/putchar",
-    "stdio/puts",
-    "stdio/snprintf",
-    "stdio/sprintf",
     // stdlib/*
     "stdlib/abs",   // slate-kaf (cir.abs)
     "stdlib/labs",  // slate-kaf (cir.abs)
     "stdlib/div",   // slate-aeo (div_t)
     "stdlib/qsort", // slate-6c2 (cir.copy)
-    "stdlib/atoi",
-    "stdlib/atol",
-    "stdlib/calloc",
-    "stdlib/exit_code",
-    "stdlib/malloc_free",
-    "stdlib/strtol", // slate-4t0
-    // string/* — slate-4t0
-    "string/memcmp",
-    "string/memcpy",
+    // string/* — char[] = "literal" needs cir.copy aggregate init (slate-6c2)
     "string/memmove",
-    "string/memset",
     "string/strcat",
-    "string/strchr",
-    "string/strcmp",
-    "string/strcpy",
-    "string/strlen",
     "string/strncat",
-    "string/strncmp",
     "string/strncpy",
-    "string/strrchr",
-    "string/strstr",
 ];
 
 fn stdlib_dir() -> PathBuf {
