@@ -455,6 +455,7 @@ fn parse_function_qual_type(s: &str) -> (CType, Vec<CType>) {
 
 fn parse_c_type(s: &str) -> CType {
     let s = s.trim();
+    let s = strip_type_qualifiers(s);
     if s == "void" {
         CType::Void
     } else if let Some(inner) = s.strip_suffix('*') {
@@ -482,6 +483,18 @@ fn parse_c_type(s: &str) -> CType {
             signed: true,
             bits: int_bits(s),
         }
+    }
+}
+
+fn strip_type_qualifiers(mut s: &str) -> &str {
+    loop {
+        let stripped = s
+            .strip_prefix("volatile ")
+            .or_else(|| s.strip_prefix("volatile\t"));
+        let Some(next) = stripped else {
+            return s.trim();
+        };
+        s = next.trim_start();
     }
 }
 
@@ -1114,5 +1127,31 @@ mod tests {
         assert_eq!(unit.functions[0].ret, CType::Bool);
         assert_eq!(unit.functions[0].params[0].ty, CType::Bool);
         assert_eq!(unit.functions[0].params[1].ty, CType::Bool);
+    }
+
+    #[test]
+    fn strips_volatile_qualifier_from_source_types() {
+        assert_eq!(
+            parse_c_type("volatile int"),
+            CType::Int {
+                signed: true,
+                bits: 32
+            }
+        );
+        assert_eq!(
+            parse_c_type("volatile char"),
+            CType::Int {
+                signed: true,
+                bits: 8
+            }
+        );
+        assert_eq!(parse_c_type("volatile double"), CType::Float { bits: 64 });
+        assert_eq!(
+            parse_c_type("volatile unsigned long"),
+            CType::Int {
+                signed: false,
+                bits: 64
+            }
+        );
     }
 }

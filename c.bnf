@@ -72,7 +72,8 @@
 # ----- types and lexical tokens -----
 
 <type> ::= <base_type> | <pointer_type> ;
-<base_type> ::= <int_type> | "volatile int" | "float" | "double" | <char_type> | <bool_type> | <ident> ;
+<base_type> ::= <unqualified_base_type> | "volatile" <unqualified_base_type> ;
+<unqualified_base_type> ::= <int_type> | "float" | "double" | <char_type> | <bool_type> | <ident> ;
 <pointer_type> ::= <base_type> "*" ;
 <int_type> ::= "int" | "unsigned int" | "short" | "unsigned short" | "long" | "unsigned long" | "long long" | "unsigned long long" ;
 <char_type> ::= "char" | "signed char" | "unsigned char" ;
