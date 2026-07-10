@@ -18,6 +18,7 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
             .collect(),
         globals: BTreeMap::new(),
         strings: BTreeMap::new(),
+        externs: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
     };
@@ -30,6 +31,9 @@ struct Lowerer<'a> {
     records: BTreeMap<String, crate::c_ast::Record>,
     globals: BTreeMap<String, GlobalVar>,
     strings: BTreeMap<String, Vec<u8>>,
+    /// external (body-less) functions → rust types of their fixed params; the
+    /// call site uses this to `as`-cast args and wrap the call in `unsafe`.
+    externs: BTreeMap<String, Vec<String>>,
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
 }
@@ -78,10 +82,8 @@ impl Val {
             Val::Expr(s) => s.clone(),
             Val::Global(name) => match strings.get(name) {
                 Some(bytes) => {
-                    format!(
-                        "{}.as_ptr() as *const libc::c_char",
-                        rust_byte_string(bytes)
-                    )
+                    // *mut so it fits *mut char slots; weakens to *const for printf/libc.
+                    format!("{}.as_ptr() as *mut libc::c_char", rust_byte_string(bytes))
                 }
                 None => name.clone(),
             },
@@ -123,6 +125,30 @@ impl<'a> Lowerer<'a> {
             items.push(Item::Raw(format!(
                 "static mut {}: {} = {};\n",
                 global.name, global.ty, global.init
+            )));
+        }
+
+        let mut extern_decls = Vec::new();
+        for op in &ops {
+            if op.name != "cir.func" || !region_ops(op).is_empty() {
+                continue;
+            }
+            let Some(name) = attr_str(op, "sym_name") else {
+                continue;
+            };
+            // printf routes through libc; complex runtime lives in the prelude.
+            if name == "printf" || is_complex_runtime_call(name) {
+                continue;
+            }
+            let function_type = attr_str(op, "function_type").unwrap_or("");
+            let (sig, params) = self.extern_fn_signature(name, function_type);
+            self.externs.insert(name.to_string(), params);
+            extern_decls.push(sig);
+        }
+        if !extern_decls.is_empty() {
+            items.push(Item::Raw(format!(
+                "unsafe extern \"C\" {{\n    {}\n}}\n",
+                extern_decls.join("\n    ")
             )));
         }
 
@@ -260,6 +286,48 @@ impl<'a> Lowerer<'a> {
         Some(text)
     }
 
+    /// Build a Rust `extern "C"` signature line for a body-less C declaration,
+    /// returning `(line, fixed_param_rust_types)`. Trailing `...` becomes a Rust
+    /// variadic; a missing return arrow means the C function returns `void`.
+    fn extern_fn_signature(&self, name: &str, function_type: &str) -> (String, Vec<String>) {
+        let inner = function_type
+            .strip_prefix("!cir.func<")
+            .and_then(|s| s.strip_suffix('>'))
+            .unwrap_or("");
+        let (params_str, ret) = match split_top_level_arrow(inner) {
+            Some((params, ret)) => (params.trim(), Some(ret.trim())),
+            None => (inner.trim(), None),
+        };
+        let params_str = params_str.trim_start_matches('(').trim_end_matches(')');
+
+        let mut parts = Vec::new();
+        let mut param_types = Vec::new();
+        let mut variadic = false;
+        for (i, raw) in split_top_level(params_str, ',')
+            .into_iter()
+            .map(str::trim)
+            .filter(|s| !s.is_empty())
+            .enumerate()
+        {
+            if raw == "..." {
+                variadic = true;
+            } else {
+                let ty = self.rust_type(raw);
+                parts.push(format!("_{i}: {ty}"));
+                param_types.push(ty);
+            }
+        }
+        if variadic {
+            parts.push("...".to_string());
+        }
+        let ret = match ret {
+            Some(ret) if ret != "()" => format!(" -> {}", self.rust_type(ret)),
+            _ => String::new(),
+        };
+        let line = format!("fn {name}({}){ret};", parts.join(", "));
+        (line, param_types)
+    }
+
     fn rust_type(&self, cir_ty: &str) -> String {
         let ty = rust_type_with_aliases(cir_ty, &self.aliases);
         if ty.contains(LONG_DOUBLE_TY) {
@@ -385,6 +453,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.get_element" => self.lower_get_element(op),
             "cir.cast" => self.lower_cast(op),
             "cir.ptr_stride" => self.lower_ptr_stride(op),
+            "cir.ptr_diff" => self.lower_ptr_diff(op),
             "cir.call" => self.lower_call(op),
             "cir.return" => self.lower_return(op),
             "cir.scope" => self.lower_scope(op),
@@ -543,6 +612,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if let Some(b) = parse_cir_bool(raw) {
             self.materialize(result, b.to_string(), result_ty);
+            return;
+        }
+        if raw.starts_with("#cir.ptr<null>") {
+            self.materialize(result, "std::ptr::null_mut()".into(), result_ty);
             return;
         }
         let value = parse_cir_int(raw)
@@ -843,6 +916,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.values.insert(result.clone(), value);
     }
 
+    fn lower_ptr_diff(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let lhs = self.render_operand(&op.operands[0]);
+        let rhs = self.render_operand(&op.operands[1]);
+        let ty = op_result_type(op)
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or_else(|| "i64".into());
+        self.materialize(
+            result,
+            format!("unsafe {{ {lhs}.offset_from({rhs}) as {ty} }}"),
+            op_result_type(op),
+        );
+    }
+
     fn lower_ptr_stride(&mut self, op: &Op) {
         let Some(result) = op.results.first() else {
             return;
@@ -884,6 +976,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             format!("unsafe {{ libc::printf({}) }}", args.join(", "))
         } else if is_complex_runtime_call(&callee) {
             self.parent.uses_complex.set(true);
+            format!("unsafe {{ {callee}({}) }}", args.join(", "))
+        } else if let Some(param_types) = self.parent.externs.get(&callee).cloned() {
+            let args = args
+                .iter()
+                .enumerate()
+                .map(|(i, arg)| match param_types.get(i) {
+                    Some(ty) => format!("{arg} as {ty}"),
+                    None => arg.clone(),
+                })
+                .collect::<Vec<_>>();
             format!("unsafe {{ {callee}({}) }}", args.join(", "))
         } else {
             format!("{callee}({})", args.join(", "))

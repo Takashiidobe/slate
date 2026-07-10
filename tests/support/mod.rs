@@ -21,6 +21,7 @@ pub fn compile_c(src: &Path, out: &Path) -> Result<(), String> {
         .args(["-O0", "-std=c11", "-o"])
         .arg(out)
         .arg(src)
+        .arg("-lm")
         .output()
         .map_err(|e| format!("spawn {}: {e}", cc()))?;
     if !o.status.success() {
