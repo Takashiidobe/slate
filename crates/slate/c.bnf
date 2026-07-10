@@ -55,7 +55,7 @@
 # ----- expressions -----
 
 <expr> ::= <term> | <term> <arith_op> <expr> | "(" <expr> <cmp_op> <expr> ")" ;
-<term> ::= <int> | <float> | <lvalue> | <call> | <sizeof> | "(" <expr> ")" ;
+<term> ::= <int> | <float> | <char> | <lvalue> | <call> | <sizeof> | "(" <expr> ")" ;
 <lvalue> ::= <ident> | <ident> "." <ident> | <ident> "[" <expr> "]" ;
 <arith_op> ::= "+" | "-" | "*" | "/" ;
 <cmp_op> ::= "<" | "<=" | ">" | ">=" | "==" | "!=" ;
@@ -66,10 +66,12 @@
 
 # ----- types and lexical tokens -----
 
-<type> ::= "int" | "volatile int" | "float" | "double" ;
+<type> ::= "int" | "volatile int" | "float" | "double" | <char_type> ;
+<char_type> ::= "char" | "signed char" | "unsigned char" ;
 
 # Lexical placeholders: a real lexer supplies identifiers and numeric
 # literals. They are single productions here so the grammar is self-contained.
 <ident> ::= "name" ;
 <int> ::= "0" ;
 <float> ::= "0.0" | "0.0f" ;
+<char> ::= "'A'" ;

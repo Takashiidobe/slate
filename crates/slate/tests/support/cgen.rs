@@ -103,6 +103,7 @@ struct Gen {
     has_union: bool,
     has_global: bool,
     has_float: bool,
+    has_char: bool,
 }
 
 /// Generate a complete, self-contained C program for `seed`.
@@ -119,6 +120,7 @@ pub fn generate(seed: u64) -> String {
         has_union: false,
         has_global: false,
         has_float: false,
+        has_char: false,
     };
     g.program();
     g.out
@@ -131,6 +133,7 @@ impl Gen {
         self.has_union = self.rng.chance(60);
         self.has_global = self.rng.chance(70);
         self.has_float = self.rng.chance(70);
+        self.has_char = self.rng.chance(70);
 
         self.line("#include <stdio.h>");
         self.blank();
@@ -402,6 +405,9 @@ impl Gen {
         if self.has_float {
             self.emit_float_use();
         }
+        if self.has_char {
+            self.emit_char_use();
+        }
         self.emit_array_use();
 
         self.line("return 0;");
@@ -470,8 +476,33 @@ impl Gen {
         self.printf_float("fa * 1.5f");
     }
 
+    // Char arithmetic promotes to int in C, so operands stay small enough that
+    // the result fits in a signed char and no overflow occurs. Values print via
+    // `%d` (numeric) and `%c` (byte) identically on both sides. The `%c` value
+    // is kept in the printable 'A'..='Z' range so output is stable.
+    fn emit_char_use(&mut self) {
+        let a = self.rng.int_in(0, 63);
+        let b = self.rng.int_in(0, 63);
+        self.line(&format!("char ca = {a};"));
+        self.line(&format!("signed char cb = {b};"));
+        self.line("char cc = ca + cb;");
+        self.printf("cc");
+
+        let u = self.rng.int_in(0, 200);
+        self.line(&format!("unsigned char uc = {u};"));
+        self.printf("uc");
+
+        let off = self.rng.int_in(0, 25);
+        self.line(&format!("char letter = 'A' + {off};"));
+        self.printf_char("letter");
+    }
+
     fn printf(&mut self, expr: &str) {
         self.line(&format!("printf(\"%d\\n\", {expr});"));
+    }
+
+    fn printf_char(&mut self, expr: &str) {
+        self.line(&format!("printf(\"%c\\n\", {expr});"));
     }
 
     fn printf_float(&mut self, expr: &str) {
@@ -579,6 +610,7 @@ mod tests {
                 has_union: false,
                 has_global: false,
                 has_float: false,
+                has_char: false,
             };
             g.program();
             for f in &g.funcs {

@@ -20,6 +20,9 @@ small C subset. This is the supported fixture-level surface today:
 
 - functions with `int` parameters, locals, return values, and `main`.
 - target-lowered CIR integer widths mapped to Rust primitives such as `i32`.
+- `char`, `signed char`, and `unsigned char` locals, params, fields, and return
+  values, mapped to Rust `i8`/`u8`, including `'A'`-style char literals and `%c`
+  printing.
 - integer constants, loads/stores, addition, increment, and comparisons.
 - `float`/`double` parameters, locals, return values, and constants, mapped to
   Rust `f32`/`f64`, with `+`/`-`/`*`/`/`, comparisons, and int/float casts.
@@ -59,6 +62,8 @@ The current fixtures are:
 - `static_globals.c` — file-scope static integer global loads and stores.
 - `floats.c` — `float`/`double` locals, params, arithmetic, casts, and `%f`
   printing.
+- `chars.c` — `char`/`signed char`/`unsigned char` locals, params, arithmetic,
+  char literals, and `%c`/`%d` printing.
 
 Generated Rust for inspection is written with:
 
@@ -84,7 +89,7 @@ Important gaps remain:
 - function prototypes, declarations across translation units, typedefs, and
   headers beyond what Clang resolves for the fixture.
 - `long double`, hex float literals, and float math beyond `+`/`-`/`*`/`/`.
-- chars as values, string operations, varargs beyond direct `printf` calls.
+- string operations and varargs beyond direct `printf` calls.
 - idiomatic Rust cleanup such as `println!`, temp removal, references, slices,
   and safe ownership.
 
