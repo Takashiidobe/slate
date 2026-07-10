@@ -18,6 +18,7 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
             .collect(),
         globals: BTreeMap::new(),
         strings: BTreeMap::new(),
+        const_arrays: BTreeMap::new(),
         externs: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
@@ -31,6 +32,9 @@ struct Lowerer<'a> {
     records: BTreeMap<String, crate::c_ast::Record>,
     globals: BTreeMap<String, GlobalVar>,
     strings: BTreeMap<String, Vec<u8>>,
+    /// numeric aggregate const globals (e.g. `int a[5]={..}`) → element literals,
+    /// keyed by raw sym_name; consumed when a `cir.copy` initializes a local.
+    const_arrays: BTreeMap<String, Vec<String>>,
     /// external (body-less) functions → rust types of their fixed params; the
     /// call site uses this to `as`-cast args and wrap the call in `unsafe`.
     externs: BTreeMap<String, Vec<String>>,
@@ -185,6 +189,13 @@ impl<'a> Lowerer<'a> {
         if let Some(mut bytes) = parse_cir_const_array(raw) {
             bytes.push(0);
             self.strings.insert(name.to_string(), bytes);
+        } else if let Some(elems) = parse_cir_const_array_elems(raw) {
+            self.const_arrays.insert(name.to_string(), elems);
+        } else if raw.trim_start().starts_with("#cir.zero")
+            && parse_cir_array_type(attr_str(op, "sym_type").unwrap_or("")).is_some()
+        {
+            // zero-initialized array; render_array_literal zero-pads to length.
+            self.const_arrays.insert(name.to_string(), Vec::new());
         } else if let Some(init) = parse_cir_int(raw)
             .map(|n| n.to_string())
             .or_else(|| parse_cir_fp(raw))
@@ -423,6 +434,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         match op.name.as_str() {
             "cir.alloca" => self.lower_alloca(op),
             "cir.store" => self.lower_store(op),
+            "cir.copy" => self.lower_copy(op),
             "cir.load" => self.lower_load(op),
             "cir.const" => self.lower_const(op),
             "cir.add" => self.lower_int_arith(op, "+"),
@@ -523,6 +535,68 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             let ptr = self.render_operand(ptr);
             self.emit_line(&format!("unsafe {{ *{ptr} = {value}; }}"));
+        }
+    }
+
+    fn lower_copy(&mut self, op: &Op) {
+        if op.operands.len() < 2 {
+            return;
+        }
+        let dst = op.operands[0].clone();
+        let src = op.operands[1].clone();
+        let Some(value) = self.copy_source_value(&dst, &src) else {
+            // opaque aggregate copy: fall back to a raw one-element memcpy.
+            let d = self.render_pointer_operand(&dst);
+            let s = self.render_pointer_operand(&src);
+            self.emit_line(&format!(
+                "unsafe {{ std::ptr::copy_nonoverlapping({s}, {d}, 1); }}"
+            ));
+            return;
+        };
+        if let Some(global) = self.global_name(&dst) {
+            self.emit_line(&format!("unsafe {{ {global} = {value}; }}"));
+        } else if let Some(member) = self.member_ptrs.get(&dst).cloned() {
+            self.emit_line(&format!(
+                "unsafe {{ {}.{} = {value}; }}",
+                member.base, member.field
+            ));
+        } else if let Some(element) = self.element_ptrs.get(&dst).cloned() {
+            self.emit_line(&format!(
+                "{}[({}) as usize] = {value};",
+                element.base, element.index
+            ));
+        } else if let Some(slot) = self.slots.get(&dst).cloned() {
+            self.emit_line(&format!("{slot} = {value};"));
+        } else {
+            let d = self.render_pointer_operand(&dst);
+            self.emit_line(&format!("unsafe {{ *{d} = {value}; }}"));
+        }
+    }
+
+    /// Resolve the by-value source of a `cir.copy`: a numeric/char const global
+    /// renders to an array literal (padded to the destination length), while an
+    /// aggregate local relies on the `Copy` derive of arrays and `#[repr(C)]`
+    /// structs. Returns `None` when the source is opaque (raw pointer copy).
+    fn copy_source_value(&self, dst: &str, src: &str) -> Option<String> {
+        let dst_len = self
+            .slot_types
+            .get(dst)
+            .and_then(|ty| parse_rust_array_type(ty))
+            .map(|(_, len)| len as usize);
+        match self.values.get(src) {
+            Some(Val::Global(name)) => {
+                if let Some(bytes) = self.parent.strings.get(name) {
+                    let elems: Vec<String> = bytes.iter().map(|b| b.to_string()).collect();
+                    Some(render_array_literal(&elems, dst_len.unwrap_or(elems.len())))
+                } else {
+                    let elems = self.parent.const_arrays.get(name)?;
+                    Some(render_array_literal(elems, dst_len.unwrap_or(elems.len())))
+                }
+            }
+            _ => self
+                .slots
+                .contains_key(src)
+                .then(|| self.render_operand(src)),
         }
     }
 
@@ -1527,6 +1601,35 @@ fn parse_cir_const_array(s: &str) -> Option<Vec<u8>> {
     Some(decode_cir_string(&rest[..end]))
 }
 
+/// Parse the numeric form `#cir.const_array<[#cir.int<1> : !s32i, ...]>` into
+/// per-element Rust literals. Returns `None` for the string form (handled by
+/// [`parse_cir_const_array`]) or any element we cannot render.
+fn parse_cir_const_array_elems(s: &str) -> Option<Vec<String>> {
+    if !s.contains("#cir.const_array<[") {
+        return None;
+    }
+    let open = s.find('[')?;
+    let close = s.rfind(']')?;
+    let inner = &s[open + 1..close];
+    split_top_level(inner, ',')
+        .into_iter()
+        .map(str::trim)
+        .filter(|part| !part.is_empty())
+        .map(|part| {
+            parse_cir_int(part)
+                .map(|n| n.to_string())
+                .or_else(|| parse_cir_fp(part))
+        })
+        .collect()
+}
+
+/// Render `elems` as a Rust array literal, truncated or zero-padded to `len`.
+fn render_array_literal(elems: &[String], len: usize) -> String {
+    let mut out: Vec<String> = elems.iter().take(len).cloned().collect();
+    out.resize(len, "0".to_string());
+    format!("[{}]", out.join(", "))
+}
+
 fn decode_cir_string(s: &str) -> Vec<u8> {
     let mut bytes = Vec::new();
     let mut chars = s.chars().peekable();
@@ -1711,6 +1814,23 @@ mod tests {
         assert_eq!(rust_type("!rec_Pair"), "Pair");
         assert_eq!(rust_type("!cir.union<\"Pair\" {!s32i, !s32i}>"), "Pair");
         assert_eq!(rust_type("!cir.array<!s32i x 3>"), "[i32; 3]");
+    }
+
+    #[test]
+    fn parses_numeric_const_array_and_renders_literal() {
+        let raw = "#cir.const_array<[#cir.int<1> : !s32i, #cir.int<2> : !s32i, \
+                   #cir.int<3> : !s32i]> : !cir.array<!s32i x 5>";
+        let elems = parse_cir_const_array_elems(raw).expect("numeric const array");
+        assert_eq!(elems, vec!["1", "2", "3"]);
+        // zero-padded up to the destination length.
+        assert_eq!(render_array_literal(&elems, 5), "[1, 2, 3, 0, 0]");
+        // truncated when the destination is shorter.
+        assert_eq!(render_array_literal(&elems, 2), "[1, 2]");
+        // the string form is not a numeric const array.
+        assert_eq!(
+            parse_cir_const_array_elems("#cir.const_array<\"hi\">"),
+            None
+        );
     }
 
     #[test]
