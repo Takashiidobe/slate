@@ -621,7 +621,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if let Some(slot) = self.slots.get(ptr) {
             slot.clone()
         } else {
-            format!("unsafe {{ *{} }}", self.render_operand(ptr))
+            format!("unsafe {{ *({}) }}", self.render_operand(ptr))
         };
         self.materialize(result, value, op_result_type(op));
     }
@@ -1054,6 +1054,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .iter()
                 .enumerate()
                 .map(|(i, arg)| match param_types.get(i) {
+                    // function-pointer params (Option<fn..>) can't be `as`-cast;
+                    // let fn-item -> fn-ptr coercion handle them.
+                    Some(_)
+                        if arg_types
+                            .get(i)
+                            .is_some_and(|t| is_cir_function_pointer_type(t)) =>
+                    {
+                        arg.clone()
+                    }
                     Some(ty) => format!("{arg} as {ty}"),
                     None => arg.clone(),
                 })
@@ -1421,6 +1430,8 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> S
     }
     if ty == "()" || ty.is_empty() {
         "()".into()
+    } else if ty == "!void" || ty == "!cir.void" {
+        "core::ffi::c_void".into()
     } else if ty == "!cir.bool" {
         "bool".into()
     } else if ty == "!s32i" || ty == "!cir.int<s, 32>" {
