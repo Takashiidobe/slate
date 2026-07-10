@@ -148,17 +148,14 @@ impl<'a> Lowerer<'a> {
         if let Some(mut bytes) = parse_cir_const_array(raw) {
             bytes.push(0);
             self.strings.insert(name.to_string(), bytes);
-        } else if let Some(init) = parse_cir_int(raw) {
+        } else if let Some(init) = parse_cir_int(raw)
+            .map(|n| n.to_string())
+            .or_else(|| parse_cir_fp(raw))
+        {
             let ty = self.rust_type(attr_str(op, "sym_type").unwrap_or("!s32i"));
             let name = sanitize_ident(name);
-            self.globals.insert(
-                name.clone(),
-                GlobalVar {
-                    name,
-                    ty,
-                    init: init.to_string(),
-                },
-            );
+            self.globals
+                .insert(name.clone(), GlobalVar { name, ty, init });
         }
     }
 

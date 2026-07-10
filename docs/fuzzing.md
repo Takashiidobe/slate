@@ -41,13 +41,14 @@ templates, it maintains **generation state** and composes programs from it:
 
 From that state it emits multi-function programs with:
 
-- helper functions taking `int` parameters and returning `int`;
+- helper functions taking and returning `int`, plus fixed `char` and `double`
+  helpers that exercise non-int signatures;
 - scoped locals, reused across statements, plus loop-scoped induction variables;
 - expressions composed by `+`, `+=`, and `++` over live variables, constants, and
   nested calls to earlier functions;
 - scoped locals passed as call arguments;
 - `for`/`while` accumulation loops, fixed-size `int` arrays, structs, unions,
-  `sizeof`, `volatile` locals, `static` globals, and enum constants;
+  `sizeof`, `volatile` locals, `static` primitive globals, and enum constants;
 - `main` that prints every function's result with `printf("%d\n", ...)`.
 
 Everything stays inside the subset Slate can translate today (see

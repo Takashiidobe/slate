@@ -162,6 +162,12 @@ impl Gen {
         if self.has_global {
             self.emit_global_decl();
         }
+        if self.has_char {
+            self.emit_char_fn();
+        }
+        if self.has_float {
+            self.emit_float_fn();
+        }
 
         // The static-counter function is emitted verbatim and, crucially, is
         // *not* registered in `funcs`, so random expressions never call it and
@@ -220,6 +226,14 @@ impl Gen {
     fn emit_global_decl(&mut self) {
         let init = self.rng.int_in(0, CONST_MAX);
         self.line(&format!("static int fuzz_counter = {init};"));
+        if self.has_char {
+            let ch = self.rng.int_in(0, 63);
+            self.line(&format!("static char fuzz_char_global = {ch};"));
+        }
+        if self.has_float {
+            let fp = self.rng.int_in(1, CONST_MAX);
+            self.line(&format!("static double fuzz_double_global = {fp}.25;"));
+        }
         self.blank();
     }
 
@@ -227,6 +241,20 @@ impl Gen {
         self.line("static int fuzz_bump(void) {");
         self.line("    fuzz_counter = fuzz_counter + 1;");
         self.line("    return fuzz_counter;");
+        self.line("}");
+        self.blank();
+    }
+
+    fn emit_char_fn(&mut self) {
+        self.line("static char fuzz_char_add(char a, char b) {");
+        self.line("    return a + b;");
+        self.line("}");
+        self.blank();
+    }
+
+    fn emit_float_fn(&mut self) {
+        self.line("static double fuzz_double_mix(double a, double b) {");
+        self.line("    return a + b * 2.0;");
         self.line("}");
         self.blank();
     }
@@ -583,6 +611,11 @@ impl Gen {
         let c = self.rng.int_in(1, CONST_MAX);
         self.line(&format!("float fa = {c}.5f;"));
         self.printf_float("fa * 1.5f");
+
+        if self.has_global {
+            self.line("fuzz_double_global = fuzz_double_mix(fuzz_double_global, 1.5);");
+            self.printf_float("fuzz_double_global");
+        }
     }
 
     // Char arithmetic promotes to int in C, so operands stay small enough that
@@ -604,6 +637,11 @@ impl Gen {
         let off = self.rng.int_in(0, 25);
         self.line(&format!("char letter = 'A' + {off};"));
         self.printf_char("letter");
+
+        if self.has_global {
+            self.line("fuzz_char_global = fuzz_char_add(fuzz_char_global, 1);");
+            self.printf("fuzz_char_global");
+        }
     }
 
     // short/long/long long map to Rust i16/i64 and unsigned variants to
@@ -788,5 +826,14 @@ mod tests {
         let corpus = (0..256u64).map(generate).collect::<Vec<_>>().join("\n");
         assert!(corpus.contains("typedef int fuzz_int;"));
         assert!(corpus.contains("fuzz_byte tag;"));
+    }
+
+    #[test]
+    fn emits_non_int_signatures_and_globals() {
+        let corpus = (0..512u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("static char fuzz_char_add(char a, char b)"));
+        assert!(corpus.contains("static double fuzz_double_mix(double a, double b)"));
+        assert!(corpus.contains("static char fuzz_char_global"));
+        assert!(corpus.contains("static double fuzz_double_global"));
     }
 }

@@ -51,8 +51,8 @@ The lowerer currently handles the fixture subset:
 - `sizeof` expressions when Clang has folded them to CIR integer constants.
 - `cir.load` and `cir.store` with `is_volatile`, emitted as
   `std::ptr::read_volatile` and `std::ptr::write_volatile`.
-- file-scope `cir.global` integers with constant initializers, emitted as Rust
-  `static mut` items.
+- file-scope `cir.global` integer and floating scalar values with constant
+  initializers, emitted as Rust `static mut` items.
 
 Unknown CIR ops emit a `todo!("cir.xyz")` expression and a diagnostic. That is
 intentional: failing loudly is better than silently dropping semantics.
@@ -71,6 +71,7 @@ Current C fixture coverage:
 | `sizeof.c`         | `sizeof` over primitive, array, struct, union, and expression forms    |
 | `volatile.c`       | volatile local stores and loads                                        |
 | `static_globals.c` | file-scope static integer global loads and stores                      |
+| `non_int_globals.c` | file-scope static non-int globals plus non-int params and returns      |
 
 ## Stage notes
 

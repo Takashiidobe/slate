@@ -30,16 +30,16 @@
 <field_list> ::= <field> <field_list> | <field> ;
 <field> ::= "int" <ident> ";" ;
 
-<global_decl> ::= "static" "int" <ident> "=" <int> ";" ;
+<global_decl> ::= "static" <type> <ident> "=" <const> ";" ;
 
 # ----- functions -----
 
 <function_list> ::= <function> <function_list> | <function> ;
 <function> ::= <ret_type> <ident> "(" <param_list> ")" "{" <stmt_list> "}" ;
-<ret_type> ::= "int" | "void" ;
+<ret_type> ::= <type> | "void" ;
 <param_list> ::= "void" | <params> ;
 <params> ::= <param> "," <params> | <param> ;
-<param> ::= "int" <ident> ;
+<param> ::= <type> <ident> ;
 
 # ----- statements -----
 
@@ -75,6 +75,7 @@
 # Lexical placeholders: a real lexer supplies identifiers and numeric
 # literals. They are single productions here so the grammar is self-contained.
 <ident> ::= "name" ;
+<const> ::= <int> | <float> | <char> ;
 <int> ::= "0" ;
 <float> ::= "0.0" | "0.0f" ;
 <char> ::= "'A'" ;
