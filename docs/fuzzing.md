@@ -82,14 +82,23 @@ sweep).
 ## Running it
 
 ```bash
+# fresh random seeds each run
 cargo test --test bnf_fuzz generator_differential -- --nocapture
 SLATE_FUZZ_CASES=64 cargo test --test bnf_fuzz generator_differential -- --nocapture
+
+# deterministic: seeds n, n+1, ...
+SLATE_FUZZ_SEED=42 cargo test --test bnf_fuzz generator_differential -- --nocapture
+
+# replay a single seed a failure reported
+SLATE_FUZZ_SEED=<seed> SLATE_FUZZ_CASES=1 cargo test --test bnf_fuzz generator_differential -- --nocapture
 ```
 
-`SLATE_FUZZ_CASES` (default 8) sets how many seeds to run. Seeds are the natural
-numbers `0..cases`, and generation is fully deterministic, so a failure reports
-the exact seed that reproduces it — and the offending `.c` and `.generated.rs`
-are left under `target/cgen-fuzz/` for inspection.
+`SLATE_FUZZ_CASES` (default 8) sets how many seeds to run. By default the seeds
+are random, so repeated runs explore different programs; `SLATE_FUZZ_SEED=<n>`
+makes a run deterministic (seeds `n, n+1, ...`). Generation is a pure function of
+its seed, so a failure reports the exact seed that reproduces the program — and
+the offending `.c` and `.generated.rs` are left under `target/cgen-fuzz/` for
+inspection.
 
 ## Not yet done
 
