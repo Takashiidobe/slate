@@ -26,6 +26,8 @@ small C subset. This is the supported fixture-level surface today:
 - `short`, `long`, and `long long` (with their `unsigned` variants) locals,
   params, and return values, mapped to Rust `i16`/`i64`/`u16`/`u32`/`u64` by CIR
   width, printed with the width-correct `printf` conversion (`%u`, `%ld`, ...).
+- `<stdint.h>` fixed-width integer typedefs and `<stddef.h>` `size_t`, resolved
+  through Clang desugared type facts and CIR integer widths.
 - integer overflow left to wrap two's-complement: the generated Rust builds with
   `overflow-checks = false`, matching clang's `-O0` C, so neither side panics.
 - integer constants, loads/stores, comparisons, increment, and the binary
@@ -79,6 +81,7 @@ The current fixtures are:
   globals plus non-int params and returns.
 - `typedefs.c` — aliases for primitive types used in params, locals, fields,
   returns, and `sizeof`.
+- `stdint_types.c` — `<stdint.h>` fixed-width typedefs and `<stddef.h>` `size_t`.
 - `floats.c` — `float`/`double` locals, params, arithmetic, casts, and `%f`
   printing.
 - `chars.c` — `char`/`signed char`/`unsigned char` locals, params, arithmetic,
@@ -106,7 +109,7 @@ fixtures under `tests/fixtures/` are C-only.
 Important gaps remain:
 
 - target-complete C integer modeling beyond the CIR widths already emitted
-  (e.g. `_Bool`, `__int128`, and the fixed-width `<stdint.h>` typedefs).
+  (e.g. `_Bool` and `__int128`).
 - bitwise, logical, and assignment operators beyond `+=`; wider arithmetic and
   casts beyond the currently exercised cases.
 - broader aggregate coverage beyond primitive scalar fields.

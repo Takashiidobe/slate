@@ -10,9 +10,10 @@
 # It is intentionally smaller than a full C grammar and covers only what
 # Slate can currently lower (see docs/README.md).
 
-<program> ::= <include> <decl_list> <function_list> ;
+<program> ::= <include_list> <decl_list> <function_list> ;
 
-<include> ::= "#include <stdio.h>" ;
+<include_list> ::= <include> <include_list> | <include> ;
+<include> ::= "#include <stdio.h>" | "#include <stdint.h>" | "#include <stddef.h>" ;
 
 # ----- top-level declarations -----
 

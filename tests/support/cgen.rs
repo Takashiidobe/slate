@@ -10,8 +10,8 @@
 //! Everything it emits is restricted to the subset Slate can translate today
 //! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
 //! `float`/`double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`,
-//! arrays, pointers, structs, unions, typedef aliases, `sizeof`, `volatile`, static globals,
-//! enum constants, and
+//! arrays, pointers, structs, unions, typedef aliases, fixed-width typedefs,
+//! `sizeof`, `volatile`, static globals, enum constants, and
 //! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
 //!
 //! Correctness rests on keeping the two sides in agreement on the operations
@@ -109,6 +109,7 @@ struct Gen {
     has_char: bool,
     has_wideint: bool,
     has_typedef: bool,
+    has_fixed_width: bool,
 }
 
 /// Generate a complete, self-contained C program for `seed`.
@@ -128,6 +129,7 @@ pub fn generate(seed: u64) -> String {
         has_char: false,
         has_wideint: false,
         has_typedef: false,
+        has_fixed_width: false,
     };
     g.program();
     g.out
@@ -143,7 +145,12 @@ impl Gen {
         self.has_char = self.rng.chance(70);
         self.has_wideint = self.rng.chance(70);
         self.has_typedef = self.rng.chance(70);
+        self.has_fixed_width = self.rng.chance(70);
 
+        if self.has_fixed_width {
+            self.line("#include <stddef.h>");
+            self.line("#include <stdint.h>");
+        }
         self.line("#include <stdio.h>");
         self.blank();
 
@@ -548,6 +555,9 @@ impl Gen {
         if self.has_wideint {
             self.emit_wideint_use();
         }
+        if self.has_fixed_width {
+            self.emit_fixed_width_use();
+        }
         self.emit_array_use();
         self.emit_pointer_use();
 
@@ -738,6 +748,22 @@ impl Gen {
         self.printf_fmt("%llu", "llub");
     }
 
+    fn emit_fixed_width_use(&mut self) {
+        let small = self.rng.int_in(-9, 9);
+        let byte = self.rng.int_in(0, 200);
+        let count = self.rng.int_in(1, CONST_MAX);
+        self.line(&format!("int8_t fw_small = {small};"));
+        self.line(&format!("uint8_t fw_byte = {byte};"));
+        self.line("int16_t fw_short = 1200;");
+        self.line("uint32_t fw_u32 = 4000000000u;");
+        self.line(&format!("size_t fw_count = {count};"));
+        self.line("uint64_t fw_wide = fw_u32 + fw_count;");
+        self.printf("(fw_small + fw_byte + fw_short)");
+        self.printf_fmt("%u", "fw_u32");
+        self.printf_fmt("%lu", "fw_count");
+        self.printf_fmt("%lu", "fw_wide");
+    }
+
     fn printf(&mut self, expr: &str) {
         self.line(&format!("printf(\"%d\\n\", {expr});"));
     }
@@ -862,6 +888,7 @@ mod tests {
                 has_char: false,
                 has_wideint: false,
                 has_typedef: false,
+                has_fixed_width: false,
             };
             g.program();
             for f in &g.funcs {
@@ -889,6 +916,16 @@ mod tests {
         let corpus = (0..256u64).map(generate).collect::<Vec<_>>().join("\n");
         assert!(corpus.contains("typedef int fuzz_int;"));
         assert!(corpus.contains("fuzz_byte tag;"));
+    }
+
+    #[test]
+    fn emits_fixed_width_typedefs() {
+        let corpus = (0..512u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("#include <stdint.h>"));
+        assert!(corpus.contains("#include <stddef.h>"));
+        assert!(corpus.contains("int8_t fw_small = "));
+        assert!(corpus.contains("uint32_t fw_u32 = 4000000000u;"));
+        assert!(corpus.contains("size_t fw_count = "));
     }
 
     #[test]

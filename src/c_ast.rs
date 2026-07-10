@@ -1003,6 +1003,63 @@ mod tests {
     }
 
     #[test]
+    fn desugars_fixed_width_header_typedefs_from_clang_json() {
+        let ast = r#"
+{
+  "kind": "TranslationUnitDecl",
+  "inner": [
+    {
+      "kind": "FunctionDecl",
+      "name": "f",
+      "loc": {"file": "stdint_types.c", "line": 8, "col": 5},
+      "type": {"qualType": "uint64_t (int8_t, size_t)"},
+      "inner": [
+        {"kind": "ParmVarDecl", "name": "a", "type": {
+          "desugaredQualType": "signed char",
+          "qualType": "int8_t"
+        }},
+        {"kind": "ParmVarDecl", "name": "b", "type": {
+          "desugaredQualType": "unsigned long",
+          "qualType": "size_t"
+        }},
+        {"kind": "CompoundStmt", "inner": [
+          {"kind": "DeclStmt", "inner": [
+            {"kind": "VarDecl", "name": "x", "type": {
+              "desugaredQualType": "unsigned int",
+              "qualType": "uint32_t"
+            }}
+          ]}
+        ]}
+      ]
+    }
+  ]
+}
+"#;
+
+        let unit = parse_json(ast, "stdint_types.c").unwrap();
+        let function = &unit.functions[0];
+        assert_eq!(
+            function.params[0].ty,
+            CType::Int {
+                signed: true,
+                bits: 8
+            }
+        );
+        assert_eq!(
+            function.params[1].ty,
+            CType::Int {
+                signed: false,
+                bits: 64
+            }
+        );
+        let body = function.body.as_ref().unwrap();
+        assert!(
+            matches!(&body[0], Stmt::Decl(Decl { name, ty: CType::Int { signed: false, bits: 32 } }, None)
+                if name == "x")
+        );
+    }
+
+    #[test]
     fn extracts_floating_record_field_types_from_clang_json() {
         let ast = r#"
 {
