@@ -10,7 +10,8 @@
 //! Everything it emits is restricted to the subset Slate can translate today
 //! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
 //! `float`/`double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`,
-//! arrays, structs, unions, `sizeof`, `volatile`, static globals, enum constants, and
+//! arrays, structs, unions, typedef aliases, `sizeof`, `volatile`, static globals,
+//! enum constants, and
 //! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
 //!
 //! Correctness rests on keeping the two sides in agreement on the operations
@@ -107,6 +108,7 @@ struct Gen {
     has_float: bool,
     has_char: bool,
     has_wideint: bool,
+    has_typedef: bool,
 }
 
 /// Generate a complete, self-contained C program for `seed`.
@@ -125,6 +127,7 @@ pub fn generate(seed: u64) -> String {
         has_float: false,
         has_char: false,
         has_wideint: false,
+        has_typedef: false,
     };
     g.program();
     g.out
@@ -139,10 +142,14 @@ impl Gen {
         self.has_float = self.rng.chance(70);
         self.has_char = self.rng.chance(70);
         self.has_wideint = self.rng.chance(70);
+        self.has_typedef = self.rng.chance(70);
 
         self.line("#include <stdio.h>");
         self.blank();
 
+        if self.has_typedef {
+            self.emit_typedef_decl();
+        }
         if self.has_enum {
             self.emit_enum_decl();
         }
@@ -185,10 +192,19 @@ impl Gen {
         self.blank();
     }
 
+    fn emit_typedef_decl(&mut self) {
+        self.line("typedef int fuzz_int;");
+        self.line("typedef unsigned char fuzz_byte;");
+        self.blank();
+    }
+
     fn emit_struct_decl(&mut self) {
         self.line("struct FuzzStruct {");
-        self.line("    int left;");
-        self.line("    int right;");
+        self.line(&format!("    {} left;", self.int_type()));
+        self.line(&format!("    {} right;", self.int_type()));
+        if self.has_typedef {
+            self.line("    fuzz_byte tag;");
+        }
         self.line("};");
         self.blank();
     }
@@ -226,7 +242,7 @@ impl Gen {
             .map(|i| {
                 let p = format!("p{i}");
                 self.declare(&p, PARAM_MAX);
-                format!("int {p}")
+                format!("{} {p}", self.int_type())
             })
             .collect();
         let sig = if params.is_empty() {
@@ -234,7 +250,7 @@ impl Gen {
         } else {
             params.join(", ")
         };
-        self.line(&format!("static int {name}({sig}) {{"));
+        self.line(&format!("static {} {name}({sig}) {{", self.int_type()));
         self.indent = 1;
 
         // Always start with a declaration so there is something in scope.
@@ -271,7 +287,7 @@ impl Gen {
     fn emit_decl_stmt(&mut self) {
         let name = self.fresh("v");
         let (expr, max) = self.gen_expr(0, DECL_BUDGET);
-        self.line(&format!("int {name} = {expr};"));
+        self.line(&format!("{} {name} = {expr};", self.int_type()));
         self.declare(&name, max);
     }
 
@@ -296,13 +312,14 @@ impl Gen {
     /// `int acc = 0; for (int i = 0; i <= N; i++) { acc += <step>; }`
     fn emit_for_stmt(&mut self) {
         let acc = self.fresh("acc");
-        self.line(&format!("int {acc} = 0;"));
+        self.line(&format!("{} {acc} = 0;", self.int_type()));
         self.declare(&acc, 0);
 
         let bound = self.rng.int_in(0, 5);
         let idx = self.fresh("i");
         self.line(&format!(
-            "for (int {idx} = 0; {idx} <= {bound}; {idx}++) {{"
+            "for ({} {idx} = 0; {idx} <= {bound}; {idx}++) {{",
+            self.int_type()
         ));
         self.indent += 1;
 
@@ -506,6 +523,11 @@ impl Gen {
         self.line(&format!("s.left = {a};"));
         self.line(&format!("s.right = {b};"));
         self.printf("(s.left + s.right)");
+        if self.has_typedef {
+            let tag = self.rng.int_in(0, 200);
+            self.line(&format!("s.tag = {tag};"));
+            self.printf("s.tag");
+        }
     }
 
     fn emit_union_use(&mut self) {
@@ -528,7 +550,11 @@ impl Gen {
         // sizeof over primitive + the array is a compile-time constant on both
         // sides, so C and translated Rust agree.
         if self.rng.chance(50) {
-            self.line("int sz = sizeof(int) + sizeof(arr);");
+            self.line(&format!(
+                "{} sz = sizeof({}) + sizeof(arr);",
+                self.int_type(),
+                self.int_type()
+            ));
             self.printf("sz");
         }
 
@@ -627,6 +653,10 @@ impl Gen {
         self.line(&format!("printf(\"%f\\n\", {expr});"));
     }
 
+    fn int_type(&self) -> &'static str {
+        if self.has_typedef { "fuzz_int" } else { "int" }
+    }
+
     // ----- scope / emission helpers -----
 
     fn push_scope(&mut self) {
@@ -705,9 +735,9 @@ mod tests {
         let src = generate(7);
         assert!(src.contains("#include <stdio.h>"));
         assert!(src.contains("int main(void) {"));
-        assert!(src.contains("static int fuzz_fn0("));
+        assert!(src.contains("fuzz_fn0("));
         // multi-function: at least two helpers plus main
-        assert!(src.matches("static int fuzz_fn").count() >= 2);
+        assert!(src.matches("fuzz_fn").count() >= 2);
         assert!(src.contains("printf(\"%d\\n\""));
     }
 
@@ -730,6 +760,7 @@ mod tests {
                 has_float: false,
                 has_char: false,
                 has_wideint: false,
+                has_typedef: false,
             };
             g.program();
             for f in &g.funcs {
@@ -750,5 +781,12 @@ mod tests {
         assert!(corpus.contains("~("));
         assert!(corpus.contains(" << "));
         assert!(corpus.contains(" >> "));
+    }
+
+    #[test]
+    fn emits_typedef_aliases() {
+        let corpus = (0..256u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("typedef int fuzz_int;"));
+        assert!(corpus.contains("fuzz_byte tag;"));
     }
 }
