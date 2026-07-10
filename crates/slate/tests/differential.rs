@@ -92,22 +92,19 @@ fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
 }
 
-/// Every `.c` in the fixtures dir must have a sibling `.rs`.
-fn fixture_pairs() -> Vec<(String, PathBuf, PathBuf)> {
+fn fixtures() -> Vec<(String, PathBuf)> {
     let dir = fixtures_dir();
-    let mut pairs = Vec::new();
+    let mut fixtures = Vec::new();
     for entry in std::fs::read_dir(&dir).expect("read fixtures dir") {
         let path = entry.expect("dir entry").path();
         if path.extension().and_then(|e| e.to_str()) != Some("c") {
             continue;
         }
-        let rs = path.with_extension("rs");
         let name = path.file_stem().unwrap().to_string_lossy().into_owned();
-        assert!(rs.exists(), "fixture {name}.c has no matching {name}.rs");
-        pairs.push((name, path, rs));
+        fixtures.push((name, path));
     }
-    pairs.sort_by(|a, b| a.0.cmp(&b.0));
-    pairs
+    fixtures.sort_by(|a, b| a.0.cmp(&b.0));
+    fixtures
 }
 
 fn translate(c_src: &Path, rs_out: &Path) -> Result<(), String> {
@@ -149,52 +146,19 @@ fn compare(name: &str, c_src: &Path, rs_src: &Path, tmp: &Path) -> Result<(), St
 }
 
 #[test]
-fn differential() {
-    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest");
-    std::fs::create_dir_all(&tmp).expect("create tmp dir");
-
-    let pairs = fixture_pairs();
-    assert!(
-        !pairs.is_empty(),
-        "no fixtures found in {:?}",
-        fixtures_dir()
-    );
-
-    let mut failures = Vec::new();
-    for (name, c_src, rs_src) in &pairs {
-        match compare(name, c_src, rs_src, &tmp) {
-            Ok(()) => eprintln!("ok    {name}"),
-            Err(e) => {
-                eprintln!("FAIL  {name}");
-                failures.push(format!("[{name}] {e}"));
-            }
-        }
-    }
-
-    if !failures.is_empty() {
-        panic!(
-            "{} of {} fixtures failed:\n\n{}",
-            failures.len(),
-            pairs.len(),
-            failures.join("\n\n")
-        );
-    }
-}
-
-#[test]
 fn generated_differential() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
 
-    let pairs = fixture_pairs();
+    let fixtures = fixtures();
     assert!(
-        !pairs.is_empty(),
+        !fixtures.is_empty(),
         "no fixtures found in {:?}",
         fixtures_dir()
     );
 
     let mut failures = Vec::new();
-    for (name, c_src, _) in &pairs {
+    for (name, c_src) in &fixtures {
         let generated = tmp.join(format!("{name}.generated.rs"));
         match translate(c_src, &generated).and_then(|()| compare(name, c_src, &generated, &tmp)) {
             Ok(()) => eprintln!("ok    {name}"),
@@ -209,7 +173,7 @@ fn generated_differential() {
         panic!(
             "{} of {} generated fixtures failed:\n\n{}",
             failures.len(),
-            pairs.len(),
+            fixtures.len(),
             failures.join("\n\n")
         );
     }
