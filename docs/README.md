@@ -21,7 +21,9 @@ small C subset. This is the supported fixture-level surface today:
 - functions with `int` parameters, locals, return values, and `main`.
 - target-lowered CIR integer widths mapped to Rust primitives such as `i32`.
 - integer constants, loads/stores, addition, increment, and comparisons.
-- calls, including `printf` lowered through `libc::printf`.
+- `float`/`double` parameters, locals, return values, and constants, mapped to
+  Rust `f32`/`f64`, with `+`/`-`/`*`/`/`, comparisons, and int/float casts.
+- calls, including `printf` lowered through `libc::printf` (`%d` and `%f`).
 - string literals used by `printf`.
 - `for` loops represented as conservative Rust `loop { ... break ... }`.
 - `while` loops represented as conservative Rust `loop { ... break ... }`.
@@ -55,6 +57,8 @@ The current fixtures are:
   forms.
 - `volatile.c` — volatile local stores and loads.
 - `static_globals.c` — file-scope static integer global loads and stores.
+- `floats.c` — `float`/`double` locals, params, arithmetic, casts, and `%f`
+  printing.
 
 Generated Rust for inspection is written with:
 
@@ -79,8 +83,8 @@ Important gaps remain:
 - more arithmetic, bitwise, logical, and assignment operators.
 - function prototypes, declarations across translation units, typedefs, and
   headers beyond what Clang resolves for the fixture.
-- floating point, chars as values, string operations, varargs beyond direct
-  `printf` calls.
+- `long double`, hex float literals, and float math beyond `+`/`-`/`*`/`/`.
+- chars as values, string operations, varargs beyond direct `printf` calls.
 - idiomatic Rust cleanup such as `println!`, temp removal, references, slices,
   and safe ownership.
 
