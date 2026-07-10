@@ -26,9 +26,10 @@ small C subset. This is the supported fixture-level surface today:
 - `short`, `long`, and `long long` (with their `unsigned` variants) locals,
   params, and return values, mapped to Rust `i16`/`i64`/`u16`/`u32`/`u64` by CIR
   width, printed with the width-correct `printf` conversion (`%u`, `%ld`, ...).
-- unsigned integer overflow lowered as wrapping arithmetic (`wrapping_add`) so
-  the defined C wrap matches Rust instead of panicking.
-- integer constants, loads/stores, addition, increment, and comparisons.
+- integer overflow left to wrap two's-complement: the generated Rust builds with
+  `overflow-checks = false`, matching clang's `-O0` C, so neither side panics.
+- integer constants, loads/stores, comparisons, increment, and the binary
+  operators `+`, `-`, `*`, `/`, `%`.
 - `float`/`double` parameters, locals, return values, and constants, mapped to
   Rust `f32`/`f64`, with `+`/`-`/`*`/`/`, comparisons, and int/float casts.
 - calls, including `printf` lowered through `libc::printf` (`%d` and `%f`).
@@ -73,6 +74,10 @@ The current fixtures are:
 - `unsigned.c` — `unsigned int` arithmetic with defined wrapping overflow.
 - `longs.c` — `long`/`unsigned long` locals, params, and return values.
 - `longlong.c` — `long long`/`unsigned long long` locals, params, and return.
+- `sub.c` — signed subtraction and defined unsigned wrapping subtraction.
+- `mul.c` — signed multiplication and defined unsigned wrapping multiplication.
+- `div.c` — signed/unsigned division, truncating toward zero.
+- `modulo.c` — signed/unsigned remainder, taking the sign of the dividend.
 
 Generated Rust for inspection is written with:
 
@@ -89,8 +94,8 @@ Important gaps remain:
 
 - target-complete C integer modeling beyond the CIR widths already emitted
   (e.g. `_Bool`, `__int128`, and the fixed-width `<stdint.h>` typedefs).
-- integer subtraction, multiplication, and division ops (only `+`/`++` lower
-  today); wider arithmetic and casts beyond the currently exercised cases.
+- bitwise, logical, and assignment operators beyond `+=`; wider arithmetic and
+  casts beyond the currently exercised cases.
 - pointers, broader aggregate coverage, field access beyond the current simple
   record cases, and pointer arithmetic.
 - globals beyond file-scope `static int` with constant initializers and constant

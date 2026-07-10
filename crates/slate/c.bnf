@@ -57,7 +57,7 @@
 <expr> ::= <term> | <term> <arith_op> <expr> | "(" <expr> <cmp_op> <expr> ")" ;
 <term> ::= <int> | <float> | <char> | <lvalue> | <call> | <sizeof> | "(" <expr> ")" ;
 <lvalue> ::= <ident> | <ident> "." <ident> | <ident> "[" <expr> "]" ;
-<arith_op> ::= "+" | "-" | "*" | "/" ;
+<arith_op> ::= "+" | "-" | "*" | "/" | "%" ;
 <cmp_op> ::= "<" | "<=" | ">" | ">=" | "==" | "!=" ;
 <call> ::= <ident> "(" ")" | <ident> "(" <arg_list> ")" ;
 <arg_list> ::= <expr> "," <arg_list> | <expr> ;

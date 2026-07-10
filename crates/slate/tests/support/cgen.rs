@@ -13,14 +13,16 @@
 //! `sizeof`, `volatile`, static globals, enum constants, and
 //! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
 //!
-//! Correctness rests on one invariant: the generated program must be
-//! well-defined C with no UB, because the differential harness compares it to
-//! the translated Rust and the Rust is built in debug mode (where `i32`
-//! overflow *panics* while C wraps). To guarantee that, the generator carries a
-//! conservative upper bound on the absolute value of every variable and every
-//! expression, and never builds an operation whose bound could exceed
-//! [`VALUE_CAP`]. Array indices are always in range and every variable is
-//! initialized before it is read.
+//! Correctness rests on keeping the two sides in agreement on the operations
+//! the differential harness actually compares. Integer overflow is *not* one of
+//! the things kept out of bounds: clang builds the C side at `-O0` (two's
+//! complement wrap) and the Rust batch crate sets `overflow-checks = false`, so
+//! both wrap identically. What the generator still guarantees is the arithmetic
+//! that traps on both sides regardless of overflow flags: divisors are nonzero
+//! constants (no division by zero, no `INT_MIN / -1`). It also carries a
+//! conservative upper bound on every value ([`VALUE_CAP`]) to keep programs
+//! tame, keeps array indices in range, and initializes every variable before it
+//! is read.
 
 #![allow(dead_code)]
 
@@ -326,13 +328,42 @@ impl Gen {
         if depth >= MAX_DEPTH || budget < 2 {
             return self.gen_leaf(budget);
         }
-        match self.rng.below(5) {
+        match self.rng.below(8) {
             0 | 1 => self.gen_leaf(budget),
-            2 | 3 => {
+            2 => {
                 // addition: split the budget so the sum stays within it
                 let (le, lm) = self.gen_expr(depth + 1, budget / 2);
                 let (re, rm) = self.gen_expr(depth + 1, budget - lm);
                 (format!("({le} + {re})"), lm + rm)
+            }
+            3 => {
+                // subtraction: each side is within budget, so |a - b| <= budget.
+                // signed results may go negative, which is well-defined.
+                let (le, lm) = self.gen_expr(depth + 1, budget);
+                let (re, rm) = self.gen_expr(depth + 1, budget);
+                (format!("({le} - {re})"), lm.max(rm))
+            }
+            4 => {
+                // multiplication: bound the product by budget via factor budgets
+                // (lm <= sqrt(budget), rm <= budget / lm => lm * rm <= budget).
+                let (le, lm) = self.gen_expr(depth + 1, budget.isqrt());
+                let rb = if lm > 0 { budget / lm } else { budget };
+                let (re, rm) = self.gen_expr(depth + 1, rb);
+                (format!("({le} * {re})"), (lm * rm).min(VALUE_CAP))
+            }
+            5 => {
+                // division by a nonzero constant: never divides by zero and
+                // avoids INT_MIN/-1; C and Rust both truncate toward zero.
+                let (le, lm) = self.gen_expr(depth + 1, budget);
+                let d = self.rng.int_in(1, CONST_MAX);
+                (format!("({le} / {d})"), lm)
+            }
+            6 => {
+                // modulo by a nonzero constant: |a % d| < d and <= |a|; C and
+                // Rust both take the sign of the dividend.
+                let (le, lm) = self.gen_expr(depth + 1, budget);
+                let d = self.rng.int_in(1, CONST_MAX);
+                (format!("({le} % {d})"), lm.min(d - 1).max(0))
             }
             _ => self.gen_call(depth, budget),
         }

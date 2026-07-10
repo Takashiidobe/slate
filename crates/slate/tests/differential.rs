@@ -39,12 +39,25 @@ fn generated_differential() {
         fixtures_dir()
     );
 
+    let mut cases = Vec::new();
     let mut failures = Vec::new();
     for (name, c_src) in &fixtures {
         let generated = tmp.join(format!("{name}.generated.rs"));
-        match support::translate(c_src, &generated)
-            .and_then(|()| support::compare(name, c_src, &generated, &tmp))
-        {
+        match support::translate(c_src, &generated) {
+            Ok(()) => cases.push(support::Case {
+                name: name.clone(),
+                c_src: c_src.clone(),
+                rs_src: generated,
+            }),
+            Err(e) => {
+                eprintln!("FAIL  {name}");
+                failures.push(format!("[{name}] {e}"));
+            }
+        }
+    }
+
+    for (name, result) in support::compare_batch(&cases, &tmp) {
+        match result {
             Ok(()) => eprintln!("ok    {name}"),
             Err(e) => {
                 eprintln!("FAIL  {name}");
