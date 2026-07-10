@@ -319,6 +319,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.mul" => self.lower_int_arith(op, "*"),
             "cir.div" => self.lower_int_arith(op, "/"),
             "cir.rem" => self.lower_int_arith(op, "%"),
+            "cir.and" => self.lower_int_arith(op, "&"),
+            "cir.or" => self.lower_int_arith(op, "|"),
+            "cir.xor" => self.lower_int_arith(op, "^"),
+            "cir.shift" => self.lower_shift(op),
+            "cir.not" => self.lower_not(op),
             "cir.fadd" => self.lower_binary(op, "+"),
             "cir.fsub" => self.lower_binary(op, "-"),
             "cir.fmul" => self.lower_binary(op, "*"),
@@ -515,6 +520,30 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let value = self.render_operand(value);
         let ty = op_result_type(op);
         self.materialize(result, format!("({value} + 1)"), ty);
+    }
+
+    // cir.shift carries the isShiftleft unit attr for `<<`; its absence means `>>`.
+    // Rust's `>>` is arithmetic on signed and logical on unsigned, matching C by type.
+    fn lower_shift(&mut self, op: &Op) {
+        let rust_op = if attr_bool(op, "isShiftleft") {
+            "<<"
+        } else {
+            ">>"
+        };
+        self.lower_int_arith(op, rust_op);
+    }
+
+    // cir.not is C's unary `~`; Rust spells integer bitwise complement `!`.
+    fn lower_not(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let value = self.render_operand(value);
+        let ty = op_result_type(op);
+        self.materialize(result, format!("(!{value})"), ty);
     }
 
     fn lower_cmp(&mut self, op: &Op) {

@@ -8,9 +8,9 @@
 //! passing scoped locals to functions.
 //!
 //! Everything it emits is restricted to the subset Slate can translate today
-//! (int arithmetic with `+`/`++`/`+=`, `float`/`double` arithmetic with
-//! `+`/`-`/`*`/`/`, comparisons, `for`/`while`, arrays, structs, unions,
-//! `sizeof`, `volatile`, static globals, enum constants, and
+//! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
+//! `float`/`double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`,
+//! arrays, structs, unions, `sizeof`, `volatile`, static globals, enum constants, and
 //! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
 //!
 //! Correctness rests on keeping the two sides in agreement on the operations
@@ -328,7 +328,7 @@ impl Gen {
         if depth >= MAX_DEPTH || budget < 2 {
             return self.gen_leaf(budget);
         }
-        match self.rng.below(8) {
+        match self.rng.below(14) {
             0 | 1 => self.gen_leaf(budget),
             2 => {
                 // addition: split the budget so the sum stays within it
@@ -365,15 +365,61 @@ impl Gen {
                 let d = self.rng.int_in(1, CONST_MAX);
                 (format!("({le} % {d})"), lm.min(d - 1).max(0))
             }
+            7 => {
+                let (le, lm) = self.gen_expr(depth + 1, budget);
+                let mask = self.bit_mask(budget);
+                (format!("({le} & {mask})"), lm.min(mask))
+            }
+            8 => {
+                let mask = self.bit_mask(budget);
+                let lhs_budget = (budget - mask).max(0);
+                let (le, lm) = self.gen_expr(depth + 1, lhs_budget);
+                (format!("({le} | {mask})"), (lm + mask).min(VALUE_CAP))
+            }
+            9 => {
+                let mask = self.bit_mask(budget);
+                let lhs_budget = (budget - mask).max(0);
+                let (le, lm) = self.gen_expr(depth + 1, lhs_budget);
+                (format!("({le} ^ {mask})"), (lm + mask).min(VALUE_CAP))
+            }
+            10 => {
+                let mask = self.bit_mask(budget);
+                let (le, _) = self.gen_expr(depth + 1, mask);
+                (format!("(~({le}) & {mask})"), mask)
+            }
+            11 => {
+                let shift = self.rng.int_in(0, 4);
+                let lhs_budget = budget.checked_shr(shift as u32).unwrap_or(0).max(1);
+                let mask = self.bit_mask(lhs_budget);
+                let (le, _) = self.gen_expr(depth + 1, mask);
+                let max = (mask << shift).min(VALUE_CAP);
+                (format!("(({le} & {mask}) << {shift})"), max)
+            }
+            12 => {
+                let shift = self.rng.int_in(0, 4);
+                let mask = self.bit_mask(budget);
+                let shifted_mask = (mask << shift).min(VALUE_CAP);
+                let (le, _) = self.gen_expr(depth + 1, shifted_mask);
+                (format!("(({le} & {shifted_mask}) >> {shift})"), mask)
+            }
             _ => self.gen_call(depth, budget),
         }
     }
 
+    fn bit_mask(&mut self, budget: i64) -> i64 {
+        let max = budget.clamp(1, 255);
+        let bits = (0..=7)
+            .rev()
+            .find(|bits| (1_i64 << bits) - 1 <= max)
+            .unwrap_or(1);
+        (1_i64 << self.rng.int_in(1, bits)) - 1
+    }
+
     fn gen_leaf(&mut self, budget: i64) -> (String, i64) {
-        if self.rng.chance(50) {
-            if let Some(v) = self.pick_var(budget) {
-                return (v.name, v.max_abs);
-            }
+        if self.rng.chance(50)
+            && let Some(v) = self.pick_var(budget)
+        {
+            return (v.name, v.max_abs);
         }
         let c = self.rng.int_in(0, CONST_MAX.min(budget));
         (c.to_string(), c)
@@ -693,5 +739,16 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn emits_supported_bitwise_ops() {
+        let corpus = (0..2048u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains(" & "));
+        assert!(corpus.contains(" | "));
+        assert!(corpus.contains(" ^ "));
+        assert!(corpus.contains("~("));
+        assert!(corpus.contains(" << "));
+        assert!(corpus.contains(" >> "));
     }
 }
