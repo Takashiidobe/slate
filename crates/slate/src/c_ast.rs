@@ -60,6 +60,7 @@ pub struct Decl {
 pub enum CType {
     Void,
     Int { signed: bool, bits: u32 },
+    Float { bits: u32 },
     Ptr(Box<CType>),
     Array(Box<CType>, Option<u64>),
     Record(String),
@@ -464,6 +465,10 @@ fn parse_c_type(s: &str) -> CType {
         CType::Record(name.trim().to_string())
     } else if let Some(name) = s.strip_prefix("struct ") {
         CType::Record(name.trim().to_string())
+    } else if s == "float" {
+        CType::Float { bits: 32 }
+    } else if s == "double" {
+        CType::Float { bits: 64 }
     } else if s.contains("unsigned") {
         CType::Int {
             signed: false,
@@ -995,5 +1000,31 @@ mod tests {
             matches!(&body[0], Stmt::Decl(Decl { name, ty: CType::Int { signed: true, bits: 64 } }, None)
                 if name == "x")
         );
+    }
+
+    #[test]
+    fn extracts_floating_record_field_types_from_clang_json() {
+        let ast = r#"
+{
+  "kind": "TranslationUnitDecl",
+  "inner": [
+    {
+      "kind": "RecordDecl",
+      "name": "Mixed",
+      "tagUsed": "struct",
+      "completeDefinition": true,
+      "loc": {"file": "non_int_fields.c", "line": 3, "col": 8},
+      "inner": [
+        {"kind": "FieldDecl", "name": "ratio", "type": {"qualType": "float"}},
+        {"kind": "FieldDecl", "name": "total", "type": {"qualType": "double"}}
+      ]
+    }
+  ]
+}
+"#;
+
+        let unit = parse_json(ast, "non_int_fields.c").unwrap();
+        assert_eq!(unit.records[0].fields[0].ty, CType::Float { bits: 32 });
+        assert_eq!(unit.records[0].fields[1].ty, CType::Float { bits: 64 });
     }
 }

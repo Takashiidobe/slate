@@ -208,6 +208,12 @@ impl Gen {
         self.line("struct FuzzStruct {");
         self.line(&format!("    {} left;", self.int_type()));
         self.line(&format!("    {} right;", self.int_type()));
+        if self.has_char {
+            self.line("    char ch;");
+        }
+        if self.has_float {
+            self.line("    double weight;");
+        }
         if self.has_typedef {
             self.line("    fuzz_byte tag;");
         }
@@ -219,6 +225,12 @@ impl Gen {
         self.line("union FuzzPair {");
         self.line("    int left;");
         self.line("    int right;");
+        if self.has_char {
+            self.line("    char ch;");
+        }
+        if self.has_float {
+            self.line("    double weight;");
+        }
         self.line("};");
         self.blank();
     }
@@ -551,6 +563,16 @@ impl Gen {
         self.line(&format!("s.left = {a};"));
         self.line(&format!("s.right = {b};"));
         self.printf("(s.left + s.right)");
+        if self.has_char {
+            let ch = self.rng.int_in(0, 63);
+            self.line(&format!("s.ch = {ch};"));
+            self.printf("s.ch");
+        }
+        if self.has_float {
+            let weight = self.rng.int_in(1, CONST_MAX);
+            self.line(&format!("s.weight = {weight}.5;"));
+            self.printf_float("s.weight");
+        }
         if self.has_typedef {
             let tag = self.rng.int_in(0, 200);
             self.line(&format!("s.tag = {tag};"));
@@ -563,6 +585,16 @@ impl Gen {
         self.line("union FuzzPair u;");
         self.line(&format!("u.left = {a};"));
         self.printf("u.left");
+        if self.has_char {
+            let ch = self.rng.int_in(0, 63);
+            self.line(&format!("u.ch = {ch};"));
+            self.printf("u.ch");
+        }
+        if self.has_float {
+            let weight = self.rng.int_in(1, CONST_MAX);
+            self.line(&format!("u.weight = {weight}.25;"));
+            self.printf_float("u.weight");
+        }
     }
 
     fn emit_array_use(&mut self) {
@@ -835,5 +867,14 @@ mod tests {
         assert!(corpus.contains("static double fuzz_double_mix(double a, double b)"));
         assert!(corpus.contains("static char fuzz_char_global"));
         assert!(corpus.contains("static double fuzz_double_global"));
+    }
+
+    #[test]
+    fn emits_non_int_aggregate_fields() {
+        let corpus = (0..512u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("char ch;"));
+        assert!(corpus.contains("double weight;"));
+        assert!(corpus.contains("s.weight = "));
+        assert!(corpus.contains("u.weight = "));
     }
 }

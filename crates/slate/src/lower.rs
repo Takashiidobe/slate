@@ -285,6 +285,9 @@ impl<'a> Lowerer<'a> {
                 bits: 64,
             } => "u64".into(),
             crate::c_ast::CType::Int { .. } => "i32".into(),
+            crate::c_ast::CType::Float { bits: 32 } => "f32".into(),
+            crate::c_ast::CType::Float { bits: 64 } => "f64".into(),
+            crate::c_ast::CType::Float { .. } => "f64".into(),
             crate::c_ast::CType::Ptr(inner) => format!("*mut {}", self.rust_c_type(inner)),
             crate::c_ast::CType::Array(inner, _) => format!("*mut {}", self.rust_c_type(inner)),
             crate::c_ast::CType::Record(name) => sanitize_ident(name),
@@ -949,6 +952,7 @@ fn default_value(ty: &str) -> &'static str {
 
 fn default_c_value(ty: &crate::c_ast::CType) -> &'static str {
     match ty {
+        crate::c_ast::CType::Float { .. } => "0.0",
         crate::c_ast::CType::Record(_) => "Default::default()",
         _ => "0",
     }

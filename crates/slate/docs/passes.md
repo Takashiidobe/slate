@@ -43,9 +43,9 @@ The lowerer currently handles the fixture subset:
   primitives.
 - source enum constants from Clang AST, emitted as Rust `const` items.
 - source union records from Clang AST, emitted as `#[repr(C)] union` items with
-  basic `cir.get_member` field access.
+  primitive scalar fields and basic `cir.get_member` field access.
 - source struct records from Clang AST, emitted as `#[repr(C)] struct` items
-  with basic `cir.get_member` field access.
+  with primitive scalar fields and basic `cir.get_member` field access.
 - fixed-size CIR arrays, emitted as Rust arrays with basic `cir.get_element`
   indexed loads and stores.
 - `sizeof` expressions when Clang has folded them to CIR integer constants.
@@ -67,6 +67,7 @@ Current C fixture coverage:
 | `enums.c`          | enum constants, implicit values, explicit positive and negative values |
 | `unions.c`         | union declaration, integer fields, field writes, field reads           |
 | `structs.c`        | struct declaration, integer fields, field writes, field reads          |
+| `non_int_fields.c` | struct/union `char`, `unsigned char`, `float`, and `double` fields     |
 | `arrays.c`         | fixed-size local arrays, indexed stores, indexed loads                 |
 | `sizeof.c`         | `sizeof` over primitive, array, struct, union, and expression forms    |
 | `volatile.c`       | volatile local stores and loads                                        |
