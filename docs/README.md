@@ -48,6 +48,7 @@ small C subset. This is the supported fixture-level surface today:
 - string literals used by `printf`.
 - `for` loops represented as conservative Rust `loop { ... break ... }`.
 - `while` loops represented as conservative Rust `loop { ... break ... }`.
+- `if`/`else` (including `else if` chains) represented as Rust `if { ... } else { ... }`.
 - C enum constants with implicit values and explicit `= number` values, emitted
   as Rust integer `const` items.
 - simple C unions with primitive scalar fields, emitted as `#[repr(C)] union` plus
@@ -143,7 +144,7 @@ Important gaps remain:
 - broader aggregate coverage beyond primitive scalar fields.
 - globals beyond file-scope `static` primitive scalar globals with constant
   initializers and constant strings used by `printf`.
-- `if`, `switch`, `break`, `continue`, and `goto`.
+- `switch`, `break`, `continue`, and `goto`.
 - more arithmetic, bitwise, logical, and assignment operators.
 - function prototypes, declarations across translation units, and headers beyond
   what Clang resolves for the fixture.
