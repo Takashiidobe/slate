@@ -53,7 +53,8 @@ The lowerer currently handles the fixture subset:
 - `cir.ptr_stride`, pointer-valued stores/loads, and array-to-pointer decay,
   emitted as raw Rust pointer operations.
 - `sizeof` expressions when Clang has folded them to CIR integer constants.
-- `cir.load` and `cir.store` with `is_volatile`, emitted as
+- `cir.load` and `cir.store` with `is_volatile` for volatile-qualified
+  primitive scalar locals, parameters, fields, returns, and globals, emitted as
   `std::ptr::read_volatile` and `std::ptr::write_volatile`.
 - file-scope `cir.global` integer and floating scalar values with constant
   initializers, emitted as Rust `static mut` items.

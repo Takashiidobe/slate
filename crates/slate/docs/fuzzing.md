@@ -49,8 +49,8 @@ From that state it emits multi-function programs with:
 - scoped locals passed as call arguments;
 - `for`/`while` accumulation loops, fixed-size primitive scalar arrays, local
   pointer mutation and pointer arithmetic, fixed-width typedef locals,
-  structs/unions with primitive scalar fields, `sizeof`, `volatile` locals,
-  `static` primitive globals, and enum constants;
+  structs/unions with primitive scalar fields, `sizeof`, volatile-qualified
+  primitive scalar values, `static` primitive globals, and enum constants;
 - `main` that prints every function's result with `printf("%d\n", ...)`.
 
 Everything stays inside the subset Slate can translate today (see
