@@ -3,13 +3,15 @@
 # This is intentionally smaller than grammar.cf and should only include C that
 # Slate can currently translate.
 
-<program> ::= <include> "\n" <enum_decl> "\n" <union_decl> "\n" <helper_fn> "\n" <loop_fn> "\n" <array_fn> "\n" <union_fn> "\n" <main_fn> ;
+<program> ::= <include> "\n" <enum_decl> "\n" <union_decl> "\n" <struct_decl> "\n" <helper_fn> "\n" <loop_fn> "\n" <array_fn> "\n" <union_fn> "\n" <struct_fn> "\n" <main_fn> ;
 
 <include> ::= "#include <stdio.h>\n" ;
 
 <enum_decl> ::= "enum FuzzEnum {\n    FuzzZero,\n    FuzzOne,\n    FuzzFive = " <five> ",\n    FuzzSix,\n    FuzzNegative = -2,\n    FuzzNegativeNext\n};\n" ;
 
 <union_decl> ::= "union FuzzPair {\n    int left;\n    int right;\n};\n" ;
+
+<struct_decl> ::= "struct FuzzStruct {\n    int left;\n    int right;\n};\n" ;
 
 <helper_fn> ::= "static int helper(int a, int b) {\n    int c = a + b;\n    return c;\n}\n" ;
 
@@ -19,12 +21,15 @@
 
 <union_fn> ::= "static int union_pick(int a, int b) {\n    union FuzzPair p;\n    p.left = a;\n    p.right = b;\n    return p.left;\n}\n" ;
 
-<main_fn> ::= "int main(void) {\n" <printf_helper> <printf_loop> <printf_array> <printf_union> <printf_enum> "    return 0;\n}\n" ;
+<struct_fn> ::= "static int struct_sum(int a, int b) {\n    struct FuzzStruct p;\n    p.left = a;\n    p.right = b;\n    return p.left + p.right;\n}\n" ;
+
+<main_fn> ::= "int main(void) {\n" <printf_helper> <printf_loop> <printf_array> <printf_union> <printf_struct> <printf_enum> "    return 0;\n}\n" ;
 
 <printf_helper> ::= "    printf(\"%d\\n\", helper(" <small_int> ", " <small_int> "));\n" ;
 <printf_loop> ::= "    printf(\"%d\\n\", loop_sum(" <loop_bound> "));\n" ;
 <printf_array> ::= "    printf(\"%d\\n\", array_pick(" <array_index> "));\n" ;
 <printf_union> ::= "    printf(\"%d\\n\", union_pick(" <small_int> ", " <small_int> "));\n" ;
+<printf_struct> ::= "    printf(\"%d\\n\", struct_sum(" <small_int> ", " <small_int> "));\n" ;
 <printf_enum> ::= "    printf(\"%d\\n\", " <enum_value> ");\n" ;
 
 <small_int> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;

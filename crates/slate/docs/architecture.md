@@ -112,13 +112,12 @@ Use this order:
    `libc`, and `unsafe` are acceptable.
 8. Run `cargo fmt` and `cargo test`.
 
-For structs specifically, the likely shape is:
+For structs specifically, the baseline shape is:
 
 - Read `RecordDecl` / `FieldDecl` from Clang AST.
 - Emit a Rust `#[repr(C)] struct` item with C-compatible field types.
-- Teach CIR lowering to map field/address/member operations to conservative
-  Rust field access or raw-pointer access.
-- Add layout-sensitive tests before attempting any idiomatic rewrite.
+- Map simple `cir.get_member` operations to conservative Rust field access.
+- Add broader and layout-sensitive tests before attempting any idiomatic rewrite.
 
 Do not make a feature pass produce prettier Rust as part of baseline lowering.
 First make it compile and match C behavior.
