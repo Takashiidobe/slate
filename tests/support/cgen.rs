@@ -9,7 +9,7 @@
 //!
 //! Everything it emits is restricted to the subset Slate can translate today
 //! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
-//! `float`/`double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`,
+//! `float`/`double`/`long double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`,
 //! arrays, pointers, structs, unions, typedef aliases, fixed-width typedefs,
 //! `_Bool`/`bool`, `sizeof`, type qualifiers, static globals, enum constants, and
 //! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
@@ -113,6 +113,7 @@ struct Gen {
     has_bool: bool,
     has_qualified_types: bool,
     has_function_pointer: bool,
+    has_long_double: bool,
 }
 
 /// Generate a complete, self-contained C program for `seed`.
@@ -136,6 +137,7 @@ pub fn generate(seed: u64) -> String {
         has_bool: false,
         has_qualified_types: false,
         has_function_pointer: false,
+        has_long_double: false,
     };
     g.program();
     g.out
@@ -155,6 +157,7 @@ impl Gen {
         self.has_bool = self.rng.chance(70);
         self.has_qualified_types = self.rng.chance(70);
         self.has_function_pointer = self.rng.chance(70);
+        self.has_long_double = self.rng.chance(70);
 
         if self.has_bool {
             self.line("#include <stdbool.h>");
@@ -200,6 +203,9 @@ impl Gen {
         }
         if self.has_function_pointer {
             self.emit_function_pointer_fns();
+        }
+        if self.has_long_double {
+            self.emit_long_double_fn();
         }
 
         // The static-counter function is emitted verbatim and, crucially, is
@@ -372,6 +378,14 @@ impl Gen {
         self.blank();
         self.line("static int fuzz_fp_apply(int (*op)(int, int), int lhs, int rhs) {");
         self.line("    return op(lhs, rhs);");
+        self.line("}");
+        self.blank();
+    }
+
+    fn emit_long_double_fn(&mut self) {
+        self.line("static int fuzz_long_double_mix(long double a, long double b) {");
+        self.line("    long double c = (a + b) / 2.0L;");
+        self.line("    return (int)(c * 3.0L);");
         self.line("}");
         self.blank();
     }
@@ -665,6 +679,9 @@ impl Gen {
         if self.has_function_pointer {
             self.emit_function_pointer_use();
         }
+        if self.has_long_double {
+            self.emit_long_double_use();
+        }
         self.emit_array_use();
         self.emit_pointer_use();
 
@@ -780,6 +797,13 @@ impl Gen {
         self.line("int (*fp)(int, int) = fuzz_fp_add;");
         self.printf("fp(2, 3)");
         self.printf("fuzz_fp_apply(fp, 4, 5)");
+    }
+
+    fn emit_long_double_use(&mut self) {
+        self.line("long double lda = 3.0L;");
+        self.line("long double ldb = 5.0L;");
+        self.printf("fuzz_long_double_mix(lda, ldb)");
+        self.printf("(int)((long double)7 / 2.0L)");
     }
 
     // Floats print through the same libc::printf on both sides, so `%f` output
@@ -1024,6 +1048,7 @@ mod tests {
                 has_bool: false,
                 has_qualified_types: false,
                 has_function_pointer: false,
+                has_long_double: false,
             };
             g.program();
             for f in &g.funcs {
@@ -1132,5 +1157,15 @@ mod tests {
         assert!(corpus.contains("int (*fp)(int, int) = fuzz_fp_add;"));
         assert!(corpus.contains("fp(2, 3)"));
         assert!(corpus.contains("fuzz_fp_apply(fp, 4, 5)"));
+    }
+
+    #[test]
+    fn emits_long_double_uses() {
+        let corpus = (0..512u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("static int fuzz_long_double_mix(long double a, long double b)"));
+        assert!(corpus.contains("long double c = (a + b) / 2.0L;"));
+        assert!(corpus.contains("long double lda = 3.0L;"));
+        assert!(corpus.contains("fuzz_long_double_mix(lda, ldb)"));
+        assert!(corpus.contains("(int)((long double)7 / 2.0L)"));
     }
 }

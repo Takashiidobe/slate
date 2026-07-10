@@ -36,6 +36,9 @@ small C subset. This is the supported fixture-level surface today:
   operators `+`, `-`, `*`, `/`, `%`.
 - `float`/`double` parameters, locals, return values, and constants, mapped to
   Rust `f32`/`f64`, with `+`/`-`/`*`/`/`, comparisons, and int/float casts.
+- `long double` parameters, locals, return values, constants, arithmetic, and
+  casts, currently mapped to Rust `f64` for baseline arithmetic rather than
+  ABI-exact extended precision.
 - calls, including `printf` lowered through `libc::printf` (`%d` and `%f`).
 - string literals used by `printf`.
 - `for` loops represented as conservative Rust `loop { ... break ... }`.
@@ -98,6 +101,8 @@ The current fixtures are:
 - `stdint_types.c` — `<stdint.h>` fixed-width typedefs and `<stddef.h>` `size_t`.
 - `floats.c` — `float`/`double` locals, params, arithmetic, casts, and `%f`
   printing.
+- `long_double.c` — `long double` locals, params, return values, arithmetic,
+  and casts.
 - `chars.c` — `char`/`signed char`/`unsigned char` locals, params, arithmetic,
   char literals, and `%c`/`%d` printing.
 - `shorts.c` — `short`/`unsigned short` locals, params, arithmetic, and return.
@@ -135,7 +140,7 @@ Important gaps remain:
 - more arithmetic, bitwise, logical, and assignment operators.
 - function prototypes, declarations across translation units, and headers beyond
   what Clang resolves for the fixture.
-- `long double`, hex float literals, and float math beyond `+`/`-`/`*`/`/`.
+- hex float literals and float math beyond `+`/`-`/`*`/`/`.
 - string operations and varargs beyond direct `printf` calls.
 - idiomatic Rust cleanup such as `println!`, temp removal, references, slices,
   and safe ownership.

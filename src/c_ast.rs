@@ -483,6 +483,8 @@ fn parse_c_type(s: &str) -> CType {
         CType::Float { bits: 32 }
     } else if s == "double" {
         CType::Float { bits: 64 }
+    } else if s == "long double" {
+        CType::Float { bits: 80 }
     } else if s.contains("unsigned") {
         CType::Int {
             signed: false,
@@ -1305,6 +1307,19 @@ mod tests {
                     bits: 32
                 }
             ]
+        );
+    }
+
+    #[test]
+    fn parses_long_double_source_type() {
+        assert_eq!(parse_c_type("long double"), CType::Float { bits: 80 });
+        assert_eq!(
+            parse_function_qual_type("long double (long double)").0,
+            CType::Float { bits: 80 }
+        );
+        assert_eq!(
+            parse_function_qual_type("long double (long double)").1,
+            vec![CType::Float { bits: 80 }]
         );
     }
 }
