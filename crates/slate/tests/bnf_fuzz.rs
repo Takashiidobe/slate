@@ -14,29 +14,6 @@ enum Symbol {
     Nonterminal(String),
 }
 
-#[derive(Debug, Clone)]
-struct Rng {
-    state: u64,
-}
-
-impl Rng {
-    fn new(seed: u64) -> Self {
-        Self { state: seed }
-    }
-
-    fn next(&mut self) -> u64 {
-        self.state = self
-            .state
-            .wrapping_mul(6364136223846793005)
-            .wrapping_add(1442695040888963407);
-        self.state
-    }
-
-    fn choose(&mut self, len: usize) -> usize {
-        (self.next() as usize) % len
-    }
-}
-
 fn parse_grammar(src: &str) -> Result<Grammar, String> {
     let mut rules = BTreeMap::new();
     for (line_no, raw) in src.lines().enumerate() {
@@ -165,65 +142,72 @@ fn split_alternatives(src: &str) -> Vec<&str> {
     parts
 }
 
-fn expand(grammar: &Grammar, start: &str, rng: &mut Rng) -> Result<String, String> {
-    expand_symbol(grammar, &Symbol::Nonterminal(start.into()), rng, 0)
-}
-
-fn expand_symbol(
-    grammar: &Grammar,
-    symbol: &Symbol,
-    rng: &mut Rng,
-    depth: usize,
-) -> Result<String, String> {
-    if depth > 64 {
-        return Err("grammar expansion exceeded depth limit".into());
-    }
-    match symbol {
-        Symbol::Terminal(text) => Ok(text.clone()),
-        Symbol::Nonterminal(name) => {
-            let alternatives = grammar
-                .rules
-                .get(name)
-                .ok_or_else(|| format!("unknown nonterminal <{name}>"))?;
-            let alt = &alternatives[rng.choose(alternatives.len())];
-            let mut out = String::new();
-            for symbol in alt {
-                out.push_str(&expand_symbol(grammar, symbol, rng, depth + 1)?);
-            }
-            Ok(out)
-        }
-    }
-}
-
+/// `c.bnf` is a reference grammar for Slate's supported C subset, not a program
+/// generator (that is `support::cgen`). These tests keep it honest: it must
+/// parse, expose the expected top-level rules, and be internally closed — every
+/// nonterminal referenced on a right-hand side must be defined somewhere.
 #[test]
 fn parses_subset_bnf() {
     let grammar = parse_grammar(include_str!("../c.bnf")).expect("parse c.bnf");
-    assert!(grammar.rules.contains_key("program"));
-    assert!(grammar.rules.contains_key("array_fn"));
-    assert!(grammar.rules.contains_key("union_decl"));
-    assert!(grammar.rules.contains_key("struct_decl"));
-    assert!(grammar.rules.contains_key("sizeof_fn"));
-    assert!(grammar.rules.contains_key("volatile_fn"));
+    for rule in [
+        "program",
+        "function",
+        "stmt",
+        "expr",
+        "struct_decl",
+        "union_decl",
+        "enum_decl",
+        "global_decl",
+        "for_loop",
+        "while_loop",
+        "sizeof",
+    ] {
+        assert!(grammar.rules.contains_key(rule), "missing rule <{rule}>");
+    }
 }
 
 #[test]
-fn bnf_generated_differential() {
-    let cases = std::env::var("SLATE_FUZZ_CASES")
+fn grammar_references_are_defined() {
+    let grammar = parse_grammar(include_str!("../c.bnf")).expect("parse c.bnf");
+    let mut undefined = Vec::new();
+    for (lhs, alternatives) in &grammar.rules {
+        for alt in alternatives {
+            for symbol in alt {
+                if let Symbol::Nonterminal(name) = symbol {
+                    if !grammar.rules.contains_key(name) {
+                        undefined.push(format!("<{name}> (used in <{lhs}>)"));
+                    }
+                }
+            }
+        }
+    }
+    assert!(
+        undefined.is_empty(),
+        "undefined nonterminals in c.bnf:\n{}",
+        undefined.join("\n")
+    );
+}
+
+/// Primary fuzzer: generate multi-function C programs with scoped variables and
+/// composed expressions, then require the translated Rust to match the original
+/// C on stdout and exit code. Seeds are deterministic, so any failure reports a
+/// seed that reproduces the exact program (also written under `target/`).
+#[test]
+fn generator_differential() {
+    let cases: u64 = std::env::var("SLATE_FUZZ_CASES")
         .ok()
         .and_then(|s| s.parse().ok())
         .unwrap_or(8);
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let tmp = manifest.join("target/bnf-fuzz");
-    std::fs::create_dir_all(&tmp).expect("create bnf fuzz dir");
-    let grammar = parse_grammar(include_str!("../c.bnf")).expect("parse c.bnf");
+    let tmp = manifest.join("target/cgen-fuzz");
+    std::fs::create_dir_all(&tmp).expect("create cgen fuzz dir");
 
     let mut failures = Vec::new();
     for seed in 0..cases {
-        let name = format!("bnf_seed_{seed:04}");
-        let mut rng = Rng::new(0x5eed_f00d ^ seed as u64);
+        let name = format!("cgen_seed_{seed:04}");
         let c_src = tmp.join(format!("{name}.c"));
         let rs_src = tmp.join(format!("{name}.generated.rs"));
-        let program = expand(&grammar, "program", &mut rng).expect("expand grammar");
+        let program = support::cgen::generate(seed);
         std::fs::write(&c_src, program).expect("write generated c");
 
         match support::translate(&c_src, &rs_src)
@@ -231,7 +215,10 @@ fn bnf_generated_differential() {
         {
             Ok(()) => eprintln!("ok    {name}"),
             Err(e) => {
-                eprintln!("FAIL  {name}");
+                eprintln!(
+                    "FAIL  {name}  (reproduce with seed {seed}, see {})",
+                    c_src.display()
+                );
                 failures.push(format!("[{name}] {e}"));
             }
         }
@@ -239,7 +226,7 @@ fn bnf_generated_differential() {
 
     if !failures.is_empty() {
         panic!(
-            "{} of {} BNF-generated programs failed:\n\n{}",
+            "{} of {} generated programs failed:\n\n{}",
             failures.len(),
             cases,
             failures.join("\n\n")
