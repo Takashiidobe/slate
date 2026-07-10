@@ -314,7 +314,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.store" => self.lower_store(op),
             "cir.load" => self.lower_load(op),
             "cir.const" => self.lower_const(op),
-            "cir.add" => self.lower_binary(op, "+"),
+            "cir.add" => self.lower_int_add(op),
             "cir.fadd" => self.lower_binary(op, "+"),
             "cir.fsub" => self.lower_binary(op, "-"),
             "cir.fmul" => self.lower_binary(op, "*"),
@@ -484,6 +484,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
+    // C unsigned overflow wraps (defined); Rust `+` panics in debug. Emit
+    // wrapping arithmetic for unsigned types so both agree. Signed overflow is
+    // UB in C, so plain `+` stays for signed and keeps output C-shaped.
+    fn lower_int_add(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let lhs = self.render_operand(&op.operands[0]);
+        let rhs = self.render_operand(&op.operands[1]);
+        let ty = op_result_type(op);
+        let expr = if self.is_unsigned(ty) {
+            format!("({lhs}).wrapping_add({rhs})")
+        } else {
+            format!("({lhs} + {rhs})")
+        };
+        self.materialize(result, expr, ty);
+    }
+
     fn lower_inc(&mut self, op: &Op) {
         let Some(result) = op.results.first() else {
             return;
@@ -492,7 +513,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let value = self.render_operand(value);
-        self.materialize(result, format!("({value} + 1)"), op_result_type(op));
+        let ty = op_result_type(op);
+        let expr = if self.is_unsigned(ty) {
+            format!("({value}).wrapping_add(1)")
+        } else {
+            format!("({value} + 1)")
+        };
+        self.materialize(result, expr, ty);
+    }
+
+    fn is_unsigned(&self, ty: Option<&str>) -> bool {
+        ty.map(|t| self.parent.rust_type(t).starts_with('u'))
+            .unwrap_or(false)
     }
 
     fn lower_cmp(&mut self, op: &Op) {

@@ -104,6 +104,7 @@ struct Gen {
     has_global: bool,
     has_float: bool,
     has_char: bool,
+    has_wideint: bool,
 }
 
 /// Generate a complete, self-contained C program for `seed`.
@@ -121,6 +122,7 @@ pub fn generate(seed: u64) -> String {
         has_global: false,
         has_float: false,
         has_char: false,
+        has_wideint: false,
     };
     g.program();
     g.out
@@ -134,6 +136,7 @@ impl Gen {
         self.has_global = self.rng.chance(70);
         self.has_float = self.rng.chance(70);
         self.has_char = self.rng.chance(70);
+        self.has_wideint = self.rng.chance(70);
 
         self.line("#include <stdio.h>");
         self.blank();
@@ -408,6 +411,9 @@ impl Gen {
         if self.has_char {
             self.emit_char_use();
         }
+        if self.has_wideint {
+            self.emit_wideint_use();
+        }
         self.emit_array_use();
 
         self.line("return 0;");
@@ -497,12 +503,47 @@ impl Gen {
         self.printf_char("letter");
     }
 
+    // short/long/long long map to Rust i16/i64 and unsigned variants to
+    // u16/u32/u64. short arithmetic promotes to int (so small operands never
+    // overflow); unsigned overflow is defined-wrap on both sides, matched by
+    // Slate's wrapping_add lowering. Each value prints with the width-correct
+    // conversion so C and Rust emit identical bytes.
+    fn emit_wideint_use(&mut self) {
+        let a = self.rng.int_in(0, 10000);
+        let b = self.rng.int_in(0, 10000);
+        self.line(&format!("short sha = {a};"));
+        self.line(&format!("unsigned short shb = {b};"));
+        self.line("short shc = sha + shb;");
+        self.printf("shc");
+        self.printf("shb");
+
+        let u = self.rng.int_in(0, CONST_MAX);
+        self.line(&format!("unsigned int uia = 4000000000u + {u}u;"));
+        self.printf_fmt("%u", "uia");
+
+        let la = self.rng.int_in(0, CONST_MAX);
+        self.line(&format!("long lla = 5000000000L + {la};"));
+        self.line("unsigned long lua = 9000000000UL;");
+        self.printf_fmt("%ld", "lla");
+        self.printf_fmt("%lu", "lua");
+
+        let lb = self.rng.int_in(0, CONST_MAX);
+        self.line(&format!("long long llb = 9000000000000LL + {lb};"));
+        self.line("unsigned long long llub = 18000000000000ULL;");
+        self.printf_fmt("%lld", "llb");
+        self.printf_fmt("%llu", "llub");
+    }
+
     fn printf(&mut self, expr: &str) {
         self.line(&format!("printf(\"%d\\n\", {expr});"));
     }
 
     fn printf_char(&mut self, expr: &str) {
         self.line(&format!("printf(\"%c\\n\", {expr});"));
+    }
+
+    fn printf_fmt(&mut self, spec: &str, expr: &str) {
+        self.line(&format!("printf(\"{spec}\\n\", {expr});"));
     }
 
     fn printf_float(&mut self, expr: &str) {
@@ -611,6 +652,7 @@ mod tests {
                 has_global: false,
                 has_float: false,
                 has_char: false,
+                has_wideint: false,
             };
             g.program();
             for f in &g.funcs {
