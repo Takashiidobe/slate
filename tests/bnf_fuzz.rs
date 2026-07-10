@@ -202,6 +202,7 @@ fn parses_subset_bnf() {
     assert!(grammar.rules.contains_key("array_fn"));
     assert!(grammar.rules.contains_key("union_decl"));
     assert!(grammar.rules.contains_key("struct_decl"));
+    assert!(grammar.rules.contains_key("sizeof_fn"));
 }
 
 #[test]
