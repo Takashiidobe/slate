@@ -26,7 +26,7 @@ impl<'a> Parser<'a> {
             if self.eof() {
                 break;
             }
-            if self.peek() == Some('!') && self.line_contains_alias() {
+            if matches!(self.peek(), Some('!') | Some('#')) && self.line_contains_alias() {
                 if let Some((name, value)) = self.parse_alias_line() {
                     aliases.insert(name, value);
                 }

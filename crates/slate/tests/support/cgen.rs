@@ -10,7 +10,7 @@
 //! Everything it emits is restricted to the subset Slate can translate today
 //! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
 //! `float`/`double`/`long double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`,
-//! `double _Complex` `+`/`-` with `__real__`/`__imag__` extraction,
+//! `double _Complex` `+`/`-`/`*`/`/` with `__real__`/`__imag__` extraction,
 //! arrays, pointers, structs, unions, typedef aliases, fixed-width typedefs,
 //! `_Bool`/`bool`, `sizeof`, type qualifiers, static globals, enum constants, and
 //! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
@@ -397,13 +397,18 @@ impl Gen {
         self.blank();
     }
 
-    // Complex mul/div lower to __muldc3/__divdc3 (external runtime), so the
-    // generator sticks to `+`/`-` and real/imag extraction.
+    // Complex `*`/`/` lower to the __muldc3/__divdc3 runtime; Slate calls the same
+    // libgcc symbols, so C and Rust agree bit-for-bit. All four ops plus real/imag
+    // extraction are exercised here.
     fn emit_complex_fn(&mut self) {
         self.line("static int fuzz_complex_mix(double _Complex a, double _Complex b) {");
         self.line("    double _Complex c = a + b;");
         self.line("    double _Complex d = a - b;");
-        self.line("    return (int)__real__ c + (int)__imag__ d;");
+        self.line("    double _Complex p = a * b;");
+        self.line("    double _Complex q = a / b;");
+        self.line(
+            "    return (int)__real__ c + (int)__imag__ d + (int)__real__ p + (int)__imag__ q;",
+        );
         self.line("}");
         self.blank();
     }
@@ -834,6 +839,12 @@ impl Gen {
         self.line("double _Complex cplxs = cplxa + cplxb;");
         self.printf("(int)__real__ cplxs");
         self.printf("(int)__imag__ cplxs");
+        self.line("double _Complex cplxp = cplxa * cplxb;");
+        self.printf("(int)__real__ cplxp");
+        self.printf("(int)__imag__ cplxp");
+        self.line("double _Complex cplxq = cplxa / cplxb;");
+        self.printf("(int)(100.0 * __real__ cplxq)");
+        self.printf("(int)(100.0 * __imag__ cplxq)");
     }
 
     // Floats print through the same libc::printf on both sides, so `%f` output
@@ -1207,8 +1218,12 @@ mod tests {
             corpus.contains("static int fuzz_complex_mix(double _Complex a, double _Complex b)")
         );
         assert!(corpus.contains("double _Complex c = a + b;"));
+        assert!(corpus.contains("double _Complex p = a * b;"));
+        assert!(corpus.contains("double _Complex q = a / b;"));
         assert!(corpus.contains("double _Complex cplxa = __builtin_complex(3.0, 5.0);"));
         assert!(corpus.contains("fuzz_complex_mix(cplxa, cplxb)"));
         assert!(corpus.contains("(int)__real__ cplxs"));
+        assert!(corpus.contains("double _Complex cplxp = cplxa * cplxb;"));
+        assert!(corpus.contains("(int)(100.0 * __imag__ cplxq)"));
     }
 }
