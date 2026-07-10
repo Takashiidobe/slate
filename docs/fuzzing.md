@@ -47,8 +47,9 @@ From that state it emits multi-function programs with:
 - expressions composed by `+`, `+=`, and `++` over live variables, constants, and
   nested calls to earlier functions;
 - scoped locals passed as call arguments;
-- `for`/`while` accumulation loops, fixed-size `int` arrays, structs, unions,
-  `sizeof`, `volatile` locals, `static` primitive globals, and enum constants;
+- `for`/`while` accumulation loops, fixed-size `int` arrays, structs/unions with
+  primitive scalar fields, `sizeof`, `volatile` locals, `static` primitive
+  globals, and enum constants;
 - `main` that prints every function's result with `printf("%d\n", ...)`.
 
 Everything stays inside the subset Slate can translate today (see

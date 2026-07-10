@@ -38,9 +38,9 @@ small C subset. This is the supported fixture-level surface today:
 - `while` loops represented as conservative Rust `loop { ... break ... }`.
 - C enum constants with implicit values and explicit `= number` values, emitted
   as Rust integer `const` items.
-- simple C unions with integer fields, emitted as `#[repr(C)] union` plus
+- simple C unions with primitive scalar fields, emitted as `#[repr(C)] union` plus
   unsafe field reads/writes.
-- simple C structs with integer fields, emitted as `#[repr(C)] struct`.
+- simple C structs with primitive scalar fields, emitted as `#[repr(C)] struct`.
 - fixed-size local `int` arrays with indexed stores and loads, emitted as Rust
   arrays.
 - `sizeof` expressions that Clang lowers to integer CIR constants.
@@ -63,6 +63,8 @@ The current fixtures are:
 - `enums.c` — enum constants with implicit and explicit values.
 - `unions.c` — basic union declaration, field writes, and field reads.
 - `structs.c` — basic struct declaration, field writes, and field reads.
+- `non_int_fields.c` — `char`/`unsigned char`/`float`/`double` struct and union
+  fields.
 - `arrays.c` — fixed-size local arrays and indexed element access.
 - `sizeof.c` — `sizeof` over primitive, array, struct, union, and expression
   forms.
@@ -102,8 +104,8 @@ Important gaps remain:
   (e.g. `_Bool`, `__int128`, and the fixed-width `<stdint.h>` typedefs).
 - bitwise, logical, and assignment operators beyond `+=`; wider arithmetic and
   casts beyond the currently exercised cases.
-- pointers, broader aggregate coverage, field access beyond the current simple
-  record cases, and pointer arithmetic.
+- pointers, broader aggregate coverage beyond primitive scalar fields, and
+  pointer arithmetic.
 - globals beyond file-scope `static` primitive scalar globals with constant
   initializers and constant strings used by `printf`.
 - `if`, `switch`, `break`, `continue`, and `goto`.

@@ -28,7 +28,7 @@
 <struct_decl> ::= "struct" <ident> "{" <field_list> "};" ;
 <union_decl> ::= "union" <ident> "{" <field_list> "};" ;
 <field_list> ::= <field> <field_list> | <field> ;
-<field> ::= "int" <ident> ";" ;
+<field> ::= <type> <ident> ";" ;
 
 <global_decl> ::= "static" <type> <ident> "=" <const> ";" ;
 
