@@ -43,6 +43,8 @@ The lowerer currently handles the fixture subset:
 - source enum constants from Clang AST, emitted as Rust `const` items.
 - source union records from Clang AST, emitted as `#[repr(C)] union` items with
   basic `cir.get_member` field access.
+- source struct records from Clang AST, emitted as `#[repr(C)] struct` items
+  with basic `cir.get_member` field access.
 - fixed-size CIR arrays, emitted as Rust arrays with basic `cir.get_element`
   indexed loads and stores.
 
@@ -57,6 +59,7 @@ Current C fixture coverage:
 | `loop_sum.c` | `for` loops, comparisons, increments, compound addition |
 | `enums.c` | enum constants, implicit values, explicit positive and negative values |
 | `unions.c` | union declaration, integer fields, field writes, field reads |
+| `structs.c` | struct declaration, integer fields, field writes, field reads |
 | `arrays.c` | fixed-size local arrays, indexed stores, indexed loads |
 
 ## Stage notes
@@ -104,8 +107,8 @@ The next baseline features should be added one fixture at a time:
 - More scalar operations: subtraction, multiplication, division, modulo, bitwise
   ops, logical ops, unary negation, and explicit casts.
 - Full control flow: `if`, `while`, `break`, `continue`, `switch`, and `goto`.
-- Aggregate types: broader arrays, structs, broader unions, more field access,
-  initialization, and layout-sensitive tests.
+- Aggregate types: broader arrays, broader structs and unions, more field
+  access, initialization, and layout-sensitive tests.
 - Pointers: address-of, dereference, pointer arithmetic, null, arrays as
   pointers, and const-correctness.
 - Globals: non-string globals, static locals, initialization, and linkage.

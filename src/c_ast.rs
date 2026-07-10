@@ -814,6 +814,36 @@ mod tests {
     }
 
     #[test]
+    fn extracts_struct_records_from_clang_json() {
+        let ast = r#"
+{
+  "kind": "TranslationUnitDecl",
+  "inner": [
+    {
+      "kind": "RecordDecl",
+      "name": "Pair",
+      "tagUsed": "struct",
+      "completeDefinition": true,
+      "loc": {"file": "structs.c", "line": 1, "col": 8},
+      "inner": [
+        {"kind": "FieldDecl", "name": "left", "type": {"qualType": "int"}},
+        {"kind": "FieldDecl", "name": "right", "type": {"qualType": "int"}}
+      ]
+    }
+  ]
+}
+"#;
+
+        let unit = parse_json(ast, "structs.c").unwrap();
+        assert_eq!(unit.records.len(), 1);
+        assert_eq!(unit.records[0].name, "Pair");
+        assert_eq!(unit.records[0].kind, RecordKind::Struct);
+        assert_eq!(unit.records[0].fields.len(), 2);
+        assert_eq!(unit.records[0].fields[0].name, "left");
+        assert_eq!(unit.records[0].fields[1].name, "right");
+    }
+
+    #[test]
     fn matches_relative_ast_file_against_absolute_source_file() {
         let ast = r#"
 {

@@ -152,10 +152,15 @@ impl<'a> Lowerer<'a> {
     }
 
     fn lower_record(&mut self, record: &crate::c_ast::Record) -> Option<String> {
-        if record.kind != RecordKind::Union || record.fields.is_empty() {
+        if record.fields.is_empty() {
             return None;
         }
-        let mut text = format!("#[repr(C)]\nunion {} {{\n", sanitize_ident(&record.name));
+        let mut text = match record.kind {
+            RecordKind::Struct => {
+                format!("#[repr(C)]\nstruct {} {{\n", sanitize_ident(&record.name))
+            }
+            RecordKind::Union => format!("#[repr(C)]\nunion {} {{\n", sanitize_ident(&record.name)),
+        };
         for field in &record.fields {
             text.push_str(&format!(
                 "    {}: {},\n",
@@ -616,13 +621,32 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn default_value(&self, ty: &str) -> String {
         if let Some(record) = self.parent.records.get(ty) {
-            if let Some(field) = record.fields.first() {
-                return format!(
-                    "{} {{ {}: {} }}",
-                    sanitize_ident(&record.name),
-                    sanitize_ident(&field.name),
-                    default_c_value(&field.ty)
-                );
+            match record.kind {
+                RecordKind::Struct => {
+                    let fields = record
+                        .fields
+                        .iter()
+                        .map(|field| {
+                            format!(
+                                "{}: {}",
+                                sanitize_ident(&field.name),
+                                default_c_value(&field.ty)
+                            )
+                        })
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    return format!("{} {{ {fields} }}", sanitize_ident(&record.name));
+                }
+                RecordKind::Union => {
+                    if let Some(field) = record.fields.first() {
+                        return format!(
+                            "{} {{ {}: {} }}",
+                            sanitize_ident(&record.name),
+                            sanitize_ident(&field.name),
+                            default_c_value(&field.ty)
+                        );
+                    }
+                }
             }
         }
         if let Some((inner, len)) = parse_cir_array_type(ty) {
