@@ -37,8 +37,12 @@ small C subset. This is the supported fixture-level surface today:
 - `float`/`double` parameters, locals, return values, and constants, mapped to
   Rust `f32`/`f64`, with `+`/`-`/`*`/`/`, comparisons, and int/float casts.
 - `long double` parameters, locals, return values, constants, arithmetic, and
-  casts, currently mapped to Rust `f64` for baseline arithmetic rather than
-  ABI-exact extended precision.
+  casts, mapped to a `#[repr(C, align(16))]` `LongDouble(f64)` newtype: ABI-exact
+  size/alignment with baseline `f64`-precision arithmetic (not extended precision).
+- `double`/`float _Complex` parameters, locals, return values, constants,
+  `+`/`-`, and `__real__`/`__imag__` extraction, mapped to a `#[repr(C)]`
+  `Complex<T>` newtype. Complex `*`/`/` (which lower to the `__muldc3`/`__divdc3`
+  runtime) are not yet supported.
 - calls, including `printf` lowered through `libc::printf` (`%d` and `%f`).
 - string literals used by `printf`.
 - `for` loops represented as conservative Rust `loop { ... break ... }`.
@@ -103,6 +107,8 @@ The current fixtures are:
   printing.
 - `long_double.c` — `long double` locals, params, return values, arithmetic,
   and casts.
+- `complex.c` — `double _Complex` locals, `+`/`-`, and `__real__`/`__imag__`
+  extraction.
 - `chars.c` — `char`/`signed char`/`unsigned char` locals, params, arithmetic,
   char literals, and `%c`/`%d` printing.
 - `shorts.c` — `short`/`unsigned short` locals, params, arithmetic, and return.
