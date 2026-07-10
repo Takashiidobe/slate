@@ -38,9 +38,20 @@ The lowerer currently handles the fixture subset:
 - `cir.get_global`, `cir.cast`, `cir.call`.
 - `cir.scope`, `cir.for`, `cir.condition`, `cir.yield`, `cir.return`.
 - global constant strings used by `printf`.
+- CIR integer aliases such as `!s32i = !cir.int<s, 32>`, mapped to Rust integer
+  primitives.
+- source enum constants from Clang AST, emitted as Rust `const` items.
 
 Unknown CIR ops emit a `todo!("cir.xyz")` expression and a diagnostic. That is
 intentional: failing loudly is better than silently dropping semantics.
+
+Current C fixture coverage:
+
+| Fixture | Covered behavior |
+| --- | --- |
+| `add.c` | `int` functions, params, locals, addition, returns, calls |
+| `loop_sum.c` | `for` loops, comparisons, increments, compound addition |
+| `enums.c` | enum constants, implicit values, explicit positive and negative values |
 
 ## Stage notes
 
@@ -59,8 +70,9 @@ semantics.
 
 `src/c_ast.rs` is a Clang AST oracle, not a handwritten C parser. It filters
 Clang's JSON dump down to source-file function definitions, extracts a compact
-model (`Function`, `Decl`, `Stmt`, `Expr`, `CType`, `Loc`), and preserves each
-function's raw JSON node for later features that need facts not yet modeled.
+model (`Enum`, `Function`, `Decl`, `Stmt`, `Expr`, `CType`, `Loc`), and
+preserves each function's raw JSON node for later features that need facts not
+yet modeled.
 
 ### lower
 
@@ -74,29 +86,29 @@ rewrites.
 A feature expands baseline C coverage. Examples: structs, arrays, pointer
 arithmetic, new arithmetic operators, globals, `if`, `switch`.
 
-Workflow:
+See [adding-features.md](adding-features.md) for the step-by-step workflow. The
+short version is: add a C fixture under `tests/fixtures/`, inspect CIR and Clang
+AST as needed, implement conservative baseline lowering, run `cargo test`, and
+refresh ignored generated fixtures with `cargo run -- emit-fixtures`.
 
-1. Add a C fixture under `tests/fixtures/` and a matching expected hand-written
-   `.rs` only if needed for the legacy differential test.
-2. Run `cargo test --test differential generated_differential -- --nocapture`
-   and confirm it fails for the missing feature.
-3. Inspect real CIR:
+## Known baseline gaps
 
-   ```bash
-   cargo run -- emit-cir tests/fixtures/<name>.c
-   ```
+The next baseline features should be added one fixture at a time:
 
-4. Inspect source facts:
-
-   ```bash
-   $SLATE_CLANG -Xclang -ast-dump=json -fsyntax-only tests/fixtures/<name>.c
-   ```
-
-5. If CIR has enough information, add a handler in `src/lower.rs`.
-6. If CIR lost needed source facts, extend `src/c_ast.rs` to extract them from
-   Clang JSON. Keep the raw JSON as an escape hatch.
-7. Keep the emitted Rust conservative and C-shaped.
-8. Run `cargo fmt` and `cargo test`.
+- More scalar operations: subtraction, multiplication, division, modulo, bitwise
+  ops, logical ops, unary negation, and explicit casts.
+- Full control flow: `if`, `while`, `break`, `continue`, `switch`, and `goto`.
+- Aggregate types: arrays, structs, unions, field access, initialization, and
+  layout-sensitive tests.
+- Pointers: address-of, dereference, pointer arithmetic, null, arrays as
+  pointers, and const-correctness.
+- Globals: non-string globals, static locals, initialization, and linkage.
+- Source model: typedefs, named enum types as variable types, prototypes, and
+  header-origin declarations.
+- Target model: signedness and width for all C integer spellings, enum
+  underlying type choices, pointer width, and ABI alignment.
+- Calls: non-`printf` libc functions, user prototypes without bodies, and
+  varargs beyond the direct `printf` fixture shape.
 
 For structs, start by extracting `RecordDecl` / `FieldDecl` from Clang AST, then
 emit `#[repr(C)]` Rust structs with C-compatible field types. Only after layout
@@ -107,15 +119,9 @@ and field access are correct should you attempt any idiomatic Rust rewrite.
 A fixup improves already-correct Rust. Examples: `printf -> println!`,
 collapsing retval temps, inlining single-use temps, or recovering `for` loops.
 
-Workflow:
-
-1. Start with a generated fixture that already passes differential testing.
-2. Add a test that proves output and exit code remain unchanged.
-3. Match a narrow Rust pattern. If the proof is weak, leave baseline Rust alone.
-4. Consult Clang AST/raw JSON only when the Rust pattern alone cannot prove the
-   rewrite.
-5. Keep the fixup optional in spirit: turning it off should still leave correct
-   baseline Rust.
+See [adding-features.md](adding-features.md) for the split between baseline
+language work and fixups. A fixup must start from generated Rust that already
+passes differential testing.
 
 For `printf -> println!`, only rewrite when the callee is known, the format
 argument is a constant C string, every format specifier is supported, and Rust
