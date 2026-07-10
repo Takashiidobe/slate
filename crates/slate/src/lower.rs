@@ -388,6 +388,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.call" => self.lower_call(op),
             "cir.return" => self.lower_return(op),
             "cir.scope" => self.lower_scope(op),
+            "cir.if" => self.lower_if(op),
             "cir.for" => self.lower_for(op),
             "cir.while" => self.lower_while(op),
             "cir.yield" | "cir.condition" => {}
@@ -917,6 +918,31 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.lower_region_ops(region);
         }
         self.indent -= 1;
+        self.emit_line("}");
+    }
+
+    fn lower_if(&mut self, op: &Op) {
+        let Some(cond) = op.operands.first() else {
+            self.emit_expr("todo!(\"cir.if\")".into());
+            return;
+        };
+        let cond = self.render_operand(cond);
+        self.emit_line(&format!("if {cond} {{"));
+        self.indent += 1;
+        if let Some(region) = op.regions.first() {
+            self.lower_region_ops(region);
+        }
+        self.indent -= 1;
+        let has_else = op
+            .regions
+            .get(1)
+            .is_some_and(|region| region.blocks.iter().any(|block| !block.ops.is_empty()));
+        if has_else {
+            self.emit_line("} else {");
+            self.indent += 1;
+            self.lower_region_ops(&op.regions[1]);
+            self.indent -= 1;
+        }
         self.emit_line("}");
     }
 

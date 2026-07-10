@@ -9,7 +9,7 @@
 //!
 //! Everything it emits is restricted to the subset Slate can translate today
 //! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
-//! `float`/`double`/`long double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`,
+//! `float`/`double`/`long double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`/`if`,
 //! `double _Complex` `+`/`-`/`*`/`/` with `__real__`/`__imag__` extraction,
 //! arrays, pointers, structs, unions, typedef aliases, fixed-width typedefs,
 //! `_Bool`/`bool`, `sizeof`, type qualifiers, static globals, enum constants, and
@@ -458,11 +458,12 @@ impl Gen {
     }
 
     fn emit_helper_stmt(&mut self) {
-        match self.rng.below(4) {
+        match self.rng.below(5) {
             0 => self.emit_decl_stmt(),
             1 => self.emit_assign_stmt(),
             2 => self.emit_compound_stmt(),
-            _ => self.emit_for_stmt(),
+            3 => self.emit_for_stmt(),
+            _ => self.emit_if_stmt(),
         }
     }
 
@@ -516,6 +517,49 @@ impl Gen {
 
         let acc_max = ((bound + 1) * step_max).min(VALUE_CAP);
         self.set_max_abs(&acc, acc_max);
+    }
+
+    /// `int r = <init>; if (<a> <cmp> <b>) { r = <x>; } else { r = <y>; }`
+    fn emit_if_stmt(&mut self) {
+        let r = self.fresh("r");
+        let (init, init_max) = self.gen_expr(0, DECL_BUDGET);
+        self.line(&format!("{} {r} = {init};", self.int_type()));
+        self.declare(&r, init_max);
+
+        let (lhs, _) = self.gen_expr(0, DECL_BUDGET);
+        let (rhs, _) = self.gen_expr(0, DECL_BUDGET);
+        let cmp = match self.rng.below(6) {
+            0 => "<",
+            1 => "<=",
+            2 => ">",
+            3 => ">=",
+            4 => "==",
+            _ => "!=",
+        };
+        self.line(&format!("if ({lhs} {cmp} {rhs}) {{"));
+        self.indent += 1;
+        self.push_scope();
+        let (then_expr, then_max) = self.gen_expr(0, DECL_BUDGET);
+        self.line(&format!("{r} = {then_expr};"));
+        self.pop_scope();
+        self.indent -= 1;
+
+        // With an else both branches reassign r; without one it may keep its init.
+        let other_max = if self.rng.chance(60) {
+            self.line("} else {");
+            self.indent += 1;
+            self.push_scope();
+            let (else_expr, else_max) = self.gen_expr(0, DECL_BUDGET);
+            self.line(&format!("{r} = {else_expr};"));
+            self.pop_scope();
+            self.indent -= 1;
+            self.line("}");
+            else_max
+        } else {
+            self.line("}");
+            init_max
+        };
+        self.set_max_abs(&r, then_max.max(other_max));
     }
 
     // ----- expressions -----
@@ -657,6 +701,9 @@ impl Gen {
         }
         if self.rng.chance(50) {
             self.emit_for_stmt();
+        }
+        if self.rng.chance(50) {
+            self.emit_if_stmt();
         }
 
         // Print each helper's result, feeding scoped values as arguments.

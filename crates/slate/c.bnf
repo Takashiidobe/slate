@@ -45,7 +45,7 @@
 # ----- statements -----
 
 <stmt_list> ::= <stmt> <stmt_list> | <stmt> ;
-<stmt> ::= <declaration> | <assignment> | <compound_assignment> | <for_loop> | <while_loop> | <call_stmt> | <return_stmt> ;
+<stmt> ::= <declaration> | <assignment> | <compound_assignment> | <for_loop> | <while_loop> | <if_stmt> | <call_stmt> | <return_stmt> ;
 
 <declaration> ::= <scalar_declaration> | <array_declaration> ;
 <scalar_declaration> ::= <type> <ident> "=" <expr> ";" ;
@@ -54,6 +54,8 @@
 <compound_assignment> ::= <lvalue> "+=" <expr> ";" ;
 <for_loop> ::= "for" "(" "int" <ident> "=" <expr> ";" <expr> ";" <ident> "++" ")" "{" <stmt_list> "}" ;
 <while_loop> ::= "while" "(" <expr> ")" "{" <stmt_list> "}" ;
+<if_stmt> ::= "if" "(" <expr> ")" "{" <stmt_list> "}" <else_clause> ;
+<else_clause> ::= "else" "{" <stmt_list> "}" | "else" <if_stmt> | "" ;
 <call_stmt> ::= <call> ";" ;
 <return_stmt> ::= "return" <expr> ";" | "return" ";" ;
 
