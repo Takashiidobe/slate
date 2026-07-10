@@ -1,6 +1,6 @@
 //! lower: combine the CIR Op-tree with the C AST oracle into Rust output.
 
-use crate::c_ast::Unit;
+use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{Item, Program};
@@ -11,6 +11,11 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
     let mut lowerer = Lowerer {
         ctx,
         aliases: cir.aliases.clone(),
+        records: c
+            .records
+            .iter()
+            .map(|record| (record.name.clone(), record.clone()))
+            .collect(),
         strings: BTreeMap::new(),
     };
     lowerer.lower_module(cir, c)
@@ -19,6 +24,7 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
 struct Lowerer<'a> {
     ctx: &'a mut Ctx,
     aliases: BTreeMap<String, String>,
+    records: BTreeMap<String, crate::c_ast::Record>,
     strings: BTreeMap<String, Vec<u8>>,
 }
 
@@ -27,10 +33,24 @@ struct FunctionLowerer<'a, 'b> {
     values: BTreeMap<String, Val>,
     slots: BTreeMap<String, String>,
     slot_types: BTreeMap<String, String>,
+    member_ptrs: BTreeMap<String, MemberPtr>,
+    element_ptrs: BTreeMap<String, ElementPtr>,
     temp_counter: usize,
     indent: usize,
     out: String,
     is_main: bool,
+}
+
+#[derive(Debug, Clone)]
+struct MemberPtr {
+    base: String,
+    field: String,
+}
+
+#[derive(Debug, Clone)]
+struct ElementPtr {
+    base: String,
+    index: String,
 }
 
 #[derive(Debug, Clone)]
@@ -64,6 +84,11 @@ impl<'a> Lowerer<'a> {
 
         for enm in &c.enums {
             if let Some(text) = self.lower_enum(enm) {
+                items.push(Item::Raw(text));
+            }
+        }
+        for record in &c.records {
+            if let Some(text) = self.lower_record(record) {
                 items.push(Item::Raw(text));
             }
         }
@@ -126,6 +151,22 @@ impl<'a> Lowerer<'a> {
         Some(text)
     }
 
+    fn lower_record(&mut self, record: &crate::c_ast::Record) -> Option<String> {
+        if record.kind != RecordKind::Union || record.fields.is_empty() {
+            return None;
+        }
+        let mut text = format!("#[repr(C)]\nunion {} {{\n", sanitize_ident(&record.name));
+        for field in &record.fields {
+            text.push_str(&format!(
+                "    {}: {},\n",
+                sanitize_ident(&field.name),
+                self.rust_c_type(&field.ty)
+            ));
+        }
+        text.push_str("}\n");
+        Some(text)
+    }
+
     fn lower_func(&mut self, op: &Op) -> Option<String> {
         let name = attr_str(op, "sym_name")?;
         let function_type = attr_str(op, "function_type").unwrap_or("");
@@ -159,6 +200,8 @@ impl<'a> Lowerer<'a> {
             values: BTreeMap::new(),
             slots: BTreeMap::new(),
             slot_types: BTreeMap::new(),
+            member_ptrs: BTreeMap::new(),
+            element_ptrs: BTreeMap::new(),
             temp_counter: 0,
             indent: 1,
             out: String::new(),
@@ -176,6 +219,48 @@ impl<'a> Lowerer<'a> {
 
     fn rust_type(&self, cir_ty: &str) -> String {
         rust_type_with_aliases(cir_ty, &self.aliases)
+    }
+
+    fn rust_c_type(&self, ty: &crate::c_ast::CType) -> String {
+        match ty {
+            crate::c_ast::CType::Void => "()".into(),
+            crate::c_ast::CType::Int {
+                signed: true,
+                bits: 8,
+            } => "i8".into(),
+            crate::c_ast::CType::Int {
+                signed: false,
+                bits: 8,
+            } => "u8".into(),
+            crate::c_ast::CType::Int {
+                signed: true,
+                bits: 16,
+            } => "i16".into(),
+            crate::c_ast::CType::Int {
+                signed: false,
+                bits: 16,
+            } => "u16".into(),
+            crate::c_ast::CType::Int {
+                signed: true,
+                bits: 32,
+            } => "i32".into(),
+            crate::c_ast::CType::Int {
+                signed: false,
+                bits: 32,
+            } => "u32".into(),
+            crate::c_ast::CType::Int {
+                signed: true,
+                bits: 64,
+            } => "i64".into(),
+            crate::c_ast::CType::Int {
+                signed: false,
+                bits: 64,
+            } => "u64".into(),
+            crate::c_ast::CType::Int { .. } => "i32".into(),
+            crate::c_ast::CType::Ptr(inner) => format!("*mut {}", self.rust_c_type(inner)),
+            crate::c_ast::CType::Array(inner, _) => format!("*mut {}", self.rust_c_type(inner)),
+            crate::c_ast::CType::Record(name) => sanitize_ident(name),
+        }
     }
 }
 
@@ -202,6 +287,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.inc" => self.lower_inc(op),
             "cir.cmp" => self.lower_cmp(op),
             "cir.get_global" => self.lower_get_global(op),
+            "cir.get_member" => self.lower_get_member(op),
+            "cir.get_element" => self.lower_get_element(op),
             "cir.cast" => self.lower_cast(op),
             "cir.call" => self.lower_call(op),
             "cir.return" => self.lower_return(op),
@@ -228,7 +315,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .unwrap_or_else(|| "i32".into());
         self.slots.insert(result.clone(), name.clone());
         self.slot_types.insert(result.clone(), ty.clone());
-        self.emit_line(&format!("let mut {name}: {ty} = {};", default_value(&ty)));
+        self.emit_line(&format!(
+            "let mut {name}: {ty} = {};",
+            self.default_value(&ty)
+        ));
     }
 
     fn lower_store(&mut self, op: &Op) {
@@ -237,7 +327,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let value = self.render_operand(&op.operands[0]);
         let ptr = &op.operands[1];
-        if let Some(slot) = self.slots.get(ptr) {
+        if let Some(member) = self.member_ptrs.get(ptr).cloned() {
+            self.emit_line(&format!(
+                "unsafe {{ {}.{} = {value}; }}",
+                member.base, member.field
+            ));
+        } else if let Some(element) = self.element_ptrs.get(ptr).cloned() {
+            self.emit_line(&format!(
+                "{}[({}) as usize] = {value};",
+                element.base, element.index
+            ));
+        } else if let Some(slot) = self.slots.get(ptr) {
             self.emit_line(&format!("{slot} = {value};"));
         } else {
             let ptr = self.render_operand(ptr);
@@ -252,9 +352,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(ptr) = op.operands.first() else {
             return;
         };
-        let value = match self.slots.get(ptr) {
-            Some(slot) => slot.clone(),
-            None => format!("unsafe {{ *{} }}", self.render_operand(ptr)),
+        let value = if let Some(member) = self.member_ptrs.get(ptr) {
+            format!("unsafe {{ {}.{} }}", member.base, member.field)
+        } else if let Some(element) = self.element_ptrs.get(ptr) {
+            format!("{}[({}) as usize]", element.base, element.index)
+        } else if let Some(slot) = self.slots.get(ptr) {
+            slot.clone()
+        } else {
+            format!("unsafe {{ *{} }}", self.render_operand(ptr))
         };
         self.materialize(result, value, op_result_type(op));
     }
@@ -328,6 +433,45 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .trim_matches('"')
             .to_string();
         self.values.insert(result.clone(), Val::Global(name));
+    }
+
+    fn lower_get_member(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(base_ptr) = op.operands.first() else {
+            return;
+        };
+        let Some(base) = self.slots.get(base_ptr).cloned() else {
+            self.parent.ctx.diagnostics.warn(
+                "lower: unsupported get_member base".to_string(),
+                op.loc.clone(),
+            );
+            return;
+        };
+        let field = sanitize_ident(attr_str(op, "name").unwrap_or(result));
+        self.member_ptrs
+            .insert(result.clone(), MemberPtr { base, field });
+    }
+
+    fn lower_get_element(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let base_ptr = &op.operands[0];
+        let Some(base) = self.slots.get(base_ptr).cloned() else {
+            self.parent.ctx.diagnostics.warn(
+                "lower: unsupported get_element base".to_string(),
+                op.loc.clone(),
+            );
+            return;
+        };
+        let index = self.render_operand(&op.operands[1]);
+        self.element_ptrs
+            .insert(result.clone(), ElementPtr { base, index });
     }
 
     fn lower_cast(&mut self, op: &Op) {
@@ -469,6 +613,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .and_then(|s| s.strip_suffix('>'))
             .map(|ty| self.parent.rust_type(ty))
     }
+
+    fn default_value(&self, ty: &str) -> String {
+        if let Some(record) = self.parent.records.get(ty) {
+            if let Some(field) = record.fields.first() {
+                return format!(
+                    "{} {{ {}: {} }}",
+                    sanitize_ident(&record.name),
+                    sanitize_ident(&field.name),
+                    default_c_value(&field.ty)
+                );
+            }
+        }
+        if let Some((inner, len)) = parse_cir_array_type(ty) {
+            return format!("[{}; {len}]", default_value(&inner));
+        }
+        if let Some((inner, len)) = parse_rust_array_type(ty) {
+            return format!("[{}; {len}]", default_value(inner));
+        }
+        default_value(ty).into()
+    }
 }
 
 fn region_ops(op: &Op) -> Vec<&Op> {
@@ -548,9 +712,41 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> S
         .and_then(|s| s.strip_suffix('>'))
     {
         format!("*mut {}", rust_type_with_aliases(inner, aliases))
+    } else if let Some((inner, len)) = parse_cir_array_type(ty) {
+        format!("[{}; {len}]", rust_type_with_aliases(&inner, aliases))
+    } else if let Some(name) = cir_record_name(ty) {
+        sanitize_ident(name)
     } else {
         "i32".into()
     }
+}
+
+fn parse_cir_array_type(ty: &str) -> Option<(String, u64)> {
+    let inner = ty
+        .trim()
+        .strip_prefix("!cir.array<")
+        .and_then(|s| s.strip_suffix('>'))?;
+    let (element, len) = inner.rsplit_once(" x ")?;
+    Some((element.trim().to_string(), len.trim().parse().ok()?))
+}
+
+fn parse_rust_array_type(ty: &str) -> Option<(&str, u64)> {
+    let inner = ty
+        .trim()
+        .strip_prefix('[')
+        .and_then(|s| s.strip_suffix(']'))?;
+    let (element, len) = inner.rsplit_once(';')?;
+    Some((element.trim(), len.trim().parse().ok()?))
+}
+
+fn cir_record_name(ty: &str) -> Option<&str> {
+    if let Some(name) = ty.strip_prefix("!rec_") {
+        return Some(name);
+    }
+    let rest = ty
+        .strip_prefix("!cir.union<\"")
+        .or_else(|| ty.strip_prefix("!cir.struct<\""))?;
+    rest.split_once('"').map(|(name, _)| name)
 }
 
 fn op_type_return(ty: &str) -> Option<&str> {
@@ -559,6 +755,13 @@ fn op_type_return(ty: &str) -> Option<&str> {
 
 fn default_value(ty: &str) -> &'static str {
     if ty == "bool" { "false" } else { "0" }
+}
+
+fn default_c_value(ty: &crate::c_ast::CType) -> &'static str {
+    match ty {
+        crate::c_ast::CType::Record(_) => "Default::default()",
+        _ => "0",
+    }
 }
 
 fn parse_cir_int(s: &str) -> Option<i64> {
@@ -662,5 +865,8 @@ mod tests {
         assert_eq!(rust_type("!s16i"), "i16");
         assert_eq!(rust_type("!u8i"), "u8");
         assert_eq!(rust_type("!s64i"), "i64");
+        assert_eq!(rust_type("!rec_Pair"), "Pair");
+        assert_eq!(rust_type("!cir.union<\"Pair\" {!s32i, !s32i}>"), "Pair");
+        assert_eq!(rust_type("!cir.array<!s32i x 3>"), "[i32; 3]");
     }
 }

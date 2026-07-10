@@ -8,7 +8,21 @@ use std::process::Command;
 #[derive(Debug, Default, Clone)]
 pub struct Unit {
     pub enums: Vec<Enum>,
+    pub records: Vec<Record>,
     pub functions: Vec<Function>,
+}
+
+#[derive(Debug, Clone)]
+pub struct Record {
+    pub name: String,
+    pub kind: RecordKind,
+    pub fields: Vec<Decl>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RecordKind {
+    Struct,
+    Union,
 }
 
 #[derive(Debug, Clone)]
@@ -48,6 +62,7 @@ pub enum CType {
     Int { signed: bool, bits: u32 },
     Ptr(Box<CType>),
     Array(Box<CType>, Option<u64>),
+    Record(String),
 }
 
 #[derive(Debug, Clone)]
@@ -140,10 +155,16 @@ pub fn parse_json(json: &str, source_file: &str) -> Result<Unit, String> {
     let root: Value =
         serde_json::from_str(json).map_err(|e| format!("parse clang AST JSON: {e}"))?;
     let mut enums = Vec::new();
+    let mut records = Vec::new();
     let mut functions = Vec::new();
     collect_enums(&root, source_file, &mut enums);
+    collect_records(&root, source_file, &mut records);
     collect_functions(&root, source_file, &mut functions);
-    Ok(Unit { enums, functions })
+    Ok(Unit {
+        enums,
+        records,
+        functions,
+    })
 }
 
 fn collect_enums(node: &Value, source_file: &str, out: &mut Vec<Enum>) {
@@ -168,6 +189,51 @@ fn collect_functions(node: &Value, source_file: &str, out: &mut Vec<Function>) {
     for child in children(node) {
         collect_functions(child, source_file, out);
     }
+}
+
+fn collect_records(node: &Value, source_file: &str, out: &mut Vec<Record>) {
+    if kind(node) == Some("RecordDecl")
+        && is_source_node(node, source_file)
+        && node
+            .get("completeDefinition")
+            .and_then(Value::as_bool)
+            .unwrap_or(false)
+    {
+        if let Some(record) = extract_record(node) {
+            out.push(record);
+        }
+        return;
+    }
+    for child in children(node) {
+        collect_records(child, source_file, out);
+    }
+}
+
+fn extract_record(node: &Value) -> Option<Record> {
+    let name = node.get("name")?.as_str()?.to_string();
+    if name.is_empty() {
+        return None;
+    }
+    let record_kind = match node.get("tagUsed")?.as_str()? {
+        "struct" => RecordKind::Struct,
+        "union" => RecordKind::Union,
+        _ => return None,
+    };
+    let fields = children(node)
+        .iter()
+        .filter(|child| kind(child) == Some("FieldDecl"))
+        .filter_map(|child| {
+            Some(Decl {
+                name: child.get("name")?.as_str()?.to_string(),
+                ty: parse_c_type(qual_type(child).unwrap_or("int")),
+            })
+        })
+        .collect();
+    Some(Record {
+        name,
+        kind: record_kind,
+        fields,
+    })
 }
 
 fn extract_enum(node: &Value) -> Option<Enum> {
@@ -394,6 +460,10 @@ fn parse_c_type(s: &str) -> CType {
     } else if let Some((inner, size)) = s.split_once('[') {
         let size = size.trim_end_matches(']').parse().ok();
         CType::Array(Box::new(parse_c_type(inner.trim())), size)
+    } else if let Some(name) = s.strip_prefix("union ") {
+        CType::Record(name.trim().to_string())
+    } else if let Some(name) = s.strip_prefix("struct ") {
+        CType::Record(name.trim().to_string())
     } else if s.contains("unsigned") {
         CType::Int {
             signed: false,
@@ -431,14 +501,68 @@ fn is_source_node(node: &Value, source_file: &str) -> bool {
     if source_file.is_empty() {
         return true;
     }
-    let Some(file) = node
-        .get("loc")
-        .and_then(|loc| loc.get("file"))
-        .and_then(Value::as_str)
-    else {
+    let files = source_files(node);
+    if files
+        .into_iter()
+        .any(|file| same_source_file(file, source_file))
+    {
+        return true;
+    }
+    has_source_loc_without_file(node) && !has_included_from(node)
+}
+
+fn same_source_file(file: &str, source_file: &str) -> bool {
+    file == source_file
+        || Path::new(file) == Path::new(source_file)
+        || file.ends_with(source_file)
+        || source_file.ends_with(file)
+}
+
+fn source_files(node: &Value) -> Vec<&str> {
+    let mut files = Vec::new();
+    collect_source_files(node.get("loc"), &mut files);
+    collect_source_files(
+        node.get("range").and_then(|range| range.get("begin")),
+        &mut files,
+    );
+    collect_source_files(
+        node.get("range").and_then(|range| range.get("end")),
+        &mut files,
+    );
+    files
+}
+
+fn collect_source_files<'a>(node: Option<&'a Value>, out: &mut Vec<&'a str>) {
+    let Some(node) = node else {
+        return;
+    };
+    if let Some(file) = node.get("file").and_then(Value::as_str) {
+        out.push(file);
+    }
+    collect_source_files(node.get("spellingLoc"), out);
+    collect_source_files(node.get("expansionLoc"), out);
+}
+
+fn has_source_loc_without_file(node: &Value) -> bool {
+    let loc = node.get("loc");
+    loc.and_then(|loc| loc.get("line")).is_some()
+        && loc.and_then(|loc| loc.get("file")).is_none()
+        && loc.and_then(|loc| loc.get("includedFrom")).is_none()
+}
+
+fn has_included_from(node: &Value) -> bool {
+    location_has_included_from(node.get("loc"))
+        || location_has_included_from(node.get("range").and_then(|range| range.get("begin")))
+        || location_has_included_from(node.get("range").and_then(|range| range.get("end")))
+}
+
+fn location_has_included_from(node: Option<&Value>) -> bool {
+    let Some(node) = node else {
         return false;
     };
-    file == source_file || Path::new(file) == Path::new(source_file) || file.ends_with(source_file)
+    node.get("includedFrom").is_some()
+        || location_has_included_from(node.get("spellingLoc"))
+        || location_has_included_from(node.get("expansionLoc"))
 }
 
 fn loc(node: &Value) -> Option<Loc> {
@@ -649,6 +773,140 @@ mod tests {
                     value: -1,
                 },
             ]
+        );
+    }
+
+    #[test]
+    fn extracts_union_records_from_clang_json() {
+        let ast = r#"
+{
+  "kind": "TranslationUnitDecl",
+  "inner": [
+    {
+      "kind": "RecordDecl",
+      "name": "Pair",
+      "tagUsed": "union",
+      "completeDefinition": true,
+      "loc": {"file": "unions.c", "line": 1, "col": 7},
+      "inner": [
+        {"kind": "FieldDecl", "name": "left", "type": {"qualType": "int"}},
+        {"kind": "FieldDecl", "name": "right", "type": {"qualType": "int"}}
+      ]
+    }
+  ]
+}
+"#;
+
+        let unit = parse_json(ast, "unions.c").unwrap();
+        assert_eq!(unit.records.len(), 1);
+        assert_eq!(unit.records[0].name, "Pair");
+        assert_eq!(unit.records[0].kind, RecordKind::Union);
+        assert_eq!(unit.records[0].fields.len(), 2);
+        assert_eq!(unit.records[0].fields[0].name, "left");
+        assert_eq!(
+            unit.records[0].fields[0].ty,
+            CType::Int {
+                signed: true,
+                bits: 32
+            }
+        );
+        assert_eq!(unit.records[0].fields[1].name, "right");
+    }
+
+    #[test]
+    fn matches_relative_ast_file_against_absolute_source_file() {
+        let ast = r#"
+{
+  "kind": "TranslationUnitDecl",
+  "inner": [
+    {
+      "kind": "RecordDecl",
+      "name": "FuzzPair",
+      "tagUsed": "union",
+      "completeDefinition": true,
+      "loc": {"file": "target/bnf-fuzz/bnf_seed_0000.c", "line": 1, "col": 7},
+      "inner": [
+        {"kind": "FieldDecl", "name": "left", "type": {"qualType": "int"}},
+        {"kind": "FieldDecl", "name": "right", "type": {"qualType": "int"}}
+      ]
+    }
+  ]
+}
+"#;
+
+        let unit = parse_json(
+            ast,
+            "/home/takashi/Projects/slate/target/bnf-fuzz/bnf_seed_0000.c",
+        )
+        .unwrap();
+        assert_eq!(unit.records.len(), 1);
+        assert_eq!(unit.records[0].name, "FuzzPair");
+    }
+
+    #[test]
+    fn treats_fileless_locations_as_main_source_file() {
+        let ast = r#"
+{
+  "kind": "TranslationUnitDecl",
+  "inner": [
+    {
+      "kind": "RecordDecl",
+      "name": "FuzzPair",
+      "tagUsed": "union",
+      "completeDefinition": true,
+      "loc": {"line": 12, "col": 7},
+      "inner": [
+        {"kind": "FieldDecl", "name": "left", "type": {"qualType": "int"}},
+        {"kind": "FieldDecl", "name": "right", "type": {"qualType": "int"}}
+      ]
+    },
+    {
+      "kind": "RecordDecl",
+      "name": "HeaderPair",
+      "tagUsed": "union",
+      "completeDefinition": true,
+      "loc": {"line": 12, "col": 7, "includedFrom": {"file": "target/bnf-fuzz/bnf_seed_0000.c"}},
+      "inner": [
+        {"kind": "FieldDecl", "name": "left", "type": {"qualType": "int"}}
+      ]
+    }
+  ]
+}
+"#;
+
+        let unit = parse_json(ast, "target/bnf-fuzz/bnf_seed_0000.c").unwrap();
+        assert_eq!(unit.records.len(), 1);
+        assert_eq!(unit.records[0].name, "FuzzPair");
+    }
+
+    #[test]
+    fn extracts_array_decl_types_from_clang_json() {
+        let ast = r#"
+{
+  "kind": "TranslationUnitDecl",
+  "inner": [
+    {
+      "kind": "FunctionDecl",
+      "name": "f",
+      "loc": {"file": "arrays.c", "line": 1, "col": 5},
+      "type": {"qualType": "int (void)"},
+      "inner": [
+        {"kind": "CompoundStmt", "inner": [
+          {"kind": "DeclStmt", "inner": [
+            {"kind": "VarDecl", "name": "values", "type": {"qualType": "int[3]"}}
+          ]}
+        ]}
+      ]
+    }
+  ]
+}
+"#;
+
+        let unit = parse_json(ast, "arrays.c").unwrap();
+        let body = unit.functions[0].body.as_ref().unwrap();
+        assert!(
+            matches!(&body[0], Stmt::Decl(Decl { name, ty: CType::Array(inner, Some(3)) }, None)
+                if name == "values" && **inner == CType::Int { signed: true, bits: 32 })
         );
     }
 }

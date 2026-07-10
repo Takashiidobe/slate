@@ -26,6 +26,10 @@ small C subset. This is the supported fixture-level surface today:
 - `for` loops represented as conservative Rust `loop { ... break ... }`.
 - C enum constants with implicit values and explicit `= number` values, emitted
   as Rust integer `const` items.
+- simple C unions with integer fields, emitted as `#[repr(C)] union` plus
+  unsafe field reads/writes.
+- fixed-size local `int` arrays with indexed stores and loads, emitted as Rust
+  arrays.
 - source-level context loaded from Clang's JSON AST.
 
 Output is intentionally ugly, temp-heavy, `libc`-backed Rust. Correctness is
@@ -37,6 +41,8 @@ The current fixtures are:
 - `add.c` — integer functions, locals, calls, and addition.
 - `loop_sum.c` — structured `for` loop lowering.
 - `enums.c` — enum constants with implicit and explicit values.
+- `unions.c` — basic union declaration, field writes, and field reads.
+- `arrays.c` — fixed-size local arrays and indexed element access.
 
 Generated Rust for inspection is written with:
 
@@ -53,7 +59,8 @@ Important gaps remain:
 
 - target-complete C integer modeling beyond the CIR widths already emitted.
 - unsigned arithmetic behavior and casts beyond the currently exercised cases.
-- pointers, arrays, structs/unions, field access, and pointer arithmetic.
+- pointers, structs, broader array and union coverage, field access beyond the
+  current simple union case, and pointer arithmetic.
 - global variables other than constant strings used by `printf`.
 - `if`, `while`, `switch`, `break`, `continue`, and `goto`.
 - more arithmetic, bitwise, logical, and assignment operators.
