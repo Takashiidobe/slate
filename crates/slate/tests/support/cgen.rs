@@ -112,6 +112,7 @@ struct Gen {
     has_fixed_width: bool,
     has_bool: bool,
     has_qualified_types: bool,
+    has_function_pointer: bool,
 }
 
 /// Generate a complete, self-contained C program for `seed`.
@@ -134,6 +135,7 @@ pub fn generate(seed: u64) -> String {
         has_fixed_width: false,
         has_bool: false,
         has_qualified_types: false,
+        has_function_pointer: false,
     };
     g.program();
     g.out
@@ -152,6 +154,7 @@ impl Gen {
         self.has_fixed_width = self.rng.chance(70);
         self.has_bool = self.rng.chance(70);
         self.has_qualified_types = self.rng.chance(70);
+        self.has_function_pointer = self.rng.chance(70);
 
         if self.has_bool {
             self.line("#include <stdbool.h>");
@@ -194,6 +197,9 @@ impl Gen {
         }
         if self.has_qualified_types {
             self.emit_qualified_fns();
+        }
+        if self.has_function_pointer {
+            self.emit_function_pointer_fns();
         }
 
         // The static-counter function is emitted verbatim and, crucially, is
@@ -355,6 +361,17 @@ impl Gen {
         self.blank();
         self.line("static int fuzz_bool_param(_Bool flag) {");
         self.line("    return flag;");
+        self.line("}");
+        self.blank();
+    }
+
+    fn emit_function_pointer_fns(&mut self) {
+        self.line("static int fuzz_fp_add(int lhs, int rhs) {");
+        self.line("    return lhs + rhs;");
+        self.line("}");
+        self.blank();
+        self.line("static int fuzz_fp_apply(int (*op)(int, int), int lhs, int rhs) {");
+        self.line("    return op(lhs, rhs);");
         self.line("}");
         self.blank();
     }
@@ -645,6 +662,9 @@ impl Gen {
         if self.has_qualified_types {
             self.emit_qualified_type_use();
         }
+        if self.has_function_pointer {
+            self.emit_function_pointer_use();
+        }
         self.emit_array_use();
         self.emit_pointer_use();
 
@@ -754,6 +774,12 @@ impl Gen {
         self.line("pointer_values[2] = 33;");
         self.line("int *walk = pointer_values;");
         self.printf(&format!("*(walk + {idx})"));
+    }
+
+    fn emit_function_pointer_use(&mut self) {
+        self.line("int (*fp)(int, int) = fuzz_fp_add;");
+        self.printf("fp(2, 3)");
+        self.printf("fuzz_fp_apply(fp, 4, 5)");
     }
 
     // Floats print through the same libc::printf on both sides, so `%f` output
@@ -997,6 +1023,7 @@ mod tests {
                 has_fixed_width: false,
                 has_bool: false,
                 has_qualified_types: false,
+                has_function_pointer: false,
             };
             g.program();
             for f in &g.funcs {
@@ -1095,5 +1122,15 @@ mod tests {
         assert!(corpus.contains("static int fuzz_atomic_param(_Atomic int value)"));
         assert!(corpus.contains("vf.weight = fuzz_volatile_param(fuzz_volatile_global);"));
         assert!(corpus.contains("fuzz_restrict_param(&restrict_value)"));
+    }
+
+    #[test]
+    fn emits_function_pointer_uses() {
+        let corpus = (0..512u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("static int fuzz_fp_add(int lhs, int rhs)"));
+        assert!(corpus.contains("static int fuzz_fp_apply(int (*op)(int, int), int lhs, int rhs)"));
+        assert!(corpus.contains("int (*fp)(int, int) = fuzz_fp_add;"));
+        assert!(corpus.contains("fp(2, 3)"));
+        assert!(corpus.contains("fuzz_fp_apply(fp, 4, 5)"));
     }
 }

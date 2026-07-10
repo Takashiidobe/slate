@@ -63,6 +63,7 @@ pub enum CType {
     Int { signed: bool, bits: u32 },
     Float { bits: u32 },
     Ptr(Box<CType>),
+    FuncPtr { ret: Box<CType>, params: Vec<CType> },
     Array(Box<CType>, Option<u64>),
     Record(String),
 }
@@ -441,12 +442,11 @@ fn parse_function_qual_type(s: &str) -> (CType, Vec<CType>) {
     let Some((ret, params)) = s.split_once('(') else {
         return (parse_c_type(s), Vec::new());
     };
-    let params = params.trim_end_matches(')').trim();
+    let params = params.strip_suffix(')').unwrap_or(params).trim();
     let params = if params.is_empty() || params == "void" {
         Vec::new()
     } else {
-        params
-            .split(',')
+        split_c_type_list(params)
             .map(|param| parse_c_type(param.trim()))
             .collect()
     };
@@ -460,6 +460,12 @@ fn parse_c_type(s: &str) -> CType {
         return parse_c_type(inner);
     }
     let s = strip_trailing_type_qualifiers(s);
+    if let Some((ret, params)) = parse_function_pointer_qual_type(s) {
+        return CType::FuncPtr {
+            ret: Box::new(ret),
+            params,
+        };
+    }
     if s == "void" {
         CType::Void
     } else if let Some(inner) = s.strip_suffix('*') {
@@ -488,6 +494,25 @@ fn parse_c_type(s: &str) -> CType {
             bits: int_bits(s),
         }
     }
+}
+
+fn parse_function_pointer_qual_type(s: &str) -> Option<(CType, Vec<CType>)> {
+    let (ret, rest) = s.split_once("(*)")?;
+    let params = rest.trim().strip_prefix('(')?.strip_suffix(')')?.trim();
+    let params = if params.is_empty() || params == "void" {
+        Vec::new()
+    } else {
+        split_c_type_list(params)
+            .map(str::trim)
+            .filter(|param| !param.is_empty() && *param != "...")
+            .map(parse_c_type)
+            .collect()
+    };
+    Some((parse_c_type(ret.trim()), params))
+}
+
+fn split_c_type_list(s: &str) -> impl Iterator<Item = &str> {
+    split_top_level(s, ',').into_iter()
 }
 
 fn strip_type_qualifiers(mut s: &str) -> &str {
@@ -522,6 +547,25 @@ fn strip_trailing_type_qualifiers(mut s: &str) -> &str {
         }
         return trimmed;
     }
+}
+
+fn split_top_level(s: &str, delimiter: char) -> Vec<&str> {
+    let mut parts = Vec::new();
+    let mut start = 0usize;
+    let mut paren = 0usize;
+    for (i, c) in s.char_indices() {
+        match c {
+            '(' => paren += 1,
+            ')' => paren = paren.saturating_sub(1),
+            c if c == delimiter && paren == 0 => {
+                parts.push(&s[start..i]);
+                start = i + c.len_utf8();
+            }
+            _ => {}
+        }
+    }
+    parts.push(&s[start..]);
+    parts
 }
 
 fn int_bits(s: &str) -> u32 {
@@ -1213,6 +1257,54 @@ mod tests {
                 signed: true,
                 bits: 32
             }))
+        );
+    }
+
+    #[test]
+    fn parses_function_pointer_source_types() {
+        assert_eq!(
+            parse_c_type("int (*)(int, int)"),
+            CType::FuncPtr {
+                ret: Box::new(CType::Int {
+                    signed: true,
+                    bits: 32
+                }),
+                params: vec![
+                    CType::Int {
+                        signed: true,
+                        bits: 32
+                    },
+                    CType::Int {
+                        signed: true,
+                        bits: 32
+                    }
+                ]
+            }
+        );
+        assert_eq!(
+            parse_function_qual_type("int (int (*)(int, int), int)").1,
+            vec![
+                CType::FuncPtr {
+                    ret: Box::new(CType::Int {
+                        signed: true,
+                        bits: 32
+                    }),
+                    params: vec![
+                        CType::Int {
+                            signed: true,
+                            bits: 32
+                        },
+                        CType::Int {
+                            signed: true,
+                            bits: 32
+                        }
+                    ]
+                },
+                CType::Int {
+                    signed: true,
+                    bits: 32
+                }
+            ]
         );
     }
 }

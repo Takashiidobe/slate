@@ -295,6 +295,14 @@ fn c_type_to_rust(ty: &crate::c_ast::CType) -> String {
         crate::c_ast::CType::Float { bits: 64 } => "f64".into(),
         crate::c_ast::CType::Float { .. } => "f64".into(),
         crate::c_ast::CType::Ptr(inner) => format!("*mut {}", c_type_to_rust(inner)),
+        crate::c_ast::CType::FuncPtr { ret, params } => {
+            let params = params
+                .iter()
+                .map(c_type_to_rust)
+                .collect::<Vec<_>>()
+                .join(", ");
+            format!("Option<fn({params}) -> {}>", c_type_to_rust(ret))
+        }
         crate::c_ast::CType::Array(inner, Some(len)) => {
             format!("[{}; {len}]", c_type_to_rust(inner))
         }
@@ -380,10 +388,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
-        let value = if operand_types
-            .first()
-            .is_some_and(|ty| ty.starts_with("!cir.ptr<"))
-        {
+        let value_ty = operand_types.first().copied();
+        let value = if value_ty.is_some_and(is_cir_function_pointer_type) {
+            self.render_function_pointer_operand(&op.operands[0])
+        } else if value_ty.is_some_and(|ty| ty.starts_with("!cir.ptr<")) {
             self.render_pointer_operand(&op.operands[0])
         } else {
             self.render_operand(&op.operands[0])
@@ -687,21 +695,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_call(&mut self, op: &Op) {
-        let callee = attr_str(op, "callee")
-            .unwrap_or("")
-            .trim_start_matches('@')
-            .to_string();
-        let args = op
-            .operands
+        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let direct_callee =
+            attr_str(op, "callee").map(|callee| callee.trim_start_matches('@').to_string());
+        let (callee, arg_operands, arg_types) = if let Some(callee) = direct_callee {
+            (callee, op.operands.as_slice(), operand_types.as_slice())
+        } else {
+            let Some((callee_operand, arg_operands)) = op.operands.split_first() else {
+                return;
+            };
+            let callee = self.render_operand(callee_operand);
+            (
+                format!("{callee}.unwrap()"),
+                arg_operands,
+                operand_types.get(1..).unwrap_or(&[]),
+            )
+        };
+        let args = arg_operands
             .iter()
-            .zip(op_operand_types(op.ty.as_deref().unwrap_or("")))
-            .map(|(operand, ty)| {
-                if ty.starts_with("!cir.ptr<") {
-                    self.render_pointer_operand(operand)
-                } else {
-                    self.render_operand(operand)
-                }
-            })
+            .zip(arg_types.iter().copied())
+            .map(|(operand, ty)| self.render_call_arg(operand, ty))
             .collect::<Vec<_>>();
         let expr = if callee == "printf" {
             format!("unsafe {{ libc::printf({}) }}", args.join(", "))
@@ -829,6 +842,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         sanitize_ident(operand)
     }
 
+    fn render_function_pointer_operand(&self, operand: &str) -> String {
+        match self.values.get(operand) {
+            Some(Val::Global(name)) if !self.parent.strings.contains_key(name) => {
+                format!("Some({})", sanitize_ident(name))
+            }
+            Some(value) => value.render(&self.parent.strings),
+            None => self.render_operand(operand),
+        }
+    }
+
+    fn render_call_arg(&self, operand: &str, ty: &str) -> String {
+        if is_cir_function_pointer_type(ty) {
+            self.render_function_pointer_operand(operand)
+        } else if ty.starts_with("!cir.ptr<") {
+            self.render_pointer_operand(operand)
+        } else {
+            self.render_operand(operand)
+        }
+    }
+
     fn next_temp(&mut self) -> String {
         let name = format!("_v{}", self.temp_counter);
         self.temp_counter += 1;
@@ -915,12 +948,12 @@ fn attr_bool(op: &Op, key: &str) -> bool {
 fn op_result_type(op: &Op) -> Option<&str> {
     op.ty
         .as_deref()
-        .and_then(|ty| ty.rsplit_once("->"))
+        .and_then(split_top_level_arrow)
         .map(|(_, ret)| ret.trim())
 }
 
 fn op_operand_types(ty: &str) -> Vec<&str> {
-    let Some((params, _)) = ty.split_once("->") else {
+    let Some((params, _)) = split_top_level_arrow(ty) else {
         return Vec::new();
     };
     let params = params.trim().trim_start_matches('(').trim_end_matches(')');
@@ -938,7 +971,7 @@ fn parse_function_type(s: &str) -> (Vec<String>, Option<String>) {
     else {
         return (Vec::new(), None);
     };
-    let Some((params, ret)) = inner.split_once("->") else {
+    let Some((params, ret)) = split_top_level_arrow(inner) else {
         return (Vec::new(), None);
     };
     let params = params.trim().trim_start_matches('(').trim_end_matches(')');
@@ -988,7 +1021,11 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> S
         .strip_prefix("!cir.ptr<")
         .and_then(|s| s.strip_suffix('>'))
     {
-        format!("*mut {}", rust_type_with_aliases(inner, aliases))
+        if let Some(fn_ty) = cir_fn_type_to_rust(inner, aliases) {
+            format!("Option<{fn_ty}>")
+        } else {
+            format!("*mut {}", rust_type_with_aliases(inner, aliases))
+        }
     } else if let Some((inner, len)) = parse_cir_array_type(ty) {
         format!("[{}; {len}]", rust_type_with_aliases(&inner, aliases))
     } else if let Some(name) = cir_record_name(ty) {
@@ -996,6 +1033,31 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> S
     } else {
         "i32".into()
     }
+}
+
+fn cir_fn_type_to_rust(ty: &str, aliases: &BTreeMap<String, String>) -> Option<String> {
+    let inner = ty
+        .trim()
+        .strip_prefix("!cir.func<")
+        .and_then(|s| s.strip_suffix('>'))?;
+    let (params, ret) = split_top_level_arrow(inner)?;
+    let params = params.trim().trim_start_matches('(').trim_end_matches(')');
+    let params = split_top_level(params, ',')
+        .into_iter()
+        .map(str::trim)
+        .filter(|s| !s.is_empty() && *s != "...")
+        .map(|param| rust_type_with_aliases(param, aliases))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let ret = rust_type_with_aliases(ret.trim(), aliases);
+    Some(format!("fn({params}) -> {ret}"))
+}
+
+fn is_cir_function_pointer_type(ty: &str) -> bool {
+    ty.trim()
+        .strip_prefix("!cir.ptr<")
+        .and_then(|s| s.strip_suffix('>'))
+        .is_some_and(|inner| inner.trim().starts_with("!cir.func<"))
 }
 
 fn parse_cir_array_type(ty: &str) -> Option<(String, u64)> {
@@ -1027,7 +1089,7 @@ fn cir_record_name(ty: &str) -> Option<&str> {
 }
 
 fn op_type_return(ty: &str) -> Option<&str> {
-    ty.rsplit_once("->").map(|(_, ret)| ret.trim())
+    split_top_level_arrow(ty).map(|(_, ret)| ret.trim())
 }
 
 fn default_value(ty: &str) -> &'static str {
@@ -1035,6 +1097,7 @@ fn default_value(ty: &str) -> &'static str {
         "bool" => "false",
         "f32" | "f64" => "0.0",
         ty if ty.starts_with("*mut ") => "std::ptr::null_mut()",
+        ty if ty.starts_with("Option<fn(") => "None",
         _ => "0",
     }
 }
@@ -1044,6 +1107,7 @@ fn default_c_value(ty: &crate::c_ast::CType) -> &'static str {
         crate::c_ast::CType::Bool => "false",
         crate::c_ast::CType::Float { .. } => "0.0",
         crate::c_ast::CType::Record(_) => "Default::default()",
+        crate::c_ast::CType::FuncPtr { .. } => "None",
         _ => "0",
     }
 }
@@ -1135,6 +1199,27 @@ fn sanitize_ident(s: &str) -> String {
     if out.is_empty() { "_tmp".into() } else { out }
 }
 
+fn split_top_level_arrow(s: &str) -> Option<(&str, &str)> {
+    let mut angle = 0usize;
+    let mut paren = 0usize;
+    let bytes = s.as_bytes();
+    let mut i = 0usize;
+    while i + 1 < bytes.len() {
+        match bytes[i] as char {
+            '<' => angle += 1,
+            '>' => angle = angle.saturating_sub(1),
+            '(' => paren += 1,
+            ')' => paren = paren.saturating_sub(1),
+            '-' if bytes[i + 1] == b'>' && angle == 0 && paren == 0 => {
+                return Some((&s[..i], &s[i + 2..]));
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+    None
+}
+
 fn split_top_level(s: &str, delimiter: char) -> Vec<&str> {
     let mut parts = Vec::new();
     let mut start = 0usize;
@@ -1172,6 +1257,10 @@ mod tests {
         assert_eq!(rust_type("!cir.float"), "f32");
         assert_eq!(rust_type("!cir.double"), "f64");
         assert_eq!(rust_type("!cir.ptr<!cir.double>"), "*mut f64");
+        assert_eq!(
+            rust_type("!cir.ptr<!cir.func<(!s32i, !s32i) -> !s32i>>"),
+            "Option<fn(i32, i32) -> i32>"
+        );
         assert_eq!(rust_type("!rec_Pair"), "Pair");
         assert_eq!(rust_type("!cir.union<\"Pair\" {!s32i, !s32i}>"), "Pair");
         assert_eq!(rust_type("!cir.array<!s32i x 3>"), "[i32; 3]");
@@ -1205,8 +1294,32 @@ mod tests {
     }
 
     #[test]
+    fn maps_source_function_pointer_types_to_rust_options() {
+        assert_eq!(
+            c_type_to_rust(&crate::c_ast::CType::FuncPtr {
+                ret: Box::new(crate::c_ast::CType::Int {
+                    signed: true,
+                    bits: 32
+                }),
+                params: vec![
+                    crate::c_ast::CType::Int {
+                        signed: true,
+                        bits: 32
+                    },
+                    crate::c_ast::CType::Int {
+                        signed: true,
+                        bits: 32
+                    }
+                ],
+            }),
+            "Option<fn(i32, i32) -> i32>"
+        );
+    }
+
+    #[test]
     fn pointer_values_default_to_null_mut() {
         assert_eq!(default_value("*mut i32"), "std::ptr::null_mut()");
+        assert_eq!(default_value("Option<fn(i32, i32) -> i32>"), "None");
     }
 
     #[test]
@@ -1214,6 +1327,29 @@ mod tests {
         assert_eq!(
             op_operand_types("(!cir.ptr<!s32i>, !cir.ptr<!cir.ptr<!s32i>>) -> ()"),
             vec!["!cir.ptr<!s32i>", "!cir.ptr<!cir.ptr<!s32i>>"]
+        );
+        assert_eq!(
+            op_operand_types(
+                "(!cir.ptr<!cir.func<(!s32i, !s32i) -> !s32i>>, !s32i, !s32i) -> !s32i"
+            ),
+            vec![
+                "!cir.ptr<!cir.func<(!s32i, !s32i) -> !s32i>>",
+                "!s32i",
+                "!s32i"
+            ]
+        );
+        assert_eq!(
+            parse_function_type(
+                "!cir.func<(!cir.ptr<!cir.func<(!s32i, !s32i) -> !s32i>>, !s32i, !s32i) -> !s32i>"
+            ),
+            (
+                vec![
+                    "!cir.ptr<!cir.func<(!s32i, !s32i) -> !s32i>>".to_string(),
+                    "!s32i".to_string(),
+                    "!s32i".to_string()
+                ],
+                Some("!s32i".to_string())
+            )
         );
     }
 
