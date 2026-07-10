@@ -45,8 +45,8 @@ small C subset. This is the supported fixture-level surface today:
   arrays.
 - `sizeof` expressions that Clang lowers to integer CIR constants.
 - volatile CIR loads and stores, emitted with Rust volatile pointer intrinsics.
-- file-scope `static int` globals with constant initializers, emitted as
-  `static mut`.
+- file-scope `static` integer and floating globals with constant initializers,
+  emitted as `static mut`.
 - `typedef` aliases for otherwise supported types, resolved through Clang's
   desugared type facts.
 - source-level context loaded from Clang's JSON AST.
@@ -68,6 +68,8 @@ The current fixtures are:
   forms.
 - `volatile.c` — volatile local stores and loads.
 - `static_globals.c` — file-scope static integer global loads and stores.
+- `non_int_globals.c` — file-scope static `char`/`unsigned char`/`float`/`double`
+  globals plus non-int params and returns.
 - `typedefs.c` — aliases for primitive types used in params, locals, fields,
   returns, and `sizeof`.
 - `floats.c` — `float`/`double` locals, params, arithmetic, casts, and `%f`
@@ -102,8 +104,8 @@ Important gaps remain:
   casts beyond the currently exercised cases.
 - pointers, broader aggregate coverage, field access beyond the current simple
   record cases, and pointer arithmetic.
-- globals beyond file-scope `static int` with constant initializers and constant
-  strings used by `printf`.
+- globals beyond file-scope `static` primitive scalar globals with constant
+  initializers and constant strings used by `printf`.
 - `if`, `switch`, `break`, `continue`, and `goto`.
 - more arithmetic, bitwise, logical, and assignment operators.
 - function prototypes, declarations across translation units, and headers beyond
