@@ -250,48 +250,55 @@ impl<'a> Lowerer<'a> {
     }
 
     fn rust_c_type(&self, ty: &crate::c_ast::CType) -> String {
-        match ty {
-            crate::c_ast::CType::Void => "()".into(),
-            crate::c_ast::CType::Int {
-                signed: true,
-                bits: 8,
-            } => "i8".into(),
-            crate::c_ast::CType::Int {
-                signed: false,
-                bits: 8,
-            } => "u8".into(),
-            crate::c_ast::CType::Int {
-                signed: true,
-                bits: 16,
-            } => "i16".into(),
-            crate::c_ast::CType::Int {
-                signed: false,
-                bits: 16,
-            } => "u16".into(),
-            crate::c_ast::CType::Int {
-                signed: true,
-                bits: 32,
-            } => "i32".into(),
-            crate::c_ast::CType::Int {
-                signed: false,
-                bits: 32,
-            } => "u32".into(),
-            crate::c_ast::CType::Int {
-                signed: true,
-                bits: 64,
-            } => "i64".into(),
-            crate::c_ast::CType::Int {
-                signed: false,
-                bits: 64,
-            } => "u64".into(),
-            crate::c_ast::CType::Int { .. } => "i32".into(),
-            crate::c_ast::CType::Float { bits: 32 } => "f32".into(),
-            crate::c_ast::CType::Float { bits: 64 } => "f64".into(),
-            crate::c_ast::CType::Float { .. } => "f64".into(),
-            crate::c_ast::CType::Ptr(inner) => format!("*mut {}", self.rust_c_type(inner)),
-            crate::c_ast::CType::Array(inner, _) => format!("*mut {}", self.rust_c_type(inner)),
-            crate::c_ast::CType::Record(name) => sanitize_ident(name),
+        c_type_to_rust(ty)
+    }
+}
+
+fn c_type_to_rust(ty: &crate::c_ast::CType) -> String {
+    match ty {
+        crate::c_ast::CType::Void => "()".into(),
+        crate::c_ast::CType::Int {
+            signed: true,
+            bits: 8,
+        } => "i8".into(),
+        crate::c_ast::CType::Int {
+            signed: false,
+            bits: 8,
+        } => "u8".into(),
+        crate::c_ast::CType::Int {
+            signed: true,
+            bits: 16,
+        } => "i16".into(),
+        crate::c_ast::CType::Int {
+            signed: false,
+            bits: 16,
+        } => "u16".into(),
+        crate::c_ast::CType::Int {
+            signed: true,
+            bits: 32,
+        } => "i32".into(),
+        crate::c_ast::CType::Int {
+            signed: false,
+            bits: 32,
+        } => "u32".into(),
+        crate::c_ast::CType::Int {
+            signed: true,
+            bits: 64,
+        } => "i64".into(),
+        crate::c_ast::CType::Int {
+            signed: false,
+            bits: 64,
+        } => "u64".into(),
+        crate::c_ast::CType::Int { .. } => "i32".into(),
+        crate::c_ast::CType::Float { bits: 32 } => "f32".into(),
+        crate::c_ast::CType::Float { bits: 64 } => "f64".into(),
+        crate::c_ast::CType::Float { .. } => "f64".into(),
+        crate::c_ast::CType::Ptr(inner) => format!("*mut {}", c_type_to_rust(inner)),
+        crate::c_ast::CType::Array(inner, Some(len)) => {
+            format!("[{}; {len}]", c_type_to_rust(inner))
         }
+        crate::c_ast::CType::Array(inner, None) => format!("*mut {}", c_type_to_rust(inner)),
+        crate::c_ast::CType::Record(name) => sanitize_ident(name),
     }
 }
 
@@ -1077,6 +1084,27 @@ mod tests {
         assert_eq!(rust_type("!rec_Pair"), "Pair");
         assert_eq!(rust_type("!cir.union<\"Pair\" {!s32i, !s32i}>"), "Pair");
         assert_eq!(rust_type("!cir.array<!s32i x 3>"), "[i32; 3]");
+    }
+
+    #[test]
+    fn maps_source_array_types_to_rust_arrays() {
+        assert_eq!(
+            c_type_to_rust(&crate::c_ast::CType::Array(
+                Box::new(crate::c_ast::CType::Float { bits: 64 }),
+                Some(3)
+            )),
+            "[f64; 3]"
+        );
+        assert_eq!(
+            c_type_to_rust(&crate::c_ast::CType::Array(
+                Box::new(crate::c_ast::CType::Int {
+                    signed: false,
+                    bits: 8
+                }),
+                None
+            )),
+            "*mut u8"
+        );
     }
 
     #[test]
