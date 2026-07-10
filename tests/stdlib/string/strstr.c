@@ -1,0 +1,3 @@
+#include <string.h>
+#include <stdio.h>
+int main(void) { const char *volatile v = "hello world"; const char *s=(char*)v; printf("%ld\n", strstr(s,"world")-s); return 0; }
