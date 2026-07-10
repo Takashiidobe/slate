@@ -136,8 +136,8 @@ impl<'a> Lowerer<'a> {
             let Some(name) = attr_str(op, "sym_name") else {
                 continue;
             };
-            // printf routes through libc; complex runtime lives in the prelude.
-            if name == "printf" || is_complex_runtime_call(name) {
+            // complex runtime routines are declared in the prelude.
+            if is_complex_runtime_call(name) {
                 continue;
             }
             let function_type = attr_str(op, "function_type").unwrap_or("");
@@ -972,9 +972,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .zip(arg_types.iter().copied())
             .map(|(operand, ty)| self.render_call_arg(operand, ty))
             .collect::<Vec<_>>();
-        let expr = if callee == "printf" {
-            format!("unsafe {{ libc::printf({}) }}", args.join(", "))
-        } else if is_complex_runtime_call(&callee) {
+        let expr = if is_complex_runtime_call(&callee) {
             self.parent.uses_complex.set(true);
             format!("unsafe {{ {callee}({}) }}", args.join(", "))
         } else if let Some(param_types) = self.parent.externs.get(&callee).cloned() {
