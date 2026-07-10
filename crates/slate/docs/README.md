@@ -47,6 +47,8 @@ small C subset. This is the supported fixture-level surface today:
 - volatile CIR loads and stores, emitted with Rust volatile pointer intrinsics.
 - file-scope `static int` globals with constant initializers, emitted as
   `static mut`.
+- `typedef` aliases for otherwise supported types, resolved through Clang's
+  desugared type facts.
 - source-level context loaded from Clang's JSON AST.
 
 Output is intentionally ugly, temp-heavy, `libc`-backed Rust. Correctness is
@@ -66,6 +68,8 @@ The current fixtures are:
   forms.
 - `volatile.c` — volatile local stores and loads.
 - `static_globals.c` — file-scope static integer global loads and stores.
+- `typedefs.c` — aliases for primitive types used in params, locals, fields,
+  returns, and `sizeof`.
 - `floats.c` — `float`/`double` locals, params, arithmetic, casts, and `%f`
   printing.
 - `chars.c` — `char`/`signed char`/`unsigned char` locals, params, arithmetic,
@@ -102,8 +106,8 @@ Important gaps remain:
   strings used by `printf`.
 - `if`, `switch`, `break`, `continue`, and `goto`.
 - more arithmetic, bitwise, logical, and assignment operators.
-- function prototypes, declarations across translation units, typedefs, and
-  headers beyond what Clang resolves for the fixture.
+- function prototypes, declarations across translation units, and headers beyond
+  what Clang resolves for the fixture.
 - `long double`, hex float literals, and float math beyond `+`/`-`/`*`/`/`.
 - string operations and varargs beyond direct `printf` calls.
 - idiomatic Rust cleanup such as `println!`, temp removal, references, slices,

@@ -574,7 +574,10 @@ fn loc(node: &Value) -> Option<Loc> {
 }
 
 fn qual_type(node: &Value) -> Option<&str> {
-    node.get("type")?.get("qualType")?.as_str()
+    let ty = node.get("type")?;
+    ty.get("desugaredQualType")
+        .and_then(Value::as_str)
+        .or_else(|| ty.get("qualType").and_then(Value::as_str))
 }
 
 fn kind(node: &Value) -> Option<&str> {
@@ -937,6 +940,60 @@ mod tests {
         assert!(
             matches!(&body[0], Stmt::Decl(Decl { name, ty: CType::Array(inner, Some(3)) }, None)
                 if name == "values" && **inner == CType::Int { signed: true, bits: 32 })
+        );
+    }
+
+    #[test]
+    fn desugars_typedef_alias_types_from_clang_json() {
+        let ast = r#"
+{
+  "kind": "TranslationUnitDecl",
+  "inner": [
+    {
+      "kind": "RecordDecl",
+      "name": "Box",
+      "tagUsed": "struct",
+      "completeDefinition": true,
+      "loc": {"file": "typedefs.c", "line": 5, "col": 8},
+      "inner": [
+        {"kind": "FieldDecl", "name": "tag", "type": {
+          "desugaredQualType": "unsigned char",
+          "qualType": "byte"
+        }}
+      ]
+    },
+    {
+      "kind": "FunctionDecl",
+      "name": "f",
+      "loc": {"file": "typedefs.c", "line": 9, "col": 5},
+      "type": {"qualType": "int (void)"},
+      "inner": [
+        {"kind": "CompoundStmt", "inner": [
+          {"kind": "DeclStmt", "inner": [
+            {"kind": "VarDecl", "name": "x", "type": {
+              "desugaredQualType": "long long",
+              "qualType": "wide"
+            }}
+          ]}
+        ]}
+      ]
+    }
+  ]
+}
+"#;
+
+        let unit = parse_json(ast, "typedefs.c").unwrap();
+        assert_eq!(
+            unit.records[0].fields[0].ty,
+            CType::Int {
+                signed: false,
+                bits: 8
+            }
+        );
+        let body = unit.functions[0].body.as_ref().unwrap();
+        assert!(
+            matches!(&body[0], Stmt::Decl(Decl { name, ty: CType::Int { signed: true, bits: 64 } }, None)
+                if name == "x")
         );
     }
 }

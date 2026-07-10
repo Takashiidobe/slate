@@ -17,7 +17,9 @@
 # ----- top-level declarations -----
 
 <decl_list> ::= <decl> <decl_list> | <decl> ;
-<decl> ::= <enum_decl> | <struct_decl> | <union_decl> | <global_decl> ;
+<decl> ::= <typedef_decl> | <enum_decl> | <struct_decl> | <union_decl> | <global_decl> ;
+
+<typedef_decl> ::= "typedef" <type> <ident> ";" ;
 
 <enum_decl> ::= "enum" <ident> "{" <enumerator_list> "};" ;
 <enumerator_list> ::= <enumerator> "," <enumerator_list> | <enumerator> ;
@@ -66,7 +68,7 @@
 
 # ----- types and lexical tokens -----
 
-<type> ::= <int_type> | "volatile int" | "float" | "double" | <char_type> ;
+<type> ::= <int_type> | "volatile int" | "float" | "double" | <char_type> | <ident> ;
 <int_type> ::= "int" | "unsigned int" | "short" | "unsigned short" | "long" | "unsigned long" | "long long" | "unsigned long long" ;
 <char_type> ::= "char" | "signed char" | "unsigned char" ;
 
