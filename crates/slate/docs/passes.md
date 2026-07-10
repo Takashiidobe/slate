@@ -46,8 +46,8 @@ The lowerer currently handles the fixture subset:
   primitive scalar fields and basic `cir.get_member` field access.
 - source struct records from Clang AST, emitted as `#[repr(C)] struct` items
   with primitive scalar fields and basic `cir.get_member` field access.
-- fixed-size CIR arrays, emitted as Rust arrays with basic `cir.get_element`
-  indexed loads and stores.
+- fixed-size CIR arrays of primitive scalar element types, emitted as Rust
+  arrays with basic `cir.get_element` indexed loads and stores.
 - `sizeof` expressions when Clang has folded them to CIR integer constants.
 - `cir.load` and `cir.store` with `is_volatile`, emitted as
   `std::ptr::read_volatile` and `std::ptr::write_volatile`.
@@ -69,6 +69,7 @@ Current C fixture coverage:
 | `structs.c`        | struct declaration, integer fields, field writes, field reads          |
 | `non_int_fields.c` | struct/union `char`, `unsigned char`, `float`, and `double` fields     |
 | `arrays.c`         | fixed-size local arrays, indexed stores, indexed loads                 |
+| `array_types.c`    | fixed-size local `char` and `double` arrays                            |
 | `sizeof.c`         | `sizeof` over primitive, array, struct, union, and expression forms    |
 | `volatile.c`       | volatile local stores and loads                                        |
 | `static_globals.c` | file-scope static integer global loads and stores                      |

@@ -41,8 +41,8 @@ small C subset. This is the supported fixture-level surface today:
 - simple C unions with primitive scalar fields, emitted as `#[repr(C)] union` plus
   unsafe field reads/writes.
 - simple C structs with primitive scalar fields, emitted as `#[repr(C)] struct`.
-- fixed-size local `int` arrays with indexed stores and loads, emitted as Rust
-  arrays.
+- fixed-size local arrays of primitive scalar element types with indexed stores
+  and loads, emitted as Rust arrays.
 - `sizeof` expressions that Clang lowers to integer CIR constants.
 - volatile CIR loads and stores, emitted with Rust volatile pointer intrinsics.
 - file-scope `static` integer and floating globals with constant initializers,
@@ -66,6 +66,7 @@ The current fixtures are:
 - `non_int_fields.c` — `char`/`unsigned char`/`float`/`double` struct and union
   fields.
 - `arrays.c` — fixed-size local arrays and indexed element access.
+- `array_types.c` — fixed-size local `char` and `double` arrays.
 - `sizeof.c` — `sizeof` over primitive, array, struct, union, and expression
   forms.
 - `volatile.c` — volatile local stores and loads.

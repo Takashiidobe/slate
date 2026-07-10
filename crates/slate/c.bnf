@@ -46,7 +46,9 @@
 <stmt_list> ::= <stmt> <stmt_list> | <stmt> ;
 <stmt> ::= <declaration> | <assignment> | <compound_assignment> | <for_loop> | <while_loop> | <call_stmt> | <return_stmt> ;
 
-<declaration> ::= <type> <ident> "=" <expr> ";" ;
+<declaration> ::= <scalar_declaration> | <array_declaration> ;
+<scalar_declaration> ::= <type> <ident> "=" <expr> ";" ;
+<array_declaration> ::= <type> <ident> "[" <int> "]" ";" ;
 <assignment> ::= <lvalue> "=" <expr> ";" ;
 <compound_assignment> ::= <lvalue> "+=" <expr> ";" ;
 <for_loop> ::= "for" "(" "int" <ident> "=" <expr> ";" <expr> ";" <ident> "++" ")" "{" <stmt_list> "}" ;

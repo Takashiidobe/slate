@@ -606,6 +606,20 @@ impl Gen {
         }
         let idx = self.rng.int_in(0, n - 1);
         self.printf(&format!("arr[{idx}]"));
+        if self.has_char {
+            let ch = self.rng.int_in(0, 63);
+            self.line("char chars[2];");
+            self.line(&format!("chars[0] = {ch};"));
+            self.line("chars[1] = chars[0] + 1;");
+            self.printf("chars[1]");
+        }
+        if self.has_float {
+            let weight = self.rng.int_in(1, CONST_MAX);
+            self.line("double weights[2];");
+            self.line(&format!("weights[0] = {weight}.5;"));
+            self.line("weights[1] = weights[0] + 1.25;");
+            self.printf_float("weights[1]");
+        }
 
         // sizeof over primitive + the array is a compile-time constant on both
         // sides, so C and translated Rust agree.
@@ -876,5 +890,14 @@ mod tests {
         assert!(corpus.contains("double weight;"));
         assert!(corpus.contains("s.weight = "));
         assert!(corpus.contains("u.weight = "));
+    }
+
+    #[test]
+    fn emits_non_int_array_declarations() {
+        let corpus = (0..512u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("char chars[2];"));
+        assert!(corpus.contains("double weights[2];"));
+        assert!(corpus.contains("chars[1] = chars[0] + 1;"));
+        assert!(corpus.contains("weights[1] = weights[0] + 1.25;"));
     }
 }
