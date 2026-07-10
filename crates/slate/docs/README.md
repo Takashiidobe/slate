@@ -31,6 +31,7 @@ small C subset. This is the supported fixture-level surface today:
 - simple C structs with integer fields, emitted as `#[repr(C)] struct`.
 - fixed-size local `int` arrays with indexed stores and loads, emitted as Rust
   arrays.
+- `sizeof` expressions that Clang lowers to integer CIR constants.
 - source-level context loaded from Clang's JSON AST.
 
 Output is intentionally ugly, temp-heavy, `libc`-backed Rust. Correctness is
@@ -45,6 +46,8 @@ The current fixtures are:
 - `unions.c` — basic union declaration, field writes, and field reads.
 - `structs.c` — basic struct declaration, field writes, and field reads.
 - `arrays.c` — fixed-size local arrays and indexed element access.
+- `sizeof.c` — `sizeof` over primitive, array, struct, union, and expression
+  forms.
 
 Generated Rust for inspection is written with:
 

@@ -47,6 +47,7 @@ The lowerer currently handles the fixture subset:
   with basic `cir.get_member` field access.
 - fixed-size CIR arrays, emitted as Rust arrays with basic `cir.get_element`
   indexed loads and stores.
+- `sizeof` expressions when Clang has folded them to CIR integer constants.
 
 Unknown CIR ops emit a `todo!("cir.xyz")` expression and a diagnostic. That is
 intentional: failing loudly is better than silently dropping semantics.
@@ -61,6 +62,7 @@ Current C fixture coverage:
 | `unions.c` | union declaration, integer fields, field writes, field reads |
 | `structs.c` | struct declaration, integer fields, field writes, field reads |
 | `arrays.c` | fixed-size local arrays, indexed stores, indexed loads |
+| `sizeof.c` | `sizeof` over primitive, array, struct, union, and expression forms |
 
 ## Stage notes
 
