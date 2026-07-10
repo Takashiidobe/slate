@@ -23,6 +23,11 @@ small C subset. This is the supported fixture-level surface today:
 - `char`, `signed char`, and `unsigned char` locals, params, fields, and return
   values, mapped to Rust `i8`/`u8`, including `'A'`-style char literals and `%c`
   printing.
+- `short`, `long`, and `long long` (with their `unsigned` variants) locals,
+  params, and return values, mapped to Rust `i16`/`i64`/`u16`/`u32`/`u64` by CIR
+  width, printed with the width-correct `printf` conversion (`%u`, `%ld`, ...).
+- unsigned integer overflow lowered as wrapping arithmetic (`wrapping_add`) so
+  the defined C wrap matches Rust instead of panicking.
 - integer constants, loads/stores, addition, increment, and comparisons.
 - `float`/`double` parameters, locals, return values, and constants, mapped to
   Rust `f32`/`f64`, with `+`/`-`/`*`/`/`, comparisons, and int/float casts.
@@ -64,6 +69,10 @@ The current fixtures are:
   printing.
 - `chars.c` — `char`/`signed char`/`unsigned char` locals, params, arithmetic,
   char literals, and `%c`/`%d` printing.
+- `shorts.c` — `short`/`unsigned short` locals, params, arithmetic, and return.
+- `unsigned.c` — `unsigned int` arithmetic with defined wrapping overflow.
+- `longs.c` — `long`/`unsigned long` locals, params, and return values.
+- `longlong.c` — `long long`/`unsigned long long` locals, params, and return.
 
 Generated Rust for inspection is written with:
 
@@ -78,8 +87,10 @@ fixtures under `tests/fixtures/` are C-only.
 
 Important gaps remain:
 
-- target-complete C integer modeling beyond the CIR widths already emitted.
-- unsigned arithmetic behavior and casts beyond the currently exercised cases.
+- target-complete C integer modeling beyond the CIR widths already emitted
+  (e.g. `_Bool`, `__int128`, and the fixed-width `<stdint.h>` typedefs).
+- integer subtraction, multiplication, and division ops (only `+`/`++` lower
+  today); wider arithmetic and casts beyond the currently exercised cases.
 - pointers, broader aggregate coverage, field access beyond the current simple
   record cases, and pointer arithmetic.
 - globals beyond file-scope `static int` with constant initializers and constant
