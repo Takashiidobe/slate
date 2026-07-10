@@ -59,8 +59,8 @@
 # ----- expressions -----
 
 <expr> ::= <term> | <term> <arith_op> <expr> | "(" <expr> <cmp_op> <expr> ")" ;
-<term> ::= <int> | <float> | <char> | <lvalue> | <call> | <sizeof> | "(" <expr> ")" ;
-<lvalue> ::= <ident> | <ident> "." <ident> | <ident> "[" <expr> "]" ;
+<term> ::= <int> | <float> | <char> | <lvalue> | "&" <lvalue> | <call> | <sizeof> | "(" <expr> ")" ;
+<lvalue> ::= <ident> | "*" <term> | <ident> "." <ident> | <ident> "[" <expr> "]" ;
 <arith_op> ::= "+" | "-" | "*" | "/" | "%" ;
 <cmp_op> ::= "<" | "<=" | ">" | ">=" | "==" | "!=" ;
 <call> ::= <ident> "(" ")" | <ident> "(" <arg_list> ")" ;
@@ -70,7 +70,9 @@
 
 # ----- types and lexical tokens -----
 
-<type> ::= <int_type> | "volatile int" | "float" | "double" | <char_type> | <ident> ;
+<type> ::= <base_type> | <pointer_type> ;
+<base_type> ::= <int_type> | "volatile int" | "float" | "double" | <char_type> | <ident> ;
+<pointer_type> ::= <base_type> "*" ;
 <int_type> ::= "int" | "unsigned int" | "short" | "unsigned short" | "long" | "unsigned long" | "long long" | "unsigned long long" ;
 <char_type> ::= "char" | "signed char" | "unsigned char" ;
 

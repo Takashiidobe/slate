@@ -10,7 +10,7 @@
 //! Everything it emits is restricted to the subset Slate can translate today
 //! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
 //! `float`/`double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`,
-//! arrays, structs, unions, typedef aliases, `sizeof`, `volatile`, static globals,
+//! arrays, pointers, structs, unions, typedef aliases, `sizeof`, `volatile`, static globals,
 //! enum constants, and
 //! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
 //!
@@ -549,6 +549,7 @@ impl Gen {
             self.emit_wideint_use();
         }
         self.emit_array_use();
+        self.emit_pointer_use();
 
         self.line("return 0;");
         self.indent = 0;
@@ -640,6 +641,22 @@ impl Gen {
             self.line(&format!("slot = slot + {bump};"));
             self.printf("slot");
         }
+    }
+
+    fn emit_pointer_use(&mut self) {
+        let init = self.rng.int_in(0, CONST_MAX);
+        let bump = self.rng.int_in(0, CONST_MAX);
+        let idx = self.rng.int_in(0, 2);
+        self.line(&format!("int pointed = {init};"));
+        self.line("int *ptr = &pointed;");
+        self.line(&format!("*ptr = *ptr + {bump};"));
+        self.printf("pointed");
+        self.line("int pointer_values[3];");
+        self.line("pointer_values[0] = 11;");
+        self.line("pointer_values[1] = 22;");
+        self.line("pointer_values[2] = 33;");
+        self.line("int *walk = pointer_values;");
+        self.printf(&format!("*(walk + {idx})"));
     }
 
     // Floats print through the same libc::printf on both sides, so `%f` output
@@ -899,5 +916,14 @@ mod tests {
         assert!(corpus.contains("double weights[2];"));
         assert!(corpus.contains("chars[1] = chars[0] + 1;"));
         assert!(corpus.contains("weights[1] = weights[0] + 1.25;"));
+    }
+
+    #[test]
+    fn emits_pointer_uses() {
+        let corpus = (0..64u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("int *ptr = &pointed;"));
+        assert!(corpus.contains("*ptr = *ptr + "));
+        assert!(corpus.contains("int *walk = pointer_values;"));
+        assert!(corpus.contains("*(walk + "));
     }
 }
