@@ -341,6 +341,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.get_member" => self.lower_get_member(op),
             "cir.get_element" => self.lower_get_element(op),
             "cir.cast" => self.lower_cast(op),
+            "cir.ptr_stride" => self.lower_ptr_stride(op),
             "cir.call" => self.lower_call(op),
             "cir.return" => self.lower_return(op),
             "cir.scope" => self.lower_scope(op),
@@ -377,7 +378,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let value = self.render_operand(&op.operands[0]);
+        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let value = if operand_types
+            .first()
+            .is_some_and(|ty| ty.starts_with("!cir.ptr<"))
+        {
+            self.render_pointer_operand(&op.operands[0])
+        } else {
+            self.render_operand(&op.operands[0])
+        };
         let ptr = &op.operands[1];
         if attr_bool(op, "is_volatile") {
             let addr = self.store_address(ptr);
@@ -634,6 +643,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let value = match self.values.get(src).cloned() {
             Some(Val::Global(name)) => Val::Global(name),
+            _ if self
+                .slot_types
+                .get(src)
+                .is_some_and(|ty| parse_rust_array_type(ty).is_some()) =>
+            {
+                Val::Expr(format!("{}.as_mut_ptr()", self.render_operand(src)))
+            }
             _ => Val::Expr(format!(
                 "{} as {}",
                 self.render_operand(src),
@@ -641,6 +657,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             )),
         };
         self.values.insert(result.clone(), value);
+    }
+
+    fn lower_ptr_stride(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let base = self.render_operand(&op.operands[0]);
+        let index = self.render_operand(&op.operands[1]);
+        self.values.insert(
+            result.clone(),
+            Val::Expr(format!("unsafe {{ {base}.offset({index} as isize) }}")),
+        );
     }
 
     fn lower_call(&mut self, op: &Op) {
@@ -651,7 +682,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let args = op
             .operands
             .iter()
-            .map(|operand| self.render_operand(operand))
+            .zip(op_operand_types(op.ty.as_deref().unwrap_or("")))
+            .map(|(operand, ty)| {
+                if ty.starts_with("!cir.ptr<") {
+                    self.render_pointer_operand(operand)
+                } else {
+                    self.render_operand(operand)
+                }
+            })
             .collect::<Vec<_>>();
         let expr = if callee == "printf" {
             format!("unsafe {{ libc::printf({}) }}", args.join(", "))
@@ -757,7 +795,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.values
             .get(operand)
             .map(|value| value.render(&self.parent.strings))
+            .or_else(|| self.slots.get(operand).map(|slot| slot.clone()))
             .unwrap_or_else(|| sanitize_ident(operand))
+    }
+
+    fn render_pointer_operand(&self, operand: &str) -> String {
+        if let Some(value) = self.values.get(operand) {
+            return value.render(&self.parent.strings);
+        }
+        if let Some(slot) = self.slots.get(operand) {
+            return if self
+                .slot_types
+                .get(operand)
+                .is_some_and(|ty| parse_rust_array_type(ty).is_some())
+            {
+                format!("{slot}.as_mut_ptr()")
+            } else {
+                format!("std::ptr::addr_of_mut!({slot})")
+            };
+        }
+        sanitize_ident(operand)
     }
 
     fn next_temp(&mut self) -> String {
@@ -848,6 +905,18 @@ fn op_result_type(op: &Op) -> Option<&str> {
         .as_deref()
         .and_then(|ty| ty.rsplit_once("->"))
         .map(|(_, ret)| ret.trim())
+}
+
+fn op_operand_types(ty: &str) -> Vec<&str> {
+    let Some((params, _)) = ty.split_once("->") else {
+        return Vec::new();
+    };
+    let params = params.trim().trim_start_matches('(').trim_end_matches(')');
+    split_top_level(params, ',')
+        .into_iter()
+        .map(str::trim)
+        .filter(|ty| !ty.is_empty())
+        .collect()
 }
 
 fn parse_function_type(s: &str) -> (Vec<String>, Option<String>) {
@@ -953,6 +1022,7 @@ fn default_value(ty: &str) -> &'static str {
     match ty {
         "bool" => "false",
         "f32" | "f64" => "0.0",
+        ty if ty.starts_with("*mut ") => "std::ptr::null_mut()",
         _ => "0",
     }
 }
@@ -1104,6 +1174,19 @@ mod tests {
                 None
             )),
             "*mut u8"
+        );
+    }
+
+    #[test]
+    fn pointer_values_default_to_null_mut() {
+        assert_eq!(default_value("*mut i32"), "std::ptr::null_mut()");
+    }
+
+    #[test]
+    fn parses_nested_op_operand_types() {
+        assert_eq!(
+            op_operand_types("(!cir.ptr<!s32i>, !cir.ptr<!cir.ptr<!s32i>>) -> ()"),
+            vec!["!cir.ptr<!s32i>", "!cir.ptr<!cir.ptr<!s32i>>"]
         );
     }
 

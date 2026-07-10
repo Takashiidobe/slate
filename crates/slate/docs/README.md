@@ -43,6 +43,8 @@ small C subset. This is the supported fixture-level surface today:
 - simple C structs with primitive scalar fields, emitted as `#[repr(C)] struct`.
 - fixed-size local arrays of primitive scalar element types with indexed stores
   and loads, emitted as Rust arrays.
+- C pointers for locals, parameters, address-of, dereference, and basic pointer
+  arithmetic, emitted as raw Rust pointers.
 - `sizeof` expressions that Clang lowers to integer CIR constants.
 - volatile CIR loads and stores, emitted with Rust volatile pointer intrinsics.
 - file-scope `static` integer and floating globals with constant initializers,
@@ -67,6 +69,8 @@ The current fixtures are:
   fields.
 - `arrays.c` — fixed-size local arrays and indexed element access.
 - `array_types.c` — fixed-size local `char` and `double` arrays.
+- `pointers.c` — pointer locals/params, address-of, dereference, and pointer
+  arithmetic.
 - `sizeof.c` — `sizeof` over primitive, array, struct, union, and expression
   forms.
 - `volatile.c` — volatile local stores and loads.
@@ -105,8 +109,7 @@ Important gaps remain:
   (e.g. `_Bool`, `__int128`, and the fixed-width `<stdint.h>` typedefs).
 - bitwise, logical, and assignment operators beyond `+=`; wider arithmetic and
   casts beyond the currently exercised cases.
-- pointers, broader aggregate coverage beyond primitive scalar fields, and
-  pointer arithmetic.
+- broader aggregate coverage beyond primitive scalar fields.
 - globals beyond file-scope `static` primitive scalar globals with constant
   initializers and constant strings used by `printf`.
 - `if`, `switch`, `break`, `continue`, and `goto`.
