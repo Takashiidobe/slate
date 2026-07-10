@@ -2,14 +2,14 @@
 
 Slate is verified by **differential testing**: translate a C program to Rust,
 compile and run both, and require identical stdout and exit code. The fuzzer's
-job is to produce a stream of *varied but valid* C programs to feed that harness.
+job is to produce a stream of _varied but valid_ C programs to feed that harness.
 
 ## Two generators
 
-| Artifact | File | Role |
-| --- | --- | --- |
-| `c.bnf` | reference grammar | **documents** the supported syntax |
-| C-subset generator | `tests/support/cgen.rs` | **primary** behavioral fuzzer |
+| Artifact           | File                    | Role                               |
+| ------------------ | ----------------------- | ---------------------------------- |
+| `c.bnf`            | reference grammar       | **documents** the supported syntax |
+| C-subset generator | `tests/support/cgen.rs` | **primary** behavioral fuzzer      |
 
 ### Why a grammar cannot be the fuzzer
 
@@ -22,7 +22,7 @@ make the output valid, translatable, and UB-free, and they are all
 context-sensitive — they depend on state built up earlier in the program.
 
 So the grammar cannot drive generation. It is kept purely as a one-screen
-reference for *which syntax* Slate supports. The `bnf_fuzz` tests keep it honest:
+reference for _which syntax_ Slate supports. The `bnf_fuzz` tests keep it honest:
 it must parse, expose the expected top-level rules, and be internally closed
 (every nonterminal referenced on a right-hand side is defined). The real
 behavioral coverage comes from `cgen`, which encodes the same subset in Rust
@@ -52,13 +52,13 @@ From that state it emits multi-function programs with:
 
 Everything stays inside the subset Slate can translate today (see
 [README.md](README.md) for that surface). This is deliberately narrower than a
-general C generator — it is a generator *for Slate's supported subset*, and it
+general C generator — it is a generator _for Slate's supported subset_, and it
 grows as the supported subset grows.
 
 ### Correctness invariant: no undefined behavior
 
 The differential harness compiles the generated Rust in **debug** mode, where
-`i32` overflow *panics*, while C silently wraps. An overflowing program would
+`i32` overflow _panics_, while C silently wraps. An overflowing program would
 diverge for reasons that are not Slate's fault. Uninitialized reads and
 out-of-bounds indexing are UB in C and would diverge similarly.
 

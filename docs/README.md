@@ -2,7 +2,7 @@
 
 `slate` translates C to Rust by lowering **ClangIR (CIR)** — Clang's MLIR-based
 IR — rather than LLVM IR. CIR is high enough to retain structured control flow,
-integer signedness, and named local variables, so this is *transpilation*, not
+integer signedness, and named local variables, so this is _transpilation_, not
 decompilation. (See [architecture.md](architecture.md) for why the IR level is
 the whole game.)
 

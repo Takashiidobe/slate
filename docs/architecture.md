@@ -29,11 +29,11 @@ a stable, op-agnostic parser possible.
 
 Every input is available in three forms, all keyed by **source location**:
 
-| Source | How obtained | Role |
-| --- | --- | --- |
-| CIR | `clang -fclangir -emit-cir` \| `cir-opt --mlir-print-op-generic` | primary lowering input |
-| Clang AST | `clang -Xclang -ast-dump=json -fsyntax-only` | structured source context and raw oracle |
-| C text | read the file | comments / naming (final polish) |
+| Source    | How obtained                                                     | Role                                     |
+| --------- | ---------------------------------------------------------------- | ---------------------------------------- |
+| CIR       | `clang -fclangir -emit-cir` \| `cir-opt --mlir-print-op-generic` | primary lowering input                   |
+| Clang AST | `clang -Xclang -ast-dump=json -fsyntax-only`                     | structured source context and raw oracle |
+| C text    | read the file                                                    | comments / naming (final polish)         |
 
 **Location is the join key.** CIR ops carry `loc("f.c":4:13)`; AST nodes carry
 source ranges; C text is addressable by line:col. "Consult the AST" means: take a
@@ -52,8 +52,8 @@ model has grown.
 
 The pipeline currently flows through two main internal representations:
 
-1. **CIR op-tree** (`ir.rs`) — a *generic* model: `Op { results, name, operands,
-   attrs, regions, result_type, loc }`. It is deliberately not a per-op typed
+1. **CIR op-tree** (`ir.rs`) — a _generic_ model: `Op { results, name, operands,
+attrs, regions, result_type, loc }`. It is deliberately not a per-op typed
    enum: the parser never changes as op coverage grows; only the lowering's
    `match name` does. Typed **views** (e.g. `AllocaOp::of(op)`) give ergonomic,
    checked access without coupling the parser to the op set.
@@ -69,7 +69,7 @@ nodes rather than text.
 
 ## Shared context
 
-One `Ctx` is threaded through every pass — it *is* the three-source model in
+One `Ctx` is threaded through every pass — it _is_ the three-source model in
 code:
 
 ```
