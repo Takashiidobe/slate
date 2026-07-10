@@ -188,23 +188,49 @@ fn grammar_references_are_defined() {
     );
 }
 
+/// A random `u64`, seeded per call from the process's `RandomState` keys (which
+/// are themselves randomized per process). No external RNG crate needed.
+fn random_seed() -> u64 {
+    use std::hash::{BuildHasher, Hasher};
+    std::collections::hash_map::RandomState::new()
+        .build_hasher()
+        .finish()
+}
+
 /// Primary fuzzer: generate multi-function C programs with scoped variables and
 /// composed expressions, then require the translated Rust to match the original
-/// C on stdout and exit code. Seeds are deterministic, so any failure reports a
-/// seed that reproduces the exact program (also written under `target/`).
+/// C on stdout and exit code.
+///
+/// By default each run uses fresh random seeds, so repeated runs explore
+/// different programs. Set `SLATE_FUZZ_SEED=<n>` to make the run deterministic
+/// (seeds `n, n+1, ...`); a failure reports the exact seed, so
+/// `SLATE_FUZZ_SEED=<seed> SLATE_FUZZ_CASES=1` replays that one program. The
+/// generated `.c`/`.generated.rs` are also left under `target/cgen-fuzz/`.
 #[test]
 fn generator_differential() {
     let cases: u64 = std::env::var("SLATE_FUZZ_CASES")
         .ok()
         .and_then(|s| s.parse().ok())
         .unwrap_or(8);
+    let base: Option<u64> = std::env::var("SLATE_FUZZ_SEED")
+        .ok()
+        .and_then(|s| s.parse().ok());
+    match base {
+        Some(b) => eprintln!("seeds: deterministic from SLATE_FUZZ_SEED={b}"),
+        None => eprintln!("seeds: random (set SLATE_FUZZ_SEED=<n> to replay a reported seed)"),
+    }
+
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
     let tmp = manifest.join("target/cgen-fuzz");
     std::fs::create_dir_all(&tmp).expect("create cgen fuzz dir");
 
     let mut failures = Vec::new();
-    for seed in 0..cases {
-        let name = format!("cgen_seed_{seed:04}");
+    for i in 0..cases {
+        let seed = match base {
+            Some(b) => b.wrapping_add(i),
+            None => random_seed(),
+        };
+        let name = format!("cgen_seed_{seed:016x}");
         let c_src = tmp.join(format!("{name}.c"));
         let rs_src = tmp.join(format!("{name}.generated.rs"));
         let program = support::cgen::generate(seed);
@@ -216,10 +242,10 @@ fn generator_differential() {
             Ok(()) => eprintln!("ok    {name}"),
             Err(e) => {
                 eprintln!(
-                    "FAIL  {name}  (reproduce with seed {seed}, see {})",
+                    "FAIL  {name}  (replay with SLATE_FUZZ_SEED={seed} SLATE_FUZZ_CASES=1, see {})",
                     c_src.display()
                 );
-                failures.push(format!("[{name}] {e}"));
+                failures.push(format!("[seed {seed}] {e}"));
             }
         }
     }
