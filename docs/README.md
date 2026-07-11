@@ -32,8 +32,9 @@ small C subset. This is the supported fixture-level surface today:
   through Clang desugared type facts and CIR integer widths.
 - integer overflow left to wrap two's-complement: the generated Rust builds with
   `overflow-checks = false`, matching clang's `-O0` C, so neither side panics.
-- integer constants, loads/stores, comparisons, increment, and the binary
-  operators `+`, `-`, `*`, `/`, `%`.
+- integer constants, loads/stores, comparisons, increment, unary `-`, logical
+  `!`/`&&`/`||`, bitwise `~`/`&`/`|`/`^`/`<<`/`>>`, compound assignment
+  operators, and the binary arithmetic operators `+`, `-`, `*`, `/`, `%`.
 - `float`/`double` parameters, locals, return values, and constants, mapped to
   Rust `f32`/`f64`, with `+`/`-`/`*`/`/`, comparisons, and int/float casts.
 - `long double` parameters, locals, return values, constants, arithmetic, and
@@ -138,6 +139,12 @@ The current fixtures are:
 - `mul.c` — signed multiplication and defined unsigned wrapping multiplication.
 - `div.c` — signed/unsigned division, truncating toward zero.
 - `modulo.c` — signed/unsigned remainder, taking the sign of the dividend.
+- `bitand.c` / `bitor.c` / `bitxor.c` / `bitnot.c` / `shl.c` / `shr.c` —
+  bitwise integer operations.
+- `logical_ops.c` — logical `&&`/`||` short-circuiting and unary logical not.
+- `unary_negation.c` — integer and floating unary arithmetic negation.
+- `compound_assignments.c` — compound assignment operators beyond `+=`.
+- `casts.c` — explicit casts across supported scalar types.
 
 Generated Rust for inspection is written with:
 
@@ -154,13 +161,12 @@ Important gaps remain:
 
 - target-complete C integer modeling beyond the CIR widths already emitted
   (e.g. `__int128`).
-- bitwise, logical, and assignment operators beyond `+=`; wider arithmetic and
-  casts beyond the currently exercised cases.
+- wider arithmetic and casts beyond the currently exercised cases.
 - broader aggregate coverage beyond primitive scalar fields.
 - globals beyond file-scope `static` primitive scalar globals with constant
   initializers and constant strings used by `printf`.
 - `goto`.
-- more arithmetic, bitwise, logical, and assignment operators.
+- more arithmetic and assignment combinations over aggregates and pointers.
 - function prototypes, declarations across translation units, and headers beyond
   what Clang resolves for the fixture.
 - hex float literals and float math beyond `+`/`-`/`*`/`/`.
