@@ -83,8 +83,10 @@ default to a local build and are overridable via environment variables:
 
 ## Build & Test
 
+> **Always use `cargo nextest r --release` to test** (not `cargo test`).
+
 ```bash
-cargo test                                 # unit + differential + fuzz
+cargo nextest r --release                   # unit + differential + fuzz
 cargo fmt                                   # required before finishing
 
 cargo run -- translate tests/fixtures/add.c # C -> Rust on stdout
@@ -92,7 +94,7 @@ cargo run -- emit-cir   tests/fixtures/add.c # inspect the CIR the lowerer sees
 cargo run -- emit-fixtures                   # regenerate tests/fixtures.generated/ (git-ignored)
 
 # fuzzer: random seeds each run; SLATE_FUZZ_SEED=<n> to replay, SLATE_FUZZ_CASES=<n> for count
-cargo test --test bnf_fuzz generator_differential -- --nocapture
+cargo nextest r --release --test bnf_fuzz generator_differential --nocapture
 ```
 
 ## Architecture Overview
