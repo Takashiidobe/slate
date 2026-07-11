@@ -1752,6 +1752,28 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .next()
             .unwrap_or("");
         let value = match self.values.get(src).cloned() {
+            // array-to-pointer decay of a numeric/wide-string const global: render
+            // the elements as a (statically promoted) array literal and take its
+            // pointer, since the global has no Rust name of its own.
+            Some(Val::Global(name))
+                if result_ty.starts_with("!cir.ptr<")
+                    && self.parent.const_arrays.contains_key(&name) =>
+            {
+                let elems = &self.parent.const_arrays[&name];
+                let (elem_ty, len) = cir_ptr_inner(operand_ty)
+                    .and_then(parse_cir_array_type)
+                    .map_or(("i32".to_string(), elems.len()), |(elem, len)| {
+                        (self.parent.rust_type(&elem), len as usize)
+                    });
+                // annotate one element so the array element type can't default wrong
+                let mut typed: Vec<String> = elems.clone();
+                if let Some(first) = typed.first_mut() {
+                    *first = format!("{first} as {elem_ty}");
+                }
+                let arr = render_array_literal(&typed, len);
+                let ptr_ty = self.parent.rust_type(result_ty);
+                Val::Expr(format!("{arr}.as_ptr() as {ptr_ty}"))
+            }
             Some(Val::Global(name)) => Val::Global(name),
             _ if self
                 .slot_types

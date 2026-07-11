@@ -21,11 +21,6 @@ struct UnsupportedProbe {
 }
 
 const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[
-    // Wide string literal used directly as a wchar_t* pointer value.
-    UnsupportedProbe {
-        probe: "wchar/wcslen",
-        bead: "slate-nk3.17",
-    },
     // signal disposition sentinels (SIG_IGN/SIG_DFL/SIG_ERR).
     UnsupportedProbe {
         probe: "signal/signal_ignore",
