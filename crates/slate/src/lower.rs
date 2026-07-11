@@ -2424,13 +2424,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_scope(&mut self, op: &Op) {
-        self.emit_line("{");
-        self.indent += 1;
-        for region in &op.regions {
-            self.lower_region_ops(region);
-        }
-        self.indent -= 1;
-        self.emit_line("}");
+        let body = self.capture_body(|this| {
+            for region in &op.regions {
+                this.lower_region_ops(region);
+            }
+        });
+        self.push_stmt(Stmt::Scope { body });
     }
 
     fn lower_if(&mut self, op: &Op) {
@@ -2438,24 +2437,161 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_expr("todo!(\"cir.if\")".into());
             return;
         };
-        let cond = self.render_operand(cond);
-        self.emit_line(&format!("if {cond} {{"));
-        self.indent += 1;
-        if let Some(region) = op.regions.first() {
-            self.lower_region_ops(region);
-        }
-        self.indent -= 1;
+        let cond = self.operand_expr(cond);
+        let then_body = self.capture_body(|this| {
+            if let Some(region) = op.regions.first() {
+                this.lower_region_ops(region);
+            }
+        });
         let has_else = op
             .regions
             .get(1)
             .is_some_and(|region| region.blocks.iter().any(|block| !block.ops.is_empty()));
-        if has_else {
-            self.emit_line("} else {");
-            self.indent += 1;
-            self.lower_region_ops(&op.regions[1]);
-            self.indent -= 1;
+        let else_body = if has_else {
+            self.capture_body(|this| this.lower_region_ops(&op.regions[1]))
+        } else {
+            Vec::new()
+        };
+        self.push_stmt(Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        });
+    }
+
+    fn not_expr(expr: Expr) -> Expr {
+        Expr::Unary {
+            op: "!".into(),
+            expr: Box::new(expr),
         }
-        self.emit_line("}");
+    }
+
+    fn break_stmt(label: Option<String>) -> IndentStmt {
+        IndentStmt {
+            depth: 0,
+            stmt: Stmt::Break(label),
+        }
+    }
+
+    fn guard_break(cond: Expr, label: Option<String>) -> Stmt {
+        Stmt::If {
+            cond: Self::not_expr(cond),
+            then_body: vec![Self::break_stmt(label)],
+            else_body: Vec::new(),
+        }
+    }
+
+    fn capture_body<F>(&mut self, f: F) -> Vec<IndentStmt>
+    where
+        F: FnOnce(&mut Self),
+    {
+        let outer_body = std::mem::take(&mut self.body);
+        let outer_indent = self.indent;
+        self.indent = 0;
+        f(self);
+        let body = std::mem::take(&mut self.body);
+        self.body = outer_body;
+        self.indent = outer_indent;
+        body
+    }
+
+    fn lower_condition_region_expr(&mut self, region: &Region) -> Expr {
+        let mut condition = Expr::Lit("true".to_string());
+        for block in &region.blocks {
+            for op in &block.ops {
+                if op.name == "cir.condition" {
+                    if let Some(operand) = op.operands.first() {
+                        condition = self.operand_expr(operand);
+                    }
+                } else {
+                    self.lower_op(op);
+                }
+            }
+        }
+        condition
+    }
+
+    fn lower_for_loop_body(
+        &mut self,
+        op: &Op,
+        break_label: Option<String>,
+        continue_label: Option<String>,
+    ) -> Vec<IndentStmt> {
+        self.capture_body(|this| {
+            let cond = this.lower_condition_region_expr(&op.regions[0]);
+            this.push_stmt(Self::guard_break(cond, None));
+            if let Some(label) = &continue_label {
+                this.loop_stack.push(LoopFrame {
+                    break_label: break_label.clone(),
+                    continue_label: continue_label.clone(),
+                    is_loop: true,
+                });
+                let body = this.capture_body(|this| this.lower_region_ops(&op.regions[1]));
+                this.loop_stack.pop();
+                this.push_stmt(Stmt::LabeledBlock {
+                    label: label.clone(),
+                    body,
+                });
+            } else {
+                this.loop_stack.push(LoopFrame {
+                    break_label,
+                    continue_label: None,
+                    is_loop: true,
+                });
+                this.lower_region_ops(&op.regions[1]);
+                this.loop_stack.pop();
+            }
+            this.lower_region_ops(&op.regions[2]);
+        })
+    }
+
+    fn lower_do_loop_body(
+        &mut self,
+        op: &Op,
+        break_label: Option<String>,
+        continue_label: Option<String>,
+    ) -> Vec<IndentStmt> {
+        self.capture_body(|this| {
+            if let Some(label) = &continue_label {
+                let block = this.capture_body(|this| {
+                    this.loop_stack.push(LoopFrame {
+                        break_label: break_label.clone(),
+                        continue_label: continue_label.clone(),
+                        is_loop: true,
+                    });
+                    this.lower_region_ops(&op.regions[0]);
+                    this.loop_stack.pop();
+                });
+                this.push_stmt(Stmt::LabeledBlock {
+                    label: label.clone(),
+                    body: block,
+                });
+            } else {
+                this.loop_stack.push(LoopFrame {
+                    break_label: break_label.clone(),
+                    continue_label: None,
+                    is_loop: true,
+                });
+                this.lower_region_ops(&op.regions[0]);
+                this.loop_stack.pop();
+            }
+            let cond = this.lower_condition_region_expr(&op.regions[1]);
+            this.push_stmt(Self::guard_break(cond, break_label));
+        })
+    }
+
+    fn lower_while_loop_body(&mut self, op: &Op) -> Vec<IndentStmt> {
+        self.capture_body(|this| {
+            let cond = this.lower_condition_region_expr(&op.regions[0]);
+            this.push_stmt(Self::guard_break(cond, None));
+            this.loop_stack.push(LoopFrame {
+                break_label: None,
+                continue_label: None,
+                is_loop: true,
+            });
+            this.lower_region_ops(&op.regions[1]);
+            this.loop_stack.pop();
+        })
     }
 
     fn lower_switch(&mut self, op: &Op) {
@@ -2543,10 +2679,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_expr("todo!(\"cir.for\")".into());
             return;
         }
-        // C `continue` must still run the step region, so wrap the body in a
-        // labeled block (`continue` -> `break 'continue`). Rust then forbids an
-        // unlabeled `break` from diverging through that block, so the loop is
-        // labeled too and `break` targets it.
         let (break_label, continue_label) = if region_has_direct_continue(&op.regions[1]) {
             let n = self.label_counter;
             self.label_counter += 1;
@@ -2554,35 +2686,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             (None, None)
         };
-        match &break_label {
-            Some(label) => self.emit_line(&format!("{label}: loop {{")),
-            None => self.emit_line("loop {"),
-        }
-        self.indent += 1;
-        let cond = self.lower_condition_region(&op.regions[0]);
-        self.emit_line(&format!("if !({cond}) {{"));
-        self.indent += 1;
-        self.emit_line("break;");
-        self.indent -= 1;
-        self.emit_line("}");
-        if let Some(label) = &continue_label {
-            self.emit_line(&format!("{label}: {{"));
-            self.indent += 1;
-        }
-        self.loop_stack.push(LoopFrame {
-            break_label,
-            continue_label: continue_label.clone(),
-            is_loop: true,
+        let body = self.lower_for_loop_body(op, break_label.clone(), continue_label);
+        self.push_stmt(Stmt::Loop {
+            label: break_label,
+            body,
         });
-        self.lower_region_ops(&op.regions[1]);
-        self.loop_stack.pop();
-        if continue_label.is_some() {
-            self.indent -= 1;
-            self.emit_line("}");
-        }
-        self.lower_region_ops(&op.regions[2]);
-        self.indent -= 1;
-        self.emit_line("}");
     }
 
     fn lower_while(&mut self, op: &Op) {
@@ -2590,24 +2698,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_expr("todo!(\"cir.while\")".into());
             return;
         }
-        self.emit_line("loop {");
-        self.indent += 1;
-        let cond = self.lower_condition_region(&op.regions[0]);
-        self.emit_line(&format!("if !({cond}) {{"));
-        self.indent += 1;
-        self.emit_line("break;");
-        self.indent -= 1;
-        self.emit_line("}");
-        // A while loop has no step region, so plain Rust `break`/`continue` match C.
-        self.loop_stack.push(LoopFrame {
-            break_label: None,
-            continue_label: None,
-            is_loop: true,
-        });
-        self.lower_region_ops(&op.regions[1]);
-        self.loop_stack.pop();
-        self.indent -= 1;
-        self.emit_line("}");
+        let body = self.lower_while_loop_body(op);
+        self.push_stmt(Stmt::Loop { label: None, body });
     }
 
     fn lower_do(&mut self, op: &Op) {
@@ -2622,45 +2714,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             (None, None)
         };
-        match &break_label {
-            Some(label) => self.emit_line(&format!("{label}: loop {{")),
-            None => self.emit_line("loop {"),
-        }
-        self.indent += 1;
-        if let Some(label) = &continue_label {
-            self.emit_line(&format!("{label}: {{"));
-            self.indent += 1;
-        }
-        self.loop_stack.push(LoopFrame {
-            break_label: break_label.clone(),
-            continue_label: continue_label.clone(),
-            is_loop: true,
+        let body = self.lower_do_loop_body(op, break_label.clone(), continue_label);
+        self.push_stmt(Stmt::Loop {
+            label: break_label,
+            body,
         });
-        self.lower_region_ops(&op.regions[0]);
-        self.loop_stack.pop();
-        if continue_label.is_some() {
-            self.indent -= 1;
-            self.emit_line("}");
-        }
-        let cond = self.lower_condition_region(&op.regions[1]);
-        self.emit_line(&format!("if !({cond}) {{"));
-        self.indent += 1;
-        match &break_label {
-            Some(label) => self.emit_line(&format!("break {label};")),
-            None => self.emit_line("break;"),
-        }
-        self.indent -= 1;
-        self.emit_line("}");
-        self.indent -= 1;
-        self.emit_line("}");
     }
 
     fn lower_break(&mut self) {
         let label = self.loop_stack.last().and_then(|f| f.break_label.clone());
-        match label {
-            Some(label) => self.emit_line(&format!("break {label};")),
-            None => self.emit_line("break;"),
-        }
+        self.push_stmt(Stmt::Break(label));
     }
 
     fn lower_continue(&mut self) {
@@ -2671,8 +2734,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .find(|frame| frame.is_loop)
             .and_then(|f| f.continue_label.clone());
         match label {
-            Some(label) => self.emit_line(&format!("break {label};")),
-            None => self.emit_line("continue;"),
+            Some(label) => self.push_stmt(Stmt::Break(Some(label))),
+            None => self.push_stmt(Stmt::Continue(None)),
         }
     }
 
