@@ -19,7 +19,6 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 | P1 | do-while | `cir.do` |
 | P1 | decrement | `cir.dec` |
 | P1 | checked/overflowing arithmetic | `cir.add.overflow`, `cir.sub.overflow`, `cir.mul.overflow`, `cir.div.overflow`, `cir.rem.overflow`, `cir.binop.overflow` |
-| P1 | C atomics | `cir.atomic.*` |
 | P1 | generic C complex arithmetic spelling | `cir.complex.binop` |
 | P1 | C complex lvalue access | `cir.complex.real_ptr`, `cir.complex.imag_ptr` |
 | P1 | aggregate value mutation/extraction | `cir.extract_member`, `cir.insert_member` |
@@ -124,3 +123,8 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
   - [x] `cir.va_start`
   - [x] `cir.va_arg`
   - [x] `cir.va_end`
+- [x] atomics (lowered as non-atomic RMW; correct single-threaded)
+  - [x] `cir.atomic.fetch`
+  - [x] `cir.atomic.xchg`
+  - [x] `cir.atomic.cmpxchg`
+  - [x] `cir.atomic.fence`
