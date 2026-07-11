@@ -17,12 +17,8 @@ use std::path::{Path, PathBuf};
 
 /// `header/name` probe ids that do not yet translate+run correctly. Each entry
 /// is tracked by a bead; remove it once the probe passes.
-///   slate-61j  extern globals + FILE streams (stdout/stderr)
 ///   slate-aeo  struct-returning libc fns + libc aggregate typedefs (div_t)
 const KNOWN_UNSUPPORTED: &[&str] = &[
-    // stdio/* — FILE streams stdout/stderr (slate-61j)
-    "stdio/fprintf",
-    "stdio/fputs",
     // stdlib/*
     "stdlib/div", // slate-aeo (div_t)
 ];
