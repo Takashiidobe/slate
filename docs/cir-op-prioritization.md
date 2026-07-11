@@ -14,8 +14,6 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 | Priority | Notes | Ops |
 | --- | --- | --- |
 | P0 | generic scalar spellings | `cir.binop`, `cir.unary` |
-| P0 | low-level conditional branch variant | `cir.brcond` |
-| P0 | switch lowering variant | `cir.switch.flat` |
 | P1 | do-while | `cir.do` |
 | P1 | decrement | `cir.dec` |
 | P1 | checked/overflowing arithmetic | `cir.add.overflow`, `cir.sub.overflow`, `cir.mul.overflow`, `cir.div.overflow`, `cir.rem.overflow`, `cir.binop.overflow` |
@@ -38,6 +36,8 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 | P3 | pointer masking | `cir.ptr_mask` |
 | P3 | traps and unreachable paths | `cir.trap`, `cir.unreachable` |
 | P3 | vector extensions | `cir.vec.*` |
+
+Note: `cir.brcond`/`cir.switch.flat` come only from `--cir-flatten-cfg`, which Slate never runs, so they're unreachable and excluded (`slate-2pq.2` closed).
 
 ## Supported Checklist
 
