@@ -51,7 +51,7 @@
 <scalar_declaration> ::= <type> <ident> "=" <expr> ";" ;
 <array_declaration> ::= <type> <ident> "[" <int> "]" ";" ;
 <assignment> ::= <lvalue> "=" <expr> ";" ;
-<compound_assignment> ::= <lvalue> "+=" <expr> ";" ;
+<compound_assignment> ::= <lvalue> <compound_assign_op> <expr> ";" ;
 <for_loop> ::= "for" "(" "int" <ident> "=" <expr> ";" <expr> ";" <ident> "++" ")" "{" <stmt_list> "}" ;
 <while_loop> ::= "while" "(" <expr> ")" "{" <stmt_list> "}" ;
 <if_stmt> ::= "if" "(" <expr> ")" "{" <stmt_list> "}" <else_clause> ;
@@ -67,11 +67,18 @@
 
 # ----- expressions -----
 
-<expr> ::= <term> | <term> <arith_op> <expr> | "(" <expr> <cmp_op> <expr> ")" ;
-<term> ::= <int> | <float> | <char> | <lvalue> | "&" <lvalue> | <call> | <function_pointer_call> | <sizeof> | "(" <expr> ")" ;
+<expr> ::= <term> | <unary_op> <term> | <term> <binary_op> <expr> | "(" <expr> <cmp_op> <expr> ")" | "(" <expr> <logical_op> <expr> ")" ;
+<term> ::= <int> | <float> | <char> | <lvalue> | "&" <lvalue> | <cast_expr> | <call> | <function_pointer_call> | <sizeof> | "(" <expr> ")" ;
 <lvalue> ::= <ident> | "*" <term> | <ident> "." <ident> | <ident> "[" <expr> "]" ;
+<binary_op> ::= <arith_op> | <bitwise_op> | <shift_op> ;
 <arith_op> ::= "+" | "-" | "*" | "/" | "%" ;
+<bitwise_op> ::= "&" | "|" | "^" ;
+<shift_op> ::= "<<" | ">>" ;
 <cmp_op> ::= "<" | "<=" | ">" | ">=" | "==" | "!=" ;
+<logical_op> ::= "&&" | "||" ;
+<unary_op> ::= "-" | "!" | "~" ;
+<compound_assign_op> ::= "+=" | "-=" | "*=" | "/=" | "%=" | "<<=" | ">>=" | "&=" | "^=" | "|=" ;
+<cast_expr> ::= "(" <type> ")" <term> ;
 <call> ::= <ident> "(" ")" | <ident> "(" <arg_list> ")" ;
 <function_pointer_call> ::= <lvalue> "(" <arg_list> ")" ;
 <arg_list> ::= <expr> "," <arg_list> | <expr> ;
