@@ -971,6 +971,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.ternary" => self.lower_ternary(op),
             "cir.get_global" => self.lower_get_global(op),
             "cir.get_member" => self.lower_get_member(op),
+            "cir.get_bitfield" => self.lower_get_bitfield(op),
+            "cir.set_bitfield" => self.lower_set_bitfield(op),
             "cir.get_element" => self.lower_get_element(op),
             "cir.cast" => self.lower_cast(op),
             "cir.ptr_stride" => self.lower_ptr_stride(op),
@@ -1725,6 +1727,78 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 unsafe_access,
             },
         );
+    }
+
+    fn lower_set_bitfield(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let value = self.render_operand(&op.operands[1]);
+        let ty = op_result_type(op);
+        let trunc = self.truncate_bitfield(op, &value, ty);
+        self.materialize(result, trunc, ty);
+        let stored = self.render_operand(result);
+        let (place, needs_unsafe) = self.bitfield_place(&op.operands[0]);
+        if needs_unsafe {
+            self.emit_line(&format!("unsafe {{ {place} = {stored}; }}"));
+        } else {
+            self.emit_line(&format!("{place} = {stored};"));
+        }
+    }
+
+    fn lower_get_bitfield(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(ptr) = op.operands.first() else {
+            return;
+        };
+        let ty = op_result_type(op);
+        let (place, needs_unsafe) = self.bitfield_place(ptr);
+        let read = if needs_unsafe {
+            format!("unsafe {{ {place} }}")
+        } else {
+            place
+        };
+        let expr = self.truncate_bitfield(op, &read, ty);
+        self.materialize(result, expr, ty);
+    }
+
+    fn bitfield_place(&self, ptr: &str) -> (String, bool) {
+        match self.place_expr(ptr) {
+            Some(place) => (place, self.ptr_requires_unsafe(ptr)),
+            None => (format!("(*{})", self.render_pointer_operand(ptr)), true),
+        }
+    }
+
+    // shift up then arithmetic-shift down masks to `size` bits, sign-extending signed types.
+    fn truncate_bitfield(&self, op: &Op, expr: &str, ty: Option<&str>) -> String {
+        let Some(size) = self.bitfield_size(op) else {
+            return format!("({expr})");
+        };
+        let rust_ty = ty.map(|ty| self.parent.rust_type(ty)).unwrap_or_default();
+        let Some(bits) = int_bits(&rust_ty) else {
+            return format!("({expr})");
+        };
+        if size >= bits {
+            format!("({expr})")
+        } else {
+            let sh = bits - size;
+            format!("((({expr}) << {sh}) >> {sh})")
+        }
+    }
+
+    fn bitfield_size(&self, op: &Op) -> Option<u32> {
+        let raw = attr_str(op, "bitfield_info")?;
+        let resolved = self.parent.aliases.get(raw).map_or(raw, String::as_str);
+        let rest = resolved.split("size = ").nth(1)?;
+        let end = rest
+            .find(|c: char| !c.is_ascii_digit())
+            .unwrap_or(rest.len());
+        rest[..end].parse().ok()
     }
 
     fn lower_get_element(&mut self, op: &Op) {
@@ -2866,6 +2940,15 @@ fn op_result_type(op: &Op) -> Option<&str> {
         .as_deref()
         .and_then(split_top_level_arrow)
         .map(|(_, ret)| ret.trim())
+}
+
+// `u32` -> 32; None for bool/isize/usize/non-integers (no fixed width to mask to).
+fn int_bits(rust_ty: &str) -> Option<u32> {
+    rust_ty
+        .strip_prefix('i')
+        .or_else(|| rust_ty.strip_prefix('u'))?
+        .parse()
+        .ok()
 }
 
 fn op_result_types(op: &Op) -> Vec<&str> {
