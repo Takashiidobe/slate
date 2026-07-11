@@ -31,7 +31,11 @@
 <field_list> ::= <field> <field_list> | <field> ;
 <field> ::= <type> <ident> ";" ;
 
-<global_decl> ::= "static" <type> <ident> "=" <const> ";" ;
+<global_decl> ::= <storage_class> <type> <ident> <global_init> ";" | <type> <ident> <global_init> ";" | "extern" <type> <ident> ";" ;
+<storage_class> ::= "static" | "" ;
+<global_init> ::= "=" <const> | "=" <aggregate_init> | "" ;
+<aggregate_init> ::= "{" <const_list> "}" ;
+<const_list> ::= <const> "," <const_list> | <const> ;
 
 # ----- functions -----
 
