@@ -71,6 +71,24 @@ pub enum Stmt {
     },
     Expr(Expr),
     Return(Option<Expr>),
+    If {
+        cond: Expr,
+        then_body: Vec<IndentStmt>,
+        else_body: Vec<IndentStmt>,
+    },
+    Loop {
+        label: Option<String>,
+        body: Vec<IndentStmt>,
+    },
+    Scope {
+        body: Vec<IndentStmt>,
+    },
+    LabeledBlock {
+        label: String,
+        body: Vec<IndentStmt>,
+    },
+    Break(Option<String>),
+    Continue(Option<String>),
     While {
         cond: Expr,
         body: Block,
@@ -247,6 +265,59 @@ impl Stmt {
                     let _ = writeln!(out, "{pad}return;");
                 }
             },
+            Stmt::If {
+                cond,
+                then_body,
+                else_body,
+            } => {
+                let _ = writeln!(out, "{pad}if {} {{", cond.render_spliceable());
+                emit_indent_stmts(out, then_body, depth + 1);
+                if else_body.is_empty() {
+                    let _ = writeln!(out, "{pad}}}");
+                } else {
+                    let _ = writeln!(out, "{pad}}} else {{");
+                    emit_indent_stmts(out, else_body, depth + 1);
+                    let _ = writeln!(out, "{pad}}}");
+                }
+            }
+            Stmt::Loop { label, body } => {
+                match label {
+                    Some(label) => {
+                        let _ = writeln!(out, "{pad}{label}: loop {{");
+                    }
+                    None => {
+                        let _ = writeln!(out, "{pad}loop {{");
+                    }
+                }
+                emit_indent_stmts(out, body, depth + 1);
+                let _ = writeln!(out, "{pad}}}");
+            }
+            Stmt::Scope { body } => {
+                let _ = writeln!(out, "{pad}{{");
+                emit_indent_stmts(out, body, depth + 1);
+                let _ = writeln!(out, "{pad}}}");
+            }
+            Stmt::LabeledBlock { label, body } => {
+                let _ = writeln!(out, "{pad}{label}: {{");
+                emit_indent_stmts(out, body, depth + 1);
+                let _ = writeln!(out, "{pad}}}");
+            }
+            Stmt::Break(label) => match label {
+                Some(label) => {
+                    let _ = writeln!(out, "{pad}break {label};");
+                }
+                None => {
+                    let _ = writeln!(out, "{pad}break;");
+                }
+            },
+            Stmt::Continue(label) => match label {
+                Some(label) => {
+                    let _ = writeln!(out, "{pad}continue {label};");
+                }
+                None => {
+                    let _ = writeln!(out, "{pad}continue;");
+                }
+            },
             Stmt::While { cond, body } => {
                 let _ = writeln!(out, "{pad}while {} {{", cond.render());
                 body.emit(out, depth + 1);
@@ -264,10 +335,17 @@ impl Stmt {
     }
 }
 
+fn emit_indent_stmts(out: &mut String, body: &[IndentStmt], depth: usize) {
+    for IndentStmt { depth: extra, stmt } in body {
+        stmt.emit(out, depth + extra);
+    }
+}
+
 // Rust expression binding powers (higher binds tighter). Only the operators the
 // lowerer emits are modeled; anything atomic or brace/paren-delimited renders at
 // PREC_ATOM so it never needs wrapping.
-const PREC_CAST: u8 = 12;
+const PREC_CAST: u8 = 4;
+const PREC_CAST_OPERAND: u8 = 12;
 const PREC_PREFIX: u8 = 13;
 const PREC_CALL: u8 = 14;
 const PREC_ATOM: u8 = 15;
@@ -408,7 +486,7 @@ impl Expr {
             }
             Expr::Unsafe(e) => format!("unsafe {{ {} }}", e.render()),
             Expr::Cast { expr, ty } => {
-                format!("{} as {}", expr.render_prec(PREC_CAST), ty.render())
+                format!("{} as {}", expr.render_prec(PREC_CAST_OPERAND), ty.render())
             }
             Expr::Ref { mutable, expr } => {
                 let kw = if *mutable { "&mut " } else { "&" };
@@ -610,6 +688,18 @@ fn add(a: i32, b: i32) -> i32 {
             }
             .render(),
             "(a + b) as i64"
+        );
+        assert_eq!(
+            Expr::Binary {
+                op: "<".into(),
+                lhs: Box::new(Expr::Cast {
+                    expr: var("a"),
+                    ty: Type::Named("i32".into()),
+                }),
+                rhs: var("b"),
+            }
+            .render(),
+            "(a as i32) < b"
         );
     }
 
