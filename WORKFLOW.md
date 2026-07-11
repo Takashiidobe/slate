@@ -85,9 +85,8 @@ checkout own `.beads/`.
 
 ## Avoid Parallel Hotspots
 
-Good parallel tickets usually add isolated fixtures or header coverage under
-`tests/stdlib/...`. Run only one ticket at a time for these shared files unless a
-human explicitly partitions the work:
+Run only one ticket at a time against these shared files unless a human explicitly
+partitions the work:
 
 - `src/lower.rs`
 - `src/c_ast.rs`

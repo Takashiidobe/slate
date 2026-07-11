@@ -106,18 +106,11 @@ is clearly better for the supported pattern.
 
 ## Choosing The Path
 
-Use baseline language feature work when:
-
-- the C construct cannot be translated yet;
-- generated Rust fails to compile;
-- generated Rust behaves differently from C;
-- Slate needs a new source fact from CIR or Clang AST.
-
-Use fixup work when:
-
-- the C construct already translates correctly;
-- the change is only about readability, idiom, or reducing `unsafe`;
-- disabling the fixup would still leave correct generated Rust.
+Baseline work when the C construct can't translate yet, generated Rust fails to
+compile or behaves differently from C, or Slate needs a new source fact from CIR
+or the Clang AST. Fixup work when it already translates correctly and the change
+is only readability, idiom, or reducing `unsafe` — disabling it would still leave
+correct Rust.
 
 Do not make a fixup carry correctness. Correctness belongs in baseline lowering;
 fixups are optional improvements.
