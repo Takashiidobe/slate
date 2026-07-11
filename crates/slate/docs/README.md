@@ -48,6 +48,9 @@ small C subset. This is the supported fixture-level surface today:
 - string literals used by `printf`.
 - `for` loops represented as conservative Rust `loop { ... break ... }`.
 - `while` loops represented as conservative Rust `loop { ... break ... }`.
+- `break` and `continue` inside `for`/`while` loops, including nested loops. A
+  `for` loop's `continue` runs the step region via a labeled block so it matches
+  C semantics.
 - `if`/`else` (including `else if` chains) represented as Rust `if { ... } else { ... }`.
 - C enum constants with implicit values and explicit `= number` values, emitted
   as Rust integer `const` items.
@@ -83,6 +86,9 @@ The current fixtures are:
 - `add.c` — integer functions, locals, calls, and addition.
 - `loop_sum.c` — structured `for` loop lowering.
 - `while_loop.c` — structured `while` loop lowering.
+- `break_for.c` / `break_while.c` — `break` early-exit from `for`/`while`.
+- `continue_for.c` / `continue_while.c` — `continue` skip-to-next-iteration.
+- `loop_break_continue.c` — nested loops mixing `break`, `continue`, and `if`.
 - `enums.c` — enum constants with implicit and explicit values.
 - `unions.c` — basic union declaration, field writes, and field reads.
 - `structs.c` — basic struct declaration, field writes, and field reads.
@@ -147,7 +153,7 @@ Important gaps remain:
 - broader aggregate coverage beyond primitive scalar fields.
 - globals beyond file-scope `static` primitive scalar globals with constant
   initializers and constant strings used by `printf`.
-- `switch`, `break`, `continue`, and `goto`.
+- `switch` and `goto`.
 - more arithmetic, bitwise, logical, and assignment operators.
 - function prototypes, declarations across translation units, and headers beyond
   what Clang resolves for the fixture.
