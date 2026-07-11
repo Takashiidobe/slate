@@ -21,27 +21,6 @@ struct UnsupportedProbe {
 }
 
 const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[
-    // External libc struct types (struct tm / struct lconv) are not modeled yet.
-    UnsupportedProbe {
-        probe: "time/asctime",
-        bead: "slate-nk3.16",
-    },
-    UnsupportedProbe {
-        probe: "time/gmtime",
-        bead: "slate-nk3.16",
-    },
-    UnsupportedProbe {
-        probe: "time/mktime",
-        bead: "slate-nk3.16",
-    },
-    UnsupportedProbe {
-        probe: "time/strftime",
-        bead: "slate-nk3.16",
-    },
-    UnsupportedProbe {
-        probe: "locale/localeconv",
-        bead: "slate-nk3.16",
-    },
     // Wide string literal used directly as a wchar_t* pointer value.
     UnsupportedProbe {
         probe: "wchar/wcslen",
