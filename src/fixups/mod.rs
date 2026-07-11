@@ -11,6 +11,7 @@ pub fn apply(program: Program) -> Program {
                 Item::Raw(text) => {
                     let text = eliminate_param_spills(&text);
                     let text = inline_single_use_temps(&text);
+                    let text = fuse_zero_init(&text);
                     Item::Raw(collapse_retval(&text))
                 }
                 item => item,
@@ -177,6 +178,50 @@ fn collapse_retval(text: &str) -> String {
         out.push('\n');
     }
     out
+}
+
+// fuse `let mut c = 0; c = expr;` into `let mut c = expr;` only when the store
+// is the immediately following line, so the placeholder is provably dead.
+fn fuse_zero_init(text: &str) -> String {
+    let trailing_newline = text.ends_with('\n');
+    let mut lines: Vec<String> = text.lines().map(str::to_string).collect();
+
+    loop {
+        let mut changed = false;
+        for i in 0..lines.len().saturating_sub(1) {
+            let Some((name, ty)) = parse_zero_init_decl(&lines[i]) else {
+                continue;
+            };
+            let Some((lhs, expr)) = parse_assign(&lines[i + 1]) else {
+                continue;
+            };
+            if lhs != name || ident_count(&lines[i + 1], name) != 1 {
+                continue;
+            }
+            let indent = leading_ws(&lines[i]);
+            lines[i] = format!("{indent}let mut {name}: {ty} = {expr};");
+            lines.remove(i + 1);
+            changed = true;
+            break;
+        }
+        if !changed {
+            break;
+        }
+    }
+
+    let mut out = lines.join("\n");
+    if trailing_newline {
+        out.push('\n');
+    }
+    out
+}
+
+fn parse_zero_init_decl(line: &str) -> Option<(&str, &str)> {
+    let rest = line.trim_start().strip_prefix("let mut ")?;
+    let (name, rest) = rest.split_once(':')?;
+    let (ty, init) = rest.split_once(" = ")?;
+    let init = init.strip_suffix(';')?.trim();
+    matches!(init, "0" | "0.0" | "false").then_some((name.trim(), ty.trim()))
 }
 
 fn parse_return_ident(line: &str) -> Option<&str> {
@@ -790,6 +835,68 @@ fn main() {
 ";
 
         assert_eq!(inline_single_use_temps(input), input);
+    }
+
+    #[test]
+    fn fuses_zero_init_with_immediate_first_assignment() {
+        let input = "\
+fn add(mut a: i32, mut b: i32) -> i32 {
+    let mut c: i32 = 0;
+    c = ((a) + (b));
+    return c;
+}
+";
+
+        assert_eq!(
+            fuse_zero_init(input),
+            "\
+fn add(mut a: i32, mut b: i32) -> i32 {
+    let mut c: i32 = ((a) + (b));
+    return c;
+}
+"
+        );
+    }
+
+    #[test]
+    fn does_not_fuse_when_first_assignment_reads_the_placeholder() {
+        let input = "\
+fn f() -> i32 {
+    let mut c: i32 = 0;
+    c = ((c) + (1));
+    return c;
+}
+";
+
+        assert_eq!(fuse_zero_init(input), input);
+    }
+
+    #[test]
+    fn does_not_fuse_when_assignment_is_not_immediate() {
+        let input = "\
+fn f(cond: bool) -> i32 {
+    let mut c: i32 = 0;
+    if cond {
+        c = 1;
+    }
+    return c;
+}
+";
+
+        assert_eq!(fuse_zero_init(input), input);
+    }
+
+    #[test]
+    fn does_not_fuse_non_placeholder_initializers() {
+        let input = "\
+fn f() -> i32 {
+    let mut c: i32 = 7;
+    c = 1;
+    return c;
+}
+";
+
+        assert_eq!(fuse_zero_init(input), input);
     }
 
     #[test]
