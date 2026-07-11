@@ -128,6 +128,13 @@ struct FunctionLowerer<'a, 'b> {
 struct LoopFrame {
     break_label: Option<String>,
     continue_label: Option<String>,
+    is_loop: bool,
+}
+
+struct SwitchCase<'a> {
+    values: Vec<i64>,
+    is_default: bool,
+    region: &'a Region,
 }
 
 #[derive(Debug, Clone)]
@@ -684,6 +691,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.return" => self.lower_return(op),
             "cir.scope" => self.lower_scope(op),
             "cir.if" => self.lower_if(op),
+            "cir.switch" => self.lower_switch(op),
             "cir.for" => self.lower_for(op),
             "cir.while" => self.lower_while(op),
             "cir.break" => self.lower_break(),
@@ -1569,6 +1577,86 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.emit_line("}");
     }
 
+    fn lower_switch(&mut self, op: &Op) {
+        let Some(selector) = op.operands.first() else {
+            self.emit_expr("todo!(\"cir.switch\")".into());
+            return;
+        };
+        let Some(region) = op.regions.first() else {
+            self.emit_expr("todo!(\"cir.switch\")".into());
+            return;
+        };
+        let cases: Vec<_> = region
+            .blocks
+            .iter()
+            .flat_map(|block| &block.ops)
+            .filter(|op| op.name == "cir.case")
+            .filter_map(switch_case)
+            .collect();
+        if cases.is_empty() {
+            return;
+        }
+
+        let n = self.label_counter;
+        self.label_counter += 1;
+        let label = format!("'__switch{n}");
+        let selector_name = format!("__switch_value{n}");
+        let case_name = format!("__switch_case{n}");
+        let default_index = cases.iter().position(|case| case.is_default);
+        let fallback = default_index
+            .map(|index| index.to_string())
+            .unwrap_or_else(|| "-1".into());
+        let selector = self.render_operand(selector);
+
+        self.emit_line("{");
+        self.indent += 1;
+        self.emit_line(&format!("let {selector_name} = {selector};"));
+        self.emit_line(&format!(
+            "let mut {case_name}: i32 = match {selector_name} {{"
+        ));
+        self.indent += 1;
+        for (index, case) in cases.iter().enumerate() {
+            for value in &case.values {
+                self.emit_line(&format!("{value} => {index},"));
+            }
+        }
+        self.emit_line(&format!("_ => {fallback},"));
+        self.indent -= 1;
+        self.emit_line("};");
+        self.emit_line(&format!("{label}: loop {{"));
+        self.indent += 1;
+        self.emit_line(&format!("match {case_name} {{"));
+        self.indent += 1;
+        self.loop_stack.push(LoopFrame {
+            break_label: Some(label.clone()),
+            continue_label: None,
+            is_loop: false,
+        });
+        for (index, case) in cases.iter().enumerate() {
+            self.emit_line(&format!("{index} => {{"));
+            self.indent += 1;
+            self.lower_region_ops(case.region);
+            if !region_ends_control_flow(case.region) {
+                if index + 1 < cases.len() {
+                    self.emit_line(&format!("{case_name} = {};", index + 1));
+                    self.emit_line(&format!("continue {label};"));
+                } else {
+                    self.emit_line(&format!("break {label};"));
+                }
+            }
+            self.indent -= 1;
+            self.emit_line("}");
+        }
+        self.loop_stack.pop();
+        self.emit_line(&format!("_ => break {label},"));
+        self.indent -= 1;
+        self.emit_line("}");
+        self.indent -= 1;
+        self.emit_line("}");
+        self.indent -= 1;
+        self.emit_line("}");
+    }
+
     fn lower_for(&mut self, op: &Op) {
         if op.regions.len() < 3 {
             self.emit_expr("todo!(\"cir.for\")".into());
@@ -1603,6 +1691,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.loop_stack.push(LoopFrame {
             break_label,
             continue_label: continue_label.clone(),
+            is_loop: true,
         });
         self.lower_region_ops(&op.regions[1]);
         self.loop_stack.pop();
@@ -1632,6 +1721,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.loop_stack.push(LoopFrame {
             break_label: None,
             continue_label: None,
+            is_loop: true,
         });
         self.lower_region_ops(&op.regions[1]);
         self.loop_stack.pop();
@@ -1650,7 +1740,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn lower_continue(&mut self) {
         let label = self
             .loop_stack
-            .last()
+            .iter()
+            .rev()
+            .find(|frame| frame.is_loop)
             .and_then(|f| f.continue_label.clone());
         match label {
             Some(label) => self.emit_line(&format!("break {label};")),
@@ -1846,6 +1938,42 @@ fn attr_int(op: &Op, key: &str) -> Option<i64> {
 
 fn attr_bool(op: &Op, key: &str) -> bool {
     op.attrs.contains_key(key)
+}
+
+fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
+    let is_default = attr_int(op, "kind") == Some(0);
+    let values = match op.attrs.get("value") {
+        Some(Attr::Array(values)) => values
+            .iter()
+            .filter_map(|value| match value {
+                Attr::Int(n) => Some(*n),
+                Attr::Raw(raw) => parse_cir_int(raw),
+                _ => None,
+            })
+            .collect(),
+        _ => Vec::new(),
+    };
+    let region = op.regions.first()?;
+    Some(SwitchCase {
+        values,
+        is_default,
+        region,
+    })
+}
+
+fn region_ends_control_flow(region: &Region) -> bool {
+    region
+        .blocks
+        .iter()
+        .rev()
+        .flat_map(|block| block.ops.iter().rev())
+        .find(|op| op.name != "cir.yield")
+        .is_some_and(|op| {
+            matches!(
+                op.name.as_str(),
+                "cir.break" | "cir.continue" | "cir.return"
+            )
+        })
 }
 
 fn op_result_type(op: &Op) -> Option<&str> {

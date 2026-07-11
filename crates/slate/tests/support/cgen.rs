@@ -9,7 +9,7 @@
 //!
 //! Everything it emits is restricted to the subset Slate can translate today
 //! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
-//! `float`/`double`/`long double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`/`if`,
+//! `float`/`double`/`long double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`/`if`/`switch`,
 //! `double _Complex` `+`/`-`/`*`/`/` with `__real__`/`__imag__` extraction,
 //! arrays, pointers, structs, unions, typedef aliases, fixed-width typedefs,
 //! `_Bool`/`bool`, `sizeof`, type qualifiers, static globals, enum constants, and
@@ -458,12 +458,13 @@ impl Gen {
     }
 
     fn emit_helper_stmt(&mut self) {
-        match self.rng.below(5) {
+        match self.rng.below(6) {
             0 => self.emit_decl_stmt(),
             1 => self.emit_assign_stmt(),
             2 => self.emit_compound_stmt(),
             3 => self.emit_for_stmt(),
-            _ => self.emit_if_stmt(),
+            4 => self.emit_if_stmt(),
+            _ => self.emit_switch_stmt(),
         }
     }
 
@@ -574,6 +575,52 @@ impl Gen {
             init_max
         };
         self.set_max_abs(&r, then_max.max(other_max));
+    }
+
+    fn emit_switch_stmt(&mut self) {
+        let r = self.fresh("sw");
+        let (init, init_max) = self.gen_expr(0, DECL_BUDGET);
+        self.line(&format!("{} {r} = {init};", self.int_type()));
+        self.declare(&r, init_max);
+
+        let selector = self.rng.int_in(0, 3);
+        let (case0_expr, case0_max) = self.gen_expr(0, STEP_BUDGET);
+        let (case1_expr, case1_max) = self.gen_expr(0, STEP_BUDGET);
+        let (default_expr, default_max) = self.gen_expr(0, STEP_BUDGET);
+        let has_default = self.rng.chance(75);
+        self.line(&format!("switch ({selector}) {{"));
+        self.indent += 1;
+        self.line("case 0:");
+        self.indent += 1;
+        self.line(&format!("{r} += {case0_expr};"));
+        self.indent -= 1;
+        self.line("case 1:");
+        self.indent += 1;
+        self.line(&format!("{r} += {case1_expr};"));
+        self.line("break;");
+        self.indent -= 1;
+        self.line("case 2:");
+        self.indent += 1;
+        self.line(&format!("{r} += {default_expr};"));
+        self.line("break;");
+        self.indent -= 1;
+        if has_default {
+            self.line("default:");
+            self.indent += 1;
+            self.line(&format!("{r} += {default_expr};"));
+            self.indent -= 1;
+        }
+        self.indent -= 1;
+        self.line("}");
+
+        let mut max = init_max;
+        max = max.max(init_max + case0_max + case1_max);
+        max = max.max(init_max + case1_max);
+        max = max.max(init_max + default_max);
+        if has_default {
+            max = max.max(init_max + default_max);
+        }
+        self.set_max_abs(&r, max.min(VALUE_CAP));
     }
 
     // ----- expressions -----
