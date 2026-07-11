@@ -925,6 +925,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.copy" => self.lower_copy(op),
             "cir.load" => self.lower_load(op),
             "cir.const" => self.lower_const(op),
+            "cir.add.overflow" => self.lower_overflow_arith(op, "overflowing_add"),
+            "cir.sub.overflow" => self.lower_overflow_arith(op, "overflowing_sub"),
+            "cir.mul.overflow" => self.lower_overflow_arith(op, "overflowing_mul"),
+            "cir.div.overflow" => self.lower_overflow_arith(op, "overflowing_div"),
+            "cir.rem.overflow" => self.lower_overflow_arith(op, "overflowing_rem"),
             "cir.add" => self.lower_int_arith(op, "+"),
             "cir.sub" => self.lower_int_arith(op, "-"),
             "cir.mul" => self.lower_int_arith(op, "*"),
@@ -1380,6 +1385,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let rhs = self.render_operand(&op.operands[1]);
         let ty = op_result_type(op);
         self.materialize(result, format!("(({lhs}) {rust_op} ({rhs}))"), ty);
+    }
+
+    fn lower_overflow_arith(&mut self, op: &Op, rust_method: &str) {
+        if op.results.len() < 2 || op.operands.len() < 2 {
+            return;
+        }
+        let lhs = self.render_operand(&op.operands[0]);
+        let rhs = self.render_operand(&op.operands[1]);
+        let result_types = op_result_types(op);
+        let pair = self.next_temp();
+        self.emit_line(&format!("let {pair} = ({lhs}).{rust_method}({rhs});"));
+        self.materialize(
+            &op.results[0],
+            format!("{pair}.0"),
+            result_types.first().copied(),
+        );
+        self.materialize(
+            &op.results[1],
+            format!("{pair}.1"),
+            result_types.get(1).copied(),
+        );
     }
 
     fn lower_inc(&mut self, op: &Op) {
