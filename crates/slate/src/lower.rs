@@ -983,7 +983,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.atomic.fetch" => self.lower_atomic_fetch(op),
             "cir.atomic.xchg" => self.lower_atomic_xchg(op),
             "cir.atomic.cmpxchg" => self.lower_atomic_cmpxchg(op),
-            "cir.atomic.fence" => self.lower_atomic_fence(),
+            "cir.atomic.fence" => self.lower_atomic_fence(op),
             "cir.return" => self.lower_return(op),
             "cir.scope" => self.lower_scope(op),
             "cir.if" => self.lower_if(op),
@@ -1052,6 +1052,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.render_operand(&op.operands[0])
         };
         let ptr = &op.operands[1];
+        if !attr_bool(op, "is_volatile") && self.try_atomic_store(op, ptr, value_ty, &value) {
+            return;
+        }
         if attr_bool(op, "is_volatile") {
             let addr = self.store_address(ptr);
             self.emit_line(&format!(
@@ -1165,6 +1168,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 "unsafe {{ std::ptr::read_volatile({}) }}",
                 self.load_address(ptr)
             )
+        } else if let Some(atomic) = self.atomic_load_expr(op, ptr) {
+            atomic
         } else if let Some(global) = self.global_name(ptr) {
             format!("unsafe {{ {global} }}")
         } else if let Some(member) = self.member_ptrs.get(ptr) {
@@ -1993,13 +1998,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    // Atomic RMW/fence ops lower to plain non-atomic read-modify-write through
-    // `store_address` (a `*mut T`). Single-threaded differential testing makes
-    // the atomic/ordering semantics unobservable; real atomics are a later fixup.
+    // Atomic ops lower to real `std::sync::atomic` operations viewed through
+    // `AtomicN::from_ptr(store_address(ptr))`, so the existing integer slot is
+    // accessed atomically without changing its storage. Integer/bool types map
+    // to an atomic wrapper; float/pointer atomics fall back to a non-atomic RMW
+    // (std has no atomic float, and atomic pointers need a different shape).
     fn atomic_rust_type(&self, op: &Op) -> String {
         op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "i32".into())
+    }
+
+    // `AtomicN::from_ptr(<*mut T>)`, an unsafe expression the caller wraps.
+    fn atomic_ref(&self, ptr: &str, wrapper: &str) -> String {
+        format!(
+            "std::sync::atomic::{wrapper}::from_ptr({})",
+            self.store_address(ptr)
+        )
     }
 
     fn lower_atomic_fetch(&mut self, op: &Op) {
@@ -2009,31 +2024,62 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let addr = self.store_address(&op.operands[0]);
         let val = self.render_operand(&op.operands[1]);
         let ty = self.atomic_rust_type(op);
+        let binop = attr_int(op, "binop").unwrap_or(0);
+        let Some(wrapper) = atomic_wrapper(&ty) else {
+            // float/pointer atomic: non-atomic read-modify-write fallback.
+            self.lower_atomic_fetch_nonatomic(op, &result, &val, &ty, binop);
+            return;
+        };
+        let atomic = self.atomic_ref(&op.operands[0], wrapper);
+        let ord = rmw_ordering(attr_int(op, "mem_order").unwrap_or(5));
+        let method = match binop {
+            0 => "fetch_add",
+            1 => "fetch_sub",
+            2 => "fetch_and",
+            3 => "fetch_xor",
+            4 => "fetch_or",
+            5 => "fetch_nand",
+            6 => "fetch_max",
+            _ => "fetch_min",
+        };
+        let fetched = format!("unsafe {{ {atomic}.{method}({val}, {ord}) }}");
+        // std atomics always return the pre-op value; `fetch_first` wants that,
+        // otherwise recompute the post-op value the op just stored.
+        if attr_bool(op, "fetch_first") {
+            self.materialize(&result, fetched, op_result_type(op));
+        } else {
+            let old = self.next_temp();
+            self.emit_line(&format!("let {old}: {ty} = {fetched};"));
+            let new = atomic_combine(binop, &old, &val);
+            self.materialize(&result, new, op_result_type(op));
+        }
+    }
+
+    fn lower_atomic_fetch_nonatomic(
+        &mut self,
+        op: &Op,
+        result: &str,
+        val: &str,
+        ty: &str,
+        binop: i64,
+    ) {
+        let addr = self.store_address(&op.operands[0]);
         let old = self.next_temp();
         self.emit_line(&format!("let {old}: {ty} = unsafe {{ *{addr} }};"));
-        let combined = match attr_int(op, "binop").unwrap_or(0) {
-            0 => format!("({old} + ({val}))"),
-            1 => format!("({old} - ({val}))"),
-            2 => format!("({old} & ({val}))"),
-            3 => format!("({old} ^ ({val}))"),
-            4 => format!("({old} | ({val}))"),
-            5 => format!("(!({old} & ({val})))"),
-            6 => format!("({old}).max({val})"),
-            _ => format!("({old}).min({val})"),
-        };
         let new = self.next_temp();
-        self.emit_line(&format!("let {new}: {ty} = {combined};"));
+        self.emit_line(&format!(
+            "let {new}: {ty} = {};",
+            atomic_combine(binop, &old, val)
+        ));
         self.emit_line(&format!("unsafe {{ *{addr} = {new}; }}"));
-        // `fetch_first` returns the pre-op value; its absence returns the new value.
         let bound = if attr_bool(op, "fetch_first") {
             old
         } else {
             new
         };
-        self.values.insert(result, Val::Expr(bound));
+        self.values.insert(result.to_string(), Val::Expr(bound));
     }
 
     fn lower_atomic_xchg(&mut self, op: &Op) {
@@ -2043,9 +2089,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let addr = self.store_address(&op.operands[0]);
         let val = self.render_operand(&op.operands[1]);
         let ty = self.atomic_rust_type(op);
+        if let Some(wrapper) = atomic_wrapper(&ty) {
+            let atomic = self.atomic_ref(&op.operands[0], wrapper);
+            let ord = rmw_ordering(attr_int(op, "mem_order").unwrap_or(5));
+            let expr = format!("unsafe {{ {atomic}.swap({val}, {ord}) }}");
+            self.materialize(&result, expr, op_result_type(op));
+            return;
+        }
+        let addr = self.store_address(&op.operands[0]);
         let old = self.next_temp();
         self.emit_line(&format!("let {old}: {ty} = unsafe {{ *{addr} }};"));
         self.emit_line(&format!("unsafe {{ *{addr} = {val}; }}"));
@@ -2056,13 +2109,33 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 3 || op.results.len() < 2 {
             return;
         }
-        let addr = self.store_address(&op.operands[0]);
         let expected = self.render_operand(&op.operands[1]);
         let desired = self.render_operand(&op.operands[2]);
         let ty = op_result_types(op)
             .first()
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "i32".into());
+        if let Some(wrapper) = atomic_wrapper(&ty) {
+            let atomic = self.atomic_ref(&op.operands[0], wrapper);
+            let succ = rmw_ordering(attr_int(op, "succ_order").unwrap_or(5));
+            let fail = load_ordering(attr_int(op, "fail_order").unwrap_or(5));
+            // Always strong: `compare_exchange_weak` may spuriously fail and
+            // diverge from the C reference under differential testing.
+            let res = self.next_temp();
+            self.emit_line(&format!(
+                "let {res}: Result<{ty}, {ty}> = unsafe {{ {atomic}.compare_exchange({expected}, {desired}, {succ}, {fail}) }};"
+            ));
+            let old = self.next_temp();
+            self.emit_line(&format!(
+                "let {old}: {ty} = match {res} {{ Ok(v) => v, Err(v) => v }};"
+            ));
+            let ok = self.next_temp();
+            self.emit_line(&format!("let {ok}: bool = {res}.is_ok();"));
+            self.values.insert(op.results[0].clone(), Val::Expr(old));
+            self.values.insert(op.results[1].clone(), Val::Expr(ok));
+            return;
+        }
+        let addr = self.store_address(&op.operands[0]);
         let old = self.next_temp();
         let ok = self.next_temp();
         self.emit_line(&format!("let {old}: {ty} = unsafe {{ *{addr} }};"));
@@ -2072,8 +2145,54 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.values.insert(op.results[1].clone(), Val::Expr(ok));
     }
 
-    fn lower_atomic_fence(&mut self) {
-        self.emit_line("std::sync::atomic::fence(std::sync::atomic::Ordering::SeqCst);");
+    fn lower_atomic_fence(&mut self, op: &Op) {
+        // a relaxed thread fence is a no-op, and `fence(Relaxed)` panics in Rust.
+        let ordering = attr_int(op, "ordering").unwrap_or(5);
+        if ordering == 0 {
+            return;
+        }
+        self.emit_line(&format!(
+            "std::sync::atomic::fence({});",
+            rust_ordering(ordering)
+        ));
+    }
+
+    // atomic `cir.load`/`cir.store` (they carry `mem_order`) — real atomic
+    // access so a shared `_Atomic` object is never touched non-atomically.
+    fn atomic_load_expr(&self, op: &Op, ptr: &str) -> Option<String> {
+        let mem_order = attr_int(op, "mem_order")?;
+        let ty = op_result_type(op).map(|ty| self.parent.rust_type(ty))?;
+        let wrapper = atomic_wrapper(&ty)?;
+        let atomic = self.atomic_ref(ptr, wrapper);
+        Some(format!(
+            "unsafe {{ {atomic}.load({}) }}",
+            load_ordering(mem_order)
+        ))
+    }
+
+    fn try_atomic_store(
+        &mut self,
+        op: &Op,
+        ptr: &str,
+        value_ty: Option<&str>,
+        value: &str,
+    ) -> bool {
+        let Some(mem_order) = attr_int(op, "mem_order") else {
+            return false;
+        };
+        let Some(wrapper) = value_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .as_deref()
+            .and_then(atomic_wrapper)
+        else {
+            return false;
+        };
+        let atomic = self.atomic_ref(ptr, wrapper);
+        self.emit_line(&format!(
+            "unsafe {{ {atomic}.store({value}, {}); }}",
+            store_ordering(mem_order)
+        ));
+        true
     }
 
     fn lower_va_start(&mut self, op: &Op) {
@@ -2626,6 +2745,75 @@ fn attr_int(op: &Op, key: &str) -> Option<i64> {
 
 fn attr_bool(op: &Op, key: &str) -> bool {
     op.attrs.contains_key(key)
+}
+
+// the `std::sync::atomic` wrapper for a scalar Rust type, if one exists.
+fn atomic_wrapper(rust_ty: &str) -> Option<&'static str> {
+    Some(match rust_ty {
+        "i8" => "AtomicI8",
+        "u8" => "AtomicU8",
+        "i16" => "AtomicI16",
+        "u16" => "AtomicU16",
+        "i32" => "AtomicI32",
+        "u32" => "AtomicU32",
+        "i64" => "AtomicI64",
+        "u64" => "AtomicU64",
+        "isize" => "AtomicIsize",
+        "usize" => "AtomicUsize",
+        "bool" => "AtomicBool",
+        _ => return None,
+    })
+}
+
+// combine old value and operand to the value an atomic fetch op stores.
+fn atomic_combine(binop: i64, old: &str, val: &str) -> String {
+    match binop {
+        0 => format!("({old} + ({val}))"),
+        1 => format!("({old} - ({val}))"),
+        2 => format!("({old} & ({val}))"),
+        3 => format!("({old} ^ ({val}))"),
+        4 => format!("({old} | ({val}))"),
+        5 => format!("(!({old} & ({val})))"),
+        6 => format!("({old}).max({val})"),
+        _ => format!("({old}).min({val})"),
+    }
+}
+
+// C `memory_order` (0 relaxed,1 consume,2 acquire,3 release,4 acq_rel,5 seq_cst)
+// mapped to a fully-qualified Rust `Ordering`. Rust lacks Consume; use Acquire.
+fn rust_ordering(mem_order: i64) -> String {
+    let name = match mem_order {
+        0 => "Relaxed",
+        1 | 2 => "Acquire",
+        3 => "Release",
+        4 => "AcqRel",
+        _ => "SeqCst",
+    };
+    format!("std::sync::atomic::Ordering::{name}")
+}
+
+fn rmw_ordering(mem_order: i64) -> String {
+    rust_ordering(mem_order)
+}
+
+// loads reject Release/AcqRel; clamp to a load-valid ordering.
+fn load_ordering(mem_order: i64) -> String {
+    let name = match mem_order {
+        0 => "Relaxed",
+        1 | 2 => "Acquire",
+        _ => "SeqCst",
+    };
+    format!("std::sync::atomic::Ordering::{name}")
+}
+
+// stores reject Acquire/AcqRel; clamp to a store-valid ordering.
+fn store_ordering(mem_order: i64) -> String {
+    let name = match mem_order {
+        0 => "Relaxed",
+        3 => "Release",
+        _ => "SeqCst",
+    };
+    format!("std::sync::atomic::Ordering::{name}")
 }
 
 fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {

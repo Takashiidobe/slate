@@ -123,7 +123,7 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
   - [x] `cir.va_start`
   - [x] `cir.va_arg`
   - [x] `cir.va_end`
-- [x] atomics (lowered as non-atomic RMW; correct single-threaded)
+- [x] atomics (real `std::sync::atomic` ops via `AtomicN::from_ptr`; int/bool only, float/ptr fall back to non-atomic RMW)
   - [x] `cir.atomic.fetch`
   - [x] `cir.atomic.xchg`
   - [x] `cir.atomic.cmpxchg`
