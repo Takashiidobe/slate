@@ -329,6 +329,15 @@ fn substitute_in_stmt_structured(stmt: &mut Stmt, name: &str, init: &Expr) -> bo
             }
             changed
         }
+        Stmt::Match { expr, arms } => {
+            let mut changed = expr.substitute_var(name, init);
+            for arm in arms {
+                for stmt in &mut arm.body {
+                    changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
+                }
+            }
+            changed
+        }
         Stmt::Raw(line) => {
             let replaced = replace_ident_once(line, name, &init.render_spliceable());
             if replaced == *line {
@@ -382,6 +391,20 @@ fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
             .iter()
             .map(|stmt| stmt_ident_count(&stmt.stmt, name))
             .sum(),
+        Stmt::Match { expr, arms } => {
+            expr_ident_count(expr, name)
+                + arms
+                    .iter()
+                    .map(|arm| {
+                        ident_count(&arm.pattern, name)
+                            + arm
+                                .body
+                                .iter()
+                                .map(|stmt| stmt_ident_count(&stmt.stmt, name))
+                                .sum::<usize>()
+                    })
+                    .sum::<usize>()
+        }
         Stmt::While { cond, body } => {
             expr_ident_count(cond, name)
                 + body
@@ -431,6 +454,13 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
                 + args
                     .iter()
                     .map(|arg| expr_ident_count(arg, name))
+                    .sum::<usize>()
+        }
+        Expr::Match { expr, arms } => {
+            expr_ident_count(expr, name)
+                + arms
+                    .iter()
+                    .map(|arm| ident_count(&arm.pattern, name) + expr_ident_count(&arm.value, name))
                     .sum::<usize>()
         }
     }
