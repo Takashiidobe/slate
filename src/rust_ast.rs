@@ -17,9 +17,9 @@ pub struct Program {
 pub enum Item {
     Func(Func),
     /// Migration target for lowered functions: a string header line plus a flat,
-    /// depth-annotated statement list. Control flow stays as `Stmt::Raw` scaffolding
-    /// at its nesting depth (no structural blocks yet); straight-line statements are
-    /// real nodes so fixups can operate on them.
+    /// depth-annotated statement list. Some scaffolding still uses `Stmt::Raw`,
+    /// but common control-flow and straight-line statements are structured so
+    /// fixups can operate on them.
     Fn(FnDef),
     /// Escape hatch for things without a modeled node yet (e.g. `use` lines).
     Raw(String),
@@ -71,6 +71,9 @@ pub enum Stmt {
     },
     Expr(Expr),
     Return(Option<Expr>),
+    Unsafe {
+        body: Vec<IndentStmt>,
+    },
     If {
         cond: Expr,
         then_body: Vec<IndentStmt>,
@@ -265,6 +268,11 @@ impl Stmt {
                     let _ = writeln!(out, "{pad}return;");
                 }
             },
+            Stmt::Unsafe { body } => {
+                let _ = writeln!(out, "{pad}unsafe {{");
+                emit_indent_stmts(out, body, depth + 1);
+                let _ = writeln!(out, "{pad}}}");
+            }
             Stmt::If {
                 cond,
                 then_body,
@@ -715,6 +723,38 @@ fn add(a: i32, b: i32) -> i32 {
             }
             .render(),
             "-(-a)"
+        );
+    }
+
+    #[test]
+    fn emits_unsafe_statement_body() {
+        let prog = Program {
+            items: vec![Item::Fn(FnDef {
+                open: "fn f() {".into(),
+                body: vec![IndentStmt {
+                    depth: 1,
+                    stmt: Stmt::Unsafe {
+                        body: vec![IndentStmt {
+                            depth: 0,
+                            stmt: Stmt::Assign {
+                                target: Expr::Raw("*p".into()),
+                                value: Expr::Var("x".into()),
+                            },
+                        }],
+                    },
+                }],
+            })],
+        };
+
+        assert_eq!(
+            prog.emit(),
+            "\
+fn f() {
+    unsafe {
+        *p = x;
+    }
+}
+"
         );
     }
 }
