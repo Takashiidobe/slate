@@ -121,3 +121,35 @@ Use fixup work when:
 
 Do not make a fixup carry correctness. Correctness belongs in baseline lowering;
 fixups are optional improvements.
+
+## Adding A Stdlib Coverage Probe
+
+The `slate-nk3.*` epic maps which libc functions Slate can translate, one small
+program per function. These tickets are the cleanest parallel work (see
+[WORKFLOW.md](../WORKFLOW.md)) because they only add isolated fixtures.
+
+Probes are **auto-discovered**: drop a `.c` file under
+`tests/stdlib/<header>/<name>.c` and `cargo test --test stdlib_coverage` picks it
+up — there is nothing to register.
+
+Conventions, copied from existing probes:
+
+- **Force the call to actually run.** Feed inputs through `volatile` locals so the
+  compiler can't constant-fold the libc call away:
+  `int volatile a='A', b=' ';`
+- **Normalize booleans** with `?1:0` so classifier results are stable across libc
+  implementations: `printf("%d %d\n", isdigit(a)?1:0, isdigit(b)?1:0);`
+- **Keep every program deterministic and UB-free** — same rule as the generator.
+  C and Rust must agree on stdout and exit code. Stay in the C locale; avoid
+  host-specific state (time, RNG, installed locales) unless normalized to a
+  predicate.
+
+```bash
+$EDITOR tests/stdlib/<header>/<name>.c
+cargo test --test stdlib_coverage -- --nocapture   # new probe must print `ok`
+```
+
+A probe that translates but can't pass yet is not silently skipped: add it to the
+`KNOWN_UNSUPPORTED` ratchet in `tests/stdlib_coverage.rs` with a tracking bead.
+When it starts passing, the test fails and tells you to promote it — coverage
+only ratchets forward.
