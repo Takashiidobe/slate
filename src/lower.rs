@@ -223,10 +223,14 @@ impl<'a> Lowerer<'a> {
         } else if let Some(elems) = parse_cir_const_array_elems(raw) {
             self.const_arrays.insert(name.to_string(), elems);
         } else if raw.trim_start().starts_with("#cir.zero")
-            && parse_cir_array_type(attr_str(op, "sym_type").unwrap_or("")).is_some()
+            && let Some((elem, len)) = parse_cir_array_type(attr_str(op, "sym_type").unwrap_or(""))
         {
-            // zero-initialized array; render_array_literal zero-pads to length.
-            self.const_arrays.insert(name.to_string(), Vec::new());
+            if elem == "!s8i" && name.starts_with(".str") {
+                self.strings.insert(name.to_string(), vec![0; len as usize]);
+            } else {
+                // zero-initialized array; render_array_literal zero-pads to length.
+                self.const_arrays.insert(name.to_string(), Vec::new());
+            }
         } else if let Some(init) = parse_cir_int(raw)
             .map(|n| n.to_string())
             .or_else(|| parse_cir_fp(raw))
@@ -2119,6 +2123,12 @@ mod tests {
             parse_cir_const_array_elems("#cir.const_array<\"hi\">"),
             None
         );
+    }
+
+    #[test]
+    fn renders_zero_bytes_in_byte_strings() {
+        assert_eq!(rust_byte_string(&[0]), "b\"\\0\"");
+        assert_eq!(rust_byte_string(&[b'a', 0, b'b']), "b\"a\\0b\"");
     }
 
     #[test]
