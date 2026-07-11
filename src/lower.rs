@@ -1639,7 +1639,7 @@ fn cir_fn_type_to_rust(ty: &str, aliases: &BTreeMap<String, String>) -> Option<S
         .trim()
         .strip_prefix("!cir.func<")
         .and_then(|s| s.strip_suffix('>'))?;
-    let (params, ret) = split_top_level_arrow(inner)?;
+    let (params, ret) = split_top_level_arrow(inner).unwrap_or((inner, "()"));
     let params = params.trim().trim_start_matches('(').trim_end_matches(')');
     let params = split_top_level(params, ',')
         .into_iter()
@@ -2006,6 +2006,7 @@ mod tests {
             rust_type("!cir.ptr<!cir.func<(!s32i, !s32i) -> !s32i>>"),
             "Option<fn(i32, i32) -> i32>"
         );
+        assert_eq!(rust_type("!cir.ptr<!cir.func<()>>"), "Option<fn() -> ()>");
         assert_eq!(rust_type("!rec_Pair"), "Pair");
         assert_eq!(rust_type("!rec__IO_FILE"), "libc::FILE");
         assert_eq!(rust_type("!rec_div_t"), "div_t");
