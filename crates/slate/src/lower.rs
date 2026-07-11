@@ -1707,6 +1707,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    fn place_or_deref(&self, ptr: &str) -> String {
+        self.place_expr(ptr)
+            .unwrap_or_else(|| format!("(*{})", self.render_pointer_operand(ptr)))
+    }
+
     fn lower_get_member(&mut self, op: &Op) {
         let Some(result) = op.results.first() else {
             return;
@@ -1714,9 +1719,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(base_ptr) = op.operands.first() else {
             return;
         };
-        let base = self
-            .place_expr(base_ptr)
-            .unwrap_or_else(|| format!("(*{})", self.render_pointer_operand(base_ptr)));
+        let base = self.place_or_deref(base_ptr);
         let field = sanitize_ident(attr_str(op, "name").unwrap_or(result));
         let unsafe_access = self.ptr_requires_unsafe(base_ptr) || self.op_base_is_union(op);
         self.member_ptrs.insert(
@@ -1776,18 +1779,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     // shift up then arithmetic-shift down masks to `size` bits, sign-extending signed types.
     fn truncate_bitfield(&self, op: &Op, expr: &str, ty: Option<&str>) -> String {
-        let Some(size) = self.bitfield_size(op) else {
-            return format!("({expr})");
-        };
-        let rust_ty = ty.map(|ty| self.parent.rust_type(ty)).unwrap_or_default();
-        let Some(bits) = int_bits(&rust_ty) else {
-            return format!("({expr})");
-        };
-        if size >= bits {
-            format!("({expr})")
-        } else {
-            let sh = bits - size;
-            format!("((({expr}) << {sh}) >> {sh})")
+        let bits = ty
+            .map(|ty| self.parent.rust_type(ty))
+            .and_then(|t| int_bits(&t));
+        match (self.bitfield_size(op), bits) {
+            (Some(size), Some(bits)) if size < bits => {
+                let sh = bits - size;
+                format!("((({expr}) << {sh}) >> {sh})")
+            }
+            _ => format!("({expr})"),
         }
     }
 
@@ -1809,9 +1809,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let base_ptr = &op.operands[0];
-        let base = self
-            .place_expr(base_ptr)
-            .unwrap_or_else(|| format!("(*{})", self.render_pointer_operand(base_ptr)));
+        let base = self.place_or_deref(base_ptr);
         let index = self.render_operand(&op.operands[1]);
         let unsafe_access = self.ptr_requires_unsafe(base_ptr);
         self.element_ptrs.insert(
@@ -2107,7 +2105,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let atomic = self.atomic_ref(&op.operands[0], wrapper);
-        let ord = rmw_ordering(attr_int(op, "mem_order").unwrap_or(5));
+        let ord = rust_ordering(attr_int(op, "mem_order").unwrap_or(5));
         let method = match binop {
             0 => "fetch_add",
             1 => "fetch_sub",
@@ -2167,7 +2165,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let ty = self.atomic_rust_type(op);
         if let Some(wrapper) = atomic_wrapper(&ty) {
             let atomic = self.atomic_ref(&op.operands[0], wrapper);
-            let ord = rmw_ordering(attr_int(op, "mem_order").unwrap_or(5));
+            let ord = rust_ordering(attr_int(op, "mem_order").unwrap_or(5));
             let expr = format!("unsafe {{ {atomic}.swap({val}, {ord}) }}");
             self.materialize(&result, expr, op_result_type(op));
             return;
@@ -2191,7 +2189,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .unwrap_or_else(|| "i32".into());
         if let Some(wrapper) = atomic_wrapper(&ty) {
             let atomic = self.atomic_ref(&op.operands[0], wrapper);
-            let succ = rmw_ordering(attr_int(op, "succ_order").unwrap_or(5));
+            let succ = rust_ordering(attr_int(op, "succ_order").unwrap_or(5));
             let fail = load_ordering(attr_int(op, "fail_order").unwrap_or(5));
             // Always strong: `compare_exchange_weak` may spuriously fail and
             // diverge from the C reference under differential testing.
@@ -2864,10 +2862,6 @@ fn rust_ordering(mem_order: i64) -> String {
         _ => "SeqCst",
     };
     format!("std::sync::atomic::Ordering::{name}")
-}
-
-fn rmw_ordering(mem_order: i64) -> String {
-    rust_ordering(mem_order)
 }
 
 // loads reject Release/AcqRel; clamp to a load-valid ordering.
@@ -3558,11 +3552,8 @@ mod tests {
                    #cir.int<3> : !s32i]> : !cir.array<!s32i x 5>";
         let elems = parse_cir_const_array_elems(raw).expect("numeric const array");
         assert_eq!(elems, vec!["1", "2", "3"]);
-        // zero-padded up to the destination length.
         assert_eq!(render_array_literal(&elems, 5), "[1, 2, 3, 0, 0]");
-        // truncated when the destination is shorter.
         assert_eq!(render_array_literal(&elems, 2), "[1, 2]");
-        // the string form is not a numeric const array.
         assert_eq!(
             parse_cir_const_array_elems("#cir.const_array<\"hi\">"),
             None
