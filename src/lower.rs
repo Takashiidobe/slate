@@ -24,18 +24,11 @@ pub struct ProjectInfo {
     pub emit_pub: bool,
 }
 
-/// Whether a `cir.func` / `cir.global` op has external linkage (C default) as
-/// opposed to internal linkage (a C file-scope `static`). CIR encodes external
-/// linkage as `linkage = 0`; internal `static` symbols carry a nonzero linkage
-/// and `sym_visibility = "private"`. Internal-linkage defs stay module-private
-/// and are not exported across translation units.
+/// CIR encodes external linkage as `linkage = 0`; a C `static` is nonzero.
 fn linkage_is_external(op: &Op) -> bool {
     attr_int(op, "linkage").unwrap_or(0) == 0
 }
 
-/// Function symbols defined (body-bearing) with external linkage in a CIR
-/// module. Internal-linkage (`static`) functions are excluded so a sibling
-/// never imports them.
 pub fn defined_functions(module: &Module) -> Vec<String> {
     let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
         return Vec::new();
@@ -47,10 +40,6 @@ pub fn defined_functions(module: &Module) -> Vec<String> {
         .collect()
 }
 
-/// Global symbols defined (with an initializer) with external linkage in a CIR
-/// module. A body-less `extern` global decl has no initializer and is excluded;
-/// internal-linkage (`static`) globals are excluded so a sibling never imports
-/// them.
 pub fn defined_globals(module: &Module) -> Vec<String> {
     let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
         return Vec::new();
@@ -158,7 +147,6 @@ struct GlobalVar {
     name: String,
     ty: String,
     init: String,
-    /// external linkage (C default); internal-linkage `static` globals are not `pub`.
     external: bool,
 }
 

@@ -139,6 +139,10 @@ Read these before making changes — they are the real playbook:
 - **The generator only emits what Slate can translate.** When you extend the
   supported subset, extend `tests/support/cgen.rs` (and `c.bnf`) to match; keep
   every generated program well-defined (no UB) so C and Rust agree.
+- **Comments explain why, not what.** One line at most. Only justify why the
+  code is the way it is (a non-obvious constraint, a magic constant); never
+  narrate what the code already says. If a name already makes the intent clear,
+  don't comment. When in doubt, no comment.
 - Run `cargo fmt` and `cargo test` before finishing.
 
 See [AGENTS.md](AGENTS.md) for shell/tooling notes.
