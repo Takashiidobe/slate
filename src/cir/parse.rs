@@ -63,6 +63,7 @@ impl<'a> Parser<'a> {
 
         self.skip_ws();
         let operands = self.parse_operands()?;
+        let mut successors = Vec::new();
         let mut attrs = BTreeMap::new();
         let mut regions = Vec::new();
         let mut ty = None;
@@ -70,7 +71,9 @@ impl<'a> Parser<'a> {
 
         loop {
             self.skip_horizontal_ws();
-            if self.starts_with("<{") {
+            if self.peek() == Some('[') {
+                successors = self.parse_successor_list()?;
+            } else if self.starts_with("<{") {
                 let body = self.take_balanced_attr_dict()?;
                 attrs.extend(parse_attr_dict(&body));
             } else if self.next_is_region_list() {
@@ -100,6 +103,7 @@ impl<'a> Parser<'a> {
             results,
             name,
             operands,
+            successors,
             attrs,
             regions,
             ty,
@@ -153,6 +157,35 @@ impl<'a> Parser<'a> {
             }
         }
         Ok(operands)
+    }
+
+    fn parse_successor_list(&mut self) -> Result<Vec<String>, String> {
+        self.expect_char('[')?;
+        let mut successors = Vec::new();
+        loop {
+            self.skip_ws();
+            match self.peek() {
+                Some(']') => {
+                    self.bump();
+                    break;
+                }
+                Some('^') => {
+                    self.bump();
+                    successors.push(self.parse_ident()?);
+                    // an optional block-arg list `(%x : t, ...)` follows some successors.
+                    self.skip_ws();
+                    if self.peek() == Some('(') {
+                        self.take_balanced('(', ')')?;
+                    }
+                }
+                Some(',') => {
+                    self.bump();
+                }
+                Some(c) => return Err(self.error(&format!("unexpected successor character '{c}'"))),
+                None => return Err(self.error("unterminated successor list")),
+            }
+        }
+        Ok(successors)
     }
 
     fn parse_region_list(&mut self) -> Result<Vec<Region>, String> {
@@ -465,8 +498,16 @@ impl<'a> Parser<'a> {
     }
 
     fn skip_ws(&mut self) {
-        while self.peek().is_some_and(char::is_whitespace) {
-            self.bump();
+        loop {
+            while self.peek().is_some_and(char::is_whitespace) {
+                self.bump();
+            }
+            // `//` line comments appear on multi-block functions (predecessor notes).
+            if self.starts_with("//") {
+                self.skip_line();
+            } else {
+                break;
+            }
         }
     }
 
@@ -803,6 +844,25 @@ mod tests {
         let module = parse_module(text).unwrap();
         assert_eq!(module.ops[0].loc.as_deref(), Some(r#"loc("f.c":1:2)"#));
         assert_eq!(module.ops[0].ty.as_deref(), Some("() -> !s32i"));
+    }
+
+    #[test]
+    fn parses_successor_lists_and_block_comments() {
+        let text = r#"
+"cir.func"() <{sym_name = "f"}> ({
+    "cir.br"()[^bb1] : () -> ()
+  ^bb1:  // pred: ^bb0
+    "cir.label"() <{label = "done"}> : () -> ()
+    "cir.return"() : () -> ()
+}) : () -> ()
+"#;
+        let module = parse_module(text).unwrap();
+        let func = &module.ops[0];
+        let entry = &func.regions[0].blocks[0];
+        assert_eq!(entry.ops[0].name, "cir.br");
+        assert_eq!(entry.ops[0].successors, ["bb1"]);
+        assert_eq!(func.regions[0].blocks[1].label.as_deref(), Some("bb1"));
+        assert_eq!(func.regions[0].blocks[1].ops[0].name, "cir.label");
     }
 
     #[test]

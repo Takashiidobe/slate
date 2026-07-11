@@ -120,6 +120,21 @@ struct FunctionLowerer<'a, 'b> {
     is_main: bool,
     loop_stack: Vec<LoopFrame>,
     label_counter: usize,
+    /// Set for functions with unstructured control flow (goto/multi-block); drives
+    /// the state-machine dispatch loop. `None` for structured functions.
+    dispatch: Option<DispatchCtx>,
+    /// Alloca results hoisted above the dispatch loop so locals outlive block arms.
+    hoisted: BTreeSet<String>,
+}
+
+/// Maps CIR jump targets to dispatch-loop states for a `goto`-bearing function.
+struct DispatchCtx {
+    loop_label: String,
+    state_var: String,
+    /// C label name (`cir.label`/`cir.goto`) -> block index.
+    label_to_state: BTreeMap<String, usize>,
+    /// Block label (`^bbN`, entry as `bb0`) -> block index, for `cir.br`.
+    block_to_state: BTreeMap<String, usize>,
 }
 
 // How `cir.break`/`cir.continue` lower for the enclosing loop. A C `for` loop's
@@ -467,12 +482,19 @@ impl<'a> Lowerer<'a> {
             is_main,
             loop_stack: Vec::new(),
             label_counter: 0,
+            dispatch: None,
+            hoisted: BTreeSet::new(),
         };
 
         for (arg, _) in &entry.args {
             f.values.insert(arg.clone(), Val::Expr(arg.clone()));
         }
-        f.lower_block(entry);
+        let body = op.regions.first().unwrap();
+        if body.blocks.len() > 1 {
+            f.lower_dispatch(body);
+        } else {
+            f.lower_block(entry);
+        }
         text.push_str(&f.out);
         text.push_str("}\n");
         Some(text)
@@ -701,6 +723,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.while" => self.lower_while(op),
             "cir.break" => self.lower_break(),
             "cir.continue" => self.lower_continue(),
+            "cir.goto" => self.lower_goto(op),
+            "cir.br" => self.lower_br(op),
+            "cir.label" => {}
             "cir.yield" | "cir.condition" => {}
             other => {
                 self.parent
@@ -716,6 +741,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(result) = op.results.first() else {
             return;
         };
+        // hoisted allocas were already declared above the dispatch loop.
+        if self.hoisted.contains(result) && self.dispatch.is_some() {
+            return;
+        }
         let name = sanitize_ident(attr_str(op, "name").unwrap_or(result));
         let ty = self
             .pointee_type(op.ty.as_deref().unwrap_or(""))
@@ -1786,6 +1815,114 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    /// Lower a function body with unstructured control flow into a state-machine
+    /// dispatch loop. Each CIR block becomes a `match` arm keyed on a `__state`
+    /// variable; `cir.br`/`cir.goto` set the next state and `continue` the loop.
+    /// Allocas are hoisted above the loop so locals survive across block arms.
+    fn lower_dispatch(&mut self, body: &Region) {
+        let n = self.label_counter;
+        self.label_counter += 1;
+        let loop_label = format!("'__dispatch{n}");
+        let state_var = format!("__state{n}");
+
+        let mut label_to_state = BTreeMap::new();
+        let mut block_to_state = BTreeMap::new();
+        for (i, block) in body.blocks.iter().enumerate() {
+            let key = block.label.clone().unwrap_or_else(|| format!("bb{i}"));
+            block_to_state.insert(key, i);
+            for op in &block.ops {
+                if op.name == "cir.label" {
+                    if let Some(label) = attr_str(op, "label") {
+                        label_to_state.insert(label.to_string(), i);
+                    }
+                }
+            }
+        }
+        self.dispatch = Some(DispatchCtx {
+            loop_label: loop_label.clone(),
+            state_var: state_var.clone(),
+            label_to_state,
+            block_to_state,
+        });
+
+        for block in &body.blocks {
+            for op in &block.ops {
+                if op.name == "cir.alloca" {
+                    self.lower_alloca(op);
+                    if let Some(result) = op.results.first() {
+                        self.hoisted.insert(result.clone());
+                    }
+                }
+            }
+        }
+
+        self.emit_line(&format!("let mut {state_var}: i32 = 0;"));
+        self.emit_line(&format!("{loop_label}: loop {{"));
+        self.indent += 1;
+        self.emit_line(&format!("match {state_var} {{"));
+        self.indent += 1;
+        for (i, block) in body.blocks.iter().enumerate() {
+            self.emit_line(&format!("{i} => {{"));
+            self.indent += 1;
+            self.lower_block(block);
+            if !block_diverges(block) {
+                self.emit_line(&format!("{state_var} = {};", i + 1));
+                self.emit_line(&format!("continue {loop_label};"));
+            }
+            self.indent -= 1;
+            self.emit_line("}");
+        }
+        self.emit_line(&format!("_ => break {loop_label},"));
+        self.indent -= 1;
+        self.emit_line("}");
+        self.indent -= 1;
+        self.emit_line("}");
+        self.dispatch = None;
+    }
+
+    fn lower_goto(&mut self, op: &Op) {
+        let Some(dispatch) = &self.dispatch else {
+            return;
+        };
+        let target = attr_str(op, "label").and_then(|l| dispatch.label_to_state.get(l));
+        match target {
+            Some(&state) => {
+                let stmt = format!(
+                    "{} = {state};\ncontinue {};",
+                    dispatch.state_var, dispatch.loop_label
+                );
+                self.emit_dispatch_jump(&stmt);
+            }
+            None => self.emit_expr("todo!(\"cir.goto: unknown label\")".into()),
+        }
+    }
+
+    fn lower_br(&mut self, op: &Op) {
+        let Some(dispatch) = &self.dispatch else {
+            return;
+        };
+        let target = op
+            .successors
+            .first()
+            .and_then(|bb| dispatch.block_to_state.get(bb));
+        match target {
+            Some(&state) => {
+                let stmt = format!(
+                    "{} = {state};\ncontinue {};",
+                    dispatch.state_var, dispatch.loop_label
+                );
+                self.emit_dispatch_jump(&stmt);
+            }
+            None => self.emit_expr("todo!(\"cir.br: unknown successor\")".into()),
+        }
+    }
+
+    fn emit_dispatch_jump(&mut self, stmt: &str) {
+        for line in stmt.lines() {
+            self.emit_line(line);
+        }
+    }
+
     fn lower_condition_region(&mut self, region: &Region) -> String {
         let mut condition = "true".to_string();
         for block in &region.blocks {
@@ -1995,6 +2132,15 @@ fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
         is_default,
         region,
     })
+}
+
+/// Whether a dispatch block ends in its own control transfer (so the dispatch
+/// loop must not append a fall-through to the next state).
+fn block_diverges(block: &Block) -> bool {
+    block
+        .ops
+        .last()
+        .is_some_and(|op| matches!(op.name.as_str(), "cir.return" | "cir.br" | "cir.goto"))
 }
 
 fn region_ends_control_flow(region: &Region) -> bool {
