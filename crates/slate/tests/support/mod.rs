@@ -1,10 +1,13 @@
 pub mod cgen;
 
+use std::collections::BTreeMap;
+use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 pub struct Run {
     stdout: Vec<u8>,
+    stderr: Vec<u8>,
     exit: Option<i32>,
 }
 
@@ -83,6 +86,15 @@ pub struct Case {
     pub name: String,
     pub c_src: PathBuf,
     pub rs_src: PathBuf,
+    pub config: RunConfig,
+}
+
+#[derive(Default, Clone)]
+pub struct RunConfig {
+    pub args: Vec<String>,
+    pub stdin: Vec<u8>,
+    pub env: BTreeMap<String, String>,
+    pub compare_stderr: bool,
 }
 
 /// A cargo bin target name derived from a case name (alnum/underscore only).
@@ -120,7 +132,18 @@ pub fn compare_batch(cases: &[Case], work_dir: &Path) -> Vec<(String, Result<(),
                 };
                 let c_bin = work_dir.join(format!("{}_c", bn));
                 compile_c(&case.c_src, &c_bin)?;
-                compare_runs(&run(&c_bin)?, &run(&rs_bin)?)
+                let run_dir = work_dir.join("runs").join(&bn);
+                if run_dir.exists() {
+                    std::fs::remove_dir_all(&run_dir)
+                        .map_err(|e| format!("remove {}: {e}", run_dir.display()))?;
+                }
+                std::fs::create_dir_all(&run_dir)
+                    .map_err(|e| format!("create {}: {e}", run_dir.display()))?;
+                compare_runs(
+                    &run_with_config(&c_bin, &case.config, &run_dir)?,
+                    &run_with_config(&rs_bin, &case.config, &run_dir)?,
+                    case.config.compare_stderr,
+                )
             })();
             (case.name.clone(), result)
         })
@@ -170,7 +193,7 @@ overflow-checks = false
     }
 }
 
-fn compare_runs(c: &Run, r: &Run) -> Result<(), String> {
+fn compare_runs(c: &Run, r: &Run, compare_stderr: bool) -> Result<(), String> {
     if c.exit != r.exit {
         return Err(format!(
             "exit code differs: C={:?} Rust={:?}",
@@ -184,15 +207,48 @@ fn compare_runs(c: &Run, r: &Run) -> Result<(), String> {
             String::from_utf8_lossy(&r.stdout),
         ));
     }
+    if compare_stderr && c.stderr != r.stderr {
+        return Err(format!(
+            "stderr differs:\n--- C ---\n{}\n--- Rust ---\n{}",
+            String::from_utf8_lossy(&c.stderr),
+            String::from_utf8_lossy(&r.stderr),
+        ));
+    }
     Ok(())
 }
 
-pub fn run(bin: &Path) -> Result<Run, String> {
-    let o = Command::new(bin)
-        .output()
+pub fn run_with_config(bin: &Path, config: &RunConfig, cwd: &Path) -> Result<Run, String> {
+    let mut cmd = Command::new(bin);
+    cmd.current_dir(cwd)
+        .args(&config.args)
+        .env("LC_ALL", "C")
+        .env("TZ", "UTC")
+        .envs(&config.env)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped());
+    if config.stdin.is_empty() {
+        cmd.stdin(Stdio::null());
+    } else {
+        cmd.stdin(Stdio::piped());
+    }
+    let mut child = cmd
+        .spawn()
         .map_err(|e| format!("run {}: {e}", bin.display()))?;
+    if !config.stdin.is_empty() {
+        let stdin = child
+            .stdin
+            .as_mut()
+            .ok_or_else(|| format!("open stdin for {}", bin.display()))?;
+        stdin
+            .write_all(&config.stdin)
+            .map_err(|e| format!("write stdin for {}: {e}", bin.display()))?;
+    }
+    let o = child
+        .wait_with_output()
+        .map_err(|e| format!("wait {}: {e}", bin.display()))?;
     Ok(Run {
         stdout: o.stdout,
+        stderr: o.stderr,
         exit: o.status.code(),
     })
 }

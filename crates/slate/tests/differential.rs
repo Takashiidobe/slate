@@ -48,6 +48,7 @@ fn generated_differential() {
                 name: name.clone(),
                 c_src: c_src.clone(),
                 rs_src: generated,
+                config: support::RunConfig::default(),
             }),
             Err(e) => {
                 eprintln!("FAIL  {name}");
