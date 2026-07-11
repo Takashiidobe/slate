@@ -1,11 +1,12 @@
 # Multi-Agent Worktree Workflow
 
-This workflow is for running several agents against Slate without creating
-unnecessary merge conflicts or duplicating beads work.
+Use this when several agents may work on Slate at the same time. Keep it focused
+on coordination; general beads, build, and test rules live in `AGENTS.md` and
+`CLAUDE.md`.
 
-## Start From Beads, Not Git Branches
+## Pick Work From Beads
 
-Before choosing work, every agent must inspect both ready and active tickets:
+Before choosing work, inspect both ready and active tickets:
 
 ```bash
 bd prime
@@ -14,9 +15,8 @@ bd list --status=in_progress
 bd list --status=open
 ```
 
-Do not pick a ticket only because it appears in `bd ready`. A ticket can be
-ready but still be linked to active work through a parent epic, child ticket,
-dependency, dependent ticket, or obvious shared implementation area.
+`bd ready` is not enough. A ready ticket can still overlap active work through
+linked beads or shared implementation areas.
 
 For each candidate, inspect its linked set:
 
@@ -26,30 +26,18 @@ bd graph <id>
 bd children <id>
 ```
 
-If the ticket has a parent, inspect the parent and sibling children too:
+If the ticket has a parent, inspect the parent and sibling children too.
 
-```bash
-bd show <parent-id>
-bd children <parent-id>
-```
+Do not start when any linked item is already `in_progress`. Linked items include
+the ticket, parent epics, child tickets, prerequisites, dependents, siblings, and
+tickets that clearly touch the same core files or feature surface.
 
-Do not start a ticket when any item in its linked set is already
-`in_progress`. The linked set includes:
+Do not implement against an epic directly; pick or create a concrete child
+ticket.
 
-- the ticket itself
-- parent epics and child tickets
-- dependency prerequisites
-- dependent tickets blocked by this one
-- sibling children under the same parent epic
-- tickets that clearly touch the same core files or feature surface
+## Claim Before Branching
 
-Do not implement against an epic ticket directly. Pick or create a child ticket
-with concrete acceptance criteria.
-
-## Claim Before Creating A Worktree
-
-Claim work from the coordination checkout, then create one branch and worktree
-per claimed bead:
+From the coordination checkout:
 
 ```bash
 bd update <id> --claim
@@ -62,25 +50,19 @@ the ticket explicitly says otherwise.
 
 ## Keep Beads Mutations Centralized
 
-Beads state is tracked in this repository through `.beads/issues.jsonl` and
-`.beads/interactions.jsonl`. Multiple branches editing those files independently
-will create noisy conflicts.
-
-Use this rule:
+Avoid `.beads/` conflicts by keeping mutations in one place:
 
 - coordination checkout: claim, close, reopen, defer, and create follow-up beads
-- worktree branches: code, tests, docs, and local read-only bead inspection
+- worktree branches: code, tests, docs, and read-only bead inspection
 
-If a worker discovers required follow-up work, create or update the bead from the
-coordination checkout before integrating the branch.
+Create or update follow-up beads from the coordination checkout before
+integrating the branch.
 
-## Choose Parallel Work By Conflict Risk
+## Avoid Parallel Hotspots
 
 Good parallel tickets usually add isolated fixtures or header coverage under
-`tests/stdlib/...`.
-
-Risky parallel tickets touch shared lowering or parser internals. Run only one
-of these at a time unless a human explicitly partitions the files:
+`tests/stdlib/...`. Run only one ticket at a time for these shared files unless a
+human explicitly partitions the work:
 
 - `src/lower.rs`
 - `src/c_ast.rs`
@@ -90,35 +72,30 @@ of these at a time unless a human explicitly partitions the files:
 - `docs/README.md`
 - `c.bnf`
 
-Do not run broad language-feature tickets concurrently when they all need the
-same lowerer code. Examples: globals, aggregates, operators, prototypes,
-switch, and goto.
+Do not run broad language-feature tickets concurrently when they need the same
+lowerer code: globals, aggregates, operators, prototypes, switch, goto.
 
 ## Worktree Rules
 
-In each worktree:
+Start by checking scope:
 
 ```bash
 git status --short --branch
 bd show <id>
-cargo fmt
-cargo test
 ```
 
-Use narrower tests while developing, but run the ticket's acceptance tests before
-handoff. For fixture work, the usual checks are:
+Use narrow tests while developing. Before handoff, run the ticket's acceptance
+tests. For fixture work, usually run:
 
 ```bash
 cargo test --test differential generated_differential
 cargo test --test stdlib_coverage
 ```
 
-Do not leave generated, temporary, or unrelated files in the branch. Do not
-rewrite unrelated user changes.
+Run `cargo fmt` before handoff. Leave no generated, temporary, or unrelated
+files in the branch. Do not rewrite unrelated user changes.
 
-## Integration
-
-Integrate from the coordination checkout:
+## Integrate From Coordination Checkout
 
 ```bash
 cd /home/takashi/Projects/slate
@@ -127,28 +104,19 @@ git merge --no-ff work/<id>
 cargo fmt
 cargo test
 bd close <id> --reason "Implemented <summary>. Verified with <commands>."
-```
-
-If the merge conflicts, resolve it in the coordination checkout and rerun the
-relevant tests. After a successful merge and close, check what became newly
-available:
-
-```bash
 bd ready
 bd list --status=in_progress
 ```
 
-Remove finished worktrees only after their branches are merged:
+Resolve conflicts in the coordination checkout and rerun relevant tests. Remove
+finished worktrees only after their branches are merged:
 
 ```bash
 git worktree remove ../slate-<id>
 ```
 
-## When A Candidate Is Linked To Active Work
+## If Active Work Overlaps
 
-If `bd list --status=in_progress`, `bd graph`, or `bd children` shows linked
-active work, do not claim the candidate. Pick an unrelated ready ticket instead.
-
-If no unrelated ticket is available, file a coordination note or ask for a human
-decision. Do not "just start" overlapping lowerer work; it causes semantic
-conflicts even when Git can merge the text.
+If a candidate is linked to active work, do not claim it. Pick an unrelated ready
+ticket instead. If none is available, file a coordination note or ask for a human
+decision.
