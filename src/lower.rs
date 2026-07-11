@@ -163,12 +163,14 @@ struct SwitchCase<'a> {
 struct MemberPtr {
     base: String,
     field: String,
+    unsafe_access: bool,
 }
 
 #[derive(Debug, Clone)]
 struct ElementPtr {
     base: String,
     index: String,
+    unsafe_access: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -339,45 +341,107 @@ impl<'a> Lowerer<'a> {
         let Some(name) = attr_str(op, "sym_name") else {
             return;
         };
+        let rust_name = sanitize_ident(name);
+        let ty = attr_str(op, "sym_type").map(|ty| self.rust_type(ty));
+        let is_c_global = !name.starts_with("__") && !name.starts_with(".str");
         let Some(raw) = attr_str(op, "initial_value") else {
-            let Some(sym_type) = attr_str(op, "sym_type") else {
+            let Some(ty) = ty else {
                 return;
             };
-            let name = sanitize_ident(name);
-            let ty = self.rust_type(sym_type);
-            self.extern_globals.insert(name, ty);
+            self.extern_globals.insert(rust_name, ty);
             return;
         };
         if let Some(mut bytes) = parse_cir_const_array(raw) {
-            bytes.push(0);
-            self.strings.insert(name.to_string(), bytes);
+            if is_c_global && let Some(ty) = ty {
+                let elems: Vec<String> = bytes.iter().map(|b| b.to_string()).collect();
+                self.globals.insert(
+                    rust_name.clone(),
+                    GlobalVar {
+                        name: rust_name,
+                        ty,
+                        init: render_array_literal(&elems, bytes.len()),
+                        external: linkage_is_external(op),
+                    },
+                );
+            } else {
+                bytes.push(0);
+                self.strings.insert(name.to_string(), bytes);
+            }
         } else if let Some(elems) = parse_cir_const_array_elems(raw) {
-            self.const_arrays.insert(name.to_string(), elems);
+            if is_c_global && let Some(ty) = ty {
+                if let Some((_, len)) = parse_rust_array_type(&ty) {
+                    self.globals.insert(
+                        rust_name.clone(),
+                        GlobalVar {
+                            name: rust_name,
+                            ty,
+                            init: render_array_literal(&elems, len as usize),
+                            external: linkage_is_external(op),
+                        },
+                    );
+                }
+            } else {
+                self.const_arrays.insert(name.to_string(), elems);
+            }
         } else if is_cir_aggregate_init(raw) {
-            self.const_aggregates
-                .insert(name.to_string(), raw.to_string());
+            if is_c_global && let Some(ty) = ty {
+                if let Some(init) = self.render_const_value(&ty, raw) {
+                    self.globals.insert(
+                        rust_name.clone(),
+                        GlobalVar {
+                            name: rust_name,
+                            ty,
+                            init,
+                            external: linkage_is_external(op),
+                        },
+                    );
+                }
+            } else {
+                self.const_aggregates
+                    .insert(name.to_string(), raw.to_string());
+            }
         } else if raw.trim_start().starts_with("#cir.zero")
             && let Some((elem, len)) = parse_cir_array_type(attr_str(op, "sym_type").unwrap_or(""))
         {
-            if elem == "!s8i" && name.starts_with(".str") {
+            if is_c_global && let Some(ty) = ty {
+                self.globals.insert(
+                    rust_name.clone(),
+                    GlobalVar {
+                        name: rust_name,
+                        ty,
+                        init: format!("[{}; {len}]", zero_for_cir_type(&elem)),
+                        external: linkage_is_external(op),
+                    },
+                );
+            } else if elem == "!s8i" && name.starts_with(".str") {
                 self.strings.insert(name.to_string(), vec![0; len as usize]);
             } else {
-                // zero-initialized array; render_array_literal zero-pads to length.
                 self.const_arrays.insert(name.to_string(), Vec::new());
             }
         } else if raw.trim_start().starts_with("#cir.zero") {
-            self.const_zero_globals.insert(name.to_string());
+            if is_c_global && let Some(ty) = ty {
+                self.globals.insert(
+                    rust_name.clone(),
+                    GlobalVar {
+                        name: rust_name,
+                        init: self.default_value(&ty),
+                        ty,
+                        external: linkage_is_external(op),
+                    },
+                );
+            } else {
+                self.const_zero_globals.insert(name.to_string());
+            }
         } else if let Some(init) = parse_cir_int(raw)
             .map(|n| n.to_string())
             .or_else(|| parse_cir_fp(raw))
         {
-            let ty = self.rust_type(attr_str(op, "sym_type").unwrap_or("!s32i"));
-            let name = sanitize_ident(name);
+            let ty = ty.unwrap_or_else(|| self.rust_type("!s32i"));
             let external = linkage_is_external(op);
             self.globals.insert(
-                name.clone(),
+                rust_name.clone(),
                 GlobalVar {
-                    name,
+                    name: rust_name,
                     ty,
                     init,
                     external,
@@ -598,6 +662,122 @@ impl<'a> Lowerer<'a> {
         }
         rust
     }
+
+    fn default_value(&self, ty: &str) -> String {
+        if let Some(record) = self.records.get(ty) {
+            match record.kind {
+                RecordKind::Struct => {
+                    let fields = record
+                        .fields
+                        .iter()
+                        .map(|field| {
+                            format!(
+                                "{}: {}",
+                                sanitize_ident(&field.name),
+                                self.default_value(&c_type_to_rust(&field.ty))
+                            )
+                        })
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    return format!("{} {{ {fields} }}", sanitize_ident(&record.name));
+                }
+                RecordKind::Union => {
+                    if let Some(field) = record.fields.first() {
+                        return format!(
+                            "{} {{ {}: {} }}",
+                            sanitize_ident(&record.name),
+                            sanitize_ident(&field.name),
+                            self.default_value(&c_type_to_rust(&field.ty))
+                        );
+                    }
+                }
+            }
+        }
+        if is_long_double(ty) || ty == LONG_DOUBLE_TY {
+            return format!("{LONG_DOUBLE_TY}(0.0)");
+        }
+        if let Some(value) = standard_record_default(ty) {
+            return value.to_string();
+        }
+        if let Some(inner) = ty
+            .strip_prefix(COMPLEX_TY)
+            .and_then(|s| s.strip_suffix('>'))
+        {
+            let d = default_value(inner);
+            return format!("Complex {{ re: {d}, im: {d} }}");
+        }
+        if let Some((inner, len)) = parse_cir_array_type(ty) {
+            return format!("[{}; {len}]", self.default_value(&inner));
+        }
+        if let Some((inner, len)) = parse_rust_array_type(ty) {
+            return format!("[{}; {len}]", self.default_value(inner));
+        }
+        default_value(ty).into()
+    }
+
+    fn render_const_value(&self, rust_ty: &str, raw: &str) -> Option<String> {
+        let raw = raw.trim();
+        if raw.starts_with("#cir.const_record<") {
+            let record = self.records.get(rust_ty)?;
+            let open = raw.find('{')?;
+            let close = raw.rfind('}')?;
+            let elems = split_top_level(&raw[open + 1..close], ',');
+            match record.kind {
+                RecordKind::Struct => {
+                    let fields = record
+                        .fields
+                        .iter()
+                        .enumerate()
+                        .map(|(i, field)| {
+                            let field_ty = c_type_to_rust(&field.ty);
+                            let value = elems
+                                .get(i)
+                                .and_then(|e| self.render_const_value(&field_ty, e.trim()))
+                                .unwrap_or_else(|| self.default_value(&field_ty));
+                            format!("{}: {value}", sanitize_ident(&field.name))
+                        })
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    Some(format!("{} {{ {fields} }}", sanitize_ident(&record.name)))
+                }
+                RecordKind::Union => {
+                    let field = record.fields.first()?;
+                    let field_ty = c_type_to_rust(&field.ty);
+                    let value = elems
+                        .first()
+                        .and_then(|e| self.render_const_value(&field_ty, e.trim()))
+                        .unwrap_or_else(|| self.default_value(&field_ty));
+                    Some(format!(
+                        "{} {{ {}: {value} }}",
+                        sanitize_ident(&record.name),
+                        sanitize_ident(&field.name)
+                    ))
+                }
+            }
+        } else if raw.starts_with("#cir.const_array<[") {
+            let (elem_ty, len) = parse_rust_array_type(rust_ty)?;
+            let open = raw.find('[')?;
+            let close = raw.rfind(']')?;
+            let mut out: Vec<String> = split_top_level(&raw[open + 1..close], ',')
+                .into_iter()
+                .map(|e| e.trim().to_string())
+                .filter(|e| !e.is_empty())
+                .take(len as usize)
+                .map(|e| {
+                    self.render_const_value(elem_ty, &e)
+                        .unwrap_or_else(|| self.default_value(elem_ty))
+                })
+                .collect();
+            out.resize(len as usize, self.default_value(elem_ty));
+            Some(format!("[{}]", out.join(", ")))
+        } else if raw.starts_with("#cir.zero") {
+            Some(self.default_value(rust_ty))
+        } else {
+            parse_cir_int(raw)
+                .map(|n| n.to_string())
+                .or_else(|| parse_cir_fp(raw))
+        }
+    }
 }
 
 fn c_type_to_rust(ty: &crate::c_ast::CType) -> String {
@@ -792,10 +972,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 member.base, member.field
             ));
         } else if let Some(element) = self.element_ptrs.get(ptr).cloned() {
-            self.emit_line(&format!(
-                "{}[({}) as usize] = {value};",
-                element.base, element.index
-            ));
+            let place = format!("{}[({}) as usize]", element.base, element.index);
+            if element.unsafe_access {
+                self.emit_line(&format!("unsafe {{ {place} = {value}; }}"));
+            } else {
+                self.emit_line(&format!("{place} = {value};"));
+            }
         } else if let Some(slot) = self.slots.get(ptr) {
             self.emit_line(&format!("{slot} = {value};"));
         } else {
@@ -827,10 +1009,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 member.base, member.field
             ));
         } else if let Some(element) = self.element_ptrs.get(&dst).cloned() {
-            self.emit_line(&format!(
-                "{}[({}) as usize] = {value};",
-                element.base, element.index
-            ));
+            let place = format!("{}[({}) as usize]", element.base, element.index);
+            if element.unsafe_access {
+                self.emit_line(&format!("unsafe {{ {place} = {value}; }}"));
+            } else {
+                self.emit_line(&format!("{place} = {value};"));
+            }
         } else if let Some(slot) = self.slots.get(&dst).cloned() {
             self.emit_line(&format!("{slot} = {value};"));
         } else {
@@ -872,73 +1056,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    /// Recursively render a CIR constant initializer as a Rust value of Rust type
-    /// `rust_ty`. Handles nesting: `#cir.const_record` → struct/union literal
-    /// (partial init leaves trailing fields default), `#cir.const_array` → array
-    /// literal, `#cir.zero` → default, otherwise an int/fp leaf.
     fn render_const_value(&self, rust_ty: &str, raw: &str) -> Option<String> {
-        let raw = raw.trim();
-        if raw.starts_with("#cir.const_record<") {
-            let record = self.parent.records.get(rust_ty)?;
-            let open = raw.find('{')?;
-            let close = raw.rfind('}')?;
-            let elems = split_top_level(&raw[open + 1..close], ',');
-            match record.kind {
-                RecordKind::Struct => {
-                    let fields = record
-                        .fields
-                        .iter()
-                        .enumerate()
-                        .map(|(i, field)| {
-                            let field_ty = c_type_to_rust(&field.ty);
-                            let value = elems
-                                .get(i)
-                                .and_then(|e| self.render_const_value(&field_ty, e.trim()))
-                                .unwrap_or_else(|| self.default_value(&field_ty));
-                            format!("{}: {value}", sanitize_ident(&field.name))
-                        })
-                        .collect::<Vec<_>>()
-                        .join(", ");
-                    Some(format!("{} {{ {fields} }}", sanitize_ident(&record.name)))
-                }
-                // brace-initializing a union targets its first member.
-                RecordKind::Union => {
-                    let field = record.fields.first()?;
-                    let field_ty = c_type_to_rust(&field.ty);
-                    let value = elems
-                        .first()
-                        .and_then(|e| self.render_const_value(&field_ty, e.trim()))
-                        .unwrap_or_else(|| self.default_value(&field_ty));
-                    Some(format!(
-                        "{} {{ {}: {value} }}",
-                        sanitize_ident(&record.name),
-                        sanitize_ident(&field.name)
-                    ))
-                }
-            }
-        } else if raw.starts_with("#cir.const_array<[") {
-            let (elem_ty, len) = parse_rust_array_type(rust_ty)?;
-            let open = raw.find('[')?;
-            let close = raw.rfind(']')?;
-            let mut out: Vec<String> = split_top_level(&raw[open + 1..close], ',')
-                .into_iter()
-                .map(|e| e.trim().to_string())
-                .filter(|e| !e.is_empty())
-                .take(len as usize)
-                .map(|e| {
-                    self.render_const_value(elem_ty, &e)
-                        .unwrap_or_else(|| self.default_value(elem_ty))
-                })
-                .collect();
-            out.resize(len as usize, self.default_value(elem_ty));
-            Some(format!("[{}]", out.join(", ")))
-        } else if raw.starts_with("#cir.zero") {
-            Some(self.default_value(rust_ty))
-        } else {
-            parse_cir_int(raw)
-                .map(|n| n.to_string())
-                .or_else(|| parse_cir_fp(raw))
-        }
+        self.parent.render_const_value(rust_ty, raw)
     }
 
     fn lower_load(&mut self, op: &Op) {
@@ -958,7 +1077,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if let Some(member) = self.member_ptrs.get(ptr) {
             format!("unsafe {{ {}.{} }}", member.base, member.field)
         } else if let Some(element) = self.element_ptrs.get(ptr) {
-            format!("{}[({}) as usize]", element.base, element.index)
+            let place = format!("{}[({}) as usize]", element.base, element.index);
+            if element.unsafe_access {
+                format!("unsafe {{ {place} }}")
+            } else {
+                place
+            }
         } else if let Some(slot) = self.slots.get(ptr) {
             slot.clone()
         } else {
@@ -1473,8 +1597,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .place_expr(base_ptr)
             .unwrap_or_else(|| format!("(*{})", self.render_pointer_operand(base_ptr)));
         let field = sanitize_ident(attr_str(op, "name").unwrap_or(result));
-        self.member_ptrs
-            .insert(result.clone(), MemberPtr { base, field });
+        let unsafe_access = self.ptr_requires_unsafe(base_ptr);
+        self.member_ptrs.insert(
+            result.clone(),
+            MemberPtr {
+                base,
+                field,
+                unsafe_access,
+            },
+        );
     }
 
     fn lower_get_element(&mut self, op: &Op) {
@@ -1489,8 +1620,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .place_expr(base_ptr)
             .unwrap_or_else(|| format!("(*{})", self.render_pointer_operand(base_ptr)));
         let index = self.render_operand(&op.operands[1]);
-        self.element_ptrs
-            .insert(result.clone(), ElementPtr { base, index });
+        let unsafe_access = self.ptr_requires_unsafe(base_ptr);
+        self.element_ptrs.insert(
+            result.clone(),
+            ElementPtr {
+                base,
+                index,
+                unsafe_access,
+            },
+        );
+    }
+
+    fn ptr_requires_unsafe(&self, ptr: &str) -> bool {
+        self.global_name(ptr).is_some()
+            || self
+                .member_ptrs
+                .get(ptr)
+                .is_some_and(|member| member.unsafe_access)
+            || self
+                .element_ptrs
+                .get(ptr)
+                .is_some_and(|element| element.unsafe_access)
     }
 
     fn lower_cast(&mut self, op: &Op) {
@@ -2111,55 +2261,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn default_value(&self, ty: &str) -> String {
-        if let Some(record) = self.parent.records.get(ty) {
-            match record.kind {
-                RecordKind::Struct => {
-                    let fields = record
-                        .fields
-                        .iter()
-                        .map(|field| {
-                            format!(
-                                "{}: {}",
-                                sanitize_ident(&field.name),
-                                self.default_value(&c_type_to_rust(&field.ty))
-                            )
-                        })
-                        .collect::<Vec<_>>()
-                        .join(", ");
-                    return format!("{} {{ {fields} }}", sanitize_ident(&record.name));
-                }
-                RecordKind::Union => {
-                    if let Some(field) = record.fields.first() {
-                        return format!(
-                            "{} {{ {}: {} }}",
-                            sanitize_ident(&record.name),
-                            sanitize_ident(&field.name),
-                            self.default_value(&c_type_to_rust(&field.ty))
-                        );
-                    }
-                }
-            }
-        }
-        if is_long_double(ty) || ty == LONG_DOUBLE_TY {
-            return format!("{LONG_DOUBLE_TY}(0.0)");
-        }
-        if let Some(value) = standard_record_default(ty) {
-            return value.to_string();
-        }
-        if let Some(inner) = ty
-            .strip_prefix(COMPLEX_TY)
-            .and_then(|s| s.strip_suffix('>'))
-        {
-            let d = default_value(inner);
-            return format!("Complex {{ re: {d}, im: {d} }}");
-        }
-        if let Some((inner, len)) = parse_cir_array_type(ty) {
-            return format!("[{}; {len}]", self.default_value(&inner));
-        }
-        if let Some((inner, len)) = parse_rust_array_type(ty) {
-            return format!("[{}; {len}]", self.default_value(inner));
-        }
-        default_value(ty).into()
+        self.parent.default_value(ty)
     }
 }
 

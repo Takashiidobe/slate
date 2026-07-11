@@ -102,3 +102,18 @@ fn file_scope_static_emits_rust_static_mut() {
     assert!(rust.contains("static mut counter: i32 = 2;"));
     assert!(!rust.contains("*counter"));
 }
+
+#[test]
+fn file_scope_globals_emit_static_mut_definitions() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-global-vars");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("global_vars.c");
+    let generated = tmp.join("global_vars.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate global vars fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated global vars rust");
+    assert!(rust.contains("static mut counter: i32 = 4;"));
+    assert!(rust.contains("static mut zeroed: i32 = 0;"));
+    assert!(rust.contains("static mut numbers: [i32; 4] = [1, 2, 0, 0];"));
+    assert!(rust.contains("static mut pair: Pair = Pair { left: 3, right: 5 };"));
+}
