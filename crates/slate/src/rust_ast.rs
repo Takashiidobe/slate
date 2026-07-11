@@ -16,10 +16,9 @@ pub struct Program {
 #[derive(Debug, Clone)]
 pub enum Item {
     Func(Func),
-    /// Migration target for lowered functions: a string header line plus a flat,
-    /// depth-annotated statement list. Some scaffolding still uses `Stmt::Raw`,
-    /// but common control-flow and straight-line statements are structured so
-    /// fixups can operate on them.
+    /// Migration target for lowered functions. Some scaffolding still uses
+    /// `Stmt::Raw`, but common control-flow and straight-line statements are
+    /// structured so fixups can operate on them.
     Fn(FnDef),
     /// Escape hatch for things without a modeled node yet (e.g. `use` lines).
     Raw(String),
@@ -27,9 +26,19 @@ pub enum Item {
 
 #[derive(Debug, Clone)]
 pub struct FnDef {
-    /// The opening line through the brace, e.g. `fn add(a: i32, b: i32) -> i32 {`.
-    pub open: String,
+    pub vis: Option<String>,
+    pub unsafe_extern_c: bool,
+    pub name: String,
+    pub params: Vec<FnParam>,
+    pub ret: Option<Type>,
     pub body: Vec<IndentStmt>,
+}
+
+#[derive(Debug, Clone)]
+pub struct FnParam {
+    pub name: String,
+    pub mutable: bool,
+    pub ty: Type,
 }
 
 #[derive(Debug, Clone)]
@@ -180,7 +189,28 @@ impl Item {
         match self {
             Item::Func(f) => f.emit(out),
             Item::Fn(f) => {
-                out.push_str(&f.open);
+                if let Some(vis) = &f.vis {
+                    out.push_str(vis);
+                    out.push(' ');
+                }
+                if f.unsafe_extern_c {
+                    out.push_str("unsafe extern \"C\" ");
+                }
+                let _ = write!(out, "fn {}(", f.name);
+                for (i, p) in f.params.iter().enumerate() {
+                    if i > 0 {
+                        out.push_str(", ");
+                    }
+                    if p.mutable {
+                        out.push_str("mut ");
+                    }
+                    let _ = write!(out, "{}: {}", p.name, p.ty.render());
+                }
+                out.push(')');
+                if let Some(ret) = &f.ret {
+                    let _ = write!(out, " -> {}", ret.render());
+                }
+                out.push_str(" {");
                 out.push('\n');
                 for IndentStmt { depth, stmt } in &f.body {
                     stmt.emit(out, *depth);
@@ -730,7 +760,11 @@ fn add(a: i32, b: i32) -> i32 {
     fn emits_unsafe_statement_body() {
         let prog = Program {
             items: vec![Item::Fn(FnDef {
-                open: "fn f() {".into(),
+                vis: None,
+                unsafe_extern_c: false,
+                name: "f".into(),
+                params: vec![],
+                ret: None,
                 body: vec![IndentStmt {
                     depth: 1,
                     stmt: Stmt::Unsafe {
