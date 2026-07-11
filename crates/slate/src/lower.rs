@@ -975,6 +975,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.va_arg" => self.lower_va_arg(op),
             // `VaList` drops on scope exit.
             "cir.va_end" => {}
+            "cir.atomic.fetch" => self.lower_atomic_fetch(op),
+            "cir.atomic.xchg" => self.lower_atomic_xchg(op),
+            "cir.atomic.cmpxchg" => self.lower_atomic_cmpxchg(op),
+            "cir.atomic.fence" => self.lower_atomic_fence(),
             "cir.return" => self.lower_return(op),
             "cir.scope" => self.lower_scope(op),
             "cir.if" => self.lower_if(op),
@@ -1961,6 +1965,89 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             self.emit_expr(expr);
         }
+    }
+
+    // Atomic RMW/fence ops lower to plain non-atomic read-modify-write through
+    // `store_address` (a `*mut T`). Single-threaded differential testing makes
+    // the atomic/ordering semantics unobservable; real atomics are a later fixup.
+    fn atomic_rust_type(&self, op: &Op) -> String {
+        op_result_type(op)
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or_else(|| "i32".into())
+    }
+
+    fn lower_atomic_fetch(&mut self, op: &Op) {
+        let Some(result) = op.results.first().cloned() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let addr = self.store_address(&op.operands[0]);
+        let val = self.render_operand(&op.operands[1]);
+        let ty = self.atomic_rust_type(op);
+        let old = self.next_temp();
+        self.emit_line(&format!("let {old}: {ty} = unsafe {{ *{addr} }};"));
+        let combined = match attr_int(op, "binop").unwrap_or(0) {
+            0 => format!("({old} + ({val}))"),
+            1 => format!("({old} - ({val}))"),
+            2 => format!("({old} & ({val}))"),
+            3 => format!("({old} ^ ({val}))"),
+            4 => format!("({old} | ({val}))"),
+            5 => format!("(!({old} & ({val})))"),
+            6 => format!("({old}).max({val})"),
+            _ => format!("({old}).min({val})"),
+        };
+        let new = self.next_temp();
+        self.emit_line(&format!("let {new}: {ty} = {combined};"));
+        self.emit_line(&format!("unsafe {{ *{addr} = {new}; }}"));
+        // `fetch_first` returns the pre-op value; its absence returns the new value.
+        let bound = if attr_bool(op, "fetch_first") {
+            old
+        } else {
+            new
+        };
+        self.values.insert(result, Val::Expr(bound));
+    }
+
+    fn lower_atomic_xchg(&mut self, op: &Op) {
+        let Some(result) = op.results.first().cloned() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let addr = self.store_address(&op.operands[0]);
+        let val = self.render_operand(&op.operands[1]);
+        let ty = self.atomic_rust_type(op);
+        let old = self.next_temp();
+        self.emit_line(&format!("let {old}: {ty} = unsafe {{ *{addr} }};"));
+        self.emit_line(&format!("unsafe {{ *{addr} = {val}; }}"));
+        self.values.insert(result, Val::Expr(old));
+    }
+
+    fn lower_atomic_cmpxchg(&mut self, op: &Op) {
+        if op.operands.len() < 3 || op.results.len() < 2 {
+            return;
+        }
+        let addr = self.store_address(&op.operands[0]);
+        let expected = self.render_operand(&op.operands[1]);
+        let desired = self.render_operand(&op.operands[2]);
+        let ty = op_result_types(op)
+            .first()
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or_else(|| "i32".into());
+        let old = self.next_temp();
+        let ok = self.next_temp();
+        self.emit_line(&format!("let {old}: {ty} = unsafe {{ *{addr} }};"));
+        self.emit_line(&format!("let {ok}: bool = {old} == ({expected});"));
+        self.emit_line(&format!("if {ok} {{ unsafe {{ *{addr} = {desired}; }} }}"));
+        self.values.insert(op.results[0].clone(), Val::Expr(old));
+        self.values.insert(op.results[1].clone(), Val::Expr(ok));
+    }
+
+    fn lower_atomic_fence(&mut self) {
+        self.emit_line("std::sync::atomic::fence(std::sync::atomic::Ordering::SeqCst);");
     }
 
     fn lower_va_start(&mut self, op: &Op) {
