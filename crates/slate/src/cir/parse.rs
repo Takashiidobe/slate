@@ -111,7 +111,16 @@ impl<'a> Parser<'a> {
         let mut results = Vec::new();
         loop {
             self.skip_ws();
-            results.push(self.parse_ssa_name()?);
+            let name = self.parse_ssa_name()?;
+            if self.peek() == Some(':') {
+                self.bump();
+                let count = self.parse_result_count()?;
+                for i in 0..count {
+                    results.push(format!("{name}#{i}"));
+                }
+            } else {
+                results.push(name);
+            }
             self.skip_ws();
             match self.peek() {
                 Some(',') => {
@@ -241,10 +250,20 @@ impl<'a> Parser<'a> {
         self.parse_ident()
     }
 
+    fn parse_result_count(&mut self) -> Result<usize, String> {
+        let start = self.pos;
+        while self.peek().is_some_and(|c| c.is_ascii_digit()) {
+            self.bump();
+        }
+        self.text[start..self.pos]
+            .parse()
+            .map_err(|_| self.error("expected result count"))
+    }
+
     fn parse_ident(&mut self) -> Result<String, String> {
         let start = self.pos;
         while let Some(c) = self.peek() {
-            if c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '-' | '$') {
+            if c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '-' | '$' | '#') {
                 self.bump();
             } else {
                 break;
@@ -784,5 +803,16 @@ mod tests {
         let module = parse_module(text).unwrap();
         assert_eq!(module.ops[0].loc.as_deref(), Some(r#"loc("f.c":1:2)"#));
         assert_eq!(module.ops[0].ty.as_deref(), Some("() -> !s32i"));
+    }
+
+    #[test]
+    fn parses_multi_result_ops_and_projections() {
+        let text = r#"
+%0:2 = "cir.modf"(%arg0) : (!cir.double) -> (!cir.double, !cir.double)
+"cir.store"(%0#1, %arg1) : (!cir.double, !cir.ptr<!cir.double>) -> ()
+"#;
+        let module = parse_module(text).unwrap();
+        assert_eq!(module.ops[0].results, ["0#0", "0#1"]);
+        assert_eq!(module.ops[1].operands, ["0#1", "arg1"]);
     }
 }

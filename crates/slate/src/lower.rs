@@ -482,6 +482,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.ceil" => self.lower_unary_method(op, "ceil"),
             "cir.fabs" => self.lower_unary_method(op, "abs"),
             "cir.floor" => self.lower_unary_method(op, "floor"),
+            "cir.modf" => self.lower_modf(op),
             "cir.round" => self.lower_unary_method(op, "round"),
             "cir.trunc" => self.lower_unary_method(op, "trunc"),
             "cir.fadd" => self.lower_binary(op, "+"),
@@ -950,6 +951,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize(result, expr, result_ty);
     }
 
+    fn lower_modf(&mut self, op: &Op) {
+        if op.results.len() < 2 {
+            return;
+        }
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let value = self.render_operand(value);
+        let result_types = op_result_types(op);
+        self.materialize(
+            &op.results[0],
+            format!("({value}).fract()"),
+            result_types.first().copied(),
+        );
+        self.materialize(
+            &op.results[1],
+            format!("({value}).trunc()"),
+            result_types.get(1).copied(),
+        );
+    }
+
     fn lower_cmp(&mut self, op: &Op) {
         let Some(result) = op.results.first() else {
             return;
@@ -1055,6 +1077,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.render_operand(src),
                 self.parent.rust_type(result_ty)
             )),
+            _ if result_ty.starts_with("!cir.ptr<") && operand_ty.starts_with("!cir.ptr<") => {
+                Val::Expr(format!(
+                    "{} as {}",
+                    self.render_pointer_operand(src),
+                    self.parent.rust_type(result_ty)
+                ))
+            }
             _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(format!(
                 "({} != {})",
                 self.render_operand(src),
@@ -1420,6 +1449,22 @@ fn op_result_type(op: &Op) -> Option<&str> {
         .map(|(_, ret)| ret.trim())
 }
 
+fn op_result_types(op: &Op) -> Vec<&str> {
+    let Some(ret) = op_result_type(op) else {
+        return Vec::new();
+    };
+    let ret = ret.trim();
+    if ret.starts_with('(') && ret.ends_with(')') {
+        split_top_level(&ret[1..ret.len() - 1], ',')
+            .into_iter()
+            .map(str::trim)
+            .filter(|ty| !ty.is_empty())
+            .collect()
+    } else {
+        vec![ret]
+    }
+}
+
 fn op_operand_types(ty: &str) -> Vec<&str> {
     let Some((params, _)) = split_top_level_arrow(ty) else {
         return Vec::new();
@@ -1676,6 +1721,7 @@ fn zero_for_cir_type(ty: &str) -> &'static str {
     match rust_type(ty).as_str() {
         "f32" | "f64" => "0.0",
         "bool" => "false",
+        ty if ty.starts_with("*mut ") => "std::ptr::null_mut()",
         _ => "0",
     }
 }
