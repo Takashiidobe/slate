@@ -508,6 +508,20 @@ impl Gen {
 
         self.push_scope();
         self.declare(&idx, bound);
+        // Guarded break/continue only skip iterations, so acc_max stays an upper bound.
+        if bound > 0 && self.rng.chance(50) {
+            let kw = if self.rng.chance(50) {
+                "break"
+            } else {
+                "continue"
+            };
+            let k = self.rng.int_in(0, bound);
+            self.line(&format!("if ({idx} == {k}) {{"));
+            self.indent += 1;
+            self.line(&format!("{kw};"));
+            self.indent -= 1;
+            self.line("}");
+        }
         let (step, step_max) = self.gen_expr(0, STEP_BUDGET);
         self.line(&format!("{acc} += {step};"));
         self.pop_scope();

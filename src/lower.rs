@@ -57,6 +57,18 @@ struct FunctionLowerer<'a, 'b> {
     indent: usize,
     out: String,
     is_main: bool,
+    loop_stack: Vec<LoopFrame>,
+    label_counter: usize,
+}
+
+// How `cir.break`/`cir.continue` lower for the enclosing loop. A C `for` loop's
+// step must still run on `continue`, but Rust's `continue` skips the loop tail,
+// so the body is wrapped in a labeled block and `continue` becomes
+// `break 'continue`. Rust then forbids an unlabeled `break` from diverging out
+// through that block, so the loop is labeled too and `break` targets it.
+struct LoopFrame {
+    break_label: Option<String>,
+    continue_label: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -339,6 +351,8 @@ impl<'a> Lowerer<'a> {
             indent: 1,
             out: String::new(),
             is_main,
+            loop_stack: Vec::new(),
+            label_counter: 0,
         };
 
         for (arg, _) in &entry.args {
@@ -569,6 +583,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.if" => self.lower_if(op),
             "cir.for" => self.lower_for(op),
             "cir.while" => self.lower_while(op),
+            "cir.break" => self.lower_break(),
+            "cir.continue" => self.lower_continue(),
             "cir.yield" | "cir.condition" => {}
             other => {
                 self.parent
@@ -1455,7 +1471,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_expr("todo!(\"cir.for\")".into());
             return;
         }
-        self.emit_line("loop {");
+        // C `continue` must still run the step region, so wrap the body in a
+        // labeled block (`continue` -> `break 'continue`). Rust then forbids an
+        // unlabeled `break` from diverging through that block, so the loop is
+        // labeled too and `break` targets it.
+        let (break_label, continue_label) = if region_has_direct_continue(&op.regions[1]) {
+            let n = self.label_counter;
+            self.label_counter += 1;
+            (Some(format!("'__loop{n}")), Some(format!("'__continue{n}")))
+        } else {
+            (None, None)
+        };
+        match &break_label {
+            Some(label) => self.emit_line(&format!("{label}: loop {{")),
+            None => self.emit_line("loop {"),
+        }
         self.indent += 1;
         let cond = self.lower_condition_region(&op.regions[0]);
         self.emit_line(&format!("if !({cond}) {{"));
@@ -1463,7 +1493,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.emit_line("break;");
         self.indent -= 1;
         self.emit_line("}");
+        if let Some(label) = &continue_label {
+            self.emit_line(&format!("{label}: {{"));
+            self.indent += 1;
+        }
+        self.loop_stack.push(LoopFrame {
+            break_label,
+            continue_label: continue_label.clone(),
+        });
         self.lower_region_ops(&op.regions[1]);
+        self.loop_stack.pop();
+        if continue_label.is_some() {
+            self.indent -= 1;
+            self.emit_line("}");
+        }
         self.lower_region_ops(&op.regions[2]);
         self.indent -= 1;
         self.emit_line("}");
@@ -1482,9 +1525,34 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.emit_line("break;");
         self.indent -= 1;
         self.emit_line("}");
+        // A while loop has no step region, so plain Rust `break`/`continue` match C.
+        self.loop_stack.push(LoopFrame {
+            break_label: None,
+            continue_label: None,
+        });
         self.lower_region_ops(&op.regions[1]);
+        self.loop_stack.pop();
         self.indent -= 1;
         self.emit_line("}");
+    }
+
+    fn lower_break(&mut self) {
+        let label = self.loop_stack.last().and_then(|f| f.break_label.clone());
+        match label {
+            Some(label) => self.emit_line(&format!("break {label};")),
+            None => self.emit_line("break;"),
+        }
+    }
+
+    fn lower_continue(&mut self) {
+        let label = self
+            .loop_stack
+            .last()
+            .and_then(|f| f.continue_label.clone());
+        match label {
+            Some(label) => self.emit_line(&format!("break {label};")),
+            None => self.emit_line("continue;"),
+        }
     }
 
     fn lower_condition_region(&mut self, region: &Region) -> String {
@@ -1781,6 +1849,24 @@ unsafe extern \"C\" {
 
 fn rust_type(cir_ty: &str) -> String {
     rust_type_with_aliases(cir_ty, &BTreeMap::new())
+}
+
+// True if the region contains a `cir.continue` that targets the enclosing loop,
+// i.e. one not swallowed by a nested loop. `cir.if`/`cir.scope`/`cir.switch`
+// bodies are transparent, so we recurse through them.
+fn region_has_direct_continue(region: &Region) -> bool {
+    region
+        .blocks
+        .iter()
+        .any(|block| ops_have_direct_continue(&block.ops))
+}
+
+fn ops_have_direct_continue(ops: &[Op]) -> bool {
+    ops.iter().any(|op| match op.name.as_str() {
+        "cir.continue" => true,
+        "cir.for" | "cir.while" | "cir.do" => false,
+        _ => op.regions.iter().any(region_has_direct_continue),
+    })
 }
 
 fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> String {
