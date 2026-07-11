@@ -1,0 +1,75 @@
+{
+  "fixtures": [
+    {
+      "source": "os_targets.c",
+      "variants": [
+        {
+          "name": "windows",
+          "predicate": "defined(_WIN32)",
+          "rust_cfg": "windows",
+          "expected_stdout": "10\n"
+        },
+        {
+          "name": "linux",
+          "predicate": "defined(__linux__)",
+          "rust_cfg": "target_os = \"linux\"",
+          "expected_stdout": "20\n"
+        },
+        {
+          "name": "apple",
+          "predicate": "defined(__APPLE__)",
+          "rust_cfg": "target_vendor = \"apple\"",
+          "expected_stdout": "30\n"
+        }
+      ],
+      "fallback": {
+        "rust_cfg": "not(any(windows, target_os = \"linux\", target_vendor = \"apple\"))",
+        "expected_stdout": "40\n"
+      }
+    },
+    {
+      "source": "arch_targets.c",
+      "variants": [
+        {
+          "name": "x86_64",
+          "predicate": "defined(__x86_64__) || defined(_M_X64)",
+          "rust_cfg": "target_arch = \"x86_64\"",
+          "expected_stdout": "64\n"
+        },
+        {
+          "name": "aarch64",
+          "predicate": "defined(__aarch64__) || defined(_M_ARM64)",
+          "rust_cfg": "target_arch = \"aarch64\"",
+          "expected_stdout": "128\n"
+        },
+        {
+          "name": "arm",
+          "predicate": "defined(__arm__) || defined(_M_ARM)",
+          "rust_cfg": "target_arch = \"arm\"",
+          "expected_stdout": "32\n"
+        }
+      ],
+      "fallback": {
+        "rust_cfg": "not(any(target_arch = \"x86_64\", target_arch = \"aarch64\", target_arch = \"arm\"))",
+        "expected_stdout": "0\n"
+      }
+    },
+    {
+      "source": "ndebug.c",
+      "variants": [
+        {
+          "name": "release",
+          "predicate": "defined(NDEBUG)",
+          "rust_cfg": "not(debug_assertions)",
+          "expected_stdout": "0\n"
+        },
+        {
+          "name": "debug",
+          "predicate": "!defined(NDEBUG)",
+          "rust_cfg": "debug_assertions",
+          "expected_stdout": "1\n"
+        }
+      ]
+    }
+  ]
+}
