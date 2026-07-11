@@ -55,12 +55,16 @@ edition = "2024"
 [dependencies]
 libc = "0.2"
 
+[build-dependencies]
+cc = "1"
+
 [profile.dev]
 overflow-checks = false
 "#
         ),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
+    write_long_double_shim(&project)?;
     std::fs::copy(src, project.join("src/main.rs"))
         .map_err(|e| format!("copy {} to cargo project: {e}", src.display()))?;
 
@@ -163,6 +167,9 @@ edition = "2024"
 [dependencies]
 libc = "0.2"
 
+[build-dependencies]
+cc = "1"
+
 # clang compiles the C side at -O0, where signed overflow wraps two's-complement
 # (and unsigned wrap is defined). Disable Rust's overflow checks so both sides
 # wrap identically instead of panicking. Division by zero / INT_MIN by -1 still
@@ -172,6 +179,7 @@ overflow-checks = false
 "#,
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
+    write_long_double_shim(project)?;
 
     for case in cases {
         let dest = bin_dir.join(format!("{}.rs", bin_name(&case.name)));
@@ -215,6 +223,34 @@ fn compare_runs(c: &Run, r: &Run, compare_stderr: bool) -> Result<(), String> {
         ));
     }
     Ok(())
+}
+
+fn write_long_double_shim(project: &Path) -> Result<(), String> {
+    std::fs::write(
+        project.join("build.rs"),
+        r#"fn main() {
+    cc::Build::new()
+        .file("src/slate_long_double.c")
+        .compile("slate_long_double");
+}
+"#,
+    )
+    .map_err(|e| format!("write build.rs: {e}"))?;
+    std::fs::write(
+        project.join("src/slate_long_double.c"),
+        r#"#include <stdio.h>
+#include <stdlib.h>
+
+void __slate_strtold(char *nptr, char **endptr, long double *out) {
+    *out = strtold(nptr, endptr);
+}
+
+int __slate_printf_ld_i32(char *fmt, const long double *value, int arg) {
+    return printf(fmt, *value, arg);
+}
+"#,
+    )
+    .map_err(|e| format!("write slate_long_double.c: {e}"))
 }
 
 pub fn run_with_config(bin: &Path, config: &RunConfig, cwd: &Path) -> Result<Run, String> {

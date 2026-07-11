@@ -21,6 +21,7 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
         strings: BTreeMap::new(),
         const_arrays: BTreeMap::new(),
         externs: BTreeMap::new(),
+        extern_returns: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
     };
@@ -40,6 +41,7 @@ struct Lowerer<'a> {
     /// external (body-less) functions → rust types of their fixed params; the
     /// call site uses this to `as`-cast args and wrap the call in `unsafe`.
     externs: BTreeMap<String, Vec<String>>,
+    extern_returns: BTreeMap<String, Option<String>>,
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
 }
@@ -137,6 +139,7 @@ impl<'a> Lowerer<'a> {
             )));
         }
 
+        let module_uses_long_double = ops.iter().any(|op| op_mentions_long_double(op));
         let mut extern_decls = Vec::new();
         for (name, ty) in &self.extern_globals {
             extern_decls.push(format!("static mut {name}: {ty};"));
@@ -153,9 +156,23 @@ impl<'a> Lowerer<'a> {
                 continue;
             }
             let function_type = attr_str(op, "function_type").unwrap_or("");
-            let (sig, params) = self.extern_fn_signature(name, function_type);
+            let (sig, params, ret) = self.extern_fn_signature(name, function_type);
             self.externs.insert(name.to_string(), params);
-            extern_decls.push(sig);
+            self.extern_returns.insert(name.to_string(), ret.clone());
+            if name == "strtold" && ret.as_deref() == Some(LONG_DOUBLE_TY) {
+                extern_decls.push(
+                    "fn __slate_strtold(_0: *mut i8, _1: *mut *mut i8, _2: *mut LongDouble);"
+                        .to_string(),
+                );
+            } else {
+                extern_decls.push(sig);
+            }
+            if name == "printf" && module_uses_long_double {
+                extern_decls.push(
+                    "fn __slate_printf_ld_i32(_0: *mut i8, _1: *const LongDouble, _2: i32) -> i32;"
+                        .to_string(),
+                );
+            }
         }
         if !extern_decls.is_empty() {
             items.push(Item::Raw(format!(
@@ -352,9 +369,13 @@ impl<'a> Lowerer<'a> {
     }
 
     /// Build a Rust `extern "C"` signature line for a body-less C declaration,
-    /// returning `(line, fixed_param_rust_types)`. Trailing `...` becomes a Rust
+    /// returning `(line, fixed_param_rust_types, return_type)`. Trailing `...` becomes a Rust
     /// variadic; a missing return arrow means the C function returns `void`.
-    fn extern_fn_signature(&self, name: &str, function_type: &str) -> (String, Vec<String>) {
+    fn extern_fn_signature(
+        &self,
+        name: &str,
+        function_type: &str,
+    ) -> (String, Vec<String>, Option<String>) {
         let inner = function_type
             .strip_prefix("!cir.func<")
             .and_then(|s| s.strip_suffix('>'))
@@ -385,12 +406,16 @@ impl<'a> Lowerer<'a> {
         if variadic {
             parts.push("...".to_string());
         }
-        let ret = match ret {
-            Some(ret) if ret != "()" => format!(" -> {}", self.rust_type(ret)),
-            _ => String::new(),
+        let ret_ty = match ret {
+            Some(ret) if ret != "()" => Some(self.rust_type(ret)),
+            _ => None,
         };
+        let ret = ret_ty
+            .as_ref()
+            .map(|ty| format!(" -> {ty}"))
+            .unwrap_or_default();
         let line = format!("fn {name}({}){ret};", parts.join(", "));
-        (line, param_types)
+        (line, param_types, ret_ty)
     }
 
     fn rust_type(&self, cir_ty: &str) -> String {
@@ -1178,6 +1203,51 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .zip(arg_types.iter().copied())
             .map(|(operand, ty)| self.render_call_arg(operand, ty))
             .collect::<Vec<_>>();
+        if callee == "strtold"
+            && self
+                .parent
+                .extern_returns
+                .get(&callee)
+                .and_then(|ret| ret.as_deref())
+                == Some(LONG_DOUBLE_TY)
+        {
+            if let Some(result) = op.results.first() {
+                let name = self.next_temp();
+                let a0 = args
+                    .first()
+                    .cloned()
+                    .unwrap_or_else(|| "std::ptr::null_mut()".into());
+                let a1 = args
+                    .get(1)
+                    .cloned()
+                    .unwrap_or_else(|| "std::ptr::null_mut()".into());
+                self.emit_line(&format!(
+                    "let mut {name}: {LONG_DOUBLE_TY} = {LONG_DOUBLE_TY}(0.0);"
+                ));
+                self.emit_line(&format!(
+                    "unsafe {{ __slate_strtold({a0} as *mut i8, {a1} as *mut *mut i8, std::ptr::addr_of_mut!({name})); }}"
+                ));
+                self.values.insert(result.to_string(), Val::Expr(name));
+            }
+            return;
+        }
+        if callee == "printf"
+            && arg_types.iter().any(|ty| is_long_double(ty))
+            && args.len() == 3
+            && arg_types.get(1).is_some_and(|ty| is_long_double(ty))
+            && arg_types.get(2).is_some_and(|ty| *ty == "!s32i")
+        {
+            let expr = format!(
+                "unsafe {{ __slate_printf_ld_i32({} as *mut i8, std::ptr::addr_of!({}) as *const LongDouble, {} as i32) }}",
+                args[0], args[1], args[2]
+            );
+            if let Some(result) = op.results.first() {
+                self.materialize(result, expr, op_result_type(op));
+            } else {
+                self.emit_expr(expr);
+            }
+            return;
+        }
         let expr = if is_complex_runtime_call(&callee) {
             self.parent.uses_complex.set(true);
             format!("unsafe {{ {callee}({}) }}", args.join(", "))
@@ -1451,6 +1521,26 @@ fn region_ops(op: &Op) -> Vec<&Op> {
         .flat_map(|region| region.blocks.iter())
         .flat_map(|block| block.ops.iter())
         .collect()
+}
+
+fn op_mentions_long_double(op: &Op) -> bool {
+    op.ty
+        .as_deref()
+        .is_some_and(|ty| ty.contains("!cir.long_double"))
+        || op
+            .attrs
+            .values()
+            .filter_map(Attr::as_str)
+            .any(|value| value.contains("!cir.long_double"))
+        || op.regions.iter().any(|region| {
+            region.blocks.iter().any(|block| {
+                block
+                    .args
+                    .iter()
+                    .any(|(_, ty)| ty.contains("!cir.long_double"))
+                    || block.ops.iter().any(op_mentions_long_double)
+            })
+        })
 }
 
 fn attr_str<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
