@@ -1,3 +1,9 @@
 #include <string.h>
 #include <stdio.h>
-int main(void) { char b[16] = "foo"; strcat(b, "bar"); puts(b); return 0; }
+int main(void) {
+  char b[16] = "foo";
+  char *r = strcat(b, "bar");
+  strcat(b, "");
+  printf("%s %d %zu\n", b, r == b, strlen(b));
+  return 0;
+}
