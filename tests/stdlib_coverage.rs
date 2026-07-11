@@ -20,7 +20,11 @@ struct UnsupportedProbe {
     bead: &'static str,
 }
 
-const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[];
+const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[UnsupportedProbe {
+    // &arr[i] lowers to a placeholder identifier; blocks pointer-difference programs.
+    probe: "stddef/ptrdiff",
+    bead: "slate-4n0",
+}];
 
 fn stdlib_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/stdlib")
