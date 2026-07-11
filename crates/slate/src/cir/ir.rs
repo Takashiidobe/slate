@@ -21,6 +21,8 @@ pub struct Op {
     pub name: String,
     /// SSA operands referenced (names without the `%`).
     pub operands: Vec<String>,
+    /// Successor block labels from a `[^bbN, ...]` list (names without the `^`).
+    pub successors: Vec<String>,
     /// `<{...}>` inherent attributes plus `{...}` discardable attributes, merged.
     pub attrs: BTreeMap<String, Attr>,
     /// Nested regions `({ ... })`.
