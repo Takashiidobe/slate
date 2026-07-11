@@ -109,9 +109,7 @@ struct Lowerer<'a> {
     extern_returns: BTreeMap<String, Option<String>>,
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
-    /// set when a variadic function is defined, gating `#![feature(c_variadic)]`.
     uses_c_variadic: std::cell::Cell<bool>,
-    /// names of locally-defined variadic functions; their call sites need `unsafe`.
     variadic_defs: BTreeSet<String>,
     project: ProjectInfo,
     /// `use crate::<mod>::<sym>;` lines for body-less decls resolved to a sibling.
@@ -136,10 +134,8 @@ struct FunctionLowerer<'a, 'b> {
     dispatch: Option<DispatchCtx>,
     /// Alloca results hoisted above the dispatch loop so locals outlive block arms.
     hoisted: BTreeSet<String>,
-    /// SSA values that denote a `va_list` place → its Rust `VaList` slot name.
-    /// Both the `ap` alloca and the array-decay casts of it map to the same slot.
+    /// `va_list` SSA values (the `ap` alloca and its array-decay casts) → slot name.
     va_places: BTreeMap<String, String>,
-    /// name of the synthesized variadic parameter (`...`), used by `va_start`.
     va_args_param: Option<String>,
 }
 
@@ -313,8 +309,7 @@ impl<'a> Lowerer<'a> {
             )));
         }
 
-        // record variadic definitions up front so call sites wrap in `unsafe`
-        // regardless of definition order.
+        // collected before lowering so call sites wrap in `unsafe` regardless of order.
         for op in &ops {
             if op.name == "cir.func"
                 && !region_ops(op).is_empty()
@@ -358,8 +353,7 @@ impl<'a> Lowerer<'a> {
             items.insert(1 + offset, Item::Raw(line));
         }
 
-        // variadic definitions need the nightly `c_variadic` gate; keep it grouped
-        // with the crate-level `#![allow(..)]` at the very top of the file.
+        // grouped with the crate-level `#![allow(..)]` so both stay at the top.
         if self.uses_c_variadic.get()
             && let Some(Item::Raw(first)) = items.first_mut()
         {
@@ -576,8 +570,7 @@ impl<'a> Lowerer<'a> {
             } else {
                 ""
             };
-            // Rust variadics must be `unsafe extern "C"`; the feature gate is added
-            // at module level once any variadic definition is seen.
+            // Rust variadics must be `unsafe extern "C"`.
             let prefix = if is_variadic {
                 self.uses_c_variadic.set(true);
                 self.variadic_defs.insert(name.to_string());
@@ -979,7 +972,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.call" => self.lower_call(op),
             "cir.va_start" => self.lower_va_start(op),
             "cir.va_arg" => self.lower_va_arg(op),
-            // C `va_end` has no Rust counterpart; the `VaList` drops on scope exit.
+            // `VaList` drops on scope exit.
             "cir.va_end" => {}
             "cir.return" => self.lower_return(op),
             "cir.scope" => self.lower_scope(op),
