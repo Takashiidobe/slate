@@ -79,6 +79,41 @@ fn cross_tu_functions() {
 }
 
 #[test]
+fn cross_tu_static_linkage() {
+    let rs_dir = build_and_diff("static_linkage");
+
+    // the external-linkage function crosses the module boundary...
+    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
+    assert!(
+        main_rs.contains("use crate::other::compute;"),
+        "external-linkage fn should import from its defining module"
+    );
+    // ...but each unit's `static` symbols stay module-private.
+    assert!(
+        !main_rs.contains("pub fn local") && main_rs.contains("fn local"),
+        "internal-linkage fn must not be pub"
+    );
+    assert!(
+        !main_rs.contains("pub static mut base") && main_rs.contains("static mut base"),
+        "internal-linkage global must not be pub"
+    );
+
+    let other_rs = std::fs::read_to_string(rs_dir.join("other.rs")).expect("read other.rs");
+    assert!(
+        other_rs.contains("pub fn compute"),
+        "external-linkage fn must be exported pub"
+    );
+    assert!(
+        !other_rs.contains("pub fn local") && other_rs.contains("fn local"),
+        "sibling's internal-linkage fn must not be pub"
+    );
+    assert!(
+        !other_rs.contains("pub static mut base") && other_rs.contains("static mut base"),
+        "sibling's internal-linkage global must not be pub"
+    );
+}
+
+#[test]
 fn cross_tu_globals() {
     let rs_dir = build_and_diff("globals");
 
