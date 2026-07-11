@@ -6,8 +6,56 @@ use crate::ctx::Ctx;
 use crate::rust_ast::{Item, Program};
 use std::collections::BTreeMap;
 
+/// How a translation unit fits into a multi-file project: which symbols other
+/// units define, which sibling modules the crate root must declare, and whether
+/// definitions are emitted `pub` so siblings can import them.
+#[derive(Default, Clone)]
+pub struct ProjectInfo {
+    /// function symbol → module (rust file stem) that defines it, for functions
+    /// defined anywhere in the project. A body-less decl whose symbol is in here
+    /// becomes `use crate::<module>::<sym>;` instead of an `extern "C"` decl.
+    pub cross_module: BTreeMap<String, String>,
+    /// global symbol → module that defines it. An `extern` global whose symbol is
+    /// in here becomes `use crate::<module>::<sym>;` instead of an extern static.
+    pub cross_module_globals: BTreeMap<String, String>,
+    /// modules the crate root declares with `mod <name>;` (empty for non-root).
+    pub child_modules: Vec<String>,
+    /// emit function and global definitions as `pub` so other modules can import them.
+    pub emit_pub: bool,
+}
+
+/// Function symbols defined (body-bearing) in a CIR module.
+pub fn defined_functions(module: &Module) -> Vec<String> {
+    let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
+        return Vec::new();
+    };
+    region_ops(module_op)
+        .iter()
+        .filter(|op| op.name == "cir.func" && !region_ops(op).is_empty())
+        .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
+        .collect()
+}
+
+/// Global symbols defined (with an initializer) in a CIR module. A body-less
+/// `extern` global decl has no initializer and is excluded.
+pub fn defined_globals(module: &Module) -> Vec<String> {
+    let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
+        return Vec::new();
+    };
+    region_ops(module_op)
+        .iter()
+        .filter(|op| op.name == "cir.global" && attr_str(op, "initial_value").is_some())
+        .filter_map(|op| attr_str(op, "sym_name").map(sanitize_ident))
+        .collect()
+}
+
 /// Lower a parsed CIR module (with the C AST as an oracle) to a Rust program.
 pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
+    lower_with_project(cir, c, ctx, &ProjectInfo::default())
+}
+
+/// Lower a translation unit that is part of a multi-file project.
+pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &ProjectInfo) -> Program {
     let mut lowerer = Lowerer {
         ctx,
         aliases: cir.aliases.clone(),
@@ -24,6 +72,8 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
         extern_returns: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
+        project: project.clone(),
+        cross_uses: Vec::new(),
     };
     lowerer.lower_module(cir, c)
 }
@@ -44,6 +94,9 @@ struct Lowerer<'a> {
     extern_returns: BTreeMap<String, Option<String>>,
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
+    project: ProjectInfo,
+    /// `use crate::<mod>::<sym>;` lines for body-less decls resolved to a sibling.
+    cross_uses: Vec<String>,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -144,9 +197,10 @@ impl<'a> Lowerer<'a> {
                 self.collect_global(op);
             }
         }
+        let global_vis = if self.project.emit_pub { "pub " } else { "" };
         for global in self.globals.values() {
             items.push(Item::Raw(format!(
-                "static mut {}: {} = {};\n",
+                "{global_vis}static mut {}: {} = {};\n",
                 global.name, global.ty, global.init
             )));
         }
@@ -154,6 +208,12 @@ impl<'a> Lowerer<'a> {
         let module_uses_long_double = ops.iter().any(|op| op_mentions_long_double(op));
         let mut extern_decls = Vec::new();
         for (name, ty) in &self.extern_globals {
+            // an extern global defined in a sibling TU becomes a module import.
+            if let Some(module) = self.project.cross_module_globals.get(name) {
+                self.cross_uses
+                    .push(format!("use crate::{module}::{name};"));
+                continue;
+            }
             extern_decls.push(format!("static mut {name}: {ty};"));
         }
         for op in &ops {
@@ -165,6 +225,13 @@ impl<'a> Lowerer<'a> {
             };
             // complex runtime routines are declared in the prelude.
             if is_complex_runtime_call(name) {
+                continue;
+            }
+            // a prototype whose definition lives in a sibling TU becomes a module
+            // import; the call then flows through the normal (non-extern) path.
+            if let Some(module) = self.project.cross_module.get(name) {
+                self.cross_uses
+                    .push(format!("use crate::{module}::{name};"));
                 continue;
             }
             let function_type = attr_str(op, "function_type").unwrap_or("");
@@ -211,6 +278,18 @@ impl<'a> Lowerer<'a> {
         }
         if self.uses_complex.get() {
             items.insert(1, Item::Raw(COMPLEX_PRELUDE.to_string()));
+        }
+
+        // module wiring goes right after the crate-level `#![allow(..)]` attr.
+        let mut wiring: Vec<String> = self
+            .project
+            .child_modules
+            .iter()
+            .map(|m| format!("mod {m};"))
+            .collect();
+        wiring.append(&mut self.cross_uses);
+        for (offset, line) in wiring.into_iter().enumerate() {
+            items.insert(1 + offset, Item::Raw(line));
         }
 
         Program { items }
@@ -334,8 +413,9 @@ impl<'a> Lowerer<'a> {
             text.push_str("fn main() {\n");
             text.push_str(&self.main_arg_bindings(entry));
         } else {
+            let vis = if self.project.emit_pub { "pub " } else { "" };
             text.push_str(&format!(
-                "fn {name}({params}) -> {} {{\n",
+                "{vis}fn {name}({params}) -> {} {{\n",
                 self.rust_type(ret_ty.as_deref().unwrap_or("()"))
             ));
         }

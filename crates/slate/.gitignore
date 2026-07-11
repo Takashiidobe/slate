@@ -1,5 +1,6 @@
 /target
 /tests/fixtures.generated/
+/tests/fixtures.multi.generated/
 
 # Beads / Dolt files (added by bd init)
 .dolt/

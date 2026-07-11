@@ -6,6 +6,7 @@ mod ctx;
 mod lower;
 mod rust_ast;
 
+use std::collections::BTreeMap;
 use std::path::Path;
 use std::process::ExitCode;
 
@@ -14,6 +15,7 @@ fn usage() -> ExitCode {
     eprintln!("  emit-cir    print ClangIR (generic form)");
     eprintln!("  emit-fixtures  write translated test fixtures to tests/fixtures.generated/");
     eprintln!("  translate   C -> Rust");
+    eprintln!("  translate-project  <dir> <out_dir>  cross-TU C dir -> Rust modules");
     ExitCode::from(2)
 }
 
@@ -28,6 +30,10 @@ fn main() -> ExitCode {
         Some("translate") => match args.get(2) {
             Some(path) => run(translate(Path::new(path))),
             None => usage(),
+        },
+        Some("translate-project") => match (args.get(2), args.get(3)) {
+            (Some(dir), Some(out)) => run(translate_project(Path::new(dir), Path::new(out))),
+            _ => usage(),
         },
         _ => usage(),
     }
@@ -70,6 +76,95 @@ fn translate(path: &Path) -> Result<String, String> {
     Ok(program.emit())
 }
 
+/// Translate a directory of `.c` files (one project spanning several translation
+/// units) into separate Rust module files under `out_dir`. The unit defining
+/// `main` becomes the crate root `main.rs` and declares the other units with
+/// `mod`; a prototype resolved to a sibling unit becomes a module import.
+fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
+    let mut modules: Vec<(String, std::path::PathBuf)> = Vec::new();
+    for entry in std::fs::read_dir(dir).map_err(|e| format!("read {}: {e}", dir.display()))? {
+        let path = entry
+            .map_err(|e| format!("read {} entry: {e}", dir.display()))?
+            .path();
+        if path.extension().and_then(|e| e.to_str()) != Some("c") {
+            continue;
+        }
+        let stem = path
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .ok_or_else(|| format!("bad file stem: {}", path.display()))?
+            .to_string();
+        modules.push((stem, path));
+    }
+    modules.sort();
+
+    // pass 1: which unit defines which function/global, and which owns `main`.
+    let mut defined: BTreeMap<String, String> = BTreeMap::new();
+    let mut defined_globals: BTreeMap<String, String> = BTreeMap::new();
+    let mut root: Option<String> = None;
+    for (stem, path) in &modules {
+        let module = cir::parse_module(&cir::emit_generic(path)?)?;
+        for sym in lower::defined_functions(&module) {
+            if sym == "main" {
+                root = Some(stem.clone());
+            } else {
+                defined.insert(sym, stem.clone());
+            }
+        }
+        for sym in lower::defined_globals(&module) {
+            defined_globals.insert(sym, stem.clone());
+        }
+    }
+    let root = root.ok_or("translate-project: no unit defines main")?;
+    let siblings: Vec<String> = modules
+        .iter()
+        .map(|(stem, _)| stem.clone())
+        .filter(|stem| *stem != root)
+        .collect();
+
+    std::fs::create_dir_all(out_dir).map_err(|e| format!("create {}: {e}", out_dir.display()))?;
+
+    // pass 2: lower each unit with project-wide knowledge and write its module.
+    let mut written = Vec::new();
+    for (stem, path) in &modules {
+        let is_root = *stem == root;
+        let project = lower::ProjectInfo {
+            cross_module: defined.clone(),
+            cross_module_globals: defined_globals.clone(),
+            child_modules: if is_root {
+                siblings.clone()
+            } else {
+                Vec::new()
+            },
+            emit_pub: true,
+        };
+        let module = cir::parse_module(&cir::emit_generic(path)?)?;
+        let unit = c_ast::parse_file(path)?;
+        let mut ctx = ctx::Ctx::default();
+        let program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
+        for d in &ctx.diagnostics.items {
+            eprintln!("{:?}: {}", d.severity, d.message);
+        }
+        if ctx.diagnostics.has_errors() {
+            return Err(format!("lowering failed for {}", path.display()));
+        }
+        let file = if is_root {
+            "main".to_string()
+        } else {
+            stem.clone()
+        };
+        let output = out_dir.join(file).with_extension("rs");
+        std::fs::write(&output, program.emit())
+            .map_err(|e| format!("write {}: {e}", output.display()))?;
+        written.push(output);
+    }
+
+    Ok(written
+        .into_iter()
+        .map(|path| format!("wrote {}\n", path.display()))
+        .collect())
+}
+
 fn emit_fixtures() -> Result<String, String> {
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
     let src_dir = manifest.join("tests/fixtures");
@@ -89,7 +184,7 @@ fn emit_fixtures() -> Result<String, String> {
     }
     inputs.sort();
 
-    let mut written = Vec::new();
+    let mut report = String::new();
     for input in inputs {
         let name = input
             .file_stem()
@@ -97,11 +192,33 @@ fn emit_fixtures() -> Result<String, String> {
         let output = out_dir.join(name).with_extension("rs");
         std::fs::write(&output, translate(&input)?)
             .map_err(|e| format!("write {}: {e}", output.display()))?;
-        written.push(output);
+        report.push_str(&format!("wrote {}\n", output.display()));
     }
 
-    Ok(written
-        .into_iter()
-        .map(|path| format!("wrote {}\n", path.display()))
-        .collect())
+    // multi-TU projects: each subdirectory of tests/fixtures.multi becomes a
+    // directory of translated Rust modules, mirroring the single-file flow.
+    let multi_src = manifest.join("tests/fixtures.multi");
+    let multi_out = manifest.join("tests/fixtures.multi.generated");
+    if multi_src.is_dir() {
+        let mut projects = Vec::new();
+        for entry in std::fs::read_dir(&multi_src)
+            .map_err(|e| format!("read {}: {e}", multi_src.display()))?
+        {
+            let path = entry
+                .map_err(|e| format!("read {} entry: {e}", multi_src.display()))?
+                .path();
+            if path.is_dir() {
+                projects.push(path);
+            }
+        }
+        projects.sort();
+        for project in projects {
+            let name = project
+                .file_name()
+                .ok_or_else(|| format!("missing dir name: {}", project.display()))?;
+            report.push_str(&translate_project(&project, &multi_out.join(name))?);
+        }
+    }
+
+    Ok(report)
 }

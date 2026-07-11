@@ -32,6 +32,10 @@ differential testing. **Build/test commands, the required CIR toolchain and its
 particular [docs/adding-features.md](docs/adding-features.md) before adding any
 feature. Do not duplicate that content here; update CLAUDE.md/docs instead.
 
+For parallel agent work, branch selection, and git worktree rules, follow
+[WORKFLOW.md](WORKFLOW.md). Agents must check both ready and in-progress beads
+and avoid starting tickets linked to active work.
+
 ## Non-Interactive Shell Commands
 
 **ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.
