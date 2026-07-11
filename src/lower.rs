@@ -2305,29 +2305,40 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
         let direct_callee =
             attr_str(op, "callee").map(|callee| callee.trim_start_matches('@').to_string());
-        let (callee, arg_operands, arg_types) = if let Some(callee) = direct_callee {
-            (callee, op.operands.as_slice(), operand_types.as_slice())
-        } else {
-            let Some((callee_operand, arg_operands)) = op.operands.split_first() else {
-                return;
+        let (callee_name, callee_expr, arg_operands, arg_types) =
+            if let Some(callee) = direct_callee {
+                (
+                    callee.clone(),
+                    Expr::Var(callee),
+                    op.operands.as_slice(),
+                    operand_types.as_slice(),
+                )
+            } else {
+                let Some((callee_operand, arg_operands)) = op.operands.split_first() else {
+                    return;
+                };
+                (
+                    String::new(),
+                    Expr::MethodCall {
+                        recv: Box::new(self.operand_expr(callee_operand)),
+                        method: "unwrap".into(),
+                        args: vec![],
+                    },
+                    arg_operands,
+                    operand_types.get(1..).unwrap_or(&[]),
+                )
             };
-            let callee = self.render_operand(callee_operand);
-            (
-                format!("{callee}.unwrap()"),
-                arg_operands,
-                operand_types.get(1..).unwrap_or(&[]),
-            )
-        };
         let args = arg_operands
             .iter()
             .zip(arg_types.iter().copied())
-            .map(|(operand, ty)| self.render_call_arg(operand, ty))
+            .map(|(operand, ty)| self.call_arg_expr(operand, ty))
             .collect::<Vec<_>>();
-        if callee == "strtold"
+        // long-double libc shims use custom helper ABIs, so they stay on raw paths.
+        if callee_name == "strtold"
             && self
                 .parent
                 .extern_returns
-                .get(&callee)
+                .get(&callee_name)
                 .and_then(|ret| ret.as_deref())
                 == Some(LONG_DOUBLE_TY)
         {
@@ -2335,11 +2346,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 let name = self.next_temp();
                 let a0 = args
                     .first()
-                    .cloned()
+                    .map(Expr::render)
                     .unwrap_or_else(|| "std::ptr::null_mut()".into());
                 let a1 = args
                     .get(1)
-                    .cloned()
+                    .map(Expr::render)
                     .unwrap_or_else(|| "std::ptr::null_mut()".into());
                 self.emit_line(&format!(
                     "let mut {name}: {LONG_DOUBLE_TY} = {LONG_DOUBLE_TY}(0.0);"
@@ -2351,15 +2362,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             return;
         }
-        if callee == "printf"
+        if callee_name == "printf"
             && arg_types.iter().any(|ty| is_long_double(ty))
             && args.len() == 3
             && arg_types.get(1).is_some_and(|ty| is_long_double(ty))
             && arg_types.get(2).is_some_and(|ty| *ty == "!s32i")
         {
+            let a0 = args[0].render();
+            let a1 = args[1].render();
+            let a2 = args[2].render();
             let expr = format!(
                 "unsafe {{ __slate_printf_ld_i32({} as *mut i8, std::ptr::addr_of!({}) as *const LongDouble, {} as i32) }}",
-                args[0], args[1], args[2]
+                a0, a1, a2
             );
             if let Some(result) = op.results.first() {
                 self.materialize(result, expr, op_result_type(op));
@@ -2368,38 +2382,45 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             return;
         }
-        let expr = if is_complex_runtime_call(&callee) {
+        let call = Expr::Call {
+            func: Box::new(callee_expr),
+            args: if let Some(param_types) = self.parent.externs.get(&callee_name).cloned() {
+                args.into_iter()
+                    .enumerate()
+                    .map(|(i, arg)| match param_types.get(i) {
+                        Some(_)
+                            if arg_types
+                                .get(i)
+                                .is_some_and(|t| is_cir_function_pointer_type(t)) =>
+                        {
+                            arg
+                        }
+                        Some(ty) => Expr::Cast {
+                            expr: Box::new(arg),
+                            ty: crate::rust_ast::Type::Named(ty.clone()),
+                        },
+                        None => arg,
+                    })
+                    .collect()
+            } else {
+                args
+            },
+        };
+        let expr = if is_complex_runtime_call(&callee_name) {
             self.parent.uses_complex.set(true);
-            format!("unsafe {{ {callee}({}) }}", args.join(", "))
-        } else if let Some(param_types) = self.parent.externs.get(&callee).cloned() {
-            let args = args
-                .iter()
-                .enumerate()
-                .map(|(i, arg)| match param_types.get(i) {
-                    // function-pointer params (Option<fn..>) can't be `as`-cast;
-                    // let fn-item -> fn-ptr coercion handle them.
-                    Some(_)
-                        if arg_types
-                            .get(i)
-                            .is_some_and(|t| is_cir_function_pointer_type(t)) =>
-                    {
-                        arg.clone()
-                    }
-                    Some(ty) => format!("{arg} as {ty}"),
-                    None => arg.clone(),
-                })
-                .collect::<Vec<_>>();
-            format!("unsafe {{ {callee}({}) }}", args.join(", "))
-        } else if self.parent.variadic_defs.contains(&callee) {
-            format!("unsafe {{ {callee}({}) }}", args.join(", "))
+            Expr::Unsafe(Box::new(call))
+        } else if self.parent.externs.contains_key(&callee_name)
+            || self.parent.variadic_defs.contains(&callee_name)
+        {
+            Expr::Unsafe(Box::new(call))
         } else {
-            format!("{callee}({})", args.join(", "))
+            call
         };
 
         if let Some(result) = op.results.first() {
-            self.materialize(result, expr, op_result_type(op));
+            self.materialize_expr(result, expr, op_result_type(op));
         } else {
-            self.emit_expr(expr);
+            self.push_stmt(Stmt::Expr(expr));
         }
     }
 
@@ -3213,13 +3234,52 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    fn render_call_arg(&self, operand: &str, ty: &str) -> String {
+    fn pointer_operand_expr(&self, operand: &str) -> Expr {
+        if self.member_ptrs.contains_key(operand) || self.element_ptrs.contains_key(operand) {
+            return Expr::Raw(self.store_address(operand));
+        }
+        if let Some(value) = self.values.get(operand) {
+            return value.to_expr(&self.parent.strings);
+        }
+        if let Some(slot) = self.slots.get(operand) {
+            return if self
+                .slot_types
+                .get(operand)
+                .is_some_and(|ty| parse_rust_array_type(ty).is_some())
+            {
+                Expr::MethodCall {
+                    recv: Box::new(Expr::Var(slot.clone())),
+                    method: "as_mut_ptr".into(),
+                    args: vec![],
+                }
+            } else {
+                Expr::Macro {
+                    name: "std::ptr::addr_of_mut".into(),
+                    args: vec![Expr::Var(slot.clone())],
+                }
+            };
+        }
+        Expr::Raw(sanitize_ident(operand))
+    }
+
+    fn function_pointer_operand_expr(&self, operand: &str) -> Expr {
+        match self.values.get(operand) {
+            Some(Val::Global(name)) if !self.parent.strings.contains_key(name) => Expr::Call {
+                func: Box::new(Expr::Var("Some".into())),
+                args: vec![Expr::Var(sanitize_ident(name))],
+            },
+            Some(value) => value.to_expr(&self.parent.strings),
+            None => self.operand_expr(operand),
+        }
+    }
+
+    fn call_arg_expr(&self, operand: &str, ty: &str) -> Expr {
         if is_cir_function_pointer_type(ty) {
-            self.render_function_pointer_operand(operand)
+            self.function_pointer_operand_expr(operand)
         } else if ty.starts_with("!cir.ptr<") {
-            self.render_pointer_operand(operand)
+            self.pointer_operand_expr(operand)
         } else {
-            self.render_operand(operand)
+            self.operand_expr(operand)
         }
     }
 
