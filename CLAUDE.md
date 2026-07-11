@@ -27,29 +27,33 @@ bd close <id>         # Complete work
 
 ## Session Completion
 
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+**This project has no git remote** — beads data and code both live locally.
+"Done" means the branch is merged into `main` in the coordination checkout, not
+pushed anywhere. Do NOT run `git push` / `git pull --rebase`.
 
-**MANDATORY WORKFLOW:**
+**When ending a work session**, complete ALL steps below. Work is NOT complete
+until the branch is merged into `main`.
 
 1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
+2. **Run quality gates** (if code changed) - `cargo fmt`, `cargo test`
 3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
+4. **INTEGRATE INTO MAIN** - from the coordination checkout, not the worktree:
    ```bash
-   git pull --rebase
-   git push
-   git status  # MUST show "up to date with origin"
+   cd /home/takashi/Projects/slate
+   git merge --no-ff work/<id>
+   cargo fmt && cargo test
+   bd close <id> --reason "..."
    ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
+5. **Clean up** - `git worktree remove ../slate-<id>`, clear stashes
+6. **Verify** - All changes committed and merged; `git status` clean
 7. **Hand off** - Provide context for next session
 
 **CRITICAL RULES:**
 
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
+- Work is NOT complete until the branch is merged into `main`
+- NEVER leave work stranded on an unmerged worktree branch
+- There is no remote: do NOT `git push` or `git pull --rebase`
+- Resolve merge conflicts in the coordination checkout and rerun tests
 <!-- END BEADS INTEGRATION -->
 
 ## What Slate Is
