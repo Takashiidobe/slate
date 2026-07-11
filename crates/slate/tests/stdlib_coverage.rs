@@ -12,12 +12,15 @@
 
 mod support;
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-/// `header/name` probe ids that do not yet translate+run correctly. Each entry
-/// is tracked by a bead; remove it once the probe passes.
-const KNOWN_UNSUPPORTED: &[&str] = &[];
+struct UnsupportedProbe {
+    probe: &'static str,
+    bead: &'static str,
+}
+
+const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[];
 
 fn stdlib_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/stdlib")
@@ -108,18 +111,16 @@ fn stdlib_coverage() {
         results.len()
     );
 
-    // Ratchet: listed-unsupported probes may fail; everything else must pass.
-    let known: std::collections::HashSet<&str> = KNOWN_UNSUPPORTED.iter().copied().collect();
+    let known = known_unsupported_by_probe(&probes);
     let mut regressions = Vec::new();
     let mut promotable = Vec::new();
     for (id, result) in &results {
-        let listed = known.contains(id.as_str());
-        match (result.is_ok(), listed) {
-            (false, false) => regressions.push(format!(
+        match (result.is_ok(), known.get(id.as_str())) {
+            (false, None) => regressions.push(format!(
                 "[{id}] {}",
                 result.as_ref().err().unwrap().lines().next().unwrap_or("")
             )),
-            (true, true) => promotable.push(id.clone()),
+            (true, Some(bead)) => promotable.push(format!("{id} ({bead})")),
             _ => {}
         }
     }
@@ -127,7 +128,7 @@ fn stdlib_coverage() {
     let mut msg = String::new();
     if !regressions.is_empty() {
         msg.push_str(&format!(
-            "{} probe(s) unexpectedly failed (add a bead + list in KNOWN_UNSUPPORTED, or fix):\n{}\n",
+            "{} probe(s) unexpectedly failed (create a focused bead, add UnsupportedProbe {{ probe, bead }} to KNOWN_UNSUPPORTED, or fix):\n{}\n",
             regressions.len(),
             regressions.join("\n")
         ));
@@ -140,6 +141,43 @@ fn stdlib_coverage() {
         ));
     }
     assert!(msg.is_empty(), "{msg}");
+}
+
+fn known_unsupported_by_probe(
+    probes: &[(String, PathBuf)],
+) -> BTreeMap<&'static str, &'static str> {
+    let valid_probes: BTreeSet<&str> = probes.iter().map(|(id, _)| id.as_str()).collect();
+    let mut known = BTreeMap::new();
+    let mut problems = Vec::new();
+
+    for entry in KNOWN_UNSUPPORTED {
+        if !valid_probes.contains(entry.probe) {
+            problems.push(format!(
+                "KNOWN_UNSUPPORTED probe '{}' does not exist under tests/stdlib",
+                entry.probe
+            ));
+        }
+        if !entry.bead.starts_with("slate-") {
+            problems.push(format!(
+                "KNOWN_UNSUPPORTED probe '{}' has invalid bead id '{}'",
+                entry.probe, entry.bead
+            ));
+        }
+        if let Some(previous) = known.insert(entry.probe, entry.bead) {
+            problems.push(format!(
+                "KNOWN_UNSUPPORTED probe '{}' is listed twice ({previous}, {})",
+                entry.probe, entry.bead
+            ));
+        }
+    }
+
+    assert!(
+        problems.is_empty(),
+        "invalid KNOWN_UNSUPPORTED entries:\n{}",
+        problems.join("\n")
+    );
+
+    known
 }
 
 fn probe_config(c_src: &Path) -> Result<support::RunConfig, String> {
