@@ -21,11 +21,6 @@ struct UnsupportedProbe {
 }
 
 const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[
-    // signal disposition sentinels (SIG_IGN/SIG_DFL/SIG_ERR).
-    UnsupportedProbe {
-        probe: "signal/signal_ignore",
-        bead: "slate-nk3.18",
-    },
     // setjmp/longjmp non-local control flow.
     UnsupportedProbe {
         probe: "setjmp/setjmp",
