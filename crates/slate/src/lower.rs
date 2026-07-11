@@ -113,6 +113,9 @@ impl<'a> Lowerer<'a> {
                 items.push(Item::Raw(text));
             }
         }
+        for text in self.standard_record_defs() {
+            items.push(Item::Raw(text));
+        }
 
         let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
             self.ctx
@@ -256,6 +259,23 @@ impl<'a> Lowerer<'a> {
         }
         text.push_str("}\n");
         Some(text)
+    }
+
+    fn standard_record_defs(&self) -> Vec<String> {
+        let mut out = Vec::new();
+        for name in ["div_t", "ldiv_t", "lldiv_t", "imaxdiv_t"] {
+            if self.records.contains_key(name) {
+                continue;
+            }
+            if self
+                .aliases
+                .values()
+                .any(|ty| cir_record_name(ty) == Some(name))
+            {
+                out.push(standard_record_def(name).to_string());
+            }
+        }
+        out
     }
 
     fn lower_func(&mut self, op: &Op) -> Option<String> {
@@ -1353,6 +1373,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if is_long_double(ty) || ty == LONG_DOUBLE_TY {
             return format!("{LONG_DOUBLE_TY}(0.0)");
         }
+        if let Some(value) = standard_record_default(ty) {
+            return value.to_string();
+        }
         if let Some(inner) = ty
             .strip_prefix(COMPLEX_TY)
             .and_then(|s| s.strip_suffix('>'))
@@ -1607,6 +1630,34 @@ fn default_value(ty: &str) -> &'static str {
         ty if ty.starts_with("*mut ") => "std::ptr::null_mut()",
         ty if ty.starts_with("Option<fn(") => "None",
         _ => "0",
+    }
+}
+
+fn standard_record_def(name: &str) -> &'static str {
+    match name {
+        "div_t" => {
+            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct div_t { quot: i32, rem: i32 }\n"
+        }
+        "ldiv_t" => {
+            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct ldiv_t { quot: i64, rem: i64 }\n"
+        }
+        "lldiv_t" => {
+            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct lldiv_t { quot: i64, rem: i64 }\n"
+        }
+        "imaxdiv_t" => {
+            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct imaxdiv_t { quot: i64, rem: i64 }\n"
+        }
+        _ => "",
+    }
+}
+
+fn standard_record_default(ty: &str) -> Option<&'static str> {
+    match ty {
+        "div_t" => Some("div_t { quot: 0, rem: 0 }"),
+        "ldiv_t" => Some("ldiv_t { quot: 0, rem: 0 }"),
+        "lldiv_t" => Some("lldiv_t { quot: 0, rem: 0 }"),
+        "imaxdiv_t" => Some("imaxdiv_t { quot: 0, rem: 0 }"),
+        _ => None,
     }
 }
 
@@ -1888,6 +1939,7 @@ mod tests {
         );
         assert_eq!(rust_type("!rec_Pair"), "Pair");
         assert_eq!(rust_type("!rec__IO_FILE"), "libc::FILE");
+        assert_eq!(rust_type("!rec_div_t"), "div_t");
         assert_eq!(rust_type("!cir.union<\"Pair\" {!s32i, !s32i}>"), "Pair");
         assert_eq!(rust_type("!cir.array<!s32i x 3>"), "[i32; 3]");
     }
@@ -2044,5 +2096,9 @@ mod tests {
         assert_eq!(default_value("f64"), "0.0");
         assert_eq!(default_value("i32"), "0");
         assert_eq!(default_value("bool"), "false");
+        assert_eq!(
+            standard_record_default("div_t"),
+            Some("div_t { quot: 0, rem: 0 }")
+        );
     }
 }

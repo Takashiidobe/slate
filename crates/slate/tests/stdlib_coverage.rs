@@ -17,11 +17,7 @@ use std::path::{Path, PathBuf};
 
 /// `header/name` probe ids that do not yet translate+run correctly. Each entry
 /// is tracked by a bead; remove it once the probe passes.
-///   slate-aeo  struct-returning libc fns + libc aggregate typedefs (div_t)
-const KNOWN_UNSUPPORTED: &[&str] = &[
-    // stdlib/*
-    "stdlib/div", // slate-aeo (div_t)
-];
+const KNOWN_UNSUPPORTED: &[&str] = &[];
 
 fn stdlib_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/stdlib")
