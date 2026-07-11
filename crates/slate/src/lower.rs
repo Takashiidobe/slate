@@ -447,6 +447,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.xor" => self.lower_int_arith(op, "^"),
             "cir.shift" => self.lower_shift(op),
             "cir.not" => self.lower_not(op),
+            "cir.abs" => self.lower_abs(op),
+            "cir.ceil" => self.lower_unary_method(op, "ceil"),
+            "cir.fabs" => self.lower_unary_method(op, "abs"),
+            "cir.floor" => self.lower_unary_method(op, "floor"),
+            "cir.round" => self.lower_unary_method(op, "round"),
+            "cir.trunc" => self.lower_unary_method(op, "trunc"),
             "cir.fadd" => self.lower_binary(op, "+"),
             "cir.fsub" => self.lower_binary(op, "-"),
             "cir.fmul" => self.lower_binary(op, "*"),
@@ -868,6 +874,48 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let value = self.render_operand(value);
         let ty = op_result_type(op);
         self.materialize(result, format!("(!{value})"), ty);
+    }
+
+    fn lower_abs(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let value = self.render_operand(value);
+        let result_ty = op_result_type(op);
+        let rust_ty = result_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or_else(|| "i32".into());
+        let expr = if matches!(rust_ty.as_str(), "i8" | "i16" | "i32" | "i64") {
+            format!("({value}).wrapping_abs()")
+        } else if rust_ty == LONG_DOUBLE_TY {
+            format!("{LONG_DOUBLE_TY}(({value}).0.abs())")
+        } else {
+            format!("({value}).abs()")
+        };
+        self.materialize(result, expr, result_ty);
+    }
+
+    fn lower_unary_method(&mut self, op: &Op, method: &str) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let value = self.render_operand(value);
+        let result_ty = op_result_type(op);
+        let rust_ty = result_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or_else(|| "f64".into());
+        let expr = if rust_ty == LONG_DOUBLE_TY {
+            format!("{LONG_DOUBLE_TY}(({value}).0.{method}())")
+        } else {
+            format!("({value}).{method}()")
+        };
+        self.materialize(result, expr, result_ty);
     }
 
     fn lower_cmp(&mut self, op: &Op) {

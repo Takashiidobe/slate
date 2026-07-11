@@ -19,21 +19,12 @@ use std::path::{Path, PathBuf};
 /// is tracked by a bead; remove it once the probe passes.
 ///   slate-61j  extern globals + FILE streams (stdout/stderr)
 ///   slate-aeo  struct-returning libc fns + libc aggregate typedefs (div_t)
-///   slate-kaf  CIR builtin math ops (cir.abs/ceil/fabs/floor/round/trunc)
 const KNOWN_UNSUPPORTED: &[&str] = &[
-    // math/* — CIR builtin math ops, not libm calls (slate-kaf)
-    "math/ceil",
-    "math/fabs",
-    "math/floor",
-    "math/round",
-    "math/trunc",
     // stdio/* — FILE streams stdout/stderr (slate-61j)
     "stdio/fprintf",
     "stdio/fputs",
     // stdlib/*
-    "stdlib/abs",  // slate-kaf (cir.abs)
-    "stdlib/labs", // slate-kaf (cir.abs)
-    "stdlib/div",  // slate-aeo (div_t)
+    "stdlib/div", // slate-aeo (div_t)
 ];
 
 fn stdlib_dir() -> PathBuf {
