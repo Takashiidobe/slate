@@ -39,6 +39,7 @@ fn apply_text_fixups(text: &str) -> String {
 // precedence-aware rendering elides parens; baked-text (`Raw`) use sites fall back
 // to a conservatively parenthesized textual splice.
 fn inline_single_use_temps(body: &mut Vec<IndentStmt>) {
+    inline_nested_temps(body);
     loop {
         let lines: Vec<String> = body.iter().map(|s| s.stmt.render_line()).collect();
         let mut applied = false;
@@ -68,11 +69,39 @@ fn inline_single_use_temps(body: &mut Vec<IndentStmt>) {
         if !applied {
             break;
         }
+        inline_nested_temps(body);
+    }
+}
+
+fn inline_nested_temps(body: &mut [IndentStmt]) {
+    for stmt in body {
+        match &mut stmt.stmt {
+            Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                inline_single_use_temps(then_body);
+                inline_single_use_temps(else_body);
+            }
+            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+                inline_single_use_temps(body);
+            }
+            _ => {}
+        }
     }
 }
 
 fn substitute_in_stmt(stmt: &mut Stmt, name: &str, init: &Expr) {
-    let structured = match stmt {
+    if substitute_in_stmt_structured(stmt, name, init) {
+        return;
+    }
+    let line = replace_ident_once(&stmt.render_line(), name, &init.render_spliceable());
+    *stmt = Stmt::Raw(line);
+}
+
+fn substitute_in_stmt_structured(stmt: &mut Stmt, name: &str, init: &Expr) -> bool {
+    match stmt {
         Stmt::Let {
             init: Some(expr), ..
         } => expr.substitute_var(name, init),
@@ -82,13 +111,35 @@ fn substitute_in_stmt(stmt: &mut Stmt, name: &str, init: &Expr) {
             t || v
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.substitute_var(name, init),
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            let mut changed = cond.substitute_var(name, init);
+            for stmt in then_body.iter_mut().chain(else_body.iter_mut()) {
+                changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
+            }
+            changed
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            let mut changed = false;
+            for stmt in body {
+                changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
+            }
+            changed
+        }
+        Stmt::Raw(line) => {
+            let replaced = replace_ident_once(line, name, &init.render_spliceable());
+            if replaced == *line {
+                false
+            } else {
+                *line = replaced;
+                true
+            }
+        }
         _ => false,
-    };
-    if structured {
-        return;
     }
-    let line = replace_ident_once(&stmt.render_line(), name, &init.render_spliceable());
-    *stmt = Stmt::Raw(line);
 }
 
 /// Folds the CIR parameter-spill prologue into direct parameter bindings.
@@ -503,6 +554,7 @@ fn is_pure_expr(expr: &str) -> bool {
         || expr.contains("::")
         || expr.contains('.')
         || expr.contains('!')
+        || expr.contains(" as ")
     {
         return false;
     }
