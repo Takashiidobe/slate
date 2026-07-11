@@ -54,6 +54,10 @@ small C subset. This is the supported fixture-level surface today:
   C semantics.
 - `switch` statements with integer cases, default labels, missing defaults,
   multiple case labels, `break`, and C fallthrough.
+- `goto` and labels (forward, backward, and nested inside `if`/scopes). When a
+  function's CIR carries unstructured jumps (`cir.goto`/`cir.label`/`cir.br`
+  across multiple blocks) it is lowered to a conservative state-machine dispatch
+  loop; functions without such jumps keep the structured lowering.
 - `if`/`else` (including `else if` chains) represented as Rust `if { ... } else { ... }`.
 - C enum constants with implicit values and explicit `= number` values, emitted
   as Rust integer `const` items.
@@ -96,6 +100,9 @@ The current fixtures are:
   `switch_fallthrough.c` / `switch_loop_control.c` — switch lowering with
   defaults, sparse cases, missing defaults, multiple labels, fallthrough, and
   loop interaction.
+- `goto_forward.c` / `goto_backward_loop.c` / `goto_if_scope.c` — `goto`
+  lowering: forward jump over dead code, backward jump forming a loop, and
+  gotos nested inside `if`/scopes, all via the dispatch-loop state machine.
 - `enums.c` — enum constants with implicit and explicit values.
 - `unions.c` — basic union declaration, field writes, and field reads.
 - `structs.c` — basic struct declaration, field writes, and field reads.
