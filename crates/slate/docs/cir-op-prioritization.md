@@ -13,7 +13,6 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 
 | Priority | Notes | Ops |
 | --- | --- | --- |
-| P0 | generic scalar spellings | `cir.binop`, `cir.unary` |
 | P1 | do-while | `cir.do` |
 | P1 | decrement | `cir.dec` |
 | P1 | checked/overflowing arithmetic | `cir.add.overflow`, `cir.sub.overflow`, `cir.mul.overflow`, `cir.div.overflow`, `cir.rem.overflow`, `cir.binop.overflow` |
