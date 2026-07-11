@@ -170,15 +170,15 @@ struct SwitchCase<'a> {
 
 #[derive(Debug, Clone)]
 struct MemberPtr {
-    base: String,
+    base: Expr,
     field: String,
     unsafe_access: bool,
 }
 
 #[derive(Debug, Clone)]
 struct ElementPtr {
-    base: String,
-    index: String,
+    base: Expr,
+    index: Expr,
     unsafe_access: bool,
 }
 
@@ -1082,38 +1082,38 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
         let value_ty = operand_types.first().copied();
         let value = if value_ty.is_some_and(is_cir_function_pointer_type) {
-            self.render_function_pointer_operand(&op.operands[0])
+            self.function_pointer_operand_expr(&op.operands[0])
         } else if value_ty.is_some_and(|ty| ty.starts_with("!cir.ptr<")) {
-            self.render_pointer_operand(&op.operands[0])
+            self.pointer_operand_expr(&op.operands[0])
         } else {
-            self.render_operand(&op.operands[0])
+            self.operand_expr(&op.operands[0])
         };
         let ptr = &op.operands[1];
-        if !attr_bool(op, "is_volatile") && self.try_atomic_store(op, ptr, value_ty, &value) {
+        let rendered_value = value.render();
+        if !attr_bool(op, "is_volatile")
+            && self.try_atomic_store(op, ptr, value_ty, &rendered_value)
+        {
             return;
         }
         if attr_bool(op, "is_volatile") {
-            let addr = self.store_address(ptr);
             self.push_stmt(Stmt::Expr(Expr::Unsafe(Box::new(Expr::Call {
                 func: Box::new(Self::raw_expr("std::ptr::write_volatile")),
-                args: vec![Self::raw_expr(addr), Self::raw_expr(value)],
+                args: vec![self.store_address_expr(ptr), value],
             }))));
-        } else if let Some(global) = self.global_name(ptr) {
-            self.push_unsafe_assign(global, value);
-        } else if let Some(member) = self.member_ptrs.get(ptr).cloned() {
-            self.push_unsafe_assign(format!("{}.{}", member.base, member.field), value);
-        } else if let Some(element) = self.element_ptrs.get(ptr).cloned() {
-            let place = format!("{}[({}) as usize]", element.base, element.index);
-            if element.unsafe_access {
-                self.push_unsafe_assign(place, value);
+        } else if let Some(target) = self.place_expr(ptr) {
+            if self.ptr_requires_unsafe(ptr) {
+                self.push_unsafe_assign(target, value);
             } else {
-                self.push_assign(place, value);
+                self.push_assign(target, value);
             }
-        } else if let Some(slot) = self.slots.get(ptr) {
-            self.push_assign(slot.clone(), value);
         } else {
-            let ptr = self.render_operand(ptr);
-            self.push_unsafe_assign(format!("*{ptr}"), value);
+            self.push_unsafe_assign(
+                Expr::Unary {
+                    op: "*".into(),
+                    expr: Box::new(self.pointer_operand_expr(ptr)),
+                },
+                value,
+            );
         }
     }
 
@@ -1132,22 +1132,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ));
             return;
         };
-        if let Some(global) = self.global_name(&dst) {
-            self.push_unsafe_assign(global, value);
-        } else if let Some(member) = self.member_ptrs.get(&dst).cloned() {
-            self.push_unsafe_assign(format!("{}.{}", member.base, member.field), value);
-        } else if let Some(element) = self.element_ptrs.get(&dst).cloned() {
-            let place = format!("{}[({}) as usize]", element.base, element.index);
-            if element.unsafe_access {
-                self.push_unsafe_assign(place, value);
+        if let Some(target) = self.place_expr(&dst) {
+            if self.ptr_requires_unsafe(&dst) {
+                self.push_unsafe_assign(target, value);
             } else {
-                self.push_assign(place, value);
+                self.push_assign(target, value);
             }
-        } else if let Some(slot) = self.slots.get(&dst).cloned() {
-            self.push_assign(slot, value);
         } else {
-            let d = self.render_pointer_operand(&dst);
-            self.push_unsafe_assign(format!("*{d}"), value);
+            self.push_unsafe_assign(
+                Expr::Unary {
+                    op: "*".into(),
+                    expr: Box::new(self.pointer_operand_expr(&dst)),
+                },
+                value,
+            );
         }
     }
 
@@ -1155,7 +1153,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     /// renders to an array literal (padded to the destination length), while an
     /// aggregate local relies on the `Copy` derive of arrays and `#[repr(C)]`
     /// structs. Returns `None` when the source is opaque (raw pointer copy).
-    fn copy_source_value(&self, dst: &str, src: &str) -> Option<String> {
+    fn copy_source_value(&self, dst: &str, src: &str) -> Option<Expr> {
         let dst_len = self
             .slot_types
             .get(dst)
@@ -1165,22 +1163,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Some(Val::Global(name)) => {
                 if let Some(bytes) = self.parent.strings.get(name) {
                     let elems: Vec<String> = bytes.iter().map(|b| b.to_string()).collect();
-                    Some(render_array_literal(&elems, dst_len.unwrap_or(elems.len())))
+                    Some(Self::raw_expr(render_array_literal(
+                        &elems,
+                        dst_len.unwrap_or(elems.len()),
+                    )))
                 } else if let Some(elems) = self.parent.const_arrays.get(name) {
-                    Some(render_array_literal(elems, dst_len.unwrap_or(elems.len())))
+                    Some(Self::raw_expr(render_array_literal(
+                        elems,
+                        dst_len.unwrap_or(elems.len()),
+                    )))
                 } else if let Some(raw) = self.parent.const_aggregates.get(name) {
                     let ty = self.slot_types.get(dst)?;
-                    self.render_const_value(ty, raw)
+                    self.render_const_value(ty, raw).map(Self::raw_expr)
                 } else if self.parent.const_zero_globals.contains(name) {
-                    self.slot_types.get(dst).map(|ty| self.default_value(ty))
+                    self.slot_types
+                        .get(dst)
+                        .map(|ty| Self::raw_expr(self.default_value(ty)))
                 } else {
                     None
                 }
             }
-            _ => self
-                .slots
-                .contains_key(src)
-                .then(|| self.render_operand(src)),
+            _ => self.slots.contains_key(src).then(|| self.operand_expr(src)),
         }
     }
 
@@ -1206,7 +1209,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Expr::Unsafe(Box::new(Expr::Var(global)))
         } else if let Some(member) = self.member_ptrs.get(ptr) {
             Expr::Unsafe(Box::new(Expr::Field {
-                base: Box::new(Self::raw_expr(member.base.clone())),
+                base: Box::new(member.base.clone()),
                 field: member.field.clone(),
             }))
         } else if let Some(element) = self.element_ptrs.get(ptr) {
@@ -1236,7 +1239,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Expr::Macro {
                 name: "std::ptr::addr_of".into(),
                 args: vec![Expr::Field {
-                    base: Box::new(Self::raw_expr(member.base.clone())),
+                    base: Box::new(member.base.clone()),
                     field: member.field.clone(),
                 }],
             }
@@ -1269,7 +1272,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Expr::Macro {
                 name: "std::ptr::addr_of_mut".into(),
                 args: vec![Expr::Field {
-                    base: Box::new(Self::raw_expr(member.base.clone())),
+                    base: Box::new(member.base.clone()),
                     field: member.field.clone(),
                 }],
             }
@@ -1992,25 +1995,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.values.insert(result.clone(), Val::Global(name));
     }
 
-    /// Render a pointer operand as a Rust place (lvalue) expression when it names
-    /// a known place (slot, struct member, array element, or global). Composing
-    /// this lets nested aggregates — struct-of-array, array-of-struct — chain into
-    /// a single Rust path like `b.data[i]` or `ps[i].x`.
-    fn place_expr(&self, ptr: &str) -> Option<String> {
+    fn place_expr(&self, ptr: &str) -> Option<Expr> {
         if let Some(member) = self.member_ptrs.get(ptr) {
-            Some(format!("{}.{}", member.base, member.field))
+            Some(Expr::Field {
+                base: Box::new(member.base.clone()),
+                field: member.field.clone(),
+            })
         } else if let Some(element) = self.element_ptrs.get(ptr) {
-            Some(format!("{}[({}) as usize]", element.base, element.index))
+            Some(self.element_place_expr(element))
         } else if let Some(slot) = self.slots.get(ptr) {
-            Some(slot.clone())
+            Some(Expr::Var(slot.clone()))
         } else {
-            self.global_name(ptr)
+            self.global_name(ptr).map(Expr::Var)
         }
     }
 
-    fn place_or_deref(&self, ptr: &str) -> String {
-        self.place_expr(ptr)
-            .unwrap_or_else(|| format!("(*{})", self.render_pointer_operand(ptr)))
+    fn place_or_deref_expr(&self, ptr: &str) -> Expr {
+        self.place_expr(ptr).unwrap_or_else(|| Expr::Unary {
+            op: "*".into(),
+            expr: Box::new(self.pointer_operand_expr(ptr)),
+        })
     }
 
     fn lower_get_member(&mut self, op: &Op) {
@@ -2020,7 +2024,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(base_ptr) = op.operands.first() else {
             return;
         };
-        let base = self.place_or_deref(base_ptr);
+        let base = self.place_or_deref_expr(base_ptr);
         let field = sanitize_ident(attr_str(op, "name").unwrap_or(result));
         let unsafe_access = self.ptr_requires_unsafe(base_ptr) || self.op_base_is_union(op);
         self.member_ptrs.insert(
@@ -2040,11 +2044,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let value = self.render_operand(&op.operands[1]);
+        let value = self.operand_expr(&op.operands[1]);
         let ty = op_result_type(op);
-        let trunc = self.truncate_bitfield(op, &value, ty);
-        self.materialize(result, trunc, ty);
-        let stored = self.render_operand(result);
+        let trunc = self.truncate_bitfield_expr(op, value, ty);
+        self.materialize_expr(result, trunc, ty);
+        let stored = self.operand_expr(result);
         let (place, needs_unsafe) = self.bitfield_place(&op.operands[0]);
         if needs_unsafe {
             self.push_unsafe_assign(place, stored);
@@ -2063,19 +2067,29 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let ty = op_result_type(op);
         let (place, needs_unsafe) = self.bitfield_place(ptr);
         let read = if needs_unsafe {
-            format!("unsafe {{ {place} }}")
+            Expr::Unsafe(Box::new(place))
         } else {
             place
         };
-        let expr = self.truncate_bitfield(op, &read, ty);
-        self.materialize(result, expr, ty);
+        let expr = self.truncate_bitfield_expr(op, read, ty);
+        self.materialize_expr(result, expr, ty);
     }
 
-    fn bitfield_place(&self, ptr: &str) -> (String, bool) {
+    fn bitfield_place(&self, ptr: &str) -> (Expr, bool) {
         match self.place_expr(ptr) {
             Some(place) => (place, self.ptr_requires_unsafe(ptr)),
-            None => (format!("(*{})", self.render_pointer_operand(ptr)), true),
+            None => (
+                Expr::Unary {
+                    op: "*".into(),
+                    expr: Box::new(self.pointer_operand_expr(ptr)),
+                },
+                true,
+            ),
         }
+    }
+
+    fn truncate_bitfield_expr(&self, op: &Op, expr: Expr, ty: Option<&str>) -> Expr {
+        Self::raw_expr(self.truncate_bitfield(op, &expr.render(), ty))
     }
 
     // shift up then arithmetic-shift down masks to `size` bits, sign-extending signed types.
@@ -2110,8 +2124,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let base_ptr = &op.operands[0];
-        let base = self.place_or_deref(base_ptr);
-        let index = self.render_operand(&op.operands[1]);
+        let base = self.place_or_deref_expr(base_ptr);
+        let index = self.operand_expr(&op.operands[1]);
         let unsafe_access = self.ptr_requires_unsafe(base_ptr);
         self.element_ptrs.insert(
             result.clone(),
@@ -2636,7 +2650,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .va_args_param
             .clone()
             .unwrap_or_else(|| "__slate_va_args".into());
-        self.push_assign(slot, format!("{args}.clone()"));
+        self.push_assign(
+            Self::raw_expr(slot),
+            Expr::MethodCall {
+                recv: Box::new(Self::raw_expr(args)),
+                method: "clone".into(),
+                args: vec![],
+            },
+        );
     }
 
     fn lower_va_arg(&mut self, op: &Op) {
@@ -2911,8 +2932,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             if !region_ends_control_flow(case.region) {
                 if index + 1 < cases.len() {
                     body.push(Self::indent_stmt(Self::assign_stmt(
-                        case_name.clone(),
-                        (index + 1).to_string(),
+                        Self::raw_expr(case_name.clone()),
+                        Expr::Lit((index + 1).to_string()),
                     )));
                     body.push(Self::indent_stmt(Stmt::Continue(Some(label.clone()))));
                 } else {
@@ -3068,8 +3089,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let mut body = self.capture_body(|this| this.lower_block(block));
             if !block_diverges(block) {
                 body.push(Self::indent_stmt(Self::assign_stmt(
-                    state_var.clone(),
-                    (i + 1).to_string(),
+                    Self::raw_expr(state_var.clone()),
+                    Expr::Lit((i + 1).to_string()),
                 )));
                 body.push(Self::indent_stmt(Stmt::Continue(Some(loop_label.clone()))));
             }
@@ -3113,7 +3134,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             });
         match target {
             Some((state, state_var, loop_label)) => {
-                self.push_assign(state_var, state.to_string());
+                self.push_assign(Self::raw_expr(state_var), Expr::Lit(state.to_string()));
                 self.push_stmt(Stmt::Continue(Some(loop_label)));
             }
             None => self.emit_expr("todo!(\"cir.goto: unknown label\")".into()),
@@ -3137,7 +3158,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             });
         match target {
             Some((state, state_var, loop_label)) => {
-                self.push_assign(state_var, state.to_string());
+                self.push_assign(Self::raw_expr(state_var), Expr::Lit(state.to_string()));
                 self.push_stmt(Stmt::Continue(Some(loop_label)));
             }
             None => self.emit_expr("todo!(\"cir.br: unknown successor\")".into()),
@@ -3195,9 +3216,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn element_place_expr(&self, element: &ElementPtr) -> Expr {
         Expr::Index {
-            base: Box::new(Self::raw_expr(element.base.clone())),
+            base: Box::new(element.base.clone()),
             index: Box::new(Expr::Cast {
-                expr: Box::new(Self::raw_expr(element.index.clone())),
+                expr: Box::new(element.index.clone()),
                 ty: Type::Named("usize".into()),
             }),
         }
@@ -3236,7 +3257,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn pointer_operand_expr(&self, operand: &str) -> Expr {
         if self.member_ptrs.contains_key(operand) || self.element_ptrs.contains_key(operand) {
-            return Expr::Raw(self.store_address(operand));
+            return self.store_address_expr(operand);
         }
         if let Some(value) = self.values.get(operand) {
             return value.to_expr(&self.parent.strings);
@@ -3340,18 +3361,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    fn assign_stmt(target: impl Into<String>, value: impl Into<String>) -> Stmt {
-        Stmt::Assign {
-            target: Self::raw_expr(target),
-            value: Self::raw_expr(value),
-        }
+    fn assign_stmt(target: Expr, value: Expr) -> Stmt {
+        Stmt::Assign { target, value }
     }
 
-    fn push_assign(&mut self, target: impl Into<String>, value: impl Into<String>) {
+    fn push_assign(&mut self, target: Expr, value: Expr) {
         self.push_stmt(Self::assign_stmt(target, value));
     }
 
-    fn push_unsafe_assign(&mut self, target: impl Into<String>, value: impl Into<String>) {
+    fn push_unsafe_assign(&mut self, target: Expr, value: Expr) {
         self.push_stmt(Self::unsafe_stmt(Self::assign_stmt(target, value)));
     }
 
