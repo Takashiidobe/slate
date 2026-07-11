@@ -3,7 +3,7 @@
 use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
-use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, Stmt};
+use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, Stmt, Type};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// How a translation unit fits into a multi-file project: which symbols other
@@ -1039,7 +1039,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         {
             self.slots.insert(result.clone(), name.clone());
             self.va_places.insert(result.clone(), name.clone());
-            self.emit_line(&format!("let mut {name}: core::ffi::VaList<'_>;"));
+            self.push_stmt(Stmt::Let {
+                name,
+                mutable: true,
+                ty: Some(Self::named_type("core::ffi::VaList<'_>")),
+                init: None,
+            });
             return;
         }
         let ty = self
@@ -1047,10 +1052,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .unwrap_or_else(|| "i32".into());
         self.slots.insert(result.clone(), name.clone());
         self.slot_types.insert(result.clone(), ty.clone());
-        self.emit_line(&format!(
-            "let mut {name}: {ty} = {};",
-            self.default_value(&ty)
-        ));
+        self.push_stmt(Stmt::Let {
+            name,
+            mutable: true,
+            ty: Some(Self::named_type(ty.clone())),
+            init: Some(Self::raw_expr(self.default_value(&ty))),
+        });
     }
 
     fn lower_store(&mut self, op: &Op) {
@@ -1072,28 +1079,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if attr_bool(op, "is_volatile") {
             let addr = self.store_address(ptr);
-            self.emit_line(&format!(
-                "unsafe {{ std::ptr::write_volatile({addr}, {value}); }}"
-            ));
+            self.push_stmt(Stmt::Expr(Expr::Unsafe(Box::new(Expr::Call {
+                func: Box::new(Self::raw_expr("std::ptr::write_volatile")),
+                args: vec![Self::raw_expr(addr), Self::raw_expr(value)],
+            }))));
         } else if let Some(global) = self.global_name(ptr) {
-            self.emit_line(&format!("unsafe {{ {global} = {value}; }}"));
+            self.push_unsafe_assign(global, value);
         } else if let Some(member) = self.member_ptrs.get(ptr).cloned() {
-            self.emit_line(&format!(
-                "unsafe {{ {}.{} = {value}; }}",
-                member.base, member.field
-            ));
+            self.push_unsafe_assign(format!("{}.{}", member.base, member.field), value);
         } else if let Some(element) = self.element_ptrs.get(ptr).cloned() {
             let place = format!("{}[({}) as usize]", element.base, element.index);
             if element.unsafe_access {
-                self.emit_line(&format!("unsafe {{ {place} = {value}; }}"));
+                self.push_unsafe_assign(place, value);
             } else {
-                self.emit_line(&format!("{place} = {value};"));
+                self.push_assign(place, value);
             }
         } else if let Some(slot) = self.slots.get(ptr) {
-            self.emit_line(&format!("{slot} = {value};"));
+            self.push_assign(slot.clone(), value);
         } else {
             let ptr = self.render_operand(ptr);
-            self.emit_line(&format!("unsafe {{ *{ptr} = {value}; }}"));
+            self.push_unsafe_assign(format!("*{ptr}"), value);
         }
     }
 
@@ -1113,24 +1118,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         if let Some(global) = self.global_name(&dst) {
-            self.emit_line(&format!("unsafe {{ {global} = {value}; }}"));
+            self.push_unsafe_assign(global, value);
         } else if let Some(member) = self.member_ptrs.get(&dst).cloned() {
-            self.emit_line(&format!(
-                "unsafe {{ {}.{} = {value}; }}",
-                member.base, member.field
-            ));
+            self.push_unsafe_assign(format!("{}.{}", member.base, member.field), value);
         } else if let Some(element) = self.element_ptrs.get(&dst).cloned() {
             let place = format!("{}[({}) as usize]", element.base, element.index);
             if element.unsafe_access {
-                self.emit_line(&format!("unsafe {{ {place} = {value}; }}"));
+                self.push_unsafe_assign(place, value);
             } else {
-                self.emit_line(&format!("{place} = {value};"));
+                self.push_assign(place, value);
             }
         } else if let Some(slot) = self.slots.get(&dst).cloned() {
-            self.emit_line(&format!("{slot} = {value};"));
+            self.push_assign(slot, value);
         } else {
             let d = self.render_pointer_operand(&dst);
-            self.emit_line(&format!("unsafe {{ *{d} = {value}; }}"));
+            self.push_unsafe_assign(format!("*{d}"), value);
         }
     }
 
@@ -1820,9 +1822,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let stored = self.render_operand(result);
         let (place, needs_unsafe) = self.bitfield_place(&op.operands[0]);
         if needs_unsafe {
-            self.emit_line(&format!("unsafe {{ {place} = {stored}; }}"));
+            self.push_unsafe_assign(place, stored);
         } else {
-            self.emit_line(&format!("{place} = {stored};"));
+            self.push_assign(place, stored);
         }
     }
 
@@ -2330,10 +2332,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if ordering == 0 {
             return;
         }
-        self.emit_line(&format!(
-            "std::sync::atomic::fence({});",
-            rust_ordering(ordering)
-        ));
+        self.push_stmt(Stmt::Expr(Expr::Call {
+            func: Box::new(Self::raw_expr("std::sync::atomic::fence")),
+            args: vec![Self::raw_expr(rust_ordering(ordering))],
+        }));
     }
 
     // atomic `cir.load`/`cir.store` (they carry `mem_order`) — real atomic
@@ -2367,10 +2369,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return false;
         };
         let atomic = self.atomic_ref(ptr, wrapper);
-        self.emit_line(&format!(
-            "unsafe {{ {atomic}.store({value}, {}); }}",
-            store_ordering(mem_order)
-        ));
+        self.push_stmt(Stmt::Expr(Expr::Unsafe(Box::new(Expr::MethodCall {
+            recv: Box::new(Self::raw_expr(atomic)),
+            method: "store".into(),
+            args: vec![
+                Self::raw_expr(value),
+                Self::raw_expr(store_ordering(mem_order)),
+            ],
+        }))));
         true
     }
 
@@ -2385,7 +2391,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .va_args_param
             .clone()
             .unwrap_or_else(|| "__slate_va_args".into());
-        self.emit_line(&format!("{slot} = {args}.clone();"));
+        self.push_assign(slot, format!("{args}.clone()"));
     }
 
     fn lower_va_arg(&mut self, op: &Op) {
@@ -2412,14 +2418,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let value = op
             .operands
             .first()
-            .map(|operand| self.render_operand(operand));
+            .map(|operand| self.operand_expr(operand));
         if self.is_main {
-            let code = value.unwrap_or_else(|| "0".into());
-            self.emit_line(&format!("std::process::exit({code} as i32);"));
+            let code = value.unwrap_or_else(|| Expr::Lit("0".into()));
+            self.push_stmt(Stmt::Expr(Expr::Call {
+                func: Box::new(Self::raw_expr("std::process::exit")),
+                args: vec![Expr::Cast {
+                    expr: Box::new(code),
+                    ty: Self::named_type("i32"),
+                }],
+            }));
         } else if let Some(value) = value {
-            self.emit_line(&format!("return {value};"));
+            self.push_stmt(Stmt::Return(Some(value)));
         } else {
-            self.emit_line("return;");
+            self.push_stmt(Stmt::Return(None));
         }
     }
 
@@ -2944,7 +2956,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn emit_expr(&mut self, expr: String) {
-        self.emit_line(&format!("{expr};"));
+        self.push_stmt(Stmt::Expr(Expr::Raw(expr)));
     }
 
     fn emit_line(&mut self, line: &str) {
@@ -2956,6 +2968,35 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             depth: self.indent,
             stmt,
         });
+    }
+
+    fn raw_expr(expr: impl Into<String>) -> Expr {
+        Expr::Raw(expr.into())
+    }
+
+    fn named_type(ty: impl Into<String>) -> Type {
+        Type::Named(ty.into())
+    }
+
+    fn unsafe_stmt(stmt: Stmt) -> Stmt {
+        Stmt::Unsafe {
+            body: vec![IndentStmt { depth: 0, stmt }],
+        }
+    }
+
+    fn assign_stmt(target: impl Into<String>, value: impl Into<String>) -> Stmt {
+        Stmt::Assign {
+            target: Self::raw_expr(target),
+            value: Self::raw_expr(value),
+        }
+    }
+
+    fn push_assign(&mut self, target: impl Into<String>, value: impl Into<String>) {
+        self.push_stmt(Self::assign_stmt(target, value));
+    }
+
+    fn push_unsafe_assign(&mut self, target: impl Into<String>, value: impl Into<String>) {
+        self.push_stmt(Self::unsafe_stmt(Self::assign_stmt(target, value)));
     }
 
     fn pointee_type(&self, ty: &str) -> Option<String> {

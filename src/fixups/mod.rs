@@ -84,7 +84,10 @@ fn inline_nested_temps(body: &mut [IndentStmt]) {
                 inline_single_use_temps(then_body);
                 inline_single_use_temps(else_body);
             }
-            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            Stmt::Loop { body, .. }
+            | Stmt::Scope { body }
+            | Stmt::LabeledBlock { body, .. }
+            | Stmt::Unsafe { body } => {
                 inline_single_use_temps(body);
             }
             _ => {}
@@ -122,7 +125,10 @@ fn substitute_in_stmt_structured(stmt: &mut Stmt, name: &str, init: &Expr) -> bo
             }
             changed
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+        Stmt::Loop { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. }
+        | Stmt::Unsafe { body } => {
             let mut changed = false;
             for stmt in body {
                 changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
