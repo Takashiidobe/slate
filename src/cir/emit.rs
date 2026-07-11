@@ -39,6 +39,10 @@ pub fn target_args() -> Vec<String> {
 /// Emit high-level ClangIR (pre-CFG-flattening, passes disabled) for `src` and
 /// return it in MLIR generic form.
 pub fn emit_generic(src: &Path) -> Result<String, String> {
+    emit_generic_with_args(src, &[])
+}
+
+pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<String, String> {
     let mut cmd = Command::new(clang());
     cmd.args([
         "-fclangir",
@@ -50,6 +54,7 @@ pub fn emit_generic(src: &Path) -> Result<String, String> {
         "-",
     ])
     .args(target_args())
+    .args(extra_args)
     .arg(src)
     .stderr(Stdio::piped());
     let clang_out = cmd

@@ -131,9 +131,14 @@ fn clang() -> String {
 
 /// Load Clang's JSON AST for `src` and extract a compact source-level oracle.
 pub fn parse_file(src: &Path) -> Result<Unit, String> {
+    parse_file_with_args(src, &[])
+}
+
+pub fn parse_file_with_args(src: &Path, extra_args: &[String]) -> Result<Unit, String> {
     let out = Command::new(clang())
         .args(["-Xclang", "-ast-dump=json", "-fsyntax-only"])
         .args(crate::cir::emit::target_args())
+        .args(extra_args)
         .arg(src)
         .output()
         .map_err(|e| format!("spawn {}: {e}", clang()))?;
