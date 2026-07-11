@@ -24,27 +24,44 @@ pub struct ProjectInfo {
     pub emit_pub: bool,
 }
 
-/// Function symbols defined (body-bearing) in a CIR module.
+/// Whether a `cir.func` / `cir.global` op has external linkage (C default) as
+/// opposed to internal linkage (a C file-scope `static`). CIR encodes external
+/// linkage as `linkage = 0`; internal `static` symbols carry a nonzero linkage
+/// and `sym_visibility = "private"`. Internal-linkage defs stay module-private
+/// and are not exported across translation units.
+fn linkage_is_external(op: &Op) -> bool {
+    attr_int(op, "linkage").unwrap_or(0) == 0
+}
+
+/// Function symbols defined (body-bearing) with external linkage in a CIR
+/// module. Internal-linkage (`static`) functions are excluded so a sibling
+/// never imports them.
 pub fn defined_functions(module: &Module) -> Vec<String> {
     let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
         return Vec::new();
     };
     region_ops(module_op)
         .iter()
-        .filter(|op| op.name == "cir.func" && !region_ops(op).is_empty())
+        .filter(|op| op.name == "cir.func" && !region_ops(op).is_empty() && linkage_is_external(op))
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
         .collect()
 }
 
-/// Global symbols defined (with an initializer) in a CIR module. A body-less
-/// `extern` global decl has no initializer and is excluded.
+/// Global symbols defined (with an initializer) with external linkage in a CIR
+/// module. A body-less `extern` global decl has no initializer and is excluded;
+/// internal-linkage (`static`) globals are excluded so a sibling never imports
+/// them.
 pub fn defined_globals(module: &Module) -> Vec<String> {
     let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
         return Vec::new();
     };
     region_ops(module_op)
         .iter()
-        .filter(|op| op.name == "cir.global" && attr_str(op, "initial_value").is_some())
+        .filter(|op| {
+            op.name == "cir.global"
+                && attr_str(op, "initial_value").is_some()
+                && linkage_is_external(op)
+        })
         .filter_map(|op| attr_str(op, "sym_name").map(sanitize_ident))
         .collect()
 }
@@ -141,6 +158,8 @@ struct GlobalVar {
     name: String,
     ty: String,
     init: String,
+    /// external linkage (C default); internal-linkage `static` globals are not `pub`.
+    external: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -197,8 +216,12 @@ impl<'a> Lowerer<'a> {
                 self.collect_global(op);
             }
         }
-        let global_vis = if self.project.emit_pub { "pub " } else { "" };
         for global in self.globals.values() {
+            let global_vis = if self.project.emit_pub && global.external {
+                "pub "
+            } else {
+                ""
+            };
             items.push(Item::Raw(format!(
                 "{global_vis}static mut {}: {} = {};\n",
                 global.name, global.ty, global.init
@@ -328,8 +351,16 @@ impl<'a> Lowerer<'a> {
         {
             let ty = self.rust_type(attr_str(op, "sym_type").unwrap_or("!s32i"));
             let name = sanitize_ident(name);
-            self.globals
-                .insert(name.clone(), GlobalVar { name, ty, init });
+            let external = linkage_is_external(op);
+            self.globals.insert(
+                name.clone(),
+                GlobalVar {
+                    name,
+                    ty,
+                    init,
+                    external,
+                },
+            );
         }
     }
 
@@ -413,7 +444,11 @@ impl<'a> Lowerer<'a> {
             text.push_str("fn main() {\n");
             text.push_str(&self.main_arg_bindings(entry));
         } else {
-            let vis = if self.project.emit_pub { "pub " } else { "" };
+            let vis = if self.project.emit_pub && linkage_is_external(op) {
+                "pub "
+            } else {
+                ""
+            };
             text.push_str(&format!(
                 "{vis}fn {name}({params}) -> {} {{\n",
                 self.rust_type(ret_ty.as_deref().unwrap_or("()"))
