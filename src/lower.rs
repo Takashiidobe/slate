@@ -532,10 +532,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.not" => self.lower_not(op),
             "cir.abs" => self.lower_abs(op),
             "cir.ceil" => self.lower_unary_method(op, "ceil"),
+            "cir.copysign" => self.lower_binary_method(op, "copysign"),
             "cir.fabs" => self.lower_unary_method(op, "abs"),
             "cir.floor" => self.lower_unary_method(op, "floor"),
+            "cir.fmaxnum" => self.lower_binary_method(op, "max"),
+            "cir.fminnum" => self.lower_binary_method(op, "min"),
+            "cir.is_fp_class" => self.lower_is_fp_class(op),
             "cir.modf" => self.lower_modf(op),
+            "cir.nearbyint" => self.lower_unary_method(op, "round_ties_even"),
+            "cir.rint" => self.lower_unary_method(op, "round_ties_even"),
             "cir.round" => self.lower_unary_method(op, "round"),
+            "cir.signbit" => self.lower_signbit(op),
             "cir.trunc" => self.lower_unary_method(op, "trunc"),
             "cir.fadd" => self.lower_binary(op, "+"),
             "cir.fsub" => self.lower_binary(op, "-"),
@@ -1001,6 +1008,114 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             format!("({value}).{method}()")
         };
         self.materialize(result, expr, result_ty);
+    }
+
+    fn lower_binary_method(&mut self, op: &Op, method: &str) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let lhs = self.render_operand(&op.operands[0]);
+        let rhs = self.render_operand(&op.operands[1]);
+        let result_ty = op_result_type(op);
+        let rust_ty = result_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or_else(|| "f64".into());
+        let expr = if rust_ty == LONG_DOUBLE_TY {
+            format!("{LONG_DOUBLE_TY}(({lhs}).0.{method}(({rhs}).0))")
+        } else {
+            format!("({lhs}).{method}({rhs})")
+        };
+        self.materialize(result, expr, result_ty);
+    }
+
+    fn lower_signbit(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let operand_ty = op
+            .ty
+            .as_deref()
+            .and_then(|ty| op_operand_types(ty).into_iter().next());
+        let value = self.render_float_predicate_operand(value, operand_ty);
+        self.materialize(
+            result,
+            format!("({value}).is_sign_negative()"),
+            op_result_type(op),
+        );
+    }
+
+    fn lower_is_fp_class(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let Some(flags) = attr_int(op, "flags") else {
+            return;
+        };
+        let operand_ty = op
+            .ty
+            .as_deref()
+            .and_then(|ty| op_operand_types(ty).into_iter().next());
+        let value = self.render_float_predicate_operand(value, operand_ty);
+        let mut parts = Vec::new();
+        if flags & 0x3 != 0 {
+            parts.push(format!("({value}).is_nan()"));
+        }
+        if flags & 0x4 != 0 {
+            parts.push(format!("({value}) == f64::NEG_INFINITY"));
+        }
+        if flags & 0x8 != 0 {
+            parts.push(format!(
+                "({value}).is_normal() && ({value}).is_sign_negative()"
+            ));
+        }
+        if flags & 0x10 != 0 {
+            parts.push(format!(
+                "({value}).is_subnormal() && ({value}).is_sign_negative()"
+            ));
+        }
+        if flags & 0x20 != 0 {
+            parts.push(format!("({value}) == 0.0 && ({value}).is_sign_negative()"));
+        }
+        if flags & 0x40 != 0 {
+            parts.push(format!("({value}) == 0.0 && !({value}).is_sign_negative()"));
+        }
+        if flags & 0x80 != 0 {
+            parts.push(format!(
+                "({value}).is_subnormal() && !({value}).is_sign_negative()"
+            ));
+        }
+        if flags & 0x100 != 0 {
+            parts.push(format!(
+                "({value}).is_normal() && !({value}).is_sign_negative()"
+            ));
+        }
+        if flags & 0x200 != 0 {
+            parts.push(format!("({value}) == f64::INFINITY"));
+        }
+        let expr = if parts.is_empty() {
+            "false".into()
+        } else {
+            parts.join(" || ")
+        };
+        self.materialize(result, expr, op_result_type(op));
+    }
+
+    fn render_float_predicate_operand(&self, operand: &str, ty: Option<&str>) -> String {
+        let value = self.render_operand(operand);
+        match ty {
+            Some(ty) if is_long_double(ty) => format!("({value}).0"),
+            Some("!cir.float") => format!("({value}) as f64"),
+            _ => value,
+        }
     }
 
     fn lower_modf(&mut self, op: &Op) {
@@ -1866,9 +1981,13 @@ fn parse_cir_fp(s: &str) -> Option<String> {
     let rest = &s[start..];
     let end = rest.find('>')?;
     let text = rest[..end].trim();
-    // rust has no hex-float literal syntax; leave those unsupported for now
     if text.starts_with("0x") || text.starts_with("0X") {
-        return None;
+        let bits = u64::from_str_radix(&text[2..], 16).ok()?;
+        return match text.len() - 2 {
+            8 => Some(format!("f32::from_bits(0x{bits:08x})")),
+            16 => Some(format!("f64::from_bits(0x{bits:016x})")),
+            _ => None,
+        };
     }
     Some(text.to_string())
 }
@@ -2255,8 +2374,14 @@ mod tests {
             parse_cir_fp("#cir.fp<2.250000e+00> : !cir.double").as_deref(),
             Some("2.250000e+00")
         );
-        // hex-float literals have no rust syntax and stay unsupported
-        assert_eq!(parse_cir_fp("#cir.fp<0x7FF0000000000000>"), None);
+        assert_eq!(
+            parse_cir_fp("#cir.fp<0x7F800000>").as_deref(),
+            Some("f32::from_bits(0x7f800000)")
+        );
+        assert_eq!(
+            parse_cir_fp("#cir.fp<0x7FF0000000000000>").as_deref(),
+            Some("f64::from_bits(0x7ff0000000000000)")
+        );
         assert_eq!(parse_cir_fp("#cir.int<0> : !s32i"), None);
     }
 
