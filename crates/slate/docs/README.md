@@ -85,8 +85,10 @@ small C subset. This is the supported fixture-level surface today:
   through CIR volatile loads/stores with Rust volatile pointer intrinsics;
   `const`, `restrict`, and `_Atomic` are normalized to the same baseline Rust
   storage types as their unqualified forms.
-- file-scope `static` integer and floating globals with constant initializers,
-  emitted as `static mut`.
+- file-scope primitive and aggregate globals with internal or external linkage,
+  including zero-initialized definitions and `extern` declarations. Definitions
+  are emitted conservatively as `static mut`; cross-translation-unit externs
+  import the Rust module that owns the definition.
 - `typedef` aliases for otherwise supported types, resolved through Clang's
   desugared type facts.
 - source-level context loaded from Clang's JSON AST.
@@ -132,6 +134,8 @@ The current fixtures are:
 - `static_globals.c` — file-scope static integer global loads and stores.
 - `non_int_globals.c` — file-scope static `char`/`unsigned char`/`float`/`double`
   globals plus non-int params and returns.
+- `global_vars.c` — non-static, zero-initialized, array, and struct globals with
+  cross-function loads and stores.
 - `typedefs.c` — aliases for primitive types used in params, locals, fields,
   returns, and `sizeof`.
 - `stdint_types.c` — `<stdint.h>` fixed-width typedefs and `<stddef.h>` `size_t`.
@@ -176,13 +180,13 @@ Important gaps remain:
 - target-complete C integer modeling beyond the CIR widths already emitted
   (e.g. `__int128`).
 - wider arithmetic and casts beyond the currently exercised cases.
-- broader aggregate coverage beyond primitive scalar fields.
-- globals beyond file-scope `static` primitive scalar globals with constant
-  initializers and constant strings used by `printf`.
+- broader aggregate coverage beyond the currently exercised struct, union, and
+  fixed-array forms.
+- richer global initializers beyond scalar constants, zero values, and aggregate
+  constants that Clang lowers to CIR const arrays/records.
 - `goto`.
 - more arithmetic and assignment combinations over aggregates and pointers.
-- function prototypes, declarations across translation units, and headers beyond
-  what Clang resolves for the fixture.
+- headers beyond what Clang resolves for the fixture.
 - hex float literals and float math beyond `+`/`-`/`*`/`/`.
 - string operations and varargs beyond direct `printf` calls.
 - idiomatic Rust cleanup such as `println!`, temp removal, references, slices,
