@@ -3,7 +3,7 @@
 use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
-use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, Stmt, Type};
+use crate::rust_ast::{Expr, FnDef, FnParam, IndentStmt, Item, Program, Stmt, Type};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// How a translation unit fits into a multi-file project: which symbols other
@@ -559,40 +559,46 @@ impl<'a> Lowerer<'a> {
             .enumerate()
             .map(|(i, (arg, ty))| {
                 let ty = param_types.get(i).map(String::as_str).unwrap_or(ty);
-                format!("{arg}: {}", self.rust_type(ty))
+                FnParam {
+                    name: arg.clone(),
+                    mutable: false,
+                    ty: Type::Named(self.rust_type(ty)),
+                }
             })
             .collect::<Vec<_>>();
 
         let va_args_param = if is_variadic {
             let param = "__slate_va_args".to_string();
-            params.push(format!("mut {param}: ..."));
+            params.push(FnParam {
+                name: param.clone(),
+                mutable: true,
+                ty: Type::Named("...".to_string()),
+            });
             Some(param)
         } else {
             None
         };
-        let params = params.join(", ");
 
-        let (open, prelude) = if is_main {
-            ("fn main() {".to_string(), self.main_arg_bindings(entry))
+        let (vis, unsafe_extern_c, ret, prelude) = if is_main {
+            params.clear();
+            (None, false, None, self.main_arg_bindings(entry))
         } else {
             let vis = if self.project.emit_pub && linkage_is_external(op) {
-                "pub "
+                Some("pub".to_string())
             } else {
-                ""
+                None
             };
-            // Rust variadics must be `unsafe extern "C"`.
-            let prefix = if is_variadic {
+            let unsafe_extern_c = if is_variadic {
                 self.uses_c_variadic.set(true);
                 self.variadic_defs.insert(name.to_string());
-                "unsafe extern \"C\" "
+                true
             } else {
-                ""
+                false
             };
-            let open = format!(
-                "{vis}{prefix}fn {name}({params}) -> {} {{",
-                self.rust_type(ret_ty.as_deref().unwrap_or("()"))
-            );
-            (open, Vec::new())
+            let ret = Some(Type::Named(
+                self.rust_type(ret_ty.as_deref().unwrap_or("()")),
+            ));
+            (vis, unsafe_extern_c, ret, Vec::<String>::new())
         };
 
         let mut f = FunctionLowerer {
@@ -626,7 +632,14 @@ impl<'a> Lowerer<'a> {
         } else {
             f.lower_block(entry);
         }
-        Some(Item::Fn(FnDef { open, body: f.body }))
+        Some(Item::Fn(FnDef {
+            vis,
+            unsafe_extern_c,
+            name: name.to_string(),
+            params,
+            ret,
+            body: f.body,
+        }))
     }
 
     fn main_arg_bindings(&self, entry: &Block) -> Vec<String> {
@@ -2971,7 +2984,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn raw_expr(expr: impl Into<String>) -> Expr {
-        Expr::Raw(expr.into())
+        let expr = expr.into();
+        if is_rust_ident(&expr) {
+            Expr::Var(expr)
+        } else {
+            Expr::Raw(expr)
+        }
     }
 
     fn named_type(ty: impl Into<String>) -> Type {
@@ -3649,6 +3667,16 @@ fn sanitize_ident(s: &str) -> String {
         out = format!("r#{out}");
     }
     out
+}
+
+fn is_rust_ident(s: &str) -> bool {
+    let s = s.strip_prefix("r#").unwrap_or(s);
+    let bytes = s.as_bytes();
+    !bytes.is_empty()
+        && (bytes[0] == b'_' || bytes[0].is_ascii_alphabetic())
+        && bytes
+            .iter()
+            .all(|b| *b == b'_' || b.is_ascii_alphanumeric())
 }
 
 fn is_rust_keyword(s: &str) -> bool {

@@ -100,15 +100,15 @@ fn compound_assignment_temps_are_inlined() {
     support::translate(&c_src, &generated).expect("translate compound fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated compound rust");
     for expr in [
-        "a = (a - 5);",
-        "a = (a * 3);",
-        "a = (a / 5);",
-        "a = (a % 7);",
-        "a = (a << 3);",
-        "a = (a >> 2);",
-        "a = (a & 6);",
-        "a = (a ^ 3);",
-        "a = (a | 8);",
+        "a = a - 5;",
+        "a = a * 3;",
+        "a = a / 5;",
+        "a = a % 7;",
+        "a = a << 3;",
+        "a = a >> 2;",
+        "a = a & 6;",
+        "a = a ^ 3;",
+        "a = a | 8;",
     ] {
         assert!(rust.contains(expr), "missing compact expression: {expr}");
     }
