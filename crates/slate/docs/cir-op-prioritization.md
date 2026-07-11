@@ -76,6 +76,9 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
   - [x] `cir.rem`
   - [x] `cir.inc`
   - [x] `cir.minus`
+  - [x] `cir.add.overflow`
+  - [x] `cir.sub.overflow`
+  - [x] `cir.mul.overflow`
 - [x] scalar bitwise/logical
   - [x] `cir.and`
   - [x] `cir.or`
