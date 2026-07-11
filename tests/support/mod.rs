@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 pub mod cgen;
 
 use std::collections::BTreeMap;
@@ -34,6 +36,103 @@ pub fn compile_c(src: &Path, out: &Path) -> Result<(), String> {
         ));
     }
     Ok(())
+}
+
+/// Compile several C translation units together into one binary (cross-TU link).
+pub fn compile_c_multi(srcs: &[PathBuf], out: &Path) -> Result<(), String> {
+    let o = Command::new(cc())
+        .args(["-O0", "-std=c11", "-o"])
+        .arg(out)
+        .args(srcs)
+        .arg("-lm")
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", cc()))?;
+    if !o.status.success() {
+        return Err(format!(
+            "C compile failed:\n{}",
+            String::from_utf8_lossy(&o.stderr)
+        ));
+    }
+    Ok(())
+}
+
+/// Invoke `slate translate-project <dir> <out_dir>`, writing one Rust module per
+/// C translation unit (the unit with `main` becomes `main.rs`).
+pub fn translate_project(dir: &Path, out_dir: &Path) -> Result<(), String> {
+    let o = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate-project")
+        .arg(dir)
+        .arg(out_dir)
+        .output()
+        .map_err(|e| format!("spawn slate translate-project: {e}"))?;
+    if !o.status.success() {
+        return Err(format!(
+            "translate-project failed:\n{}",
+            String::from_utf8_lossy(&o.stderr)
+        ));
+    }
+    Ok(())
+}
+
+/// Compile a directory of translated Rust modules as one crate rooted at
+/// `main.rs`, so `mod`/`use crate::…` wiring across units is linked together.
+pub fn compile_rs_project(
+    rs_dir: &Path,
+    work_dir: &Path,
+    package: &str,
+) -> Result<PathBuf, String> {
+    let project = work_dir.join(format!("{package}_proj"));
+    let _ = std::fs::remove_dir_all(&project);
+    std::fs::create_dir_all(project.join("src"))
+        .map_err(|e| format!("create {}: {e}", project.display()))?;
+    std::fs::write(
+        project.join("Cargo.toml"),
+        format!(
+            r#"[package]
+name = "{package}"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+libc = "0.2"
+
+[build-dependencies]
+cc = "1"
+
+[profile.dev]
+overflow-checks = false
+"#
+        ),
+    )
+    .map_err(|e| format!("write Cargo.toml: {e}"))?;
+    write_long_double_shim(&project)?;
+
+    for entry in std::fs::read_dir(rs_dir).map_err(|e| format!("read {}: {e}", rs_dir.display()))? {
+        let path = entry
+            .map_err(|e| format!("read {} entry: {e}", rs_dir.display()))?
+            .path();
+        if path.extension().and_then(|e| e.to_str()) == Some("rs") {
+            let name = path.file_name().expect("rs file name");
+            std::fs::copy(&path, project.join("src").join(name))
+                .map_err(|e| format!("copy {} to project: {e}", path.display()))?;
+        }
+    }
+
+    let target_dir = project.join("target");
+    let o = Command::new(cargo())
+        .args(["build", "--quiet", "--manifest-path"])
+        .arg(project.join("Cargo.toml"))
+        .arg("--target-dir")
+        .arg(&target_dir)
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", cargo()))?;
+    if !o.status.success() {
+        return Err(format!(
+            "Rust cargo build failed:\n{}",
+            String::from_utf8_lossy(&o.stderr)
+        ));
+    }
+    Ok(target_dir.join("debug").join(package))
 }
 
 pub fn compile_rs_cargo(src: &Path, work_dir: &Path, package: &str) -> Result<PathBuf, String> {
@@ -201,7 +300,7 @@ overflow-checks = false
     }
 }
 
-fn compare_runs(c: &Run, r: &Run, compare_stderr: bool) -> Result<(), String> {
+pub fn compare_runs(c: &Run, r: &Run, compare_stderr: bool) -> Result<(), String> {
     if c.exit != r.exit {
         return Err(format!(
             "exit code differs: C={:?} Rust={:?}",
