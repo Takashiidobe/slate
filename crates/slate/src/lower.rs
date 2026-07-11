@@ -299,6 +299,7 @@ impl<'a> Lowerer<'a> {
 
         if is_main {
             text.push_str("fn main() {\n");
+            text.push_str(&self.main_arg_bindings(entry));
         } else {
             text.push_str(&format!(
                 "fn {name}({params}) -> {} {{\n",
@@ -326,6 +327,28 @@ impl<'a> Lowerer<'a> {
         text.push_str(&f.out);
         text.push_str("}\n");
         Some(text)
+    }
+
+    fn main_arg_bindings(&self, entry: &Block) -> String {
+        if entry.args.is_empty() {
+            return String::new();
+        }
+        let mut text = String::new();
+        text.push_str("    let mut __slate_argv_storage: Vec<std::ffi::CString> = std::env::args().map(|arg| std::ffi::CString::new(arg).unwrap()).collect();\n");
+        text.push_str("    let mut __slate_argv_ptrs: Vec<*mut i8> = __slate_argv_storage.iter().map(|arg| arg.as_ptr() as *mut i8).collect();\n");
+        text.push_str("    __slate_argv_ptrs.push(std::ptr::null_mut());\n");
+
+        for (i, (arg, ty)) in entry.args.iter().enumerate() {
+            let name = sanitize_ident(arg);
+            let rust_ty = self.rust_type(ty);
+            let value = match i {
+                0 => "__slate_argv_storage.len() as i32".to_string(),
+                1 => "__slate_argv_ptrs.as_mut_ptr()".to_string(),
+                _ => "std::ptr::null_mut()".to_string(),
+            };
+            text.push_str(&format!("    let {name}: {rust_ty} = {value};\n"));
+        }
+        text
     }
 
     /// Build a Rust `extern "C"` signature line for a body-less C declaration,
