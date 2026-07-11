@@ -1,6 +1,6 @@
 //! Rust cleanup passes that run after faithful CIR lowering.
 
-use crate::rust_ast::{Expr, IndentStmt, Item, Program, Stmt};
+use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, Stmt};
 
 pub fn apply(program: Program) -> Program {
     Program {
@@ -13,11 +13,10 @@ pub fn apply(program: Program) -> Program {
                 Item::Raw(text) => Item::Raw(apply_text_fixups(&text)),
                 Item::Fn(mut f) => {
                     inline_single_use_temps(&mut f.body);
-                    let text = Program {
-                        items: vec![Item::Fn(f)],
-                    }
-                    .emit();
-                    Item::Raw(apply_text_fixups(&text))
+                    eliminate_param_spills_ast(&mut f);
+                    fuse_zero_init_ast(&mut f.body);
+                    collapse_retval_ast(&mut f.body);
+                    Item::Fn(f)
                 }
                 item => item,
             })
@@ -32,6 +31,201 @@ fn apply_text_fixups(text: &str) -> String {
     let text = eliminate_param_spills(text);
     let text = fuse_zero_init(&text);
     collapse_retval(&text)
+}
+
+fn eliminate_param_spills_ast(f: &mut FnDef) {
+    let param_names: Vec<String> = f.params.iter().map(|p| p.name.clone()).collect();
+    let mut claimed_locals: Vec<String> = Vec::new();
+    let mut removed: Vec<usize> = Vec::new();
+
+    for param_index in 0..f.params.len() {
+        if f.params[param_index].mutable {
+            continue;
+        }
+        let param_name = f.params[param_index].name.clone();
+        let param_ty = f.params[param_index].ty.render();
+        let body_uses: usize = f
+            .body
+            .iter()
+            .map(|stmt| stmt_ident_count(&stmt.stmt, &param_name))
+            .sum();
+        if body_uses != 1 {
+            continue;
+        }
+
+        let Some((store_index, local)) =
+            f.body
+                .iter()
+                .enumerate()
+                .find_map(|(index, stmt)| match &stmt.stmt {
+                    Stmt::Assign { target, value } => {
+                        let local = expr_ident(target)?;
+                        (expr_ident(value) == Some(param_name.as_str()))
+                            .then(|| (index, local.to_string()))
+                    }
+                    _ => None,
+                })
+        else {
+            continue;
+        };
+        if param_names.iter().any(|name| name == &local)
+            || claimed_locals.iter().any(|name| name == &local)
+        {
+            continue;
+        }
+
+        let Some(decl_index) =
+            f.body
+                .iter()
+                .enumerate()
+                .take(store_index)
+                .find_map(|(index, stmt)| match &stmt.stmt {
+                    Stmt::Let {
+                        name,
+                        mutable: true,
+                        ty: Some(ty),
+                        ..
+                    } if name == &local && ty.render() == param_ty => Some(index),
+                    _ => None,
+                })
+        else {
+            continue;
+        };
+
+        if f.body[decl_index + 1..store_index]
+            .iter()
+            .any(|stmt| stmt_ident_count(&stmt.stmt, &local) > 0)
+        {
+            continue;
+        }
+
+        f.params[param_index].name = local.clone();
+        f.params[param_index].mutable = true;
+        claimed_locals.push(local);
+        removed.push(decl_index);
+        removed.push(store_index);
+    }
+
+    removed.sort_unstable();
+    removed.dedup();
+    for index in removed.into_iter().rev() {
+        f.body.remove(index);
+    }
+}
+
+fn collapse_retval_ast(body: &mut Vec<IndentStmt>) {
+    let Some((ret_index, name)) =
+        body.iter()
+            .enumerate()
+            .find_map(|(index, stmt)| match &stmt.stmt {
+                Stmt::Return(Some(expr)) => expr_ident(expr).map(|name| (index, name.to_string())),
+                _ => None,
+            })
+    else {
+        return;
+    };
+    if ret_index == 0 {
+        return;
+    }
+
+    let store_index = ret_index - 1;
+    let value = match &body[store_index].stmt {
+        Stmt::Assign { target, value } if expr_ident(target) == Some(name.as_str()) => {
+            value.clone()
+        }
+        _ => return,
+    };
+
+    let mentions: usize = body
+        .iter()
+        .map(|stmt| stmt_ident_count(&stmt.stmt, &name))
+        .sum();
+    if mentions != 3 {
+        return;
+    }
+
+    let Some(decl_index) = body
+        .iter()
+        .position(|stmt| matches!(&stmt.stmt, Stmt::Let { name: n, .. } if n == &name))
+    else {
+        return;
+    };
+
+    body[ret_index].stmt = Stmt::Return(Some(value));
+    let mut remove = [store_index, decl_index];
+    remove.sort_unstable();
+    for index in remove.into_iter().rev() {
+        body.remove(index);
+    }
+}
+
+fn fuse_zero_init_ast(body: &mut Vec<IndentStmt>) {
+    for stmt in body.iter_mut() {
+        for_nested_body(&mut stmt.stmt, fuse_zero_init_ast);
+    }
+
+    loop {
+        let mut changed = false;
+        for i in 0..body.len().saturating_sub(1) {
+            let Stmt::Let {
+                name,
+                mutable: true,
+                ty: Some(_),
+                init: Some(init),
+            } = &body[i].stmt
+            else {
+                continue;
+            };
+            if !is_zero_expr(init) {
+                continue;
+            }
+            let Stmt::Assign { target, value } = &body[i + 1].stmt else {
+                continue;
+            };
+            if expr_ident(target) != Some(name.as_str()) || expr_ident_count(value, name) != 0 {
+                continue;
+            }
+            let value = value.clone();
+            if let Stmt::Let { init, .. } = &mut body[i].stmt {
+                *init = Some(value);
+            }
+            body.remove(i + 1);
+            changed = true;
+            break;
+        }
+        if !changed {
+            break;
+        }
+    }
+}
+
+fn for_nested_body(stmt: &mut Stmt, f: fn(&mut Vec<IndentStmt>)) {
+    match stmt {
+        Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => {
+            f(then_body);
+            f(else_body);
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. }
+        | Stmt::Unsafe { body } => f(body),
+        _ => {}
+    }
+}
+
+fn is_zero_expr(expr: &Expr) -> bool {
+    matches!(expr, Expr::Lit(s) | Expr::Raw(s) if matches!(s.as_str(), "0" | "0.0" | "false"))
+}
+
+fn expr_ident(expr: &Expr) -> Option<&str> {
+    match expr {
+        Expr::Var(s) | Expr::Raw(s) if is_ident(s) => Some(s),
+        _ => None,
+    }
 }
 
 // Inline single-use pure temps directly on the statement list. Where the use site
@@ -145,6 +339,100 @@ fn substitute_in_stmt_structured(stmt: &mut Stmt, name: &str, init: &Expr) -> bo
             }
         }
         _ => false,
+    }
+}
+
+fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
+    match stmt {
+        Stmt::Let { name: n, init, .. } => {
+            usize::from(n == name) + init.as_ref().map_or(0, |expr| expr_ident_count(expr, name))
+        }
+        Stmt::Assign { target, value } => {
+            expr_ident_count(target, name) + expr_ident_count(value, name)
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_ident_count(expr, name),
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => 0,
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            expr_ident_count(cond, name)
+                + then_body
+                    .iter()
+                    .chain(else_body)
+                    .map(|stmt| stmt_ident_count(&stmt.stmt, name))
+                    .sum::<usize>()
+        }
+        Stmt::Loop { label, body } => {
+            label.as_ref().map_or(0, |label| ident_count(label, name))
+                + body
+                    .iter()
+                    .map(|stmt| stmt_ident_count(&stmt.stmt, name))
+                    .sum::<usize>()
+        }
+        Stmt::LabeledBlock { label, body } => {
+            ident_count(label, name)
+                + body
+                    .iter()
+                    .map(|stmt| stmt_ident_count(&stmt.stmt, name))
+                    .sum::<usize>()
+        }
+        Stmt::Scope { body } | Stmt::Unsafe { body } => body
+            .iter()
+            .map(|stmt| stmt_ident_count(&stmt.stmt, name))
+            .sum(),
+        Stmt::While { cond, body } => {
+            expr_ident_count(cond, name)
+                + body
+                    .stmts
+                    .iter()
+                    .map(|stmt| stmt_ident_count(stmt, name))
+                    .sum::<usize>()
+        }
+        Stmt::Block(body) => body
+            .stmts
+            .iter()
+            .map(|stmt| stmt_ident_count(stmt, name))
+            .sum(),
+        Stmt::Raw(line) => ident_count(line, name),
+    }
+}
+
+fn expr_ident_count(expr: &Expr, name: &str) -> usize {
+    match expr {
+        Expr::Lit(s) | Expr::Var(s) => usize::from(s == name),
+        Expr::Raw(s) => ident_count(s, name),
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::Unsafe(expr) => expr_ident_count(expr, name),
+        Expr::Binary { lhs, rhs, .. } => expr_ident_count(lhs, name) + expr_ident_count(rhs, name),
+        Expr::Call { func, args } => {
+            expr_ident_count(func, name)
+                + args
+                    .iter()
+                    .map(|arg| expr_ident_count(arg, name))
+                    .sum::<usize>()
+        }
+        Expr::MethodCall { recv, args, .. } => {
+            expr_ident_count(recv, name)
+                + args
+                    .iter()
+                    .map(|arg| expr_ident_count(arg, name))
+                    .sum::<usize>()
+        }
+        Expr::Field { base, field } => expr_ident_count(base, name) + ident_count(field, name),
+        Expr::Macro {
+            name: macro_name,
+            args,
+        } => {
+            ident_count(macro_name, name)
+                + args
+                    .iter()
+                    .map(|arg| expr_ident_count(arg, name))
+                    .sum::<usize>()
+        }
     }
 }
 
@@ -697,7 +985,7 @@ fn is_ident_continue(b: u8) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rust_ast::Type;
+    use crate::rust_ast::{FnParam, Type};
 
     fn temp(name: &str, ty: &str, init: Expr) -> Stmt {
         Stmt::Let {
@@ -723,6 +1011,96 @@ mod tests {
             .collect();
         inline_single_use_temps(&mut body);
         body.iter().map(|s| s.stmt.render_line()).collect()
+    }
+
+    fn migrated_fn(body: Vec<Stmt>) -> FnDef {
+        FnDef {
+            vis: None,
+            unsafe_extern_c: false,
+            name: "add".into(),
+            params: vec![
+                FnParam {
+                    name: "arg0".into(),
+                    mutable: false,
+                    ty: Type::Named("i32".into()),
+                },
+                FnParam {
+                    name: "arg1".into(),
+                    mutable: false,
+                    ty: Type::Named("i32".into()),
+                },
+            ],
+            ret: Some(Type::Named("i32".into())),
+            body: body
+                .into_iter()
+                .map(|stmt| IndentStmt { depth: 1, stmt })
+                .collect(),
+        }
+    }
+
+    #[test]
+    fn apply_keeps_migrated_functions_structured() {
+        let program = Program {
+            items: vec![Item::Fn(migrated_fn(vec![
+                Stmt::Let {
+                    name: "a".into(),
+                    mutable: true,
+                    ty: Some(Type::Named("i32".into())),
+                    init: Some(Expr::Lit("0".into())),
+                },
+                Stmt::Let {
+                    name: "b".into(),
+                    mutable: true,
+                    ty: Some(Type::Named("i32".into())),
+                    init: Some(Expr::Lit("0".into())),
+                },
+                Stmt::Let {
+                    name: "__retval".into(),
+                    mutable: true,
+                    ty: Some(Type::Named("i32".into())),
+                    init: Some(Expr::Lit("0".into())),
+                },
+                Stmt::Let {
+                    name: "c".into(),
+                    mutable: true,
+                    ty: Some(Type::Named("i32".into())),
+                    init: Some(Expr::Lit("0".into())),
+                },
+                Stmt::Assign {
+                    target: Expr::Var("a".into()),
+                    value: Expr::Var("arg0".into()),
+                },
+                Stmt::Assign {
+                    target: Expr::Var("b".into()),
+                    value: Expr::Var("arg1".into()),
+                },
+                Stmt::Assign {
+                    target: Expr::Var("c".into()),
+                    value: bin("+", Expr::Var("a".into()), Expr::Var("b".into())),
+                },
+                Stmt::Assign {
+                    target: Expr::Var("__retval".into()),
+                    value: Expr::Var("c".into()),
+                },
+                Stmt::Return(Some(Expr::Var("__retval".into()))),
+            ]))],
+        };
+
+        let out = apply(program);
+        let Item::Fn(f) = &out.items[0] else {
+            panic!("migrated functions must remain structured");
+        };
+        assert_eq!(f.params[0].name, "a");
+        assert!(f.params[0].mutable);
+        assert_eq!(
+            out.emit(),
+            "\
+fn add(mut a: i32, mut b: i32) -> i32 {
+    let mut c: i32 = a + b;
+    return c;
+}
+"
+        );
     }
 
     #[test]
