@@ -8,7 +8,7 @@
 //! passing scoped locals to functions.
 //!
 //! Everything it emits is restricted to the subset Slate can translate today
-//! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise ops/`++`/`+=`,
+//! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise/logical ops/unary negation/`++`/compound assignments,
 //! `float`/`double`/`long double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`/`if`/`switch`,
 //! `double _Complex` `+`/`-`/`*`/`/` with `__real__`/`__imag__` extraction,
 //! arrays, pointers, structs, unions, typedef aliases, fixed-width typedefs,
@@ -488,9 +488,51 @@ impl Gen {
         let Some(target) = self.pick_var(VALUE_CAP - STEP_BUDGET) else {
             return self.emit_decl_stmt();
         };
-        let (expr, max) = self.gen_expr(0, STEP_BUDGET);
-        self.line(&format!("{} += {expr};", target.name));
-        self.set_max_abs(&target.name, target.max_abs + max);
+        match self.rng.below(8) {
+            0 => {
+                let (expr, max) = self.gen_expr(0, STEP_BUDGET);
+                self.line(&format!("{} += {expr};", target.name));
+                self.set_max_abs(&target.name, target.max_abs + max);
+            }
+            1 => {
+                let (expr, max) = self.gen_expr(0, STEP_BUDGET);
+                self.line(&format!("{} -= {expr};", target.name));
+                self.set_max_abs(&target.name, target.max_abs + max);
+            }
+            2 => {
+                let Some(target) = self.pick_var(VALUE_CAP / STEP_BUDGET) else {
+                    return self.emit_decl_stmt();
+                };
+                let (expr, max) = self.gen_expr(0, STEP_BUDGET);
+                self.line(&format!("{} *= {expr};", target.name));
+                self.set_max_abs(&target.name, (target.max_abs * max).min(VALUE_CAP));
+            }
+            3 => {
+                let d = self.rng.int_in(1, CONST_MAX);
+                self.line(&format!("{} /= {d};", target.name));
+                self.set_max_abs(&target.name, target.max_abs);
+            }
+            4 => {
+                let d = self.rng.int_in(1, CONST_MAX);
+                self.line(&format!("{} %= {d};", target.name));
+                self.set_max_abs(&target.name, target.max_abs.min(d - 1).max(0));
+            }
+            5 => {
+                let mask = self.bit_mask(STEP_BUDGET);
+                self.line(&format!("{} &= {mask};", target.name));
+                self.set_max_abs(&target.name, target.max_abs.min(mask));
+            }
+            6 => {
+                let mask = self.bit_mask(STEP_BUDGET);
+                self.line(&format!("{} ^= {mask};", target.name));
+                self.set_max_abs(&target.name, (target.max_abs + mask).min(VALUE_CAP));
+            }
+            _ => {
+                let mask = self.bit_mask(STEP_BUDGET);
+                self.line(&format!("{} |= {mask};", target.name));
+                self.set_max_abs(&target.name, (target.max_abs + mask).min(VALUE_CAP));
+            }
+        }
     }
 
     /// `int acc = 0; for (int i = 0; i <= N; i++) { acc += <step>; }`
@@ -632,7 +674,7 @@ impl Gen {
         if depth >= MAX_DEPTH || budget < 2 {
             return self.gen_leaf(budget);
         }
-        match self.rng.below(14) {
+        match self.rng.below(18) {
             0 | 1 => self.gen_leaf(budget),
             2 => {
                 // addition: split the budget so the sum stays within it
@@ -705,6 +747,24 @@ impl Gen {
                 let shifted_mask = (mask << shift).min(VALUE_CAP);
                 let (le, _) = self.gen_expr(depth + 1, shifted_mask);
                 (format!("(({le} & {shifted_mask}) >> {shift})"), mask)
+            }
+            13 => {
+                let (expr, max) = self.gen_expr(depth + 1, budget);
+                (format!("(-({expr}))"), max)
+            }
+            14 => {
+                let (expr, _) = self.gen_expr(depth + 1, budget);
+                (format!("(!({expr}))"), 1)
+            }
+            15 => {
+                let (lhs, _) = self.gen_expr(depth + 1, budget);
+                let (rhs, _) = self.gen_expr(depth + 1, budget);
+                (format!("(({lhs}) && ({rhs}))"), 1)
+            }
+            16 => {
+                let (lhs, _) = self.gen_expr(depth + 1, budget);
+                let (rhs, _) = self.gen_expr(depth + 1, budget);
+                (format!("(({lhs}) || ({rhs}))"), 1)
             }
             _ => self.gen_call(depth, budget),
         }
@@ -816,6 +876,7 @@ impl Gen {
         if self.has_complex {
             self.emit_complex_use();
         }
+        self.emit_shift_compound_use();
         self.emit_array_use();
         self.emit_pointer_use();
 
@@ -909,6 +970,13 @@ impl Gen {
             self.line(&format!("slot = slot + {bump};"));
             self.printf("slot");
         }
+    }
+
+    fn emit_shift_compound_use(&mut self) {
+        self.line("unsigned int shift_value = 3u;");
+        self.line("shift_value <<= 2;");
+        self.line("shift_value >>= 1;");
+        self.printf_fmt("%u", "shift_value");
     }
 
     fn emit_pointer_use(&mut self) {
@@ -1219,6 +1287,25 @@ mod tests {
         assert!(corpus.contains("~("));
         assert!(corpus.contains(" << "));
         assert!(corpus.contains(" >> "));
+    }
+
+    #[test]
+    fn emits_supported_logical_and_compound_ops() {
+        let corpus = (0..4096u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("!("));
+        assert!(corpus.contains("(-("));
+        assert!(corpus.contains(" && "));
+        assert!(corpus.contains(" || "));
+        assert!(corpus.contains(" += "));
+        assert!(corpus.contains(" -= "));
+        assert!(corpus.contains(" *= "));
+        assert!(corpus.contains(" /= "));
+        assert!(corpus.contains(" %= "));
+        assert!(corpus.contains(" &= "));
+        assert!(corpus.contains(" ^= "));
+        assert!(corpus.contains(" |= "));
+        assert!(corpus.contains(" <<= "));
+        assert!(corpus.contains(" >>= "));
     }
 
     #[test]
