@@ -117,6 +117,29 @@ fn compound_assignment_temps_are_inlined() {
 }
 
 #[test]
+fn call_lowering_preserves_function_pointer_and_extern_shapes() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-call-lowering");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let fp_c = fixtures_dir().join("function_pointers.c");
+    let fp_generated = tmp.join("function_pointers.generated.rs");
+    support::translate(&fp_c, &fp_generated).expect("translate function pointer fixture");
+    let fp_rust =
+        std::fs::read_to_string(&fp_generated).expect("read generated function pointer rust");
+    assert!(fp_rust.contains("Some(add_pair)"));
+    assert!(fp_rust.contains(".unwrap()("));
+
+    let extern_c = fixtures_dir().join("extern_decl.c");
+    let extern_generated = tmp.join("extern_decl.generated.rs");
+    support::translate(&extern_c, &extern_generated).expect("translate extern fixture");
+    let extern_rust =
+        std::fs::read_to_string(&extern_generated).expect("read generated extern rust");
+    assert!(extern_rust.contains("unsafe { toupper("));
+    assert!(extern_rust.contains(" as i32) }"));
+    assert!(extern_rust.contains("unsafe { printf("));
+}
+
+#[test]
 fn switch_and_dispatch_use_block_match_arms() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-control-ast");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
