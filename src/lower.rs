@@ -17,6 +17,7 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
             .map(|record| (sanitize_ident(&record.name), record.clone()))
             .collect(),
         globals: BTreeMap::new(),
+        extern_globals: BTreeMap::new(),
         strings: BTreeMap::new(),
         const_arrays: BTreeMap::new(),
         externs: BTreeMap::new(),
@@ -31,6 +32,7 @@ struct Lowerer<'a> {
     aliases: BTreeMap<String, String>,
     records: BTreeMap<String, crate::c_ast::Record>,
     globals: BTreeMap<String, GlobalVar>,
+    extern_globals: BTreeMap<String, String>,
     strings: BTreeMap<String, Vec<u8>>,
     /// numeric aggregate const globals (e.g. `int a[5]={..}`) → element literals,
     /// keyed by raw sym_name; consumed when a `cir.copy` initializes a local.
@@ -133,6 +135,9 @@ impl<'a> Lowerer<'a> {
         }
 
         let mut extern_decls = Vec::new();
+        for (name, ty) in &self.extern_globals {
+            extern_decls.push(format!("static mut {name}: {ty};"));
+        }
         for op in &ops {
             if op.name != "cir.func" || !region_ops(op).is_empty() {
                 continue;
@@ -184,6 +189,12 @@ impl<'a> Lowerer<'a> {
             return;
         };
         let Some(raw) = attr_str(op, "initial_value") else {
+            let Some(sym_type) = attr_str(op, "sym_type") else {
+                return;
+            };
+            let name = sanitize_ident(name);
+            let ty = self.rust_type(sym_type);
+            self.extern_globals.insert(name, ty);
             return;
         };
         if let Some(mut bytes) = parse_cir_const_array(raw) {
@@ -671,7 +682,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return None;
         };
         let name = sanitize_ident(name);
-        self.parent.globals.contains_key(&name).then_some(name)
+        (self.parent.globals.contains_key(&name) || self.parent.extern_globals.contains_key(&name))
+            .then_some(name)
     }
 
     fn lower_const(&mut self, op: &Op) {
@@ -1521,7 +1533,11 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> S
     } else if let Some((inner, len)) = parse_cir_array_type(ty) {
         format!("[{}; {len}]", rust_type_with_aliases(&inner, aliases))
     } else if let Some(name) = cir_record_name(ty) {
-        sanitize_ident(name)
+        if name == "_IO_FILE" {
+            "libc::FILE".into()
+        } else {
+            sanitize_ident(name)
+        }
     } else {
         "i32".into()
     }
@@ -1871,6 +1887,7 @@ mod tests {
             "Option<fn(i32, i32) -> i32>"
         );
         assert_eq!(rust_type("!rec_Pair"), "Pair");
+        assert_eq!(rust_type("!rec__IO_FILE"), "libc::FILE");
         assert_eq!(rust_type("!cir.union<\"Pair\" {!s32i, !s32i}>"), "Pair");
         assert_eq!(rust_type("!cir.array<!s32i x 3>"), "[i32; 3]");
     }
