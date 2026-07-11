@@ -245,6 +245,7 @@ fn generator_differential() {
                     name,
                     c_src,
                     rs_src,
+                    config: support::RunConfig::default(),
                 });
             }
             Err(e) => {

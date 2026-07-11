@@ -64,6 +64,8 @@ fn stdlib_coverage() {
                 name: id.clone(),
                 c_src: c_src.clone(),
                 rs_src: generated,
+                config: probe_config(c_src)
+                    .unwrap_or_else(|e| panic!("load run config for {}: {e}", c_src.display())),
             }),
             Err(e) => {
                 results.insert(id.clone(), Err(format!("translate: {e}")));
@@ -138,4 +140,48 @@ fn stdlib_coverage() {
         ));
     }
     assert!(msg.is_empty(), "{msg}");
+}
+
+fn probe_config(c_src: &Path) -> Result<support::RunConfig, String> {
+    let mut config = support::RunConfig {
+        compare_stderr: true,
+        ..support::RunConfig::default()
+    };
+    let base = c_src.with_extension("");
+
+    let stdin = base.with_extension("stdin");
+    if stdin.exists() {
+        config.stdin =
+            std::fs::read(&stdin).map_err(|e| format!("read {}: {e}", stdin.display()))?;
+    }
+
+    let args = base.with_extension("args");
+    if args.exists() {
+        let text =
+            std::fs::read_to_string(&args).map_err(|e| format!("read {}: {e}", args.display()))?;
+        config.args = text
+            .lines()
+            .map(str::trim)
+            .filter(|line| !line.is_empty())
+            .map(str::to_string)
+            .collect();
+    }
+
+    let env = base.with_extension("env");
+    if env.exists() {
+        let text =
+            std::fs::read_to_string(&env).map_err(|e| format!("read {}: {e}", env.display()))?;
+        for (i, line) in text.lines().enumerate() {
+            let line = line.trim();
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            let Some((key, value)) = line.split_once('=') else {
+                return Err(format!("{}:{}: expected KEY=VALUE", env.display(), i + 1));
+            };
+            config.env.insert(key.to_string(), value.to_string());
+        }
+    }
+
+    Ok(config)
 }
