@@ -1,6 +1,6 @@
 //! Rust cleanup passes that run after faithful CIR lowering.
 
-use crate::rust_ast::{Item, Program};
+use crate::rust_ast::{Expr, IndentStmt, Item, Program, Stmt};
 
 pub fn apply(program: Program) -> Program {
     Program {
@@ -8,11 +8,16 @@ pub fn apply(program: Program) -> Program {
             .items
             .into_iter()
             .map(|item| match item {
-                Item::Raw(text) => {
-                    let text = eliminate_param_spills(&text);
-                    let text = inline_single_use_temps(&text);
-                    let text = fuse_zero_init(&text);
-                    Item::Raw(collapse_retval(&text))
+                // non-function items (preludes, globals, externs, records) carry no
+                // inlinable temps; the remaining text fixups no-op on them.
+                Item::Raw(text) => Item::Raw(apply_text_fixups(&text)),
+                Item::Fn(mut f) => {
+                    inline_single_use_temps(&mut f.body);
+                    let text = Program {
+                        items: vec![Item::Fn(f)],
+                    }
+                    .emit();
+                    Item::Raw(apply_text_fixups(&text))
                 }
                 item => item,
             })
@@ -20,12 +25,23 @@ pub fn apply(program: Program) -> Program {
     }
 }
 
-fn inline_single_use_temps(text: &str) -> String {
-    let mut lines: Vec<String> = text.lines().map(str::to_string).collect();
-    let trailing_newline = text.ends_with('\n');
+// text passes that are insensitive to expression parenthesization: they match on
+// identifiers and signatures, so they run correctly after the AST inliner has
+// elided parens. slate-04q.13 will migrate these onto the structured body too.
+fn apply_text_fixups(text: &str) -> String {
+    let text = eliminate_param_spills(text);
+    let text = fuse_zero_init(&text);
+    collapse_retval(&text)
+}
 
+// Inline single-use pure temps directly on the statement list. Where the use site
+// is a structured expression the temp's init is spliced as an `Expr` subtree, so
+// precedence-aware rendering elides parens; baked-text (`Raw`) use sites fall back
+// to a conservatively parenthesized textual splice.
+fn inline_single_use_temps(body: &mut Vec<IndentStmt>) {
     loop {
-        let mut changed = false;
+        let lines: Vec<String> = body.iter().map(|s| s.stmt.render_line()).collect();
+        let mut applied = false;
         for i in 0..lines.len() {
             let Some(def) = parse_temp_let(&lines[i]) else {
                 continue;
@@ -36,21 +52,43 @@ fn inline_single_use_temps(text: &str) -> String {
             let Some(use_index) = single_safe_use(&lines, i, def.name, def.expr) else {
                 continue;
             };
-            lines[use_index] = replace_ident_once(&lines[use_index], def.name, def.expr);
-            lines.remove(i);
-            changed = true;
+            let Stmt::Let {
+                init: Some(init), ..
+            } = &body[i].stmt
+            else {
+                continue;
+            };
+            let init = init.clone();
+            let name = def.name.to_string();
+            substitute_in_stmt(&mut body[use_index].stmt, &name, &init);
+            body.remove(i);
+            applied = true;
             break;
         }
-        if !changed {
+        if !applied {
             break;
         }
     }
+}
 
-    let mut out = lines.join("\n");
-    if trailing_newline {
-        out.push('\n');
+fn substitute_in_stmt(stmt: &mut Stmt, name: &str, init: &Expr) {
+    let structured = match stmt {
+        Stmt::Let {
+            init: Some(expr), ..
+        } => expr.substitute_var(name, init),
+        Stmt::Assign { target, value } => {
+            let t = target.substitute_var(name, init);
+            let v = value.substitute_var(name, init);
+            t || v
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.substitute_var(name, init),
+        _ => false,
+    };
+    if structured {
+        return;
     }
-    out
+    let line = replace_ident_once(&stmt.render_line(), name, &init.render_spliceable());
+    *stmt = Stmt::Raw(line);
 }
 
 /// Folds the CIR parameter-spill prologue into direct parameter bindings.
@@ -601,6 +639,33 @@ fn is_ident_continue(b: u8) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rust_ast::Type;
+
+    fn temp(name: &str, ty: &str, init: Expr) -> Stmt {
+        Stmt::Let {
+            name: name.to_string(),
+            mutable: false,
+            ty: Some(Type::Named(ty.to_string())),
+            init: Some(init),
+        }
+    }
+
+    fn bin(op: &str, lhs: Expr, rhs: Expr) -> Expr {
+        Expr::Binary {
+            op: op.to_string(),
+            lhs: Box::new(lhs),
+            rhs: Box::new(rhs),
+        }
+    }
+
+    fn inlined_lines(stmts: Vec<Stmt>) -> Vec<String> {
+        let mut body: Vec<IndentStmt> = stmts
+            .into_iter()
+            .map(|stmt| IndentStmt { depth: 1, stmt })
+            .collect();
+        inline_single_use_temps(&mut body);
+        body.iter().map(|s| s.stmt.render_line()).collect()
+    }
 
     #[test]
     fn collapses_retval_store_into_return() {
@@ -763,78 +828,95 @@ fn f(arg0: i32) -> i64 {
 
     #[test]
     fn inlines_single_use_scalar_temps() {
-        let input = "\
-fn main() {
-    let mut a: i32 = 0;
-    let _v0: i32 = 20;
-    a = _v0;
-    let _v1: i32 = 5;
-    let _v2: i32 = a;
-    let _v3: i32 = ((_v2) - (_v1));
-    a = _v3;
-}
-";
+        // structured temp-into-temp splices precedence-render without parens; the
+        // final splice into a `Raw` assignment wraps the compound conservatively.
+        let stmts = vec![
+            Stmt::Raw("let mut a: i32 = 0;".to_string()),
+            temp("_v0", "i32", Expr::Lit("20".to_string())),
+            Stmt::Raw("a = _v0;".to_string()),
+            temp("_v1", "i32", Expr::Lit("5".to_string())),
+            temp("_v2", "i32", Expr::Var("a".to_string())),
+            temp(
+                "_v3",
+                "i32",
+                bin(
+                    "-",
+                    Expr::Var("_v2".to_string()),
+                    Expr::Var("_v1".to_string()),
+                ),
+            ),
+            Stmt::Raw("a = _v3;".to_string()),
+        ];
 
         assert_eq!(
-            inline_single_use_temps(input),
-            "\
-fn main() {
-    let mut a: i32 = 0;
-    a = 20;
-    a = ((a) - (5));
-}
-"
+            inlined_lines(stmts),
+            vec!["let mut a: i32 = 0;", "a = 20;", "a = (a - 5);"]
         );
     }
 
     #[test]
     fn does_not_inline_call_results() {
-        let input = "\
-fn main() {
-    let _v0: i32 = f();
-    let _v1: i32 = _v0;
-}
-";
+        let stmts = vec![
+            temp("_v0", "i32", Expr::Raw("f()".to_string())),
+            temp("_v1", "i32", Expr::Var("_v0".to_string())),
+        ];
 
-        assert_eq!(inline_single_use_temps(input), input);
+        assert_eq!(
+            inlined_lines(stmts),
+            vec!["let _v0: i32 = f();", "let _v1: i32 = _v0;"]
+        );
     }
 
     #[test]
     fn does_not_cross_side_effecting_statement() {
-        let input = "\
-fn main() {
-    let _v0: i32 = a;
-    unsafe { printf(_v1); };
-    b = _v0;
-}
-";
+        let stmts = vec![
+            temp("_v0", "i32", Expr::Var("a".to_string())),
+            Stmt::Raw("unsafe { printf(_v1); };".to_string()),
+            Stmt::Raw("b = _v0;".to_string()),
+        ];
 
-        assert_eq!(inline_single_use_temps(input), input);
+        assert_eq!(
+            inlined_lines(stmts),
+            vec!["let _v0: i32 = a;", "unsafe { printf(_v1); };", "b = _v0;"]
+        );
     }
 
     #[test]
     fn does_not_inline_volatile_or_pointer_intrinsics() {
-        let input = "\
-fn main() {
-    let _v0: i32 = std::ptr::read_volatile(std::ptr::addr_of!(a));
-    b = _v0;
-}
-";
+        let stmts = vec![
+            temp(
+                "_v0",
+                "i32",
+                Expr::Raw("std::ptr::read_volatile(std::ptr::addr_of!(a))".to_string()),
+            ),
+            Stmt::Raw("b = _v0;".to_string()),
+        ];
 
-        assert_eq!(inline_single_use_temps(input), input);
+        assert_eq!(
+            inlined_lines(stmts),
+            vec![
+                "let _v0: i32 = std::ptr::read_volatile(std::ptr::addr_of!(a));",
+                "b = _v0;",
+            ]
+        );
     }
 
     #[test]
     fn does_not_inline_method_receivers_that_need_type_annotations() {
-        let input = "\
-fn main() {
-    let _v0: i32 = 2147483647;
-    let _v1: i32 = 1;
-    let _v2 = (_v0).overflowing_add(_v1);
-}
-";
+        let stmts = vec![
+            temp("_v0", "i32", Expr::Lit("2147483647".to_string())),
+            temp("_v1", "i32", Expr::Lit("1".to_string())),
+            Stmt::Raw("let _v2 = (_v0).overflowing_add(_v1);".to_string()),
+        ];
 
-        assert_eq!(inline_single_use_temps(input), input);
+        assert_eq!(
+            inlined_lines(stmts),
+            vec![
+                "let _v0: i32 = 2147483647;",
+                "let _v1: i32 = 1;",
+                "let _v2 = (_v0).overflowing_add(_v1);",
+            ]
+        );
     }
 
     #[test]
@@ -901,13 +983,17 @@ fn f() -> i32 {
 
     #[test]
     fn does_not_inline_call_arguments_that_need_type_annotations() {
-        let input = "\
-fn main() {
-    let _v0: i64 = 9223372036854775807;
-    let _v1: i32 = unsafe { printf(_v0) };
-}
-";
+        let stmts = vec![
+            temp("_v0", "i64", Expr::Lit("9223372036854775807".to_string())),
+            Stmt::Raw("let _v1: i32 = unsafe { printf(_v0) };".to_string()),
+        ];
 
-        assert_eq!(inline_single_use_temps(input), input);
+        assert_eq!(
+            inlined_lines(stmts),
+            vec![
+                "let _v0: i64 = 9223372036854775807;",
+                "let _v1: i32 = unsafe { printf(_v0) };",
+            ]
+        );
     }
 }
