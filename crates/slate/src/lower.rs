@@ -658,6 +658,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.xor" => self.lower_int_arith(op, "^"),
             "cir.shift" => self.lower_shift(op),
             "cir.not" => self.lower_not(op),
+            "cir.minus" | "cir.fneg" => self.lower_neg(op),
             "cir.abs" => self.lower_abs(op),
             "cir.ceil" => self.lower_unary_method(op, "ceil"),
             "cir.copysign" => self.lower_binary_method(op, "copysign"),
@@ -1044,7 +1045,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let rhs = self.render_operand(&op.operands[1]);
         self.materialize(
             result,
-            format!("({lhs} {rust_op} {rhs})"),
+            format!("(({lhs}) {rust_op} ({rhs}))"),
             op_result_type(op),
         );
     }
@@ -1063,7 +1064,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let lhs = self.render_operand(&op.operands[0]);
         let rhs = self.render_operand(&op.operands[1]);
         let ty = op_result_type(op);
-        self.materialize(result, format!("({lhs} {rust_op} {rhs})"), ty);
+        self.materialize(result, format!("(({lhs}) {rust_op} ({rhs}))"), ty);
     }
 
     fn lower_inc(&mut self, op: &Op) {
@@ -1099,7 +1100,33 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let value = self.render_operand(value);
         let ty = op_result_type(op);
-        self.materialize(result, format!("(!{value})"), ty);
+        self.materialize(result, format!("(!({value}))"), ty);
+    }
+
+    fn lower_neg(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let value = self.render_operand(value);
+        let result_ty = op_result_type(op);
+        let operand_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
+            .into_iter()
+            .next()
+            .unwrap_or("");
+        let rust_ty = result_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or_else(|| "i32".into());
+        let expr = if rust_ty == LONG_DOUBLE_TY {
+            format!("{LONG_DOUBLE_TY}(-({value}).0)")
+        } else if operand_ty == "!cir.bool" {
+            format!("-(({value}) as {rust_ty})")
+        } else {
+            format!("(-({value}))")
+        };
+        self.materialize(result, expr, result_ty);
     }
 
     fn lower_abs(&mut self, op: &Op) {
@@ -1291,7 +1318,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Some(5) => "!=",
             _ => "<=",
         };
-        self.materialize(result, format!("({lhs} {cmp} {rhs})"), Some("!cir.bool"));
+        self.materialize(
+            result,
+            format!("(({lhs}) {cmp} ({rhs}))"),
+            Some("!cir.bool"),
+        );
     }
 
     fn lower_get_global(&mut self, op: &Op) {
@@ -1390,7 +1421,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             )),
             _ if result_ty == operand_ty => Val::Expr(self.render_operand(src)),
             _ => Val::Expr(format!(
-                "{} as {}",
+                "({}) as {}",
                 self.render_operand(src),
                 self.parent.rust_type(result_ty)
             )),
