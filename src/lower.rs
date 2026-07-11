@@ -74,6 +74,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         extern_globals: BTreeMap::new(),
         strings: BTreeMap::new(),
         const_arrays: BTreeMap::new(),
+        const_aggregates: BTreeMap::new(),
         const_zero_globals: BTreeSet::new(),
         externs: BTreeMap::new(),
         extern_returns: BTreeMap::new(),
@@ -95,6 +96,10 @@ struct Lowerer<'a> {
     /// numeric aggregate const globals (e.g. `int a[5]={..}`) → element literals,
     /// keyed by raw sym_name; consumed when a `cir.copy` initializes a local.
     const_arrays: BTreeMap<String, Vec<String>>,
+    /// nested aggregate const globals (structs, unions, arrays of aggregates) →
+    /// their raw `#cir.const_record`/`#cir.const_array` initializer, keyed by raw
+    /// sym_name; rendered recursively against the destination type on `cir.copy`.
+    const_aggregates: BTreeMap<String, String>,
     const_zero_globals: BTreeSet<String>,
     /// external (body-less) functions → rust types of their fixed params; the
     /// call site uses this to `as`-cast args and wrap the call in `unsafe`.
@@ -348,6 +353,9 @@ impl<'a> Lowerer<'a> {
             self.strings.insert(name.to_string(), bytes);
         } else if let Some(elems) = parse_cir_const_array_elems(raw) {
             self.const_arrays.insert(name.to_string(), elems);
+        } else if is_cir_aggregate_init(raw) {
+            self.const_aggregates
+                .insert(name.to_string(), raw.to_string());
         } else if raw.trim_start().starts_with("#cir.zero")
             && let Some((elem, len)) = parse_cir_array_type(attr_str(op, "sym_type").unwrap_or(""))
         {
@@ -848,6 +856,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     Some(render_array_literal(&elems, dst_len.unwrap_or(elems.len())))
                 } else if let Some(elems) = self.parent.const_arrays.get(name) {
                     Some(render_array_literal(elems, dst_len.unwrap_or(elems.len())))
+                } else if let Some(raw) = self.parent.const_aggregates.get(name) {
+                    let ty = self.slot_types.get(dst)?;
+                    self.render_const_value(ty, raw)
                 } else if self.parent.const_zero_globals.contains(name) {
                     self.slot_types.get(dst).map(|ty| self.default_value(ty))
                 } else {
@@ -858,6 +869,75 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .slots
                 .contains_key(src)
                 .then(|| self.render_operand(src)),
+        }
+    }
+
+    /// Recursively render a CIR constant initializer as a Rust value of Rust type
+    /// `rust_ty`. Handles nesting: `#cir.const_record` → struct/union literal
+    /// (partial init leaves trailing fields default), `#cir.const_array` → array
+    /// literal, `#cir.zero` → default, otherwise an int/fp leaf.
+    fn render_const_value(&self, rust_ty: &str, raw: &str) -> Option<String> {
+        let raw = raw.trim();
+        if raw.starts_with("#cir.const_record<") {
+            let record = self.parent.records.get(rust_ty)?;
+            let open = raw.find('{')?;
+            let close = raw.rfind('}')?;
+            let elems = split_top_level(&raw[open + 1..close], ',');
+            match record.kind {
+                RecordKind::Struct => {
+                    let fields = record
+                        .fields
+                        .iter()
+                        .enumerate()
+                        .map(|(i, field)| {
+                            let field_ty = c_type_to_rust(&field.ty);
+                            let value = elems
+                                .get(i)
+                                .and_then(|e| self.render_const_value(&field_ty, e.trim()))
+                                .unwrap_or_else(|| self.default_value(&field_ty));
+                            format!("{}: {value}", sanitize_ident(&field.name))
+                        })
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    Some(format!("{} {{ {fields} }}", sanitize_ident(&record.name)))
+                }
+                // brace-initializing a union targets its first member.
+                RecordKind::Union => {
+                    let field = record.fields.first()?;
+                    let field_ty = c_type_to_rust(&field.ty);
+                    let value = elems
+                        .first()
+                        .and_then(|e| self.render_const_value(&field_ty, e.trim()))
+                        .unwrap_or_else(|| self.default_value(&field_ty));
+                    Some(format!(
+                        "{} {{ {}: {value} }}",
+                        sanitize_ident(&record.name),
+                        sanitize_ident(&field.name)
+                    ))
+                }
+            }
+        } else if raw.starts_with("#cir.const_array<[") {
+            let (elem_ty, len) = parse_rust_array_type(rust_ty)?;
+            let open = raw.find('[')?;
+            let close = raw.rfind(']')?;
+            let mut out: Vec<String> = split_top_level(&raw[open + 1..close], ',')
+                .into_iter()
+                .map(|e| e.trim().to_string())
+                .filter(|e| !e.is_empty())
+                .take(len as usize)
+                .map(|e| {
+                    self.render_const_value(elem_ty, &e)
+                        .unwrap_or_else(|| self.default_value(elem_ty))
+                })
+                .collect();
+            out.resize(len as usize, self.default_value(elem_ty));
+            Some(format!("[{}]", out.join(", ")))
+        } else if raw.starts_with("#cir.zero") {
+            Some(self.default_value(rust_ty))
+        } else {
+            parse_cir_int(raw)
+                .map(|n| n.to_string())
+                .or_else(|| parse_cir_fp(raw))
         }
     }
 
@@ -1366,6 +1446,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.values.insert(result.clone(), Val::Global(name));
     }
 
+    /// Render a pointer operand as a Rust place (lvalue) expression when it names
+    /// a known place (slot, struct member, array element, or global). Composing
+    /// this lets nested aggregates — struct-of-array, array-of-struct — chain into
+    /// a single Rust path like `b.data[i]` or `ps[i].x`.
+    fn place_expr(&self, ptr: &str) -> Option<String> {
+        if let Some(member) = self.member_ptrs.get(ptr) {
+            Some(format!("{}.{}", member.base, member.field))
+        } else if let Some(element) = self.element_ptrs.get(ptr) {
+            Some(format!("{}[({}) as usize]", element.base, element.index))
+        } else if let Some(slot) = self.slots.get(ptr) {
+            Some(slot.clone())
+        } else {
+            self.global_name(ptr)
+        }
+    }
+
     fn lower_get_member(&mut self, op: &Op) {
         let Some(result) = op.results.first() else {
             return;
@@ -1374,9 +1470,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let base = self
-            .slots
-            .get(base_ptr)
-            .cloned()
+            .place_expr(base_ptr)
             .unwrap_or_else(|| format!("(*{})", self.render_pointer_operand(base_ptr)));
         let field = sanitize_ident(attr_str(op, "name").unwrap_or(result));
         self.member_ptrs
@@ -1391,13 +1485,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let base_ptr = &op.operands[0];
-        let Some(base) = self.slots.get(base_ptr).cloned() else {
-            self.parent.ctx.diagnostics.warn(
-                "lower: unsupported get_element base".to_string(),
-                op.loc.clone(),
-            );
-            return;
-        };
+        let base = self
+            .place_expr(base_ptr)
+            .unwrap_or_else(|| format!("(*{})", self.render_pointer_operand(base_ptr)));
         let index = self.render_operand(&op.operands[1]);
         self.element_ptrs
             .insert(result.clone(), ElementPtr { base, index });
@@ -2031,7 +2121,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                             format!(
                                 "{}: {}",
                                 sanitize_ident(&field.name),
-                                default_c_value(&field.ty)
+                                self.default_value(&c_type_to_rust(&field.ty))
                             )
                         })
                         .collect::<Vec<_>>()
@@ -2044,7 +2134,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                             "{} {{ {}: {} }}",
                             sanitize_ident(&record.name),
                             sanitize_ident(&field.name),
-                            default_c_value(&field.ty)
+                            self.default_value(&c_type_to_rust(&field.ty))
                         );
                     }
                 }
@@ -2064,10 +2154,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return format!("Complex {{ re: {d}, im: {d} }}");
         }
         if let Some((inner, len)) = parse_cir_array_type(ty) {
-            return format!("[{}; {len}]", default_value(&inner));
+            return format!("[{}; {len}]", self.default_value(&inner));
         }
         if let Some((inner, len)) = parse_rust_array_type(ty) {
-            return format!("[{}; {len}]", default_value(inner));
+            return format!("[{}; {len}]", self.default_value(inner));
         }
         default_value(ty).into()
     }
@@ -2452,17 +2542,6 @@ fn standard_record_default(ty: &str) -> Option<&'static str> {
     }
 }
 
-fn default_c_value(ty: &crate::c_ast::CType) -> &'static str {
-    match ty {
-        crate::c_ast::CType::Bool => "false",
-        crate::c_ast::CType::Float { bits: 80 } => "LongDouble(0.0)",
-        crate::c_ast::CType::Float { .. } => "0.0",
-        crate::c_ast::CType::Record(_) => "Default::default()",
-        crate::c_ast::CType::FuncPtr { .. } => "None",
-        _ => "0",
-    }
-}
-
 fn zero_for_cir_type(ty: &str) -> &'static str {
     match rust_type(ty).as_str() {
         "f32" | "f64" => "0.0",
@@ -2527,7 +2606,8 @@ fn parse_cir_const_array(s: &str) -> Option<Vec<u8>> {
 /// per-element Rust literals. Returns `None` for the string form (handled by
 /// [`parse_cir_const_array`]) or any element we cannot render.
 fn parse_cir_const_array_elems(s: &str) -> Option<Vec<String>> {
-    if !s.contains("#cir.const_array<[") {
+    let s = s.trim_start();
+    if !s.starts_with("#cir.const_array<[") {
         return None;
     }
     let open = s.find('[')?;
@@ -2538,11 +2618,21 @@ fn parse_cir_const_array_elems(s: &str) -> Option<Vec<String>> {
         .map(str::trim)
         .filter(|part| !part.is_empty())
         .map(|part| {
+            if is_cir_aggregate_init(part) {
+                return None; // array of aggregates → render_const_value handles it
+            }
             parse_cir_int(part)
                 .map(|n| n.to_string())
                 .or_else(|| parse_cir_fp(part))
         })
         .collect()
+}
+
+/// A `cir.global` initializer that is a struct/union or nested-aggregate array,
+/// rendered on demand by [`FunctionLowerer::render_const_value`].
+fn is_cir_aggregate_init(raw: &str) -> bool {
+    let raw = raw.trim_start();
+    raw.starts_with("#cir.const_record<") || raw.starts_with("#cir.const_array<[")
 }
 
 /// Render `elems` as a Rust array literal, truncated or zero-padded to `len`.
@@ -2759,6 +2849,20 @@ mod tests {
     }
 
     #[test]
+    fn treats_nested_aggregate_arrays_as_aggregates_not_flat() {
+        // an array of structs must not be flattened to its leading scalars; it is
+        // rendered recursively by render_const_value instead.
+        let raw = "#cir.const_array<[#cir.const_record<{#cir.int<1> : !s32i, \
+                   #cir.int<2> : !s32i}> : !rec_P]> : !cir.array<!rec_P x 1>";
+        assert_eq!(parse_cir_const_array_elems(raw), None);
+        assert!(is_cir_aggregate_init(raw));
+        assert!(is_cir_aggregate_init(
+            "#cir.const_record<{#cir.int<3> : !s32i}> : !rec_P"
+        ));
+        assert!(!is_cir_aggregate_init("#cir.int<3> : !s32i"));
+    }
+
+    #[test]
     fn renders_zero_bytes_in_byte_strings() {
         assert_eq!(rust_byte_string(&[0]), "b\"\\0\"");
         assert_eq!(rust_byte_string(&[b'a', 0, b'b']), "b\"a\\0b\"");
@@ -2767,7 +2871,6 @@ mod tests {
     #[test]
     fn maps_source_bool_type_to_rust_bool() {
         assert_eq!(c_type_to_rust(&crate::c_ast::CType::Bool), "bool");
-        assert_eq!(default_c_value(&crate::c_ast::CType::Bool), "false");
     }
 
     #[test]
@@ -2819,10 +2922,6 @@ mod tests {
         assert_eq!(
             c_type_to_rust(&crate::c_ast::CType::Float { bits: 80 }),
             "LongDouble"
-        );
-        assert_eq!(
-            default_c_value(&crate::c_ast::CType::Float { bits: 80 }),
-            "LongDouble(0.0)"
         );
     }
 

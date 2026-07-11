@@ -63,7 +63,14 @@ small C subset. This is the supported fixture-level surface today:
   as Rust integer `const` items.
 - simple C unions with primitive scalar fields, emitted as `#[repr(C)] union` plus
   unsafe field reads/writes.
-- simple C structs with primitive scalar fields, emitted as `#[repr(C)] struct`.
+- C structs and unions, including nested aggregates: structs containing structs
+  or arrays, arrays of structs, and struct assignment/copy (via the derived
+  `Copy`). Member and element accesses compose into a single Rust place
+  (`b.data[i]`, `ps[i].x`).
+- aggregate initializers for structs and unions, including nested, partial
+  (trailing fields zero-filled), and designated forms; Clang normalizes these to
+  `#cir.const_record`/`#cir.const_array` constants that lower to a matching Rust
+  struct/array literal on the initializing `cir.copy`.
 - fixed-size local arrays of primitive scalar element types with indexed stores
   and loads, emitted as Rust arrays. Aggregate initializers (`int a[5]={..}`,
   `char s[6]="hi"`, `{0}` zero-init) lower the resulting `cir.copy` to a Rust
