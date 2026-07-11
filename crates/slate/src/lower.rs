@@ -1429,19 +1429,34 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.results.len() < 2 || op.operands.len() < 2 {
             return;
         }
-        let lhs = self.render_operand(&op.operands[0]);
-        let rhs = self.render_operand(&op.operands[1]);
+        let lhs = self.operand_expr(&op.operands[0]);
+        let rhs = self.operand_expr(&op.operands[1]);
         let result_types = op_result_types(op);
         let pair = self.next_temp();
-        self.emit_line(&format!("let {pair} = ({lhs}).{rust_method}({rhs});"));
-        self.materialize(
+        self.push_stmt(Stmt::Let {
+            name: pair.clone(),
+            mutable: false,
+            ty: None,
+            init: Some(Expr::MethodCall {
+                recv: Box::new(lhs),
+                method: rust_method.to_string(),
+                args: vec![rhs],
+            }),
+        });
+        self.materialize_expr(
             &op.results[0],
-            format!("{pair}.0"),
+            Expr::Field {
+                base: Box::new(Expr::Var(pair.clone())),
+                field: "0".into(),
+            },
             result_types.first().copied(),
         );
-        self.materialize(
+        self.materialize_expr(
             &op.results[1],
-            format!("{pair}.1"),
+            Expr::Field {
+                base: Box::new(Expr::Var(pair)),
+                field: "1".into(),
+            },
             result_types.get(1).copied(),
         );
     }
@@ -1948,20 +1963,40 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .get(src)
                 .is_some_and(|ty| parse_rust_array_type(ty).is_some()) =>
             {
-                Val::expr(format!("{}.as_mut_ptr()", self.render_operand(src)))
+                Val::Expr(Expr::MethodCall {
+                    recv: Box::new(self.operand_expr(src)),
+                    method: "as_mut_ptr".into(),
+                    args: vec![],
+                })
             }
-            _ if is_long_double(result_ty) && !is_long_double(operand_ty) => Val::expr(format!(
-                "{LONG_DOUBLE_TY}({} as f64)",
-                self.render_operand(src)
-            )),
+            _ if is_long_double(result_ty) && !is_long_double(operand_ty) => {
+                Val::Expr(Expr::Call {
+                    func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                    args: vec![Expr::Cast {
+                        expr: Box::new(self.operand_expr(src)),
+                        ty: crate::rust_ast::Type::Named("f64".into()),
+                    }],
+                })
+            }
             _ if is_long_double(operand_ty) && result_ty == "!cir.bool" => {
-                Val::expr(format!("({}.0 != 0.0)", self.render_operand(src)))
+                Val::Expr(Expr::Binary {
+                    op: "!=".into(),
+                    lhs: Box::new(Expr::Field {
+                        base: Box::new(self.operand_expr(src)),
+                        field: "0".into(),
+                    }),
+                    rhs: Box::new(Expr::Lit("0.0".into())),
+                })
             }
-            _ if is_long_double(operand_ty) && !is_long_double(result_ty) => Val::expr(format!(
-                "({}.0 as {})",
-                self.render_operand(src),
-                self.parent.rust_type(result_ty)
-            )),
+            _ if is_long_double(operand_ty) && !is_long_double(result_ty) => {
+                Val::Expr(Expr::Cast {
+                    expr: Box::new(Expr::Field {
+                        base: Box::new(self.operand_expr(src)),
+                        field: "0".into(),
+                    }),
+                    ty: crate::rust_ast::Type::Named(self.parent.rust_type(result_ty)),
+                })
+            }
             _ if result_ty.starts_with("!cir.ptr<") && operand_ty.starts_with("!cir.ptr<") => {
                 Val::expr(format!(
                     "{} as {}",
@@ -1978,11 +2013,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     self.render_operand(src)
                 ))
             }
-            _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::expr(format!(
-                "({} != {})",
-                self.render_operand(src),
-                zero_for_cir_type(operand_ty)
-            )),
+            _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(Expr::Binary {
+                op: "!=".into(),
+                lhs: Box::new(self.operand_expr(src)),
+                rhs: Box::new(Expr::Lit(zero_for_cir_type(operand_ty).to_string())),
+            }),
             _ if result_ty == operand_ty => Val::Expr(self.operand_expr(src)),
             _ => Val::Expr(Expr::Cast {
                 expr: Box::new(self.operand_expr(src)),
@@ -1999,14 +2034,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let lhs = self.render_operand(&op.operands[0]);
-        let rhs = self.render_operand(&op.operands[1]);
+        let lhs = self.operand_expr(&op.operands[0]);
+        let rhs = self.operand_expr(&op.operands[1]);
         let ty = op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "i64".into());
-        self.materialize(
+        self.materialize_expr(
             result,
-            format!("unsafe {{ {lhs}.offset_from({rhs}) as {ty} }}"),
+            Expr::Unsafe(Box::new(Expr::Cast {
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(lhs),
+                    method: "offset_from".into(),
+                    args: vec![rhs],
+                }),
+                ty: crate::rust_ast::Type::Named(ty),
+            })),
             op_result_type(op),
         );
     }
@@ -2018,11 +2060,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let base = self.render_operand(&op.operands[0]);
-        let index = self.render_operand(&op.operands[1]);
+        let base = self.operand_expr(&op.operands[0]);
+        let index = self.operand_expr(&op.operands[1]);
         self.values.insert(
             result.clone(),
-            Val::expr(format!("unsafe {{ {base}.offset({index} as isize) }}")),
+            Val::Expr(Expr::Unsafe(Box::new(Expr::MethodCall {
+                recv: Box::new(base),
+                method: "offset".into(),
+                args: vec![Expr::Cast {
+                    expr: Box::new(index),
+                    ty: crate::rust_ast::Type::Named("isize".into()),
+                }],
+            }))),
         );
     }
 
