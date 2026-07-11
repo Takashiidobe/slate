@@ -216,9 +216,13 @@ fn bin_name(name: &str) -> String {
 /// If the batched build fails (e.g. a program does not compile), it falls back
 /// to the per-case path so the failing case gets an exact error.
 pub fn compare_batch(cases: &[Case], work_dir: &Path) -> Vec<(String, Result<(), String>)> {
+    if cases.is_empty() {
+        return Vec::new();
+    }
+
+    // preserve the project so Cargo can reuse target artifacts across runs.
     let project = work_dir.join("batch_cargo");
     let bin_dir = project.join("src/bin");
-    let _ = std::fs::remove_dir_all(&project);
 
     let batch_bins = build_batch(cases, &project, &bin_dir);
     let target_dir = project.join("target");
@@ -256,7 +260,7 @@ pub fn compare_batch(cases: &[Case], work_dir: &Path) -> Vec<(String, Result<(),
 /// Write one crate with a `src/bin/<name>.rs` per case and build them together.
 fn build_batch(cases: &[Case], project: &Path, bin_dir: &Path) -> Result<(), String> {
     std::fs::create_dir_all(bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
-    std::fs::write(
+    write_if_changed(
         project.join("Cargo.toml"),
         r#"[package]
 name = "slate_batch"
@@ -275,15 +279,33 @@ cc = "1"
 # trap on both sides, so the generator keeps divisors to nonzero constants.
 [profile.dev]
 overflow-checks = false
-"#,
+"#
+        .as_bytes(),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
     write_long_double_shim(project)?;
 
+    let mut expected = BTreeMap::new();
     for case in cases {
         let dest = bin_dir.join(format!("{}.rs", bin_name(&case.name)));
-        std::fs::copy(&case.rs_src, &dest)
-            .map_err(|e| format!("copy {} to batch crate: {e}", case.rs_src.display()))?;
+        expected.insert(dest.clone(), ());
+        let contents = std::fs::read(&case.rs_src)
+            .map_err(|e| format!("read {} for batch crate: {e}", case.rs_src.display()))?;
+        write_if_changed(&dest, &contents)
+            .map_err(|e| format!("write {} to batch crate: {e}", dest.display()))?;
+    }
+
+    for entry in
+        std::fs::read_dir(bin_dir).map_err(|e| format!("read {}: {e}", bin_dir.display()))?
+    {
+        let path = entry
+            .map_err(|e| format!("read {} entry: {e}", bin_dir.display()))?
+            .path();
+        if path.extension().and_then(|e| e.to_str()) == Some("rs") && !expected.contains_key(&path)
+        {
+            std::fs::remove_file(&path)
+                .map_err(|e| format!("remove stale {}: {e}", path.display()))?;
+        }
     }
 
     let o = Command::new(cargo())
@@ -325,17 +347,18 @@ pub fn compare_runs(c: &Run, r: &Run, compare_stderr: bool) -> Result<(), String
 }
 
 fn write_long_double_shim(project: &Path) -> Result<(), String> {
-    std::fs::write(
+    write_if_changed(
         project.join("build.rs"),
         r#"fn main() {
     cc::Build::new()
         .file("src/slate_long_double.c")
         .compile("slate_long_double");
 }
-"#,
+"#
+        .as_bytes(),
     )
     .map_err(|e| format!("write build.rs: {e}"))?;
-    std::fs::write(
+    write_if_changed(
         project.join("src/slate_long_double.c"),
         r#"#include <stdio.h>
 #include <stdlib.h>
@@ -347,9 +370,23 @@ void __slate_strtold(char *nptr, char **endptr, long double *out) {
 int __slate_printf_ld_i32(char *fmt, const long double *value, int arg) {
     return printf(fmt, *value, arg);
 }
-"#,
+"#
+        .as_bytes(),
     )
+    .map(|_| ())
     .map_err(|e| format!("write slate_long_double.c: {e}"))
+}
+
+fn write_if_changed(path: impl AsRef<Path>, contents: &[u8]) -> std::io::Result<bool> {
+    let path = path.as_ref();
+    if std::fs::read(path).is_ok_and(|current| current == contents) {
+        return Ok(false);
+    }
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    std::fs::write(path, contents)?;
+    Ok(true)
 }
 
 pub fn run_with_config(bin: &Path, config: &RunConfig, cwd: &Path) -> Result<Run, String> {
@@ -400,5 +437,42 @@ pub fn translate(c_src: &Path, rs_out: &Path) -> Result<(), String> {
             String::from_utf8_lossy(&o.stderr)
         ));
     }
-    std::fs::write(rs_out, o.stdout).map_err(|e| format!("write {}: {e}", rs_out.display()))
+    write_if_changed(rs_out, &o.stdout)
+        .map(|_| ())
+        .map_err(|e| format!("write {}: {e}", rs_out.display()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    fn temp_path(name: &str) -> PathBuf {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        std::env::temp_dir().join(format!(
+            "slate-support-test-{}-{nonce}-{name}",
+            std::process::id()
+        ))
+    }
+
+    #[test]
+    fn write_if_changed_reports_unchanged_files() {
+        let path = temp_path("unchanged");
+        assert!(write_if_changed(&path, b"same").unwrap());
+        assert!(!write_if_changed(&path, b"same").unwrap());
+        assert_eq!(std::fs::read(&path).unwrap(), b"same");
+        std::fs::remove_file(&path).unwrap();
+    }
+
+    #[test]
+    fn write_if_changed_rewrites_changed_files() {
+        let path = temp_path("changed");
+        assert!(write_if_changed(&path, b"old").unwrap());
+        assert!(write_if_changed(&path, b"new").unwrap());
+        assert_eq!(std::fs::read(&path).unwrap(), b"new");
+        std::fs::remove_file(&path).unwrap();
+    }
 }
