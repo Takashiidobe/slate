@@ -1669,6 +1669,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn render_pointer_operand(&self, operand: &str) -> String {
+        if self.member_ptrs.contains_key(operand) || self.element_ptrs.contains_key(operand) {
+            return self.store_address(operand);
+        }
         if let Some(value) = self.values.get(operand) {
             return value.render(&self.parent.strings);
         }
