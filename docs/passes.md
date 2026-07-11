@@ -20,13 +20,14 @@ Readability is recovered later by Rust fixups, not during baseline lowering.
 | **parse-cir**      | CIR text -> generic Op-tree + locs      | recursive-descent parser over MLIR generic form                        | implemented              |
 | **load-ast**       | C -> compact source context + raw JSON  | `clang -Xclang -ast-dump=json -fsyntax-only`                           | implemented              |
 | **lower**          | CIR + AST context -> Rust source        | match `op.name`; materialize temps; use `libc` / `unsafe`              | implemented              |
+| **fixups**         | baseline Rust AST -> cleaner Rust AST   | fixed cleanup pass entry point in `src/fixups/`                         | implemented boundary     |
 | **main-normalize** | C `main` return -> process exit         | emit `std::process::exit(code)`                                        | implemented inside lower |
 | **generated-diff** | C + generated Rust -> output comparison | build generated Rust with Cargo + `libc`, compare stdout + exit code   | implemented              |
 
 Current code path:
 
 ```text
-emit-cir -> parse-cir -> load-ast -> lower(libc/unsafe) -> generated-diff
+emit-cir -> parse-cir -> load-ast -> lower(libc/unsafe) -> fixups -> generated-diff
 ```
 
 ## Current baseline coverage
@@ -109,6 +110,13 @@ The lowerer is the only stage that knows CIR op semantics. It currently emits ra
 Rust item strings for the covered baseline. That is acceptable for V0, but any
 nontrivial fixup should operate on structured Rust nodes instead of string
 rewrites.
+
+### fixups
+
+Fixups run after baseline lowering through the fixed `src/fixups::apply` entry
+point. They must preserve the fallback property: the lowered Rust remains correct
+without a given cleanup. Keep cleanup code outside the CIR visitor unless the
+baseline lowering itself is wrong.
 
 ## Adding a feature
 

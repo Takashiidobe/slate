@@ -3,6 +3,7 @@
 mod c_ast;
 mod cir;
 mod ctx;
+mod fixups;
 mod lower;
 mod rust_ast;
 
@@ -73,7 +74,7 @@ fn translate(path: &Path) -> Result<String, String> {
         return Err("lowering failed".into());
     }
 
-    Ok(program.emit())
+    Ok(fixups::apply(program).emit())
 }
 
 /// Translate a directory of `.c` files (one project spanning several translation
@@ -154,7 +155,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
             stem.clone()
         };
         let output = out_dir.join(file).with_extension("rs");
-        std::fs::write(&output, program.emit())
+        std::fs::write(&output, fixups::apply(program).emit())
             .map_err(|e| format!("write {}: {e}", output.display()))?;
         written.push(output);
     }

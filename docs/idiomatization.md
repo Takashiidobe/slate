@@ -16,6 +16,9 @@ Each rung:
   information (this is what justifies the three-source design — see
   [architecture.md](architecture.md)).
 
+Cleanup passes live under `src/fixups/` and are wired through a fixed post-lower
+entry point. Baseline lowering owns correctness; fixups own readability.
+
 The ladder is ordered by value-for-effort, not dependency; most rungs are
 independent.
 
