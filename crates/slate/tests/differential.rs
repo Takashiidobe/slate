@@ -91,6 +91,32 @@ fn volatile_uses_rust_volatile_intrinsics() {
 }
 
 #[test]
+fn compound_assignment_temps_are_inlined() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-compound-fixup");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("compound_assignments.c");
+    let generated = tmp.join("compound_assignments.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate compound fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated compound rust");
+    for expr in [
+        "a = ((a) - (5));",
+        "a = ((a) * (3));",
+        "a = ((a) / (5));",
+        "a = ((a) % (7));",
+        "a = ((a) << (3));",
+        "a = ((a) >> (2));",
+        "a = ((a) & (6));",
+        "a = ((a) ^ (3));",
+        "a = ((a) | (8));",
+    ] {
+        assert!(rust.contains(expr), "missing compact expression: {expr}");
+    }
+    assert!(!rust.contains("let _v1: i32 = 20;"));
+    assert!(!rust.contains("let _v4: i32 = ((_v3) - (_v2));"));
+}
+
+#[test]
 fn file_scope_static_emits_rust_static_mut() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-static-globals");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
