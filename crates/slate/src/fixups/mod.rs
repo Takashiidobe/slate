@@ -446,6 +446,19 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
                     .sum::<usize>()
         }
         Expr::Field { base, field } => expr_ident_count(base, name) + ident_count(field, name),
+        Expr::Index { base, index } => expr_ident_count(base, name) + expr_ident_count(index, name),
+        Expr::StructLit {
+            name: type_name,
+            fields,
+        } => {
+            ident_count(type_name, name)
+                + fields
+                    .iter()
+                    .map(|(field, value)| ident_count(field, name) + expr_ident_count(value, name))
+                    .sum::<usize>()
+        }
+        Expr::ArrayLit(elems) => elems.iter().map(|elem| expr_ident_count(elem, name)).sum(),
+        Expr::ArrayRepeat { elem, .. } => expr_ident_count(elem, name),
         Expr::Macro {
             name: macro_name,
             args,
@@ -462,6 +475,15 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
                     .iter()
                     .map(|arm| ident_count(&arm.pattern, name) + expr_ident_count(&arm.value, name))
                     .sum::<usize>()
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            expr_ident_count(cond, name)
+                + expr_ident_count(then_expr, name)
+                + expr_ident_count(else_expr, name)
         }
     }
 }

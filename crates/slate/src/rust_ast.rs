@@ -156,6 +156,19 @@ pub enum Expr {
         base: Box<Expr>,
         field: String,
     },
+    Index {
+        base: Box<Expr>,
+        index: Box<Expr>,
+    },
+    StructLit {
+        name: String,
+        fields: Vec<(String, Expr)>,
+    },
+    ArrayLit(Vec<Expr>),
+    ArrayRepeat {
+        elem: Box<Expr>,
+        len: usize,
+    },
     /// A macro invocation, e.g. `println!(...)`. `name` excludes the `!`.
     Macro {
         name: String,
@@ -164,6 +177,11 @@ pub enum Expr {
     Match {
         expr: Box<Expr>,
         arms: Vec<ExprMatchArm>,
+    },
+    If {
+        cond: Box<Expr>,
+        then_expr: Box<Expr>,
+        else_expr: Box<Expr>,
     },
     Unsafe(Box<Expr>),
     Cast {
@@ -486,6 +504,26 @@ impl Expr {
                 changed
             }
             Expr::Field { base, .. } => base.substitute_var(name, replacement),
+            Expr::Index { base, index } => {
+                let b = base.substitute_var(name, replacement);
+                let i = index.substitute_var(name, replacement);
+                b || i
+            }
+            Expr::StructLit { fields, .. } => {
+                let mut changed = false;
+                for (_, value) in fields {
+                    changed |= value.substitute_var(name, replacement);
+                }
+                changed
+            }
+            Expr::ArrayLit(elems) => {
+                let mut changed = false;
+                for elem in elems {
+                    changed |= elem.substitute_var(name, replacement);
+                }
+                changed
+            }
+            Expr::ArrayRepeat { elem, .. } => elem.substitute_var(name, replacement),
             Expr::Macro { args, .. } => {
                 let mut changed = false;
                 for arg in args {
@@ -500,6 +538,16 @@ impl Expr {
                 }
                 changed
             }
+            Expr::If {
+                cond,
+                then_expr,
+                else_expr,
+            } => {
+                let c = cond.substitute_var(name, replacement);
+                let t = then_expr.substitute_var(name, replacement);
+                let e = else_expr.substitute_var(name, replacement);
+                c || t || e
+            }
         }
     }
 
@@ -508,7 +556,10 @@ impl Expr {
             Expr::Binary { op, .. } => binop_prec(op),
             Expr::Cast { .. } => PREC_CAST,
             Expr::Unary { .. } | Expr::Ref { .. } => PREC_PREFIX,
-            Expr::Call { .. } | Expr::MethodCall { .. } | Expr::Field { .. } => PREC_CALL,
+            Expr::Call { .. }
+            | Expr::MethodCall { .. }
+            | Expr::Field { .. }
+            | Expr::Index { .. } => PREC_CALL,
             _ => PREC_ATOM,
         }
     }
@@ -555,6 +606,27 @@ impl Expr {
             Expr::Field { base, field } => {
                 format!("{}.{field}", base.render_prec(PREC_CALL))
             }
+            Expr::Index { base, index } => {
+                format!(
+                    "{}[{}]",
+                    base.render_prec(PREC_CALL),
+                    index.render_spliceable()
+                )
+            }
+            Expr::StructLit { name, fields } => {
+                let fields = fields
+                    .iter()
+                    .map(|(name, value)| format!("{name}: {}", value.render()))
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                format!("{name} {{ {fields} }}")
+            }
+            Expr::ArrayLit(elems) => {
+                format!("[{}]", render_args(elems))
+            }
+            Expr::ArrayRepeat { elem, len } => {
+                format!("[{}; {len}]", elem.render())
+            }
             Expr::Macro { name, args } => {
                 format!("{name}!({})", render_args(args))
             }
@@ -565,6 +637,18 @@ impl Expr {
                     .collect::<Vec<_>>()
                     .join(", ");
                 format!("match {} {{ {arms} }}", expr.render_spliceable())
+            }
+            Expr::If {
+                cond,
+                then_expr,
+                else_expr,
+            } => {
+                format!(
+                    "if {} {{ {} }} else {{ {} }}",
+                    cond.render_spliceable(),
+                    then_expr.render(),
+                    else_expr.render()
+                )
             }
             Expr::Unsafe(e) => format!("unsafe {{ {} }}", e.render()),
             Expr::Cast { expr, ty } => {

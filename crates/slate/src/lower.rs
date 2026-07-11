@@ -1196,62 +1196,100 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let value = if attr_bool(op, "is_volatile") {
-            format!(
-                "unsafe {{ std::ptr::read_volatile({}) }}",
-                self.load_address(ptr)
-            )
+            Expr::Unsafe(Box::new(Expr::Call {
+                func: Box::new(Self::raw_expr("std::ptr::read_volatile")),
+                args: vec![self.load_address_expr(ptr)],
+            }))
         } else if let Some(atomic) = self.atomic_load_expr(op, ptr) {
-            atomic
+            Expr::Raw(atomic)
         } else if let Some(global) = self.global_name(ptr) {
-            format!("unsafe {{ {global} }}")
+            Expr::Unsafe(Box::new(Expr::Var(global)))
         } else if let Some(member) = self.member_ptrs.get(ptr) {
-            format!("unsafe {{ {}.{} }}", member.base, member.field)
+            Expr::Unsafe(Box::new(Expr::Field {
+                base: Box::new(Self::raw_expr(member.base.clone())),
+                field: member.field.clone(),
+            }))
         } else if let Some(element) = self.element_ptrs.get(ptr) {
-            let place = format!("{}[({}) as usize]", element.base, element.index);
+            let place = self.element_place_expr(element);
             if element.unsafe_access {
-                format!("unsafe {{ {place} }}")
+                Expr::Unsafe(Box::new(place))
             } else {
                 place
             }
         } else if let Some(slot) = self.slots.get(ptr) {
-            slot.clone()
+            Expr::Var(slot.clone())
         } else {
-            format!("unsafe {{ *({}) }}", self.render_operand(ptr))
+            Expr::Unsafe(Box::new(Expr::Unary {
+                op: "*".into(),
+                expr: Box::new(self.operand_expr(ptr)),
+            }))
         };
-        self.materialize(result, value, op_result_type(op));
+        self.materialize_expr(result, value, op_result_type(op));
     }
 
     fn load_address(&self, ptr: &str) -> String {
+        self.load_address_expr(ptr).render()
+    }
+
+    fn load_address_expr(&self, ptr: &str) -> Expr {
         if let Some(member) = self.member_ptrs.get(ptr) {
-            format!("std::ptr::addr_of!({}.{})", member.base, member.field)
+            Expr::Macro {
+                name: "std::ptr::addr_of".into(),
+                args: vec![Expr::Field {
+                    base: Box::new(Self::raw_expr(member.base.clone())),
+                    field: member.field.clone(),
+                }],
+            }
         } else if let Some(element) = self.element_ptrs.get(ptr) {
-            format!(
-                "std::ptr::addr_of!({}[({}) as usize])",
-                element.base, element.index
-            )
+            Expr::Macro {
+                name: "std::ptr::addr_of".into(),
+                args: vec![self.element_place_expr(element)],
+            }
         } else if let Some(slot) = self.slots.get(ptr) {
-            format!("std::ptr::addr_of!({slot})")
+            Expr::Macro {
+                name: "std::ptr::addr_of".into(),
+                args: vec![Expr::Var(slot.clone())],
+            }
         } else if let Some(global) = self.global_name(ptr) {
-            format!("std::ptr::addr_of!({global})")
+            Expr::Macro {
+                name: "std::ptr::addr_of".into(),
+                args: vec![Expr::Var(global)],
+            }
         } else {
-            self.render_operand(ptr)
+            self.operand_expr(ptr)
         }
     }
 
     fn store_address(&self, ptr: &str) -> String {
+        self.store_address_expr(ptr).render()
+    }
+
+    fn store_address_expr(&self, ptr: &str) -> Expr {
         if let Some(member) = self.member_ptrs.get(ptr) {
-            format!("std::ptr::addr_of_mut!({}.{})", member.base, member.field)
+            Expr::Macro {
+                name: "std::ptr::addr_of_mut".into(),
+                args: vec![Expr::Field {
+                    base: Box::new(Self::raw_expr(member.base.clone())),
+                    field: member.field.clone(),
+                }],
+            }
         } else if let Some(element) = self.element_ptrs.get(ptr) {
-            format!(
-                "std::ptr::addr_of_mut!({}[({}) as usize])",
-                element.base, element.index
-            )
+            Expr::Macro {
+                name: "std::ptr::addr_of_mut".into(),
+                args: vec![self.element_place_expr(element)],
+            }
         } else if let Some(slot) = self.slots.get(ptr) {
-            format!("std::ptr::addr_of_mut!({slot})")
+            Expr::Macro {
+                name: "std::ptr::addr_of_mut".into(),
+                args: vec![Expr::Var(slot.clone())],
+            }
         } else if let Some(global) = self.global_name(ptr) {
-            format!("std::ptr::addr_of_mut!({global})")
+            Expr::Macro {
+                name: "std::ptr::addr_of_mut".into(),
+                args: vec![Expr::Var(global)],
+            }
         } else {
-            self.render_operand(ptr)
+            self.operand_expr(ptr)
         }
     }
 
@@ -1273,9 +1311,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let raw = self.parent.aliases.get(raw).map_or(raw, String::as_str);
         let result_ty = op_result_type(op);
         if let Some((re, im)) = parse_cir_const_complex(raw) {
-            self.materialize(
+            self.materialize_expr(
                 result,
-                format!("Complex {{ re: {re}, im: {im} }}"),
+                Expr::StructLit {
+                    name: "Complex".into(),
+                    fields: vec![("re".into(), Expr::Lit(re)), ("im".into(), Expr::Lit(im))],
+                },
                 result_ty,
             );
             return;
@@ -1307,11 +1348,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let re = self.render_operand(&op.operands[0]);
-        let im = self.render_operand(&op.operands[1]);
-        self.materialize(
+        self.materialize_expr(
             result,
-            format!("Complex {{ re: {re}, im: {im} }}"),
+            Expr::StructLit {
+                name: "Complex".into(),
+                fields: vec![
+                    ("re".into(), self.operand_expr(&op.operands[0])),
+                    ("im".into(), self.operand_expr(&op.operands[1])),
+                ],
+            },
             op_result_type(op),
         );
     }
@@ -1323,8 +1368,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(src) = op.operands.first() else {
             return;
         };
-        let value = format!("{}.{field}", self.render_operand(src));
-        self.materialize(result, value, op_result_type(op));
+        self.materialize_expr(
+            result,
+            Expr::Field {
+                base: Box::new(self.operand_expr(src)),
+                field: field.into(),
+            },
+            op_result_type(op),
+        );
     }
 
     // cir.select(cond, t, f) is a pure value pick; all three operands are already
@@ -1336,12 +1387,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 3 {
             return;
         }
-        let cond = self.render_operand(&op.operands[0]);
-        let t = self.render_operand(&op.operands[1]);
-        let f = self.render_operand(&op.operands[2]);
-        self.materialize(
+        let cond = self.operand_expr(&op.operands[0]);
+        let t = self.operand_expr(&op.operands[1]);
+        let f = self.operand_expr(&op.operands[2]);
+        self.materialize_expr(
             result,
-            format!("if {cond} {{ {t} }} else {{ {f} }}"),
+            Expr::If {
+                cond: Box::new(cond),
+                then_expr: Box::new(t),
+                else_expr: Box::new(f),
+            },
             op_result_type(op),
         );
     }
@@ -1546,9 +1601,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "i32".into());
         if rust_ty == LONG_DOUBLE_TY {
-            self.materialize(
+            self.materialize_expr(
                 result,
-                format!("{LONG_DOUBLE_TY}(-({}).0)", value.render()),
+                Expr::Call {
+                    func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                    args: vec![Expr::Unary {
+                        op: "-".into(),
+                        expr: Box::new(Expr::Field {
+                            base: Box::new(value),
+                            field: "0".into(),
+                        }),
+                    }],
+                },
                 result_ty,
             );
             return;
@@ -1577,19 +1641,37 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
-        let value = self.render_operand(value);
+        let value = self.operand_expr(value);
         let result_ty = op_result_type(op);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "i32".into());
         let expr = if matches!(rust_ty.as_str(), "i8" | "i16" | "i32" | "i64") {
-            format!("({value}).wrapping_abs()")
+            Expr::MethodCall {
+                recv: Box::new(value),
+                method: "wrapping_abs".into(),
+                args: vec![],
+            }
         } else if rust_ty == LONG_DOUBLE_TY {
-            format!("{LONG_DOUBLE_TY}(({value}).0.abs())")
+            Expr::Call {
+                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                args: vec![Expr::MethodCall {
+                    recv: Box::new(Expr::Field {
+                        base: Box::new(value),
+                        field: "0".into(),
+                    }),
+                    method: "abs".into(),
+                    args: vec![],
+                }],
+            }
         } else {
-            format!("({value}).abs()")
+            Expr::MethodCall {
+                recv: Box::new(value),
+                method: "abs".into(),
+                args: vec![],
+            }
         };
-        self.materialize(result, expr, result_ty);
+        self.materialize_expr(result, expr, result_ty);
     }
 
     fn lower_unary_method(&mut self, op: &Op, method: &str) {
@@ -1599,17 +1681,31 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
-        let value = self.render_operand(value);
+        let value = self.operand_expr(value);
         let result_ty = op_result_type(op);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "f64".into());
         let expr = if rust_ty == LONG_DOUBLE_TY {
-            format!("{LONG_DOUBLE_TY}(({value}).0.{method}())")
+            Expr::Call {
+                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                args: vec![Expr::MethodCall {
+                    recv: Box::new(Expr::Field {
+                        base: Box::new(value),
+                        field: "0".into(),
+                    }),
+                    method: method.into(),
+                    args: vec![],
+                }],
+            }
         } else {
-            format!("({value}).{method}()")
+            Expr::MethodCall {
+                recv: Box::new(value),
+                method: method.into(),
+                args: vec![],
+            }
         };
-        self.materialize(result, expr, result_ty);
+        self.materialize_expr(result, expr, result_ty);
     }
 
     fn lower_binary_method(&mut self, op: &Op, method: &str) {
@@ -1619,18 +1715,35 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let lhs = self.render_operand(&op.operands[0]);
-        let rhs = self.render_operand(&op.operands[1]);
+        let lhs = self.operand_expr(&op.operands[0]);
+        let rhs = self.operand_expr(&op.operands[1]);
         let result_ty = op_result_type(op);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "f64".into());
         let expr = if rust_ty == LONG_DOUBLE_TY {
-            format!("{LONG_DOUBLE_TY}(({lhs}).0.{method}(({rhs}).0))")
+            Expr::Call {
+                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                args: vec![Expr::MethodCall {
+                    recv: Box::new(Expr::Field {
+                        base: Box::new(lhs),
+                        field: "0".into(),
+                    }),
+                    method: method.into(),
+                    args: vec![Expr::Field {
+                        base: Box::new(rhs),
+                        field: "0".into(),
+                    }],
+                }],
+            }
         } else {
-            format!("({lhs}).{method}({rhs})")
+            Expr::MethodCall {
+                recv: Box::new(lhs),
+                method: method.into(),
+                args: vec![rhs],
+            }
         };
-        self.materialize(result, expr, result_ty);
+        self.materialize_expr(result, expr, result_ty);
     }
 
     fn lower_signbit(&mut self, op: &Op) {
@@ -1644,10 +1757,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .ty
             .as_deref()
             .and_then(|ty| op_operand_types(ty).into_iter().next());
-        let value = self.render_float_predicate_operand(value, operand_ty);
-        self.materialize(
+        let value = self.float_predicate_operand_expr(value, operand_ty);
+        self.materialize_expr(
             result,
-            format!("({value}).is_sign_negative()"),
+            Expr::MethodCall {
+                recv: Box::new(value),
+                method: "is_sign_negative".into(),
+                args: vec![],
+            },
             op_result_type(op),
         );
     }
@@ -1666,56 +1783,141 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .ty
             .as_deref()
             .and_then(|ty| op_operand_types(ty).into_iter().next());
-        let value = self.render_float_predicate_operand(value, operand_ty);
+        let value = self.float_predicate_operand_expr(value, operand_ty);
         let mut parts = Vec::new();
         if flags & 0x3 != 0 {
-            parts.push(format!("({value}).is_nan()"));
+            parts.push(Expr::MethodCall {
+                recv: Box::new(value.clone()),
+                method: "is_nan".into(),
+                args: vec![],
+            });
         }
         if flags & 0x4 != 0 {
-            parts.push(format!("({value}) == f64::NEG_INFINITY"));
+            parts.push(Expr::Binary {
+                op: "==".into(),
+                lhs: Box::new(value.clone()),
+                rhs: Box::new(Self::raw_expr("f64::NEG_INFINITY")),
+            });
         }
         if flags & 0x8 != 0 {
-            parts.push(format!(
-                "({value}).is_normal() && ({value}).is_sign_negative()"
+            parts.push(Self::and_expr(
+                Expr::MethodCall {
+                    recv: Box::new(value.clone()),
+                    method: "is_normal".into(),
+                    args: vec![],
+                },
+                Expr::MethodCall {
+                    recv: Box::new(value.clone()),
+                    method: "is_sign_negative".into(),
+                    args: vec![],
+                },
             ));
         }
         if flags & 0x10 != 0 {
-            parts.push(format!(
-                "({value}).is_subnormal() && ({value}).is_sign_negative()"
+            parts.push(Self::and_expr(
+                Expr::MethodCall {
+                    recv: Box::new(value.clone()),
+                    method: "is_subnormal".into(),
+                    args: vec![],
+                },
+                Expr::MethodCall {
+                    recv: Box::new(value.clone()),
+                    method: "is_sign_negative".into(),
+                    args: vec![],
+                },
             ));
         }
         if flags & 0x20 != 0 {
-            parts.push(format!("({value}) == 0.0 && ({value}).is_sign_negative()"));
+            parts.push(Self::and_expr(
+                Expr::Binary {
+                    op: "==".into(),
+                    lhs: Box::new(value.clone()),
+                    rhs: Box::new(Expr::Lit("0.0".into())),
+                },
+                Expr::MethodCall {
+                    recv: Box::new(value.clone()),
+                    method: "is_sign_negative".into(),
+                    args: vec![],
+                },
+            ));
         }
         if flags & 0x40 != 0 {
-            parts.push(format!("({value}) == 0.0 && !({value}).is_sign_negative()"));
+            parts.push(Self::and_expr(
+                Expr::Binary {
+                    op: "==".into(),
+                    lhs: Box::new(value.clone()),
+                    rhs: Box::new(Expr::Lit("0.0".into())),
+                },
+                Expr::Unary {
+                    op: "!".into(),
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(value.clone()),
+                        method: "is_sign_negative".into(),
+                        args: vec![],
+                    }),
+                },
+            ));
         }
         if flags & 0x80 != 0 {
-            parts.push(format!(
-                "({value}).is_subnormal() && !({value}).is_sign_negative()"
+            parts.push(Self::and_expr(
+                Expr::MethodCall {
+                    recv: Box::new(value.clone()),
+                    method: "is_subnormal".into(),
+                    args: vec![],
+                },
+                Expr::Unary {
+                    op: "!".into(),
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(value.clone()),
+                        method: "is_sign_negative".into(),
+                        args: vec![],
+                    }),
+                },
             ));
         }
         if flags & 0x100 != 0 {
-            parts.push(format!(
-                "({value}).is_normal() && !({value}).is_sign_negative()"
+            parts.push(Self::and_expr(
+                Expr::MethodCall {
+                    recv: Box::new(value.clone()),
+                    method: "is_normal".into(),
+                    args: vec![],
+                },
+                Expr::Unary {
+                    op: "!".into(),
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(value.clone()),
+                        method: "is_sign_negative".into(),
+                        args: vec![],
+                    }),
+                },
             ));
         }
         if flags & 0x200 != 0 {
-            parts.push(format!("({value}) == f64::INFINITY"));
+            parts.push(Expr::Binary {
+                op: "==".into(),
+                lhs: Box::new(value),
+                rhs: Box::new(Self::raw_expr("f64::INFINITY")),
+            });
         }
         let expr = if parts.is_empty() {
-            "false".into()
+            Expr::Lit("false".into())
         } else {
-            parts.join(" || ")
+            Self::or_exprs(parts)
         };
-        self.materialize(result, expr, op_result_type(op));
+        self.materialize_expr(result, expr, op_result_type(op));
     }
 
-    fn render_float_predicate_operand(&self, operand: &str, ty: Option<&str>) -> String {
-        let value = self.render_operand(operand);
+    fn float_predicate_operand_expr(&self, operand: &str, ty: Option<&str>) -> Expr {
+        let value = self.operand_expr(operand);
         match ty {
-            Some(ty) if is_long_double(ty) => format!("({value}).0"),
-            Some("!cir.float") => format!("({value}) as f64"),
+            Some(ty) if is_long_double(ty) => Expr::Field {
+                base: Box::new(value),
+                field: "0".into(),
+            },
+            Some("!cir.float") => Expr::Cast {
+                expr: Box::new(value),
+                ty: Type::Named("f64".into()),
+            },
             _ => value,
         }
     }
@@ -1727,16 +1929,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
-        let value = self.render_operand(value);
+        let value = self.operand_expr(value);
         let result_types = op_result_types(op);
-        self.materialize(
+        self.materialize_expr(
             &op.results[0],
-            format!("({value}).fract()"),
+            Expr::MethodCall {
+                recv: Box::new(value.clone()),
+                method: "fract".into(),
+                args: vec![],
+            },
             result_types.first().copied(),
         );
-        self.materialize(
+        self.materialize_expr(
             &op.results[1],
-            format!("({value}).trunc()"),
+            Expr::MethodCall {
+                recv: Box::new(value),
+                method: "trunc".into(),
+                args: vec![],
+            },
             result_types.get(1).copied(),
         );
     }
@@ -2015,11 +2225,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 })
             }
             _ if result_ty.starts_with("!cir.ptr<") && operand_ty.starts_with("!cir.ptr<") => {
-                Val::expr(format!(
-                    "{} as {}",
-                    self.render_pointer_operand(src),
-                    self.parent.rust_type(result_ty)
-                ))
+                Val::Expr(Expr::Cast {
+                    expr: Box::new(Self::raw_expr(self.render_pointer_operand(src))),
+                    ty: Type::Named(self.parent.rust_type(result_ty)),
+                })
             }
             // integer sentinel (SIG_IGN/SIG_DFL/SIG_ERR = (void(*)(int))N) cast to a
             // fn pointer: `as` cannot target Option<fn(..)>, so reinterpret the bits.
@@ -2963,6 +3172,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.operand_expr(operand).render()
     }
 
+    fn element_place_expr(&self, element: &ElementPtr) -> Expr {
+        Expr::Index {
+            base: Box::new(Self::raw_expr(element.base.clone())),
+            index: Box::new(Expr::Cast {
+                expr: Box::new(Self::raw_expr(element.index.clone())),
+                ty: Type::Named("usize".into()),
+            }),
+        }
+    }
+
     fn render_pointer_operand(&self, operand: &str) -> String {
         if self.member_ptrs.contains_key(operand) || self.element_ptrs.contains_key(operand) {
             return self.store_address(operand);
@@ -3032,6 +3251,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             Expr::Raw(expr)
         }
+    }
+
+    fn and_expr(lhs: Expr, rhs: Expr) -> Expr {
+        Expr::Binary {
+            op: "&&".into(),
+            lhs: Box::new(lhs),
+            rhs: Box::new(rhs),
+        }
+    }
+
+    fn or_exprs(mut exprs: Vec<Expr>) -> Expr {
+        let first = exprs.remove(0);
+        exprs.into_iter().fold(first, |lhs, rhs| Expr::Binary {
+            op: "||".into(),
+            lhs: Box::new(lhs),
+            rhs: Box::new(rhs),
+        })
     }
 
     fn named_type(ty: impl Into<String>) -> Type {
