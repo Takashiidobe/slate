@@ -10,7 +10,8 @@ pub fn apply(program: Program) -> Program {
             .map(|item| match item {
                 Item::Raw(text) => {
                     let text = eliminate_param_spills(&text);
-                    Item::Raw(inline_single_use_temps(&text))
+                    let text = inline_single_use_temps(&text);
+                    Item::Raw(collapse_retval(&text))
                 }
                 item => item,
             })
@@ -123,6 +124,84 @@ fn eliminate_param_spills(text: &str) -> String {
         out.push('\n');
     }
     out
+}
+
+/// Collapses the CIR return-slot boilerplate into a direct `return`.
+///
+/// C returns lower through a dedicated slot: `let mut __retval = 0; ...
+/// __retval = expr; return __retval;`. When the slot is assigned exactly once,
+/// immediately before the return, that store can become `return expr;` and the
+/// slot declaration drops out. `main` returns via `process::exit`, not `return
+/// __retval`, so it is naturally excluded.
+fn collapse_retval(text: &str) -> String {
+    let trailing_newline = text.ends_with('\n');
+    let mut lines: Vec<String> = text.lines().map(str::to_string).collect();
+
+    let Some(ret_index) = lines.iter().position(|l| parse_return_ident(l).is_some()) else {
+        return text.to_string();
+    };
+    let name = parse_return_ident(&lines[ret_index]).unwrap();
+    if ret_index == 0 {
+        return text.to_string();
+    }
+
+    let store_index = ret_index - 1;
+    let Some((lhs, expr)) = parse_assign(&lines[store_index]) else {
+        return text.to_string();
+    };
+    if lhs != name {
+        return text.to_string();
+    }
+
+    // decl + single store + return: exactly three mentions means the slot is
+    // never read or reassigned elsewhere, so folding is safe.
+    let mentions: usize = lines.iter().map(|l| ident_count(l, name)).sum();
+    if mentions != 3 {
+        return text.to_string();
+    }
+
+    let Some(decl_index) = lines
+        .iter()
+        .position(|l| parse_local_decl(l).is_some_and(|(n, _)| n == name))
+    else {
+        return text.to_string();
+    };
+
+    let indent = leading_ws(&lines[ret_index]);
+    lines[ret_index] = format!("{indent}return {expr};");
+    lines.remove(store_index);
+    lines.remove(decl_index);
+
+    let mut out = lines.join("\n");
+    if trailing_newline {
+        out.push('\n');
+    }
+    out
+}
+
+fn parse_return_ident(line: &str) -> Option<&str> {
+    let inner = line
+        .trim()
+        .strip_prefix("return ")?
+        .strip_suffix(';')?
+        .trim();
+    is_ident(inner).then_some(inner)
+}
+
+fn parse_assign(line: &str) -> Option<(&str, &str)> {
+    let stmt = line.trim().strip_suffix(';')?;
+    let (lhs, rhs) = stmt.split_once('=')?;
+    let lhs = lhs.trim();
+    let rhs = rhs.trim();
+    if is_ident(lhs) && !rhs.starts_with('=') {
+        Some((lhs, rhs))
+    } else {
+        None
+    }
+}
+
+fn leading_ws(line: &str) -> &str {
+    &line[..line.len() - line.trim_start().len()]
 }
 
 struct SpillFold<'a> {
@@ -477,6 +556,73 @@ fn is_ident_continue(b: u8) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn collapses_retval_store_into_return() {
+        let input = "\
+fn add(mut a: i32, mut b: i32) -> i32 {
+    let mut __retval: i32 = 0;
+    let mut c: i32 = 0;
+    c = ((a) + (b));
+    __retval = c;
+    return __retval;
+}
+";
+
+        assert_eq!(
+            collapse_retval(input),
+            "\
+fn add(mut a: i32, mut b: i32) -> i32 {
+    let mut c: i32 = 0;
+    c = ((a) + (b));
+    return c;
+}
+"
+        );
+    }
+
+    #[test]
+    fn does_not_collapse_when_retval_read_elsewhere() {
+        let input = "\
+fn f() -> i32 {
+    let mut __retval: i32 = 0;
+    __retval = 1;
+    let mut x: i32 = __retval;
+    __retval = x;
+    return __retval;
+}
+";
+
+        assert_eq!(collapse_retval(input), input);
+    }
+
+    #[test]
+    fn does_not_collapse_when_store_is_not_immediately_before_return() {
+        let input = "\
+fn f() -> i32 {
+    let mut __retval: i32 = 0;
+    __retval = 1;
+    let mut x: i32 = 2;
+    return __retval;
+}
+";
+
+        assert_eq!(collapse_retval(input), input);
+    }
+
+    #[test]
+    fn leaves_process_exit_main_untouched() {
+        let input = "\
+fn main() {
+    let mut __retval: i32 = 0;
+    __retval = 0;
+    let _v0: i32 = __retval;
+    std::process::exit(_v0 as i32);
+}
+";
+
+        assert_eq!(collapse_retval(input), input);
+    }
 
     #[test]
     fn folds_parameter_spills_into_direct_bindings() {
