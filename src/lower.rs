@@ -80,6 +80,8 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         extern_returns: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
+        uses_c_variadic: std::cell::Cell::new(false),
+        variadic_defs: BTreeSet::new(),
         project: project.clone(),
         cross_uses: Vec::new(),
     };
@@ -107,6 +109,10 @@ struct Lowerer<'a> {
     extern_returns: BTreeMap<String, Option<String>>,
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
+    /// set when a variadic function is defined, gating `#![feature(c_variadic)]`.
+    uses_c_variadic: std::cell::Cell<bool>,
+    /// names of locally-defined variadic functions; their call sites need `unsafe`.
+    variadic_defs: BTreeSet<String>,
     project: ProjectInfo,
     /// `use crate::<mod>::<sym>;` lines for body-less decls resolved to a sibling.
     cross_uses: Vec<String>,
@@ -130,6 +136,11 @@ struct FunctionLowerer<'a, 'b> {
     dispatch: Option<DispatchCtx>,
     /// Alloca results hoisted above the dispatch loop so locals outlive block arms.
     hoisted: BTreeSet<String>,
+    /// SSA values that denote a `va_list` place → its Rust `VaList` slot name.
+    /// Both the `ap` alloca and the array-decay casts of it map to the same slot.
+    va_places: BTreeMap<String, String>,
+    /// name of the synthesized variadic parameter (`...`), used by `va_start`.
+    va_args_param: Option<String>,
 }
 
 /// Maps CIR jump targets to dispatch-loop states for a `goto`-bearing function.
@@ -302,6 +313,19 @@ impl<'a> Lowerer<'a> {
             )));
         }
 
+        // record variadic definitions up front so call sites wrap in `unsafe`
+        // regardless of definition order.
+        for op in &ops {
+            if op.name == "cir.func"
+                && !region_ops(op).is_empty()
+                && attr_str(op, "sym_name").is_some_and(|name| name != "main")
+                && function_type_is_variadic(attr_str(op, "function_type").unwrap_or(""))
+            {
+                self.variadic_defs
+                    .insert(attr_str(op, "sym_name").unwrap().to_string());
+            }
+        }
+
         for op in ops {
             if op.name != "cir.func" || region_ops(op).is_empty() {
                 continue;
@@ -332,6 +356,14 @@ impl<'a> Lowerer<'a> {
         wiring.append(&mut self.cross_uses);
         for (offset, line) in wiring.into_iter().enumerate() {
             items.insert(1 + offset, Item::Raw(line));
+        }
+
+        // variadic definitions need the nightly `c_variadic` gate; keep it grouped
+        // with the crate-level `#![allow(..)]` at the very top of the file.
+        if self.uses_c_variadic.get()
+            && let Some(Item::Raw(first)) = items.first_mut()
+        {
+            *first = format!("#![feature(c_variadic)]\n{first}");
         }
 
         Program { items }
@@ -513,9 +545,10 @@ impl<'a> Lowerer<'a> {
         let (param_types, ret_ty) = parse_function_type(function_type);
         let entry = op.regions.first()?.blocks.first()?;
         let is_main = name == "main";
+        let is_variadic = !is_main && function_type_is_variadic(function_type);
 
         let mut text = String::new();
-        let params = entry
+        let mut params = entry
             .args
             .iter()
             .enumerate()
@@ -523,8 +556,16 @@ impl<'a> Lowerer<'a> {
                 let ty = param_types.get(i).map(String::as_str).unwrap_or(ty);
                 format!("{arg}: {}", self.rust_type(ty))
             })
-            .collect::<Vec<_>>()
-            .join(", ");
+            .collect::<Vec<_>>();
+
+        let va_args_param = if is_variadic {
+            let param = "__slate_va_args".to_string();
+            params.push(format!("mut {param}: ..."));
+            Some(param)
+        } else {
+            None
+        };
+        let params = params.join(", ");
 
         if is_main {
             text.push_str("fn main() {\n");
@@ -535,8 +576,17 @@ impl<'a> Lowerer<'a> {
             } else {
                 ""
             };
+            // Rust variadics must be `unsafe extern "C"`; the feature gate is added
+            // at module level once any variadic definition is seen.
+            let prefix = if is_variadic {
+                self.uses_c_variadic.set(true);
+                self.variadic_defs.insert(name.to_string());
+                "unsafe extern \"C\" "
+            } else {
+                ""
+            };
             text.push_str(&format!(
-                "{vis}fn {name}({params}) -> {} {{\n",
+                "{vis}{prefix}fn {name}({params}) -> {} {{\n",
                 self.rust_type(ret_ty.as_deref().unwrap_or("()"))
             ));
         }
@@ -556,6 +606,8 @@ impl<'a> Lowerer<'a> {
             label_counter: 0,
             dispatch: None,
             hoisted: BTreeSet::new(),
+            va_places: BTreeMap::new(),
+            va_args_param,
         };
 
         for (arg, _) in &entry.args {
@@ -925,6 +977,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.ptr_stride" => self.lower_ptr_stride(op),
             "cir.ptr_diff" => self.lower_ptr_diff(op),
             "cir.call" => self.lower_call(op),
+            "cir.va_start" => self.lower_va_start(op),
+            "cir.va_arg" => self.lower_va_arg(op),
+            // C `va_end` has no Rust counterpart; the `VaList` drops on scope exit.
+            "cir.va_end" => {}
             "cir.return" => self.lower_return(op),
             "cir.scope" => self.lower_scope(op),
             "cir.if" => self.lower_if(op),
@@ -956,6 +1012,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let name = sanitize_ident(attr_str(op, "name").unwrap_or(result));
+        // a `va_list` local becomes a Rust `VaList`, assigned by `va_start`.
+        if op
+            .ty
+            .as_deref()
+            .is_some_and(|ty| ty.contains("__va_list_tag"))
+        {
+            self.slots.insert(result.clone(), name.clone());
+            self.va_places.insert(result.clone(), name.clone());
+            self.emit_line(&format!("let mut {name}: core::ffi::VaList<'_>;"));
+            return;
+        }
         let ty = self
             .pointee_type(op.ty.as_deref().unwrap_or(""))
             .unwrap_or_else(|| "i32".into());
@@ -1680,6 +1747,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(src) = op.operands.first() else {
             return;
         };
+        // array-decay of a `va_list` local keeps referring to the same slot.
+        if let Some(slot) = self.va_places.get(src).cloned() {
+            self.va_places.insert(result.clone(), slot.clone());
+            self.values.insert(result.clone(), Val::Expr(slot));
+            return;
+        }
         let result_ty = op_result_type(op).unwrap_or("");
         let operand_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
             .into_iter()
@@ -1851,6 +1924,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 })
                 .collect::<Vec<_>>();
             format!("unsafe {{ {callee}({}) }}", args.join(", "))
+        } else if self.parent.variadic_defs.contains(&callee) {
+            format!("unsafe {{ {callee}({}) }}", args.join(", "))
         } else {
             format!("{callee}({})", args.join(", "))
         };
@@ -1860,6 +1935,40 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             self.emit_expr(expr);
         }
+    }
+
+    fn lower_va_start(&mut self, op: &Op) {
+        let Some(ptr) = op.operands.first() else {
+            return;
+        };
+        let Some(slot) = self.va_places.get(ptr).cloned() else {
+            return;
+        };
+        let args = self
+            .va_args_param
+            .clone()
+            .unwrap_or_else(|| "__slate_va_args".into());
+        self.emit_line(&format!("{slot} = {args}.clone();"));
+    }
+
+    fn lower_va_arg(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(ptr) = op.operands.first() else {
+            return;
+        };
+        let Some(slot) = self.va_places.get(ptr).cloned() else {
+            return;
+        };
+        let ty = op_result_type(op)
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or_else(|| "i32".into());
+        self.materialize(
+            result,
+            format!("unsafe {{ {slot}.next_arg::<{ty}>() }}"),
+            op_result_type(op),
+        );
     }
 
     fn lower_return(&mut self, op: &Op) {
@@ -2440,6 +2549,21 @@ fn parse_function_type(s: &str) -> (Vec<String>, Option<String>) {
         .map(str::to_string)
         .collect();
     (params, Some(ret.trim().to_string()))
+}
+
+/// Whether a `!cir.func<..>` type ends its parameter list with `...`.
+fn function_type_is_variadic(s: &str) -> bool {
+    let Some(inner) = s
+        .strip_prefix("!cir.func<")
+        .and_then(|s| s.strip_suffix('>'))
+    else {
+        return false;
+    };
+    let params = split_top_level_arrow(inner).map_or(inner, |(params, _)| params);
+    let params = params.trim().trim_start_matches('(').trim_end_matches(')');
+    split_top_level(params, ',')
+        .into_iter()
+        .any(|s| s.trim() == "...")
 }
 
 const LONG_DOUBLE_TY: &str = "LongDouble";
