@@ -20,10 +20,7 @@ struct UnsupportedProbe {
     bead: &'static str,
 }
 
-const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[UnsupportedProbe {
-    probe: "stdlib/strtold",
-    bead: "slate-nk3.15",
-}];
+const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[];
 
 fn stdlib_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/stdlib")
