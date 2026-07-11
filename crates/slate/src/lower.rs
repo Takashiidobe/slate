@@ -655,6 +655,28 @@ impl<'a> Lowerer<'a> {
         ty
     }
 
+    fn cir_type_is_union(&self, ty: &str) -> bool {
+        let ty = self.expand_alias(ty);
+        if ty.starts_with("!cir.union<") {
+            return true;
+        }
+        cir_record_name(ty)
+            .and_then(|name| self.records.get(&sanitize_ident(name)))
+            .is_some_and(|record| record.kind == RecordKind::Union)
+    }
+
+    fn expand_alias<'b>(&'b self, ty: &'b str) -> &'b str {
+        let mut ty = ty.trim();
+        let mut seen = BTreeSet::new();
+        while let Some(expanded) = self.aliases.get(ty) {
+            if !seen.insert(ty.to_string()) {
+                break;
+            }
+            ty = expanded.trim();
+        }
+        ty
+    }
+
     fn rust_c_type(&self, ty: &crate::c_ast::CType) -> String {
         let rust = c_type_to_rust(ty);
         if rust.contains(LONG_DOUBLE_TY) {
@@ -1597,7 +1619,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .place_expr(base_ptr)
             .unwrap_or_else(|| format!("(*{})", self.render_pointer_operand(base_ptr)));
         let field = sanitize_ident(attr_str(op, "name").unwrap_or(result));
-        let unsafe_access = self.ptr_requires_unsafe(base_ptr);
+        let unsafe_access = self.ptr_requires_unsafe(base_ptr) || self.op_base_is_union(op);
         self.member_ptrs.insert(
             result.clone(),
             MemberPtr {
@@ -1641,6 +1663,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .element_ptrs
                 .get(ptr)
                 .is_some_and(|element| element.unsafe_access)
+    }
+
+    fn op_base_is_union(&self, op: &Op) -> bool {
+        op.ty
+            .as_deref()
+            .and_then(|ty| op_operand_types(ty).into_iter().next())
+            .and_then(cir_ptr_inner)
+            .is_some_and(|ty| self.parent.cir_type_is_union(ty))
     }
 
     fn lower_cast(&mut self, op: &Op) {
@@ -2383,6 +2413,13 @@ fn op_operand_types(ty: &str) -> Vec<&str> {
         .map(str::trim)
         .filter(|ty| !ty.is_empty())
         .collect()
+}
+
+fn cir_ptr_inner(ty: &str) -> Option<&str> {
+    ty.trim()
+        .strip_prefix("!cir.ptr<")
+        .and_then(|ty| ty.strip_suffix('>'))
+        .map(str::trim)
 }
 
 fn parse_function_type(s: &str) -> (Vec<String>, Option<String>) {
