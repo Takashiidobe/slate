@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 mod c_ast;
+mod cfg_translate;
 mod cir;
 mod ctx;
 mod fixups;
@@ -16,6 +17,7 @@ fn usage() -> ExitCode {
     eprintln!("  emit-cir    print ClangIR (generic form)");
     eprintln!("  emit-fixtures  write translated test fixtures to tests/fixtures.generated/");
     eprintln!("  translate   C -> Rust");
+    eprintln!("  translate-cfg   experimental multi-config C -> Rust");
     eprintln!("  translate-project  <dir> <out_dir>  cross-TU C dir -> Rust modules");
     ExitCode::from(2)
 }
@@ -30,6 +32,10 @@ fn main() -> ExitCode {
         Some("emit-fixtures") => run(emit_fixtures()),
         Some("translate") => match args.get(2) {
             Some(path) => run(translate(Path::new(path))),
+            None => usage(),
+        },
+        Some("translate-cfg") => match args.get(2) {
+            Some(path) => run(cfg_translate::translate_cfg(Path::new(path))),
             None => usage(),
         },
         Some("translate-project") => match (args.get(2), args.get(3)) {
