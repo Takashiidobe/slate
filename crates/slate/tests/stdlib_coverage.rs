@@ -20,7 +20,44 @@ struct UnsupportedProbe {
     bead: &'static str,
 }
 
-const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[];
+const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[
+    // External libc struct types (struct tm / struct lconv) are not modeled yet.
+    UnsupportedProbe {
+        probe: "time/asctime",
+        bead: "slate-nk3.16",
+    },
+    UnsupportedProbe {
+        probe: "time/gmtime",
+        bead: "slate-nk3.16",
+    },
+    UnsupportedProbe {
+        probe: "time/mktime",
+        bead: "slate-nk3.16",
+    },
+    UnsupportedProbe {
+        probe: "time/strftime",
+        bead: "slate-nk3.16",
+    },
+    UnsupportedProbe {
+        probe: "locale/localeconv",
+        bead: "slate-nk3.16",
+    },
+    // Wide string literal used directly as a wchar_t* pointer value.
+    UnsupportedProbe {
+        probe: "wchar/wcslen",
+        bead: "slate-nk3.17",
+    },
+    // signal disposition sentinels (SIG_IGN/SIG_DFL/SIG_ERR).
+    UnsupportedProbe {
+        probe: "signal/signal_ignore",
+        bead: "slate-nk3.18",
+    },
+    // setjmp/longjmp non-local control flow.
+    UnsupportedProbe {
+        probe: "setjmp/setjmp",
+        bead: "slate-nk3.19",
+    },
+];
 
 fn stdlib_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/stdlib")
