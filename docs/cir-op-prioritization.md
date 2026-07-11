@@ -16,7 +16,6 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 | P1 | complex arithmetic (mul/div/conj) | `cir.complex.mul`, `cir.complex.div`, `cir.complex.conj` |
 | P1 | C complex lvalue access | `cir.complex.real_ptr`, `cir.complex.imag_ptr` |
 | P1 | aggregate value mutation/extraction | `cir.extract_member`, `cir.insert_member` |
-| P1 | C bitfields | `cir.get_bitfield`, `cir.set_bitfield` |
 | P1 | memory operations | `cir.libc.memchr`, `cir.libc.memcpy`, `cir.libc.memmove`, `cir.libc.memset` |
 | P2 | math builtins/libm | `cir.acos`, `cir.asin`, `cir.atan`, `cir.atan2`, `cir.cos`, `cir.exp`, `cir.exp2`, `cir.fmaximum`, `cir.fminimum`, `cir.fmod`, `cir.llrint`, `cir.llround`, `cir.log`, `cir.log10`, `cir.log2`, `cir.lrint`, `cir.lround`, `cir.pow`, `cir.roundeven`, `cir.sin`, `cir.sqrt`, `cir.tan` |
 | P2 | integer bit builtins | `cir.bitreverse`, `cir.byte_swap`, `cir.clrsb`, `cir.clz`, `cir.ctz`, `cir.ffs`, `cir.parity`, `cir.popcount`, `cir.rotate` |
@@ -120,6 +119,9 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
   - [x] `cir.get_element`
   - [x] `cir.ptr_stride`
   - [x] `cir.ptr_diff`
+- [x] bitfields (per-field storage; get/set mask and sign-extend to the field width)
+  - [x] `cir.get_bitfield`
+  - [x] `cir.set_bitfield`
 - [x] varargs
   - [x] `cir.va_start`
   - [x] `cir.va_arg`
