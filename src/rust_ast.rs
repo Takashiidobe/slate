@@ -99,6 +99,17 @@ pub enum Expr {
         func: Box<Expr>,
         args: Vec<Expr>,
     },
+    /// A method call, e.g. `p.offset(3)`. `recv` is the receiver expression.
+    MethodCall {
+        recv: Box<Expr>,
+        method: String,
+        args: Vec<Expr>,
+    },
+    /// A field or tuple-index access, e.g. `pair.0` or `s.len`.
+    Field {
+        base: Box<Expr>,
+        field: String,
+    },
     /// A macro invocation, e.g. `println!(...)`. `name` excludes the `!`.
     Macro {
         name: String,
@@ -322,6 +333,14 @@ impl Expr {
                 }
                 changed
             }
+            Expr::MethodCall { recv, args, .. } => {
+                let mut changed = recv.substitute_var(name, replacement);
+                for arg in args {
+                    changed |= arg.substitute_var(name, replacement);
+                }
+                changed
+            }
+            Expr::Field { base, .. } => base.substitute_var(name, replacement),
             Expr::Macro { args, .. } => {
                 let mut changed = false;
                 for arg in args {
@@ -337,7 +356,7 @@ impl Expr {
             Expr::Binary { op, .. } => binop_prec(op),
             Expr::Cast { .. } => PREC_CAST,
             Expr::Unary { .. } | Expr::Ref { .. } => PREC_PREFIX,
-            Expr::Call { .. } => PREC_CALL,
+            Expr::Call { .. } | Expr::MethodCall { .. } | Expr::Field { .. } => PREC_CALL,
             _ => PREC_ATOM,
         }
     }
@@ -373,6 +392,16 @@ impl Expr {
             }
             Expr::Call { func, args } => {
                 format!("{}({})", func.render_prec(PREC_CALL), render_args(args))
+            }
+            Expr::MethodCall { recv, method, args } => {
+                format!(
+                    "{}.{method}({})",
+                    recv.render_prec(PREC_CALL),
+                    render_args(args)
+                )
+            }
+            Expr::Field { base, field } => {
+                format!("{}.{field}", base.render_prec(PREC_CALL))
             }
             Expr::Macro { name, args } => {
                 format!("{name}!({})", render_args(args))
@@ -523,6 +552,44 @@ fn add(a: i32, b: i32) -> i32 {
         assert_eq!(
             bin("==", bin("&", var("a"), var("b")), var("c")).render(),
             "a & b == c"
+        );
+    }
+
+    #[test]
+    fn wraps_looser_receiver_of_postfix() {
+        // a binary receiver of a method call or field access must be wrapped.
+        assert_eq!(
+            Expr::MethodCall {
+                recv: bin("+", var("a"), var("b")),
+                method: "offset".into(),
+                args: vec![Expr::Var("c".into())],
+            }
+            .render(),
+            "(a + b).offset(c)"
+        );
+        assert_eq!(
+            Expr::Field {
+                base: Box::new(Expr::Cast {
+                    expr: var("x"),
+                    ty: Type::Named("i32".into()),
+                }),
+                field: "0".into(),
+            }
+            .render(),
+            "(x as i32).0"
+        );
+        // a call/field receiver already binds tightly: no parens, chains flat.
+        assert_eq!(
+            Expr::Field {
+                base: Box::new(Expr::MethodCall {
+                    recv: var("p"),
+                    method: "get".into(),
+                    args: vec![],
+                }),
+                field: "0".into(),
+            }
+            .render(),
+            "p.get().0"
         );
     }
 
