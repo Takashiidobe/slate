@@ -11,32 +11,34 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 
 ## Unsupported Inventory
 
-| Prio | Notes                                 | Ops                                                                                                                                                                                                                                                                                     |
-| ---- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- | ---------------------------- | -------------------------------- |
-| P0   | generic scalar spellings              | `cir.binop`, `cir.unary`                                                                                                                                                                                                                                                                |
-| P0   | checked/overflowing arithmetic form   | `cir.binop.overflow`                                                                                                                                                                                                                                                                    |
-| P0   | low-level conditional branch variant  | `cir.brcond`                                                                                                                                                                                                                                                                            |
-| P0   | do-while                              | `cir.do`                                                                                                                                                                                                                                                                                |
-| P0   | switch lowering variant               | `cir.switch.flat`                                                                                                                                                                                                                                                                       |
-| P1   | C atomics                             | `cir.atomic.*`                                                                                                                                                                                                                                                                          |
-| P1   | generic C complex arithmetic spelling | `cir.complex.binop`                                                                                                                                                                                                                                                                     |
-| P1   | C complex lvalue access               | `cir.complex.real_ptr`, `cir.complex.imag_ptr`                                                                                                                                                                                                                                          |
-| P1   | aggregate value mutation/extraction   | `cir.extract_member`, `cir.insert_member`                                                                                                                                                                                                                                               |
-| P1   | C bitfields                           | `cir.get_bitfield`, `cir.set_bitfield`                                                                                                                                                                                                                                                  |
-| P1   | memory operations                     | `cir.libc.memchr`, `cir.libc.memcpy`, `cir.libc.memmove`, `cir.libc.memset`, `cir.memcpy_inline`, `cir.memset_inline`                                                                                                                                                                   |
-| P2   | math builtins/libm                    | `cir.acos`, `cir.asin`, `cir.atan`, `cir.atan2`, `cir.cos`, `cir.exp`, `cir.exp2`, `cir.fmaximum`, `cir.fminimum`, `cir.fmod`, `cir.llrint`, `cir.llround`, `cir.log`, `cir.log10`, `cir.log2`, `cir.lrint`, `cir.lround`, `cir.pow`, `cir.roundeven`, `cir.sin`, `cir.sqrt`, `cir.tan` |
-| P2   | integer bit builtins                  | `cir.bit_reverse`, `cir.byte_swap`, `cir.clrsb`, `cir.clz`, `cir.ctz`, `cir.ffs`, `cir.parity`, `cir.popcount`, `cir.rotate`                                                                                                                                                            |     | P2  | constant/object-size queries | `cir.is_constant`, `cir.objsize` |
-| P3   | inline assembly                       | `cir.asm`                                                                                                                                                                                                                                                                               |
-| P3   | assumptions and alignment hints       | `cir.assume`, `cir.assume.aligned`, `cir.assume.separate_storage`                                                                                                                                                                                                                       |
-| P3   | labels-as-values/computed goto        | `cir.blockaddress`                                                                                                                                                                                                                                                                      |
-| P3   | target/cache builtins                 | `cir.clear_cache`, `cir.prefetch`                                                                                                                                                                                                                                                       |
-| P3   | setjmp/EH-adjacent lowering           | `cir.eh.setjmp`                                                                                                                                                                                                                                                                         |
-| P3   | branch prediction hint                | `cir.expect`                                                                                                                                                                                                                                                                            |
-| P3   | frame/stack builtins                  | `cir.frame_address`, `cir.stack_restore`, `cir.stack_save`                                                                                                                                                                                                                              |
-| P3   | LLVM intrinsic escape hatch           | `cir.llvm.intrinsic`                                                                                                                                                                                                                                                                    |
-| P3   | pointer masking                       | `cir.ptr_mask`                                                                                                                                                                                                                                                                          |
-| P3   | traps and unreachable paths           | `cir.trap`, `cir.unreachable`                                                                                                                                                                                                                                                           |
-| P3   | vector extensions                     | `cir.vec.*`                                                                                                                                                                                                                                                                             |
+| Priority | Notes | Ops |
+| --- | --- | --- |
+| P0 | generic scalar spellings | `cir.binop`, `cir.unary` |
+| P0 | low-level conditional branch variant | `cir.brcond` |
+| P0 | switch lowering variant | `cir.switch.flat` |
+| P1 | do-while | `cir.do` |
+| P1 | decrement | `cir.dec` |
+| P1 | checked/overflowing arithmetic | `cir.add.overflow`, `cir.sub.overflow`, `cir.mul.overflow`, `cir.div.overflow`, `cir.rem.overflow`, `cir.binop.overflow` |
+| P1 | C atomics | `cir.atomic.*` |
+| P1 | generic C complex arithmetic spelling | `cir.complex.binop` |
+| P1 | C complex lvalue access | `cir.complex.real_ptr`, `cir.complex.imag_ptr` |
+| P1 | aggregate value mutation/extraction | `cir.extract_member`, `cir.insert_member` |
+| P1 | C bitfields | `cir.get_bitfield`, `cir.set_bitfield` |
+| P1 | memory operations | `cir.libc.memchr`, `cir.libc.memcpy`, `cir.libc.memmove`, `cir.libc.memset`, `cir.memcpy_inline`, `cir.memset_inline` |
+| P2 | math builtins/libm | `cir.acos`, `cir.asin`, `cir.atan`, `cir.atan2`, `cir.cos`, `cir.exp`, `cir.exp2`, `cir.fmaximum`, `cir.fminimum`, `cir.fmod`, `cir.llrint`, `cir.llround`, `cir.log`, `cir.log10`, `cir.log2`, `cir.lrint`, `cir.lround`, `cir.pow`, `cir.roundeven`, `cir.sin`, `cir.sqrt`, `cir.tan` |
+| P2 | integer bit builtins | `cir.bit_reverse`, `cir.byte_swap`, `cir.clrsb`, `cir.clz`, `cir.ctz`, `cir.ffs`, `cir.parity`, `cir.popcount`, `cir.rotate` |
+| P2 | constant/object-size queries | `cir.is_constant`, `cir.objsize` |
+| P3 | inline assembly | `cir.asm` |
+| P3 | assumptions and alignment hints | `cir.assume`, `cir.assume.aligned`, `cir.assume.separate_storage` |
+| P3 | labels-as-values/computed goto | `cir.blockaddress` |
+| P3 | target/cache builtins | `cir.clear_cache`, `cir.prefetch` |
+| P3 | setjmp/EH-adjacent lowering | `cir.eh.setjmp` |
+| P3 | branch prediction hint | `cir.expect` |
+| P3 | frame/stack builtins | `cir.frame_address`, `cir.stack_restore`, `cir.stack_save` |
+| P3 | LLVM intrinsic escape hatch | `cir.llvm.intrinsic` |
+| P3 | pointer masking | `cir.ptr_mask` |
+| P3 | traps and unreachable paths | `cir.trap`, `cir.unreachable` |
+| P3 | vector extensions | `cir.vec.*` |
 
 ## Supported Checklist
 
