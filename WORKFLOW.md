@@ -47,6 +47,10 @@ fall back to the description only when notes are absent.
 Do not implement against an epic directly; pick or create a concrete child
 ticket.
 
+When adding support for a new CIR op, update
+`docs/cir-op-prioritization.md` in the same branch: move the op from the
+unsupported inventory to the supported checklist and mark it complete.
+
 ## Claim Before Branching
 
 From the coordination checkout:

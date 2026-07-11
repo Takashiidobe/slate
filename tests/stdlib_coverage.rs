@@ -62,20 +62,30 @@ fn stdlib_coverage() {
 
     let probes = probes();
     assert!(!probes.is_empty(), "no probes found in {:?}", stdlib_dir());
+    let known = known_unsupported_by_probe(&probes);
 
     // Translate first; translate failures are recorded directly.
     let mut cases = Vec::new();
+    let mut known_cases = Vec::new();
     let mut results: BTreeMap<String, Result<(), String>> = BTreeMap::new();
     for (id, c_src) in &probes {
         let generated = tmp.join(format!("{}.generated.rs", id.replace('/', "__")));
         match support::translate(c_src, &generated) {
-            Ok(()) => cases.push(support::Case {
-                name: id.clone(),
-                c_src: c_src.clone(),
-                rs_src: generated,
-                config: probe_config(c_src)
-                    .unwrap_or_else(|e| panic!("load run config for {}: {e}", c_src.display())),
-            }),
+            Ok(()) => {
+                let case = support::Case {
+                    name: id.clone(),
+                    c_src: c_src.clone(),
+                    rs_src: generated,
+                    config: probe_config(c_src)
+                        .unwrap_or_else(|e| panic!("load run config for {}: {e}", c_src.display())),
+                };
+                // expected failures would poison the shared batch and force per-case fallback.
+                if known.contains_key(id.as_str()) {
+                    known_cases.push(case);
+                } else {
+                    cases.push(case);
+                }
+            }
             Err(e) => {
                 results.insert(id.clone(), Err(format!("translate: {e}")));
             }
@@ -83,6 +93,9 @@ fn stdlib_coverage() {
     }
 
     for (name, result) in support::compare_batch(&cases, &tmp) {
+        results.insert(name, result);
+    }
+    for (name, result) in support::compare_batch(&known_cases, &tmp.join("known-unsupported")) {
         results.insert(name, result);
     }
 
@@ -117,7 +130,6 @@ fn stdlib_coverage() {
         results.len()
     );
 
-    let known = known_unsupported_by_probe(&probes);
     let mut regressions = Vec::new();
     let mut promotable = Vec::new();
     for (id, result) in &results {
