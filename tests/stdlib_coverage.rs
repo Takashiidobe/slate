@@ -57,6 +57,11 @@ const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[
         probe: "setjmp/setjmp",
         bead: "slate-nk3.19",
     },
+    // user-defined variadic functions (va_start/va_arg/va_end).
+    UnsupportedProbe {
+        probe: "stdarg/vararg_sum",
+        bead: "slate-nk3.21",
+    },
 ];
 
 fn stdlib_dir() -> PathBuf {
