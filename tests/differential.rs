@@ -187,3 +187,43 @@ fn file_scope_globals_emit_static_mut_definitions() {
     assert!(rust.contains("static mut numbers: [i32; 4] = [1, 2, 0, 0];"));
     assert!(rust.contains("static mut pair: Pair = Pair { left: 3, right: 5 };"));
 }
+
+#[test]
+fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-assignment-places");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    for (fixture, expected) in [
+        (
+            "pointers",
+            &["local = value;", "*slot = _v", "values[(2 as usize)] = 12;"][..],
+        ),
+        (
+            "struct_with_array",
+            &["b.data[(0 as usize)] = 10;", "b.len = 3;"][..],
+        ),
+        (
+            "global_vars",
+            &[
+                "counter = _v",
+                "numbers[(2 as usize)] = _v",
+                "pair.right = _v",
+            ][..],
+        ),
+        ("bitfield_ops", &["s.a = _v", "s.b = _v", "w.x = _v"][..]),
+    ] {
+        let c_src = fixtures_dir().join(format!("{fixture}.c"));
+        let generated = tmp.join(format!("{fixture}.generated.rs"));
+        support::translate(&c_src, &generated).unwrap_or_else(|err| {
+            panic!("translate {fixture} fixture: {err}");
+        });
+        let rust = std::fs::read_to_string(&generated)
+            .unwrap_or_else(|err| panic!("read generated {fixture} rust: {err}"));
+        for snippet in expected {
+            assert!(
+                rust.contains(snippet),
+                "missing assignment snippet in {fixture}: {snippet}"
+            );
+        }
+    }
+}
