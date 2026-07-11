@@ -3,7 +3,9 @@
 use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
-use crate::rust_ast::{Expr, FnDef, FnParam, IndentStmt, Item, Program, Stmt, Type};
+use crate::rust_ast::{
+    Expr, ExprMatchArm, FnDef, FnParam, IndentStmt, Item, MatchArm, Program, Stmt, Type,
+};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// How a translation unit fits into a multi-file project: which symbols other
@@ -2498,6 +2500,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    fn indent_stmt(stmt: Stmt) -> IndentStmt {
+        IndentStmt { depth: 0, stmt }
+    }
+
     fn guard_break(cond: Expr, label: Option<String>) -> Stmt {
         Stmt::If {
             cond: Self::not_expr(cond),
@@ -2650,53 +2656,75 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .unwrap_or_else(|| "-1".into());
         let selector = self.render_operand(selector);
 
-        self.emit_line("{");
-        self.indent += 1;
-        self.emit_line(&format!("let {selector_name} = {selector};"));
-        self.emit_line(&format!(
-            "let mut {case_name}: i32 = match {selector_name} {{"
-        ));
-        self.indent += 1;
+        let mut selector_arms = Vec::new();
         for (index, case) in cases.iter().enumerate() {
             for value in &case.values {
-                self.emit_line(&format!("{value} => {index},"));
+                selector_arms.push(ExprMatchArm {
+                    pattern: value.to_string(),
+                    value: Expr::Lit(index.to_string()),
+                });
             }
         }
-        self.emit_line(&format!("_ => {fallback},"));
-        self.indent -= 1;
-        self.emit_line("};");
-        self.emit_line(&format!("{label}: loop {{"));
-        self.indent += 1;
-        self.emit_line(&format!("match {case_name} {{"));
-        self.indent += 1;
+        selector_arms.push(ExprMatchArm {
+            pattern: "_".to_string(),
+            value: Expr::Lit(fallback),
+        });
+
+        let mut case_arms = Vec::new();
         self.loop_stack.push(LoopFrame {
             break_label: Some(label.clone()),
             continue_label: None,
             is_loop: false,
         });
         for (index, case) in cases.iter().enumerate() {
-            self.emit_line(&format!("{index} => {{"));
-            self.indent += 1;
-            self.lower_region_ops(case.region);
+            let mut body = self.capture_body(|this| this.lower_region_ops(case.region));
             if !region_ends_control_flow(case.region) {
                 if index + 1 < cases.len() {
-                    self.emit_line(&format!("{case_name} = {};", index + 1));
-                    self.emit_line(&format!("continue {label};"));
+                    body.push(Self::indent_stmt(Self::assign_stmt(
+                        case_name.clone(),
+                        (index + 1).to_string(),
+                    )));
+                    body.push(Self::indent_stmt(Stmt::Continue(Some(label.clone()))));
                 } else {
-                    self.emit_line(&format!("break {label};"));
+                    body.push(Self::indent_stmt(Stmt::Break(Some(label.clone()))));
                 }
             }
-            self.indent -= 1;
-            self.emit_line("}");
+            case_arms.push(MatchArm {
+                pattern: index.to_string(),
+                body,
+            });
         }
         self.loop_stack.pop();
-        self.emit_line(&format!("_ => break {label},"));
-        self.indent -= 1;
-        self.emit_line("}");
-        self.indent -= 1;
-        self.emit_line("}");
-        self.indent -= 1;
-        self.emit_line("}");
+        case_arms.push(MatchArm {
+            pattern: "_".to_string(),
+            body: vec![Self::indent_stmt(Stmt::Break(Some(label.clone())))],
+        });
+
+        let body = vec![
+            Self::indent_stmt(Stmt::Let {
+                name: selector_name.clone(),
+                mutable: false,
+                ty: None,
+                init: Some(Self::raw_expr(selector)),
+            }),
+            Self::indent_stmt(Stmt::Let {
+                name: case_name.clone(),
+                mutable: true,
+                ty: Some(Self::named_type("i32")),
+                init: Some(Expr::Match {
+                    expr: Box::new(Self::raw_expr(selector_name)),
+                    arms: selector_arms,
+                }),
+            }),
+            Self::indent_stmt(Stmt::Loop {
+                label: Some(label),
+                body: vec![Self::indent_stmt(Stmt::Match {
+                    expr: Self::raw_expr(case_name),
+                    arms: case_arms,
+                })],
+            }),
+        ];
+        self.push_stmt(Stmt::Scope { body });
     }
 
     fn lower_for(&mut self, op: &Op) {
@@ -2805,27 +2833,38 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         }
 
-        self.emit_line(&format!("let mut {state_var}: i32 = 0;"));
-        self.emit_line(&format!("{loop_label}: loop {{"));
-        self.indent += 1;
-        self.emit_line(&format!("match {state_var} {{"));
-        self.indent += 1;
+        let mut arms = Vec::new();
         for (i, block) in body.blocks.iter().enumerate() {
-            self.emit_line(&format!("{i} => {{"));
-            self.indent += 1;
-            self.lower_block(block);
+            let mut body = self.capture_body(|this| this.lower_block(block));
             if !block_diverges(block) {
-                self.emit_line(&format!("{state_var} = {};", i + 1));
-                self.emit_line(&format!("continue {loop_label};"));
+                body.push(Self::indent_stmt(Self::assign_stmt(
+                    state_var.clone(),
+                    (i + 1).to_string(),
+                )));
+                body.push(Self::indent_stmt(Stmt::Continue(Some(loop_label.clone()))));
             }
-            self.indent -= 1;
-            self.emit_line("}");
+            arms.push(MatchArm {
+                pattern: i.to_string(),
+                body,
+            });
         }
-        self.emit_line(&format!("_ => break {loop_label},"));
-        self.indent -= 1;
-        self.emit_line("}");
-        self.indent -= 1;
-        self.emit_line("}");
+        arms.push(MatchArm {
+            pattern: "_".to_string(),
+            body: vec![Self::indent_stmt(Stmt::Break(Some(loop_label.clone())))],
+        });
+        self.push_stmt(Stmt::Let {
+            name: state_var.clone(),
+            mutable: true,
+            ty: Some(Self::named_type("i32")),
+            init: Some(Expr::Lit("0".to_string())),
+        });
+        self.push_stmt(Stmt::Loop {
+            label: Some(loop_label),
+            body: vec![Self::indent_stmt(Stmt::Match {
+                expr: Self::raw_expr(state_var),
+                arms,
+            })],
+        });
         self.dispatch = None;
     }
 
@@ -2833,14 +2872,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(dispatch) = &self.dispatch else {
             return;
         };
-        let target = attr_str(op, "label").and_then(|l| dispatch.label_to_state.get(l));
+        let target = attr_str(op, "label")
+            .and_then(|l| dispatch.label_to_state.get(l))
+            .map(|state| {
+                (
+                    *state,
+                    dispatch.state_var.clone(),
+                    dispatch.loop_label.clone(),
+                )
+            });
         match target {
-            Some(&state) => {
-                let stmt = format!(
-                    "{} = {state};\ncontinue {};",
-                    dispatch.state_var, dispatch.loop_label
-                );
-                self.emit_dispatch_jump(&stmt);
+            Some((state, state_var, loop_label)) => {
+                self.push_assign(state_var, state.to_string());
+                self.push_stmt(Stmt::Continue(Some(loop_label)));
             }
             None => self.emit_expr("todo!(\"cir.goto: unknown label\")".into()),
         }
@@ -2853,22 +2897,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let target = op
             .successors
             .first()
-            .and_then(|bb| dispatch.block_to_state.get(bb));
+            .and_then(|bb| dispatch.block_to_state.get(bb))
+            .map(|state| {
+                (
+                    *state,
+                    dispatch.state_var.clone(),
+                    dispatch.loop_label.clone(),
+                )
+            });
         match target {
-            Some(&state) => {
-                let stmt = format!(
-                    "{} = {state};\ncontinue {};",
-                    dispatch.state_var, dispatch.loop_label
-                );
-                self.emit_dispatch_jump(&stmt);
+            Some((state, state_var, loop_label)) => {
+                self.push_assign(state_var, state.to_string());
+                self.push_stmt(Stmt::Continue(Some(loop_label)));
             }
             None => self.emit_expr("todo!(\"cir.br: unknown successor\")".into()),
-        }
-    }
-
-    fn emit_dispatch_jump(&mut self, stmt: &str) {
-        for line in stmt.lines() {
-            self.emit_line(line);
         }
     }
 

@@ -117,6 +117,27 @@ fn compound_assignment_temps_are_inlined() {
 }
 
 #[test]
+fn switch_and_dispatch_use_block_match_arms() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-control-ast");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let switch_c = fixtures_dir().join("switch_fallthrough.c");
+    let switch_generated = tmp.join("switch_fallthrough.generated.rs");
+    support::translate(&switch_c, &switch_generated).expect("translate switch fixture");
+    let switch_rust =
+        std::fs::read_to_string(&switch_generated).expect("read generated switch rust");
+    assert!(switch_rust.contains("match __switch_case0 {\n                    0 => {"));
+    assert!(!switch_rust.contains("_ => break '__switch0,"));
+
+    let goto_c = fixtures_dir().join("goto_if_scope.c");
+    let goto_generated = tmp.join("goto_if_scope.generated.rs");
+    support::translate(&goto_c, &goto_generated).expect("translate goto fixture");
+    let goto_rust = std::fs::read_to_string(&goto_generated).expect("read generated goto rust");
+    assert!(goto_rust.contains("match __state0 {\n            0 => {"));
+    assert!(!goto_rust.contains("_ => break '__dispatch0,"));
+}
+
+#[test]
 fn file_scope_static_emits_rust_static_mut() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-static-globals");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
