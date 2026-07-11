@@ -980,6 +980,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.switch" => self.lower_switch(op),
             "cir.for" => self.lower_for(op),
             "cir.while" => self.lower_while(op),
+            "cir.do" => self.lower_do(op),
             "cir.break" => self.lower_break(),
             "cir.continue" => self.lower_continue(),
             "cir.goto" => self.lower_goto(op),
@@ -2184,6 +2185,51 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         });
         self.lower_region_ops(&op.regions[1]);
         self.loop_stack.pop();
+        self.indent -= 1;
+        self.emit_line("}");
+    }
+
+    fn lower_do(&mut self, op: &Op) {
+        if op.regions.len() < 2 {
+            self.emit_expr("todo!(\"cir.do\")".into());
+            return;
+        }
+        let (break_label, continue_label) = if region_has_direct_continue(&op.regions[0]) {
+            let n = self.label_counter;
+            self.label_counter += 1;
+            (Some(format!("'__loop{n}")), Some(format!("'__continue{n}")))
+        } else {
+            (None, None)
+        };
+        match &break_label {
+            Some(label) => self.emit_line(&format!("{label}: loop {{")),
+            None => self.emit_line("loop {"),
+        }
+        self.indent += 1;
+        if let Some(label) = &continue_label {
+            self.emit_line(&format!("{label}: {{"));
+            self.indent += 1;
+        }
+        self.loop_stack.push(LoopFrame {
+            break_label: break_label.clone(),
+            continue_label: continue_label.clone(),
+            is_loop: true,
+        });
+        self.lower_region_ops(&op.regions[0]);
+        self.loop_stack.pop();
+        if continue_label.is_some() {
+            self.indent -= 1;
+            self.emit_line("}");
+        }
+        let cond = self.lower_condition_region(&op.regions[1]);
+        self.emit_line(&format!("if !({cond}) {{"));
+        self.indent += 1;
+        match &break_label {
+            Some(label) => self.emit_line(&format!("break {label};")),
+            None => self.emit_line("break;"),
+        }
+        self.indent -= 1;
+        self.emit_line("}");
         self.indent -= 1;
         self.emit_line("}");
     }
