@@ -4,7 +4,7 @@ use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{Item, Program};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 /// How a translation unit fits into a multi-file project: which symbols other
 /// units define, which sibling modules the crate root must declare, and whether
@@ -74,6 +74,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         extern_globals: BTreeMap::new(),
         strings: BTreeMap::new(),
         const_arrays: BTreeMap::new(),
+        const_zero_globals: BTreeSet::new(),
         externs: BTreeMap::new(),
         extern_returns: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
@@ -94,6 +95,7 @@ struct Lowerer<'a> {
     /// numeric aggregate const globals (e.g. `int a[5]={..}`) → element literals,
     /// keyed by raw sym_name; consumed when a `cir.copy` initializes a local.
     const_arrays: BTreeMap<String, Vec<String>>,
+    const_zero_globals: BTreeSet<String>,
     /// external (body-less) functions → rust types of their fixed params; the
     /// call site uses this to `as`-cast args and wrap the call in `unsafe`.
     externs: BTreeMap<String, Vec<String>>,
@@ -340,6 +342,8 @@ impl<'a> Lowerer<'a> {
                 // zero-initialized array; render_array_literal zero-pads to length.
                 self.const_arrays.insert(name.to_string(), Vec::new());
             }
+        } else if raw.trim_start().starts_with("#cir.zero") {
+            self.const_zero_globals.insert(name.to_string());
         } else if let Some(init) = parse_cir_int(raw)
             .map(|n| n.to_string())
             .or_else(|| parse_cir_fp(raw))
@@ -401,7 +405,7 @@ impl<'a> Lowerer<'a> {
 
     fn standard_record_defs(&self) -> Vec<String> {
         let mut out = Vec::new();
-        for name in ["div_t", "ldiv_t", "lldiv_t", "imaxdiv_t"] {
+        for name in ["div_t", "ldiv_t", "lldiv_t", "imaxdiv_t", "tm", "lconv"] {
             if self.records.contains_key(name) {
                 continue;
             }
@@ -812,9 +816,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 if let Some(bytes) = self.parent.strings.get(name) {
                     let elems: Vec<String> = bytes.iter().map(|b| b.to_string()).collect();
                     Some(render_array_literal(&elems, dst_len.unwrap_or(elems.len())))
-                } else {
-                    let elems = self.parent.const_arrays.get(name)?;
+                } else if let Some(elems) = self.parent.const_arrays.get(name) {
                     Some(render_array_literal(elems, dst_len.unwrap_or(elems.len())))
+                } else if self.parent.const_zero_globals.contains(name) {
+                    self.slot_types.get(dst).map(|ty| self.default_value(ty))
+                } else {
+                    None
                 }
             }
             _ => self
@@ -1306,13 +1313,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(base_ptr) = op.operands.first() else {
             return;
         };
-        let Some(base) = self.slots.get(base_ptr).cloned() else {
-            self.parent.ctx.diagnostics.warn(
-                "lower: unsupported get_member base".to_string(),
-                op.loc.clone(),
-            );
-            return;
-        };
+        let base = self
+            .slots
+            .get(base_ptr)
+            .cloned()
+            .unwrap_or_else(|| format!("(*{})", self.render_pointer_operand(base_ptr)));
         let field = sanitize_ident(attr_str(op, "name").unwrap_or(result));
         self.member_ptrs
             .insert(result.clone(), MemberPtr { base, field });
@@ -2244,6 +2249,12 @@ fn standard_record_def(name: &str) -> &'static str {
         "imaxdiv_t" => {
             "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct imaxdiv_t { quot: i64, rem: i64 }\n"
         }
+        "tm" => {
+            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct tm { tm_sec: i32, tm_min: i32, tm_hour: i32, tm_mday: i32, tm_mon: i32, tm_year: i32, tm_wday: i32, tm_yday: i32, tm_isdst: i32, tm_gmtoff: i64, tm_zone: *mut i8 }\n"
+        }
+        "lconv" => {
+            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct lconv { decimal_point: *mut i8, thousands_sep: *mut i8, grouping: *mut i8, int_curr_symbol: *mut i8, currency_symbol: *mut i8, mon_decimal_point: *mut i8, mon_thousands_sep: *mut i8, mon_grouping: *mut i8, positive_sign: *mut i8, negative_sign: *mut i8, int_frac_digits: i8, frac_digits: i8, p_cs_precedes: i8, p_sep_by_space: i8, n_cs_precedes: i8, n_sep_by_space: i8, p_sign_posn: i8, n_sign_posn: i8, int_p_cs_precedes: i8, int_p_sep_by_space: i8, int_n_cs_precedes: i8, int_n_sep_by_space: i8, int_p_sign_posn: i8, int_n_sign_posn: i8 }\n"
+        }
         _ => "",
     }
 }
@@ -2254,6 +2265,12 @@ fn standard_record_default(ty: &str) -> Option<&'static str> {
         "ldiv_t" => Some("ldiv_t { quot: 0, rem: 0 }"),
         "lldiv_t" => Some("lldiv_t { quot: 0, rem: 0 }"),
         "imaxdiv_t" => Some("imaxdiv_t { quot: 0, rem: 0 }"),
+        "tm" => Some(
+            "tm { tm_sec: 0, tm_min: 0, tm_hour: 0, tm_mday: 0, tm_mon: 0, tm_year: 0, tm_wday: 0, tm_yday: 0, tm_isdst: 0, tm_gmtoff: 0, tm_zone: std::ptr::null_mut() }",
+        ),
+        "lconv" => Some(
+            "lconv { decimal_point: std::ptr::null_mut(), thousands_sep: std::ptr::null_mut(), grouping: std::ptr::null_mut(), int_curr_symbol: std::ptr::null_mut(), currency_symbol: std::ptr::null_mut(), mon_decimal_point: std::ptr::null_mut(), mon_thousands_sep: std::ptr::null_mut(), mon_grouping: std::ptr::null_mut(), positive_sign: std::ptr::null_mut(), negative_sign: std::ptr::null_mut(), int_frac_digits: 0, frac_digits: 0, p_cs_precedes: 0, p_sep_by_space: 0, n_cs_precedes: 0, n_sep_by_space: 0, p_sign_posn: 0, n_sign_posn: 0, int_p_cs_precedes: 0, int_p_sep_by_space: 0, int_n_cs_precedes: 0, int_n_sep_by_space: 0, int_p_sign_posn: 0, int_n_sign_posn: 0 }",
+        ),
         _ => None,
     }
 }
