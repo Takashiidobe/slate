@@ -16,8 +16,26 @@ pub struct Program {
 #[derive(Debug, Clone)]
 pub enum Item {
     Func(Func),
+    /// Migration target for lowered functions: a string header line plus a flat,
+    /// depth-annotated statement list. Control flow stays as `Stmt::Raw` scaffolding
+    /// at its nesting depth (no structural blocks yet); straight-line statements are
+    /// real nodes so fixups can operate on them.
+    Fn(FnDef),
     /// Escape hatch for things without a modeled node yet (e.g. `use` lines).
     Raw(String),
+}
+
+#[derive(Debug, Clone)]
+pub struct FnDef {
+    /// The opening line through the brace, e.g. `fn add(a: i32, b: i32) -> i32 {`.
+    pub open: String,
+    pub body: Vec<IndentStmt>,
+}
+
+#[derive(Debug, Clone)]
+pub struct IndentStmt {
+    pub depth: usize,
+    pub stmt: Stmt,
 }
 
 #[derive(Debug, Clone)]
@@ -58,6 +76,9 @@ pub enum Stmt {
         body: Block,
     },
     Block(Block),
+    /// A fully-formed Rust statement line spliced in as-is, sans indentation and
+    /// trailing newline. The migration bridge for control flow not yet modeled.
+    Raw(String),
 }
 
 #[derive(Debug, Clone)]
@@ -126,6 +147,14 @@ impl Item {
     fn emit(&self, out: &mut String) {
         match self {
             Item::Func(f) => f.emit(out),
+            Item::Fn(f) => {
+                out.push_str(&f.open);
+                out.push('\n');
+                for IndentStmt { depth, stmt } in &f.body {
+                    stmt.emit(out, *depth);
+                }
+                out.push_str("}\n");
+            }
             Item::Raw(s) => {
                 out.push_str(s);
                 out.push('\n');
@@ -162,6 +191,14 @@ impl Block {
 }
 
 impl Stmt {
+    // The single-line, un-indented text form, as fixups parse it. Only meaningful
+    // for the flat statement forms the migrated body holds (Let/Assign/Expr/Return/Raw).
+    pub fn render_line(&self) -> String {
+        let mut out = String::new();
+        self.emit(&mut out, 0);
+        out.trim_end().to_string()
+    }
+
     fn emit(&self, out: &mut String, depth: usize) {
         let pad = INDENT.repeat(depth);
         match self {
@@ -209,31 +246,156 @@ impl Stmt {
                 b.emit(out, depth + 1);
                 let _ = writeln!(out, "{pad}}}");
             }
+            Stmt::Raw(line) => {
+                let _ = writeln!(out, "{pad}{line}");
+            }
         }
     }
 }
 
+// Rust expression binding powers (higher binds tighter). Only the operators the
+// lowerer emits are modeled; anything atomic or brace/paren-delimited renders at
+// PREC_ATOM so it never needs wrapping.
+const PREC_CAST: u8 = 12;
+const PREC_PREFIX: u8 = 13;
+const PREC_CALL: u8 = 14;
+const PREC_ATOM: u8 = 15;
+
+fn binop_prec(op: &str) -> u8 {
+    match op {
+        "||" => 3,
+        "&&" => 4,
+        "==" | "!=" | "<" | ">" | "<=" | ">=" => 5,
+        "|" => 6,
+        "^" => 7,
+        "&" => 8,
+        "<<" | ">>" => 9,
+        "+" | "-" => 10,
+        "*" | "/" | "%" => 11,
+        _ => PREC_ATOM,
+    }
+}
+
+fn is_comparison(op: &str) -> bool {
+    binop_prec(op) == 5
+}
+
 impl Expr {
     pub fn render(&self) -> String {
+        self.render_prec(0)
+    }
+
+    // Render for splicing into arbitrary surrounding text (a `Stmt::Raw` line),
+    // where the enclosing precedence is unknown. Anything that binds looser than a
+    // call is wrapped so the splice can never change precedence.
+    pub fn render_spliceable(&self) -> String {
+        if self.prec() < PREC_CALL {
+            format!("({})", self.render())
+        } else {
+            self.render()
+        }
+    }
+
+    // Replace every `Var(name)` node with a clone of `replacement`, returning
+    // whether any substitution happened. Names baked into `Raw` text are not
+    // reached — the inliner falls back to a textual splice for those.
+    pub fn substitute_var(&mut self, name: &str, replacement: &Expr) -> bool {
         match self {
-            Expr::Lit(s) | Expr::Var(s) | Expr::Raw(s) => s.clone(),
-            Expr::Unary { op, expr } => format!("{op}{}", expr.render()),
-            Expr::Binary { op, lhs, rhs } => {
-                format!("({} {op} {})", lhs.render(), rhs.render())
+            Expr::Var(v) if v == name => {
+                *self = replacement.clone();
+                true
+            }
+            Expr::Lit(_) | Expr::Var(_) | Expr::Raw(_) => false,
+            Expr::Unary { expr, .. }
+            | Expr::Cast { expr, .. }
+            | Expr::Ref { expr, .. }
+            | Expr::Unsafe(expr) => expr.substitute_var(name, replacement),
+            Expr::Binary { lhs, rhs, .. } => {
+                let l = lhs.substitute_var(name, replacement);
+                let r = rhs.substitute_var(name, replacement);
+                l || r
             }
             Expr::Call { func, args } => {
-                format!("{}({})", func.render(), render_args(args))
+                let mut changed = func.substitute_var(name, replacement);
+                for arg in args {
+                    changed |= arg.substitute_var(name, replacement);
+                }
+                changed
+            }
+            Expr::Macro { args, .. } => {
+                let mut changed = false;
+                for arg in args {
+                    changed |= arg.substitute_var(name, replacement);
+                }
+                changed
+            }
+        }
+    }
+
+    fn prec(&self) -> u8 {
+        match self {
+            Expr::Binary { op, .. } => binop_prec(op),
+            Expr::Cast { .. } => PREC_CAST,
+            Expr::Unary { .. } | Expr::Ref { .. } => PREC_PREFIX,
+            Expr::Call { .. } => PREC_CALL,
+            _ => PREC_ATOM,
+        }
+    }
+
+    // render, wrapping in parens when this expression binds looser than the
+    // enclosing position requires. Extra parens are always safe, so the rule is
+    // conservative: wrap on `<`, keep bare on `>=`.
+    fn render_prec(&self, min: u8) -> String {
+        let inner = self.render_raw();
+        if self.prec() < min {
+            format!("({inner})")
+        } else {
+            inner
+        }
+    }
+
+    fn render_raw(&self) -> String {
+        match self {
+            Expr::Lit(s) | Expr::Var(s) | Expr::Raw(s) => s.clone(),
+            Expr::Unary { op, expr } => format!("{op}{}", render_prefix_operand(expr)),
+            Expr::Binary { op, lhs, rhs } => {
+                let p = binop_prec(op);
+                // left-assoc: the right operand must bind strictly tighter, so a
+                // same-precedence right child (`a - (b - c)`) still needs parens.
+                // comparisons are non-associative, so wrap same-precedence on both
+                // sides to avoid an illegal `a < b < c` chain.
+                let (lmin, rmin) = if is_comparison(op) {
+                    (p + 1, p + 1)
+                } else {
+                    (p, p + 1)
+                };
+                format!("{} {op} {}", lhs.render_prec(lmin), rhs.render_prec(rmin))
+            }
+            Expr::Call { func, args } => {
+                format!("{}({})", func.render_prec(PREC_CALL), render_args(args))
             }
             Expr::Macro { name, args } => {
                 format!("{name}!({})", render_args(args))
             }
             Expr::Unsafe(e) => format!("unsafe {{ {} }}", e.render()),
-            Expr::Cast { expr, ty } => format!("{} as {}", expr.render(), ty.render()),
+            Expr::Cast { expr, ty } => {
+                format!("{} as {}", expr.render_prec(PREC_CAST), ty.render())
+            }
             Expr::Ref { mutable, expr } => {
                 let kw = if *mutable { "&mut " } else { "&" };
-                format!("{kw}{}", expr.render())
+                format!("{kw}{}", render_prefix_operand(expr))
             }
         }
+    }
+}
+
+// A prefix operator over another prefix form (`- -a`, `&&x`) tokenizes as `--`
+// or `&&` without a barrier, so parenthesize a nested prefix operand.
+fn render_prefix_operand(expr: &Expr) -> String {
+    if matches!(expr, Expr::Unary { .. } | Expr::Ref { .. }) {
+        format!("({})", expr.render())
+    } else {
+        expr.render_prec(PREC_PREFIX)
     }
 }
 
@@ -295,10 +457,107 @@ mod tests {
 
         let expected = "\
 fn add(a: i32, b: i32) -> i32 {
-    let mut c: i32 = (a + b);
+    let mut c: i32 = a + b;
     return c;
 }
 ";
         assert_eq!(prog.emit(), expected);
+    }
+
+    fn var(name: &str) -> Box<Expr> {
+        Box::new(Expr::Var(name.into()))
+    }
+
+    fn bin(op: &str, lhs: Box<Expr>, rhs: Box<Expr>) -> Box<Expr> {
+        Box::new(Expr::Binary {
+            op: op.into(),
+            lhs,
+            rhs,
+        })
+    }
+
+    #[test]
+    fn elides_parens_by_precedence() {
+        // a + b * c : mul binds tighter, no parens.
+        assert_eq!(
+            bin("+", var("a"), bin("*", var("b"), var("c"))).render(),
+            "a + b * c"
+        );
+        // (a + b) * c : add under mul must be wrapped.
+        assert_eq!(
+            bin("*", bin("+", var("a"), var("b")), var("c")).render(),
+            "(a + b) * c"
+        );
+    }
+
+    #[test]
+    fn keeps_parens_for_left_assoc_right_child() {
+        // a - (b - c) : subtraction is left-assoc, right child needs parens.
+        assert_eq!(
+            bin("-", var("a"), bin("-", var("b"), var("c"))).render(),
+            "a - (b - c)"
+        );
+        // a - b - c : left nesting is the default parse, no parens.
+        assert_eq!(
+            bin("-", bin("-", var("a"), var("b")), var("c")).render(),
+            "a - b - c"
+        );
+    }
+
+    #[test]
+    fn wraps_non_associative_comparison_chain() {
+        assert_eq!(
+            bin("<", bin("<", var("a"), var("b")), var("c")).render(),
+            "(a < b) < c"
+        );
+    }
+
+    #[test]
+    fn shift_and_bitwise_precedence() {
+        // add binds tighter than shift: no parens.
+        assert_eq!(
+            bin("<<", bin("+", var("a"), var("b")), var("c")).render(),
+            "a + b << c"
+        );
+        // bitand binds tighter than comparison: no parens.
+        assert_eq!(
+            bin("==", bin("&", var("a"), var("b")), var("c")).render(),
+            "a & b == c"
+        );
+    }
+
+    #[test]
+    fn wraps_binary_under_prefix_and_cast() {
+        assert_eq!(
+            Expr::Unary {
+                op: "-".into(),
+                expr: bin("+", var("a"), var("b")),
+            }
+            .render(),
+            "-(a + b)"
+        );
+        assert_eq!(
+            Expr::Cast {
+                expr: bin("+", var("a"), var("b")),
+                ty: Type::Named("i64".into()),
+            }
+            .render(),
+            "(a + b) as i64"
+        );
+    }
+
+    #[test]
+    fn separates_nested_prefix_operators() {
+        assert_eq!(
+            Expr::Unary {
+                op: "-".into(),
+                expr: Box::new(Expr::Unary {
+                    op: "-".into(),
+                    expr: var("a"),
+                }),
+            }
+            .render(),
+            "-(-a)"
+        );
     }
 }
