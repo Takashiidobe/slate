@@ -48,6 +48,18 @@ pub struct IndentStmt {
 }
 
 #[derive(Debug, Clone)]
+pub struct MatchArm {
+    pub pattern: String,
+    pub body: Vec<IndentStmt>,
+}
+
+#[derive(Debug, Clone)]
+pub struct ExprMatchArm {
+    pub pattern: String,
+    pub value: Expr,
+}
+
+#[derive(Debug, Clone)]
 pub struct Func {
     pub name: String,
     pub params: Vec<Param>,
@@ -99,6 +111,10 @@ pub enum Stmt {
         label: String,
         body: Vec<IndentStmt>,
     },
+    Match {
+        expr: Expr,
+        arms: Vec<MatchArm>,
+    },
     Break(Option<String>),
     Continue(Option<String>),
     While {
@@ -144,6 +160,10 @@ pub enum Expr {
     Macro {
         name: String,
         args: Vec<Expr>,
+    },
+    Match {
+        expr: Box<Expr>,
+        arms: Vec<ExprMatchArm>,
     },
     Unsafe(Box<Expr>),
     Cast {
@@ -340,6 +360,15 @@ impl Stmt {
                 emit_indent_stmts(out, body, depth + 1);
                 let _ = writeln!(out, "{pad}}}");
             }
+            Stmt::Match { expr, arms } => {
+                let _ = writeln!(out, "{pad}match {} {{", expr.render_spliceable());
+                for arm in arms {
+                    let _ = writeln!(out, "{pad}{INDENT}{} => {{", arm.pattern);
+                    emit_indent_stmts(out, &arm.body, depth + 2);
+                    let _ = writeln!(out, "{pad}{INDENT}}}");
+                }
+                let _ = writeln!(out, "{pad}}}");
+            }
             Stmt::Break(label) => match label {
                 Some(label) => {
                     let _ = writeln!(out, "{pad}break {label};");
@@ -464,6 +493,13 @@ impl Expr {
                 }
                 changed
             }
+            Expr::Match { expr, arms } => {
+                let mut changed = expr.substitute_var(name, replacement);
+                for arm in arms {
+                    changed |= arm.value.substitute_var(name, replacement);
+                }
+                changed
+            }
         }
     }
 
@@ -521,6 +557,14 @@ impl Expr {
             }
             Expr::Macro { name, args } => {
                 format!("{name}!({})", render_args(args))
+            }
+            Expr::Match { expr, arms } => {
+                let arms = arms
+                    .iter()
+                    .map(|arm| format!("{} => {}", arm.pattern, arm.value.render()))
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                format!("match {} {{ {arms} }}", expr.render_spliceable())
             }
             Expr::Unsafe(e) => format!("unsafe {{ {} }}", e.render()),
             Expr::Cast { expr, ty } => {
