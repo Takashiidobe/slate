@@ -3,7 +3,7 @@
 use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
-use crate::rust_ast::{Item, Program};
+use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, Stmt};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// How a translation unit fits into a multi-file project: which symbols other
@@ -125,7 +125,7 @@ struct FunctionLowerer<'a, 'b> {
     element_ptrs: BTreeMap<String, ElementPtr>,
     temp_counter: usize,
     indent: usize,
-    out: String,
+    body: Vec<IndentStmt>,
     is_main: bool,
     loop_stack: Vec<LoopFrame>,
     label_counter: usize,
@@ -190,14 +190,26 @@ struct GlobalVar {
 
 #[derive(Debug, Clone)]
 enum Val {
-    Expr(String),
+    Expr(Expr),
     Global(String),
 }
 
 impl Val {
+    // bridge for the still-textual constructors: wrap a rendered string as a leaf.
+    fn expr(s: impl Into<String>) -> Val {
+        Val::Expr(Expr::Raw(s.into()))
+    }
+
+    fn to_expr(&self, strings: &BTreeMap<String, Vec<u8>>) -> Expr {
+        match self {
+            Val::Expr(e) => e.clone(),
+            Val::Global(_) => Expr::Raw(self.render(strings)),
+        }
+    }
+
     fn render(&self, strings: &BTreeMap<String, Vec<u8>>) -> String {
         match self {
-            Val::Expr(s) => s.clone(),
+            Val::Expr(e) => e.render(),
             Val::Global(name) => match strings.get(name) {
                 Some(bytes) => {
                     // *mut so it fits *mut char slots; weakens to *const for printf/libc.
@@ -326,7 +338,7 @@ impl<'a> Lowerer<'a> {
                 continue;
             }
             match self.lower_func(op) {
-                Some(text) => items.push(Item::Raw(text)),
+                Some(item) => items.push(item),
                 None => self.ctx.diagnostics.warn(
                     format!("lower: skipped function {:?}", attr_str(op, "sym_name")),
                     op.loc.clone(),
@@ -533,7 +545,7 @@ impl<'a> Lowerer<'a> {
         out
     }
 
-    fn lower_func(&mut self, op: &Op) -> Option<String> {
+    fn lower_func(&mut self, op: &Op) -> Option<Item> {
         let name = attr_str(op, "sym_name")?;
         let function_type = attr_str(op, "function_type").unwrap_or("");
         let (param_types, ret_ty) = parse_function_type(function_type);
@@ -541,7 +553,6 @@ impl<'a> Lowerer<'a> {
         let is_main = name == "main";
         let is_variadic = !is_main && function_type_is_variadic(function_type);
 
-        let mut text = String::new();
         let mut params = entry
             .args
             .iter()
@@ -561,9 +572,8 @@ impl<'a> Lowerer<'a> {
         };
         let params = params.join(", ");
 
-        if is_main {
-            text.push_str("fn main() {\n");
-            text.push_str(&self.main_arg_bindings(entry));
+        let (open, prelude) = if is_main {
+            ("fn main() {".to_string(), self.main_arg_bindings(entry))
         } else {
             let vis = if self.project.emit_pub && linkage_is_external(op) {
                 "pub "
@@ -578,11 +588,12 @@ impl<'a> Lowerer<'a> {
             } else {
                 ""
             };
-            text.push_str(&format!(
-                "{vis}{prefix}fn {name}({params}) -> {} {{\n",
+            let open = format!(
+                "{vis}{prefix}fn {name}({params}) -> {} {{",
                 self.rust_type(ret_ty.as_deref().unwrap_or("()"))
-            ));
-        }
+            );
+            (open, Vec::new())
+        };
 
         let mut f = FunctionLowerer {
             parent: self,
@@ -593,7 +604,7 @@ impl<'a> Lowerer<'a> {
             element_ptrs: BTreeMap::new(),
             temp_counter: 0,
             indent: 1,
-            out: String::new(),
+            body: Vec::new(),
             is_main,
             loop_stack: Vec::new(),
             label_counter: 0,
@@ -603,8 +614,11 @@ impl<'a> Lowerer<'a> {
             va_args_param,
         };
 
+        for line in prelude {
+            f.emit_line(&line);
+        }
         for (arg, _) in &entry.args {
-            f.values.insert(arg.clone(), Val::Expr(arg.clone()));
+            f.values.insert(arg.clone(), Val::expr(arg.clone()));
         }
         let body = op.regions.first().unwrap();
         if body.blocks.len() > 1 {
@@ -612,19 +626,18 @@ impl<'a> Lowerer<'a> {
         } else {
             f.lower_block(entry);
         }
-        text.push_str(&f.out);
-        text.push_str("}\n");
-        Some(text)
+        Some(Item::Fn(FnDef { open, body: f.body }))
     }
 
-    fn main_arg_bindings(&self, entry: &Block) -> String {
+    fn main_arg_bindings(&self, entry: &Block) -> Vec<String> {
         if entry.args.is_empty() {
-            return String::new();
+            return Vec::new();
         }
-        let mut text = String::new();
-        text.push_str("    let mut __slate_argv_storage: Vec<std::ffi::CString> = std::env::args().map(|arg| std::ffi::CString::new(arg).unwrap()).collect();\n");
-        text.push_str("    let mut __slate_argv_ptrs: Vec<*mut i8> = __slate_argv_storage.iter().map(|arg| arg.as_ptr() as *mut i8).collect();\n");
-        text.push_str("    __slate_argv_ptrs.push(std::ptr::null_mut());\n");
+        let mut lines = vec![
+            "let mut __slate_argv_storage: Vec<std::ffi::CString> = std::env::args().map(|arg| std::ffi::CString::new(arg).unwrap()).collect();".to_string(),
+            "let mut __slate_argv_ptrs: Vec<*mut i8> = __slate_argv_storage.iter().map(|arg| arg.as_ptr() as *mut i8).collect();".to_string(),
+            "__slate_argv_ptrs.push(std::ptr::null_mut());".to_string(),
+        ];
 
         for (i, (arg, ty)) in entry.args.iter().enumerate() {
             let name = sanitize_ident(arg);
@@ -634,9 +647,9 @@ impl<'a> Lowerer<'a> {
                 1 => "__slate_argv_ptrs.as_mut_ptr()".to_string(),
                 _ => "std::ptr::null_mut()".to_string(),
             };
-            text.push_str(&format!("    let {name}: {rust_ty} = {value};\n"));
+            lines.push(format!("let {name}: {rust_ty} = {value};"));
         }
-        text
+        lines
     }
 
     /// Build a Rust `extern "C"` signature line for a body-less C declaration,
@@ -1346,7 +1359,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.emit_line(&f);
         self.indent -= 1;
         self.emit_line("};");
-        self.values.insert(result.to_string(), Val::Expr(name));
+        self.values.insert(result.to_string(), Val::expr(name));
     }
 
     // Lower every op in a region, capturing the terminating cir.yield's operand as
@@ -1374,11 +1387,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let lhs = self.render_operand(&op.operands[0]);
-        let rhs = self.render_operand(&op.operands[1]);
-        self.materialize(
+        let lhs = self.operand_expr(&op.operands[0]);
+        let rhs = self.operand_expr(&op.operands[1]);
+        self.materialize_expr(
             result,
-            format!("(({lhs}) {rust_op} ({rhs}))"),
+            Expr::Binary {
+                op: rust_op.to_string(),
+                lhs: Box::new(lhs),
+                rhs: Box::new(rhs),
+            },
             op_result_type(op),
         );
     }
@@ -1394,10 +1411,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let lhs = self.render_operand(&op.operands[0]);
-        let rhs = self.render_operand(&op.operands[1]);
+        let lhs = self.operand_expr(&op.operands[0]);
+        let rhs = self.operand_expr(&op.operands[1]);
         let ty = op_result_type(op);
-        self.materialize(result, format!("(({lhs}) {rust_op} ({rhs}))"), ty);
+        self.materialize_expr(
+            result,
+            Expr::Binary {
+                op: rust_op.to_string(),
+                lhs: Box::new(lhs),
+                rhs: Box::new(rhs),
+            },
+            ty,
+        );
     }
 
     fn lower_overflow_arith(&mut self, op: &Op, rust_method: &str) {
@@ -1428,9 +1453,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
-        let value = self.render_operand(value);
+        let value = self.operand_expr(value);
         let ty = op_result_type(op);
-        self.materialize(result, format!("({value} {rust_op} 1)"), ty);
+        self.materialize_expr(
+            result,
+            Expr::Binary {
+                op: rust_op.to_string(),
+                lhs: Box::new(value),
+                rhs: Box::new(Expr::Lit("1".to_string())),
+            },
+            ty,
+        );
     }
 
     // cir.shift carries the isShiftleft unit attr for `<<`; its absence means `>>`.
@@ -1452,9 +1485,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
-        let value = self.render_operand(value);
+        let value = self.operand_expr(value);
         let ty = op_result_type(op);
-        self.materialize(result, format!("(!({value}))"), ty);
+        self.materialize_expr(
+            result,
+            Expr::Unary {
+                op: "!".to_string(),
+                expr: Box::new(value),
+            },
+            ty,
+        );
     }
 
     fn lower_neg(&mut self, op: &Op) {
@@ -1464,7 +1504,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
-        let value = self.render_operand(value);
+        let value = self.operand_expr(value);
         let result_ty = op_result_type(op);
         let operand_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
             .into_iter()
@@ -1473,14 +1513,29 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "i32".into());
-        let expr = if rust_ty == LONG_DOUBLE_TY {
-            format!("{LONG_DOUBLE_TY}(-({value}).0)")
-        } else if operand_ty == "!cir.bool" {
-            format!("-(({value}) as {rust_ty})")
+        if rust_ty == LONG_DOUBLE_TY {
+            self.materialize(
+                result,
+                format!("{LONG_DOUBLE_TY}(-({}).0)", value.render()),
+                result_ty,
+            );
+            return;
+        }
+        let expr = if operand_ty == "!cir.bool" {
+            Expr::Unary {
+                op: "-".to_string(),
+                expr: Box::new(Expr::Cast {
+                    expr: Box::new(value),
+                    ty: crate::rust_ast::Type::Named(rust_ty),
+                }),
+            }
         } else {
-            format!("(-({value}))")
+            Expr::Unary {
+                op: "-".to_string(),
+                expr: Box::new(value),
+            }
         };
-        self.materialize(result, expr, result_ty);
+        self.materialize_expr(result, expr, result_ty);
     }
 
     fn lower_abs(&mut self, op: &Op) {
@@ -1661,8 +1716,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let lhs = self.render_operand(&op.operands[0]);
-        let rhs = self.render_operand(&op.operands[1]);
+        let lhs = self.operand_expr(&op.operands[0]);
+        let rhs = self.operand_expr(&op.operands[1]);
         let cmp = match attr_int(op, "kind") {
             Some(0) => "<",
             Some(1) => "<=",
@@ -1672,9 +1727,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Some(5) => "!=",
             _ => "<=",
         };
-        self.materialize(
+        self.materialize_expr(
             result,
-            format!("(({lhs}) {cmp} ({rhs}))"),
+            Expr::Binary {
+                op: cmp.to_string(),
+                lhs: Box::new(lhs),
+                rhs: Box::new(rhs),
+            },
             Some("!cir.bool"),
         );
     }
@@ -1852,7 +1911,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         // array-decay of a `va_list` local keeps referring to the same slot.
         if let Some(slot) = self.va_places.get(src).cloned() {
             self.va_places.insert(result.clone(), slot.clone());
-            self.values.insert(result.clone(), Val::Expr(slot));
+            self.values.insert(result.clone(), Val::expr(slot));
             return;
         }
         let result_ty = op_result_type(op).unwrap_or("");
@@ -1881,7 +1940,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
                 let arr = render_array_literal(&typed, len);
                 let ptr_ty = self.parent.rust_type(result_ty);
-                Val::Expr(format!("{arr}.as_ptr() as {ptr_ty}"))
+                Val::expr(format!("{arr}.as_ptr() as {ptr_ty}"))
             }
             Some(Val::Global(name)) => Val::Global(name),
             _ if self
@@ -1889,22 +1948,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .get(src)
                 .is_some_and(|ty| parse_rust_array_type(ty).is_some()) =>
             {
-                Val::Expr(format!("{}.as_mut_ptr()", self.render_operand(src)))
+                Val::expr(format!("{}.as_mut_ptr()", self.render_operand(src)))
             }
-            _ if is_long_double(result_ty) && !is_long_double(operand_ty) => Val::Expr(format!(
+            _ if is_long_double(result_ty) && !is_long_double(operand_ty) => Val::expr(format!(
                 "{LONG_DOUBLE_TY}({} as f64)",
                 self.render_operand(src)
             )),
             _ if is_long_double(operand_ty) && result_ty == "!cir.bool" => {
-                Val::Expr(format!("({}.0 != 0.0)", self.render_operand(src)))
+                Val::expr(format!("({}.0 != 0.0)", self.render_operand(src)))
             }
-            _ if is_long_double(operand_ty) && !is_long_double(result_ty) => Val::Expr(format!(
+            _ if is_long_double(operand_ty) && !is_long_double(result_ty) => Val::expr(format!(
                 "({}.0 as {})",
                 self.render_operand(src),
                 self.parent.rust_type(result_ty)
             )),
             _ if result_ty.starts_with("!cir.ptr<") && operand_ty.starts_with("!cir.ptr<") => {
-                Val::Expr(format!(
+                Val::expr(format!(
                     "{} as {}",
                     self.render_pointer_operand(src),
                     self.parent.rust_type(result_ty)
@@ -1914,22 +1973,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             // fn pointer: `as` cannot target Option<fn(..)>, so reinterpret the bits.
             _ if result_ty.starts_with("!cir.ptr<!cir.func<") => {
                 let ptr_ty = self.parent.rust_type(result_ty);
-                Val::Expr(format!(
+                Val::expr(format!(
                     "unsafe {{ std::mem::transmute::<usize, {ptr_ty}>(({}) as usize) }}",
                     self.render_operand(src)
                 ))
             }
-            _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(format!(
+            _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::expr(format!(
                 "({} != {})",
                 self.render_operand(src),
                 zero_for_cir_type(operand_ty)
             )),
-            _ if result_ty == operand_ty => Val::Expr(self.render_operand(src)),
-            _ => Val::Expr(format!(
-                "({}) as {}",
-                self.render_operand(src),
-                self.parent.rust_type(result_ty)
-            )),
+            _ if result_ty == operand_ty => Val::Expr(self.operand_expr(src)),
+            _ => Val::Expr(Expr::Cast {
+                expr: Box::new(self.operand_expr(src)),
+                ty: crate::rust_ast::Type::Named(self.parent.rust_type(result_ty)),
+            }),
         };
         self.values.insert(result.clone(), value);
     }
@@ -1964,7 +2022,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let index = self.render_operand(&op.operands[1]);
         self.values.insert(
             result.clone(),
-            Val::Expr(format!("unsafe {{ {base}.offset({index} as isize) }}")),
+            Val::expr(format!("unsafe {{ {base}.offset({index} as isize) }}")),
         );
     }
 
@@ -2014,7 +2072,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.emit_line(&format!(
                     "unsafe {{ __slate_strtold({a0} as *mut i8, {a1} as *mut *mut i8, std::ptr::addr_of_mut!({name})); }}"
                 ));
-                self.values.insert(result.to_string(), Val::Expr(name));
+                self.values.insert(result.to_string(), Val::expr(name));
             }
             return;
         }
@@ -2151,7 +2209,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             new
         };
-        self.values.insert(result.to_string(), Val::Expr(bound));
+        self.values.insert(result.to_string(), Val::expr(bound));
     }
 
     fn lower_atomic_xchg(&mut self, op: &Op) {
@@ -2174,7 +2232,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let old = self.next_temp();
         self.emit_line(&format!("let {old}: {ty} = unsafe {{ *{addr} }};"));
         self.emit_line(&format!("unsafe {{ *{addr} = {val}; }}"));
-        self.values.insert(result, Val::Expr(old));
+        self.values.insert(result, Val::expr(old));
     }
 
     fn lower_atomic_cmpxchg(&mut self, op: &Op) {
@@ -2203,8 +2261,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ));
             let ok = self.next_temp();
             self.emit_line(&format!("let {ok}: bool = {res}.is_ok();"));
-            self.values.insert(op.results[0].clone(), Val::Expr(old));
-            self.values.insert(op.results[1].clone(), Val::Expr(ok));
+            self.values.insert(op.results[0].clone(), Val::expr(old));
+            self.values.insert(op.results[1].clone(), Val::expr(ok));
             return;
         }
         let addr = self.store_address(&op.operands[0]);
@@ -2213,8 +2271,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.emit_line(&format!("let {old}: {ty} = unsafe {{ *{addr} }};"));
         self.emit_line(&format!("let {ok}: bool = {old} == ({expected});"));
         self.emit_line(&format!("if {ok} {{ unsafe {{ *{addr} = {desired}; }} }}"));
-        self.values.insert(op.results[0].clone(), Val::Expr(old));
-        self.values.insert(op.results[1].clone(), Val::Expr(ok));
+        self.values.insert(op.results[0].clone(), Val::expr(old));
+        self.values.insert(op.results[1].clone(), Val::expr(ok));
     }
 
     fn lower_atomic_fence(&mut self, op: &Op) {
@@ -2694,20 +2752,36 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn materialize(&mut self, result: &str, expr: String, cir_ty: Option<&str>) {
+        self.materialize_expr(result, Expr::Raw(expr), cir_ty);
+    }
+
+    fn materialize_expr(&mut self, result: &str, expr: Expr, cir_ty: Option<&str>) {
         let name = self.next_temp();
         let ty = cir_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "i32".into());
-        self.emit_line(&format!("let {name}: {ty} = {expr};"));
-        self.values.insert(result.to_string(), Val::Expr(name));
+        self.push_stmt(Stmt::Let {
+            name: name.clone(),
+            mutable: false,
+            ty: Some(crate::rust_ast::Type::Named(ty)),
+            init: Some(expr),
+        });
+        self.values
+            .insert(result.to_string(), Val::Expr(Expr::Var(name)));
+    }
+
+    fn operand_expr(&self, operand: &str) -> Expr {
+        if let Some(val) = self.values.get(operand) {
+            return val.to_expr(&self.parent.strings);
+        }
+        if let Some(slot) = self.slots.get(operand) {
+            return Expr::Raw(slot.clone());
+        }
+        Expr::Raw(sanitize_ident(operand))
     }
 
     fn render_operand(&self, operand: &str) -> String {
-        self.values
-            .get(operand)
-            .map(|value| value.render(&self.parent.strings))
-            .or_else(|| self.slots.get(operand).map(|slot| slot.clone()))
-            .unwrap_or_else(|| sanitize_ident(operand))
+        self.operand_expr(operand).render()
     }
 
     fn render_pointer_operand(&self, operand: &str) -> String {
@@ -2762,9 +2836,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn emit_line(&mut self, line: &str) {
-        self.out.push_str(&"    ".repeat(self.indent));
-        self.out.push_str(line);
-        self.out.push('\n');
+        self.push_stmt(Stmt::Raw(line.to_string()));
+    }
+
+    fn push_stmt(&mut self, stmt: Stmt) {
+        self.body.push(IndentStmt {
+            depth: self.indent,
+            stmt,
+        });
     }
 
     fn pointee_type(&self, ty: &str) -> Option<String> {
