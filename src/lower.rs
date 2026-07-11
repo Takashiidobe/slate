@@ -1801,6 +1801,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     self.parent.rust_type(result_ty)
                 ))
             }
+            // integer sentinel (SIG_IGN/SIG_DFL/SIG_ERR = (void(*)(int))N) cast to a
+            // fn pointer: `as` cannot target Option<fn(..)>, so reinterpret the bits.
+            _ if result_ty.starts_with("!cir.ptr<!cir.func<") => {
+                let ptr_ty = self.parent.rust_type(result_ty);
+                Val::Expr(format!(
+                    "unsafe {{ std::mem::transmute::<usize, {ptr_ty}>(({}) as usize) }}",
+                    self.render_operand(src)
+                ))
+            }
             _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(format!(
                 "({} != {})",
                 self.render_operand(src),
@@ -2466,7 +2475,7 @@ fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
             .iter()
             .filter_map(|value| match value {
                 Attr::Int(n) => Some(*n),
-                Attr::Raw(raw) => parse_cir_int(raw),
+                Attr::Raw(raw) => parse_cir_int(raw).map(|n| n as i64),
                 _ => None,
             })
             .collect(),
@@ -2829,7 +2838,10 @@ fn zero_for_cir_type(ty: &str) -> &'static str {
     }
 }
 
-fn parse_cir_int(s: &str) -> Option<i64> {
+// i128 so a full-range `!u64i` value (e.g. SIG_ERR = (void(*)(int))-1, which CIR
+// prints as the unsigned bit pattern 18446744073709551615) survives as a valid
+// unsigned literal rather than overflowing i64 and collapsing to 0.
+fn parse_cir_int(s: &str) -> Option<i128> {
     let start = s.find("#cir.int<")? + "#cir.int<".len();
     let rest = &s[start..];
     let end = rest.find('>')?;
