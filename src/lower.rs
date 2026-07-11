@@ -959,7 +959,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.complex.create" => self.lower_complex_create(op),
             "cir.complex.real" => self.lower_complex_part(op, "re"),
             "cir.complex.imag" => self.lower_complex_part(op, "im"),
-            "cir.inc" => self.lower_inc(op),
+            "cir.inc" => self.lower_step(op, "+"),
+            "cir.dec" => self.lower_step(op, "-"),
             "cir.cmp" => self.lower_cmp(op),
             "cir.select" => self.lower_select(op),
             "cir.ternary" => self.lower_ternary(op),
@@ -1382,7 +1383,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize(result, format!("(({lhs}) {rust_op} ({rhs}))"), ty);
     }
 
-    fn lower_inc(&mut self, op: &Op) {
+    fn lower_step(&mut self, op: &Op, rust_op: &str) {
         let Some(result) = op.results.first() else {
             return;
         };
@@ -1391,7 +1392,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let value = self.render_operand(value);
         let ty = op_result_type(op);
-        self.materialize(result, format!("({value} + 1)"), ty);
+        self.materialize(result, format!("({value} {rust_op} 1)"), ty);
     }
 
     // cir.shift carries the isShiftleft unit attr for `<<`; its absence means `>>`.
