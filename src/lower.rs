@@ -4,8 +4,8 @@ use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, FnDef,
-    FnParam, IndentStmt, Item, MatchArm, Program, Stmt, Type,
+    AtomicOrdering, AtomicRmwOp, AtomicType, EnumConst, Expr, ExprMatchArm, ExternDecl,
+    ExternFnDecl, FnDef, FnParam, IndentStmt, Item, MatchArm, Prim, Program, RecordDef, Stmt, Type,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -227,18 +227,16 @@ impl<'a> Lowerer<'a> {
         ])];
 
         for enm in &c.enums {
-            if let Some(text) = self.lower_enum(enm) {
-                items.push(Item::Raw(text));
+            if let Some(item) = self.lower_enum(enm) {
+                items.push(item);
             }
         }
         for record in &c.records {
-            if let Some(text) = self.lower_record(record) {
-                items.push(Item::Raw(text));
+            if let Some(item) = self.lower_record(record) {
+                items.push(item);
             }
         }
-        for text in self.standard_record_defs() {
-            items.push(Item::Raw(text));
-        }
+        items.extend(self.standard_record_defs());
 
         let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
             self.ctx
@@ -539,47 +537,44 @@ impl<'a> Lowerer<'a> {
         }
     }
 
-    fn lower_enum(&mut self, enm: &crate::c_ast::Enum) -> Option<String> {
+    fn lower_enum(&mut self, enm: &crate::c_ast::Enum) -> Option<Item> {
         if enm.variants.is_empty() {
             return None;
         }
-        let mut text = String::new();
-        for variant in &enm.variants {
-            text.push_str(&format!(
-                "const {}: i32 = {};\n",
-                sanitize_ident(&variant.name),
-                variant.value
-            ));
-        }
-        Some(text)
+        let consts = enm
+            .variants
+            .iter()
+            .map(|variant| EnumConst {
+                name: sanitize_ident(&variant.name),
+                value: variant.value,
+            })
+            .collect();
+        Some(Item::Enum(consts))
     }
 
-    fn lower_record(&mut self, record: &crate::c_ast::Record) -> Option<String> {
+    fn lower_record(&mut self, record: &crate::c_ast::Record) -> Option<Item> {
         if record.fields.is_empty() {
             return None;
         }
-        let mut text = match record.kind {
-            RecordKind::Struct => format!(
-                "#[repr(C)]\n#[derive(Clone, Copy)]\nstruct {} {{\n",
-                sanitize_ident(&record.name)
-            ),
-            RecordKind::Union => format!(
-                "#[repr(C)]\n#[derive(Clone, Copy)]\nunion {} {{\n",
-                sanitize_ident(&record.name)
-            ),
-        };
-        for field in &record.fields {
-            text.push_str(&format!(
-                "    {}: {},\n",
-                sanitize_ident(&field.name),
-                self.rust_c_type(&field.ty)
-            ));
-        }
-        text.push_str("}\n");
-        Some(text)
+        let fields = record
+            .fields
+            .iter()
+            .map(|field| {
+                (
+                    sanitize_ident(&field.name),
+                    self.record_field_type(&field.ty),
+                )
+            })
+            .collect();
+        Some(Item::Record(RecordDef {
+            is_union: record.kind == RecordKind::Union,
+            allow_non_camel_case: false,
+            name: sanitize_ident(&record.name),
+            fields,
+        }))
     }
 
-    fn standard_record_defs(&self) -> Vec<String> {
+    fn standard_record_defs(&self) -> Vec<Item> {
         let mut out = Vec::new();
         for name in ["div_t", "ldiv_t", "lldiv_t", "imaxdiv_t", "tm", "lconv"] {
             if self.records.contains_key(name) {
@@ -590,7 +585,7 @@ impl<'a> Lowerer<'a> {
                 .values()
                 .any(|ty| cir_record_name(ty) == Some(name))
             {
-                out.push(standard_record_def(name).to_string());
+                out.push(Item::Record(standard_record_def(name)));
             }
         }
         out
@@ -802,12 +797,11 @@ impl<'a> Lowerer<'a> {
         ty
     }
 
-    fn rust_c_type(&self, ty: &crate::c_ast::CType) -> String {
-        let rust = c_type_to_rust(ty);
-        if rust.contains(LONG_DOUBLE_TY) {
+    fn record_field_type(&self, ty: &crate::c_ast::CType) -> Type {
+        if ctype_uses_long_double(ty) {
             self.uses_long_double.set(true);
         }
-        rust
+        c_type_to_type(ty)
     }
 
     fn default_value_expr(&self, ty: &str) -> Expr {
@@ -1002,6 +996,54 @@ fn c_type_to_rust(ty: &crate::c_ast::CType) -> String {
         }
         crate::c_ast::CType::Array(inner, None) => format!("*mut {}", c_type_to_rust(inner)),
         crate::c_ast::CType::Record(name) => sanitize_ident(name),
+    }
+}
+
+fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
+    use crate::c_ast::CType;
+    let ptr = |inner: &CType| Type::Ptr {
+        mutable: true,
+        inner: Box::new(c_type_to_type(inner)),
+    };
+    match ty {
+        CType::Void => Type::Unit,
+        CType::Bool => Type::Prim(Prim::Bool),
+        CType::Int { signed, bits } => Type::Prim(match (signed, bits) {
+            (true, 8) => Prim::I8,
+            (false, 8) => Prim::U8,
+            (true, 16) => Prim::I16,
+            (false, 16) => Prim::U16,
+            (false, 32) => Prim::U32,
+            (true, 64) => Prim::I64,
+            (false, 64) => Prim::U64,
+            _ => Prim::I32,
+        }),
+        CType::Float { bits: 32 } => Type::Prim(Prim::F32),
+        CType::Float { bits: 80 } => Type::Named(LONG_DOUBLE_TY.into()),
+        CType::Float { .. } => Type::Prim(Prim::F64),
+        CType::Ptr(inner) => ptr(inner),
+        CType::FuncPtr { ret, params } => Type::FnPtr {
+            params: params.iter().map(c_type_to_type).collect(),
+            ret: Box::new(c_type_to_type(ret)),
+        },
+        CType::Array(inner, Some(len)) => Type::Array {
+            elem: Box::new(c_type_to_type(inner)),
+            len: *len,
+        },
+        CType::Array(inner, None) => ptr(inner),
+        CType::Record(name) => Type::Named(sanitize_ident(name)),
+    }
+}
+
+fn ctype_uses_long_double(ty: &crate::c_ast::CType) -> bool {
+    use crate::c_ast::CType;
+    match ty {
+        CType::Float { bits: 80 } => true,
+        CType::Ptr(inner) | CType::Array(inner, _) => ctype_uses_long_double(inner),
+        CType::FuncPtr { ret, params } => {
+            ctype_uses_long_double(ret) || params.iter().any(ctype_uses_long_double)
+        }
+        _ => false,
     }
 }
 
@@ -4041,27 +4083,59 @@ fn default_value_expr(ty: &str) -> Expr {
     }
 }
 
-fn standard_record_def(name: &str) -> &'static str {
-    match name {
-        "div_t" => {
-            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct div_t { quot: i32, rem: i32 }\n"
-        }
-        "ldiv_t" => {
-            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct ldiv_t { quot: i64, rem: i64 }\n"
-        }
-        "lldiv_t" => {
-            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct lldiv_t { quot: i64, rem: i64 }\n"
-        }
-        "imaxdiv_t" => {
-            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct imaxdiv_t { quot: i64, rem: i64 }\n"
-        }
-        "tm" => {
-            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct tm { tm_sec: i32, tm_min: i32, tm_hour: i32, tm_mday: i32, tm_mon: i32, tm_year: i32, tm_wday: i32, tm_yday: i32, tm_isdst: i32, tm_gmtoff: i64, tm_zone: *mut i8 }\n"
-        }
-        "lconv" => {
-            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy)]\nstruct lconv { decimal_point: *mut i8, thousands_sep: *mut i8, grouping: *mut i8, int_curr_symbol: *mut i8, currency_symbol: *mut i8, mon_decimal_point: *mut i8, mon_thousands_sep: *mut i8, mon_grouping: *mut i8, positive_sign: *mut i8, negative_sign: *mut i8, int_frac_digits: i8, frac_digits: i8, p_cs_precedes: i8, p_sep_by_space: i8, n_cs_precedes: i8, n_sep_by_space: i8, p_sign_posn: i8, n_sign_posn: i8, int_p_cs_precedes: i8, int_p_sep_by_space: i8, int_n_cs_precedes: i8, int_n_sep_by_space: i8, int_p_sign_posn: i8, int_n_sign_posn: i8 }\n"
-        }
-        _ => "",
+fn standard_record_def(name: &str) -> RecordDef {
+    let fields: Vec<(&str, &str)> = match name {
+        "div_t" => vec![("quot", "i32"), ("rem", "i32")],
+        "ldiv_t" | "lldiv_t" | "imaxdiv_t" => vec![("quot", "i64"), ("rem", "i64")],
+        "tm" => vec![
+            ("tm_sec", "i32"),
+            ("tm_min", "i32"),
+            ("tm_hour", "i32"),
+            ("tm_mday", "i32"),
+            ("tm_mon", "i32"),
+            ("tm_year", "i32"),
+            ("tm_wday", "i32"),
+            ("tm_yday", "i32"),
+            ("tm_isdst", "i32"),
+            ("tm_gmtoff", "i64"),
+            ("tm_zone", "*mut i8"),
+        ],
+        "lconv" => vec![
+            ("decimal_point", "*mut i8"),
+            ("thousands_sep", "*mut i8"),
+            ("grouping", "*mut i8"),
+            ("int_curr_symbol", "*mut i8"),
+            ("currency_symbol", "*mut i8"),
+            ("mon_decimal_point", "*mut i8"),
+            ("mon_thousands_sep", "*mut i8"),
+            ("mon_grouping", "*mut i8"),
+            ("positive_sign", "*mut i8"),
+            ("negative_sign", "*mut i8"),
+            ("int_frac_digits", "i8"),
+            ("frac_digits", "i8"),
+            ("p_cs_precedes", "i8"),
+            ("p_sep_by_space", "i8"),
+            ("n_cs_precedes", "i8"),
+            ("n_sep_by_space", "i8"),
+            ("p_sign_posn", "i8"),
+            ("n_sign_posn", "i8"),
+            ("int_p_cs_precedes", "i8"),
+            ("int_p_sep_by_space", "i8"),
+            ("int_n_cs_precedes", "i8"),
+            ("int_n_sep_by_space", "i8"),
+            ("int_p_sign_posn", "i8"),
+            ("int_n_sign_posn", "i8"),
+        ],
+        _ => Vec::new(),
+    };
+    RecordDef {
+        is_union: false,
+        allow_non_camel_case: true,
+        name: name.to_string(),
+        fields: fields
+            .into_iter()
+            .map(|(n, ty)| (n.to_string(), Type::parse(ty)))
+            .collect(),
     }
 }
 
@@ -4543,6 +4617,77 @@ mod tests {
             matches!(f.values.get("r"), Some(Val::Expr(Expr::Var(_)))),
             "the result value must reference the binding as a structured Expr::Var"
         );
+    }
+
+    #[test]
+    fn records_lower_to_structured_field_types() {
+        use crate::c_ast::{CType, Decl, Record};
+        let mut ctx = Ctx::default();
+        let mut lowerer = test_lowerer(&mut ctx);
+        let record = Record {
+            name: "S".into(),
+            kind: RecordKind::Struct,
+            fields: vec![
+                Decl {
+                    name: "n".into(),
+                    ty: CType::Int {
+                        signed: true,
+                        bits: 32,
+                    },
+                },
+                Decl {
+                    name: "p".into(),
+                    ty: CType::Ptr(Box::new(CType::Int {
+                        signed: true,
+                        bits: 8,
+                    })),
+                },
+            ],
+        };
+        let Some(Item::Record(def)) = lowerer.lower_record(&record) else {
+            panic!("lower_record should produce an Item::Record");
+        };
+        assert!(matches!(def.fields[0].1, Type::Prim(Prim::I32)));
+        assert!(matches!(
+            &def.fields[1].1,
+            Type::Ptr { mutable: true, inner } if matches!(**inner, Type::Prim(Prim::I8))
+        ));
+    }
+
+    #[test]
+    fn enums_lower_to_structured_const_items() {
+        use crate::c_ast::{Enum, EnumVariant};
+        let mut ctx = Ctx::default();
+        let mut lowerer = test_lowerer(&mut ctx);
+        let enm = Enum {
+            name: Some("E".into()),
+            variants: vec![
+                EnumVariant {
+                    name: "A".into(),
+                    value: 0,
+                },
+                EnumVariant {
+                    name: "B".into(),
+                    value: -1,
+                },
+            ],
+        };
+        let Some(Item::Enum(consts)) = lowerer.lower_enum(&enm) else {
+            panic!("lower_enum should produce an Item::Enum");
+        };
+        assert_eq!(consts.len(), 2);
+        assert_eq!(consts[1].name, "B");
+        assert_eq!(consts[1].value, -1);
+    }
+
+    #[test]
+    fn parses_pointer_spellings_into_structured_types() {
+        assert!(matches!(
+            Type::parse("*mut i8"),
+            Type::Ptr { mutable: true, inner } if matches!(*inner, Type::Prim(Prim::I8))
+        ));
+        assert!(matches!(Type::parse("i64"), Type::Prim(Prim::I64)));
+        assert!(matches!(Type::parse("Pair"), Type::Named(n) if n == "Pair"));
     }
 
     #[test]
