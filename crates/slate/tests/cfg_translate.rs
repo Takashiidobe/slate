@@ -22,6 +22,21 @@ fn translate_cfg(name: &str) -> String {
     String::from_utf8(out.stdout).expect("generated Rust is utf8")
 }
 
+fn translate_cfg_err(name: &str) -> String {
+    let src = cfg_fixtures_dir().join(name);
+    let out = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate-cfg")
+        .arg(&src)
+        .output()
+        .expect("run slate translate-cfg");
+    assert!(
+        !out.status.success(),
+        "translate-cfg unexpectedly succeeded for {name}:\n{}",
+        String::from_utf8_lossy(&out.stdout)
+    );
+    String::from_utf8(out.stderr).expect("diagnostics are utf8")
+}
+
 fn write_generated(name: &str, rust: &str) -> PathBuf {
     let out_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/cfg-translate-generated");
     std::fs::create_dir_all(&out_dir).expect("create cfg translate output dir");
@@ -85,4 +100,49 @@ fn cfg_translated_fixtures_compile_for_current_host() {
         support::compile_rs_cargo(&rs, &work_dir, &package)
             .unwrap_or_else(|err| panic!("generated cfg Rust did not compile for {name}:\n{err}"));
     }
+}
+
+#[test]
+fn refuses_conditional_inside_a_function_body() {
+    let err = translate_cfg_err("reject/fragment_stmt.c");
+    assert!(
+        err.contains("inside a function or record body"),
+        "expected fragment-cut diagnostic, got:\n{err}"
+    );
+}
+
+#[test]
+fn refuses_predicate_without_a_known_cfg_mapping() {
+    let err = translate_cfg_err("reject/unmapped_predicate.c");
+    assert!(
+        err.contains("does not map to a known Rust cfg"),
+        "expected unmapped-predicate diagnostic, got:\n{err}"
+    );
+}
+
+#[test]
+fn refuses_multiple_conditional_chains() {
+    let err = translate_cfg_err("reject/two_chains.c");
+    assert!(
+        err.contains("conditional chains found"),
+        "expected multi-chain diagnostic, got:\n{err}"
+    );
+}
+
+#[test]
+fn passes_through_sources_without_conditional_regions() {
+    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/add.c");
+    let out = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate-cfg")
+        .arg(&src)
+        .output()
+        .expect("run slate translate-cfg");
+    assert!(
+        out.status.success(),
+        "translate-cfg failed on a plain source:\n{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
+    assert!(rust.contains("fn add("));
+    assert!(!rust.contains("#[cfg("));
 }
