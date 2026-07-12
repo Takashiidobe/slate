@@ -632,6 +632,7 @@ impl<W: Write> Codegen<W> {
     fn expr_raw(&mut self, expr: &Expr) -> fmt::Result {
         match expr {
             Expr::Value(v) => self.value(v),
+            Expr::Str(s) => self.out.write_str(&string_literal(s)),
             Expr::HexFloat(s) => self.out.write_str(s),
             Expr::ByteStr(bytes) => self.out.write_str(&byte_string_literal(bytes)),
             Expr::Path(p) => self.path(p),
@@ -1090,6 +1091,23 @@ fn byte_string_literal(bytes: &[u8]) -> String {
             0 => out.push_str("\\0"),
             0x20..=0x7e => out.push(*b as char),
             _ => out.push_str(&format!("\\x{b:02x}")),
+        }
+    }
+    out.push('"');
+    out
+}
+
+fn string_literal(s: &str) -> String {
+    let mut out = String::from("\"");
+    for ch in s.chars() {
+        match ch {
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            '\\' => out.push_str("\\\\"),
+            '"' => out.push_str("\\\""),
+            ch if ch.is_ascii_graphic() || ch == ' ' => out.push(ch),
+            ch => out.push_str(&format!("\\u{{{:x}}}", ch as u32)),
         }
     }
     out.push('"');
