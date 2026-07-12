@@ -494,7 +494,7 @@ impl<W: Write> Codegen<W> {
                     self.ty(ty)?;
                 }
                 self.out.write_str(" = if ")?;
-                self.expr_spliceable(cond)?;
+                self.expr_prec(cond, PREC_CALL)?;
                 self.out.write_str(" {\n")?;
                 self.indent_stmts(then_body, depth + 1)?;
                 write!(self.out, "{pad}{INDENT}")?;
@@ -536,7 +536,7 @@ impl<W: Write> Codegen<W> {
                 else_body,
             } => {
                 write!(self.out, "{pad}if ")?;
-                self.expr_spliceable(cond)?;
+                self.expr_prec(cond, PREC_CALL)?;
                 self.out.write_str(" {\n")?;
                 self.indent_stmts(then_body, depth + 1)?;
                 if else_body.is_empty() {
@@ -567,7 +567,7 @@ impl<W: Write> Codegen<W> {
             }
             Stmt::Match { expr, arms } => {
                 write!(self.out, "{pad}match ")?;
-                self.expr_spliceable(expr)?;
+                self.expr_prec(expr, PREC_CALL)?;
                 self.out.write_str(" {\n")?;
                 for arm in arms {
                     write!(self.out, "{pad}{INDENT}")?;
@@ -598,23 +598,11 @@ impl<W: Write> Codegen<W> {
                 self.block(b, depth + 1)?;
                 writeln!(self.out, "{pad}}}")
             }
-            Stmt::Raw(line) => writeln!(self.out, "{pad}{line}"),
         }
     }
 
     pub fn expr(&mut self, expr: &Expr) -> fmt::Result {
         self.expr_prec(expr, 0)
-    }
-
-    // Render for splicing into arbitrary surrounding text (a `Stmt::Raw` line),
-    // where the enclosing precedence is unknown. Anything that binds looser than
-    // a call is wrapped so the splice can never change precedence.
-    fn expr_spliceable(&mut self, expr: &Expr) -> fmt::Result {
-        if expr_prec(expr) < PREC_CALL {
-            self.parenthesized(expr)
-        } else {
-            self.expr(expr)
-        }
     }
 
     // Render, wrapping in parens when this expression binds looser than the
@@ -707,7 +695,7 @@ impl<W: Write> Codegen<W> {
             Expr::Index { base, index } => {
                 self.expr_prec(base, PREC_CALL)?;
                 self.out.write_char('[')?;
-                self.expr_spliceable(index)?;
+                self.expr_prec(index, PREC_CALL)?;
                 self.out.write_char(']')
             }
             Expr::StructLit { name, fields } => {
@@ -749,7 +737,7 @@ impl<W: Write> Codegen<W> {
             }
             Expr::Match { expr, arms } => {
                 self.out.write_str("match ")?;
-                self.expr_spliceable(expr)?;
+                self.expr_prec(expr, PREC_CALL)?;
                 self.out.write_str(" { ")?;
                 for (i, arm) in arms.iter().enumerate() {
                     if i > 0 {
@@ -767,7 +755,7 @@ impl<W: Write> Codegen<W> {
                 else_expr,
             } => {
                 self.out.write_str("if ")?;
-                self.expr_spliceable(cond)?;
+                self.expr_prec(cond, PREC_CALL)?;
                 self.out.write_str(" { ")?;
                 self.expr(then_expr)?;
                 self.out.write_str(" } else { ")?;
@@ -1047,21 +1035,8 @@ pub fn expr_to_string(expr: &Expr) -> String {
     cg.into_inner()
 }
 
-pub fn expr_spliceable_to_string(expr: &Expr) -> String {
-    let mut cg = Codegen::new(String::new());
-    cg.expr_spliceable(expr)
-        .expect("writing to a String never fails");
-    cg.into_inner()
-}
-
 pub fn type_to_string(ty: &Type) -> String {
     let mut cg = Codegen::new(String::new());
     cg.ty(ty).expect("writing to a String never fails");
     cg.into_inner()
-}
-
-pub fn stmt_line_to_string(stmt: &Stmt) -> String {
-    let mut cg = Codegen::new(String::new());
-    cg.stmt(stmt, 0).expect("writing to a String never fails");
-    cg.into_inner().trim_end().to_string()
 }
