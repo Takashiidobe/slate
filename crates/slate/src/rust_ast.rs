@@ -615,6 +615,17 @@ pub enum Expr {
         dst: Box<Expr>,
         count: usize,
     },
+    PtrCopy {
+        src: Box<Expr>,
+        dst: Box<Expr>,
+        count: Box<Expr>,
+        overlapping: bool,
+    },
+    WriteBytes {
+        dst: Box<Expr>,
+        val: Box<Expr>,
+        count: Box<Expr>,
+    },
     Todo(String),
     Path(Path),
 }
@@ -843,6 +854,20 @@ impl Expr {
                 let s = src.substitute_var(name, replacement);
                 let d = dst.substitute_var(name, replacement);
                 s || d
+            }
+            Expr::PtrCopy {
+                src, dst, count, ..
+            } => {
+                let s = src.substitute_var(name, replacement);
+                let d = dst.substitute_var(name, replacement);
+                let c = count.substitute_var(name, replacement);
+                s || d || c
+            }
+            Expr::WriteBytes { dst, val, count } => {
+                let d = dst.substitute_var(name, replacement);
+                let v = val.substitute_var(name, replacement);
+                let c = count.substitute_var(name, replacement);
+                d || v || c
             }
             Expr::AtomicFence { .. } | Expr::Todo(_) => false,
             Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
