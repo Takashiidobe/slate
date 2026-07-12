@@ -6,9 +6,9 @@ use crate::ctx::Ctx;
 use crate::rust_ast::{
     AtomicOrdering, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType, CrateAttr, Derive,
     EnumConst, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam, GenericParam,
-    Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint, MatchArm, Method, Pattern, Prim,
-    Program, RecordDef, Repr, RustValue, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type,
-    UnaryOp, Visibility,
+    Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint, MatchArm, Method, Path, Pattern,
+    Prim, Program, RecordDef, Repr, RustValue, StdTrait, Stmt, StructDef, StructFields, TraitBound,
+    Type, UnaryOp, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -278,7 +278,11 @@ impl<'a> Lowerer<'a> {
             // an extern global defined in a sibling TU becomes a module import.
             if let Some(module) = self.project.cross_module_globals.get(name) {
                 self.cross_uses.push(Item::Use {
-                    path: format!("crate::{module}::{name}"),
+                    path: Path::new([
+                        Ident::from("crate"),
+                        Ident::from(module.as_str()),
+                        Ident::from(name.as_str()),
+                    ]),
                 });
                 continue;
             }
@@ -303,7 +307,11 @@ impl<'a> Lowerer<'a> {
             // import; the call then flows through the normal (non-extern) path.
             if let Some(module) = self.project.cross_module.get(name) {
                 self.cross_uses.push(Item::Use {
-                    path: format!("crate::{module}::{name}"),
+                    path: Path::new([
+                        Ident::from("crate"),
+                        Ident::from(module.as_str()),
+                        Ident::from(name),
+                    ]),
                 });
                 continue;
             }
@@ -424,7 +432,9 @@ impl<'a> Lowerer<'a> {
             .project
             .child_modules
             .iter()
-            .map(|name| Item::Mod { name: name.clone() })
+            .map(|name| Item::Mod {
+                name: Ident::from(name.as_str()),
+            })
             .collect();
         wiring.append(&mut self.cross_uses);
         for (offset, item) in wiring.into_iter().enumerate() {
