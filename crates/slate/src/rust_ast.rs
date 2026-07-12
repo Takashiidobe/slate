@@ -245,11 +245,11 @@ pub enum Expr {
     Lit(String),
     Var(String),
     Unary {
-        op: String,
+        op: UnaryOp,
         expr: Box<Expr>,
     },
     Binary {
-        op: String,
+        op: BinOp,
         lhs: Box<Expr>,
         rhs: Box<Expr>,
     },
@@ -441,6 +441,89 @@ impl Prim {
             "f64" => Prim::F64,
             _ => return None,
         })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BinOp {
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Rem,
+    BitAnd,
+    BitOr,
+    BitXor,
+    Shl,
+    Shr,
+    Eq,
+    Ne,
+    Lt,
+    Le,
+    Gt,
+    Ge,
+    And,
+    Or,
+}
+
+impl BinOp {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            BinOp::Add => "+",
+            BinOp::Sub => "-",
+            BinOp::Mul => "*",
+            BinOp::Div => "/",
+            BinOp::Rem => "%",
+            BinOp::BitAnd => "&",
+            BinOp::BitOr => "|",
+            BinOp::BitXor => "^",
+            BinOp::Shl => "<<",
+            BinOp::Shr => ">>",
+            BinOp::Eq => "==",
+            BinOp::Ne => "!=",
+            BinOp::Lt => "<",
+            BinOp::Le => "<=",
+            BinOp::Gt => ">",
+            BinOp::Ge => ">=",
+            BinOp::And => "&&",
+            BinOp::Or => "||",
+        }
+    }
+
+    // higher binds tighter; mirrors Rust's operator precedence.
+    pub fn precedence(self) -> u8 {
+        match self {
+            BinOp::Or => 3,
+            BinOp::And => 4,
+            BinOp::Eq | BinOp::Ne | BinOp::Lt | BinOp::Gt | BinOp::Le | BinOp::Ge => 5,
+            BinOp::BitOr => 6,
+            BinOp::BitXor => 7,
+            BinOp::BitAnd => 8,
+            BinOp::Shl | BinOp::Shr => 9,
+            BinOp::Add | BinOp::Sub => 10,
+            BinOp::Mul | BinOp::Div | BinOp::Rem => 11,
+        }
+    }
+
+    pub fn is_comparison(self) -> bool {
+        self.precedence() == 5
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum UnaryOp {
+    Neg,
+    Not,
+    Deref,
+}
+
+impl UnaryOp {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            UnaryOp::Neg => "-",
+            UnaryOp::Not => "!",
+            UnaryOp::Deref => "*",
+        }
     }
 }
 
