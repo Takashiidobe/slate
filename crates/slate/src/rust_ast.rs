@@ -20,8 +20,44 @@ pub enum Item {
     /// `Stmt::Raw`, but common control-flow and straight-line statements are
     /// structured so fixups can operate on them.
     Fn(FnDef),
+    CrateAttrs(Vec<String>),
+    Mod {
+        name: String,
+    },
+    Use {
+        path: String,
+    },
+    Static {
+        vis: Option<String>,
+        mutable: bool,
+        name: String,
+        ty: Type,
+        init: Expr,
+    },
+    ExternBlock {
+        abi: String,
+        decls: Vec<ExternDecl>,
+    },
     /// Escape hatch for things without a modeled node yet (e.g. `use` lines).
     Raw(String),
+}
+
+#[derive(Debug, Clone)]
+pub enum ExternDecl {
+    Fn(ExternFnDecl),
+    Static {
+        mutable: bool,
+        name: String,
+        ty: Type,
+    },
+}
+
+#[derive(Debug, Clone)]
+pub struct ExternFnDecl {
+    pub name: String,
+    pub params: Vec<FnParam>,
+    pub variadic: bool,
+    pub ret: Option<Type>,
 }
 
 #[derive(Debug, Clone)]
@@ -340,9 +376,79 @@ impl Item {
                 }
                 out.push_str("}\n");
             }
+            Item::CrateAttrs(attrs) => {
+                for attr in attrs {
+                    let _ = writeln!(out, "#![{attr}]");
+                }
+            }
+            Item::Mod { name } => {
+                let _ = writeln!(out, "mod {name};");
+            }
+            Item::Use { path } => {
+                let _ = writeln!(out, "use {path};");
+            }
+            Item::Static {
+                vis,
+                mutable,
+                name,
+                ty,
+                init,
+            } => {
+                if let Some(vis) = vis {
+                    out.push_str(vis);
+                    out.push(' ');
+                }
+                out.push_str("static ");
+                if *mutable {
+                    out.push_str("mut ");
+                }
+                let _ = writeln!(out, "{name}: {} = {};", ty.render(), init.render());
+            }
+            Item::ExternBlock { abi, decls } => {
+                let _ = writeln!(out, "unsafe extern \"{abi}\" {{");
+                for decl in decls {
+                    out.push_str(INDENT);
+                    decl.emit(out);
+                }
+                out.push_str("}\n");
+            }
             Item::Raw(s) => {
                 out.push_str(s);
                 out.push('\n');
+            }
+        }
+    }
+}
+
+impl ExternDecl {
+    fn emit(&self, out: &mut String) {
+        match self {
+            ExternDecl::Fn(f) => {
+                let _ = write!(out, "fn {}(", f.name);
+                for (i, p) in f.params.iter().enumerate() {
+                    if i > 0 {
+                        out.push_str(", ");
+                    }
+                    let _ = write!(out, "{}: {}", p.name, p.ty.render());
+                }
+                if f.variadic {
+                    if !f.params.is_empty() {
+                        out.push_str(", ");
+                    }
+                    out.push_str("...");
+                }
+                out.push(')');
+                if let Some(ret) = &f.ret {
+                    let _ = write!(out, " -> {}", ret.render());
+                }
+                out.push_str(";\n");
+            }
+            ExternDecl::Static { mutable, name, ty } => {
+                out.push_str("static ");
+                if *mutable {
+                    out.push_str("mut ");
+                }
+                let _ = writeln!(out, "{name}: {};", ty.render());
             }
         }
     }
