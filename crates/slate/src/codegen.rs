@@ -682,6 +682,7 @@ impl<W: Write> Codegen<W> {
                 self.expr(dst)?;
                 write!(self.out, ", {count}) }}")
             }
+            Expr::Todo(note) => write!(self.out, "todo!({note:?})"),
         }
     }
 

@@ -357,6 +357,7 @@ pub enum Expr {
         dst: Box<Expr>,
         count: usize,
     },
+    Todo(String),
     /// Fully-formed Rust text spliced in as-is (e.g. `libc::printf`).
     Raw(String),
 }
@@ -494,7 +495,7 @@ impl Expr {
                 let d = dst.substitute_var(name, replacement);
                 s || d
             }
-            Expr::AtomicFence { .. } => false,
+            Expr::AtomicFence { .. } | Expr::Todo(_) => false,
             Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
                 ptr.substitute_var(name, replacement)
             }
