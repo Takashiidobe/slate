@@ -731,6 +731,7 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char('>')
             }
             Type::Unit => self.out.write_str("()"),
+            Type::Variadic => self.out.write_str("..."),
         }
     }
 }

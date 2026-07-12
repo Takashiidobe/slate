@@ -380,6 +380,7 @@ pub enum Type {
         ret: Box<Type>,
     },
     Unit,
+    Variadic,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
