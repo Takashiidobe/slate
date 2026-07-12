@@ -202,7 +202,7 @@ impl<W: Write> Codegen<W> {
         let kw = if r.is_union { "union" } else { "struct" };
         writeln!(self.out, "{kw} {} {{", r.name)?;
         for (name, ty) in &r.fields {
-            write!(self.out, "    {name}: ")?;
+            write!(self.out, "    {}: ", name.as_str())?;
             self.ty(ty)?;
             self.out.write_str(",\n")?;
         }
@@ -525,7 +525,7 @@ impl<W: Write> Codegen<W> {
             }
             Stmt::Loop { label, body } => {
                 match label {
-                    Some(label) => writeln!(self.out, "{pad}{label}: loop {{")?,
+                    Some(label) => writeln!(self.out, "{pad}'{}: loop {{", label.as_str())?,
                     None => writeln!(self.out, "{pad}loop {{")?,
                 }
                 self.indent_stmts(body, depth + 1)?;
@@ -537,7 +537,7 @@ impl<W: Write> Codegen<W> {
                 writeln!(self.out, "{pad}}}")
             }
             Stmt::LabeledBlock { label, body } => {
-                writeln!(self.out, "{pad}{label}: {{")?;
+                writeln!(self.out, "{pad}'{}: {{", label.as_str())?;
                 self.indent_stmts(body, depth + 1)?;
                 writeln!(self.out, "{pad}}}")
             }
@@ -546,18 +546,20 @@ impl<W: Write> Codegen<W> {
                 self.expr_spliceable(expr)?;
                 self.out.write_str(" {\n")?;
                 for arm in arms {
-                    writeln!(self.out, "{pad}{INDENT}{} => {{", arm.pattern)?;
+                    write!(self.out, "{pad}{INDENT}")?;
+                    self.pattern(&arm.pattern)?;
+                    self.out.write_str(" => {\n")?;
                     self.indent_stmts(&arm.body, depth + 2)?;
                     writeln!(self.out, "{pad}{INDENT}}}")?;
                 }
                 writeln!(self.out, "{pad}}}")
             }
             Stmt::Break(label) => match label {
-                Some(label) => writeln!(self.out, "{pad}break {label};"),
+                Some(label) => writeln!(self.out, "{pad}break '{};", label.as_str()),
                 None => writeln!(self.out, "{pad}break;"),
             },
             Stmt::Continue(label) => match label {
-                Some(label) => writeln!(self.out, "{pad}continue {label};"),
+                Some(label) => writeln!(self.out, "{pad}continue '{};", label.as_str()),
                 None => writeln!(self.out, "{pad}continue;"),
             },
             Stmt::While { cond, body } => {
@@ -718,7 +720,8 @@ impl<W: Write> Codegen<W> {
                     if i > 0 {
                         self.out.write_str(", ")?;
                     }
-                    write!(self.out, "{} => ", arm.pattern)?;
+                    self.pattern(&arm.pattern)?;
+                    self.out.write_str(" => ")?;
                     self.expr(&arm.value)?;
                 }
                 self.out.write_str(" }")
@@ -897,7 +900,8 @@ impl<W: Write> Codegen<W> {
 
     fn value(&mut self, value: &RustValue) -> fmt::Result {
         match value {
-            RustValue::Int(n) => write!(self.out, "{n}"),
+            RustValue::I64(n) => write!(self.out, "{n}"),
+            RustValue::I128(n) => write!(self.out, "{n}"),
             RustValue::Float(n) => {
                 if n.fract() == 0.0 {
                     write!(self.out, "{n:.1}")
@@ -908,6 +912,26 @@ impl<W: Write> Codegen<W> {
             RustValue::Bool(b) => write!(self.out, "{b}"),
             RustValue::None => self.out.write_str("None"),
             RustValue::NullPtr => self.out.write_str("std::ptr::null_mut()"),
+        }
+    }
+
+    fn pattern(&mut self, pattern: &crate::rust_ast::Pattern) -> fmt::Result {
+        match pattern {
+            crate::rust_ast::Pattern::Wildcard => self.out.write_char('_'),
+            crate::rust_ast::Pattern::Binding(name) => self.out.write_str(name.as_str()),
+            crate::rust_ast::Pattern::I64(n) => write!(self.out, "{n}"),
+            crate::rust_ast::Pattern::I128(n) => write!(self.out, "{n}"),
+            crate::rust_ast::Pattern::TupleStruct { name, fields } => {
+                self.out.write_str(name.as_str())?;
+                self.out.write_char('(')?;
+                for (i, field) in fields.iter().enumerate() {
+                    if i > 0 {
+                        self.out.write_str(", ")?;
+                    }
+                    self.pattern(field)?;
+                }
+                self.out.write_char(')')
+            }
         }
     }
 

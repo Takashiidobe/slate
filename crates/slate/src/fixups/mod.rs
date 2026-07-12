@@ -1,6 +1,6 @@
 //! Rust cleanup passes that run after faithful CIR lowering.
 
-use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, RustValue, Stmt};
+use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Pattern, Program, RustValue, Stmt};
 
 pub fn apply(program: Program) -> Program {
     Program {
@@ -224,8 +224,10 @@ fn for_nested_body(stmt: &mut Stmt, f: fn(&mut Vec<IndentStmt>)) {
 }
 
 fn is_zero_expr(expr: &Expr) -> bool {
-    matches!(expr, Expr::Value(RustValue::Int(0)))
-        || matches!(expr, Expr::Lit(s) | Expr::Raw(s) if matches!(s.as_str(), "0" | "0.0" | "false"))
+    matches!(
+        expr,
+        Expr::Value(RustValue::I64(0)) | Expr::Value(RustValue::I128(0))
+    ) || matches!(expr, Expr::Lit(s) | Expr::Raw(s) if matches!(s.as_str(), "0" | "0.0" | "false"))
 }
 
 fn expr_ident(expr: &Expr) -> Option<&str> {
@@ -436,14 +438,16 @@ fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
                     .sum::<usize>()
         }
         Stmt::Loop { label, body } => {
-            label.as_ref().map_or(0, |label| ident_count(label, name))
+            label
+                .as_ref()
+                .map_or(0, |label| ident_count(label.as_str(), name))
                 + body
                     .iter()
                     .map(|stmt| stmt_ident_count(&stmt.stmt, name))
                     .sum::<usize>()
         }
         Stmt::LabeledBlock { label, body } => {
-            ident_count(label, name)
+            ident_count(label.as_str(), name)
                 + body
                     .iter()
                     .map(|stmt| stmt_ident_count(&stmt.stmt, name))
@@ -459,7 +463,7 @@ fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
                 + arms
                     .iter()
                     .map(|arm| {
-                        ident_count(&arm.pattern, name)
+                        pattern_ident_count(&arm.pattern, name)
                             + arm
                                 .body
                                 .iter()
@@ -471,6 +475,20 @@ fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
         Stmt::While { cond, body } => expr_ident_count(cond, name) + block_ident_count(body, name),
         Stmt::Block(body) => block_ident_count(body, name),
         Stmt::Raw(line) => ident_count(line, name),
+    }
+}
+
+fn pattern_ident_count(pattern: &Pattern, name: &str) -> usize {
+    match pattern {
+        Pattern::Wildcard | Pattern::I64(_) | Pattern::I128(_) => 0,
+        Pattern::Binding(binding) => usize::from(binding.as_str() == name),
+        Pattern::TupleStruct { name: ctor, fields } => {
+            usize::from(ctor.as_str() == name)
+                + fields
+                    .iter()
+                    .map(|field| pattern_ident_count(field, name))
+                    .sum::<usize>()
+        }
     }
 }
 
@@ -570,7 +588,9 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
             expr_ident_count(expr, name)
                 + arms
                     .iter()
-                    .map(|arm| ident_count(&arm.pattern, name) + expr_ident_count(&arm.value, name))
+                    .map(|arm| {
+                        pattern_ident_count(&arm.pattern, name) + expr_ident_count(&arm.value, name)
+                    })
                     .sum::<usize>()
         }
         Expr::If {
@@ -1195,25 +1215,25 @@ mod tests {
                     name: "a".into(),
                     mutable: true,
                     ty: Some(Type::Prim(Prim::I32)),
-                    init: Some(Expr::Lit("0".into())),
+                    init: Some(Expr::Value(RustValue::I64(0))),
                 },
                 Stmt::Let {
                     name: "b".into(),
                     mutable: true,
                     ty: Some(Type::Prim(Prim::I32)),
-                    init: Some(Expr::Lit("0".into())),
+                    init: Some(Expr::Value(RustValue::I64(0))),
                 },
                 Stmt::Let {
                     name: "__retval".into(),
                     mutable: true,
                     ty: Some(Type::Prim(Prim::I32)),
-                    init: Some(Expr::Lit("0".into())),
+                    init: Some(Expr::Value(RustValue::I64(0))),
                 },
                 Stmt::Let {
                     name: "c".into(),
                     mutable: true,
                     ty: Some(Type::Prim(Prim::I32)),
-                    init: Some(Expr::Lit("0".into())),
+                    init: Some(Expr::Value(RustValue::I64(0))),
                 },
                 Stmt::Assign {
                     target: Expr::Var("a".into()),
@@ -1417,9 +1437,9 @@ fn f(arg0: i32) -> i64 {
         // final splice into a `Raw` assignment wraps the compound conservatively.
         let stmts = vec![
             Stmt::Raw("let mut a: i32 = 0;".to_string()),
-            temp("_v0", "i32", Expr::Lit("20".to_string())),
+            temp("_v0", "i32", Expr::Value(RustValue::I64(20))),
             Stmt::Raw("a = _v0;".to_string()),
-            temp("_v1", "i32", Expr::Lit("5".to_string())),
+            temp("_v1", "i32", Expr::Value(RustValue::I64(5))),
             temp("_v2", "i32", Expr::Var("a".to_string().into())),
             temp(
                 "_v3",
@@ -1489,8 +1509,8 @@ fn f(arg0: i32) -> i64 {
     #[test]
     fn does_not_inline_method_receivers_that_need_type_annotations() {
         let stmts = vec![
-            temp("_v0", "i32", Expr::Lit("2147483647".to_string())),
-            temp("_v1", "i32", Expr::Lit("1".to_string())),
+            temp("_v0", "i32", Expr::Value(RustValue::I64(2147483647))),
+            temp("_v1", "i32", Expr::Value(RustValue::I64(1))),
             Stmt::Raw("let _v2 = (_v0).overflowing_add(_v1);".to_string()),
         ];
 
@@ -1569,7 +1589,11 @@ fn f() -> i32 {
     #[test]
     fn does_not_inline_call_arguments_that_need_type_annotations() {
         let stmts = vec![
-            temp("_v0", "i64", Expr::Lit("9223372036854775807".to_string())),
+            temp(
+                "_v0",
+                "i64",
+                Expr::Value(RustValue::I64(9223372036854775807)),
+            ),
             Stmt::Raw("let _v1: i32 = unsafe { printf(_v0) };".to_string()),
         ];
 
