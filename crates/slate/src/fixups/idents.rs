@@ -33,7 +33,7 @@ pub(super) fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
                 + expr_ident_count(then_value, name)
                 + expr_ident_count(else_value, name)
         }
-        Stmt::Assign { target, value } => {
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
             expr_ident_count(target, name) + expr_ident_count(value, name)
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_ident_count(expr, name),
