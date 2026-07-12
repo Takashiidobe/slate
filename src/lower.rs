@@ -1448,41 +1448,45 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_expr("todo!(\"cir.ternary\")".into());
             return;
         }
-        let cond = self.render_operand(cond);
+        let cond = self.operand_expr(cond);
         let name = self.next_temp();
         let ty = op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "i32".into());
-        self.emit_line(&format!("let {name}: {ty} = if {cond} {{"));
-        self.indent += 1;
-        let t = self.lower_yield_region(&op.regions[0]);
-        self.emit_line(&t);
-        self.indent -= 1;
-        self.emit_line("} else {");
-        self.indent += 1;
-        let f = self.lower_yield_region(&op.regions[1]);
-        self.emit_line(&f);
-        self.indent -= 1;
-        self.emit_line("};");
-        self.values.insert(result.to_string(), Val::expr(name));
+        let (then_body, then_value) = self.lower_yield_region(&op.regions[0]);
+        let (else_body, else_value) = self.lower_yield_region(&op.regions[1]);
+        self.push_stmt(Stmt::LetIf {
+            name: name.clone(),
+            mutable: false,
+            ty: Some(Type::Named(ty)),
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+        });
+        self.values
+            .insert(result.to_string(), Val::Expr(Expr::Var(name)));
     }
 
     // Lower every op in a region, capturing the terminating cir.yield's operand as
     // the region's tail value instead of lowering the yield itself.
-    fn lower_yield_region(&mut self, region: &Region) -> String {
-        let mut yielded = String::new();
-        for block in &region.blocks {
-            for op in &block.ops {
-                if op.name == "cir.yield" {
-                    if let Some(operand) = op.operands.first() {
-                        yielded = self.render_operand(operand);
+    fn lower_yield_region(&mut self, region: &Region) -> (Vec<IndentStmt>, Expr) {
+        let mut yielded = Expr::Raw("todo!(\"cir.yield\")".into());
+        let body = self.capture_body(|this| {
+            for block in &region.blocks {
+                for op in &block.ops {
+                    if op.name == "cir.yield" {
+                        if let Some(operand) = op.operands.first() {
+                            yielded = this.operand_expr(operand);
+                        }
+                    } else {
+                        this.lower_op(op);
                     }
-                } else {
-                    self.lower_op(op);
                 }
             }
-        }
-        yielded
+        });
+        (body, yielded)
     }
 
     fn lower_binary(&mut self, op: &Op, rust_op: &str) {
