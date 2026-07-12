@@ -512,6 +512,13 @@ impl<W: Write> Codegen<W> {
                 self.expr(value)?;
                 self.out.write_str(";\n")
             }
+            Stmt::CompoundAssign { target, op, value } => {
+                self.out.write_str(&pad)?;
+                self.expr(target)?;
+                write!(self.out, " {}= ", op.spelling())?;
+                self.expr(value)?;
+                self.out.write_str(";\n")
+            }
             Stmt::Expr(e) => {
                 self.out.write_str(&pad)?;
                 self.expr(e)?;

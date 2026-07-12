@@ -165,7 +165,7 @@ fn walk_stmt_exprs(stmt: &Stmt, f: &mut impl FnMut(&Expr)) {
             walk_expr(then_value, f);
             walk_expr(else_value, f);
         }
-        Stmt::Assign { target, value } => {
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
             walk_expr(target, f);
             walk_expr(value, f);
         }
