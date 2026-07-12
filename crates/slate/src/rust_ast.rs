@@ -304,6 +304,10 @@ pub enum Expr {
         mutable: bool,
         expr: Box<Expr>,
     },
+    AddrOf {
+        mutable: bool,
+        expr: Box<Expr>,
+    },
     AtomicRef {
         ty: AtomicType,
         ptr: Box<Expr>,
@@ -482,6 +486,7 @@ impl Expr {
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
             | Expr::Ref { expr, .. }
+            | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. }
             | Expr::Unsafe(expr) => expr.substitute_var(name, replacement),
             Expr::CopyNonoverlapping { src, dst, .. } => {

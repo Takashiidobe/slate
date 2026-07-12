@@ -585,6 +585,15 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str(if *mutable { "&mut " } else { "&" })?;
                 self.prefix_operand(expr)
             }
+            Expr::AddrOf { mutable, expr } => {
+                self.out.write_str(if *mutable {
+                    "std::ptr::addr_of_mut!("
+                } else {
+                    "std::ptr::addr_of!("
+                })?;
+                self.expr(expr)?;
+                self.out.write_char(')')
+            }
             Expr::AtomicRef { ty, ptr } => self.atomic_ref(*ty, ptr),
             Expr::AtomicLoad { ty, ptr, ordering } => {
                 self.out.write_str("unsafe { ")?;
