@@ -188,6 +188,15 @@ fn simple_printfs_are_recovered_as_format_macros() {
             "printf call should be removed in {fixture}"
         );
     }
+
+    let widths_c = fixtures_dir().join("printf_integer_widths.c");
+    let widths_generated = tmp.join("printf_integer_widths.generated.rs");
+    support::translate(&widths_c, &widths_generated).expect("translate printf widths fixture");
+    let widths_rust =
+        std::fs::read_to_string(&widths_generated).expect("read generated printf widths rust");
+    assert!(widths_rust.contains("println!(\"{:05}|{:<4}|{:+}|{:5}|{:+06}\","));
+    assert!(!widths_rust.contains("fn printf("));
+    assert!(!widths_rust.contains("unsafe { printf("));
 }
 
 #[test]
