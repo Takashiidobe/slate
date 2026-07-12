@@ -2,6 +2,7 @@
 
 mod call_args;
 mod compound_assign;
+mod drop_call_results;
 mod idents;
 mod inline_temps;
 mod param_spills;
@@ -27,6 +28,7 @@ pub fn apply(program: Program) -> Program {
                     compound_assign::fixup(&mut f.body);
                     call_args::fixup(&mut f.body, &sigs);
                     retval::fixup(&mut f);
+                    drop_call_results::fixup(&mut f.body);
                     Item::Fn(f)
                 }
                 item => item,

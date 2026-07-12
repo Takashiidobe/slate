@@ -110,6 +110,19 @@ fn compound_assignment_temps_are_inlined() {
 }
 
 #[test]
+fn unused_call_result_temps_are_dropped() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-drop-call-result");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("compound_assignments.c");
+    let generated = tmp.join("compound_assignments.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate compound fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated compound rust");
+    assert!(rust.contains("unsafe { printf("));
+    assert!(!rust.contains(": i32 = unsafe { printf("));
+}
+
+#[test]
 fn call_argument_temps_are_inlined() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-call-arg-fixup");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
