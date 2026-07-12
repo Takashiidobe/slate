@@ -198,6 +198,17 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(!widths_rust.contains("fn printf("));
     assert!(!widths_rust.contains("unsafe { printf("));
 
+    let hex_octal_c = fixtures_dir().join("printf_hex_octal.c");
+    let hex_octal_generated = tmp.join("printf_hex_octal.generated.rs");
+    support::translate(&hex_octal_c, &hex_octal_generated)
+        .expect("translate printf hex/octal fixture");
+    let hex_octal_rust = std::fs::read_to_string(&hex_octal_generated)
+        .expect("read generated printf hex/octal rust");
+    assert!(hex_octal_rust.contains("println!(\"{:x} {:X} {:o}\","));
+    assert!(hex_octal_rust.contains("println!(\"{:08x}|{:<4X}|{:5o}\","));
+    assert!(!hex_octal_rust.contains("fn printf("));
+    assert!(!hex_octal_rust.contains("unsafe { printf("));
+
     let string_char_c = fixtures_dir().join("printf_string_char.c");
     let string_char_generated = tmp.join("printf_string_char.generated.rs");
     support::translate(&string_char_c, &string_char_generated)
