@@ -4,10 +4,11 @@ use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType, Derive, EnumConst,
-    Expr, ExprMatchArm, ExternDecl, ExternFnDecl, FnDef, FnParam, GenericParam, Ident, ImplBlock,
-    ImplItem, IndentStmt, Item, Label, MatchArm, Method, Pattern, Prim, Program, RecordDef, Repr,
-    RustValue, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp,
+    AtomicOrdering, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType, CrateAttr, Derive,
+    EnumConst, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam, GenericParam,
+    Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint, MatchArm, Method, Pattern, Prim,
+    Program, RecordDef, Repr, RustValue, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type,
+    UnaryOp,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -223,10 +224,13 @@ impl Val {
 
 impl<'a> Lowerer<'a> {
     fn lower_module(&mut self, module: &Module, c: &Unit) -> Program {
-        let mut items = vec![Item::CrateAttrs(vec![
-            "allow(dead_code, unused, non_snake_case, non_upper_case_globals, arithmetic_overflow)"
-                .into(),
-        ])];
+        let mut items = vec![Item::CrateAttrs(vec![CrateAttr::Allow(vec![
+            Lint::DeadCode,
+            Lint::Unused,
+            Lint::NonSnakeCase,
+            Lint::NonUpperCaseGlobals,
+            Lint::ArithmeticOverflow,
+        ])])];
 
         for enm in &c.enums {
             if let Some(item) = self.lower_enum(enm) {
@@ -431,7 +435,7 @@ impl<'a> Lowerer<'a> {
         if self.uses_c_variadic.get()
             && let Some(Item::CrateAttrs(attrs)) = items.first_mut()
         {
-            attrs.insert(0, "feature(c_variadic)".into());
+            attrs.insert(0, CrateAttr::Feature(Feature::CVariadic));
         }
 
         Program { items }
