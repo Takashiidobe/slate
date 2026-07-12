@@ -3644,12 +3644,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Expr(Expr::Todo(note.to_string())));
     }
 
-    /// Raw escape hatch for pre-rendered statement text (variadic prelude lines,
-    /// opaque aggregate memcpy, the `strtold` shim) with no structured node yet.
-    fn emit_line(&mut self, line: &str) {
-        self.push_stmt(Stmt::Raw(line.to_string()));
-    }
-
     fn push_stmt(&mut self, stmt: Stmt) {
         self.body.push(IndentStmt {
             depth: self.indent,
