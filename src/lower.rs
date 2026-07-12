@@ -4,8 +4,8 @@ use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, Derive, EnumConst, Expr,
-    ExprMatchArm, ExternDecl, ExternFnDecl, FnDef, FnParam, GenericParam, Ident, ImplBlock,
+    AtomicOrdering, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType, Derive, EnumConst,
+    Expr, ExprMatchArm, ExternDecl, ExternFnDecl, FnDef, FnParam, GenericParam, Ident, ImplBlock,
     ImplItem, IndentStmt, Item, Label, MatchArm, Method, Pattern, Prim, Program, RecordDef, Repr,
     RustValue, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp,
 };
@@ -4026,9 +4026,9 @@ fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
         params: vec![FnParam {
             name: "o".into(),
             mutable: false,
-            ty: complex_ty(Type::Named("T".into())),
+            ty: complex_ty(Type::TyVar("T".into())),
         }],
-        ret: Some(complex_ty(Type::Named("T".into()))),
+        ret: Some(complex_ty(Type::TyVar("T".into()))),
         body: Expr::StructLit {
             name: "Complex".into(),
             fields: vec![component("re"), component("im")],
@@ -4039,15 +4039,15 @@ fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
             name: "T".into(),
             bounds: vec![TraitBound {
                 trait_,
-                assoc: vec![("Output".into(), Type::Named("T".into()))],
+                assoc: vec![("Output".into(), Type::TyVar("T".into()))],
             }],
         }],
         trait_: Some(trait_),
-        self_ty: complex_ty(Type::Named("T".into())),
+        self_ty: complex_ty(Type::TyVar("T".into())),
         items: vec![
             ImplItem::AssocType {
                 name: "Output".into(),
-                ty: complex_ty(Type::Named("T".into())),
+                ty: complex_ty(Type::TyVar("T".into())),
             },
             ImplItem::Method(method),
         ],
@@ -4083,8 +4083,8 @@ fn complex_prelude() -> Vec<Item> {
             }],
             name: "Complex".into(),
             fields: StructFields::Named(vec![
-                ("re".into(), Type::Named("T".into())),
-                ("im".into(), Type::Named("T".into())),
+                ("re".into(), Type::TyVar("T".into())),
+                ("im".into(), Type::TyVar("T".into())),
             ]),
         }),
         complex_binop_impl(StdTrait::Add, BinOp::Add),
@@ -4131,7 +4131,7 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
     if ty == "()" || ty.is_empty() {
         Type::Unit
     } else if ty == "!void" || ty == "!cir.void" {
-        Type::Named("core::ffi::c_void".into())
+        Type::CLib(CLibType::Void)
     } else if ty == "!cir.bool" {
         Type::Prim(Prim::Bool)
     } else if ty == "!s32i" || ty == "!cir.int<s, 32>" {
@@ -4180,7 +4180,7 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
         }
     } else if let Some(name) = cir_record_name(ty) {
         if name == "_IO_FILE" {
-            Type::Named("libc::FILE".into())
+            Type::CLib(CLibType::File)
         } else {
             Type::Named(sanitize_ident(name).into_string())
         }
@@ -4224,7 +4224,12 @@ fn type_mentions_named(ty: &Type, needle: &str) -> bool {
                 .any(|param| type_mentions_named(param, needle))
                 || type_mentions_named(ret, needle)
         }
-        Type::Prim(_) | Type::VaList | Type::Unit | Type::Variadic => false,
+        Type::Prim(_)
+        | Type::TyVar(_)
+        | Type::CLib(_)
+        | Type::VaList
+        | Type::Unit
+        | Type::Variadic => false,
     }
 }
 
@@ -4237,7 +4242,13 @@ fn type_mentions_complex(ty: &Type) -> bool {
             params.iter().any(type_mentions_complex) || type_mentions_complex(ret)
         }
         Type::Generic { args, .. } => args.iter().any(type_mentions_complex),
-        Type::Prim(_) | Type::Named(_) | Type::VaList | Type::Unit | Type::Variadic => false,
+        Type::Prim(_)
+        | Type::Named(_)
+        | Type::TyVar(_)
+        | Type::CLib(_)
+        | Type::VaList
+        | Type::Unit
+        | Type::Variadic => false,
     }
 }
 
