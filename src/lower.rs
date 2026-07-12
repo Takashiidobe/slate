@@ -1237,12 +1237,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let dst = op.operands[0].clone();
         let src = op.operands[1].clone();
         let Some(value) = self.copy_source_value(&dst, &src) else {
-            // opaque aggregate copy: fall back to a raw one-element memcpy.
-            let d = self.render_pointer_operand(&dst);
-            let s = self.render_pointer_operand(&src);
-            self.emit_line(&format!(
-                "unsafe {{ std::ptr::copy_nonoverlapping({s}, {d}, 1); }}"
-            ));
+            // opaque aggregate copy: fall back to a one-element memcpy.
+            let d = self.pointer_operand_expr(&dst);
+            let s = self.pointer_operand_expr(&src);
+            self.push_stmt(Stmt::Expr(Expr::CopyNonoverlapping {
+                src: Box::new(s),
+                dst: Box::new(d),
+                count: 1,
+            }));
             return;
         };
         if let Some(target) = self.place_expr(&dst) {
@@ -1376,10 +1378,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             self.operand_expr(ptr)
         }
-    }
-
-    fn store_address(&self, ptr: &str) -> String {
-        self.store_address_expr(ptr).render()
     }
 
     fn store_address_expr(&self, ptr: &str) -> Expr {
@@ -2373,7 +2371,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             _ if result_ty.starts_with("!cir.ptr<") && operand_ty.starts_with("!cir.ptr<") => {
                 Val::Expr(Expr::Cast {
-                    expr: Box::new(Self::raw_expr(self.render_pointer_operand(src))),
+                    expr: Box::new(self.pointer_operand_expr(src)),
                     ty: Type::Named(self.parent.rust_type(result_ty)),
                 })
             }
@@ -2381,10 +2379,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             // fn pointer: `as` cannot target Option<fn(..)>, so reinterpret the bits.
             _ if result_ty.starts_with("!cir.ptr<!cir.func<") => {
                 let ptr_ty = self.parent.rust_type(result_ty);
-                Val::Expr(Expr::Raw(format!(
-                    "unsafe {{ std::mem::transmute::<usize, {ptr_ty}>(({}) as usize) }}",
-                    self.render_operand(src)
-                )))
+                Val::Expr(Expr::Transmute {
+                    from: Type::Named("usize".into()),
+                    to: Type::Named(ptr_ty),
+                    expr: Box::new(Expr::Cast {
+                        expr: Box::new(self.operand_expr(src)),
+                        ty: Type::Named("usize".into()),
+                    }),
+                })
             }
             _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(Expr::Binary {
                 op: "!=".into(),
@@ -3148,7 +3150,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let fallback = default_index
             .map(|index| index.to_string())
             .unwrap_or_else(|| "-1".into());
-        let selector = self.render_operand(selector);
+        let selector = self.operand_expr(selector);
 
         let mut selector_arms = Vec::new();
         for (index, case) in cases.iter().enumerate() {
@@ -3199,7 +3201,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 name: selector_name.clone(),
                 mutable: false,
                 ty: None,
-                init: Some(Self::raw_expr(selector)),
+                init: Some(selector),
             }),
             Self::indent_stmt(Stmt::Let {
                 name: case_name.clone(),
@@ -3302,10 +3304,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let key = block.label.clone().unwrap_or_else(|| format!("bb{i}"));
             block_to_state.insert(key, i);
             for op in &block.ops {
-                if op.name == "cir.label" {
-                    if let Some(label) = attr_str(op, "label") {
-                        label_to_state.insert(label.to_string(), i);
-                    }
+                if op.name == "cir.label"
+                    && let Some(label) = attr_str(op, "label")
+                {
+                    label_to_state.insert(label.to_string(), i);
                 }
             }
         }
@@ -3408,22 +3410,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    fn lower_condition_region(&mut self, region: &Region) -> String {
-        let mut condition = "true".to_string();
-        for block in &region.blocks {
-            for op in &block.ops {
-                if op.name == "cir.condition" {
-                    if let Some(operand) = op.operands.first() {
-                        condition = self.render_operand(operand);
-                    }
-                } else {
-                    self.lower_op(op);
-                }
-            }
-        }
-        condition
-    }
-
     fn materialize_expr(&mut self, result: &str, expr: Expr, cir_ty: Option<&str>) {
         let name = self.next_temp();
         let ty = cir_ty
@@ -3449,10 +3435,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         Expr::Raw(sanitize_ident(operand))
     }
 
-    fn render_operand(&self, operand: &str) -> String {
-        self.operand_expr(operand).render()
-    }
-
     fn element_place_expr(&self, element: &ElementPtr) -> Expr {
         Expr::Index {
             base: Box::new(element.base.clone()),
@@ -3460,37 +3442,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 expr: Box::new(element.index.clone()),
                 ty: Type::Named("usize".into()),
             }),
-        }
-    }
-
-    fn render_pointer_operand(&self, operand: &str) -> String {
-        if self.member_ptrs.contains_key(operand) || self.element_ptrs.contains_key(operand) {
-            return self.store_address(operand);
-        }
-        if let Some(value) = self.values.get(operand) {
-            return value.render(&self.parent.strings);
-        }
-        if let Some(slot) = self.slots.get(operand) {
-            return if self
-                .slot_types
-                .get(operand)
-                .is_some_and(|ty| parse_rust_array_type(ty).is_some())
-            {
-                format!("{slot}.as_mut_ptr()")
-            } else {
-                format!("std::ptr::addr_of_mut!({slot})")
-            };
-        }
-        sanitize_ident(operand)
-    }
-
-    fn render_function_pointer_operand(&self, operand: &str) -> String {
-        match self.values.get(operand) {
-            Some(Val::Global(name)) if !self.parent.strings.contains_key(name) => {
-                format!("Some({})", sanitize_ident(name))
-            }
-            Some(value) => value.render(&self.parent.strings),
-            None => self.render_operand(operand),
         }
     }
 

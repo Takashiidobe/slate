@@ -482,7 +482,11 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
+        | Expr::Transmute { expr, .. }
         | Expr::Unsafe(expr) => expr_ident_count(expr, name),
+        Expr::CopyNonoverlapping { src, dst, .. } => {
+            expr_ident_count(src, name) + expr_ident_count(dst, name)
+        }
         Expr::AtomicFence { .. } => 0,
         Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => expr_ident_count(ptr, name),
         Expr::AtomicStore { ptr, value, .. }
