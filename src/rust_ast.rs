@@ -610,7 +610,7 @@ pub enum Expr {
         count: usize,
     },
     Todo(String),
-    Raw(String),
+    Path(Path),
 }
 
 #[derive(Debug, Clone)]
@@ -813,7 +813,7 @@ impl Expr {
                 *self = replacement.clone();
                 true
             }
-            Expr::Value(_) | Expr::Lit(_) | Expr::Var(_) | Expr::Raw(_) => false,
+            Expr::Value(_) | Expr::Lit(_) | Expr::Var(_) | Expr::Path(_) => false,
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
             | Expr::Ref { expr, .. }

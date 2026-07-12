@@ -625,7 +625,8 @@ impl<W: Write> Codegen<W> {
     fn expr_raw(&mut self, expr: &Expr) -> fmt::Result {
         match expr {
             Expr::Value(v) => self.value(v),
-            Expr::Lit(s) | Expr::Raw(s) => self.out.write_str(s),
+            Expr::Lit(s) => self.out.write_str(s),
+            Expr::Path(p) => self.path(p),
             Expr::Var(s) => self.out.write_str(s.as_str()),
             Expr::Unary { op, expr } => {
                 self.out.write_str(op.spelling())?;
