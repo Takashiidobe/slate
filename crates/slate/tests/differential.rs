@@ -139,6 +139,30 @@ fn call_argument_temps_are_inlined() {
 }
 
 #[test]
+fn control_flow_conditions_drop_redundant_parens() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-redundant-parens");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("redundant_parens.c");
+    let generated = tmp.join("redundant_parens.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate redundant parens fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated redundant parens rust");
+
+    for bare in ["if a == b {", "if a > b {", "if !(a < b) {"] {
+        assert!(rust.contains(bare), "condition should render bare: {bare}");
+    }
+    for wrapped in ["if (a == b)", "if (a > b)", "if (!(a < b))"] {
+        assert!(
+            !rust.contains(wrapped),
+            "condition should not be parenthesized: {wrapped}"
+        );
+    }
+    // precedence-required parens across bitwise/shift must survive.
+    assert!(rust.contains("(a & b) + (a << 1)"));
+    assert!(rust.contains("return r + t + m;"));
+}
+
+#[test]
 fn main_retval_boilerplate_is_collapsed() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-main-retval-fixup");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
