@@ -430,6 +430,23 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::Unsafe(expr) => expr_ident_count(expr, name),
+        Expr::AtomicFence { .. } => 0,
+        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => expr_ident_count(ptr, name),
+        Expr::AtomicStore { ptr, value, .. }
+        | Expr::AtomicFetch { ptr, value, .. }
+        | Expr::AtomicSwap { ptr, value, .. } => {
+            expr_ident_count(ptr, name) + expr_ident_count(value, name)
+        }
+        Expr::AtomicCompareExchange {
+            ptr,
+            expected,
+            desired,
+            ..
+        } => {
+            expr_ident_count(ptr, name)
+                + expr_ident_count(expected, name)
+                + expr_ident_count(desired, name)
+        }
         Expr::Binary { lhs, rhs, .. } => expr_ident_count(lhs, name) + expr_ident_count(rhs, name),
         Expr::Call { func, args } => {
             expr_ident_count(func, name)
