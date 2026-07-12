@@ -38,8 +38,25 @@ pub enum Item {
         abi: String,
         decls: Vec<ExternDecl>,
     },
-    /// Escape hatch for things without a modeled node yet (e.g. `use` lines).
+    /// A C enum lowered as a group of `const NAME: i32 = value;` items.
+    Enum(Vec<EnumConst>),
+    Record(RecordDef),
+    /// Escape hatch for things without a modeled node yet (runtime preludes).
     Raw(String),
+}
+
+#[derive(Debug, Clone)]
+pub struct EnumConst {
+    pub name: String,
+    pub value: i64,
+}
+
+#[derive(Debug, Clone)]
+pub struct RecordDef {
+    pub is_union: bool,
+    pub allow_non_camel_case: bool,
+    pub name: String,
+    pub fields: Vec<(String, Type)>,
 }
 
 #[derive(Debug, Clone)]
@@ -319,9 +336,84 @@ pub enum Expr {
 
 #[derive(Debug, Clone)]
 pub enum Type {
+    Prim(Prim),
+    /// Records, `LongDouble`, `Complex<f64>`, `libc::FILE`, and other opaque spellings.
     Named(String),
-    Ptr { mutable: bool, inner: Box<Type> },
+    Ptr {
+        mutable: bool,
+        inner: Box<Type>,
+    },
+    Array {
+        elem: Box<Type>,
+        len: u64,
+    },
+    FnPtr {
+        params: Vec<Type>,
+        ret: Box<Type>,
+    },
     Unit,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Prim {
+    Bool,
+    I8,
+    I16,
+    I32,
+    I64,
+    I128,
+    Isize,
+    U8,
+    U16,
+    U32,
+    U64,
+    U128,
+    Usize,
+    F32,
+    F64,
+}
+
+impl Prim {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            Prim::Bool => "bool",
+            Prim::I8 => "i8",
+            Prim::I16 => "i16",
+            Prim::I32 => "i32",
+            Prim::I64 => "i64",
+            Prim::I128 => "i128",
+            Prim::Isize => "isize",
+            Prim::U8 => "u8",
+            Prim::U16 => "u16",
+            Prim::U32 => "u32",
+            Prim::U64 => "u64",
+            Prim::U128 => "u128",
+            Prim::Usize => "usize",
+            Prim::F32 => "f32",
+            Prim::F64 => "f64",
+        }
+    }
+
+    pub fn parse(s: &str) -> Option<Prim> {
+        Some(match s {
+            "bool" => Prim::Bool,
+            "i8" => Prim::I8,
+            "i16" => Prim::I16,
+            "i32" => Prim::I32,
+            "i64" => Prim::I64,
+            "i128" => Prim::I128,
+            "isize" => Prim::Isize,
+            "u8" => Prim::U8,
+            "u16" => Prim::U16,
+            "u32" => Prim::U32,
+            "u64" => Prim::U64,
+            "u128" => Prim::U128,
+            "usize" => Prim::Usize,
+            "f32" => Prim::F32,
+            "f64" => Prim::F64,
+            _ => return None,
+        })
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -411,6 +503,26 @@ impl Item {
                     decl.emit(out);
                 }
                 out.push_str("}\n");
+            }
+            Item::Enum(consts) => {
+                for c in consts {
+                    let _ = writeln!(out, "const {}: i32 = {};", c.name, c.value);
+                }
+                out.push('\n');
+            }
+            Item::Record(r) => {
+                out.push_str("#[repr(C)]\n");
+                if r.allow_non_camel_case {
+                    out.push_str("#[allow(non_camel_case_types)]\n");
+                }
+                out.push_str("#[derive(Clone, Copy)]\n");
+                let kw = if r.is_union { "union" } else { "struct" };
+                let _ = writeln!(out, "{kw} {} {{", r.name);
+                for (name, ty) in &r.fields {
+                    let _ = writeln!(out, "    {name}: {},", ty.render());
+                }
+                out.push_str("}\n");
+                out.push('\n');
             }
             Item::Raw(s) => {
                 out.push_str(s);
@@ -1047,12 +1159,45 @@ fn render_args(args: &[Expr]) -> String {
 impl Type {
     pub fn render(&self) -> String {
         match self {
+            Type::Prim(p) => p.spelling().to_string(),
             Type::Named(n) => n.clone(),
             Type::Ptr { mutable, inner } => {
                 let kw = if *mutable { "*mut " } else { "*const " };
                 format!("{kw}{}", inner.render())
             }
+            Type::Array { elem, len } => format!("[{}; {len}]", elem.render()),
+            Type::FnPtr { params, ret } => {
+                let params = params
+                    .iter()
+                    .map(Type::render)
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                format!("Option<fn({params}) -> {}>", ret.render())
+            }
             Type::Unit => "()".to_string(),
+        }
+    }
+
+    pub fn parse(s: &str) -> Type {
+        let s = s.trim();
+        if let Some(rest) = s.strip_prefix("*mut ") {
+            return Type::Ptr {
+                mutable: true,
+                inner: Box::new(Type::parse(rest)),
+            };
+        }
+        if let Some(rest) = s.strip_prefix("*const ") {
+            return Type::Ptr {
+                mutable: false,
+                inner: Box::new(Type::parse(rest)),
+            };
+        }
+        if s == "()" {
+            return Type::Unit;
+        }
+        match Prim::parse(s) {
+            Some(p) => Type::Prim(p),
+            None => Type::Named(s.to_string()),
         }
     }
 }
