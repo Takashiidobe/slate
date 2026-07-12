@@ -4,8 +4,8 @@ use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, Expr, ExprMatchArm, FnDef, FnParam, IndentStmt, Item,
-    MatchArm, Program, Stmt, Type,
+    AtomicOrdering, AtomicRmwOp, AtomicType, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, FnDef,
+    FnParam, IndentStmt, Item, MatchArm, Program, Stmt, Type,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -115,8 +115,8 @@ struct Lowerer<'a> {
     uses_c_variadic: std::cell::Cell<bool>,
     variadic_defs: BTreeSet<String>,
     project: ProjectInfo,
-    /// `use crate::<mod>::<sym>;` lines for body-less decls resolved to a sibling.
-    cross_uses: Vec<String>,
+    /// `use crate::<mod>::<sym>;` items for body-less decls resolved to a sibling.
+    cross_uses: Vec<Item>,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -226,9 +226,10 @@ impl Val {
 
 impl<'a> Lowerer<'a> {
     fn lower_module(&mut self, module: &Module, c: &Unit) -> Program {
-        let mut items = vec![Item::Raw(
-            "#![allow(dead_code, unused, non_snake_case, non_upper_case_globals, arithmetic_overflow)]".into(),
-        )];
+        let mut items = vec![Item::CrateAttrs(vec![
+            "allow(dead_code, unused, non_snake_case, non_upper_case_globals, arithmetic_overflow)"
+                .into(),
+        ])];
 
         for enm in &c.enums {
             if let Some(text) = self.lower_enum(enm) {
@@ -259,16 +260,17 @@ impl<'a> Lowerer<'a> {
         }
         for global in self.globals.values() {
             let global_vis = if self.project.emit_pub && global.external {
-                "pub "
+                Some("pub".into())
             } else {
-                ""
+                None
             };
-            items.push(Item::Raw(format!(
-                "{global_vis}static mut {}: {} = {};\n",
-                global.name,
-                global.ty,
-                global.init.render()
-            )));
+            items.push(Item::Static {
+                vis: global_vis,
+                mutable: true,
+                name: global.name.clone(),
+                ty: Type::Named(global.ty.clone()),
+                init: global.init.clone(),
+            });
         }
 
         let module_uses_long_double = ops.iter().any(|op| op_mentions_long_double(op));
@@ -276,11 +278,16 @@ impl<'a> Lowerer<'a> {
         for (name, ty) in &self.extern_globals {
             // an extern global defined in a sibling TU becomes a module import.
             if let Some(module) = self.project.cross_module_globals.get(name) {
-                self.cross_uses
-                    .push(format!("use crate::{module}::{name};"));
+                self.cross_uses.push(Item::Use {
+                    path: format!("crate::{module}::{name}"),
+                });
                 continue;
             }
-            extern_decls.push(format!("static mut {name}: {ty};"));
+            extern_decls.push(ExternDecl::Static {
+                mutable: true,
+                name: name.clone(),
+                ty: Type::Named(ty.clone()),
+            });
         }
         for op in &ops {
             if op.name != "cir.func" || !region_ops(op).is_empty() {
@@ -296,34 +303,71 @@ impl<'a> Lowerer<'a> {
             // a prototype whose definition lives in a sibling TU becomes a module
             // import; the call then flows through the normal (non-extern) path.
             if let Some(module) = self.project.cross_module.get(name) {
-                self.cross_uses
-                    .push(format!("use crate::{module}::{name};"));
+                self.cross_uses.push(Item::Use {
+                    path: format!("crate::{module}::{name}"),
+                });
                 continue;
             }
             let function_type = attr_str(op, "function_type").unwrap_or("");
-            let (sig, params, ret) = self.extern_fn_signature(name, function_type);
+            let (decl, params, ret) = self.extern_fn_signature(name, function_type);
             self.externs.insert(name.to_string(), params);
             self.extern_returns.insert(name.to_string(), ret.clone());
             if name == "strtold" && ret.as_deref() == Some(LONG_DOUBLE_TY) {
-                extern_decls.push(
-                    "fn __slate_strtold(_0: *mut i8, _1: *mut *mut i8, _2: *mut LongDouble);"
-                        .to_string(),
-                );
+                extern_decls.push(ExternDecl::Fn(ExternFnDecl {
+                    name: "__slate_strtold".into(),
+                    params: vec![
+                        FnParam {
+                            name: "_0".into(),
+                            mutable: false,
+                            ty: Type::Named("*mut i8".into()),
+                        },
+                        FnParam {
+                            name: "_1".into(),
+                            mutable: false,
+                            ty: Type::Named("*mut *mut i8".into()),
+                        },
+                        FnParam {
+                            name: "_2".into(),
+                            mutable: false,
+                            ty: Type::Named("*mut LongDouble".into()),
+                        },
+                    ],
+                    variadic: false,
+                    ret: None,
+                }));
             } else {
-                extern_decls.push(sig);
+                extern_decls.push(ExternDecl::Fn(decl));
             }
             if name == "printf" && module_uses_long_double {
-                extern_decls.push(
-                    "fn __slate_printf_ld_i32(_0: *mut i8, _1: *const LongDouble, _2: i32) -> i32;"
-                        .to_string(),
-                );
+                extern_decls.push(ExternDecl::Fn(ExternFnDecl {
+                    name: "__slate_printf_ld_i32".into(),
+                    params: vec![
+                        FnParam {
+                            name: "_0".into(),
+                            mutable: false,
+                            ty: Type::Named("*mut i8".into()),
+                        },
+                        FnParam {
+                            name: "_1".into(),
+                            mutable: false,
+                            ty: Type::Named("*const LongDouble".into()),
+                        },
+                        FnParam {
+                            name: "_2".into(),
+                            mutable: false,
+                            ty: Type::Named("i32".into()),
+                        },
+                    ],
+                    variadic: false,
+                    ret: Some(Type::Named("i32".into())),
+                }));
             }
         }
         if !extern_decls.is_empty() {
-            items.push(Item::Raw(format!(
-                "unsafe extern \"C\" {{\n    {}\n}}\n",
-                extern_decls.join("\n    ")
-            )));
+            items.push(Item::ExternBlock {
+                abi: "C".into(),
+                decls: extern_decls,
+            });
         }
 
         // collected before lowering so call sites wrap in `unsafe` regardless of order.
@@ -359,22 +403,22 @@ impl<'a> Lowerer<'a> {
         }
 
         // module wiring goes right after the crate-level `#![allow(..)]` attr.
-        let mut wiring: Vec<String> = self
+        let mut wiring: Vec<Item> = self
             .project
             .child_modules
             .iter()
-            .map(|m| format!("mod {m};"))
+            .map(|name| Item::Mod { name: name.clone() })
             .collect();
         wiring.append(&mut self.cross_uses);
-        for (offset, line) in wiring.into_iter().enumerate() {
-            items.insert(1 + offset, Item::Raw(line));
+        for (offset, item) in wiring.into_iter().enumerate() {
+            items.insert(1 + offset, item);
         }
 
         // grouped with the crate-level `#![allow(..)]` so both stay at the top.
         if self.uses_c_variadic.get()
-            && let Some(Item::Raw(first)) = items.first_mut()
+            && let Some(Item::CrateAttrs(attrs)) = items.first_mut()
         {
-            *first = format!("#![feature(c_variadic)]\n{first}");
+            attrs.insert(0, "feature(c_variadic)".into());
         }
 
         Program { items }
@@ -677,14 +721,14 @@ impl<'a> Lowerer<'a> {
         lines
     }
 
-    /// Build a Rust `extern "C"` signature line for a body-less C declaration,
+    /// Build a Rust `extern "C"` signature for a body-less C declaration,
     /// returning `(line, fixed_param_rust_types, return_type)`. Trailing `...` becomes a Rust
     /// variadic; a missing return arrow means the C function returns `void`.
     fn extern_fn_signature(
         &self,
         name: &str,
         function_type: &str,
-    ) -> (String, Vec<String>, Option<String>) {
+    ) -> (ExternFnDecl, Vec<String>, Option<String>) {
         let inner = function_type
             .strip_prefix("!cir.func<")
             .and_then(|s| s.strip_suffix('>'))
@@ -695,7 +739,7 @@ impl<'a> Lowerer<'a> {
         };
         let params_str = params_str.trim_start_matches('(').trim_end_matches(')');
 
-        let mut parts = Vec::new();
+        let mut params = Vec::new();
         let mut param_types = Vec::new();
         let mut variadic = false;
         for (i, raw) in split_top_level(params_str, ',')
@@ -708,23 +752,25 @@ impl<'a> Lowerer<'a> {
                 variadic = true;
             } else {
                 let ty = self.rust_type(raw);
-                parts.push(format!("_{i}: {ty}"));
+                params.push(FnParam {
+                    name: format!("_{i}"),
+                    mutable: false,
+                    ty: Type::Named(ty.clone()),
+                });
                 param_types.push(ty);
             }
-        }
-        if variadic {
-            parts.push("...".to_string());
         }
         let ret_ty = match ret {
             Some(ret) if ret != "()" => Some(self.rust_type(ret)),
             _ => None,
         };
-        let ret = ret_ty
-            .as_ref()
-            .map(|ty| format!(" -> {ty}"))
-            .unwrap_or_default();
-        let line = format!("fn {name}({}){ret};", parts.join(", "));
-        (line, param_types, ret_ty)
+        let decl = ExternFnDecl {
+            name: name.into(),
+            params,
+            variadic,
+            ret: ret_ty.clone().map(Type::Named),
+        };
+        (decl, param_types, ret_ty)
     }
 
     fn rust_type(&self, cir_ty: &str) -> String {
