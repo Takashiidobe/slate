@@ -2172,21 +2172,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    fn truncate_bitfield_expr(&self, op: &Op, expr: Expr, ty: Option<&str>) -> Expr {
-        Self::raw_expr(self.truncate_bitfield(op, &expr.render(), ty))
-    }
-
     // shift up then arithmetic-shift down masks to `size` bits, sign-extending signed types.
-    fn truncate_bitfield(&self, op: &Op, expr: &str, ty: Option<&str>) -> String {
+    fn truncate_bitfield_expr(&self, op: &Op, expr: Expr, ty: Option<&str>) -> Expr {
         let bits = ty
             .map(|ty| self.parent.rust_type(ty))
             .and_then(|t| int_bits(&t));
         match (self.bitfield_size(op), bits) {
             (Some(size), Some(bits)) if size < bits => {
-                let sh = bits - size;
-                format!("((({expr}) << {sh}) >> {sh})")
+                let sh = Box::new(Expr::Lit((bits - size).to_string()));
+                Expr::Binary {
+                    op: ">>".into(),
+                    lhs: Box::new(Expr::Binary {
+                        op: "<<".into(),
+                        lhs: Box::new(expr),
+                        rhs: sh.clone(),
+                    }),
+                    rhs: sh,
+                }
             }
-            _ => format!("({expr})"),
+            _ => expr,
         }
     }
 
