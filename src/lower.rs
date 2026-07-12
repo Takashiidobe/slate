@@ -335,7 +335,7 @@ impl<'a> Lowerer<'a> {
                             mutable: false,
                             ty: Type::Ptr {
                                 mutable: true,
-                                inner: Box::new(Type::Named(LONG_DOUBLE_TY.into())),
+                                inner: Box::new(Type::LongDouble),
                             },
                         },
                     ],
@@ -362,7 +362,7 @@ impl<'a> Lowerer<'a> {
                             mutable: false,
                             ty: Type::Ptr {
                                 mutable: false,
-                                inner: Box::new(Type::Named(LONG_DOUBLE_TY.into())),
+                                inner: Box::new(Type::LongDouble),
                             },
                         },
                         FnParam {
@@ -791,7 +791,7 @@ impl<'a> Lowerer<'a> {
 
     fn rust_type(&self, cir_ty: &str) -> Type {
         let ty = rust_type_with_aliases(cir_ty, &self.aliases);
-        if type_mentions_named(&ty, LONG_DOUBLE_TY) {
+        if type_mentions_long_double(&ty) {
             self.uses_long_double.set(true);
         }
         if type_mentions_complex(&ty) {
@@ -1045,7 +1045,7 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
             _ => Prim::I32,
         }),
         CType::Float { bits: 32 } => Type::Prim(Prim::F32),
-        CType::Float { bits: 80 } => Type::Named(LONG_DOUBLE_TY.into()),
+        CType::Float { bits: 80 } => Type::LongDouble,
         CType::Float { .. } => Type::Prim(Prim::F64),
         CType::Ptr(inner) => ptr(inner),
         CType::FuncPtr { ret, params } => Type::FnPtr {
@@ -1057,7 +1057,7 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
             len: *len,
         },
         CType::Array(inner, None) => ptr(inner),
-        CType::Record(name) => Type::Named(sanitize_ident(name).into_string()),
+        CType::Record(name) => Type::Custom(sanitize_ident(name).into_string()),
     }
 }
 
@@ -1721,7 +1721,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
-        if type_mentions_named(&rust_ty, LONG_DOUBLE_TY) {
+        if type_mentions_long_double(&rust_ty) {
             self.materialize_expr(
                 result,
                 Expr::Call {
@@ -1776,7 +1776,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 method: "wrapping_abs".into(),
                 args: vec![],
             }
-        } else if type_mentions_named(&rust_ty, LONG_DOUBLE_TY) {
+        } else if type_mentions_long_double(&rust_ty) {
             Expr::Call {
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::MethodCall {
@@ -1810,7 +1810,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::F64));
-        let expr = if type_mentions_named(&rust_ty, LONG_DOUBLE_TY) {
+        let expr = if type_mentions_long_double(&rust_ty) {
             Expr::Call {
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::MethodCall {
@@ -1845,7 +1845,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::F64));
-        let expr = if type_mentions_named(&rust_ty, LONG_DOUBLE_TY) {
+        let expr = if type_mentions_long_double(&rust_ty) {
             Expr::Call {
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::MethodCall {
@@ -2505,7 +2505,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.push_stmt(Stmt::Let {
                     name: name.clone(),
                     mutable: true,
-                    ty: Some(Type::Named(LONG_DOUBLE_TY.into())),
+                    ty: Some(Type::LongDouble),
                     init: Some(self.default_value_expr(LONG_DOUBLE_TY)),
                 });
                 let i8_ptr = Type::Ptr {
@@ -2551,7 +2551,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             };
             let long_double_ptr = Type::Ptr {
                 mutable: false,
-                inner: Box::new(Type::Named(LONG_DOUBLE_TY.into())),
+                inner: Box::new(Type::LongDouble),
             };
             let expr = Self::unsafe_expr(Expr::Call {
                 func: Box::new(Expr::Var("__slate_printf_ld_i32".into())),
@@ -3914,7 +3914,7 @@ fn function_type_is_variadic(s: &str) -> bool {
 const LONG_DOUBLE_TY: &str = "LongDouble";
 
 fn long_double_ty() -> Type {
-    Type::Named(LONG_DOUBLE_TY.into())
+    Type::LongDouble
 }
 
 fn long_double_field(base: &str) -> Expr {
@@ -4155,7 +4155,7 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
     } else if ty == "!cir.double" {
         Type::Prim(Prim::F64)
     } else if is_long_double(ty) {
-        Type::Named(LONG_DOUBLE_TY.into())
+        Type::LongDouble
     } else if let Some(inner) = ty
         .strip_prefix("!cir.complex<")
         .and_then(|s| s.strip_suffix('>'))
@@ -4182,7 +4182,7 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
         if name == "_IO_FILE" {
             Type::CLib(CLibType::File)
         } else {
-            Type::Named(sanitize_ident(name).into_string())
+            Type::Custom(sanitize_ident(name).into_string())
         }
     } else {
         Type::Prim(Prim::I32)
@@ -4209,22 +4209,18 @@ fn cir_fn_type_to_type(ty: &str, aliases: &BTreeMap<String, String>) -> Option<T
     })
 }
 
-fn type_mentions_named(ty: &Type, needle: &str) -> bool {
+fn type_mentions_long_double(ty: &Type) -> bool {
     match ty {
-        Type::Named(name) => name.contains(needle),
-        Type::Complex(inner) => type_mentions_named(inner, needle),
-        Type::Generic { name, args } => {
-            name.contains(needle) || args.iter().any(|arg| type_mentions_named(arg, needle))
-        }
-        Type::Ptr { inner, .. } => type_mentions_named(inner, needle),
-        Type::Array { elem, .. } => type_mentions_named(elem, needle),
+        Type::LongDouble => true,
+        Type::Complex(inner) => type_mentions_long_double(inner),
+        Type::Generic { args, .. } => args.iter().any(type_mentions_long_double),
+        Type::Ptr { inner, .. } => type_mentions_long_double(inner),
+        Type::Array { elem, .. } => type_mentions_long_double(elem),
         Type::FnPtr { params, ret } => {
-            params
-                .iter()
-                .any(|param| type_mentions_named(param, needle))
-                || type_mentions_named(ret, needle)
+            params.iter().any(type_mentions_long_double) || type_mentions_long_double(ret)
         }
         Type::Prim(_)
+        | Type::Custom(_)
         | Type::TyVar(_)
         | Type::CLib(_)
         | Type::VaList
@@ -4243,7 +4239,8 @@ fn type_mentions_complex(ty: &Type) -> bool {
         }
         Type::Generic { args, .. } => args.iter().any(type_mentions_complex),
         Type::Prim(_)
-        | Type::Named(_)
+        | Type::Custom(_)
+        | Type::LongDouble
         | Type::TyVar(_)
         | Type::CLib(_)
         | Type::VaList
