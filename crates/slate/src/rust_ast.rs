@@ -564,6 +564,7 @@ pub enum Type {
         name: String,
         args: Vec<Type>,
     },
+    VaList,
     Ptr {
         mutable: bool,
         inner: Box<Type>,
@@ -1002,6 +1003,9 @@ impl Type {
         }
         if s == "()" {
             return Type::Unit;
+        }
+        if s == "core::ffi::VaList<'_>" {
+            return Type::VaList;
         }
         match Prim::parse(s) {
             Some(p) => Type::Prim(p),
