@@ -4,9 +4,9 @@ use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, EnumConst, Expr, ExprMatchArm, ExternDecl,
+    AtomicOrdering, AtomicRmwOp, AtomicType, BinOp, EnumConst, Expr, ExprMatchArm, ExternDecl,
     ExternFnDecl, FnDef, FnParam, IndentStmt, Item, MatchArm, Prim, Program, RecordDef, RustValue,
-    Stmt, Type,
+    Stmt, Type, UnaryOp,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -1073,14 +1073,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.mul.overflow" => self.lower_overflow_arith(op, "overflowing_mul"),
             "cir.div.overflow" => self.lower_overflow_arith(op, "overflowing_div"),
             "cir.rem.overflow" => self.lower_overflow_arith(op, "overflowing_rem"),
-            "cir.add" => self.lower_int_arith(op, "+"),
-            "cir.sub" => self.lower_int_arith(op, "-"),
-            "cir.mul" => self.lower_int_arith(op, "*"),
-            "cir.div" => self.lower_int_arith(op, "/"),
-            "cir.rem" => self.lower_int_arith(op, "%"),
-            "cir.and" => self.lower_int_arith(op, "&"),
-            "cir.or" => self.lower_int_arith(op, "|"),
-            "cir.xor" => self.lower_int_arith(op, "^"),
+            "cir.add" => self.lower_int_arith(op, BinOp::Add),
+            "cir.sub" => self.lower_int_arith(op, BinOp::Sub),
+            "cir.mul" => self.lower_int_arith(op, BinOp::Mul),
+            "cir.div" => self.lower_int_arith(op, BinOp::Div),
+            "cir.rem" => self.lower_int_arith(op, BinOp::Rem),
+            "cir.and" => self.lower_int_arith(op, BinOp::BitAnd),
+            "cir.or" => self.lower_int_arith(op, BinOp::BitOr),
+            "cir.xor" => self.lower_int_arith(op, BinOp::BitXor),
             "cir.shift" => self.lower_shift(op),
             "cir.not" => self.lower_not(op),
             "cir.minus" | "cir.fneg" => self.lower_neg(op),
@@ -1098,17 +1098,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.round" => self.lower_unary_method(op, "round"),
             "cir.signbit" => self.lower_signbit(op),
             "cir.trunc" => self.lower_unary_method(op, "trunc"),
-            "cir.fadd" => self.lower_binary(op, "+"),
-            "cir.fsub" => self.lower_binary(op, "-"),
-            "cir.fmul" => self.lower_binary(op, "*"),
-            "cir.fdiv" => self.lower_binary(op, "/"),
-            "cir.complex.add" => self.lower_binary(op, "+"),
-            "cir.complex.sub" => self.lower_binary(op, "-"),
+            "cir.fadd" => self.lower_binary(op, BinOp::Add),
+            "cir.fsub" => self.lower_binary(op, BinOp::Sub),
+            "cir.fmul" => self.lower_binary(op, BinOp::Mul),
+            "cir.fdiv" => self.lower_binary(op, BinOp::Div),
+            "cir.complex.add" => self.lower_binary(op, BinOp::Add),
+            "cir.complex.sub" => self.lower_binary(op, BinOp::Sub),
             "cir.complex.create" => self.lower_complex_create(op),
             "cir.complex.real" => self.lower_complex_part(op, "re"),
             "cir.complex.imag" => self.lower_complex_part(op, "im"),
-            "cir.inc" => self.lower_step(op, "+"),
-            "cir.dec" => self.lower_step(op, "-"),
+            "cir.inc" => self.lower_step(op, BinOp::Add),
+            "cir.dec" => self.lower_step(op, BinOp::Sub),
             "cir.cmp" => self.lower_cmp(op),
             "cir.select" => self.lower_select(op),
             "cir.ternary" => self.lower_ternary(op),
@@ -1222,7 +1222,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             self.push_unsafe_assign(
                 Expr::Unary {
-                    op: "*".into(),
+                    op: UnaryOp::Deref,
                     expr: Box::new(self.pointer_operand_expr(ptr)),
                 },
                 value,
@@ -1256,7 +1256,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             self.push_unsafe_assign(
                 Expr::Unary {
-                    op: "*".into(),
+                    op: UnaryOp::Deref,
                     expr: Box::new(self.pointer_operand_expr(&dst)),
                 },
                 value,
@@ -1340,7 +1340,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Expr::Var(slot.clone())
         } else {
             Expr::Unsafe(Box::new(Expr::Unary {
-                op: "*".into(),
+                op: UnaryOp::Deref,
                 expr: Box::new(self.operand_expr(ptr)),
             }))
         };
@@ -1539,7 +1539,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         (body, yielded)
     }
 
-    fn lower_binary(&mut self, op: &Op, rust_op: &str) {
+    fn lower_binary(&mut self, op: &Op, rust_op: BinOp) {
         let Some(result) = op.results.first() else {
             return;
         };
@@ -1551,7 +1551,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             result,
             Expr::Binary {
-                op: rust_op.to_string(),
+                op: rust_op,
                 lhs: Box::new(lhs),
                 rhs: Box::new(rhs),
             },
@@ -1563,7 +1563,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // wrap two's-complement just like clang's `-O0` C — no `wrapping_*` needed.
     // `/` and `%` still trap on div-by-zero and INT_MIN/-1 on both sides, so the
     // generator avoids those.
-    fn lower_int_arith(&mut self, op: &Op, rust_op: &str) {
+    fn lower_int_arith(&mut self, op: &Op, rust_op: BinOp) {
         let Some(result) = op.results.first() else {
             return;
         };
@@ -1576,7 +1576,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             result,
             Expr::Binary {
-                op: rust_op.to_string(),
+                op: rust_op,
                 lhs: Box::new(lhs),
                 rhs: Box::new(rhs),
             },
@@ -1620,7 +1620,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    fn lower_step(&mut self, op: &Op, rust_op: &str) {
+    fn lower_step(&mut self, op: &Op, rust_op: BinOp) {
         let Some(result) = op.results.first() else {
             return;
         };
@@ -1632,7 +1632,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             result,
             Expr::Binary {
-                op: rust_op.to_string(),
+                op: rust_op,
                 lhs: Box::new(value),
                 rhs: Box::new(Expr::Lit("1".to_string())),
             },
@@ -1644,9 +1644,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // Rust's `>>` is arithmetic on signed and logical on unsigned, matching C by type.
     fn lower_shift(&mut self, op: &Op) {
         let rust_op = if attr_bool(op, "isShiftleft") {
-            "<<"
+            BinOp::Shl
         } else {
-            ">>"
+            BinOp::Shr
         };
         self.lower_int_arith(op, rust_op);
     }
@@ -1664,7 +1664,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             result,
             Expr::Unary {
-                op: "!".to_string(),
+                op: UnaryOp::Not,
                 expr: Box::new(value),
             },
             ty,
@@ -1693,7 +1693,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Expr::Call {
                     func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                     args: vec![Expr::Unary {
-                        op: "-".into(),
+                        op: UnaryOp::Neg,
                         expr: Box::new(Expr::Field {
                             base: Box::new(value),
                             field: "0".into(),
@@ -1706,7 +1706,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let expr = if operand_ty == "!cir.bool" {
             Expr::Unary {
-                op: "-".to_string(),
+                op: UnaryOp::Neg,
                 expr: Box::new(Expr::Cast {
                     expr: Box::new(value),
                     ty: crate::rust_ast::Type::Named(rust_ty),
@@ -1714,7 +1714,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         } else {
             Expr::Unary {
-                op: "-".to_string(),
+                op: UnaryOp::Neg,
                 expr: Box::new(value),
             }
         };
@@ -1881,7 +1881,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if flags & 0x4 != 0 {
             parts.push(Expr::Binary {
-                op: "==".into(),
+                op: BinOp::Eq,
                 lhs: Box::new(value.clone()),
                 rhs: Box::new(Self::raw_expr("f64::NEG_INFINITY")),
             });
@@ -1917,7 +1917,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if flags & 0x20 != 0 {
             parts.push(Self::and_expr(
                 Expr::Binary {
-                    op: "==".into(),
+                    op: BinOp::Eq,
                     lhs: Box::new(value.clone()),
                     rhs: Box::new(Expr::Lit("0.0".into())),
                 },
@@ -1931,12 +1931,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if flags & 0x40 != 0 {
             parts.push(Self::and_expr(
                 Expr::Binary {
-                    op: "==".into(),
+                    op: BinOp::Eq,
                     lhs: Box::new(value.clone()),
                     rhs: Box::new(Expr::Lit("0.0".into())),
                 },
                 Expr::Unary {
-                    op: "!".into(),
+                    op: UnaryOp::Not,
                     expr: Box::new(Expr::MethodCall {
                         recv: Box::new(value.clone()),
                         method: "is_sign_negative".into(),
@@ -1953,7 +1953,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     args: vec![],
                 },
                 Expr::Unary {
-                    op: "!".into(),
+                    op: UnaryOp::Not,
                     expr: Box::new(Expr::MethodCall {
                         recv: Box::new(value.clone()),
                         method: "is_sign_negative".into(),
@@ -1970,7 +1970,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     args: vec![],
                 },
                 Expr::Unary {
-                    op: "!".into(),
+                    op: UnaryOp::Not,
                     expr: Box::new(Expr::MethodCall {
                         recv: Box::new(value.clone()),
                         method: "is_sign_negative".into(),
@@ -1981,7 +1981,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if flags & 0x200 != 0 {
             parts.push(Expr::Binary {
-                op: "==".into(),
+                op: BinOp::Eq,
                 lhs: Box::new(value),
                 rhs: Box::new(Self::raw_expr("f64::INFINITY")),
             });
@@ -2048,18 +2048,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let lhs = self.operand_expr(&op.operands[0]);
         let rhs = self.operand_expr(&op.operands[1]);
         let cmp = match attr_int(op, "kind") {
-            Some(0) => "<",
-            Some(1) => "<=",
-            Some(2) => ">",
-            Some(3) => ">=",
-            Some(4) => "==",
-            Some(5) => "!=",
-            _ => "<=",
+            Some(0) => BinOp::Lt,
+            Some(1) => BinOp::Le,
+            Some(2) => BinOp::Gt,
+            Some(3) => BinOp::Ge,
+            Some(4) => BinOp::Eq,
+            Some(5) => BinOp::Ne,
+            _ => BinOp::Le,
         };
         self.materialize_expr(
             result,
             Expr::Binary {
-                op: cmp.to_string(),
+                op: cmp,
                 lhs: Box::new(lhs),
                 rhs: Box::new(rhs),
             },
@@ -2096,7 +2096,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn place_or_deref_expr(&self, ptr: &str) -> Expr {
         self.place_expr(ptr).unwrap_or_else(|| Expr::Unary {
-            op: "*".into(),
+            op: UnaryOp::Deref,
             expr: Box::new(self.pointer_operand_expr(ptr)),
         })
     }
@@ -2164,7 +2164,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Some(place) => (place, self.ptr_requires_unsafe(ptr)),
             None => (
                 Expr::Unary {
-                    op: "*".into(),
+                    op: UnaryOp::Deref,
                     expr: Box::new(self.pointer_operand_expr(ptr)),
                 },
                 true,
@@ -2181,9 +2181,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             (Some(size), Some(bits)) if size < bits => {
                 let sh = Box::new(Expr::Lit((bits - size).to_string()));
                 Expr::Binary {
-                    op: ">>".into(),
+                    op: BinOp::Shr,
                     lhs: Box::new(Expr::Binary {
-                        op: "<<".into(),
+                        op: BinOp::Shl,
                         lhs: Box::new(expr),
                         rhs: sh.clone(),
                     }),
@@ -2323,7 +2323,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             _ if is_long_double(operand_ty) && result_ty == "!cir.bool" => {
                 Val::Expr(Expr::Binary {
-                    op: "!=".into(),
+                    op: BinOp::Ne,
                     lhs: Box::new(Expr::Field {
                         base: Box::new(self.operand_expr(src)),
                         field: "0".into(),
@@ -2360,7 +2360,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 })
             }
             _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(Expr::Binary {
-                op: "!=".into(),
+                op: BinOp::Ne,
                 lhs: Box::new(self.operand_expr(src)),
                 rhs: Box::new(zero_for_cir_type(operand_ty)),
             }),
@@ -2636,7 +2636,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             mutable: false,
             ty: Some(Self::named_type(ty)),
             init: Some(Expr::Unsafe(Box::new(Expr::Unary {
-                op: "*".into(),
+                op: UnaryOp::Deref,
                 expr: Box::new(addr.clone()),
             }))),
         });
@@ -2649,7 +2649,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         });
         self.push_unsafe_assign(
             Expr::Unary {
-                op: "*".into(),
+                op: UnaryOp::Deref,
                 expr: Box::new(addr),
             },
             Expr::Var(new.clone()),
@@ -2689,13 +2689,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             mutable: false,
             ty: Some(Self::named_type(ty)),
             init: Some(Expr::Unsafe(Box::new(Expr::Unary {
-                op: "*".into(),
+                op: UnaryOp::Deref,
                 expr: Box::new(addr.clone()),
             }))),
         });
         self.push_unsafe_assign(
             Expr::Unary {
-                op: "*".into(),
+                op: UnaryOp::Deref,
                 expr: Box::new(addr),
             },
             val,
@@ -2774,7 +2774,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             mutable: false,
             ty: Some(Self::named_type(ty)),
             init: Some(Expr::Unsafe(Box::new(Expr::Unary {
-                op: "*".into(),
+                op: UnaryOp::Deref,
                 expr: Box::new(addr.clone()),
             }))),
         });
@@ -2783,7 +2783,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             mutable: false,
             ty: Some(Self::named_type("bool")),
             init: Some(Expr::Binary {
-                op: "==".into(),
+                op: BinOp::Eq,
                 lhs: Box::new(Expr::Var(old.clone())),
                 rhs: Box::new(expected),
             }),
@@ -2792,7 +2792,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             cond: Expr::Var(ok.clone()),
             then_body: vec![Self::indent_stmt(Self::unsafe_stmt(Self::assign_stmt(
                 Expr::Unary {
-                    op: "*".into(),
+                    op: UnaryOp::Deref,
                     expr: Box::new(addr),
                 },
                 desired,
@@ -2955,7 +2955,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn not_expr(expr: Expr) -> Expr {
         Expr::Unary {
-            op: "!".into(),
+            op: UnaryOp::Not,
             expr: Box::new(expr),
         }
     }
@@ -3501,7 +3501,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn and_expr(lhs: Expr, rhs: Expr) -> Expr {
         Expr::Binary {
-            op: "&&".into(),
+            op: BinOp::And,
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         }
@@ -3510,7 +3510,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn or_exprs(mut exprs: Vec<Expr>) -> Expr {
         let first = exprs.remove(0);
         exprs.into_iter().fold(first, |lhs, rhs| Expr::Binary {
-            op: "||".into(),
+            op: BinOp::Or,
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         })
@@ -3624,34 +3624,34 @@ fn atomic_rmw_op(binop: i64) -> AtomicRmwOp {
 fn atomic_combine(binop: i64, old: Expr, val: Expr) -> Expr {
     match binop {
         0 => Expr::Binary {
-            op: "+".into(),
+            op: BinOp::Add,
             lhs: Box::new(old),
             rhs: Box::new(val),
         },
         1 => Expr::Binary {
-            op: "-".into(),
+            op: BinOp::Sub,
             lhs: Box::new(old),
             rhs: Box::new(val),
         },
         2 => Expr::Binary {
-            op: "&".into(),
+            op: BinOp::BitAnd,
             lhs: Box::new(old),
             rhs: Box::new(val),
         },
         3 => Expr::Binary {
-            op: "^".into(),
+            op: BinOp::BitXor,
             lhs: Box::new(old),
             rhs: Box::new(val),
         },
         4 => Expr::Binary {
-            op: "|".into(),
+            op: BinOp::BitOr,
             lhs: Box::new(old),
             rhs: Box::new(val),
         },
         5 => Expr::Unary {
-            op: "!".into(),
+            op: UnaryOp::Not,
             expr: Box::new(Expr::Binary {
-                op: "&".into(),
+                op: BinOp::BitAnd,
                 lhs: Box::new(old),
                 rhs: Box::new(val),
             }),
