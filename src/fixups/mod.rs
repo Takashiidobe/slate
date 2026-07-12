@@ -1112,7 +1112,7 @@ fn is_ident_continue(b: u8) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rust_ast::{BinOp, FnParam, Type};
+    use crate::rust_ast::{BinOp, FnParam, Prim, Type};
 
     fn temp(name: &str, ty: &str, init: Expr) -> Stmt {
         Stmt::Let {
@@ -1149,15 +1149,15 @@ mod tests {
                 FnParam {
                     name: "arg0".into(),
                     mutable: false,
-                    ty: Type::Named("i32".into()),
+                    ty: Type::Prim(Prim::I32),
                 },
                 FnParam {
                     name: "arg1".into(),
                     mutable: false,
-                    ty: Type::Named("i32".into()),
+                    ty: Type::Prim(Prim::I32),
                 },
             ],
-            ret: Some(Type::Named("i32".into())),
+            ret: Some(Type::Prim(Prim::I32)),
             body: body
                 .into_iter()
                 .map(|stmt| IndentStmt { depth: 1, stmt })
@@ -1172,25 +1172,25 @@ mod tests {
                 Stmt::Let {
                     name: "a".into(),
                     mutable: true,
-                    ty: Some(Type::Named("i32".into())),
+                    ty: Some(Type::Prim(Prim::I32)),
                     init: Some(Expr::Lit("0".into())),
                 },
                 Stmt::Let {
                     name: "b".into(),
                     mutable: true,
-                    ty: Some(Type::Named("i32".into())),
+                    ty: Some(Type::Prim(Prim::I32)),
                     init: Some(Expr::Lit("0".into())),
                 },
                 Stmt::Let {
                     name: "__retval".into(),
                     mutable: true,
-                    ty: Some(Type::Named("i32".into())),
+                    ty: Some(Type::Prim(Prim::I32)),
                     init: Some(Expr::Lit("0".into())),
                 },
                 Stmt::Let {
                     name: "c".into(),
                     mutable: true,
-                    ty: Some(Type::Named("i32".into())),
+                    ty: Some(Type::Prim(Prim::I32)),
                     init: Some(Expr::Lit("0".into())),
                 },
                 Stmt::Assign {
