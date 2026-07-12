@@ -216,6 +216,8 @@ location (`file:line:col`):
 
 - [adding-features.md](adding-features.md) — how to add C coverage or a Rust
   fixup.
+- [writing-a-fixup.md](writing-a-fixup.md) — the AST-to-AST recipe for a fixup
+  pass: shape, shared helpers, safety rules, and registration.
 - [architecture.md](architecture.md) — sources, IRs, pipeline, shared context.
 - [passes.md](passes.md) — the pass catalog: what runs, in what order, how.
 - [idiomatization.md](idiomatization.md) — the `unsafe`/`libc` → idiomatic ladder.
