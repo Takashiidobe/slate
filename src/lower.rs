@@ -2615,11 +2615,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // accessed atomically without changing its storage. Integer/bool types map
     // to an atomic wrapper; float/pointer atomics fall back to a non-atomic RMW
     // (std has no atomic float, and atomic pointers need a different shape).
-    fn atomic_rust_type(&self, op: &Op) -> String {
+    fn atomic_rust_type(&self, op: &Op) -> Type {
         op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32))
-            .render()
     }
 
     fn lower_atomic_fetch(&mut self, op: &Op) {
@@ -2634,7 +2633,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let binop = attr_int(op, "binop").unwrap_or(0);
         let Some(atomic_ty) = atomic_type(&ty) else {
             // float/pointer atomic: non-atomic read-modify-write fallback.
-            self.lower_atomic_fetch_nonatomic(op, &result, val, &ty, binop);
+            self.lower_atomic_fetch_nonatomic(op, &result, val, ty, binop);
             return;
         };
         let fetched = Expr::AtomicFetch {
@@ -2653,7 +2652,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.push_stmt(Stmt::Let {
                 name: old.clone(),
                 mutable: false,
-                ty: Some(Self::named_type(ty)),
+                ty: Some(ty),
                 init: Some(fetched),
             });
             let new = atomic_combine(binop, Expr::Var(old), val);
@@ -2666,7 +2665,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         op: &Op,
         result: &str,
         val: Expr,
-        ty: &str,
+        ty: Type,
         binop: i64,
     ) {
         let addr = self.store_address_expr(&op.operands[0]);
@@ -2674,7 +2673,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Let {
             name: old.clone(),
             mutable: false,
-            ty: Some(Self::named_type(ty)),
+            ty: Some(ty.clone()),
             init: Some(Self::unsafe_expr(Expr::Unary {
                 op: UnaryOp::Deref,
                 expr: Box::new(addr.clone()),
@@ -2684,7 +2683,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Let {
             name: new.clone(),
             mutable: false,
-            ty: Some(Self::named_type(ty)),
+            ty: Some(ty),
             init: Some(atomic_combine(binop, Expr::Var(old.clone()), val)),
         });
         self.push_unsafe_assign(
@@ -2727,7 +2726,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Let {
             name: old.clone(),
             mutable: false,
-            ty: Some(Self::named_type(ty)),
+            ty: Some(ty),
             init: Some(Self::unsafe_expr(Expr::Unary {
                 op: UnaryOp::Deref,
                 expr: Box::new(addr.clone()),
@@ -2753,8 +2752,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .first()
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
-        let ty_rendered = ty.render();
-        if let Some(atomic_ty) = atomic_type(&ty_rendered) {
+        if let Some(atomic_ty) = atomic_type(&ty) {
             // Always strong: `compare_exchange_weak` may spuriously fail and
             // diverge from the C reference under differential testing.
             let res = self.next_temp();
@@ -2865,7 +2863,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn atomic_load_expr(&self, op: &Op, ptr: &str) -> Option<Expr> {
         let mem_order = attr_int(op, "mem_order")?;
         let ty = op_result_type(op).map(|ty| self.parent.rust_type(ty))?;
-        let atomic_ty = atomic_type(&ty.render())?;
+        let atomic_ty = atomic_type(&ty)?;
         Some(Expr::AtomicLoad {
             ty: atomic_ty,
             ptr: Box::new(self.store_address_expr(ptr)),
@@ -2884,8 +2882,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return false;
         };
         let Some(wrapper) = value_ty
-            .map(|ty| self.parent.rust_type(ty).render())
-            .as_deref()
+            .map(|ty| self.parent.rust_type(ty))
+            .as_ref()
             .and_then(atomic_type)
         else {
             return false;
@@ -3649,19 +3647,19 @@ fn attr_bool(op: &Op, key: &str) -> bool {
     op.attrs.contains_key(key)
 }
 
-fn atomic_type(rust_ty: &str) -> Option<AtomicType> {
+fn atomic_type(rust_ty: &Type) -> Option<AtomicType> {
     Some(match rust_ty {
-        "i8" => AtomicType::I8,
-        "u8" => AtomicType::U8,
-        "i16" => AtomicType::I16,
-        "u16" => AtomicType::U16,
-        "i32" => AtomicType::I32,
-        "u32" => AtomicType::U32,
-        "i64" => AtomicType::I64,
-        "u64" => AtomicType::U64,
-        "isize" => AtomicType::Isize,
-        "usize" => AtomicType::Usize,
-        "bool" => AtomicType::Bool,
+        Type::Prim(Prim::I8) => AtomicType::I8,
+        Type::Prim(Prim::U8) => AtomicType::U8,
+        Type::Prim(Prim::I16) => AtomicType::I16,
+        Type::Prim(Prim::U16) => AtomicType::U16,
+        Type::Prim(Prim::I32) => AtomicType::I32,
+        Type::Prim(Prim::U32) => AtomicType::U32,
+        Type::Prim(Prim::I64) => AtomicType::I64,
+        Type::Prim(Prim::U64) => AtomicType::U64,
+        Type::Prim(Prim::Isize) => AtomicType::Isize,
+        Type::Prim(Prim::Usize) => AtomicType::Usize,
+        Type::Prim(Prim::Bool) => AtomicType::Bool,
         _ => return None,
     })
 }
