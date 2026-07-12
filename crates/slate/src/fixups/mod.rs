@@ -230,7 +230,8 @@ fn is_zero_expr(expr: &Expr) -> bool {
 
 fn expr_ident(expr: &Expr) -> Option<&str> {
     match expr {
-        Expr::Var(s) | Expr::Raw(s) if is_ident(s) => Some(s),
+        Expr::Var(s) if is_ident(s.as_str()) => Some(s.as_str()),
+        Expr::Raw(s) if is_ident(s) => Some(s),
         _ => None,
     }
 }
@@ -488,7 +489,8 @@ fn block_ident_count(block: &crate::rust_ast::Block, name: &str) -> usize {
 fn expr_ident_count(expr: &Expr, name: &str) -> usize {
     match expr {
         Expr::Value(_) => 0,
-        Expr::Lit(s) | Expr::Var(s) => usize::from(s == name),
+        Expr::Lit(s) => usize::from(s == name),
+        Expr::Var(s) => usize::from(s.as_str() == name),
         Expr::Raw(s) => ident_count(s, name),
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
@@ -1418,14 +1420,14 @@ fn f(arg0: i32) -> i64 {
             temp("_v0", "i32", Expr::Lit("20".to_string())),
             Stmt::Raw("a = _v0;".to_string()),
             temp("_v1", "i32", Expr::Lit("5".to_string())),
-            temp("_v2", "i32", Expr::Var("a".to_string())),
+            temp("_v2", "i32", Expr::Var("a".to_string().into())),
             temp(
                 "_v3",
                 "i32",
                 bin(
                     BinOp::Sub,
-                    Expr::Var("_v2".to_string()),
-                    Expr::Var("_v1".to_string()),
+                    Expr::Var("_v2".to_string().into()),
+                    Expr::Var("_v1".to_string().into()),
                 ),
             ),
             Stmt::Raw("a = _v3;".to_string()),
@@ -1441,7 +1443,7 @@ fn f(arg0: i32) -> i64 {
     fn does_not_inline_call_results() {
         let stmts = vec![
             temp("_v0", "i32", Expr::Raw("f()".to_string())),
-            temp("_v1", "i32", Expr::Var("_v0".to_string())),
+            temp("_v1", "i32", Expr::Var("_v0".to_string().into())),
         ];
 
         assert_eq!(
@@ -1453,7 +1455,7 @@ fn f(arg0: i32) -> i64 {
     #[test]
     fn does_not_cross_side_effecting_statement() {
         let stmts = vec![
-            temp("_v0", "i32", Expr::Var("a".to_string())),
+            temp("_v0", "i32", Expr::Var("a".to_string().into())),
             Stmt::Raw("unsafe { printf(_v1); };".to_string()),
             Stmt::Raw("b = _v0;".to_string()),
         ];

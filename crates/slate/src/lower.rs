@@ -5,9 +5,9 @@ use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
     AtomicOrdering, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, Derive, EnumConst, Expr,
-    ExprMatchArm, ExternDecl, ExternFnDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem,
-    IndentStmt, Item, MatchArm, Method, Prim, Program, RecordDef, Repr, RustValue, StdTrait, Stmt,
-    StructDef, StructFields, TraitBound, Type, UnaryOp,
+    ExprMatchArm, ExternDecl, ExternFnDecl, FnDef, FnParam, GenericParam, Ident, ImplBlock,
+    ImplItem, IndentStmt, Item, MatchArm, Method, Prim, Program, RecordDef, Repr, RustValue,
+    StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -56,7 +56,7 @@ pub fn defined_globals(module: &Module) -> Vec<String> {
                 && attr_str(op, "initial_value").is_some()
                 && linkage_is_external(op)
         })
-        .filter_map(|op| attr_str(op, "sym_name").map(sanitize_ident))
+        .filter_map(|op| attr_str(op, "sym_name").map(|name| sanitize_ident(name).into_string()))
         .collect()
 }
 
@@ -73,7 +73,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         records: c
             .records
             .iter()
-            .map(|record| (sanitize_ident(&record.name), record.clone()))
+            .map(|record| (sanitize_ident(&record.name).into_string(), record.clone()))
             .collect(),
         globals: BTreeMap::new(),
         extern_globals: BTreeMap::new(),
@@ -441,7 +441,7 @@ impl<'a> Lowerer<'a> {
         let Some(name) = attr_str(op, "sym_name") else {
             return;
         };
-        let rust_name = sanitize_ident(name);
+        let rust_name = sanitize_ident(name).into_string();
         let ty = attr_str(op, "sym_type").map(|ty| self.rust_type(ty));
         let is_c_global = !name.starts_with("__") && !name.starts_with(".str");
         let Some(raw) = attr_str(op, "initial_value") else {
@@ -567,7 +567,7 @@ impl<'a> Lowerer<'a> {
             .variants
             .iter()
             .map(|variant| EnumConst {
-                name: sanitize_ident(&variant.name),
+                name: sanitize_ident(&variant.name).into_string(),
                 value: variant.value,
             })
             .collect();
@@ -583,7 +583,7 @@ impl<'a> Lowerer<'a> {
             .iter()
             .map(|field| {
                 (
-                    sanitize_ident(&field.name),
+                    sanitize_ident(&field.name).into_string(),
                     self.record_field_type(&field.ty),
                 )
             })
@@ -591,7 +591,7 @@ impl<'a> Lowerer<'a> {
         Some(Item::Record(RecordDef {
             is_union: record.kind == RecordKind::Union,
             allow_non_camel_case: false,
-            name: sanitize_ident(&record.name),
+            name: sanitize_ident(&record.name).into_string(),
             fields,
         }))
     }
@@ -691,7 +691,7 @@ impl<'a> Lowerer<'a> {
         }
         for (arg, _) in &entry.args {
             f.values
-                .insert(arg.clone(), Val::Expr(Expr::Var(arg.clone())));
+                .insert(arg.clone(), Val::Expr(Expr::Var(arg.clone().into())));
         }
         let body = op.regions.first().unwrap();
         if body.blocks.len() > 1 {
@@ -802,7 +802,7 @@ impl<'a> Lowerer<'a> {
             return true;
         }
         cir_record_name(ty)
-            .and_then(|name| self.records.get(&sanitize_ident(name)))
+            .and_then(|name| self.records.get(sanitize_ident(name).as_str()))
             .is_some_and(|record| record.kind == RecordKind::Union)
     }
 
@@ -834,22 +834,22 @@ impl<'a> Lowerer<'a> {
                         .iter()
                         .map(|field| {
                             (
-                                sanitize_ident(&field.name),
+                                sanitize_ident(&field.name).into_string(),
                                 self.default_value_expr(&c_type_to_rust(&field.ty)),
                             )
                         })
                         .collect();
                     return Expr::StructLit {
-                        name: sanitize_ident(&record.name),
+                        name: sanitize_ident(&record.name).into_string(),
                         fields,
                     };
                 }
                 RecordKind::Union => {
                     if let Some(field) = record.fields.first() {
                         return Expr::StructLit {
-                            name: sanitize_ident(&record.name),
+                            name: sanitize_ident(&record.name).into_string(),
                             fields: vec![(
-                                sanitize_ident(&field.name),
+                                sanitize_ident(&field.name).into_string(),
                                 self.default_value_expr(&c_type_to_rust(&field.ty)),
                             )],
                         };
@@ -915,11 +915,11 @@ impl<'a> Lowerer<'a> {
                                 .get(i)
                                 .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
                                 .unwrap_or_else(|| self.default_value_expr(&field_ty));
-                            (sanitize_ident(&field.name), value)
+                            (sanitize_ident(&field.name).into_string(), value)
                         })
                         .collect();
                     Some(Expr::StructLit {
-                        name: sanitize_ident(&record.name),
+                        name: sanitize_ident(&record.name).into_string(),
                         fields,
                     })
                 }
@@ -931,8 +931,8 @@ impl<'a> Lowerer<'a> {
                         .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
                         .unwrap_or_else(|| self.default_value_expr(&field_ty));
                     Some(Expr::StructLit {
-                        name: sanitize_ident(&record.name),
-                        fields: vec![(sanitize_ident(&field.name), value)],
+                        name: sanitize_ident(&record.name).into_string(),
+                        fields: vec![(sanitize_ident(&field.name).into_string(), value)],
                     })
                 }
             }
@@ -1016,7 +1016,7 @@ fn c_type_to_rust(ty: &crate::c_ast::CType) -> String {
             format!("[{}; {len}]", c_type_to_rust(inner))
         }
         crate::c_ast::CType::Array(inner, None) => format!("*mut {}", c_type_to_rust(inner)),
-        crate::c_ast::CType::Record(name) => sanitize_ident(name),
+        crate::c_ast::CType::Record(name) => sanitize_ident(name).into_string(),
     }
 }
 
@@ -1052,7 +1052,7 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
             len: *len,
         },
         CType::Array(inner, None) => ptr(inner),
-        CType::Record(name) => Type::Named(sanitize_ident(name)),
+        CType::Record(name) => Type::Named(sanitize_ident(name).into_string()),
     }
 }
 
@@ -1180,7 +1180,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if self.hoisted.contains(result) && self.dispatch.is_some() {
             return;
         }
-        let name = sanitize_ident(attr_str(op, "name").unwrap_or(result));
+        let name = sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string();
         // a `va_list` local becomes a Rust `VaList`, assigned by `va_start`.
         if op
             .ty
@@ -1343,7 +1343,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if let Some(atomic) = self.atomic_load_expr(op, ptr) {
             atomic
         } else if let Some(global) = self.global_name(ptr) {
-            Self::unsafe_expr(Expr::Var(global))
+            Self::unsafe_expr(Expr::Var(global.into()))
         } else if let Some(member) = self.member_ptrs.get(ptr) {
             Self::unsafe_expr(Expr::Field {
                 base: Box::new(member.base.clone()),
@@ -1357,7 +1357,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 place
             }
         } else if let Some(slot) = self.slots.get(ptr) {
-            Expr::Var(slot.clone())
+            Expr::Var(slot.clone().into())
         } else {
             Self::unsafe_expr(Expr::Unary {
                 op: UnaryOp::Deref,
@@ -1388,9 +1388,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if let Some(element) = self.element_ptrs.get(ptr) {
             addr_of(self.element_place_expr(element))
         } else if let Some(slot) = self.slots.get(ptr) {
-            addr_of(Expr::Var(slot.clone()))
+            addr_of(Expr::Var(slot.clone().into()))
         } else if let Some(global) = self.global_name(ptr) {
-            addr_of(Expr::Var(global))
+            addr_of(Expr::Var(global.into()))
         } else {
             self.operand_expr(ptr)
         }
@@ -1400,7 +1400,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(Val::Global(name)) = self.values.get(ptr) else {
             return None;
         };
-        let name = sanitize_ident(name);
+        let name = sanitize_ident(name).into_string();
         (self.parent.globals.contains_key(&name) || self.parent.extern_globals.contains_key(&name))
             .then_some(name)
     }
@@ -1536,7 +1536,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             else_value,
         });
         self.values
-            .insert(result.to_string(), Val::Expr(Expr::Var(name)));
+            .insert(result.to_string(), Val::Expr(Expr::Var(name.into())));
     }
 
     // Lower every op in a region, capturing the terminating cir.yield's operand as
@@ -1625,7 +1625,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             &op.results[0],
             Expr::Field {
-                base: Box::new(Expr::Var(pair.clone())),
+                base: Box::new(Expr::Var(pair.clone().into())),
                 field: "0".into(),
             },
             result_types.first().copied(),
@@ -1633,7 +1633,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             &op.results[1],
             Expr::Field {
-                base: Box::new(Expr::Var(pair)),
+                base: Box::new(Expr::Var(pair.into())),
                 field: "1".into(),
             },
             result_types.get(1).copied(),
@@ -2111,9 +2111,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if let Some(element) = self.element_ptrs.get(ptr) {
             Some(self.element_place_expr(element))
         } else if let Some(slot) = self.slots.get(ptr) {
-            Some(Expr::Var(slot.clone()))
+            Some(Expr::Var(slot.clone().into()))
         } else {
-            self.global_name(ptr).map(Expr::Var)
+            self.global_name(ptr).map(|name| Expr::Var(name.into()))
         }
     }
 
@@ -2132,7 +2132,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let base = self.place_or_deref_expr(base_ptr);
-        let field = sanitize_ident(attr_str(op, "name").unwrap_or(result));
+        let field = sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string();
         let unsafe_access = self.ptr_requires_unsafe(base_ptr) || self.op_base_is_union(op);
         self.member_ptrs.insert(
             result.clone(),
@@ -2278,7 +2278,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if let Some(slot) = self.va_places.get(src).cloned() {
             self.va_places.insert(result.clone(), slot.clone());
             self.values
-                .insert(result.clone(), Val::Expr(Expr::Var(slot)));
+                .insert(result.clone(), Val::Expr(Expr::Var(slot.into())));
             return;
         }
         let result_ty = op_result_type(op).unwrap_or("");
@@ -2445,7 +2445,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             if let Some(callee) = direct_callee {
                 (
                     callee.clone(),
-                    Expr::Var(callee),
+                    Expr::Var(callee.into()),
                     op.operands.as_slice(),
                     operand_types.as_slice(),
                 )
@@ -2515,13 +2515,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         },
                         Expr::AddrOf {
                             mutable: true,
-                            expr: Box::new(Expr::Var(name.clone())),
+                            expr: Box::new(Expr::Var(name.clone().into())),
                         },
                     ],
                 };
                 self.push_stmt(Self::unsafe_stmt(Stmt::Expr(call)));
                 self.values
-                    .insert(result.to_string(), Val::Expr(Expr::Var(name)));
+                    .insert(result.to_string(), Val::Expr(Expr::Var(name.into())));
             }
             return;
         }
@@ -2653,7 +2653,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 ty: Some(ty),
                 init: Some(fetched),
             });
-            let new = atomic_combine(binop, Expr::Var(old), val);
+            let new = atomic_combine(binop, Expr::Var(old.into()), val);
             self.materialize_expr(&result, new, op_result_type(op));
         }
     }
@@ -2682,14 +2682,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             name: new.clone(),
             mutable: false,
             ty: Some(ty),
-            init: Some(atomic_combine(binop, Expr::Var(old.clone()), val)),
+            init: Some(atomic_combine(binop, Expr::Var(old.clone().into()), val)),
         });
         self.push_unsafe_assign(
             Expr::Unary {
                 op: UnaryOp::Deref,
                 expr: Box::new(addr),
             },
-            Expr::Var(new.clone()),
+            Expr::Var(new.clone().into()),
         );
         let bound = if attr_bool(op, "fetch_first") {
             old
@@ -2697,7 +2697,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             new
         };
         self.values
-            .insert(result.to_string(), Val::Expr(Expr::Var(bound)));
+            .insert(result.to_string(), Val::Expr(Expr::Var(bound.into())));
     }
 
     fn lower_atomic_xchg(&mut self, op: &Op) {
@@ -2737,7 +2737,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             },
             val,
         );
-        self.values.insert(result, Val::Expr(Expr::Var(old)));
+        self.values.insert(result, Val::Expr(Expr::Var(old.into())));
     }
 
     fn lower_atomic_cmpxchg(&mut self, op: &Op) {
@@ -2776,7 +2776,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 mutable: false,
                 ty: Some(ty.clone()),
                 init: Some(Expr::Match {
-                    expr: Box::new(Expr::Var(res.clone())),
+                    expr: Box::new(Expr::Var(res.clone().into())),
                     arms: vec![
                         ExprMatchArm {
                             pattern: "Ok(v)".into(),
@@ -2795,15 +2795,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 mutable: false,
                 ty: Some(Self::named_type("bool")),
                 init: Some(Expr::MethodCall {
-                    recv: Box::new(Expr::Var(res)),
+                    recv: Box::new(Expr::Var(res.into())),
                     method: "is_ok".into(),
                     args: vec![],
                 }),
             });
             self.values
-                .insert(op.results[0].clone(), Val::Expr(Expr::Var(old)));
+                .insert(op.results[0].clone(), Val::Expr(Expr::Var(old.into())));
             self.values
-                .insert(op.results[1].clone(), Val::Expr(Expr::Var(ok)));
+                .insert(op.results[1].clone(), Val::Expr(Expr::Var(ok.into())));
             return;
         }
         let addr = self.store_address_expr(&op.operands[0]);
@@ -2824,12 +2824,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ty: Some(Self::named_type("bool")),
             init: Some(Expr::Binary {
                 op: BinOp::Eq,
-                lhs: Box::new(Expr::Var(old.clone())),
+                lhs: Box::new(Expr::Var(old.clone().into())),
                 rhs: Box::new(expected),
             }),
         });
         self.push_stmt(Stmt::If {
-            cond: Expr::Var(ok.clone()),
+            cond: Expr::Var(ok.clone().into()),
             then_body: vec![Self::indent_stmt(Self::unsafe_stmt(Self::assign_stmt(
                 Expr::Unary {
                     op: UnaryOp::Deref,
@@ -2840,9 +2840,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             else_body: Vec::new(),
         });
         self.values
-            .insert(op.results[0].clone(), Val::Expr(Expr::Var(old)));
+            .insert(op.results[0].clone(), Val::Expr(Expr::Var(old.into())));
         self.values
-            .insert(op.results[1].clone(), Val::Expr(Expr::Var(ok)));
+            .insert(op.results[1].clone(), Val::Expr(Expr::Var(ok.into())));
     }
 
     fn lower_atomic_fence(&mut self, op: &Op) {
@@ -2932,7 +2932,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             result,
             Self::unsafe_expr(Expr::MethodCallGeneric {
-                recv: Box::new(Expr::Var(slot)),
+                recv: Box::new(Expr::Var(slot.into())),
                 method: "next_arg".into(),
                 type_args: vec![ty],
                 args: vec![],
@@ -3438,7 +3438,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             init: Some(expr),
         });
         self.values
-            .insert(result.to_string(), Val::Expr(Expr::Var(name)));
+            .insert(result.to_string(), Val::Expr(Expr::Var(name.into())));
     }
 
     fn operand_expr(&self, operand: &str) -> Expr {
@@ -3446,9 +3446,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return val.to_expr(&self.parent.strings);
         }
         if let Some(slot) = self.slots.get(operand) {
-            return Expr::Raw(slot.clone());
+            return Expr::Var(slot.clone().into());
         }
-        Expr::Raw(sanitize_ident(operand))
+        Expr::Var(sanitize_ident(operand))
     }
 
     fn element_place_expr(&self, element: &ElementPtr) -> Expr {
@@ -3475,18 +3475,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .is_some_and(|ty| parse_rust_array_type(ty).is_some())
             {
                 Expr::MethodCall {
-                    recv: Box::new(Expr::Var(slot.clone())),
+                    recv: Box::new(Expr::Var(slot.clone().into())),
                     method: "as_mut_ptr".into(),
                     args: vec![],
                 }
             } else {
                 Expr::AddrOf {
                     mutable: true,
-                    expr: Box::new(Expr::Var(slot.clone())),
+                    expr: Box::new(Expr::Var(slot.clone().into())),
                 }
             };
         }
-        Expr::Raw(sanitize_ident(operand))
+        Expr::Var(sanitize_ident(operand))
     }
 
     fn function_pointer_operand_expr(&self, operand: &str) -> Expr {
@@ -3538,7 +3538,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn raw_expr(expr: impl Into<String>) -> Expr {
         let expr = expr.into();
         if is_rust_ident(&expr) {
-            Expr::Var(expr)
+            Expr::Var(expr.into())
         } else {
             Expr::Raw(expr)
         }
@@ -4156,7 +4156,7 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
         if name == "_IO_FILE" {
             Type::Named("libc::FILE".into())
         } else {
-            Type::Named(sanitize_ident(name))
+            Type::Named(sanitize_ident(name).into_string())
         }
     } else {
         Type::Prim(Prim::I32)
@@ -4533,7 +4533,7 @@ fn rust_byte_string(bytes: &[u8]) -> String {
     out
 }
 
-fn sanitize_ident(s: &str) -> String {
+fn sanitize_ident(s: &str) -> Ident {
     let mut out = String::new();
     for (i, c) in s.chars().enumerate() {
         if (i == 0 && (c.is_ascii_alphabetic() || c == '_'))
@@ -4545,7 +4545,7 @@ fn sanitize_ident(s: &str) -> String {
         }
     }
     if out.is_empty() {
-        return "_tmp".into();
+        return Ident::from("_tmp");
     }
     // `crate`/`self`/`Self`/`super` can't be raw identifiers, so mangle them instead.
     if matches!(out.as_str(), "crate" | "self" | "Self" | "super") {
@@ -4553,7 +4553,7 @@ fn sanitize_ident(s: &str) -> String {
     } else if is_rust_keyword(&out) {
         out = format!("r#{out}");
     }
-    out
+    Ident::from(out)
 }
 
 fn is_rust_ident(s: &str) -> bool {
