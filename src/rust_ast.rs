@@ -20,10 +20,10 @@ pub enum Item {
     Fn(FnDef),
     CrateAttrs(Vec<CrateAttr>),
     Mod {
-        name: String,
+        name: Ident,
     },
     Use {
-        path: String,
+        path: Path,
     },
     Static {
         vis: Visibility,
@@ -433,6 +433,21 @@ impl From<&str> for Ident {
 impl std::fmt::Display for Ident {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
+    }
+}
+
+/// A `::`-separated path (`crate::foo::bar`). Aliases (`use x as y`) are not
+/// modeled yet; add them to codegen when a path actually needs one.
+#[derive(Debug, Clone)]
+pub struct Path {
+    pub segments: Vec<Ident>,
+}
+
+impl Path {
+    pub fn new(segments: impl IntoIterator<Item = Ident>) -> Self {
+        Self {
+            segments: segments.into_iter().collect(),
+        }
     }
 }
 
