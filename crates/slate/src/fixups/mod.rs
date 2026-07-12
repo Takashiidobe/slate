@@ -1160,7 +1160,7 @@ mod tests {
         Stmt::Let {
             name: name.to_string(),
             mutable: false,
-            ty: Some(Type::Named(ty.to_string())),
+            ty: Some(Type::parse(ty)),
             init: Some(init),
         }
     }

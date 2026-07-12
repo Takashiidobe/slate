@@ -938,7 +938,8 @@ impl<W: Write> Codegen<W> {
     fn ty(&mut self, ty: &Type) -> fmt::Result {
         match ty {
             Type::Prim(p) => self.out.write_str(p.spelling()),
-            Type::Named(n) => self.out.write_str(n),
+            Type::Custom(n) => self.out.write_str(n),
+            Type::LongDouble => self.out.write_str("LongDouble"),
             Type::TyVar(name) => self.out.write_str(name.as_str()),
             Type::CLib(c) => self.out.write_str(c.path()),
             Type::Complex(inner) => {

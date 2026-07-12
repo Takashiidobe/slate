@@ -17,9 +17,6 @@ pub struct Program {
 #[derive(Debug, Clone)]
 pub enum Item {
     Func(Func),
-    /// Migration target for lowered functions. Some scaffolding still uses
-    /// `Stmt::Raw`, but common control-flow and straight-line statements are
-    /// structured so fixups can operate on them.
     Fn(FnDef),
     CrateAttrs(Vec<String>),
     Mod {
@@ -39,12 +36,10 @@ pub enum Item {
         abi: String,
         decls: Vec<ExternDecl>,
     },
-    /// A C enum lowered as a group of `const NAME: i32 = value;` items.
     Enum(Vec<EnumConst>),
     Record(RecordDef),
     Struct(StructDef),
     Impl(ImplBlock),
-    /// Escape hatch for things without a modeled node yet (runtime preludes).
     Raw(String),
 }
 
@@ -128,7 +123,6 @@ impl StdTrait {
 #[derive(Debug, Clone)]
 pub struct ImplBlock {
     pub generics: Vec<GenericParam>,
-    /// The trait being implemented; `None` for an inherent impl.
     pub trait_: Option<StdTrait>,
     pub self_ty: Type,
     pub items: Vec<ImplItem>,
@@ -282,6 +276,7 @@ pub struct Block {
 }
 
 #[derive(Debug, Clone)]
+#[allow(clippy::large_enum_variant)]
 pub enum Stmt {
     Let {
         name: String,
@@ -335,15 +330,9 @@ pub enum Stmt {
         body: Block,
     },
     Block(Block),
-    /// A fully-formed Rust statement line spliced in as-is, sans indentation and
-    /// trailing newline. The migration bridge for control flow not yet modeled.
     Raw(String),
 }
 
-/// A structured Rust literal value. Kept as typed data rather than pre-rendered
-/// text so literals carry real shape through the AST (`RustValue::NullPtr`
-/// instead of the string `"std::ptr::null_mut()"`), mirroring how atomics are
-/// modeled. Use this over `Expr::Lit` whenever the value is known structurally.
 #[derive(Debug, Clone)]
 pub enum RustValue {
     I64(i64),
@@ -416,9 +405,7 @@ impl From<&str> for Label {
 
 #[derive(Debug, Clone)]
 pub enum Expr {
-    /// A structured literal value (integer, null pointer).
     Value(RustValue),
-    /// A literal or identifier printed verbatim (numbers, `true`, names).
     Lit(String),
     Var(Ident),
     Unary {
@@ -434,7 +421,6 @@ pub enum Expr {
         func: Box<Expr>,
         args: Vec<Expr>,
     },
-    /// A method call, e.g. `p.offset(3)`. `recv` is the receiver expression.
     MethodCall {
         recv: Box<Expr>,
         method: String,
@@ -446,7 +432,6 @@ pub enum Expr {
         type_args: Vec<Type>,
         args: Vec<Expr>,
     },
-    /// A field or tuple-index access, e.g. `pair.0` or `s.len`.
     Field {
         base: Box<Expr>,
         field: String,
@@ -472,7 +457,6 @@ pub enum Expr {
         elem: Box<Expr>,
         len: usize,
     },
-    /// A macro invocation, e.g. `println!(...)`. `name` excludes the `!`.
     Macro {
         name: String,
         args: Vec<Expr>,
@@ -550,42 +534,26 @@ pub enum Expr {
         count: usize,
     },
     Todo(String),
-    /// Fully-formed Rust text spliced in as-is (e.g. `libc::printf`).
     Raw(String),
 }
 
 #[derive(Debug, Clone)]
 pub enum Type {
     Prim(Prim),
-    /// Records, `LongDouble`, and other opaque spellings with no native Rust type.
-    Named(String),
-    /// A generic type parameter reference, e.g. the `T` in `Complex<T>`.
+    Custom(String),
+    LongDouble,
     TyVar(Ident),
-    /// A C library type with no native Rust equivalent, spelled by its FFI path.
     CLib(CLibType),
     Complex(Box<Type>),
-    Generic {
-        name: String,
-        args: Vec<Type>,
-    },
+    Generic { name: String, args: Vec<Type> },
     VaList,
-    Ptr {
-        mutable: bool,
-        inner: Box<Type>,
-    },
-    Array {
-        elem: Box<Type>,
-        len: u64,
-    },
-    FnPtr {
-        params: Vec<Type>,
-        ret: Box<Type>,
-    },
+    Ptr { mutable: bool, inner: Box<Type> },
+    Array { elem: Box<Type>, len: u64 },
+    FnPtr { params: Vec<Type>, ret: Box<Type> },
     Unit,
     Variadic,
 }
 
-/// C library types with no native Rust equivalent, referenced through their FFI path.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CLibType {
     Void,
@@ -746,10 +714,6 @@ impl UnaryOp {
     }
 }
 
-// ---------------------------------------------------------------------------
-// Emitter entry points — the printing logic lives in `crate::codegen`.
-// ---------------------------------------------------------------------------
-
 impl Program {
     pub fn emit(&self) -> String {
         crate::codegen::program_to_string(self)
@@ -757,8 +721,6 @@ impl Program {
 }
 
 impl Stmt {
-    // The single-line, un-indented text form, as fixups parse it. Only meaningful
-    // for the flat statement forms the migrated body holds (Let/Assign/Expr/Return/Raw).
     pub fn render_line(&self) -> String {
         crate::codegen::stmt_line_to_string(self)
     }
@@ -769,16 +731,10 @@ impl Expr {
         crate::codegen::expr_to_string(self)
     }
 
-    // Render for splicing into arbitrary surrounding text (a `Stmt::Raw` line),
-    // where the enclosing precedence is unknown. Anything that binds looser than a
-    // call is wrapped so the splice can never change precedence.
     pub fn render_spliceable(&self) -> String {
         crate::codegen::expr_spliceable_to_string(self)
     }
 
-    // Replace every `Var(name)` node with a clone of `replacement`, returning
-    // whether any substitution happened. Names baked into `Raw` text are not
-    // reached — the inliner falls back to a textual splice for those.
     pub fn substitute_var(&mut self, name: &str, replacement: &Expr) -> bool {
         match self {
             Expr::Var(v) if v.as_str() == name => {
@@ -1029,7 +985,7 @@ impl Type {
         }
         match Prim::parse(s) {
             Some(p) => Type::Prim(p),
-            None => Type::Named(s.to_string()),
+            None => Type::Custom(s.to_string()),
         }
     }
 }
