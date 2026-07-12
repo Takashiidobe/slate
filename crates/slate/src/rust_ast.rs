@@ -381,6 +381,14 @@ pub enum Expr {
         base: Box<Expr>,
         field: String,
     },
+    TupleField {
+        base: Box<Expr>,
+        index: usize,
+    },
+    ArrayPtr {
+        array: Box<Expr>,
+        mutable: bool,
+    },
     Index {
         base: Box<Expr>,
         index: Box<Expr>,
@@ -755,7 +763,10 @@ impl Expr {
                 }
                 changed
             }
-            Expr::Field { base, .. } => base.substitute_var(name, replacement),
+            Expr::Field { base, .. } | Expr::TupleField { base, .. } => {
+                base.substitute_var(name, replacement)
+            }
+            Expr::ArrayPtr { array, .. } => array.substitute_var(name, replacement),
             Expr::Index { base, index } => {
                 let b = base.substitute_var(name, replacement);
                 let i = index.substitute_var(name, replacement);
