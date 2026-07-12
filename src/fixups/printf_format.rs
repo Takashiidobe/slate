@@ -250,6 +250,7 @@ enum ConversionKind {
     Integer,
     String,
     Char,
+    Float,
 }
 
 fn parse_printf_format(bytes: &[u8]) -> Option<ParsedFormat> {
@@ -302,7 +303,9 @@ fn parse_printf_format(bytes: &[u8]) -> Option<ParsedFormat> {
 }
 
 fn parse_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conversion, String)> {
-    parse_integer_conversion(bytes, i).or_else(|| parse_string_char_conversion(bytes, i))
+    parse_integer_conversion(bytes, i)
+        .or_else(|| parse_string_char_conversion(bytes, i))
+        .or_else(|| parse_float_conversion(bytes, i))
 }
 
 fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversion, String)> {
@@ -380,6 +383,32 @@ fn parse_string_char_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conver
     Some((i + 1, Conversion { kind }, "{}".into()))
 }
 
+fn parse_float_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversion, String)> {
+    let precision = if bytes.get(i).copied()? == b'.' {
+        i += 1;
+        let precision_start = i;
+        while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+            i += 1;
+        }
+        if i == precision_start {
+            return None;
+        }
+        std::str::from_utf8(&bytes[precision_start..i]).ok()?
+    } else {
+        "6"
+    };
+    if bytes.get(i).copied()? != b'f' {
+        return None;
+    }
+    Some((
+        i + 1,
+        Conversion {
+            kind: ConversionKind::Float,
+        },
+        format!("{{:.{precision}}}"),
+    ))
+}
+
 fn integer_placeholder(left: bool, plus: bool, zero: bool, width: Option<&str>) -> String {
     if !left && !plus && !zero && width.is_none() {
         return "{}".into();
@@ -417,6 +446,7 @@ fn printf_macro_arg(
         ConversionKind::Integer => Some(arg.clone()),
         ConversionKind::String => const_c_string_arg(arg, consts).map(Expr::Str),
         ConversionKind::Char => const_c_char_arg(arg, consts).map(Expr::Str),
+        ConversionKind::Float => Some(arg.clone()),
     }
 }
 
@@ -877,11 +907,45 @@ fn main() {
 
     #[test]
     fn leaves_unsupported_formats_and_extern_declaration() {
-        let out = run(printf_stmt(b"%f\n\0", var("x")));
+        let out = run(printf_stmt(b"%e\n\0", var("x")));
 
         assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
         assert!(out.contains("unsafe { printf("));
         assert!(!out.contains("println!"));
+    }
+
+    #[test]
+    fn rewrites_fixed_float_conversions() {
+        let out = run(printf_stmt_args(
+            b"%f %.2f %.0f\n\0",
+            vec![var("x"), var("y"), var("z")],
+        ));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{:.6} {:.2} {:.0}\", x, y, z);
+}
+"
+        );
+    }
+
+    #[test]
+    fn leaves_ambiguous_float_formats_unsupported() {
+        for fmt in [
+            &b"%e\n\0"[..],
+            &b"%g\n\0"[..],
+            &b"%8.2f\n\0"[..],
+            &b"%+.2f\n\0"[..],
+            &b"%.*f\n\0"[..],
+            &b"%Lf\n\0"[..],
+        ] {
+            let out = run(printf_stmt(fmt, var("x")));
+            assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+            assert!(out.contains("unsafe { printf("));
+            assert!(!out.contains("println!"));
+        }
     }
 
     #[test]
@@ -913,7 +977,7 @@ fn main() {
     fn leaves_supported_calls_when_any_printf_call_is_unsupported() {
         let mut program = program_with_body(vec![
             printf_stmt(b"%d\n\0", var("x")),
-            printf_stmt(b"%f\n\0", var("y")),
+            printf_stmt(b"%e\n\0", var("y")),
         ]);
         fixup(&mut program);
         let out = program.emit();
