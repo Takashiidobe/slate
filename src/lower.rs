@@ -126,7 +126,7 @@ struct FunctionLowerer<'a, 'b> {
     parent: &'a mut Lowerer<'b>,
     values: BTreeMap<String, Val>,
     slots: BTreeMap<String, String>,
-    slot_types: BTreeMap<String, String>,
+    slot_types: BTreeMap<String, Type>,
     member_ptrs: BTreeMap<String, MemberPtr>,
     element_ptrs: BTreeMap<String, ElementPtr>,
     temp_counter: usize,
@@ -508,7 +508,7 @@ impl<'a> Lowerer<'a> {
             }
         } else if is_cir_aggregate_init(raw) {
             if is_c_global && let Some(ty) = ty {
-                if let Some(init) = self.render_const_value_expr(&ty.render(), raw) {
+                if let Some(init) = self.render_const_value_expr(&ty, raw) {
                     self.globals.insert(
                         rust_name.clone(),
                         GlobalVar {
@@ -533,9 +533,7 @@ impl<'a> Lowerer<'a> {
                         name: rust_name,
                         ty,
                         init: Expr::ArrayRepeat {
-                            elem: Box::new(
-                                self.default_value_expr(&self.rust_type(&elem).render()),
-                            ),
+                            elem: Box::new(self.default_value_expr(&self.rust_type(&elem))),
                             len: len as usize,
                         },
                         external: linkage_is_external(op),
@@ -552,7 +550,7 @@ impl<'a> Lowerer<'a> {
                     rust_name.clone(),
                     GlobalVar {
                         name: rust_name,
-                        init: self.default_value_expr(&ty.render()),
+                        init: self.default_value_expr(&ty),
                         ty,
                         external: linkage_is_external(op),
                     },
@@ -923,73 +921,62 @@ impl<'a> Lowerer<'a> {
         c_type_to_type(ty)
     }
 
-    fn default_value_expr(&self, ty: &str) -> Expr {
-        if let Some(record) = self.records.get(ty) {
-            match record.kind {
-                RecordKind::Struct => {
-                    let fields = record
-                        .fields
-                        .iter()
-                        .map(|field| {
-                            (
-                                sanitize_ident(&field.name).into_string(),
-                                self.default_value_expr(&c_type_to_rust(&field.ty)),
-                            )
-                        })
-                        .collect();
-                    return Expr::StructLit {
-                        name: sanitize_ident(&record.name).into_string(),
-                        fields,
-                    };
-                }
-                RecordKind::Union => {
-                    if let Some(field) = record.fields.first() {
-                        return Expr::StructLit {
-                            name: sanitize_ident(&record.name).into_string(),
-                            fields: vec![(
-                                sanitize_ident(&field.name).into_string(),
-                                self.default_value_expr(&c_type_to_rust(&field.ty)),
-                            )],
-                        };
+    fn default_value_expr(&self, ty: &Type) -> Expr {
+        match ty {
+            Type::Custom(name) => {
+                if let Some(record) = self.records.get(name) {
+                    match record.kind {
+                        RecordKind::Struct => {
+                            let fields = record
+                                .fields
+                                .iter()
+                                .map(|field| {
+                                    (
+                                        sanitize_ident(&field.name).into_string(),
+                                        self.default_value_expr(&c_type_to_type(&field.ty)),
+                                    )
+                                })
+                                .collect();
+                            return Expr::StructLit {
+                                name: sanitize_ident(&record.name).into_string(),
+                                fields,
+                            };
+                        }
+                        RecordKind::Union => {
+                            if let Some(field) = record.fields.first() {
+                                return Expr::StructLit {
+                                    name: sanitize_ident(&record.name).into_string(),
+                                    fields: vec![(
+                                        sanitize_ident(&field.name).into_string(),
+                                        self.default_value_expr(&c_type_to_type(&field.ty)),
+                                    )],
+                                };
+                            }
+                        }
                     }
                 }
+                standard_record_default_expr(name).unwrap_or_else(|| default_value_for_type(ty))
             }
-        }
-        if is_long_double(ty) || ty == LONG_DOUBLE_TY {
-            return Expr::Call {
+            Type::LongDouble => Expr::Call {
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::Value(RustValue::Float(0.0))],
-            };
+            },
+            Type::Complex(inner) => {
+                let d = default_value_for_type(inner);
+                Expr::StructLit {
+                    name: "Complex".into(),
+                    fields: vec![("re".into(), d.clone()), ("im".into(), d)],
+                }
+            }
+            Type::Array { elem, len } => Expr::ArrayRepeat {
+                elem: Box::new(self.default_value_expr(elem)),
+                len: *len as usize,
+            },
+            _ => default_value_for_type(ty),
         }
-        if let Some(value) = standard_record_default_expr(ty) {
-            return value;
-        }
-        if let Some(inner) = ty
-            .strip_prefix(COMPLEX_TY)
-            .and_then(|s| s.strip_suffix('>'))
-        {
-            let d = default_value_expr(inner);
-            return Expr::StructLit {
-                name: "Complex".into(),
-                fields: vec![("re".into(), d.clone()), ("im".into(), d)],
-            };
-        }
-        if let Some((inner, len)) = parse_cir_array_type(ty) {
-            return Expr::ArrayRepeat {
-                elem: Box::new(self.default_value_expr(&inner)),
-                len: len as usize,
-            };
-        }
-        if let Some((inner, len)) = parse_rust_array_type(ty) {
-            return Expr::ArrayRepeat {
-                elem: Box::new(self.default_value_expr(inner)),
-                len: len as usize,
-            };
-        }
-        default_value_expr(ty)
     }
 
-    fn render_const_value_expr(&self, rust_ty: &str, raw: &str) -> Option<Expr> {
+    fn render_const_value_expr(&self, ty: &Type, raw: &str) -> Option<Expr> {
         let raw = raw.trim();
         if let Some((re, im)) = parse_cir_const_complex(raw) {
             Some(Expr::StructLit {
@@ -1000,7 +987,10 @@ impl<'a> Lowerer<'a> {
                 ],
             })
         } else if raw.starts_with("#cir.const_record<") {
-            let record = self.records.get(rust_ty)?;
+            let Type::Custom(name) = ty else {
+                return None;
+            };
+            let record = self.records.get(name)?;
             let open = raw.find('{')?;
             let close = raw.rfind('}')?;
             let elems = split_top_level(&raw[open + 1..close], ',');
@@ -1011,7 +1001,7 @@ impl<'a> Lowerer<'a> {
                         .iter()
                         .enumerate()
                         .map(|(i, field)| {
-                            let field_ty = c_type_to_rust(&field.ty);
+                            let field_ty = c_type_to_type(&field.ty);
                             let value = elems
                                 .get(i)
                                 .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
@@ -1026,7 +1016,7 @@ impl<'a> Lowerer<'a> {
                 }
                 RecordKind::Union => {
                     let field = record.fields.first()?;
-                    let field_ty = c_type_to_rust(&field.ty);
+                    let field_ty = c_type_to_type(&field.ty);
                     let value = elems
                         .first()
                         .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
@@ -1038,84 +1028,29 @@ impl<'a> Lowerer<'a> {
                 }
             }
         } else if raw.starts_with("#cir.const_array<[") {
-            let (elem_ty, len) = parse_rust_array_type(rust_ty)?;
+            let Type::Array { elem, len } = ty else {
+                return None;
+            };
+            let len = *len as usize;
             let open = raw.find('[')?;
             let close = raw.rfind(']')?;
             let mut out: Vec<Expr> = split_top_level(&raw[open + 1..close], ',')
                 .into_iter()
                 .map(|e| e.trim().to_string())
                 .filter(|e| !e.is_empty())
-                .take(len as usize)
+                .take(len)
                 .map(|e| {
-                    self.render_const_value_expr(elem_ty, &e)
-                        .unwrap_or_else(|| self.default_value_expr(elem_ty))
+                    self.render_const_value_expr(elem, &e)
+                        .unwrap_or_else(|| self.default_value_expr(elem))
                 })
                 .collect();
-            out.resize(len as usize, self.default_value_expr(elem_ty));
+            out.resize(len, self.default_value_expr(elem));
             Some(Expr::ArrayLit(out))
         } else if raw.starts_with("#cir.zero") {
-            Some(self.default_value_expr(rust_ty))
+            Some(self.default_value_expr(ty))
         } else {
             parse_cir_scalar_expr(raw)
         }
-    }
-}
-
-fn c_type_to_rust(ty: &crate::c_ast::CType) -> String {
-    match ty {
-        crate::c_ast::CType::Void => "()".into(),
-        crate::c_ast::CType::Bool => "bool".into(),
-        crate::c_ast::CType::Int {
-            signed: true,
-            bits: 8,
-        } => "i8".into(),
-        crate::c_ast::CType::Int {
-            signed: false,
-            bits: 8,
-        } => "u8".into(),
-        crate::c_ast::CType::Int {
-            signed: true,
-            bits: 16,
-        } => "i16".into(),
-        crate::c_ast::CType::Int {
-            signed: false,
-            bits: 16,
-        } => "u16".into(),
-        crate::c_ast::CType::Int {
-            signed: true,
-            bits: 32,
-        } => "i32".into(),
-        crate::c_ast::CType::Int {
-            signed: false,
-            bits: 32,
-        } => "u32".into(),
-        crate::c_ast::CType::Int {
-            signed: true,
-            bits: 64,
-        } => "i64".into(),
-        crate::c_ast::CType::Int {
-            signed: false,
-            bits: 64,
-        } => "u64".into(),
-        crate::c_ast::CType::Int { .. } => "i32".into(),
-        crate::c_ast::CType::Float { bits: 32 } => "f32".into(),
-        crate::c_ast::CType::Float { bits: 64 } => "f64".into(),
-        crate::c_ast::CType::Float { bits: 80 } => LONG_DOUBLE_TY.into(),
-        crate::c_ast::CType::Float { .. } => "f64".into(),
-        crate::c_ast::CType::Ptr(inner) => format!("*mut {}", c_type_to_rust(inner)),
-        crate::c_ast::CType::FuncPtr { ret, params } => {
-            let params = params
-                .iter()
-                .map(c_type_to_rust)
-                .collect::<Vec<_>>()
-                .join(", ");
-            format!("Option<fn({params}) -> {}>", c_type_to_rust(ret))
-        }
-        crate::c_ast::CType::Array(inner, Some(len)) => {
-            format!("[{}; {len}]", c_type_to_rust(inner))
-        }
-        crate::c_ast::CType::Array(inner, None) => format!("*mut {}", c_type_to_rust(inner)),
-        crate::c_ast::CType::Record(name) => sanitize_ident(name).into_string(),
     }
 }
 
@@ -1299,14 +1234,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let ty = self
             .pointee_type(op.ty.as_deref().unwrap_or(""))
             .unwrap_or(Type::Prim(Prim::I32));
-        let ty_str = ty.render();
         self.slots.insert(result.clone(), name.clone());
-        self.slot_types.insert(result.clone(), ty_str.clone());
+        self.slot_types.insert(result.clone(), ty.clone());
+        let init = self.default_value_expr(&ty);
         self.push_stmt(Stmt::Let {
             name,
             mutable: true,
             ty: Some(ty),
-            init: Some(self.default_value_expr(&ty_str)),
+            init: Some(init),
         });
     }
 
@@ -1392,8 +1327,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let dst_len = self
             .slot_types
             .get(dst)
-            .and_then(|ty| parse_rust_array_type(ty))
-            .map(|(_, len)| len as usize);
+            .and_then(type_array_len)
+            .map(|len| len as usize);
         match self.values.get(src) {
             Some(Val::Global(name)) => {
                 if let Some(bytes) = self.parent.strings.get(name) {
@@ -1427,8 +1362,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    fn render_const_value_expr(&self, rust_ty: &str, raw: &str) -> Option<Expr> {
-        self.parent.render_const_value_expr(rust_ty, raw)
+    fn render_const_value_expr(&self, ty: &Type, raw: &str) -> Option<Expr> {
+        self.parent.render_const_value_expr(ty, raw)
     }
 
     fn lower_load(&mut self, op: &Op) {
@@ -2429,7 +2364,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             _ if self
                 .slot_types
                 .get(src)
-                .is_some_and(|ty| parse_rust_array_type(ty).is_some()) =>
+                .is_some_and(|ty| matches!(ty, Type::Array { .. })) =>
             {
                 Val::Expr(Expr::ArrayPtr {
                     array: Box::new(self.operand_expr(src)),
@@ -2600,7 +2535,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     name: name.clone(),
                     mutable: true,
                     ty: Some(Type::LongDouble),
-                    init: Some(self.default_value_expr(LONG_DOUBLE_TY)),
+                    init: Some(self.default_value_expr(&Type::LongDouble)),
                 });
                 let i8_ptr = Type::Ptr {
                     mutable: true,
@@ -3592,7 +3527,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return if self
                 .slot_types
                 .get(operand)
-                .is_some_and(|ty| parse_rust_array_type(ty).is_some())
+                .is_some_and(|ty| matches!(ty, Type::Array { .. }))
             {
                 Expr::MethodCall {
                     recv: Box::new(Expr::Var(slot.clone().into())),
@@ -3705,7 +3640,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
     }
 
-    fn default_value_expr(&self, ty: &str) -> Expr {
+    fn default_value_expr(&self, ty: &Type) -> Expr {
         self.parent.default_value_expr(ty)
     }
 }
@@ -4367,13 +4302,10 @@ fn op_type_return(ty: &str) -> Option<&str> {
     split_top_level_arrow(ty).map(|(_, ret)| ret.trim())
 }
 
-fn default_value_expr(ty: &str) -> Expr {
+fn type_array_len(ty: &Type) -> Option<u64> {
     match ty {
-        "bool" => Expr::Value(RustValue::Bool(false)),
-        "f32" | "f64" => Expr::Value(RustValue::Float(0.0)),
-        ty if ty.starts_with("*mut ") => Expr::Value(RustValue::NullPtr),
-        ty if ty.starts_with("Option<fn(") => Expr::Value(RustValue::None),
-        _ => Expr::Value(RustValue::I64(0)),
+        Type::Array { len, .. } => Some(*len),
+        _ => None,
     }
 }
 
@@ -4524,7 +4456,7 @@ fn parse_cir_scalar_expr(s: &str) -> Option<Expr> {
         .or_else(|| {
             s.trim_start()
                 .starts_with("#cir.ptr<null>")
-                .then(|| default_value_expr("*mut i32"))
+                .then(|| Expr::Value(RustValue::NullPtr))
         })
 }
 
