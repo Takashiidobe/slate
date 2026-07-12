@@ -557,8 +557,12 @@ pub enum Expr {
 #[derive(Debug, Clone)]
 pub enum Type {
     Prim(Prim),
-    /// Records, `LongDouble`, `libc::FILE`, and other opaque spellings.
+    /// Records, `LongDouble`, and other opaque spellings with no native Rust type.
     Named(String),
+    /// A generic type parameter reference, e.g. the `T` in `Complex<T>`.
+    TyVar(Ident),
+    /// A C library type with no native Rust equivalent, spelled by its FFI path.
+    CLib(CLibType),
     Complex(Box<Type>),
     Generic {
         name: String,
@@ -579,6 +583,22 @@ pub enum Type {
     },
     Unit,
     Variadic,
+}
+
+/// C library types with no native Rust equivalent, referenced through their FFI path.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CLibType {
+    Void,
+    File,
+}
+
+impl CLibType {
+    pub fn path(self) -> &'static str {
+        match self {
+            CLibType::Void => "core::ffi::c_void",
+            CLibType::File => "libc::FILE",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
