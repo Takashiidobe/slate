@@ -7,6 +7,7 @@ mod codegen;
 mod ctx;
 mod fixups;
 mod lower;
+mod preprocess;
 mod rust_ast;
 
 use std::collections::BTreeMap;
@@ -19,6 +20,7 @@ fn usage() -> ExitCode {
     eprintln!("  emit-fixtures  write translated test fixtures to tests/fixtures.generated/");
     eprintln!("  translate   C -> Rust");
     eprintln!("  translate-cfg   experimental multi-config C -> Rust");
+    eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
     eprintln!("  translate-project  <dir> <out_dir>  cross-TU C dir -> Rust modules");
     ExitCode::from(2)
 }
@@ -37,6 +39,10 @@ fn main() -> ExitCode {
         },
         Some("translate-cfg") => match args.get(2) {
             Some(path) => run(cfg_translate::translate_cfg(Path::new(path))),
+            None => usage(),
+        },
+        Some("record-cfg") => match args.get(2) {
+            Some(path) => run(record_cfg(Path::new(path), &args[3..])),
             None => usage(),
         },
         Some("translate-project") => match (args.get(2), args.get(3)) {
@@ -171,6 +177,50 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
         .into_iter()
         .map(|path| format!("wrote {}\n", path.display()))
         .collect())
+}
+
+/// Record the preprocessor conditional regions of `path` (resolving active
+/// branches for the given clang args) and print them as JSON for later stages.
+fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
+    let source =
+        std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+    let pp = preprocess::record_file(&source, clang_args)?;
+    let chains: Vec<serde_json::Value> = pp
+        .chains
+        .iter()
+        .map(|chain| {
+            let branches: Vec<serde_json::Value> = chain
+                .branches
+                .iter()
+                .map(|branch| {
+                    serde_json::json!({
+                        "kind": branch.kind.as_str(),
+                        "raw_predicate": branch.raw_predicate,
+                        "directive_line": branch.directive_line,
+                        "body_start": branch.body_start,
+                        "body_end": branch.body_end,
+                        "rust_cfg": branch.rust_cfg,
+                        "active": branch.active,
+                    })
+                })
+                .collect();
+            serde_json::json!({
+                "depth": chain.depth,
+                "open_line": chain.open_line,
+                "endif_line": chain.endif_line,
+                "branches": branches,
+            })
+        })
+        .collect();
+    let doc = serde_json::json!({
+        "file": path.to_string_lossy(),
+        "chains": chains,
+        "diagnostics": pp.diagnostics,
+    });
+    Ok(format!(
+        "{}\n",
+        serde_json::to_string_pretty(&doc).map_err(|e| format!("serialize cfg regions: {e}"))?
+    ))
 }
 
 fn emit_fixtures() -> Result<String, String> {
