@@ -939,6 +939,8 @@ impl<W: Write> Codegen<W> {
         match ty {
             Type::Prim(p) => self.out.write_str(p.spelling()),
             Type::Named(n) => self.out.write_str(n),
+            Type::TyVar(name) => self.out.write_str(name.as_str()),
+            Type::CLib(c) => self.out.write_str(c.path()),
             Type::Complex(inner) => {
                 self.out.write_str("Complex<")?;
                 self.ty(inner)?;
