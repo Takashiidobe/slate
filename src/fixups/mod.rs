@@ -217,13 +217,12 @@ fn is_zero_expr(expr: &Expr) -> bool {
     matches!(
         expr,
         Expr::Value(RustValue::I64(0)) | Expr::Value(RustValue::I128(0))
-    ) || matches!(expr, Expr::Lit(s) | Expr::Raw(s) if matches!(s.as_str(), "0" | "0.0" | "false"))
+    ) || matches!(expr, Expr::Lit(s) if matches!(s.as_str(), "0" | "0.0" | "false"))
 }
 
 fn expr_ident(expr: &Expr) -> Option<&str> {
     match expr {
         Expr::Var(s) if is_ident(s.as_str()) => Some(s.as_str()),
-        Expr::Raw(s) if is_ident(s) => Some(s),
         _ => None,
     }
 }
@@ -450,7 +449,7 @@ fn walk_expr(expr: &Expr, f: &mut impl FnMut(&Expr)) {
         Expr::Value(_)
         | Expr::Lit(_)
         | Expr::Var(_)
-        | Expr::Raw(_)
+        | Expr::Path(_)
         | Expr::Todo(_)
         | Expr::AtomicFence { .. } => {}
         Expr::Unary { expr, .. }
@@ -649,7 +648,7 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
         Expr::Value(_) => 0,
         Expr::Lit(s) => usize::from(s == name),
         Expr::Var(s) => usize::from(s.as_str() == name),
-        Expr::Raw(s) => ident_count(s, name),
+        Expr::Path(_) => 0,
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }

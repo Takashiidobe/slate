@@ -204,19 +204,17 @@ impl Val {
     fn to_expr(&self, strings: &BTreeMap<String, Vec<u8>>) -> Expr {
         match self {
             Val::Expr(e) => e.clone(),
-            Val::Global(_) => Expr::Raw(self.render(strings)),
-        }
-    }
-
-    fn render(&self, strings: &BTreeMap<String, Vec<u8>>) -> String {
-        match self {
-            Val::Expr(e) => e.render(),
             Val::Global(name) => match strings.get(name) {
-                Some(bytes) => {
-                    // *mut so it fits *mut char slots; weakens to *const for printf/libc.
-                    format!("{}.as_ptr() as *mut libc::c_char", rust_byte_string(bytes))
-                }
-                None => name.clone(),
+                // *mut so it fits *mut char slots; weakens to *const for printf/libc.
+                Some(bytes) => Expr::Cast {
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(Expr::Lit(rust_byte_string(bytes))),
+                        method: "as_ptr".into(),
+                        args: Vec::new(),
+                    }),
+                    ty: Type::parse("*mut libc::c_char"),
+                },
+                None => Expr::Var(name.clone().into()),
             },
         }
     }
@@ -1332,7 +1330,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if attr_bool(op, "is_volatile") {
             self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
-                func: Box::new(Self::raw_expr("std::ptr::write_volatile")),
+                func: Box::new(Self::path_expr("std::ptr::write_volatile")),
                 args: vec![self.store_address_expr(ptr), value],
             })));
         } else if let Some(target) = self.place_expr(ptr) {
@@ -1442,7 +1440,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let value = if attr_bool(op, "is_volatile") {
             Self::unsafe_expr(Expr::Call {
-                func: Box::new(Self::raw_expr("std::ptr::read_volatile")),
+                func: Box::new(Self::path_expr("std::ptr::read_volatile")),
                 args: vec![self.load_address_expr(ptr)],
             })
         } else if let Some(atomic) = self.atomic_load_expr(op, ptr) {
@@ -1537,7 +1535,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         if raw.starts_with("#cir.ptr<null>") {
-            self.materialize_expr(result, Expr::Raw("std::ptr::null_mut()".into()), result_ty);
+            self.materialize_expr(result, Expr::Value(RustValue::NullPtr), result_ty);
             return;
         }
         let value = if result_ty.is_some_and(is_long_double) {
@@ -2016,7 +2014,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             parts.push(Expr::Binary {
                 op: BinOp::Eq,
                 lhs: Box::new(value.clone()),
-                rhs: Box::new(Self::raw_expr("f64::NEG_INFINITY")),
+                rhs: Box::new(Self::path_expr("f64::NEG_INFINITY")),
             });
         }
         if flags & 0x8 != 0 {
@@ -2116,7 +2114,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             parts.push(Expr::Binary {
                 op: BinOp::Eq,
                 lhs: Box::new(value),
-                rhs: Box::new(Self::raw_expr("f64::INFINITY")),
+                rhs: Box::new(Self::path_expr("f64::INFINITY")),
             });
         }
         let expr = if parts.is_empty() {
@@ -3023,9 +3021,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .clone()
             .unwrap_or_else(|| "__slate_va_args".into());
         self.push_assign(
-            Self::raw_expr(slot),
+            Expr::Var(slot.into()),
             Expr::MethodCall {
-                recv: Box::new(Self::raw_expr(args)),
+                recv: Box::new(Expr::Var(args.into())),
                 method: "clone".into(),
                 args: vec![],
             },
@@ -3065,7 +3063,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if self.is_main {
             let code = value.unwrap_or(Expr::Value(RustValue::I64(0)));
             self.push_stmt(Stmt::Expr(Expr::Call {
-                func: Box::new(Self::raw_expr("std::process::exit")),
+                func: Box::new(Self::path_expr("std::process::exit")),
                 args: vec![Expr::Cast {
                     expr: Box::new(code),
                     ty: Type::Prim(Prim::I32),
@@ -3307,7 +3305,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             if !region_ends_control_flow(case.region) {
                 if index + 1 < cases.len() {
                     body.push(Self::indent_stmt(Self::assign_stmt(
-                        Self::raw_expr(case_name.clone()),
+                        Expr::Var(case_name.clone().into()),
                         Expr::Value(RustValue::I64((index + 1) as i64)),
                     )));
                     body.push(Self::indent_stmt(Stmt::Continue(Some(label.clone()))));
@@ -3338,14 +3336,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 mutable: true,
                 ty: Some(Type::Prim(Prim::I32)),
                 init: Some(Expr::Match {
-                    expr: Box::new(Self::raw_expr(selector_name)),
+                    expr: Box::new(Expr::Var(selector_name.into())),
                     arms: selector_arms,
                 }),
             }),
             Self::indent_stmt(Stmt::Loop {
                 label: Some(label),
                 body: vec![Self::indent_stmt(Stmt::Match {
-                    expr: Self::raw_expr(case_name),
+                    expr: Expr::Var(case_name.into()),
                     arms: case_arms,
                 })],
             }),
@@ -3466,7 +3464,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let mut body = self.capture_body(|this| this.lower_block(block));
             if !block_diverges(block) {
                 body.push(Self::indent_stmt(Self::assign_stmt(
-                    Self::raw_expr(state_var.clone()),
+                    Expr::Var(state_var.clone().into()),
                     Expr::Value(RustValue::I64((i + 1) as i64)),
                 )));
                 body.push(Self::indent_stmt(Stmt::Continue(Some(loop_label.clone()))));
@@ -3489,7 +3487,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Loop {
             label: Some(loop_label),
             body: vec![Self::indent_stmt(Stmt::Match {
-                expr: Self::raw_expr(state_var),
+                expr: Expr::Var(state_var.into()),
                 arms,
             })],
         });
@@ -3512,7 +3510,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         match target {
             Some((state, state_var, loop_label)) => {
                 self.push_assign(
-                    Self::raw_expr(state_var),
+                    Expr::Var(state_var.into()),
                     Expr::Value(RustValue::I64(state as i64)),
                 );
                 self.push_stmt(Stmt::Continue(Some(loop_label)));
@@ -3539,7 +3537,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         match target {
             Some((state, state_var, loop_label)) => {
                 self.push_assign(
-                    Self::raw_expr(state_var),
+                    Expr::Var(state_var.into()),
                     Expr::Value(RustValue::I64(state as i64)),
                 );
                 self.push_stmt(Stmt::Continue(Some(loop_label)));
@@ -3651,13 +3649,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         });
     }
 
-    fn raw_expr(expr: impl Into<String>) -> Expr {
-        let expr = expr.into();
-        if is_rust_ident(&expr) {
-            Expr::Var(expr.into())
-        } else {
-            Expr::Raw(expr)
-        }
+    fn path_expr(path: &str) -> Expr {
+        Expr::Path(Path::new(path.split("::").map(Ident::from)))
     }
 
     fn unsafe_expr(value: Expr) -> Expr {
@@ -4556,7 +4549,7 @@ fn parse_cir_fp_expr(s: &str) -> Option<Expr> {
 fn fp_literal_expr(fp: String) -> Expr {
     fp.parse::<f64>()
         .map(|n| Expr::Value(RustValue::Float(n)))
-        .unwrap_or_else(|_| Expr::Raw(fp))
+        .unwrap_or_else(|_| Expr::Lit(fp))
 }
 
 // i128 so a full-range `!u64i` value (e.g. SIG_ERR = (void(*)(int))-1, which CIR
