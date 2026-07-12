@@ -126,6 +126,20 @@ fn call_argument_temps_are_inlined() {
 }
 
 #[test]
+fn main_retval_boilerplate_is_collapsed() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-main-retval-fixup");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("add.c");
+    let generated = tmp.join("add.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate add fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated add rust");
+    assert!(rust.contains("std::process::exit(0 as i32);"));
+    assert!(!rust.contains("__retval"));
+    assert!(!rust.contains("let _v14: i32 ="));
+}
+
+#[test]
 fn call_lowering_preserves_function_pointer_and_extern_shapes() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-call-lowering");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
