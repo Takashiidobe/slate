@@ -358,18 +358,24 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
         _ => {}
     }
     let conv = bytes.get(i).copied()?;
-    if !matches!(conv, b'd' | b'i' | b'u') {
+    if !matches!(conv, b'd' | b'i' | b'u' | b'x' | b'X' | b'o') {
         return None;
     }
-    if plus && conv == b'u' {
+    if plus && !matches!(conv, b'd' | b'i') {
         return None;
     }
+    let format_kind = match conv {
+        b'x' => Some('x'),
+        b'X' => Some('X'),
+        b'o' => Some('o'),
+        _ => None,
+    };
     Some((
         i + 1,
         Conversion {
             kind: ConversionKind::Integer,
         },
-        integer_placeholder(left, plus, zero, width),
+        integer_placeholder(left, plus, zero, width, format_kind),
     ))
 }
 
@@ -409,8 +415,14 @@ fn parse_float_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversi
     ))
 }
 
-fn integer_placeholder(left: bool, plus: bool, zero: bool, width: Option<&str>) -> String {
-    if !left && !plus && !zero && width.is_none() {
+fn integer_placeholder(
+    left: bool,
+    plus: bool,
+    zero: bool,
+    width: Option<&str>,
+    format_kind: Option<char>,
+) -> String {
+    if !left && !plus && !zero && width.is_none() && format_kind.is_none() {
         return "{}".into();
     }
     let mut out = String::from("{:");
@@ -425,6 +437,9 @@ fn integer_placeholder(left: bool, plus: bool, zero: bool, width: Option<&str>) 
     }
     if let Some(width) = width {
         out.push_str(width);
+    }
+    if let Some(format_kind) = format_kind {
+        out.push(format_kind);
     }
     out.push('}');
     out
@@ -835,6 +850,30 @@ fn main() {
     }
 
     #[test]
+    fn rewrites_hex_and_octal_integer_conversions() {
+        let out = run(printf_stmt_args(
+            b"%x %X %o %08x %-4X %5o\n\0",
+            vec![
+                var("lo"),
+                var("hi"),
+                var("oct"),
+                var("padded"),
+                var("left"),
+                var("wide"),
+            ],
+        ));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{:x} {:X} {:o} {:08x} {:<4X} {:5o}\", lo, hi, oct, padded, left, wide);
+}
+"
+        );
+    }
+
+    #[test]
     fn rewrites_constant_string_and_ascii_char_conversions() {
         let mut program = program_with_body(vec![
             temp("ch", "i32", int(65)),
@@ -963,8 +1002,10 @@ fn main() {
             &b"%*d\n\0"[..],
             &b"%.3d\n\0"[..],
             &b"%#d\n\0"[..],
+            &b"%#x\n\0"[..],
             &b"% d\n\0"[..],
             &b"%-05d\n\0"[..],
+            &b"%+x\n\0"[..],
         ] {
             let out = run(printf_stmt(fmt, var("x")));
             assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
