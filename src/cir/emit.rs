@@ -5,6 +5,7 @@
 //!   SLATE_CLANG    (default ~/llvm-project/build-cir/bin/clang)
 //!   SLATE_CIR_OPT  (default ~/llvm-project/build-cir/bin/cir-opt)
 
+use std::collections::BTreeMap;
 use std::path::Path;
 use std::process::{Command, Stdio};
 
@@ -34,6 +35,37 @@ pub fn target_args() -> Vec<String> {
         args.extend(extra.split_whitespace().map(str::to_string));
     }
     args
+}
+
+/// Query the macro environment Clang predefines for `extra_args` (target,
+/// `-D`/`-U`, etc.). Used by the preprocessing oracle to decide which
+/// conditional branch is active for a given invocation.
+pub fn predefined_macros(extra_args: &[String]) -> Result<BTreeMap<String, String>, String> {
+    let out = Command::new(clang())
+        .args(["-dM", "-E", "-x", "c"])
+        .args(target_args())
+        .args(extra_args)
+        .arg("/dev/null")
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", clang()))?;
+    if !out.status.success() {
+        return Err(format!(
+            "clang -dM -E failed:\n{}",
+            String::from_utf8_lossy(&out.stderr)
+        ));
+    }
+    let mut macros = BTreeMap::new();
+    for line in String::from_utf8_lossy(&out.stdout).lines() {
+        let mut parts = line.splitn(3, ' ');
+        if parts.next() != Some("#define") {
+            continue;
+        }
+        let Some(name) = parts.next() else { continue };
+        // function-like macros carry a `(` in the name field; keep the bare name.
+        let name = name.split('(').next().unwrap_or(name);
+        macros.insert(name.to_string(), parts.next().unwrap_or("").to_string());
+    }
+    Ok(macros)
 }
 
 /// Emit high-level ClangIR (pre-CFG-flattening, passes disabled) for `src` and
