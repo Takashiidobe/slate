@@ -167,6 +167,27 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(logical_rust.contains("println!(\"{} {} {}\","));
     assert!(!logical_rust.contains("fn printf("));
     assert!(!logical_rust.contains("unsafe { printf("));
+
+    for fixture in ["unsigned", "longs", "longlong", "stdint_types"] {
+        let c_src = fixtures_dir().join(format!("{fixture}.c"));
+        let generated = tmp.join(format!("{fixture}.generated.rs"));
+        support::translate(&c_src, &generated)
+            .unwrap_or_else(|err| panic!("translate {fixture} fixture: {err}"));
+        let rust = std::fs::read_to_string(&generated)
+            .unwrap_or_else(|err| panic!("read generated {fixture} rust: {err}"));
+        assert!(
+            rust.contains("println!(\"{}"),
+            "missing recovered integer printf in {fixture}"
+        );
+        assert!(
+            !rust.contains("fn printf("),
+            "printf extern should be removed in {fixture}"
+        );
+        assert!(
+            !rust.contains("unsafe { printf("),
+            "printf call should be removed in {fixture}"
+        );
+    }
 }
 
 #[test]
