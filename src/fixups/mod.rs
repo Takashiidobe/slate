@@ -6,6 +6,7 @@ mod drop_call_results;
 mod idents;
 mod inline_temps;
 mod param_spills;
+mod remove_mut;
 mod retval;
 mod zero_init;
 
@@ -29,6 +30,7 @@ pub fn apply(program: Program) -> Program {
                     call_args::fixup(&mut f.body, &sigs);
                     retval::fixup(&mut f);
                     drop_call_results::fixup(&mut f.body);
+                    remove_mut::fixup(&mut f);
                     Item::Fn(f)
                 }
                 item => item,
@@ -96,12 +98,12 @@ mod tests {
             panic!("migrated functions must remain structured");
         };
         assert_eq!(f.params[0].name, "a");
-        assert!(f.params[0].mutable);
+        assert!(!f.params[0].mutable);
         assert_eq!(
             out.emit(),
             "\
-fn add(mut a: i32, mut b: i32) -> i32 {
-    let mut c: i32 = a + b;
+fn add(a: i32, b: i32) -> i32 {
+    let c: i32 = a + b;
     return c;
 }
 "

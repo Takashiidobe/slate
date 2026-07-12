@@ -177,6 +177,36 @@ fn main_retval_boilerplate_is_collapsed() {
 }
 
 #[test]
+fn unnecessary_mut_bindings_are_removed() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-remove-mut-fixup");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let add_c = fixtures_dir().join("add.c");
+    let add_generated = tmp.join("add.generated.rs");
+    support::translate(&add_c, &add_generated).expect("translate add fixture");
+    let add_rust = std::fs::read_to_string(&add_generated).expect("read generated add rust");
+    assert!(add_rust.contains("fn add(a: i32, b: i32) -> i32"));
+    assert!(add_rust.contains("let c: i32 = a + b;"));
+    assert!(!add_rust.contains("fn add(mut a: i32, mut b: i32)"));
+    assert!(!add_rust.contains("let mut c: i32 ="));
+
+    let compound_c = fixtures_dir().join("compound_assignments.c");
+    let compound_generated = tmp.join("compound_assignments.generated.rs");
+    support::translate(&compound_c, &compound_generated).expect("translate compound fixture");
+    let compound_rust =
+        std::fs::read_to_string(&compound_generated).expect("read generated compound rust");
+    assert!(compound_rust.contains("let mut a: i32 = 0;"));
+
+    let pointers_c = fixtures_dir().join("pointers.c");
+    let pointers_generated = tmp.join("pointers.generated.rs");
+    support::translate(&pointers_c, &pointers_generated).expect("translate pointers fixture");
+    let pointers_rust =
+        std::fs::read_to_string(&pointers_generated).expect("read generated pointers rust");
+    assert!(pointers_rust.contains("let mut local: i32 = 0;"));
+    assert!(pointers_rust.contains("std::ptr::addr_of_mut!(local)"));
+}
+
+#[test]
 fn call_lowering_preserves_function_pointer_and_extern_shapes() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-call-lowering");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
