@@ -139,6 +139,13 @@ Read these before making changes — they are the real playbook:
 - **Transliterate first, idiomatize later.** Baseline Rust may be ugly:
   `#[repr(C)]`, raw pointers, explicit temps, `libc`, and `unsafe` are all
   acceptable. Make it correct first; recover idiom in separate, verified fixups.
+- **The lowerer emits structured AST, never rendered strings.** Everything in
+  `src/lower.rs` builds `src/rust_ast.rs` nodes (`Item`/`Stmt`/`Expr`); `format!`
+  into Rust source text is not allowed. Keep it as strongly typed as possible —
+  favor a new enum variant over a `String` bridge, so the compiler enforces
+  exhaustiveness and fixups can pattern-match the shape. If the AST cannot express
+  something, add the node to `rust_ast.rs` rather than emitting text. Same rule
+  for fixups — see [docs/writing-a-fixup.md](docs/writing-a-fixup.md).
 - **Correctness lives in baseline lowering, never in a fixup.** A fixup must be
   optional in spirit — disabling it still leaves correct Rust.
 - **The generator only emits what Slate can translate.** When you extend the

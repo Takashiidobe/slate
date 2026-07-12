@@ -106,10 +106,14 @@ yet modeled.
 
 ### lower
 
-The lowerer is the only stage that knows CIR op semantics. It currently emits raw
-Rust item strings for the covered baseline. That is acceptable for V0, but any
-nontrivial fixup should operate on structured Rust nodes instead of string
-rewrites.
+The lowerer is the only stage that knows CIR op semantics. It emits **structured
+`rust_ast` nodes**, not Rust source strings: every handler builds
+`Item`/`Stmt`/`Expr` values that `src/codegen.rs` renders once at the end.
+`format!`-ing into Rust text is not allowed. Keep the output as strongly typed as
+possible — favor a new enum variant over a `String` bridge, so the compiler
+enforces exhaustiveness and fixups can pattern-match the shape. If the AST cannot
+express a construct, extend `src/rust_ast.rs`. Fixups follow the same rule
+([writing-a-fixup.md](writing-a-fixup.md)).
 
 ### fixups
 
