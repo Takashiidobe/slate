@@ -208,16 +208,17 @@ fn parse_printf_format(bytes: &[u8]) -> Option<ParsedFormat> {
     while i < bytes.len() {
         match bytes[i] {
             b'%' => match bytes.get(i + 1).copied() {
-                Some(b'd') => {
-                    format.push_str("{}");
-                    arg_count += 1;
-                    i += 2;
-                }
                 Some(b'%') => {
                     format.push('%');
                     i += 2;
                 }
-                _ => return None,
+                Some(_) => {
+                    let next = parse_integer_conversion(bytes, i + 1)?;
+                    format.push_str("{}");
+                    arg_count += 1;
+                    i = next;
+                }
+                None => return None,
             },
             b'{' => {
                 format.push_str("{{");
@@ -247,6 +248,23 @@ fn parse_printf_format(bytes: &[u8]) -> Option<ParsedFormat> {
         arg_count,
         trailing_newline,
     })
+}
+
+fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<usize> {
+    match bytes.get(i).copied()? {
+        b'l' => {
+            i += 1;
+            if bytes.get(i).copied() == Some(b'l') {
+                i += 1;
+            }
+        }
+        b'z' => i += 1,
+        _ => {}
+    }
+    match bytes.get(i).copied()? {
+        b'd' | b'i' | b'u' => Some(i + 1),
+        _ => None,
+    }
 }
 
 fn format_macro(name: &str, args: Vec<Expr>) -> Expr {
@@ -539,6 +557,31 @@ fn main() {
     }
 
     #[test]
+    fn rewrites_signed_and_unsigned_integer_conversions() {
+        let out = run(printf_stmt_args(
+            b"%i %u %ld %lu %lld %llu %zu\n\0",
+            vec![
+                var("i"),
+                var("u"),
+                var("l"),
+                var("ul"),
+                var("ll"),
+                var("ull"),
+                var("n"),
+            ],
+        ));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{} {} {} {} {} {} {}\", i, u, l, ul, ll, ull, n);
+}
+"
+        );
+    }
+
+    #[test]
     fn rewrites_percent_d_without_newline_to_print() {
         let out = run(printf_stmt(b"value=%d\0", var("x")));
 
@@ -574,7 +617,7 @@ fn main() {
 
     #[test]
     fn leaves_unsupported_formats_and_extern_declaration() {
-        let out = run(printf_stmt(b"%u\n\0", var("x")));
+        let out = run(printf_stmt(b"%f\n\0", var("x")));
 
         assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
         assert!(out.contains("unsafe { printf("));
