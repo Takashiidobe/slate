@@ -882,6 +882,34 @@ impl<W: Write> Codegen<W> {
                 self.expr(dst)?;
                 write!(self.out, ", {count}) }}")
             }
+            Expr::PtrCopy {
+                src,
+                dst,
+                count,
+                overlapping,
+            } => {
+                let f = if *overlapping {
+                    "copy"
+                } else {
+                    "copy_nonoverlapping"
+                };
+                write!(self.out, "std::ptr::{f}(")?;
+                self.expr(src)?;
+                self.out.write_str(", ")?;
+                self.expr(dst)?;
+                self.out.write_str(", ")?;
+                self.expr(count)?;
+                self.out.write_char(')')
+            }
+            Expr::WriteBytes { dst, val, count } => {
+                self.out.write_str("std::ptr::write_bytes(")?;
+                self.expr(dst)?;
+                self.out.write_str(", ")?;
+                self.expr(val)?;
+                self.out.write_str(", ")?;
+                self.expr(count)?;
+                self.out.write_char(')')
+            }
             Expr::Todo(note) => write!(self.out, "todo!({note:?})"),
         }
     }

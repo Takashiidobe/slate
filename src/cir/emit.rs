@@ -67,6 +67,11 @@ pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<Strin
         ));
     }
 
+    // TODO: cir-opt could run `--cir-idiom-recognizer` here to raise raw
+    // `@memcpy`/`@memset`/`@memmove` calls into `cir.libc.*` ops (easier to
+    // pattern-match downstream), but the pass's recognizeStandardLibraryCall is
+    // a no-op stub in the current CIR build, so it would raise nothing. Revisit
+    // if it lands.
     let mut child = Command::new(cir_opt())
         .arg("--mlir-print-op-generic")
         .stdin(Stdio::piped())
