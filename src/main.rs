@@ -3,6 +3,7 @@
 mod c_ast;
 mod cfg_translate;
 mod cir;
+mod codegen;
 mod ctx;
 mod fixups;
 mod lower;
