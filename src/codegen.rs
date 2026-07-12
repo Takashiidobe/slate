@@ -656,6 +656,23 @@ impl<W: Write> Codegen<W> {
                     ordering_str(*ordering)
                 )
             }
+            Expr::Transmute { from, to, expr } => {
+                self.out.write_str("unsafe { std::mem::transmute::<")?;
+                self.ty(from)?;
+                self.out.write_str(", ")?;
+                self.ty(to)?;
+                self.out.write_str(">(")?;
+                self.expr(expr)?;
+                self.out.write_str(") }")
+            }
+            Expr::CopyNonoverlapping { src, dst, count } => {
+                self.out
+                    .write_str("unsafe { std::ptr::copy_nonoverlapping(")?;
+                self.expr(src)?;
+                self.out.write_str(", ")?;
+                self.expr(dst)?;
+                write!(self.out, ", {count}) }}")
+            }
         }
     }
 
