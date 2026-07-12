@@ -1541,13 +1541,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let value = if result_ty.is_some_and(is_long_double) {
             let value = parse_cir_fp_expr(raw)
                 .or_else(|| parse_cir_int(raw).map(int_value_expr))
-                .unwrap_or_else(|| Expr::Value(RustValue::Float(0.0)));
+                .unwrap_or(Expr::Value(RustValue::Float(0.0)));
             Expr::Call {
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![value],
             }
         } else {
-            parse_cir_scalar_expr(raw).unwrap_or_else(|| Expr::Value(RustValue::I64(0)))
+            parse_cir_scalar_expr(raw).unwrap_or(Expr::Value(RustValue::I64(0)))
         };
         self.materialize_expr(result, value, result_ty);
     }

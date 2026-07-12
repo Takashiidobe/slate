@@ -580,8 +580,6 @@ fn int_bits(s: &str) -> u32 {
         8
     } else if s.contains("short") {
         16
-    } else if s.contains("long long") {
-        64
     } else if s.contains("long") {
         64
     } else {
