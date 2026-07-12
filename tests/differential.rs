@@ -110,6 +110,22 @@ fn compound_assignment_temps_are_inlined() {
 }
 
 #[test]
+fn call_argument_temps_are_inlined() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-call-arg-fixup");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("add.c");
+    let generated = tmp.join("add.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate add fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated add rust");
+    for call in ["add(2, 3)", "add(-10, 4)", "add(0, 0)"] {
+        assert!(rust.contains(call), "missing inlined call: {call}");
+    }
+    assert!(!rust.contains("= add(_v"));
+    assert!(!rust.contains("let _v1: i32 = 2;"));
+}
+
+#[test]
 fn call_lowering_preserves_function_pointer_and_extern_shapes() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-call-lowering");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
