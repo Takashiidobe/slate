@@ -265,6 +265,26 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(float_rejected_rust.contains("fn printf("));
     assert!(float_rejected_rust.contains("unsafe { printf("));
     assert!(!float_rejected_rust.contains("println!(\"{:."));
+
+    let pointer_c = fixtures_dir().join("printf_pointer.c");
+    let pointer_generated = tmp.join("printf_pointer.generated.rs");
+    support::translate(&pointer_c, &pointer_generated).expect("translate printf pointer fixture");
+    let pointer_rust =
+        std::fs::read_to_string(&pointer_generated).expect("read generated printf pointer rust");
+    assert!(pointer_rust.contains("println!(\"{:p}\","));
+    assert!(pointer_rust.contains("print!(\"addr={:p}\","));
+    assert!(!pointer_rust.contains("fn printf("));
+    assert!(!pointer_rust.contains("unsafe { printf("));
+
+    let pointer_rejected_c = fixtures_dir().join("printf_pointer_rejected.c");
+    let pointer_rejected_generated = tmp.join("printf_pointer_rejected.generated.rs");
+    support::translate(&pointer_rejected_c, &pointer_rejected_generated)
+        .expect("translate rejected printf pointer fixture");
+    let pointer_rejected_rust = std::fs::read_to_string(&pointer_rejected_generated)
+        .expect("read generated rejected printf pointer rust");
+    assert!(pointer_rejected_rust.contains("fn printf("));
+    assert!(pointer_rejected_rust.contains("unsafe { printf("));
+    assert!(!pointer_rejected_rust.contains("println!(\"{:p}"));
 }
 
 #[test]
