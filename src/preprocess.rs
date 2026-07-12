@@ -302,10 +302,10 @@ fn eval(expr: &PredExpr, macros: &BTreeMap<String, String>) -> Option<bool> {
     }
 }
 
-fn opt(key: &str, value: &str) -> Cfg {
+fn opt(key: impl Into<String>, value: impl Into<String>) -> Cfg {
     Cfg::Opt {
-        key: key.to_string(),
-        value: value.to_string(),
+        key: key.into(),
+        value: value.into(),
     }
 }
 
