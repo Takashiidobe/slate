@@ -13,9 +13,9 @@
 use std::fmt::{self, Write};
 
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, Attr, Block, Derive, Expr, ExternDecl, FnDef, Func,
-    GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method, Program, RecordDef, Repr,
-    RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
+    AtomicOrdering, AtomicRmwOp, AtomicType, Attr, Block, CrateAttr, Derive, Expr, ExternDecl,
+    FnDef, Func, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method, Program, RecordDef,
+    Repr, RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
 };
 
 const INDENT: &str = "    ";
@@ -116,7 +116,9 @@ impl<W: Write> Codegen<W> {
             Item::Fn(f) => self.fn_def(f)?,
             Item::CrateAttrs(attrs) => {
                 for attr in attrs {
-                    writeln!(self.out, "#![{attr}]")?;
+                    self.out.write_str("#![")?;
+                    self.crate_attr(attr)?;
+                    self.out.write_str("]\n")?;
                 }
             }
             Item::Mod { name } => writeln!(self.out, "mod {name};")?,
@@ -238,6 +240,24 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str("}\n")
             }
         }
+    }
+
+    fn crate_attr(&mut self, attr: &CrateAttr) -> fmt::Result {
+        let (kind, lints) = match attr {
+            CrateAttr::Allow(lints) => ("allow", lints),
+            CrateAttr::Deny(lints) => ("deny", lints),
+            CrateAttr::Feature(feature) => {
+                return write!(self.out, "feature({})", feature.spelling());
+            }
+        };
+        write!(self.out, "{kind}(")?;
+        for (i, lint) in lints.iter().enumerate() {
+            if i > 0 {
+                self.out.write_str(", ")?;
+            }
+            self.out.write_str(lint.spelling())?;
+        }
+        self.out.write_char(')')
     }
 
     fn attr(&mut self, attr: &Attr) -> fmt::Result {

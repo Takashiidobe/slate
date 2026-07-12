@@ -18,7 +18,7 @@ pub struct Program {
 pub enum Item {
     Func(Func),
     Fn(FnDef),
-    CrateAttrs(Vec<String>),
+    CrateAttrs(Vec<CrateAttr>),
     Mod {
         name: String,
     },
@@ -57,6 +57,48 @@ pub struct StructDef {
 pub enum StructFields {
     Tuple(Vec<Type>),
     Named(Vec<(String, Type)>),
+}
+
+/// A crate-level inner attribute (`#![..]`).
+#[derive(Debug, Clone)]
+pub enum CrateAttr {
+    Allow(Vec<Lint>),
+    Deny(Vec<Lint>),
+    Feature(Feature),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Lint {
+    DeadCode,
+    Unused,
+    NonSnakeCase,
+    NonUpperCaseGlobals,
+    ArithmeticOverflow,
+}
+
+impl Lint {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            Lint::DeadCode => "dead_code",
+            Lint::Unused => "unused",
+            Lint::NonSnakeCase => "non_snake_case",
+            Lint::NonUpperCaseGlobals => "non_upper_case_globals",
+            Lint::ArithmeticOverflow => "arithmetic_overflow",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Feature {
+    CVariadic,
+}
+
+impl Feature {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            Feature::CVariadic => "c_variadic",
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
