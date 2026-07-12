@@ -16,7 +16,6 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 | P1 | complex arithmetic (mul/div/conj) | `cir.complex.mul`, `cir.complex.div`, `cir.complex.conj` |
 | P1 | C complex lvalue access | `cir.complex.real_ptr`, `cir.complex.imag_ptr` |
 | P1 | aggregate value mutation/extraction | `cir.extract_member`, `cir.insert_member` |
-| P1 | memory operations | `cir.libc.memchr`, `cir.libc.memcpy`, `cir.libc.memmove`, `cir.libc.memset` |
 | P2 | math builtins/libm | `cir.acos`, `cir.asin`, `cir.atan`, `cir.atan2`, `cir.cos`, `cir.exp`, `cir.exp2`, `cir.fmaximum`, `cir.fminimum`, `cir.fmod`, `cir.llrint`, `cir.llround`, `cir.log`, `cir.log10`, `cir.log2`, `cir.lrint`, `cir.lround`, `cir.pow`, `cir.roundeven`, `cir.sin`, `cir.sqrt`, `cir.tan` |
 | P2 | integer bit builtins | `cir.bitreverse`, `cir.byte_swap`, `cir.clrsb`, `cir.clz`, `cir.ctz`, `cir.ffs`, `cir.parity`, `cir.popcount`, `cir.rotate` |
 | P2 | constant/object-size queries | `cir.is_constant`, `cir.objsize` |
@@ -131,3 +130,8 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
   - [x] `cir.atomic.xchg`
   - [x] `cir.atomic.cmpxchg`
   - [x] `cir.atomic.fence`
+- [x] memory operations (byte-wise `std::ptr` ops; only clang builtins raise these — `__builtin_bzero`→memset, `__builtin_bcopy`→memmove, aggregate `__builtin_bit_cast`→memcpy, `__builtin_memchr`→memchr — while plain libc `memcpy`/`memset`/... stay `cir.call`s to the extern symbol)
+  - [x] `cir.libc.memcpy` (`std::ptr::copy_nonoverlapping`)
+  - [x] `cir.libc.memmove` (`std::ptr::copy`)
+  - [x] `cir.libc.memset` (`std::ptr::write_bytes`)
+  - [x] `cir.libc.memchr` (`__slate_memchr` prelude helper)
