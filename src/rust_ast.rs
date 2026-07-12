@@ -338,6 +338,9 @@ pub enum Stmt {
 #[derive(Debug, Clone)]
 pub enum RustValue {
     Int(i64),
+    Float(f64),
+    Bool(bool),
+    None,
     NullPtr,
 }
 
