@@ -98,7 +98,7 @@ struct Lowerer<'a> {
     aliases: BTreeMap<String, String>,
     records: BTreeMap<String, crate::c_ast::Record>,
     globals: BTreeMap<String, GlobalVar>,
-    extern_globals: BTreeMap<String, String>,
+    extern_globals: BTreeMap<String, Type>,
     strings: BTreeMap<String, Vec<u8>>,
     /// numeric aggregate const globals (e.g. `int a[5]={..}`) → element literals,
     /// keyed by raw sym_name; consumed when a `cir.copy` initializes a local.
@@ -188,7 +188,7 @@ struct ElementPtr {
 #[derive(Debug, Clone)]
 struct GlobalVar {
     name: String,
-    ty: String,
+    ty: Type,
     init: Expr,
     external: bool,
 }
@@ -263,7 +263,7 @@ impl<'a> Lowerer<'a> {
                 vis: global_vis,
                 mutable: true,
                 name: global.name.clone(),
-                ty: Type::Named(global.ty.clone()),
+                ty: global.ty.clone(),
                 init: global.init.clone(),
             });
         }
@@ -281,7 +281,7 @@ impl<'a> Lowerer<'a> {
             extern_decls.push(ExternDecl::Static {
                 mutable: true,
                 name: name.clone(),
-                ty: Type::Named(ty.clone()),
+                ty: ty.clone(),
             });
         }
         for op in &ops {
@@ -469,7 +469,7 @@ impl<'a> Lowerer<'a> {
             }
         } else if let Some(elems) = parse_cir_const_array_elems(raw) {
             if is_c_global && let Some(ty) = ty {
-                if let Some((_, len)) = parse_rust_array_type(&ty) {
+                if let Some((_, len)) = parse_rust_array_type(&ty.render()) {
                     self.globals.insert(
                         rust_name.clone(),
                         GlobalVar {
@@ -489,7 +489,7 @@ impl<'a> Lowerer<'a> {
             }
         } else if is_cir_aggregate_init(raw) {
             if is_c_global && let Some(ty) = ty {
-                if let Some(init) = self.render_const_value_expr(&ty, raw) {
+                if let Some(init) = self.render_const_value_expr(&ty.render(), raw) {
                     self.globals.insert(
                         rust_name.clone(),
                         GlobalVar {
@@ -514,7 +514,9 @@ impl<'a> Lowerer<'a> {
                         name: rust_name,
                         ty,
                         init: Expr::ArrayRepeat {
-                            elem: Box::new(self.default_value_expr(&self.rust_type(&elem))),
+                            elem: Box::new(
+                                self.default_value_expr(&self.rust_type(&elem).render()),
+                            ),
                             len: len as usize,
                         },
                         external: linkage_is_external(op),
@@ -531,7 +533,7 @@ impl<'a> Lowerer<'a> {
                     rust_name.clone(),
                     GlobalVar {
                         name: rust_name,
-                        init: self.default_value_expr(&ty),
+                        init: self.default_value_expr(&ty.render()),
                         ty,
                         external: linkage_is_external(op),
                     },
@@ -628,7 +630,7 @@ impl<'a> Lowerer<'a> {
                 FnParam {
                     name: arg.clone(),
                     mutable: false,
-                    ty: Type::Named(self.rust_type(ty)),
+                    ty: self.rust_type(ty),
                 }
             })
             .collect::<Vec<_>>();
@@ -661,9 +663,7 @@ impl<'a> Lowerer<'a> {
             } else {
                 false
             };
-            let ret = Some(Type::Named(
-                self.rust_type(ret_ty.as_deref().unwrap_or("()")),
-            ));
+            let ret = Some(self.rust_type(ret_ty.as_deref().unwrap_or("()")));
             (vis, unsafe_extern_c, ret, Vec::<String>::new())
         };
 
@@ -721,7 +721,7 @@ impl<'a> Lowerer<'a> {
 
         for (i, (arg, ty)) in entry.args.iter().enumerate() {
             let name = sanitize_ident(arg);
-            let rust_ty = self.rust_type(ty);
+            let rust_ty = self.rust_type(ty).render();
             let value = match i {
                 0 => "__slate_argv_storage.len() as i32".to_string(),
                 1 => "__slate_argv_ptrs.as_mut_ptr()".to_string(),
@@ -766,30 +766,31 @@ impl<'a> Lowerer<'a> {
                 params.push(FnParam {
                     name: format!("_{i}"),
                     mutable: false,
-                    ty: Type::Named(ty.clone()),
+                    ty: ty.clone(),
                 });
-                param_types.push(ty);
+                param_types.push(ty.render());
             }
         }
-        let ret_ty = match ret {
+        let ret_ast = match ret {
             Some(ret) if ret != "()" => Some(self.rust_type(ret)),
             _ => None,
         };
+        let ret_ty = ret_ast.as_ref().map(Type::render);
         let decl = ExternFnDecl {
             name: name.into(),
             params,
             variadic,
-            ret: ret_ty.clone().map(Type::Named),
+            ret: ret_ast,
         };
         (decl, param_types, ret_ty)
     }
 
-    fn rust_type(&self, cir_ty: &str) -> String {
+    fn rust_type(&self, cir_ty: &str) -> Type {
         let ty = rust_type_with_aliases(cir_ty, &self.aliases);
-        if ty.contains(LONG_DOUBLE_TY) {
+        if type_mentions_named(&ty, LONG_DOUBLE_TY) {
             self.uses_long_double.set(true);
         }
-        if ty.contains(COMPLEX_TY) {
+        if type_mentions_complex(&ty) {
             self.uses_complex.set(true);
         }
         ty
@@ -1228,10 +1229,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         if attr_bool(op, "is_volatile") {
-            self.push_stmt(Stmt::Expr(Expr::Unsafe(Box::new(Expr::Call {
+            self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
                 func: Box::new(Self::raw_expr("std::ptr::write_volatile")),
                 args: vec![self.store_address_expr(ptr), value],
-            }))));
+            })));
         } else if let Some(target) = self.place_expr(ptr) {
             if self.ptr_requires_unsafe(ptr) {
                 self.push_unsafe_assign(target, value);
@@ -1335,33 +1336,33 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let value = if attr_bool(op, "is_volatile") {
-            Expr::Unsafe(Box::new(Expr::Call {
+            Self::unsafe_expr(Expr::Call {
                 func: Box::new(Self::raw_expr("std::ptr::read_volatile")),
                 args: vec![self.load_address_expr(ptr)],
-            }))
+            })
         } else if let Some(atomic) = self.atomic_load_expr(op, ptr) {
             atomic
         } else if let Some(global) = self.global_name(ptr) {
-            Expr::Unsafe(Box::new(Expr::Var(global)))
+            Self::unsafe_expr(Expr::Var(global))
         } else if let Some(member) = self.member_ptrs.get(ptr) {
-            Expr::Unsafe(Box::new(Expr::Field {
+            Self::unsafe_expr(Expr::Field {
                 base: Box::new(member.base.clone()),
                 field: member.field.clone(),
-            }))
+            })
         } else if let Some(element) = self.element_ptrs.get(ptr) {
             let place = self.element_place_expr(element);
             if element.unsafe_access {
-                Expr::Unsafe(Box::new(place))
+                Self::unsafe_expr(place)
             } else {
                 place
             }
         } else if let Some(slot) = self.slots.get(ptr) {
             Expr::Var(slot.clone())
         } else {
-            Expr::Unsafe(Box::new(Expr::Unary {
+            Self::unsafe_expr(Expr::Unary {
                 op: UnaryOp::Deref,
                 expr: Box::new(self.operand_expr(ptr)),
-            }))
+            })
         };
         self.materialize_expr(result, value, op_result_type(op));
     }
@@ -1521,13 +1522,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let name = self.next_temp();
         let ty = op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or_else(|| "i32".into());
+            .unwrap_or(Type::Prim(Prim::I32));
         let (then_body, then_value) = self.lower_yield_region(&op.regions[0]);
         let (else_body, else_value) = self.lower_yield_region(&op.regions[1]);
         self.push_stmt(Stmt::LetIf {
             name: name.clone(),
             mutable: false,
-            ty: Some(Type::Named(ty)),
+            ty: Some(ty),
             cond,
             then_body,
             then_value,
@@ -1705,8 +1706,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .unwrap_or("");
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or_else(|| "i32".into());
-        if rust_ty == LONG_DOUBLE_TY {
+            .unwrap_or(Type::Prim(Prim::I32));
+        if type_mentions_named(&rust_ty, LONG_DOUBLE_TY) {
             self.materialize_expr(
                 result,
                 Expr::Call {
@@ -1728,7 +1729,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 op: UnaryOp::Neg,
                 expr: Box::new(Expr::Cast {
                     expr: Box::new(value),
-                    ty: crate::rust_ast::Type::Named(rust_ty),
+                    ty: rust_ty,
                 }),
             }
         } else {
@@ -1751,14 +1752,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let result_ty = op_result_type(op);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or_else(|| "i32".into());
-        let expr = if matches!(rust_ty.as_str(), "i8" | "i16" | "i32" | "i64") {
+            .unwrap_or(Type::Prim(Prim::I32));
+        let expr = if matches!(
+            &rust_ty,
+            Type::Prim(Prim::I8 | Prim::I16 | Prim::I32 | Prim::I64)
+        ) {
             Expr::MethodCall {
                 recv: Box::new(value),
                 method: "wrapping_abs".into(),
                 args: vec![],
             }
-        } else if rust_ty == LONG_DOUBLE_TY {
+        } else if type_mentions_named(&rust_ty, LONG_DOUBLE_TY) {
             Expr::Call {
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::MethodCall {
@@ -1791,8 +1795,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let result_ty = op_result_type(op);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or_else(|| "f64".into());
-        let expr = if rust_ty == LONG_DOUBLE_TY {
+            .unwrap_or(Type::Prim(Prim::F64));
+        let expr = if type_mentions_named(&rust_ty, LONG_DOUBLE_TY) {
             Expr::Call {
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::MethodCall {
@@ -1826,8 +1830,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let result_ty = op_result_type(op);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or_else(|| "f64".into());
-        let expr = if rust_ty == LONG_DOUBLE_TY {
+            .unwrap_or(Type::Prim(Prim::F64));
+        let expr = if type_mentions_named(&rust_ty, LONG_DOUBLE_TY) {
             Expr::Call {
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::MethodCall {
@@ -2170,7 +2174,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let ty = op_result_type(op);
         let (place, needs_unsafe) = self.bitfield_place(ptr);
         let read = if needs_unsafe {
-            Expr::Unsafe(Box::new(place))
+            Self::unsafe_expr(place)
         } else {
             place
         };
@@ -2195,7 +2199,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn truncate_bitfield_expr(&self, op: &Op, expr: Expr, ty: Option<&str>) -> Expr {
         let bits = ty
             .map(|ty| self.parent.rust_type(ty))
-            .and_then(|t| int_bits(&t));
+            .and_then(|t| int_bits(&t.render()));
         match (self.bitfield_size(op), bits) {
             (Some(size), Some(bits)) if size < bits => {
                 let sh = Box::new(Expr::Lit((bits - size).to_string()));
@@ -2295,7 +2299,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 let (elem_ty, len) = cir_ptr_inner(operand_ty)
                     .and_then(parse_cir_array_type)
                     .map_or(("i32".to_string(), elems.len()), |(elem, len)| {
-                        (self.parent.rust_type(&elem), len as usize)
+                        (self.parent.rust_type(&elem).render(), len as usize)
                     });
                 // annotate one element so the array element type can't default wrong
                 let mut typed: Vec<Expr> = elems.clone();
@@ -2316,7 +2320,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         method: "as_ptr".into(),
                         args: vec![],
                     }),
-                    ty: Type::Named(ptr_ty),
+                    ty: ptr_ty,
                 })
             }
             Some(Val::Global(name)) => Val::Global(name),
@@ -2356,13 +2360,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         base: Box::new(self.operand_expr(src)),
                         field: "0".into(),
                     }),
-                    ty: crate::rust_ast::Type::Named(self.parent.rust_type(result_ty)),
+                    ty: self.parent.rust_type(result_ty),
                 })
             }
             _ if result_ty.starts_with("!cir.ptr<") && operand_ty.starts_with("!cir.ptr<") => {
                 Val::Expr(Expr::Cast {
                     expr: Box::new(self.pointer_operand_expr(src)),
-                    ty: Type::Named(self.parent.rust_type(result_ty)),
+                    ty: self.parent.rust_type(result_ty),
                 })
             }
             // integer sentinel (SIG_IGN/SIG_DFL/SIG_ERR = (void(*)(int))N) cast to a
@@ -2371,7 +2375,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 let ptr_ty = self.parent.rust_type(result_ty);
                 Val::Expr(Expr::Transmute {
                     from: Type::Prim(Prim::Usize),
-                    to: Type::Named(ptr_ty),
+                    to: ptr_ty,
                     expr: Box::new(Expr::Cast {
                         expr: Box::new(self.operand_expr(src)),
                         ty: Type::Prim(Prim::Usize),
@@ -2386,7 +2390,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             _ if result_ty == operand_ty => Val::Expr(self.operand_expr(src)),
             _ => Val::Expr(Expr::Cast {
                 expr: Box::new(self.operand_expr(src)),
-                ty: crate::rust_ast::Type::Named(self.parent.rust_type(result_ty)),
+                ty: self.parent.rust_type(result_ty),
             }),
         };
         self.values.insert(result.clone(), value);
@@ -2403,17 +2407,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let rhs = self.operand_expr(&op.operands[1]);
         let ty = op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or_else(|| "i64".into());
+            .unwrap_or(Type::Prim(Prim::I64));
         self.materialize_expr(
             result,
-            Expr::Unsafe(Box::new(Expr::Cast {
+            Self::unsafe_expr(Expr::Cast {
                 expr: Box::new(Expr::MethodCall {
                     recv: Box::new(lhs),
                     method: "offset_from".into(),
                     args: vec![rhs],
                 }),
-                ty: crate::rust_ast::Type::Named(ty),
-            })),
+                ty,
+            }),
             op_result_type(op),
         );
     }
@@ -2429,14 +2433,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let index = self.operand_expr(&op.operands[1]);
         self.values.insert(
             result.clone(),
-            Val::Expr(Expr::Unsafe(Box::new(Expr::MethodCall {
+            Val::Expr(Self::unsafe_expr(Expr::MethodCall {
                 recv: Box::new(base),
                 method: "offset".into(),
                 args: vec![Expr::Cast {
                     expr: Box::new(index),
                     ty: crate::rust_ast::Type::Prim(Prim::Isize),
                 }],
-            }))),
+            })),
         );
     }
 
@@ -2574,11 +2578,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let expr = if is_complex_runtime_call(&callee_name) {
             self.parent.uses_complex.set(true);
-            Expr::Unsafe(Box::new(call))
+            Self::unsafe_expr(call)
         } else if self.parent.externs.contains_key(&callee_name)
             || self.parent.variadic_defs.contains(&callee_name)
         {
-            Expr::Unsafe(Box::new(call))
+            Self::unsafe_expr(call)
         } else {
             call
         };
@@ -2598,7 +2602,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn atomic_rust_type(&self, op: &Op) -> String {
         op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or_else(|| "i32".into())
+            .unwrap_or(Type::Prim(Prim::I32))
+            .render()
     }
 
     fn lower_atomic_fetch(&mut self, op: &Op) {
@@ -2654,10 +2659,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             name: old.clone(),
             mutable: false,
             ty: Some(Self::named_type(ty)),
-            init: Some(Expr::Unsafe(Box::new(Expr::Unary {
+            init: Some(Self::unsafe_expr(Expr::Unary {
                 op: UnaryOp::Deref,
                 expr: Box::new(addr.clone()),
-            }))),
+            })),
         });
         let new = self.next_temp();
         self.push_stmt(Stmt::Let {
@@ -2707,10 +2712,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             name: old.clone(),
             mutable: false,
             ty: Some(Self::named_type(ty)),
-            init: Some(Expr::Unsafe(Box::new(Expr::Unary {
+            init: Some(Self::unsafe_expr(Expr::Unary {
                 op: UnaryOp::Deref,
                 expr: Box::new(addr.clone()),
-            }))),
+            })),
         });
         self.push_unsafe_assign(
             Expr::Unary {
@@ -2731,15 +2736,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let ty = op_result_types(op)
             .first()
             .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or_else(|| "i32".into());
-        if let Some(atomic_ty) = atomic_type(&ty) {
+            .unwrap_or(Type::Prim(Prim::I32));
+        let ty_rendered = ty.render();
+        if let Some(atomic_ty) = atomic_type(&ty_rendered) {
             // Always strong: `compare_exchange_weak` may spuriously fail and
             // diverge from the C reference under differential testing.
             let res = self.next_temp();
             self.push_stmt(Stmt::Let {
                 name: res.clone(),
                 mutable: false,
-                ty: Some(Self::named_type(format!("Result<{ty}, {ty}>"))),
+                ty: Some(Type::Generic {
+                    name: "Result".into(),
+                    args: vec![ty.clone(), ty.clone()],
+                }),
                 init: Some(Expr::AtomicCompareExchange {
                     ty: atomic_ty,
                     ptr: Box::new(self.store_address_expr(&op.operands[0])),
@@ -2753,7 +2762,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.push_stmt(Stmt::Let {
                 name: old.clone(),
                 mutable: false,
-                ty: Some(Self::named_type(ty)),
+                ty: Some(ty.clone()),
                 init: Some(Expr::Match {
                     expr: Box::new(Expr::Var(res.clone())),
                     arms: vec![
@@ -2791,11 +2800,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Let {
             name: old.clone(),
             mutable: false,
-            ty: Some(Self::named_type(ty)),
-            init: Some(Expr::Unsafe(Box::new(Expr::Unary {
+            ty: Some(ty),
+            init: Some(Self::unsafe_expr(Expr::Unary {
                 op: UnaryOp::Deref,
                 expr: Box::new(addr.clone()),
-            }))),
+            })),
         });
         self.push_stmt(Stmt::Let {
             name: ok.clone(),
@@ -2840,7 +2849,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn atomic_load_expr(&self, op: &Op, ptr: &str) -> Option<Expr> {
         let mem_order = attr_int(op, "mem_order")?;
         let ty = op_result_type(op).map(|ty| self.parent.rust_type(ty))?;
-        let atomic_ty = atomic_type(&ty)?;
+        let atomic_ty = atomic_type(&ty.render())?;
         Some(Expr::AtomicLoad {
             ty: atomic_ty,
             ptr: Box::new(self.store_address_expr(ptr)),
@@ -2859,7 +2868,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return false;
         };
         let Some(wrapper) = value_ty
-            .map(|ty| self.parent.rust_type(ty))
+            .map(|ty| self.parent.rust_type(ty).render())
             .as_deref()
             .and_then(atomic_type)
         else {
@@ -2907,10 +2916,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let ty = op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or_else(|| "i32".into());
+            .unwrap_or(Type::Prim(Prim::I32));
         self.materialize_expr(
             result,
-            Expr::Raw(format!("unsafe {{ {slot}.next_arg::<{ty}>() }}")),
+            Self::unsafe_expr(Expr::MethodCallGeneric {
+                recv: Box::new(Expr::Var(slot)),
+                method: "next_arg".into(),
+                type_args: vec![ty],
+                args: vec![],
+            }),
             op_result_type(op),
         );
     }
@@ -3404,11 +3418,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let name = self.next_temp();
         let ty = cir_ty
             .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or_else(|| "i32".into());
+            .unwrap_or(Type::Prim(Prim::I32));
         self.push_stmt(Stmt::Let {
             name: name.clone(),
             mutable: false,
-            ty: Some(crate::rust_ast::Type::Named(ty)),
+            ty: Some(ty),
             init: Some(expr),
         });
         self.values
@@ -3518,6 +3532,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    fn unsafe_expr(value: Expr) -> Expr {
+        Expr::Unsafe(Box::new(crate::rust_ast::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(value)),
+        }))
+    }
+
     fn and_expr(lhs: Expr, rhs: Expr) -> Expr {
         Expr::Binary {
             op: BinOp::And,
@@ -3541,7 +3562,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn unsafe_stmt(stmt: Stmt) -> Stmt {
         Stmt::Unsafe {
-            body: vec![IndentStmt { depth: 0, stmt }],
+            body: crate::rust_ast::Block {
+                stmts: vec![IndentStmt { depth: 0, stmt }],
+                tail: None,
+            },
         }
     }
 
@@ -3561,7 +3585,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let ret = op_type_return(ty)?;
         ret.strip_prefix("!cir.ptr<")
             .and_then(|s| s.strip_suffix('>'))
-            .map(|ty| self.parent.rust_type(ty))
+            .map(|ty| self.parent.rust_type(ty).render())
     }
 
     fn default_value_expr(&self, ty: &str) -> Expr {
@@ -4039,7 +4063,7 @@ fn complex_prelude() -> Vec<Item> {
     ]
 }
 
-fn rust_type(cir_ty: &str) -> String {
+fn rust_type(cir_ty: &str) -> Type {
     rust_type_with_aliases(cir_ty, &BTreeMap::new())
 }
 
@@ -4061,67 +4085,73 @@ fn ops_have_direct_continue(ops: &[Op]) -> bool {
     })
 }
 
-fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> String {
+fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> Type {
     let ty = cir_ty.trim();
     if let Some(expanded) = aliases.get(ty) {
         return rust_type_with_aliases(expanded, aliases);
     }
     if ty == "()" || ty.is_empty() {
-        "()".into()
+        Type::Unit
     } else if ty == "!void" || ty == "!cir.void" {
-        "core::ffi::c_void".into()
+        Type::Named("core::ffi::c_void".into())
     } else if ty == "!cir.bool" {
-        "bool".into()
+        Type::Prim(Prim::Bool)
     } else if ty == "!s32i" || ty == "!cir.int<s, 32>" {
-        "i32".into()
+        Type::Prim(Prim::I32)
     } else if ty == "!u32i" || ty == "!cir.int<u, 32>" {
-        "u32".into()
+        Type::Prim(Prim::U32)
     } else if ty == "!s16i" || ty == "!cir.int<s, 16>" {
-        "i16".into()
+        Type::Prim(Prim::I16)
     } else if ty == "!u16i" || ty == "!cir.int<u, 16>" {
-        "u16".into()
+        Type::Prim(Prim::U16)
     } else if ty == "!s8i" || ty == "!cir.int<s, 8>" {
-        "i8".into()
+        Type::Prim(Prim::I8)
     } else if ty == "!u8i" || ty == "!cir.int<u, 8>" {
-        "u8".into()
+        Type::Prim(Prim::U8)
     } else if ty == "!s64i" || ty == "!cir.int<s, 64>" {
-        "i64".into()
+        Type::Prim(Prim::I64)
     } else if ty == "!u64i" || ty == "!cir.int<u, 64>" {
-        "u64".into()
+        Type::Prim(Prim::U64)
     } else if ty == "!cir.float" {
-        "f32".into()
+        Type::Prim(Prim::F32)
     } else if ty == "!cir.double" {
-        "f64".into()
+        Type::Prim(Prim::F64)
     } else if is_long_double(ty) {
-        LONG_DOUBLE_TY.into()
+        Type::Named(LONG_DOUBLE_TY.into())
     } else if let Some(inner) = ty
         .strip_prefix("!cir.complex<")
         .and_then(|s| s.strip_suffix('>'))
     {
-        format!("Complex<{}>", rust_type_with_aliases(inner, aliases))
+        Type::Complex(Box::new(rust_type_with_aliases(inner, aliases)))
     } else if let Some(inner) = ty
         .strip_prefix("!cir.ptr<")
         .and_then(|s| s.strip_suffix('>'))
     {
-        if let Some(fn_ty) = cir_fn_type_to_rust(inner, aliases) {
-            format!("Option<{fn_ty}>")
+        if let Some(fn_ty) = cir_fn_type_to_type(inner, aliases) {
+            fn_ty
         } else {
-            format!("*mut {}", rust_type_with_aliases(inner, aliases))
+            Type::Ptr {
+                mutable: true,
+                inner: Box::new(rust_type_with_aliases(inner, aliases)),
+            }
         }
     } else if let Some((inner, len)) = parse_cir_array_type(ty) {
-        format!("[{}; {len}]", rust_type_with_aliases(&inner, aliases))
+        Type::Array {
+            elem: Box::new(rust_type_with_aliases(&inner, aliases)),
+            len,
+        }
     } else if let Some(name) = cir_record_name(ty) {
         if name == "_IO_FILE" {
-            "libc::FILE".into()
+            Type::Named("libc::FILE".into())
         } else {
-            sanitize_ident(name)
+            Type::Named(sanitize_ident(name))
         }
     } else {
-        "i32".into()
+        Type::Prim(Prim::I32)
     }
 }
 
-fn cir_fn_type_to_rust(ty: &str, aliases: &BTreeMap<String, String>) -> Option<String> {
+fn cir_fn_type_to_type(ty: &str, aliases: &BTreeMap<String, String>) -> Option<Type> {
     let inner = ty
         .trim()
         .strip_prefix("!cir.func<")
@@ -4133,10 +4163,44 @@ fn cir_fn_type_to_rust(ty: &str, aliases: &BTreeMap<String, String>) -> Option<S
         .map(str::trim)
         .filter(|s| !s.is_empty() && *s != "...")
         .map(|param| rust_type_with_aliases(param, aliases))
-        .collect::<Vec<_>>()
-        .join(", ");
+        .collect::<Vec<_>>();
     let ret = rust_type_with_aliases(ret.trim(), aliases);
-    Some(format!("fn({params}) -> {ret}"))
+    Some(Type::FnPtr {
+        params,
+        ret: Box::new(ret),
+    })
+}
+
+fn type_mentions_named(ty: &Type, needle: &str) -> bool {
+    match ty {
+        Type::Named(name) => name.contains(needle),
+        Type::Complex(inner) => type_mentions_named(inner, needle),
+        Type::Generic { name, args } => {
+            name.contains(needle) || args.iter().any(|arg| type_mentions_named(arg, needle))
+        }
+        Type::Ptr { inner, .. } => type_mentions_named(inner, needle),
+        Type::Array { elem, .. } => type_mentions_named(elem, needle),
+        Type::FnPtr { params, ret } => {
+            params
+                .iter()
+                .any(|param| type_mentions_named(param, needle))
+                || type_mentions_named(ret, needle)
+        }
+        Type::Prim(_) | Type::Unit | Type::Variadic => false,
+    }
+}
+
+fn type_mentions_complex(ty: &Type) -> bool {
+    match ty {
+        Type::Complex(_) => true,
+        Type::Ptr { inner, .. } => type_mentions_complex(inner),
+        Type::Array { elem, .. } => type_mentions_complex(elem),
+        Type::FnPtr { params, ret } => {
+            params.iter().any(type_mentions_complex) || type_mentions_complex(ret)
+        }
+        Type::Generic { args, .. } => args.iter().any(type_mentions_complex),
+        Type::Prim(_) | Type::Named(_) | Type::Unit | Type::Variadic => false,
+    }
 }
 
 fn is_cir_function_pointer_type(ty: &str) -> bool {
@@ -4302,7 +4366,7 @@ fn standard_record_default_expr(ty: &str) -> Option<Expr> {
 }
 
 fn zero_for_cir_type(ty: &str) -> Expr {
-    default_value_expr(&rust_type(ty))
+    default_value_expr(&rust_type(ty).render())
 }
 
 fn render_array_literal_expr(elems: &[Expr], len: usize, default: Expr) -> Expr {
