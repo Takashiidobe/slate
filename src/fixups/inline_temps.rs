@@ -303,6 +303,18 @@ fn walk_expr(expr: &Expr, f: &mut impl FnMut(&Expr)) {
             walk_expr(src, f);
             walk_expr(dst, f);
         }
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => {
+            walk_expr(src, f);
+            walk_expr(dst, f);
+            walk_expr(count, f);
+        }
+        Expr::WriteBytes { dst, val, count } => {
+            walk_expr(dst, f);
+            walk_expr(val, f);
+            walk_expr(count, f);
+        }
     }
 }
 
