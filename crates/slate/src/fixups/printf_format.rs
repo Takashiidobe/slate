@@ -1,4 +1,6 @@
+use crate::rust_ast::RustValue;
 use crate::rust_ast::{Block, Expr, ExternDecl, IndentStmt, Item, Program, Stmt};
+use std::collections::BTreeMap;
 
 pub(super) fn fixup(program: &mut Program) {
     if has_unsupported_printf(program) {
@@ -22,22 +24,38 @@ fn has_unsupported_printf(program: &Program) -> bool {
 }
 
 fn body_has_unsupported_printf(body: &[IndentStmt]) -> bool {
-    body.iter()
-        .any(|indent| stmt_has_unsupported_printf(&indent.stmt))
+    let mut consts = BTreeMap::new();
+    body_has_unsupported_printf_with_consts(body, &mut consts)
 }
 
-fn block_has_unsupported_printf(block: &Block) -> bool {
-    body_has_unsupported_printf(&block.stmts)
+fn body_has_unsupported_printf_with_consts(
+    body: &[IndentStmt],
+    consts: &mut BTreeMap<String, Expr>,
+) -> bool {
+    for indent in body {
+        if stmt_has_unsupported_printf(&indent.stmt, consts) {
+            return true;
+        }
+        update_consts_after_stmt(&indent.stmt, consts);
+    }
+    false
+}
+
+fn block_has_unsupported_printf(block: &Block, consts: &BTreeMap<String, Expr>) -> bool {
+    let mut block_consts = consts.clone();
+    body_has_unsupported_printf_with_consts(&block.stmts, &mut block_consts)
         || block
             .tail
             .as_deref()
-            .is_some_and(expr_has_unsupported_printf)
+            .is_some_and(|expr| expr_has_unsupported_printf(expr, &block_consts))
 }
 
-fn stmt_has_unsupported_printf(stmt: &Stmt) -> bool {
+fn stmt_has_unsupported_printf(stmt: &Stmt, consts: &BTreeMap<String, Expr>) -> bool {
     match stmt {
-        Stmt::Expr(expr) if rewrite_printf_expr(expr).is_some() => false,
-        Stmt::Let { init, .. } => init.as_ref().is_some_and(expr_has_unsupported_printf),
+        Stmt::Expr(expr) if rewrite_printf_expr(expr, consts).is_some() => false,
+        Stmt::Let { init, .. } => init
+            .as_ref()
+            .is_some_and(|expr| expr_has_unsupported_printf(expr, consts)),
         Stmt::LetIf {
             cond,
             then_body,
@@ -46,56 +64,71 @@ fn stmt_has_unsupported_printf(stmt: &Stmt) -> bool {
             else_value,
             ..
         } => {
-            expr_has_unsupported_printf(cond)
-                || body_has_unsupported_printf(then_body)
-                || expr_has_unsupported_printf(then_value)
-                || body_has_unsupported_printf(else_body)
-                || expr_has_unsupported_printf(else_value)
+            let mut then_consts = consts.clone();
+            let mut else_consts = consts.clone();
+            expr_has_unsupported_printf(cond, consts)
+                || body_has_unsupported_printf_with_consts(then_body, &mut then_consts)
+                || expr_has_unsupported_printf(then_value, &then_consts)
+                || body_has_unsupported_printf_with_consts(else_body, &mut else_consts)
+                || expr_has_unsupported_printf(else_value, &else_consts)
         }
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            expr_has_unsupported_printf(target) || expr_has_unsupported_printf(value)
+            expr_has_unsupported_printf(target, consts)
+                || expr_has_unsupported_printf(value, consts)
         }
-        Stmt::Expr(expr) => expr_has_unsupported_printf(expr),
-        Stmt::Return(expr) => expr.as_ref().is_some_and(expr_has_unsupported_printf),
+        Stmt::Expr(expr) => expr_has_unsupported_printf(expr, consts),
+        Stmt::Return(expr) => expr
+            .as_ref()
+            .is_some_and(|expr| expr_has_unsupported_printf(expr, consts)),
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-            block_has_unsupported_printf(body)
+            block_has_unsupported_printf(body, consts)
         }
         Stmt::If {
             cond,
             then_body,
             else_body,
         } => {
-            expr_has_unsupported_printf(cond)
-                || body_has_unsupported_printf(then_body)
-                || body_has_unsupported_printf(else_body)
+            let mut then_consts = consts.clone();
+            let mut else_consts = consts.clone();
+            expr_has_unsupported_printf(cond, consts)
+                || body_has_unsupported_printf_with_consts(then_body, &mut then_consts)
+                || body_has_unsupported_printf_with_consts(else_body, &mut else_consts)
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            body_has_unsupported_printf(body)
+            let mut nested_consts = consts.clone();
+            body_has_unsupported_printf_with_consts(body, &mut nested_consts)
         }
         Stmt::Match { expr, arms } => {
-            expr_has_unsupported_printf(expr)
-                || arms
-                    .iter()
-                    .any(|arm| body_has_unsupported_printf(&arm.body))
+            expr_has_unsupported_printf(expr, consts)
+                || arms.iter().any(|arm| {
+                    let mut arm_consts = consts.clone();
+                    body_has_unsupported_printf_with_consts(&arm.body, &mut arm_consts)
+                })
         }
         Stmt::Break(_) | Stmt::Continue(_) => false,
     }
 }
 
-fn expr_has_unsupported_printf(expr: &Expr) -> bool {
-    expr_has_printf_call(expr)
+fn expr_has_unsupported_printf(expr: &Expr, consts: &BTreeMap<String, Expr>) -> bool {
+    expr_has_printf_call(expr) && rewrite_printf_expr(expr, consts).is_none()
 }
 
 fn fixup_body(body: &mut [IndentStmt]) {
+    let mut consts = BTreeMap::new();
+    fixup_body_with_consts(body, &mut consts);
+}
+
+fn fixup_body_with_consts(body: &mut [IndentStmt], consts: &mut BTreeMap<String, Expr>) {
     for indent in body {
-        fixup_stmt(&mut indent.stmt);
+        fixup_stmt(&mut indent.stmt, consts);
+        update_consts_after_stmt(&indent.stmt, consts);
     }
 }
 
-fn fixup_stmt(stmt: &mut Stmt) {
+fn fixup_stmt(stmt: &mut Stmt, consts: &BTreeMap<String, Expr>) {
     match stmt {
         Stmt::Expr(expr) => {
-            if let Some(replacement) = rewrite_printf_expr(expr) {
+            if let Some(replacement) = rewrite_printf_expr(expr, consts) {
                 *expr = replacement;
             }
         }
@@ -109,34 +142,39 @@ fn fixup_stmt(stmt: &mut Stmt) {
             else_body,
             ..
         } => {
-            fixup_body(then_body);
-            fixup_body(else_body);
+            let mut then_consts = consts.clone();
+            let mut else_consts = consts.clone();
+            fixup_body_with_consts(then_body, &mut then_consts);
+            fixup_body_with_consts(else_body, &mut else_consts);
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            fixup_body(body);
+            let mut nested_consts = consts.clone();
+            fixup_body_with_consts(body, &mut nested_consts);
         }
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-            fixup_block(body);
+            fixup_block(body, consts);
         }
         Stmt::Match { arms, .. } => {
             for arm in arms {
-                fixup_body(&mut arm.body);
+                let mut arm_consts = consts.clone();
+                fixup_body_with_consts(&mut arm.body, &mut arm_consts);
             }
         }
         _ => {}
     }
 }
 
-fn fixup_block(block: &mut Block) {
-    fixup_body(&mut block.stmts);
+fn fixup_block(block: &mut Block, consts: &BTreeMap<String, Expr>) {
+    let mut block_consts = consts.clone();
+    fixup_body_with_consts(&mut block.stmts, &mut block_consts);
     if let Some(tail) = &mut block.tail {
-        if let Some(replacement) = rewrite_printf_expr(tail) {
+        if let Some(replacement) = rewrite_printf_expr(tail, &block_consts) {
             *tail = Box::new(replacement);
         }
     }
 }
 
-fn rewrite_printf_expr(expr: &Expr) -> Option<Expr> {
+fn rewrite_printf_expr(expr: &Expr, consts: &BTreeMap<String, Expr>) -> Option<Expr> {
     let call = peel_empty_unsafe(expr);
     let Expr::Call { func, args } = call else {
         return None;
@@ -146,7 +184,7 @@ fn rewrite_printf_expr(expr: &Expr) -> Option<Expr> {
     }
     let (fmt, rest) = args.split_first()?;
     let format = const_c_string(fmt)?;
-    let macro_call = printf_macro(&format, rest)?;
+    let macro_call = printf_macro(&format, rest, consts)?;
     Some(macro_call)
 }
 
@@ -176,9 +214,9 @@ fn trim_c_nul(bytes: &[u8]) -> Vec<u8> {
     bytes.strip_suffix(&[0]).unwrap_or(bytes).to_vec()
 }
 
-fn printf_macro(format: &[u8], args: &[Expr]) -> Option<Expr> {
+fn printf_macro(format: &[u8], args: &[Expr], consts: &BTreeMap<String, Expr>) -> Option<Expr> {
     let parsed = parse_printf_format(format)?;
-    if parsed.arg_count != args.len() {
+    if parsed.conversions.len() != args.len() {
         return None;
     }
     let mut macro_args = Vec::new();
@@ -191,19 +229,32 @@ fn printf_macro(format: &[u8], args: &[Expr]) -> Option<Expr> {
         "print"
     };
     macro_args.push(Expr::Str(parsed.format));
-    macro_args.extend(args.iter().cloned());
+    for (arg, conversion) in args.iter().zip(parsed.conversions.iter()) {
+        macro_args.push(printf_macro_arg(arg, conversion.kind, consts)?);
+    }
     Some(format_macro(name, macro_args))
 }
 
 struct ParsedFormat {
     format: String,
-    arg_count: usize,
+    conversions: Vec<Conversion>,
     trailing_newline: bool,
+}
+
+struct Conversion {
+    kind: ConversionKind,
+}
+
+#[derive(Clone, Copy)]
+enum ConversionKind {
+    Integer,
+    String,
+    Char,
 }
 
 fn parse_printf_format(bytes: &[u8]) -> Option<ParsedFormat> {
     let mut format = String::new();
-    let mut arg_count = 0;
+    let mut conversions = Vec::new();
     let mut i = 0;
     while i < bytes.len() {
         match bytes[i] {
@@ -213,9 +264,9 @@ fn parse_printf_format(bytes: &[u8]) -> Option<ParsedFormat> {
                     i += 2;
                 }
                 Some(_) => {
-                    let (next, placeholder) = parse_integer_conversion(bytes, i + 1)?;
+                    let (next, conversion, placeholder) = parse_conversion(bytes, i + 1)?;
                     format.push_str(&placeholder);
-                    arg_count += 1;
+                    conversions.push(conversion);
                     i = next;
                 }
                 None => return None,
@@ -245,12 +296,16 @@ fn parse_printf_format(bytes: &[u8]) -> Option<ParsedFormat> {
     }
     Some(ParsedFormat {
         format,
-        arg_count,
+        conversions,
         trailing_newline,
     })
 }
 
-fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, String)> {
+fn parse_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conversion, String)> {
+    parse_integer_conversion(bytes, i).or_else(|| parse_string_char_conversion(bytes, i))
+}
+
+fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversion, String)> {
     let mut left = false;
     let mut plus = false;
     let mut zero = false;
@@ -306,7 +361,23 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, String
     if plus && conv == b'u' {
         return None;
     }
-    Some((i + 1, integer_placeholder(left, plus, zero, width)))
+    Some((
+        i + 1,
+        Conversion {
+            kind: ConversionKind::Integer,
+        },
+        integer_placeholder(left, plus, zero, width),
+    ))
+}
+
+fn parse_string_char_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conversion, String)> {
+    let conv = bytes.get(i).copied()?;
+    let kind = match conv {
+        b's' => ConversionKind::String,
+        b'c' => ConversionKind::Char,
+        _ => return None,
+    };
+    Some((i + 1, Conversion { kind }, "{}".into()))
 }
 
 fn integer_placeholder(left: bool, plus: bool, zero: bool, width: Option<&str>) -> String {
@@ -335,6 +406,78 @@ fn format_macro(name: &str, args: Vec<Expr>) -> Expr {
         name: name.into(),
         args,
     }
+}
+
+fn printf_macro_arg(
+    arg: &Expr,
+    kind: ConversionKind,
+    consts: &BTreeMap<String, Expr>,
+) -> Option<Expr> {
+    match kind {
+        ConversionKind::Integer => Some(arg.clone()),
+        ConversionKind::String => const_c_string_arg(arg, consts).map(Expr::Str),
+        ConversionKind::Char => const_c_char_arg(arg, consts).map(Expr::Str),
+    }
+}
+
+fn const_c_string_arg(arg: &Expr, consts: &BTreeMap<String, Expr>) -> Option<String> {
+    let bytes = const_c_string(resolve_const(arg, consts))?;
+    if bytes.contains(&0) {
+        return None;
+    }
+    String::from_utf8(bytes).ok()
+}
+
+fn const_c_char_arg(arg: &Expr, consts: &BTreeMap<String, Expr>) -> Option<String> {
+    let value = const_integer(resolve_const(arg, consts))?;
+    let byte = u8::try_from(value).ok()?;
+    if !byte.is_ascii() {
+        return None;
+    }
+    Some(char::from(byte).to_string())
+}
+
+fn const_integer(expr: &Expr) -> Option<i64> {
+    match expr {
+        Expr::Value(RustValue::I64(n)) => Some(*n),
+        Expr::Value(RustValue::I128(n)) => i64::try_from(*n).ok(),
+        Expr::Cast { expr, .. } => const_integer(expr),
+        _ => None,
+    }
+}
+
+fn resolve_const<'a>(expr: &'a Expr, consts: &'a BTreeMap<String, Expr>) -> &'a Expr {
+    match expr {
+        Expr::Var(name) => consts.get(name.as_str()).unwrap_or(expr),
+        Expr::Cast { expr, .. } => resolve_const(expr, consts),
+        _ => expr,
+    }
+}
+
+fn update_consts_after_stmt(stmt: &Stmt, consts: &mut BTreeMap<String, Expr>) {
+    match stmt {
+        Stmt::Let {
+            name,
+            mutable: false,
+            init: Some(init),
+            ..
+        } if is_printf_const(init) => {
+            consts.insert(name.clone(), init.clone());
+        }
+        Stmt::Let { name, .. } => {
+            consts.remove(name);
+        }
+        Stmt::Assign { target, .. } | Stmt::CompoundAssign { target, .. } => {
+            if let Expr::Var(name) = target {
+                consts.remove(name.as_str());
+            }
+        }
+        _ => {}
+    }
+}
+
+fn is_printf_const(expr: &Expr) -> bool {
+    const_integer(expr).is_some() || const_c_string(expr).is_some()
 }
 
 fn prune_printf_extern(program: &mut Program) {
@@ -659,6 +802,43 @@ fn main() {
 }
 "
         );
+    }
+
+    #[test]
+    fn rewrites_constant_string_and_ascii_char_conversions() {
+        let mut program = program_with_body(vec![
+            temp("ch", "i32", int(65)),
+            printf_stmt_args(
+                b"%s %c %d\n\0",
+                vec![fmt_arg(b"tag\0"), var("ch"), var("n")],
+            ),
+        ]);
+        fixup(&mut program);
+        let out = program.emit();
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    let ch: i32 = 65;
+    println!(\"{} {} {}\", \"tag\", \"A\", n);
+}
+"
+        );
+    }
+
+    #[test]
+    fn leaves_pointer_strings_and_non_ascii_chars_unsupported() {
+        for stmt in [
+            printf_stmt_args(b"%s\n\0", vec![var("ptr")]),
+            printf_stmt_args(b"%c\n\0", vec![int(128)]),
+            printf_stmt_args(b"%s\n\0", vec![fmt_arg(b"a\0b\0")]),
+        ] {
+            let out = run(stmt);
+            assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+            assert!(out.contains("unsafe { printf("));
+            assert!(!out.contains("println!"));
+        }
     }
 
     #[test]
