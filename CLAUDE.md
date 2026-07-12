@@ -120,6 +120,9 @@ Read these before making changes — they are the real playbook:
 - **[docs/adding-features.md](docs/adding-features.md)** — the workflow for
   adding coverage (baseline language feature vs. Rust fixup). Start here when
   adding a feature.
+- **[docs/writing-a-fixup.md](docs/writing-a-fixup.md)** — the AST-to-AST recipe
+  for a fixup pass (fixups are AST-to-AST only, never string rewrites). Read this
+  before writing or modifying anything under `src/fixups/`.
 - [docs/architecture.md](docs/architecture.md) — sources, the two IRs, the
   pipeline, and why CIR over LLVM IR.
 - [docs/passes.md](docs/passes.md) — the pass catalog: what runs, in what order.

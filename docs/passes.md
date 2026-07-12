@@ -158,7 +158,8 @@ A fixup improves already-correct Rust. Examples: `printf -> println!`,
 collapsing retval temps, inlining single-use temps, or recovering `for` loops.
 
 See [adding-features.md](adding-features.md) for the split between baseline
-language work and fixups. A fixup must start from generated Rust that already
+language work and fixups, and [writing-a-fixup.md](writing-a-fixup.md) for the
+AST-to-AST pass recipe. A fixup must start from generated Rust that already
 passes differential testing.
 
 For `printf -> println!`, only rewrite when the callee is known, the format
