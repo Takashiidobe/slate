@@ -313,17 +313,29 @@ impl<'a> Lowerer<'a> {
                         FnParam {
                             name: "_0".into(),
                             mutable: false,
-                            ty: Type::Named("*mut i8".into()),
+                            ty: Type::Ptr {
+                                mutable: true,
+                                inner: Box::new(Type::Prim(Prim::I8)),
+                            },
                         },
                         FnParam {
                             name: "_1".into(),
                             mutable: false,
-                            ty: Type::Named("*mut *mut i8".into()),
+                            ty: Type::Ptr {
+                                mutable: true,
+                                inner: Box::new(Type::Ptr {
+                                    mutable: true,
+                                    inner: Box::new(Type::Prim(Prim::I8)),
+                                }),
+                            },
                         },
                         FnParam {
                             name: "_2".into(),
                             mutable: false,
-                            ty: Type::Named("*mut LongDouble".into()),
+                            ty: Type::Ptr {
+                                mutable: true,
+                                inner: Box::new(Type::Named(LONG_DOUBLE_TY.into())),
+                            },
                         },
                     ],
                     variadic: false,
@@ -339,21 +351,27 @@ impl<'a> Lowerer<'a> {
                         FnParam {
                             name: "_0".into(),
                             mutable: false,
-                            ty: Type::Named("*mut i8".into()),
+                            ty: Type::Ptr {
+                                mutable: true,
+                                inner: Box::new(Type::Prim(Prim::I8)),
+                            },
                         },
                         FnParam {
                             name: "_1".into(),
                             mutable: false,
-                            ty: Type::Named("*const LongDouble".into()),
+                            ty: Type::Ptr {
+                                mutable: false,
+                                inner: Box::new(Type::Named(LONG_DOUBLE_TY.into())),
+                            },
                         },
                         FnParam {
                             name: "_2".into(),
                             mutable: false,
-                            ty: Type::Named("i32".into()),
+                            ty: Type::Prim(Prim::I32),
                         },
                     ],
                     variadic: false,
-                    ret: Some(Type::Named("i32".into())),
+                    ret: Some(Type::Prim(Prim::I32)),
                 }));
             }
         }
@@ -619,7 +637,7 @@ impl<'a> Lowerer<'a> {
             params.push(FnParam {
                 name: param.clone(),
                 mutable: true,
-                ty: Type::Named("...".to_string()),
+                ty: Type::Variadic,
             });
             Some(param)
         } else {
@@ -2003,7 +2021,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             },
             Some("!cir.float") => Expr::Cast {
                 expr: Box::new(value),
-                ty: Type::Named("f64".into()),
+                ty: Type::Prim(Prim::F64),
             },
             _ => value,
         }
@@ -2317,7 +2335,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                     args: vec![Expr::Cast {
                         expr: Box::new(self.operand_expr(src)),
-                        ty: crate::rust_ast::Type::Named("f64".into()),
+                        ty: crate::rust_ast::Type::Prim(Prim::F64),
                     }],
                 })
             }
@@ -2351,11 +2369,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             _ if result_ty.starts_with("!cir.ptr<!cir.func<") => {
                 let ptr_ty = self.parent.rust_type(result_ty);
                 Val::Expr(Expr::Transmute {
-                    from: Type::Named("usize".into()),
+                    from: Type::Prim(Prim::Usize),
                     to: Type::Named(ptr_ty),
                     expr: Box::new(Expr::Cast {
                         expr: Box::new(self.operand_expr(src)),
-                        ty: Type::Named("usize".into()),
+                        ty: Type::Prim(Prim::Usize),
                     }),
                 })
             }
@@ -2415,7 +2433,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 method: "offset".into(),
                 args: vec![Expr::Cast {
                     expr: Box::new(index),
-                    ty: crate::rust_ast::Type::Named("isize".into()),
+                    ty: crate::rust_ast::Type::Prim(Prim::Isize),
                 }],
             }))),
         );
@@ -3411,7 +3429,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             base: Box::new(element.base.clone()),
             index: Box::new(Expr::Cast {
                 expr: Box::new(element.index.clone()),
-                ty: Type::Named("usize".into()),
+                ty: Type::Prim(Prim::Usize),
             }),
         }
     }
