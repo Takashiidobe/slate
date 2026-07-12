@@ -1,4 +1,4 @@
-use crate::rust_ast::RustValue;
+use crate::rust_ast::{BinOp, RustValue};
 use crate::rust_ast::{Block, Expr, ExternDecl, IndentStmt, Item, Program, Stmt};
 use std::collections::BTreeMap;
 
@@ -247,10 +247,24 @@ struct Conversion {
 
 #[derive(Clone, Copy)]
 enum ConversionKind {
-    Integer,
+    Integer(IntegerArg),
     String,
     Char,
     Float,
+}
+
+#[derive(Clone, Copy)]
+enum IntegerArg {
+    Value,
+    Alternate(AlternateIntegerFormat),
+}
+
+#[derive(Clone, Copy)]
+struct AlternateIntegerFormat {
+    left: bool,
+    zero: bool,
+    width: Option<usize>,
+    radix: char,
 }
 
 fn parse_printf_format(bytes: &[u8]) -> Option<ParsedFormat> {
@@ -311,6 +325,7 @@ fn parse_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conversion, String
 fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversion, String)> {
     let mut left = false;
     let mut plus = false;
+    let mut alternate = false;
     let mut zero = false;
     loop {
         match bytes.get(i).copied()? {
@@ -320,6 +335,10 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
             }
             b'+' if !plus => {
                 plus = true;
+                i += 1;
+            }
+            b'#' if !alternate => {
+                alternate = true;
                 i += 1;
             }
             b'0' if !zero => {
@@ -364,18 +383,36 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
     if plus && !matches!(conv, b'd' | b'i') {
         return None;
     }
+    if alternate && !matches!(conv, b'x' | b'X' | b'o') {
+        return None;
+    }
     let format_kind = match conv {
         b'x' => Some('x'),
         b'X' => Some('X'),
         b'o' => Some('o'),
         _ => None,
     };
+    let conversion_kind = if alternate {
+        let width = width.map(str::parse).transpose().ok()?;
+        ConversionKind::Integer(IntegerArg::Alternate(AlternateIntegerFormat {
+            left,
+            zero,
+            width,
+            radix: format_kind?,
+        }))
+    } else {
+        ConversionKind::Integer(IntegerArg::Value)
+    };
     Some((
         i + 1,
         Conversion {
-            kind: ConversionKind::Integer,
+            kind: conversion_kind,
         },
-        integer_placeholder(left, plus, zero, width, format_kind),
+        if alternate {
+            "{}".into()
+        } else {
+            integer_placeholder(left, plus, false, zero, width, format_kind)
+        },
     ))
 }
 
@@ -418,11 +455,12 @@ fn parse_float_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversi
 fn integer_placeholder(
     left: bool,
     plus: bool,
+    alternate: bool,
     zero: bool,
     width: Option<&str>,
     format_kind: Option<char>,
 ) -> String {
-    if !left && !plus && !zero && width.is_none() && format_kind.is_none() {
+    if !left && !plus && !alternate && !zero && width.is_none() && format_kind.is_none() {
         return "{}".into();
     }
     let mut out = String::from("{:");
@@ -431,6 +469,9 @@ fn integer_placeholder(
     }
     if plus {
         out.push('+');
+    }
+    if alternate {
+        out.push('#');
     }
     if zero {
         out.push('0');
@@ -458,10 +499,109 @@ fn printf_macro_arg(
     consts: &BTreeMap<String, Expr>,
 ) -> Option<Expr> {
     match kind {
-        ConversionKind::Integer => Some(arg.clone()),
+        ConversionKind::Integer(IntegerArg::Value) => Some(arg.clone()),
+        ConversionKind::Integer(IntegerArg::Alternate(format)) => {
+            Some(alternate_integer_arg(arg, format))
+        }
         ConversionKind::String => const_c_string_arg(arg, consts).map(Expr::Str),
         ConversionKind::Char => const_c_char_arg(arg, consts).map(Expr::Str),
         ConversionKind::Float => Some(arg.clone()),
+    }
+}
+
+fn alternate_integer_arg(arg: &Expr, format: AlternateIntegerFormat) -> Expr {
+    let tmp = "__slate_printf_arg";
+    let tmp_expr = Expr::Var(tmp.into());
+    let zero_cond = Expr::Binary {
+        op: BinOp::Eq,
+        lhs: Box::new(tmp_expr.clone()),
+        rhs: Box::new(Expr::Value(RustValue::I64(0))),
+    };
+    Expr::Block(Box::new(Block {
+        stmts: vec![IndentStmt {
+            depth: 0,
+            stmt: Stmt::Let {
+                name: tmp.into(),
+                mutable: false,
+                ty: None,
+                init: Some(arg.clone()),
+            },
+        }],
+        tail: Some(Box::new(Expr::If {
+            cond: Box::new(zero_cond),
+            then_expr: Box::new(non_alternate_integer_format(format, tmp_expr.clone())),
+            else_expr: Box::new(alternate_nonzero_integer_format(format, tmp_expr)),
+        })),
+    }))
+}
+
+fn non_alternate_integer_format(format: AlternateIntegerFormat, arg: Expr) -> Expr {
+    let width = format.width.map(|width| width.to_string());
+    let placeholder = integer_placeholder(
+        format.left,
+        false,
+        false,
+        format.zero,
+        width.as_deref(),
+        Some(format.radix),
+    );
+    format_macro("format", vec![Expr::Str(placeholder), arg])
+}
+
+fn alternate_nonzero_integer_format(format: AlternateIntegerFormat, arg: Expr) -> Expr {
+    match format.radix {
+        'x' => format_macro(
+            "format",
+            vec![
+                Expr::Str(integer_placeholder(
+                    format.left,
+                    false,
+                    true,
+                    format.zero,
+                    format.width.map(|width| width.to_string()).as_deref(),
+                    Some('x'),
+                )),
+                arg,
+            ],
+        ),
+        'X' => prefixed_nonzero_integer_format(format, "0X", "X", arg),
+        'o' => prefixed_nonzero_integer_format(format, "0", "o", arg),
+        _ => unreachable!(),
+    }
+}
+
+fn prefixed_nonzero_integer_format(
+    format: AlternateIntegerFormat,
+    prefix: &str,
+    radix: &str,
+    arg: Expr,
+) -> Expr {
+    let base = if format.zero && radix == "X" {
+        let digit_width = format.width.unwrap_or(0).saturating_sub(prefix.len());
+        format_macro(
+            "format",
+            vec![
+                Expr::Str(format!("{prefix}{{:0>{digit_width}{radix}}}")),
+                arg,
+            ],
+        )
+    } else {
+        format_macro(
+            "format",
+            vec![Expr::Str(format!("{prefix}{{:{radix}}}")), arg],
+        )
+    };
+    match format.width {
+        Some(width) if format.left => {
+            format_macro("format", vec![Expr::Str(format!("{{:<{width}}}")), base])
+        }
+        Some(width) if format.zero && radix != "X" => {
+            format_macro("format", vec![Expr::Str(format!("{{:0>{width}}}")), base])
+        }
+        Some(width) if !format.zero => {
+            format_macro("format", vec![Expr::Str(format!("{{:>{width}}}")), base])
+        }
+        _ => base,
     }
 }
 
@@ -874,6 +1014,29 @@ fn main() {
     }
 
     #[test]
+    fn rewrites_alternate_hex_integer_conversions() {
+        let out = run(printf_stmt_args(
+            b"%#x %#X %#o %#08x %-#10X %#12lo\n\0",
+            vec![
+                var("lo"),
+                var("hi"),
+                var("oct"),
+                var("padded"),
+                var("left"),
+                var("wide"),
+            ],
+        ));
+
+        assert!(out.contains("println!(\"{} {} {} {} {} {}\","));
+        assert!(out.contains("format!(\"{:#x}\", __slate_printf_arg)"));
+        assert!(out.contains("format!(\"0X{:X}\", __slate_printf_arg)"));
+        assert!(out.contains("format!(\"0{:o}\", __slate_printf_arg)"));
+        assert!(out.contains("format!(\"{:#08x}\", __slate_printf_arg)"));
+        assert!(out.contains("format!(\"{:<10}\", format!(\"0X{:X}\", __slate_printf_arg))"));
+        assert!(out.contains("format!(\"{:>12}\", format!(\"0{:o}\", __slate_printf_arg))"));
+    }
+
+    #[test]
     fn rewrites_constant_string_and_ascii_char_conversions() {
         let mut program = program_with_body(vec![
             temp("ch", "i32", int(65)),
@@ -1002,7 +1165,6 @@ fn main() {
             &b"%*d\n\0"[..],
             &b"%.3d\n\0"[..],
             &b"%#d\n\0"[..],
-            &b"%#x\n\0"[..],
             &b"% d\n\0"[..],
             &b"%-05d\n\0"[..],
             &b"%+x\n\0"[..],

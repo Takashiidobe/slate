@@ -209,6 +209,22 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(!hex_octal_rust.contains("fn printf("));
     assert!(!hex_octal_rust.contains("unsafe { printf("));
 
+    let alternate_c = fixtures_dir().join("printf_alternate_integer.c");
+    let alternate_generated = tmp.join("printf_alternate_integer.generated.rs");
+    support::translate(&alternate_c, &alternate_generated)
+        .expect("translate printf alternate integer fixture");
+    let alternate_rust = std::fs::read_to_string(&alternate_generated)
+        .expect("read generated printf alternate integer rust");
+    assert!(alternate_rust.contains("println!(\"{} {} {}\","));
+    assert!(alternate_rust.contains("println!(\"{}|{}|{}\","));
+    assert!(alternate_rust.contains("println!(\"{} {} {} {}\","));
+    assert!(alternate_rust.contains("format!(\"{:#x}\", __slate_printf_arg)"));
+    assert!(alternate_rust.contains("format!(\"0X{:X}\", __slate_printf_arg)"));
+    assert!(alternate_rust.contains("format!(\"0{:o}\", __slate_printf_arg)"));
+    assert!(alternate_rust.contains("format!(\"{:#08x}\", __slate_printf_arg)"));
+    assert!(!alternate_rust.contains("fn printf("));
+    assert!(!alternate_rust.contains("unsafe { printf("));
+
     let string_char_c = fixtures_dir().join("printf_string_char.c");
     let string_char_generated = tmp.join("printf_string_char.generated.rs");
     support::translate(&string_char_c, &string_char_generated)
