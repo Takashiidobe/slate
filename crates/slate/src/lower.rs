@@ -100,7 +100,7 @@ struct Lowerer<'a> {
     strings: BTreeMap<String, Vec<u8>>,
     /// numeric aggregate const globals (e.g. `int a[5]={..}`) → element literals,
     /// keyed by raw sym_name; consumed when a `cir.copy` initializes a local.
-    const_arrays: BTreeMap<String, Vec<String>>,
+    const_arrays: BTreeMap<String, Vec<Expr>>,
     /// nested aggregate const globals (structs, unions, arrays of aggregates) →
     /// their raw `#cir.const_record`/`#cir.const_array` initializer, keyed by raw
     /// sym_name; rendered recursively against the destination type on `cir.copy`.
@@ -187,7 +187,7 @@ struct ElementPtr {
 struct GlobalVar {
     name: String,
     ty: String,
-    init: String,
+    init: Expr,
     external: bool,
 }
 
@@ -265,7 +265,9 @@ impl<'a> Lowerer<'a> {
             };
             items.push(Item::Raw(format!(
                 "{global_vis}static mut {}: {} = {};\n",
-                global.name, global.ty, global.init
+                global.name,
+                global.ty,
+                global.init.render()
             )));
         }
 
@@ -394,13 +396,13 @@ impl<'a> Lowerer<'a> {
         };
         if let Some(mut bytes) = parse_cir_const_array(raw) {
             if is_c_global && let Some(ty) = ty {
-                let elems: Vec<String> = bytes.iter().map(|b| b.to_string()).collect();
+                let elems: Vec<Expr> = bytes.iter().map(|b| Expr::Lit(b.to_string())).collect();
                 self.globals.insert(
                     rust_name.clone(),
                     GlobalVar {
                         name: rust_name,
                         ty,
-                        init: render_array_literal(&elems, bytes.len()),
+                        init: render_array_literal_expr(&elems, bytes.len(), Expr::Lit("0".into())),
                         external: linkage_is_external(op),
                     },
                 );
@@ -416,7 +418,11 @@ impl<'a> Lowerer<'a> {
                         GlobalVar {
                             name: rust_name,
                             ty,
-                            init: render_array_literal(&elems, len as usize),
+                            init: render_array_literal_expr(
+                                &elems,
+                                len as usize,
+                                Expr::Lit("0".into()),
+                            ),
                             external: linkage_is_external(op),
                         },
                     );
@@ -426,7 +432,7 @@ impl<'a> Lowerer<'a> {
             }
         } else if is_cir_aggregate_init(raw) {
             if is_c_global && let Some(ty) = ty {
-                if let Some(init) = self.render_const_value(&ty, raw) {
+                if let Some(init) = self.render_const_value_expr(&ty, raw) {
                     self.globals.insert(
                         rust_name.clone(),
                         GlobalVar {
@@ -450,7 +456,10 @@ impl<'a> Lowerer<'a> {
                     GlobalVar {
                         name: rust_name,
                         ty,
-                        init: format!("[{}; {len}]", zero_for_cir_type(&elem)),
+                        init: Expr::ArrayRepeat {
+                            elem: Box::new(self.default_value_expr(&self.rust_type(&elem))),
+                            len: len as usize,
+                        },
                         external: linkage_is_external(op),
                     },
                 );
@@ -465,7 +474,7 @@ impl<'a> Lowerer<'a> {
                     rust_name.clone(),
                     GlobalVar {
                         name: rust_name,
-                        init: self.default_value(&ty),
+                        init: self.default_value_expr(&ty),
                         ty,
                         external: linkage_is_external(op),
                     },
@@ -484,7 +493,7 @@ impl<'a> Lowerer<'a> {
                 GlobalVar {
                     name: rust_name,
                     ty,
-                    init,
+                    init: Expr::Lit(init),
                     external,
                 },
             );
@@ -759,7 +768,7 @@ impl<'a> Lowerer<'a> {
         rust
     }
 
-    fn default_value(&self, ty: &str) -> String {
+    fn default_value_expr(&self, ty: &str) -> Expr {
         if let Some(record) = self.records.get(ty) {
             match record.kind {
                 RecordKind::Struct => {
@@ -767,53 +776,72 @@ impl<'a> Lowerer<'a> {
                         .fields
                         .iter()
                         .map(|field| {
-                            format!(
-                                "{}: {}",
+                            (
                                 sanitize_ident(&field.name),
-                                self.default_value(&c_type_to_rust(&field.ty))
+                                self.default_value_expr(&c_type_to_rust(&field.ty)),
                             )
                         })
-                        .collect::<Vec<_>>()
-                        .join(", ");
-                    return format!("{} {{ {fields} }}", sanitize_ident(&record.name));
+                        .collect();
+                    return Expr::StructLit {
+                        name: sanitize_ident(&record.name),
+                        fields,
+                    };
                 }
                 RecordKind::Union => {
                     if let Some(field) = record.fields.first() {
-                        return format!(
-                            "{} {{ {}: {} }}",
-                            sanitize_ident(&record.name),
-                            sanitize_ident(&field.name),
-                            self.default_value(&c_type_to_rust(&field.ty))
-                        );
+                        return Expr::StructLit {
+                            name: sanitize_ident(&record.name),
+                            fields: vec![(
+                                sanitize_ident(&field.name),
+                                self.default_value_expr(&c_type_to_rust(&field.ty)),
+                            )],
+                        };
                     }
                 }
             }
         }
         if is_long_double(ty) || ty == LONG_DOUBLE_TY {
-            return format!("{LONG_DOUBLE_TY}(0.0)");
+            return Expr::Call {
+                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                args: vec![Expr::Lit("0.0".into())],
+            };
         }
-        if let Some(value) = standard_record_default(ty) {
-            return value.to_string();
+        if let Some(value) = standard_record_default_expr(ty) {
+            return value;
         }
         if let Some(inner) = ty
             .strip_prefix(COMPLEX_TY)
             .and_then(|s| s.strip_suffix('>'))
         {
-            let d = default_value(inner);
-            return format!("Complex {{ re: {d}, im: {d} }}");
+            let d = default_value_expr(inner);
+            return Expr::StructLit {
+                name: "Complex".into(),
+                fields: vec![("re".into(), d.clone()), ("im".into(), d)],
+            };
         }
         if let Some((inner, len)) = parse_cir_array_type(ty) {
-            return format!("[{}; {len}]", self.default_value(&inner));
+            return Expr::ArrayRepeat {
+                elem: Box::new(self.default_value_expr(&inner)),
+                len: len as usize,
+            };
         }
         if let Some((inner, len)) = parse_rust_array_type(ty) {
-            return format!("[{}; {len}]", self.default_value(inner));
+            return Expr::ArrayRepeat {
+                elem: Box::new(self.default_value_expr(inner)),
+                len: len as usize,
+            };
         }
-        default_value(ty).into()
+        default_value_expr(ty)
     }
 
-    fn render_const_value(&self, rust_ty: &str, raw: &str) -> Option<String> {
+    fn render_const_value_expr(&self, rust_ty: &str, raw: &str) -> Option<Expr> {
         let raw = raw.trim();
-        if raw.starts_with("#cir.const_record<") {
+        if let Some((re, im)) = parse_cir_const_complex(raw) {
+            Some(Expr::StructLit {
+                name: "Complex".into(),
+                fields: vec![("re".into(), Expr::Lit(re)), ("im".into(), Expr::Lit(im))],
+            })
+        } else if raw.starts_with("#cir.const_record<") {
             let record = self.records.get(rust_ty)?;
             let open = raw.find('{')?;
             let close = raw.rfind('}')?;
@@ -828,50 +856,51 @@ impl<'a> Lowerer<'a> {
                             let field_ty = c_type_to_rust(&field.ty);
                             let value = elems
                                 .get(i)
-                                .and_then(|e| self.render_const_value(&field_ty, e.trim()))
-                                .unwrap_or_else(|| self.default_value(&field_ty));
-                            format!("{}: {value}", sanitize_ident(&field.name))
+                                .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
+                                .unwrap_or_else(|| self.default_value_expr(&field_ty));
+                            (sanitize_ident(&field.name), value)
                         })
-                        .collect::<Vec<_>>()
-                        .join(", ");
-                    Some(format!("{} {{ {fields} }}", sanitize_ident(&record.name)))
+                        .collect();
+                    Some(Expr::StructLit {
+                        name: sanitize_ident(&record.name),
+                        fields,
+                    })
                 }
                 RecordKind::Union => {
                     let field = record.fields.first()?;
                     let field_ty = c_type_to_rust(&field.ty);
                     let value = elems
                         .first()
-                        .and_then(|e| self.render_const_value(&field_ty, e.trim()))
-                        .unwrap_or_else(|| self.default_value(&field_ty));
-                    Some(format!(
-                        "{} {{ {}: {value} }}",
-                        sanitize_ident(&record.name),
-                        sanitize_ident(&field.name)
-                    ))
+                        .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
+                        .unwrap_or_else(|| self.default_value_expr(&field_ty));
+                    Some(Expr::StructLit {
+                        name: sanitize_ident(&record.name),
+                        fields: vec![(sanitize_ident(&field.name), value)],
+                    })
                 }
             }
         } else if raw.starts_with("#cir.const_array<[") {
             let (elem_ty, len) = parse_rust_array_type(rust_ty)?;
             let open = raw.find('[')?;
             let close = raw.rfind(']')?;
-            let mut out: Vec<String> = split_top_level(&raw[open + 1..close], ',')
+            let mut out: Vec<Expr> = split_top_level(&raw[open + 1..close], ',')
                 .into_iter()
                 .map(|e| e.trim().to_string())
                 .filter(|e| !e.is_empty())
                 .take(len as usize)
                 .map(|e| {
-                    self.render_const_value(elem_ty, &e)
-                        .unwrap_or_else(|| self.default_value(elem_ty))
+                    self.render_const_value_expr(elem_ty, &e)
+                        .unwrap_or_else(|| self.default_value_expr(elem_ty))
                 })
                 .collect();
-            out.resize(len as usize, self.default_value(elem_ty));
-            Some(format!("[{}]", out.join(", ")))
+            out.resize(len as usize, self.default_value_expr(elem_ty));
+            Some(Expr::ArrayLit(out))
         } else if raw.starts_with("#cir.zero") {
-            Some(self.default_value(rust_ty))
+            Some(self.default_value_expr(rust_ty))
         } else {
             parse_cir_int(raw)
-                .map(|n| n.to_string())
-                .or_else(|| parse_cir_fp(raw))
+                .map(|n| Expr::Lit(n.to_string()))
+                .or_else(|| parse_cir_fp(raw).map(Expr::Lit))
         }
     }
 }
@@ -1072,7 +1101,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             name,
             mutable: true,
             ty: Some(Self::named_type(ty.clone())),
-            init: Some(Self::raw_expr(self.default_value(&ty))),
+            init: Some(self.default_value_expr(&ty)),
         });
     }
 
@@ -1161,23 +1190,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         match self.values.get(src) {
             Some(Val::Global(name)) => {
                 if let Some(bytes) = self.parent.strings.get(name) {
-                    let elems: Vec<String> = bytes.iter().map(|b| b.to_string()).collect();
-                    Some(Self::raw_expr(render_array_literal(
+                    let elems: Vec<Expr> = bytes.iter().map(|b| Expr::Lit(b.to_string())).collect();
+                    Some(render_array_literal_expr(
                         &elems,
                         dst_len.unwrap_or(elems.len()),
-                    )))
+                        Expr::Lit("0".into()),
+                    ))
                 } else if let Some(elems) = self.parent.const_arrays.get(name) {
-                    Some(Self::raw_expr(render_array_literal(
+                    Some(render_array_literal_expr(
                         elems,
                         dst_len.unwrap_or(elems.len()),
-                    )))
+                        Expr::Lit("0".into()),
+                    ))
                 } else if let Some(raw) = self.parent.const_aggregates.get(name) {
                     let ty = self.slot_types.get(dst)?;
-                    self.render_const_value(ty, raw).map(Self::raw_expr)
+                    self.render_const_value_expr(ty, raw)
                 } else if self.parent.const_zero_globals.contains(name) {
                     self.slot_types
                         .get(dst)
-                        .map(|ty| Self::raw_expr(self.default_value(ty)))
+                        .map(|ty| self.default_value_expr(ty))
                 } else {
                     None
                 }
@@ -1186,8 +1217,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    fn render_const_value(&self, rust_ty: &str, raw: &str) -> Option<String> {
-        self.parent.render_const_value(rust_ty, raw)
+    fn render_const_value_expr(&self, rust_ty: &str, raw: &str) -> Option<Expr> {
+        self.parent.render_const_value_expr(rust_ty, raw)
     }
 
     fn lower_load(&mut self, op: &Op) {
@@ -2189,13 +2220,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         (self.parent.rust_type(&elem), len as usize)
                     });
                 // annotate one element so the array element type can't default wrong
-                let mut typed: Vec<String> = elems.clone();
+                let mut typed: Vec<Expr> = elems.clone();
                 if let Some(first) = typed.first_mut() {
-                    *first = format!("{first} as {elem_ty}");
+                    *first = Expr::Cast {
+                        expr: Box::new(first.clone()),
+                        ty: Type::Named(elem_ty),
+                    };
                 }
-                let arr = render_array_literal(&typed, len);
                 let ptr_ty = self.parent.rust_type(result_ty);
-                Val::expr(format!("{arr}.as_ptr() as {ptr_ty}"))
+                Val::Expr(Expr::Cast {
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(render_array_literal_expr(
+                            &typed,
+                            len,
+                            Expr::Lit("0".into()),
+                        )),
+                        method: "as_ptr".into(),
+                        args: vec![],
+                    }),
+                    ty: Type::Named(ptr_ty),
+                })
             }
             Some(Val::Global(name)) => Val::Global(name),
             _ if self
@@ -2255,7 +2299,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(Expr::Binary {
                 op: "!=".into(),
                 lhs: Box::new(self.operand_expr(src)),
-                rhs: Box::new(Expr::Lit(zero_for_cir_type(operand_ty).to_string())),
+                rhs: Box::new(zero_for_cir_type(operand_ty)),
             }),
             _ if result_ty == operand_ty => Val::Expr(self.operand_expr(src)),
             _ => Val::Expr(Expr::Cast {
@@ -3457,8 +3501,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
     }
 
-    fn default_value(&self, ty: &str) -> String {
-        self.parent.default_value(ty)
+    fn default_value_expr(&self, ty: &str) -> Expr {
+        self.parent.default_value_expr(ty)
     }
 }
 
@@ -3931,13 +3975,16 @@ fn op_type_return(ty: &str) -> Option<&str> {
     split_top_level_arrow(ty).map(|(_, ret)| ret.trim())
 }
 
-fn default_value(ty: &str) -> &'static str {
+fn default_value_expr(ty: &str) -> Expr {
     match ty {
-        "bool" => "false",
-        "f32" | "f64" => "0.0",
-        ty if ty.starts_with("*mut ") => "std::ptr::null_mut()",
-        ty if ty.starts_with("Option<fn(") => "None",
-        _ => "0",
+        "bool" => Expr::Lit("false".into()),
+        "f32" | "f64" => Expr::Lit("0.0".into()),
+        ty if ty.starts_with("*mut ") => Expr::Call {
+            func: Box::new(Expr::Raw("std::ptr::null_mut".into())),
+            args: vec![],
+        },
+        ty if ty.starts_with("Option<fn(") => Expr::Lit("None".into()),
+        _ => Expr::Lit("0".into()),
     }
 }
 
@@ -3965,29 +4012,89 @@ fn standard_record_def(name: &str) -> &'static str {
     }
 }
 
-fn standard_record_default(ty: &str) -> Option<&'static str> {
-    match ty {
-        "div_t" => Some("div_t { quot: 0, rem: 0 }"),
-        "ldiv_t" => Some("ldiv_t { quot: 0, rem: 0 }"),
-        "lldiv_t" => Some("lldiv_t { quot: 0, rem: 0 }"),
-        "imaxdiv_t" => Some("imaxdiv_t { quot: 0, rem: 0 }"),
-        "tm" => Some(
-            "tm { tm_sec: 0, tm_min: 0, tm_hour: 0, tm_mday: 0, tm_mon: 0, tm_year: 0, tm_wday: 0, tm_yday: 0, tm_isdst: 0, tm_gmtoff: 0, tm_zone: std::ptr::null_mut() }",
-        ),
-        "lconv" => Some(
-            "lconv { decimal_point: std::ptr::null_mut(), thousands_sep: std::ptr::null_mut(), grouping: std::ptr::null_mut(), int_curr_symbol: std::ptr::null_mut(), currency_symbol: std::ptr::null_mut(), mon_decimal_point: std::ptr::null_mut(), mon_thousands_sep: std::ptr::null_mut(), mon_grouping: std::ptr::null_mut(), positive_sign: std::ptr::null_mut(), negative_sign: std::ptr::null_mut(), int_frac_digits: 0, frac_digits: 0, p_cs_precedes: 0, p_sep_by_space: 0, n_cs_precedes: 0, n_sep_by_space: 0, p_sign_posn: 0, n_sign_posn: 0, int_p_cs_precedes: 0, int_p_sep_by_space: 0, int_n_cs_precedes: 0, int_n_sep_by_space: 0, int_p_sign_posn: 0, int_n_sign_posn: 0 }",
-        ),
-        _ => None,
-    }
+fn standard_record_default_expr(ty: &str) -> Option<Expr> {
+    let fields = match ty {
+        "div_t" => vec![("quot", "0"), ("rem", "0")],
+        "ldiv_t" => vec![("quot", "0"), ("rem", "0")],
+        "lldiv_t" => vec![("quot", "0"), ("rem", "0")],
+        "imaxdiv_t" => vec![("quot", "0"), ("rem", "0")],
+        "tm" => vec![
+            ("tm_sec", "0"),
+            ("tm_min", "0"),
+            ("tm_hour", "0"),
+            ("tm_mday", "0"),
+            ("tm_mon", "0"),
+            ("tm_year", "0"),
+            ("tm_wday", "0"),
+            ("tm_yday", "0"),
+            ("tm_isdst", "0"),
+            ("tm_gmtoff", "0"),
+            ("tm_zone", "std::ptr::null_mut()"),
+        ],
+        "lconv" => vec![
+            ("decimal_point", "std::ptr::null_mut()"),
+            ("thousands_sep", "std::ptr::null_mut()"),
+            ("grouping", "std::ptr::null_mut()"),
+            ("int_curr_symbol", "std::ptr::null_mut()"),
+            ("currency_symbol", "std::ptr::null_mut()"),
+            ("mon_decimal_point", "std::ptr::null_mut()"),
+            ("mon_thousands_sep", "std::ptr::null_mut()"),
+            ("mon_grouping", "std::ptr::null_mut()"),
+            ("positive_sign", "std::ptr::null_mut()"),
+            ("negative_sign", "std::ptr::null_mut()"),
+            ("int_frac_digits", "0"),
+            ("frac_digits", "0"),
+            ("p_cs_precedes", "0"),
+            ("p_sep_by_space", "0"),
+            ("n_cs_precedes", "0"),
+            ("n_sep_by_space", "0"),
+            ("p_sign_posn", "0"),
+            ("n_sign_posn", "0"),
+            ("int_p_cs_precedes", "0"),
+            ("int_p_sep_by_space", "0"),
+            ("int_n_cs_precedes", "0"),
+            ("int_n_sep_by_space", "0"),
+            ("int_p_sign_posn", "0"),
+            ("int_n_sign_posn", "0"),
+        ],
+        _ => return None,
+    };
+    Some(Expr::StructLit {
+        name: ty.into(),
+        fields: fields
+            .into_iter()
+            .map(|(name, value)| {
+                let value = if value == "std::ptr::null_mut()" {
+                    default_value_expr("*mut i8")
+                } else {
+                    Expr::Lit(value.into())
+                };
+                (name.into(), value)
+            })
+            .collect(),
+    })
 }
 
-fn zero_for_cir_type(ty: &str) -> &'static str {
-    match rust_type(ty).as_str() {
-        "f32" | "f64" => "0.0",
-        "bool" => "false",
-        ty if ty.starts_with("*mut ") => "std::ptr::null_mut()",
-        _ => "0",
-    }
+fn zero_for_cir_type(ty: &str) -> Expr {
+    default_value_expr(&rust_type(ty))
+}
+
+fn render_array_literal_expr(elems: &[Expr], len: usize, default: Expr) -> Expr {
+    let mut out: Vec<Expr> = elems.iter().take(len).cloned().collect();
+    out.resize(len, default);
+    Expr::ArrayLit(out)
+}
+
+fn parse_cir_scalar_expr(s: &str) -> Option<Expr> {
+    parse_cir_int(s)
+        .map(|n| Expr::Lit(n.to_string()))
+        .or_else(|| parse_cir_fp(s).map(Expr::Lit))
+        .or_else(|| parse_cir_bool(s).map(|b| Expr::Lit(b.to_string())))
+        .or_else(|| {
+            s.trim_start()
+                .starts_with("#cir.ptr<null>")
+                .then(|| default_value_expr("*mut i32"))
+        })
 }
 
 // i128 so a full-range `!u64i` value (e.g. SIG_ERR = (void(*)(int))-1, which CIR
@@ -4047,7 +4154,7 @@ fn parse_cir_const_array(s: &str) -> Option<Vec<u8>> {
 /// Parse the numeric form `#cir.const_array<[#cir.int<1> : !s32i, ...]>` into
 /// per-element Rust literals. Returns `None` for the string form (handled by
 /// [`parse_cir_const_array`]) or any element we cannot render.
-fn parse_cir_const_array_elems(s: &str) -> Option<Vec<String>> {
+fn parse_cir_const_array_elems(s: &str) -> Option<Vec<Expr>> {
     let s = s.trim_start();
     if !s.starts_with("#cir.const_array<[") {
         return None;
@@ -4063,25 +4170,16 @@ fn parse_cir_const_array_elems(s: &str) -> Option<Vec<String>> {
             if is_cir_aggregate_init(part) {
                 return None; // array of aggregates → render_const_value handles it
             }
-            parse_cir_int(part)
-                .map(|n| n.to_string())
-                .or_else(|| parse_cir_fp(part))
+            parse_cir_scalar_expr(part)
         })
         .collect()
 }
 
 /// A `cir.global` initializer that is a struct/union or nested-aggregate array,
-/// rendered on demand by [`FunctionLowerer::render_const_value`].
+/// rendered on demand by [`FunctionLowerer::render_const_value_expr`].
 fn is_cir_aggregate_init(raw: &str) -> bool {
     let raw = raw.trim_start();
     raw.starts_with("#cir.const_record<") || raw.starts_with("#cir.const_array<[")
-}
-
-/// Render `elems` as a Rust array literal, truncated or zero-padded to `len`.
-fn render_array_literal(elems: &[String], len: usize) -> String {
-    let mut out: Vec<String> = elems.iter().take(len).cloned().collect();
-    out.resize(len, "0".to_string());
-    format!("[{}]", out.join(", "))
 }
 
 fn decode_cir_string(s: &str) -> Vec<u8> {
@@ -4259,6 +4357,28 @@ fn split_top_level(s: &str, delimiter: char) -> Vec<&str> {
 mod tests {
     use super::*;
 
+    fn test_lowerer(ctx: &mut Ctx) -> Lowerer<'_> {
+        Lowerer {
+            ctx,
+            aliases: BTreeMap::new(),
+            records: BTreeMap::new(),
+            globals: BTreeMap::new(),
+            extern_globals: BTreeMap::new(),
+            strings: BTreeMap::new(),
+            const_arrays: BTreeMap::new(),
+            const_aggregates: BTreeMap::new(),
+            const_zero_globals: BTreeSet::new(),
+            externs: BTreeMap::new(),
+            extern_returns: BTreeMap::new(),
+            uses_long_double: std::cell::Cell::new(false),
+            uses_complex: std::cell::Cell::new(false),
+            uses_c_variadic: std::cell::Cell::new(false),
+            variadic_defs: BTreeSet::new(),
+            project: ProjectInfo::default(),
+            cross_uses: Vec::new(),
+        }
+    }
+
     #[test]
     fn maps_cir_integer_types_to_rust_primitives() {
         assert_eq!(rust_type("!s32i"), "i32");
@@ -4288,13 +4408,62 @@ mod tests {
         let raw = "#cir.const_array<[#cir.int<1> : !s32i, #cir.int<2> : !s32i, \
                    #cir.int<3> : !s32i]> : !cir.array<!s32i x 5>";
         let elems = parse_cir_const_array_elems(raw).expect("numeric const array");
-        assert_eq!(elems, vec!["1", "2", "3"]);
-        assert_eq!(render_array_literal(&elems, 5), "[1, 2, 3, 0, 0]");
-        assert_eq!(render_array_literal(&elems, 2), "[1, 2]");
         assert_eq!(
-            parse_cir_const_array_elems("#cir.const_array<\"hi\">"),
-            None
+            elems.iter().map(Expr::render).collect::<Vec<_>>(),
+            vec!["1", "2", "3"]
         );
+        let padded = render_array_literal_expr(&elems, 5, Expr::Lit("0".into()));
+        let truncated = render_array_literal_expr(&elems, 2, Expr::Lit("0".into()));
+        assert!(matches!(padded, Expr::ArrayLit(_)));
+        assert_eq!(padded.render(), "[1, 2, 3, 0, 0]");
+        assert_eq!(truncated.render(), "[1, 2]");
+        assert!(parse_cir_const_array_elems("#cir.const_array<\"hi\">").is_none());
+    }
+
+    #[test]
+    fn default_arrays_and_records_are_structured_expressions() {
+        let mut ctx = Ctx::default();
+        let lowerer = test_lowerer(&mut ctx);
+        let array = lowerer.default_value_expr("[i32; 3]");
+        assert!(matches!(array, Expr::ArrayRepeat { .. }));
+        assert_eq!(array.render(), "[0; 3]");
+
+        let div = lowerer.default_value_expr("div_t");
+        assert!(matches!(div, Expr::StructLit { .. }));
+        assert_eq!(div.render(), "div_t { quot: 0, rem: 0 }");
+    }
+
+    #[test]
+    fn aggregate_const_values_are_structured_expressions() {
+        let mut ctx = Ctx::default();
+        let mut lowerer = test_lowerer(&mut ctx);
+        lowerer.records.insert(
+            "Pair".into(),
+            crate::c_ast::Record {
+                name: "Pair".into(),
+                kind: RecordKind::Struct,
+                fields: vec![
+                    crate::c_ast::Decl {
+                        name: "x".into(),
+                        ty: crate::c_ast::CType::Int {
+                            signed: true,
+                            bits: 32,
+                        },
+                    },
+                    crate::c_ast::Decl {
+                        name: "y".into(),
+                        ty: crate::c_ast::CType::Int {
+                            signed: true,
+                            bits: 32,
+                        },
+                    },
+                ],
+            },
+        );
+        let raw = "#cir.const_record<{#cir.int<1> : !s32i, #cir.int<2> : !s32i}> : !rec_Pair";
+        let expr = lowerer.render_const_value_expr("Pair", raw).unwrap();
+        assert!(matches!(expr, Expr::StructLit { .. }));
+        assert_eq!(expr.render(), "Pair { x: 1, y: 2 }");
     }
 
     #[test]
@@ -4303,7 +4472,7 @@ mod tests {
         // rendered recursively by render_const_value instead.
         let raw = "#cir.const_array<[#cir.const_record<{#cir.int<1> : !s32i, \
                    #cir.int<2> : !s32i}> : !rec_P]> : !cir.array<!rec_P x 1>";
-        assert_eq!(parse_cir_const_array_elems(raw), None);
+        assert!(parse_cir_const_array_elems(raw).is_none());
         assert!(is_cir_aggregate_init(raw));
         assert!(is_cir_aggregate_init(
             "#cir.const_record<{#cir.int<3> : !s32i}> : !rec_P"
@@ -4391,8 +4560,14 @@ mod tests {
 
     #[test]
     fn pointer_values_default_to_null_mut() {
-        assert_eq!(default_value("*mut i32"), "std::ptr::null_mut()");
-        assert_eq!(default_value("Option<fn(i32, i32) -> i32>"), "None");
+        assert_eq!(
+            default_value_expr("*mut i32").render(),
+            "std::ptr::null_mut()"
+        );
+        assert_eq!(
+            default_value_expr("Option<fn(i32, i32) -> i32>").render(),
+            "None"
+        );
     }
 
     #[test]
@@ -4449,13 +4624,13 @@ mod tests {
 
     #[test]
     fn floating_point_types_default_to_zero_point_zero() {
-        assert_eq!(default_value("f32"), "0.0");
-        assert_eq!(default_value("f64"), "0.0");
-        assert_eq!(default_value("i32"), "0");
-        assert_eq!(default_value("bool"), "false");
+        assert_eq!(default_value_expr("f32").render(), "0.0");
+        assert_eq!(default_value_expr("f64").render(), "0.0");
+        assert_eq!(default_value_expr("i32").render(), "0");
+        assert_eq!(default_value_expr("bool").render(), "false");
         assert_eq!(
-            standard_record_default("div_t"),
-            Some("div_t { quot: 0, rem: 0 }")
+            standard_record_default_expr("div_t").map(|expr| expr.render()),
+            Some("div_t { quot: 0, rem: 0 }".into())
         );
     }
 }
