@@ -119,7 +119,7 @@ fn block_ident_count(block: &Block, name: &str) -> usize {
 pub(super) fn expr_ident_count(expr: &Expr, name: &str) -> usize {
     match expr {
         Expr::Value(_) => 0,
-        Expr::HexFloat(_) | Expr::ByteStr(_) => 0,
+        Expr::Str(_) | Expr::HexFloat(_) | Expr::ByteStr(_) => 0,
         Expr::Var(s) => usize::from(s.as_str() == name),
         Expr::Path(_) => 0,
         Expr::Unary { expr, .. }

@@ -483,6 +483,7 @@ impl From<&str> for Label {
 #[derive(Debug, Clone)]
 pub enum Expr {
     Value(RustValue),
+    Str(String),
     HexFloat(String),
     ByteStr(Vec<u8>),
     Var(Ident),
@@ -831,6 +832,7 @@ impl Expr {
                 true
             }
             Expr::Value(_)
+            | Expr::Str(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
             | Expr::Var(_)

@@ -216,6 +216,7 @@ fn walk_expr(expr: &Expr, f: &mut impl FnMut(&Expr)) {
     f(expr);
     match expr {
         Expr::Value(_)
+        | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
         | Expr::Var(_)

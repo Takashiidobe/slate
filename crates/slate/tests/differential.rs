@@ -118,8 +118,9 @@ fn unused_call_result_temps_are_dropped() {
 
     support::translate(&c_src, &generated).expect("translate compound fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated compound rust");
-    assert!(rust.contains("unsafe { printf("));
+    assert!(rust.contains("println!(\"{}\", _v"));
     assert!(!rust.contains(": i32 = unsafe { printf("));
+    assert!(!rust.contains(": i32 = println!("));
 }
 
 #[test]
@@ -136,6 +137,36 @@ fn call_argument_temps_are_inlined() {
     }
     assert!(!rust.contains("= add(_v"));
     assert!(!rust.contains("let _v1: i32 = 2;"));
+}
+
+#[test]
+fn simple_printfs_are_recovered_as_format_macros() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-printf-format-fixup");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_src = fixtures_dir().join("add.c");
+    let generated = tmp.join("add.generated.rs");
+    support::translate(&c_src, &generated).expect("translate add fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated add rust");
+    for call in [
+        "println!(\"{}\", add(2, 3));",
+        "println!(\"{}\", add(-10, 4));",
+        "println!(\"{}\", add(0, 0));",
+    ] {
+        assert!(rust.contains(call), "missing recovered printf: {call}");
+    }
+    assert!(!rust.contains("fn printf("));
+    assert!(!rust.contains("unsafe { printf("));
+
+    let logical_c = fixtures_dir().join("logical_ops.c");
+    let logical_generated = tmp.join("logical_ops.generated.rs");
+    support::translate(&logical_c, &logical_generated).expect("translate logical_ops fixture");
+    let logical_rust =
+        std::fs::read_to_string(&logical_generated).expect("read generated logical_ops rust");
+    assert!(logical_rust.contains("println!(\"{} {}\","));
+    assert!(logical_rust.contains("println!(\"{} {} {}\","));
+    assert!(!logical_rust.contains("fn printf("));
+    assert!(!logical_rust.contains("unsafe { printf("));
 }
 
 #[test]

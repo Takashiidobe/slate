@@ -6,6 +6,7 @@ mod drop_call_results;
 mod idents;
 mod inline_temps;
 mod param_spills;
+mod printf_format;
 mod remove_mut;
 mod retval;
 mod zero_init;
@@ -17,7 +18,7 @@ use crate::rust_ast::{Item, Program};
 
 pub fn apply(program: Program) -> Program {
     let sigs = call_args::collect_signatures(&program);
-    Program {
+    let mut program = Program {
         items: program
             .items
             .into_iter()
@@ -36,7 +37,9 @@ pub fn apply(program: Program) -> Program {
                 item => item,
             })
             .collect(),
-    }
+    };
+    printf_format::fixup(&mut program);
+    program
 }
 
 #[cfg(test)]
