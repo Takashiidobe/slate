@@ -34,9 +34,11 @@ fn expr_prec(expr: &Expr) -> u8 {
         Expr::Binary { op, .. } => op.precedence(),
         Expr::Cast { .. } => PREC_CAST,
         Expr::Unary { .. } | Expr::Ref { .. } => PREC_PREFIX,
-        Expr::Call { .. } | Expr::MethodCall { .. } | Expr::Field { .. } | Expr::Index { .. } => {
-            PREC_CALL
-        }
+        Expr::Call { .. }
+        | Expr::MethodCall { .. }
+        | Expr::MethodCallGeneric { .. }
+        | Expr::Field { .. }
+        | Expr::Index { .. } => PREC_CALL,
         _ => PREC_ATOM,
     }
 }
@@ -404,8 +406,11 @@ impl<W: Write> Codegen<W> {
     }
 
     fn block(&mut self, block: &Block, depth: usize) -> fmt::Result {
-        for stmt in &block.stmts {
-            self.stmt(stmt, depth)?;
+        self.indent_stmts(&block.stmts, depth)?;
+        if let Some(tail) = &block.tail {
+            self.out.write_str(&INDENT.repeat(depth))?;
+            self.expr(tail)?;
+            self.out.write_char('\n')?;
         }
         Ok(())
     }
@@ -496,7 +501,7 @@ impl<W: Write> Codegen<W> {
             },
             Stmt::Unsafe { body } => {
                 writeln!(self.out, "{pad}unsafe {{")?;
-                self.indent_stmts(body, depth + 1)?;
+                self.block(body, depth + 1)?;
                 writeln!(self.out, "{pad}}}")
             }
             Stmt::If {
@@ -636,6 +641,24 @@ impl<W: Write> Codegen<W> {
                 self.args(args)?;
                 self.out.write_char(')')
             }
+            Expr::MethodCallGeneric {
+                recv,
+                method,
+                type_args,
+                args,
+            } => {
+                self.expr_prec(recv, PREC_CALL)?;
+                write!(self.out, ".{method}::<")?;
+                for (i, ty) in type_args.iter().enumerate() {
+                    if i > 0 {
+                        self.out.write_str(", ")?;
+                    }
+                    self.ty(ty)?;
+                }
+                self.out.write_str(">(")?;
+                self.args(args)?;
+                self.out.write_char(')')
+            }
             Expr::Field { base, field } => {
                 self.expr_prec(base, PREC_CALL)?;
                 write!(self.out, ".{field}")
@@ -698,10 +721,10 @@ impl<W: Write> Codegen<W> {
                 self.expr(else_expr)?;
                 self.out.write_str(" }")
             }
-            Expr::Unsafe(e) => {
-                self.out.write_str("unsafe { ")?;
-                self.expr(e)?;
-                self.out.write_str(" }")
+            Expr::Block(block) => self.expr_block(block),
+            Expr::Unsafe(block) => {
+                self.out.write_str("unsafe ")?;
+                self.expr_block(block)
             }
             Expr::Cast { expr, ty } => {
                 self.expr_prec(expr, PREC_CAST_OPERAND)?;
@@ -833,6 +856,20 @@ impl<W: Write> Codegen<W> {
         }
     }
 
+    fn expr_block(&mut self, block: &Block) -> fmt::Result {
+        if block.stmts.is_empty() {
+            self.out.write_str("{ ")?;
+            if let Some(tail) = &block.tail {
+                self.expr(tail)?;
+            }
+            self.out.write_str(" }")
+        } else {
+            self.out.write_str("{\n")?;
+            self.block(block, 1)?;
+            self.out.write_char('}')
+        }
+    }
+
     fn args(&mut self, args: &[Expr]) -> fmt::Result {
         for (i, arg) in args.iter().enumerate() {
             if i > 0 {
@@ -854,6 +891,22 @@ impl<W: Write> Codegen<W> {
         match ty {
             Type::Prim(p) => self.out.write_str(p.spelling()),
             Type::Named(n) => self.out.write_str(n),
+            Type::Complex(inner) => {
+                self.out.write_str("Complex<")?;
+                self.ty(inner)?;
+                self.out.write_char('>')
+            }
+            Type::Generic { name, args } => {
+                self.out.write_str(name)?;
+                self.out.write_char('<')?;
+                for (i, arg) in args.iter().enumerate() {
+                    if i > 0 {
+                        self.out.write_str(", ")?;
+                    }
+                    self.ty(arg)?;
+                }
+                self.out.write_char('>')
+            }
             Type::Ptr { mutable, inner } => {
                 self.out
                     .write_str(if *mutable { "*mut " } else { "*const " })?;
