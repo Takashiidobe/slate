@@ -1,6 +1,8 @@
 //! Rust cleanup passes that run after faithful CIR lowering.
 
-use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Pattern, Program, RustValue, Stmt};
+use crate::rust_ast::{
+    Block, Expr, FnDef, IndentStmt, Item, Pattern, Program, RustValue, Stmt, UnaryOp,
+};
 
 pub fn apply(program: Program) -> Program {
     Program {
@@ -8,9 +10,6 @@ pub fn apply(program: Program) -> Program {
             .items
             .into_iter()
             .map(|item| match item {
-                // non-function items (preludes, globals, externs, records) carry no
-                // inlinable temps; the remaining text fixups no-op on them.
-                Item::Raw(text) => Item::Raw(apply_text_fixups(&text)),
                 Item::Fn(mut f) => {
                     inline_single_use_temps(&mut f.body);
                     eliminate_param_spills_ast(&mut f);
@@ -22,15 +21,6 @@ pub fn apply(program: Program) -> Program {
             })
             .collect(),
     }
-}
-
-// text passes that are insensitive to expression parenthesization: they match on
-// identifiers and signatures, so they run correctly after the AST inliner has
-// elided parens. slate-04q.13 will migrate these onto the structured body too.
-fn apply_text_fixups(text: &str) -> String {
-    let text = eliminate_param_spills(text);
-    let text = fuse_zero_init(&text);
-    collapse_retval(&text)
 }
 
 fn eliminate_param_spills_ast(f: &mut FnDef) {
@@ -238,37 +228,36 @@ fn expr_ident(expr: &Expr) -> Option<&str> {
     }
 }
 
-// Inline single-use pure temps directly on the statement list. Where the use site
-// is a structured expression the temp's init is spliced as an `Expr` subtree, so
-// precedence-aware rendering elides parens; baked-text (`Raw`) use sites fall back
-// to a conservatively parenthesized textual splice.
+// Inline single-use pure temps directly on the statement list. The temp's init is
+// spliced as an `Expr` subtree into its use site and precedence-aware rendering
+// elides redundant parens.
 fn inline_single_use_temps(body: &mut Vec<IndentStmt>) {
     inline_nested_temps(body);
     loop {
-        let lines: Vec<String> = body.iter().map(|s| s.stmt.render_line()).collect();
         let mut applied = false;
-        for i in 0..lines.len() {
-            let Some(def) = parse_temp_let(&lines[i]) else {
-                continue;
-            };
-            if !is_pure_expr(def.expr) {
-                continue;
-            }
-            let Some(use_index) = single_safe_use(&lines, i, def.name, def.expr) else {
-                continue;
-            };
+        for i in 0..body.len() {
             let Stmt::Let {
-                init: Some(init), ..
+                name,
+                mutable: false,
+                init: Some(init),
+                ..
             } = &body[i].stmt
             else {
                 continue;
             };
+            if !is_temp_name(name) || !is_pure_expr(init) {
+                continue;
+            }
+            let name = name.clone();
             let init = init.clone();
-            let name = def.name.to_string();
-            substitute_in_stmt(&mut body[use_index].stmt, &name, &init);
-            body.remove(i);
-            applied = true;
-            break;
+            let Some(use_index) = single_safe_use(body, i, &name) else {
+                continue;
+            };
+            if body[use_index].stmt.substitute_var(&name, &init) {
+                body.remove(i);
+                applied = true;
+                break;
+            }
         }
         if !applied {
             break;
@@ -305,19 +294,94 @@ fn inline_nested_temps(body: &mut [IndentStmt]) {
     }
 }
 
-fn substitute_in_stmt(stmt: &mut Stmt, name: &str, init: &Expr) {
-    if substitute_in_stmt_structured(stmt, name, init) {
-        return;
+// The temp is inlinable only if, in the statements that follow, it is read exactly
+// once and every statement before that read is another pure temp let (so nothing
+// between the definition and the use can observe a different value). The read must
+// not sit inside a call or method/field receiver, where inlining a bare value can
+// lose a needed type annotation.
+fn single_safe_use(body: &[IndentStmt], def_index: usize, name: &str) -> Option<usize> {
+    let mut found = None;
+    for index in (def_index + 1)..body.len() {
+        let stmt = &body[index].stmt;
+        let uses = stmt_ident_count(stmt, name);
+        if uses > 0 {
+            if uses == 1
+                && found.is_none()
+                && !stmt_contains_call(stmt)
+                && !is_receiver_use(stmt, name)
+            {
+                found = Some(index);
+                continue;
+            }
+            return None;
+        }
+        if found.is_some() {
+            continue;
+        }
+        if !is_pure_temp_let(stmt) {
+            return None;
+        }
     }
-    let line = replace_ident_once(&stmt.render_line(), name, &init.render_spliceable());
-    *stmt = Stmt::Raw(line);
+    found
 }
 
-fn substitute_in_stmt_structured(stmt: &mut Stmt, name: &str, init: &Expr) -> bool {
+fn is_pure_temp_let(stmt: &Stmt) -> bool {
+    matches!(
+        stmt,
+        Stmt::Let { name, init: Some(init), .. } if is_temp_name(name) && is_pure_expr(init)
+    )
+}
+
+// Conservative purity: only value/var arithmetic that has no side effects and no
+// place dependence beyond its named operands. Matches (and never exceeds) what the
+// prior text heuristic inlined, so inlining decisions are unchanged.
+fn is_pure_expr(expr: &Expr) -> bool {
+    match expr {
+        Expr::Value(_) => true,
+        Expr::Lit(s) => s.bytes().all(|b| b.is_ascii_digit()),
+        Expr::Var(_) => true,
+        Expr::Unary { op, expr } => !matches!(op, UnaryOp::Not) && is_pure_expr(expr),
+        Expr::Binary { lhs, rhs, .. } => is_pure_expr(lhs) && is_pure_expr(rhs),
+        _ => false,
+    }
+}
+
+fn stmt_contains_call(stmt: &Stmt) -> bool {
+    let mut found = false;
+    walk_stmt_exprs(stmt, &mut |expr| {
+        found |= matches!(
+            expr,
+            Expr::Call { .. }
+                | Expr::MethodCall { .. }
+                | Expr::MethodCallGeneric { .. }
+                | Expr::Macro { .. }
+        );
+    });
+    found
+}
+
+fn is_receiver_use(stmt: &Stmt, name: &str) -> bool {
+    let mut found = false;
+    walk_stmt_exprs(stmt, &mut |expr| {
+        let receiver = match expr {
+            Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => Some(&**recv),
+            Expr::Field { base, .. } | Expr::TupleField { base, .. } => Some(&**base),
+            _ => None,
+        };
+        if let Some(Expr::Var(v)) = receiver {
+            found |= v.as_str() == name;
+        }
+    });
+    found
+}
+
+fn walk_stmt_exprs(stmt: &Stmt, f: &mut impl FnMut(&Expr)) {
     match stmt {
-        Stmt::Let {
-            init: Some(expr), ..
-        } => expr.substitute_var(name, init),
+        Stmt::Let { init, .. } => {
+            if let Some(expr) = init {
+                walk_expr(expr, f);
+            }
+        }
         Stmt::LetIf {
             cond,
             then_body,
@@ -326,74 +390,151 @@ fn substitute_in_stmt_structured(stmt: &mut Stmt, name: &str, init: &Expr) -> bo
             else_value,
             ..
         } => {
-            let mut changed = cond.substitute_var(name, init);
-            for stmt in then_body.iter_mut().chain(else_body.iter_mut()) {
-                changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
+            walk_expr(cond, f);
+            for stmt in then_body.iter().chain(else_body) {
+                walk_stmt_exprs(&stmt.stmt, f);
             }
-            changed |= then_value.substitute_var(name, init);
-            changed |= else_value.substitute_var(name, init);
-            changed
+            walk_expr(then_value, f);
+            walk_expr(else_value, f);
         }
         Stmt::Assign { target, value } => {
-            let t = target.substitute_var(name, init);
-            let v = value.substitute_var(name, init);
-            t || v
+            walk_expr(target, f);
+            walk_expr(value, f);
         }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.substitute_var(name, init),
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => walk_expr(expr, f),
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
         Stmt::If {
             cond,
             then_body,
             else_body,
         } => {
-            let mut changed = cond.substitute_var(name, init);
-            for stmt in then_body.iter_mut().chain(else_body.iter_mut()) {
-                changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
+            walk_expr(cond, f);
+            for stmt in then_body.iter().chain(else_body) {
+                walk_stmt_exprs(&stmt.stmt, f);
             }
-            changed
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            let mut changed = false;
             for stmt in body {
-                changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
+                walk_stmt_exprs(&stmt.stmt, f);
             }
-            changed
         }
-        Stmt::Unsafe { body } => substitute_in_block_structured(body, name, init),
+        Stmt::Unsafe { body } => walk_block(body, f),
         Stmt::Match { expr, arms } => {
-            let mut changed = expr.substitute_var(name, init);
+            walk_expr(expr, f);
             for arm in arms {
-                for stmt in &mut arm.body {
-                    changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
+                for stmt in &arm.body {
+                    walk_stmt_exprs(&stmt.stmt, f);
                 }
             }
-            changed
         }
-        Stmt::Raw(line) => {
-            let replaced = replace_ident_once(line, name, &init.render_spliceable());
-            if replaced == *line {
-                false
-            } else {
-                *line = replaced;
-                true
-            }
+        Stmt::While { cond, body } => {
+            walk_expr(cond, f);
+            walk_block(body, f);
         }
-        _ => false,
+        Stmt::Block(body) => walk_block(body, f),
     }
 }
 
-fn substitute_in_block_structured(
-    block: &mut crate::rust_ast::Block,
-    name: &str,
-    init: &Expr,
-) -> bool {
-    let mut changed = false;
-    for stmt in &mut block.stmts {
-        changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
+fn walk_block(block: &Block, f: &mut impl FnMut(&Expr)) {
+    for stmt in &block.stmts {
+        walk_stmt_exprs(&stmt.stmt, f);
     }
-    if let Some(tail) = &mut block.tail {
-        changed |= tail.substitute_var(name, init);
+    if let Some(tail) = &block.tail {
+        walk_expr(tail, f);
     }
-    changed
+}
+
+fn walk_expr(expr: &Expr, f: &mut impl FnMut(&Expr)) {
+    f(expr);
+    match expr {
+        Expr::Value(_)
+        | Expr::Lit(_)
+        | Expr::Var(_)
+        | Expr::Raw(_)
+        | Expr::Todo(_)
+        | Expr::AtomicFence { .. } => {}
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => walk_expr(expr, f),
+        Expr::Binary { lhs, rhs, .. } => {
+            walk_expr(lhs, f);
+            walk_expr(rhs, f);
+        }
+        Expr::Call { func, args } => {
+            walk_expr(func, f);
+            for arg in args {
+                walk_expr(arg, f);
+            }
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            walk_expr(recv, f);
+            for arg in args {
+                walk_expr(arg, f);
+            }
+        }
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } => walk_expr(base, f),
+        Expr::ArrayPtr { array, .. } => walk_expr(array, f),
+        Expr::Index { base, index } => {
+            walk_expr(base, f);
+            walk_expr(index, f);
+        }
+        Expr::StructLit { fields, .. } => {
+            for (_, value) in fields {
+                walk_expr(value, f);
+            }
+        }
+        Expr::ArrayLit(elems) => {
+            for elem in elems {
+                walk_expr(elem, f);
+            }
+        }
+        Expr::ArrayRepeat { elem, .. } => walk_expr(elem, f),
+        Expr::Macro { args, .. } => {
+            for arg in args {
+                walk_expr(arg, f);
+            }
+        }
+        Expr::Closure { body, .. } => walk_expr(body, f),
+        Expr::Match { expr, arms } => {
+            walk_expr(expr, f);
+            for arm in arms {
+                walk_expr(&arm.value, f);
+            }
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            walk_expr(cond, f);
+            walk_expr(then_expr, f);
+            walk_expr(else_expr, f);
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => walk_block(block, f),
+        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => walk_expr(ptr, f),
+        Expr::AtomicStore { ptr, value, .. }
+        | Expr::AtomicFetch { ptr, value, .. }
+        | Expr::AtomicSwap { ptr, value, .. } => {
+            walk_expr(ptr, f);
+            walk_expr(value, f);
+        }
+        Expr::AtomicCompareExchange {
+            ptr,
+            expected,
+            desired,
+            ..
+        } => {
+            walk_expr(ptr, f);
+            walk_expr(expected, f);
+            walk_expr(desired, f);
+        }
+        Expr::CopyNonoverlapping { src, dst, .. } => {
+            walk_expr(src, f);
+            walk_expr(dst, f);
+        }
+    }
 }
 
 fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
@@ -474,7 +615,6 @@ fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
         }
         Stmt::While { cond, body } => expr_ident_count(cond, name) + block_ident_count(body, name),
         Stmt::Block(body) => block_ident_count(body, name),
-        Stmt::Raw(line) => ident_count(line, name),
     }
 }
 
@@ -612,480 +752,14 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
     }
 }
 
-/// Folds the CIR parameter-spill prologue into direct parameter bindings.
-///
-/// CIR spills every C parameter into its own stack slot (`let mut a = 0; a = arg0;`)
-/// because C parameters are mutable lvalues. When a spill slot is only ever seeded
-/// from its parameter, the parameter can bind under the slot name directly.
-fn eliminate_param_spills(text: &str) -> String {
-    let trailing_newline = text.ends_with('\n');
-    let mut lines: Vec<String> = text.lines().map(str::to_string).collect();
-
-    let Some(sig_index) = lines.iter().position(|line| is_fn_signature(line)) else {
-        return text.to_string();
-    };
-    let Some((open, close)) = paren_span(&lines[sig_index]) else {
-        return text.to_string();
-    };
-    let params = split_params(&lines[sig_index][open + 1..close]);
-    let param_names: Vec<&str> = params
-        .iter()
-        .filter_map(|p| parse_param(p).map(|(n, _)| n))
-        .collect();
-
-    let mut renames: Vec<(String, String)> = Vec::new();
-    let mut removed: Vec<usize> = Vec::new();
-    let mut claimed_locals: Vec<String> = Vec::new();
-
-    for param in &params {
-        let Some((param_name, param_ty)) = parse_param(param) else {
-            continue;
-        };
-        let Some(fold) = spill_fold(&lines, sig_index, param_name, param_ty, &param_names) else {
-            continue;
-        };
-        if claimed_locals.iter().any(|l| l == fold.local) {
-            continue;
-        }
-        claimed_locals.push(fold.local.to_string());
-        renames.push((
-            param.to_string(),
-            format!("mut {}: {}", fold.local, param_ty),
-        ));
-        removed.push(fold.decl_index);
-        removed.push(fold.store_index);
-    }
-
-    if renames.is_empty() {
-        return text.to_string();
-    }
-
-    let mut new_params: Vec<String> = params.iter().map(|p| p.to_string()).collect();
-    for (old, new) in &renames {
-        if let Some(slot) = new_params.iter_mut().find(|p| p.as_str() == old) {
-            *slot = new.clone();
-        }
-    }
-    let sig = &lines[sig_index];
-    lines[sig_index] = format!(
-        "{}{}{}",
-        &sig[..=open],
-        new_params.join(", "),
-        &sig[close..]
-    );
-
-    removed.sort_unstable();
-    for index in removed.into_iter().rev() {
-        lines.remove(index);
-    }
-
-    let mut out = lines.join("\n");
-    if trailing_newline {
-        out.push('\n');
-    }
-    out
-}
-
-/// Collapses the CIR return-slot boilerplate into a direct `return`.
-///
-/// C returns lower through a dedicated slot: `let mut __retval = 0; ...
-/// __retval = expr; return __retval;`. When the slot is assigned exactly once,
-/// immediately before the return, that store can become `return expr;` and the
-/// slot declaration drops out. `main` returns via `process::exit`, not `return
-/// __retval`, so it is naturally excluded.
-fn collapse_retval(text: &str) -> String {
-    let trailing_newline = text.ends_with('\n');
-    let mut lines: Vec<String> = text.lines().map(str::to_string).collect();
-
-    let Some(ret_index) = lines.iter().position(|l| parse_return_ident(l).is_some()) else {
-        return text.to_string();
-    };
-    let name = parse_return_ident(&lines[ret_index]).unwrap();
-    if ret_index == 0 {
-        return text.to_string();
-    }
-
-    let store_index = ret_index - 1;
-    let Some((lhs, expr)) = parse_assign(&lines[store_index]) else {
-        return text.to_string();
-    };
-    if lhs != name {
-        return text.to_string();
-    }
-
-    // decl + single store + return: exactly three mentions means the slot is
-    // never read or reassigned elsewhere, so folding is safe.
-    let mentions: usize = lines.iter().map(|l| ident_count(l, name)).sum();
-    if mentions != 3 {
-        return text.to_string();
-    }
-
-    let Some(decl_index) = lines
-        .iter()
-        .position(|l| parse_local_decl(l).is_some_and(|(n, _)| n == name))
-    else {
-        return text.to_string();
-    };
-
-    let indent = leading_ws(&lines[ret_index]);
-    lines[ret_index] = format!("{indent}return {expr};");
-    lines.remove(store_index);
-    lines.remove(decl_index);
-
-    let mut out = lines.join("\n");
-    if trailing_newline {
-        out.push('\n');
-    }
-    out
-}
-
-// fuse `let mut c = 0; c = expr;` into `let mut c = expr;` only when the store
-// is the immediately following line, so the placeholder is provably dead.
-fn fuse_zero_init(text: &str) -> String {
-    let trailing_newline = text.ends_with('\n');
-    let mut lines: Vec<String> = text.lines().map(str::to_string).collect();
-
-    loop {
-        let mut changed = false;
-        for i in 0..lines.len().saturating_sub(1) {
-            let Some((name, ty)) = parse_zero_init_decl(&lines[i]) else {
-                continue;
-            };
-            let Some((lhs, expr)) = parse_assign(&lines[i + 1]) else {
-                continue;
-            };
-            if lhs != name || ident_count(&lines[i + 1], name) != 1 {
-                continue;
-            }
-            let indent = leading_ws(&lines[i]);
-            lines[i] = format!("{indent}let mut {name}: {ty} = {expr};");
-            lines.remove(i + 1);
-            changed = true;
-            break;
-        }
-        if !changed {
-            break;
-        }
-    }
-
-    let mut out = lines.join("\n");
-    if trailing_newline {
-        out.push('\n');
-    }
-    out
-}
-
-fn parse_zero_init_decl(line: &str) -> Option<(&str, &str)> {
-    let rest = line.trim_start().strip_prefix("let mut ")?;
-    let (name, rest) = rest.split_once(':')?;
-    let (ty, init) = rest.split_once(" = ")?;
-    let init = init.strip_suffix(';')?.trim();
-    matches!(init, "0" | "0.0" | "false").then_some((name.trim(), ty.trim()))
-}
-
-fn parse_return_ident(line: &str) -> Option<&str> {
-    let inner = line
-        .trim()
-        .strip_prefix("return ")?
-        .strip_suffix(';')?
-        .trim();
-    is_ident(inner).then_some(inner)
-}
-
-fn parse_assign(line: &str) -> Option<(&str, &str)> {
-    let stmt = line.trim().strip_suffix(';')?;
-    let (lhs, rhs) = stmt.split_once('=')?;
-    let lhs = lhs.trim();
-    let rhs = rhs.trim();
-    if is_ident(lhs) && !rhs.starts_with('=') {
-        Some((lhs, rhs))
-    } else {
-        None
-    }
-}
-
-fn leading_ws(line: &str) -> &str {
-    &line[..line.len() - line.trim_start().len()]
-}
-
-struct SpillFold<'a> {
-    local: &'a str,
-    decl_index: usize,
-    store_index: usize,
-}
-
-fn spill_fold<'a>(
-    lines: &'a [String],
-    sig_index: usize,
-    param: &str,
-    param_ty: &str,
-    param_names: &[&str],
-) -> Option<SpillFold<'a>> {
-    let body_uses: usize = lines[sig_index + 1..]
-        .iter()
-        .map(|line| ident_count(line, param))
-        .sum();
-    if body_uses != 1 {
-        return None;
-    }
-
-    let store_index = lines
-        .iter()
-        .enumerate()
-        .skip(sig_index + 1)
-        .find(|(_, line)| parse_spill_store(line).is_some_and(|(_, rhs)| rhs == param))?
-        .0;
-    let (local, _) = parse_spill_store(&lines[store_index])?;
-
-    if param_names.contains(&local) {
-        return None;
-    }
-
-    let decl_index = lines
-        .iter()
-        .enumerate()
-        .take(store_index)
-        .skip(sig_index + 1)
-        .find(|(_, line)| {
-            parse_local_decl(line).is_some_and(|(n, ty)| n == local && ty == param_ty)
-        })?
-        .0;
-
-    // binding the parameter directly must not change what an earlier read of the slot saw.
-    if lines[decl_index + 1..store_index]
-        .iter()
-        .any(|line| ident_count(line, local) > 0)
-    {
-        return None;
-    }
-
-    Some(SpillFold {
-        local,
-        decl_index,
-        store_index,
-    })
-}
-
-fn is_fn_signature(line: &str) -> bool {
-    let mut rest = line.trim_start();
-    for prefix in ["pub ", "unsafe extern \"C\" "] {
-        rest = rest.strip_prefix(prefix).unwrap_or(rest);
-    }
-    rest.starts_with("fn ") && rest.contains('(') && rest.trim_end().ends_with('{')
-}
-
-fn paren_span(line: &str) -> Option<(usize, usize)> {
-    let open = line.find('(')?;
-    let bytes = line.as_bytes();
-    let mut depth = 0i32;
-    for i in open..bytes.len() {
-        match bytes[i] {
-            b'(' => depth += 1,
-            b')' => {
-                depth -= 1;
-                if depth == 0 {
-                    return Some((open, i));
-                }
-            }
-            _ => {}
-        }
-    }
-    None
-}
-
-fn split_params(params: &str) -> Vec<&str> {
-    let bytes = params.as_bytes();
-    let mut depth = 0i32;
-    let mut start = 0usize;
-    let mut out = Vec::new();
-    for (i, &b) in bytes.iter().enumerate() {
-        match b {
-            b'(' | b'[' | b'<' => depth += 1,
-            b')' | b']' | b'>' => depth -= 1,
-            b',' if depth == 0 => {
-                let part = params[start..i].trim();
-                if !part.is_empty() {
-                    out.push(part);
-                }
-                start = i + 1;
-            }
-            _ => {}
-        }
-    }
-    let last = params[start..].trim();
-    if !last.is_empty() {
-        out.push(last);
-    }
-    out
-}
-
-fn parse_param(param: &str) -> Option<(&str, &str)> {
-    if param.starts_with("mut ") {
-        return None;
-    }
-    let (name, ty) = param.split_once(':')?;
-    Some((name.trim(), ty.trim()))
-}
-
-fn parse_spill_store(line: &str) -> Option<(&str, &str)> {
-    let trimmed = line.trim();
-    let stmt = trimmed.strip_suffix(';')?;
-    let (lhs, rhs) = stmt.split_once('=')?;
-    let lhs = lhs.trim();
-    let rhs = rhs.trim();
-    if is_ident(lhs) && is_ident(rhs) {
-        Some((lhs, rhs))
-    } else {
-        None
-    }
-}
-
-fn parse_local_decl(line: &str) -> Option<(&str, &str)> {
-    let rest = line.trim_start().strip_prefix("let mut ")?;
-    let (name, rest) = rest.split_once(':')?;
-    let (ty, _) = rest.split_once('=')?;
-    Some((name.trim(), ty.trim()))
-}
-
 fn is_ident(s: &str) -> bool {
     let bytes = s.as_bytes();
     !bytes.is_empty() && is_ident_start(bytes[0]) && bytes.iter().all(|&b| is_ident_continue(b))
 }
 
-#[derive(Debug, Clone, Copy)]
-struct TempLet<'a> {
-    name: &'a str,
-    expr: &'a str,
-}
-
-fn parse_temp_let(line: &str) -> Option<TempLet<'_>> {
-    let trimmed = line.trim_start();
-    let rest = trimmed.strip_prefix("let ")?;
-    let (name, rest) = rest.split_once(':')?;
-    if !is_temp_name(name) {
-        return None;
-    }
-    let (_, expr) = rest.split_once(" = ")?;
-    Some(TempLet {
-        name,
-        expr: expr.strip_suffix(';')?.trim(),
-    })
-}
-
-fn single_safe_use(lines: &[String], def_index: usize, name: &str, expr: &str) -> Option<usize> {
-    let source_vars = source_vars(expr);
-    let mut found = None;
-
-    for (index, line) in lines.iter().enumerate().skip(def_index + 1) {
-        let uses = ident_count(line, name);
-        if uses > 0 {
-            if uses == 1
-                && found.is_none()
-                && !contains_call(line)
-                && !is_method_receiver_use(line, name)
-            {
-                found = Some(index);
-                continue;
-            }
-            return None;
-        }
-
-        if found.is_some() {
-            continue;
-        }
-
-        if let Some(def) = parse_temp_let(line) {
-            if !is_pure_expr(def.expr) {
-                return None;
-            }
-        } else {
-            return None;
-        }
-
-        if source_vars.iter().any(|var| assigns_to(line, var)) {
-            return None;
-        }
-    }
-
-    found
-}
-
 fn is_temp_name(name: &str) -> bool {
     name.strip_prefix("_v")
         .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|b| b.is_ascii_digit()))
-}
-
-fn is_pure_expr(expr: &str) -> bool {
-    if expr.contains("unsafe")
-        || expr.contains('{')
-        || expr.contains('}')
-        || expr.contains('[')
-        || expr.contains(']')
-        || expr.contains("::")
-        || expr.contains('.')
-        || expr.contains('!')
-        || expr.contains(" as ")
-    {
-        return false;
-    }
-    !contains_call(expr)
-}
-
-fn contains_call(expr: &str) -> bool {
-    let bytes = expr.as_bytes();
-    let mut i = 0;
-    while i < bytes.len() {
-        if is_ident_start(bytes[i]) {
-            let start = i;
-            i += 1;
-            while i < bytes.len() && is_ident_continue(bytes[i]) {
-                i += 1;
-            }
-            let mut j = i;
-            while j < bytes.len() && bytes[j].is_ascii_whitespace() {
-                j += 1;
-            }
-            if j < bytes.len() && bytes[j] == b'(' && &expr[start..i] != "as" {
-                return true;
-            }
-        } else {
-            i += 1;
-        }
-    }
-    false
-}
-
-fn source_vars(expr: &str) -> Vec<&str> {
-    idents(expr)
-        .into_iter()
-        .filter(|ident| !is_temp_name(ident) && *ident != "as")
-        .collect()
-}
-
-fn idents(expr: &str) -> Vec<&str> {
-    let bytes = expr.as_bytes();
-    let mut out = Vec::new();
-    let mut i = 0;
-    while i < bytes.len() {
-        if is_ident_start(bytes[i]) {
-            let start = i;
-            i += 1;
-            while i < bytes.len() && is_ident_continue(bytes[i]) {
-                i += 1;
-            }
-            out.push(&expr[start..i]);
-        } else {
-            i += 1;
-        }
-    }
-    out
-}
-
-fn assigns_to(line: &str, name: &str) -> bool {
-    let trimmed = line.trim_start();
-    trimmed
-        .strip_prefix(name)
-        .is_some_and(|rest| rest.trim_start().starts_with('='))
 }
 
 fn ident_count(line: &str, name: &str) -> usize {
@@ -1106,48 +780,6 @@ fn ident_count(line: &str, name: &str) -> usize {
         }
     }
     count
-}
-
-fn is_method_receiver_use(line: &str, name: &str) -> bool {
-    let bytes = line.as_bytes();
-    let name_bytes = name.as_bytes();
-    let mut i = 0;
-    while i + name_bytes.len() <= bytes.len() {
-        if &bytes[i..i + name_bytes.len()] == name_bytes
-            && (i == 0 || !is_ident_continue(bytes[i - 1]))
-            && (i + name_bytes.len() == bytes.len()
-                || !is_ident_continue(bytes[i + name_bytes.len()]))
-        {
-            let mut j = i + name_bytes.len();
-            while j < bytes.len() && (bytes[j].is_ascii_whitespace() || bytes[j] == b')') {
-                j += 1;
-            }
-            return j < bytes.len() && bytes[j] == b'.';
-        }
-        i += 1;
-    }
-    false
-}
-
-fn replace_ident_once(line: &str, name: &str, expr: &str) -> String {
-    let bytes = line.as_bytes();
-    let name_bytes = name.as_bytes();
-    let mut i = 0;
-    while i + name_bytes.len() <= bytes.len() {
-        if &bytes[i..i + name_bytes.len()] == name_bytes
-            && (i == 0 || !is_ident_continue(bytes[i - 1]))
-            && (i + name_bytes.len() == bytes.len()
-                || !is_ident_continue(bytes[i + name_bytes.len()]))
-        {
-            let mut out = String::new();
-            out.push_str(&line[..i]);
-            out.push_str(expr);
-            out.push_str(&line[i + name_bytes.len()..]);
-            return out;
-        }
-        i += 1;
-    }
-    line.to_string()
 }
 
 fn is_ident_start(b: u8) -> bool {
@@ -1172,6 +804,37 @@ mod tests {
         }
     }
 
+    fn let_mut(name: &str, ty: &str, init: Expr) -> Stmt {
+        Stmt::Let {
+            name: name.to_string(),
+            mutable: true,
+            ty: Some(Type::parse(ty)),
+            init: Some(init),
+        }
+    }
+
+    fn assign(target: &str, value: Expr) -> Stmt {
+        Stmt::Assign {
+            target: Expr::Var(target.into()),
+            value,
+        }
+    }
+
+    fn var(name: &str) -> Expr {
+        Expr::Var(name.into())
+    }
+
+    fn int(n: i64) -> Expr {
+        Expr::Value(RustValue::I64(n))
+    }
+
+    fn call(func: &str, args: Vec<Expr>) -> Expr {
+        Expr::Call {
+            func: Box::new(Expr::Var(func.into())),
+            args,
+        }
+    }
+
     fn bin(op: BinOp, lhs: Expr, rhs: Expr) -> Expr {
         Expr::Binary {
             op,
@@ -1180,13 +843,39 @@ mod tests {
         }
     }
 
-    fn inlined_lines(stmts: Vec<Stmt>) -> Vec<String> {
-        let mut body: Vec<IndentStmt> = stmts
-            .into_iter()
-            .map(|stmt| IndentStmt { depth: 1, stmt })
-            .collect();
-        inline_single_use_temps(&mut body);
-        body.iter().map(|s| s.stmt.render_line()).collect()
+    fn param(name: &str, ty: &str) -> FnParam {
+        FnParam {
+            name: name.into(),
+            mutable: false,
+            ty: Type::parse(ty),
+        }
+    }
+
+    fn func(params: Vec<FnParam>, ret: Option<&str>, stmts: Vec<Stmt>) -> FnDef {
+        FnDef {
+            vis: Visibility::Private,
+            unsafe_extern_c: false,
+            name: "f".into(),
+            params,
+            ret: ret.map(Type::parse),
+            body: stmts
+                .into_iter()
+                .map(|stmt| IndentStmt { depth: 1, stmt })
+                .collect(),
+        }
+    }
+
+    fn emit(f: FnDef) -> String {
+        Program {
+            items: vec![Item::Fn(f)],
+        }
+        .emit()
+    }
+
+    fn inlined(stmts: Vec<Stmt>) -> String {
+        let mut f = func(vec![], None, stmts);
+        inline_single_use_temps(&mut f.body);
+        emit(f)
     }
 
     fn migrated_fn(body: Vec<Stmt>) -> FnDef {
@@ -1279,24 +968,44 @@ fn add(mut a: i32, mut b: i32) -> i32 {
         );
     }
 
+    fn after_body(
+        pass: fn(&mut Vec<IndentStmt>),
+        params: Vec<FnParam>,
+        ret: Option<&str>,
+        stmts: Vec<Stmt>,
+    ) -> String {
+        let mut f = func(params, ret, stmts);
+        pass(&mut f.body);
+        emit(f)
+    }
+
+    fn after_fn(pass: fn(&mut FnDef), f: FnDef) -> String {
+        let mut f = f;
+        pass(&mut f);
+        emit(f)
+    }
+
     #[test]
     fn collapses_retval_store_into_return() {
-        let input = "\
-fn add(mut a: i32, mut b: i32) -> i32 {
-    let mut __retval: i32 = 0;
-    let mut c: i32 = 0;
-    c = ((a) + (b));
-    __retval = c;
-    return __retval;
-}
-";
+        let out = after_body(
+            collapse_retval_ast,
+            vec![],
+            Some("i32"),
+            vec![
+                let_mut("__retval", "i32", int(0)),
+                let_mut("c", "i32", int(0)),
+                assign("c", bin(BinOp::Add, var("a"), var("b"))),
+                assign("__retval", var("c")),
+                Stmt::Return(Some(var("__retval"))),
+            ],
+        );
 
         assert_eq!(
-            collapse_retval(input),
+            out,
             "\
-fn add(mut a: i32, mut b: i32) -> i32 {
+fn f() -> i32 {
     let mut c: i32 = 0;
-    c = ((a) + (b));
+    c = a + b;
     return c;
 }
 "
@@ -1305,94 +1014,64 @@ fn add(mut a: i32, mut b: i32) -> i32 {
 
     #[test]
     fn does_not_collapse_when_retval_read_elsewhere() {
-        let input = "\
-fn f() -> i32 {
-    let mut __retval: i32 = 0;
-    __retval = 1;
-    let mut x: i32 = __retval;
-    __retval = x;
-    return __retval;
-}
-";
-
-        assert_eq!(collapse_retval(input), input);
-    }
-
-    #[test]
-    fn does_not_collapse_when_store_is_not_immediately_before_return() {
-        let input = "\
-fn f() -> i32 {
-    let mut __retval: i32 = 0;
-    __retval = 1;
-    let mut x: i32 = 2;
-    return __retval;
-}
-";
-
-        assert_eq!(collapse_retval(input), input);
-    }
-
-    #[test]
-    fn leaves_process_exit_main_untouched() {
-        let input = "\
-fn main() {
-    let mut __retval: i32 = 0;
-    __retval = 0;
-    let _v0: i32 = __retval;
-    std::process::exit(_v0 as i32);
-}
-";
-
-        assert_eq!(collapse_retval(input), input);
-    }
-
-    #[test]
-    fn folds_parameter_spills_into_direct_bindings() {
-        let input = "\
-fn add(arg0: i32, arg1: i32) -> i32 {
-    let mut a: i32 = 0;
-    let mut b: i32 = 0;
-    let mut __retval: i32 = 0;
-    let mut c: i32 = 0;
-    a = arg0;
-    b = arg1;
-    c = ((a) + (b));
-    __retval = c;
-    return __retval;
-}
-";
+        let stmts = vec![
+            let_mut("__retval", "i32", int(0)),
+            assign("__retval", int(1)),
+            let_mut("x", "i32", var("__retval")),
+            assign("__retval", var("x")),
+            Stmt::Return(Some(var("__retval"))),
+        ];
+        let expected = emit(func(vec![], Some("i32"), stmts.clone()));
 
         assert_eq!(
-            eliminate_param_spills(input),
-            "\
-fn add(mut a: i32, mut b: i32) -> i32 {
-    let mut __retval: i32 = 0;
-    let mut c: i32 = 0;
-    c = ((a) + (b));
-    __retval = c;
-    return __retval;
-}
-"
+            after_body(collapse_retval_ast, vec![], Some("i32"), stmts),
+            expected
         );
     }
 
     #[test]
-    fn folds_pointer_and_float_parameter_spills() {
-        let input = "\
-fn scale(arg0: *mut i32, arg1: f32) -> f32 {
-    let mut slot: *mut i32 = std::ptr::null_mut();
-    let mut factor: f32 = 0.0;
-    slot = arg0;
-    factor = arg1;
-    return factor;
-}
-";
+    fn does_not_collapse_when_store_is_not_immediately_before_return() {
+        let stmts = vec![
+            let_mut("__retval", "i32", int(0)),
+            assign("__retval", int(1)),
+            let_mut("x", "i32", int(2)),
+            Stmt::Return(Some(var("__retval"))),
+        ];
+        let expected = emit(func(vec![], Some("i32"), stmts.clone()));
 
         assert_eq!(
-            eliminate_param_spills(input),
+            after_body(collapse_retval_ast, vec![], Some("i32"), stmts),
+            expected
+        );
+    }
+
+    #[test]
+    fn folds_parameter_spills_into_direct_bindings() {
+        let f = func(
+            vec![param("arg0", "i32"), param("arg1", "i32")],
+            Some("i32"),
+            vec![
+                let_mut("a", "i32", int(0)),
+                let_mut("b", "i32", int(0)),
+                let_mut("__retval", "i32", int(0)),
+                let_mut("c", "i32", int(0)),
+                assign("a", var("arg0")),
+                assign("b", var("arg1")),
+                assign("c", bin(BinOp::Add, var("a"), var("b"))),
+                assign("__retval", var("c")),
+                Stmt::Return(Some(var("__retval"))),
+            ],
+        );
+
+        assert_eq!(
+            after_fn(eliminate_param_spills_ast, f),
             "\
-fn scale(mut slot: *mut i32, mut factor: f32) -> f32 {
-    return factor;
+fn f(mut a: i32, mut b: i32) -> i32 {
+    let mut __retval: i32 = 0;
+    let mut c: i32 = 0;
+    c = a + b;
+    __retval = c;
+    return __retval;
 }
 "
         );
@@ -1400,152 +1079,71 @@ fn scale(mut slot: *mut i32, mut factor: f32) -> f32 {
 
     #[test]
     fn does_not_fold_when_parameter_is_read_again() {
-        let input = "\
-fn f(arg0: i32) -> i32 {
-    let mut a: i32 = 0;
-    a = arg0;
-    return arg0;
-}
-";
+        let f = func(
+            vec![param("arg0", "i32")],
+            Some("i32"),
+            vec![
+                let_mut("a", "i32", int(0)),
+                assign("a", var("arg0")),
+                Stmt::Return(Some(var("arg0"))),
+            ],
+        );
+        let expected = emit(f.clone());
 
-        assert_eq!(eliminate_param_spills(input), input);
+        assert_eq!(after_fn(eliminate_param_spills_ast, f), expected);
     }
 
     #[test]
     fn does_not_fold_when_slot_read_before_spill() {
-        let input = "\
-fn f(arg0: i32) -> i32 {
-    let mut a: i32 = 0;
-    let mut b: i32 = a;
-    a = arg0;
-    return b;
-}
-";
+        let f = func(
+            vec![param("arg0", "i32")],
+            Some("i32"),
+            vec![
+                let_mut("a", "i32", int(0)),
+                let_mut("b", "i32", var("a")),
+                assign("a", var("arg0")),
+                Stmt::Return(Some(var("b"))),
+            ],
+        );
+        let expected = emit(f.clone());
 
-        assert_eq!(eliminate_param_spills(input), input);
+        assert_eq!(after_fn(eliminate_param_spills_ast, f), expected);
     }
 
     #[test]
     fn does_not_fold_when_slot_type_differs_from_parameter() {
-        let input = "\
-fn f(arg0: i32) -> i64 {
-    let mut a: i64 = 0;
-    a = arg0;
-    return a;
-}
-";
-
-        assert_eq!(eliminate_param_spills(input), input);
-    }
-
-    #[test]
-    fn inlines_single_use_scalar_temps() {
-        // structured temp-into-temp splices precedence-render without parens; the
-        // final splice into a `Raw` assignment wraps the compound conservatively.
-        let stmts = vec![
-            Stmt::Raw("let mut a: i32 = 0;".to_string()),
-            temp("_v0", "i32", Expr::Value(RustValue::I64(20))),
-            Stmt::Raw("a = _v0;".to_string()),
-            temp("_v1", "i32", Expr::Value(RustValue::I64(5))),
-            temp("_v2", "i32", Expr::Var("a".to_string().into())),
-            temp(
-                "_v3",
-                "i32",
-                bin(
-                    BinOp::Sub,
-                    Expr::Var("_v2".to_string().into()),
-                    Expr::Var("_v1".to_string().into()),
-                ),
-            ),
-            Stmt::Raw("a = _v3;".to_string()),
-        ];
-
-        assert_eq!(
-            inlined_lines(stmts),
-            vec!["let mut a: i32 = 0;", "a = 20;", "a = (a - 5);"]
-        );
-    }
-
-    #[test]
-    fn does_not_inline_call_results() {
-        let stmts = vec![
-            temp("_v0", "i32", Expr::Raw("f()".to_string())),
-            temp("_v1", "i32", Expr::Var("_v0".to_string().into())),
-        ];
-
-        assert_eq!(
-            inlined_lines(stmts),
-            vec!["let _v0: i32 = f();", "let _v1: i32 = _v0;"]
-        );
-    }
-
-    #[test]
-    fn does_not_cross_side_effecting_statement() {
-        let stmts = vec![
-            temp("_v0", "i32", Expr::Var("a".to_string().into())),
-            Stmt::Raw("unsafe { printf(_v1); };".to_string()),
-            Stmt::Raw("b = _v0;".to_string()),
-        ];
-
-        assert_eq!(
-            inlined_lines(stmts),
-            vec!["let _v0: i32 = a;", "unsafe { printf(_v1); };", "b = _v0;"]
-        );
-    }
-
-    #[test]
-    fn does_not_inline_volatile_or_pointer_intrinsics() {
-        let stmts = vec![
-            temp(
-                "_v0",
-                "i32",
-                Expr::Raw("std::ptr::read_volatile(std::ptr::addr_of!(a))".to_string()),
-            ),
-            Stmt::Raw("b = _v0;".to_string()),
-        ];
-
-        assert_eq!(
-            inlined_lines(stmts),
+        let f = func(
+            vec![param("arg0", "i32")],
+            Some("i64"),
             vec![
-                "let _v0: i32 = std::ptr::read_volatile(std::ptr::addr_of!(a));",
-                "b = _v0;",
-            ]
+                let_mut("a", "i64", int(0)),
+                assign("a", var("arg0")),
+                Stmt::Return(Some(var("a"))),
+            ],
         );
-    }
+        let expected = emit(f.clone());
 
-    #[test]
-    fn does_not_inline_method_receivers_that_need_type_annotations() {
-        let stmts = vec![
-            temp("_v0", "i32", Expr::Value(RustValue::I64(2147483647))),
-            temp("_v1", "i32", Expr::Value(RustValue::I64(1))),
-            Stmt::Raw("let _v2 = (_v0).overflowing_add(_v1);".to_string()),
-        ];
-
-        assert_eq!(
-            inlined_lines(stmts),
-            vec![
-                "let _v0: i32 = 2147483647;",
-                "let _v1: i32 = 1;",
-                "let _v2 = (_v0).overflowing_add(_v1);",
-            ]
-        );
+        assert_eq!(after_fn(eliminate_param_spills_ast, f), expected);
     }
 
     #[test]
     fn fuses_zero_init_with_immediate_first_assignment() {
-        let input = "\
-fn add(mut a: i32, mut b: i32) -> i32 {
-    let mut c: i32 = 0;
-    c = ((a) + (b));
-    return c;
-}
-";
+        let out = after_body(
+            fuse_zero_init_ast,
+            vec![],
+            Some("i32"),
+            vec![
+                let_mut("c", "i32", int(0)),
+                assign("c", bin(BinOp::Add, var("a"), var("b"))),
+                Stmt::Return(Some(var("c"))),
+            ],
+        );
 
         assert_eq!(
-            fuse_zero_init(input),
+            out,
             "\
-fn add(mut a: i32, mut b: i32) -> i32 {
-    let mut c: i32 = ((a) + (b));
+fn f() -> i32 {
+    let mut c: i32 = a + b;
     return c;
 }
 "
@@ -1554,62 +1152,198 @@ fn add(mut a: i32, mut b: i32) -> i32 {
 
     #[test]
     fn does_not_fuse_when_first_assignment_reads_the_placeholder() {
-        let input = "\
-fn f() -> i32 {
-    let mut c: i32 = 0;
-    c = ((c) + (1));
-    return c;
-}
-";
+        let stmts = vec![
+            let_mut("c", "i32", int(0)),
+            assign("c", bin(BinOp::Add, var("c"), int(1))),
+            Stmt::Return(Some(var("c"))),
+        ];
+        let expected = emit(func(vec![], Some("i32"), stmts.clone()));
 
-        assert_eq!(fuse_zero_init(input), input);
+        assert_eq!(
+            after_body(fuse_zero_init_ast, vec![], Some("i32"), stmts),
+            expected
+        );
     }
 
     #[test]
     fn does_not_fuse_when_assignment_is_not_immediate() {
-        let input = "\
-fn f(cond: bool) -> i32 {
-    let mut c: i32 = 0;
-    if cond {
-        c = 1;
-    }
-    return c;
-}
-";
+        let stmts = vec![
+            let_mut("c", "i32", int(0)),
+            Stmt::If {
+                cond: var("cond"),
+                then_body: vec![IndentStmt {
+                    depth: 2,
+                    stmt: assign("c", int(1)),
+                }],
+                else_body: vec![],
+            },
+            Stmt::Return(Some(var("c"))),
+        ];
+        let expected = emit(func(
+            vec![param("cond", "bool")],
+            Some("i32"),
+            stmts.clone(),
+        ));
 
-        assert_eq!(fuse_zero_init(input), input);
+        assert_eq!(
+            after_body(
+                fuse_zero_init_ast,
+                vec![param("cond", "bool")],
+                Some("i32"),
+                stmts
+            ),
+            expected
+        );
     }
 
     #[test]
     fn does_not_fuse_non_placeholder_initializers() {
-        let input = "\
-fn f() -> i32 {
-    let mut c: i32 = 7;
-    c = 1;
-    return c;
-}
-";
+        let stmts = vec![
+            let_mut("c", "i32", int(7)),
+            assign("c", int(1)),
+            Stmt::Return(Some(var("c"))),
+        ];
+        let expected = emit(func(vec![], Some("i32"), stmts.clone()));
 
-        assert_eq!(fuse_zero_init(input), input);
+        assert_eq!(
+            after_body(fuse_zero_init_ast, vec![], Some("i32"), stmts),
+            expected
+        );
+    }
+
+    #[test]
+    fn inlines_single_use_scalar_temps() {
+        let out = inlined(vec![
+            let_mut("a", "i32", int(0)),
+            temp("_v0", "i32", int(20)),
+            assign("a", var("_v0")),
+            temp("_v1", "i32", int(5)),
+            temp("_v2", "i32", var("a")),
+            temp("_v3", "i32", bin(BinOp::Sub, var("_v2"), var("_v1"))),
+            assign("a", var("_v3")),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let mut a: i32 = 0;
+    a = 20;
+    a = a - 5;
+}
+"
+        );
+    }
+
+    #[test]
+    fn does_not_inline_call_results() {
+        let out = inlined(vec![
+            temp("_v0", "i32", call("g", vec![])),
+            temp("_v1", "i32", var("_v0")),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let _v0: i32 = g();
+    let _v1: i32 = _v0;
+}
+"
+        );
+    }
+
+    #[test]
+    fn does_not_cross_side_effecting_statement() {
+        let out = inlined(vec![
+            temp("_v0", "i32", var("a")),
+            Stmt::Expr(call("printf", vec![var("_v1")])),
+            assign("b", var("_v0")),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let _v0: i32 = a;
+    printf(_v1);
+    b = _v0;
+}
+"
+        );
+    }
+
+    #[test]
+    fn does_not_inline_impure_intrinsics() {
+        let out = inlined(vec![
+            temp(
+                "_v0",
+                "i32",
+                call("std::ptr::read_volatile", vec![var("p")]),
+            ),
+            assign("b", var("_v0")),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let _v0: i32 = std::ptr::read_volatile(p);
+    b = _v0;
+}
+"
+        );
+    }
+
+    #[test]
+    fn does_not_inline_method_receivers_that_need_type_annotations() {
+        let out = inlined(vec![
+            temp("_v0", "i32", int(2147483647)),
+            temp("_v1", "i32", int(1)),
+            Stmt::Let {
+                name: "_v2".into(),
+                mutable: false,
+                ty: None,
+                init: Some(Expr::MethodCall {
+                    recv: Box::new(var("_v0")),
+                    method: "overflowing_add".into(),
+                    args: vec![var("_v1")],
+                }),
+            },
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let _v0: i32 = 2147483647;
+    let _v1: i32 = 1;
+    let _v2 = _v0.overflowing_add(_v1);
+}
+"
+        );
     }
 
     #[test]
     fn does_not_inline_call_arguments_that_need_type_annotations() {
-        let stmts = vec![
-            temp(
-                "_v0",
-                "i64",
-                Expr::Value(RustValue::I64(9223372036854775807)),
-            ),
-            Stmt::Raw("let _v1: i32 = unsafe { printf(_v0) };".to_string()),
-        ];
+        let out = inlined(vec![
+            temp("_v0", "i64", int(9223372036854775807)),
+            Stmt::Let {
+                name: "_v1".into(),
+                mutable: false,
+                ty: Some(Type::parse("i32")),
+                init: Some(call("printf", vec![var("_v0")])),
+            },
+        ]);
 
         assert_eq!(
-            inlined_lines(stmts),
-            vec![
-                "let _v0: i64 = 9223372036854775807;",
-                "let _v1: i32 = unsafe { printf(_v0) };",
-            ]
+            out,
+            "\
+fn f() {
+    let _v0: i64 = 9223372036854775807;
+    let _v1: i32 = printf(_v0);
+}
+"
         );
     }
 }

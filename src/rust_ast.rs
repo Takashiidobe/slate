@@ -388,7 +388,6 @@ pub enum Stmt {
         body: Block,
     },
     Block(Block),
-    Raw(String),
 }
 
 #[derive(Debug, Clone)]
@@ -798,18 +797,14 @@ impl Program {
 }
 
 impl Stmt {
-    pub fn render_line(&self) -> String {
-        crate::codegen::stmt_line_to_string(self)
+    pub fn substitute_var(&mut self, name: &str, replacement: &Expr) -> bool {
+        stmt_substitute_var(self, name, replacement)
     }
 }
 
 impl Expr {
     pub fn render(&self) -> String {
         crate::codegen::expr_to_string(self)
-    }
-
-    pub fn render_spliceable(&self) -> String {
-        crate::codegen::expr_spliceable_to_string(self)
     }
 
     pub fn substitute_var(&mut self, name: &str, replacement: &Expr) -> bool {
@@ -974,7 +969,7 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
             t || v
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.substitute_var(name, replacement),
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) | Stmt::Raw(_) => false,
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
         Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             let mut changed = false;
             for stmt in body {
