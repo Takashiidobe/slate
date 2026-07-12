@@ -2275,7 +2275,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(src) = op.operands.first() else {
             return;
         };
-        // array-decay of a `va_list` local keeps referring to the same slot.
         if let Some(slot) = self.va_places.get(src).cloned() {
             self.va_places.insert(result.clone(), slot.clone());
             self.values
@@ -2288,9 +2287,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .next()
             .unwrap_or("");
         let value = match self.values.get(src).cloned() {
-            // array-to-pointer decay of a numeric/wide-string const global: render
-            // the elements as a (statically promoted) array literal and take its
-            // pointer, since the global has no Rust name of its own.
             Some(Val::Global(name))
                 if result_ty.starts_with("!cir.ptr<")
                     && self.parent.const_arrays.contains_key(&name) =>
@@ -2298,15 +2294,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 let elems = &self.parent.const_arrays[&name];
                 let (elem_ty, len) = cir_ptr_inner(operand_ty)
                     .and_then(parse_cir_array_type)
-                    .map_or(("i32".to_string(), elems.len()), |(elem, len)| {
-                        (self.parent.rust_type(&elem).render(), len as usize)
+                    .map_or((Type::Prim(Prim::I32), elems.len()), |(elem, len)| {
+                        (self.parent.rust_type(&elem), len as usize)
                     });
-                // annotate one element so the array element type can't default wrong
                 let mut typed: Vec<Expr> = elems.clone();
                 if let Some(first) = typed.first_mut() {
                     *first = Expr::Cast {
                         expr: Box::new(first.clone()),
-                        ty: Type::Named(elem_ty),
+                        ty: elem_ty,
                     };
                 }
                 let ptr_ty = self.parent.rust_type(result_ty);
@@ -2315,7 +2310,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         recv: Box::new(render_array_literal_expr(
                             &typed,
                             len,
-                            Expr::Lit("0".into()),
+                            Expr::Value(RustValue::Int(0)),
                         )),
                         method: "as_ptr".into(),
                         args: vec![],
@@ -2351,7 +2346,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         base: Box::new(self.operand_expr(src)),
                         field: "0".into(),
                     }),
-                    rhs: Box::new(Expr::Lit("0.0".into())),
+                    rhs: Box::new(Expr::Value(RustValue::Float(0.0))),
                 })
             }
             _ if is_long_double(operand_ty) && !is_long_double(result_ty) => {
@@ -4387,7 +4382,17 @@ fn standard_record_default_expr(ty: &str) -> Option<Expr> {
 }
 
 fn zero_for_cir_type(ty: &str) -> Expr {
-    default_value_expr(&rust_type(ty).render())
+    default_value_for_type(&rust_type(ty))
+}
+
+fn default_value_for_type(ty: &Type) -> Expr {
+    match ty {
+        Type::Prim(Prim::Bool) => Expr::Value(RustValue::Bool(false)),
+        Type::Prim(Prim::F32 | Prim::F64) => Expr::Value(RustValue::Float(0.0)),
+        Type::Ptr { .. } => Expr::Value(RustValue::NullPtr),
+        Type::FnPtr { .. } => Expr::Value(RustValue::None),
+        _ => Expr::Value(RustValue::Int(0)),
+    }
 }
 
 fn render_array_literal_expr(elems: &[Expr], len: usize, default: Expr) -> Expr {

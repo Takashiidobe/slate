@@ -883,6 +883,15 @@ impl<W: Write> Codegen<W> {
     fn value(&mut self, value: &RustValue) -> fmt::Result {
         match value {
             RustValue::Int(n) => write!(self.out, "{n}"),
+            RustValue::Float(n) => {
+                if n.fract() == 0.0 {
+                    write!(self.out, "{n:.1}")
+                } else {
+                    write!(self.out, "{n}")
+                }
+            }
+            RustValue::Bool(b) => write!(self.out, "{b}"),
+            RustValue::None => self.out.write_str("None"),
             RustValue::NullPtr => self.out.write_str("std::ptr::null_mut()"),
         }
     }
