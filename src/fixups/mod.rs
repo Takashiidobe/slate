@@ -217,10 +217,8 @@ fn for_nested_body(stmt: &mut Stmt, f: fn(&mut Vec<IndentStmt>)) {
             f(then_body);
             f(else_body);
         }
-        Stmt::Loop { body, .. }
-        | Stmt::Scope { body }
-        | Stmt::LabeledBlock { body, .. }
-        | Stmt::Unsafe { body } => f(body),
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => f(body),
+        Stmt::Unsafe { body } => f(&mut body.stmts),
         _ => {}
     }
 }
@@ -295,12 +293,10 @@ fn inline_nested_temps(body: &mut [IndentStmt]) {
                 inline_single_use_temps(then_body);
                 inline_single_use_temps(else_body);
             }
-            Stmt::Loop { body, .. }
-            | Stmt::Scope { body }
-            | Stmt::LabeledBlock { body, .. }
-            | Stmt::Unsafe { body } => {
+            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
                 inline_single_use_temps(body);
             }
+            Stmt::Unsafe { body } => inline_single_use_temps(&mut body.stmts),
             _ => {}
         }
     }
@@ -352,16 +348,14 @@ fn substitute_in_stmt_structured(stmt: &mut Stmt, name: &str, init: &Expr) -> bo
             }
             changed
         }
-        Stmt::Loop { body, .. }
-        | Stmt::Scope { body }
-        | Stmt::LabeledBlock { body, .. }
-        | Stmt::Unsafe { body } => {
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             let mut changed = false;
             for stmt in body {
                 changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
             }
             changed
         }
+        Stmt::Unsafe { body } => substitute_in_block_structured(body, name, init),
         Stmt::Match { expr, arms } => {
             let mut changed = expr.substitute_var(name, init);
             for arm in arms {
@@ -382,6 +376,21 @@ fn substitute_in_stmt_structured(stmt: &mut Stmt, name: &str, init: &Expr) -> bo
         }
         _ => false,
     }
+}
+
+fn substitute_in_block_structured(
+    block: &mut crate::rust_ast::Block,
+    name: &str,
+    init: &Expr,
+) -> bool {
+    let mut changed = false;
+    for stmt in &mut block.stmts {
+        changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
+    }
+    if let Some(tail) = &mut block.tail {
+        changed |= tail.substitute_var(name, init);
+    }
+    changed
 }
 
 fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
@@ -439,10 +448,11 @@ fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
                     .map(|stmt| stmt_ident_count(&stmt.stmt, name))
                     .sum::<usize>()
         }
-        Stmt::Scope { body } | Stmt::Unsafe { body } => body
+        Stmt::Scope { body } => body
             .iter()
             .map(|stmt| stmt_ident_count(&stmt.stmt, name))
             .sum(),
+        Stmt::Unsafe { body } => block_ident_count(body, name),
         Stmt::Match { expr, arms } => {
             expr_ident_count(expr, name)
                 + arms
@@ -457,21 +467,22 @@ fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
                     })
                     .sum::<usize>()
         }
-        Stmt::While { cond, body } => {
-            expr_ident_count(cond, name)
-                + body
-                    .stmts
-                    .iter()
-                    .map(|stmt| stmt_ident_count(stmt, name))
-                    .sum::<usize>()
-        }
-        Stmt::Block(body) => body
-            .stmts
-            .iter()
-            .map(|stmt| stmt_ident_count(stmt, name))
-            .sum(),
+        Stmt::While { cond, body } => expr_ident_count(cond, name) + block_ident_count(body, name),
+        Stmt::Block(body) => block_ident_count(body, name),
         Stmt::Raw(line) => ident_count(line, name),
     }
+}
+
+fn block_ident_count(block: &crate::rust_ast::Block, name: &str) -> usize {
+    block
+        .stmts
+        .iter()
+        .map(|stmt| stmt_ident_count(&stmt.stmt, name))
+        .sum::<usize>()
+        + block
+            .tail
+            .as_ref()
+            .map_or(0, |tail| expr_ident_count(tail, name))
 }
 
 fn expr_ident_count(expr: &Expr, name: &str) -> usize {
@@ -483,8 +494,8 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. }
-        | Expr::Unsafe(expr) => expr_ident_count(expr, name),
+        | Expr::Transmute { expr, .. } => expr_ident_count(expr, name),
+        Expr::Block(block) | Expr::Unsafe(block) => block_ident_count(block, name),
         Expr::CopyNonoverlapping { src, dst, .. } => {
             expr_ident_count(src, name) + expr_ident_count(dst, name)
         }
@@ -514,6 +525,13 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
                     .sum::<usize>()
         }
         Expr::MethodCall { recv, args, .. } => {
+            expr_ident_count(recv, name)
+                + args
+                    .iter()
+                    .map(|arg| expr_ident_count(arg, name))
+                    .sum::<usize>()
+        }
+        Expr::MethodCallGeneric { recv, args, .. } => {
             expr_ident_count(recv, name)
                 + args
                     .iter()

@@ -268,7 +268,8 @@ pub struct Param {
 
 #[derive(Debug, Default, Clone)]
 pub struct Block {
-    pub stmts: Vec<Stmt>,
+    pub stmts: Vec<IndentStmt>,
+    pub tail: Option<Box<Expr>>,
 }
 
 #[derive(Debug, Clone)]
@@ -296,7 +297,7 @@ pub enum Stmt {
     Expr(Expr),
     Return(Option<Expr>),
     Unsafe {
-        body: Vec<IndentStmt>,
+        body: Block,
     },
     If {
         cond: Expr,
@@ -366,6 +367,12 @@ pub enum Expr {
         method: String,
         args: Vec<Expr>,
     },
+    MethodCallGeneric {
+        recv: Box<Expr>,
+        method: String,
+        type_args: Vec<Type>,
+        args: Vec<Expr>,
+    },
     /// A field or tuple-index access, e.g. `pair.0` or `s.len`.
     Field {
         base: Box<Expr>,
@@ -398,7 +405,8 @@ pub enum Expr {
         then_expr: Box<Expr>,
         else_expr: Box<Expr>,
     },
-    Unsafe(Box<Expr>),
+    Block(Box<Block>),
+    Unsafe(Box<Block>),
     Cast {
         expr: Box<Expr>,
         ty: Type,
@@ -468,8 +476,13 @@ pub enum Expr {
 #[derive(Debug, Clone)]
 pub enum Type {
     Prim(Prim),
-    /// Records, `LongDouble`, `Complex<f64>`, `libc::FILE`, and other opaque spellings.
+    /// Records, `LongDouble`, `libc::FILE`, and other opaque spellings.
     Named(String),
+    Complex(Box<Type>),
+    Generic {
+        name: String,
+        args: Vec<Type>,
+    },
     Ptr {
         mutable: bool,
         inner: Box<Type>,
@@ -675,8 +688,17 @@ impl Expr {
             | Expr::Cast { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
-            | Expr::Transmute { expr, .. }
-            | Expr::Unsafe(expr) => expr.substitute_var(name, replacement),
+            | Expr::Transmute { expr, .. } => expr.substitute_var(name, replacement),
+            Expr::Block(block) | Expr::Unsafe(block) => {
+                let mut changed = false;
+                for stmt in &mut block.stmts {
+                    changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                }
+                if let Some(tail) = &mut block.tail {
+                    changed |= tail.substitute_var(name, replacement);
+                }
+                changed
+            }
             Expr::CopyNonoverlapping { src, dst, .. } => {
                 let s = src.substitute_var(name, replacement);
                 let d = dst.substitute_var(name, replacement);
@@ -717,6 +739,13 @@ impl Expr {
                 changed
             }
             Expr::MethodCall { recv, args, .. } => {
+                let mut changed = recv.substitute_var(name, replacement);
+                for arg in args {
+                    changed |= arg.substitute_var(name, replacement);
+                }
+                changed
+            }
+            Expr::MethodCallGeneric { recv, args, .. } => {
                 let mut changed = recv.substitute_var(name, replacement);
                 for arg in args {
                     changed |= arg.substitute_var(name, replacement);
@@ -768,6 +797,102 @@ impl Expr {
                 let e = else_expr.substitute_var(name, replacement);
                 c || t || e
             }
+        }
+    }
+}
+
+fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool {
+    match stmt {
+        Stmt::Let {
+            init: Some(expr), ..
+        } => expr.substitute_var(name, replacement),
+        Stmt::Let { init: None, .. } => false,
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            let mut changed = cond.substitute_var(name, replacement);
+            for stmt in then_body.iter_mut().chain(else_body.iter_mut()) {
+                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+            }
+            changed |= then_value.substitute_var(name, replacement);
+            changed |= else_value.substitute_var(name, replacement);
+            changed
+        }
+        Stmt::Assign { target, value } => {
+            let t = target.substitute_var(name, replacement);
+            let v = value.substitute_var(name, replacement);
+            t || v
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.substitute_var(name, replacement),
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) | Stmt::Raw(_) => false,
+        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            let mut changed = false;
+            for stmt in body {
+                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+            }
+            changed
+        }
+        Stmt::Unsafe { body } => {
+            let mut changed = false;
+            for stmt in &mut body.stmts {
+                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+            }
+            if let Some(tail) = &mut body.tail {
+                changed |= tail.substitute_var(name, replacement);
+            }
+            changed
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            let mut changed = cond.substitute_var(name, replacement);
+            for stmt in then_body.iter_mut().chain(else_body.iter_mut()) {
+                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+            }
+            changed
+        }
+        Stmt::Loop { body, .. } => {
+            let mut changed = false;
+            for stmt in body {
+                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+            }
+            changed
+        }
+        Stmt::Match { expr, arms } => {
+            let mut changed = expr.substitute_var(name, replacement);
+            for arm in arms {
+                for stmt in &mut arm.body {
+                    changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                }
+            }
+            changed
+        }
+        Stmt::While { cond, body } => {
+            let mut changed = cond.substitute_var(name, replacement);
+            for stmt in &mut body.stmts {
+                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+            }
+            if let Some(tail) = &mut body.tail {
+                changed |= tail.substitute_var(name, replacement);
+            }
+            changed
+        }
+        Stmt::Block(body) => {
+            let mut changed = false;
+            for stmt in &mut body.stmts {
+                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+            }
+            if let Some(tail) = &mut body.tail {
+                changed |= tail.substitute_var(name, replacement);
+            }
+            changed
         }
     }
 }
