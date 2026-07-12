@@ -218,6 +218,26 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(rejected_rust.contains("fn printf("));
     assert!(rejected_rust.contains("unsafe { printf("));
     assert!(!rejected_rust.contains("println!(\"{}\""));
+
+    let float_c = fixtures_dir().join("printf_float.c");
+    let float_generated = tmp.join("printf_float.generated.rs");
+    support::translate(&float_c, &float_generated).expect("translate printf float fixture");
+    let float_rust =
+        std::fs::read_to_string(&float_generated).expect("read generated printf float rust");
+    assert!(float_rust.contains("println!(\"{:.6} {:.2} {:.0}\","));
+    assert!(float_rust.contains("print!(\"tail {:.3}\","));
+    assert!(!float_rust.contains("fn printf("));
+    assert!(!float_rust.contains("unsafe { printf("));
+
+    let float_rejected_c = fixtures_dir().join("printf_float_rejected.c");
+    let float_rejected_generated = tmp.join("printf_float_rejected.generated.rs");
+    support::translate(&float_rejected_c, &float_rejected_generated)
+        .expect("translate rejected printf float fixture");
+    let float_rejected_rust = std::fs::read_to_string(&float_rejected_generated)
+        .expect("read generated rejected printf float rust");
+    assert!(float_rejected_rust.contains("fn printf("));
+    assert!(float_rejected_rust.contains("unsafe { printf("));
+    assert!(!float_rejected_rust.contains("println!(\"{:."));
 }
 
 #[test]
