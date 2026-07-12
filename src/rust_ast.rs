@@ -356,6 +356,11 @@ pub enum Stmt {
         target: Expr,
         value: Expr,
     },
+    CompoundAssign {
+        target: Expr,
+        op: BinOp,
+        value: Expr,
+    },
     Expr(Expr),
     Return(Option<Expr>),
     Unsafe {
@@ -968,7 +973,7 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
             changed |= else_value.substitute_var(name, replacement);
             changed
         }
-        Stmt::Assign { target, value } => {
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
             let t = target.substitute_var(name, replacement);
             let v = value.substitute_var(name, replacement);
             t || v
