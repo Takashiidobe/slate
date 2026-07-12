@@ -2306,14 +2306,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
                 let ptr_ty = self.parent.rust_type(result_ty);
                 Val::Expr(Expr::Cast {
-                    expr: Box::new(Expr::MethodCall {
-                        recv: Box::new(render_array_literal_expr(
+                    expr: Box::new(Expr::ArrayPtr {
+                        array: Box::new(render_array_literal_expr(
                             &typed,
                             len,
                             Expr::Value(RustValue::Int(0)),
                         )),
-                        method: "as_ptr".into(),
-                        args: vec![],
+                        mutable: false,
                     }),
                     ty: ptr_ty,
                 })
@@ -2324,10 +2323,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .get(src)
                 .is_some_and(|ty| parse_rust_array_type(ty).is_some()) =>
             {
-                Val::Expr(Expr::MethodCall {
-                    recv: Box::new(self.operand_expr(src)),
-                    method: "as_mut_ptr".into(),
-                    args: vec![],
+                Val::Expr(Expr::ArrayPtr {
+                    array: Box::new(self.operand_expr(src)),
+                    mutable: true,
                 })
             }
             _ if is_long_double(result_ty) && !is_long_double(operand_ty) => {
@@ -2342,18 +2340,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             _ if is_long_double(operand_ty) && result_ty == "!cir.bool" => {
                 Val::Expr(Expr::Binary {
                     op: BinOp::Ne,
-                    lhs: Box::new(Expr::Field {
+                    lhs: Box::new(Expr::TupleField {
                         base: Box::new(self.operand_expr(src)),
-                        field: "0".into(),
+                        index: 0,
                     }),
                     rhs: Box::new(Expr::Value(RustValue::Float(0.0))),
                 })
             }
             _ if is_long_double(operand_ty) && !is_long_double(result_ty) => {
                 Val::Expr(Expr::Cast {
-                    expr: Box::new(Expr::Field {
+                    expr: Box::new(Expr::TupleField {
                         base: Box::new(self.operand_expr(src)),
-                        field: "0".into(),
+                        index: 0,
                     }),
                     ty: self.parent.rust_type(result_ty),
                 })

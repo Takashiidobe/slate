@@ -539,6 +539,8 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
                     .sum::<usize>()
         }
         Expr::Field { base, field } => expr_ident_count(base, name) + ident_count(field, name),
+        Expr::TupleField { base, .. } => expr_ident_count(base, name),
+        Expr::ArrayPtr { array, .. } => expr_ident_count(array, name),
         Expr::Index { base, index } => expr_ident_count(base, name) + expr_ident_count(index, name),
         Expr::StructLit {
             name: type_name,

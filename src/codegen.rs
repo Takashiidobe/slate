@@ -38,6 +38,8 @@ fn expr_prec(expr: &Expr) -> u8 {
         | Expr::MethodCall { .. }
         | Expr::MethodCallGeneric { .. }
         | Expr::Field { .. }
+        | Expr::TupleField { .. }
+        | Expr::ArrayPtr { .. }
         | Expr::Index { .. } => PREC_CALL,
         _ => PREC_ATOM,
     }
@@ -662,6 +664,18 @@ impl<W: Write> Codegen<W> {
             Expr::Field { base, field } => {
                 self.expr_prec(base, PREC_CALL)?;
                 write!(self.out, ".{field}")
+            }
+            Expr::TupleField { base, index } => {
+                self.expr_prec(base, PREC_CALL)?;
+                write!(self.out, ".{index}")
+            }
+            Expr::ArrayPtr { array, mutable } => {
+                self.expr_prec(array, PREC_CALL)?;
+                self.out.write_str(if *mutable {
+                    ".as_mut_ptr()"
+                } else {
+                    ".as_ptr()"
+                })
             }
             Expr::Index { base, index } => {
                 self.expr_prec(base, PREC_CALL)?;
