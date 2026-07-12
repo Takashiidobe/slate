@@ -62,10 +62,12 @@ attrs, regions, result_type, loc }`. It is deliberately not a per-op typed
    source locations and function names. This is not a handwritten C parser; it is
    Clang's semantic AST reduced to the facts Slate currently needs.
 
-`rust_ast.rs` exists as a small output-side tree and printer, but the current V0
-lowerer emits raw Rust item strings for the covered subset. That is acceptable
-for the baseline, but Rust fixups should move toward operating on structured Rust
-nodes rather than text.
+`rust_ast.rs` is the output-side tree and printer, and the lowerer builds it
+directly: every handler emits structured `Item`/`Stmt`/`Expr` nodes that
+`codegen.rs` renders once, never Rust source strings. Keep that output as strongly
+typed as possible — a new enum variant is preferred over a `String` bridge, so the
+compiler enforces exhaustiveness and fixups can pattern-match the shape. Fixups
+operate on the same tree (AST-to-AST only).
 
 ## Shared context
 
