@@ -198,11 +198,6 @@ enum Val {
 }
 
 impl Val {
-    // bridge for the still-textual constructors: wrap a rendered string as a leaf.
-    fn expr(s: impl Into<String>) -> Val {
-        Val::Expr(Expr::Raw(s.into()))
-    }
-
     fn to_expr(&self, strings: &BTreeMap<String, Vec<u8>>) -> Expr {
         match self {
             Val::Expr(e) => e.clone(),
@@ -680,7 +675,8 @@ impl<'a> Lowerer<'a> {
             f.emit_line(&line);
         }
         for (arg, _) in &entry.args {
-            f.values.insert(arg.clone(), Val::expr(arg.clone()));
+            f.values
+                .insert(arg.clone(), Val::Expr(Expr::Var(arg.clone())));
         }
         let body = op.regions.first().unwrap();
         if body.blocks.len() > 1 {
@@ -1108,7 +1104,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .ctx
                     .diagnostics
                     .warn(format!("lower: unsupported CIR op {other}"), op.loc.clone());
-                self.emit_expr(format!("todo!({other:?})"));
+                self.emit_todo(other);
             }
         }
     }
@@ -1401,11 +1397,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         if let Some(b) = parse_cir_bool(raw) {
-            self.materialize(result, b.to_string(), result_ty);
+            self.materialize_expr(result, Expr::Lit(b.to_string()), result_ty);
             return;
         }
         if raw.starts_with("#cir.ptr<null>") {
-            self.materialize(result, "std::ptr::null_mut()".into(), result_ty);
+            self.materialize_expr(result, Expr::Raw("std::ptr::null_mut()".into()), result_ty);
             return;
         }
         let value = parse_cir_int(raw)
@@ -1417,7 +1413,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             value
         };
-        self.materialize(result, value, result_ty);
+        self.materialize_expr(result, Expr::Lit(value), result_ty);
     }
 
     fn lower_complex_create(&mut self, op: &Op) {
@@ -1491,7 +1487,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         if op.regions.len() < 2 {
-            self.emit_expr("todo!(\"cir.ternary\")".into());
+            self.emit_todo("cir.ternary");
             return;
         }
         let cond = self.operand_expr(cond);
@@ -2247,7 +2243,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         // array-decay of a `va_list` local keeps referring to the same slot.
         if let Some(slot) = self.va_places.get(src).cloned() {
             self.va_places.insert(result.clone(), slot.clone());
-            self.values.insert(result.clone(), Val::expr(slot));
+            self.values
+                .insert(result.clone(), Val::Expr(Expr::Var(slot)));
             return;
         }
         let result_ty = op_result_type(op).unwrap_or("");
@@ -2341,10 +2338,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             // fn pointer: `as` cannot target Option<fn(..)>, so reinterpret the bits.
             _ if result_ty.starts_with("!cir.ptr<!cir.func<") => {
                 let ptr_ty = self.parent.rust_type(result_ty);
-                Val::expr(format!(
+                Val::Expr(Expr::Raw(format!(
                     "unsafe {{ std::mem::transmute::<usize, {ptr_ty}>(({}) as usize) }}",
                     self.render_operand(src)
-                ))
+                )))
             }
             _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(Expr::Binary {
                 op: "!=".into(),
@@ -2465,7 +2462,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.emit_line(&format!(
                     "unsafe {{ __slate_strtold({a0} as *mut i8, {a1} as *mut *mut i8, std::ptr::addr_of_mut!({name})); }}"
                 ));
-                self.values.insert(result.to_string(), Val::expr(name));
+                self.values
+                    .insert(result.to_string(), Val::Expr(Expr::Var(name)));
             }
             return;
         }
@@ -2483,9 +2481,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 a0, a1, a2
             );
             if let Some(result) = op.results.first() {
-                self.materialize(result, expr, op_result_type(op));
+                self.materialize_expr(result, Expr::Raw(expr), op_result_type(op));
             } else {
-                self.emit_expr(expr);
+                self.push_stmt(Stmt::Expr(Expr::Raw(expr)));
             }
             return;
         }
@@ -2619,7 +2617,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             new
         };
-        self.values.insert(result.to_string(), Val::expr(bound));
+        self.values
+            .insert(result.to_string(), Val::Expr(Expr::Var(bound)));
     }
 
     fn lower_atomic_xchg(&mut self, op: &Op) {
@@ -2659,7 +2658,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             },
             val,
         );
-        self.values.insert(result, Val::expr(old));
+        self.values.insert(result, Val::Expr(Expr::Var(old)));
     }
 
     fn lower_atomic_cmpxchg(&mut self, op: &Op) {
@@ -2719,8 +2718,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     args: vec![],
                 }),
             });
-            self.values.insert(op.results[0].clone(), Val::expr(old));
-            self.values.insert(op.results[1].clone(), Val::expr(ok));
+            self.values
+                .insert(op.results[0].clone(), Val::Expr(Expr::Var(old)));
+            self.values
+                .insert(op.results[1].clone(), Val::Expr(Expr::Var(ok)));
             return;
         }
         let addr = self.store_address_expr(&op.operands[0]);
@@ -2756,8 +2757,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             )))],
             else_body: Vec::new(),
         });
-        self.values.insert(op.results[0].clone(), Val::expr(old));
-        self.values.insert(op.results[1].clone(), Val::expr(ok));
+        self.values
+            .insert(op.results[0].clone(), Val::Expr(Expr::Var(old)));
+        self.values
+            .insert(op.results[1].clone(), Val::Expr(Expr::Var(ok)));
     }
 
     fn lower_atomic_fence(&mut self, op: &Op) {
@@ -2844,9 +2847,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let ty = op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "i32".into());
-        self.materialize(
+        self.materialize_expr(
             result,
-            format!("unsafe {{ {slot}.next_arg::<{ty}>() }}"),
+            Expr::Raw(format!("unsafe {{ {slot}.next_arg::<{ty}>() }}")),
             op_result_type(op),
         );
     }
@@ -2883,7 +2886,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn lower_if(&mut self, op: &Op) {
         let Some(cond) = op.operands.first() else {
-            self.emit_expr("todo!(\"cir.if\")".into());
+            self.emit_todo("cir.if");
             return;
         };
         let cond = self.operand_expr(cond);
@@ -3049,11 +3052,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn lower_switch(&mut self, op: &Op) {
         let Some(selector) = op.operands.first() else {
-            self.emit_expr("todo!(\"cir.switch\")".into());
+            self.emit_todo("cir.switch");
             return;
         };
         let Some(region) = op.regions.first() else {
-            self.emit_expr("todo!(\"cir.switch\")".into());
+            self.emit_todo("cir.switch");
             return;
         };
         let cases: Vec<_> = region
@@ -3151,7 +3154,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn lower_for(&mut self, op: &Op) {
         if op.regions.len() < 3 {
-            self.emit_expr("todo!(\"cir.for\")".into());
+            self.emit_todo("cir.for");
             return;
         }
         let (break_label, continue_label) = if region_has_direct_continue(&op.regions[1]) {
@@ -3170,7 +3173,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn lower_while(&mut self, op: &Op) {
         if op.regions.len() < 2 {
-            self.emit_expr("todo!(\"cir.while\")".into());
+            self.emit_todo("cir.while");
             return;
         }
         let body = self.lower_while_loop_body(op);
@@ -3179,7 +3182,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn lower_do(&mut self, op: &Op) {
         if op.regions.len() < 2 {
-            self.emit_expr("todo!(\"cir.do\")".into());
+            self.emit_todo("cir.do");
             return;
         }
         let (break_label, continue_label) = if region_has_direct_continue(&op.regions[0]) {
@@ -3308,7 +3311,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.push_assign(Self::raw_expr(state_var), Expr::Lit(state.to_string()));
                 self.push_stmt(Stmt::Continue(Some(loop_label)));
             }
-            None => self.emit_expr("todo!(\"cir.goto: unknown label\")".into()),
+            None => self.emit_todo("cir.goto: unknown label"),
         }
     }
 
@@ -3332,7 +3335,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.push_assign(Self::raw_expr(state_var), Expr::Lit(state.to_string()));
                 self.push_stmt(Stmt::Continue(Some(loop_label)));
             }
-            None => self.emit_expr("todo!(\"cir.br: unknown successor\")".into()),
+            None => self.emit_todo("cir.br: unknown successor"),
         }
     }
 
@@ -3350,10 +3353,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         }
         condition
-    }
-
-    fn materialize(&mut self, result: &str, expr: String, cir_ty: Option<&str>) {
-        self.materialize_expr(result, Expr::Raw(expr), cir_ty);
     }
 
     fn materialize_expr(&mut self, result: &str, expr: Expr, cir_ty: Option<&str>) {
@@ -3481,10 +3480,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         name
     }
 
-    fn emit_expr(&mut self, expr: String) {
-        self.push_stmt(Stmt::Expr(Expr::Raw(expr)));
+    /// Raw escape hatch for CIR constructs slate cannot lower yet: emits a
+    /// `todo!("<note>")` placeholder so the generated Rust still compiles-shaped.
+    fn emit_todo(&mut self, note: &str) {
+        self.push_stmt(Stmt::Expr(Expr::Raw(format!("todo!({note:?})"))));
     }
 
+    /// Raw escape hatch for pre-rendered statement text (variadic prelude lines,
+    /// opaque aggregate memcpy, the `strtold` shim) with no structured node yet.
     fn emit_line(&mut self, line: &str) {
         self.push_stmt(Stmt::Raw(line.to_string()));
     }
@@ -4481,6 +4484,65 @@ mod tests {
         let div = lowerer.default_value_expr("div_t");
         assert!(matches!(div, Expr::StructLit { .. }));
         assert_eq!(div.render(), "div_t { quot: 0, rem: 0 }");
+    }
+
+    fn test_function_lowerer<'a, 'b>(parent: &'a mut Lowerer<'b>) -> FunctionLowerer<'a, 'b> {
+        FunctionLowerer {
+            parent,
+            values: BTreeMap::new(),
+            slots: BTreeMap::new(),
+            slot_types: BTreeMap::new(),
+            member_ptrs: BTreeMap::new(),
+            element_ptrs: BTreeMap::new(),
+            temp_counter: 0,
+            indent: 0,
+            body: Vec::new(),
+            is_main: false,
+            loop_stack: Vec::new(),
+            label_counter: 0,
+            dispatch: None,
+            hoisted: BTreeSet::new(),
+            va_places: BTreeMap::new(),
+            va_args_param: None,
+        }
+    }
+
+    fn const_op(value: &str, ret_ty: &str) -> Op {
+        Op {
+            results: vec!["r".into()],
+            name: "cir.const".into(),
+            operands: Vec::new(),
+            successors: Vec::new(),
+            attrs: BTreeMap::from([("value".into(), Attr::Raw(value.into()))]),
+            regions: Vec::new(),
+            ty: Some(format!("() -> {ret_ty}")),
+            loc: None,
+        }
+    }
+
+    #[test]
+    fn const_ints_lower_to_structured_literal_nodes() {
+        let mut ctx = Ctx::default();
+        let mut lowerer = test_lowerer(&mut ctx);
+        let mut f = test_function_lowerer(&mut lowerer);
+
+        f.lower_const(&const_op("#cir.int<7> : !s32i", "!s32i"));
+
+        let Some(IndentStmt {
+            stmt: Stmt::Let { init, .. },
+            ..
+        }) = f.body.first()
+        else {
+            panic!("lower_const should push a `let` binding");
+        };
+        assert!(
+            matches!(init, Some(Expr::Lit(v)) if v == "7"),
+            "const int must materialize a structured Expr::Lit, got {init:?}"
+        );
+        assert!(
+            matches!(f.values.get("r"), Some(Val::Expr(Expr::Var(_)))),
+            "the result value must reference the binding as a structured Expr::Var"
+        );
     }
 
     #[test]
