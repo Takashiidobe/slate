@@ -174,9 +174,10 @@ fn grammar_references_are_defined() {
         for alt in alternatives {
             for symbol in alt {
                 if let Symbol::Nonterminal(name) = symbol
-                    && !grammar.rules.contains_key(name) {
-                        undefined.push(format!("<{name}> (used in <{lhs}>)"));
-                    }
+                    && !grammar.rules.contains_key(name)
+                {
+                    undefined.push(format!("<{name}> (used in <{lhs}>)"));
+                }
             }
         }
     }
