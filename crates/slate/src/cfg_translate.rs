@@ -240,7 +240,10 @@ fn split_top_items(text: &str) -> Result<Vec<TopItem>, String> {
 
 fn item_boundary(line: &str) -> bool {
     let trimmed = line.trim();
-    trimmed.ends_with('}') || trimmed.ends_with(';') || trimmed == ")]"
+    trimmed.ends_with('}')
+        || trimmed.ends_with(';')
+        || trimmed == ")]"
+        || (trimmed.starts_with("#![") && trimmed.ends_with(']'))
 }
 
 fn update_depths(line: &str, brace_depth: &mut i32, paren_depth: &mut i32) {
@@ -312,6 +315,25 @@ fn main() {
                 .map(|item| item.key.as_str())
                 .collect::<Vec<_>>(),
             ["allow", "extern", "fn:f", "fn:main"]
+        );
+    }
+
+    #[test]
+    fn splits_single_line_allow_attribute_before_function() {
+        let text = "\
+#![allow(dead_code)]
+
+fn f() -> i32 {
+    return 1;
+}
+";
+        let items = split_top_items(text).unwrap();
+        assert_eq!(
+            items
+                .iter()
+                .map(|item| item.key.as_str())
+                .collect::<Vec<_>>(),
+            ["allow", "fn:f"]
         );
     }
 }
