@@ -482,6 +482,7 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. }
         | Expr::Unsafe(expr) => expr_ident_count(expr, name),
         Expr::CopyNonoverlapping { src, dst, .. } => {

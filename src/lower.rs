@@ -1347,63 +1347,30 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, value, op_result_type(op));
     }
 
-    fn load_address(&self, ptr: &str) -> String {
-        self.load_address_expr(ptr).render()
-    }
-
     fn load_address_expr(&self, ptr: &str) -> Expr {
-        if let Some(member) = self.member_ptrs.get(ptr) {
-            Expr::Macro {
-                name: "std::ptr::addr_of".into(),
-                args: vec![Expr::Field {
-                    base: Box::new(member.base.clone()),
-                    field: member.field.clone(),
-                }],
-            }
-        } else if let Some(element) = self.element_ptrs.get(ptr) {
-            Expr::Macro {
-                name: "std::ptr::addr_of".into(),
-                args: vec![self.element_place_expr(element)],
-            }
-        } else if let Some(slot) = self.slots.get(ptr) {
-            Expr::Macro {
-                name: "std::ptr::addr_of".into(),
-                args: vec![Expr::Var(slot.clone())],
-            }
-        } else if let Some(global) = self.global_name(ptr) {
-            Expr::Macro {
-                name: "std::ptr::addr_of".into(),
-                args: vec![Expr::Var(global)],
-            }
-        } else {
-            self.operand_expr(ptr)
-        }
+        self.address_expr(ptr, false)
     }
 
     fn store_address_expr(&self, ptr: &str) -> Expr {
+        self.address_expr(ptr, true)
+    }
+
+    fn address_expr(&self, ptr: &str, mutable: bool) -> Expr {
+        let addr_of = |expr: Expr| Expr::AddrOf {
+            mutable,
+            expr: Box::new(expr),
+        };
         if let Some(member) = self.member_ptrs.get(ptr) {
-            Expr::Macro {
-                name: "std::ptr::addr_of_mut".into(),
-                args: vec![Expr::Field {
-                    base: Box::new(member.base.clone()),
-                    field: member.field.clone(),
-                }],
-            }
+            addr_of(Expr::Field {
+                base: Box::new(member.base.clone()),
+                field: member.field.clone(),
+            })
         } else if let Some(element) = self.element_ptrs.get(ptr) {
-            Expr::Macro {
-                name: "std::ptr::addr_of_mut".into(),
-                args: vec![self.element_place_expr(element)],
-            }
+            addr_of(self.element_place_expr(element))
         } else if let Some(slot) = self.slots.get(ptr) {
-            Expr::Macro {
-                name: "std::ptr::addr_of_mut".into(),
-                args: vec![Expr::Var(slot.clone())],
-            }
+            addr_of(Expr::Var(slot.clone()))
         } else if let Some(global) = self.global_name(ptr) {
-            Expr::Macro {
-                name: "std::ptr::addr_of_mut".into(),
-                args: vec![Expr::Var(global)],
-            }
+            addr_of(Expr::Var(global))
         } else {
             self.operand_expr(ptr)
         }
@@ -2526,9 +2493,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                             expr: Box::new(a1),
                             ty: i8_ptr_ptr,
                         },
-                        Expr::Macro {
-                            name: "std::ptr::addr_of_mut".into(),
-                            args: vec![Expr::Var(name.clone())],
+                        Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(Expr::Var(name.clone())),
                         },
                     ],
                 };
@@ -3464,9 +3431,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     args: vec![],
                 }
             } else {
-                Expr::Macro {
-                    name: "std::ptr::addr_of_mut".into(),
-                    args: vec![Expr::Var(slot.clone())],
+                Expr::AddrOf {
+                    mutable: true,
+                    expr: Box::new(Expr::Var(slot.clone())),
                 }
             };
         }
