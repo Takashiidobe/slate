@@ -213,8 +213,8 @@ fn parse_printf_format(bytes: &[u8]) -> Option<ParsedFormat> {
                     i += 2;
                 }
                 Some(_) => {
-                    let next = parse_integer_conversion(bytes, i + 1)?;
-                    format.push_str("{}");
+                    let (next, placeholder) = parse_integer_conversion(bytes, i + 1)?;
+                    format.push_str(&placeholder);
                     arg_count += 1;
                     i = next;
                 }
@@ -250,7 +250,45 @@ fn parse_printf_format(bytes: &[u8]) -> Option<ParsedFormat> {
     })
 }
 
-fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<usize> {
+fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, String)> {
+    let mut left = false;
+    let mut plus = false;
+    let mut zero = false;
+    loop {
+        match bytes.get(i).copied()? {
+            b'-' if !left => {
+                left = true;
+                i += 1;
+            }
+            b'+' if !plus => {
+                plus = true;
+                i += 1;
+            }
+            b'0' if !zero => {
+                zero = true;
+                i += 1;
+            }
+            b'-' | b'+' | b'0' | b' ' | b'#' => return None,
+            _ => break,
+        }
+    }
+
+    let width_start = i;
+    while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+        i += 1;
+    }
+    let width = if i > width_start {
+        Some(std::str::from_utf8(&bytes[width_start..i]).ok()?)
+    } else {
+        None
+    };
+    if (left || zero) && width.is_none() {
+        return None;
+    }
+    if left && zero {
+        return None;
+    }
+
     match bytes.get(i).copied()? {
         b'l' => {
             i += 1;
@@ -261,10 +299,35 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<usize> {
         b'z' => i += 1,
         _ => {}
     }
-    match bytes.get(i).copied()? {
-        b'd' | b'i' | b'u' => Some(i + 1),
-        _ => None,
+    let conv = bytes.get(i).copied()?;
+    if !matches!(conv, b'd' | b'i' | b'u') {
+        return None;
     }
+    if plus && conv == b'u' {
+        return None;
+    }
+    Some((i + 1, integer_placeholder(left, plus, zero, width)))
+}
+
+fn integer_placeholder(left: bool, plus: bool, zero: bool, width: Option<&str>) -> String {
+    if !left && !plus && !zero && width.is_none() {
+        return "{}".into();
+    }
+    let mut out = String::from("{:");
+    if left {
+        out.push('<');
+    }
+    if plus {
+        out.push('+');
+    }
+    if zero {
+        out.push('0');
+    }
+    if let Some(width) = width {
+        out.push_str(width);
+    }
+    out.push('}');
+    out
 }
 
 fn format_macro(name: &str, args: Vec<Expr>) -> Expr {
@@ -582,6 +645,23 @@ fn main() {
     }
 
     #[test]
+    fn rewrites_static_width_zero_left_and_sign_integer_formats() {
+        let out = run(printf_stmt_args(
+            b"%05d|%-4d|%+d|%5u|%+06ld\n\0",
+            vec![var("a"), var("b"), var("c"), var("u"), var("l")],
+        ));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{:05}|{:<4}|{:+}|{:5}|{:+06}\", a, b, c, u, l);
+}
+"
+        );
+    }
+
+    #[test]
     fn rewrites_percent_d_without_newline_to_print() {
         let out = run(printf_stmt(b"value=%d\0", var("x")));
 
@@ -631,6 +711,22 @@ fn main() {
         assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
         assert!(out.contains("unsafe { printf("));
         assert!(!out.contains("println!"));
+    }
+
+    #[test]
+    fn leaves_dynamic_width_precision_and_unsupported_flags() {
+        for fmt in [
+            &b"%*d\n\0"[..],
+            &b"%.3d\n\0"[..],
+            &b"%#d\n\0"[..],
+            &b"% d\n\0"[..],
+            &b"%-05d\n\0"[..],
+        ] {
+            let out = run(printf_stmt(fmt, var("x")));
+            assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+            assert!(out.contains("unsafe { printf("));
+            assert!(!out.contains("println!"));
+        }
     }
 
     #[test]
