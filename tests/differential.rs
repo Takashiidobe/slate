@@ -197,6 +197,27 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(widths_rust.contains("println!(\"{:05}|{:<4}|{:+}|{:5}|{:+06}\","));
     assert!(!widths_rust.contains("fn printf("));
     assert!(!widths_rust.contains("unsafe { printf("));
+
+    let string_char_c = fixtures_dir().join("printf_string_char.c");
+    let string_char_generated = tmp.join("printf_string_char.generated.rs");
+    support::translate(&string_char_c, &string_char_generated)
+        .expect("translate printf string/char fixture");
+    let string_char_rust = std::fs::read_to_string(&string_char_generated)
+        .expect("read generated printf string/char rust");
+    assert!(string_char_rust.contains("println!(\"{} {} {} {}\", \"tag\", \"A\", \"\\n\", _v3);"));
+    assert!(string_char_rust.contains("print!(\"literal={}\", \"tail\");"));
+    assert!(!string_char_rust.contains("fn printf("));
+    assert!(!string_char_rust.contains("unsafe { printf("));
+
+    let rejected_c = fixtures_dir().join("printf_string_char_rejected.c");
+    let rejected_generated = tmp.join("printf_string_char_rejected.generated.rs");
+    support::translate(&rejected_c, &rejected_generated)
+        .expect("translate rejected printf string/char fixture");
+    let rejected_rust = std::fs::read_to_string(&rejected_generated)
+        .expect("read generated rejected printf string/char rust");
+    assert!(rejected_rust.contains("fn printf("));
+    assert!(rejected_rust.contains("unsafe { printf("));
+    assert!(!rejected_rust.contains("println!(\"{}\""));
 }
 
 #[test]
