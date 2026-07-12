@@ -14,8 +14,8 @@ use std::fmt::{self, Write};
 
 use crate::rust_ast::{
     AtomicOrdering, AtomicRmwOp, AtomicType, Attr, Block, CrateAttr, Derive, Expr, ExternDecl,
-    FnDef, Func, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method, Program, RecordDef,
-    Repr, RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
+    FnDef, Func, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method, Path, Program,
+    RecordDef, Repr, RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
 };
 
 const INDENT: &str = "    ";
@@ -122,7 +122,11 @@ impl<W: Write> Codegen<W> {
                 }
             }
             Item::Mod { name } => writeln!(self.out, "mod {name};")?,
-            Item::Use { path } => writeln!(self.out, "use {path};")?,
+            Item::Use { path } => {
+                self.out.write_str("use ")?;
+                self.path(path)?;
+                self.out.write_str(";\n")?;
+            }
             Item::Static {
                 vis,
                 mutable,
@@ -964,6 +968,16 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char(')')
             }
         }
+    }
+
+    fn path(&mut self, path: &Path) -> fmt::Result {
+        for (i, segment) in path.segments.iter().enumerate() {
+            if i > 0 {
+                self.out.write_str("::")?;
+            }
+            self.out.write_str(segment.as_str())?;
+        }
+        Ok(())
     }
 
     fn ty(&mut self, ty: &Type) -> fmt::Result {
