@@ -1112,7 +1112,7 @@ fn is_ident_continue(b: u8) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rust_ast::{FnParam, Type};
+    use crate::rust_ast::{BinOp, FnParam, Type};
 
     fn temp(name: &str, ty: &str, init: Expr) -> Stmt {
         Stmt::Let {
@@ -1123,9 +1123,9 @@ mod tests {
         }
     }
 
-    fn bin(op: &str, lhs: Expr, rhs: Expr) -> Expr {
+    fn bin(op: BinOp, lhs: Expr, rhs: Expr) -> Expr {
         Expr::Binary {
-            op: op.to_string(),
+            op,
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         }
@@ -1203,7 +1203,7 @@ mod tests {
                 },
                 Stmt::Assign {
                     target: Expr::Var("c".into()),
-                    value: bin("+", Expr::Var("a".into()), Expr::Var("b".into())),
+                    value: bin(BinOp::Add, Expr::Var("a".into()), Expr::Var("b".into())),
                 },
                 Stmt::Assign {
                     target: Expr::Var("__retval".into()),
@@ -1403,7 +1403,7 @@ fn f(arg0: i32) -> i64 {
                 "_v3",
                 "i32",
                 bin(
-                    "-",
+                    BinOp::Sub,
                     Expr::Var("_v2".to_string()),
                     Expr::Var("_v1".to_string()),
                 ),

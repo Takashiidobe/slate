@@ -28,28 +28,9 @@ const PREC_PREFIX: u8 = 13;
 const PREC_CALL: u8 = 14;
 const PREC_ATOM: u8 = 15;
 
-fn binop_prec(op: &str) -> u8 {
-    match op {
-        "||" => 3,
-        "&&" => 4,
-        "==" | "!=" | "<" | ">" | "<=" | ">=" => 5,
-        "|" => 6,
-        "^" => 7,
-        "&" => 8,
-        "<<" | ">>" => 9,
-        "+" | "-" => 10,
-        "*" | "/" | "%" => 11,
-        _ => PREC_ATOM,
-    }
-}
-
-fn is_comparison(op: &str) -> bool {
-    binop_prec(op) == 5
-}
-
 fn expr_prec(expr: &Expr) -> u8 {
     match expr {
-        Expr::Binary { op, .. } => binop_prec(op),
+        Expr::Binary { op, .. } => op.precedence(),
         Expr::Cast { .. } => PREC_CAST,
         Expr::Unary { .. } | Expr::Ref { .. } => PREC_PREFIX,
         Expr::Call { .. } | Expr::MethodCall { .. } | Expr::Field { .. } | Expr::Index { .. } => {
@@ -479,22 +460,22 @@ impl<W: Write> Codegen<W> {
             Expr::Value(v) => self.value(v),
             Expr::Lit(s) | Expr::Var(s) | Expr::Raw(s) => self.out.write_str(s),
             Expr::Unary { op, expr } => {
-                self.out.write_str(op)?;
+                self.out.write_str(op.spelling())?;
                 self.prefix_operand(expr)
             }
             Expr::Binary { op, lhs, rhs } => {
-                let p = binop_prec(op);
+                let p = op.precedence();
                 // left-assoc: the right operand must bind strictly tighter, so a
                 // same-precedence right child (`a - (b - c)`) still needs parens.
                 // comparisons are non-associative, so wrap same-precedence on both
                 // sides to avoid an illegal `a < b < c` chain.
-                let (lmin, rmin) = if is_comparison(op) {
+                let (lmin, rmin) = if op.is_comparison() {
                     (p + 1, p + 1)
                 } else {
                     (p, p + 1)
                 };
                 self.expr_prec(lhs, lmin)?;
-                write!(self.out, " {op} ")?;
+                write!(self.out, " {} ", op.spelling())?;
                 self.expr_prec(rhs, rmin)
             }
             Expr::Call { func, args } => {
