@@ -343,6 +343,16 @@ pub enum Expr {
     AtomicFence {
         ordering: AtomicOrdering,
     },
+    Transmute {
+        from: Type,
+        to: Type,
+        expr: Box<Expr>,
+    },
+    CopyNonoverlapping {
+        src: Box<Expr>,
+        dst: Box<Expr>,
+        count: usize,
+    },
     /// Fully-formed Rust text spliced in as-is (e.g. `libc::printf`).
     Raw(String),
 }
@@ -472,7 +482,13 @@ impl Expr {
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
             | Expr::Ref { expr, .. }
+            | Expr::Transmute { expr, .. }
             | Expr::Unsafe(expr) => expr.substitute_var(name, replacement),
+            Expr::CopyNonoverlapping { src, dst, .. } => {
+                let s = src.substitute_var(name, replacement);
+                let d = dst.substitute_var(name, replacement);
+                s || d
+            }
             Expr::AtomicFence { .. } => false,
             Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
                 ptr.substitute_var(name, replacement)
