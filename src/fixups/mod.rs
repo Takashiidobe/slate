@@ -574,6 +574,13 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
         }
         Expr::ArrayLit(elems) => elems.iter().map(|elem| expr_ident_count(elem, name)).sum(),
         Expr::ArrayRepeat { elem, .. } => expr_ident_count(elem, name),
+        Expr::Closure { params, body } => {
+            if params.iter().any(|p| p.as_str() == name) {
+                0
+            } else {
+                expr_ident_count(body, name)
+            }
+        }
         Expr::Macro {
             name: macro_name,
             args,
