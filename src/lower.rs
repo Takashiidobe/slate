@@ -4,9 +4,10 @@ use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, BinOp, EnumConst, Expr, ExprMatchArm, ExternDecl,
-    ExternFnDecl, FnDef, FnParam, IndentStmt, Item, MatchArm, Prim, Program, RecordDef, RustValue,
-    Stmt, Type, UnaryOp,
+    AtomicOrdering, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, Derive, EnumConst, Expr,
+    ExprMatchArm, ExternDecl, ExternFnDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem,
+    IndentStmt, Item, MatchArm, Method, Prim, Program, RecordDef, Repr, RustValue, StdTrait, Stmt,
+    StructDef, StructFields, TraitBound, Type, UnaryOp,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -408,10 +409,10 @@ impl<'a> Lowerer<'a> {
         }
 
         if self.uses_long_double.get() {
-            items.insert(1, Item::Raw(LONG_DOUBLE_PRELUDE.to_string()));
+            items.splice(1..1, long_double_prelude());
         }
         if self.uses_complex.get() {
-            items.insert(1, Item::Raw(COMPLEX_PRELUDE.to_string()));
+            items.splice(1..1, complex_prelude());
         }
 
         // module wiring goes right after the crate-level `#![allow(..)]` attr.
@@ -3850,18 +3851,80 @@ fn function_type_is_variadic(s: &str) -> bool {
 
 const LONG_DOUBLE_TY: &str = "LongDouble";
 
+fn long_double_ty() -> Type {
+    Type::Named(LONG_DOUBLE_TY.into())
+}
+
+fn long_double_field(base: &str) -> Expr {
+    Expr::Field {
+        base: Box::new(Expr::Var(base.into())),
+        field: "0".into(),
+    }
+}
+
+fn long_double_op_impl(trait_: StdTrait, params: Vec<FnParam>, arg: Expr) -> Item {
+    let method = Method {
+        name: trait_.method().into(),
+        takes_self: true,
+        params,
+        ret: Some(long_double_ty()),
+        body: Expr::Call {
+            func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+            args: vec![arg],
+        },
+    };
+    Item::Impl(ImplBlock {
+        generics: vec![],
+        trait_: Some(trait_),
+        self_ty: long_double_ty(),
+        items: vec![
+            ImplItem::AssocType {
+                name: "Output".into(),
+                ty: long_double_ty(),
+            },
+            ImplItem::Method(method),
+        ],
+    })
+}
+
+fn long_double_binary(trait_: StdTrait, op: BinOp) -> Item {
+    let arg = Expr::Binary {
+        op,
+        lhs: Box::new(long_double_field("self")),
+        rhs: Box::new(long_double_field("o")),
+    };
+    let o = FnParam {
+        name: "o".into(),
+        mutable: false,
+        ty: long_double_ty(),
+    };
+    long_double_op_impl(trait_, vec![o], arg)
+}
+
 // x86-64 SysV wants size 16 / align 16 for long double; align(16) on an f64
 // newtype gives that layout while arithmetic stays f64-precision (tier 1).
-const LONG_DOUBLE_PRELUDE: &str = "\
-#[repr(C, align(16))]
-#[derive(Clone, Copy)]
-struct LongDouble(f64);
-impl core::ops::Add for LongDouble { type Output = LongDouble; fn add(self, o: LongDouble) -> LongDouble { LongDouble(self.0 + o.0) } }
-impl core::ops::Sub for LongDouble { type Output = LongDouble; fn sub(self, o: LongDouble) -> LongDouble { LongDouble(self.0 - o.0) } }
-impl core::ops::Mul for LongDouble { type Output = LongDouble; fn mul(self, o: LongDouble) -> LongDouble { LongDouble(self.0 * o.0) } }
-impl core::ops::Div for LongDouble { type Output = LongDouble; fn div(self, o: LongDouble) -> LongDouble { LongDouble(self.0 / o.0) } }
-impl core::ops::Neg for LongDouble { type Output = LongDouble; fn neg(self) -> LongDouble { LongDouble(-self.0) } }
-";
+fn long_double_prelude() -> Vec<Item> {
+    let neg_arg = Expr::Unary {
+        op: UnaryOp::Neg,
+        expr: Box::new(long_double_field("self")),
+    };
+    vec![
+        Item::Struct(StructDef {
+            attrs: vec![
+                RustAttr::Repr(vec![Repr::C, Repr::Align(16)]),
+                RustAttr::Derive(vec![Derive::Clone, Derive::Copy]),
+            ],
+            generics: vec![],
+            name: LONG_DOUBLE_TY.into(),
+            fields: StructFields::Tuple(vec![Type::Prim(Prim::F64)]),
+        }),
+        long_double_binary(StdTrait::Add, BinOp::Add),
+        long_double_binary(StdTrait::Sub, BinOp::Sub),
+        long_double_binary(StdTrait::Mul, BinOp::Mul),
+        long_double_binary(StdTrait::Div, BinOp::Div),
+        long_double_op_impl(StdTrait::Neg, vec![], neg_arg),
+    ]
+}
 
 fn is_long_double(ty: &str) -> bool {
     ty.starts_with("!cir.long_double")
@@ -3876,27 +3939,105 @@ fn is_complex_runtime_call(name: &str) -> bool {
     matches!(name, "__muldc3" | "__divdc3" | "__mulsc3" | "__divsc3")
 }
 
+fn complex_ty(inner: &str) -> Type {
+    Type::Named(format!("Complex<{inner}>"))
+}
+
+fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
+    let field = |base: &str, field: &str| Expr::Field {
+        base: Box::new(Expr::Var(base.into())),
+        field: field.into(),
+    };
+    let component = |name: &str| {
+        (
+            name.to_string(),
+            Expr::Binary {
+                op,
+                lhs: Box::new(field("self", name)),
+                rhs: Box::new(field("o", name)),
+            },
+        )
+    };
+    let method = Method {
+        name: trait_.method().into(),
+        takes_self: true,
+        params: vec![FnParam {
+            name: "o".into(),
+            mutable: false,
+            ty: complex_ty("T"),
+        }],
+        ret: Some(complex_ty("T")),
+        body: Expr::StructLit {
+            name: "Complex".into(),
+            fields: vec![component("re"), component("im")],
+        },
+    };
+    Item::Impl(ImplBlock {
+        generics: vec![GenericParam {
+            name: "T".into(),
+            bounds: vec![TraitBound {
+                trait_,
+                assoc: vec![("Output".into(), Type::Named("T".into()))],
+            }],
+        }],
+        trait_: Some(trait_),
+        self_ty: complex_ty("T"),
+        items: vec![
+            ImplItem::AssocType {
+                name: "Output".into(),
+                ty: complex_ty("T"),
+            },
+            ImplItem::Method(method),
+        ],
+    })
+}
+
+fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
+    let param = |n: &str| FnParam {
+        name: n.into(),
+        mutable: false,
+        ty: Type::Prim(prim),
+    };
+    ExternDecl::Fn(ExternFnDecl {
+        name: name.into(),
+        params: vec![param("a"), param("b"), param("c"), param("d")],
+        variadic: false,
+        ret: Some(complex_ty(prim.spelling())),
+    })
+}
+
 // C `_Complex` has no native Rust type; a #[repr(C)] pair matches its two-scalar
 // layout, and the extern runtime routines back `*`/`/`.
-const COMPLEX_PRELUDE: &str = "\
-#[repr(C)]
-#[derive(Clone, Copy)]
-struct Complex<T> { re: T, im: T }
-impl<T: core::ops::Add<Output = T>> core::ops::Add for Complex<T> {
-    type Output = Complex<T>;
-    fn add(self, o: Complex<T>) -> Complex<T> { Complex { re: self.re + o.re, im: self.im + o.im } }
+fn complex_prelude() -> Vec<Item> {
+    vec![
+        Item::Struct(StructDef {
+            attrs: vec![
+                RustAttr::Repr(vec![Repr::C]),
+                RustAttr::Derive(vec![Derive::Clone, Derive::Copy]),
+            ],
+            generics: vec![GenericParam {
+                name: "T".into(),
+                bounds: vec![],
+            }],
+            name: "Complex".into(),
+            fields: StructFields::Named(vec![
+                ("re".into(), Type::Named("T".into())),
+                ("im".into(), Type::Named("T".into())),
+            ]),
+        }),
+        complex_binop_impl(StdTrait::Add, BinOp::Add),
+        complex_binop_impl(StdTrait::Sub, BinOp::Sub),
+        Item::ExternBlock {
+            abi: "C".into(),
+            decls: vec![
+                complex_runtime_decl("__muldc3", Prim::F64),
+                complex_runtime_decl("__divdc3", Prim::F64),
+                complex_runtime_decl("__mulsc3", Prim::F32),
+                complex_runtime_decl("__divsc3", Prim::F32),
+            ],
+        },
+    ]
 }
-impl<T: core::ops::Sub<Output = T>> core::ops::Sub for Complex<T> {
-    type Output = Complex<T>;
-    fn sub(self, o: Complex<T>) -> Complex<T> { Complex { re: self.re - o.re, im: self.im - o.im } }
-}
-unsafe extern \"C\" {
-    fn __muldc3(a: f64, b: f64, c: f64, d: f64) -> Complex<f64>;
-    fn __divdc3(a: f64, b: f64, c: f64, d: f64) -> Complex<f64>;
-    fn __mulsc3(a: f32, b: f32, c: f32, d: f32) -> Complex<f32>;
-    fn __divsc3(a: f32, b: f32, c: f32, d: f32) -> Complex<f32>;
-}
-";
 
 fn rust_type(cir_ty: &str) -> String {
     rust_type_with_aliases(cir_ty, &BTreeMap::new())
