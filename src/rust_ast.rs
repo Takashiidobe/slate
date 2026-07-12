@@ -160,7 +160,7 @@ pub struct RecordDef {
     pub is_union: bool,
     pub allow_non_camel_case: bool,
     pub name: String,
-    pub fields: Vec<(String, Type)>,
+    pub fields: Vec<(Ident, Type)>,
 }
 
 #[derive(Debug, Clone)]
@@ -206,14 +206,23 @@ pub struct IndentStmt {
 
 #[derive(Debug, Clone)]
 pub struct MatchArm {
-    pub pattern: String,
+    pub pattern: Pattern,
     pub body: Vec<IndentStmt>,
 }
 
 #[derive(Debug, Clone)]
 pub struct ExprMatchArm {
-    pub pattern: String,
+    pub pattern: Pattern,
     pub value: Expr,
+}
+
+#[derive(Debug, Clone)]
+pub enum Pattern {
+    Wildcard,
+    Binding(Ident),
+    I64(i64),
+    I128(i128),
+    TupleStruct { name: Ident, fields: Vec<Pattern> },
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -305,22 +314,22 @@ pub enum Stmt {
         else_body: Vec<IndentStmt>,
     },
     Loop {
-        label: Option<String>,
+        label: Option<Label>,
         body: Vec<IndentStmt>,
     },
     Scope {
         body: Vec<IndentStmt>,
     },
     LabeledBlock {
-        label: String,
+        label: Label,
         body: Vec<IndentStmt>,
     },
     Match {
         expr: Expr,
         arms: Vec<MatchArm>,
     },
-    Break(Option<String>),
-    Continue(Option<String>),
+    Break(Option<Label>),
+    Continue(Option<Label>),
     While {
         cond: Expr,
         body: Block,
@@ -337,7 +346,8 @@ pub enum Stmt {
 /// modeled. Use this over `Expr::Lit` whenever the value is known structurally.
 #[derive(Debug, Clone)]
 pub enum RustValue {
-    Int(i64),
+    I64(i64),
+    I128(i128),
     Float(f64),
     Bool(bool),
     None,
@@ -376,6 +386,31 @@ impl From<&str> for Ident {
 impl std::fmt::Display for Ident {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Label(Ident);
+
+impl Label {
+    pub fn new(name: impl Into<Ident>) -> Self {
+        Self(name.into())
+    }
+
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
+}
+
+impl From<String> for Label {
+    fn from(s: String) -> Self {
+        Self::new(s)
+    }
+}
+
+impl From<&str> for Label {
+    fn from(s: &str) -> Self {
+        Self::new(s)
     }
 }
 

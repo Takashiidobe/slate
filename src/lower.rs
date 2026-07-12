@@ -6,8 +6,8 @@ use crate::ctx::Ctx;
 use crate::rust_ast::{
     AtomicOrdering, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, Derive, EnumConst, Expr,
     ExprMatchArm, ExternDecl, ExternFnDecl, FnDef, FnParam, GenericParam, Ident, ImplBlock,
-    ImplItem, IndentStmt, Item, MatchArm, Method, Prim, Program, RecordDef, Repr, RustValue,
-    StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp,
+    ImplItem, IndentStmt, Item, Label, MatchArm, Method, Pattern, Prim, Program, RecordDef, Repr,
+    RustValue, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -146,7 +146,7 @@ struct FunctionLowerer<'a, 'b> {
 
 /// Maps CIR jump targets to dispatch-loop states for a `goto`-bearing function.
 struct DispatchCtx {
-    loop_label: String,
+    loop_label: Label,
     state_var: String,
     /// C label name (`cir.label`/`cir.goto`) -> block index.
     label_to_state: BTreeMap<String, usize>,
@@ -160,8 +160,8 @@ struct DispatchCtx {
 // `break 'continue`. Rust then forbids an unlabeled `break` from diverging out
 // through that block, so the loop is labeled too and `break` targets it.
 struct LoopFrame {
-    break_label: Option<String>,
-    continue_label: Option<String>,
+    break_label: Option<Label>,
+    continue_label: Option<Label>,
     is_loop: bool,
 }
 
@@ -453,13 +453,20 @@ impl<'a> Lowerer<'a> {
         };
         if let Some(mut bytes) = parse_cir_const_array(raw) {
             if is_c_global && let Some(ty) = ty {
-                let elems: Vec<Expr> = bytes.iter().map(|b| Expr::Lit(b.to_string())).collect();
+                let elems: Vec<Expr> = bytes
+                    .iter()
+                    .map(|b| Expr::Value(RustValue::I64(i64::from(*b))))
+                    .collect();
                 self.globals.insert(
                     rust_name.clone(),
                     GlobalVar {
                         name: rust_name,
                         ty,
-                        init: render_array_literal_expr(&elems, bytes.len(), Expr::Lit("0".into())),
+                        init: render_array_literal_expr(
+                            &elems,
+                            bytes.len(),
+                            Expr::Value(RustValue::I64(0)),
+                        ),
                         external: linkage_is_external(op),
                     },
                 );
@@ -478,7 +485,7 @@ impl<'a> Lowerer<'a> {
                             init: render_array_literal_expr(
                                 &elems,
                                 len as usize,
-                                Expr::Lit("0".into()),
+                                Expr::Value(RustValue::I64(0)),
                             ),
                             external: linkage_is_external(op),
                         },
@@ -541,10 +548,7 @@ impl<'a> Lowerer<'a> {
             } else {
                 self.const_zero_globals.insert(name.to_string());
             }
-        } else if let Some(init) = parse_cir_int(raw)
-            .map(|n| n.to_string())
-            .or_else(|| parse_cir_fp(raw))
-        {
+        } else if let Some(init) = parse_cir_scalar_expr(raw) {
             let ty = ty.unwrap_or_else(|| self.rust_type("!s32i"));
             let external = linkage_is_external(op);
             self.globals.insert(
@@ -552,7 +556,7 @@ impl<'a> Lowerer<'a> {
                 GlobalVar {
                     name: rust_name,
                     ty,
-                    init: Expr::Lit(init),
+                    init,
                     external,
                 },
             );
@@ -583,7 +587,7 @@ impl<'a> Lowerer<'a> {
             .iter()
             .map(|field| {
                 (
-                    sanitize_ident(&field.name).into_string(),
+                    sanitize_ident(&field.name),
                     self.record_field_type(&field.ty),
                 )
             })
@@ -860,7 +864,7 @@ impl<'a> Lowerer<'a> {
         if is_long_double(ty) || ty == LONG_DOUBLE_TY {
             return Expr::Call {
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-                args: vec![Expr::Lit("0.0".into())],
+                args: vec![Expr::Value(RustValue::Float(0.0))],
             };
         }
         if let Some(value) = standard_record_default_expr(ty) {
@@ -896,7 +900,10 @@ impl<'a> Lowerer<'a> {
         if let Some((re, im)) = parse_cir_const_complex(raw) {
             Some(Expr::StructLit {
                 name: "Complex".into(),
-                fields: vec![("re".into(), Expr::Lit(re)), ("im".into(), Expr::Lit(im))],
+                fields: vec![
+                    ("re".into(), fp_literal_expr(re)),
+                    ("im".into(), fp_literal_expr(im)),
+                ],
             })
         } else if raw.starts_with("#cir.const_record<") {
             let record = self.records.get(rust_ty)?;
@@ -955,9 +962,7 @@ impl<'a> Lowerer<'a> {
         } else if raw.starts_with("#cir.zero") {
             Some(self.default_value_expr(rust_ty))
         } else {
-            parse_cir_int(raw)
-                .map(|n| Expr::Lit(n.to_string()))
-                .or_else(|| parse_cir_fp(raw).map(Expr::Lit))
+            parse_cir_scalar_expr(raw)
         }
     }
 }
@@ -1297,17 +1302,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         match self.values.get(src) {
             Some(Val::Global(name)) => {
                 if let Some(bytes) = self.parent.strings.get(name) {
-                    let elems: Vec<Expr> = bytes.iter().map(|b| Expr::Lit(b.to_string())).collect();
+                    let elems: Vec<Expr> = bytes
+                        .iter()
+                        .map(|b| Expr::Value(RustValue::I64(i64::from(*b))))
+                        .collect();
                     Some(render_array_literal_expr(
                         &elems,
                         dst_len.unwrap_or(elems.len()),
-                        Expr::Lit("0".into()),
+                        Expr::Value(RustValue::I64(0)),
                     ))
                 } else if let Some(elems) = self.parent.const_arrays.get(name) {
                     Some(render_array_literal_expr(
                         elems,
                         dst_len.unwrap_or(elems.len()),
-                        Expr::Lit("0".into()),
+                        Expr::Value(RustValue::I64(0)),
                     ))
                 } else if let Some(raw) = self.parent.const_aggregates.get(name) {
                     let ty = self.slot_types.get(dst)?;
@@ -1418,30 +1426,35 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 result,
                 Expr::StructLit {
                     name: "Complex".into(),
-                    fields: vec![("re".into(), Expr::Lit(re)), ("im".into(), Expr::Lit(im))],
+                    fields: vec![
+                        ("re".into(), fp_literal_expr(re)),
+                        ("im".into(), fp_literal_expr(im)),
+                    ],
                 },
                 result_ty,
             );
             return;
         }
         if let Some(b) = parse_cir_bool(raw) {
-            self.materialize_expr(result, Expr::Lit(b.to_string()), result_ty);
+            self.materialize_expr(result, Expr::Value(RustValue::Bool(b)), result_ty);
             return;
         }
         if raw.starts_with("#cir.ptr<null>") {
             self.materialize_expr(result, Expr::Raw("std::ptr::null_mut()".into()), result_ty);
             return;
         }
-        let value = parse_cir_int(raw)
-            .map(|n| n.to_string())
-            .or_else(|| parse_cir_fp(raw))
-            .unwrap_or_else(|| "0".into());
         let value = if result_ty.is_some_and(is_long_double) {
-            format!("{LONG_DOUBLE_TY}({value})")
+            let value = parse_cir_fp_expr(raw)
+                .or_else(|| parse_cir_int(raw).map(int_value_expr))
+                .unwrap_or_else(|| Expr::Value(RustValue::Float(0.0)));
+            Expr::Call {
+                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                args: vec![value],
+            }
         } else {
-            value
+            parse_cir_scalar_expr(raw).unwrap_or_else(|| Expr::Value(RustValue::I64(0)))
         };
-        self.materialize_expr(result, Expr::Lit(value), result_ty);
+        self.materialize_expr(result, value, result_ty);
     }
 
     fn lower_complex_create(&mut self, op: &Op) {
@@ -1654,7 +1667,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Expr::Binary {
                 op: rust_op,
                 lhs: Box::new(value),
-                rhs: Box::new(Expr::Lit("1".to_string())),
+                rhs: Box::new(Expr::Value(RustValue::I64(1))),
             },
             ty,
         );
@@ -1942,7 +1955,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Expr::Binary {
                     op: BinOp::Eq,
                     lhs: Box::new(value.clone()),
-                    rhs: Box::new(Expr::Lit("0.0".into())),
+                    rhs: Box::new(Expr::Value(RustValue::Float(0.0))),
                 },
                 Expr::MethodCall {
                     recv: Box::new(value.clone()),
@@ -1956,7 +1969,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Expr::Binary {
                     op: BinOp::Eq,
                     lhs: Box::new(value.clone()),
-                    rhs: Box::new(Expr::Lit("0.0".into())),
+                    rhs: Box::new(Expr::Value(RustValue::Float(0.0))),
                 },
                 Expr::Unary {
                     op: UnaryOp::Not,
@@ -2010,7 +2023,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             });
         }
         let expr = if parts.is_empty() {
-            Expr::Lit("false".into())
+            Expr::Value(RustValue::Bool(false))
         } else {
             Self::or_exprs(parts)
         };
@@ -2202,7 +2215,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .and_then(|t| int_bits(&t.render()));
         match (self.bitfield_size(op), bits) {
             (Some(size), Some(bits)) if size < bits => {
-                let sh = Box::new(Expr::Lit((bits - size).to_string()));
+                let sh = Box::new(Expr::Value(RustValue::I64((bits - size) as i64)));
                 Expr::Binary {
                     op: BinOp::Shr,
                     lhs: Box::new(Expr::Binary {
@@ -2310,7 +2323,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         array: Box::new(render_array_literal_expr(
                             &typed,
                             len,
-                            Expr::Value(RustValue::Int(0)),
+                            Expr::Value(RustValue::I64(0)),
                         )),
                         mutable: false,
                     }),
@@ -2779,11 +2792,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     expr: Box::new(Expr::Var(res.clone().into())),
                     arms: vec![
                         ExprMatchArm {
-                            pattern: "Ok(v)".into(),
+                            pattern: Pattern::TupleStruct {
+                                name: "Ok".into(),
+                                fields: vec![Pattern::Binding("v".into())],
+                            },
                             value: Expr::Var("v".into()),
                         },
                         ExprMatchArm {
-                            pattern: "Err(v)".into(),
+                            pattern: Pattern::TupleStruct {
+                                name: "Err".into(),
+                                fields: vec![Pattern::Binding("v".into())],
+                            },
                             value: Expr::Var("v".into()),
                         },
                     ],
@@ -2947,7 +2966,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .first()
             .map(|operand| self.operand_expr(operand));
         if self.is_main {
-            let code = value.unwrap_or_else(|| Expr::Lit("0".into()));
+            let code = value.unwrap_or_else(|| Expr::Value(RustValue::I64(0)));
             self.push_stmt(Stmt::Expr(Expr::Call {
                 func: Box::new(Self::raw_expr("std::process::exit")),
                 args: vec![Expr::Cast {
@@ -3005,7 +3024,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    fn break_stmt(label: Option<String>) -> IndentStmt {
+    fn break_stmt(label: Option<Label>) -> IndentStmt {
         IndentStmt {
             depth: 0,
             stmt: Stmt::Break(label),
@@ -3016,7 +3035,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         IndentStmt { depth: 0, stmt }
     }
 
-    fn guard_break(cond: Expr, label: Option<String>) -> Stmt {
+    fn guard_break(cond: Expr, label: Option<Label>) -> Stmt {
         Stmt::If {
             cond: Self::not_expr(cond),
             then_body: vec![Self::break_stmt(label)],
@@ -3039,7 +3058,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_condition_region_expr(&mut self, region: &Region) -> Expr {
-        let mut condition = Expr::Lit("true".to_string());
+        let mut condition = Expr::Value(RustValue::Bool(true));
         for block in &region.blocks {
             for op in &block.ops {
                 if op.name == "cir.condition" {
@@ -3057,8 +3076,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn lower_for_loop_body(
         &mut self,
         op: &Op,
-        break_label: Option<String>,
-        continue_label: Option<String>,
+        break_label: Option<Label>,
+        continue_label: Option<Label>,
     ) -> Vec<IndentStmt> {
         self.capture_body(|this| {
             let cond = this.lower_condition_region_expr(&op.regions[0]);
@@ -3091,8 +3110,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn lower_do_loop_body(
         &mut self,
         op: &Op,
-        break_label: Option<String>,
-        continue_label: Option<String>,
+        break_label: Option<Label>,
+        continue_label: Option<Label>,
     ) -> Vec<IndentStmt> {
         self.capture_body(|this| {
             if let Some(label) = &continue_label {
@@ -3159,27 +3178,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
         let n = self.label_counter;
         self.label_counter += 1;
-        let label = format!("'__switch{n}");
+        let label = Label::new(format!("__switch{n}"));
         let selector_name = format!("__switch_value{n}");
         let case_name = format!("__switch_case{n}");
         let default_index = cases.iter().position(|case| case.is_default);
-        let fallback = default_index
-            .map(|index| index.to_string())
-            .unwrap_or_else(|| "-1".into());
+        let fallback = default_index.map(|index| index as i64).unwrap_or(-1);
         let selector = self.operand_expr(selector);
 
         let mut selector_arms = Vec::new();
         for (index, case) in cases.iter().enumerate() {
             for value in &case.values {
                 selector_arms.push(ExprMatchArm {
-                    pattern: value.to_string(),
-                    value: Expr::Lit(index.to_string()),
+                    pattern: int_pattern(*value as i128),
+                    value: Expr::Value(RustValue::I64(index as i64)),
                 });
             }
         }
         selector_arms.push(ExprMatchArm {
-            pattern: "_".to_string(),
-            value: Expr::Lit(fallback),
+            pattern: Pattern::Wildcard,
+            value: Expr::Value(RustValue::I64(fallback)),
         });
 
         let mut case_arms = Vec::new();
@@ -3194,7 +3211,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 if index + 1 < cases.len() {
                     body.push(Self::indent_stmt(Self::assign_stmt(
                         Self::raw_expr(case_name.clone()),
-                        Expr::Lit((index + 1).to_string()),
+                        Expr::Value(RustValue::I64((index + 1) as i64)),
                     )));
                     body.push(Self::indent_stmt(Stmt::Continue(Some(label.clone()))));
                 } else {
@@ -3202,13 +3219,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
             }
             case_arms.push(MatchArm {
-                pattern: index.to_string(),
+                pattern: int_pattern(index as i128),
                 body,
             });
         }
         self.loop_stack.pop();
         case_arms.push(MatchArm {
-            pattern: "_".to_string(),
+            pattern: Pattern::Wildcard,
             body: vec![Self::indent_stmt(Stmt::Break(Some(label.clone())))],
         });
 
@@ -3247,7 +3264,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let (break_label, continue_label) = if region_has_direct_continue(&op.regions[1]) {
             let n = self.label_counter;
             self.label_counter += 1;
-            (Some(format!("'__loop{n}")), Some(format!("'__continue{n}")))
+            (
+                Some(Label::new(format!("__loop{n}"))),
+                Some(Label::new(format!("__continue{n}"))),
+            )
         } else {
             (None, None)
         };
@@ -3275,7 +3295,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let (break_label, continue_label) = if region_has_direct_continue(&op.regions[0]) {
             let n = self.label_counter;
             self.label_counter += 1;
-            (Some(format!("'__loop{n}")), Some(format!("'__continue{n}")))
+            (
+                Some(Label::new(format!("__loop{n}"))),
+                Some(Label::new(format!("__continue{n}"))),
+            )
         } else {
             (None, None)
         };
@@ -3311,7 +3334,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn lower_dispatch(&mut self, body: &Region) {
         let n = self.label_counter;
         self.label_counter += 1;
-        let loop_label = format!("'__dispatch{n}");
+        let loop_label = Label::new(format!("__dispatch{n}"));
         let state_var = format!("__state{n}");
 
         let mut label_to_state = BTreeMap::new();
@@ -3351,24 +3374,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             if !block_diverges(block) {
                 body.push(Self::indent_stmt(Self::assign_stmt(
                     Self::raw_expr(state_var.clone()),
-                    Expr::Lit((i + 1).to_string()),
+                    Expr::Value(RustValue::I64((i + 1) as i64)),
                 )));
                 body.push(Self::indent_stmt(Stmt::Continue(Some(loop_label.clone()))));
             }
             arms.push(MatchArm {
-                pattern: i.to_string(),
+                pattern: int_pattern(i as i128),
                 body,
             });
         }
         arms.push(MatchArm {
-            pattern: "_".to_string(),
+            pattern: Pattern::Wildcard,
             body: vec![Self::indent_stmt(Stmt::Break(Some(loop_label.clone())))],
         });
         self.push_stmt(Stmt::Let {
             name: state_var.clone(),
             mutable: true,
             ty: Some(Self::named_type("i32")),
-            init: Some(Expr::Lit("0".to_string())),
+            init: Some(Expr::Value(RustValue::I64(0))),
         });
         self.push_stmt(Stmt::Loop {
             label: Some(loop_label),
@@ -3395,7 +3418,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             });
         match target {
             Some((state, state_var, loop_label)) => {
-                self.push_assign(Self::raw_expr(state_var), Expr::Lit(state.to_string()));
+                self.push_assign(
+                    Self::raw_expr(state_var),
+                    Expr::Value(RustValue::I64(state as i64)),
+                );
                 self.push_stmt(Stmt::Continue(Some(loop_label)));
             }
             None => self.emit_todo("cir.goto: unknown label"),
@@ -3419,7 +3445,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             });
         match target {
             Some((state, state_var, loop_label)) => {
-                self.push_assign(Self::raw_expr(state_var), Expr::Lit(state.to_string()));
+                self.push_assign(
+                    Self::raw_expr(state_var),
+                    Expr::Value(RustValue::I64(state as i64)),
+                );
                 self.push_stmt(Stmt::Continue(Some(loop_label)));
             }
             None => self.emit_todo("cir.br: unknown successor"),
@@ -4256,56 +4285,65 @@ fn op_type_return(ty: &str) -> Option<&str> {
 
 fn default_value_expr(ty: &str) -> Expr {
     match ty {
-        "bool" => Expr::Lit("false".into()),
-        "f32" | "f64" => Expr::Lit("0.0".into()),
+        "bool" => Expr::Value(RustValue::Bool(false)),
+        "f32" | "f64" => Expr::Value(RustValue::Float(0.0)),
         ty if ty.starts_with("*mut ") => Expr::Value(RustValue::NullPtr),
-        ty if ty.starts_with("Option<fn(") => Expr::Lit("None".into()),
-        _ => Expr::Value(RustValue::Int(0)),
+        ty if ty.starts_with("Option<fn(") => Expr::Value(RustValue::None),
+        _ => Expr::Value(RustValue::I64(0)),
     }
 }
 
 fn standard_record_def(name: &str) -> RecordDef {
-    let fields: Vec<(&str, &str)> = match name {
-        "div_t" => vec![("quot", "i32"), ("rem", "i32")],
-        "ldiv_t" | "lldiv_t" | "imaxdiv_t" => vec![("quot", "i64"), ("rem", "i64")],
+    let i8_ty = || Type::Prim(Prim::I8);
+    let i32_ty = || Type::Prim(Prim::I32);
+    let i64_ty = || Type::Prim(Prim::I64);
+    let i8_ptr_ty = || Type::Ptr {
+        mutable: true,
+        inner: Box::new(Type::Prim(Prim::I8)),
+    };
+    let fields: Vec<(Ident, Type)> = match name {
+        "div_t" => vec![("quot".into(), i32_ty()), ("rem".into(), i32_ty())],
+        "ldiv_t" | "lldiv_t" | "imaxdiv_t" => {
+            vec![("quot".into(), i64_ty()), ("rem".into(), i64_ty())]
+        }
         "tm" => vec![
-            ("tm_sec", "i32"),
-            ("tm_min", "i32"),
-            ("tm_hour", "i32"),
-            ("tm_mday", "i32"),
-            ("tm_mon", "i32"),
-            ("tm_year", "i32"),
-            ("tm_wday", "i32"),
-            ("tm_yday", "i32"),
-            ("tm_isdst", "i32"),
-            ("tm_gmtoff", "i64"),
-            ("tm_zone", "*mut i8"),
+            ("tm_sec".into(), i32_ty()),
+            ("tm_min".into(), i32_ty()),
+            ("tm_hour".into(), i32_ty()),
+            ("tm_mday".into(), i32_ty()),
+            ("tm_mon".into(), i32_ty()),
+            ("tm_year".into(), i32_ty()),
+            ("tm_wday".into(), i32_ty()),
+            ("tm_yday".into(), i32_ty()),
+            ("tm_isdst".into(), i32_ty()),
+            ("tm_gmtoff".into(), i64_ty()),
+            ("tm_zone".into(), i8_ptr_ty()),
         ],
         "lconv" => vec![
-            ("decimal_point", "*mut i8"),
-            ("thousands_sep", "*mut i8"),
-            ("grouping", "*mut i8"),
-            ("int_curr_symbol", "*mut i8"),
-            ("currency_symbol", "*mut i8"),
-            ("mon_decimal_point", "*mut i8"),
-            ("mon_thousands_sep", "*mut i8"),
-            ("mon_grouping", "*mut i8"),
-            ("positive_sign", "*mut i8"),
-            ("negative_sign", "*mut i8"),
-            ("int_frac_digits", "i8"),
-            ("frac_digits", "i8"),
-            ("p_cs_precedes", "i8"),
-            ("p_sep_by_space", "i8"),
-            ("n_cs_precedes", "i8"),
-            ("n_sep_by_space", "i8"),
-            ("p_sign_posn", "i8"),
-            ("n_sign_posn", "i8"),
-            ("int_p_cs_precedes", "i8"),
-            ("int_p_sep_by_space", "i8"),
-            ("int_n_cs_precedes", "i8"),
-            ("int_n_sep_by_space", "i8"),
-            ("int_p_sign_posn", "i8"),
-            ("int_n_sign_posn", "i8"),
+            ("decimal_point".into(), i8_ptr_ty()),
+            ("thousands_sep".into(), i8_ptr_ty()),
+            ("grouping".into(), i8_ptr_ty()),
+            ("int_curr_symbol".into(), i8_ptr_ty()),
+            ("currency_symbol".into(), i8_ptr_ty()),
+            ("mon_decimal_point".into(), i8_ptr_ty()),
+            ("mon_thousands_sep".into(), i8_ptr_ty()),
+            ("mon_grouping".into(), i8_ptr_ty()),
+            ("positive_sign".into(), i8_ptr_ty()),
+            ("negative_sign".into(), i8_ptr_ty()),
+            ("int_frac_digits".into(), i8_ty()),
+            ("frac_digits".into(), i8_ty()),
+            ("p_cs_precedes".into(), i8_ty()),
+            ("p_sep_by_space".into(), i8_ty()),
+            ("n_cs_precedes".into(), i8_ty()),
+            ("n_sep_by_space".into(), i8_ty()),
+            ("p_sign_posn".into(), i8_ty()),
+            ("n_sign_posn".into(), i8_ty()),
+            ("int_p_cs_precedes".into(), i8_ty()),
+            ("int_p_sep_by_space".into(), i8_ty()),
+            ("int_n_cs_precedes".into(), i8_ty()),
+            ("int_n_sep_by_space".into(), i8_ty()),
+            ("int_p_sign_posn".into(), i8_ty()),
+            ("int_n_sign_posn".into(), i8_ty()),
         ],
         _ => Vec::new(),
     };
@@ -4313,31 +4351,28 @@ fn standard_record_def(name: &str) -> RecordDef {
         is_union: false,
         allow_non_camel_case: true,
         name: name.to_string(),
-        fields: fields
-            .into_iter()
-            .map(|(n, ty)| (n.to_string(), Type::parse(ty)))
-            .collect(),
+        fields,
     }
 }
 
 fn standard_record_default_expr(ty: &str) -> Option<Expr> {
-    use RustValue::{Int, NullPtr};
+    use RustValue::{I64, NullPtr};
     let fields = match ty {
-        "div_t" => vec![("quot", Int(0)), ("rem", Int(0))],
-        "ldiv_t" => vec![("quot", Int(0)), ("rem", Int(0))],
-        "lldiv_t" => vec![("quot", Int(0)), ("rem", Int(0))],
-        "imaxdiv_t" => vec![("quot", Int(0)), ("rem", Int(0))],
+        "div_t" => vec![("quot", I64(0)), ("rem", I64(0))],
+        "ldiv_t" => vec![("quot", I64(0)), ("rem", I64(0))],
+        "lldiv_t" => vec![("quot", I64(0)), ("rem", I64(0))],
+        "imaxdiv_t" => vec![("quot", I64(0)), ("rem", I64(0))],
         "tm" => vec![
-            ("tm_sec", Int(0)),
-            ("tm_min", Int(0)),
-            ("tm_hour", Int(0)),
-            ("tm_mday", Int(0)),
-            ("tm_mon", Int(0)),
-            ("tm_year", Int(0)),
-            ("tm_wday", Int(0)),
-            ("tm_yday", Int(0)),
-            ("tm_isdst", Int(0)),
-            ("tm_gmtoff", Int(0)),
+            ("tm_sec", I64(0)),
+            ("tm_min", I64(0)),
+            ("tm_hour", I64(0)),
+            ("tm_mday", I64(0)),
+            ("tm_mon", I64(0)),
+            ("tm_year", I64(0)),
+            ("tm_wday", I64(0)),
+            ("tm_yday", I64(0)),
+            ("tm_isdst", I64(0)),
+            ("tm_gmtoff", I64(0)),
             ("tm_zone", NullPtr),
         ],
         "lconv" => vec![
@@ -4351,20 +4386,20 @@ fn standard_record_default_expr(ty: &str) -> Option<Expr> {
             ("mon_grouping", NullPtr),
             ("positive_sign", NullPtr),
             ("negative_sign", NullPtr),
-            ("int_frac_digits", Int(0)),
-            ("frac_digits", Int(0)),
-            ("p_cs_precedes", Int(0)),
-            ("p_sep_by_space", Int(0)),
-            ("n_cs_precedes", Int(0)),
-            ("n_sep_by_space", Int(0)),
-            ("p_sign_posn", Int(0)),
-            ("n_sign_posn", Int(0)),
-            ("int_p_cs_precedes", Int(0)),
-            ("int_p_sep_by_space", Int(0)),
-            ("int_n_cs_precedes", Int(0)),
-            ("int_n_sep_by_space", Int(0)),
-            ("int_p_sign_posn", Int(0)),
-            ("int_n_sign_posn", Int(0)),
+            ("int_frac_digits", I64(0)),
+            ("frac_digits", I64(0)),
+            ("p_cs_precedes", I64(0)),
+            ("p_sep_by_space", I64(0)),
+            ("n_cs_precedes", I64(0)),
+            ("n_sep_by_space", I64(0)),
+            ("p_sign_posn", I64(0)),
+            ("n_sign_posn", I64(0)),
+            ("int_p_cs_precedes", I64(0)),
+            ("int_p_sep_by_space", I64(0)),
+            ("int_n_cs_precedes", I64(0)),
+            ("int_n_sep_by_space", I64(0)),
+            ("int_p_sign_posn", I64(0)),
+            ("int_n_sign_posn", I64(0)),
         ],
         _ => return None,
     };
@@ -4387,7 +4422,7 @@ fn default_value_for_type(ty: &Type) -> Expr {
         Type::Prim(Prim::F32 | Prim::F64) => Expr::Value(RustValue::Float(0.0)),
         Type::Ptr { .. } => Expr::Value(RustValue::NullPtr),
         Type::FnPtr { .. } => Expr::Value(RustValue::None),
-        _ => Expr::Value(RustValue::Int(0)),
+        _ => Expr::Value(RustValue::I64(0)),
     }
 }
 
@@ -4399,14 +4434,38 @@ fn render_array_literal_expr(elems: &[Expr], len: usize, default: Expr) -> Expr 
 
 fn parse_cir_scalar_expr(s: &str) -> Option<Expr> {
     parse_cir_int(s)
-        .map(|n| Expr::Lit(n.to_string()))
-        .or_else(|| parse_cir_fp(s).map(Expr::Lit))
-        .or_else(|| parse_cir_bool(s).map(|b| Expr::Lit(b.to_string())))
+        .map(int_value_expr)
+        .or_else(|| parse_cir_fp_expr(s))
+        .or_else(|| parse_cir_bool(s).map(|b| Expr::Value(RustValue::Bool(b))))
         .or_else(|| {
             s.trim_start()
                 .starts_with("#cir.ptr<null>")
                 .then(|| default_value_expr("*mut i32"))
         })
+}
+
+fn int_value_expr(n: i128) -> Expr {
+    Expr::Value(match i64::try_from(n) {
+        Ok(n) => RustValue::I64(n),
+        Err(_) => RustValue::I128(n),
+    })
+}
+
+fn int_pattern(n: i128) -> Pattern {
+    match i64::try_from(n) {
+        Ok(n) => Pattern::I64(n),
+        Err(_) => Pattern::I128(n),
+    }
+}
+
+fn parse_cir_fp_expr(s: &str) -> Option<Expr> {
+    parse_cir_fp(s).map(fp_literal_expr)
+}
+
+fn fp_literal_expr(fp: String) -> Expr {
+    fp.parse::<f64>()
+        .map(|n| Expr::Value(RustValue::Float(n)))
+        .unwrap_or_else(|_| Expr::Raw(fp))
 }
 
 // i128 so a full-range `!u64i` value (e.g. SIG_ERR = (void(*)(int))-1, which CIR
