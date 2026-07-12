@@ -4,7 +4,8 @@ use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
-    Expr, ExprMatchArm, FnDef, FnParam, IndentStmt, Item, MatchArm, Program, Stmt, Type,
+    AtomicOrdering, AtomicRmwOp, AtomicType, Expr, ExprMatchArm, FnDef, FnParam, IndentStmt, Item,
+    MatchArm, Program, Stmt, Type,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -1089,9 +1090,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.operand_expr(&op.operands[0])
         };
         let ptr = &op.operands[1];
-        let rendered_value = value.render();
-        if !attr_bool(op, "is_volatile")
-            && self.try_atomic_store(op, ptr, value_ty, &rendered_value)
+        if !attr_bool(op, "is_volatile") && self.try_atomic_store(op, ptr, value_ty, value.clone())
         {
             return;
         }
@@ -1204,7 +1203,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 args: vec![self.load_address_expr(ptr)],
             }))
         } else if let Some(atomic) = self.atomic_load_expr(op, ptr) {
-            Expr::Raw(atomic)
+            atomic
         } else if let Some(global) = self.global_name(ptr) {
             Expr::Unsafe(Box::new(Expr::Var(global)))
         } else if let Some(member) = self.member_ptrs.get(ptr) {
@@ -2449,14 +2448,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .unwrap_or_else(|| "i32".into())
     }
 
-    // `AtomicN::from_ptr(<*mut T>)`, an unsafe expression the caller wraps.
-    fn atomic_ref(&self, ptr: &str, wrapper: &str) -> String {
-        format!(
-            "std::sync::atomic::{wrapper}::from_ptr({})",
-            self.store_address(ptr)
-        )
-    }
-
     fn lower_atomic_fetch(&mut self, op: &Op) {
         let Some(result) = op.results.first().cloned() else {
             return;
@@ -2464,36 +2455,35 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let val = self.render_operand(&op.operands[1]);
+        let val = self.operand_expr(&op.operands[1]);
         let ty = self.atomic_rust_type(op);
         let binop = attr_int(op, "binop").unwrap_or(0);
-        let Some(wrapper) = atomic_wrapper(&ty) else {
+        let Some(atomic_ty) = atomic_type(&ty) else {
             // float/pointer atomic: non-atomic read-modify-write fallback.
-            self.lower_atomic_fetch_nonatomic(op, &result, &val, &ty, binop);
+            self.lower_atomic_fetch_nonatomic(op, &result, val, &ty, binop);
             return;
         };
-        let atomic = self.atomic_ref(&op.operands[0], wrapper);
-        let ord = rust_ordering(attr_int(op, "mem_order").unwrap_or(5));
-        let method = match binop {
-            0 => "fetch_add",
-            1 => "fetch_sub",
-            2 => "fetch_and",
-            3 => "fetch_xor",
-            4 => "fetch_or",
-            5 => "fetch_nand",
-            6 => "fetch_max",
-            _ => "fetch_min",
+        let fetched = Expr::AtomicFetch {
+            ty: atomic_ty,
+            op: atomic_rmw_op(binop),
+            ptr: Box::new(self.store_address_expr(&op.operands[0])),
+            value: Box::new(val.clone()),
+            ordering: rust_ordering(attr_int(op, "mem_order").unwrap_or(5)),
         };
-        let fetched = format!("unsafe {{ {atomic}.{method}({val}, {ord}) }}");
         // std atomics always return the pre-op value; `fetch_first` wants that,
         // otherwise recompute the post-op value the op just stored.
         if attr_bool(op, "fetch_first") {
-            self.materialize(&result, fetched, op_result_type(op));
+            self.materialize_expr(&result, fetched, op_result_type(op));
         } else {
             let old = self.next_temp();
-            self.emit_line(&format!("let {old}: {ty} = {fetched};"));
-            let new = atomic_combine(binop, &old, &val);
-            self.materialize(&result, new, op_result_type(op));
+            self.push_stmt(Stmt::Let {
+                name: old.clone(),
+                mutable: false,
+                ty: Some(Self::named_type(ty)),
+                init: Some(fetched),
+            });
+            let new = atomic_combine(binop, Expr::Var(old), val);
+            self.materialize_expr(&result, new, op_result_type(op));
         }
     }
 
@@ -2501,19 +2491,35 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         &mut self,
         op: &Op,
         result: &str,
-        val: &str,
+        val: Expr,
         ty: &str,
         binop: i64,
     ) {
-        let addr = self.store_address(&op.operands[0]);
+        let addr = self.store_address_expr(&op.operands[0]);
         let old = self.next_temp();
-        self.emit_line(&format!("let {old}: {ty} = unsafe {{ *{addr} }};"));
+        self.push_stmt(Stmt::Let {
+            name: old.clone(),
+            mutable: false,
+            ty: Some(Self::named_type(ty)),
+            init: Some(Expr::Unsafe(Box::new(Expr::Unary {
+                op: "*".into(),
+                expr: Box::new(addr.clone()),
+            }))),
+        });
         let new = self.next_temp();
-        self.emit_line(&format!(
-            "let {new}: {ty} = {};",
-            atomic_combine(binop, &old, val)
-        ));
-        self.emit_line(&format!("unsafe {{ *{addr} = {new}; }}"));
+        self.push_stmt(Stmt::Let {
+            name: new.clone(),
+            mutable: false,
+            ty: Some(Self::named_type(ty)),
+            init: Some(atomic_combine(binop, Expr::Var(old.clone()), val)),
+        });
+        self.push_unsafe_assign(
+            Expr::Unary {
+                op: "*".into(),
+                expr: Box::new(addr),
+            },
+            Expr::Var(new.clone()),
+        );
         let bound = if attr_bool(op, "fetch_first") {
             old
         } else {
@@ -2529,19 +2535,36 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let val = self.render_operand(&op.operands[1]);
+        let val = self.operand_expr(&op.operands[1]);
         let ty = self.atomic_rust_type(op);
-        if let Some(wrapper) = atomic_wrapper(&ty) {
-            let atomic = self.atomic_ref(&op.operands[0], wrapper);
-            let ord = rust_ordering(attr_int(op, "mem_order").unwrap_or(5));
-            let expr = format!("unsafe {{ {atomic}.swap({val}, {ord}) }}");
-            self.materialize(&result, expr, op_result_type(op));
+        if let Some(atomic_ty) = atomic_type(&ty) {
+            let expr = Expr::AtomicSwap {
+                ty: atomic_ty,
+                ptr: Box::new(self.store_address_expr(&op.operands[0])),
+                value: Box::new(val),
+                ordering: rust_ordering(attr_int(op, "mem_order").unwrap_or(5)),
+            };
+            self.materialize_expr(&result, expr, op_result_type(op));
             return;
         }
-        let addr = self.store_address(&op.operands[0]);
+        let addr = self.store_address_expr(&op.operands[0]);
         let old = self.next_temp();
-        self.emit_line(&format!("let {old}: {ty} = unsafe {{ *{addr} }};"));
-        self.emit_line(&format!("unsafe {{ *{addr} = {val}; }}"));
+        self.push_stmt(Stmt::Let {
+            name: old.clone(),
+            mutable: false,
+            ty: Some(Self::named_type(ty)),
+            init: Some(Expr::Unsafe(Box::new(Expr::Unary {
+                op: "*".into(),
+                expr: Box::new(addr.clone()),
+            }))),
+        });
+        self.push_unsafe_assign(
+            Expr::Unary {
+                op: "*".into(),
+                expr: Box::new(addr),
+            },
+            val,
+        );
         self.values.insert(result, Val::expr(old));
     }
 
@@ -2549,38 +2572,96 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 3 || op.results.len() < 2 {
             return;
         }
-        let expected = self.render_operand(&op.operands[1]);
-        let desired = self.render_operand(&op.operands[2]);
+        let expected = self.operand_expr(&op.operands[1]);
+        let desired = self.operand_expr(&op.operands[2]);
         let ty = op_result_types(op)
             .first()
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or_else(|| "i32".into());
-        if let Some(wrapper) = atomic_wrapper(&ty) {
-            let atomic = self.atomic_ref(&op.operands[0], wrapper);
-            let succ = rust_ordering(attr_int(op, "succ_order").unwrap_or(5));
-            let fail = load_ordering(attr_int(op, "fail_order").unwrap_or(5));
+        if let Some(atomic_ty) = atomic_type(&ty) {
             // Always strong: `compare_exchange_weak` may spuriously fail and
             // diverge from the C reference under differential testing.
             let res = self.next_temp();
-            self.emit_line(&format!(
-                "let {res}: Result<{ty}, {ty}> = unsafe {{ {atomic}.compare_exchange({expected}, {desired}, {succ}, {fail}) }};"
-            ));
+            self.push_stmt(Stmt::Let {
+                name: res.clone(),
+                mutable: false,
+                ty: Some(Self::named_type(format!("Result<{ty}, {ty}>"))),
+                init: Some(Expr::AtomicCompareExchange {
+                    ty: atomic_ty,
+                    ptr: Box::new(self.store_address_expr(&op.operands[0])),
+                    expected: Box::new(expected),
+                    desired: Box::new(desired),
+                    success: rust_ordering(attr_int(op, "succ_order").unwrap_or(5)),
+                    failure: load_ordering(attr_int(op, "fail_order").unwrap_or(5)),
+                }),
+            });
             let old = self.next_temp();
-            self.emit_line(&format!(
-                "let {old}: {ty} = match {res} {{ Ok(v) => v, Err(v) => v }};"
-            ));
+            self.push_stmt(Stmt::Let {
+                name: old.clone(),
+                mutable: false,
+                ty: Some(Self::named_type(ty)),
+                init: Some(Expr::Match {
+                    expr: Box::new(Expr::Var(res.clone())),
+                    arms: vec![
+                        ExprMatchArm {
+                            pattern: "Ok(v)".into(),
+                            value: Expr::Var("v".into()),
+                        },
+                        ExprMatchArm {
+                            pattern: "Err(v)".into(),
+                            value: Expr::Var("v".into()),
+                        },
+                    ],
+                }),
+            });
             let ok = self.next_temp();
-            self.emit_line(&format!("let {ok}: bool = {res}.is_ok();"));
+            self.push_stmt(Stmt::Let {
+                name: ok.clone(),
+                mutable: false,
+                ty: Some(Self::named_type("bool")),
+                init: Some(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(res)),
+                    method: "is_ok".into(),
+                    args: vec![],
+                }),
+            });
             self.values.insert(op.results[0].clone(), Val::expr(old));
             self.values.insert(op.results[1].clone(), Val::expr(ok));
             return;
         }
-        let addr = self.store_address(&op.operands[0]);
+        let addr = self.store_address_expr(&op.operands[0]);
         let old = self.next_temp();
         let ok = self.next_temp();
-        self.emit_line(&format!("let {old}: {ty} = unsafe {{ *{addr} }};"));
-        self.emit_line(&format!("let {ok}: bool = {old} == ({expected});"));
-        self.emit_line(&format!("if {ok} {{ unsafe {{ *{addr} = {desired}; }} }}"));
+        self.push_stmt(Stmt::Let {
+            name: old.clone(),
+            mutable: false,
+            ty: Some(Self::named_type(ty)),
+            init: Some(Expr::Unsafe(Box::new(Expr::Unary {
+                op: "*".into(),
+                expr: Box::new(addr.clone()),
+            }))),
+        });
+        self.push_stmt(Stmt::Let {
+            name: ok.clone(),
+            mutable: false,
+            ty: Some(Self::named_type("bool")),
+            init: Some(Expr::Binary {
+                op: "==".into(),
+                lhs: Box::new(Expr::Var(old.clone())),
+                rhs: Box::new(expected),
+            }),
+        });
+        self.push_stmt(Stmt::If {
+            cond: Expr::Var(ok.clone()),
+            then_body: vec![Self::indent_stmt(Self::unsafe_stmt(Self::assign_stmt(
+                Expr::Unary {
+                    op: "*".into(),
+                    expr: Box::new(addr),
+                },
+                desired,
+            )))],
+            else_body: Vec::new(),
+        });
         self.values.insert(op.results[0].clone(), Val::expr(old));
         self.values.insert(op.results[1].clone(), Val::expr(ok));
     }
@@ -2591,23 +2672,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if ordering == 0 {
             return;
         }
-        self.push_stmt(Stmt::Expr(Expr::Call {
-            func: Box::new(Self::raw_expr("std::sync::atomic::fence")),
-            args: vec![Self::raw_expr(rust_ordering(ordering))],
+        self.push_stmt(Stmt::Expr(Expr::AtomicFence {
+            ordering: rust_ordering(ordering),
         }));
     }
 
     // atomic `cir.load`/`cir.store` (they carry `mem_order`) — real atomic
     // access so a shared `_Atomic` object is never touched non-atomically.
-    fn atomic_load_expr(&self, op: &Op, ptr: &str) -> Option<String> {
+    fn atomic_load_expr(&self, op: &Op, ptr: &str) -> Option<Expr> {
         let mem_order = attr_int(op, "mem_order")?;
         let ty = op_result_type(op).map(|ty| self.parent.rust_type(ty))?;
-        let wrapper = atomic_wrapper(&ty)?;
-        let atomic = self.atomic_ref(ptr, wrapper);
-        Some(format!(
-            "unsafe {{ {atomic}.load({}) }}",
-            load_ordering(mem_order)
-        ))
+        let atomic_ty = atomic_type(&ty)?;
+        Some(Expr::AtomicLoad {
+            ty: atomic_ty,
+            ptr: Box::new(self.store_address_expr(ptr)),
+            ordering: load_ordering(mem_order),
+        })
     }
 
     fn try_atomic_store(
@@ -2615,7 +2695,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         op: &Op,
         ptr: &str,
         value_ty: Option<&str>,
-        value: &str,
+        value: Expr,
     ) -> bool {
         let Some(mem_order) = attr_int(op, "mem_order") else {
             return false;
@@ -2623,19 +2703,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(wrapper) = value_ty
             .map(|ty| self.parent.rust_type(ty))
             .as_deref()
-            .and_then(atomic_wrapper)
+            .and_then(atomic_type)
         else {
             return false;
         };
-        let atomic = self.atomic_ref(ptr, wrapper);
-        self.push_stmt(Stmt::Expr(Expr::Unsafe(Box::new(Expr::MethodCall {
-            recv: Box::new(Self::raw_expr(atomic)),
-            method: "store".into(),
-            args: vec![
-                Self::raw_expr(value),
-                Self::raw_expr(store_ordering(mem_order)),
-            ],
-        }))));
+        self.push_stmt(Stmt::Expr(Expr::AtomicStore {
+            ty: wrapper,
+            ptr: Box::new(self.store_address_expr(ptr)),
+            value: Box::new(value),
+            ordering: store_ordering(mem_order),
+        }));
         true
     }
 
@@ -3425,69 +3502,113 @@ fn attr_bool(op: &Op, key: &str) -> bool {
     op.attrs.contains_key(key)
 }
 
-// the `std::sync::atomic` wrapper for a scalar Rust type, if one exists.
-fn atomic_wrapper(rust_ty: &str) -> Option<&'static str> {
+fn atomic_type(rust_ty: &str) -> Option<AtomicType> {
     Some(match rust_ty {
-        "i8" => "AtomicI8",
-        "u8" => "AtomicU8",
-        "i16" => "AtomicI16",
-        "u16" => "AtomicU16",
-        "i32" => "AtomicI32",
-        "u32" => "AtomicU32",
-        "i64" => "AtomicI64",
-        "u64" => "AtomicU64",
-        "isize" => "AtomicIsize",
-        "usize" => "AtomicUsize",
-        "bool" => "AtomicBool",
+        "i8" => AtomicType::I8,
+        "u8" => AtomicType::U8,
+        "i16" => AtomicType::I16,
+        "u16" => AtomicType::U16,
+        "i32" => AtomicType::I32,
+        "u32" => AtomicType::U32,
+        "i64" => AtomicType::I64,
+        "u64" => AtomicType::U64,
+        "isize" => AtomicType::Isize,
+        "usize" => AtomicType::Usize,
+        "bool" => AtomicType::Bool,
         _ => return None,
     })
 }
 
-// combine old value and operand to the value an atomic fetch op stores.
-fn atomic_combine(binop: i64, old: &str, val: &str) -> String {
+fn atomic_rmw_op(binop: i64) -> AtomicRmwOp {
     match binop {
-        0 => format!("({old} + ({val}))"),
-        1 => format!("({old} - ({val}))"),
-        2 => format!("({old} & ({val}))"),
-        3 => format!("({old} ^ ({val}))"),
-        4 => format!("({old} | ({val}))"),
-        5 => format!("(!({old} & ({val})))"),
-        6 => format!("({old}).max({val})"),
-        _ => format!("({old}).min({val})"),
+        0 => AtomicRmwOp::Add,
+        1 => AtomicRmwOp::Sub,
+        2 => AtomicRmwOp::And,
+        3 => AtomicRmwOp::Xor,
+        4 => AtomicRmwOp::Or,
+        5 => AtomicRmwOp::Nand,
+        6 => AtomicRmwOp::Max,
+        _ => AtomicRmwOp::Min,
+    }
+}
+
+// combine old value and operand to the value an atomic fetch op stores.
+fn atomic_combine(binop: i64, old: Expr, val: Expr) -> Expr {
+    match binop {
+        0 => Expr::Binary {
+            op: "+".into(),
+            lhs: Box::new(old),
+            rhs: Box::new(val),
+        },
+        1 => Expr::Binary {
+            op: "-".into(),
+            lhs: Box::new(old),
+            rhs: Box::new(val),
+        },
+        2 => Expr::Binary {
+            op: "&".into(),
+            lhs: Box::new(old),
+            rhs: Box::new(val),
+        },
+        3 => Expr::Binary {
+            op: "^".into(),
+            lhs: Box::new(old),
+            rhs: Box::new(val),
+        },
+        4 => Expr::Binary {
+            op: "|".into(),
+            lhs: Box::new(old),
+            rhs: Box::new(val),
+        },
+        5 => Expr::Unary {
+            op: "!".into(),
+            expr: Box::new(Expr::Binary {
+                op: "&".into(),
+                lhs: Box::new(old),
+                rhs: Box::new(val),
+            }),
+        },
+        6 => Expr::MethodCall {
+            recv: Box::new(old),
+            method: "max".into(),
+            args: vec![val],
+        },
+        _ => Expr::MethodCall {
+            recv: Box::new(old),
+            method: "min".into(),
+            args: vec![val],
+        },
     }
 }
 
 // C `memory_order` (0 relaxed,1 consume,2 acquire,3 release,4 acq_rel,5 seq_cst)
 // mapped to a fully-qualified Rust `Ordering`. Rust lacks Consume; use Acquire.
-fn rust_ordering(mem_order: i64) -> String {
-    let name = match mem_order {
-        0 => "Relaxed",
-        1 | 2 => "Acquire",
-        3 => "Release",
-        4 => "AcqRel",
-        _ => "SeqCst",
-    };
-    format!("std::sync::atomic::Ordering::{name}")
+fn rust_ordering(mem_order: i64) -> AtomicOrdering {
+    match mem_order {
+        0 => AtomicOrdering::Relaxed,
+        1 | 2 => AtomicOrdering::Acquire,
+        3 => AtomicOrdering::Release,
+        4 => AtomicOrdering::AcqRel,
+        _ => AtomicOrdering::SeqCst,
+    }
 }
 
 // loads reject Release/AcqRel; clamp to a load-valid ordering.
-fn load_ordering(mem_order: i64) -> String {
-    let name = match mem_order {
-        0 => "Relaxed",
-        1 | 2 => "Acquire",
-        _ => "SeqCst",
-    };
-    format!("std::sync::atomic::Ordering::{name}")
+fn load_ordering(mem_order: i64) -> AtomicOrdering {
+    match mem_order {
+        0 => AtomicOrdering::Relaxed,
+        1 | 2 => AtomicOrdering::Acquire,
+        _ => AtomicOrdering::SeqCst,
+    }
 }
 
 // stores reject Acquire/AcqRel; clamp to a store-valid ordering.
-fn store_ordering(mem_order: i64) -> String {
-    let name = match mem_order {
-        0 => "Relaxed",
-        3 => "Release",
-        _ => "SeqCst",
-    };
-    format!("std::sync::atomic::Ordering::{name}")
+fn store_ordering(mem_order: i64) -> AtomicOrdering {
+    match mem_order {
+        0 => AtomicOrdering::Relaxed,
+        3 => AtomicOrdering::Release,
+        _ => AtomicOrdering::SeqCst,
+    }
 }
 
 fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
