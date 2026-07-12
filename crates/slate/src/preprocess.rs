@@ -12,6 +12,7 @@
 //! target/debug macros; anything else is kept as an opaque diagnostic rather
 //! than guessed.
 
+use crate::rust_ast::Cfg;
 use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -63,7 +64,7 @@ pub struct Branch {
     pub body_end: usize,
     /// Mapped Rust `cfg(...)` predicate, or `None` when the predicate is opaque
     /// or references an unknown macro.
-    pub rust_cfg: Option<String>,
+    pub rust_cfg: Option<Cfg>,
     /// Whether this branch is active for the queried macro environment.
     /// `None` when the predicate could not be evaluated.
     pub active: Option<bool>,
@@ -301,31 +302,43 @@ fn eval(expr: &PredExpr, macros: &BTreeMap<String, String>) -> Option<bool> {
     }
 }
 
-fn known_cfg(macro_name: &str) -> Option<&'static str> {
+fn opt(key: &str, value: &str) -> Cfg {
+    Cfg::Opt {
+        key: key.to_string(),
+        value: value.to_string(),
+    }
+}
+
+fn known_cfg(macro_name: &str) -> Option<Cfg> {
     Some(match macro_name {
-        "_WIN32" => "windows",
-        "__linux__" => "target_os = \"linux\"",
-        "__APPLE__" => "target_vendor = \"apple\"",
-        "__x86_64__" | "_M_X64" => "target_arch = \"x86_64\"",
-        "__aarch64__" | "_M_ARM64" => "target_arch = \"aarch64\"",
-        "__arm__" | "_M_ARM" => "target_arch = \"arm\"",
-        "NDEBUG" => "not(debug_assertions)",
+        "_WIN32" => Cfg::Flag("windows".into()),
+        "__linux__" => opt("target_os", "linux"),
+        "__APPLE__" => opt("target_vendor", "apple"),
+        "__x86_64__" | "_M_X64" => opt("target_arch", "x86_64"),
+        "__aarch64__" | "_M_ARM64" => opt("target_arch", "aarch64"),
+        "__arm__" | "_M_ARM" => opt("target_arch", "arm"),
+        "NDEBUG" => Cfg::Not(Box::new(Cfg::Flag("debug_assertions".into()))),
         _ => return None,
     })
 }
 
-fn pred_to_cfg(expr: &PredExpr) -> Option<String> {
+pub(crate) fn pred_to_cfg(expr: &PredExpr) -> Option<Cfg> {
     match expr {
-        PredExpr::Defined(name) => known_cfg(name).map(str::to_string),
+        PredExpr::Defined(name) => known_cfg(name),
         PredExpr::Opaque(_) => None,
-        PredExpr::Not(inner) => pred_to_cfg(inner).map(|c| negate_cfg(&c)),
-        PredExpr::Or(items) => combine_cfg(items, "any"),
-        PredExpr::And(items) => combine_cfg(items, "all"),
+        PredExpr::Not(inner) => pred_to_cfg(inner).map(negate_cfg),
+        PredExpr::Or(items) => combine_cfg(items, CfgList::Any),
+        PredExpr::And(items) => combine_cfg(items, CfgList::All),
     }
 }
 
-fn combine_cfg(items: &[PredExpr], keyword: &str) -> Option<String> {
-    let mut atoms: Vec<String> = Vec::new();
+enum CfgList {
+    Any,
+    All,
+}
+
+fn combine_cfg(items: &[PredExpr], keyword: CfgList) -> Option<Cfg> {
+    let mut atoms: Vec<Cfg> = Vec::new();
     for item in items {
         let cfg = pred_to_cfg(item)?;
         if !atoms.contains(&cfg) {
@@ -335,15 +348,17 @@ fn combine_cfg(items: &[PredExpr], keyword: &str) -> Option<String> {
     match atoms.len() {
         0 => None,
         1 => Some(atoms.remove(0)),
-        _ => Some(format!("{keyword}({})", atoms.join(", "))),
+        _ => Some(match keyword {
+            CfgList::Any => Cfg::Any(atoms),
+            CfgList::All => Cfg::All(atoms),
+        }),
     }
 }
 
-fn negate_cfg(cfg: &str) -> String {
-    if let Some(inner) = cfg.strip_prefix("not(").and_then(|s| s.strip_suffix(')')) {
-        inner.to_string()
-    } else {
-        format!("not({cfg})")
+fn negate_cfg(cfg: Cfg) -> Cfg {
+    match cfg {
+        Cfg::Not(inner) => *inner,
+        other => Cfg::Not(Box::new(other)),
     }
 }
 
@@ -507,6 +522,10 @@ mod tests {
             .collect()
     }
 
+    fn cfg_str(cfg: &Option<Cfg>) -> Option<String> {
+        cfg.as_ref().map(Cfg::render)
+    }
+
     #[test]
     fn parses_defined_disjunction() {
         assert_eq!(
@@ -535,13 +554,13 @@ mod tests {
     #[test]
     fn disjunction_of_same_arch_dedups_to_one_cfg() {
         let cfg = pred_to_cfg(&parse_predicate("defined(__x86_64__) || defined(_M_X64)"));
-        assert_eq!(cfg.as_deref(), Some("target_arch = \"x86_64\""));
+        assert_eq!(cfg_str(&cfg).as_deref(), Some("target_arch = \"x86_64\""));
     }
 
     #[test]
     fn negated_ndebug_simplifies_double_not() {
         let cfg = pred_to_cfg(&PredExpr::Not(Box::new(PredExpr::Defined("NDEBUG".into()))));
-        assert_eq!(cfg.as_deref(), Some("debug_assertions"));
+        assert_eq!(cfg_str(&cfg).as_deref(), Some("debug_assertions"));
     }
 
     #[test]
@@ -554,20 +573,23 @@ mod tests {
         assert_eq!(chain.endif_line, 7);
 
         let win = &chain.branches[0];
-        assert_eq!(win.rust_cfg.as_deref(), Some("windows"));
+        assert_eq!(cfg_str(&win.rust_cfg).as_deref(), Some("windows"));
         assert_eq!(win.body_start, 2);
         assert_eq!(win.body_end, 2);
         assert_eq!(win.active, Some(false));
 
         let lin = &chain.branches[1];
         assert_eq!(lin.kind, DirectiveKind::Elif);
-        assert_eq!(lin.rust_cfg.as_deref(), Some("target_os = \"linux\""));
+        assert_eq!(
+            cfg_str(&lin.rust_cfg).as_deref(),
+            Some("target_os = \"linux\"")
+        );
         assert_eq!(lin.active, Some(true));
 
         let other = &chain.branches[2];
         assert_eq!(other.kind, DirectiveKind::Else);
         assert_eq!(
-            other.rust_cfg.as_deref(),
+            cfg_str(&other.rust_cfg).as_deref(),
             Some("not(any(windows, target_os = \"linux\"))")
         );
         assert_eq!(other.active, Some(false));

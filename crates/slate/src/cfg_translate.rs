@@ -1,24 +1,18 @@
 use crate::preprocess::{self, Branch, DirectiveKind, PredExpr};
+use crate::rust_ast::{Cfg, Item, Program};
 use crate::{c_ast, cir, ctx, fixups, lower};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
 #[derive(Debug, Clone)]
 struct CfgConfig {
-    rust_cfg: String,
+    rust_cfg: Cfg,
     clang_args: Vec<String>,
 }
 
-#[derive(Debug, Clone)]
 struct Variant {
     config: CfgConfig,
-    items: Vec<TopItem>,
-}
-
-#[derive(Debug, Clone)]
-struct TopItem {
-    key: String,
-    text: String,
+    program: Program,
 }
 
 pub fn translate_cfg(path: &Path) -> Result<String, String> {
@@ -26,19 +20,16 @@ pub fn translate_cfg(path: &Path) -> Result<String, String> {
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
     let configs = match plan_configs(&source)? {
         // No conditional compilation: fall back to plain single-config lowering.
-        None => return translate_one(path, &[]),
+        None => return Ok(translate_one(path, &[])?.emit()),
         Some(configs) => configs,
     };
 
     let mut variants = Vec::new();
     for config in configs {
-        let text = translate_one(path, &config.clang_args)?;
-        variants.push(Variant {
-            config,
-            items: split_top_items(&text)?,
-        });
+        let program = translate_one(path, &config.clang_args)?;
+        variants.push(Variant { config, program });
     }
-    merge_variants(&variants)
+    Ok(merge_variants(&variants).emit())
 }
 
 /// Derive the whole-item cfg matrix from the recorded conditional regions
@@ -242,7 +233,7 @@ fn line_start_depths(source: &str) -> Vec<i32> {
     depths
 }
 
-fn translate_one(path: &Path, clang_args: &[String]) -> Result<String, String> {
+fn translate_one(path: &Path, clang_args: &[String]) -> Result<Program, String> {
     let cir_text = cir::emit::emit_generic_with_args(path, clang_args)?;
     let module = cir::parse_module(&cir_text)?;
     let unit = c_ast::parse_file_with_args(path, clang_args)?;
@@ -255,144 +246,90 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<String, String> {
     if ctx.diagnostics.has_errors() {
         return Err(format!("lowering failed for {}", path.display()));
     }
-    Ok(fixups::apply(program).emit())
+    Ok(fixups::apply(program))
 }
 
-fn merge_variants(variants: &[Variant]) -> Result<String, String> {
+/// Stitch the per-config programs into one: items that are identical across
+/// every config in which they appear are emitted once; items that differ are
+/// emitted once per config, each wrapped in its `#[cfg(..)]` gate. Item identity
+/// is [`item_key`]; first-seen order is preserved.
+fn merge_variants(variants: &[Variant]) -> Program {
     let mut order = Vec::new();
     let mut seen = BTreeSet::new();
-    let mut by_key: BTreeMap<String, Vec<(CfgConfig, String)>> = BTreeMap::new();
+    let mut by_key: BTreeMap<String, Vec<(Cfg, Item)>> = BTreeMap::new();
 
     for variant in variants {
-        for item in &variant.items {
-            if seen.insert(item.key.clone()) {
-                order.push(item.key.clone());
+        for item in &variant.program.items {
+            let key = item_key(item);
+            if seen.insert(key.clone()) {
+                order.push(key.clone());
             }
             by_key
-                .entry(item.key.clone())
+                .entry(key)
                 .or_default()
-                .push((variant.config.clone(), item.text.clone()));
+                .push((variant.config.rust_cfg.clone(), item.clone()));
         }
     }
 
-    let mut out = String::new();
-    for key in order {
-        let entries = by_key
-            .remove(&key)
-            .ok_or_else(|| format!("missing item group for {key}"))?;
-        if all_text_equal(&entries) {
-            push_item(&mut out, &entries[0].1);
-            continue;
-        }
-        for (config, text) in entries {
-            push_cfg_item(&mut out, &config.rust_cfg, &text);
-        }
-    }
-    Ok(out)
-}
-
-fn all_text_equal(entries: &[(CfgConfig, String)]) -> bool {
-    entries
-        .first()
-        .is_none_or(|(_, first)| entries.iter().all(|(_, text)| text == first))
-}
-
-fn push_item(out: &mut String, item: &str) {
-    if !out.is_empty() {
-        out.push('\n');
-    }
-    out.push_str(item.trim_end());
-    out.push('\n');
-}
-
-fn push_cfg_item(out: &mut String, rust_cfg: &str, item: &str) {
-    if !out.is_empty() {
-        out.push('\n');
-    }
-    out.push_str(&format!("#[cfg({rust_cfg})]\n"));
-    out.push_str(item.trim_end());
-    out.push('\n');
-}
-
-fn split_top_items(text: &str) -> Result<Vec<TopItem>, String> {
     let mut items = Vec::new();
-    let mut current = Vec::new();
-    let mut brace_depth = 0i32;
-    let mut paren_depth = 0i32;
-
-    for line in text.lines() {
-        if current.is_empty() && line.trim().is_empty() {
-            continue;
-        }
-        current.push(line.to_string());
-        update_depths(line, &mut brace_depth, &mut paren_depth);
-        if brace_depth == 0 && paren_depth == 0 && item_boundary(line) {
-            let item_text = current.join("\n");
-            items.push(TopItem {
-                key: item_key(&item_text),
-                text: item_text,
-            });
-            current.clear();
+    for key in order {
+        let entries = by_key.remove(&key).expect("key recorded but group absent");
+        if all_items_equal(&entries) {
+            items.push(entries.into_iter().next().unwrap().1);
+        } else {
+            for (cfg, item) in entries {
+                items.push(Item::Cfg {
+                    cfg,
+                    item: Box::new(item),
+                });
+            }
         }
     }
-
-    if !current.is_empty() {
-        if brace_depth != 0 || paren_depth != 0 {
-            return Err("translate-cfg: unterminated generated Rust item".into());
-        }
-        let item_text = current.join("\n");
-        items.push(TopItem {
-            key: item_key(&item_text),
-            text: item_text,
-        });
-    }
-    Ok(items)
+    Program { items }
 }
 
-fn item_boundary(line: &str) -> bool {
-    let trimmed = line.trim();
-    trimmed.ends_with('}')
-        || trimmed.ends_with(';')
-        || trimmed == ")]"
-        || (trimmed.starts_with("#![") && trimmed.ends_with(']'))
-}
-
-fn update_depths(line: &str, brace_depth: &mut i32, paren_depth: &mut i32) {
-    for byte in line.bytes() {
-        match byte {
-            b'{' => *brace_depth += 1,
-            b'}' => *brace_depth -= 1,
-            b'(' => *paren_depth += 1,
-            b')' => *paren_depth -= 1,
-            _ => {}
-        }
+fn all_items_equal(entries: &[(Cfg, Item)]) -> bool {
+    let mut rendered = entries.iter().map(|(_, item)| render_item(item));
+    match rendered.next() {
+        None => true,
+        Some(first) => rendered.all(|item| item == first),
     }
 }
 
-fn item_key(text: &str) -> String {
-    if text.trim_start().starts_with("unsafe extern") {
-        return "extern".into();
+fn render_item(item: &Item) -> String {
+    Program {
+        items: vec![item.clone()],
     }
-    if text.trim_start().starts_with("#![allow") {
-        return "allow".into();
-    }
-    if let Some(name) = fn_name(text) {
-        return format!("fn:{name}");
-    }
-    text.lines().next().unwrap_or_default().trim().to_string()
+    .emit()
 }
 
-fn fn_name(text: &str) -> Option<String> {
-    let line = text
-        .lines()
-        .find(|line| line.contains("fn "))
-        .map(str::trim)?;
-    let after = line.split_once("fn ")?.1;
-    let name = after.split_once('(')?.0.trim();
-    if name.is_empty() {
-        None
-    } else {
-        Some(name.to_string())
+/// A stable identity for an item across configs, so the same logical item
+/// (e.g. `fn os_code`) is grouped even when its body differs per config.
+fn item_key(item: &Item) -> String {
+    match item {
+        Item::CrateAttrs(_) => "crate-attrs".into(),
+        Item::ExternBlock { .. } => "extern".into(),
+        Item::Func(f) => format!("fn:{}", f.name),
+        Item::Fn(f) => format!("fn:{}", f.name),
+        Item::Static { name, .. } => format!("static:{name}"),
+        Item::Mod { name } => format!("mod:{name}"),
+        Item::Use { path } => format!(
+            "use:{}",
+            path.segments
+                .iter()
+                .map(|s| s.as_str())
+                .collect::<Vec<_>>()
+                .join("::")
+        ),
+        Item::Enum(consts) => format!(
+            "enum:{}",
+            consts.first().map(|c| c.name.as_str()).unwrap_or_default()
+        ),
+        Item::Record(r) => format!("record:{}", r.name),
+        Item::Struct(s) => format!("struct:{}", s.name),
+        Item::Impl(im) => format!("impl:{}", im.self_ty.render()),
+        Item::Cfg { item, .. } => item_key(item),
+        Item::Raw(s) => s.lines().next().unwrap_or_default().trim().to_string(),
     }
 }
 
@@ -400,52 +337,62 @@ fn fn_name(text: &str) -> Option<String> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn splits_allow_extern_and_functions() {
-        let text = "\
-#![allow(
-    dead_code
-)]
+    use crate::rust_ast::{FnDef, Visibility};
 
-unsafe extern \"C\" {
-    fn printf(_0: *mut i8, ...) -> i32;
-}
-
-fn f() -> i32 {
-    return 1;
-}
-
-fn main() {
-    std::process::exit(f());
-}
-";
-        let items = split_top_items(text).unwrap();
-        assert_eq!(
-            items
-                .iter()
-                .map(|item| item.key.as_str())
-                .collect::<Vec<_>>(),
-            ["allow", "extern", "fn:f", "fn:main"]
-        );
+    fn fn_item(name: &str, ret: i64) -> Item {
+        Item::Fn(FnDef {
+            vis: Visibility::Private,
+            unsafe_extern_c: false,
+            name: name.to_string(),
+            params: Vec::new(),
+            ret: None,
+            body: vec![crate::rust_ast::IndentStmt {
+                depth: 1,
+                stmt: crate::rust_ast::Stmt::Return(Some(crate::rust_ast::Expr::Value(
+                    crate::rust_ast::RustValue::I64(ret),
+                ))),
+            }],
+        })
     }
 
     #[test]
-    fn splits_single_line_allow_attribute_before_function() {
-        let text = "\
-#![allow(dead_code)]
+    fn item_key_groups_same_named_functions() {
+        assert_eq!(item_key(&fn_item("os_code", 10)), "fn:os_code");
+        assert_eq!(item_key(&fn_item("os_code", 20)), "fn:os_code");
+        assert_eq!(item_key(&Item::CrateAttrs(Vec::new())), "crate-attrs");
+    }
 
-fn f() -> i32 {
-    return 1;
-}
-";
-        let items = split_top_items(text).unwrap();
-        assert_eq!(
-            items
-                .iter()
-                .map(|item| item.key.as_str())
-                .collect::<Vec<_>>(),
-            ["allow", "fn:f"]
-        );
+    #[test]
+    fn differing_items_are_gated_and_identical_items_collapse() {
+        let variants = vec![
+            Variant {
+                config: CfgConfig {
+                    rust_cfg: Cfg::Flag("windows".into()),
+                    clang_args: Vec::new(),
+                },
+                program: Program {
+                    items: vec![fn_item("os_code", 10), fn_item("main", 0)],
+                },
+            },
+            Variant {
+                config: CfgConfig {
+                    rust_cfg: Cfg::Opt {
+                        key: "target_os".into(),
+                        value: "linux".into(),
+                    },
+                    clang_args: Vec::new(),
+                },
+                program: Program {
+                    items: vec![fn_item("os_code", 20), fn_item("main", 0)],
+                },
+            },
+        ];
+        let out = merge_variants(&variants).emit();
+        assert!(out.contains("#[cfg(windows)]\nfn os_code()"));
+        assert!(out.contains("#[cfg(target_os = \"linux\")]\nfn os_code()"));
+        // `main` is identical across configs, so it is emitted once, ungated.
+        assert_eq!(out.matches("fn main()").count(), 1);
+        assert!(!out.contains("#[cfg(windows)]\nfn main"));
     }
 
     #[test]

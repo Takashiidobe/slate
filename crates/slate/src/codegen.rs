@@ -13,7 +13,7 @@
 use std::fmt::{self, Write};
 
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, Attr, Block, CrateAttr, Derive, Expr, ExternDecl,
+    AtomicOrdering, AtomicRmwOp, AtomicType, Attr, Block, Cfg, CrateAttr, Derive, Expr, ExternDecl,
     FnDef, Func, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method, Path, Program,
     RecordDef, Repr, RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
 };
@@ -164,9 +164,40 @@ impl<W: Write> Codegen<W> {
             Item::Record(r) => self.record(r)?,
             Item::Struct(s) => self.struct_def(s)?,
             Item::Impl(im) => self.impl_block(im)?,
+            Item::Cfg { cfg, item } => {
+                self.out.write_str("#[cfg(")?;
+                self.cfg(cfg)?;
+                self.out.write_str(")]\n")?;
+                self.item(item)?;
+            }
             Item::Raw(s) => writeln!(self.out, "{s}")?,
         }
         Ok(())
+    }
+
+    fn cfg(&mut self, cfg: &Cfg) -> fmt::Result {
+        match cfg {
+            Cfg::Flag(name) => self.out.write_str(name),
+            Cfg::Opt { key, value } => write!(self.out, "{key} = \"{value}\""),
+            Cfg::Not(inner) => {
+                self.out.write_str("not(")?;
+                self.cfg(inner)?;
+                self.out.write_str(")")
+            }
+            Cfg::Any(items) => self.cfg_list("any", items),
+            Cfg::All(items) => self.cfg_list("all", items),
+        }
+    }
+
+    fn cfg_list(&mut self, keyword: &str, items: &[Cfg]) -> fmt::Result {
+        write!(self.out, "{keyword}(")?;
+        for (i, item) in items.iter().enumerate() {
+            if i > 0 {
+                self.out.write_str(", ")?;
+            }
+            self.cfg(item)?;
+        }
+        self.out.write_str(")")
     }
 
     fn fn_def(&mut self, f: &FnDef) -> fmt::Result {
@@ -1076,6 +1107,12 @@ pub fn expr_to_string(expr: &Expr) -> String {
 pub fn type_to_string(ty: &Type) -> String {
     let mut cg = Codegen::new(String::new());
     cg.ty(ty).expect("writing to a String never fails");
+    cg.into_inner()
+}
+
+pub fn cfg_to_string(cfg: &Cfg) -> String {
+    let mut cg = Codegen::new(String::new());
+    cg.cfg(cfg).expect("writing to a String never fails");
     cg.into_inner()
 }
 
