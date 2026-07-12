@@ -199,7 +199,7 @@ fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
                         "directive_line": branch.directive_line,
                         "body_start": branch.body_start,
                         "body_end": branch.body_end,
-                        "rust_cfg": branch.rust_cfg,
+                        "rust_cfg": branch.rust_cfg.as_ref().map(|c| c.render()),
                         "active": branch.active,
                     })
                 })
