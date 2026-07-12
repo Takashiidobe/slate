@@ -40,7 +40,30 @@ pub enum Item {
     Record(RecordDef),
     Struct(StructDef),
     Impl(ImplBlock),
+    /// A `#[cfg(..)]`-gated item: the predicate plus the item it guards.
+    Cfg {
+        cfg: Cfg,
+        item: Box<Item>,
+    },
     Raw(String),
+}
+
+/// A `cfg(..)` predicate, rendered as the inside of a `#[cfg(..)]` attribute.
+/// `Flag` is a bare atom (`windows`, `debug_assertions`); `Opt` is a `key =
+/// "value"` pair (`target_arch = "x86_64"`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Cfg {
+    Flag(String),
+    Opt { key: String, value: String },
+    Not(Box<Cfg>),
+    Any(Vec<Cfg>),
+    All(Vec<Cfg>),
+}
+
+impl Cfg {
+    pub fn render(&self) -> String {
+        crate::codegen::cfg_to_string(self)
+    }
 }
 
 /// A struct definition richer than [`RecordDef`]: attributes, generics, and a
