@@ -130,8 +130,8 @@ impl<W: Write> Codegen<W> {
                 ty,
                 init,
             } => {
-                if let Some(vis) = vis {
-                    write!(self.out, "{vis} ")?;
+                if let Some(kw) = vis.keyword() {
+                    write!(self.out, "{kw} ")?;
                 }
                 self.out.write_str("static ")?;
                 if *mutable {
@@ -166,8 +166,8 @@ impl<W: Write> Codegen<W> {
     }
 
     fn fn_def(&mut self, f: &FnDef) -> fmt::Result {
-        if let Some(vis) = &f.vis {
-            write!(self.out, "{vis} ")?;
+        if let Some(kw) = f.vis.keyword() {
+            write!(self.out, "{kw} ")?;
         }
         if f.unsafe_extern_c {
             self.out.write_str("unsafe extern \"C\" ")?;

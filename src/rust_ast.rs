@@ -26,7 +26,7 @@ pub enum Item {
         path: String,
     },
     Static {
-        vis: Option<String>,
+        vis: Visibility,
         mutable: bool,
         name: String,
         ty: Type,
@@ -57,6 +57,22 @@ pub struct StructDef {
 pub enum StructFields {
     Tuple(Vec<Type>),
     Named(Vec<(String, Type)>),
+}
+
+/// An item's visibility modifier. `Private` renders no keyword.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Visibility {
+    Private,
+    Pub,
+}
+
+impl Visibility {
+    pub fn keyword(self) -> Option<&'static str> {
+        match self {
+            Visibility::Private => None,
+            Visibility::Pub => Some("pub"),
+        }
+    }
 }
 
 /// A crate-level inner attribute (`#![..]`).
@@ -219,7 +235,7 @@ pub struct ExternFnDecl {
 
 #[derive(Debug, Clone)]
 pub struct FnDef {
-    pub vis: Option<String>,
+    pub vis: Visibility,
     pub unsafe_extern_c: bool,
     pub name: String,
     pub params: Vec<FnParam>,

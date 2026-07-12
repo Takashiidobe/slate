@@ -1154,7 +1154,7 @@ fn is_ident_continue(b: u8) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rust_ast::{BinOp, FnParam, Prim, Type};
+    use crate::rust_ast::{BinOp, FnParam, Prim, Type, Visibility};
 
     fn temp(name: &str, ty: &str, init: Expr) -> Stmt {
         Stmt::Let {
@@ -1184,7 +1184,7 @@ mod tests {
 
     fn migrated_fn(body: Vec<Stmt>) -> FnDef {
         FnDef {
-            vis: None,
+            vis: Visibility::Private,
             unsafe_extern_c: false,
             name: "add".into(),
             params: vec![
