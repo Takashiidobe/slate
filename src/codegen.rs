@@ -732,6 +732,17 @@ impl<W: Write> Codegen<W> {
                 self.args(args)?;
                 self.out.write_char(')')
             }
+            Expr::Closure { params, body } => {
+                self.out.write_char('|')?;
+                for (i, param) in params.iter().enumerate() {
+                    if i > 0 {
+                        self.out.write_str(", ")?;
+                    }
+                    self.out.write_str(param.as_str())?;
+                }
+                self.out.write_str("| ")?;
+                self.expr(body)
+            }
             Expr::Match { expr, arms } => {
                 self.out.write_str("match ")?;
                 self.expr_spliceable(expr)?;
