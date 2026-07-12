@@ -85,7 +85,7 @@ where
 {
     expect_char(chars, '<')?;
     let mut name = String::new();
-    while let Some(c) = chars.next() {
+    for c in chars.by_ref() {
         if c == '>' {
             if name.is_empty() {
                 return Err("empty nonterminal".into());
@@ -173,11 +173,10 @@ fn grammar_references_are_defined() {
     for (lhs, alternatives) in &grammar.rules {
         for alt in alternatives {
             for symbol in alt {
-                if let Symbol::Nonterminal(name) = symbol {
-                    if !grammar.rules.contains_key(name) {
+                if let Symbol::Nonterminal(name) = symbol
+                    && !grammar.rules.contains_key(name) {
                         undefined.push(format!("<{name}> (used in <{lhs}>)"));
                     }
-                }
             }
         }
     }

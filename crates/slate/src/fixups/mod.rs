@@ -293,15 +293,10 @@ fn inline_nested_temps(body: &mut [IndentStmt]) {
     }
 }
 
-// The temp is inlinable only if, in the statements that follow, it is read exactly
-// once and every statement before that read is another pure temp let (so nothing
-// between the definition and the use can observe a different value). The read must
-// not sit inside a call or method/field receiver, where inlining a bare value can
-// lose a needed type annotation.
 fn single_safe_use(body: &[IndentStmt], def_index: usize, name: &str) -> Option<usize> {
     let mut found = None;
-    for index in (def_index + 1)..body.len() {
-        let stmt = &body[index].stmt;
+    for (index, stmt) in body.iter().enumerate().skip(def_index + 1) {
+        let stmt = &stmt.stmt;
         let uses = stmt_ident_count(stmt, name);
         if uses > 0 {
             if uses == 1
