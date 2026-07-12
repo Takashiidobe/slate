@@ -110,7 +110,7 @@ struct Lowerer<'a> {
     const_zero_globals: BTreeSet<String>,
     /// external (body-less) functions → rust types of their fixed params; the
     /// call site uses this to `as`-cast args and wrap the call in `unsafe`.
-    externs: BTreeMap<String, Vec<String>>,
+    externs: BTreeMap<String, Vec<Type>>,
     extern_returns: BTreeMap<String, Option<String>>,
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
@@ -743,7 +743,7 @@ impl<'a> Lowerer<'a> {
         &self,
         name: &str,
         function_type: &str,
-    ) -> (ExternFnDecl, Vec<String>, Option<String>) {
+    ) -> (ExternFnDecl, Vec<Type>, Option<String>) {
         let inner = function_type
             .strip_prefix("!cir.func<")
             .and_then(|s| s.strip_suffix('>'))
@@ -772,7 +772,7 @@ impl<'a> Lowerer<'a> {
                     mutable: false,
                     ty: ty.clone(),
                 });
-                param_types.push(ty.render());
+                param_types.push(ty);
             }
         }
         let ret_ast = match ret {
@@ -1204,14 +1204,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let ty = self
             .pointee_type(op.ty.as_deref().unwrap_or(""))
-            .unwrap_or_else(|| "i32".into());
+            .unwrap_or(Type::Prim(Prim::I32));
+        let ty_str = ty.render();
         self.slots.insert(result.clone(), name.clone());
-        self.slot_types.insert(result.clone(), ty.clone());
+        self.slot_types.insert(result.clone(), ty_str.clone());
         self.push_stmt(Stmt::Let {
             name,
             mutable: true,
-            ty: Some(Type::Named(ty.clone())),
-            init: Some(self.default_value_expr(&ty)),
+            ty: Some(ty),
+            init: Some(self.default_value_expr(&ty_str)),
         });
     }
 
@@ -2594,7 +2595,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         }
                         Some(ty) => Expr::Cast {
                             expr: Box::new(arg),
-                            ty: crate::rust_ast::Type::Named(ty.clone()),
+                            ty: ty.clone(),
                         },
                         None => arg,
                     })
@@ -3618,11 +3619,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Self::unsafe_stmt(Self::assign_stmt(target, value)));
     }
 
-    fn pointee_type(&self, ty: &str) -> Option<String> {
+    fn pointee_type(&self, ty: &str) -> Option<Type> {
         let ret = op_type_return(ty)?;
         ret.strip_prefix("!cir.ptr<")
             .and_then(|s| s.strip_suffix('>'))
-            .map(|ty| self.parent.rust_type(ty).render())
+            .map(|ty| self.parent.rust_type(ty))
     }
 
     fn default_value_expr(&self, ty: &str) -> Expr {
@@ -4000,8 +4001,8 @@ fn is_complex_runtime_call(name: &str) -> bool {
     matches!(name, "__muldc3" | "__divdc3" | "__mulsc3" | "__divsc3")
 }
 
-fn complex_ty(inner: &str) -> Type {
-    Type::Named(format!("Complex<{inner}>"))
+fn complex_ty(inner: Type) -> Type {
+    Type::Complex(Box::new(inner))
 }
 
 fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
@@ -4025,9 +4026,9 @@ fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
         params: vec![FnParam {
             name: "o".into(),
             mutable: false,
-            ty: complex_ty("T"),
+            ty: complex_ty(Type::Named("T".into())),
         }],
-        ret: Some(complex_ty("T")),
+        ret: Some(complex_ty(Type::Named("T".into()))),
         body: Expr::StructLit {
             name: "Complex".into(),
             fields: vec![component("re"), component("im")],
@@ -4042,11 +4043,11 @@ fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
             }],
         }],
         trait_: Some(trait_),
-        self_ty: complex_ty("T"),
+        self_ty: complex_ty(Type::Named("T".into())),
         items: vec![
             ImplItem::AssocType {
                 name: "Output".into(),
-                ty: complex_ty("T"),
+                ty: complex_ty(Type::Named("T".into())),
             },
             ImplItem::Method(method),
         ],
@@ -4063,7 +4064,7 @@ fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
         name: name.into(),
         params: vec![param("a"), param("b"), param("c"), param("d")],
         variadic: false,
-        ret: Some(complex_ty(prim.spelling())),
+        ret: Some(complex_ty(Type::Prim(prim))),
     })
 }
 
