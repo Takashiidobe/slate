@@ -344,13 +344,48 @@ pub enum RustValue {
     NullPtr,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Ident(String);
+
+impl Ident {
+    pub fn new(s: impl Into<String>) -> Self {
+        Self(s.into())
+    }
+
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+
+    pub fn into_string(self) -> String {
+        self.0
+    }
+}
+
+impl From<String> for Ident {
+    fn from(s: String) -> Self {
+        Self::new(s)
+    }
+}
+
+impl From<&str> for Ident {
+    fn from(s: &str) -> Self {
+        Self::new(s)
+    }
+}
+
+impl std::fmt::Display for Ident {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum Expr {
     /// A structured literal value (integer, null pointer).
     Value(RustValue),
     /// A literal or identifier printed verbatim (numbers, `true`, names).
     Lit(String),
-    Var(String),
+    Var(Ident),
     Unary {
         op: UnaryOp,
         expr: Box<Expr>,
@@ -690,7 +725,7 @@ impl Expr {
     // reached — the inliner falls back to a textual splice for those.
     pub fn substitute_var(&mut self, name: &str, replacement: &Expr) -> bool {
         match self {
-            Expr::Var(v) if v == name => {
+            Expr::Var(v) if v.as_str() == name => {
                 *self = replacement.clone();
                 true
             }
