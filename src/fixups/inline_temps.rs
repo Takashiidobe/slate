@@ -143,7 +143,7 @@ fn is_receiver_use(stmt: &Stmt, name: &str) -> bool {
     found
 }
 
-fn walk_stmt_exprs(stmt: &Stmt, f: &mut impl FnMut(&Expr)) {
+pub(super) fn walk_stmt_exprs(stmt: &Stmt, f: &mut impl FnMut(&Expr)) {
     match stmt {
         Stmt::Let { init, .. } => {
             if let Some(expr) = init {

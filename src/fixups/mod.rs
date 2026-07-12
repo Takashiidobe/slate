@@ -1,5 +1,6 @@
 //! Rust cleanup passes that run after faithful CIR lowering.
 
+mod call_args;
 mod compound_assign;
 mod idents;
 mod inline_temps;
@@ -13,6 +14,7 @@ mod test_support;
 use crate::rust_ast::{Item, Program};
 
 pub fn apply(program: Program) -> Program {
+    let sigs = call_args::collect_signatures(&program);
     Program {
         items: program
             .items
@@ -23,6 +25,7 @@ pub fn apply(program: Program) -> Program {
                     param_spills::fixup(&mut f);
                     zero_init::fixup(&mut f.body);
                     compound_assign::fixup(&mut f.body);
+                    call_args::fixup(&mut f.body, &sigs);
                     retval::fixup(&mut f.body);
                     Item::Fn(f)
                 }
