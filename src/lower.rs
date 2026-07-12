@@ -2538,17 +2538,38 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             && arg_types.get(1).is_some_and(|ty| is_long_double(ty))
             && arg_types.get(2).is_some_and(|ty| *ty == "!s32i")
         {
-            let a0 = args[0].render();
-            let a1 = args[1].render();
-            let a2 = args[2].render();
-            let expr = format!(
-                "unsafe {{ __slate_printf_ld_i32({} as *mut i8, std::ptr::addr_of!({}) as *const LongDouble, {} as i32) }}",
-                a0, a1, a2
-            );
+            let i8_ptr = Type::Ptr {
+                mutable: true,
+                inner: Box::new(Type::Prim(Prim::I8)),
+            };
+            let long_double_ptr = Type::Ptr {
+                mutable: false,
+                inner: Box::new(Type::Named(LONG_DOUBLE_TY.into())),
+            };
+            let expr = Self::unsafe_expr(Expr::Call {
+                func: Box::new(Expr::Var("__slate_printf_ld_i32".into())),
+                args: vec![
+                    Expr::Cast {
+                        expr: Box::new(args[0].clone()),
+                        ty: i8_ptr,
+                    },
+                    Expr::Cast {
+                        expr: Box::new(Expr::AddrOf {
+                            mutable: false,
+                            expr: Box::new(args[1].clone()),
+                        }),
+                        ty: long_double_ptr,
+                    },
+                    Expr::Cast {
+                        expr: Box::new(args[2].clone()),
+                        ty: Type::Prim(Prim::I32),
+                    },
+                ],
+            });
             if let Some(result) = op.results.first() {
-                self.materialize_expr(result, Expr::Raw(expr), op_result_type(op));
+                self.materialize_expr(result, expr, op_result_type(op));
             } else {
-                self.push_stmt(Stmt::Expr(Expr::Raw(expr)));
+                self.push_stmt(Stmt::Expr(expr));
             }
             return;
         }
