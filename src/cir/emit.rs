@@ -25,10 +25,11 @@ fn cir_opt() -> String {
 pub fn target_args() -> Vec<String> {
     let mut args = Vec::new();
     if let Ok(target) = std::env::var("SLATE_TARGET")
-        && !target.trim().is_empty() {
-            args.push("-target".into());
-            args.push(target);
-        }
+        && !target.trim().is_empty()
+    {
+        args.push("-target".into());
+        args.push(target);
+    }
     if let Ok(extra) = std::env::var("SLATE_CLANG_ARGS") {
         args.extend(extra.split_whitespace().map(str::to_string));
     }
