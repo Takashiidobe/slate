@@ -8,7 +8,7 @@ use crate::rust_ast::{
     EnumConst, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam, GenericParam,
     Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint, MatchArm, Method, Pattern, Prim,
     Program, RecordDef, Repr, RustValue, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type,
-    UnaryOp,
+    UnaryOp, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -259,9 +259,9 @@ impl<'a> Lowerer<'a> {
         }
         for global in self.globals.values() {
             let global_vis = if self.project.emit_pub && global.external {
-                Some("pub".into())
+                Visibility::Pub
             } else {
-                None
+                Visibility::Private
             };
             items.push(Item::Static {
                 vis: global_vis,
@@ -657,12 +657,17 @@ impl<'a> Lowerer<'a> {
 
         let (vis, unsafe_extern_c, ret, prelude) = if is_main {
             params.clear();
-            (None, false, None, self.main_arg_bindings(entry))
+            (
+                Visibility::Private,
+                false,
+                None,
+                self.main_arg_bindings(entry),
+            )
         } else {
             let vis = if self.project.emit_pub && linkage_is_external(op) {
-                Some("pub".to_string())
+                Visibility::Pub
             } else {
-                None
+                Visibility::Private
             };
             let unsafe_extern_c = if is_variadic {
                 self.uses_c_variadic.set(true);
