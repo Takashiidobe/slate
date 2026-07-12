@@ -1265,7 +1265,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if attr_bool(op, "is_volatile") {
             self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
-                func: Box::new(Self::path_expr("std::ptr::write_volatile")),
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "ptr", "write_volatile"].map(Ident::from),
+                ))),
                 args: vec![self.store_address_expr(ptr), value],
             })));
         } else if let Some(target) = self.place_expr(ptr) {
@@ -1375,7 +1377,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let value = if attr_bool(op, "is_volatile") {
             Self::unsafe_expr(Expr::Call {
-                func: Box::new(Self::path_expr("std::ptr::read_volatile")),
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "ptr", "read_volatile"].map(Ident::from),
+                ))),
                 args: vec![self.load_address_expr(ptr)],
             })
         } else if let Some(atomic) = self.atomic_load_expr(op, ptr) {
@@ -1949,7 +1953,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             parts.push(Expr::Binary {
                 op: BinOp::Eq,
                 lhs: Box::new(value.clone()),
-                rhs: Box::new(Self::path_expr("f64::NEG_INFINITY")),
+                rhs: Box::new(Expr::Path(Path::new(
+                    ["f64", "NEG_INFINITY"].map(Ident::from),
+                ))),
             });
         }
         if flags & 0x8 != 0 {
@@ -2049,7 +2055,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             parts.push(Expr::Binary {
                 op: BinOp::Eq,
                 lhs: Box::new(value),
-                rhs: Box::new(Self::path_expr("f64::INFINITY")),
+                rhs: Box::new(Expr::Path(Path::new(["f64", "INFINITY"].map(Ident::from)))),
             });
         }
         let expr = if parts.is_empty() {
@@ -2998,7 +3004,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if self.is_main {
             let code = value.unwrap_or(Expr::Value(RustValue::I64(0)));
             self.push_stmt(Stmt::Expr(Expr::Call {
-                func: Box::new(Self::path_expr("std::process::exit")),
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "process", "exit"].map(Ident::from),
+                ))),
                 args: vec![Expr::Cast {
                     expr: Box::new(code),
                     ty: Type::Prim(Prim::I32),
@@ -3582,10 +3590,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             depth: self.indent,
             stmt,
         });
-    }
-
-    fn path_expr(path: &str) -> Expr {
-        Expr::Path(Path::new(path.split("::").map(Ident::from)))
     }
 
     fn unsafe_expr(value: Expr) -> Expr {
