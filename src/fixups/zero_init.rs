@@ -72,7 +72,7 @@ fn is_zero_expr(expr: &Expr) -> bool {
     matches!(
         expr,
         Expr::Value(RustValue::I64(0)) | Expr::Value(RustValue::I128(0))
-    ) || matches!(expr, Expr::Lit(s) if matches!(s.as_str(), "0" | "0.0" | "false"))
+    )
 }
 
 #[cfg(test)]

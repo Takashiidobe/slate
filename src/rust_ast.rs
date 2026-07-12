@@ -478,7 +478,8 @@ impl From<&str> for Label {
 #[derive(Debug, Clone)]
 pub enum Expr {
     Value(RustValue),
-    Lit(String),
+    HexFloat(String),
+    ByteStr(Vec<u8>),
     Var(Ident),
     Unary {
         op: UnaryOp,
@@ -813,7 +814,11 @@ impl Expr {
                 *self = replacement.clone();
                 true
             }
-            Expr::Value(_) | Expr::Lit(_) | Expr::Var(_) | Expr::Path(_) => false,
+            Expr::Value(_)
+            | Expr::HexFloat(_)
+            | Expr::ByteStr(_)
+            | Expr::Var(_)
+            | Expr::Path(_) => false,
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
             | Expr::Ref { expr, .. }
