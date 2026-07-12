@@ -107,7 +107,6 @@ fn is_pure_temp_let(stmt: &Stmt) -> bool {
 fn is_pure_expr(expr: &Expr) -> bool {
     match expr {
         Expr::Value(_) => true,
-        Expr::Lit(s) => s.bytes().all(|b| b.is_ascii_digit()),
         Expr::Var(_) => true,
         Expr::Unary { op, expr } => !matches!(op, UnaryOp::Not) && is_pure_expr(expr),
         Expr::Binary { lhs, rhs, .. } => is_pure_expr(lhs) && is_pure_expr(rhs),
@@ -217,7 +216,8 @@ fn walk_expr(expr: &Expr, f: &mut impl FnMut(&Expr)) {
     f(expr);
     match expr {
         Expr::Value(_)
-        | Expr::Lit(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
         | Expr::Todo(_)

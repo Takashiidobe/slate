@@ -625,7 +625,8 @@ impl<W: Write> Codegen<W> {
     fn expr_raw(&mut self, expr: &Expr) -> fmt::Result {
         match expr {
             Expr::Value(v) => self.value(v),
-            Expr::Lit(s) => self.out.write_str(s),
+            Expr::HexFloat(s) => self.out.write_str(s),
+            Expr::ByteStr(bytes) => self.out.write_str(&byte_string_literal(bytes)),
             Expr::Path(p) => self.path(p),
             Expr::Var(s) => self.out.write_str(s.as_str()),
             Expr::Unary { op, expr } => {
@@ -1040,4 +1041,22 @@ pub fn type_to_string(ty: &Type) -> String {
     let mut cg = Codegen::new(String::new());
     cg.ty(ty).expect("writing to a String never fails");
     cg.into_inner()
+}
+
+fn byte_string_literal(bytes: &[u8]) -> String {
+    let mut out = String::from("b\"");
+    for b in bytes {
+        match *b {
+            b'\n' => out.push_str("\\n"),
+            b'\r' => out.push_str("\\r"),
+            b'\t' => out.push_str("\\t"),
+            b'\\' => out.push_str("\\\\"),
+            b'"' => out.push_str("\\\""),
+            0 => out.push_str("\\0"),
+            0x20..=0x7e => out.push(*b as char),
+            _ => out.push_str(&format!("\\x{b:02x}")),
+        }
+    }
+    out.push('"');
+    out
 }

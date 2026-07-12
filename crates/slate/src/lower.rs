@@ -208,7 +208,7 @@ impl Val {
                 // *mut so it fits *mut char slots; weakens to *const for printf/libc.
                 Some(bytes) => Expr::Cast {
                     expr: Box::new(Expr::MethodCall {
-                        recv: Box::new(Expr::Lit(rust_byte_string(bytes))),
+                        recv: Box::new(Expr::ByteStr(bytes.clone())),
                         method: "as_ptr".into(),
                         args: Vec::new(),
                     }),
@@ -4481,7 +4481,7 @@ fn parse_cir_fp_expr(s: &str) -> Option<Expr> {
 fn fp_literal_expr(fp: String) -> Expr {
     fp.parse::<f64>()
         .map(|n| Expr::Value(RustValue::Float(n)))
-        .unwrap_or_else(|_| Expr::Lit(fp))
+        .unwrap_or_else(|_| Expr::HexFloat(fp))
 }
 
 // i128 so a full-range `!u64i` value (e.g. SIG_ERR = (void(*)(int))-1, which CIR
@@ -4588,24 +4588,6 @@ fn decode_cir_string(s: &str) -> Vec<u8> {
         }
     }
     bytes
-}
-
-fn rust_byte_string(bytes: &[u8]) -> String {
-    let mut out = String::from("b\"");
-    for b in bytes {
-        match *b {
-            b'\n' => out.push_str("\\n"),
-            b'\r' => out.push_str("\\r"),
-            b'\t' => out.push_str("\\t"),
-            b'\\' => out.push_str("\\\\"),
-            b'"' => out.push_str("\\\""),
-            0 => out.push_str("\\0"),
-            0x20..=0x7e => out.push(*b as char),
-            _ => out.push_str(&format!("\\x{b:02x}")),
-        }
-    }
-    out.push('"');
-    out
 }
 
 fn sanitize_ident(s: &str) -> Ident {
