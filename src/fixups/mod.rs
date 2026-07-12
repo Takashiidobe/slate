@@ -488,7 +488,7 @@ fn expr_ident_count(expr: &Expr, name: &str) -> usize {
         Expr::CopyNonoverlapping { src, dst, .. } => {
             expr_ident_count(src, name) + expr_ident_count(dst, name)
         }
-        Expr::AtomicFence { .. } => 0,
+        Expr::AtomicFence { .. } | Expr::Todo(_) => 0,
         Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => expr_ident_count(ptr, name),
         Expr::AtomicStore { ptr, value, .. }
         | Expr::AtomicFetch { ptr, value, .. }

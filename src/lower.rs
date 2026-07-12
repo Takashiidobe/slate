@@ -1522,7 +1522,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // Lower every op in a region, capturing the terminating cir.yield's operand as
     // the region's tail value instead of lowering the yield itself.
     fn lower_yield_region(&mut self, region: &Region) -> (Vec<IndentStmt>, Expr) {
-        let mut yielded = Expr::Raw("todo!(\"cir.yield\")".into());
+        let mut yielded = Expr::Todo("cir.yield".into());
         let body = self.capture_body(|this| {
             for block in &region.blocks {
                 for op in &block.ops {
@@ -3470,7 +3470,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     /// Raw escape hatch for CIR constructs slate cannot lower yet: emits a
     /// `todo!("<note>")` placeholder so the generated Rust still compiles-shaped.
     fn emit_todo(&mut self, note: &str) {
-        self.push_stmt(Stmt::Expr(Expr::Raw(format!("todo!({note:?})"))));
+        self.push_stmt(Stmt::Expr(Expr::Todo(note.to_string())));
     }
 
     /// Raw escape hatch for pre-rendered statement text (variadic prelude lines,
