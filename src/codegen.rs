@@ -494,7 +494,7 @@ impl<W: Write> Codegen<W> {
                     self.ty(ty)?;
                 }
                 self.out.write_str(" = if ")?;
-                self.expr_prec(cond, PREC_CALL)?;
+                self.expr(cond)?;
                 self.out.write_str(" {\n")?;
                 self.indent_stmts(then_body, depth + 1)?;
                 write!(self.out, "{pad}{INDENT}")?;
@@ -543,7 +543,7 @@ impl<W: Write> Codegen<W> {
                 else_body,
             } => {
                 write!(self.out, "{pad}if ")?;
-                self.expr_prec(cond, PREC_CALL)?;
+                self.expr(cond)?;
                 self.out.write_str(" {\n")?;
                 self.indent_stmts(then_body, depth + 1)?;
                 if else_body.is_empty() {
@@ -574,7 +574,7 @@ impl<W: Write> Codegen<W> {
             }
             Stmt::Match { expr, arms } => {
                 write!(self.out, "{pad}match ")?;
-                self.expr_prec(expr, PREC_CALL)?;
+                self.expr(expr)?;
                 self.out.write_str(" {\n")?;
                 for arm in arms {
                     write!(self.out, "{pad}{INDENT}")?;
@@ -746,7 +746,7 @@ impl<W: Write> Codegen<W> {
             }
             Expr::Match { expr, arms } => {
                 self.out.write_str("match ")?;
-                self.expr_prec(expr, PREC_CALL)?;
+                self.expr(expr)?;
                 self.out.write_str(" { ")?;
                 for (i, arm) in arms.iter().enumerate() {
                     if i > 0 {
@@ -764,7 +764,7 @@ impl<W: Write> Codegen<W> {
                 else_expr,
             } => {
                 self.out.write_str("if ")?;
-                self.expr_prec(cond, PREC_CALL)?;
+                self.expr(cond)?;
                 self.out.write_str(" { ")?;
                 self.expr(then_expr)?;
                 self.out.write_str(" } else { ")?;
