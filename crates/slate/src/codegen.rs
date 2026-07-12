@@ -13,8 +13,9 @@
 use std::fmt::{self, Write};
 
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, Block, Expr, ExternDecl, FnDef, Func, IndentStmt,
-    Item, Program, RecordDef, RustValue, Stmt, Type,
+    AtomicOrdering, AtomicRmwOp, AtomicType, Attr, Block, Derive, Expr, ExternDecl, FnDef, Func,
+    GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method, Program, RecordDef, Repr,
+    RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
 };
 
 const INDENT: &str = "    ";
@@ -151,6 +152,8 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char('\n')?;
             }
             Item::Record(r) => self.record(r)?,
+            Item::Struct(s) => self.struct_def(s)?,
+            Item::Impl(im) => self.impl_block(im)?,
             Item::Raw(s) => writeln!(self.out, "{s}")?,
         }
         Ok(())
@@ -200,6 +203,149 @@ impl<W: Write> Codegen<W> {
             self.out.write_str(",\n")?;
         }
         self.out.write_str("}\n\n")
+    }
+
+    fn struct_def(&mut self, s: &StructDef) -> fmt::Result {
+        for attr in &s.attrs {
+            self.out.write_str("#[")?;
+            self.attr(attr)?;
+            self.out.write_str("]\n")?;
+        }
+        write!(self.out, "struct {}", s.name)?;
+        self.generics(&s.generics)?;
+        match &s.fields {
+            StructFields::Tuple(tys) => {
+                self.out.write_char('(')?;
+                for (i, ty) in tys.iter().enumerate() {
+                    if i > 0 {
+                        self.out.write_str(", ")?;
+                    }
+                    self.ty(ty)?;
+                }
+                self.out.write_str(");\n")
+            }
+            StructFields::Named(fields) => {
+                self.out.write_str(" {\n")?;
+                for (name, ty) in fields {
+                    write!(self.out, "{INDENT}{name}: ")?;
+                    self.ty(ty)?;
+                    self.out.write_str(",\n")?;
+                }
+                self.out.write_str("}\n")
+            }
+        }
+    }
+
+    fn attr(&mut self, attr: &Attr) -> fmt::Result {
+        match attr {
+            Attr::Repr(items) => {
+                self.out.write_str("repr(")?;
+                for (i, r) in items.iter().enumerate() {
+                    if i > 0 {
+                        self.out.write_str(", ")?;
+                    }
+                    match r {
+                        Repr::C => self.out.write_str("C")?,
+                        Repr::Align(n) => write!(self.out, "align({n})")?,
+                    }
+                }
+                self.out.write_char(')')
+            }
+            Attr::Derive(items) => {
+                self.out.write_str("derive(")?;
+                for (i, d) in items.iter().enumerate() {
+                    if i > 0 {
+                        self.out.write_str(", ")?;
+                    }
+                    self.out.write_str(match d {
+                        Derive::Clone => "Clone",
+                        Derive::Copy => "Copy",
+                    })?;
+                }
+                self.out.write_char(')')
+            }
+        }
+    }
+
+    fn generics(&mut self, generics: &[GenericParam]) -> fmt::Result {
+        if generics.is_empty() {
+            return Ok(());
+        }
+        self.out.write_char('<')?;
+        for (i, g) in generics.iter().enumerate() {
+            if i > 0 {
+                self.out.write_str(", ")?;
+            }
+            self.out.write_str(&g.name)?;
+            for (j, bound) in g.bounds.iter().enumerate() {
+                self.out.write_str(if j == 0 { ": " } else { " + " })?;
+                self.trait_bound(bound)?;
+            }
+        }
+        self.out.write_char('>')
+    }
+
+    fn trait_bound(&mut self, bound: &TraitBound) -> fmt::Result {
+        self.out.write_str(bound.trait_.path())?;
+        if !bound.assoc.is_empty() {
+            self.out.write_char('<')?;
+            for (i, (name, ty)) in bound.assoc.iter().enumerate() {
+                if i > 0 {
+                    self.out.write_str(", ")?;
+                }
+                write!(self.out, "{name} = ")?;
+                self.ty(ty)?;
+            }
+            self.out.write_char('>')?;
+        }
+        Ok(())
+    }
+
+    fn impl_block(&mut self, im: &ImplBlock) -> fmt::Result {
+        self.out.write_str("impl")?;
+        self.generics(&im.generics)?;
+        self.out.write_char(' ')?;
+        if let Some(tr) = &im.trait_ {
+            write!(self.out, "{} for ", tr.path())?;
+        }
+        self.ty(&im.self_ty)?;
+        self.out.write_str(" {\n")?;
+        for item in &im.items {
+            match item {
+                ImplItem::AssocType { name, ty } => {
+                    write!(self.out, "{INDENT}type {name} = ")?;
+                    self.ty(ty)?;
+                    self.out.write_str(";\n")?;
+                }
+                ImplItem::Method(m) => self.method(m)?,
+            }
+        }
+        self.out.write_str("}\n")
+    }
+
+    fn method(&mut self, m: &Method) -> fmt::Result {
+        write!(self.out, "{INDENT}fn {}(", m.name)?;
+        let mut first = true;
+        if m.takes_self {
+            self.out.write_str("self")?;
+            first = false;
+        }
+        for p in &m.params {
+            if !first {
+                self.out.write_str(", ")?;
+            }
+            first = false;
+            write!(self.out, "{}: ", p.name)?;
+            self.ty(&p.ty)?;
+        }
+        self.out.write_char(')')?;
+        if let Some(ret) = &m.ret {
+            self.out.write_str(" -> ")?;
+            self.ty(ret)?;
+        }
+        self.out.write_str(" { ")?;
+        self.expr(&m.body)?;
+        self.out.write_str(" }\n")
     }
 
     fn extern_decl(&mut self, decl: &ExternDecl) -> fmt::Result {

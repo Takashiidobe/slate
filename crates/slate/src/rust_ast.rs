@@ -42,8 +42,111 @@ pub enum Item {
     /// A C enum lowered as a group of `const NAME: i32 = value;` items.
     Enum(Vec<EnumConst>),
     Record(RecordDef),
+    Struct(StructDef),
+    Impl(ImplBlock),
     /// Escape hatch for things without a modeled node yet (runtime preludes).
     Raw(String),
+}
+
+/// A struct definition richer than [`RecordDef`]: attributes, generics, and a
+/// tuple-or-named body, none of which `RecordDef` can express.
+#[derive(Debug, Clone)]
+pub struct StructDef {
+    pub attrs: Vec<Attr>,
+    pub generics: Vec<GenericParam>,
+    pub name: String,
+    pub fields: StructFields,
+}
+
+#[derive(Debug, Clone)]
+pub enum StructFields {
+    Tuple(Vec<Type>),
+    Named(Vec<(String, Type)>),
+}
+
+#[derive(Debug, Clone)]
+pub enum Attr {
+    Repr(Vec<Repr>),
+    Derive(Vec<Derive>),
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum Repr {
+    C,
+    Align(u32),
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum Derive {
+    Clone,
+    Copy,
+}
+
+#[derive(Debug, Clone)]
+pub struct GenericParam {
+    pub name: String,
+    pub bounds: Vec<TraitBound>,
+}
+
+#[derive(Debug, Clone)]
+pub struct TraitBound {
+    pub trait_: StdTrait,
+    pub assoc: Vec<(String, Type)>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StdTrait {
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Neg,
+}
+
+impl StdTrait {
+    pub fn path(self) -> &'static str {
+        match self {
+            StdTrait::Add => "core::ops::Add",
+            StdTrait::Sub => "core::ops::Sub",
+            StdTrait::Mul => "core::ops::Mul",
+            StdTrait::Div => "core::ops::Div",
+            StdTrait::Neg => "core::ops::Neg",
+        }
+    }
+
+    pub fn method(self) -> &'static str {
+        match self {
+            StdTrait::Add => "add",
+            StdTrait::Sub => "sub",
+            StdTrait::Mul => "mul",
+            StdTrait::Div => "div",
+            StdTrait::Neg => "neg",
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ImplBlock {
+    pub generics: Vec<GenericParam>,
+    /// The trait being implemented; `None` for an inherent impl.
+    pub trait_: Option<StdTrait>,
+    pub self_ty: Type,
+    pub items: Vec<ImplItem>,
+}
+
+#[derive(Debug, Clone)]
+pub enum ImplItem {
+    AssocType { name: String, ty: Type },
+    Method(Method),
+}
+
+#[derive(Debug, Clone)]
+pub struct Method {
+    pub name: String,
+    pub takes_self: bool,
+    pub params: Vec<FnParam>,
+    pub ret: Option<Type>,
+    pub body: Expr,
 }
 
 #[derive(Debug, Clone)]
