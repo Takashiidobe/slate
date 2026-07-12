@@ -122,6 +122,16 @@ pub enum Stmt {
         ty: Option<Type>,
         init: Option<Expr>,
     },
+    LetIf {
+        name: String,
+        mutable: bool,
+        ty: Option<Type>,
+        cond: Expr,
+        then_body: Vec<IndentStmt>,
+        then_value: Expr,
+        else_body: Vec<IndentStmt>,
+        else_value: Expr,
+    },
     Assign {
         target: Expr,
         value: Expr,
@@ -396,6 +406,33 @@ impl Stmt {
                     let _ = write!(out, " = {}", init.render());
                 }
                 out.push_str(";\n");
+            }
+            Stmt::LetIf {
+                name,
+                mutable,
+                ty,
+                cond,
+                then_body,
+                then_value,
+                else_body,
+                else_value,
+            } => {
+                out.push_str(&pad);
+                out.push_str("let ");
+                if *mutable {
+                    out.push_str("mut ");
+                }
+                out.push_str(name);
+                if let Some(ty) = ty {
+                    let _ = write!(out, ": {}", ty.render());
+                }
+                let _ = writeln!(out, " = if {} {{", cond.render_spliceable());
+                emit_indent_stmts(out, then_body, depth + 1);
+                let _ = writeln!(out, "{}{}{}", pad, INDENT, then_value.render());
+                let _ = writeln!(out, "{pad}}} else {{");
+                emit_indent_stmts(out, else_body, depth + 1);
+                let _ = writeln!(out, "{}{}{}", pad, INDENT, else_value.render());
+                let _ = writeln!(out, "{pad}}};");
             }
             Stmt::Assign { target, value } => {
                 let _ = writeln!(out, "{pad}{} = {};", target.render(), value.render());
