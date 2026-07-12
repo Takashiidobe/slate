@@ -519,6 +519,10 @@ pub enum Expr {
         name: String,
         args: Vec<Expr>,
     },
+    Closure {
+        params: Vec<Ident>,
+        body: Box<Expr>,
+    },
     Match {
         expr: Box<Expr>,
         arms: Vec<ExprMatchArm>,
@@ -892,6 +896,13 @@ impl Expr {
                 changed
             }
             Expr::ArrayRepeat { elem, .. } => elem.substitute_var(name, replacement),
+            Expr::Closure { params, body } => {
+                if params.iter().any(|p| p.as_str() == name) {
+                    false
+                } else {
+                    body.substitute_var(name, replacement)
+                }
+            }
             Expr::Macro { args, .. } => {
                 let mut changed = false;
                 for arg in args {

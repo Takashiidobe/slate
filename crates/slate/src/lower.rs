@@ -677,7 +677,7 @@ impl<'a> Lowerer<'a> {
                 false
             };
             let ret = Some(self.rust_type(ret_ty.as_deref().unwrap_or("()")));
-            (vis, unsafe_extern_c, ret, Vec::<String>::new())
+            (vis, unsafe_extern_c, ret, Vec::<Stmt>::new())
         };
 
         let mut f = FunctionLowerer {
@@ -699,8 +699,8 @@ impl<'a> Lowerer<'a> {
             va_args_param,
         };
 
-        for line in prelude {
-            f.emit_line(&line);
+        for stmt in prelude {
+            f.push_stmt(stmt);
         }
         for (arg, _) in &entry.args {
             f.values
@@ -722,27 +722,104 @@ impl<'a> Lowerer<'a> {
         }))
     }
 
-    fn main_arg_bindings(&self, entry: &Block) -> Vec<String> {
+    fn main_arg_bindings(&self, entry: &Block) -> Vec<Stmt> {
         if entry.args.is_empty() {
             return Vec::new();
         }
-        let mut lines = vec![
-            "let mut __slate_argv_storage: Vec<std::ffi::CString> = std::env::args().map(|arg| std::ffi::CString::new(arg).unwrap()).collect();".to_string(),
-            "let mut __slate_argv_ptrs: Vec<*mut i8> = __slate_argv_storage.iter().map(|arg| arg.as_ptr() as *mut i8).collect();".to_string(),
-            "__slate_argv_ptrs.push(std::ptr::null_mut());".to_string(),
+
+        let call = |path: &str, args: Vec<Expr>| Expr::Call {
+            func: Box::new(Expr::Var(path.into())),
+            args,
+        };
+        let method = |recv: Expr, name: &str, args: Vec<Expr>| Expr::MethodCall {
+            recv: Box::new(recv),
+            method: name.into(),
+            args,
+        };
+        let char_ptr = Type::Ptr {
+            mutable: true,
+            inner: Box::new(Type::Prim(Prim::I8)),
+        };
+
+        let storage_init = method(
+            method(
+                call("std::env::args", vec![]),
+                "map",
+                vec![Expr::Closure {
+                    params: vec!["arg".into()],
+                    body: Box::new(method(
+                        call("std::ffi::CString::new", vec![Expr::Var("arg".into())]),
+                        "unwrap",
+                        vec![],
+                    )),
+                }],
+            ),
+            "collect",
+            vec![],
+        );
+        let ptrs_init = method(
+            method(
+                method(Expr::Var("__slate_argv_storage".into()), "iter", vec![]),
+                "map",
+                vec![Expr::Closure {
+                    params: vec!["arg".into()],
+                    body: Box::new(Expr::Cast {
+                        expr: Box::new(method(Expr::Var("arg".into()), "as_ptr", vec![])),
+                        ty: char_ptr.clone(),
+                    }),
+                }],
+            ),
+            "collect",
+            vec![],
+        );
+
+        let mut stmts = vec![
+            Stmt::Let {
+                name: "__slate_argv_storage".into(),
+                mutable: true,
+                ty: Some(Type::Generic {
+                    name: "Vec".into(),
+                    args: vec![Type::Custom("std::ffi::CString".into())],
+                }),
+                init: Some(storage_init),
+            },
+            Stmt::Let {
+                name: "__slate_argv_ptrs".into(),
+                mutable: true,
+                ty: Some(Type::Generic {
+                    name: "Vec".into(),
+                    args: vec![char_ptr],
+                }),
+                init: Some(ptrs_init),
+            },
+            Stmt::Expr(method(
+                Expr::Var("__slate_argv_ptrs".into()),
+                "push",
+                vec![Expr::Value(RustValue::NullPtr)],
+            )),
         ];
 
         for (i, (arg, ty)) in entry.args.iter().enumerate() {
-            let name = sanitize_ident(arg);
-            let rust_ty = self.rust_type(ty).render();
             let value = match i {
-                0 => "__slate_argv_storage.len() as i32".to_string(),
-                1 => "__slate_argv_ptrs.as_mut_ptr()".to_string(),
-                _ => "std::ptr::null_mut()".to_string(),
+                0 => Expr::Cast {
+                    expr: Box::new(method(
+                        Expr::Var("__slate_argv_storage".into()),
+                        "len",
+                        vec![],
+                    )),
+                    ty: Type::Prim(Prim::I32),
+                },
+                1 => method(Expr::Var("__slate_argv_ptrs".into()), "as_mut_ptr", vec![]),
+                _ => Expr::Value(RustValue::NullPtr),
             };
-            lines.push(format!("let {name}: {rust_ty} = {value};"));
+            stmts.push(Stmt::Let {
+                name: sanitize_ident(arg).into_string(),
+                mutable: false,
+                ty: Some(self.rust_type(ty)),
+                init: Some(value),
+            });
         }
-        lines
+        stmts
     }
 
     /// Build a Rust `extern "C"` signature for a body-less C declaration,
@@ -3337,10 +3414,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    /// Lower a function body with unstructured control flow into a state-machine
-    /// dispatch loop. Each CIR block becomes a `match` arm keyed on a `__state`
-    /// variable; `cir.br`/`cir.goto` set the next state and `continue` the loop.
-    /// Allocas are hoisted above the loop so locals survive across block arms.
     fn lower_dispatch(&mut self, body: &Region) {
         let n = self.label_counter;
         self.label_counter += 1;
