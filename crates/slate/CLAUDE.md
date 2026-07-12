@@ -130,6 +130,9 @@ Read these before making changes — they are the real playbook:
   idiomatic ladder.
 - [docs/fuzzing.md](docs/fuzzing.md) — the stateful C-subset generator behind
   differential fuzzing (`tests/support/cgen.rs`).
+- [docs/cfg-portability.md](docs/cfg-portability.md) — single-config vs.
+  multi-config (`translate-cfg`) translation and the supported preprocessor
+  predicate → Rust `cfg` mappings.
 - [docs/README.md](docs/README.md) — the supported-subset surface.
 
 ## Conventions & Patterns

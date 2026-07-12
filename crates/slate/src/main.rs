@@ -278,5 +278,36 @@ fn emit_fixtures() -> Result<String, String> {
         }
     }
 
+    // multi-config cfg fixtures: render the portable #[cfg(...)] merge so the C
+    // and generated Rust can be compared side by side. The `reject/` subdir holds
+    // sources that translate-cfg is meant to refuse, so it is skipped.
+    let cfg_src = manifest.join("tests/fixtures.cfg");
+    let cfg_out = manifest.join("tests/fixtures.cfg.generated");
+    if cfg_src.is_dir() {
+        std::fs::create_dir_all(&cfg_out)
+            .map_err(|e| format!("create {}: {e}", cfg_out.display()))?;
+        let mut cfg_inputs = Vec::new();
+        for entry in
+            std::fs::read_dir(&cfg_src).map_err(|e| format!("read {}: {e}", cfg_src.display()))?
+        {
+            let path = entry
+                .map_err(|e| format!("read {} entry: {e}", cfg_src.display()))?
+                .path();
+            if path.extension().and_then(|e| e.to_str()) == Some("c") {
+                cfg_inputs.push(path);
+            }
+        }
+        cfg_inputs.sort();
+        for input in cfg_inputs {
+            let name = input
+                .file_stem()
+                .ok_or_else(|| format!("missing file stem: {}", input.display()))?;
+            let output = cfg_out.join(name).with_extension("rs");
+            std::fs::write(&output, cfg_translate::translate_cfg(&input)?)
+                .map_err(|e| format!("write {}: {e}", output.display()))?;
+            report.push_str(&format!("wrote {}\n", output.display()));
+        }
+    }
+
     Ok(report)
 }
