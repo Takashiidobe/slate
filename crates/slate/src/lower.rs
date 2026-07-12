@@ -5,7 +5,8 @@ use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
     AtomicOrdering, AtomicRmwOp, AtomicType, EnumConst, Expr, ExprMatchArm, ExternDecl,
-    ExternFnDecl, FnDef, FnParam, IndentStmt, Item, MatchArm, Prim, Program, RecordDef, Stmt, Type,
+    ExternFnDecl, FnDef, FnParam, IndentStmt, Item, MatchArm, Prim, Program, RecordDef, RustValue,
+    Stmt, Type,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -4074,12 +4075,9 @@ fn default_value_expr(ty: &str) -> Expr {
     match ty {
         "bool" => Expr::Lit("false".into()),
         "f32" | "f64" => Expr::Lit("0.0".into()),
-        ty if ty.starts_with("*mut ") => Expr::Call {
-            func: Box::new(Expr::Raw("std::ptr::null_mut".into())),
-            args: vec![],
-        },
+        ty if ty.starts_with("*mut ") => Expr::Value(RustValue::NullPtr),
         ty if ty.starts_with("Option<fn(") => Expr::Lit("None".into()),
-        _ => Expr::Lit("0".into()),
+        _ => Expr::Value(RustValue::Int(0)),
     }
 }
 
@@ -4140,49 +4138,50 @@ fn standard_record_def(name: &str) -> RecordDef {
 }
 
 fn standard_record_default_expr(ty: &str) -> Option<Expr> {
+    use RustValue::{Int, NullPtr};
     let fields = match ty {
-        "div_t" => vec![("quot", "0"), ("rem", "0")],
-        "ldiv_t" => vec![("quot", "0"), ("rem", "0")],
-        "lldiv_t" => vec![("quot", "0"), ("rem", "0")],
-        "imaxdiv_t" => vec![("quot", "0"), ("rem", "0")],
+        "div_t" => vec![("quot", Int(0)), ("rem", Int(0))],
+        "ldiv_t" => vec![("quot", Int(0)), ("rem", Int(0))],
+        "lldiv_t" => vec![("quot", Int(0)), ("rem", Int(0))],
+        "imaxdiv_t" => vec![("quot", Int(0)), ("rem", Int(0))],
         "tm" => vec![
-            ("tm_sec", "0"),
-            ("tm_min", "0"),
-            ("tm_hour", "0"),
-            ("tm_mday", "0"),
-            ("tm_mon", "0"),
-            ("tm_year", "0"),
-            ("tm_wday", "0"),
-            ("tm_yday", "0"),
-            ("tm_isdst", "0"),
-            ("tm_gmtoff", "0"),
-            ("tm_zone", "std::ptr::null_mut()"),
+            ("tm_sec", Int(0)),
+            ("tm_min", Int(0)),
+            ("tm_hour", Int(0)),
+            ("tm_mday", Int(0)),
+            ("tm_mon", Int(0)),
+            ("tm_year", Int(0)),
+            ("tm_wday", Int(0)),
+            ("tm_yday", Int(0)),
+            ("tm_isdst", Int(0)),
+            ("tm_gmtoff", Int(0)),
+            ("tm_zone", NullPtr),
         ],
         "lconv" => vec![
-            ("decimal_point", "std::ptr::null_mut()"),
-            ("thousands_sep", "std::ptr::null_mut()"),
-            ("grouping", "std::ptr::null_mut()"),
-            ("int_curr_symbol", "std::ptr::null_mut()"),
-            ("currency_symbol", "std::ptr::null_mut()"),
-            ("mon_decimal_point", "std::ptr::null_mut()"),
-            ("mon_thousands_sep", "std::ptr::null_mut()"),
-            ("mon_grouping", "std::ptr::null_mut()"),
-            ("positive_sign", "std::ptr::null_mut()"),
-            ("negative_sign", "std::ptr::null_mut()"),
-            ("int_frac_digits", "0"),
-            ("frac_digits", "0"),
-            ("p_cs_precedes", "0"),
-            ("p_sep_by_space", "0"),
-            ("n_cs_precedes", "0"),
-            ("n_sep_by_space", "0"),
-            ("p_sign_posn", "0"),
-            ("n_sign_posn", "0"),
-            ("int_p_cs_precedes", "0"),
-            ("int_p_sep_by_space", "0"),
-            ("int_n_cs_precedes", "0"),
-            ("int_n_sep_by_space", "0"),
-            ("int_p_sign_posn", "0"),
-            ("int_n_sign_posn", "0"),
+            ("decimal_point", NullPtr),
+            ("thousands_sep", NullPtr),
+            ("grouping", NullPtr),
+            ("int_curr_symbol", NullPtr),
+            ("currency_symbol", NullPtr),
+            ("mon_decimal_point", NullPtr),
+            ("mon_thousands_sep", NullPtr),
+            ("mon_grouping", NullPtr),
+            ("positive_sign", NullPtr),
+            ("negative_sign", NullPtr),
+            ("int_frac_digits", Int(0)),
+            ("frac_digits", Int(0)),
+            ("p_cs_precedes", Int(0)),
+            ("p_sep_by_space", Int(0)),
+            ("n_cs_precedes", Int(0)),
+            ("n_sep_by_space", Int(0)),
+            ("p_sign_posn", Int(0)),
+            ("n_sign_posn", Int(0)),
+            ("int_p_cs_precedes", Int(0)),
+            ("int_p_sep_by_space", Int(0)),
+            ("int_n_cs_precedes", Int(0)),
+            ("int_n_sep_by_space", Int(0)),
+            ("int_p_sign_posn", Int(0)),
+            ("int_n_sign_posn", Int(0)),
         ],
         _ => return None,
     };
@@ -4190,14 +4189,7 @@ fn standard_record_default_expr(ty: &str) -> Option<Expr> {
         name: ty.into(),
         fields: fields
             .into_iter()
-            .map(|(name, value)| {
-                let value = if value == "std::ptr::null_mut()" {
-                    default_value_expr("*mut i8")
-                } else {
-                    Expr::Lit(value.into())
-                };
-                (name.into(), value)
-            })
+            .map(|(name, value)| (name.into(), Expr::Value(value)))
             .collect(),
     })
 }

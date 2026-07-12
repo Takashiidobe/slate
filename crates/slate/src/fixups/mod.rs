@@ -1,6 +1,6 @@
 //! Rust cleanup passes that run after faithful CIR lowering.
 
-use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, Stmt};
+use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, RustValue, Stmt};
 
 pub fn apply(program: Program) -> Program {
     Program {
@@ -226,7 +226,8 @@ fn for_nested_body(stmt: &mut Stmt, f: fn(&mut Vec<IndentStmt>)) {
 }
 
 fn is_zero_expr(expr: &Expr) -> bool {
-    matches!(expr, Expr::Lit(s) | Expr::Raw(s) if matches!(s.as_str(), "0" | "0.0" | "false"))
+    matches!(expr, Expr::Value(RustValue::Int(0)))
+        || matches!(expr, Expr::Lit(s) | Expr::Raw(s) if matches!(s.as_str(), "0" | "0.0" | "false"))
 }
 
 fn expr_ident(expr: &Expr) -> Option<&str> {
@@ -475,6 +476,7 @@ fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
 
 fn expr_ident_count(expr: &Expr, name: &str) -> usize {
     match expr {
+        Expr::Value(_) => 0,
         Expr::Lit(s) | Expr::Var(s) => usize::from(s == name),
         Expr::Raw(s) => ident_count(s, name),
         Expr::Unary { expr, .. }

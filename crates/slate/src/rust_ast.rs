@@ -226,8 +226,29 @@ pub enum Stmt {
     Raw(String),
 }
 
+/// A structured Rust literal value. Kept as typed data rather than pre-rendered
+/// text so literals carry real shape through the AST (`RustValue::NullPtr`
+/// instead of the string `"std::ptr::null_mut()"`), mirroring how atomics are
+/// modeled. Use this over `Expr::Lit` whenever the value is known structurally.
+#[derive(Debug, Clone)]
+pub enum RustValue {
+    Int(i64),
+    NullPtr,
+}
+
+impl RustValue {
+    pub fn render(&self) -> String {
+        match self {
+            RustValue::Int(n) => n.to_string(),
+            RustValue::NullPtr => "std::ptr::null_mut()".to_string(),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum Expr {
+    /// A structured literal value (integer, null pointer).
+    Value(RustValue),
     /// A literal or identifier printed verbatim (numbers, `true`, names).
     Lit(String),
     Var(String),
@@ -809,7 +830,7 @@ impl Expr {
                 *self = replacement.clone();
                 true
             }
-            Expr::Lit(_) | Expr::Var(_) | Expr::Raw(_) => false,
+            Expr::Value(_) | Expr::Lit(_) | Expr::Var(_) | Expr::Raw(_) => false,
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
             | Expr::Ref { expr, .. }
@@ -930,6 +951,7 @@ impl Expr {
 
     fn render_raw(&self) -> String {
         match self {
+            Expr::Value(v) => v.render(),
             Expr::Lit(s) | Expr::Var(s) | Expr::Raw(s) => s.clone(),
             Expr::Unary { op, expr } => format!("{op}{}", render_prefix_operand(expr)),
             Expr::Binary { op, lhs, rhs } => {
