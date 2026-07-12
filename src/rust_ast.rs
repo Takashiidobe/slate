@@ -59,6 +59,42 @@ pub struct ExprMatchArm {
     pub value: Expr,
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum AtomicType {
+    I8,
+    U8,
+    I16,
+    U16,
+    I32,
+    U32,
+    I64,
+    U64,
+    Isize,
+    Usize,
+    Bool,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum AtomicOrdering {
+    Relaxed,
+    Acquire,
+    Release,
+    AcqRel,
+    SeqCst,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum AtomicRmwOp {
+    Add,
+    Sub,
+    And,
+    Xor,
+    Or,
+    Nand,
+    Max,
+    Min,
+}
+
 #[derive(Debug, Clone)]
 pub struct Func {
     pub name: String,
@@ -191,6 +227,45 @@ pub enum Expr {
     Ref {
         mutable: bool,
         expr: Box<Expr>,
+    },
+    AtomicRef {
+        ty: AtomicType,
+        ptr: Box<Expr>,
+    },
+    AtomicLoad {
+        ty: AtomicType,
+        ptr: Box<Expr>,
+        ordering: AtomicOrdering,
+    },
+    AtomicStore {
+        ty: AtomicType,
+        ptr: Box<Expr>,
+        value: Box<Expr>,
+        ordering: AtomicOrdering,
+    },
+    AtomicFetch {
+        ty: AtomicType,
+        op: AtomicRmwOp,
+        ptr: Box<Expr>,
+        value: Box<Expr>,
+        ordering: AtomicOrdering,
+    },
+    AtomicSwap {
+        ty: AtomicType,
+        ptr: Box<Expr>,
+        value: Box<Expr>,
+        ordering: AtomicOrdering,
+    },
+    AtomicCompareExchange {
+        ty: AtomicType,
+        ptr: Box<Expr>,
+        expected: Box<Expr>,
+        desired: Box<Expr>,
+        success: AtomicOrdering,
+        failure: AtomicOrdering,
+    },
+    AtomicFence {
+        ordering: AtomicOrdering,
     },
     /// Fully-formed Rust text spliced in as-is (e.g. `libc::printf`).
     Raw(String),
@@ -484,6 +559,28 @@ impl Expr {
             | Expr::Cast { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::Unsafe(expr) => expr.substitute_var(name, replacement),
+            Expr::AtomicFence { .. } => false,
+            Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
+                ptr.substitute_var(name, replacement)
+            }
+            Expr::AtomicStore { ptr, value, .. }
+            | Expr::AtomicFetch { ptr, value, .. }
+            | Expr::AtomicSwap { ptr, value, .. } => {
+                let p = ptr.substitute_var(name, replacement);
+                let v = value.substitute_var(name, replacement);
+                p || v
+            }
+            Expr::AtomicCompareExchange {
+                ptr,
+                expected,
+                desired,
+                ..
+            } => {
+                let p = ptr.substitute_var(name, replacement);
+                let e = expected.substitute_var(name, replacement);
+                let d = desired.substitute_var(name, replacement);
+                p || e || d
+            }
             Expr::Binary { lhs, rhs, .. } => {
                 let l = lhs.substitute_var(name, replacement);
                 let r = rhs.substitute_var(name, replacement);
@@ -658,6 +755,134 @@ impl Expr {
                 let kw = if *mutable { "&mut " } else { "&" };
                 format!("{kw}{}", render_prefix_operand(expr))
             }
+            Expr::AtomicRef { ty, ptr } => {
+                format!(
+                    "std::sync::atomic::{}::from_ptr({})",
+                    ty.render_wrapper(),
+                    ptr.render()
+                )
+            }
+            Expr::AtomicLoad { ty, ptr, ordering } => {
+                format!(
+                    "unsafe {{ {}.load({}) }}",
+                    render_atomic_ref(*ty, ptr),
+                    ordering.render()
+                )
+            }
+            Expr::AtomicStore {
+                ty,
+                ptr,
+                value,
+                ordering,
+            } => {
+                format!(
+                    "unsafe {{ {}.store({}, {}) }}",
+                    render_atomic_ref(*ty, ptr),
+                    value.render(),
+                    ordering.render()
+                )
+            }
+            Expr::AtomicFetch {
+                ty,
+                op,
+                ptr,
+                value,
+                ordering,
+            } => {
+                format!(
+                    "unsafe {{ {}.{}({}, {}) }}",
+                    render_atomic_ref(*ty, ptr),
+                    op.render_method(),
+                    value.render(),
+                    ordering.render()
+                )
+            }
+            Expr::AtomicSwap {
+                ty,
+                ptr,
+                value,
+                ordering,
+            } => {
+                format!(
+                    "unsafe {{ {}.swap({}, {}) }}",
+                    render_atomic_ref(*ty, ptr),
+                    value.render(),
+                    ordering.render()
+                )
+            }
+            Expr::AtomicCompareExchange {
+                ty,
+                ptr,
+                expected,
+                desired,
+                success,
+                failure,
+            } => {
+                format!(
+                    "unsafe {{ {}.compare_exchange({}, {}, {}, {}) }}",
+                    render_atomic_ref(*ty, ptr),
+                    expected.render(),
+                    desired.render(),
+                    success.render(),
+                    failure.render()
+                )
+            }
+            Expr::AtomicFence { ordering } => {
+                format!("std::sync::atomic::fence({})", ordering.render())
+            }
+        }
+    }
+}
+
+fn render_atomic_ref(ty: AtomicType, ptr: &Expr) -> String {
+    Expr::AtomicRef {
+        ty,
+        ptr: Box::new(ptr.clone()),
+    }
+    .render()
+}
+
+impl AtomicType {
+    fn render_wrapper(self) -> &'static str {
+        match self {
+            AtomicType::I8 => "AtomicI8",
+            AtomicType::U8 => "AtomicU8",
+            AtomicType::I16 => "AtomicI16",
+            AtomicType::U16 => "AtomicU16",
+            AtomicType::I32 => "AtomicI32",
+            AtomicType::U32 => "AtomicU32",
+            AtomicType::I64 => "AtomicI64",
+            AtomicType::U64 => "AtomicU64",
+            AtomicType::Isize => "AtomicIsize",
+            AtomicType::Usize => "AtomicUsize",
+            AtomicType::Bool => "AtomicBool",
+        }
+    }
+}
+
+impl AtomicOrdering {
+    fn render(self) -> &'static str {
+        match self {
+            AtomicOrdering::Relaxed => "std::sync::atomic::Ordering::Relaxed",
+            AtomicOrdering::Acquire => "std::sync::atomic::Ordering::Acquire",
+            AtomicOrdering::Release => "std::sync::atomic::Ordering::Release",
+            AtomicOrdering::AcqRel => "std::sync::atomic::Ordering::AcqRel",
+            AtomicOrdering::SeqCst => "std::sync::atomic::Ordering::SeqCst",
+        }
+    }
+}
+
+impl AtomicRmwOp {
+    fn render_method(self) -> &'static str {
+        match self {
+            AtomicRmwOp::Add => "fetch_add",
+            AtomicRmwOp::Sub => "fetch_sub",
+            AtomicRmwOp::And => "fetch_and",
+            AtomicRmwOp::Xor => "fetch_xor",
+            AtomicRmwOp::Or => "fetch_or",
+            AtomicRmwOp::Nand => "fetch_nand",
+            AtomicRmwOp::Max => "fetch_max",
+            AtomicRmwOp::Min => "fetch_min",
         }
     }
 }
@@ -917,6 +1142,35 @@ fn f() {
     }
 }
 "
+        );
+    }
+
+    #[test]
+    fn renders_atomic_expression_nodes() {
+        let ptr = || {
+            Box::new(Expr::Macro {
+                name: "std::ptr::addr_of_mut".into(),
+                args: vec![Expr::Var("a".into())],
+            })
+        };
+
+        assert_eq!(
+            Expr::AtomicFetch {
+                ty: AtomicType::I32,
+                op: AtomicRmwOp::Add,
+                ptr: ptr(),
+                value: Box::new(Expr::Var("x".into())),
+                ordering: AtomicOrdering::SeqCst,
+            }
+            .render(),
+            "unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(a)).fetch_add(x, std::sync::atomic::Ordering::SeqCst) }"
+        );
+        assert_eq!(
+            Expr::AtomicFence {
+                ordering: AtomicOrdering::Acquire,
+            }
+            .render(),
+            "std::sync::atomic::fence(std::sync::atomic::Ordering::Acquire)"
         );
     }
 }
