@@ -2493,18 +2493,44 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 let name = self.next_temp();
                 let a0 = args
                     .first()
-                    .map(Expr::render)
-                    .unwrap_or_else(|| "std::ptr::null_mut()".into());
+                    .cloned()
+                    .unwrap_or(Expr::Value(RustValue::NullPtr));
                 let a1 = args
                     .get(1)
-                    .map(Expr::render)
-                    .unwrap_or_else(|| "std::ptr::null_mut()".into());
-                self.emit_line(&format!(
-                    "let mut {name}: {LONG_DOUBLE_TY} = {LONG_DOUBLE_TY}(0.0);"
-                ));
-                self.emit_line(&format!(
-                    "unsafe {{ __slate_strtold({a0} as *mut i8, {a1} as *mut *mut i8, std::ptr::addr_of_mut!({name})); }}"
-                ));
+                    .cloned()
+                    .unwrap_or(Expr::Value(RustValue::NullPtr));
+                self.push_stmt(Stmt::Let {
+                    name: name.clone(),
+                    mutable: true,
+                    ty: Some(Self::named_type(LONG_DOUBLE_TY)),
+                    init: Some(self.default_value_expr(LONG_DOUBLE_TY)),
+                });
+                let i8_ptr = Type::Ptr {
+                    mutable: true,
+                    inner: Box::new(Type::Prim(Prim::I8)),
+                };
+                let i8_ptr_ptr = Type::Ptr {
+                    mutable: true,
+                    inner: Box::new(i8_ptr.clone()),
+                };
+                let call = Expr::Call {
+                    func: Box::new(Expr::Var("__slate_strtold".into())),
+                    args: vec![
+                        Expr::Cast {
+                            expr: Box::new(a0),
+                            ty: i8_ptr,
+                        },
+                        Expr::Cast {
+                            expr: Box::new(a1),
+                            ty: i8_ptr_ptr,
+                        },
+                        Expr::Macro {
+                            name: "std::ptr::addr_of_mut".into(),
+                            args: vec![Expr::Var(name.clone())],
+                        },
+                    ],
+                };
+                self.push_stmt(Self::unsafe_stmt(Stmt::Expr(call)));
                 self.values
                     .insert(result.to_string(), Val::Expr(Expr::Var(name)));
             }
