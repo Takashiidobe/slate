@@ -26,7 +26,7 @@ pub fn apply(program: Program) -> Program {
                     zero_init::fixup(&mut f.body);
                     compound_assign::fixup(&mut f.body);
                     call_args::fixup(&mut f.body, &sigs);
-                    retval::fixup(&mut f.body);
+                    retval::fixup(&mut f);
                     Item::Fn(f)
                 }
                 item => item,
