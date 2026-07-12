@@ -209,6 +209,14 @@ fn for_nested_body(stmt: &mut Stmt, f: fn(&mut Vec<IndentStmt>)) {
             f(then_body);
             f(else_body);
         }
+        Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        } => {
+            f(then_body);
+            f(else_body);
+        }
         Stmt::Loop { body, .. }
         | Stmt::Scope { body }
         | Stmt::LabeledBlock { body, .. }
@@ -278,6 +286,14 @@ fn inline_nested_temps(body: &mut [IndentStmt]) {
                 inline_single_use_temps(then_body);
                 inline_single_use_temps(else_body);
             }
+            Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            } => {
+                inline_single_use_temps(then_body);
+                inline_single_use_temps(else_body);
+            }
             Stmt::Loop { body, .. }
             | Stmt::Scope { body }
             | Stmt::LabeledBlock { body, .. }
@@ -302,6 +318,22 @@ fn substitute_in_stmt_structured(stmt: &mut Stmt, name: &str, init: &Expr) -> bo
         Stmt::Let {
             init: Some(expr), ..
         } => expr.substitute_var(name, init),
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            let mut changed = cond.substitute_var(name, init);
+            for stmt in then_body.iter_mut().chain(else_body.iter_mut()) {
+                changed |= substitute_in_stmt_structured(&mut stmt.stmt, name, init);
+            }
+            changed |= then_value.substitute_var(name, init);
+            changed |= else_value.substitute_var(name, init);
+            changed
+        }
         Stmt::Assign { target, value } => {
             let t = target.substitute_var(name, init);
             let v = value.substitute_var(name, init);
@@ -355,6 +387,25 @@ fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
     match stmt {
         Stmt::Let { name: n, init, .. } => {
             usize::from(n == name) + init.as_ref().map_or(0, |expr| expr_ident_count(expr, name))
+        }
+        Stmt::LetIf {
+            name: n,
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            usize::from(n == name)
+                + expr_ident_count(cond, name)
+                + then_body
+                    .iter()
+                    .chain(else_body)
+                    .map(|stmt| stmt_ident_count(&stmt.stmt, name))
+                    .sum::<usize>()
+                + expr_ident_count(then_value, name)
+                + expr_ident_count(else_value, name)
         }
         Stmt::Assign { target, value } => {
             expr_ident_count(target, name) + expr_ident_count(value, name)
