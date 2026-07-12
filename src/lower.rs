@@ -87,6 +87,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_long_double: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
         uses_c_variadic: std::cell::Cell::new(false),
+        uses_memchr: std::cell::Cell::new(false),
         variadic_defs: BTreeSet::new(),
         project: project.clone(),
         cross_uses: Vec::new(),
@@ -116,6 +117,7 @@ struct Lowerer<'a> {
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
     uses_c_variadic: std::cell::Cell<bool>,
+    uses_memchr: std::cell::Cell<bool>,
     variadic_defs: BTreeSet<String>,
     project: ProjectInfo,
     /// `use crate::<mod>::<sym>;` items for body-less decls resolved to a sibling.
@@ -423,6 +425,9 @@ impl<'a> Lowerer<'a> {
         }
         if self.uses_complex.get() {
             items.splice(1..1, complex_prelude());
+        }
+        if self.uses_memchr.get() {
+            items.splice(1..1, vec![memchr_prelude()]);
         }
 
         // module wiring goes right after the crate-level `#![allow(..)]` attr.
@@ -1175,6 +1180,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.ptr_stride" => self.lower_ptr_stride(op),
             "cir.ptr_diff" => self.lower_ptr_diff(op),
             "cir.call" => self.lower_call(op),
+            "cir.libc.memcpy" => self.lower_mem_copy(op, false),
+            "cir.libc.memmove" => self.lower_mem_copy(op, true),
+            "cir.libc.memset" => self.lower_mem_set(op),
+            "cir.libc.memchr" => self.lower_mem_chr(op),
             "cir.va_start" => self.lower_va_start(op),
             "cir.va_arg" => self.lower_va_arg(op),
             // `VaList` drops on scope exit.
@@ -2657,6 +2666,82 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    fn byte_ptr_operand(&self, operand: &str, mutable: bool) -> Expr {
+        Expr::Cast {
+            expr: Box::new(self.pointer_operand_expr(operand)),
+            ty: Type::Ptr {
+                mutable,
+                inner: Box::new(Type::Prim(Prim::U8)),
+            },
+        }
+    }
+
+    fn usize_operand(&self, operand: &str) -> Expr {
+        Expr::Cast {
+            expr: Box::new(self.operand_expr(operand)),
+            ty: Type::Prim(Prim::Usize),
+        }
+    }
+
+    // cir.libc.memcpy/memmove: (dst, src, len). memmove keeps overlapping copy
+    // semantics; both operate byte-wise via *u8 pointers.
+    fn lower_mem_copy(&mut self, op: &Op, overlapping: bool) {
+        if op.operands.len() < 3 {
+            return;
+        }
+        let dst = self.byte_ptr_operand(&op.operands[0], true);
+        let src = self.byte_ptr_operand(&op.operands[1], false);
+        let count = self.usize_operand(&op.operands[2]);
+        self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::PtrCopy {
+            src: Box::new(src),
+            dst: Box::new(dst),
+            count: Box::new(count),
+            overlapping,
+        })));
+    }
+
+    // cir.libc.memset: (dst, val:u8, len); the alignment attr carries no runtime
+    // meaning here.
+    fn lower_mem_set(&mut self, op: &Op) {
+        if op.operands.len() < 3 {
+            return;
+        }
+        let dst = self.byte_ptr_operand(&op.operands[0], true);
+        let val = Expr::Cast {
+            expr: Box::new(self.operand_expr(&op.operands[1])),
+            ty: Type::Prim(Prim::U8),
+        };
+        let count = self.usize_operand(&op.operands[2]);
+        self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::WriteBytes {
+            dst: Box::new(dst),
+            val: Box::new(val),
+            count: Box::new(count),
+        })));
+    }
+
+    // cir.libc.memchr: (src, pattern:i32, len:u64) -> void*. Backed by a prelude
+    // helper so the byte scan stays a single structured call site.
+    fn lower_mem_chr(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 3 {
+            return;
+        }
+        self.parent.uses_memchr.set(true);
+        let src = self.pointer_operand_expr(&op.operands[0]);
+        let pattern = Expr::Cast {
+            expr: Box::new(self.operand_expr(&op.operands[1])),
+            ty: Type::Prim(Prim::I32),
+        };
+        let len = self.usize_operand(&op.operands[2]);
+        let call = Expr::Call {
+            func: Box::new(Expr::Var("__slate_memchr".into())),
+            args: vec![src, pattern, len],
+        };
+        self.materialize_expr(result, call, op_result_type(op));
+    }
+
     // Atomic ops lower to real `std::sync::atomic` operations viewed through
     // `AtomicN::from_ptr(store_address(ptr))`, so the existing integer slot is
     // accessed atomically without changing its storage. Integer/bool types map
@@ -4117,6 +4202,138 @@ fn complex_prelude() -> Vec<Item> {
             ],
         },
     ]
+}
+
+// C `memchr` has no direct std equivalent; this byte scan matches its
+// `(unsigned char)c` comparison and returns a raw pointer to the first hit.
+fn memchr_prelude() -> Item {
+    let void_ptr = |mutable| Type::Ptr {
+        mutable,
+        inner: Box::new(Type::CLib(CLibType::Void)),
+    };
+    let u8_const_ptr = Type::Ptr {
+        mutable: false,
+        inner: Box::new(Type::Prim(Prim::U8)),
+    };
+    let var = |name: &str| Expr::Var(name.into());
+    let byte_at = || Expr::MethodCall {
+        recv: Box::new(var("bytes")),
+        method: "add".into(),
+        args: vec![var("i")],
+    };
+
+    let hit = Stmt::If {
+        cond: Expr::Binary {
+            op: BinOp::Eq,
+            lhs: Box::new(FunctionLowerer::unsafe_expr(Expr::Unary {
+                op: UnaryOp::Deref,
+                expr: Box::new(byte_at()),
+            })),
+            rhs: Box::new(var("b")),
+        },
+        then_body: vec![IndentStmt {
+            depth: 0,
+            stmt: Stmt::Return(Some(Expr::Cast {
+                expr: Box::new(FunctionLowerer::unsafe_expr(byte_at())),
+                ty: void_ptr(true),
+            })),
+        }],
+        else_body: Vec::new(),
+    };
+    let step = Stmt::CompoundAssign {
+        target: var("i"),
+        op: BinOp::Add,
+        value: Expr::Value(RustValue::I64(1)),
+    };
+    let scan = Stmt::While {
+        cond: Expr::Binary {
+            op: BinOp::Lt,
+            lhs: Box::new(var("i")),
+            rhs: Box::new(var("n")),
+        },
+        body: crate::rust_ast::Block {
+            stmts: vec![
+                IndentStmt {
+                    depth: 0,
+                    stmt: hit,
+                },
+                IndentStmt {
+                    depth: 0,
+                    stmt: step,
+                },
+            ],
+            tail: None,
+        },
+    };
+
+    let body = vec![
+        IndentStmt {
+            depth: 1,
+            stmt: Stmt::Let {
+                name: "b".into(),
+                mutable: false,
+                ty: Some(Type::Prim(Prim::U8)),
+                init: Some(Expr::Cast {
+                    expr: Box::new(var("c")),
+                    ty: Type::Prim(Prim::U8),
+                }),
+            },
+        },
+        IndentStmt {
+            depth: 1,
+            stmt: Stmt::Let {
+                name: "bytes".into(),
+                mutable: false,
+                ty: Some(u8_const_ptr.clone()),
+                init: Some(Expr::Cast {
+                    expr: Box::new(var("s")),
+                    ty: u8_const_ptr,
+                }),
+            },
+        },
+        IndentStmt {
+            depth: 1,
+            stmt: Stmt::Let {
+                name: "i".into(),
+                mutable: true,
+                ty: Some(Type::Prim(Prim::Usize)),
+                init: Some(Expr::Value(RustValue::I64(0))),
+            },
+        },
+        IndentStmt {
+            depth: 1,
+            stmt: scan,
+        },
+        IndentStmt {
+            depth: 1,
+            stmt: Stmt::Return(Some(Expr::Value(RustValue::NullPtr))),
+        },
+    ];
+
+    Item::Fn(FnDef {
+        vis: Visibility::Private,
+        unsafe_extern_c: false,
+        name: "__slate_memchr".into(),
+        params: vec![
+            FnParam {
+                name: "s".into(),
+                mutable: false,
+                ty: void_ptr(false),
+            },
+            FnParam {
+                name: "c".into(),
+                mutable: false,
+                ty: Type::Prim(Prim::I32),
+            },
+            FnParam {
+                name: "n".into(),
+                mutable: false,
+                ty: Type::Prim(Prim::Usize),
+            },
+        ],
+        ret: Some(void_ptr(true)),
+        body,
+    })
 }
 
 fn rust_type(cir_ty: &str) -> Type {
