@@ -1197,7 +1197,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.push_stmt(Stmt::Let {
                 name,
                 mutable: true,
-                ty: Some(Self::named_type("core::ffi::VaList<'_>")),
+                ty: Some(Type::VaList),
                 init: None,
             });
             return;
@@ -1210,7 +1210,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Let {
             name,
             mutable: true,
-            ty: Some(Self::named_type(ty.clone())),
+            ty: Some(Type::Named(ty.clone())),
             init: Some(self.default_value_expr(&ty)),
         });
     }
@@ -2504,7 +2504,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.push_stmt(Stmt::Let {
                     name: name.clone(),
                     mutable: true,
-                    ty: Some(Self::named_type(LONG_DOUBLE_TY)),
+                    ty: Some(Type::Named(LONG_DOUBLE_TY.into())),
                     init: Some(self.default_value_expr(LONG_DOUBLE_TY)),
                 });
                 let i8_ptr = Type::Ptr {
@@ -2812,7 +2812,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.push_stmt(Stmt::Let {
                 name: ok.clone(),
                 mutable: false,
-                ty: Some(Self::named_type("bool")),
+                ty: Some(Type::Prim(Prim::Bool)),
                 init: Some(Expr::MethodCall {
                     recv: Box::new(Expr::Var(res.into())),
                     method: "is_ok".into(),
@@ -2840,7 +2840,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Let {
             name: ok.clone(),
             mutable: false,
-            ty: Some(Self::named_type("bool")),
+            ty: Some(Type::Prim(Prim::Bool)),
             init: Some(Expr::Binary {
                 op: BinOp::Eq,
                 lhs: Box::new(Expr::Var(old.clone().into())),
@@ -2966,12 +2966,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .first()
             .map(|operand| self.operand_expr(operand));
         if self.is_main {
-            let code = value.unwrap_or_else(|| Expr::Value(RustValue::I64(0)));
+            let code = value.unwrap_or(Expr::Value(RustValue::I64(0)));
             self.push_stmt(Stmt::Expr(Expr::Call {
                 func: Box::new(Self::raw_expr("std::process::exit")),
                 args: vec![Expr::Cast {
                     expr: Box::new(code),
-                    ty: Self::named_type("i32"),
+                    ty: Type::Prim(Prim::I32),
                 }],
             }));
         } else if let Some(value) = value {
@@ -3239,7 +3239,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Self::indent_stmt(Stmt::Let {
                 name: case_name.clone(),
                 mutable: true,
-                ty: Some(Self::named_type("i32")),
+                ty: Some(Type::Prim(Prim::I32)),
                 init: Some(Expr::Match {
                     expr: Box::new(Self::raw_expr(selector_name)),
                     arms: selector_arms,
@@ -3390,7 +3390,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Let {
             name: state_var.clone(),
             mutable: true,
-            ty: Some(Self::named_type("i32")),
+            ty: Some(Type::Prim(Prim::I32)),
             init: Some(Expr::Value(RustValue::I64(0))),
         });
         self.push_stmt(Stmt::Loop {
@@ -3595,10 +3595,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         })
-    }
-
-    fn named_type(ty: impl Into<String>) -> Type {
-        Type::Named(ty.into())
     }
 
     fn unsafe_stmt(stmt: Stmt) -> Stmt {
@@ -4227,7 +4223,7 @@ fn type_mentions_named(ty: &Type, needle: &str) -> bool {
                 .any(|param| type_mentions_named(param, needle))
                 || type_mentions_named(ret, needle)
         }
-        Type::Prim(_) | Type::Unit | Type::Variadic => false,
+        Type::Prim(_) | Type::VaList | Type::Unit | Type::Variadic => false,
     }
 }
 
@@ -4240,7 +4236,7 @@ fn type_mentions_complex(ty: &Type) -> bool {
             params.iter().any(type_mentions_complex) || type_mentions_complex(ret)
         }
         Type::Generic { args, .. } => args.iter().any(type_mentions_complex),
-        Type::Prim(_) | Type::Named(_) | Type::Unit | Type::Variadic => false,
+        Type::Prim(_) | Type::Named(_) | Type::VaList | Type::Unit | Type::Variadic => false,
     }
 }
 
