@@ -23,10 +23,7 @@ mod test_support;
 use crate::rust_ast::{Item, Program};
 
 pub fn apply(program: Program) -> Program {
-    let facts::AnalyzedProgram {
-        program,
-        facts: _facts,
-    } = facts::analyze(program);
+    let facts::AnalyzedProgram { program, .. } = facts::analyze(program);
     let sigs = call_args::collect_signatures(&program);
     let mut program = Program {
         items: program
@@ -51,9 +48,12 @@ pub fn apply(program: Program) -> Program {
     ptr_len::fixup(&mut program);
     string_copy::fixup(&mut program);
     string_libc::fixup(&mut program);
-    for item in &mut program.items {
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item {
-            remove_mut::fixup(f);
+            if let Some(function) = facts.function_by_item_index(item_index) {
+                remove_mut::fixup(f, function, &facts);
+            }
         }
     }
     printf_format::fixup(&mut program);
