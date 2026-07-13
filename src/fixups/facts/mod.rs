@@ -9,6 +9,7 @@ pub(super) mod control_flow;
 pub(super) mod counted_loop;
 pub(super) mod def_use;
 pub(super) mod effects;
+pub(super) mod heap_ownership;
 pub(super) mod loop_shapes;
 pub(super) mod places;
 pub(super) mod printf;
@@ -44,6 +45,7 @@ pub(super) struct FixupFacts {
     pub(super) string_libc_uses: Vec<StringLibcUseFact>,
     pub(super) string_lift_plans: Vec<StringLiftPlanFact>,
     pub(super) string_copy_rewrites: Vec<StringCopyRewriteFact>,
+    pub(super) heap_ownership: Vec<HeapOwnershipFact>,
     pub(super) printf_calls: Vec<PrintfCallFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
@@ -391,6 +393,26 @@ pub(super) enum StringCopyRewrite {
     AssignOwned(BindingId),
     PushLiteral(String),
     PushOwned(BindingId),
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct HeapOwnershipFact {
+    pub(super) function: FunctionId,
+    pub(super) pointer: BindingId,
+    pub(super) allocation_temp: BindingId,
+    pub(super) size_temp: Option<BindingId>,
+    pub(super) free_temp: Option<BindingId>,
+    pub(super) pointer_path: AstPath,
+    pub(super) allocation_path: AstPath,
+    pub(super) assign_path: AstPath,
+    pub(super) free_path: AstPath,
+    pub(super) elem_ty: Type,
+    pub(super) kind: HeapOwnershipKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum HeapOwnershipKind {
+    ScalarBox,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1061,6 +1083,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     calls::collect_facts(&program, &mut collector.facts);
     casts::collect_facts(&program, &mut collector.facts);
     strings::collect_facts(&program, &mut collector.facts);
+    heap_ownership::collect_facts(&program, &mut collector.facts);
     printf::collect_facts(&program, &mut collector.facts);
     strings::collect_rewrite_facts(&program, &mut collector.facts);
     ptr_len::collect_facts(&program, &mut collector.facts);

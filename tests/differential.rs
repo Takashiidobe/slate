@@ -527,6 +527,24 @@ fn ptr_len_pairs_use_slice_params_for_full_array_calls() {
 }
 
 #[test]
+fn scalar_heap_owner_uses_box_drop() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-heap-box");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("heap_box_fixup.c");
+    let generated = tmp.join("heap_box_fixup.generated.rs");
+    support::translate(&c_src, &generated).expect("translate heap_box_fixup fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated heap_box_fixup rust");
+
+    assert!(rust.contains("let mut p: Box<i32> = Box::<i32>::new(0);"));
+    assert!(rust.contains("*p = 41;"));
+    assert!(rust.contains("*p = _v"));
+    assert!(!rust.contains("fn malloc("));
+    assert!(!rust.contains("fn free("));
+    assert!(!rust.contains("unsafe { malloc("));
+    assert!(!rust.contains("unsafe { free("));
+}
+
+#[test]
 fn string_copy_calls_use_lifted_string_operations() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-string-copy");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
