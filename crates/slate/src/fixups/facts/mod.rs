@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::support::walk;
-use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt};
+use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
 
 #[derive(Debug, Clone)]
 pub(super) struct AnalyzedProgram {
@@ -15,6 +15,8 @@ pub(super) struct FixupFacts {
     pub(super) bindings: Vec<BindingFact>,
     pub(super) loops: Vec<LoopFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
+    pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
+    pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
     pub(super) relations: Vec<FactRelation>,
 }
 
@@ -62,6 +64,24 @@ pub(super) struct BindingMutabilityFact {
     pub(super) binding: BindingId,
     pub(super) required: bool,
     pub(super) reasons: BTreeSet<MutabilityReason>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct PtrLenSliceFact {
+    pub(super) caller: FunctionId,
+    pub(super) callee: FunctionId,
+    pub(super) ptr_param: BindingId,
+    pub(super) len_param: BindingId,
+    pub(super) backing_array_len: u64,
+    pub(super) mutable: bool,
+    pub(super) elem_ty: Type,
+    pub(super) len_ty: Type,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct PtrLenUnsupportedCallsiteFact {
+    pub(super) caller: FunctionId,
+    pub(super) callee: FunctionId,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
