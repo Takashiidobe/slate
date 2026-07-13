@@ -21,7 +21,7 @@ use std::collections::HashMap;
 
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
-use crate::rust_ast::{Expr, ExternDecl, IndentStmt, Item, Program, Stmt, Type, UnaryOp};
+use crate::rust_ast::{Expr, ExternDecl, IndentStmt, Item, Program, Stmt, Type};
 
 pub(super) struct Signature {
     params: Vec<Type>,
@@ -197,12 +197,7 @@ fn is_pure_temp_let(stmt: &Stmt) -> bool {
 }
 
 fn is_pure_expr(expr: &Expr) -> bool {
-    match expr {
-        Expr::Value(_) | Expr::Var(_) => true,
-        Expr::Unary { op, expr } => !matches!(op, UnaryOp::Not) && is_pure_expr(expr),
-        Expr::Binary { lhs, rhs, .. } => is_pure_expr(lhs) && is_pure_expr(rhs),
-        _ => false,
-    }
+    super::effects::is_movable_pure_expr(expr)
 }
 
 fn is_temp_name(name: &str) -> bool {
