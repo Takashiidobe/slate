@@ -4449,6 +4449,8 @@ fn type_mentions_long_double(ty: &Type) -> bool {
         Type::LongDouble => true,
         Type::Complex(inner) => type_mentions_long_double(inner),
         Type::Generic { args, .. } => args.iter().any(type_mentions_long_double),
+        Type::Ref { inner, .. } => type_mentions_long_double(inner),
+        Type::Slice(elem) => type_mentions_long_double(elem),
         Type::Ptr { inner, .. } => type_mentions_long_double(inner),
         Type::Array { elem, .. } => type_mentions_long_double(elem),
         Type::FnPtr { params, ret } => {
@@ -4459,6 +4461,7 @@ fn type_mentions_long_double(ty: &Type) -> bool {
         | Type::TyVar(_)
         | Type::CLib(_)
         | Type::VaList
+        | Type::Str
         | Type::Unit
         | Type::Variadic => false,
     }
@@ -4467,6 +4470,8 @@ fn type_mentions_long_double(ty: &Type) -> bool {
 fn type_mentions_complex(ty: &Type) -> bool {
     match ty {
         Type::Complex(_) => true,
+        Type::Ref { inner, .. } => type_mentions_complex(inner),
+        Type::Slice(elem) => type_mentions_complex(elem),
         Type::Ptr { inner, .. } => type_mentions_complex(inner),
         Type::Array { elem, .. } => type_mentions_complex(elem),
         Type::FnPtr { params, ret } => {
@@ -4479,6 +4484,7 @@ fn type_mentions_complex(ty: &Type) -> bool {
         | Type::TyVar(_)
         | Type::CLib(_)
         | Type::VaList
+        | Type::Str
         | Type::Unit
         | Type::Variadic => false,
     }
