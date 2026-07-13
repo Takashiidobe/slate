@@ -212,10 +212,21 @@ fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
             })
         })
         .collect();
+    let diagnostics: Vec<serde_json::Value> = pp
+        .diagnostics
+        .iter()
+        .map(|d| {
+            serde_json::json!({
+                "kind": d.kind.as_str(),
+                "line": d.line,
+                "message": d.message,
+            })
+        })
+        .collect();
     let doc = serde_json::json!({
         "file": path.to_string_lossy(),
         "chains": chains,
-        "diagnostics": pp.diagnostics,
+        "diagnostics": diagnostics,
     });
     Ok(format!(
         "{}\n",
