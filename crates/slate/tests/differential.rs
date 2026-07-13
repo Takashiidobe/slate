@@ -534,6 +534,30 @@ fn string_libc_calls_use_lifted_string_operations() {
 }
 
 #[test]
+fn numeric_parse_calls_use_runtime_parse_support() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-numeric-parse");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("numeric_parse_fixup.c");
+    let generated = tmp.join("numeric_parse_fixup.generated.rs");
+    support::translate(&c_src, &generated).expect("translate numeric_parse_fixup fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated numeric parse rust");
+
+    assert!(rust.contains("#![allow("));
+    assert!(rust.contains("mod __slate_runtime"));
+    assert!(rust.contains(".parse::<i32>().unwrap_or(0)"));
+    assert!(rust.contains("__slate_runtime::parse_i32(whole)"));
+    assert!(rust.contains("__slate_runtime::parse_i64(leading)"));
+    assert!(rust.contains("__slate_runtime::parse_i64(large)"));
+    assert!(rust.contains("__slate_runtime::parse_u64(empty)"));
+    assert!(rust.contains("__slate_runtime::parse_f64(flt)"));
+    assert!(rust.contains("unsafe { strtol("));
+    assert!(!rust.contains("fn atoi("));
+    assert!(!rust.contains("fn atol("));
+    assert!(!rust.contains("fn strtoul("));
+    assert!(!rust.contains("fn strtod("));
+}
+
+#[test]
 fn ptr_len_pairs_use_slice_params_for_full_array_calls() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-ptr-len-slice");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
