@@ -329,7 +329,7 @@ mod tests {
                         .into_iter()
                         .enumerate()
                         .map(|(index, ty)| FnParam {
-                            name: format!("arg{index}").into(),
+                            name: format!("arg{index}"),
                             mutable: false,
                             ty,
                         })

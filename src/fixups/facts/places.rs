@@ -460,7 +460,7 @@ mod tests {
         .facts
     }
 
-    fn place_at<'a>(facts: &'a facts::FixupFacts, path: AstPath) -> &'a PlaceFact {
+    fn place_at(facts: &facts::FixupFacts, path: AstPath) -> &PlaceFact {
         facts.places.iter().find(|fact| fact.path == path).unwrap()
     }
 
