@@ -448,7 +448,7 @@ mod tests {
             .id
     }
 
-    fn fact_for<'a>(facts: &'a facts::FixupFacts, binding: BindingId) -> &'a DefUseFact {
+    fn fact_for(facts: &facts::FixupFacts, binding: BindingId) -> &DefUseFact {
         facts
             .def_use
             .iter()
