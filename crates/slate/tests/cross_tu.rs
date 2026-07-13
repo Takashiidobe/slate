@@ -54,6 +54,39 @@ fn build_and_diff(name: &str) -> PathBuf {
 }
 
 #[test]
+fn library_project_creates_cargo_crate_without_main() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.library")
+        .join("simple");
+    let work = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/cross-tu")
+        .join("library-project");
+    let crate_dir = work.join("crate");
+    let _ = std::fs::remove_dir_all(&crate_dir);
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--lib"])
+        .arg(&dir)
+        .arg(&crate_dir)
+        .output()
+        .expect("run slate translate-project --lib");
+    assert!(
+        output.status.success(),
+        "translate-project --lib failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    assert!(crate_dir.join("Cargo.toml").is_file());
+    let lib_rs = std::fs::read_to_string(crate_dir.join("src/lib.rs")).expect("read lib.rs");
+    assert!(lib_rs.contains("pub mod math;"));
+    assert!(lib_rs.contains("pub mod state;"));
+
+    let math_rs = std::fs::read_to_string(crate_dir.join("src/math.rs")).expect("read math.rs");
+    assert!(math_rs.contains("pub fn square"));
+    assert!(crate_dir.join("tests/run_smoke.rs").is_file());
+}
+
+#[test]
 fn cross_tu_functions() {
     let rs_dir = build_and_diff("cross_tu");
 

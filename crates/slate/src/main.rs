@@ -11,8 +11,8 @@ mod preprocess;
 mod rust_ast;
 
 use std::collections::BTreeMap;
-use std::path::Path;
-use std::process::ExitCode;
+use std::path::{Path, PathBuf};
+use std::process::{Command, ExitCode};
 
 fn usage() -> ExitCode {
     eprintln!("usage: slate <command> [file.c]");
@@ -22,6 +22,9 @@ fn usage() -> ExitCode {
     eprintln!("  translate-cfg   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
     eprintln!("  translate-project  <dir> <out_dir>  cross-TU C dir -> Rust modules");
+    eprintln!(
+        "  translate-project --lib  <project_dir> <crate_dir>  cross-TU C library -> Cargo crate"
+    );
     ExitCode::from(2)
 }
 
@@ -45,9 +48,18 @@ fn main() -> ExitCode {
             Some(path) => run(record_cfg(Path::new(path), &args[3..])),
             None => usage(),
         },
-        Some("translate-project") => match (args.get(2), args.get(3)) {
-            (Some(dir), Some(out)) => run(translate_project(Path::new(dir), Path::new(out))),
-            _ => usage(),
+        Some("translate-project") => match args.get(2).map(String::as_str) {
+            Some("--lib") => match (args.get(3), args.get(4)) {
+                (Some(dir), Some(out)) => {
+                    run(translate_project_lib_crate(Path::new(dir), Path::new(out)))
+                }
+                _ => usage(),
+            },
+            Some(dir) => match args.get(3) {
+                Some(out) => run(translate_project(Path::new(dir), Path::new(out))),
+                _ => usage(),
+            },
+            None => usage(),
         },
         _ => usage(),
     }
@@ -90,12 +102,8 @@ fn translate(path: &Path) -> Result<String, String> {
     Ok(fixups::apply(program).emit())
 }
 
-/// Translate a directory of `.c` files (one project spanning several translation
-/// units) into separate Rust module files under `out_dir`. The unit defining
-/// `main` becomes the crate root `main.rs` and declares the other units with
-/// `mod`; a prototype resolved to a sibling unit becomes a module import.
-fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
-    let mut modules: Vec<(String, std::path::PathBuf)> = Vec::new();
+fn collect_c_modules(dir: &Path) -> Result<Vec<(String, PathBuf)>, String> {
+    let mut modules = Vec::new();
     for entry in std::fs::read_dir(dir).map_err(|e| format!("read {}: {e}", dir.display()))? {
         let path = entry
             .map_err(|e| format!("read {} entry: {e}", dir.display()))?
@@ -106,11 +114,183 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
         let stem = path
             .file_stem()
             .and_then(|s| s.to_str())
-            .ok_or_else(|| format!("bad file stem: {}", path.display()))?
-            .to_string();
-        modules.push((stem, path));
+            .ok_or_else(|| format!("bad file stem: {}", path.display()))?;
+        modules.push((rust_ident(stem), path));
     }
     modules.sort();
+    Ok(modules)
+}
+
+fn rust_ident(name: &str) -> String {
+    let mut out: String = name
+        .chars()
+        .map(|c| {
+            if c.is_ascii_alphanumeric() || c == '_' {
+                c
+            } else {
+                '_'
+            }
+        })
+        .collect();
+    if out.is_empty() || out.starts_with(|c: char| c.is_ascii_digit()) {
+        out.insert(0, '_');
+    }
+    out
+}
+
+fn cargo() -> String {
+    std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into())
+}
+
+fn package_name(crate_dir: &Path) -> String {
+    let name = crate_dir
+        .file_name()
+        .and_then(|s| s.to_str())
+        .map(rust_ident)
+        .filter(|s| !s.is_empty())
+        .unwrap_or_else(|| "slate_project".into());
+    match name.as_str() {
+        "as" | "break" | "const" | "continue" | "crate" | "else" | "enum" | "extern" | "false"
+        | "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" | "match" | "mod" | "move"
+        | "mut" | "pub" | "ref" | "return" | "self" | "Self" | "static" | "struct" | "super"
+        | "trait" | "true" | "type" | "unsafe" | "use" | "where" | "while" | "async" | "await"
+        | "dyn" => format!("slate_{name}"),
+        _ => name,
+    }
+}
+
+fn init_lib_crate(crate_dir: &Path) -> Result<(), String> {
+    std::fs::create_dir_all(crate_dir)
+        .map_err(|e| format!("create {}: {e}", crate_dir.display()))?;
+    let package = package_name(crate_dir);
+    if !crate_dir.join("Cargo.toml").exists() {
+        let out = Command::new(cargo())
+            .args(["init", "--lib", "--vcs", "none", "--name"])
+            .arg(&package)
+            .arg(crate_dir)
+            .output()
+            .map_err(|e| format!("spawn cargo init: {e}"))?;
+        if !out.status.success() {
+            return Err(format!(
+                "cargo init failed:\n{}",
+                String::from_utf8_lossy(&out.stderr)
+            ));
+        }
+    }
+
+    let manifest = format!(
+        r#"[package]
+name = "{package}"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+libc = "0.2"
+
+[profile.dev]
+overflow-checks = false
+"#
+    );
+    std::fs::write(crate_dir.join("Cargo.toml"), manifest)
+        .map_err(|e| format!("write {}: {e}", crate_dir.join("Cargo.toml").display()))?;
+    let main_rs = crate_dir.join("src/main.rs");
+    if main_rs.exists() {
+        std::fs::remove_file(&main_rs).map_err(|e| format!("remove {}: {e}", main_rs.display()))?;
+    }
+    Ok(())
+}
+
+fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<String, String> {
+    let nested_src = project_dir.join("src");
+    let src_dir = if nested_src.is_dir() {
+        nested_src.as_path()
+    } else {
+        project_dir
+    };
+    let modules = collect_c_modules(src_dir)?;
+    if modules.is_empty() {
+        return Err(format!(
+            "translate-project --lib: no C files in {}",
+            src_dir.display()
+        ));
+    }
+
+    init_lib_crate(crate_dir)?;
+    let crate_src = crate_dir.join("src");
+    std::fs::create_dir_all(&crate_src)
+        .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
+
+    let mut defined: BTreeMap<String, String> = BTreeMap::new();
+    let mut defined_globals: BTreeMap<String, String> = BTreeMap::new();
+    for (stem, path) in &modules {
+        let module = cir::parse_module(&cir::emit_generic(path)?)?;
+        for sym in lower::defined_functions(&module) {
+            defined.insert(sym, stem.clone());
+        }
+        for sym in lower::defined_globals(&module) {
+            defined_globals.insert(sym, stem.clone());
+        }
+    }
+
+    let project = lower::ProjectInfo {
+        cross_module: defined,
+        cross_module_globals: defined_globals,
+        child_modules: Vec::new(),
+        emit_pub: true,
+    };
+
+    let mut written = Vec::new();
+    for (stem, path) in &modules {
+        let module = cir::parse_module(&cir::emit_generic(path)?)?;
+        let unit = c_ast::parse_file(path)?;
+        let mut ctx = ctx::Ctx::default();
+        let program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
+        for d in &ctx.diagnostics.items {
+            eprintln!("{:?}: {}", d.severity, d.message);
+        }
+        if ctx.diagnostics.has_errors() {
+            return Err(format!("lowering failed for {}", path.display()));
+        }
+        let output = crate_src.join(stem).with_extension("rs");
+        std::fs::write(&output, fixups::apply(program).emit())
+            .map_err(|e| format!("write {}: {e}", output.display()))?;
+        written.push(output);
+    }
+
+    let lib_rs = modules
+        .iter()
+        .map(|(stem, _)| format!("pub mod {stem};\n"))
+        .collect::<String>();
+    let lib_rs_path = crate_src.join("lib.rs");
+    std::fs::write(&lib_rs_path, lib_rs)
+        .map_err(|e| format!("write {}: {e}", lib_rs_path.display()))?;
+    written.push(lib_rs_path);
+
+    let tests_dir = project_dir.join("tests");
+    if tests_dir.is_dir() {
+        let crate_tests = crate_dir.join("tests");
+        std::fs::create_dir_all(&crate_tests)
+            .map_err(|e| format!("create {}: {e}", crate_tests.display()))?;
+        for (stem, path) in collect_c_modules(&tests_dir)? {
+            let output = crate_tests.join(stem).with_extension("rs");
+            std::fs::write(&output, translate(&path)?)
+                .map_err(|e| format!("write {}: {e}", output.display()))?;
+            written.push(output);
+        }
+    }
+
+    Ok(written
+        .into_iter()
+        .map(|path| format!("wrote {}\n", path.display()))
+        .collect())
+}
+
+/// Translate a directory of `.c` files (one project spanning several translation
+/// units) into separate Rust module files under `out_dir`. The unit defining
+/// `main` becomes the crate root `main.rs` and declares the other units with
+/// `mod`; a prototype resolved to a sibling unit becomes a module import.
+fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
+    let modules = collect_c_modules(dir)?;
 
     // pass 1: which unit defines which function/global, and which owns `main`.
     let mut defined: BTreeMap<String, String> = BTreeMap::new();
