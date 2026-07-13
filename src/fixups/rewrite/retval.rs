@@ -1,25 +1,37 @@
 //! Collapse a return-value slot store into the final return or main exit when
 //! the slot is used only for that round trip.
 
-use crate::fixups::idents::{expr_ident, stmt_ident_count};
+use crate::fixups::facts::{
+    AstPath, BindingId, ControlFlowSubject, FixupFacts, FunctionId, PathSegment, PlaceAccess,
+    PlaceKind,
+};
+use crate::fixups::idents::expr_ident;
 use crate::rust_ast::{Expr, FnDef, IndentStmt, Path, Prim, Stmt, Type};
 
-pub(in crate::fixups) fn fixup(f: &mut FnDef) {
-    collapse_return_slot(&mut f.body);
+pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
+    collapse_return_slot(&mut f.body, function, facts);
     if f.name == "main" {
-        collapse_main_exit_slot(&mut f.body);
+        collapse_main_exit_slot(&mut f.body, function, facts);
     }
 }
 
-fn collapse_return_slot(body: &mut Vec<IndentStmt>) {
-    let Some((ret_index, name)) =
-        body.iter()
-            .enumerate()
-            .find_map(|(index, stmt)| match &stmt.stmt {
-                Stmt::Return(Some(expr)) => expr_ident(expr).map(|name| (index, name.to_string())),
-                _ => None,
-            })
-    else {
+fn collapse_return_slot(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFacts) {
+    let Some((ret_index, binding)) = body.iter().enumerate().find_map(|(index, stmt)| match &stmt
+        .stmt
+    {
+        Stmt::Return(Some(Expr::Var(name))) => {
+            let path = stmt_path(index);
+            if !reachable_stmt(function, facts, &path) {
+                return None;
+            }
+            facts
+                .bindings
+                .iter()
+                .find(|binding| binding.function == function && binding.name == name.as_str())
+                .map(|binding| (index, binding.id))
+        }
+        _ => None,
+    }) else {
         return;
     };
     if ret_index == 0 {
@@ -28,42 +40,44 @@ fn collapse_return_slot(body: &mut Vec<IndentStmt>) {
 
     let store_index = ret_index - 1;
     let value = match &body[store_index].stmt {
-        Stmt::Assign { target, value } if expr_ident(target) == Some(name.as_str()) => {
+        Stmt::Assign { target, value }
+            if store_writes_binding(function, facts, store_index, binding, target) =>
+        {
             value.clone()
         }
         _ => return,
     };
 
-    let mentions: usize = body
-        .iter()
-        .map(|stmt| stmt_ident_count(&stmt.stmt, &name))
-        .sum();
-    if mentions != 3 {
+    let Some(def_use) = facts.def_use(binding) else {
+        return;
+    };
+    if def_use.definition.0.len() != 1
+        || def_use.reads != [AstPath(stmt_path(ret_index))]
+        || def_use.writes != [AstPath(stmt_path(store_index))]
+    {
         return;
     }
-
-    let Some(decl_index) = body
-        .iter()
-        .position(|stmt| matches!(&stmt.stmt, Stmt::Let { name: n, .. } if n == &name))
-    else {
+    let [PathSegment::Stmt(decl_index)] = def_use.definition.0.as_slice() else {
         return;
     };
 
     body[ret_index].stmt = Stmt::Return(Some(value));
-    let mut remove = [store_index, decl_index];
+    let mut remove = [store_index, *decl_index];
     remove.sort_unstable();
     for index in remove.into_iter().rev() {
         body.remove(index);
     }
 }
 
-fn collapse_main_exit_slot(body: &mut Vec<IndentStmt>) {
+fn collapse_main_exit_slot(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFacts) {
     let Some((exit_index, temp_name, cast_ty)) =
         body.iter()
             .enumerate()
             .find_map(|(index, stmt)| match &stmt.stmt {
-                Stmt::Expr(expr) => main_exit_arg_temp(expr)
-                    .map(|(name, ty)| (index, name.to_string(), ty.cloned())),
+                Stmt::Expr(expr) if reachable_stmt(function, facts, &stmt_path(index)) => {
+                    main_exit_arg_temp(expr)
+                        .map(|(name, ty)| (index, name.to_string(), ty.cloned()))
+                }
                 _ => None,
             })
     else {
@@ -86,31 +100,44 @@ fn collapse_main_exit_slot(body: &mut Vec<IndentStmt>) {
     let Some(retval_name) = retval_name else {
         return;
     };
+    let temp_path = AstPath(stmt_path(temp_index));
+    let Some(temp_binding) = facts.binding_by_local_path(function, &temp_name, &temp_path) else {
+        return;
+    };
+    let Some(retval_binding) = facts
+        .bindings
+        .iter()
+        .find(|binding| binding.function == function && binding.name == retval_name)
+        .map(|binding| binding.id)
+    else {
+        return;
+    };
 
     let store_index = temp_index - 1;
     let value = match &body[store_index].stmt {
-        Stmt::Assign { target, value } if expr_ident(target) == Some(retval_name.as_str()) => {
+        Stmt::Assign { target, value }
+            if store_writes_binding(function, facts, store_index, retval_binding, target) =>
+        {
             value.clone()
         }
         _ => return,
     };
 
-    let retval_mentions: usize = body
-        .iter()
-        .map(|stmt| stmt_ident_count(&stmt.stmt, &retval_name))
-        .sum();
-    let temp_mentions: usize = body
-        .iter()
-        .map(|stmt| stmt_ident_count(&stmt.stmt, &temp_name))
-        .sum();
-    if retval_mentions != 3 || temp_mentions != 2 {
+    let Some(retval_def_use) = facts.def_use(retval_binding) else {
+        return;
+    };
+    let Some(temp_def_use) = facts.def_use(temp_binding) else {
+        return;
+    };
+    if retval_def_use.definition.0.len() != 1
+        || retval_def_use.reads != [AstPath(stmt_path(temp_index))]
+        || retval_def_use.writes != [AstPath(stmt_path(store_index))]
+        || temp_def_use.reads != [AstPath(stmt_path(exit_index))]
+        || !temp_def_use.writes.is_empty()
+    {
         return;
     }
-
-    let Some(decl_index) = body
-        .iter()
-        .position(|stmt| matches!(&stmt.stmt, Stmt::Let { name, .. } if name == &retval_name))
-    else {
+    let [PathSegment::Stmt(decl_index)] = retval_def_use.definition.0.as_slice() else {
         return;
     };
 
@@ -127,7 +154,7 @@ fn collapse_main_exit_slot(body: &mut Vec<IndentStmt>) {
         unreachable!();
     };
     replace_main_exit_arg(expr, replacement);
-    let mut remove = [temp_index, store_index, decl_index];
+    let mut remove = [temp_index, store_index, *decl_index];
     remove.sort_unstable();
     for index in remove.into_iter().rev() {
         body.remove(index);
@@ -168,14 +195,71 @@ fn is_std_process_exit(expr: &Expr) -> bool {
             .all(|(segment, expected)| segment.as_str() == expected)
 }
 
+fn store_writes_binding(
+    function: FunctionId,
+    facts: &FixupFacts,
+    index: usize,
+    binding: BindingId,
+    target: &Expr,
+) -> bool {
+    let Some(name) = facts.binding_name(binding) else {
+        return false;
+    };
+    if expr_ident(target) != Some(name) {
+        return false;
+    }
+    facts
+        .place(function, &AstPath(stmt_path(index)))
+        .is_some_and(|fact| {
+            fact.access == PlaceAccess::Write
+                && fact.ordinary_slot
+                && matches!(&fact.kind, PlaceKind::Local { name: place } if place == name)
+        })
+}
+
+fn reachable_stmt(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    facts
+        .control_flow(function, ControlFlowSubject::Stmt, &AstPath(path.to_vec()))
+        .is_some_and(|fact| fact.reachable)
+}
+
+fn stmt_path(index: usize) -> Vec<PathSegment> {
+    vec![PathSegment::Stmt(index)]
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{BinOp, Ident, Visibility};
+    use crate::rust_ast::{BinOp, Ident, Item, Program, Visibility};
 
-    fn retval_body(body: &mut Vec<IndentStmt>) {
-        collapse_return_slot(body);
+    fn retval_body(program: &mut Program) {
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        let Item::Fn(f) = &mut program.items[0] else {
+            unreachable!();
+        };
+        collapse_return_slot(&mut f.body, FunctionId(0), &analyzed.facts);
+    }
+
+    fn retval_after_body(
+        params: Vec<crate::rust_ast::FnParam>,
+        ret: Option<&str>,
+        stmts: Vec<Stmt>,
+    ) -> String {
+        let mut program = Program {
+            items: vec![Item::Fn(func(params, ret, stmts))],
+        };
+        retval_body(&mut program);
+        program.emit()
+    }
+
+    fn fixed_fn(mut f: FnDef) -> String {
+        let program = Program {
+            items: vec![Item::Fn(f.clone())],
+        };
+        let analyzed = crate::fixups::facts::analyze(program);
+        fixup(&mut f, FunctionId(0), &analyzed.facts);
+        emit(f)
     }
 
     fn std_process_exit(expr: Expr) -> Expr {
@@ -189,8 +273,7 @@ mod tests {
 
     #[test]
     fn collapses_retval_store_into_return() {
-        let out = after_body(
-            retval_body,
+        let out = retval_after_body(
             vec![],
             Some("i32"),
             vec![
@@ -225,10 +308,7 @@ fn f() -> i32 {
         ];
         let expected = emit(func(vec![], Some("i32"), stmts.clone()));
 
-        assert_eq!(
-            after_body(retval_body, vec![], Some("i32"), stmts),
-            expected
-        );
+        assert_eq!(retval_after_body(vec![], Some("i32"), stmts), expected);
     }
 
     #[test]
@@ -241,36 +321,30 @@ fn f() -> i32 {
         ];
         let expected = emit(func(vec![], Some("i32"), stmts.clone()));
 
-        assert_eq!(
-            after_body(retval_body, vec![], Some("i32"), stmts),
-            expected
-        );
+        assert_eq!(retval_after_body(vec![], Some("i32"), stmts), expected);
     }
 
     #[test]
     fn collapses_main_retval_store_into_exit() {
-        let out = after_fn(
-            fixup,
-            FnDef {
-                vis: Visibility::Private,
-                unsafe_extern_c: false,
-                name: "main".into(),
-                params: vec![],
-                ret: None,
-                body: vec![
-                    let_mut("__retval", "i32", int(0)),
-                    assign("__retval", int(0)),
-                    temp("_v1", "i32", var("__retval")),
-                    Stmt::Expr(std_process_exit(Expr::Cast {
-                        expr: Box::new(var("_v1")),
-                        ty: Type::Prim(Prim::I32),
-                    })),
-                ]
-                .into_iter()
-                .map(|stmt| IndentStmt { depth: 1, stmt })
-                .collect(),
-            },
-        );
+        let out = fixed_fn(FnDef {
+            vis: Visibility::Private,
+            unsafe_extern_c: false,
+            name: "main".into(),
+            params: vec![],
+            ret: None,
+            body: vec![
+                let_mut("__retval", "i32", int(0)),
+                assign("__retval", int(0)),
+                temp("_v1", "i32", var("__retval")),
+                Stmt::Expr(std_process_exit(Expr::Cast {
+                    expr: Box::new(var("_v1")),
+                    ty: Type::Prim(Prim::I32),
+                })),
+            ]
+            .into_iter()
+            .map(|stmt| IndentStmt { depth: 1, stmt })
+            .collect(),
+        });
 
         assert_eq!(
             out,
@@ -307,6 +381,6 @@ fn main() {
         };
         let expected = emit(f.clone());
 
-        assert_eq!(after_fn(fixup, f), expected);
+        assert_eq!(fixed_fn(f), expected);
     }
 }
