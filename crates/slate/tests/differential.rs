@@ -507,3 +507,28 @@ fn string_libc_calls_use_lifted_string_operations() {
     assert!(!rust.contains("unsafe { strncmp("));
     assert!(!rust.contains("unsafe { memcmp("));
 }
+
+#[test]
+fn string_copy_calls_use_lifted_string_operations() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-string-copy");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("string_copy_fixup.c");
+    let generated = tmp.join("string_copy_fixup.generated.rs");
+    support::translate(&c_src, &generated).expect("translate string_copy_fixup fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated string_copy rust");
+
+    assert!(rust.contains("let mut copy: String = \"\".to_owned();"));
+    assert!(rust.contains("let mut append: String = \"foo\".to_owned();"));
+    assert!(rust.contains("copy = \"abc\".to_owned();"));
+    assert!(rust.contains("append.push_str(\"bar\");"));
+    assert!(rust.contains("trunc_copy = \"abc\".to_owned();"));
+    assert!(rust.contains("trunc_append.push_str(\"suf\");"));
+    assert!(rust.contains("let _v7: usize = trunc_append.len();"));
+    assert!(
+        rust.contains("println!(\"{} {} {} {} {}\", copy, append, trunc_copy, trunc_append, _v7);")
+    );
+    for name in ["strcpy", "strncpy", "strcat", "strncat"] {
+        assert!(!rust.contains(&format!("fn {name}(")));
+        assert!(!rust.contains(&format!("unsafe {{ {name}(")));
+    }
+}

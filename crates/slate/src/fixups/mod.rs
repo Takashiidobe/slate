@@ -9,6 +9,7 @@ mod param_spills;
 mod printf_format;
 mod remove_mut;
 mod retval;
+mod string_copy;
 mod string_libc;
 mod string_lift;
 mod zero_init;
@@ -40,6 +41,7 @@ pub fn apply(program: Program) -> Program {
             })
             .collect(),
     };
+    string_copy::fixup(&mut program);
     string_libc::fixup(&mut program);
     for item in &mut program.items {
         if let Item::Fn(f) = item {

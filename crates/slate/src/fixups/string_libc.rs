@@ -543,7 +543,10 @@ fn supported_compare_call(expr: &Expr, env: &BTreeMap<String, StringKind>) -> Op
 }
 
 fn is_libc_string_func(name: &str) -> bool {
-    matches!(name, "strlen" | "strcmp" | "strncmp" | "memcmp")
+    matches!(
+        name,
+        "strlen" | "strcmp" | "strncmp" | "memcmp" | "strcpy" | "strncpy" | "strcat" | "strncat"
+    )
 }
 
 fn peel_empty_unsafe(expr: &Expr) -> &Expr {
@@ -881,6 +884,7 @@ fn is_zero_comparison_with_var(expr: &Expr, name: &str) -> bool {
 
 fn lifted_kind(ty: &Type) -> Option<StringKind> {
     match ty {
+        Type::Custom(name) if name == "String" => Some(StringKind::Str),
         Type::Ref {
             mutable: false,
             inner,
