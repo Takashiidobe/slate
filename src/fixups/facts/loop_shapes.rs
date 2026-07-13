@@ -8,7 +8,7 @@ use crate::fixups::facts::{
 use crate::fixups::support::walk;
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
-pub(super) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.loop_shapes.clear();
     facts.loop_shape_rejections.clear();
     for (item_index, item) in program.items.iter().enumerate() {
