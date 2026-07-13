@@ -151,6 +151,11 @@ Read these before making changes — they are the real playbook:
   for fixups — see [docs/writing-a-fixup.md](docs/writing-a-fixup.md).
 - **Correctness lives in baseline lowering, never in a fixup.** A fixup must be
   optional in spirit — disabling it still leaves correct Rust.
+- **Use shared fixup walkers.** Fact collectors should use
+  `src/fixups/facts/walk.rs`; rewrite passes should use
+  `src/fixups/support/walk.rs`. Do not add pass-local recursive `exprs`,
+  `stmt_exprs`, or body walkers when the shared helper can cover the traversal;
+  extend the shared helper if a common traversal shape is missing.
 - **The generator only emits what Slate can translate.** When you extend the
   supported subset, extend `tests/support/cgen.rs` (and `c.bnf`) to match; keep
   every generated program well-defined (no UB) so C and Rust agree.
