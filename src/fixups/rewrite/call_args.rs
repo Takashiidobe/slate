@@ -19,7 +19,9 @@
 
 use std::collections::HashMap;
 
-use crate::fixups::idents::stmt_ident_count;
+use crate::fixups::facts::{
+    AstPath, CallArgPinning, CallCallee, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
+};
 use crate::fixups::support::walk;
 use crate::rust_ast::{Expr, ExternDecl, IndentStmt, Item, Program, Stmt, Type};
 
@@ -64,67 +66,112 @@ pub(in crate::fixups) fn collect_signatures(program: &Program) -> Signatures {
     sigs
 }
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>, sigs: &Signatures) {
-    fixup_nested(body, sigs);
-    loop {
-        let mut applied = false;
-        for i in 0..body.len() {
-            let Stmt::Let {
-                name,
-                mutable: false,
-                init: Some(init),
-                ..
-            } = &body[i].stmt
-            else {
-                continue;
-            };
-            if !is_temp_name(name) {
-                continue;
-            }
-            let name = name.clone();
-            let init = init.clone();
-            let Some((use_index, callee, slot)) = single_arg_use(body, i, &name) else {
-                continue;
-            };
-            if !inlinable(&init, sigs, sigs.get(&callee), slot) {
-                continue;
-            }
-            if body[use_index].stmt.substitute_var(&name, &init) {
-                body.remove(i);
-                applied = true;
-                break;
-            }
-        }
-        if !applied {
-            break;
-        }
-        fixup_nested(body, sigs);
-    }
+pub(in crate::fixups) fn fixup(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+) -> bool {
+    fixup_at(body, function, facts, &mut Vec::new())
 }
 
-fn fixup_nested(body: &mut [IndentStmt], sigs: &Signatures) {
-    for stmt in body {
-        match &mut stmt.stmt {
-            Stmt::If {
-                then_body,
-                else_body,
-                ..
-            }
-            | Stmt::LetIf {
-                then_body,
-                else_body,
-                ..
-            } => {
-                fixup(then_body, sigs);
-                fixup(else_body, sigs);
-            }
-            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-                fixup(body, sigs);
-            }
-            Stmt::Unsafe { body } => fixup(&mut body.stmts, sigs),
-            _ => {}
+fn fixup_at(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) -> bool {
+    if fixup_nested(body, function, facts, path) {
+        return true;
+    }
+    for i in 0..body.len() {
+        let def_path = stmt_path(path, i);
+        let Stmt::Let {
+            name,
+            mutable: false,
+            init: Some(init),
+            ..
+        } = &body[i].stmt
+        else {
+            continue;
+        };
+        if !is_temp_name(name) {
+            continue;
+        }
+        let Some(binding) = facts.binding_by_local_path(function, name, &AstPath(def_path.clone()))
+        else {
+            continue;
+        };
+        let name = name.clone();
+        let init = init.clone();
+        let Some((use_index, slot)) = single_arg_use(body, i, binding, function, facts, path)
+        else {
+            continue;
+        };
+        let mut arg_path = stmt_path(path, use_index);
+        arg_path.push(PathSegment::Expr(slot + 1));
+        if !inlinable(function, facts, &def_path, &arg_path) {
+            continue;
+        }
+        if body[use_index].stmt.substitute_var(&name, &init) {
+            body.remove(i);
+            return true;
         }
     }
+    false
+}
+
+fn fixup_nested(
+    body: &mut [IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) -> bool {
+    for (index, stmt) in body.iter_mut().enumerate() {
+        if walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            match &mut stmt.stmt {
+                Stmt::If {
+                    then_body,
+                    else_body,
+                    ..
+                }
+                | Stmt::LetIf {
+                    then_body,
+                    else_body,
+                    ..
+                } => {
+                    walk::with_path_segment(path, PathSegment::Then, |path| {
+                        fixup_at(then_body, function, facts, path)
+                    }) || walk::with_path_segment(path, PathSegment::Else, |path| {
+                        fixup_at(else_body, function, facts, path)
+                    })
+                }
+                Stmt::Loop { body, .. } => {
+                    walk::with_path_segment(path, PathSegment::LoopBody, |path| {
+                        fixup_at(body, function, facts, path)
+                    })
+                }
+                Stmt::Scope { body } => {
+                    walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
+                        fixup_at(body, function, facts, path)
+                    })
+                }
+                Stmt::LabeledBlock { body, .. } => {
+                    walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
+                        fixup_at(body, function, facts, path)
+                    })
+                }
+                Stmt::Unsafe { body } => {
+                    walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
+                        fixup_at(&mut body.stmts, function, facts, path)
+                    })
+                }
+                _ => false,
+            }
+        }) {
+            return true;
+        }
+    }
+    false
 }
 
 /// The single use of `name` after `def_index`, as `(use_index, callee, slot)`,
@@ -134,70 +181,100 @@ fn fixup_nested(body: &mut [IndentStmt], sigs: &Signatures) {
 fn single_arg_use(
     body: &[IndentStmt],
     def_index: usize,
-    name: &str,
-) -> Option<(usize, String, usize)> {
-    let mut target: Option<(usize, String, usize)> = None;
-    for (index, stmt) in body.iter().enumerate().skip(def_index + 1) {
-        let uses = stmt_ident_count(&stmt.stmt, name);
-        if uses == 0 {
-            if target.is_none() && !is_pure_temp_let(&stmt.stmt) {
-                return None;
-            }
-            continue;
-        }
-        if uses != 1 || target.is_some() {
+    binding: crate::fixups::facts::BindingId,
+    function: FunctionId,
+    facts: &FixupFacts,
+    body_path: &[PathSegment],
+) -> Option<(usize, usize)> {
+    let reads = &facts.def_use(binding)?.reads;
+    if reads.len() != 1 {
+        return None;
+    }
+    let use_index = direct_stmt_index(body_path, &reads[0])?;
+    if use_index <= def_index || use_index >= body.len() {
+        return None;
+    }
+    let name = binding_name(facts, binding)?;
+    let slot = find_arg_slot(&body[use_index].stmt, name)?;
+    for index in def_index + 1..use_index {
+        if !is_pure_temp_let(
+            &body[index].stmt,
+            function,
+            facts,
+            &stmt_path(body_path, index),
+        ) {
             return None;
         }
-        let (callee, slot) = find_arg_slot(&stmt.stmt, name)?;
-        target = Some((index, callee, slot));
     }
-    target
+    Some((use_index, slot))
 }
 
-fn find_arg_slot(stmt: &Stmt, name: &str) -> Option<(String, usize)> {
+fn find_arg_slot(stmt: &Stmt, name: &str) -> Option<usize> {
     let mut result = None;
     walk::stmt_exprs(stmt, &mut |expr| {
         if result.is_some() {
             return;
         }
         if let Expr::Call { func, args } = expr
-            && let Expr::Var(callee) = &**func
+            && matches!(&**func, Expr::Var(_))
             && let Some(slot) = args
                 .iter()
                 .position(|arg| matches!(arg, Expr::Var(v) if v.as_str() == name))
         {
-            result = Some((callee.as_str().to_string(), slot));
+            result = Some(slot);
         }
     });
     result
 }
 
-fn inlinable(init: &Expr, sigs: &Signatures, callee: Option<&Signature>, slot: usize) -> bool {
-    // (b) result of a known call: its Rust type is fixed by the callee's return
-    // type, so it needs no annotation even in a vararg slot.
-    if let Expr::Call { func, .. } = init
-        && let Expr::Var(inner) = &**func
-        && sigs.contains_key(inner.as_str())
+fn inlinable(
+    function: FunctionId,
+    facts: &FixupFacts,
+    def_path: &[PathSegment],
+    arg_path: &[PathSegment],
+) -> bool {
+    if facts
+        .callsite(function, &AstPath(def_path.to_vec()))
+        .is_some_and(|callsite| {
+            matches!(
+                callsite.callee,
+                CallCallee::Direct {
+                    signature: Some(_),
+                    ..
+                }
+            )
+        })
     {
         return true;
     }
-    // (a) pure temp into a declared, non-variadic parameter slot: the parameter
-    // type pins any literal, so dropping the annotation cannot change inference.
-    match callee {
-        Some(sig) if !sig.variadic && slot < sig.params.len() => is_pure_expr(init),
-        _ => false,
-    }
+    facts
+        .call_arg_at(function, &AstPath(arg_path.to_vec()))
+        .is_some_and(|(_, arg)| {
+            arg.pinning == CallArgPinning::DeclaredParam
+                && !arg.variadic
+                && is_pure_expr(function, facts, def_path)
+        })
 }
 
-fn is_pure_temp_let(stmt: &Stmt) -> bool {
-    matches!(
-        stmt,
-        Stmt::Let { name, init: Some(init), .. } if is_temp_name(name) && is_pure_expr(init)
-    )
+fn is_pure_temp_let(
+    stmt: &Stmt,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> bool {
+    matches!(stmt, Stmt::Let { name, init: Some(_), .. } if is_temp_name(name))
+        && facts.effects.iter().any(|fact| {
+            fact.function == function
+                && fact.path == AstPath(path.to_vec())
+                && fact.subject == EffectSubject::Expr
+                && fact.purity == Purity::MovablePure
+        })
 }
 
-fn is_pure_expr(expr: &Expr) -> bool {
-    crate::fixups::facts::is_movable_pure_expr(expr)
+fn is_pure_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    facts
+        .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
+        .is_some_and(|fact| fact.purity == Purity::MovablePure)
 }
 
 fn is_temp_name(name: &str) -> bool {
@@ -205,11 +282,33 @@ fn is_temp_name(name: &str) -> bool {
         .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|b| b.is_ascii_digit()))
 }
 
+fn stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
+    let mut path = body_path.to_vec();
+    path.push(PathSegment::Stmt(index));
+    path
+}
+
+fn direct_stmt_index(body_path: &[PathSegment], read: &AstPath) -> Option<usize> {
+    let rest = read.0.strip_prefix(body_path)?;
+    match rest {
+        [PathSegment::Stmt(index), ..] => Some(*index),
+        _ => None,
+    }
+}
+
+fn binding_name(facts: &FixupFacts, binding: crate::fixups::facts::BindingId) -> Option<&str> {
+    facts
+        .bindings
+        .iter()
+        .find(|fact| fact.id == binding)
+        .map(|fact| fact.name.as_str())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::Stmt;
+    use crate::rust_ast::{ExternDecl, ExternFnDecl, FnParam, Item, Program, Stmt};
 
     fn sig(params: &[&str], variadic: bool) -> Signature {
         Signature {
@@ -219,10 +318,44 @@ mod tests {
     }
 
     fn run(sigs: Vec<(&str, Signature)>, stmts: Vec<Stmt>) -> String {
-        let sigmap: Signatures = sigs.into_iter().map(|(n, s)| (n.to_string(), s)).collect();
-        let mut f = func(vec![], None, stmts);
-        fixup(&mut f.body, &sigmap);
-        emit(f)
+        let mut items: Vec<Item> = sigs
+            .into_iter()
+            .map(|(name, sig)| Item::ExternBlock {
+                abi: "C".into(),
+                decls: vec![ExternDecl::Fn(ExternFnDecl {
+                    name: name.into(),
+                    params: sig
+                        .params
+                        .into_iter()
+                        .enumerate()
+                        .map(|(index, ty)| FnParam {
+                            name: format!("arg{index}").into(),
+                            mutable: false,
+                            ty,
+                        })
+                        .collect(),
+                    variadic: sig.variadic,
+                    ret: Some(Type::parse("i32")),
+                })],
+            })
+            .collect();
+        items.push(Item::Fn(func(vec![], None, stmts)));
+        let mut program = Program { items };
+        let item_index = program.items.len() - 1;
+        loop {
+            let analyzed = crate::fixups::facts::analyze(program.clone());
+            let facts = analyzed.facts;
+            let Item::Fn(f) = &mut program.items[item_index] else {
+                unreachable!();
+            };
+            if !fixup(&mut f.body, FunctionId(0), &facts) {
+                break;
+            }
+        }
+        let Item::Fn(f) = &program.items[item_index] else {
+            unreachable!();
+        };
+        emit(f.clone())
     }
 
     #[test]
