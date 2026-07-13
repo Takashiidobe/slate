@@ -3,6 +3,7 @@
 mod borrow_alias;
 mod call_args;
 mod calls;
+mod casts;
 mod compound_assign;
 mod control_flow;
 mod counted_loop;
