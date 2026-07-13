@@ -42,6 +42,8 @@ pub(super) struct FixupFacts {
     pub(super) string_buffers: Vec<StringBufferFact>,
     pub(super) string_pointer_views: Vec<StringPointerViewFact>,
     pub(super) string_libc_uses: Vec<StringLibcUseFact>,
+    pub(super) string_lift_plans: Vec<StringLiftPlanFact>,
+    pub(super) string_copy_rewrites: Vec<StringCopyRewriteFact>,
     pub(super) printf_calls: Vec<PrintfCallFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
@@ -364,6 +366,31 @@ pub(super) struct StringLibcUseFact {
     pub(super) callee: StringLibcFunction,
     pub(super) path: AstPath,
     pub(super) pointer_args: Vec<BindingId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct StringLiftPlanFact {
+    pub(super) function: FunctionId,
+    pub(super) binding: BindingId,
+    pub(super) path: AstPath,
+    pub(super) recovery: StringRecoveryCandidate,
+    pub(super) remove_assignment: Option<AstPath>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct StringCopyRewriteFact {
+    pub(super) function: FunctionId,
+    pub(super) path: AstPath,
+    pub(super) dst: BindingId,
+    pub(super) rewrite: StringCopyRewrite,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum StringCopyRewrite {
+    AssignLiteral(String),
+    AssignOwned(BindingId),
+    PushLiteral(String),
+    PushOwned(BindingId),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -991,6 +1018,26 @@ impl FixupFacts {
             .find(|fact| fact.function == function && &fact.path == path)
     }
 
+    pub(super) fn string_lift_plan(
+        &self,
+        function: FunctionId,
+        binding: BindingId,
+    ) -> Option<&StringLiftPlanFact> {
+        self.string_lift_plans
+            .iter()
+            .find(|fact| fact.function == function && fact.binding == binding)
+    }
+
+    pub(super) fn string_copy_rewrite(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&StringCopyRewriteFact> {
+        self.string_copy_rewrites
+            .iter()
+            .find(|fact| fact.function == function && &fact.path == path)
+    }
+
     pub(super) fn printf_call(
         &self,
         function: FunctionId,
@@ -1015,6 +1062,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     casts::collect_facts(&program, &mut collector.facts);
     strings::collect_facts(&program, &mut collector.facts);
     printf::collect_facts(&program, &mut collector.facts);
+    strings::collect_rewrite_facts(&program, &mut collector.facts);
     ptr_len::collect_facts(&program, &mut collector.facts);
     slice_index::collect_facts(&program, &mut collector.facts);
     counted_loop::collect_facts(&program, &mut collector.facts);

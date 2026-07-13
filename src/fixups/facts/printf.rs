@@ -168,7 +168,7 @@ fn visit_expr(
             .skip(1)
             .map(|(index, arg)| {
                 let mut arg_path = path.to_vec();
-                arg_path.push(PathSegment::Expr(index));
+                arg_path.push(PathSegment::Expr(index + 1));
                 PrintfArgFact {
                     path: AstPath(arg_path),
                     const_string: const_c_string_arg(arg, env),

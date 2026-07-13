@@ -2,10 +2,11 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, FixupFacts, FunctionId, NulTermination, PathSegment,
-    StringBufferFact, StringBufferKind, StringBufferProvenance, StringBufferRejection,
-    StringLibcFunction, StringLibcUseFact, StringPointerViewFact, StringPointerViewKind,
-    StringRecoveryCandidate,
+    AstPath, BindingId, BindingKind, ConstValue, FixupFacts, FunctionId, NulTermination,
+    PathSegment, StringBufferFact, StringBufferKind, StringBufferProvenance, StringBufferRejection,
+    StringCopyRewrite, StringCopyRewriteFact, StringLibcFunction, StringLibcUseFact,
+    StringLiftPlanFact, StringPointerViewFact, StringPointerViewKind, StringRecoveryCandidate,
+    ValueSubject,
 };
 use crate::rust_ast::{
     Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
@@ -38,6 +39,749 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
     facts.string_buffers = buffers;
     facts.string_pointer_views = pointer_views;
     facts.string_libc_uses = libc_uses;
+}
+
+pub(in crate::fixups) fn collect_rewrite_facts(program: &Program, facts: &mut FixupFacts) {
+    facts.string_lift_plans.clear();
+    facts.string_copy_rewrites.clear();
+
+    for (item_index, item) in program.items.iter().enumerate() {
+        let Item::Fn(f) = item else {
+            continue;
+        };
+        let Some(function) = facts.function_by_item_index(item_index) else {
+            continue;
+        };
+        let mut plans = Vec::new();
+        let mut rewrites = Vec::new();
+        let consts = const_usize_temps(function, facts);
+        collect_body_rewrite_facts(
+            function,
+            &f.body,
+            &mut Vec::new(),
+            facts,
+            &consts,
+            &mut plans,
+            &mut rewrites,
+        );
+        facts.string_lift_plans.extend(plans);
+        facts.string_copy_rewrites.extend(rewrites);
+    }
+}
+
+fn collect_body_rewrite_facts(
+    function: FunctionId,
+    body: &[IndentStmt],
+    path: &mut Vec<PathSegment>,
+    facts: &FixupFacts,
+    consts: &BTreeMap<String, usize>,
+    plans: &mut Vec<StringLiftPlanFact>,
+    rewrites: &mut Vec<StringCopyRewriteFact>,
+) {
+    collect_nested_rewrite_facts(function, body, path, facts, consts, plans, rewrites);
+    let borrowed = liftable_bindings(
+        function,
+        body,
+        path,
+        facts,
+        StringRecoveryCandidate::BorrowedStr,
+        consts,
+    );
+    let borrowed_bytes = liftable_bindings(
+        function,
+        body,
+        path,
+        facts,
+        StringRecoveryCandidate::BorrowedBytes,
+        consts,
+    );
+    let owned = liftable_bindings(
+        function,
+        body,
+        path,
+        facts,
+        StringRecoveryCandidate::OwnedString,
+        consts,
+    );
+    for binding in borrowed {
+        if let Some(plan) = lift_plan_for_binding(
+            function,
+            body,
+            path,
+            facts,
+            binding,
+            StringRecoveryCandidate::BorrowedStr,
+        ) {
+            plans.push(plan);
+        }
+    }
+    for binding in borrowed_bytes {
+        if let Some(plan) = lift_plan_for_binding(
+            function,
+            body,
+            path,
+            facts,
+            binding,
+            StringRecoveryCandidate::BorrowedBytes,
+        ) {
+            plans.push(plan);
+        }
+    }
+    for binding in &owned {
+        if let Some(plan) = lift_plan_for_binding(
+            function,
+            body,
+            path,
+            facts,
+            *binding,
+            StringRecoveryCandidate::OwnedString,
+        ) {
+            plans.push(plan);
+        }
+    }
+    collect_copy_rewrites(function, body, path, facts, consts, &owned, rewrites);
+}
+
+fn collect_nested_rewrite_facts(
+    function: FunctionId,
+    body: &[IndentStmt],
+    path: &mut Vec<PathSegment>,
+    facts: &FixupFacts,
+    consts: &BTreeMap<String, usize>,
+    plans: &mut Vec<StringLiftPlanFact>,
+    rewrites: &mut Vec<StringCopyRewriteFact>,
+) {
+    for (index, indent) in body.iter().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| match &indent.stmt {
+            Stmt::If {
+                then_body,
+                else_body,
+                ..
+            }
+            | Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            } => {
+                walk::with_path_segment(path, PathSegment::Then, |path| {
+                    collect_body_rewrite_facts(
+                        function, then_body, path, facts, consts, plans, rewrites,
+                    );
+                });
+                walk::with_path_segment(path, PathSegment::Else, |path| {
+                    collect_body_rewrite_facts(
+                        function, else_body, path, facts, consts, plans, rewrites,
+                    );
+                });
+            }
+            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+                collect_body_rewrite_facts(function, body, path, facts, consts, plans, rewrites);
+            }
+            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                walk::with_path_segment(path, PathSegment::BlockBody, |path| {
+                    collect_body_rewrite_facts(
+                        function,
+                        &body.stmts,
+                        path,
+                        facts,
+                        consts,
+                        plans,
+                        rewrites,
+                    );
+                });
+            }
+            Stmt::Match { arms, .. } => {
+                for (arm_index, arm) in arms.iter().enumerate() {
+                    walk::with_path_segment(path, PathSegment::MatchArm(arm_index), |path| {
+                        collect_body_rewrite_facts(
+                            function, &arm.body, path, facts, consts, plans, rewrites,
+                        );
+                    });
+                }
+            }
+            _ => {}
+        });
+    }
+}
+
+fn liftable_bindings(
+    function: FunctionId,
+    body: &[IndentStmt],
+    path: &[PathSegment],
+    facts: &FixupFacts,
+    recovery: StringRecoveryCandidate,
+    consts: &BTreeMap<String, usize>,
+) -> BTreeSet<BindingId> {
+    let candidates = (0..body.len())
+        .filter_map(|index| {
+            let stmt_path = stmt_path(path, index);
+            let candidate = lift_candidate_at(function, body, facts, &stmt_path, recovery)?;
+            Some((candidate.binding, index, candidate.remove_index))
+        })
+        .collect::<Vec<_>>();
+    let mut liftable = candidates
+        .iter()
+        .map(|(binding, _, _)| *binding)
+        .collect::<BTreeSet<_>>();
+    loop {
+        let before = liftable.clone();
+        liftable.retain(|binding| {
+            let Some((_, index, remove_index)) = candidates
+                .iter()
+                .find(|(candidate, _, _)| candidate == binding)
+                .copied()
+            else {
+                return false;
+            };
+            let scan_start = remove_index.map_or(index + 1, |index| index + 1);
+            body[scan_start..]
+                .iter()
+                .enumerate()
+                .all(|(offset, indent)| {
+                    let stmt_path = stmt_path(path, scan_start + offset);
+                    stmt_allows_lift(
+                        function,
+                        &indent.stmt,
+                        &stmt_path,
+                        facts,
+                        *binding,
+                        recovery,
+                        &before,
+                        consts,
+                    )
+                })
+        });
+        if liftable == before {
+            return liftable;
+        }
+    }
+}
+
+struct LiftCandidate {
+    binding: BindingId,
+    remove_index: Option<usize>,
+    remove_assignment: Option<AstPath>,
+}
+
+fn lift_plan_for_binding(
+    function: FunctionId,
+    body: &[IndentStmt],
+    path: &[PathSegment],
+    facts: &FixupFacts,
+    binding: BindingId,
+    recovery: StringRecoveryCandidate,
+) -> Option<StringLiftPlanFact> {
+    for index in 0..body.len() {
+        let stmt_path = stmt_path(path, index);
+        let Some(candidate) = lift_candidate_at(function, body, facts, &stmt_path, recovery) else {
+            continue;
+        };
+        if candidate.binding == binding {
+            return Some(StringLiftPlanFact {
+                function,
+                binding,
+                path: AstPath(stmt_path),
+                recovery,
+                remove_assignment: candidate.remove_assignment,
+            });
+        }
+    }
+    None
+}
+
+fn lift_candidate_at(
+    function: FunctionId,
+    body: &[IndentStmt],
+    facts: &FixupFacts,
+    path: &[PathSegment],
+    recovery: StringRecoveryCandidate,
+) -> Option<LiftCandidate> {
+    let buffer = facts.string_buffer_at(function, &AstPath(path.to_vec()))?;
+    if !buffer.candidates.contains(&recovery) {
+        return None;
+    }
+    let remove_assignment = match &buffer.provenance {
+        StringBufferProvenance::Literal => {
+            if facts
+                .def_use(buffer.binding)
+                .is_some_and(|def_use| !def_use.writes.is_empty())
+            {
+                return None;
+            }
+            None
+        }
+        StringBufferProvenance::ZeroInitialized => {
+            if recovery != StringRecoveryCandidate::OwnedString {
+                return None;
+            }
+            None
+        }
+        StringBufferProvenance::AssignedLiteral { assignment } => Some(assignment.clone()),
+        _ => return None,
+    };
+    let remove_index = remove_assignment
+        .as_ref()
+        .and_then(|assignment| assignment_index(path, &assignment.0));
+    if remove_index.is_some_and(|index| index >= body.len()) {
+        return None;
+    }
+    Some(LiftCandidate {
+        binding: buffer.binding,
+        remove_index,
+        remove_assignment,
+    })
+}
+
+fn collect_copy_rewrites(
+    function: FunctionId,
+    body: &[IndentStmt],
+    path: &[PathSegment],
+    facts: &FixupFacts,
+    consts: &BTreeMap<String, usize>,
+    liftable: &BTreeSet<BindingId>,
+    rewrites: &mut Vec<StringCopyRewriteFact>,
+) {
+    for (index, indent) in body.iter().enumerate() {
+        let stmt_path = stmt_path(path, index);
+        if let Stmt::Expr(expr) = &indent.stmt
+            && let Some((dst, rewrite)) =
+                copy_rewrite_for_expr(function, expr, &stmt_path, facts, liftable, consts)
+        {
+            rewrites.push(StringCopyRewriteFact {
+                function,
+                path: AstPath(stmt_path),
+                dst,
+                rewrite,
+            });
+        }
+    }
+}
+
+fn stmt_allows_lift(
+    function: FunctionId,
+    stmt: &Stmt,
+    path: &[PathSegment],
+    facts: &FixupFacts,
+    binding: BindingId,
+    recovery: StringRecoveryCandidate,
+    liftable: &BTreeSet<BindingId>,
+    consts: &BTreeMap<String, usize>,
+) -> bool {
+    if let Stmt::Expr(expr) = stmt
+        && recovery == StringRecoveryCandidate::OwnedString
+        && copy_rewrite_for_expr(function, expr, path, facts, liftable, consts).is_some()
+    {
+        return true;
+    }
+    let uses = binding_uses_under(facts, function, binding, path);
+    uses.into_iter()
+        .all(|use_path| use_allowed(function, &use_path, facts, binding, recovery, liftable))
+}
+
+fn body_allows_lift(
+    function: FunctionId,
+    body: &[IndentStmt],
+    path: &[PathSegment],
+    facts: &FixupFacts,
+    binding: BindingId,
+    recovery: StringRecoveryCandidate,
+    liftable: &BTreeSet<BindingId>,
+    consts: &BTreeMap<String, usize>,
+) -> bool {
+    body.iter().enumerate().all(|(index, indent)| {
+        stmt_allows_lift(
+            function,
+            &indent.stmt,
+            &stmt_path(path, index),
+            facts,
+            binding,
+            recovery,
+            liftable,
+            consts,
+        )
+    })
+}
+
+fn block_allows_lift(
+    function: FunctionId,
+    block: &Block,
+    path: &[PathSegment],
+    facts: &FixupFacts,
+    binding: BindingId,
+    recovery: StringRecoveryCandidate,
+    liftable: &BTreeSet<BindingId>,
+    consts: &BTreeMap<String, usize>,
+) -> bool {
+    body_allows_lift(
+        function,
+        &block.stmts,
+        path,
+        facts,
+        binding,
+        recovery,
+        liftable,
+        consts,
+    ) && block.tail.as_deref().is_none_or(|_tail| {
+        let tail_path = child_path(path, PathSegment::BlockTail);
+        binding_uses_under(facts, function, binding, &tail_path)
+            .into_iter()
+            .all(|use_path| use_allowed(function, &use_path, facts, binding, recovery, liftable))
+    })
+}
+fn binding_uses_under(
+    facts: &FixupFacts,
+    function: FunctionId,
+    binding: BindingId,
+    prefix: &[PathSegment],
+) -> Vec<AstPath> {
+    let mut uses = Vec::new();
+    if let Some(def_use) = facts.def_use(binding) {
+        uses.extend(
+            def_use
+                .reads
+                .iter()
+                .filter(|path| path_starts_with(&path.0, prefix))
+                .cloned(),
+        );
+        uses.extend(
+            def_use
+                .writes
+                .iter()
+                .filter(|path| path_starts_with(&path.0, prefix))
+                .cloned(),
+        );
+    }
+    uses.extend(
+        facts
+            .string_pointer_views
+            .iter()
+            .filter(|view| {
+                view.function == function
+                    && view.source == binding
+                    && path_starts_with(&view.path.0, prefix)
+            })
+            .map(|view| view.path.clone()),
+    );
+    uses
+}
+
+fn use_allowed(
+    function: FunctionId,
+    use_path: &AstPath,
+    facts: &FixupFacts,
+    binding: BindingId,
+    _recovery: StringRecoveryCandidate,
+    liftable: &BTreeSet<BindingId>,
+) -> bool {
+    if facts.printf_calls.iter().any(|printf| {
+        printf.function == function
+            && path_starts_with(&use_path.0, &printf.path.0)
+            && printf_allows_lift(function, printf, facts, binding)
+    }) {
+        return true;
+    }
+    facts.string_libc_uses.iter().any(|libc| {
+        libc.function == function
+            && path_starts_with(&use_path.0, &libc.path.0)
+            && matches!(
+                libc.callee,
+                StringLibcFunction::StrLen
+                    | StringLibcFunction::StrCmp
+                    | StringLibcFunction::StrNCmp
+                    | StringLibcFunction::MemCmp
+            )
+            && libc
+                .pointer_args
+                .iter()
+                .all(|arg| *arg == binding || liftable.contains(arg))
+    })
+}
+
+fn printf_allows_lift(
+    function: FunctionId,
+    printf: &crate::fixups::facts::PrintfCallFact,
+    facts: &FixupFacts,
+    binding: BindingId,
+) -> bool {
+    let Some(conversions) = printf.format.as_deref().and_then(simple_printf_conversions) else {
+        return false;
+    };
+    conversions.len() == printf.arg_facts.len()
+        && conversions
+            .iter()
+            .zip(&printf.arg_facts)
+            .all(|(conversion, arg)| {
+                facts
+                    .string_pointer_view(function, &arg.path)
+                    .is_none_or(|view| {
+                        view.source != binding || (*conversion == b's' && arg.pointer)
+                    })
+            })
+}
+
+fn copy_rewrite_for_expr(
+    function: FunctionId,
+    expr: &Expr,
+    path: &[PathSegment],
+    facts: &FixupFacts,
+    liftable: &BTreeSet<BindingId>,
+    consts: &BTreeMap<String, usize>,
+) -> Option<(BindingId, StringCopyRewrite)> {
+    let Expr::Call { args, .. } = peel_empty_unsafe(expr) else {
+        return None;
+    };
+    let Some(libc) = facts.string_libc_use(function, &AstPath(path.to_vec())) else {
+        return None;
+    };
+    match libc.callee {
+        StringLibcFunction::StrCpy if args.len() == 2 => {
+            let arg_path = call_arg_path(expr, path, 0);
+            let Some(dst) = pointer_view_binding(function, &arg_path, facts) else {
+                return None;
+            };
+            if !liftable.contains(&dst) {
+                return None;
+            }
+            let rewrite = copy_source_rewrite(
+                function,
+                &args[1],
+                &call_arg_path(expr, path, 1),
+                facts,
+                liftable,
+                false,
+            )?;
+            Some((dst, rewrite))
+        }
+        StringLibcFunction::StrNCpy if args.len() == 3 => {
+            let dst = pointer_view_binding(function, &call_arg_path(expr, path, 0), facts)?;
+            if !liftable.contains(&dst) {
+                return None;
+            }
+            let src = const_ascii_prefix(&args[1], &args[2], consts)?;
+            Some((dst, StringCopyRewrite::AssignLiteral(src)))
+        }
+        StringLibcFunction::StrCat if args.len() == 2 => {
+            let dst = pointer_view_binding(function, &call_arg_path(expr, path, 0), facts)?;
+            if !liftable.contains(&dst) {
+                return None;
+            }
+            let rewrite = copy_source_rewrite(
+                function,
+                &args[1],
+                &call_arg_path(expr, path, 1),
+                facts,
+                liftable,
+                true,
+            )?;
+            Some((dst, rewrite))
+        }
+        StringLibcFunction::StrNCat if args.len() == 3 => {
+            let dst = pointer_view_binding(function, &call_arg_path(expr, path, 0), facts)?;
+            if !liftable.contains(&dst) {
+                return None;
+            }
+            let src = const_ascii_prefix(&args[1], &args[2], consts)?;
+            Some((dst, StringCopyRewrite::PushLiteral(src)))
+        }
+        _ => None,
+    }
+}
+
+fn copy_source_rewrite(
+    function: FunctionId,
+    expr: &Expr,
+    path: &[PathSegment],
+    facts: &FixupFacts,
+    liftable: &BTreeSet<BindingId>,
+    push: bool,
+) -> Option<StringCopyRewrite> {
+    if let Some(bytes) = const_c_string(expr) {
+        let value = String::from_utf8(bytes).ok()?;
+        return Some(if push {
+            StringCopyRewrite::PushLiteral(value)
+        } else {
+            StringCopyRewrite::AssignLiteral(value)
+        });
+    }
+    let source = pointer_view_binding(function, path, facts)?;
+    if !liftable.contains(&source) {
+        return None;
+    }
+    Some(if push {
+        StringCopyRewrite::PushOwned(source)
+    } else {
+        StringCopyRewrite::AssignOwned(source)
+    })
+}
+
+fn pointer_view_binding(
+    function: FunctionId,
+    path: &[PathSegment],
+    facts: &FixupFacts,
+) -> Option<BindingId> {
+    facts
+        .string_pointer_view(function, &AstPath(path.to_vec()))
+        .map(|view| view.source)
+}
+
+fn binding_for_expr(
+    function: FunctionId,
+    expr: &Expr,
+    path: &[PathSegment],
+    facts: &FixupFacts,
+) -> Option<BindingId> {
+    let Expr::Var(name) = expr else {
+        return None;
+    };
+    facts
+        .def_use
+        .iter()
+        .find(|def_use| {
+            def_use.function == function
+                && facts.binding_name(def_use.binding) == Some(name.as_str())
+                && def_use.reads.iter().any(|read| read.0 == path)
+        })
+        .map(|def_use| def_use.binding)
+}
+
+fn const_usize_temps(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, usize> {
+    facts
+        .values
+        .iter()
+        .filter(|fact| fact.function == function)
+        .filter_map(|fact| match (&fact.subject, &fact.value) {
+            (ValueSubject::Binding(binding), ConstValue::Usize(value)) => {
+                Some((facts.binding_name(*binding)?.to_owned(), *value))
+            }
+            _ => None,
+        })
+        .collect()
+}
+
+fn const_ascii_prefix(
+    src: &Expr,
+    count: &Expr,
+    consts: &BTreeMap<String, usize>,
+) -> Option<String> {
+    let bytes = const_c_string(src)?;
+    if !bytes.is_ascii() {
+        return None;
+    }
+    let n = const_usize(count, consts)?;
+    String::from_utf8(bytes[..std::cmp::min(n, bytes.len())].to_vec()).ok()
+}
+
+fn const_usize(expr: &Expr, consts: &BTreeMap<String, usize>) -> Option<usize> {
+    match expr {
+        Expr::Var(name) => consts.get(name.as_str()).copied(),
+        Expr::Value(RustValue::I64(n)) => usize::try_from(*n).ok(),
+        Expr::Value(RustValue::I128(n)) => usize::try_from(*n).ok(),
+        Expr::Cast { expr, .. } => const_usize(expr, consts),
+        _ => None,
+    }
+}
+
+fn const_c_string(expr: &Expr) -> Option<Vec<u8>> {
+    match expr {
+        Expr::Str(s) => Some(s.as_bytes().to_vec()),
+        Expr::ByteStr(bytes) => Some(bytes.strip_suffix(&[0]).unwrap_or(bytes).to_vec()),
+        Expr::Cast { expr, .. } => const_c_string(expr),
+        Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
+            const_c_string(recv)
+        }
+        _ => None,
+    }
+}
+
+fn call_arg_path(expr: &Expr, path: &[PathSegment], arg_index: usize) -> Vec<PathSegment> {
+    let mut path = path.to_vec();
+    if matches!(expr, Expr::Unsafe(block) if block.stmts.is_empty() && block.tail.is_some()) {
+        path.push(PathSegment::UnsafeBody);
+        path.push(PathSegment::BlockTail);
+    }
+    path.push(PathSegment::Expr(arg_index + 1));
+    path
+}
+
+fn simple_printf_conversions(bytes: &[u8]) -> Option<Vec<u8>> {
+    let mut conversions = Vec::new();
+    let mut i = 0;
+    while i < bytes.len() {
+        match bytes[i] {
+            b'%' => {
+                let (next, conv) = simple_printf_conversion(bytes, i + 1)?;
+                if conv == b'%' {
+                    i += 2;
+                    continue;
+                }
+                if !matches!(conv, b's' | b'c' | b'd' | b'i' | b'u' | b'x' | b'X' | b'o') {
+                    return None;
+                }
+                conversions.push(conv);
+                i = next;
+            }
+            0x20..=0x7e | b'\n' | b'\t' => i += 1,
+            _ => return None,
+        }
+    }
+    Some(conversions)
+}
+
+fn simple_printf_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, u8)> {
+    match bytes.get(i).copied()? {
+        b'%' => return Some((i + 1, b'%')),
+        b's' | b'c' => return Some((i + 1, bytes[i])),
+        _ => {}
+    }
+    loop {
+        match bytes.get(i).copied()? {
+            b'-' | b'+' | b'#' | b'0' | b' ' => i += 1,
+            _ => break,
+        }
+    }
+    while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+        i += 1;
+    }
+    match bytes.get(i).copied()? {
+        b'l' => {
+            i += 1;
+            if bytes.get(i).copied() == Some(b'l') {
+                i += 1;
+            }
+        }
+        b'z' => i += 1,
+        _ => {}
+    }
+    let conv = bytes.get(i).copied()?;
+    matches!(conv, b'd' | b'i' | b'u' | b'x' | b'X' | b'o').then_some((i + 1, conv))
+}
+
+fn stmt_path(path: &[PathSegment], index: usize) -> Vec<PathSegment> {
+    let mut path = path.to_vec();
+    path.push(PathSegment::Stmt(index));
+    path
+}
+
+fn child_path(path: &[PathSegment], segment: PathSegment) -> Vec<PathSegment> {
+    let mut path = path.to_vec();
+    path.push(segment);
+    path
+}
+
+fn path_starts_with(path: &[PathSegment], prefix: &[PathSegment]) -> bool {
+    path.len() >= prefix.len() && &path[..prefix.len()] == prefix
+}
+
+fn assignment_index(def_path: &[PathSegment], assignment_path: &[PathSegment]) -> Option<usize> {
+    let parent = def_path.get(..def_path.len().checked_sub(1)?)?;
+    let assignment_parent = assignment_path.get(..assignment_path.len().checked_sub(1)?)?;
+    if assignment_parent != parent {
+        return None;
+    }
+    match assignment_path.last()? {
+        PathSegment::Stmt(index) => Some(*index),
+        _ => None,
+    }
 }
 
 struct Collected {
