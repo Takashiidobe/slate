@@ -2,6 +2,7 @@
 
 mod call_args;
 mod compound_assign;
+mod counted_loop;
 mod drop_call_results;
 mod facts;
 mod idents;
@@ -54,6 +55,7 @@ pub fn apply(program: Program) -> Program {
     ptr_len::collect_facts(&program, &mut facts);
     ptr_len::fixup(&mut program, &facts);
     slice_index::collect_facts(&program, &mut facts);
+    counted_loop::collect_facts(&program, &mut facts);
     string_copy::fixup(&mut program);
     string_libc::fixup(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);

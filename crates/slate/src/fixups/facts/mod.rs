@@ -20,6 +20,7 @@ pub(super) struct FixupFacts {
     pub(super) slice_pointer_views: Vec<SlicePointerViewFact>,
     pub(super) slice_index_ranges: Vec<SliceIndexRangeFact>,
     pub(super) slice_pointer_indexes: Vec<SlicePointerIndexFact>,
+    pub(super) counted_slice_loops: Vec<CountedSliceLoopFact>,
     pub(super) relations: Vec<FactRelation>,
 }
 
@@ -118,6 +119,21 @@ pub(super) struct SlicePointerIndexFact {
     pub(super) path: AstPath,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct CountedSliceLoopFact {
+    pub(super) function: FunctionId,
+    pub(super) loop_id: LoopId,
+    pub(super) index: BindingId,
+    pub(super) slice: BindingId,
+    pub(super) start: CountedLoopStart,
+    pub(super) bound: CountedLoopBound,
+    pub(super) step: CountedLoopStep,
+    pub(super) index_use: CountedLoopIndexUse,
+    pub(super) access: SliceLoopAccess,
+    pub(super) loop_path: AstPath,
+    pub(super) body_path: AstPath,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum IndexLowerBound {
     Zero,
@@ -132,6 +148,32 @@ pub(super) enum IndexUpperBound {
 pub(super) enum PointerOffsetUnit {
     Elements,
     Bytes,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum CountedLoopStart {
+    Zero,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum CountedLoopBound {
+    SliceLen,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum CountedLoopStep {
+    One,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum CountedLoopIndexUse {
+    SliceIndexOnly,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum SliceLoopAccess {
+    ReadOnly,
+    Mutable,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
