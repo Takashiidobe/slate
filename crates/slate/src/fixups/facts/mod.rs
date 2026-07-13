@@ -17,6 +17,7 @@ pub(super) struct FixupFacts {
     pub(super) borrow_alias: Vec<BorrowAliasFact>,
     pub(super) def_use: Vec<DefUseFact>,
     pub(super) effects: Vec<EffectFact>,
+    pub(super) control_flow: Vec<ControlFlowFact>,
     pub(super) places: Vec<PlaceFact>,
     pub(super) values: Vec<ValueFact>,
     pub(super) call_signatures: Vec<CallSignatureFact>,
@@ -117,6 +118,19 @@ pub(super) struct EffectFact {
     pub(super) path: AstPath,
     pub(super) purity: Purity,
     pub(super) effects: BTreeSet<EffectKind>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct ControlFlowFact {
+    pub(super) function: FunctionId,
+    pub(super) subject: ControlFlowSubject,
+    pub(super) path: AstPath,
+    pub(super) reachable: bool,
+    pub(super) falls_through: bool,
+    pub(super) exits: BTreeSet<ControlFlowExit>,
+    pub(super) single_exit: bool,
+    pub(super) has_unreachable_tail: bool,
+    pub(super) expression_eligible: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -568,6 +582,20 @@ pub(super) enum EffectSubject {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum ControlFlowSubject {
+    Body,
+    Block,
+    Stmt,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum ControlFlowExit {
+    Return,
+    Break(Option<String>),
+    Continue(Option<String>),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Purity {
     MovablePure,
     ReadOnly,
@@ -727,6 +755,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     super::borrow_alias::collect_facts(&program, &mut collector.facts);
     super::def_use::collect_facts(&program, &mut collector.facts);
     super::effects::collect_facts(&program, &mut collector.facts);
+    super::control_flow::collect_facts(&program, &mut collector.facts);
     super::places::collect_facts(&program, &mut collector.facts);
     super::values::collect_facts(&program, &mut collector.facts);
     super::calls::collect_facts(&program, &mut collector.facts);
