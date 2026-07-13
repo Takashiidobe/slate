@@ -1,12 +1,12 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, FixupFacts, FunctionId, NulTermination, PathSegment,
     StringBufferFact, StringBufferKind, StringBufferProvenance, StringBufferRejection,
     StringLibcFunction, StringLibcUseFact, StringPointerViewFact, StringPointerViewKind,
     StringRecoveryCandidate,
 };
-use crate::fixups::support::walk;
 use crate::rust_ast::{
     Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
