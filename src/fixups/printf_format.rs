@@ -161,11 +161,10 @@ fn fixup_stmt(stmt: &mut Stmt, env: &PrintfEnv) {
 fn fixup_block(block: &mut Block, env: &PrintfEnv) {
     let mut block_env = env.clone();
     fixup_body_with_env(&mut block.stmts, &mut block_env);
-    if let Some(tail) = &mut block.tail {
-        if let Some(replacement) = rewrite_printf_expr(tail, &block_env) {
-            *tail = Box::new(replacement);
+    if let Some(tail) = &mut block.tail
+        && let Some(replacement) = rewrite_printf_expr(tail, &block_env) {
+            **tail = replacement;
         }
-    }
 }
 
 fn rewrite_printf_expr(expr: &Expr, env: &PrintfEnv) -> Option<Expr> {
@@ -183,13 +182,11 @@ fn rewrite_printf_expr(expr: &Expr, env: &PrintfEnv) -> Option<Expr> {
 }
 
 fn peel_empty_unsafe(expr: &Expr) -> &Expr {
-    if let Expr::Unsafe(block) = expr {
-        if block.stmts.is_empty() {
-            if let Some(tail) = &block.tail {
+    if let Expr::Unsafe(block) = expr
+        && block.stmts.is_empty()
+            && let Some(tail) = &block.tail {
                 return tail;
             }
-        }
-    }
     expr
 }
 
