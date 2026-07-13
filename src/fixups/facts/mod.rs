@@ -1,4 +1,7 @@
-use crate::rust_ast::{Block, IndentStmt, Item, Program, Stmt};
+use std::collections::{BTreeMap, BTreeSet};
+
+use crate::fixups::support::walk;
+use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt};
 
 #[derive(Debug, Clone)]
 pub(super) struct AnalyzedProgram {
@@ -11,6 +14,7 @@ pub(super) struct FixupFacts {
     pub(super) functions: Vec<FunctionFact>,
     pub(super) bindings: Vec<BindingFact>,
     pub(super) loops: Vec<LoopFact>,
+    pub(super) mutability: Vec<BindingMutabilityFact>,
     pub(super) relations: Vec<FactRelation>,
 }
 
@@ -54,6 +58,23 @@ pub(super) struct LoopFact {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct BindingMutabilityFact {
+    pub(super) binding: BindingId,
+    pub(super) required: bool,
+    pub(super) reasons: BTreeSet<MutabilityReason>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum MutabilityReason {
+    Assigned,
+    AddressTaken,
+    MutBorrowed,
+    RawPtrDerived,
+    MethodReceiver,
+    AtomicAccess,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) enum LoopKind {
     Loop,
     While,
@@ -94,6 +115,53 @@ pub(super) enum PathSegment {
     BlockBody,
 }
 
+impl FixupFacts {
+    pub(super) fn function_by_item_index(&self, item_index: usize) -> Option<FunctionId> {
+        self.functions
+            .iter()
+            .find(|function| function.item_index == item_index)
+            .map(|function| function.id)
+    }
+
+    pub(super) fn binding_by_param_index(
+        &self,
+        function: FunctionId,
+        index: usize,
+    ) -> Option<BindingId> {
+        self.bindings
+            .iter()
+            .find(|binding| {
+                binding.function == function
+                    && matches!(binding.kind, BindingKind::Param { index: i } if i == index)
+            })
+            .map(|binding| binding.id)
+    }
+
+    pub(super) fn binding_by_local_path(
+        &self,
+        function: FunctionId,
+        name: &str,
+        path: &AstPath,
+    ) -> Option<BindingId> {
+        self.bindings
+            .iter()
+            .find(|binding| {
+                binding.function == function
+                    && binding.name == name
+                    && binding.kind == BindingKind::Local
+                    && &binding.path == path
+            })
+            .map(|binding| binding.id)
+    }
+
+    pub(super) fn binding_requires_mut(&self, binding: BindingId) -> bool {
+        self.mutability
+            .iter()
+            .find(|fact| fact.binding == binding)
+            .is_some_and(|fact| fact.required)
+    }
+}
+
 pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     let mut collector = Collector::default();
     collector.program(&program);
@@ -124,6 +192,7 @@ impl Collector {
                 );
             }
             self.body(function, &f.body, &mut Vec::new());
+            self.collect_mutability(function, f);
         }
     }
 
@@ -266,6 +335,135 @@ impl Collector {
             | Stmt::Continue(_) => {}
         }
     }
+
+    fn collect_mutability(&mut self, function: FunctionId, f: &crate::rust_ast::FnDef) {
+        let mut required = BTreeMap::<String, BTreeSet<MutabilityReason>>::new();
+        collect_required_mut(&f.body, &mut required);
+        for binding in self
+            .facts
+            .bindings
+            .iter()
+            .filter(|binding| binding.function == function)
+        {
+            let reasons = required.get(&binding.name).cloned().unwrap_or_default();
+            self.facts.mutability.push(BindingMutabilityFact {
+                binding: binding.id,
+                required: !reasons.is_empty(),
+                reasons,
+            });
+        }
+    }
+}
+
+fn collect_required_mut(
+    body: &[IndentStmt],
+    required: &mut BTreeMap<String, BTreeSet<MutabilityReason>>,
+) {
+    for stmt in body {
+        collect_required_stmt(&stmt.stmt, required);
+    }
+}
+
+fn collect_required_stmt(stmt: &Stmt, required: &mut BTreeMap<String, BTreeSet<MutabilityReason>>) {
+    match stmt {
+        Stmt::Let { init, .. } => {
+            if let Some(init) = init {
+                collect_expr_hazards(init, required);
+            }
+        }
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            collect_expr_hazards(cond, required);
+            collect_required_mut(then_body, required);
+            collect_expr_hazards(then_value, required);
+            collect_required_mut(else_body, required);
+            collect_expr_hazards(else_value, required);
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            collect_vars(target, MutabilityReason::Assigned, required);
+            collect_expr_hazards(value, required);
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => collect_expr_hazards(expr, required),
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            collect_expr_hazards(cond, required);
+            collect_required_mut(then_body, required);
+            collect_required_mut(else_body, required);
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            collect_required_mut(body, required);
+        }
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            collect_block_required_mut(body, required);
+        }
+        Stmt::Match { expr, arms } => {
+            collect_expr_hazards(expr, required);
+            for arm in arms {
+                collect_required_mut(&arm.body, required);
+            }
+        }
+    }
+}
+
+fn collect_block_required_mut(
+    block: &Block,
+    required: &mut BTreeMap<String, BTreeSet<MutabilityReason>>,
+) {
+    collect_required_mut(&block.stmts, required);
+    if let Some(tail) = &block.tail {
+        collect_expr_hazards(tail, required);
+    }
+}
+
+fn collect_expr_hazards(expr: &Expr, required: &mut BTreeMap<String, BTreeSet<MutabilityReason>>) {
+    walk::exprs(expr, &mut |expr| match expr {
+        Expr::AddrOf { expr, .. } => collect_vars(expr, MutabilityReason::AddressTaken, required),
+        Expr::Ref {
+            mutable: true,
+            expr,
+        } => collect_vars(expr, MutabilityReason::MutBorrowed, required),
+        Expr::ArrayPtr {
+            mutable: true,
+            array,
+        } => collect_vars(array, MutabilityReason::RawPtrDerived, required),
+        Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => {
+            collect_vars(recv, MutabilityReason::MethodReceiver, required)
+        }
+        Expr::AtomicRef { ptr, .. }
+        | Expr::AtomicLoad { ptr, .. }
+        | Expr::AtomicStore { ptr, .. }
+        | Expr::AtomicFetch { ptr, .. }
+        | Expr::AtomicSwap { ptr, .. }
+        | Expr::AtomicCompareExchange { ptr, .. } => {
+            collect_vars(ptr, MutabilityReason::AtomicAccess, required)
+        }
+        _ => {}
+    });
+}
+
+fn collect_vars(
+    expr: &Expr,
+    reason: MutabilityReason,
+    required: &mut BTreeMap<String, BTreeSet<MutabilityReason>>,
+) {
+    walk::exprs(expr, &mut |expr| {
+        if let Expr::Var(name) = expr {
+            required
+                .entry(name.as_str().to_string())
+                .or_default()
+                .insert(reason);
+        }
+    });
 }
 
 #[cfg(test)]
@@ -511,5 +709,88 @@ mod tests {
 
         assert_eq!(analyzed.program.emit(), before);
         assert!(analyzed.facts.relations.is_empty());
+    }
+
+    #[test]
+    fn records_mutability_facts_for_assignments_and_alias_hazards() {
+        let program = Program {
+            items: vec![Item::Fn(named(
+                "f",
+                vec![
+                    let_mut("assigned", "i32", int(0)),
+                    assign("assigned", int(1)),
+                    let_mut("addr", "i32", int(0)),
+                    Stmt::Expr(Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(var("addr")),
+                    }),
+                    let_mut("borrowed", "i32", int(0)),
+                    Stmt::Expr(Expr::Ref {
+                        mutable: true,
+                        expr: Box::new(var("borrowed")),
+                    }),
+                    let_mut("raw", "[i32; 1]", Expr::ArrayLit(vec![int(0)])),
+                    Stmt::Expr(Expr::ArrayPtr {
+                        array: Box::new(var("raw")),
+                        mutable: true,
+                    }),
+                    let_mut(
+                        "receiver",
+                        "Vec<i32>",
+                        Expr::Call {
+                            func: Box::new(Expr::Var("Vec::new".into())),
+                            args: vec![],
+                        },
+                    ),
+                    Stmt::Expr(Expr::MethodCall {
+                        recv: Box::new(var("receiver")),
+                        method: "push".into(),
+                        args: vec![int(1)],
+                    }),
+                    let_mut("plain", "i32", int(0)),
+                ],
+            ))],
+        };
+
+        let analyzed = analyze(program);
+        let function = FunctionId(0);
+        let reason_for = |name: &str| {
+            let binding = analyzed
+                .facts
+                .bindings
+                .iter()
+                .find(|binding| binding.function == function && binding.name == name)
+                .unwrap();
+            analyzed
+                .facts
+                .mutability
+                .iter()
+                .find(|fact| fact.binding == binding.id)
+                .unwrap()
+                .reasons
+                .clone()
+        };
+
+        assert_eq!(
+            reason_for("assigned"),
+            BTreeSet::from([MutabilityReason::Assigned])
+        );
+        assert_eq!(
+            reason_for("addr"),
+            BTreeSet::from([MutabilityReason::AddressTaken])
+        );
+        assert_eq!(
+            reason_for("borrowed"),
+            BTreeSet::from([MutabilityReason::MutBorrowed])
+        );
+        assert_eq!(
+            reason_for("raw"),
+            BTreeSet::from([MutabilityReason::RawPtrDerived])
+        );
+        assert_eq!(
+            reason_for("receiver"),
+            BTreeSet::from([MutabilityReason::MethodReceiver])
+        );
+        assert!(reason_for("plain").is_empty());
     }
 }
