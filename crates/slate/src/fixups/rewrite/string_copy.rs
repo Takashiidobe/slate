@@ -1,11 +1,9 @@
 use crate::fixups::facts::{
-    AstPath, CallCallee, ConstValue, FixupFacts, FunctionId, PathSegment, StringBufferProvenance,
-    StringRecoveryCandidate, ValueSubject,
+    AstPath, CallCallee, FixupFacts, FunctionId, PathSegment, StringBufferProvenance,
+    StringCopyRewrite, StringRecoveryCandidate,
 };
-use crate::rust_ast::{
-    Block, Expr, ExternDecl, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type,
-};
-use std::collections::{BTreeMap, BTreeSet};
+use crate::rust_ast::{Block, Expr, ExternDecl, IndentStmt, Item, Program, Stmt, Type};
+use std::collections::BTreeSet;
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
     for (item_index, item) in program.items.iter_mut().enumerate() {
@@ -23,19 +21,21 @@ struct Candidate {
     remove_index: Option<usize>,
 }
 
-#[derive(Clone)]
-enum Source {
-    Str(Expr),
-    Owned(String),
+fn fixup_body(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFacts) {
+    fixup_body_at(body, function, facts, &mut Vec::new());
 }
 
-fn fixup_body(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFacts) {
-    fixup_nested(body, function, facts);
-    let consts = const_usize_temps(function, facts);
-    let liftable = liftable_names(body, function, facts, &consts);
+fn fixup_body_at(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    fixup_nested(body, function, facts, path);
+    let liftable = liftable_names(body, function, facts, path);
     let mut remove = Vec::new();
     for i in 0..body.len() {
-        let Some(candidate) = candidate_at(body, function, facts, &stmt_path(&[], i)) else {
+        let Some(candidate) = candidate_at(body, function, facts, &stmt_path(path, i)) else {
             continue;
         };
         let Stmt::Let { name, ty, init, .. } = &mut body[i].stmt else {
@@ -50,54 +50,34 @@ fn fixup_body(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFac
             remove.push(remove_index);
         }
     }
+    rewrite_body(body, function, facts, path, &liftable);
     for i in remove.into_iter().rev() {
         body.remove(i);
     }
-    rewrite_body(body, &liftable, &consts);
 }
 
 fn liftable_names(
     body: &[IndentStmt],
     function: FunctionId,
     facts: &FixupFacts,
-    consts: &BTreeMap<String, usize>,
+    path: &[PathSegment],
 ) -> BTreeSet<String> {
-    let candidates = (0..body.len())
+    (0..body.len())
         .filter_map(|i| {
-            let candidate = candidate_at(body, function, facts, &stmt_path(&[], i))?;
-            let name = let_name(&body[i].stmt)?;
-            Some((name, i, candidate))
+            let buffer = facts.string_buffer_at(function, &AstPath(stmt_path(path, i)))?;
+            facts
+                .string_lift_plans
+                .iter()
+                .any(|plan| {
+                    plan.function == function
+                        && plan.binding == buffer.binding
+                        && plan.path == buffer.path
+                        && plan.recovery == StringRecoveryCandidate::OwnedString
+                })
+                .then(|| facts.binding_name(buffer.binding).map(str::to_owned))
+                .flatten()
         })
-        .collect::<Vec<_>>();
-    let mut liftable = candidates
-        .iter()
-        .map(|(name, _, _)| name.clone())
-        .collect::<BTreeSet<_>>();
-    loop {
-        let before = liftable.clone();
-        liftable.retain(|name| {
-            let Some((_, i, candidate)) = candidates
-                .iter()
-                .find(|(candidate_name, _, _)| candidate_name == name)
-            else {
-                return false;
-            };
-            let scan_start = candidate.remove_index.map_or(i + 1, |index| index + 1);
-            body[scan_start..]
-                .iter()
-                .all(|indent| stmt_allows_lift(&indent.stmt, name, &before, consts))
-        });
-        if liftable == before {
-            return liftable;
-        }
-    }
-}
-
-fn let_name(stmt: &Stmt) -> Option<String> {
-    match stmt {
-        Stmt::Let { name, .. } => Some(name.clone()),
-        _ => None,
-    }
+        .collect()
 }
 
 fn candidate_at(
@@ -113,26 +93,25 @@ fn candidate_at(
     {
         return None;
     }
+    let plan = facts.string_lift_plans.iter().find(|plan| {
+        plan.function == function
+            && plan.binding == buffer.binding
+            && plan.path.0 == path
+            && plan.recovery == StringRecoveryCandidate::OwnedString
+    })?;
     let init = match &buffer.provenance {
         StringBufferProvenance::ZeroInitialized => String::new(),
-        StringBufferProvenance::Literal => {
-            if facts
-                .def_use(buffer.binding)
-                .is_some_and(|def_use| !def_use.writes.is_empty())
-            {
-                return None;
-            }
-            String::from_utf8(buffer.bytes.clone()?).ok()?
-        }
+        StringBufferProvenance::Literal => String::from_utf8(buffer.bytes.clone()?).ok()?,
         StringBufferProvenance::AssignedLiteral { .. } => {
             String::from_utf8(buffer.bytes.clone()?).ok()?
         }
         _ => return None,
     };
     let remove_index = match &buffer.provenance {
-        StringBufferProvenance::AssignedLiteral { assignment } => {
-            Some(assignment_index(path, &assignment.0)?)
-        }
+        StringBufferProvenance::AssignedLiteral { .. } => plan
+            .remove_assignment
+            .as_ref()
+            .and_then(|assignment| assignment_index(path, &assignment.0)),
         _ => None,
     };
     if remove_index.is_some_and(|index| index >= body.len()) {
@@ -142,57 +121,6 @@ fn candidate_at(
         init: Expr::Str(init),
         remove_index,
     })
-}
-
-fn is_char_array(ty: &Type) -> bool {
-    matches!(
-        ty,
-        Type::Array { elem, .. } if matches!(&**elem, Type::Prim(Prim::I8 | Prim::U8))
-    )
-}
-
-fn is_zero_array(expr: &Expr) -> bool {
-    matches!(
-        expr,
-        Expr::ArrayRepeat { elem, .. }
-            if matches!(&**elem, Expr::Value(RustValue::I64(0) | RustValue::I128(0)))
-    )
-}
-
-fn array_c_string(expr: &Expr) -> Option<String> {
-    let Expr::ArrayLit(elems) = expr else {
-        return None;
-    };
-    let bytes = elems.iter().map(byte_literal).collect::<Option<Vec<_>>>()?;
-    let nul = bytes.iter().position(|byte| *byte == 0)?;
-    if bytes[nul..].iter().any(|byte| *byte != 0) {
-        return None;
-    }
-    String::from_utf8(bytes[..nul].to_vec()).ok()
-}
-
-fn byte_literal(expr: &Expr) -> Option<u8> {
-    let n = match expr {
-        Expr::Value(RustValue::I64(n)) => *n,
-        Expr::Value(RustValue::I128(n)) => i64::try_from(*n).ok()?,
-        Expr::Cast { expr, .. } => return byte_literal(expr),
-        _ => return None,
-    };
-    u8::try_from(n).ok()
-}
-
-fn const_usize_temps(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, usize> {
-    facts
-        .values
-        .iter()
-        .filter(|fact| fact.function == function)
-        .filter_map(|fact| match (&fact.subject, &fact.value) {
-            (ValueSubject::Binding(binding), ConstValue::Usize(value)) => {
-                Some((facts.binding_name(*binding)?.to_owned(), *value))
-            }
-            _ => None,
-        })
-        .collect()
 }
 
 fn stmt_path(path: &[PathSegment], index: usize) -> Vec<PathSegment> {
@@ -213,216 +141,86 @@ fn assignment_index(def_path: &[PathSegment], assignment_path: &[PathSegment]) -
     }
 }
 
-fn stmt_mentions_var(stmt: &Stmt, name: &str) -> bool {
-    !stmt_allows_lift(stmt, name, &BTreeSet::new(), &BTreeMap::new())
-}
-
-fn stmt_allows_lift(
-    stmt: &Stmt,
-    name: &str,
-    liftable: &BTreeSet<String>,
-    consts: &BTreeMap<String, usize>,
-) -> bool {
-    match stmt {
-        Stmt::Expr(expr) if supported_copy_call(expr, liftable, consts).is_some() => true,
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_allows_lift(expr, name, liftable),
-        Stmt::Let { init, .. } => init
-            .as_ref()
-            .is_none_or(|expr| expr_allows_lift(expr, name, liftable)),
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            !expr_mentions_var(target, name) && expr_allows_lift(value, name, liftable)
-        }
-        Stmt::If {
-            cond,
-            then_body,
-            else_body,
-        } => {
-            expr_allows_lift(cond, name, liftable)
-                && body_allows_lift(then_body, name, liftable, consts)
-                && body_allows_lift(else_body, name, liftable, consts)
-        }
-        Stmt::LetIf {
-            cond,
-            then_body,
-            then_value,
-            else_body,
-            else_value,
-            ..
-        } => {
-            expr_allows_lift(cond, name, liftable)
-                && body_allows_lift(then_body, name, liftable, consts)
-                && expr_allows_lift(then_value, name, liftable)
-                && body_allows_lift(else_body, name, liftable, consts)
-                && expr_allows_lift(else_value, name, liftable)
-        }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            body_allows_lift(body, name, liftable, consts)
-        }
-        Stmt::While { cond, body } => {
-            expr_allows_lift(cond, name, liftable)
-                && block_allows_lift(body, name, liftable, consts)
-        }
-        Stmt::Block(body) | Stmt::Unsafe { body } => {
-            block_allows_lift(body, name, liftable, consts)
-        }
-        Stmt::Match { expr, arms } => {
-            expr_allows_lift(expr, name, liftable)
-                && arms
-                    .iter()
-                    .all(|arm| body_allows_lift(&arm.body, name, liftable, consts))
-        }
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => true,
-    }
-}
-
-fn body_allows_lift(
-    body: &[IndentStmt],
-    name: &str,
-    liftable: &BTreeSet<String>,
-    consts: &BTreeMap<String, usize>,
-) -> bool {
-    body.iter()
-        .all(|indent| stmt_allows_lift(&indent.stmt, name, liftable, consts))
-}
-
-fn block_allows_lift(
-    block: &Block,
-    name: &str,
-    liftable: &BTreeSet<String>,
-    consts: &BTreeMap<String, usize>,
-) -> bool {
-    body_allows_lift(&block.stmts, name, liftable, consts)
-        && block
-            .tail
-            .as_deref()
-            .is_none_or(|tail| expr_allows_lift(tail, name, liftable))
-}
-
-fn expr_allows_lift(expr: &Expr, name: &str, liftable: &BTreeSet<String>) -> bool {
-    if expr_mentions_pointer_view(expr, name) {
-        return expr_supported_pointer_view(expr, name, liftable);
-    }
-    !expr_mentions_var(expr, name)
-}
-
-fn expr_mentions_var(expr: &Expr, name: &str) -> bool {
-    expr_any(
-        expr,
-        &mut |expr| matches!(expr, Expr::Var(v) if v.as_str() == name),
-    )
-}
-
-fn expr_supported_pointer_view(expr: &Expr, name: &str, liftable: &BTreeSet<String>) -> bool {
-    match expr {
-        Expr::Call { func, args } if matches!(&**func, Expr::Var(callee) if matches!(callee.as_str(), "strlen" | "strcmp" | "strncmp")) => {
-            args.iter().all(|arg| {
-                pointer_view_source(arg)
-                    .is_none_or(|source| source == name || liftable.contains(source))
-                    || source_expr(arg, liftable).is_some()
-            })
-        }
-        Expr::Call { func, args } if matches!(&**func, Expr::Var(callee) if callee.as_str() == "printf") => {
-            printf_allows_lift(args, name)
-        }
-        Expr::Unsafe(block) if block.stmts.is_empty() => block
-            .tail
-            .as_deref()
-            .is_some_and(|tail| expr_supported_pointer_view(tail, name, liftable)),
-        Expr::Cast { expr, .. }
-        | Expr::Unary { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => expr_supported_pointer_view(expr, name, liftable),
-        _ => false,
-    }
-}
-
-fn printf_allows_lift(args: &[Expr], name: &str) -> bool {
-    let Some((fmt, rest)) = args.split_first() else {
-        return false;
-    };
-    let Some(conversions) = printf_conversions(fmt) else {
-        return false;
-    };
-    conversions.len() == rest.len()
-        && conversions.iter().zip(rest).all(|(conversion, arg)| {
-            *conversion == b's' && expr_mentions_pointer_view(arg, name)
-                || !expr_mentions_pointer_view(arg, name)
-        })
-}
-
-fn printf_conversions(expr: &Expr) -> Option<Vec<u8>> {
-    let bytes = const_c_string(expr)?;
-    let mut conversions = Vec::new();
-    let mut i = 0;
-    while i < bytes.len() {
-        match bytes[i] {
-            b'%' => {
-                let conv = *bytes.get(i + 1)?;
-                if conv == b'%' {
-                    i += 2;
-                    continue;
+fn fixup_nested(
+    body: &mut [IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    for (index, indent) in body.iter_mut().enumerate() {
+        crate::fixups::support::walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            match &mut indent.stmt {
+                Stmt::If {
+                    then_body,
+                    else_body,
+                    ..
                 }
-                conversions.push(conv);
-                i += 2;
-            }
-            _ => i += 1,
-        }
-    }
-    Some(conversions)
-}
-
-fn expr_mentions_pointer_view(expr: &Expr, name: &str) -> bool {
-    expr_any(expr, &mut |expr| {
-        pointer_view_source(expr).is_some_and(|source| source == name)
-    })
-}
-
-fn fixup_nested(body: &mut [IndentStmt], function: FunctionId, facts: &FixupFacts) {
-    for indent in body {
-        match &mut indent.stmt {
-            Stmt::If {
-                then_body,
-                else_body,
-                ..
-            }
-            | Stmt::LetIf {
-                then_body,
-                else_body,
-                ..
-            } => {
-                fixup_body(then_body, function, facts);
-                fixup_body(else_body, function, facts);
-            }
-            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-                fixup_body(body, function, facts);
-            }
-            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-                fixup_body(&mut body.stmts, function, facts);
-            }
-            Stmt::Match { arms, .. } => {
-                for arm in arms {
-                    fixup_body(&mut arm.body, function, facts);
+                | Stmt::LetIf {
+                    then_body,
+                    else_body,
+                    ..
+                } => {
+                    crate::fixups::support::walk::with_path_segment(
+                        path,
+                        PathSegment::Then,
+                        |path| {
+                            fixup_body_at(then_body, function, facts, path);
+                        },
+                    );
+                    crate::fixups::support::walk::with_path_segment(
+                        path,
+                        PathSegment::Else,
+                        |path| {
+                            fixup_body_at(else_body, function, facts, path);
+                        },
+                    );
                 }
+                Stmt::Loop { body, .. }
+                | Stmt::Scope { body }
+                | Stmt::LabeledBlock { body, .. } => {
+                    fixup_body_at(body, function, facts, path);
+                }
+                Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                    fixup_body_at(&mut body.stmts, function, facts, path);
+                }
+                Stmt::Match { arms, .. } => {
+                    for (arm_index, arm) in arms.iter_mut().enumerate() {
+                        crate::fixups::support::walk::with_path_segment(
+                            path,
+                            PathSegment::MatchArm(arm_index),
+                            |path| fixup_body_at(&mut arm.body, function, facts, path),
+                        );
+                    }
+                }
+                _ => {}
             }
-            _ => {}
-        }
+        });
     }
 }
 
 fn rewrite_body(
     body: &mut [IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
     liftable: &BTreeSet<String>,
-    consts: &BTreeMap<String, usize>,
 ) {
-    for indent in body {
-        rewrite_stmt(&mut indent.stmt, liftable, consts);
+    for (index, indent) in body.iter_mut().enumerate() {
+        crate::fixups::support::walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            rewrite_stmt(&mut indent.stmt, function, facts, path, liftable);
+        });
     }
 }
 
-fn rewrite_stmt(stmt: &mut Stmt, liftable: &BTreeSet<String>, consts: &BTreeMap<String, usize>) {
-    if let Stmt::Expr(expr) = stmt
-        && let Some(replacement) = supported_copy_call(expr, liftable, consts)
+fn rewrite_stmt(
+    stmt: &mut Stmt,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+    liftable: &BTreeSet<String>,
+) {
+    if let Stmt::Expr(_expr) = stmt
+        && let Some(replacement) = copy_replacement(function, facts, &AstPath(path.to_vec()))
     {
         *stmt = replacement;
         return;
@@ -444,8 +242,12 @@ fn rewrite_stmt(stmt: &mut Stmt, liftable: &BTreeSet<String>, consts: &BTreeMap<
             else_body,
         } => {
             rewrite_expr_pointer_views(cond, liftable);
-            rewrite_body(then_body, liftable, consts);
-            rewrite_body(else_body, liftable, consts);
+            crate::fixups::support::walk::with_path_segment(path, PathSegment::Then, |path| {
+                rewrite_body(then_body, function, facts, path, liftable);
+            });
+            crate::fixups::support::walk::with_path_segment(path, PathSegment::Else, |path| {
+                rewrite_body(else_body, function, facts, path, liftable);
+            });
         }
         Stmt::LetIf {
             cond,
@@ -456,25 +258,33 @@ fn rewrite_stmt(stmt: &mut Stmt, liftable: &BTreeSet<String>, consts: &BTreeMap<
             ..
         } => {
             rewrite_expr_pointer_views(cond, liftable);
-            rewrite_body(then_body, liftable, consts);
+            crate::fixups::support::walk::with_path_segment(path, PathSegment::Then, |path| {
+                rewrite_body(then_body, function, facts, path, liftable);
+            });
             rewrite_expr_pointer_views(then_value, liftable);
-            rewrite_body(else_body, liftable, consts);
+            crate::fixups::support::walk::with_path_segment(path, PathSegment::Else, |path| {
+                rewrite_body(else_body, function, facts, path, liftable);
+            });
             rewrite_expr_pointer_views(else_value, liftable);
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            rewrite_body(body, liftable, consts);
+            rewrite_body(body, function, facts, path, liftable);
         }
         Stmt::While { cond, body } => {
             rewrite_expr_pointer_views(cond, liftable);
-            rewrite_block_pointer_views(body, liftable, consts);
+            rewrite_block_pointer_views(body, function, facts, path, liftable);
         }
         Stmt::Block(body) | Stmt::Unsafe { body } => {
-            rewrite_block_pointer_views(body, liftable, consts)
+            rewrite_block_pointer_views(body, function, facts, path, liftable)
         }
         Stmt::Match { expr, arms } => {
             rewrite_expr_pointer_views(expr, liftable);
-            for arm in arms {
-                rewrite_body(&mut arm.body, liftable, consts);
+            for (arm_index, arm) in arms.iter_mut().enumerate() {
+                crate::fixups::support::walk::with_path_segment(
+                    path,
+                    PathSegment::MatchArm(arm_index),
+                    |path| rewrite_body(&mut arm.body, function, facts, path, liftable),
+                );
             }
         }
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
@@ -483,10 +293,12 @@ fn rewrite_stmt(stmt: &mut Stmt, liftable: &BTreeSet<String>, consts: &BTreeMap<
 
 fn rewrite_block_pointer_views(
     block: &mut Block,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
     liftable: &BTreeSet<String>,
-    consts: &BTreeMap<String, usize>,
 ) {
-    rewrite_body(&mut block.stmts, liftable, consts);
+    rewrite_body(&mut block.stmts, function, facts, path, liftable);
     if let Some(tail) = &mut block.tail {
         rewrite_expr_pointer_views(tail, liftable);
     }
@@ -561,7 +373,7 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>) {
             rewrite_expr_pointer_views(else_expr, liftable);
         }
         Expr::Block(block) | Expr::Unsafe(block) => {
-            rewrite_block_pointer_views(block, liftable, &BTreeMap::new())
+            rewrite_block_expr_pointer_views(block, liftable)
         }
         Expr::CopyNonoverlapping { src, dst, .. } => {
             rewrite_expr_pointer_views(src, liftable);
@@ -609,104 +421,49 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>) {
     }
 }
 
-fn supported_copy_call(
-    expr: &Expr,
-    liftable: &BTreeSet<String>,
-    consts: &BTreeMap<String, usize>,
-) -> Option<Stmt> {
-    let Expr::Call { func, args } = peel_empty_unsafe(expr) else {
-        return None;
-    };
-    let Expr::Var(name) = &**func else {
-        return None;
-    };
-    match name.as_str() {
-        "strcpy" if args.len() == 2 => {
-            let dst = pointer_view_source(&args[0])?;
-            if !liftable.contains(dst) {
-                return None;
-            }
-            let src = source_expr(&args[1], liftable)?;
-            Some(Stmt::Assign {
-                target: Expr::Var(dst.into()),
-                value: to_owned(source_as_str(src)),
-            })
-        }
-        "strncpy" if args.len() == 3 => {
-            let dst = pointer_view_source(&args[0])?;
-            if !liftable.contains(dst) {
-                return None;
-            }
-            let src = const_ascii_prefix(&args[1], &args[2], consts)?;
-            Some(Stmt::Assign {
-                target: Expr::Var(dst.into()),
-                value: to_owned(Expr::Str(src)),
-            })
-        }
-        "strcat" if args.len() == 2 => {
-            let dst = pointer_view_source(&args[0])?;
-            if !liftable.contains(dst) {
-                return None;
-            }
-            let src = source_expr(&args[1], liftable)?;
-            Some(Stmt::Expr(Expr::MethodCall {
-                recv: Box::new(Expr::Var(dst.into())),
-                method: "push_str".into(),
-                args: vec![source_as_str(src)],
-            }))
-        }
-        "strncat" if args.len() == 3 => {
-            let dst = pointer_view_source(&args[0])?;
-            if !liftable.contains(dst) {
-                return None;
-            }
-            let src = const_ascii_prefix(&args[1], &args[2], consts)?;
-            Some(Stmt::Expr(Expr::MethodCall {
-                recv: Box::new(Expr::Var(dst.into())),
-                method: "push_str".into(),
-                args: vec![Expr::Str(src)],
-            }))
-        }
-        _ => None,
-    }
-}
-
-fn const_ascii_prefix(
-    src: &Expr,
-    count: &Expr,
-    consts: &BTreeMap<String, usize>,
-) -> Option<String> {
-    let bytes = const_c_string(src)?;
-    if !bytes.is_ascii() {
-        return None;
-    }
-    let n = const_usize(count, consts)?;
-    String::from_utf8(bytes[..std::cmp::min(n, bytes.len())].to_vec()).ok()
-}
-
-fn source_expr(expr: &Expr, liftable: &BTreeSet<String>) -> Option<Source> {
-    if let Some(bytes) = const_c_string(expr) {
-        return String::from_utf8(bytes)
-            .ok()
-            .map(Expr::Str)
-            .map(Source::Str);
-    }
-    let source = pointer_view_source(expr)?;
-    if liftable.contains(source) {
-        return Some(Source::Owned(source.into()));
-    }
-    None
-}
-
-fn source_as_str(source: Source) -> Expr {
-    match source {
-        Source::Str(expr) => expr,
-        Source::Owned(name) => Expr::MethodCall {
-            recv: Box::new(Expr::Var(name.into())),
-            method: "as_str".into(),
-            args: Vec::new(),
+fn copy_replacement(function: FunctionId, facts: &FixupFacts, path: &AstPath) -> Option<Stmt> {
+    let fact = facts.string_copy_rewrite(function, path)?;
+    let dst = facts.binding_name(fact.dst)?.to_owned();
+    Some(match &fact.rewrite {
+        StringCopyRewrite::AssignLiteral(value) => Stmt::Assign {
+            target: Expr::Var(dst.into()),
+            value: to_owned(Expr::Str(value.clone())),
         },
-    }
+        StringCopyRewrite::AssignOwned(source) => Stmt::Assign {
+            target: Expr::Var(dst.into()),
+            value: to_owned(Expr::MethodCall {
+                recv: Box::new(Expr::Var(facts.binding_name(*source)?.to_owned().into())),
+                method: "as_str".into(),
+                args: Vec::new(),
+            }),
+        },
+        StringCopyRewrite::PushLiteral(value) => Stmt::Expr(Expr::MethodCall {
+            recv: Box::new(Expr::Var(dst.into())),
+            method: "push_str".into(),
+            args: vec![Expr::Str(value.clone())],
+        }),
+        StringCopyRewrite::PushOwned(source) => Stmt::Expr(Expr::MethodCall {
+            recv: Box::new(Expr::Var(dst.into())),
+            method: "push_str".into(),
+            args: vec![Expr::MethodCall {
+                recv: Box::new(Expr::Var(facts.binding_name(*source)?.to_owned().into())),
+                method: "as_str".into(),
+                args: Vec::new(),
+            }],
+        }),
+    })
+}
+
+fn rewrite_block_expr_pointer_views(block: &mut Block, liftable: &BTreeSet<String>) {
+    crate::fixups::support::walk::block_exprs_mut_with(block, &mut |expr| {
+        if let Some(source) = pointer_view_source(expr)
+            && liftable.contains(source)
+        {
+            *expr = Expr::Var(source.into());
+            return false;
+        }
+        true
+    });
 }
 
 fn to_owned(expr: Expr) -> Expr {
@@ -714,28 +471,6 @@ fn to_owned(expr: Expr) -> Expr {
         recv: Box::new(expr),
         method: "to_owned".into(),
         args: Vec::new(),
-    }
-}
-
-fn const_usize(expr: &Expr, consts: &BTreeMap<String, usize>) -> Option<usize> {
-    match expr {
-        Expr::Var(name) => consts.get(name.as_str()).copied(),
-        Expr::Value(RustValue::I64(n)) => usize::try_from(*n).ok(),
-        Expr::Value(RustValue::I128(n)) => usize::try_from(*n).ok(),
-        Expr::Cast { expr, .. } => const_usize(expr, consts),
-        _ => None,
-    }
-}
-
-fn const_c_string(expr: &Expr) -> Option<Vec<u8>> {
-    match expr {
-        Expr::Str(s) => Some(s.as_bytes().to_vec()),
-        Expr::ByteStr(bytes) => Some(bytes.strip_suffix(&[0]).unwrap_or(bytes).to_vec()),
-        Expr::Cast { expr, .. } => const_c_string(expr),
-        Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
-            const_c_string(recv)
-        }
-        _ => None,
     }
 }
 
@@ -935,6 +670,7 @@ fn stmt_expr_any(stmt: &Stmt, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
+    use crate::rust_ast::Prim;
 
     fn run(stmts: Vec<Stmt>) -> String {
         let mut program = Program {
