@@ -789,7 +789,7 @@ fn var_name(expr: &Expr) -> Option<&str> {
 }
 
 fn libc_function(expr: &Expr) -> Option<StringLibcFunction> {
-    let Expr::Call { func, .. } = expr else {
+    let Expr::Call { func, .. } = peel_empty_unsafe(expr) else {
         return None;
     };
     let Expr::Var(name) = &**func else {
@@ -810,10 +810,34 @@ fn libc_function(expr: &Expr) -> Option<StringLibcFunction> {
 }
 
 fn libc_pointer_args(expr: &Expr) -> Vec<&str> {
-    let Expr::Call { args, .. } = expr else {
+    let Some(callee) = libc_function(expr) else {
         return Vec::new();
     };
-    args.iter().filter_map(pointer_source).collect()
+    let Expr::Call { args, .. } = peel_empty_unsafe(expr) else {
+        return Vec::new();
+    };
+    let pointer_args = match callee {
+        StringLibcFunction::StrLen => &args[..args.len().min(1)],
+        StringLibcFunction::StrCmp
+        | StringLibcFunction::StrNCmp
+        | StringLibcFunction::MemCmp
+        | StringLibcFunction::StrCpy
+        | StringLibcFunction::StrNCpy
+        | StringLibcFunction::StrCat
+        | StringLibcFunction::StrNCat => &args[..args.len().min(2)],
+        StringLibcFunction::Printf => args,
+    };
+    pointer_args.iter().filter_map(pointer_source).collect()
+}
+
+fn peel_empty_unsafe(expr: &Expr) -> &Expr {
+    if let Expr::Unsafe(block) = expr
+        && block.stmts.is_empty()
+        && let Some(tail) = &block.tail
+    {
+        return tail;
+    }
+    expr
 }
 
 fn pointer_source(expr: &Expr) -> Option<&str> {
@@ -1022,14 +1046,7 @@ mod tests {
             .iter()
             .find(|fact| fact.callee == StringLibcFunction::Printf)
             .unwrap();
-        assert_eq!(
-            libc.path,
-            AstPath(vec![
-                PathSegment::Stmt(1),
-                PathSegment::UnsafeBody,
-                PathSegment::BlockTail
-            ])
-        );
+        assert_eq!(libc.path, AstPath(vec![PathSegment::Stmt(1)]));
         assert_eq!(libc.pointer_args, vec![s]);
     }
 
