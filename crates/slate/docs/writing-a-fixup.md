@@ -79,7 +79,9 @@ Do not re-walk the tree by hand when a helper exists:
   predicate and collection cases. Use `exprs` / `stmt_exprs` / `body_exprs` when
   a pass needs to visit every contained expression, and
   `exprs_any` / `stmt_exprs_any` / `body_exprs_all` for guards like "does this
-  subtree contain a call?" or "are all nested expressions safe?". Keep the
+  subtree contain a call?" or "are all nested expressions safe?". Use
+  `exprs_all_with` / `stmt_exprs_all_with` when a pass has custom accept/reject
+  cases for selected nodes but wants default recursion everywhere else. Keep the
   pass-specific policy in the closure; do not hand-roll full `Expr`/`Stmt`
   recursion unless the helper cannot express the traversal.
 - **`Stmt::substitute_var(name, repl)` / `Expr::substitute_var(name, repl)`**

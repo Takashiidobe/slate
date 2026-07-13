@@ -318,6 +318,204 @@ pub(in crate::fixups) fn exprs_all(expr: &Expr, pred: &mut impl FnMut(&Expr) -> 
     !exprs_any(expr, &mut |expr| !pred(expr))
 }
 
+pub(in crate::fixups) fn body_exprs_all_with(
+    body: &[IndentStmt],
+    stmt_hook: &mut impl FnMut(&Stmt) -> Option<bool>,
+    expr_hook: &mut impl FnMut(&Expr) -> Option<bool>,
+) -> bool {
+    body.iter()
+        .all(|stmt| stmt_exprs_all_with(&stmt.stmt, stmt_hook, expr_hook))
+}
+
+pub(in crate::fixups) fn block_exprs_all_with(
+    block: &Block,
+    stmt_hook: &mut impl FnMut(&Stmt) -> Option<bool>,
+    expr_hook: &mut impl FnMut(&Expr) -> Option<bool>,
+) -> bool {
+    body_exprs_all_with(&block.stmts, stmt_hook, expr_hook)
+        && block
+            .tail
+            .as_deref()
+            .is_none_or(|tail| exprs_all_with_hooks(tail, stmt_hook, expr_hook))
+}
+
+pub(in crate::fixups) fn stmt_exprs_all_with(
+    stmt: &Stmt,
+    stmt_hook: &mut impl FnMut(&Stmt) -> Option<bool>,
+    expr_hook: &mut impl FnMut(&Expr) -> Option<bool>,
+) -> bool {
+    if let Some(result) = stmt_hook(stmt) {
+        return result;
+    }
+    match stmt {
+        Stmt::Let { init, .. } => init
+            .as_ref()
+            .is_none_or(|expr| exprs_all_with_hooks(expr, stmt_hook, expr_hook)),
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            exprs_all_with_hooks(cond, stmt_hook, expr_hook)
+                && body_exprs_all_with(then_body, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(then_value, stmt_hook, expr_hook)
+                && body_exprs_all_with(else_body, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(else_value, stmt_hook, expr_hook)
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            exprs_all_with_hooks(target, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(value, stmt_hook, expr_hook)
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
+            exprs_all_with_hooks(expr, stmt_hook, expr_hook)
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            exprs_all_with_hooks(cond, stmt_hook, expr_hook)
+                && body_exprs_all_with(then_body, stmt_hook, expr_hook)
+                && body_exprs_all_with(else_body, stmt_hook, expr_hook)
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            body_exprs_all_with(body, stmt_hook, expr_hook)
+        }
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            block_exprs_all_with(body, stmt_hook, expr_hook)
+        }
+        Stmt::Match { expr, arms } => {
+            exprs_all_with_hooks(expr, stmt_hook, expr_hook)
+                && arms
+                    .iter()
+                    .all(|arm| body_exprs_all_with(&arm.body, stmt_hook, expr_hook))
+        }
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => true,
+    }
+}
+
+pub(in crate::fixups) fn exprs_all_with(
+    expr: &Expr,
+    hook: &mut impl FnMut(&Expr) -> Option<bool>,
+) -> bool {
+    exprs_all_with_hooks(expr, &mut |_| None, hook)
+}
+
+fn exprs_all_with_hooks(
+    expr: &Expr,
+    stmt_hook: &mut impl FnMut(&Stmt) -> Option<bool>,
+    expr_hook: &mut impl FnMut(&Expr) -> Option<bool>,
+) -> bool {
+    if let Some(result) = expr_hook(expr) {
+        return result;
+    }
+    match expr {
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::Var(_)
+        | Expr::Path(_)
+        | Expr::Todo(_)
+        | Expr::AtomicFence { .. } => true,
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => exprs_all_with_hooks(expr, stmt_hook, expr_hook),
+        Expr::Binary { lhs, rhs, .. } => {
+            exprs_all_with_hooks(lhs, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(rhs, stmt_hook, expr_hook)
+        }
+        Expr::Call { func, args } => {
+            exprs_all_with_hooks(func, stmt_hook, expr_hook)
+                && args
+                    .iter()
+                    .all(|arg| exprs_all_with_hooks(arg, stmt_hook, expr_hook))
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            exprs_all_with_hooks(recv, stmt_hook, expr_hook)
+                && args
+                    .iter()
+                    .all(|arg| exprs_all_with_hooks(arg, stmt_hook, expr_hook))
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => exprs_all_with_hooks(base, stmt_hook, expr_hook),
+        Expr::Index { base, index } => {
+            exprs_all_with_hooks(base, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(index, stmt_hook, expr_hook)
+        }
+        Expr::StructLit { fields, .. } => fields
+            .iter()
+            .all(|(_, value)| exprs_all_with_hooks(value, stmt_hook, expr_hook)),
+        Expr::ArrayLit(elems) => elems
+            .iter()
+            .all(|elem| exprs_all_with_hooks(elem, stmt_hook, expr_hook)),
+        Expr::ArrayRepeat { elem, .. } => exprs_all_with_hooks(elem, stmt_hook, expr_hook),
+        Expr::Macro { args, .. } => args
+            .iter()
+            .all(|arg| exprs_all_with_hooks(arg, stmt_hook, expr_hook)),
+        Expr::Closure { body, .. } => exprs_all_with_hooks(body, stmt_hook, expr_hook),
+        Expr::Match { expr, arms } => {
+            exprs_all_with_hooks(expr, stmt_hook, expr_hook)
+                && arms
+                    .iter()
+                    .all(|arm| exprs_all_with_hooks(&arm.value, stmt_hook, expr_hook))
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            exprs_all_with_hooks(cond, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(then_expr, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(else_expr, stmt_hook, expr_hook)
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            block_exprs_all_with(block, stmt_hook, expr_hook)
+        }
+        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
+            exprs_all_with_hooks(ptr, stmt_hook, expr_hook)
+        }
+        Expr::AtomicStore { ptr, value, .. }
+        | Expr::AtomicFetch { ptr, value, .. }
+        | Expr::AtomicSwap { ptr, value, .. } => {
+            exprs_all_with_hooks(ptr, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(value, stmt_hook, expr_hook)
+        }
+        Expr::AtomicCompareExchange {
+            ptr,
+            expected,
+            desired,
+            ..
+        } => {
+            exprs_all_with_hooks(ptr, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(expected, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(desired, stmt_hook, expr_hook)
+        }
+        Expr::CopyNonoverlapping { src, dst, .. } => {
+            exprs_all_with_hooks(src, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(dst, stmt_hook, expr_hook)
+        }
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => {
+            exprs_all_with_hooks(src, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(dst, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(count, stmt_hook, expr_hook)
+        }
+        Expr::WriteBytes { dst, val, count } => {
+            exprs_all_with_hooks(dst, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(val, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(count, stmt_hook, expr_hook)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -346,5 +544,92 @@ mod tests {
         assert!(!stmt_exprs_all(&stmt, &mut |expr| {
             !matches!(expr, Expr::Var(name) if name.as_str() == "a")
         }));
+    }
+
+    #[test]
+    fn exprs_all_with_uses_default_recursion_when_hook_declines() {
+        let expr = bin(BinOp::Add, var("ok"), var("bad"));
+
+        assert!(!exprs_all_with(&expr, &mut |expr| match expr {
+            Expr::Var(name) if name.as_str() == "bad" => Some(false),
+            _ => None,
+        }));
+    }
+
+    #[test]
+    fn exprs_all_with_can_accept_subtree_without_descending() {
+        let expr = call("allowed", vec![var("bad")]);
+
+        assert!(exprs_all_with(&expr, &mut |expr| match expr {
+            Expr::Call { func, .. } if matches!(&**func, Expr::Var(name) if name.as_str() == "allowed") =>
+            {
+                Some(true)
+            }
+            Expr::Var(name) if name.as_str() == "bad" => Some(false),
+            _ => None,
+        }));
+    }
+
+    #[test]
+    fn stmt_exprs_all_with_can_override_statement_policy() {
+        let stmt = assign("target", var("bad"));
+
+        assert!(stmt_exprs_all_with(
+            &stmt,
+            &mut |stmt| match stmt {
+                Stmt::Assign { target, value } if matches!(target, Expr::Var(name) if name.as_str() == "target") =>
+                {
+                    Some(exprs_all_with(value, &mut |expr| match expr {
+                        Expr::Var(name) if name.as_str() == "bad" => Some(true),
+                        _ => None,
+                    }))
+                }
+                _ => None,
+            },
+            &mut |expr| match expr {
+                Expr::Var(name) if name.as_str() == "bad" => Some(false),
+                _ => None,
+            },
+        ));
+    }
+
+    #[test]
+    fn stmt_exprs_all_with_rejects_from_statement_hook() {
+        let stmt = assign("target", int(1));
+
+        assert!(!stmt_exprs_all_with(
+            &stmt,
+            &mut |stmt| match stmt {
+                Stmt::Assign { target, .. } if matches!(target, Expr::Var(name) if name.as_str() == "target") =>
+                {
+                    Some(false)
+                }
+                _ => None,
+            },
+            &mut |_| None,
+        ));
+    }
+
+    #[test]
+    fn stmt_exprs_all_with_applies_statement_hook_inside_expression_blocks() {
+        let stmt = Stmt::Expr(Expr::Block(Box::new(Block {
+            stmts: vec![IndentStmt {
+                depth: 1,
+                stmt: assign("target", int(1)),
+            }],
+            tail: None,
+        })));
+
+        assert!(!stmt_exprs_all_with(
+            &stmt,
+            &mut |stmt| match stmt {
+                Stmt::Assign { target, .. } if matches!(target, Expr::Var(name) if name.as_str() == "target") =>
+                {
+                    Some(false)
+                }
+                _ => None,
+            },
+            &mut |_| None,
+        ));
     }
 }
