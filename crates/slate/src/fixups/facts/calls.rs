@@ -697,7 +697,7 @@ mod tests {
             .unwrap()
     }
 
-    fn callsite_at<'a>(facts: &'a facts::FixupFacts, path: AstPath) -> &'a CallsiteFact {
+    fn callsite_at(facts: &facts::FixupFacts, path: AstPath) -> &CallsiteFact {
         facts
             .callsites
             .iter()

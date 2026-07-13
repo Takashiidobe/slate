@@ -356,12 +356,12 @@ impl<'a> Collector<'a> {
             }
             Expr::Match { expr, arms } => {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(expr, path));
-                let result = arms.iter().enumerate().find_map(|(index, arm)| {
+
+                arms.iter().enumerate().find_map(|(index, arm)| {
                     walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
                         self.expr(&arm.value, path)
                     })
-                });
-                result
+                })
             }
             Expr::If {
                 cond,

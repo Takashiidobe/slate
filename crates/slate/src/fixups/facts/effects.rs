@@ -390,11 +390,7 @@ mod tests {
         .facts
     }
 
-    fn effect_for<'a>(
-        facts: &'a facts::FixupFacts,
-        subject: EffectSubject,
-        path: AstPath,
-    ) -> &'a EffectFact {
+    fn effect_for(facts: &facts::FixupFacts, subject: EffectSubject, path: AstPath) -> &EffectFact {
         facts
             .effects
             .iter()

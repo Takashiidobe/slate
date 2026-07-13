@@ -186,10 +186,9 @@ fn printf_fact<'a>(
     facts: &'a FixupFacts,
     path: &[PathSegment],
 ) -> Option<&'a PrintfCallFact> {
-    let found = facts
+    facts
         .printf_call(function, &AstPath(path.to_vec()))
-        .or_else(|| facts.printf_call(function, &unsafe_tail_path(path)));
-    found
+        .or_else(|| facts.printf_call(function, &unsafe_tail_path(path)))
 }
 
 fn unsafe_tail_path(path: &[PathSegment]) -> AstPath {
