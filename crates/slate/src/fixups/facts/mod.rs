@@ -892,6 +892,20 @@ impl FixupFacts {
         })
     }
 
+    pub(super) fn values_at(
+        &self,
+        function: FunctionId,
+        subject: ValueSubject,
+        path: &AstPath,
+    ) -> impl Iterator<Item = &ConstValue> {
+        self.values
+            .iter()
+            .filter(move |fact| {
+                fact.function == function && fact.subject == subject && &fact.path == path
+            })
+            .map(|fact| &fact.value)
+    }
+
     pub(super) fn callsite(&self, function: FunctionId, path: &AstPath) -> Option<&CallsiteFact> {
         self.callsites
             .iter()
@@ -917,6 +931,42 @@ impl FixupFacts {
 
     pub(super) fn cast_at(&self, function: FunctionId, path: &AstPath) -> Option<&CastFact> {
         self.casts
+            .iter()
+            .find(|fact| fact.function == function && &fact.path == path)
+    }
+
+    pub(super) fn string_buffer(&self, binding: BindingId) -> Option<&StringBufferFact> {
+        self.string_buffers
+            .iter()
+            .find(|fact| fact.binding == binding)
+    }
+
+    pub(super) fn string_buffer_at(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&StringBufferFact> {
+        self.string_buffers
+            .iter()
+            .find(|fact| fact.function == function && &fact.path == path)
+    }
+
+    pub(super) fn string_pointer_view(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&StringPointerViewFact> {
+        self.string_pointer_views
+            .iter()
+            .find(|fact| fact.function == function && &fact.path == path)
+    }
+
+    pub(super) fn string_libc_use(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&StringLibcUseFact> {
+        self.string_libc_uses
             .iter()
             .find(|fact| fact.function == function && &fact.path == path)
     }
