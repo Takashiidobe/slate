@@ -21,6 +21,7 @@ mod string_copy;
 mod string_libc;
 mod string_lift;
 mod support;
+mod values;
 mod zero_init;
 
 #[cfg(test)]
