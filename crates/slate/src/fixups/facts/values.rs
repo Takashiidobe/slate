@@ -1,10 +1,10 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, ConstValue, FixupFacts, FunctionId, PathSegment, ValueFact,
     ValueSubject,
 };
-use crate::fixups::support::walk;
 use crate::rust_ast::{
     BinOp, Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
