@@ -4,7 +4,7 @@ use crate::rust_ast::{
 };
 use std::collections::{BTreeMap, BTreeSet};
 
-pub(super) fn fixup(program: &mut Program) {
+pub(in crate::fixups) fn fixup(program: &mut Program) {
     for item in &mut program.items {
         if let Item::Fn(f) = item {
             fixup_body(&mut f.body);

@@ -10,7 +10,7 @@ use crate::rust_ast::{
     Block, Expr, ExternDecl, FnParam, IndentStmt, Item, Param, Pattern, Program, Stmt, Type,
 };
 
-pub(super) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.call_signatures.clear();
     facts.callsites.clear();
 
