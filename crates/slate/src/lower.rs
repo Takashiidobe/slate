@@ -72,14 +72,22 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
 
 /// Lower a translation unit that is part of a multi-file project.
 pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &ProjectInfo) -> Program {
+    let anon_records = anon_local_records(cir);
+    let mut records: BTreeMap<String, crate::c_ast::Record> = c
+        .records
+        .iter()
+        .map(|record| (sanitize_ident(&record.name).into_string(), record.clone()))
+        .collect();
+    for record in &anon_records {
+        records
+            .entry(sanitize_ident(&record.name).into_string())
+            .or_insert_with(|| record.clone());
+    }
     let mut lowerer = Lowerer {
         ctx,
         aliases: cir.aliases.clone(),
-        records: c
-            .records
-            .iter()
-            .map(|record| (sanitize_ident(&record.name).into_string(), record.clone()))
-            .collect(),
+        records,
+        anon_records,
         globals: BTreeMap::new(),
         extern_globals: BTreeMap::new(),
         strings: BTreeMap::new(),
@@ -141,6 +149,10 @@ struct Lowerer<'a> {
     ctx: &'a mut Ctx,
     aliases: BTreeMap<String, String>,
     records: BTreeMap<String, crate::c_ast::Record>,
+    /// Function-local anonymous record types recovered from the CIR (libyaml's
+    /// STACK/QUEUE macro locals). Numbered per-TU, so emitted per-module rather
+    /// than into the shared type module.
+    anon_records: Vec<crate::c_ast::Record>,
     globals: BTreeMap<String, GlobalVar>,
     extern_globals: BTreeMap<String, Type>,
     strings: BTreeMap<String, Vec<u8>>,
@@ -286,6 +298,13 @@ impl<'a> Lowerer<'a> {
             }
             if let Some(item) = self.lower_record(record) {
                 items.push(item);
+            }
+        }
+        for record in &self.anon_records {
+            if let Some(def) =
+                lower_record_def(record, Visibility::Private, Visibility::Private, false)
+            {
+                items.push(Item::Record(def));
             }
         }
         items.extend(self.standard_record_defs());
@@ -4575,6 +4594,152 @@ fn cir_record_name(ty: &str) -> Option<&str> {
 
 fn op_type_return(ty: &str) -> Option<&str> {
     split_top_level_arrow(ty).map(|(_, ret)| ret.trim())
+}
+
+fn cir_ptr_pointee(ty: &str) -> Option<&str> {
+    ty.trim()
+        .strip_prefix("!cir.ptr<")
+        .and_then(|s| s.strip_suffix('>'))
+}
+
+// The alias-table key (e.g. `!rec_anon2E36`) for an anonymous record type,
+// gating on the expanded struct/union name starting with `anon.`.
+fn anon_alias_key(ty: &str, aliases: &BTreeMap<String, String>) -> Option<String> {
+    let ty = ty.trim();
+    let name = cir_record_name(aliases.get(ty)?)?;
+    name.starts_with("anon.").then(|| ty.to_string())
+}
+
+fn parse_cir_int_type(ty: &str) -> Option<(bool, u32)> {
+    let rest = ty.trim().strip_prefix('!')?;
+    let signed = match rest.as_bytes().first()? {
+        b's' => true,
+        b'u' => false,
+        _ => return None,
+    };
+    let bits = rest[1..].strip_suffix('i')?.parse().ok()?;
+    Some((signed, bits))
+}
+
+fn cir_type_to_ctype(ty: &str, aliases: &BTreeMap<String, String>) -> crate::c_ast::CType {
+    use crate::c_ast::CType;
+    let ty = ty.trim();
+    if let Some(inner) = cir_ptr_pointee(ty) {
+        return CType::Ptr(Box::new(cir_type_to_ctype(inner, aliases)));
+    }
+    match ty {
+        "!cir.void" | "!void" => return CType::Void,
+        "!cir.bool" => return CType::Bool,
+        "!cir.float" => return CType::Float { bits: 32 },
+        "!cir.double" => return CType::Float { bits: 64 },
+        _ => {}
+    }
+    if let Some((signed, bits)) = parse_cir_int_type(ty) {
+        return CType::Int { signed, bits };
+    }
+    // resolve records through the alias table so anon fields keep their dotted name.
+    if let Some(name) = aliases
+        .get(ty)
+        .and_then(|expanded| cir_record_name(expanded))
+        .or_else(|| cir_record_name(ty))
+    {
+        return CType::Record(name.to_string());
+    }
+    CType::Int {
+        signed: true,
+        bits: 32,
+    }
+}
+
+fn collect_anon_record_info(
+    ops: &[Op],
+    aliases: &BTreeMap<String, String>,
+    needed: &mut BTreeSet<String>,
+    field_names: &mut BTreeMap<(String, i64), String>,
+) {
+    for op in ops {
+        match op.name.as_str() {
+            "cir.alloca" => {
+                if let Some(key) = op
+                    .ty
+                    .as_deref()
+                    .and_then(op_type_return)
+                    .and_then(cir_ptr_pointee)
+                    .and_then(|pointee| anon_alias_key(pointee, aliases))
+                {
+                    needed.insert(key);
+                }
+            }
+            "cir.get_member" => {
+                if let (Some(key), Some(index), Some(name)) = (
+                    op.ty
+                        .as_deref()
+                        .and_then(split_top_level_arrow)
+                        .and_then(|(inputs, _)| inputs.trim().strip_prefix('(')?.strip_suffix(')'))
+                        .and_then(|inputs| split_top_level(inputs, ',').first().copied())
+                        .and_then(cir_ptr_pointee)
+                        .and_then(|pointee| anon_alias_key(pointee, aliases)),
+                    op.attrs.get("index_attr").and_then(Attr::as_int),
+                    op.attrs.get("name").and_then(Attr::as_str),
+                ) {
+                    field_names.insert((key, index), name.to_string());
+                }
+            }
+            _ => {}
+        }
+        for region in &op.regions {
+            for block in &region.blocks {
+                collect_anon_record_info(&block.ops, aliases, needed, field_names);
+            }
+        }
+    }
+}
+
+/// Recover the function-local anonymous record types the CIR uses as locals but
+/// that never surface as named Clang AST records (libyaml's STACK/QUEUE macro
+/// locals): field types from the type-alias table, field names from
+/// `cir.get_member`.
+pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
+    let mut needed = BTreeSet::new();
+    let mut field_names = BTreeMap::new();
+    collect_anon_record_info(&module.ops, &module.aliases, &mut needed, &mut field_names);
+
+    let mut records = Vec::new();
+    for key in &needed {
+        let Some(expanded) = module.aliases.get(key) else {
+            continue;
+        };
+        let Some(name) = cir_record_name(expanded) else {
+            continue;
+        };
+        let is_union = expanded.trim_start().starts_with("!cir.union");
+        let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}')) else {
+            continue;
+        };
+        let fields = split_top_level(&expanded[open + 1..close], ',')
+            .iter()
+            .map(|s| s.trim())
+            .filter(|s| !s.is_empty())
+            .enumerate()
+            .map(|(i, field_ty)| crate::c_ast::Decl {
+                name: field_names
+                    .get(&(key.clone(), i as i64))
+                    .cloned()
+                    .unwrap_or_else(|| format!("f{i}")),
+                ty: cir_type_to_ctype(field_ty, &module.aliases),
+            })
+            .collect();
+        records.push(crate::c_ast::Record {
+            name: name.to_string(),
+            kind: if is_union {
+                RecordKind::Union
+            } else {
+                RecordKind::Struct
+            },
+            fields,
+        });
+    }
+    records
 }
 
 fn type_array_len(ty: &Type) -> Option<u64> {
