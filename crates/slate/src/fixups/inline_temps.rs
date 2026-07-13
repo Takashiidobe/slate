@@ -2,10 +2,18 @@
 //! is spliced as an `Expr` subtree into its use site and precedence-aware
 //! rendering elides redundant parens.
 
-use crate::fixups::idents::stmt_ident_count;
+use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::rust_ast::{Block, Expr, IndentStmt, Stmt, UnaryOp};
 
 pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
+    fixup_with_tails(body, &[]);
+}
+
+// `tails` are the yielded value expressions of the enclosing block (a `LetIf`
+// branch value, an `unsafe` block tail). They are not statements we can
+// substitute into here, but a temp that feeds one is used past the statement
+// list, so it must not be treated as single-use.
+fn fixup_with_tails(body: &mut Vec<IndentStmt>, tails: &[&Expr]) {
     inline_nested_temps(body);
     loop {
         let mut applied = false;
@@ -24,7 +32,7 @@ pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
             }
             let name = name.clone();
             let init = init.clone();
-            let Some(use_index) = single_safe_use(body, i, &name) else {
+            let Some(use_index) = single_safe_use(body, i, &name, tails) else {
                 continue;
             };
             if body[use_index].stmt.substitute_var(&name, &init) {
@@ -53,22 +61,35 @@ fn inline_nested_temps(body: &mut [IndentStmt]) {
             }
             Stmt::LetIf {
                 then_body,
+                then_value,
                 else_body,
+                else_value,
                 ..
             } => {
-                fixup(then_body);
-                fixup(else_body);
+                fixup_with_tails(then_body, &[then_value]);
+                fixup_with_tails(else_body, &[else_value]);
             }
             Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
                 fixup(body);
             }
-            Stmt::Unsafe { body } => fixup(&mut body.stmts),
+            Stmt::Unsafe { body } => {
+                let Block { stmts, tail } = body;
+                match tail {
+                    Some(tail) => fixup_with_tails(stmts, &[tail]),
+                    None => fixup(stmts),
+                }
+            }
             _ => {}
         }
     }
 }
 
-fn single_safe_use(body: &[IndentStmt], def_index: usize, name: &str) -> Option<usize> {
+fn single_safe_use(
+    body: &[IndentStmt],
+    def_index: usize,
+    name: &str,
+    tails: &[&Expr],
+) -> Option<usize> {
     let mut found = None;
     for (index, stmt) in body.iter().enumerate().skip(def_index + 1) {
         let stmt = &stmt.stmt;
@@ -90,6 +111,9 @@ fn single_safe_use(body: &[IndentStmt], def_index: usize, name: &str) -> Option<
         if !is_pure_temp_let(stmt) {
             return None;
         }
+    }
+    if tails.iter().any(|tail| expr_ident_count(tail, name) > 0) {
+        return None;
     }
     found
 }
@@ -357,6 +381,41 @@ fn f() {
     a = a - 5;
 }
 "
+        );
+    }
+
+    #[test]
+    fn keeps_temp_that_feeds_a_branch_value() {
+        // a temp used once in the branch body (the store) and once as the branch's
+        // yielded value must not be inlined away, or the tail reference dangles.
+        let out = inlined(vec![Stmt::LetIf {
+            name: "_v0".into(),
+            mutable: false,
+            ty: Some(Type::parse("i32")),
+            cond: var("c"),
+            then_body: vec![
+                IndentStmt {
+                    depth: 2,
+                    stmt: temp("_v1", "i32", bin(BinOp::Add, var("a"), int(1))),
+                },
+                IndentStmt {
+                    depth: 2,
+                    stmt: assign("a", var("_v1")),
+                },
+            ],
+            then_value: var("_v1"),
+            else_body: vec![],
+            else_value: int(0),
+        }]);
+
+        assert!(
+            out.contains("let _v1: i32 = a + 1;"),
+            "binding must survive, got:\n{out}"
+        );
+        assert_eq!(
+            out.matches("_v1").count(),
+            3,
+            "def + store use + branch value"
         );
     }
 
