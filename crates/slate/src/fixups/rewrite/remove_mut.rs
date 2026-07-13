@@ -4,7 +4,7 @@ use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
 use crate::fixups::support::walk;
 use crate::rust_ast::{FnDef, IndentStmt, Stmt};
 
-pub(super) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
+pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
     for (index, param) in f.params.iter_mut().enumerate() {
         if facts
             .binding_by_param_index(function, index)

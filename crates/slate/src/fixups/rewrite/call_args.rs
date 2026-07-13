@@ -23,14 +23,14 @@ use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
 use crate::rust_ast::{Expr, ExternDecl, IndentStmt, Item, Program, Stmt, Type};
 
-pub(super) struct Signature {
+pub(in crate::fixups) struct Signature {
     params: Vec<Type>,
     variadic: bool,
 }
 
-pub(super) type Signatures = HashMap<String, Signature>;
+pub(in crate::fixups) type Signatures = HashMap<String, Signature>;
 
-pub(super) fn collect_signatures(program: &Program) -> Signatures {
+pub(in crate::fixups) fn collect_signatures(program: &Program) -> Signatures {
     let mut sigs = Signatures::new();
     let mut record = |name: &str, params: Vec<Type>, variadic: bool| {
         sigs.insert(name.to_string(), Signature { params, variadic });
@@ -64,7 +64,7 @@ pub(super) fn collect_signatures(program: &Program) -> Signatures {
     sigs
 }
 
-pub(super) fn fixup(body: &mut Vec<IndentStmt>, sigs: &Signatures) {
+pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>, sigs: &Signatures) {
     fixup_nested(body, sigs);
     loop {
         let mut applied = false;
@@ -197,7 +197,7 @@ fn is_pure_temp_let(stmt: &Stmt) -> bool {
 }
 
 fn is_pure_expr(expr: &Expr) -> bool {
-    super::effects::is_movable_pure_expr(expr)
+    crate::fixups::facts::is_movable_pure_expr(expr)
 }
 
 fn is_temp_name(name: &str) -> bool {

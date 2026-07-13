@@ -7,7 +7,7 @@ use crate::fixups::facts::{
 use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, Ident, IndentStmt, Item, Program, Stmt, UnaryOp};
 
-pub(super) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.borrow_alias.clear();
     let mut all = Vec::new();
     for (item_index, item) in program.items.iter().enumerate() {

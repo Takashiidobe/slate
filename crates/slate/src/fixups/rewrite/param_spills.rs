@@ -4,7 +4,7 @@
 use crate::fixups::idents::{expr_ident, stmt_ident_count};
 use crate::rust_ast::{FnDef, Stmt};
 
-pub(super) fn fixup(f: &mut FnDef) {
+pub(in crate::fixups) fn fixup(f: &mut FnDef) {
     let param_names: Vec<String> = f.params.iter().map(|p| p.name.clone()).collect();
     let mut claimed_locals: Vec<String> = Vec::new();
     let mut removed: Vec<usize> = Vec::new();

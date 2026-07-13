@@ -2,7 +2,7 @@ use crate::rust_ast::{BinOp, Block, Expr, ExternDecl, Ident, IndentStmt, Item, P
 use crate::rust_ast::{Program, RustValue, Stmt};
 use std::collections::BTreeMap;
 
-pub(super) fn fixup(program: &mut Program) {
+pub(in crate::fixups) fn fixup(program: &mut Program) {
     for item in &mut program.items {
         if let Item::Fn(f) = item {
             let mut env = BTreeMap::new();
