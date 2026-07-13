@@ -12,6 +12,7 @@ pub(super) mod def_use;
 pub(super) mod effects;
 pub(super) mod loop_shapes;
 pub(super) mod places;
+pub(super) mod printf;
 pub(super) mod ptr_len;
 pub(super) mod slice_index;
 pub(super) mod strings;
@@ -41,6 +42,7 @@ pub(super) struct FixupFacts {
     pub(super) string_buffers: Vec<StringBufferFact>,
     pub(super) string_pointer_views: Vec<StringPointerViewFact>,
     pub(super) string_libc_uses: Vec<StringLibcUseFact>,
+    pub(super) printf_calls: Vec<PrintfCallFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
@@ -362,6 +364,24 @@ pub(super) struct StringLibcUseFact {
     pub(super) callee: StringLibcFunction,
     pub(super) path: AstPath,
     pub(super) pointer_args: Vec<BindingId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct PrintfCallFact {
+    pub(super) function: FunctionId,
+    pub(super) path: AstPath,
+    pub(super) format: Option<Vec<u8>>,
+    pub(super) arg_paths: Vec<AstPath>,
+    pub(super) arg_facts: Vec<PrintfArgFact>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct PrintfArgFact {
+    pub(super) path: AstPath,
+    pub(super) const_string: Option<String>,
+    pub(super) const_char: Option<String>,
+    pub(super) rust_string: bool,
+    pub(super) pointer: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -970,6 +990,16 @@ impl FixupFacts {
             .iter()
             .find(|fact| fact.function == function && &fact.path == path)
     }
+
+    pub(super) fn printf_call(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&PrintfCallFact> {
+        self.printf_calls
+            .iter()
+            .find(|fact| fact.function == function && &fact.path == path)
+    }
 }
 
 pub(super) fn analyze(program: Program) -> AnalyzedProgram {
@@ -984,6 +1014,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     calls::collect_facts(&program, &mut collector.facts);
     casts::collect_facts(&program, &mut collector.facts);
     strings::collect_facts(&program, &mut collector.facts);
+    printf::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
         facts: collector.facts,

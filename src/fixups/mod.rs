@@ -119,7 +119,8 @@ pub fn apply(program: Program) -> Program {
             rewrite::remove_mut::fixup(f, function, &facts);
         }
     }
-    rewrite::printf_format::fixup(&mut program);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::printf_format::fixup(&mut program, &facts);
     program
 }
 
