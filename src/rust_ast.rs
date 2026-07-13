@@ -664,6 +664,9 @@ pub enum Type {
     Complex(Box<Type>),
     Generic { name: String, args: Vec<Type> },
     VaList,
+    Str,
+    Ref { mutable: bool, inner: Box<Type> },
+    Slice(Box<Type>),
     Ptr { mutable: bool, inner: Box<Type> },
     Array { elem: Box<Type>, len: u64 },
     FnPtr { params: Vec<Type>, ret: Box<Type> },
@@ -1116,11 +1119,38 @@ impl Type {
                 inner: Box::new(Type::parse(rest)),
             };
         }
+        if let Some(rest) = s.strip_prefix("&mut ") {
+            return Type::Ref {
+                mutable: true,
+                inner: Box::new(Type::parse(rest)),
+            };
+        }
+        if let Some(rest) = s.strip_prefix('&') {
+            return Type::Ref {
+                mutable: false,
+                inner: Box::new(Type::parse(rest)),
+            };
+        }
+        if let Some(rest) = s.strip_prefix('[').and_then(|s| s.strip_suffix(']'))
+            && let Some((elem, len)) = rest.rsplit_once(';')
+            && let Ok(len) = len.trim().parse()
+        {
+            return Type::Array {
+                elem: Box::new(Type::parse(elem.trim())),
+                len,
+            };
+        }
+        if let Some(rest) = s.strip_prefix('[').and_then(|s| s.strip_suffix(']')) {
+            return Type::Slice(Box::new(Type::parse(rest)));
+        }
         if s == "()" {
             return Type::Unit;
         }
         if s == "core::ffi::VaList<'_>" {
             return Type::VaList;
+        }
+        if s == "str" {
+            return Type::Str;
         }
         match Prim::parse(s) {
             Some(p) => Type::Prim(p),
