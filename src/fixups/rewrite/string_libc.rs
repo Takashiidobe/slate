@@ -2,6 +2,7 @@ use crate::fixups::facts::{
     AstPath, CallCallee, ConstValue, FixupFacts, FunctionId, PathSegment, StringBufferFact,
     StringBufferKind, StringLibcFunction, ValueSubject,
 };
+use crate::fixups::runtime;
 use crate::fixups::support::walk;
 use crate::rust_ast::{
     BinOp, Block, Expr, ExternDecl, Ident, IndentStmt, Item, Path, Prim, Type, UnaryOp,
@@ -17,6 +18,7 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
             fixup_body(&mut f.body, function, facts, &mut Vec::new());
         }
     }
+    runtime::ensure_numeric_parse(program);
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -417,6 +419,9 @@ fn replacement_expr(
     if let Some(replacement) = supported_usize_call(expr, function, facts, path) {
         return Some(replacement);
     }
+    if let Some(replacement) = supported_numeric_parse_call(expr, function, facts, path) {
+        return Some(replacement);
+    }
     supported_compare_call(expr, function, facts, path)
         .map(|compare| cmp_to_i32(compare_expr(compare)))
 }
@@ -557,6 +562,57 @@ fn supported_span_call(
     }
 }
 
+fn supported_numeric_parse_call(
+    expr: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<Expr> {
+    let Expr::Call { func, args } = peel_empty_unsafe(expr) else {
+        return None;
+    };
+    let Expr::Var(name) = &**func else {
+        return None;
+    };
+    let usage = facts.string_libc_use(function, &AstPath(path.to_vec()))?;
+    if usage.pointer_args.len() != 1 {
+        return None;
+    }
+    let source = source_for_binding(facts, usage.pointer_args[0])?;
+    if source.kind != StringKind::Str {
+        return None;
+    }
+    let helper = match (name.as_str(), usage.callee) {
+        ("atoi", StringLibcFunction::Atoi) if args.len() == 1 => "parse_i32",
+        ("atol", StringLibcFunction::Atol) if args.len() == 1 => "parse_i64",
+        ("strtol", StringLibcFunction::StrTol)
+            if args.len() == 3
+                && is_null_at(&args[1], function, facts, &call_arg_path(expr, path, 1))
+                && is_ten_at(&args[2], function, facts, &call_arg_path(expr, path, 2)) =>
+        {
+            "parse_i64"
+        }
+        ("strtoul", StringLibcFunction::StrToul)
+            if args.len() == 3
+                && is_null_at(&args[1], function, facts, &call_arg_path(expr, path, 1))
+                && is_ten_at(&args[2], function, facts, &call_arg_path(expr, path, 2)) =>
+        {
+            "parse_u64"
+        }
+        ("strtod", StringLibcFunction::StrTod)
+            if args.len() == 2
+                && is_null_at(&args[1], function, facts, &call_arg_path(expr, path, 1)) =>
+        {
+            "parse_f64"
+        }
+        _ => return None,
+    };
+    Some(Expr::Call {
+        func: Box::new(runtime::numeric_parse_path(helper)),
+        args: vec![Expr::Var(source.name.into())],
+    })
+}
+
 fn supported_compare_call(
     expr: &Expr,
     function: FunctionId,
@@ -615,6 +671,11 @@ fn is_libc_string_func(name: &str) -> bool {
             | "strpbrk"
             | "strspn"
             | "strcspn"
+            | "atoi"
+            | "atol"
+            | "strtol"
+            | "strtoul"
+            | "strtod"
             | "strcpy"
             | "strncpy"
             | "strcat"
@@ -883,6 +944,58 @@ fn is_zero_at(expr: &Expr, function: FunctionId, facts: &FixupFacts, path: &[Pat
             &AstPath(path.to_vec()),
             &ConstValue::Zero,
         )
+}
+
+fn is_null_at(expr: &Expr, function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    is_zero_at(expr, function, facts, path)
+        || expr_has_value(expr, function, facts, &ConstValue::Zero)
+        || matches!(
+            peel_empty_unsafe(expr),
+            Expr::Call { func, args }
+                if args.is_empty()
+                    && matches_null_path(&**func)
+        )
+}
+
+fn matches_null_path(expr: &Expr) -> bool {
+    let Expr::Path(path) = expr else {
+        return false;
+    };
+    let segments = path.segments.iter().map(Ident::as_str).collect::<Vec<_>>();
+    matches!(
+        segments.as_slice(),
+        ["std", "ptr", "null" | "null_mut"] | ["core", "ptr", "null" | "null_mut"]
+    )
+}
+
+fn is_ten_at(expr: &Expr, function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    matches!(expr, Expr::Value(RustValue::I64(10) | RustValue::I128(10)))
+        || expr_has_value(expr, function, facts, &ConstValue::Integer(10))
+        || expr_has_value(expr, function, facts, &ConstValue::Usize(10))
+        || facts
+            .values_at(function, ValueSubject::Expr, &AstPath(path.to_vec()))
+            .any(|value| matches!(value, ConstValue::Integer(10) | ConstValue::Usize(10)))
+}
+
+fn expr_has_value(
+    expr: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    expected: &ConstValue,
+) -> bool {
+    match expr {
+        Expr::Cast { expr, .. } => expr_has_value(expr, function, facts, expected),
+        Expr::Var(name) => facts.bindings.iter().rev().any(|binding| {
+            binding.function == function
+                && binding.name == name.as_str()
+                && facts.values.iter().any(|value| {
+                    value.function == function
+                        && value.subject == ValueSubject::Binding(binding.id)
+                        && &value.value == expected
+                })
+        }),
+        _ => false,
+    }
 }
 
 fn ascii_byte_at(

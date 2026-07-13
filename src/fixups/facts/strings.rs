@@ -495,6 +495,11 @@ fn use_allowed(
                     | StringLibcFunction::StrPBrk
                     | StringLibcFunction::StrSpn
                     | StringLibcFunction::StrCSpn
+                    | StringLibcFunction::Atoi
+                    | StringLibcFunction::Atol
+                    | StringLibcFunction::StrTol
+                    | StringLibcFunction::StrToul
+                    | StringLibcFunction::StrTod
             )
             && libc
                 .pointer_args
@@ -1567,6 +1572,11 @@ fn libc_function(expr: &Expr) -> Option<StringLibcFunction> {
         "strncpy" => StringLibcFunction::StrNCpy,
         "strcat" => StringLibcFunction::StrCat,
         "strncat" => StringLibcFunction::StrNCat,
+        "atoi" => StringLibcFunction::Atoi,
+        "atol" => StringLibcFunction::Atol,
+        "strtol" => StringLibcFunction::StrTol,
+        "strtoul" => StringLibcFunction::StrToul,
+        "strtod" => StringLibcFunction::StrTod,
         "printf" => StringLibcFunction::Printf,
         _ => return None,
     })
@@ -1580,9 +1590,14 @@ fn libc_pointer_args(expr: &Expr) -> Vec<&str> {
         return Vec::new();
     };
     let pointer_args = match callee {
-        StringLibcFunction::StrLen | StringLibcFunction::StrChr | StringLibcFunction::StrRChr => {
-            &args[..args.len().min(1)]
-        }
+        StringLibcFunction::StrLen
+        | StringLibcFunction::StrChr
+        | StringLibcFunction::StrRChr
+        | StringLibcFunction::Atoi
+        | StringLibcFunction::Atol
+        | StringLibcFunction::StrTol
+        | StringLibcFunction::StrToul
+        | StringLibcFunction::StrTod => &args[..args.len().min(1)],
         StringLibcFunction::StrCmp
         | StringLibcFunction::StrNCmp
         | StringLibcFunction::MemCmp
