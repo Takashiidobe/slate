@@ -312,7 +312,6 @@ fn collect_records(
                 .and_then(|name| extract_record(child, Some(name)))
             {
                 out.push(record);
-                continue;
             }
         }
         collect_records(child, source_file, record_roots, out);
