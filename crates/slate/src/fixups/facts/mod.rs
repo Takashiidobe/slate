@@ -15,6 +15,7 @@ pub(super) struct FixupFacts {
     pub(super) bindings: Vec<BindingFact>,
     pub(super) loops: Vec<LoopFact>,
     pub(super) borrow_alias: Vec<BorrowAliasFact>,
+    pub(super) def_use: Vec<DefUseFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
@@ -84,6 +85,16 @@ pub(super) struct BorrowAliasFact {
 pub(super) struct BorrowAliasUseFact {
     pub(super) kind: BorrowAliasUseKind,
     pub(super) path: AstPath,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct DefUseFact {
+    pub(super) function: FunctionId,
+    pub(super) binding: BindingId,
+    pub(super) definition: AstPath,
+    pub(super) reads: Vec<AstPath>,
+    pub(super) writes: Vec<AstPath>,
+    pub(super) last_use: Option<AstPath>,
 }
 
 #[derive(Debug, Clone)]
@@ -274,6 +285,7 @@ pub(super) enum PathSegment {
     UnsafeBody,
     WhileBody,
     BlockBody,
+    BlockTail,
 }
 
 impl FixupFacts {
@@ -327,6 +339,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     let mut collector = Collector::default();
     collector.program(&program);
     super::borrow_alias::collect_facts(&program, &mut collector.facts);
+    super::def_use::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
         facts: collector.facts,
