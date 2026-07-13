@@ -1,3 +1,4 @@
+use crate::fixups::support::walk;
 use crate::rust_ast::{
     Block, Expr, ExternDecl, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type,
 };
@@ -277,98 +278,10 @@ fn expr_allows_lift(expr: &Expr, name: &str, liftable: &BTreeSet<String>) -> boo
 }
 
 fn expr_mentions_var(expr: &Expr, name: &str) -> bool {
-    match expr {
-        Expr::Var(v) if v.as_str() == name => true,
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => expr_mentions_var(expr, name),
-        Expr::Binary { lhs, rhs, .. } => {
-            expr_mentions_var(lhs, name) || expr_mentions_var(rhs, name)
-        }
-        Expr::Call { func, args } => {
-            expr_mentions_var(func, name) || args.iter().any(|arg| expr_mentions_var(arg, name))
-        }
-        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            expr_mentions_var(recv, name) || args.iter().any(|arg| expr_mentions_var(arg, name))
-        }
-        Expr::Field { base, .. }
-        | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => expr_mentions_var(base, name),
-        Expr::Index { base, index } => {
-            expr_mentions_var(base, name) || expr_mentions_var(index, name)
-        }
-        Expr::StructLit { fields, .. } => fields
-            .iter()
-            .any(|(_, value)| expr_mentions_var(value, name)),
-        Expr::ArrayLit(elems) => elems.iter().any(|elem| expr_mentions_var(elem, name)),
-        Expr::ArrayRepeat { elem, .. } => expr_mentions_var(elem, name),
-        Expr::Macro { args, .. } => args.iter().any(|arg| expr_mentions_var(arg, name)),
-        Expr::Closure { body, .. } => expr_mentions_var(body, name),
-        Expr::Match { expr, arms } => {
-            expr_mentions_var(expr, name)
-                || arms.iter().any(|arm| expr_mentions_var(&arm.value, name))
-        }
-        Expr::If {
-            cond,
-            then_expr,
-            else_expr,
-        } => {
-            expr_mentions_var(cond, name)
-                || expr_mentions_var(then_expr, name)
-                || expr_mentions_var(else_expr, name)
-        }
-        Expr::Block(block) | Expr::Unsafe(block) => {
-            block
-                .stmts
-                .iter()
-                .any(|indent| stmt_mentions_var(&indent.stmt, name))
-                || block
-                    .tail
-                    .as_deref()
-                    .is_some_and(|tail| expr_mentions_var(tail, name))
-        }
-        Expr::CopyNonoverlapping { src, dst, .. } => {
-            expr_mentions_var(src, name) || expr_mentions_var(dst, name)
-        }
-        Expr::PtrCopy {
-            src, dst, count, ..
-        } => {
-            expr_mentions_var(src, name)
-                || expr_mentions_var(dst, name)
-                || expr_mentions_var(count, name)
-        }
-        Expr::WriteBytes { dst, val, count } => {
-            expr_mentions_var(dst, name)
-                || expr_mentions_var(val, name)
-                || expr_mentions_var(count, name)
-        }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => expr_mentions_var(ptr, name),
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            expr_mentions_var(ptr, name) || expr_mentions_var(value, name)
-        }
-        Expr::AtomicCompareExchange {
-            ptr,
-            expected,
-            desired,
-            ..
-        } => {
-            expr_mentions_var(ptr, name)
-                || expr_mentions_var(expected, name)
-                || expr_mentions_var(desired, name)
-        }
-        Expr::Value(_)
-        | Expr::Str(_)
-        | Expr::HexFloat(_)
-        | Expr::ByteStr(_)
-        | Expr::Var(_)
-        | Expr::Path(_)
-        | Expr::AtomicFence { .. }
-        | Expr::Todo(_) => false,
-    }
+    walk::exprs_any(
+        expr,
+        &mut |expr| matches!(expr, Expr::Var(v) if v.as_str() == name),
+    )
 }
 
 fn expr_supported_pointer_view(expr: &Expr, name: &str, liftable: &BTreeSet<String>) -> bool {
@@ -432,108 +345,9 @@ fn printf_conversions(expr: &Expr) -> Option<Vec<u8>> {
 }
 
 fn expr_mentions_pointer_view(expr: &Expr, name: &str) -> bool {
-    pointer_view_source(expr).is_some_and(|source| source == name)
-        || match expr {
-            Expr::Unary { expr, .. }
-            | Expr::Cast { expr, .. }
-            | Expr::Ref { expr, .. }
-            | Expr::AddrOf { expr, .. }
-            | Expr::Transmute { expr, .. } => expr_mentions_pointer_view(expr, name),
-            Expr::Binary { lhs, rhs, .. } => {
-                expr_mentions_pointer_view(lhs, name) || expr_mentions_pointer_view(rhs, name)
-            }
-            Expr::Call { func, args } => {
-                expr_mentions_pointer_view(func, name)
-                    || args.iter().any(|arg| expr_mentions_pointer_view(arg, name))
-            }
-            Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-                expr_mentions_pointer_view(recv, name)
-                    || args.iter().any(|arg| expr_mentions_pointer_view(arg, name))
-            }
-            Expr::Field { base, .. }
-            | Expr::TupleField { base, .. }
-            | Expr::ArrayPtr { array: base, .. } => expr_mentions_pointer_view(base, name),
-            Expr::Index { base, index } => {
-                expr_mentions_pointer_view(base, name) || expr_mentions_pointer_view(index, name)
-            }
-            Expr::StructLit { fields, .. } => fields
-                .iter()
-                .any(|(_, value)| expr_mentions_pointer_view(value, name)),
-            Expr::ArrayLit(elems) => elems
-                .iter()
-                .any(|elem| expr_mentions_pointer_view(elem, name)),
-            Expr::ArrayRepeat { elem, .. } => expr_mentions_pointer_view(elem, name),
-            Expr::Macro { args, .. } => {
-                args.iter().any(|arg| expr_mentions_pointer_view(arg, name))
-            }
-            Expr::Closure { body, .. } => expr_mentions_pointer_view(body, name),
-            Expr::Match { expr, arms } => {
-                expr_mentions_pointer_view(expr, name)
-                    || arms
-                        .iter()
-                        .any(|arm| expr_mentions_pointer_view(&arm.value, name))
-            }
-            Expr::If {
-                cond,
-                then_expr,
-                else_expr,
-            } => {
-                expr_mentions_pointer_view(cond, name)
-                    || expr_mentions_pointer_view(then_expr, name)
-                    || expr_mentions_pointer_view(else_expr, name)
-            }
-            Expr::Block(block) | Expr::Unsafe(block) => {
-                block
-                    .stmts
-                    .iter()
-                    .any(|indent| stmt_mentions_var(&indent.stmt, name))
-                    || block
-                        .tail
-                        .as_deref()
-                        .is_some_and(|tail| expr_mentions_pointer_view(tail, name))
-            }
-            Expr::CopyNonoverlapping { src, dst, .. } => {
-                expr_mentions_pointer_view(src, name) || expr_mentions_pointer_view(dst, name)
-            }
-            Expr::PtrCopy {
-                src, dst, count, ..
-            } => {
-                expr_mentions_pointer_view(src, name)
-                    || expr_mentions_pointer_view(dst, name)
-                    || expr_mentions_pointer_view(count, name)
-            }
-            Expr::WriteBytes { dst, val, count } => {
-                expr_mentions_pointer_view(dst, name)
-                    || expr_mentions_pointer_view(val, name)
-                    || expr_mentions_pointer_view(count, name)
-            }
-            Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-                expr_mentions_pointer_view(ptr, name)
-            }
-            Expr::AtomicStore { ptr, value, .. }
-            | Expr::AtomicFetch { ptr, value, .. }
-            | Expr::AtomicSwap { ptr, value, .. } => {
-                expr_mentions_pointer_view(ptr, name) || expr_mentions_pointer_view(value, name)
-            }
-            Expr::AtomicCompareExchange {
-                ptr,
-                expected,
-                desired,
-                ..
-            } => {
-                expr_mentions_pointer_view(ptr, name)
-                    || expr_mentions_pointer_view(expected, name)
-                    || expr_mentions_pointer_view(desired, name)
-            }
-            Expr::Value(_)
-            | Expr::Str(_)
-            | Expr::HexFloat(_)
-            | Expr::ByteStr(_)
-            | Expr::Var(_)
-            | Expr::Path(_)
-            | Expr::AtomicFence { .. }
-            | Expr::Todo(_) => false,
-        }
+    walk::exprs_any(expr, &mut |expr| {
+        pointer_view_source(expr).is_some_and(|source| source == name)
+    })
 }
 
 fn fixup_nested(body: &mut [IndentStmt]) {
@@ -952,190 +766,19 @@ fn copy_calls(program: &Program) -> Vec<String> {
     let mut calls = Vec::new();
     for item in &program.items {
         if let Item::Fn(f) = item {
-            body_copy_calls(&f.body, &mut calls);
+            walk::body_exprs(&f.body, &mut |expr| {
+                if let Expr::Call { func, .. } = expr
+                    && let Expr::Var(name) = &**func
+                    && is_copy_func(name.as_str())
+                {
+                    calls.push(name.as_str().into());
+                }
+            });
         }
     }
     calls.sort();
     calls.dedup();
     calls
-}
-
-fn body_copy_calls(body: &[IndentStmt], calls: &mut Vec<String>) {
-    for indent in body {
-        stmt_copy_calls(&indent.stmt, calls);
-    }
-}
-
-fn block_copy_calls(block: &Block, calls: &mut Vec<String>) {
-    body_copy_calls(&block.stmts, calls);
-    if let Some(tail) = &block.tail {
-        expr_copy_calls(tail, calls);
-    }
-}
-
-fn stmt_copy_calls(stmt: &Stmt, calls: &mut Vec<String>) {
-    match stmt {
-        Stmt::Let { init, .. } => {
-            if let Some(init) = init {
-                expr_copy_calls(init, calls);
-            }
-        }
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            expr_copy_calls(target, calls);
-            expr_copy_calls(value, calls);
-        }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_copy_calls(expr, calls),
-        Stmt::If {
-            cond,
-            then_body,
-            else_body,
-        } => {
-            expr_copy_calls(cond, calls);
-            body_copy_calls(then_body, calls);
-            body_copy_calls(else_body, calls);
-        }
-        Stmt::LetIf {
-            cond,
-            then_body,
-            then_value,
-            else_body,
-            else_value,
-            ..
-        } => {
-            expr_copy_calls(cond, calls);
-            body_copy_calls(then_body, calls);
-            expr_copy_calls(then_value, calls);
-            body_copy_calls(else_body, calls);
-            expr_copy_calls(else_value, calls);
-        }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            body_copy_calls(body, calls);
-        }
-        Stmt::While { cond, body } => {
-            expr_copy_calls(cond, calls);
-            block_copy_calls(body, calls);
-        }
-        Stmt::Block(body) | Stmt::Unsafe { body } => block_copy_calls(body, calls),
-        Stmt::Match { expr, arms } => {
-            expr_copy_calls(expr, calls);
-            for arm in arms {
-                body_copy_calls(&arm.body, calls);
-            }
-        }
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
-    }
-}
-
-fn expr_copy_calls(expr: &Expr, calls: &mut Vec<String>) {
-    match expr {
-        Expr::Call { func, args } => {
-            if let Expr::Var(name) = &**func
-                && is_copy_func(name.as_str())
-            {
-                calls.push(name.as_str().into());
-            }
-            expr_copy_calls(func, calls);
-            for arg in args {
-                expr_copy_calls(arg, calls);
-            }
-        }
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => expr_copy_calls(expr, calls),
-        Expr::Binary { lhs, rhs, .. } => {
-            expr_copy_calls(lhs, calls);
-            expr_copy_calls(rhs, calls);
-        }
-        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            expr_copy_calls(recv, calls);
-            for arg in args {
-                expr_copy_calls(arg, calls);
-            }
-        }
-        Expr::Field { base, .. }
-        | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => expr_copy_calls(base, calls),
-        Expr::Index { base, index } => {
-            expr_copy_calls(base, calls);
-            expr_copy_calls(index, calls);
-        }
-        Expr::StructLit { fields, .. } => {
-            for (_, value) in fields {
-                expr_copy_calls(value, calls);
-            }
-        }
-        Expr::ArrayLit(elems) => {
-            for elem in elems {
-                expr_copy_calls(elem, calls);
-            }
-        }
-        Expr::ArrayRepeat { elem, .. } => expr_copy_calls(elem, calls),
-        Expr::Macro { args, .. } => {
-            for arg in args {
-                expr_copy_calls(arg, calls);
-            }
-        }
-        Expr::Closure { body, .. } => expr_copy_calls(body, calls),
-        Expr::Match { expr, arms } => {
-            expr_copy_calls(expr, calls);
-            for arm in arms {
-                expr_copy_calls(&arm.value, calls);
-            }
-        }
-        Expr::If {
-            cond,
-            then_expr,
-            else_expr,
-        } => {
-            expr_copy_calls(cond, calls);
-            expr_copy_calls(then_expr, calls);
-            expr_copy_calls(else_expr, calls);
-        }
-        Expr::Block(block) | Expr::Unsafe(block) => block_copy_calls(block, calls),
-        Expr::CopyNonoverlapping { src, dst, .. } => {
-            expr_copy_calls(src, calls);
-            expr_copy_calls(dst, calls);
-        }
-        Expr::PtrCopy {
-            src, dst, count, ..
-        } => {
-            expr_copy_calls(src, calls);
-            expr_copy_calls(dst, calls);
-            expr_copy_calls(count, calls);
-        }
-        Expr::WriteBytes { dst, val, count } => {
-            expr_copy_calls(dst, calls);
-            expr_copy_calls(val, calls);
-            expr_copy_calls(count, calls);
-        }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => expr_copy_calls(ptr, calls),
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            expr_copy_calls(ptr, calls);
-            expr_copy_calls(value, calls);
-        }
-        Expr::AtomicCompareExchange {
-            ptr,
-            expected,
-            desired,
-            ..
-        } => {
-            expr_copy_calls(ptr, calls);
-            expr_copy_calls(expected, calls);
-            expr_copy_calls(desired, calls);
-        }
-        Expr::Value(_)
-        | Expr::Str(_)
-        | Expr::HexFloat(_)
-        | Expr::ByteStr(_)
-        | Expr::Var(_)
-        | Expr::Path(_)
-        | Expr::AtomicFence { .. }
-        | Expr::Todo(_) => {}
-    }
 }
 
 #[cfg(test)]
