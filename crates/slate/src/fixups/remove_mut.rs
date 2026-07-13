@@ -1,176 +1,162 @@
-//! Remove `mut` from bindings whose later use does not require mutation.
+//! Remove `mut` from bindings whose analyzed facts do not require mutation.
 
-use std::collections::BTreeSet;
+use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
+use crate::rust_ast::{Block, FnDef, IndentStmt, Stmt};
 
-use crate::fixups::support::walk;
-use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Stmt};
-
-pub(super) fn fixup(f: &mut FnDef) {
-    let mut required = BTreeSet::new();
-    collect_required_mut(&f.body, &mut required);
-    for param in &mut f.params {
-        if !required.contains(&param.name) {
+pub(super) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
+    for (index, param) in f.params.iter_mut().enumerate() {
+        if facts
+            .binding_by_param_index(function, index)
+            .is_some_and(|binding| !facts.binding_requires_mut(binding))
+        {
             param.mutable = false;
         }
     }
-    remove_unneeded_mut(&mut f.body, &required);
+    remove_unneeded_mut(&mut f.body, function, facts, &mut Vec::new());
 }
 
-fn collect_required_mut(body: &[IndentStmt], required: &mut BTreeSet<String>) {
-    for stmt in body {
-        collect_required_stmt(&stmt.stmt, required);
+fn remove_unneeded_mut(
+    body: &mut [IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    for (index, indent) in body.iter_mut().enumerate() {
+        path.push(PathSegment::Stmt(index));
+        remove_stmt_unneeded_mut(&mut indent.stmt, function, facts, path);
+        path.pop();
     }
 }
 
-fn collect_required_stmt(stmt: &Stmt, required: &mut BTreeSet<String>) {
+fn remove_block_unneeded_mut(
+    block: &mut Block,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    remove_unneeded_mut(&mut block.stmts, function, facts, path);
+}
+
+fn remove_stmt_unneeded_mut(
+    stmt: &mut Stmt,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
     match stmt {
-        Stmt::Let { init, .. } => {
-            if let Some(init) = init {
-                collect_expr_hazards(init, required);
+        Stmt::Let { name, mutable, .. } => {
+            if local_can_drop_mut(function, facts, name, path) {
+                *mutable = false;
             }
         }
         Stmt::LetIf {
-            cond,
+            name,
+            mutable,
             then_body,
-            then_value,
             else_body,
-            else_value,
             ..
         } => {
-            collect_expr_hazards(cond, required);
-            collect_required_mut(then_body, required);
-            collect_expr_hazards(then_value, required);
-            collect_required_mut(else_body, required);
-            collect_expr_hazards(else_value, required);
+            if local_can_drop_mut(function, facts, name, path) {
+                *mutable = false;
+            }
+            path.push(PathSegment::Then);
+            remove_unneeded_mut(then_body, function, facts, path);
+            path.pop();
+            path.push(PathSegment::Else);
+            remove_unneeded_mut(else_body, function, facts, path);
+            path.pop();
         }
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            collect_vars(target, required);
-            collect_expr_hazards(value, required);
-        }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => collect_expr_hazards(expr, required),
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
         Stmt::If {
-            cond,
             then_body,
             else_body,
+            ..
         } => {
-            collect_expr_hazards(cond, required);
-            collect_required_mut(then_body, required);
-            collect_required_mut(else_body, required);
+            path.push(PathSegment::Then);
+            remove_unneeded_mut(then_body, function, facts, path);
+            path.pop();
+            path.push(PathSegment::Else);
+            remove_unneeded_mut(else_body, function, facts, path);
+            path.pop();
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            collect_required_mut(body, required);
+        Stmt::Loop { body, .. } => {
+            path.push(PathSegment::LoopBody);
+            remove_unneeded_mut(body, function, facts, path);
+            path.pop();
         }
-        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-            collect_block_required_mut(body, required);
+        Stmt::Scope { body } => {
+            path.push(PathSegment::ScopeBody);
+            remove_unneeded_mut(body, function, facts, path);
+            path.pop();
         }
-        Stmt::Match { expr, arms } => {
-            collect_expr_hazards(expr, required);
-            for arm in arms {
-                collect_required_mut(&arm.body, required);
+        Stmt::LabeledBlock { body, .. } => {
+            path.push(PathSegment::LabeledBody);
+            remove_unneeded_mut(body, function, facts, path);
+            path.pop();
+        }
+        Stmt::Unsafe { body } => {
+            path.push(PathSegment::UnsafeBody);
+            remove_block_unneeded_mut(body, function, facts, path);
+            path.pop();
+        }
+        Stmt::While { body, .. } => {
+            path.push(PathSegment::WhileBody);
+            remove_block_unneeded_mut(body, function, facts, path);
+            path.pop();
+        }
+        Stmt::Block(body) => {
+            path.push(PathSegment::BlockBody);
+            remove_block_unneeded_mut(body, function, facts, path);
+            path.pop();
+        }
+        Stmt::Match { arms, .. } => {
+            for (index, arm) in arms.iter_mut().enumerate() {
+                path.push(PathSegment::MatchArm(index));
+                remove_unneeded_mut(&mut arm.body, function, facts, path);
+                path.pop();
             }
         }
+        Stmt::Assign { .. }
+        | Stmt::CompoundAssign { .. }
+        | Stmt::Expr(_)
+        | Stmt::Return(_)
+        | Stmt::Break(_)
+        | Stmt::Continue(_) => {}
     }
 }
 
-fn collect_block_required_mut(block: &Block, required: &mut BTreeSet<String>) {
-    collect_required_mut(&block.stmts, required);
-    if let Some(tail) = &block.tail {
-        collect_expr_hazards(tail, required);
-    }
-}
-
-fn collect_expr_hazards(expr: &Expr, required: &mut BTreeSet<String>) {
-    walk::exprs(expr, &mut |expr| match expr {
-        Expr::AddrOf { expr, .. } => collect_vars(expr, required),
-        Expr::Ref {
-            mutable: true,
-            expr,
-        } => collect_vars(expr, required),
-        Expr::ArrayPtr {
-            mutable: true,
-            array,
-        } => collect_vars(array, required),
-        Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => {
-            collect_vars(recv, required)
-        }
-        Expr::AtomicRef { ptr, .. }
-        | Expr::AtomicLoad { ptr, .. }
-        | Expr::AtomicStore { ptr, .. }
-        | Expr::AtomicFetch { ptr, .. }
-        | Expr::AtomicSwap { ptr, .. }
-        | Expr::AtomicCompareExchange { ptr, .. } => collect_vars(ptr, required),
-        _ => {}
-    });
-}
-
-fn collect_vars(expr: &Expr, vars: &mut BTreeSet<String>) {
-    walk::exprs(expr, &mut |expr| {
-        if let Expr::Var(name) = expr {
-            vars.insert(name.as_str().to_string());
-        }
-    });
-}
-
-fn remove_unneeded_mut(body: &mut [IndentStmt], required: &BTreeSet<String>) {
-    for indent in body {
-        match &mut indent.stmt {
-            Stmt::Let { name, mutable, .. } => {
-                if !required.contains(name) {
-                    *mutable = false;
-                }
-            }
-            Stmt::LetIf {
-                name,
-                mutable,
-                then_body,
-                else_body,
-                ..
-            } => {
-                if !required.contains(name) {
-                    *mutable = false;
-                }
-                remove_unneeded_mut(then_body, required);
-                remove_unneeded_mut(else_body, required);
-            }
-            Stmt::If {
-                then_body,
-                else_body,
-                ..
-            } => {
-                remove_unneeded_mut(then_body, required);
-                remove_unneeded_mut(else_body, required);
-            }
-            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-                remove_unneeded_mut(body, required);
-            }
-            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-                remove_block_unneeded_mut(body, required);
-            }
-            Stmt::Match { arms, .. } => {
-                for arm in arms {
-                    remove_unneeded_mut(&mut arm.body, required);
-                }
-            }
-            _ => {}
-        }
-    }
-}
-
-fn remove_block_unneeded_mut(block: &mut Block, required: &BTreeSet<String>) {
-    remove_unneeded_mut(&mut block.stmts, required);
+fn local_can_drop_mut(
+    function: FunctionId,
+    facts: &FixupFacts,
+    name: &str,
+    path: &[PathSegment],
+) -> bool {
+    facts
+        .binding_by_local_path(function, name, &AstPath(path.to_vec()))
+        .is_some_and(|binding| !facts.binding_requires_mut(binding))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::fixups::facts;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{Expr, FnDef, IndentStmt, Stmt, Visibility};
+    use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, Stmt, Visibility};
 
     fn run(stmts: Vec<Stmt>) -> String {
         let mut f = func(vec![param("a", "i32")], Some("i32"), stmts);
         f.params[0].mutable = true;
-        fixup(&mut f);
+        run_fn(f)
+    }
+
+    fn run_fn(f: FnDef) -> String {
+        let analyzed = facts::analyze(Program {
+            items: vec![Item::Fn(f)],
+        });
+        let mut f = match analyzed.program.items.into_iter().next().unwrap() {
+            Item::Fn(f) => f,
+            _ => unreachable!(),
+        };
+        fixup(&mut f, facts::FunctionId(0), &analyzed.facts);
         emit(f)
     }
 
@@ -317,8 +303,35 @@ fn f(a: i32) -> i32 {
     }
 
     #[test]
+    fn keeps_mut_when_raw_pointer_is_derived() {
+        let out = run(vec![
+            let_mut("items", "[i32; 1]", Expr::ArrayLit(vec![int(0)])),
+            temp(
+                "p",
+                "*mut i32",
+                Expr::ArrayPtr {
+                    array: Box::new(var("items")),
+                    mutable: true,
+                },
+            ),
+            Stmt::Return(Some(var("a"))),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f(a: i32) -> i32 {
+    let mut items: [i32; 1] = [0];
+    let p: *mut i32 = items.as_mut_ptr();
+    return a;
+}
+"
+        );
+    }
+
+    #[test]
     fn removes_mut_in_nested_bodies() {
-        let mut f = FnDef {
+        let f = FnDef {
             vis: Visibility::Private,
             unsafe_extern_c: false,
             name: "f".into(),
@@ -336,10 +349,9 @@ fn f(a: i32) -> i32 {
                 },
             }],
         };
-        fixup(&mut f);
 
         assert_eq!(
-            emit(f),
+            run_fn(f),
             "\
 fn f() {
     if cond {
