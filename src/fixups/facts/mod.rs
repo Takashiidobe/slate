@@ -1,6 +1,5 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
 
 pub(super) mod borrow_alias;
@@ -17,6 +16,7 @@ pub(super) mod ptr_len;
 pub(super) mod slice_index;
 pub(super) mod strings;
 pub(super) mod values;
+pub(super) mod walk;
 
 #[derive(Debug, Clone)]
 pub(super) struct AnalyzedProgram {
