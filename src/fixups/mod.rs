@@ -4,6 +4,7 @@ mod borrow_alias;
 mod call_args;
 mod calls;
 mod compound_assign;
+mod control_flow;
 mod counted_loop;
 mod def_use;
 mod drop_call_results;
