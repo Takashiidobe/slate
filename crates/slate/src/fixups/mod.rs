@@ -9,6 +9,7 @@ mod param_spills;
 mod printf_format;
 mod remove_mut;
 mod retval;
+mod string_lift;
 mod zero_init;
 
 #[cfg(test)]
@@ -31,6 +32,7 @@ pub fn apply(program: Program) -> Program {
                     call_args::fixup(&mut f.body, &sigs);
                     retval::fixup(&mut f);
                     drop_call_results::fixup(&mut f.body);
+                    string_lift::fixup(&mut f.body);
                     remove_mut::fixup(&mut f);
                     Item::Fn(f)
                 }
