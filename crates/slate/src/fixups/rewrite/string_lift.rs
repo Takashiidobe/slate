@@ -2,7 +2,7 @@ use crate::fixups::facts::{
     AstPath, FixupFacts, FunctionId, PathSegment, StringBufferProvenance, StringRecoveryCandidate,
 };
 use crate::fixups::support::walk;
-use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Stmt, Type};
+use crate::rust_ast::{Expr, IndentStmt, Prim, Stmt, Type};
 use std::collections::BTreeSet;
 
 pub(in crate::fixups) fn fixup(
@@ -20,7 +20,6 @@ fn fixup_body(
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
 ) {
-    let liftable = liftable_names(body, function, facts, path);
     let mut removals = BTreeSet::new();
     let mut i = 0;
     while i < body.len() {
@@ -30,18 +29,6 @@ fn fixup_body(
             i += 1;
             continue;
         };
-        if !liftable.contains(&name) {
-            i += 1;
-            continue;
-        }
-        let scan_start = remove_index.map_or(i + 1, |index| index + 1);
-        if body[scan_start..]
-            .iter()
-            .any(|indent| !stmt_allows_lift(&indent.stmt, &name, &liftable))
-        {
-            i += 1;
-            continue;
-        }
         let Stmt::Let {
             mutable, ty, init, ..
         } = &mut body[i].stmt
@@ -61,43 +48,6 @@ fn fixup_body(
     }
     for index in removals.into_iter().rev() {
         body.remove(index);
-    }
-}
-
-fn liftable_names(
-    body: &[IndentStmt],
-    function: FunctionId,
-    facts: &FixupFacts,
-    path: &[PathSegment],
-) -> BTreeSet<String> {
-    let candidates = (0..body.len())
-        .filter_map(|i| {
-            lift_candidate(body, function, facts, &stmt_path(path, i))
-                .map(|(name, _, remove_index)| (name, i, remove_index))
-        })
-        .collect::<Vec<_>>();
-    let mut liftable = candidates
-        .iter()
-        .map(|(name, _, _)| name.clone())
-        .collect::<BTreeSet<_>>();
-    loop {
-        let before = liftable.clone();
-        liftable.retain(|name| {
-            let Some((_, i, remove_index)) = candidates
-                .iter()
-                .find(|(candidate, _, _)| candidate == name)
-                .cloned()
-            else {
-                return false;
-            };
-            let scan_start = remove_index.map_or(i + 1, |index| index + 1);
-            body[scan_start..]
-                .iter()
-                .all(|indent| stmt_allows_lift(&indent.stmt, name, &before))
-        });
-        if liftable == before {
-            return liftable;
-        }
     }
 }
 
@@ -166,20 +116,22 @@ fn lift_candidate(
 ) -> Option<(String, Lifted, Option<usize>)> {
     let buffer = facts.string_buffer_at(function, &AstPath(path.to_vec()))?;
     let name = facts.binding_name(buffer.binding)?.to_owned();
-    let lifted = lifted_buffer(buffer)?;
+    let plan = facts.string_lift_plans.iter().find(|plan| {
+        plan.function == function
+            && plan.binding == buffer.binding
+            && plan.path.0 == path
+            && matches!(
+                plan.recovery,
+                StringRecoveryCandidate::BorrowedStr | StringRecoveryCandidate::BorrowedBytes
+            )
+    })?;
+    let lifted = lifted_buffer(buffer, plan.recovery)?;
     let remove_index = match &buffer.provenance {
-        StringBufferProvenance::Literal => {
-            if facts
-                .def_use(buffer.binding)
-                .is_some_and(|def_use| !def_use.writes.is_empty())
-            {
-                return None;
-            }
-            None
-        }
-        StringBufferProvenance::AssignedLiteral { assignment } => {
-            Some(assignment_index(path, &assignment.0)?)
-        }
+        StringBufferProvenance::Literal => None,
+        StringBufferProvenance::AssignedLiteral { .. } => plan
+            .remove_assignment
+            .as_ref()
+            .and_then(|assignment| assignment_index(path, &assignment.0)),
         _ => return None,
     };
     if remove_index.is_some_and(|index| index >= body.len()) {
@@ -188,22 +140,19 @@ fn lift_candidate(
     Some((name, lifted, remove_index))
 }
 
-fn lifted_buffer(buffer: &crate::fixups::facts::StringBufferFact) -> Option<Lifted> {
+fn lifted_buffer(
+    buffer: &crate::fixups::facts::StringBufferFact,
+    recovery: StringRecoveryCandidate,
+) -> Option<Lifted> {
     let bytes = buffer.bytes.clone()?;
-    if buffer
-        .candidates
-        .contains(&StringRecoveryCandidate::BorrowedStr)
-    {
+    if recovery == StringRecoveryCandidate::BorrowedStr {
         let text = String::from_utf8(bytes).ok()?;
         return Some(Lifted {
             ty: str_ref_type(),
             expr: Expr::Str(text),
         });
     }
-    if buffer
-        .candidates
-        .contains(&StringRecoveryCandidate::BorrowedBytes)
-    {
+    if recovery == StringRecoveryCandidate::BorrowedBytes {
         return Some(Lifted {
             ty: byte_slice_ref_type(),
             expr: Expr::ByteStr(bytes),
@@ -226,16 +175,6 @@ fn byte_slice_ref_type() -> Type {
     }
 }
 
-fn byte_literal(expr: &Expr) -> Option<u8> {
-    let n = match expr {
-        Expr::Value(RustValue::I64(n)) => *n,
-        Expr::Value(RustValue::I128(n)) => i64::try_from(*n).ok()?,
-        Expr::Cast { expr, .. } => return byte_literal(expr),
-        _ => return None,
-    };
-    u8::try_from(n).ok()
-}
-
 fn stmt_path(path: &[PathSegment], index: usize) -> Vec<PathSegment> {
     let mut path = path.to_vec();
     path.push(PathSegment::Stmt(index));
@@ -250,314 +189,6 @@ fn assignment_index(def_path: &[PathSegment], assignment_path: &[PathSegment]) -
     }
     match assignment_path.last()? {
         PathSegment::Stmt(index) => Some(*index),
-        _ => None,
-    }
-}
-
-fn stmt_allows_lift(stmt: &Stmt, name: &str, liftable: &BTreeSet<String>) -> bool {
-    match stmt {
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_allows_lift(expr, name, liftable),
-        Stmt::Let { init, .. } => init
-            .as_ref()
-            .is_none_or(|expr| expr_allows_lift(expr, name, liftable)),
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            !expr_mentions_var(target, name) && expr_allows_lift(value, name, liftable)
-        }
-        Stmt::If {
-            cond,
-            then_body,
-            else_body,
-        } => {
-            expr_allows_lift(cond, name, liftable)
-                && body_allows_lift(then_body, name, liftable)
-                && body_allows_lift(else_body, name, liftable)
-        }
-        Stmt::LetIf {
-            cond,
-            then_body,
-            then_value,
-            else_body,
-            else_value,
-            ..
-        } => {
-            expr_allows_lift(cond, name, liftable)
-                && body_allows_lift(then_body, name, liftable)
-                && expr_allows_lift(then_value, name, liftable)
-                && body_allows_lift(else_body, name, liftable)
-                && expr_allows_lift(else_value, name, liftable)
-        }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            body_allows_lift(body, name, liftable)
-        }
-        Stmt::While { cond, body } => {
-            expr_allows_lift(cond, name, liftable) && block_allows_lift(body, name, liftable)
-        }
-        Stmt::Block(body) | Stmt::Unsafe { body } => block_allows_lift(body, name, liftable),
-        Stmt::Match { expr, arms } => {
-            expr_allows_lift(expr, name, liftable)
-                && arms
-                    .iter()
-                    .all(|arm| body_allows_lift(&arm.body, name, liftable))
-        }
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => true,
-    }
-}
-
-fn body_allows_lift(body: &[IndentStmt], name: &str, liftable: &BTreeSet<String>) -> bool {
-    body.iter()
-        .all(|indent| stmt_allows_lift(&indent.stmt, name, liftable))
-}
-
-fn block_allows_lift(
-    block: &crate::rust_ast::Block,
-    name: &str,
-    liftable: &BTreeSet<String>,
-) -> bool {
-    body_allows_lift(&block.stmts, name, liftable)
-        && block
-            .tail
-            .as_deref()
-            .is_none_or(|tail| expr_allows_lift(tail, name, liftable))
-}
-
-fn expr_allows_lift(expr: &Expr, name: &str, liftable: &BTreeSet<String>) -> bool {
-    if let Some(result) = expr_allows_lift_override(expr, name, liftable) {
-        return result;
-    }
-    match expr {
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. }
-        | Expr::Closure { body: expr, .. }
-        | Expr::AtomicRef { ptr: expr, .. }
-        | Expr::AtomicLoad { ptr: expr, .. } => expr_allows_lift(expr, name, liftable),
-        Expr::Binary { lhs, rhs, .. }
-        | Expr::Index {
-            base: lhs,
-            index: rhs,
-        } => expr_allows_lift(lhs, name, liftable) && expr_allows_lift(rhs, name, liftable),
-        Expr::Call { func, args } => {
-            expr_allows_lift(func, name, liftable)
-                && args.iter().all(|arg| expr_allows_lift(arg, name, liftable))
-        }
-        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            expr_allows_lift(recv, name, liftable)
-                && args.iter().all(|arg| expr_allows_lift(arg, name, liftable))
-        }
-        Expr::Field { base, .. }
-        | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => expr_allows_lift(base, name, liftable),
-        Expr::StructLit { fields, .. } => fields
-            .iter()
-            .all(|(_, value)| expr_allows_lift(value, name, liftable)),
-        Expr::ArrayLit(elems) => elems
-            .iter()
-            .all(|elem| expr_allows_lift(elem, name, liftable)),
-        Expr::ArrayRepeat { elem, .. } => expr_allows_lift(elem, name, liftable),
-        Expr::Macro { args, .. } => args.iter().all(|arg| expr_allows_lift(arg, name, liftable)),
-        Expr::Match { expr, arms } => {
-            expr_allows_lift(expr, name, liftable)
-                && arms
-                    .iter()
-                    .all(|arm| expr_allows_lift(&arm.value, name, liftable))
-        }
-        Expr::If {
-            cond,
-            then_expr,
-            else_expr,
-        } => {
-            expr_allows_lift(cond, name, liftable)
-                && expr_allows_lift(then_expr, name, liftable)
-                && expr_allows_lift(else_expr, name, liftable)
-        }
-        Expr::Block(block) | Expr::Unsafe(block) => block_allows_lift(block, name, liftable),
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            expr_allows_lift(ptr, name, liftable) && expr_allows_lift(value, name, liftable)
-        }
-        Expr::AtomicCompareExchange {
-            ptr,
-            expected,
-            desired,
-            ..
-        } => {
-            expr_allows_lift(ptr, name, liftable)
-                && expr_allows_lift(expected, name, liftable)
-                && expr_allows_lift(desired, name, liftable)
-        }
-        Expr::CopyNonoverlapping { src, dst, .. } => {
-            expr_allows_lift(src, name, liftable) && expr_allows_lift(dst, name, liftable)
-        }
-        Expr::PtrCopy {
-            src, dst, count, ..
-        } => {
-            expr_allows_lift(src, name, liftable)
-                && expr_allows_lift(dst, name, liftable)
-                && expr_allows_lift(count, name, liftable)
-        }
-        Expr::WriteBytes { dst, val, count } => {
-            expr_allows_lift(dst, name, liftable)
-                && expr_allows_lift(val, name, liftable)
-                && expr_allows_lift(count, name, liftable)
-        }
-        Expr::Value(_)
-        | Expr::Str(_)
-        | Expr::HexFloat(_)
-        | Expr::ByteStr(_)
-        | Expr::Var(_)
-        | Expr::Path(_)
-        | Expr::Todo(_)
-        | Expr::AtomicFence { .. } => true,
-    }
-}
-
-fn expr_allows_lift_override(expr: &Expr, name: &str, liftable: &BTreeSet<String>) -> Option<bool> {
-    match expr {
-        Expr::Var(v) if v.as_str() == name => false,
-        Expr::MethodCall { recv, method, args }
-            if args.is_empty()
-                && matches!(&**recv, Expr::Var(v) if v.as_str() == name)
-                && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
-        {
-            false
-        }
-        Expr::ArrayPtr { array, .. } if matches!(&**array, Expr::Var(v) if v.as_str() == name) => {
-            false
-        }
-        Expr::Call { func, args } if matches!(&**func, Expr::Var(callee) if callee.as_str() == "printf") => {
-            if args.iter().any(|arg| expr_has_pointer_view(arg, name)) {
-                printf_call_allows_lift(args, name)
-            } else {
-                args.iter().all(|arg| expr_allows_lift(arg, name, liftable))
-            }
-        }
-        Expr::Call { func, args } if matches!(&**func, Expr::Var(callee) if matches!(callee.as_str(), "strlen" | "strcmp" | "strncmp" | "memcmp")) => {
-            libc_string_call_allows_lift(args, name, liftable)
-        }
-        _ => return None,
-    }
-    .into()
-}
-
-fn expr_mentions_var(expr: &Expr, name: &str) -> bool {
-    !expr_allows_lift(expr, name, &BTreeSet::new())
-}
-
-fn stmt_mentions_var(stmt: &Stmt, name: &str) -> bool {
-    !stmt_allows_lift(stmt, name, &BTreeSet::new())
-}
-
-fn expr_has_pointer_view(expr: &Expr, name: &str) -> bool {
-    match expr {
-        Expr::MethodCall { recv, method, args }
-            if args.is_empty()
-                && matches!(&**recv, Expr::Var(v) if v.as_str() == name)
-                && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
-        {
-            true
-        }
-        Expr::ArrayPtr { array, .. } if matches!(&**array, Expr::Var(v) if v.as_str() == name) => {
-            true
-        }
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => expr_has_pointer_view(expr, name),
-        _ => false,
-    }
-}
-
-fn pointer_view_source(expr: &Expr) -> Option<&str> {
-    match expr {
-        Expr::MethodCall { recv, method, args }
-            if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
-        {
-            match &**recv {
-                Expr::Var(v) => Some(v.as_str()),
-                _ => None,
-            }
-        }
-        Expr::ArrayPtr { array, .. } => match &**array {
-            Expr::Var(v) => Some(v.as_str()),
-            _ => None,
-        },
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => pointer_view_source(expr),
-        _ => None,
-    }
-}
-
-fn libc_string_call_allows_lift(args: &[Expr], name: &str, liftable: &BTreeSet<String>) -> bool {
-    let (pointer_args, other_args): (&[Expr], &[Expr]) = match args.len() {
-        1 => (&args[..1], &[]),
-        2 => (&args[..2], &[]),
-        3 => (&args[..2], &args[2..]),
-        _ => return false,
-    };
-    pointer_args.iter().all(|arg| {
-        pointer_view_source(arg).is_some_and(|source| source == name || liftable.contains(source))
-    }) && other_args
-        .iter()
-        .all(|arg| expr_allows_lift(arg, name, liftable))
-}
-
-fn printf_call_allows_lift(args: &[Expr], name: &str) -> bool {
-    let Some((fmt, rest)) = args.split_first() else {
-        return false;
-    };
-    let Some(conversions) = simple_printf_conversions(fmt) else {
-        return false;
-    };
-    conversions.len() == rest.len()
-        && conversions
-            .iter()
-            .zip(rest)
-            .all(|(conversion, arg)| match conversion {
-                b's' => expr_has_pointer_view(arg, name) || const_c_string(arg).is_some(),
-                _ => expr_allows_lift(arg, name, &BTreeSet::new()),
-            })
-}
-
-fn simple_printf_conversions(expr: &Expr) -> Option<Vec<u8>> {
-    let bytes = const_c_string(expr)?;
-    let mut conversions = Vec::new();
-    let mut i = 0;
-    while i < bytes.len() {
-        match bytes[i] {
-            b'%' => {
-                let conv = *bytes.get(i + 1)?;
-                if conv == b'%' {
-                    i += 2;
-                    continue;
-                }
-                if !matches!(conv, b's' | b'c' | b'd' | b'i' | b'u' | b'x' | b'X' | b'o') {
-                    return None;
-                }
-                conversions.push(conv);
-                i += 2;
-            }
-            0x20..=0x7e | b'\n' | b'\t' => i += 1,
-            _ => return None,
-        }
-    }
-    Some(conversions)
-}
-
-fn const_c_string(expr: &Expr) -> Option<Vec<u8>> {
-    match expr {
-        Expr::Str(s) => Some(s.as_bytes().to_vec()),
-        Expr::ByteStr(bytes) => Some(bytes.strip_suffix(&[0]).unwrap_or(bytes).to_vec()),
-        Expr::Cast { expr, .. } => const_c_string(expr),
-        Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
-            const_c_string(recv)
-        }
         _ => None,
     }
 }
