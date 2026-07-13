@@ -91,7 +91,7 @@ pub fn apply(program: Program) -> Program {
             && let Some(function) = facts.function_by_item_index(item_index)
         {
             rewrite::drop_call_results::fixup(&mut f.body, function, &facts);
-            rewrite::string_lift::fixup(&mut f.body);
+            rewrite::string_lift::fixup(&mut f.body, function, &facts);
         }
     }
     let facts::AnalyzedProgram {
@@ -104,8 +104,13 @@ pub fn apply(program: Program) -> Program {
     facts::slice_index::collect_facts(&program, &mut facts);
     facts::counted_loop::collect_facts(&program, &mut facts);
     facts::loop_shapes::collect_facts(&program, &mut facts);
-    rewrite::string_copy::fixup(&mut program);
-    rewrite::string_libc::fixup(&mut program);
+    rewrite::string_copy::fixup(&mut program, &facts);
+    let facts::AnalyzedProgram {
+        program: analyzed_program,
+        facts,
+    } = facts::analyze(program);
+    program = analyzed_program;
+    rewrite::string_libc::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
