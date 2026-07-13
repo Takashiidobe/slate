@@ -413,7 +413,9 @@ fn merge_variants(baseline: &Translation, variants: &[Variant], pp: &Preprocessi
 
     let mut items = Vec::new();
     for item in &baseline.program.items {
-        if let Item::CrateAttrs(_) = item { items.push(item.clone()) }
+        if let Item::CrateAttrs(_) = item {
+            items.push(item.clone())
+        }
     }
     items.extend(gated);
     for item in &baseline.program.items {

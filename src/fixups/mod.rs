@@ -45,15 +45,22 @@ pub fn apply(program: Program) -> Program {
             })
             .collect(),
     };
-    ptr_len::fixup(&mut program);
+    let facts::AnalyzedProgram {
+        program: analyzed_program,
+        mut facts,
+    } = facts::analyze(program);
+    program = analyzed_program;
+    ptr_len::collect_facts(&program, &mut facts);
+    ptr_len::fixup(&mut program, &facts);
     string_copy::fixup(&mut program);
     string_libc::fixup(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
-            && let Some(function) = facts.function_by_item_index(item_index) {
-                remove_mut::fixup(f, function, &facts);
-            }
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            remove_mut::fixup(f, function, &facts);
+        }
     }
     printf_format::fixup(&mut program);
     program
