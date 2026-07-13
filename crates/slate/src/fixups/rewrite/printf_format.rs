@@ -1,14 +1,19 @@
+use crate::fixups::facts::{
+    AstPath, FixupFacts, FunctionId, PathSegment, PrintfArgFact, PrintfCallFact,
+};
+use crate::fixups::support::walk;
 use crate::rust_ast::{BinOp, RustValue};
-use crate::rust_ast::{Block, Expr, ExternDecl, FnParam, IndentStmt, Item, Program, Stmt, Type};
-use std::collections::BTreeMap;
+use crate::rust_ast::{Block, Expr, ExternDecl, IndentStmt, Item, Program, Stmt};
 
-pub(in crate::fixups) fn fixup(program: &mut Program) {
-    if has_unsupported_printf(program) {
+pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
+    if has_unsupported_printf(facts) {
         return;
     }
-    for item in &mut program.items {
-        if let Item::Fn(f) = item {
-            fixup_body(&mut f.body, &f.params);
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            fixup_body(&mut f.body, function, facts);
         }
     }
     if !program_has_printf_call(program) {
@@ -16,114 +21,68 @@ pub(in crate::fixups) fn fixup(program: &mut Program) {
     }
 }
 
-fn has_unsupported_printf(program: &Program) -> bool {
-    program.items.iter().any(|item| match item {
-        Item::Fn(f) => {
-            let mut env = PrintfEnv::from_params(&f.params);
-            body_has_unsupported_printf(&f.body, &mut env)
-        }
-        _ => false,
+fn has_unsupported_printf(facts: &FixupFacts) -> bool {
+    facts.printf_calls.iter().any(|fact| {
+        fact.format
+            .as_deref()
+            .and_then(parse_printf_format)
+            .is_none_or(|format| {
+                format.conversions.len() != fact.arg_facts.len()
+                    || format
+                        .conversions
+                        .iter()
+                        .zip(fact.arg_facts.iter())
+                        .any(|(conversion, arg)| !arg_supports_conversion(arg, conversion.kind))
+            })
     })
 }
 
-fn body_has_unsupported_printf(body: &[IndentStmt], env: &mut PrintfEnv) -> bool {
-    for indent in body {
-        if stmt_has_unsupported_printf(&indent.stmt, env) {
-            return true;
-        }
-        env.update_after_stmt(&indent.stmt);
-    }
-    false
-}
-
-fn block_has_unsupported_printf(block: &Block, env: &PrintfEnv) -> bool {
-    let mut block_env = env.clone();
-    body_has_unsupported_printf(&block.stmts, &mut block_env)
-        || block
-            .tail
-            .as_deref()
-            .is_some_and(|expr| expr_has_unsupported_printf(expr, &block_env))
-}
-
-fn stmt_has_unsupported_printf(stmt: &Stmt, env: &PrintfEnv) -> bool {
-    match stmt {
-        Stmt::Expr(expr) if rewrite_printf_expr(expr, env).is_some() => false,
-        Stmt::Let { init, .. } => init
-            .as_ref()
-            .is_some_and(|expr| expr_has_unsupported_printf(expr, env)),
-        Stmt::LetIf {
-            cond,
-            then_body,
-            then_value,
-            else_body,
-            else_value,
-            ..
-        } => {
-            let mut then_env = env.clone();
-            let mut else_env = env.clone();
-            expr_has_unsupported_printf(cond, env)
-                || body_has_unsupported_printf(then_body, &mut then_env)
-                || expr_has_unsupported_printf(then_value, &then_env)
-                || body_has_unsupported_printf(else_body, &mut else_env)
-                || expr_has_unsupported_printf(else_value, &else_env)
-        }
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            expr_has_unsupported_printf(target, env) || expr_has_unsupported_printf(value, env)
-        }
-        Stmt::Expr(expr) => expr_has_unsupported_printf(expr, env),
-        Stmt::Return(expr) => expr
-            .as_ref()
-            .is_some_and(|expr| expr_has_unsupported_printf(expr, env)),
-        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-            block_has_unsupported_printf(body, env)
-        }
-        Stmt::If {
-            cond,
-            then_body,
-            else_body,
-        } => {
-            let mut then_env = env.clone();
-            let mut else_env = env.clone();
-            expr_has_unsupported_printf(cond, env)
-                || body_has_unsupported_printf(then_body, &mut then_env)
-                || body_has_unsupported_printf(else_body, &mut else_env)
-        }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            let mut nested_env = env.clone();
-            body_has_unsupported_printf(body, &mut nested_env)
-        }
-        Stmt::Match { expr, arms } => {
-            expr_has_unsupported_printf(expr, env)
-                || arms.iter().any(|arm| {
-                    let mut arm_env = env.clone();
-                    body_has_unsupported_printf(&arm.body, &mut arm_env)
-                })
-        }
-        Stmt::Break(_) | Stmt::Continue(_) => false,
+fn arg_supports_conversion(arg: &PrintfArgFact, kind: ConversionKind) -> bool {
+    match kind {
+        ConversionKind::Integer(_) | ConversionKind::Float => true,
+        ConversionKind::String => arg.const_string.is_some() || arg.rust_string,
+        ConversionKind::Char => arg.const_char.is_some(),
+        ConversionKind::Pointer => arg.pointer,
     }
 }
 
-fn expr_has_unsupported_printf(expr: &Expr, env: &PrintfEnv) -> bool {
-    expr_has_printf_call(expr) && rewrite_printf_expr(expr, env).is_none()
+fn fixup_body(body: &mut [IndentStmt], function: FunctionId, facts: &FixupFacts) {
+    fixup_body_with_env(body, function, facts, &mut Vec::new());
 }
 
-fn fixup_body(body: &mut [IndentStmt], params: &[FnParam]) {
-    let mut env = PrintfEnv::from_params(params);
-    fixup_body_with_env(body, &mut env);
-}
-
-fn fixup_body_with_env(body: &mut [IndentStmt], env: &mut PrintfEnv) {
-    for indent in body {
-        fixup_stmt(&mut indent.stmt, env);
-        env.update_after_stmt(&indent.stmt);
+fn fixup_body_with_env(
+    body: &mut [IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    for (index, indent) in body.iter_mut().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            fixup_stmt(&mut indent.stmt, function, facts, path);
+        });
     }
 }
 
-fn fixup_stmt(stmt: &mut Stmt, env: &PrintfEnv) {
+fn fixup_stmt(
+    stmt: &mut Stmt,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
     match stmt {
         Stmt::Expr(expr) => {
-            if let Some(replacement) = rewrite_printf_expr(expr, env) {
+            if let Some(replacement) = rewrite_printf_expr(expr, function, facts, path) {
                 *expr = replacement;
+            }
+        }
+        Stmt::Let {
+            name,
+            mutable: false,
+            init: Some(init),
+            ..
+        } if unused_local(function, facts, name, path) => {
+            if let Some(replacement) = rewrite_printf_expr(init, function, facts, path) {
+                *stmt = Stmt::Expr(replacement);
             }
         }
         Stmt::If {
@@ -136,39 +95,77 @@ fn fixup_stmt(stmt: &mut Stmt, env: &PrintfEnv) {
             else_body,
             ..
         } => {
-            let mut then_env = env.clone();
-            let mut else_env = env.clone();
-            fixup_body_with_env(then_body, &mut then_env);
-            fixup_body_with_env(else_body, &mut else_env);
+            walk::with_path_segment(path, PathSegment::Then, |path| {
+                fixup_body_with_env(then_body, function, facts, path);
+            });
+            walk::with_path_segment(path, PathSegment::Else, |path| {
+                fixup_body_with_env(else_body, function, facts, path);
+            });
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            let mut nested_env = env.clone();
-            fixup_body_with_env(body, &mut nested_env);
+        Stmt::Loop { body, .. } => {
+            walk::with_path_segment(path, PathSegment::LoopBody, |path| {
+                fixup_body_with_env(body, function, facts, path);
+            });
         }
-        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-            fixup_block(body, env);
+        Stmt::Scope { body } => {
+            walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
+                fixup_body_with_env(body, function, facts, path);
+            });
+        }
+        Stmt::LabeledBlock { body, .. } => {
+            walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
+                fixup_body_with_env(body, function, facts, path);
+            });
+        }
+        Stmt::Unsafe { body } => {
+            walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
+                fixup_block(body, function, facts, path);
+            });
+        }
+        Stmt::While { body, .. } => {
+            walk::with_path_segment(path, PathSegment::WhileBody, |path| {
+                fixup_block(body, function, facts, path);
+            });
+        }
+        Stmt::Block(body) => {
+            walk::with_path_segment(path, PathSegment::BlockBody, |path| {
+                fixup_block(body, function, facts, path);
+            });
         }
         Stmt::Match { arms, .. } => {
-            for arm in arms {
-                let mut arm_env = env.clone();
-                fixup_body_with_env(&mut arm.body, &mut arm_env);
+            for (index, arm) in arms.iter_mut().enumerate() {
+                walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
+                    fixup_body_with_env(&mut arm.body, function, facts, path);
+                });
             }
         }
         _ => {}
     }
 }
 
-fn fixup_block(block: &mut Block, env: &PrintfEnv) {
-    let mut block_env = env.clone();
-    fixup_body_with_env(&mut block.stmts, &mut block_env);
+fn fixup_block(
+    block: &mut Block,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    fixup_body_with_env(&mut block.stmts, function, facts, path);
     if let Some(tail) = &mut block.tail
-        && let Some(replacement) = rewrite_printf_expr(tail, &block_env)
+        && let Some(replacement) = walk::with_path_segment(path, PathSegment::BlockTail, |path| {
+            rewrite_printf_expr(tail, function, facts, path)
+        })
     {
         **tail = replacement;
     }
 }
 
-fn rewrite_printf_expr(expr: &Expr, env: &PrintfEnv) -> Option<Expr> {
+fn rewrite_printf_expr(
+    expr: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<Expr> {
+    let fact = printf_fact(function, facts, path)?;
     let call = peel_empty_unsafe(expr);
     let Expr::Call { func, args } = call else {
         return None;
@@ -176,10 +173,42 @@ fn rewrite_printf_expr(expr: &Expr, env: &PrintfEnv) -> Option<Expr> {
     if !matches!(&**func, Expr::Var(name) if name.as_str() == "printf") {
         return None;
     }
-    let (fmt, rest) = args.split_first()?;
-    let format = const_c_string(fmt)?;
-    let macro_call = printf_macro(&format, rest, env)?;
+    let rest = args.get(1..)?;
+    if fact.arg_paths.len() != rest.len() {
+        return None;
+    }
+    let macro_call = printf_macro(fact.format.as_deref()?, rest, &fact.arg_facts)?;
     Some(macro_call)
+}
+
+fn printf_fact<'a>(
+    function: FunctionId,
+    facts: &'a FixupFacts,
+    path: &[PathSegment],
+) -> Option<&'a PrintfCallFact> {
+    let found = facts
+        .printf_call(function, &AstPath(path.to_vec()))
+        .or_else(|| facts.printf_call(function, &unsafe_tail_path(path)));
+    found
+}
+
+fn unsafe_tail_path(path: &[PathSegment]) -> AstPath {
+    let mut path = path.to_vec();
+    path.push(PathSegment::UnsafeBody);
+    path.push(PathSegment::BlockTail);
+    AstPath(path)
+}
+
+fn unused_local(
+    function: FunctionId,
+    facts: &FixupFacts,
+    name: &str,
+    path: &[PathSegment],
+) -> bool {
+    facts
+        .binding_by_local_path(function, name, &AstPath(path.to_vec()))
+        .and_then(|binding| facts.def_use(binding))
+        .is_some_and(|def_use| def_use.reads.is_empty())
 }
 
 fn peel_empty_unsafe(expr: &Expr) -> &Expr {
@@ -208,7 +237,7 @@ fn trim_c_nul(bytes: &[u8]) -> Vec<u8> {
     bytes.strip_suffix(&[0]).unwrap_or(bytes).to_vec()
 }
 
-fn printf_macro(format: &[u8], args: &[Expr], env: &PrintfEnv) -> Option<Expr> {
+fn printf_macro(format: &[u8], args: &[Expr], arg_facts: &[PrintfArgFact]) -> Option<Expr> {
     let parsed = parse_printf_format(format)?;
     if parsed.conversions.len() != args.len() {
         return None;
@@ -223,8 +252,12 @@ fn printf_macro(format: &[u8], args: &[Expr], env: &PrintfEnv) -> Option<Expr> {
         "print"
     };
     macro_args.push(Expr::Str(parsed.format));
-    for (arg, conversion) in args.iter().zip(parsed.conversions.iter()) {
-        macro_args.push(printf_macro_arg(arg, conversion.kind, env)?);
+    for ((arg, conversion), arg_fact) in args
+        .iter()
+        .zip(parsed.conversions.iter())
+        .zip(arg_facts.iter())
+    {
+        macro_args.push(printf_macro_arg(arg, conversion.kind, arg_fact)?);
     }
     Some(format_macro(name, macro_args))
 }
@@ -502,35 +535,29 @@ fn format_macro(name: &str, args: Vec<Expr>) -> Expr {
     }
 }
 
-fn printf_macro_arg(arg: &Expr, kind: ConversionKind, env: &PrintfEnv) -> Option<Expr> {
+fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> Option<Expr> {
     match kind {
         ConversionKind::Integer(IntegerArg::Value) => Some(arg.clone()),
         ConversionKind::Integer(IntegerArg::Alternate(format)) => {
             Some(alternate_integer_arg(arg, format))
         }
-        ConversionKind::String => printf_string_arg(arg, env),
-        ConversionKind::Char => const_c_char_arg(arg, env).map(Expr::Str),
+        ConversionKind::String => printf_string_arg(arg, fact),
+        ConversionKind::Char => fact.const_char.clone().map(Expr::Str),
         ConversionKind::Float => Some(arg.clone()),
-        ConversionKind::Pointer if is_printf_pointer_arg(arg, env) => Some(arg.clone()),
+        ConversionKind::Pointer if fact.pointer => Some(arg.clone()),
         ConversionKind::Pointer => None,
     }
 }
 
-fn printf_string_arg(arg: &Expr, env: &PrintfEnv) -> Option<Expr> {
-    if let Some(value) = const_c_string_arg(arg, env) {
-        return Some(Expr::Str(value));
+fn printf_string_arg(arg: &Expr, fact: &PrintfArgFact) -> Option<Expr> {
+    if let Some(value) = &fact.const_string {
+        return Some(Expr::Str(value.clone()));
     }
     let stripped = strip_pointer_view(arg);
-    match stripped {
-        Expr::Var(name)
-            if env
-                .types
-                .get(name.as_str())
-                .is_some_and(type_is_rust_string) =>
-        {
-            Some(stripped.clone())
-        }
-        _ => None,
+    if fact.rust_string {
+        Some(stripped.clone())
+    } else {
+        None
     }
 }
 
@@ -545,17 +572,6 @@ fn strip_pointer_view(expr: &Expr) -> &Expr {
         Expr::ArrayPtr { array, .. } => strip_pointer_view(array),
         _ => expr,
     }
-}
-
-fn type_is_rust_string(ty: &Type) -> bool {
-    matches!(ty, Type::Custom(name) if name == "String")
-        || matches!(
-            ty,
-            Type::Ref {
-                mutable: false,
-                inner,
-            } if matches!(&**inner, Type::Str)
-        )
 }
 
 fn alternate_integer_arg(arg: &Expr, format: AlternateIntegerFormat) -> Expr {
@@ -651,140 +667,6 @@ fn prefixed_nonzero_integer_format(
             format_macro("format", vec![Expr::Str(format!("{{:>{width}}}")), base])
         }
         _ => base,
-    }
-}
-
-fn const_c_string_arg(arg: &Expr, env: &PrintfEnv) -> Option<String> {
-    let bytes = pointer_view_source(arg)
-        .and_then(|name| env.consts.get(name))
-        .and_then(const_c_string)
-        .or_else(|| const_c_string(env.resolve_const(arg)))?;
-    if bytes.contains(&0) {
-        return None;
-    }
-    String::from_utf8(bytes).ok()
-}
-
-fn pointer_view_source(expr: &Expr) -> Option<&str> {
-    match expr {
-        Expr::Cast { expr, .. } => pointer_view_source(expr),
-        Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
-            match &**recv {
-                Expr::Var(name) => Some(name.as_str()),
-                _ => None,
-            }
-        }
-        _ => None,
-    }
-}
-
-fn const_c_char_arg(arg: &Expr, env: &PrintfEnv) -> Option<String> {
-    let value = const_integer(env.resolve_const(arg))?;
-    let byte = u8::try_from(value).ok()?;
-    if !byte.is_ascii() {
-        return None;
-    }
-    Some(char::from(byte).to_string())
-}
-
-fn const_integer(expr: &Expr) -> Option<i64> {
-    match expr {
-        Expr::Value(RustValue::I64(n)) => Some(*n),
-        Expr::Value(RustValue::I128(n)) => i64::try_from(*n).ok(),
-        Expr::Cast { expr, .. } => const_integer(expr),
-        _ => None,
-    }
-}
-
-fn is_printf_const(expr: &Expr) -> bool {
-    const_integer(expr).is_some() || const_c_string(expr).is_some()
-}
-
-fn is_printf_pointer_arg(arg: &Expr, env: &PrintfEnv) -> bool {
-    match arg {
-        Expr::Var(name) => env.types.get(name.as_str()).is_some_and(type_is_pointer),
-        Expr::Cast { ty, expr } => type_is_pointer(ty) && !is_null_pointer_source(expr),
-        Expr::AddrOf { .. } | Expr::Ref { .. } | Expr::ArrayPtr { .. } => true,
-        Expr::MethodCall { method, args, .. } if args.is_empty() => {
-            matches!(method.as_str(), "as_ptr" | "as_mut_ptr")
-        }
-        _ => false,
-    }
-}
-
-fn type_is_pointer(ty: &Type) -> bool {
-    matches!(ty, Type::Ptr { .. })
-}
-
-fn is_null_pointer_source(expr: &Expr) -> bool {
-    match expr {
-        Expr::Value(RustValue::I64(0) | RustValue::I128(0) | RustValue::NullPtr) => true,
-        Expr::Cast { expr, .. } => is_null_pointer_source(expr),
-        _ => false,
-    }
-}
-
-#[derive(Clone)]
-struct PrintfEnv {
-    consts: BTreeMap<String, Expr>,
-    types: BTreeMap<String, Type>,
-}
-
-impl PrintfEnv {
-    fn new() -> Self {
-        Self {
-            consts: BTreeMap::new(),
-            types: BTreeMap::new(),
-        }
-    }
-
-    fn from_params(params: &[FnParam]) -> Self {
-        let mut env = Self::new();
-        for param in params {
-            env.types.insert(param.name.clone(), param.ty.clone());
-        }
-        env
-    }
-
-    fn resolve_const<'a>(&'a self, expr: &'a Expr) -> &'a Expr {
-        match expr {
-            Expr::Var(name) => self.consts.get(name.as_str()).unwrap_or(expr),
-            Expr::Cast { expr, .. } => self.resolve_const(expr),
-            _ => expr,
-        }
-    }
-
-    fn update_after_stmt(&mut self, stmt: &Stmt) {
-        match stmt {
-            Stmt::Let { name, ty, .. } => {
-                if let Some(ty) = ty {
-                    self.types.insert(name.clone(), ty.clone());
-                } else {
-                    self.types.remove(name.as_str());
-                }
-            }
-            Stmt::Assign { target, .. } | Stmt::CompoundAssign { target, .. } => {
-                if let Expr::Var(name) = target {
-                    self.consts.remove(name.as_str());
-                }
-            }
-            _ => {}
-        }
-
-        match stmt {
-            Stmt::Let {
-                name,
-                mutable: false,
-                init: Some(init),
-                ..
-            } if is_printf_const(init) => {
-                self.consts.insert(name.clone(), init.clone());
-            }
-            Stmt::Let { name, .. } => {
-                self.consts.remove(name.as_str());
-            }
-            _ => {}
-        }
     }
 }
 
@@ -1018,8 +900,13 @@ mod tests {
 
     fn run(stmt: Stmt) -> String {
         let mut program = program(stmt);
-        fixup(&mut program);
+        run_fixup(&mut program);
         program.emit()
+    }
+
+    fn run_fixup(program: &mut Program) {
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        fixup(program, &analyzed.facts);
     }
 
     #[test]
@@ -1047,6 +934,41 @@ fn main() {
             out,
             "\
 fn main() {
+    println!();
+}
+"
+        );
+    }
+
+    #[test]
+    fn rewrites_printf_calls_inside_loops_before_trailing_newline() {
+        let mut program = program_with_body(vec![
+            Stmt::Loop {
+                label: None,
+                body: vec![
+                    IndentStmt {
+                        depth: 0,
+                        stmt: printf_stmt(b"%d \0", var("x")),
+                    },
+                    IndentStmt {
+                        depth: 0,
+                        stmt: Stmt::Break(None),
+                    },
+                ],
+            },
+            printf_stmt_args(b"\n\0", vec![]),
+        ]);
+        run_fixup(&mut program);
+        let out = program.emit();
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    loop {
+        print!(\"{} \", x);
+        break;
+    }
     println!();
 }
 "
@@ -1168,7 +1090,7 @@ fn main() {
                 vec![fmt_arg(b"tag\0"), var("ch"), var("n")],
             ),
         ]);
-        fixup(&mut program);
+        run_fixup(&mut program);
         let out = program.emit();
 
         assert_eq!(
@@ -1271,7 +1193,7 @@ fn main() {
             },
             printf_stmt_args(b"%p %p\n\0", vec![var("ptr"), fmt_arg(b"tag\0")]),
         ]);
-        fixup(&mut program);
+        run_fixup(&mut program);
         let out = program.emit();
 
         assert_eq!(
@@ -1335,7 +1257,7 @@ fn main() {
             printf_stmt(b"%d\n\0", var("x")),
             printf_stmt(b"%e\n\0", var("y")),
         ]);
-        fixup(&mut program);
+        run_fixup(&mut program);
         let out = program.emit();
 
         assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
