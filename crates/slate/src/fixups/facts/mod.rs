@@ -14,6 +14,7 @@ pub(super) struct FixupFacts {
     pub(super) functions: Vec<FunctionFact>,
     pub(super) bindings: Vec<BindingFact>,
     pub(super) loops: Vec<LoopFact>,
+    pub(super) borrow_alias: Vec<BorrowAliasFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
@@ -68,6 +69,21 @@ pub(super) struct BindingMutabilityFact {
     pub(super) binding: BindingId,
     pub(super) required: bool,
     pub(super) reasons: BTreeSet<MutabilityReason>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct BorrowAliasFact {
+    pub(super) function: FunctionId,
+    pub(super) binding: BindingId,
+    pub(super) state: BorrowAliasState,
+    pub(super) reasons: BTreeSet<BorrowAliasReason>,
+    pub(super) uses: Vec<BorrowAliasUseFact>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct BorrowAliasUseFact {
+    pub(super) kind: BorrowAliasUseKind,
+    pub(super) path: AstPath,
 }
 
 #[derive(Debug, Clone)]
@@ -177,6 +193,39 @@ pub(super) enum SliceLoopAccess {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum BorrowAliasState {
+    ReadOnly,
+    UniqueMutation,
+    Escaped,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum BorrowAliasReason {
+    Read,
+    Assigned,
+    MutatedProjection,
+    SharedBorrow,
+    MutableBorrow,
+    AddressTaken,
+    RawPtrDerived,
+    UnknownCallEscape,
+    AtomicAccess,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum BorrowAliasUseKind {
+    Read,
+    Assigned,
+    MutatedProjection,
+    SharedBorrow,
+    MutableBorrow,
+    AddressTaken,
+    RawPtrDerived,
+    UnknownCallEscape,
+    AtomicAccess,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) enum MutabilityReason {
     Assigned,
     AddressTaken,
@@ -277,6 +326,7 @@ impl FixupFacts {
 pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     let mut collector = Collector::default();
     collector.program(&program);
+    super::borrow_alias::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
         facts: collector.facts,
