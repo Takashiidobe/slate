@@ -18,6 +18,7 @@ pub(super) struct FixupFacts {
     pub(super) def_use: Vec<DefUseFact>,
     pub(super) effects: Vec<EffectFact>,
     pub(super) places: Vec<PlaceFact>,
+    pub(super) values: Vec<ValueFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
@@ -117,6 +118,32 @@ pub(super) struct PlaceFact {
     pub(super) readable: bool,
     pub(super) assignable: bool,
     pub(super) ordinary_slot: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct ValueFact {
+    pub(super) function: FunctionId,
+    pub(super) subject: ValueSubject,
+    pub(super) path: AstPath,
+    pub(super) value: ConstValue,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum ValueSubject {
+    Expr,
+    Binding(BindingId),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum ConstValue {
+    Integer(i128),
+    Usize(usize),
+    Bool(bool),
+    Bytes(Vec<u8>),
+    CStringBytes(Vec<u8>),
+    String(String),
+    Zero,
+    ArrayLength(usize),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -444,6 +471,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     super::def_use::collect_facts(&program, &mut collector.facts);
     super::effects::collect_facts(&program, &mut collector.facts);
     super::places::collect_facts(&program, &mut collector.facts);
+    super::values::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
         facts: collector.facts,
