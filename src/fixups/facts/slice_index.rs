@@ -1,10 +1,10 @@
 use std::collections::BTreeMap;
 
+use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, FixupFacts, FunctionId, IndexLowerBound, IndexUpperBound, PathSegment,
     PointerOffsetUnit, SliceIndexRangeFact, SlicePointerIndexFact, SlicePointerViewFact,
 };
-use crate::fixups::support::walk;
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {

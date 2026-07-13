@@ -1,9 +1,9 @@
 use std::collections::BTreeSet;
 
+use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, EffectFact, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
 };
-use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, UnaryOp};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {

@@ -75,17 +75,15 @@ Do not re-walk the tree by hand when a helper exists:
 - **`src/fixups/idents.rs`** — `expr_ident(e)` (is this a bare variable?),
   `expr_ident_count(e, name)` / `stmt_ident_count(s, name)` (how many times is
   `name` read?). Use counts to prove single-use or no-use before moving code.
-- **`src/fixups/support/walk.rs`** — AST traversal helpers for common predicate,
-  collection, and rewrite cases. Use `exprs` / `stmt_exprs` / `body_exprs` when
-  a pass needs to visit every contained expression, and
-  `exprs_any` / `stmt_exprs_any` / `body_exprs_all` for guards like "does this
-  subtree contain a call?" or "are all nested expressions safe?". Use
-  `exprs_all_with` / `stmt_exprs_all_with` when a pass has custom accept/reject
-  cases for selected nodes but wants default recursion everywhere else. Use
-  `exprs_mut_with` / `stmt_exprs_mut_with` for expression rewrites that need to
-  skip default recursion after replacing a node. Keep the pass-specific policy
-  in the closure; do not hand-roll full `Expr`/`Stmt` recursion unless the helper
-  cannot express the traversal.
+- **`src/fixups/support/walk.rs`** — rewrite-only traversal helpers. Use the
+  path-aware nested-body helpers to keep rewrite paths aligned with facts, and
+  use the mutable expression helpers for AST rewrites that need to skip default
+  recursion after replacing a node.
+- **`src/fixups/facts/walk.rs`** — fact-only expression and statement walkers.
+  Immutable collection, `any`/`all` predicates, semantic scans, and whole-tree
+  discovery belong in `src/fixups/facts/`, not in rewrite modules. A rewrite
+  should consume `FixupFacts` plus local AST shape; if it needs information that
+  is not already in `FixupFacts`, add a fact collector first.
 - **`Stmt::substitute_var(name, repl)` / `Expr::substitute_var(name, repl)`**
   (`src/rust_ast.rs`) — replace every `Expr::Var(name)` subtree with a cloned
   expression, returning whether anything changed. This is how `inline_temps`
