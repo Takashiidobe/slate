@@ -10,6 +10,9 @@ thread_local! {
     // Clang omits desugaredQualType for pointer/array-to-typedef, so parse_c_type
     // resolves the base name here to recover the true signedness and width.
     static TYPEDEFS: RefCell<HashMap<String, String>> = RefCell::new(HashMap::new());
+    // Clang gives a C enum an unsigned underlying type unless an enumerator is
+    // negative; CIR follows suit, so parse_c_type resolves enum signedness here.
+    static ENUM_SIGNED: RefCell<HashMap<String, bool>> = RefCell::new(HashMap::new());
 }
 
 /// A parsed C translation unit.
@@ -204,6 +207,9 @@ fn parse_json_with_record_roots(
     let mut typedefs = HashMap::new();
     collect_typedefs(&root, &mut typedefs);
     TYPEDEFS.with(|table| *table.borrow_mut() = typedefs);
+    let mut enum_signed = HashMap::new();
+    collect_enum_signedness(&root, &mut enum_signed);
+    ENUM_SIGNED.with(|table| *table.borrow_mut() = enum_signed);
     let mut enums = Vec::new();
     let mut records = Vec::new();
     let mut functions = Vec::new();
@@ -228,6 +234,21 @@ fn collect_typedefs(node: &Value, out: &mut HashMap<String, String>) {
     }
     for child in children(node) {
         collect_typedefs(child, out);
+    }
+}
+
+fn collect_enum_signedness(node: &Value, out: &mut HashMap<String, bool>) {
+    if kind(node) == Some("EnumDecl") {
+        if let Some(name) = node.get("name").and_then(Value::as_str) {
+            let signed = children(node).iter().any(|child| {
+                kind(child) == Some("EnumConstantDecl")
+                    && enum_constant_value(child).is_some_and(|v| v < 0)
+            });
+            out.entry(name.to_string()).or_insert(signed);
+        }
+    }
+    for child in children(node) {
+        collect_enum_signedness(child, out);
     }
 }
 
@@ -604,6 +625,11 @@ fn parse_c_type(s: &str) -> CType {
         CType::Float { bits: 80 }
     } else if let Some(underlying) = lookup_typedef(s) {
         parse_c_type(&underlying)
+    } else if let Some(name) = s.strip_prefix("enum ") {
+        CType::Int {
+            signed: enum_is_signed(name.trim()),
+            bits: 32,
+        }
     } else if s.contains("unsigned") {
         CType::Int {
             signed: false,
@@ -622,6 +648,10 @@ fn lookup_typedef(name: &str) -> Option<String> {
         let underlying = table.borrow().get(name)?.clone();
         (underlying != name).then_some(underlying)
     })
+}
+
+fn enum_is_signed(name: &str) -> bool {
+    ENUM_SIGNED.with(|table| table.borrow().get(name).copied().unwrap_or(false))
 }
 
 fn parse_function_pointer_qual_type(s: &str) -> Option<(CType, Vec<CType>)> {
