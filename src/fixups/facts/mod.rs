@@ -3,6 +3,22 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
 
+pub(super) mod borrow_alias;
+pub(super) mod calls;
+pub(super) mod casts;
+pub(super) mod control_flow;
+pub(super) mod counted_loop;
+pub(super) mod def_use;
+pub(super) mod effects;
+pub(super) mod loop_shapes;
+pub(super) mod places;
+pub(super) mod ptr_len;
+pub(super) mod slice_index;
+pub(super) mod strings;
+pub(super) mod values;
+
+pub(super) use effects::is_movable_pure_expr;
+
 #[derive(Debug, Clone)]
 pub(super) struct AnalyzedProgram {
     pub(super) program: Program,
@@ -791,15 +807,15 @@ impl FixupFacts {
 pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     let mut collector = Collector::default();
     collector.program(&program);
-    super::borrow_alias::collect_facts(&program, &mut collector.facts);
-    super::def_use::collect_facts(&program, &mut collector.facts);
-    super::effects::collect_facts(&program, &mut collector.facts);
-    super::control_flow::collect_facts(&program, &mut collector.facts);
-    super::places::collect_facts(&program, &mut collector.facts);
-    super::values::collect_facts(&program, &mut collector.facts);
-    super::calls::collect_facts(&program, &mut collector.facts);
-    super::casts::collect_facts(&program, &mut collector.facts);
-    super::strings::collect_facts(&program, &mut collector.facts);
+    borrow_alias::collect_facts(&program, &mut collector.facts);
+    def_use::collect_facts(&program, &mut collector.facts);
+    effects::collect_facts(&program, &mut collector.facts);
+    control_flow::collect_facts(&program, &mut collector.facts);
+    places::collect_facts(&program, &mut collector.facts);
+    values::collect_facts(&program, &mut collector.facts);
+    calls::collect_facts(&program, &mut collector.facts);
+    casts::collect_facts(&program, &mut collector.facts);
+    strings::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
         facts: collector.facts,

@@ -2,7 +2,7 @@ use crate::fixups::support::walk;
 use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 use std::collections::BTreeSet;
 
-pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
+pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) {
     fixup_nested(body);
     let liftable = liftable_names(body);
     let mut i = 0;

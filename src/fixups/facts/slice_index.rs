@@ -7,7 +7,7 @@ use crate::fixups::facts::{
 use crate::fixups::support::walk;
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
-pub(super) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     for (item_index, item) in program.items.iter().enumerate() {
         let Item::Fn(f) = item else {
             continue;
@@ -456,7 +456,8 @@ fn var_binding(expr: &Expr, function: FunctionId, facts: &FixupFacts) -> Option<
 mod tests {
     use super::*;
     use crate::fixups::facts;
-    use crate::fixups::ptr_len;
+    use crate::fixups::facts::ptr_len;
+    use crate::fixups::rewrite;
     use crate::fixups::test_support::*;
     use crate::rust_ast::{Item, Program, UnaryOp};
 
@@ -738,7 +739,7 @@ mod tests {
         let analyzed = facts::analyze(program.clone());
         let mut ptr_facts = analyzed.facts;
         ptr_len::collect_facts(&program, &mut ptr_facts);
-        ptr_len::fixup(&mut program, &ptr_facts);
+        rewrite::ptr_len::fixup(&mut program, &ptr_facts);
         let analyzed = facts::analyze(program);
         let mut facts = analyzed.facts;
 

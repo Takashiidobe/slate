@@ -1,33 +1,9 @@
 //! Rust cleanup passes that run after faithful CIR lowering.
 
-mod borrow_alias;
-mod call_args;
-mod calls;
-mod casts;
-mod compound_assign;
-mod control_flow;
-mod counted_loop;
-mod def_use;
-mod drop_call_results;
-mod effects;
 mod facts;
 mod idents;
-mod inline_temps;
-mod loop_shapes;
-mod param_spills;
-mod places;
-mod printf_format;
-mod ptr_len;
-mod remove_mut;
-mod retval;
-mod slice_index;
-mod string_copy;
-mod string_libc;
-mod string_lift;
-mod strings;
+mod rewrite;
 mod support;
-mod values;
-mod zero_init;
 
 #[cfg(test)]
 mod test_support;
@@ -36,21 +12,21 @@ use crate::rust_ast::{Item, Program};
 
 pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { program, .. } = facts::analyze(program);
-    let sigs = call_args::collect_signatures(&program);
+    let sigs = rewrite::call_args::collect_signatures(&program);
     let mut program = Program {
         items: program
             .items
             .into_iter()
             .map(|item| match item {
                 Item::Fn(mut f) => {
-                    inline_temps::fixup(&mut f.body);
-                    param_spills::fixup(&mut f);
-                    zero_init::fixup(&mut f.body);
-                    compound_assign::fixup(&mut f.body);
-                    call_args::fixup(&mut f.body, &sigs);
-                    retval::fixup(&mut f);
-                    drop_call_results::fixup(&mut f.body);
-                    string_lift::fixup(&mut f.body);
+                    rewrite::inline_temps::fixup(&mut f.body);
+                    rewrite::param_spills::fixup(&mut f);
+                    rewrite::zero_init::fixup(&mut f.body);
+                    rewrite::compound_assign::fixup(&mut f.body);
+                    rewrite::call_args::fixup(&mut f.body, &sigs);
+                    rewrite::retval::fixup(&mut f);
+                    rewrite::drop_call_results::fixup(&mut f.body);
+                    rewrite::string_lift::fixup(&mut f.body);
                     Item::Fn(f)
                 }
                 item => item,
@@ -62,22 +38,22 @@ pub fn apply(program: Program) -> Program {
         mut facts,
     } = facts::analyze(program);
     program = analyzed_program;
-    ptr_len::collect_facts(&program, &mut facts);
-    ptr_len::fixup(&mut program, &facts);
-    slice_index::collect_facts(&program, &mut facts);
-    counted_loop::collect_facts(&program, &mut facts);
-    loop_shapes::collect_facts(&program, &mut facts);
-    string_copy::fixup(&mut program);
-    string_libc::fixup(&mut program);
+    facts::ptr_len::collect_facts(&program, &mut facts);
+    rewrite::ptr_len::fixup(&mut program, &facts);
+    facts::slice_index::collect_facts(&program, &mut facts);
+    facts::counted_loop::collect_facts(&program, &mut facts);
+    facts::loop_shapes::collect_facts(&program, &mut facts);
+    rewrite::string_copy::fixup(&mut program);
+    rewrite::string_libc::fixup(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
             && let Some(function) = facts.function_by_item_index(item_index)
         {
-            remove_mut::fixup(f, function, &facts);
+            rewrite::remove_mut::fixup(f, function, &facts);
         }
     }
-    printf_format::fixup(&mut program);
+    rewrite::printf_format::fixup(&mut program);
     program
 }
 

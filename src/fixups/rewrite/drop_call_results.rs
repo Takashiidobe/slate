@@ -13,7 +13,7 @@ use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, IndentStmt, Stmt};
 
-pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
+pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) {
     scope(body, None);
 }
 
