@@ -1,13 +1,19 @@
+use crate::fixups::facts::{
+    AstPath, ConstValue, FixupFacts, FunctionId, PathSegment, StringBufferProvenance,
+    StringRecoveryCandidate, ValueSubject,
+};
 use crate::fixups::support::walk;
 use crate::rust_ast::{
     Block, Expr, ExternDecl, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
-pub(in crate::fixups) fn fixup(program: &mut Program) {
-    for item in &mut program.items {
-        if let Item::Fn(f) = item {
-            fixup_body(&mut f.body);
+pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            fixup_body(&mut f.body, function, facts);
         }
     }
     prune_unused_externs(program);
@@ -25,13 +31,13 @@ enum Source {
     Owned(String),
 }
 
-fn fixup_body(body: &mut Vec<IndentStmt>) {
-    fixup_nested(body);
-    let consts = const_usize_temps(body);
-    let liftable = liftable_names(body, &consts);
+fn fixup_body(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFacts) {
+    fixup_nested(body, function, facts);
+    let consts = const_usize_temps(function, facts);
+    let liftable = liftable_names(body, function, facts, &consts);
     let mut remove = Vec::new();
     for i in 0..body.len() {
-        let Some(candidate) = candidate_at(body, i) else {
+        let Some(candidate) = candidate_at(body, function, facts, &stmt_path(&[], i)) else {
             continue;
         };
         let Stmt::Let { name, ty, init, .. } = &mut body[i].stmt else {
@@ -52,10 +58,15 @@ fn fixup_body(body: &mut Vec<IndentStmt>) {
     rewrite_body(body, &liftable, &consts);
 }
 
-fn liftable_names(body: &[IndentStmt], consts: &BTreeMap<String, usize>) -> BTreeSet<String> {
+fn liftable_names(
+    body: &[IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    consts: &BTreeMap<String, usize>,
+) -> BTreeSet<String> {
     let candidates = (0..body.len())
         .filter_map(|i| {
-            let candidate = candidate_at(body, i)?;
+            let candidate = candidate_at(body, function, facts, &stmt_path(&[], i))?;
             let name = let_name(&body[i].stmt)?;
             Some((name, i, candidate))
         })
@@ -91,46 +102,47 @@ fn let_name(stmt: &Stmt) -> Option<String> {
     }
 }
 
-fn candidate_at(body: &[IndentStmt], i: usize) -> Option<Candidate> {
-    let Stmt::Let {
-        name,
-        mutable: true,
-        ty: Some(ty),
-        init,
-    } = &body.get(i)?.stmt
-    else {
-        return None;
-    };
-    if !is_char_array(ty) {
-        return None;
-    }
-    if let Some(init) = init.as_ref().and_then(array_c_string) {
-        return Some(Candidate {
-            init: Expr::Str(init),
-            remove_index: None,
-        });
-    }
-    if !init.as_ref().is_some_and(is_zero_array) {
+fn candidate_at(
+    body: &[IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<Candidate> {
+    let buffer = facts.string_buffer_at(function, &AstPath(path.to_vec()))?;
+    if !buffer
+        .candidates
+        .contains(&StringRecoveryCandidate::OwnedString)
+    {
         return None;
     }
-    for (index, indent) in body.iter().enumerate().skip(i + 1) {
-        match &indent.stmt {
-            Stmt::Assign {
-                target: Expr::Var(target),
-                value,
-            } if target.as_str() == name => {
-                return Some(Candidate {
-                    init: Expr::Str(array_c_string(value)?),
-                    remove_index: Some(index),
-                });
+    let init = match &buffer.provenance {
+        StringBufferProvenance::ZeroInitialized => String::new(),
+        StringBufferProvenance::Literal => {
+            if facts
+                .def_use(buffer.binding)
+                .is_some_and(|def_use| !def_use.writes.is_empty())
+            {
+                return None;
             }
-            stmt if stmt_mentions_var(stmt, name) => break,
-            _ => {}
+            String::from_utf8(buffer.bytes.clone()?).ok()?
         }
+        StringBufferProvenance::AssignedLiteral { .. } => {
+            String::from_utf8(buffer.bytes.clone()?).ok()?
+        }
+        _ => return None,
+    };
+    let remove_index = match &buffer.provenance {
+        StringBufferProvenance::AssignedLiteral { assignment } => {
+            Some(assignment_index(path, &assignment.0)?)
+        }
+        _ => None,
+    };
+    if remove_index.is_some_and(|index| index >= body.len()) {
+        return None;
     }
     Some(Candidate {
-        init: Expr::Str(String::new()),
-        remove_index: None,
+        init: Expr::Str(init),
+        remove_index,
     })
 }
 
@@ -171,18 +183,36 @@ fn byte_literal(expr: &Expr) -> Option<u8> {
     u8::try_from(n).ok()
 }
 
-fn const_usize_temps(body: &[IndentStmt]) -> BTreeMap<String, usize> {
-    body.iter()
-        .filter_map(|indent| match &indent.stmt {
-            Stmt::Let {
-                name,
-                mutable: false,
-                init: Some(init),
-                ..
-            } => Some((name.clone(), const_usize(init, &BTreeMap::new())?)),
+fn const_usize_temps(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, usize> {
+    facts
+        .values
+        .iter()
+        .filter(|fact| fact.function == function)
+        .filter_map(|fact| match (&fact.subject, &fact.value) {
+            (ValueSubject::Binding(binding), ConstValue::Usize(value)) => {
+                Some((facts.binding_name(*binding)?.to_owned(), *value))
+            }
             _ => None,
         })
         .collect()
+}
+
+fn stmt_path(path: &[PathSegment], index: usize) -> Vec<PathSegment> {
+    let mut path = path.to_vec();
+    path.push(PathSegment::Stmt(index));
+    path
+}
+
+fn assignment_index(def_path: &[PathSegment], assignment_path: &[PathSegment]) -> Option<usize> {
+    let parent = def_path.get(..def_path.len().checked_sub(1)?)?;
+    let assignment_parent = assignment_path.get(..assignment_path.len().checked_sub(1)?)?;
+    if assignment_parent != parent {
+        return None;
+    }
+    match assignment_path.last()? {
+        PathSegment::Stmt(index) => Some(*index),
+        _ => None,
+    }
 }
 
 fn stmt_mentions_var(stmt: &Stmt, name: &str) -> bool {
@@ -350,7 +380,7 @@ fn expr_mentions_pointer_view(expr: &Expr, name: &str) -> bool {
     })
 }
 
-fn fixup_nested(body: &mut [IndentStmt]) {
+fn fixup_nested(body: &mut [IndentStmt], function: FunctionId, facts: &FixupFacts) {
     for indent in body {
         match &mut indent.stmt {
             Stmt::If {
@@ -363,18 +393,18 @@ fn fixup_nested(body: &mut [IndentStmt]) {
                 else_body,
                 ..
             } => {
-                fixup_body(then_body);
-                fixup_body(else_body);
+                fixup_body(then_body, function, facts);
+                fixup_body(else_body, function, facts);
             }
             Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-                fixup_body(body);
+                fixup_body(body, function, facts);
             }
             Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-                fixup_body(&mut body.stmts);
+                fixup_body(&mut body.stmts, function, facts);
             }
             Stmt::Match { arms, .. } => {
                 for arm in arms {
-                    fixup_body(&mut arm.body);
+                    fixup_body(&mut arm.body, function, facts);
                 }
             }
             _ => {}
@@ -790,7 +820,8 @@ mod tests {
         let mut program = Program {
             items: vec![Item::Fn(func(Vec::new(), None, stmts))],
         };
-        fixup(&mut program);
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        fixup(&mut program, &analyzed.facts);
         program.emit()
     }
 
