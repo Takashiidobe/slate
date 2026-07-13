@@ -50,11 +50,10 @@ pub fn apply(program: Program) -> Program {
     string_libc::fixup(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     for (item_index, item) in program.items.iter_mut().enumerate() {
-        if let Item::Fn(f) = item {
-            if let Some(function) = facts.function_by_item_index(item_index) {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index) {
                 remove_mut::fixup(f, function, &facts);
             }
-        }
     }
     printf_format::fixup(&mut program);
     program

@@ -118,7 +118,7 @@ fn reports_reserved_system_macro_with_kind_and_location() {
     let diags = doc["diagnostics"].as_array().expect("diagnostics array");
     let unmapped = diags
         .iter()
-        .find(|d| d["kind"] == Value::from("unmapped-macro"))
+        .find(|d| d["kind"] == "unmapped-macro")
         .expect("an unmapped-macro diagnostic");
     assert_eq!(unmapped["line"].as_u64().unwrap(), 1);
     let message = unmapped["message"].as_str().unwrap();

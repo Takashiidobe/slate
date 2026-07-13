@@ -160,16 +160,14 @@ fn find_arg_slot(stmt: &Stmt, name: &str) -> Option<(String, usize)> {
         if result.is_some() {
             return;
         }
-        if let Expr::Call { func, args } = expr {
-            if let Expr::Var(callee) = &**func {
-                if let Some(slot) = args
+        if let Expr::Call { func, args } = expr
+            && let Expr::Var(callee) = &**func
+                && let Some(slot) = args
                     .iter()
                     .position(|arg| matches!(arg, Expr::Var(v) if v.as_str() == name))
                 {
                     result = Some((callee.as_str().to_string(), slot));
                 }
-            }
-        }
     });
     result
 }
@@ -177,13 +175,11 @@ fn find_arg_slot(stmt: &Stmt, name: &str) -> Option<(String, usize)> {
 fn inlinable(init: &Expr, sigs: &Signatures, callee: Option<&Signature>, slot: usize) -> bool {
     // (b) result of a known call: its Rust type is fixed by the callee's return
     // type, so it needs no annotation even in a vararg slot.
-    if let Expr::Call { func, .. } = init {
-        if let Expr::Var(inner) = &**func {
-            if sigs.contains_key(inner.as_str()) {
+    if let Expr::Call { func, .. } = init
+        && let Expr::Var(inner) = &**func
+            && sigs.contains_key(inner.as_str()) {
                 return true;
             }
-        }
-    }
     // (a) pure temp into a declared, non-variadic parameter slot: the parameter
     // type pins any literal, so dropping the annotation cannot change inference.
     match callee {

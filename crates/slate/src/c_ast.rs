@@ -224,29 +224,27 @@ fn parse_json_with_record_roots(
 }
 
 fn collect_typedefs(node: &Value, out: &mut HashMap<String, String>) {
-    if kind(node) == Some("TypedefDecl") {
-        if let (Some(name), Some(underlying)) =
+    if kind(node) == Some("TypedefDecl")
+        && let (Some(name), Some(underlying)) =
             (node.get("name").and_then(Value::as_str), qual_type(node))
         {
             out.entry(name.to_string())
                 .or_insert_with(|| underlying.to_string());
         }
-    }
     for child in children(node) {
         collect_typedefs(child, out);
     }
 }
 
 fn collect_enum_signedness(node: &Value, out: &mut HashMap<String, bool>) {
-    if kind(node) == Some("EnumDecl") {
-        if let Some(name) = node.get("name").and_then(Value::as_str) {
+    if kind(node) == Some("EnumDecl")
+        && let Some(name) = node.get("name").and_then(Value::as_str) {
             let signed = children(node).iter().any(|child| {
                 kind(child) == Some("EnumConstantDecl")
                     && enum_constant_value(child).is_some_and(|v| v < 0)
             });
             out.entry(name.to_string()).or_insert(signed);
         }
-    }
     for child in children(node) {
         collect_enum_signedness(child, out);
     }
@@ -288,11 +286,9 @@ fn collect_records(
             .get("completeDefinition")
             .and_then(Value::as_bool)
             .unwrap_or(false)
-    {
-        if let Some(record) = extract_record(node, None) {
+        && let Some(record) = extract_record(node, None) {
             out.push(record);
         }
-    }
     let kids = children(node);
     for (i, child) in kids.iter().enumerate() {
         if kind(child) == Some("RecordDecl")
@@ -306,14 +302,12 @@ fn collect_records(
                 .and_then(Value::as_str)
                 .unwrap_or("")
                 .is_empty()
-        {
-            if let Some(record) = next_anonymous_field_name(&kids, i + 1)
+            && let Some(record) = next_anonymous_field_name(&kids, i + 1)
                 .or_else(|| next_anonymous_typedef_name(&kids, i + 1))
                 .and_then(|name| extract_record(child, Some(name)))
             {
                 out.push(record);
             }
-        }
         collect_records(child, source_file, record_roots, out);
     }
 }

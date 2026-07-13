@@ -36,15 +36,10 @@ fn remove_stmt_unneeded_mut(
     path: &mut Vec<PathSegment>,
 ) {
     match stmt {
-        Stmt::Let { name, mutable, .. } => {
-            if local_can_drop_mut(function, facts, name, path) {
-                *mutable = false;
-            }
-        }
-        Stmt::LetIf { name, mutable, .. } => {
-            if local_can_drop_mut(function, facts, name, path) {
-                *mutable = false;
-            }
+        Stmt::Let { name, mutable, .. } | Stmt::LetIf { name, mutable, .. }
+            if local_can_drop_mut(function, facts, name, path) =>
+        {
+            *mutable = false;
         }
         _ => {}
     }
