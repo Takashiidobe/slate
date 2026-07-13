@@ -1,5 +1,6 @@
 use crate::fixups::facts::{
-    AstPath, BindingKind, FixupFacts, FunctionId, PathSegment, StringBufferKind,
+    AstPath, CallCallee, FixupFacts, FunctionId, PathSegment, StringBufferFact, StringBufferKind,
+    StringLibcFunction,
 };
 use crate::fixups::support::walk;
 use crate::rust_ast::{BinOp, Block, Expr, ExternDecl, Ident, IndentStmt, Item, Path, Prim, Type};
@@ -11,11 +12,9 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
         if let Item::Fn(f) = item
             && let Some(function) = facts.function_by_item_index(item_index)
         {
-            let mut env = root_env(function, facts);
-            fixup_body(&mut f.body, function, facts, &mut env, &mut Vec::new());
+            fixup_body(&mut f.body, function, facts, &mut Vec::new());
         }
     }
-    prune_unused_externs(program);
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -40,19 +39,19 @@ fn fixup_body(
     body: &mut Vec<IndentStmt>,
     function: FunctionId,
     facts: &FixupFacts,
-    env: &mut BTreeMap<String, StringKind>,
     path: &mut Vec<PathSegment>,
 ) {
     let mut temps = BTreeMap::new();
     let mut remove = Vec::new();
     for i in 0..body.len() {
+        let mut stmt_path = stmt_path(path, i);
         let candidate = match &body[i].stmt {
             Stmt::Let {
                 name,
                 ty: Some(Type::Prim(Prim::I32)),
                 init: Some(init),
                 ..
-            } => supported_compare_call(init, env)
+            } => supported_compare_call(init, function, facts, &stmt_path)
                 .filter(|_| temp_uses_are_zero_comparisons(&body[i + 1..], name))
                 .map(|compare| (name.clone(), compare)),
             _ => None,
@@ -61,16 +60,7 @@ fn fixup_body(
             temps.insert(name, compare);
             remove.push(i);
         } else {
-            let mut stmt_path = stmt_path(path, i);
-            fixup_stmt(
-                &mut body[i].stmt,
-                function,
-                facts,
-                env,
-                &temps,
-                &mut stmt_path,
-            );
-            record_local_string_kind(&body[i].stmt, function, facts, env, &stmt_path);
+            fixup_stmt(&mut body[i].stmt, function, facts, &temps, &mut stmt_path);
         }
     }
     for i in remove.into_iter().rev() {
@@ -78,52 +68,8 @@ fn fixup_body(
     }
 }
 
-fn root_env(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, StringKind> {
-    facts
-        .bindings
-        .iter()
-        .filter(|binding| binding.function == function)
-        .filter(|binding| matches!(binding.kind, BindingKind::Param { .. }))
-        .filter_map(|binding| {
-            let kind = facts
-                .string_buffer(binding.id)
-                .and_then(string_kind_for_buffer)?;
-            Some((binding.name.clone(), kind))
-        })
-        .collect()
-}
-
-fn record_local_string_kind(
-    stmt: &Stmt,
-    function: FunctionId,
-    facts: &FixupFacts,
-    env: &mut BTreeMap<String, StringKind>,
-    path: &[PathSegment],
-) {
-    let Stmt::Let { name, .. } = stmt else {
-        return;
-    };
-    let Some(binding) = facts.binding_by_local_path(function, name, &AstPath(path.to_vec())) else {
-        return;
-    };
-    if let Some(kind) = facts
-        .string_buffer(binding)
-        .and_then(string_kind_for_buffer)
-    {
-        env.insert(name.clone(), kind);
-    }
-}
-
-fn string_kind_for_buffer(buffer: &crate::fixups::facts::StringBufferFact) -> Option<StringKind> {
-    match buffer.kind {
-        StringBufferKind::BorrowedStr | StringBufferKind::OwnedString => Some(StringKind::Str),
-        StringBufferKind::BorrowedBytes => Some(StringKind::Bytes),
-        StringBufferKind::CharArray => None,
-    }
-}
-
-fn prune_unused_externs(program: &mut Program) {
-    let used = libc_string_calls(program);
+pub(in crate::fixups) fn prune_unused_externs(program: &mut Program, facts: &FixupFacts) {
+    let used = direct_calls(facts);
     program.items.retain_mut(|item| match item {
         Item::ExternBlock { decls, .. } => {
             decls.retain(|decl| match decl {
@@ -136,237 +82,58 @@ fn prune_unused_externs(program: &mut Program) {
     });
 }
 
-fn libc_string_calls(program: &Program) -> Vec<String> {
-    let mut calls = Vec::new();
-    for item in &program.items {
-        if let Item::Fn(f) = item {
-            body_libc_string_calls(&f.body, &mut calls);
-        }
-    }
+fn direct_calls(facts: &FixupFacts) -> Vec<String> {
+    let mut calls = facts
+        .callsites
+        .iter()
+        .filter_map(|callsite| match &callsite.callee {
+            CallCallee::Direct { name, .. } => Some(name.clone()),
+            CallCallee::Indirect => None,
+        })
+        .collect::<Vec<_>>();
     calls.sort();
     calls.dedup();
     calls
-}
-
-fn body_libc_string_calls(body: &[IndentStmt], calls: &mut Vec<String>) {
-    for indent in body {
-        stmt_libc_string_calls(&indent.stmt, calls);
-    }
-}
-
-fn block_libc_string_calls(block: &Block, calls: &mut Vec<String>) {
-    body_libc_string_calls(&block.stmts, calls);
-    if let Some(tail) = &block.tail {
-        expr_libc_string_calls(tail, calls);
-    }
-}
-
-fn stmt_libc_string_calls(stmt: &Stmt, calls: &mut Vec<String>) {
-    match stmt {
-        Stmt::Let { init, .. } => {
-            if let Some(init) = init {
-                expr_libc_string_calls(init, calls);
-            }
-        }
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            expr_libc_string_calls(target, calls);
-            expr_libc_string_calls(value, calls);
-        }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_libc_string_calls(expr, calls),
-        Stmt::If {
-            cond,
-            then_body,
-            else_body,
-        } => {
-            expr_libc_string_calls(cond, calls);
-            body_libc_string_calls(then_body, calls);
-            body_libc_string_calls(else_body, calls);
-        }
-        Stmt::LetIf {
-            cond,
-            then_body,
-            then_value,
-            else_body,
-            else_value,
-            ..
-        } => {
-            expr_libc_string_calls(cond, calls);
-            body_libc_string_calls(then_body, calls);
-            expr_libc_string_calls(then_value, calls);
-            body_libc_string_calls(else_body, calls);
-            expr_libc_string_calls(else_value, calls);
-        }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            body_libc_string_calls(body, calls);
-        }
-        Stmt::While { cond, body } => {
-            expr_libc_string_calls(cond, calls);
-            block_libc_string_calls(body, calls);
-        }
-        Stmt::Block(body) | Stmt::Unsafe { body } => block_libc_string_calls(body, calls),
-        Stmt::Match { expr, arms } => {
-            expr_libc_string_calls(expr, calls);
-            for arm in arms {
-                body_libc_string_calls(&arm.body, calls);
-            }
-        }
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
-    }
-}
-
-fn expr_libc_string_calls(expr: &Expr, calls: &mut Vec<String>) {
-    match expr {
-        Expr::Call { func, args } => {
-            if let Expr::Var(name) = &**func
-                && is_libc_string_func(name.as_str())
-            {
-                calls.push(name.as_str().into());
-            }
-            expr_libc_string_calls(func, calls);
-            for arg in args {
-                expr_libc_string_calls(arg, calls);
-            }
-        }
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => expr_libc_string_calls(expr, calls),
-        Expr::Binary { lhs, rhs, .. } => {
-            expr_libc_string_calls(lhs, calls);
-            expr_libc_string_calls(rhs, calls);
-        }
-        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            expr_libc_string_calls(recv, calls);
-            for arg in args {
-                expr_libc_string_calls(arg, calls);
-            }
-        }
-        Expr::Field { base, .. }
-        | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => expr_libc_string_calls(base, calls),
-        Expr::Index { base, index } => {
-            expr_libc_string_calls(base, calls);
-            expr_libc_string_calls(index, calls);
-        }
-        Expr::StructLit { fields, .. } => {
-            for (_, value) in fields {
-                expr_libc_string_calls(value, calls);
-            }
-        }
-        Expr::ArrayLit(elems) => {
-            for elem in elems {
-                expr_libc_string_calls(elem, calls);
-            }
-        }
-        Expr::ArrayRepeat { elem, .. } => expr_libc_string_calls(elem, calls),
-        Expr::Macro { args, .. } => {
-            for arg in args {
-                expr_libc_string_calls(arg, calls);
-            }
-        }
-        Expr::Closure { body, .. } => expr_libc_string_calls(body, calls),
-        Expr::Match { expr, arms } => {
-            expr_libc_string_calls(expr, calls);
-            for arm in arms {
-                expr_libc_string_calls(&arm.value, calls);
-            }
-        }
-        Expr::If {
-            cond,
-            then_expr,
-            else_expr,
-        } => {
-            expr_libc_string_calls(cond, calls);
-            expr_libc_string_calls(then_expr, calls);
-            expr_libc_string_calls(else_expr, calls);
-        }
-        Expr::Block(block) | Expr::Unsafe(block) => block_libc_string_calls(block, calls),
-        Expr::CopyNonoverlapping { src, dst, .. } => {
-            expr_libc_string_calls(src, calls);
-            expr_libc_string_calls(dst, calls);
-        }
-        Expr::PtrCopy {
-            src, dst, count, ..
-        } => {
-            expr_libc_string_calls(src, calls);
-            expr_libc_string_calls(dst, calls);
-            expr_libc_string_calls(count, calls);
-        }
-        Expr::WriteBytes { dst, val, count } => {
-            expr_libc_string_calls(dst, calls);
-            expr_libc_string_calls(val, calls);
-            expr_libc_string_calls(count, calls);
-        }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-            expr_libc_string_calls(ptr, calls);
-        }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            expr_libc_string_calls(ptr, calls);
-            expr_libc_string_calls(value, calls);
-        }
-        Expr::AtomicCompareExchange {
-            ptr,
-            expected,
-            desired,
-            ..
-        } => {
-            expr_libc_string_calls(ptr, calls);
-            expr_libc_string_calls(expected, calls);
-            expr_libc_string_calls(desired, calls);
-        }
-        Expr::Value(_)
-        | Expr::Str(_)
-        | Expr::HexFloat(_)
-        | Expr::ByteStr(_)
-        | Expr::Var(_)
-        | Expr::Path(_)
-        | Expr::AtomicFence { .. }
-        | Expr::Todo(_) => {}
-    }
 }
 
 fn fixup_stmt(
     stmt: &mut Stmt,
     function: FunctionId,
     facts: &FixupFacts,
-    env: &BTreeMap<String, StringKind>,
     temps: &BTreeMap<String, Compare>,
     path: &mut Vec<PathSegment>,
 ) {
     match stmt {
         Stmt::Let { ty, init, .. } => {
             if let Some(init) = init {
-                if let Some(source) = supported_strlen_call(init, env) {
+                if let Some(source) = supported_strlen_call(function, facts, path) {
                     *init = strlen_replacement(source);
                     if matches!(ty, Some(Type::Prim(Prim::U64))) {
                         *ty = Some(Type::Prim(Prim::Usize));
                     }
                     return;
                 }
-                fixup_expr(init, env, temps);
+                fixup_expr(init, function, facts, temps, path);
             }
         }
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            fixup_expr(target, env, temps);
-            fixup_expr(value, env, temps);
+            fixup_expr(target, function, facts, temps, path);
+            fixup_expr(value, function, facts, temps, path);
         }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => fixup_expr(expr, env, temps),
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
+            fixup_expr(expr, function, facts, temps, path)
+        }
         Stmt::If {
             cond,
             then_body,
             else_body,
         } => {
-            fixup_expr(cond, env, temps);
-            let mut then_env = env.clone();
-            let mut else_env = env.clone();
+            fixup_expr(cond, function, facts, temps, path);
             walk::with_path_segment(path, PathSegment::Then, |path| {
-                fixup_body(then_body, function, facts, &mut then_env, path);
+                fixup_body(then_body, function, facts, path);
             });
             walk::with_path_segment(path, PathSegment::Else, |path| {
-                fixup_body(else_body, function, facts, &mut else_env, path);
+                fixup_body(else_body, function, facts, path);
             });
         }
         Stmt::LetIf {
@@ -377,33 +144,29 @@ fn fixup_stmt(
             else_value,
             ..
         } => {
-            fixup_expr(cond, env, temps);
-            let mut then_env = env.clone();
-            let mut else_env = env.clone();
+            fixup_expr(cond, function, facts, temps, path);
             walk::with_path_segment(path, PathSegment::Then, |path| {
-                fixup_body(then_body, function, facts, &mut then_env, path);
+                fixup_body(then_body, function, facts, path);
+                fixup_expr(then_value, function, facts, temps, path);
             });
-            fixup_expr(then_value, &then_env, temps);
             walk::with_path_segment(path, PathSegment::Else, |path| {
-                fixup_body(else_body, function, facts, &mut else_env, path);
+                fixup_body(else_body, function, facts, path);
+                fixup_expr(else_value, function, facts, temps, path);
             });
-            fixup_expr(else_value, &else_env, temps);
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            let mut nested_env = env.clone();
-            fixup_body(body, function, facts, &mut nested_env, path);
+            fixup_body(body, function, facts, path);
         }
         Stmt::While { cond, body } => {
-            fixup_expr(cond, env, temps);
-            fixup_block(body, function, facts, env, path);
+            fixup_expr(cond, function, facts, temps, path);
+            fixup_block(body, function, facts, path);
         }
-        Stmt::Block(body) | Stmt::Unsafe { body } => fixup_block(body, function, facts, env, path),
+        Stmt::Block(body) | Stmt::Unsafe { body } => fixup_block(body, function, facts, path),
         Stmt::Match { expr, arms } => {
-            fixup_expr(expr, env, temps);
+            fixup_expr(expr, function, facts, temps, path);
             for (index, arm) in arms.iter_mut().enumerate() {
-                let mut arm_env = env.clone();
                 walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
-                    fixup_body(&mut arm.body, function, facts, &mut arm_env, path);
+                    fixup_body(&mut arm.body, function, facts, path);
                 });
             }
         }
@@ -415,22 +178,24 @@ fn fixup_block(
     block: &mut Block,
     function: FunctionId,
     facts: &FixupFacts,
-    env: &BTreeMap<String, StringKind>,
     path: &mut Vec<PathSegment>,
 ) {
-    let mut block_env = env.clone();
-    fixup_body(&mut block.stmts, function, facts, &mut block_env, path);
+    fixup_body(&mut block.stmts, function, facts, path);
     if let Some(tail) = &mut block.tail {
-        fixup_expr(tail, &block_env, &BTreeMap::new());
+        walk::with_path_segment(path, PathSegment::BlockTail, |path| {
+            fixup_expr(tail, function, facts, &BTreeMap::new(), path);
+        });
     }
 }
 
 fn fixup_expr(
     expr: &mut Expr,
-    env: &BTreeMap<String, StringKind>,
+    function: FunctionId,
+    facts: &FixupFacts,
     temps: &BTreeMap<String, Compare>,
+    path: &mut Vec<PathSegment>,
 ) {
-    if let Some(replacement) = replacement_expr(expr, env, temps) {
+    if let Some(replacement) = replacement_expr(expr, function, facts, temps, path) {
         *expr = replacement;
         return;
     }
@@ -439,51 +204,81 @@ fn fixup_expr(
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => fixup_expr(expr, env, temps),
+        | Expr::Transmute { expr, .. } => {
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(expr, function, facts, temps, path)
+            });
+        }
         Expr::Binary { lhs, rhs, .. } => {
-            fixup_expr(lhs, env, temps);
-            fixup_expr(rhs, env, temps);
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(lhs, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                fixup_expr(rhs, function, facts, temps, path)
+            });
         }
         Expr::Call { func, args } => {
-            fixup_expr(func, env, temps);
-            for arg in args {
-                fixup_expr(arg, env, temps);
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(func, function, facts, temps, path)
+            });
+            for (index, arg) in args.iter_mut().enumerate() {
+                walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
+                    fixup_expr(arg, function, facts, temps, path)
+                });
             }
         }
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            fixup_expr(recv, env, temps);
-            for arg in args {
-                fixup_expr(arg, env, temps);
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(recv, function, facts, temps, path)
+            });
+            for (index, arg) in args.iter_mut().enumerate() {
+                walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
+                    fixup_expr(arg, function, facts, temps, path)
+                });
             }
         }
         Expr::Field { base, .. }
         | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => fixup_expr(base, env, temps),
+        | Expr::ArrayPtr { array: base, .. } => {
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(base, function, facts, temps, path)
+            });
+        }
         Expr::Index { base, index } => {
-            fixup_expr(base, env, temps);
-            fixup_expr(index, env, temps);
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(base, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                fixup_expr(index, function, facts, temps, path)
+            });
         }
         Expr::StructLit { fields, .. } => {
-            for (_, value) in fields {
-                fixup_expr(value, env, temps);
+            for (index, (_, value)) in fields.iter_mut().enumerate() {
+                walk::with_path_segment(path, PathSegment::Expr(index), |path| {
+                    fixup_expr(value, function, facts, temps, path)
+                });
             }
         }
-        Expr::ArrayLit(elems) => {
-            for elem in elems {
-                fixup_expr(elem, env, temps);
+        Expr::ArrayLit(elems) | Expr::Macro { args: elems, .. } => {
+            for (index, elem) in elems.iter_mut().enumerate() {
+                walk::with_path_segment(path, PathSegment::Expr(index), |path| {
+                    fixup_expr(elem, function, facts, temps, path)
+                });
             }
         }
-        Expr::ArrayRepeat { elem, .. } => fixup_expr(elem, env, temps),
-        Expr::Macro { args, .. } => {
-            for arg in args {
-                fixup_expr(arg, env, temps);
-            }
+        Expr::ArrayRepeat { elem, .. } | Expr::Closure { body: elem, .. } => {
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(elem, function, facts, temps, path)
+            });
         }
-        Expr::Closure { body, .. } => fixup_expr(body, env, temps),
         Expr::Match { expr, arms } => {
-            fixup_expr(expr, env, temps);
-            for arm in arms {
-                fixup_expr(&mut arm.value, env, temps);
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(expr, function, facts, temps, path)
+            });
+            for (index, arm) in arms.iter_mut().enumerate() {
+                walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
+                    fixup_expr(&mut arm.value, function, facts, temps, path)
+                });
             }
         }
         Expr::If {
@@ -491,39 +286,72 @@ fn fixup_expr(
             then_expr,
             else_expr,
         } => {
-            fixup_expr(cond, env, temps);
-            fixup_expr(then_expr, env, temps);
-            fixup_expr(else_expr, env, temps);
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(cond, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                fixup_expr(then_expr, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(2), |path| {
+                fixup_expr(else_expr, function, facts, temps, path)
+            });
         }
-        Expr::Block(block) | Expr::Unsafe(block) => fixup_block(
-            block,
-            FunctionId(usize::MAX),
-            &FixupFacts::default(),
-            env,
-            &mut Vec::new(),
-        ),
+        Expr::Block(block) => {
+            walk::with_path_segment(path, PathSegment::BlockBody, |path| {
+                fixup_block(block, function, facts, path)
+            });
+        }
+        Expr::Unsafe(block) => {
+            walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
+                fixup_block(block, function, facts, path)
+            });
+        }
         Expr::CopyNonoverlapping { src, dst, .. } => {
-            fixup_expr(src, env, temps);
-            fixup_expr(dst, env, temps);
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(src, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                fixup_expr(dst, function, facts, temps, path)
+            });
         }
         Expr::PtrCopy {
             src, dst, count, ..
         } => {
-            fixup_expr(src, env, temps);
-            fixup_expr(dst, env, temps);
-            fixup_expr(count, env, temps);
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(src, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                fixup_expr(dst, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(2), |path| {
+                fixup_expr(count, function, facts, temps, path)
+            });
         }
         Expr::WriteBytes { dst, val, count } => {
-            fixup_expr(dst, env, temps);
-            fixup_expr(val, env, temps);
-            fixup_expr(count, env, temps);
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(dst, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                fixup_expr(val, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(2), |path| {
+                fixup_expr(count, function, facts, temps, path)
+            });
         }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => fixup_expr(ptr, env, temps),
+        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(ptr, function, facts, temps, path)
+            });
+        }
         Expr::AtomicStore { ptr, value, .. }
         | Expr::AtomicFetch { ptr, value, .. }
         | Expr::AtomicSwap { ptr, value, .. } => {
-            fixup_expr(ptr, env, temps);
-            fixup_expr(value, env, temps);
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(ptr, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                fixup_expr(value, function, facts, temps, path)
+            });
         }
         Expr::AtomicCompareExchange {
             ptr,
@@ -531,9 +359,15 @@ fn fixup_expr(
             desired,
             ..
         } => {
-            fixup_expr(ptr, env, temps);
-            fixup_expr(expected, env, temps);
-            fixup_expr(desired, env, temps);
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(ptr, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                fixup_expr(expected, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(2), |path| {
+                fixup_expr(desired, function, facts, temps, path)
+            });
         }
         Expr::Value(_)
         | Expr::Str(_)
@@ -548,8 +382,10 @@ fn fixup_expr(
 
 fn replacement_expr(
     expr: &Expr,
-    env: &BTreeMap<String, StringKind>,
+    function: FunctionId,
+    facts: &FixupFacts,
     temps: &BTreeMap<String, Compare>,
+    path: &mut Vec<PathSegment>,
 ) -> Option<Expr> {
     if let Some((compare, op)) = temp_zero_comparison(expr, temps) {
         return Some(compare_to_bool(compare, op));
@@ -557,21 +393,26 @@ fn replacement_expr(
     if let Expr::Binary { op, lhs, rhs } = expr
         && op.is_comparison()
     {
-        if let Some(compare) = supported_compare_call(lhs, env)
+        let mut lhs_path = path.to_vec();
+        lhs_path.push(PathSegment::Expr(0));
+        let mut rhs_path = path.to_vec();
+        rhs_path.push(PathSegment::Expr(1));
+        if let Some(compare) = supported_compare_call(lhs, function, facts, &lhs_path)
             && is_zero(rhs)
         {
             return Some(compare_to_bool(&compare, *op));
         }
-        if let Some(compare) = supported_compare_call(rhs, env)
+        if let Some(compare) = supported_compare_call(rhs, function, facts, &rhs_path)
             && is_zero(lhs)
         {
             return Some(compare_to_bool(&compare, flip_comparison(*op)));
         }
     }
-    if let Some(source) = supported_strlen_call(expr, env) {
+    if let Some(source) = supported_strlen_call(function, facts, path) {
         return Some(strlen_replacement(source));
     }
-    supported_compare_call(expr, env).map(|compare| cmp_to_i32(compare_expr(compare)))
+    supported_compare_call(expr, function, facts, path)
+        .map(|compare| cmp_to_i32(compare_expr(compare)))
 }
 
 fn strlen_replacement(source: Source) -> Expr {
@@ -582,40 +423,54 @@ fn strlen_replacement(source: Source) -> Expr {
     }
 }
 
-fn supported_strlen_call(expr: &Expr, env: &BTreeMap<String, StringKind>) -> Option<Source> {
-    let Expr::Call { func, args } = peel_empty_unsafe(expr) else {
-        return None;
-    };
-    if !matches!(&**func, Expr::Var(name) if name.as_str() == "strlen") || args.len() != 1 {
+fn supported_strlen_call(
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<Source> {
+    let usage = facts.string_libc_use(function, &AstPath(path.to_vec()))?;
+    if usage.callee != StringLibcFunction::StrLen || usage.pointer_args.len() != 1 {
         return None;
     }
-    pointer_source(&args[0], env)
+    source_for_binding(facts, usage.pointer_args[0])
 }
 
-fn supported_compare_call(expr: &Expr, env: &BTreeMap<String, StringKind>) -> Option<Compare> {
+fn supported_compare_call(
+    expr: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<Compare> {
     let Expr::Call { func, args } = peel_empty_unsafe(expr) else {
         return None;
     };
     let Expr::Var(name) = &**func else {
         return None;
     };
-    match name.as_str() {
-        "strcmp" if args.len() == 2 => {
-            let lhs = pointer_source(&args[0], env)?;
-            let rhs = pointer_source(&args[1], env)?;
+    let usage = facts.string_libc_use(function, &AstPath(path.to_vec()))?;
+    match (name.as_str(), usage.callee) {
+        ("strcmp", StringLibcFunction::StrCmp)
+            if args.len() == 2 && usage.pointer_args.len() == 2 =>
+        {
+            let lhs = source_for_binding(facts, usage.pointer_args[0])?;
+            let rhs = source_for_binding(facts, usage.pointer_args[1])?;
             comparable(lhs, rhs).map(|(lhs, rhs)| Compare { lhs, rhs })
         }
-        "strncmp" if args.len() == 3 => {
-            let lhs = pointer_source(&args[0], env)?;
-            let rhs = pointer_source(&args[1], env)?;
+        ("strncmp", StringLibcFunction::StrNCmp)
+            if args.len() == 3 && usage.pointer_args.len() == 2 =>
+        {
+            let lhs = source_for_binding(facts, usage.pointer_args[0])?;
+            let rhs = source_for_binding(facts, usage.pointer_args[1])?;
             Some(Compare {
                 lhs: prefix(lhs, args[2].clone()),
                 rhs: prefix(rhs, args[2].clone()),
             })
         }
-        "memcmp" if args.len() == 3 => {
-            let lhs = pointer_source(&args[0], env)?;
-            let rhs = pointer_source(&args[1], env)?;
+        ("memcmp", StringLibcFunction::MemCmp)
+            if args.len() == 3 && usage.pointer_args.len() == 2 =>
+        {
+            let lhs = source_for_binding(facts, usage.pointer_args[0])?;
+            let rhs = source_for_binding(facts, usage.pointer_args[1])?;
             Some(Compare {
                 lhs: prefix(lhs, args[2].clone()),
                 rhs: prefix(rhs, args[2].clone()),
@@ -642,24 +497,22 @@ fn peel_empty_unsafe(expr: &Expr) -> &Expr {
     expr
 }
 
-fn pointer_source(expr: &Expr, env: &BTreeMap<String, StringKind>) -> Option<Source> {
-    match expr {
-        Expr::Var(name) => env.get(name.as_str()).map(|kind| Source {
-            name: name.as_str().into(),
-            kind: *kind,
-        }),
-        Expr::MethodCall { recv, method, args }
-            if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
-        {
-            pointer_source(recv, env)
-        }
-        Expr::ArrayPtr { array, .. } => pointer_source(array, env),
-        Expr::Cast { expr, .. }
-        | Expr::Unary { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => pointer_source(expr, env),
-        _ => None,
+fn source_for_binding(
+    facts: &FixupFacts,
+    binding: crate::fixups::facts::BindingId,
+) -> Option<Source> {
+    let buffer = facts.string_buffer(binding)?;
+    Some(Source {
+        name: facts.binding_name(binding)?.to_owned(),
+        kind: string_kind_for_buffer(buffer)?,
+    })
+}
+
+fn string_kind_for_buffer(buffer: &StringBufferFact) -> Option<StringKind> {
+    match buffer.kind {
+        StringBufferKind::BorrowedStr | StringBufferKind::OwnedString => Some(StringKind::Str),
+        StringBufferKind::BorrowedBytes => Some(StringKind::Bytes),
+        StringBufferKind::CharArray => None,
     }
 }
 
