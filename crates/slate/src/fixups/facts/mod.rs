@@ -19,6 +19,9 @@ pub(super) struct FixupFacts {
     pub(super) effects: Vec<EffectFact>,
     pub(super) places: Vec<PlaceFact>,
     pub(super) values: Vec<ValueFact>,
+    pub(super) string_buffers: Vec<StringBufferFact>,
+    pub(super) string_pointer_views: Vec<StringPointerViewFact>,
+    pub(super) string_libc_uses: Vec<StringLibcUseFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
@@ -144,6 +147,97 @@ pub(super) enum ConstValue {
     String(String),
     Zero,
     ArrayLength(usize),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct StringBufferFact {
+    pub(super) function: FunctionId,
+    pub(super) binding: BindingId,
+    pub(super) path: AstPath,
+    pub(super) kind: StringBufferKind,
+    pub(super) provenance: StringBufferProvenance,
+    pub(super) bytes: Option<Vec<u8>>,
+    pub(super) nul_termination: NulTermination,
+    pub(super) interior_nul: bool,
+    pub(super) candidates: BTreeSet<StringRecoveryCandidate>,
+    pub(super) rejections: BTreeSet<StringBufferRejection>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum StringBufferKind {
+    CharArray,
+    BorrowedStr,
+    BorrowedBytes,
+    OwnedString,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum StringBufferProvenance {
+    Literal,
+    ZeroInitialized,
+    AssignedLiteral { assignment: AstPath },
+    Lifted,
+    Unknown,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum NulTermination {
+    NotApplicable,
+    Unterminated,
+    Terminated,
+    AllZero,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum StringRecoveryCandidate {
+    BorrowedStr,
+    BorrowedBytes,
+    OwnedString,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum StringBufferRejection {
+    Indexed,
+    Mutated,
+    UnsupportedInitializer,
+    Unterminated,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct StringPointerViewFact {
+    pub(super) function: FunctionId,
+    pub(super) source: BindingId,
+    pub(super) path: AstPath,
+    pub(super) mutable: bool,
+    pub(super) kind: StringPointerViewKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum StringPointerViewKind {
+    AsPtr,
+    AsMutPtr,
+    ArrayPtr,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct StringLibcUseFact {
+    pub(super) function: FunctionId,
+    pub(super) callee: StringLibcFunction,
+    pub(super) path: AstPath,
+    pub(super) pointer_args: Vec<BindingId>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum StringLibcFunction {
+    StrLen,
+    StrCmp,
+    StrNCmp,
+    MemCmp,
+    StrCpy,
+    StrNCpy,
+    StrCat,
+    StrNCat,
+    Printf,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -472,6 +566,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     super::effects::collect_facts(&program, &mut collector.facts);
     super::places::collect_facts(&program, &mut collector.facts);
     super::values::collect_facts(&program, &mut collector.facts);
+    super::strings::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
         facts: collector.facts,
