@@ -17,6 +17,9 @@ pub(super) struct FixupFacts {
     pub(super) mutability: Vec<BindingMutabilityFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
+    pub(super) slice_pointer_views: Vec<SlicePointerViewFact>,
+    pub(super) slice_index_ranges: Vec<SliceIndexRangeFact>,
+    pub(super) slice_pointer_indexes: Vec<SlicePointerIndexFact>,
     pub(super) relations: Vec<FactRelation>,
 }
 
@@ -82,6 +85,53 @@ pub(super) struct PtrLenSliceFact {
 pub(super) struct PtrLenUnsupportedCallsiteFact {
     pub(super) caller: FunctionId,
     pub(super) callee: FunctionId,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct SlicePointerViewFact {
+    pub(super) function: FunctionId,
+    pub(super) pointer: BindingId,
+    pub(super) slice: BindingId,
+    pub(super) mutable: bool,
+    pub(super) elem_ty: Type,
+    pub(super) path: AstPath,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct SliceIndexRangeFact {
+    pub(super) function: FunctionId,
+    pub(super) index: BindingId,
+    pub(super) slice: BindingId,
+    pub(super) lower: IndexLowerBound,
+    pub(super) upper: IndexUpperBound,
+    pub(super) loop_path: AstPath,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct SlicePointerIndexFact {
+    pub(super) function: FunctionId,
+    pub(super) pointer: BindingId,
+    pub(super) slice: BindingId,
+    pub(super) offset_index: BindingId,
+    pub(super) ranged_index: BindingId,
+    pub(super) unit: PointerOffsetUnit,
+    pub(super) path: AstPath,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum IndexLowerBound {
+    Zero,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum IndexUpperBound {
+    SliceLen,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum PointerOffsetUnit {
+    Elements,
+    Bytes,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
