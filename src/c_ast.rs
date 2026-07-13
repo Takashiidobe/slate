@@ -400,7 +400,7 @@ fn enum_constant_value(node: &Value) -> Option<i64> {
 fn extract_function(node: &Value) -> Option<Function> {
     let name = node.get("name")?.as_str()?.to_string();
     let fn_qual_type = qual_type(node).unwrap_or("int ()");
-    let (ret, _) = parse_function_qual_type(fn_qual_type);
+    let (ret, _) = parse_function_decl_qual_type(fn_qual_type);
     let params = children(node)
         .iter()
         .filter(|child| kind(child) == Some("ParmVarDecl"))
@@ -571,7 +571,7 @@ fn parse_expr(node: &Value) -> Option<Expr> {
     }
 }
 
-fn parse_function_qual_type(s: &str) -> (CType, Vec<CType>) {
+fn parse_function_decl_qual_type(s: &str) -> (CType, Vec<CType>) {
     let Some((ret, params)) = s.split_once('(') else {
         return (parse_c_type(s), Vec::new());
     };
@@ -599,10 +599,21 @@ fn parse_c_type(s: &str) -> CType {
             params,
         };
     }
+    if let Some((ret, params)) = parse_function_qual_type(s) {
+        return CType::FuncPtr {
+            ret: Box::new(ret),
+            params,
+        };
+    }
     if s == "void" {
         CType::Void
     } else if let Some(inner) = s.strip_suffix('*') {
-        CType::Ptr(Box::new(parse_c_type(inner.trim())))
+        let inner = parse_c_type(inner.trim());
+        if matches!(inner, CType::FuncPtr { .. }) {
+            inner
+        } else {
+            CType::Ptr(Box::new(inner))
+        }
     } else if let Some((inner, size)) = s.split_once('[') {
         let size = size.trim_end_matches(']').parse().ok();
         CType::Array(Box::new(parse_c_type(inner.trim())), size)
@@ -652,6 +663,23 @@ fn enum_is_signed(name: &str) -> bool {
 fn parse_function_pointer_qual_type(s: &str) -> Option<(CType, Vec<CType>)> {
     let (ret, rest) = s.split_once("(*)")?;
     let params = rest.trim().strip_prefix('(')?.strip_suffix(')')?.trim();
+    Some((parse_c_type(ret.trim()), parse_function_params(params)))
+}
+
+fn parse_function_qual_type(s: &str) -> Option<(CType, Vec<CType>)> {
+    let open = s.find('(')?;
+    let ret = s[..open].trim();
+    if ret.is_empty() || ret.contains('*') || matches!(ret, "struct" | "union" | "enum") {
+        return None;
+    }
+    let params = s[open + 1..].strip_suffix(')')?.trim();
+    if params.contains("unnamed at") {
+        return None;
+    }
+    Some((parse_c_type(ret), parse_function_params(params)))
+}
+
+fn parse_function_params(params: &str) -> Vec<CType> {
     let params = if params.is_empty() || params == "void" {
         Vec::new()
     } else {
@@ -661,7 +689,7 @@ fn parse_function_pointer_qual_type(s: &str) -> Option<(CType, Vec<CType>)> {
             .map(parse_c_type)
             .collect()
     };
-    Some((parse_c_type(ret.trim()), params))
+    params
 }
 
 fn split_c_type_list(s: &str) -> impl Iterator<Item = &str> {

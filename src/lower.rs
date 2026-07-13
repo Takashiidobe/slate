@@ -1140,6 +1140,10 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
         CType::Float { bits: 32 } => Type::Prim(Prim::F32),
         CType::Float { bits: 80 } => Type::LongDouble,
         CType::Float { .. } => Type::Prim(Prim::F64),
+        CType::Ptr(inner) if matches!(&**inner, CType::Void) => Type::Ptr {
+            mutable: true,
+            inner: Box::new(Type::CLib(CLibType::Void)),
+        },
         CType::Ptr(inner) => ptr(inner),
         CType::FuncPtr { ret, params } => Type::FnPtr {
             params: params.iter().map(c_type_to_type).collect(),
@@ -1150,6 +1154,7 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
             len: *len,
         },
         CType::Array(inner, None) => ptr(inner),
+        CType::Record(name) if name == "_IO_FILE" => Type::CLib(CLibType::File),
         CType::Record(name) => Type::Custom(sanitize_ident(name).into_string()),
     }
 }
@@ -2417,6 +2422,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .next()
             .unwrap_or("");
         let value = match self.values.get(src).cloned() {
+            Some(Val::Global(name))
+                if result_ty.starts_with("!cir.ptr<")
+                    && self.parent.strings.contains_key(&name) =>
+            {
+                let bytes = self.parent.strings[&name].clone();
+                Val::Expr(Expr::Cast {
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(Expr::ByteStr(bytes)),
+                        method: "as_ptr".into(),
+                        args: Vec::new(),
+                    }),
+                    ty: self.parent.rust_type(result_ty),
+                })
+            }
             Some(Val::Global(name))
                 if result_ty.starts_with("!cir.ptr<")
                     && self.parent.const_arrays.contains_key(&name) =>
@@ -4987,6 +5006,10 @@ fn parse_cir_const_complex(s: &str) -> Option<(String, String)> {
 }
 
 fn parse_cir_const_array(s: &str) -> Option<Vec<u8>> {
+    let s = s.trim_start();
+    if !s.starts_with("#cir.const_array<\"") {
+        return None;
+    }
     let start = s.find('"')? + 1;
     let rest = &s[start..];
     let end = rest.find('"')?;
