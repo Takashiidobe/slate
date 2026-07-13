@@ -1,4 +1,5 @@
-use crate::rust_ast::{Block, Expr, IndentStmt, Prim, RustValue, Stmt, Type};
+use crate::fixups::support::walk;
+use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 use std::collections::BTreeSet;
 
 pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
@@ -210,70 +211,25 @@ fn byte_literal(expr: &Expr) -> Option<u8> {
 }
 
 fn stmt_allows_lift(stmt: &Stmt, name: &str, liftable: &BTreeSet<String>) -> bool {
-    match stmt {
-        Stmt::Let { init, .. } => init
-            .as_ref()
-            .is_none_or(|expr| expr_allows_lift(expr, name, false, liftable)),
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
-            expr_allows_lift(expr, name, false, liftable)
-        }
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => true,
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            !expr_mentions_var(target, name) && expr_allows_lift(value, name, false, liftable)
-        }
-        Stmt::If {
-            cond,
-            then_body,
-            else_body,
-        } => {
-            expr_allows_lift(cond, name, false, liftable)
-                && body_allows_lift(then_body, name, liftable)
-                && body_allows_lift(else_body, name, liftable)
-        }
-        Stmt::LetIf {
-            cond,
-            then_body,
-            then_value,
-            else_body,
-            else_value,
-            ..
-        } => {
-            expr_allows_lift(cond, name, false, liftable)
-                && body_allows_lift(then_body, name, liftable)
-                && expr_allows_lift(then_value, name, false, liftable)
-                && body_allows_lift(else_body, name, liftable)
-                && expr_allows_lift(else_value, name, false, liftable)
-        }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            body_allows_lift(body, name, liftable)
-        }
-        Stmt::While { body, cond } => {
-            expr_allows_lift(cond, name, false, liftable) && block_allows_lift(body, name, liftable)
-        }
-        Stmt::Block(body) | Stmt::Unsafe { body } => block_allows_lift(body, name, liftable),
-        Stmt::Match { expr, arms } => {
-            expr_allows_lift(expr, name, false, liftable)
-                && arms
-                    .iter()
-                    .all(|arm| body_allows_lift(&arm.body, name, liftable))
-        }
-    }
+    walk::stmt_exprs_all_with(
+        stmt,
+        &mut |stmt| match stmt {
+            Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+                Some(!expr_mentions_var(target, name) && expr_allows_lift(value, name, liftable))
+            }
+            _ => None,
+        },
+        &mut |expr| expr_allows_lift_override(expr, name, liftable),
+    )
 }
 
-fn body_allows_lift(body: &[IndentStmt], name: &str, liftable: &BTreeSet<String>) -> bool {
-    body.iter()
-        .all(|indent| stmt_allows_lift(&indent.stmt, name, liftable))
+fn expr_allows_lift(expr: &Expr, name: &str, liftable: &BTreeSet<String>) -> bool {
+    walk::exprs_all_with(expr, &mut |expr| {
+        expr_allows_lift_override(expr, name, liftable)
+    })
 }
 
-fn block_allows_lift(block: &Block, name: &str, liftable: &BTreeSet<String>) -> bool {
-    body_allows_lift(&block.stmts, name, liftable)
-        && block
-            .tail
-            .as_deref()
-            .is_none_or(|expr| expr_allows_lift(expr, name, false, liftable))
-}
-
-fn expr_allows_lift(expr: &Expr, name: &str, in_printf: bool, liftable: &BTreeSet<String>) -> bool {
+fn expr_allows_lift_override(expr: &Expr, name: &str, liftable: &BTreeSet<String>) -> Option<bool> {
     match expr {
         Expr::Var(v) if v.as_str() == name => false,
         Expr::MethodCall { recv, method, args }
@@ -281,125 +237,28 @@ fn expr_allows_lift(expr: &Expr, name: &str, in_printf: bool, liftable: &BTreeSe
                 && matches!(&**recv, Expr::Var(v) if v.as_str() == name)
                 && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
         {
-            in_printf
+            false
         }
         Expr::ArrayPtr { array, .. } if matches!(&**array, Expr::Var(v) if v.as_str() == name) => {
-            in_printf
+            false
         }
         Expr::Call { func, args } if matches!(&**func, Expr::Var(callee) if callee.as_str() == "printf") => {
             if args.iter().any(|arg| expr_has_pointer_view(arg, name)) {
                 printf_call_allows_lift(args, name)
             } else {
-                args.iter()
-                    .all(|arg| expr_allows_lift(arg, name, false, liftable))
+                args.iter().all(|arg| expr_allows_lift(arg, name, liftable))
             }
         }
         Expr::Call { func, args } if matches!(&**func, Expr::Var(callee) if matches!(callee.as_str(), "strlen" | "strcmp" | "strncmp" | "memcmp")) => {
             libc_string_call_allows_lift(args, name, liftable)
         }
-        Expr::Call { func, args } => {
-            expr_allows_lift(func, name, false, liftable)
-                && args
-                    .iter()
-                    .all(|arg| expr_allows_lift(arg, name, false, liftable))
-        }
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => expr_allows_lift(expr, name, in_printf, liftable),
-        Expr::Binary { lhs, rhs, .. } => {
-            expr_allows_lift(lhs, name, in_printf, liftable)
-                && expr_allows_lift(rhs, name, in_printf, liftable)
-        }
-        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            expr_allows_lift(recv, name, in_printf, liftable)
-                && args
-                    .iter()
-                    .all(|arg| expr_allows_lift(arg, name, in_printf, liftable))
-        }
-        Expr::Field { base, .. }
-        | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => expr_allows_lift(base, name, in_printf, liftable),
-        Expr::Index { base, index } => {
-            expr_allows_lift(base, name, in_printf, liftable)
-                && expr_allows_lift(index, name, in_printf, liftable)
-        }
-        Expr::StructLit { fields, .. } => fields
-            .iter()
-            .all(|(_, value)| expr_allows_lift(value, name, in_printf, liftable)),
-        Expr::ArrayLit(elems) => elems
-            .iter()
-            .all(|elem| expr_allows_lift(elem, name, in_printf, liftable)),
-        Expr::ArrayRepeat { elem, .. } => expr_allows_lift(elem, name, in_printf, liftable),
-        Expr::Macro { args, .. } => args
-            .iter()
-            .all(|arg| expr_allows_lift(arg, name, in_printf, liftable)),
-        Expr::Closure { body, .. } => expr_allows_lift(body, name, in_printf, liftable),
-        Expr::Match { expr, arms } => {
-            expr_allows_lift(expr, name, in_printf, liftable)
-                && arms
-                    .iter()
-                    .all(|arm| expr_allows_lift(&arm.value, name, in_printf, liftable))
-        }
-        Expr::If {
-            cond,
-            then_expr,
-            else_expr,
-        } => {
-            expr_allows_lift(cond, name, in_printf, liftable)
-                && expr_allows_lift(then_expr, name, in_printf, liftable)
-                && expr_allows_lift(else_expr, name, in_printf, liftable)
-        }
-        Expr::Block(block) | Expr::Unsafe(block) => block_allows_lift(block, name, liftable),
-        Expr::CopyNonoverlapping { src, dst, .. } => {
-            expr_allows_lift(src, name, in_printf, liftable)
-                && expr_allows_lift(dst, name, in_printf, liftable)
-        }
-        Expr::PtrCopy {
-            src, dst, count, ..
-        } => {
-            expr_allows_lift(src, name, in_printf, liftable)
-                && expr_allows_lift(dst, name, in_printf, liftable)
-                && expr_allows_lift(count, name, in_printf, liftable)
-        }
-        Expr::WriteBytes { dst, val, count } => {
-            expr_allows_lift(dst, name, in_printf, liftable)
-                && expr_allows_lift(val, name, in_printf, liftable)
-                && expr_allows_lift(count, name, in_printf, liftable)
-        }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-            expr_allows_lift(ptr, name, in_printf, liftable)
-        }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            expr_allows_lift(ptr, name, in_printf, liftable)
-                && expr_allows_lift(value, name, in_printf, liftable)
-        }
-        Expr::AtomicCompareExchange {
-            ptr,
-            expected,
-            desired,
-            ..
-        } => {
-            expr_allows_lift(ptr, name, in_printf, liftable)
-                && expr_allows_lift(expected, name, in_printf, liftable)
-                && expr_allows_lift(desired, name, in_printf, liftable)
-        }
-        Expr::Value(_)
-        | Expr::Str(_)
-        | Expr::HexFloat(_)
-        | Expr::ByteStr(_)
-        | Expr::Path(_)
-        | Expr::AtomicFence { .. }
-        | Expr::Todo(_)
-        | Expr::Var(_) => true,
+        _ => return None,
     }
+    .into()
 }
 
 fn expr_mentions_var(expr: &Expr, name: &str) -> bool {
-    !expr_allows_lift(expr, name, false, &BTreeSet::new())
+    !expr_allows_lift(expr, name, &BTreeSet::new())
 }
 
 fn stmt_mentions_var(stmt: &Stmt, name: &str) -> bool {
@@ -461,7 +320,7 @@ fn libc_string_call_allows_lift(args: &[Expr], name: &str, liftable: &BTreeSet<S
         pointer_view_source(arg).is_some_and(|source| source == name || liftable.contains(source))
     }) && other_args
         .iter()
-        .all(|arg| expr_allows_lift(arg, name, false, liftable))
+        .all(|arg| expr_allows_lift(arg, name, liftable))
 }
 
 fn printf_call_allows_lift(args: &[Expr], name: &str) -> bool {
@@ -477,7 +336,7 @@ fn printf_call_allows_lift(args: &[Expr], name: &str) -> bool {
             .zip(rest)
             .all(|(conversion, arg)| match conversion {
                 b's' => expr_has_pointer_view(arg, name) || const_c_string(arg).is_some(),
-                _ => expr_allows_lift(arg, name, false, &BTreeSet::new()),
+                _ => expr_allows_lift(arg, name, &BTreeSet::new()),
             })
 }
 
@@ -519,72 +378,14 @@ fn const_c_string(expr: &Expr) -> Option<Vec<u8>> {
 }
 
 fn rewrite_stmt_pointer_views(stmt: &mut Stmt, name: &str) {
-    match stmt {
-        Stmt::Let { init, .. } => {
-            if let Some(init) = init {
-                rewrite_expr_pointer_views(init, name);
-            }
-        }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => rewrite_expr_pointer_views(expr, name),
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            rewrite_expr_pointer_views(target, name);
-            rewrite_expr_pointer_views(value, name);
-        }
-        Stmt::If {
-            cond,
-            then_body,
-            else_body,
-        } => {
-            rewrite_expr_pointer_views(cond, name);
-            rewrite_body_pointer_views(then_body, name);
-            rewrite_body_pointer_views(else_body, name);
-        }
-        Stmt::LetIf {
-            cond,
-            then_body,
-            then_value,
-            else_body,
-            else_value,
-            ..
-        } => {
-            rewrite_expr_pointer_views(cond, name);
-            rewrite_body_pointer_views(then_body, name);
-            rewrite_expr_pointer_views(then_value, name);
-            rewrite_body_pointer_views(else_body, name);
-            rewrite_expr_pointer_views(else_value, name);
-        }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            rewrite_body_pointer_views(body, name);
-        }
-        Stmt::While { cond, body } => {
-            rewrite_expr_pointer_views(cond, name);
-            rewrite_block_pointer_views(body, name);
-        }
-        Stmt::Block(body) | Stmt::Unsafe { body } => rewrite_block_pointer_views(body, name),
-        Stmt::Match { expr, arms } => {
-            rewrite_expr_pointer_views(expr, name);
-            for arm in arms {
-                rewrite_body_pointer_views(&mut arm.body, name);
-            }
-        }
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
-    }
-}
-
-fn rewrite_body_pointer_views(body: &mut [IndentStmt], name: &str) {
-    for indent in body {
-        rewrite_stmt_pointer_views(&mut indent.stmt, name);
-    }
-}
-
-fn rewrite_block_pointer_views(block: &mut Block, name: &str) {
-    rewrite_body_pointer_views(&mut block.stmts, name);
-    if let Some(tail) = &mut block.tail {
-        rewrite_expr_pointer_views(tail, name);
-    }
+    walk::stmt_exprs_mut_with(stmt, &mut |expr| rewrite_pointer_view_expr(expr, name));
 }
 
 fn rewrite_expr_pointer_views(expr: &mut Expr, name: &str) {
+    walk::exprs_mut_with(expr, &mut |expr| rewrite_pointer_view_expr(expr, name));
+}
+
+fn rewrite_pointer_view_expr(expr: &mut Expr, name: &str) -> bool {
     match expr {
         Expr::MethodCall { recv, method, args }
             if args.is_empty()
@@ -602,6 +403,7 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, name: &str) {
                     inner: Box::new(Type::Prim(Prim::I8)),
                 },
             };
+            false
         }
         Expr::ArrayPtr { array, .. } if matches!(&**array, Expr::Var(v) if v.as_str() == name) => {
             *expr = Expr::Cast {
@@ -615,113 +417,9 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, name: &str) {
                     inner: Box::new(Type::Prim(Prim::I8)),
                 },
             };
+            false
         }
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => rewrite_expr_pointer_views(expr, name),
-        Expr::Binary { lhs, rhs, .. } => {
-            rewrite_expr_pointer_views(lhs, name);
-            rewrite_expr_pointer_views(rhs, name);
-        }
-        Expr::Call { func, args } => {
-            rewrite_expr_pointer_views(func, name);
-            for arg in args {
-                rewrite_expr_pointer_views(arg, name);
-            }
-        }
-        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            rewrite_expr_pointer_views(recv, name);
-            for arg in args {
-                rewrite_expr_pointer_views(arg, name);
-            }
-        }
-        Expr::Field { base, .. }
-        | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => {
-            rewrite_expr_pointer_views(base, name);
-        }
-        Expr::Index { base, index } => {
-            rewrite_expr_pointer_views(base, name);
-            rewrite_expr_pointer_views(index, name);
-        }
-        Expr::StructLit { fields, .. } => {
-            for (_, value) in fields {
-                rewrite_expr_pointer_views(value, name);
-            }
-        }
-        Expr::ArrayLit(elems) => {
-            for elem in elems {
-                rewrite_expr_pointer_views(elem, name);
-            }
-        }
-        Expr::ArrayRepeat { elem, .. } => rewrite_expr_pointer_views(elem, name),
-        Expr::Macro { args, .. } => {
-            for arg in args {
-                rewrite_expr_pointer_views(arg, name);
-            }
-        }
-        Expr::Closure { body, .. } => rewrite_expr_pointer_views(body, name),
-        Expr::Match { expr, arms } => {
-            rewrite_expr_pointer_views(expr, name);
-            for arm in arms {
-                rewrite_expr_pointer_views(&mut arm.value, name);
-            }
-        }
-        Expr::If {
-            cond,
-            then_expr,
-            else_expr,
-        } => {
-            rewrite_expr_pointer_views(cond, name);
-            rewrite_expr_pointer_views(then_expr, name);
-            rewrite_expr_pointer_views(else_expr, name);
-        }
-        Expr::Block(block) | Expr::Unsafe(block) => rewrite_block_pointer_views(block, name),
-        Expr::CopyNonoverlapping { src, dst, .. } => {
-            rewrite_expr_pointer_views(src, name);
-            rewrite_expr_pointer_views(dst, name);
-        }
-        Expr::PtrCopy {
-            src, dst, count, ..
-        } => {
-            rewrite_expr_pointer_views(src, name);
-            rewrite_expr_pointer_views(dst, name);
-            rewrite_expr_pointer_views(count, name);
-        }
-        Expr::WriteBytes { dst, val, count } => {
-            rewrite_expr_pointer_views(dst, name);
-            rewrite_expr_pointer_views(val, name);
-            rewrite_expr_pointer_views(count, name);
-        }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-            rewrite_expr_pointer_views(ptr, name);
-        }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            rewrite_expr_pointer_views(ptr, name);
-            rewrite_expr_pointer_views(value, name);
-        }
-        Expr::AtomicCompareExchange {
-            ptr,
-            expected,
-            desired,
-            ..
-        } => {
-            rewrite_expr_pointer_views(ptr, name);
-            rewrite_expr_pointer_views(expected, name);
-            rewrite_expr_pointer_views(desired, name);
-        }
-        Expr::Value(_)
-        | Expr::Str(_)
-        | Expr::HexFloat(_)
-        | Expr::ByteStr(_)
-        | Expr::Var(_)
-        | Expr::Path(_)
-        | Expr::AtomicFence { .. }
-        | Expr::Todo(_) => {}
+        _ => true,
     }
 }
 

@@ -516,6 +516,189 @@ fn exprs_all_with_hooks(
     }
 }
 
+pub(in crate::fixups) fn body_exprs_mut_with(
+    body: &mut [IndentStmt],
+    f: &mut impl FnMut(&mut Expr) -> bool,
+) {
+    for stmt in body {
+        stmt_exprs_mut_with(&mut stmt.stmt, f);
+    }
+}
+
+pub(in crate::fixups) fn block_exprs_mut_with(
+    block: &mut Block,
+    f: &mut impl FnMut(&mut Expr) -> bool,
+) {
+    body_exprs_mut_with(&mut block.stmts, f);
+    if let Some(tail) = &mut block.tail {
+        exprs_mut_with(tail, f);
+    }
+}
+
+pub(in crate::fixups) fn stmt_exprs_mut_with(
+    stmt: &mut Stmt,
+    f: &mut impl FnMut(&mut Expr) -> bool,
+) {
+    match stmt {
+        Stmt::Let { init, .. } => {
+            if let Some(expr) = init {
+                exprs_mut_with(expr, f);
+            }
+        }
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            exprs_mut_with(cond, f);
+            body_exprs_mut_with(then_body, f);
+            exprs_mut_with(then_value, f);
+            body_exprs_mut_with(else_body, f);
+            exprs_mut_with(else_value, f);
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            exprs_mut_with(target, f);
+            exprs_mut_with(value, f);
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => exprs_mut_with(expr, f),
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            exprs_mut_with(cond, f);
+            body_exprs_mut_with(then_body, f);
+            body_exprs_mut_with(else_body, f);
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            body_exprs_mut_with(body, f);
+        }
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            block_exprs_mut_with(body, f);
+        }
+        Stmt::Match { expr, arms } => {
+            exprs_mut_with(expr, f);
+            for arm in arms {
+                body_exprs_mut_with(&mut arm.body, f);
+            }
+        }
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+    }
+}
+
+pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut Expr) -> bool) {
+    if !f(expr) {
+        return;
+    }
+    match expr {
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::Var(_)
+        | Expr::Path(_)
+        | Expr::Todo(_)
+        | Expr::AtomicFence { .. } => {}
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => exprs_mut_with(expr, f),
+        Expr::Binary { lhs, rhs, .. } => {
+            exprs_mut_with(lhs, f);
+            exprs_mut_with(rhs, f);
+        }
+        Expr::Call { func, args } => {
+            exprs_mut_with(func, f);
+            for arg in args {
+                exprs_mut_with(arg, f);
+            }
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            exprs_mut_with(recv, f);
+            for arg in args {
+                exprs_mut_with(arg, f);
+            }
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => exprs_mut_with(base, f),
+        Expr::Index { base, index } => {
+            exprs_mut_with(base, f);
+            exprs_mut_with(index, f);
+        }
+        Expr::StructLit { fields, .. } => {
+            for (_, value) in fields {
+                exprs_mut_with(value, f);
+            }
+        }
+        Expr::ArrayLit(elems) => {
+            for elem in elems {
+                exprs_mut_with(elem, f);
+            }
+        }
+        Expr::ArrayRepeat { elem, .. } => exprs_mut_with(elem, f),
+        Expr::Macro { args, .. } => {
+            for arg in args {
+                exprs_mut_with(arg, f);
+            }
+        }
+        Expr::Closure { body, .. } => exprs_mut_with(body, f),
+        Expr::Match { expr, arms } => {
+            exprs_mut_with(expr, f);
+            for arm in arms {
+                exprs_mut_with(&mut arm.value, f);
+            }
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            exprs_mut_with(cond, f);
+            exprs_mut_with(then_expr, f);
+            exprs_mut_with(else_expr, f);
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => block_exprs_mut_with(block, f),
+        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => exprs_mut_with(ptr, f),
+        Expr::AtomicStore { ptr, value, .. }
+        | Expr::AtomicFetch { ptr, value, .. }
+        | Expr::AtomicSwap { ptr, value, .. } => {
+            exprs_mut_with(ptr, f);
+            exprs_mut_with(value, f);
+        }
+        Expr::AtomicCompareExchange {
+            ptr,
+            expected,
+            desired,
+            ..
+        } => {
+            exprs_mut_with(ptr, f);
+            exprs_mut_with(expected, f);
+            exprs_mut_with(desired, f);
+        }
+        Expr::CopyNonoverlapping { src, dst, .. } => {
+            exprs_mut_with(src, f);
+            exprs_mut_with(dst, f);
+        }
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => {
+            exprs_mut_with(src, f);
+            exprs_mut_with(dst, f);
+            exprs_mut_with(count, f);
+        }
+        Expr::WriteBytes { dst, val, count } => {
+            exprs_mut_with(dst, f);
+            exprs_mut_with(val, f);
+            exprs_mut_with(count, f);
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -631,5 +814,48 @@ mod tests {
             },
             &mut |_| None,
         ));
+    }
+
+    #[test]
+    fn stmt_exprs_mut_with_rewrites_nested_expression_blocks() {
+        let mut stmt = Stmt::Expr(Expr::Block(Box::new(Block {
+            stmts: vec![IndentStmt {
+                depth: 1,
+                stmt: Stmt::Expr(var("old")),
+            }],
+            tail: Some(Box::new(var("old"))),
+        })));
+
+        stmt_exprs_mut_with(&mut stmt, &mut |expr| {
+            if matches!(expr, Expr::Var(name) if name.as_str() == "old") {
+                *expr = var("new");
+            }
+            true
+        });
+
+        assert!(!stmt_exprs_any(&stmt, &mut |expr| {
+            matches!(expr, Expr::Var(name) if name.as_str() == "old")
+        }));
+        assert!(stmt_exprs_any(&stmt, &mut |expr| {
+            matches!(expr, Expr::Var(name) if name.as_str() == "new")
+        }));
+    }
+
+    #[test]
+    fn exprs_mut_with_can_skip_replaced_subtree() {
+        let mut expr = call("wrap", vec![var("old")]);
+
+        exprs_mut_with(&mut expr, &mut |expr| {
+            if matches!(expr, Expr::Call { .. }) {
+                *expr = var("new");
+                return false;
+            }
+            if matches!(expr, Expr::Var(name) if name.as_str() == "new") {
+                *expr = var("visited");
+            }
+            true
+        });
+
+        assert!(matches!(expr, Expr::Var(name) if name.as_str() == "new"));
     }
 }
