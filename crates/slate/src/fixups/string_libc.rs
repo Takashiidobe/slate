@@ -276,8 +276,15 @@ fn fixup_stmt(
     temps: &BTreeMap<String, Compare>,
 ) {
     match stmt {
-        Stmt::Let { init, .. } => {
+        Stmt::Let { ty, init, .. } => {
             if let Some(init) = init {
+                if let Some(source) = supported_strlen_call(init, env) {
+                    *init = strlen_replacement(source);
+                    if matches!(ty, Some(Type::Prim(Prim::U64))) {
+                        *ty = Some(Type::Prim(Prim::Usize));
+                    }
+                    return;
+                }
                 fixup_expr(init, env, temps);
             }
         }
@@ -479,16 +486,17 @@ fn replacement_expr(
         }
     }
     if let Some(source) = supported_strlen_call(expr, env) {
-        return Some(Expr::Cast {
-            expr: Box::new(Expr::MethodCall {
-                recv: Box::new(Expr::Var(source.name.into())),
-                method: "len".into(),
-                args: Vec::new(),
-            }),
-            ty: Type::Prim(Prim::U64),
-        });
+        return Some(strlen_replacement(source));
     }
     supported_compare_call(expr, env).map(|compare| cmp_to_i32(compare_expr(compare)))
+}
+
+fn strlen_replacement(source: Source) -> Expr {
+    Expr::MethodCall {
+        recv: Box::new(Expr::Var(source.name.into())),
+        method: "len".into(),
+        args: Vec::new(),
+    }
 }
 
 fn supported_strlen_call(expr: &Expr, env: &BTreeMap<String, StringKind>) -> Option<Source> {
@@ -955,7 +963,7 @@ mod tests {
             ],
         );
 
-        assert!(out.contains("let n: u64 = s.len() as u64;"));
+        assert!(out.contains("let n: usize = s.len();"));
         assert!(!out.contains("strlen("));
     }
 

@@ -493,7 +493,8 @@ fn string_libc_calls_use_lifted_string_operations() {
 
     assert!(rust.contains("let alpha: &str = \"abc\";"));
     assert!(rust.contains("let bytes_a: &[u8] = b\"\\xff\\x01\";"));
-    assert!(rust.contains("alpha.len()"));
+    assert!(rust.contains("let _v1: usize = alpha.len();"));
+    assert!(!rust.contains("alpha.len() as u64"));
     assert!(rust.contains("alpha == alpha"));
     assert!(rust.contains("alpha.cmp(beta) == std::cmp::Ordering::Less"));
     assert!(rust.contains(".split_at(std::cmp::min("));
