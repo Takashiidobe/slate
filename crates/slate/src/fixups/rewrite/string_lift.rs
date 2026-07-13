@@ -21,6 +21,7 @@ fn fixup_body(
     path: &mut Vec<PathSegment>,
 ) {
     let liftable = liftable_names(body, function, facts, path);
+    let mut removals = BTreeSet::new();
     let mut i = 0;
     while i < body.len() {
         let stmt_path = stmt_path(path, i);
@@ -51,12 +52,15 @@ fn fixup_body(
         *ty = Some(lifted.ty);
         *init = Some(lifted.expr);
         if let Some(remove_index) = remove_index {
-            body.remove(remove_index);
+            removals.insert(remove_index);
         }
         for indent in body.iter_mut().skip(i + 1) {
             rewrite_stmt_pointer_views(&mut indent.stmt, &name);
         }
         i += 1;
+    }
+    for index in removals.into_iter().rev() {
+        body.remove(index);
     }
 }
 

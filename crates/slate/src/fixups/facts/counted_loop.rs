@@ -8,6 +8,7 @@ use crate::fixups::support::walk;
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+    facts.counted_slice_loops.clear();
     for (item_index, item) in program.items.iter().enumerate() {
         let Item::Fn(f) = item else {
             continue;

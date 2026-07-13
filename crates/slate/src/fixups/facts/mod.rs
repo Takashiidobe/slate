@@ -1015,6 +1015,10 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     casts::collect_facts(&program, &mut collector.facts);
     strings::collect_facts(&program, &mut collector.facts);
     printf::collect_facts(&program, &mut collector.facts);
+    ptr_len::collect_facts(&program, &mut collector.facts);
+    slice_index::collect_facts(&program, &mut collector.facts);
+    counted_loop::collect_facts(&program, &mut collector.facts);
+    loop_shapes::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
         facts: collector.facts,
