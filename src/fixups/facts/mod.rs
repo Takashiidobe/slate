@@ -17,6 +17,7 @@ pub(super) struct FixupFacts {
     pub(super) borrow_alias: Vec<BorrowAliasFact>,
     pub(super) def_use: Vec<DefUseFact>,
     pub(super) effects: Vec<EffectFact>,
+    pub(super) places: Vec<PlaceFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
@@ -105,6 +106,69 @@ pub(super) struct EffectFact {
     pub(super) path: AstPath,
     pub(super) purity: Purity,
     pub(super) effects: BTreeSet<EffectKind>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct PlaceFact {
+    pub(super) function: FunctionId,
+    pub(super) path: AstPath,
+    pub(super) access: PlaceAccess,
+    pub(super) kind: PlaceKind,
+    pub(super) readable: bool,
+    pub(super) assignable: bool,
+    pub(super) ordinary_slot: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum PlaceKind {
+    Local {
+        name: String,
+    },
+    Projection {
+        root: PlaceRoot,
+        projections: Vec<PlaceProjection>,
+    },
+    Volatile {
+        access: VolatileAccess,
+    },
+    Atomic {
+        access: AtomicPlaceAccess,
+    },
+    Unsupported,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum PlaceRoot {
+    Local { name: String },
+    Unsupported,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum PlaceProjection {
+    Deref,
+    Field(String),
+    TupleField(usize),
+    Index,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum PlaceAccess {
+    Read,
+    Write,
+    ReadWrite,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum VolatileAccess {
+    Read,
+    Write,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum AtomicPlaceAccess {
+    Read,
+    Write,
+    ReadWrite,
 }
 
 #[derive(Debug, Clone)]
@@ -379,6 +443,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     super::borrow_alias::collect_facts(&program, &mut collector.facts);
     super::def_use::collect_facts(&program, &mut collector.facts);
     super::effects::collect_facts(&program, &mut collector.facts);
+    super::places::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
         facts: collector.facts,
