@@ -18,6 +18,7 @@ pub(super) struct FixupFacts {
     pub(super) def_use: Vec<DefUseFact>,
     pub(super) effects: Vec<EffectFact>,
     pub(super) control_flow: Vec<ControlFlowFact>,
+    pub(super) casts: Vec<CastFact>,
     pub(super) places: Vec<PlaceFact>,
     pub(super) values: Vec<ValueFact>,
     pub(super) call_signatures: Vec<CallSignatureFact>,
@@ -131,6 +132,18 @@ pub(super) struct ControlFlowFact {
     pub(super) single_exit: bool,
     pub(super) has_unreachable_tail: bool,
     pub(super) expression_eligible: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct CastFact {
+    pub(super) function: FunctionId,
+    pub(super) path: AstPath,
+    pub(super) from: Option<Type>,
+    pub(super) to: Type,
+    pub(super) kind: CastKind,
+    pub(super) required: bool,
+    pub(super) reasons: BTreeSet<CastRequirement>,
+    pub(super) removable_candidate: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -596,6 +609,32 @@ pub(super) enum ControlFlowExit {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum CastKind {
+    NoOp,
+    IntegerSignChange,
+    IntegerWidthChange,
+    IntegerSignAndWidthChange,
+    IntegerSameShape,
+    FloatWidthChange,
+    FloatInteger,
+    PointerCast,
+    ReferenceCoercion,
+    SliceCoercion,
+    LiteralInferenceGuard,
+    Semantic,
+    Unknown,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum CastRequirement {
+    Abi,
+    Semantics,
+    Inference,
+    RustCoercion,
+    UnknownSource,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Purity {
     MovablePure,
     ReadOnly,
@@ -759,6 +798,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     super::places::collect_facts(&program, &mut collector.facts);
     super::values::collect_facts(&program, &mut collector.facts);
     super::calls::collect_facts(&program, &mut collector.facts);
+    super::casts::collect_facts(&program, &mut collector.facts);
     super::strings::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
