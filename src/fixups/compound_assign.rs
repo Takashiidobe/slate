@@ -5,7 +5,7 @@
 //! rhs, so it never reorders a side effect or touches a volatile/complex lvalue.
 
 use crate::fixups::idents::expr_ident;
-use crate::rust_ast::{BinOp, Expr, IndentStmt, Stmt, UnaryOp};
+use crate::rust_ast::{BinOp, Expr, IndentStmt, Stmt};
 
 pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
     for indent in body.iter_mut() {
@@ -71,12 +71,7 @@ fn is_compound_op(op: BinOp) -> bool {
 // Same conservative purity as inline_temps: value/var arithmetic with no side
 // effects, so `a op= rhs` cannot reorder or duplicate an effect.
 fn is_pure_expr(expr: &Expr) -> bool {
-    match expr {
-        Expr::Value(_) | Expr::Var(_) => true,
-        Expr::Unary { op, expr } => !matches!(op, UnaryOp::Not) && is_pure_expr(expr),
-        Expr::Binary { lhs, rhs, .. } => is_pure_expr(lhs) && is_pure_expr(rhs),
-        _ => false,
-    }
+    super::effects::is_movable_pure_expr(expr)
 }
 
 #[cfg(test)]
