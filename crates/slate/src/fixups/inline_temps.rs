@@ -3,6 +3,7 @@
 //! rendering elides redundant parens.
 
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
+use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, IndentStmt, Stmt, UnaryOp};
 
 pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
@@ -139,208 +140,26 @@ fn is_pure_expr(expr: &Expr) -> bool {
 }
 
 fn stmt_contains_call(stmt: &Stmt) -> bool {
-    let mut found = false;
-    walk_stmt_exprs(stmt, &mut |expr| {
-        found |= matches!(
+    walk::stmt_exprs_any(stmt, &mut |expr| {
+        matches!(
             expr,
             Expr::Call { .. }
                 | Expr::MethodCall { .. }
                 | Expr::MethodCallGeneric { .. }
                 | Expr::Macro { .. }
-        );
-    });
-    found
+        )
+    })
 }
 
 fn is_receiver_use(stmt: &Stmt, name: &str) -> bool {
-    let mut found = false;
-    walk_stmt_exprs(stmt, &mut |expr| {
+    walk::stmt_exprs_any(stmt, &mut |expr| {
         let receiver = match expr {
             Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => Some(&**recv),
             Expr::Field { base, .. } | Expr::TupleField { base, .. } => Some(&**base),
             _ => None,
         };
-        if let Some(Expr::Var(v)) = receiver {
-            found |= v.as_str() == name;
-        }
-    });
-    found
-}
-
-pub(super) fn walk_stmt_exprs(stmt: &Stmt, f: &mut impl FnMut(&Expr)) {
-    match stmt {
-        Stmt::Let { init, .. } => {
-            if let Some(expr) = init {
-                walk_expr(expr, f);
-            }
-        }
-        Stmt::LetIf {
-            cond,
-            then_body,
-            then_value,
-            else_body,
-            else_value,
-            ..
-        } => {
-            walk_expr(cond, f);
-            for stmt in then_body.iter().chain(else_body) {
-                walk_stmt_exprs(&stmt.stmt, f);
-            }
-            walk_expr(then_value, f);
-            walk_expr(else_value, f);
-        }
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            walk_expr(target, f);
-            walk_expr(value, f);
-        }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => walk_expr(expr, f),
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
-        Stmt::If {
-            cond,
-            then_body,
-            else_body,
-        } => {
-            walk_expr(cond, f);
-            for stmt in then_body.iter().chain(else_body) {
-                walk_stmt_exprs(&stmt.stmt, f);
-            }
-        }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            for stmt in body {
-                walk_stmt_exprs(&stmt.stmt, f);
-            }
-        }
-        Stmt::Unsafe { body } => walk_block(body, f),
-        Stmt::Match { expr, arms } => {
-            walk_expr(expr, f);
-            for arm in arms {
-                for stmt in &arm.body {
-                    walk_stmt_exprs(&stmt.stmt, f);
-                }
-            }
-        }
-        Stmt::While { cond, body } => {
-            walk_expr(cond, f);
-            walk_block(body, f);
-        }
-        Stmt::Block(body) => walk_block(body, f),
-    }
-}
-
-fn walk_block(block: &Block, f: &mut impl FnMut(&Expr)) {
-    for stmt in &block.stmts {
-        walk_stmt_exprs(&stmt.stmt, f);
-    }
-    if let Some(tail) = &block.tail {
-        walk_expr(tail, f);
-    }
-}
-
-fn walk_expr(expr: &Expr, f: &mut impl FnMut(&Expr)) {
-    f(expr);
-    match expr {
-        Expr::Value(_)
-        | Expr::Str(_)
-        | Expr::HexFloat(_)
-        | Expr::ByteStr(_)
-        | Expr::Var(_)
-        | Expr::Path(_)
-        | Expr::Todo(_)
-        | Expr::AtomicFence { .. } => {}
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => walk_expr(expr, f),
-        Expr::Binary { lhs, rhs, .. } => {
-            walk_expr(lhs, f);
-            walk_expr(rhs, f);
-        }
-        Expr::Call { func, args } => {
-            walk_expr(func, f);
-            for arg in args {
-                walk_expr(arg, f);
-            }
-        }
-        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            walk_expr(recv, f);
-            for arg in args {
-                walk_expr(arg, f);
-            }
-        }
-        Expr::Field { base, .. } | Expr::TupleField { base, .. } => walk_expr(base, f),
-        Expr::ArrayPtr { array, .. } => walk_expr(array, f),
-        Expr::Index { base, index } => {
-            walk_expr(base, f);
-            walk_expr(index, f);
-        }
-        Expr::StructLit { fields, .. } => {
-            for (_, value) in fields {
-                walk_expr(value, f);
-            }
-        }
-        Expr::ArrayLit(elems) => {
-            for elem in elems {
-                walk_expr(elem, f);
-            }
-        }
-        Expr::ArrayRepeat { elem, .. } => walk_expr(elem, f),
-        Expr::Macro { args, .. } => {
-            for arg in args {
-                walk_expr(arg, f);
-            }
-        }
-        Expr::Closure { body, .. } => walk_expr(body, f),
-        Expr::Match { expr, arms } => {
-            walk_expr(expr, f);
-            for arm in arms {
-                walk_expr(&arm.value, f);
-            }
-        }
-        Expr::If {
-            cond,
-            then_expr,
-            else_expr,
-        } => {
-            walk_expr(cond, f);
-            walk_expr(then_expr, f);
-            walk_expr(else_expr, f);
-        }
-        Expr::Block(block) | Expr::Unsafe(block) => walk_block(block, f),
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => walk_expr(ptr, f),
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            walk_expr(ptr, f);
-            walk_expr(value, f);
-        }
-        Expr::AtomicCompareExchange {
-            ptr,
-            expected,
-            desired,
-            ..
-        } => {
-            walk_expr(ptr, f);
-            walk_expr(expected, f);
-            walk_expr(desired, f);
-        }
-        Expr::CopyNonoverlapping { src, dst, .. } => {
-            walk_expr(src, f);
-            walk_expr(dst, f);
-        }
-        Expr::PtrCopy {
-            src, dst, count, ..
-        } => {
-            walk_expr(src, f);
-            walk_expr(dst, f);
-            walk_expr(count, f);
-        }
-        Expr::WriteBytes { dst, val, count } => {
-            walk_expr(dst, f);
-            walk_expr(val, f);
-            walk_expr(count, f);
-        }
-    }
+        matches!(receiver, Some(Expr::Var(v)) if v.as_str() == name)
+    })
 }
 
 fn is_temp_name(name: &str) -> bool {

@@ -2,7 +2,7 @@
 
 use std::collections::BTreeSet;
 
-use crate::fixups::inline_temps::walk_stmt_exprs;
+use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Stmt};
 
 pub(super) fn fixup(f: &mut FnDef) {
@@ -81,7 +81,7 @@ fn collect_block_required_mut(block: &Block, required: &mut BTreeSet<String>) {
 }
 
 fn collect_expr_hazards(expr: &Expr, required: &mut BTreeSet<String>) {
-    walk_stmt_exprs(&Stmt::Expr(expr.clone()), &mut |expr| match expr {
+    walk::exprs(expr, &mut |expr| match expr {
         Expr::AddrOf { expr, .. } => collect_vars(expr, required),
         Expr::Ref {
             mutable: true,
@@ -105,7 +105,7 @@ fn collect_expr_hazards(expr: &Expr, required: &mut BTreeSet<String>) {
 }
 
 fn collect_vars(expr: &Expr, vars: &mut BTreeSet<String>) {
-    walk_stmt_exprs(&Stmt::Expr(expr.clone()), &mut |expr| {
+    walk::exprs(expr, &mut |expr| {
         if let Expr::Var(name) = expr {
             vars.insert(name.as_str().to_string());
         }
