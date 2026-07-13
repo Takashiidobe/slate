@@ -1,7 +1,8 @@
 //! Remove `mut` from bindings whose analyzed facts do not require mutation.
 
 use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
-use crate::rust_ast::{Block, FnDef, IndentStmt, Stmt};
+use crate::fixups::support::walk;
+use crate::rust_ast::{FnDef, IndentStmt, Stmt};
 
 pub(super) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
     for (index, param) in f.params.iter_mut().enumerate() {
@@ -28,15 +29,6 @@ fn remove_unneeded_mut(
     }
 }
 
-fn remove_block_unneeded_mut(
-    block: &mut Block,
-    function: FunctionId,
-    facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
-) {
-    remove_unneeded_mut(&mut block.stmts, function, facts, path);
-}
-
 fn remove_stmt_unneeded_mut(
     stmt: &mut Stmt,
     function: FunctionId,
@@ -49,79 +41,16 @@ fn remove_stmt_unneeded_mut(
                 *mutable = false;
             }
         }
-        Stmt::LetIf {
-            name,
-            mutable,
-            then_body,
-            else_body,
-            ..
-        } => {
+        Stmt::LetIf { name, mutable, .. } => {
             if local_can_drop_mut(function, facts, name, path) {
                 *mutable = false;
             }
-            path.push(PathSegment::Then);
-            remove_unneeded_mut(then_body, function, facts, path);
-            path.pop();
-            path.push(PathSegment::Else);
-            remove_unneeded_mut(else_body, function, facts, path);
-            path.pop();
         }
-        Stmt::If {
-            then_body,
-            else_body,
-            ..
-        } => {
-            path.push(PathSegment::Then);
-            remove_unneeded_mut(then_body, function, facts, path);
-            path.pop();
-            path.push(PathSegment::Else);
-            remove_unneeded_mut(else_body, function, facts, path);
-            path.pop();
-        }
-        Stmt::Loop { body, .. } => {
-            path.push(PathSegment::LoopBody);
-            remove_unneeded_mut(body, function, facts, path);
-            path.pop();
-        }
-        Stmt::Scope { body } => {
-            path.push(PathSegment::ScopeBody);
-            remove_unneeded_mut(body, function, facts, path);
-            path.pop();
-        }
-        Stmt::LabeledBlock { body, .. } => {
-            path.push(PathSegment::LabeledBody);
-            remove_unneeded_mut(body, function, facts, path);
-            path.pop();
-        }
-        Stmt::Unsafe { body } => {
-            path.push(PathSegment::UnsafeBody);
-            remove_block_unneeded_mut(body, function, facts, path);
-            path.pop();
-        }
-        Stmt::While { body, .. } => {
-            path.push(PathSegment::WhileBody);
-            remove_block_unneeded_mut(body, function, facts, path);
-            path.pop();
-        }
-        Stmt::Block(body) => {
-            path.push(PathSegment::BlockBody);
-            remove_block_unneeded_mut(body, function, facts, path);
-            path.pop();
-        }
-        Stmt::Match { arms, .. } => {
-            for (index, arm) in arms.iter_mut().enumerate() {
-                path.push(PathSegment::MatchArm(index));
-                remove_unneeded_mut(&mut arm.body, function, facts, path);
-                path.pop();
-            }
-        }
-        Stmt::Assign { .. }
-        | Stmt::CompoundAssign { .. }
-        | Stmt::Expr(_)
-        | Stmt::Return(_)
-        | Stmt::Break(_)
-        | Stmt::Continue(_) => {}
+        _ => {}
     }
+    walk::nested_bodies_mut_with_path(stmt, path, &mut |body, path| {
+        remove_unneeded_mut(body, function, facts, path);
+    });
 }
 
 fn local_can_drop_mut(

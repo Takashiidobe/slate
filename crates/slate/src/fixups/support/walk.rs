@@ -1,4 +1,32 @@
+#[path = "new_walk.rs"]
+mod new_walk;
+
+use crate::fixups::facts::PathSegment;
 use crate::rust_ast::{Block, Expr, IndentStmt, Stmt};
+
+pub(in crate::fixups) fn with_path_segment<R>(
+    path: &mut Vec<PathSegment>,
+    segment: PathSegment,
+    f: impl FnOnce(&mut Vec<PathSegment>) -> R,
+) -> R {
+    new_walk::with_path_segment(path, segment, f)
+}
+
+pub(in crate::fixups) fn nested_bodies_with_path(
+    stmt: &Stmt,
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&[IndentStmt], &mut Vec<PathSegment>),
+) {
+    new_walk::nested_bodies_with_path(stmt, path, f);
+}
+
+pub(in crate::fixups) fn nested_bodies_mut_with_path(
+    stmt: &mut Stmt,
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&mut [IndentStmt], &mut Vec<PathSegment>),
+) {
+    new_walk::nested_bodies_mut_with_path(stmt, path, f);
+}
 
 pub(in crate::fixups) fn body_exprs(body: &[IndentStmt], f: &mut impl FnMut(&Expr)) {
     for stmt in body {
