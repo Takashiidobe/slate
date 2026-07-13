@@ -9,6 +9,8 @@ use crate::rust_ast::{
 };
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+    facts.ptr_len_slices.clear();
+    facts.ptr_len_unsupported_callsites.clear();
     let candidates = collect_candidates(program, facts);
     collect_callsites(program, facts, &candidates);
 }
