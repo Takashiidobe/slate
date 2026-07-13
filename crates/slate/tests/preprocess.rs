@@ -74,7 +74,15 @@ fn records_expected_cfg_mappings_for_every_fixture() {
 /// known fixtures produce no opaque-predicate diagnostics.
 #[test]
 fn records_source_ranges_without_diagnostics() {
-    for source in ["os_targets.c", "arch_targets.c", "ndebug.c"] {
+    for source in [
+        "os_targets.c",
+        "win64_target.c",
+        "unix_target.c",
+        "arch_targets.c",
+        "pointer_width_targets.c",
+        "arm_endian_targets.c",
+        "ndebug.c",
+    ] {
         let doc = record_cfg(source, &[]);
         assert!(
             doc["diagnostics"].as_array().unwrap().is_empty(),

@@ -43,12 +43,29 @@ Only these `defined(MACRO)` predicates (and boolean combinations of them with
 
 | C predicate                | Rust `cfg`                  |
 | -------------------------- | --------------------------- |
+| `defined(_WIN64)`          | `all(windows, target_pointer_width = "64")` |
 | `defined(_WIN32)`          | `windows`                   |
-| `defined(__linux__)`       | `target_os = "linux"`       |
+| `defined(__linux__)` / `defined(__linux)` / `defined(linux)` | `target_os = "linux"` |
+| `defined(__ANDROID__)`     | `target_os = "android"`     |
+| `defined(__FreeBSD__)`     | `target_os = "freebsd"`     |
+| `defined(__unix__)` / `defined(__unix)` | `unix`         |
 | `defined(__APPLE__)`       | `target_vendor = "apple"`   |
 | `defined(__x86_64__)` / `defined(_M_X64)`   | `target_arch = "x86_64"`  |
+| `defined(__i386__)` / `defined(_M_IX86)`    | `target_arch = "x86"`     |
 | `defined(__aarch64__)` / `defined(_M_ARM64)`| `target_arch = "aarch64"` |
 | `defined(__arm__)` / `defined(_M_ARM)`      | `target_arch = "arm"`     |
+| `defined(__powerpc64__)` / `defined(__PPC64__)` | `target_arch = "powerpc64"` |
+| `defined(__powerpc__)` / `defined(__POWERPC__)` / `defined(_M_PPC)` | `target_arch = "powerpc"` |
+| `defined(__wasm64__)`      | `target_arch = "wasm64"`    |
+| `defined(__wasm32__)`      | `target_arch = "wasm32"`    |
+| `defined(_M_RISCV64)`      | `target_arch = "riscv64"`   |
+| `defined(_M_RISCV32)`      | `target_arch = "riscv32"`   |
+| `defined(__LP64__)` / `defined(_LP64)`      | `target_pointer_width = "64"` |
+| `defined(__ILP32__)` / `defined(_ILP32)`    | `target_pointer_width = "32"` |
+| `defined(__ARMEB__)`       | `all(target_arch = "arm", target_endian = "big")` |
+| `defined(__ARMEL__)`       | `all(target_arch = "arm", target_endian = "little")` |
+| `defined(__AARCH64EB__)`   | `all(target_arch = "aarch64", target_endian = "big")` |
+| `defined(__AARCH64EL__)`   | `all(target_arch = "aarch64", target_endian = "little")` |
 | `defined(NDEBUG)`          | `not(debug_assertions)`     |
 
 Combinations compose as expected: `||` becomes `any(...)`, `&&` becomes
