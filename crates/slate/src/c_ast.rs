@@ -1,8 +1,16 @@
 //! Clang AST oracle for source-level facts that CIR may not preserve.
 
 use serde_json::Value;
+use std::cell::RefCell;
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+
+thread_local! {
+    // Clang omits desugaredQualType for pointer/array-to-typedef, so parse_c_type
+    // resolves the base name here to recover the true signedness and width.
+    static TYPEDEFS: RefCell<HashMap<String, String>> = RefCell::new(HashMap::new());
+}
 
 /// A parsed C translation unit.
 #[derive(Debug, Default, Clone)]
@@ -193,6 +201,9 @@ fn parse_json_with_record_roots(
 ) -> Result<Unit, String> {
     let root: Value =
         serde_json::from_str(json).map_err(|e| format!("parse clang AST JSON: {e}"))?;
+    let mut typedefs = HashMap::new();
+    collect_typedefs(&root, &mut typedefs);
+    TYPEDEFS.with(|table| *table.borrow_mut() = typedefs);
     let mut enums = Vec::new();
     let mut records = Vec::new();
     let mut functions = Vec::new();
@@ -204,6 +215,20 @@ fn parse_json_with_record_roots(
         records,
         functions,
     })
+}
+
+fn collect_typedefs(node: &Value, out: &mut HashMap<String, String>) {
+    if kind(node) == Some("TypedefDecl") {
+        if let (Some(name), Some(underlying)) =
+            (node.get("name").and_then(Value::as_str), qual_type(node))
+        {
+            out.entry(name.to_string())
+                .or_insert_with(|| underlying.to_string());
+        }
+    }
+    for child in children(node) {
+        collect_typedefs(child, out);
+    }
 }
 
 fn collect_enums(node: &Value, source_file: &str, out: &mut Vec<Enum>) {
@@ -577,6 +602,8 @@ fn parse_c_type(s: &str) -> CType {
         CType::Float { bits: 64 }
     } else if s == "long double" {
         CType::Float { bits: 80 }
+    } else if let Some(underlying) = lookup_typedef(s) {
+        parse_c_type(&underlying)
     } else if s.contains("unsigned") {
         CType::Int {
             signed: false,
@@ -588,6 +615,13 @@ fn parse_c_type(s: &str) -> CType {
             bits: int_bits(s),
         }
     }
+}
+
+fn lookup_typedef(name: &str) -> Option<String> {
+    TYPEDEFS.with(|table| {
+        let underlying = table.borrow().get(name)?.clone();
+        (underlying != name).then_some(underlying)
+    })
 }
 
 fn parse_function_pointer_qual_type(s: &str) -> Option<(CType, Vec<CType>)> {
