@@ -98,6 +98,29 @@ fn records_source_ranges_without_diagnostics() {
     }
 }
 
+/// An unknown project macro is reported as a structured `unmapped-macro`
+/// diagnostic that names the macro and its source line, distinct from a
+/// predicate shape we cannot normalize at all (slate-lq0.6).
+#[test]
+fn reports_unknown_project_macro_with_kind_and_location() {
+    let doc = record_cfg("reject/unmapped_predicate.c", &[]);
+    let diags = doc["diagnostics"].as_array().expect("diagnostics array");
+    let unmapped = diags
+        .iter()
+        .find(|d| d["kind"] == Value::from("unmapped-macro"))
+        .expect("an unmapped-macro diagnostic");
+    assert_eq!(unmapped["line"].as_u64().unwrap(), 3);
+    let message = unmapped["message"].as_str().unwrap();
+    assert!(
+        message.contains("PROJECT_FEATURE_X"),
+        "diagnostic should name the macro: {message}"
+    );
+    assert!(
+        message.contains("uncovered"),
+        "inactive unmapped branch should be reported uncovered: {message}"
+    );
+}
+
 fn active_cfg(doc: &Value) -> Option<String> {
     doc["chains"]
         .as_array()

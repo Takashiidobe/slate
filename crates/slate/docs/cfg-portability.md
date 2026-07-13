@@ -79,14 +79,38 @@ regions, their normalized predicates, mapped `cfg`s, and which branch is active
 for a given set of args — useful for understanding why a region was or was not
 merged.
 
+## Diagnostics
+
+Slate never guesses a `cfg` for a predicate it does not understand, so it reports
+the branches it cannot recover instead of silently dropping them. `record-cfg`
+emits these as structured `diagnostics` entries (`kind`, `line`, `message`),
+distinguishing two predicate classes so you know whether to add a config-matrix
+entry or rewrite the source:
+
+- **`unmapped-macro`** — a clean `defined(...)` predicate that names a macro with
+  no entry in the table above (e.g. a project-specific `defined(MY_FEATURE)`).
+  The predicate is *recorded and understood* — it just needs a user-supplied
+  mapping. The diagnostic names the offending macro(s). A branch that is also
+  inactive in the queried config is flagged **uncovered**: it would vanish from
+  the output entirely.
+- **`opaque-predicate`** — a predicate whose *shape* is outside the
+  boolean-over-`defined()` subset (arithmetic, comparisons, bare macros, e.g.
+  `#if VERSION > 3`), which cannot be normalized to a `cfg` at all.
+
+Structural problems (`stray-directive`, `unterminated-if`) are reported the same
+way.
+
 ## What is refused
 
 `translate-cfg` emits a diagnostic and refuses (rather than guessing) when a
-conditional region cannot be stitched as whole Rust items:
+conditional region cannot be stitched as whole Rust items. These split into
+*unsupported-but-recorded predicates* and *code shapes that cannot be merged
+cleanly*:
 
+- **Unmapped predicates** — a predicate with no entry in the table above
+  (the `unmapped-macro`/`opaque-predicate` classes above).
 - **Fragment cuts** — a directive inside a function or record body, where the cut
   does not fall on an item boundary.
-- **Unmapped predicates** — a predicate with no entry in the table above.
 - **Multiple or nested chains** — currently only a single top-level
   `#if`/`#endif` chain is merged.
 - **Predicates that cannot be isolated** — e.g. a negated or `#ifndef` opening
