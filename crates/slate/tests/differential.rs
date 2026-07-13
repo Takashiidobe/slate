@@ -493,19 +493,44 @@ fn string_libc_calls_use_lifted_string_operations() {
 
     assert!(rust.contains("let alpha: &str = \"abc\";"));
     assert!(rust.contains("let bytes_a: &[u8] = b\"\\xff\\x01\";"));
-    assert!(rust.contains("let _v1: usize = alpha.len();"));
+    assert!(rust.contains(": usize = alpha.len();"));
     assert!(!rust.contains("alpha.len() as u64"));
     assert!(rust.contains("alpha == alpha"));
     assert!(rust.contains("alpha.cmp(beta) == std::cmp::Ordering::Less"));
     assert!(rust.contains(".split_at(std::cmp::min("));
+    assert!(rust.contains("hay.find(char::from("));
+    assert!(rust.contains("hay.rfind(char::from("));
+    assert!(rust.contains("hay.find(sub)"));
+    assert!(rust.contains("hay.find(|__slate_ch| set.contains(__slate_ch))"));
+    assert!(
+        rust.contains("hay.find(|__slate_ch| !prefix.contains(__slate_ch)).unwrap_or(hay.len())")
+    );
+    assert!(
+        rust.contains("hay.find(|__slate_ch| reject.contains(__slate_ch)).unwrap_or(hay.len())")
+    );
+    assert!(rust.contains("Some(hay.len()).map_or(std::ptr::null_mut()"));
+    assert!(rust.contains("let utf8: &str = \"h\\u{e9}\";"));
+    assert!(rust.contains("utf8.as_bytes().iter().position("));
     assert!(!rust.contains("fn strlen("));
     assert!(!rust.contains("fn strcmp("));
     assert!(!rust.contains("fn strncmp("));
     assert!(!rust.contains("fn memcmp("));
+    assert!(!rust.contains("fn strchr("));
+    assert!(!rust.contains("fn strrchr("));
+    assert!(!rust.contains("fn strstr("));
+    assert!(!rust.contains("fn strpbrk("));
+    assert!(!rust.contains("fn strspn("));
+    assert!(!rust.contains("fn strcspn("));
     assert!(!rust.contains("unsafe { strlen("));
     assert!(!rust.contains("unsafe { strcmp("));
     assert!(!rust.contains("unsafe { strncmp("));
     assert!(!rust.contains("unsafe { memcmp("));
+    assert!(!rust.contains("unsafe { strchr("));
+    assert!(!rust.contains("unsafe { strrchr("));
+    assert!(!rust.contains("unsafe { strstr("));
+    assert!(!rust.contains("unsafe { strpbrk("));
+    assert!(!rust.contains("unsafe { strspn("));
+    assert!(!rust.contains("unsafe { strcspn("));
 }
 
 #[test]
