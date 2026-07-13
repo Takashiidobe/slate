@@ -450,6 +450,11 @@ pub(super) enum StringLibcFunction {
     StrNCpy,
     StrCat,
     StrNCat,
+    Atoi,
+    Atol,
+    StrTol,
+    StrToul,
+    StrTod,
     Printf,
 }
 

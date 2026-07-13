@@ -3,6 +3,7 @@
 mod facts;
 mod idents;
 mod rewrite;
+mod runtime;
 mod support;
 
 #[cfg(test)]
