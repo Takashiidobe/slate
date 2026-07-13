@@ -19,6 +19,8 @@ pub(super) struct FixupFacts {
     pub(super) effects: Vec<EffectFact>,
     pub(super) places: Vec<PlaceFact>,
     pub(super) values: Vec<ValueFact>,
+    pub(super) call_signatures: Vec<CallSignatureFact>,
+    pub(super) callsites: Vec<CallsiteFact>,
     pub(super) string_buffers: Vec<StringBufferFact>,
     pub(super) string_pointer_views: Vec<StringPointerViewFact>,
     pub(super) string_libc_uses: Vec<StringLibcUseFact>,
@@ -40,6 +42,9 @@ pub(super) struct BindingId(pub(super) usize);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct LoopId(pub(super) usize);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(super) struct SignatureId(pub(super) usize);
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct FunctionFact {
@@ -129,6 +134,88 @@ pub(super) struct ValueFact {
     pub(super) subject: ValueSubject,
     pub(super) path: AstPath,
     pub(super) value: ConstValue,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct CallSignatureFact {
+    pub(super) id: SignatureId,
+    pub(super) name: String,
+    pub(super) source: CallSignatureSource,
+    pub(super) params: Vec<CallParamFact>,
+    pub(super) variadic: bool,
+    pub(super) ret: Option<Type>,
+    pub(super) semantics: BTreeSet<LibcCallSemantic>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum CallSignatureSource {
+    Function(FunctionId),
+    FuncItem {
+        item_index: usize,
+    },
+    Extern {
+        item_index: usize,
+        decl_index: usize,
+    },
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct CallParamFact {
+    pub(super) index: usize,
+    pub(super) name: String,
+    pub(super) ty: Type,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct CallsiteFact {
+    pub(super) function: FunctionId,
+    pub(super) path: AstPath,
+    pub(super) callee: CallCallee,
+    pub(super) args: Vec<CallArgFact>,
+    pub(super) variadic_boundary: Option<usize>,
+    pub(super) ret: Option<Type>,
+    pub(super) result_binding: Option<BindingId>,
+    pub(super) semantics: BTreeSet<LibcCallSemantic>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum CallCallee {
+    Direct {
+        name: String,
+        signature: Option<SignatureId>,
+    },
+    Indirect,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct CallArgFact {
+    pub(super) slot: usize,
+    pub(super) path: AstPath,
+    pub(super) declared_ty: Option<Type>,
+    pub(super) variadic: bool,
+    pub(super) pinning: CallArgPinning,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum CallArgPinning {
+    DeclaredParam,
+    VariadicUnpinned,
+    UnknownCallee,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum LibcCallSemantic {
+    Printf,
+    StrLen,
+    StrCmp,
+    StrNCmp,
+    MemCmp,
+    StrCpy,
+    StrNCpy,
+    StrCat,
+    StrNCat,
+    MemCpy,
+    MemSet,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -566,6 +653,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     super::effects::collect_facts(&program, &mut collector.facts);
     super::places::collect_facts(&program, &mut collector.facts);
     super::values::collect_facts(&program, &mut collector.facts);
+    super::calls::collect_facts(&program, &mut collector.facts);
     super::strings::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
