@@ -489,6 +489,12 @@ fn use_allowed(
                     | StringLibcFunction::StrCmp
                     | StringLibcFunction::StrNCmp
                     | StringLibcFunction::MemCmp
+                    | StringLibcFunction::StrChr
+                    | StringLibcFunction::StrRChr
+                    | StringLibcFunction::StrStr
+                    | StringLibcFunction::StrPBrk
+                    | StringLibcFunction::StrSpn
+                    | StringLibcFunction::StrCSpn
             )
             && libc
                 .pointer_args
@@ -808,6 +814,7 @@ struct BufferSummary {
     bytes: Option<Vec<u8>>,
     nul_termination: NulTermination,
     interior_nul: bool,
+    ascii_only: bool,
     rejections: BTreeSet<StringBufferRejection>,
 }
 
@@ -1193,6 +1200,7 @@ impl<'a> Collector<'a> {
                     summary.provenance = StringBufferProvenance::ZeroInitialized;
                     summary.nul_termination = NulTermination::AllZero;
                     summary.bytes = Some(Vec::new());
+                    summary.ascii_only = true;
                 }
                 Some(expr) => match literal_bytes(expr) {
                     Some(literal) => {
@@ -1220,10 +1228,12 @@ impl<'a> Collector<'a> {
                 Expr::Str(s) => {
                     summary.bytes = Some(s.as_bytes().to_vec());
                     summary.interior_nul = s.as_bytes().contains(&0);
+                    summary.ascii_only = s.is_ascii();
                 }
                 Expr::ByteStr(bytes) => {
                     summary.bytes = Some(bytes.clone());
                     summary.interior_nul = bytes.contains(&0);
+                    summary.ascii_only = bytes.is_ascii();
                 }
                 _ => {}
             }
@@ -1365,6 +1375,7 @@ impl BufferSummary {
             bytes: None,
             nul_termination: NulTermination::NotApplicable,
             interior_nul: false,
+            ascii_only: false,
             rejections: BTreeSet::new(),
         }
     }
@@ -1374,6 +1385,7 @@ impl BufferSummary {
         self.bytes = Some(literal.bytes);
         self.nul_termination = literal.nul_termination;
         self.interior_nul = literal.interior_nul;
+        self.ascii_only = self.bytes.as_ref().is_some_and(|bytes| bytes.is_ascii());
         if self.nul_termination == NulTermination::Unterminated {
             self.rejections.insert(StringBufferRejection::Unterminated);
         }
@@ -1390,6 +1402,7 @@ impl BufferSummary {
             bytes: self.bytes,
             nul_termination: self.nul_termination,
             interior_nul: self.interior_nul,
+            ascii_only: self.ascii_only,
             candidates,
             rejections: self.rejections,
         }
@@ -1544,6 +1557,12 @@ fn libc_function(expr: &Expr) -> Option<StringLibcFunction> {
         "strcmp" => StringLibcFunction::StrCmp,
         "strncmp" => StringLibcFunction::StrNCmp,
         "memcmp" => StringLibcFunction::MemCmp,
+        "strchr" => StringLibcFunction::StrChr,
+        "strrchr" => StringLibcFunction::StrRChr,
+        "strstr" => StringLibcFunction::StrStr,
+        "strpbrk" => StringLibcFunction::StrPBrk,
+        "strspn" => StringLibcFunction::StrSpn,
+        "strcspn" => StringLibcFunction::StrCSpn,
         "strcpy" => StringLibcFunction::StrCpy,
         "strncpy" => StringLibcFunction::StrNCpy,
         "strcat" => StringLibcFunction::StrCat,
@@ -1561,10 +1580,16 @@ fn libc_pointer_args(expr: &Expr) -> Vec<&str> {
         return Vec::new();
     };
     let pointer_args = match callee {
-        StringLibcFunction::StrLen => &args[..args.len().min(1)],
+        StringLibcFunction::StrLen | StringLibcFunction::StrChr | StringLibcFunction::StrRChr => {
+            &args[..args.len().min(1)]
+        }
         StringLibcFunction::StrCmp
         | StringLibcFunction::StrNCmp
         | StringLibcFunction::MemCmp
+        | StringLibcFunction::StrStr
+        | StringLibcFunction::StrPBrk
+        | StringLibcFunction::StrSpn
+        | StringLibcFunction::StrCSpn
         | StringLibcFunction::StrCpy
         | StringLibcFunction::StrNCpy
         | StringLibcFunction::StrCat

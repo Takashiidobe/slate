@@ -1,9 +1,11 @@
 use crate::fixups::facts::{
-    AstPath, CallCallee, FixupFacts, FunctionId, PathSegment, StringBufferFact, StringBufferKind,
-    StringLibcFunction,
+    AstPath, CallCallee, ConstValue, FixupFacts, FunctionId, PathSegment, StringBufferFact,
+    StringBufferKind, StringLibcFunction, ValueSubject,
 };
 use crate::fixups::support::walk;
-use crate::rust_ast::{BinOp, Block, Expr, ExternDecl, Ident, IndentStmt, Item, Path, Prim, Type};
+use crate::rust_ast::{
+    BinOp, Block, Expr, ExternDecl, Ident, IndentStmt, Item, Path, Prim, Type, UnaryOp,
+};
 use crate::rust_ast::{Program, RustValue, Stmt};
 use std::collections::BTreeMap;
 
@@ -27,6 +29,7 @@ enum StringKind {
 struct Source {
     name: String,
     kind: StringKind,
+    ascii_only: bool,
 }
 
 #[derive(Clone)]
@@ -106,8 +109,8 @@ fn fixup_stmt(
     match stmt {
         Stmt::Let { ty, init, .. } => {
             if let Some(init) = init {
-                if let Some(source) = supported_strlen_call(function, facts, path) {
-                    *init = strlen_replacement(source);
+                if let Some(replacement) = supported_usize_call(init, function, facts, path) {
+                    *init = replacement;
                     if matches!(ty, Some(Type::Prim(Prim::U64))) {
                         *ty = Some(Type::Prim(Prim::Usize));
                     }
@@ -408,8 +411,11 @@ fn replacement_expr(
             return Some(compare_to_bool(&compare, flip_comparison(*op)));
         }
     }
-    if let Some(source) = supported_strlen_call(function, facts, path) {
-        return Some(strlen_replacement(source));
+    if let Some(search) = supported_pointer_search_call(expr, function, facts, path) {
+        return Some(search);
+    }
+    if let Some(replacement) = supported_usize_call(expr, function, facts, path) {
+        return Some(replacement);
     }
     supported_compare_call(expr, function, facts, path)
         .map(|compare| cmp_to_i32(compare_expr(compare)))
@@ -423,6 +429,18 @@ fn strlen_replacement(source: Source) -> Expr {
     }
 }
 
+fn supported_usize_call(
+    expr: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<Expr> {
+    if let Some(source) = supported_strlen_call(function, facts, path) {
+        return Some(strlen_replacement(source));
+    }
+    supported_span_call(expr, function, facts, path)
+}
+
 fn supported_strlen_call(
     function: FunctionId,
     facts: &FixupFacts,
@@ -433,6 +451,110 @@ fn supported_strlen_call(
         return None;
     }
     source_for_binding(facts, usage.pointer_args[0])
+}
+
+fn supported_pointer_search_call(
+    expr: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<Expr> {
+    let Expr::Call { func, args } = peel_empty_unsafe(expr) else {
+        return None;
+    };
+    let Expr::Var(name) = &**func else {
+        return None;
+    };
+    let usage = facts.string_libc_use(function, &AstPath(path.to_vec()))?;
+    match (name.as_str(), usage.callee) {
+        ("strchr", StringLibcFunction::StrChr)
+            if args.len() == 2 && usage.pointer_args.len() == 1 =>
+        {
+            let source = source_for_binding(facts, usage.pointer_args[0])?;
+            let arg_path = call_arg_path(expr, path, 1);
+            let ascii = ascii_byte_at(&args[1], function, facts, &arg_path);
+            Some(pointer_search(
+                source.clone(),
+                char_search_index(
+                    source,
+                    args[1].clone(),
+                    false,
+                    is_zero_at(&args[1], function, facts, &arg_path),
+                    ascii,
+                ),
+            ))
+        }
+        ("strrchr", StringLibcFunction::StrRChr)
+            if args.len() == 2 && usage.pointer_args.len() == 1 =>
+        {
+            let source = source_for_binding(facts, usage.pointer_args[0])?;
+            let arg_path = call_arg_path(expr, path, 1);
+            let ascii = ascii_byte_at(&args[1], function, facts, &arg_path);
+            Some(pointer_search(
+                source.clone(),
+                char_search_index(
+                    source,
+                    args[1].clone(),
+                    true,
+                    is_zero_at(&args[1], function, facts, &arg_path),
+                    ascii,
+                ),
+            ))
+        }
+        ("strstr", StringLibcFunction::StrStr)
+            if args.len() == 2 && usage.pointer_args.len() == 2 =>
+        {
+            let source = source_for_binding(facts, usage.pointer_args[0])?;
+            let needle = source_for_binding(facts, usage.pointer_args[1])?;
+            Some(pointer_search(
+                source.clone(),
+                substring_search_index(source, needle)?,
+            ))
+        }
+        ("strpbrk", StringLibcFunction::StrPBrk)
+            if args.len() == 2 && usage.pointer_args.len() == 2 =>
+        {
+            let source = source_for_binding(facts, usage.pointer_args[0])?;
+            let set = source_for_binding(facts, usage.pointer_args[1])?;
+            Some(pointer_search(
+                source.clone(),
+                set_position(source, set, false)?,
+            ))
+        }
+        _ => None,
+    }
+}
+
+fn supported_span_call(
+    expr: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<Expr> {
+    let Expr::Call { func, args } = peel_empty_unsafe(expr) else {
+        return None;
+    };
+    let Expr::Var(name) = &**func else {
+        return None;
+    };
+    let usage = facts.string_libc_use(function, &AstPath(path.to_vec()))?;
+    match (name.as_str(), usage.callee) {
+        ("strspn", StringLibcFunction::StrSpn)
+            if args.len() == 2 && usage.pointer_args.len() == 2 =>
+        {
+            let source = source_for_binding(facts, usage.pointer_args[0])?;
+            let set = source_for_binding(facts, usage.pointer_args[1])?;
+            Some(span_index(source, set, true)?)
+        }
+        ("strcspn", StringLibcFunction::StrCSpn)
+            if args.len() == 2 && usage.pointer_args.len() == 2 =>
+        {
+            let source = source_for_binding(facts, usage.pointer_args[0])?;
+            let set = source_for_binding(facts, usage.pointer_args[1])?;
+            Some(span_index(source, set, false)?)
+        }
+        _ => None,
+    }
 }
 
 fn supported_compare_call(
@@ -483,7 +605,20 @@ fn supported_compare_call(
 fn is_libc_string_func(name: &str) -> bool {
     matches!(
         name,
-        "strlen" | "strcmp" | "strncmp" | "memcmp" | "strcpy" | "strncpy" | "strcat" | "strncat"
+        "strlen"
+            | "strcmp"
+            | "strncmp"
+            | "memcmp"
+            | "strchr"
+            | "strrchr"
+            | "strstr"
+            | "strpbrk"
+            | "strspn"
+            | "strcspn"
+            | "strcpy"
+            | "strncpy"
+            | "strcat"
+            | "strncat"
     )
 }
 
@@ -505,6 +640,7 @@ fn source_for_binding(
     Some(Source {
         name: facts.binding_name(binding)?.to_owned(),
         kind: string_kind_for_buffer(buffer)?,
+        ascii_only: buffer.ascii_only,
     })
 }
 
@@ -521,6 +657,266 @@ fn comparable(lhs: Source, rhs: Source) -> Option<(Expr, Expr)> {
         return None;
     }
     Some((Expr::Var(lhs.name.into()), Expr::Var(rhs.name.into())))
+}
+
+fn pointer_search(source: Source, index: Expr) -> Expr {
+    let name = source.name.clone();
+    Expr::MethodCall {
+        recv: Box::new(index),
+        method: "map_or".into(),
+        args: vec![null_mut(), index_to_ptr(&name)],
+    }
+}
+
+fn char_search_index(
+    source: Source,
+    needle: Expr,
+    reverse: bool,
+    zero: bool,
+    ascii_needle: bool,
+) -> Expr {
+    if zero {
+        return some(strlen_replacement(source));
+    }
+    if source.kind == StringKind::Str && source.ascii_only && ascii_needle {
+        return Expr::MethodCall {
+            recv: Box::new(Expr::Var(source.name.into())),
+            method: if reverse { "rfind" } else { "find" }.into(),
+            args: vec![char_expr(needle)],
+        };
+    }
+    byte_position(byte_source_expr(source), byte_expr(needle), reverse)
+}
+
+fn byte_position(source: Expr, needle: Expr, reverse: bool) -> Expr {
+    Expr::MethodCall {
+        recv: Box::new(Expr::MethodCall {
+            recv: Box::new(source),
+            method: "iter".into(),
+            args: Vec::new(),
+        }),
+        method: if reverse { "rposition" } else { "position" }.into(),
+        args: vec![Expr::Closure {
+            params: vec![Ident::new("__slate_byte")],
+            body: Box::new(Expr::Binary {
+                op: BinOp::Eq,
+                lhs: Box::new(Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(Expr::Var("__slate_byte".into())),
+                }),
+                rhs: Box::new(byte_expr(needle)),
+            }),
+        }],
+    }
+}
+
+fn substring_search_index(source: Source, needle: Source) -> Option<Expr> {
+    if source.kind != needle.kind {
+        return None;
+    }
+    if source.kind == StringKind::Str && source.ascii_only && needle.ascii_only {
+        return Some(Expr::MethodCall {
+            recv: Box::new(Expr::Var(source.name.into())),
+            method: "find".into(),
+            args: vec![Expr::Var(needle.name.into())],
+        });
+    }
+    Some(Expr::If {
+        cond: Box::new(Expr::MethodCall {
+            recv: Box::new(byte_source_expr(needle.clone())),
+            method: "is_empty".into(),
+            args: Vec::new(),
+        }),
+        then_expr: Box::new(some(Expr::Value(RustValue::I64(0)))),
+        else_expr: Box::new(Expr::MethodCall {
+            recv: Box::new(Expr::MethodCall {
+                recv: Box::new(byte_source_expr(source)),
+                method: "windows".into(),
+                args: vec![byte_len(needle.clone())],
+            }),
+            method: "position".into(),
+            args: vec![Expr::Closure {
+                params: vec![Ident::new("__slate_window")],
+                body: Box::new(Expr::Binary {
+                    op: BinOp::Eq,
+                    lhs: Box::new(Expr::Var("__slate_window".into())),
+                    rhs: Box::new(byte_source_expr(needle)),
+                }),
+            }],
+        }),
+    })
+}
+
+fn span_index(source: Source, set: Source, span_members: bool) -> Option<Expr> {
+    Some(Expr::MethodCall {
+        recv: Box::new(set_position(source.clone(), set, span_members)?),
+        method: "unwrap_or".into(),
+        args: vec![strlen_replacement(source)],
+    })
+}
+
+fn set_position(source: Source, set: Source, invert: bool) -> Option<Expr> {
+    if source.kind != set.kind {
+        return None;
+    }
+    let use_str = source.kind == StringKind::Str && source.ascii_only && set.ascii_only;
+    let contains = if use_str {
+        Expr::MethodCall {
+            recv: Box::new(Expr::Var(set.name.into())),
+            method: "contains".into(),
+            args: vec![Expr::Var("__slate_ch".into())],
+        }
+    } else {
+        Expr::MethodCall {
+            recv: Box::new(byte_source_expr(set)),
+            method: "contains".into(),
+            args: vec![Expr::Var("__slate_byte".into())],
+        }
+    };
+    let body = if invert {
+        Expr::Unary {
+            op: UnaryOp::Not,
+            expr: Box::new(contains),
+        }
+    } else {
+        contains
+    };
+    let (recv, method, param) = if use_str {
+        (Expr::Var(source.name.into()), "find", "__slate_ch")
+    } else {
+        (
+            Expr::MethodCall {
+                recv: Box::new(byte_source_expr(source)),
+                method: "iter".into(),
+                args: Vec::new(),
+            },
+            "position",
+            "__slate_byte",
+        )
+    };
+    Some(Expr::MethodCall {
+        recv: Box::new(recv),
+        method: method.into(),
+        args: vec![Expr::Closure {
+            params: vec![Ident::new(param)],
+            body: Box::new(body),
+        }],
+    })
+}
+
+fn index_to_ptr(name: &str) -> Expr {
+    Expr::Closure {
+        params: vec![Ident::new("__slate_index")],
+        body: Box::new(Expr::Unsafe(Box::new(Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Cast {
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(Expr::MethodCall {
+                        recv: Box::new(Expr::Var(name.into())),
+                        method: "as_ptr".into(),
+                        args: Vec::new(),
+                    }),
+                    method: "add".into(),
+                    args: vec![Expr::Var("__slate_index".into())],
+                }),
+                ty: Type::Ptr {
+                    mutable: true,
+                    inner: Box::new(Type::Prim(Prim::I8)),
+                },
+            })),
+        }))),
+    }
+}
+
+fn some(expr: Expr) -> Expr {
+    Expr::Call {
+        func: Box::new(Expr::Var("Some".into())),
+        args: vec![expr],
+    }
+}
+
+fn null_mut() -> Expr {
+    Expr::Call {
+        func: Box::new(path_expr(["std", "ptr", "null_mut"])),
+        args: Vec::new(),
+    }
+}
+
+fn char_expr(expr: Expr) -> Expr {
+    Expr::Call {
+        func: Box::new(path_expr(["char", "from"])),
+        args: vec![byte_expr(expr)],
+    }
+}
+
+fn byte_expr(expr: Expr) -> Expr {
+    Expr::Cast {
+        expr: Box::new(expr),
+        ty: Type::Prim(Prim::U8),
+    }
+}
+
+fn byte_source_expr(source: Source) -> Expr {
+    match source.kind {
+        StringKind::Str => Expr::MethodCall {
+            recv: Box::new(Expr::Var(source.name.into())),
+            method: "as_bytes".into(),
+            args: Vec::new(),
+        },
+        StringKind::Bytes => Expr::Var(source.name.into()),
+    }
+}
+
+fn byte_len(source: Source) -> Expr {
+    Expr::MethodCall {
+        recv: Box::new(byte_source_expr(source)),
+        method: "len".into(),
+        args: Vec::new(),
+    }
+}
+
+fn is_zero_at(expr: &Expr, function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    is_zero(expr)
+        || facts.has_value(
+            function,
+            ValueSubject::Expr,
+            &AstPath(path.to_vec()),
+            &ConstValue::Zero,
+        )
+}
+
+fn ascii_byte_at(
+    expr: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> bool {
+    byte_value(expr, function, facts, path).is_some_and(|value| value < 128)
+}
+
+fn byte_value(
+    expr: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<u8> {
+    match expr {
+        Expr::Value(RustValue::I64(n)) => u8::try_from(*n).ok(),
+        Expr::Value(RustValue::I128(n)) => u8::try_from(*n).ok(),
+        Expr::Cast { expr, .. } => byte_value(expr, function, facts, path),
+        _ => facts
+            .values_at(function, ValueSubject::Expr, &AstPath(path.to_vec()))
+            .find_map(|value| match value {
+                ConstValue::Integer(n) => u8::try_from(*n).ok(),
+                ConstValue::Usize(n) => u8::try_from(*n).ok(),
+                ConstValue::Zero => Some(0),
+                ConstValue::Bool(_)
+                | ConstValue::Bytes(_)
+                | ConstValue::CStringBytes(_)
+                | ConstValue::String(_)
+                | ConstValue::ArrayLength(_) => None,
+            }),
+    }
 }
 
 fn prefix(source: Source, count: Expr) -> Expr {
@@ -862,6 +1258,16 @@ fn path_expr<const N: usize>(segments: [&str; N]) -> Expr {
 fn stmt_path(path: &[PathSegment], index: usize) -> Vec<PathSegment> {
     let mut path = path.to_vec();
     path.push(PathSegment::Stmt(index));
+    path
+}
+
+fn call_arg_path(expr: &Expr, path: &[PathSegment], arg_index: usize) -> Vec<PathSegment> {
+    let mut path = path.to_vec();
+    if matches!(expr, Expr::Unsafe(_)) {
+        path.push(PathSegment::UnsafeBody);
+        path.push(PathSegment::BlockTail);
+    }
+    path.push(PathSegment::Expr(arg_index + 1));
     path
 }
 
