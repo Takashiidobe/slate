@@ -34,14 +34,18 @@ pub fn apply(program: Program) -> Program {
                     retval::fixup(&mut f);
                     drop_call_results::fixup(&mut f.body);
                     string_lift::fixup(&mut f.body);
-                    string_libc::fixup(&mut f.body);
-                    remove_mut::fixup(&mut f);
                     Item::Fn(f)
                 }
                 item => item,
             })
             .collect(),
     };
+    string_libc::fixup(&mut program);
+    for item in &mut program.items {
+        if let Item::Fn(f) = item {
+            remove_mut::fixup(f);
+        }
+    }
     printf_format::fixup(&mut program);
     program
 }

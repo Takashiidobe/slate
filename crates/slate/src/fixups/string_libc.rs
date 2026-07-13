@@ -1,10 +1,15 @@
-use crate::rust_ast::{BinOp, Block, Expr, Ident, IndentStmt, Path, Prim, Type};
-use crate::rust_ast::{RustValue, Stmt};
+use crate::rust_ast::{BinOp, Block, Expr, ExternDecl, Ident, IndentStmt, Item, Path, Prim, Type};
+use crate::rust_ast::{Program, RustValue, Stmt};
 use std::collections::BTreeMap;
 
-pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
-    let mut env = BTreeMap::new();
-    fixup_body(body, &mut env);
+pub(super) fn fixup(program: &mut Program) {
+    for item in &mut program.items {
+        if let Item::Fn(f) = item {
+            let mut env = BTreeMap::new();
+            fixup_body(&mut f.body, &mut env);
+        }
+    }
+    prune_unused_externs(program);
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -56,6 +61,212 @@ fn fixup_body(body: &mut Vec<IndentStmt>, env: &mut BTreeMap<String, StringKind>
     }
     for i in remove.into_iter().rev() {
         body.remove(i);
+    }
+}
+
+fn prune_unused_externs(program: &mut Program) {
+    let used = libc_string_calls(program);
+    program.items.retain_mut(|item| match item {
+        Item::ExternBlock { decls, .. } => {
+            decls.retain(|decl| match decl {
+                ExternDecl::Fn(f) if is_libc_string_func(&f.name) => used.contains(&f.name),
+                _ => true,
+            });
+            !decls.is_empty()
+        }
+        _ => true,
+    });
+}
+
+fn libc_string_calls(program: &Program) -> Vec<String> {
+    let mut calls = Vec::new();
+    for item in &program.items {
+        if let Item::Fn(f) = item {
+            body_libc_string_calls(&f.body, &mut calls);
+        }
+    }
+    calls.sort();
+    calls.dedup();
+    calls
+}
+
+fn body_libc_string_calls(body: &[IndentStmt], calls: &mut Vec<String>) {
+    for indent in body {
+        stmt_libc_string_calls(&indent.stmt, calls);
+    }
+}
+
+fn block_libc_string_calls(block: &Block, calls: &mut Vec<String>) {
+    body_libc_string_calls(&block.stmts, calls);
+    if let Some(tail) = &block.tail {
+        expr_libc_string_calls(tail, calls);
+    }
+}
+
+fn stmt_libc_string_calls(stmt: &Stmt, calls: &mut Vec<String>) {
+    match stmt {
+        Stmt::Let { init, .. } => {
+            if let Some(init) = init {
+                expr_libc_string_calls(init, calls);
+            }
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            expr_libc_string_calls(target, calls);
+            expr_libc_string_calls(value, calls);
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_libc_string_calls(expr, calls),
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            expr_libc_string_calls(cond, calls);
+            body_libc_string_calls(then_body, calls);
+            body_libc_string_calls(else_body, calls);
+        }
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            expr_libc_string_calls(cond, calls);
+            body_libc_string_calls(then_body, calls);
+            expr_libc_string_calls(then_value, calls);
+            body_libc_string_calls(else_body, calls);
+            expr_libc_string_calls(else_value, calls);
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            body_libc_string_calls(body, calls);
+        }
+        Stmt::While { cond, body } => {
+            expr_libc_string_calls(cond, calls);
+            block_libc_string_calls(body, calls);
+        }
+        Stmt::Block(body) | Stmt::Unsafe { body } => block_libc_string_calls(body, calls),
+        Stmt::Match { expr, arms } => {
+            expr_libc_string_calls(expr, calls);
+            for arm in arms {
+                body_libc_string_calls(&arm.body, calls);
+            }
+        }
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+    }
+}
+
+fn expr_libc_string_calls(expr: &Expr, calls: &mut Vec<String>) {
+    match expr {
+        Expr::Call { func, args } => {
+            if let Expr::Var(name) = &**func
+                && is_libc_string_func(name.as_str())
+            {
+                calls.push(name.as_str().into());
+            }
+            expr_libc_string_calls(func, calls);
+            for arg in args {
+                expr_libc_string_calls(arg, calls);
+            }
+        }
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => expr_libc_string_calls(expr, calls),
+        Expr::Binary { lhs, rhs, .. } => {
+            expr_libc_string_calls(lhs, calls);
+            expr_libc_string_calls(rhs, calls);
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            expr_libc_string_calls(recv, calls);
+            for arg in args {
+                expr_libc_string_calls(arg, calls);
+            }
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => expr_libc_string_calls(base, calls),
+        Expr::Index { base, index } => {
+            expr_libc_string_calls(base, calls);
+            expr_libc_string_calls(index, calls);
+        }
+        Expr::StructLit { fields, .. } => {
+            for (_, value) in fields {
+                expr_libc_string_calls(value, calls);
+            }
+        }
+        Expr::ArrayLit(elems) => {
+            for elem in elems {
+                expr_libc_string_calls(elem, calls);
+            }
+        }
+        Expr::ArrayRepeat { elem, .. } => expr_libc_string_calls(elem, calls),
+        Expr::Macro { args, .. } => {
+            for arg in args {
+                expr_libc_string_calls(arg, calls);
+            }
+        }
+        Expr::Closure { body, .. } => expr_libc_string_calls(body, calls),
+        Expr::Match { expr, arms } => {
+            expr_libc_string_calls(expr, calls);
+            for arm in arms {
+                expr_libc_string_calls(&arm.value, calls);
+            }
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            expr_libc_string_calls(cond, calls);
+            expr_libc_string_calls(then_expr, calls);
+            expr_libc_string_calls(else_expr, calls);
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => block_libc_string_calls(block, calls),
+        Expr::CopyNonoverlapping { src, dst, .. } => {
+            expr_libc_string_calls(src, calls);
+            expr_libc_string_calls(dst, calls);
+        }
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => {
+            expr_libc_string_calls(src, calls);
+            expr_libc_string_calls(dst, calls);
+            expr_libc_string_calls(count, calls);
+        }
+        Expr::WriteBytes { dst, val, count } => {
+            expr_libc_string_calls(dst, calls);
+            expr_libc_string_calls(val, calls);
+            expr_libc_string_calls(count, calls);
+        }
+        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
+            expr_libc_string_calls(ptr, calls);
+        }
+        Expr::AtomicStore { ptr, value, .. }
+        | Expr::AtomicFetch { ptr, value, .. }
+        | Expr::AtomicSwap { ptr, value, .. } => {
+            expr_libc_string_calls(ptr, calls);
+            expr_libc_string_calls(value, calls);
+        }
+        Expr::AtomicCompareExchange {
+            ptr,
+            expected,
+            desired,
+            ..
+        } => {
+            expr_libc_string_calls(ptr, calls);
+            expr_libc_string_calls(expected, calls);
+            expr_libc_string_calls(desired, calls);
+        }
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::Var(_)
+        | Expr::Path(_)
+        | Expr::AtomicFence { .. }
+        | Expr::Todo(_) => {}
     }
 }
 
@@ -321,6 +532,10 @@ fn supported_compare_call(expr: &Expr, env: &BTreeMap<String, StringKind>) -> Op
         }
         _ => None,
     }
+}
+
+fn is_libc_string_func(name: &str) -> bool {
+    matches!(name, "strlen" | "strcmp" | "strncmp" | "memcmp")
 }
 
 fn peel_empty_unsafe(expr: &Expr) -> &Expr {
@@ -701,10 +916,15 @@ mod tests {
     use super::*;
     use crate::fixups::test_support::*;
 
+    fn fixup_test_body(body: &mut Vec<IndentStmt>) {
+        let mut env = BTreeMap::new();
+        fixup_body(body, &mut env);
+    }
+
     #[test]
     fn rewrites_strlen_on_lifted_str() {
         let out = after_body(
-            fixup,
+            fixup_test_body,
             vec![],
             None,
             vec![
@@ -742,7 +962,7 @@ mod tests {
     #[test]
     fn rewrites_strcmp_temp_comparison() {
         let out = after_body(
-            fixup,
+            fixup_test_body,
             vec![],
             None,
             vec![

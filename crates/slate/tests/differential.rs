@@ -497,6 +497,10 @@ fn string_libc_calls_use_lifted_string_operations() {
     assert!(rust.contains("alpha == alpha"));
     assert!(rust.contains("alpha.cmp(beta) == std::cmp::Ordering::Less"));
     assert!(rust.contains(".split_at(std::cmp::min("));
+    assert!(!rust.contains("fn strlen("));
+    assert!(!rust.contains("fn strcmp("));
+    assert!(!rust.contains("fn strncmp("));
+    assert!(!rust.contains("fn memcmp("));
     assert!(!rust.contains("unsafe { strlen("));
     assert!(!rust.contains("unsafe { strcmp("));
     assert!(!rust.contains("unsafe { strncmp("));
