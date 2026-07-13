@@ -1,6 +1,7 @@
 pub(super) mod call_args;
 pub(super) mod compound_assign;
 pub(super) mod drop_call_results;
+pub(super) mod heap_ownership;
 pub(super) mod inline_temps;
 pub(super) mod param_spills;
 pub(super) mod printf_format;
