@@ -1061,6 +1061,19 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char('>')
             }
             Type::VaList => self.out.write_str("core::ffi::VaList<'_>"),
+            Type::Str => self.out.write_str("str"),
+            Type::Ref { mutable, inner } => {
+                self.out.write_char('&')?;
+                if *mutable {
+                    self.out.write_str("mut ")?;
+                }
+                self.ty(inner)
+            }
+            Type::Slice(elem) => {
+                self.out.write_char('[')?;
+                self.ty(elem)?;
+                self.out.write_char(']')
+            }
             Type::Ptr { mutable, inner } => {
                 self.out
                     .write_str(if *mutable { "*mut " } else { "*const " })?;

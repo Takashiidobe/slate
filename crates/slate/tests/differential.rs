@@ -242,9 +242,10 @@ fn simple_printfs_are_recovered_as_format_macros() {
         .expect("translate rejected printf string/char fixture");
     let rejected_rust = std::fs::read_to_string(&rejected_generated)
         .expect("read generated rejected printf string/char rust");
-    assert!(rejected_rust.contains("fn printf("));
-    assert!(rejected_rust.contains("unsafe { printf("));
-    assert!(!rejected_rust.contains("println!(\"{}\""));
+    assert!(rejected_rust.contains("let buf: &str = \"hey\";"));
+    assert!(rejected_rust.contains("println!(\"{}\", \"hey\");"));
+    assert!(!rejected_rust.contains("fn printf("));
+    assert!(!rejected_rust.contains("unsafe { printf("));
 
     let float_c = fixtures_dir().join("printf_float.c");
     let float_generated = tmp.join("printf_float.generated.rs");
@@ -465,4 +466,18 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
             );
         }
     }
+}
+
+#[test]
+fn string_lift_recovers_safe_local_string_buffers() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-string-lift");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("string_lift.c");
+    let generated = tmp.join("string_lift.generated.rs");
+    support::translate(&c_src, &generated).expect("translate string_lift fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated string_lift rust");
+
+    assert!(rust.contains("let greeting: &str = \"h\\u{e9}\";"));
+    assert!(rust.contains("let mut mutate: [i8; 4] = [0; 4];"));
+    assert!(rust.contains("mutate.as_mut_ptr()"));
 }
