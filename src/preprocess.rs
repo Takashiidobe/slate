@@ -36,6 +36,47 @@ impl DirectiveKind {
     }
 }
 
+/// Why a conditional region cannot be recovered as a portable Rust `cfg`. The
+/// two predicate classes are kept distinct so users can tell an *unsupported but
+/// recorded* predicate (a clean `defined(...)` shape over an unknown macro —
+/// fixable with a config-matrix or feature mapping) from a predicate *shape* we
+/// cannot normalize at all.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DiagnosticKind {
+    /// A boolean-over-`defined()` predicate that names a macro with no known
+    /// target/debug cfg mapping. Recorded, but not mappable without user input.
+    UnmappedMacro,
+    /// A predicate whose shape is outside the `defined()` subset (arithmetic,
+    /// comparisons, bare macros), so it cannot be normalized at all.
+    OpaquePredicate,
+    /// A `#elif`/`#else`/`#endif` with no open `#if`.
+    StrayDirective,
+    /// An `#if` chain with no matching `#endif`.
+    UnterminatedIf,
+}
+
+impl DiagnosticKind {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            DiagnosticKind::UnmappedMacro => "unmapped-macro",
+            DiagnosticKind::OpaquePredicate => "opaque-predicate",
+            DiagnosticKind::StrayDirective => "stray-directive",
+            DiagnosticKind::UnterminatedIf => "unterminated-if",
+        }
+    }
+}
+
+/// A recorded reason a conditional region could not be mapped, with enough
+/// source context (line, and for predicate cases the predicate text) for a user
+/// to add a config-matrix entry.
+#[derive(Debug, Clone)]
+pub struct Diagnostic {
+    pub kind: DiagnosticKind,
+    /// 1-based source line of the offending directive.
+    pub line: usize,
+    pub message: String,
+}
+
 /// A normalized preprocessor condition, restricted to the boolean-over-`defined`
 /// shape used by target/debug gates. Anything richer is [`PredExpr::Opaque`].
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -83,7 +124,7 @@ pub struct CondChain {
 #[derive(Debug, Clone, Default)]
 pub struct Preprocessing {
     pub chains: Vec<CondChain>,
-    pub diagnostics: Vec<String>,
+    pub diagnostics: Vec<Diagnostic>,
 }
 
 /// Scan `source` for conditional regions and resolve active branches against
@@ -95,17 +136,94 @@ pub fn record(source: &str, macros: &BTreeMap<String, String>) -> Preprocessing 
     }
     for chain in &pp.chains {
         for branch in &chain.branches {
-            if branch.rust_cfg.is_none() {
-                pp.diagnostics.push(format!(
-                    "line {}: #{} predicate `{}` is not a known target/debug gate; recorded opaque",
-                    branch.directive_line,
-                    branch.kind.as_str(),
-                    branch.raw_predicate.as_deref().unwrap_or("(else)"),
-                ));
+            if let Some(diag) = classify_branch(branch) {
+                pp.diagnostics.push(diag);
             }
         }
     }
     pp
+}
+
+/// Diagnose a branch whose predicate does not map to a Rust `cfg`. Returns
+/// `None` for a cleanly mapped branch. An inactive unmapped branch is flagged as
+/// *uncovered* — it will silently vanish from the output rather than being gated.
+fn classify_branch(branch: &Branch) -> Option<Diagnostic> {
+    if branch.rust_cfg.is_some() {
+        return None;
+    }
+    let raw = branch.raw_predicate.as_deref().unwrap_or("(else)");
+    let uncovered = branch.active != Some(true);
+    if has_opaque(&branch.predicate) {
+        return Some(Diagnostic {
+            kind: DiagnosticKind::OpaquePredicate,
+            line: branch.directive_line,
+            message: format!(
+                "line {}: #{} predicate `{}` is not a boolean-over-defined() gate; \
+                 cannot be normalized to a Rust cfg{}",
+                branch.directive_line,
+                branch.kind.as_str(),
+                raw,
+                coverage_note(uncovered),
+            ),
+        });
+    }
+    let unknown = unmapped_atoms(&branch.predicate);
+    Some(Diagnostic {
+        kind: DiagnosticKind::UnmappedMacro,
+        line: branch.directive_line,
+        message: format!(
+            "line {}: #{} predicate `{}` references macro(s) {} with no known target/debug \
+             cfg mapping{}",
+            branch.directive_line,
+            branch.kind.as_str(),
+            raw,
+            unknown.join(", "),
+            coverage_note(uncovered),
+        ),
+    })
+}
+
+fn coverage_note(uncovered: bool) -> &'static str {
+    if uncovered {
+        "; branch left uncovered (supply a config-matrix entry or cfg mapping)"
+    } else {
+        ""
+    }
+}
+
+/// True when any leaf of `expr` is an [`PredExpr::Opaque`] shape.
+fn has_opaque(expr: &PredExpr) -> bool {
+    match expr {
+        PredExpr::Opaque(_) => true,
+        PredExpr::Defined(_) => false,
+        PredExpr::Not(inner) => has_opaque(inner),
+        PredExpr::And(items) | PredExpr::Or(items) => items.iter().any(has_opaque),
+    }
+}
+
+/// The `defined(MACRO)` atoms of `expr` that have no known cfg mapping, in
+/// source order and de-duplicated.
+fn unmapped_atoms(expr: &PredExpr) -> Vec<String> {
+    let mut out = Vec::new();
+    collect_unmapped(expr, &mut out);
+    out
+}
+
+fn collect_unmapped(expr: &PredExpr, out: &mut Vec<String>) {
+    match expr {
+        PredExpr::Defined(name) => {
+            if known_cfg(name).is_none() && !out.contains(name) {
+                out.push(name.clone());
+            }
+        }
+        PredExpr::Not(inner) => collect_unmapped(inner, out),
+        PredExpr::And(items) | PredExpr::Or(items) => {
+            for item in items {
+                collect_unmapped(item, out);
+            }
+        }
+        PredExpr::Opaque(_) => {}
+    }
 }
 
 /// Convenience: query Clang's predefined macros for `clang_args` and record.
@@ -123,7 +241,7 @@ struct ChainBuilder {
 fn scan(source: &str) -> Preprocessing {
     let mut stack: Vec<ChainBuilder> = Vec::new();
     let mut chains: Vec<CondChain> = Vec::new();
-    let mut diagnostics: Vec<String> = Vec::new();
+    let mut diagnostics: Vec<Diagnostic> = Vec::new();
 
     for (idx, line) in source.lines().enumerate() {
         let lineno = idx + 1;
@@ -151,7 +269,11 @@ fn scan(source: &str) -> Preprocessing {
             }
             Directive::Cont(kind) => {
                 let Some(top) = stack.last_mut() else {
-                    diagnostics.push(format!("line {lineno}: #{} without #if", kind.as_str()));
+                    diagnostics.push(Diagnostic {
+                        kind: DiagnosticKind::StrayDirective,
+                        line: lineno,
+                        message: format!("line {lineno}: #{} without #if", kind.as_str()),
+                    });
                     continue;
                 };
                 close_body(top, lineno);
@@ -173,7 +295,11 @@ fn scan(source: &str) -> Preprocessing {
             }
             Directive::Endif => {
                 let Some(mut top) = stack.pop() else {
-                    diagnostics.push(format!("line {lineno}: #endif without #if"));
+                    diagnostics.push(Diagnostic {
+                        kind: DiagnosticKind::StrayDirective,
+                        line: lineno,
+                        message: format!("line {lineno}: #endif without #if"),
+                    });
                     continue;
                 };
                 close_body(&mut top, lineno);
@@ -188,10 +314,14 @@ fn scan(source: &str) -> Preprocessing {
     }
 
     for leftover in &stack {
-        diagnostics.push(format!(
-            "line {}: unterminated #if (missing #endif)",
-            leftover.open_line
-        ));
+        diagnostics.push(Diagnostic {
+            kind: DiagnosticKind::UnterminatedIf,
+            line: leftover.open_line,
+            message: format!(
+                "line {}: unterminated #if (missing #endif)",
+                leftover.open_line
+            ),
+        });
     }
     chains.sort_by_key(|c| c.open_line);
     Preprocessing {
@@ -613,12 +743,54 @@ mod tests {
         let src = "#if FOO > 2\nX\n#endif\n";
         let pp = record(src, &macros(&[]));
         assert_eq!(pp.chains[0].branches[0].active, None);
-        assert!(pp.diagnostics.iter().any(|d| d.contains("opaque")));
+        let diag = &pp.diagnostics[0];
+        assert_eq!(diag.kind, DiagnosticKind::OpaquePredicate);
+        assert_eq!(diag.line, 1);
+        assert!(diag.message.contains("FOO > 2"));
+    }
+
+    #[test]
+    fn unknown_macro_is_distinguished_from_opaque_shape() {
+        let src = "#if defined(PROJECT_FEATURE_X)\nX\n#endif\n";
+        let pp = record(src, &macros(&[]));
+        let diag = &pp.diagnostics[0];
+        assert_eq!(diag.kind, DiagnosticKind::UnmappedMacro);
+        assert_eq!(diag.line, 1);
+        assert!(
+            diag.message.contains("PROJECT_FEATURE_X"),
+            "should name the unmapped macro, got: {}",
+            diag.message
+        );
+    }
+
+    #[test]
+    fn inactive_unmapped_branch_is_flagged_uncovered() {
+        // linux branch is active (mapped); the unknown-macro branch is inactive.
+        let src = "#if defined(__linux__)\nL\n#elif defined(PROJECT_X)\nP\n#endif\n";
+        let pp = record(src, &macros(&["__linux__"]));
+        let unmapped = pp
+            .diagnostics
+            .iter()
+            .find(|d| d.kind == DiagnosticKind::UnmappedMacro)
+            .expect("unmapped macro diagnostic");
+        assert!(
+            unmapped.message.contains("uncovered"),
+            "inactive unmapped branch should be uncovered, got: {}",
+            unmapped.message
+        );
     }
 
     #[test]
     fn unterminated_if_is_diagnosed() {
         let pp = record("#if defined(X)\nY\n", &macros(&[]));
-        assert!(pp.diagnostics.iter().any(|d| d.contains("unterminated")));
+        let diag = &pp.diagnostics[0];
+        assert_eq!(diag.kind, DiagnosticKind::UnterminatedIf);
+        assert!(diag.message.contains("unterminated"));
+    }
+
+    #[test]
+    fn stray_directive_is_diagnosed() {
+        let pp = record("#endif\n", &macros(&[]));
+        assert_eq!(pp.diagnostics[0].kind, DiagnosticKind::StrayDirective);
     }
 }
