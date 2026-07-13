@@ -441,12 +441,41 @@ fn opt(key: impl Into<String>, value: impl Into<String>) -> Cfg {
 
 fn known_cfg(macro_name: &str) -> Option<Cfg> {
     Some(match macro_name {
+        "_WIN64" => Cfg::All(vec![
+            Cfg::Flag("windows".into()),
+            opt("target_pointer_width", "64"),
+        ]),
         "_WIN32" => Cfg::Flag("windows".into()),
-        "__linux__" => opt("target_os", "linux"),
+        "__linux__" | "__linux" | "linux" => opt("target_os", "linux"),
+        "__ANDROID__" => opt("target_os", "android"),
+        "__FreeBSD__" => opt("target_os", "freebsd"),
+        "__unix__" | "__unix" => Cfg::Flag("unix".into()),
         "__APPLE__" => opt("target_vendor", "apple"),
         "__x86_64__" | "_M_X64" => opt("target_arch", "x86_64"),
+        "__i386__" | "_M_IX86" => opt("target_arch", "x86"),
         "__aarch64__" | "_M_ARM64" => opt("target_arch", "aarch64"),
         "__arm__" | "_M_ARM" => opt("target_arch", "arm"),
+        "__powerpc64__" | "__PPC64__" => opt("target_arch", "powerpc64"),
+        "__powerpc__" | "__POWERPC__" | "_M_PPC" => opt("target_arch", "powerpc"),
+        "__wasm64__" => opt("target_arch", "wasm64"),
+        "__wasm32__" => opt("target_arch", "wasm32"),
+        "_M_RISCV64" => opt("target_arch", "riscv64"),
+        "_M_RISCV32" => opt("target_arch", "riscv32"),
+        "__LP64__" | "_LP64" => opt("target_pointer_width", "64"),
+        "__ILP32__" | "_ILP32" => opt("target_pointer_width", "32"),
+        "__ARMEB__" => Cfg::All(vec![opt("target_arch", "arm"), opt("target_endian", "big")]),
+        "__ARMEL__" => Cfg::All(vec![
+            opt("target_arch", "arm"),
+            opt("target_endian", "little"),
+        ]),
+        "__AARCH64EB__" => Cfg::All(vec![
+            opt("target_arch", "aarch64"),
+            opt("target_endian", "big"),
+        ]),
+        "__AARCH64EL__" => Cfg::All(vec![
+            opt("target_arch", "aarch64"),
+            opt("target_endian", "little"),
+        ]),
         "NDEBUG" => Cfg::Not(Box::new(Cfg::Flag("debug_assertions".into()))),
         _ => return None,
     })
