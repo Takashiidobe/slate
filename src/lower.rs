@@ -4911,7 +4911,7 @@ fn parse_cir_scalar_expr(s: &str) -> Option<Expr> {
         .or_else(|| {
             s.trim_start()
                 .starts_with("#cir.ptr<null>")
-                .then(|| Expr::Value(RustValue::NullPtr))
+                .then_some(Expr::Value(RustValue::NullPtr))
         })
 }
 
