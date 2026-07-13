@@ -2,147 +2,180 @@
 //! is spliced as an `Expr` subtree into its use site and precedence-aware
 //! rendering elides redundant parens.
 
-use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
+use crate::fixups::facts::{
+    AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
+};
 use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) {
-    fixup_with_tails(body, &[]);
+pub(in crate::fixups) fn fixup(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+) -> bool {
+    fixup_at(body, function, facts, &mut Vec::new())
 }
 
-// `tails` are the yielded value expressions of the enclosing block (a `LetIf`
-// branch value, an `unsafe` block tail). They are not statements we can
-// substitute into here, but a temp that feeds one is used past the statement
-// list, so it must not be treated as single-use.
-fn fixup_with_tails(body: &mut Vec<IndentStmt>, tails: &[&Expr]) {
-    inline_nested_temps(body);
-    loop {
-        let mut applied = false;
-        for i in 0..body.len() {
-            let Stmt::Let {
-                name,
-                mutable: false,
-                init: Some(init),
-                ..
-            } = &body[i].stmt
-            else {
-                continue;
-            };
-            if !is_temp_name(name) || !is_pure_expr(init) {
-                continue;
-            }
-            let name = name.clone();
-            let init = init.clone();
-            let Some(use_index) = single_safe_use(body, i, &name, tails) else {
-                continue;
-            };
-            if body[use_index].stmt.substitute_var(&name, &init) {
-                body.remove(i);
-                applied = true;
-                break;
-            }
-        }
-        if !applied {
-            break;
-        }
-        inline_nested_temps(body);
+fn fixup_at(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) -> bool {
+    if inline_nested_temps(body, function, facts, path) {
+        return true;
     }
+    for i in 0..body.len() {
+        let mut def_path = path.clone();
+        def_path.push(PathSegment::Stmt(i));
+        let Stmt::Let {
+            name,
+            mutable: false,
+            init: Some(init),
+            ..
+        } = &body[i].stmt
+        else {
+            continue;
+        };
+        if !is_temp_name(name) || !is_pure_expr(function, facts, &def_path) {
+            continue;
+        }
+        let Some(binding) = facts.binding_by_local_path(function, name, &AstPath(def_path.clone()))
+        else {
+            continue;
+        };
+        let name = name.clone();
+        let init = init.clone();
+        let Some(use_index) = single_safe_use(body, i, binding, function, facts, path) else {
+            continue;
+        };
+        if body[use_index].stmt.substitute_var(&name, &init) {
+            body.remove(i);
+            return true;
+        }
+    }
+    false
 }
 
-fn inline_nested_temps(body: &mut [IndentStmt]) {
-    for stmt in body {
-        match &mut stmt.stmt {
-            Stmt::If {
-                then_body,
-                else_body,
-                ..
-            } => {
-                fixup(then_body);
-                fixup(else_body);
-            }
-            Stmt::LetIf {
-                then_body,
-                then_value,
-                else_body,
-                else_value,
-                ..
-            } => {
-                fixup_with_tails(then_body, &[then_value]);
-                fixup_with_tails(else_body, &[else_value]);
-            }
-            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-                fixup(body);
-            }
-            Stmt::Unsafe { body } => {
-                let Block { stmts, tail } = body;
-                match tail {
-                    Some(tail) => fixup_with_tails(stmts, &[tail]),
-                    None => fixup(stmts),
+fn inline_nested_temps(
+    body: &mut [IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) -> bool {
+    for (index, stmt) in body.iter_mut().enumerate() {
+        if walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            match &mut stmt.stmt {
+                Stmt::If {
+                    then_body,
+                    else_body,
+                    ..
                 }
+                | Stmt::LetIf {
+                    then_body,
+                    else_body,
+                    ..
+                } => {
+                    walk::with_path_segment(path, PathSegment::Then, |path| {
+                        fixup_at(then_body, function, facts, path)
+                    }) || walk::with_path_segment(path, PathSegment::Else, |path| {
+                        fixup_at(else_body, function, facts, path)
+                    })
+                }
+                Stmt::Loop { body, .. } => {
+                    walk::with_path_segment(path, PathSegment::LoopBody, |path| {
+                        fixup_at(body, function, facts, path)
+                    })
+                }
+                Stmt::Scope { body } => {
+                    walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
+                        fixup_at(body, function, facts, path)
+                    })
+                }
+                Stmt::LabeledBlock { body, .. } => {
+                    walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
+                        fixup_at(body, function, facts, path)
+                    })
+                }
+                Stmt::Unsafe { body } => {
+                    let Block { stmts, tail } = body;
+                    let _ = tail;
+                    walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
+                        fixup_at(stmts, function, facts, path)
+                    })
+                }
+                _ => false,
             }
-            _ => {}
+        }) {
+            return true;
         }
     }
+    false
 }
 
 fn single_safe_use(
     body: &[IndentStmt],
     def_index: usize,
-    name: &str,
-    tails: &[&Expr],
+    binding: crate::fixups::facts::BindingId,
+    function: FunctionId,
+    facts: &FixupFacts,
+    body_path: &[PathSegment],
 ) -> Option<usize> {
-    let mut found = None;
-    for (index, stmt) in body.iter().enumerate().skip(def_index + 1) {
-        let stmt = &stmt.stmt;
-        let uses = stmt_ident_count(stmt, name);
-        if uses > 0 {
-            if uses == 1
-                && found.is_none()
-                && !stmt_contains_call(stmt)
-                && !is_receiver_use(stmt, name)
-            {
-                found = Some(index);
-                continue;
-            }
-            return None;
-        }
-        if found.is_some() {
-            continue;
-        }
-        if !is_pure_temp_let(stmt) {
-            return None;
-        }
-    }
-    if tails.iter().any(|tail| expr_ident_count(tail, name) > 0) {
+    let reads = &facts.def_use(binding)?.reads;
+    if reads.len() != 1 {
         return None;
     }
-    found
+    let use_index = direct_stmt_index(body_path, &reads[0])?;
+    if use_index <= def_index || use_index >= body.len() {
+        return None;
+    }
+    let use_path = stmt_path(body_path, use_index);
+    if stmt_contains_call(function, facts, &use_path)
+        || is_receiver_use(&body[use_index].stmt, binding_name(facts, binding)?)
+    {
+        return None;
+    }
+    for index in def_index + 1..use_index {
+        let path = stmt_path(body_path, index);
+        if !is_pure_temp_let(&body[index].stmt, function, facts, &path) {
+            return None;
+        }
+    }
+    Some(use_index)
 }
 
-fn is_pure_temp_let(stmt: &Stmt) -> bool {
-    matches!(
-        stmt,
-        Stmt::Let { name, init: Some(init), .. } if is_temp_name(name) && is_pure_expr(init)
-    )
+fn is_pure_temp_let(
+    stmt: &Stmt,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> bool {
+    let Stmt::Let {
+        name,
+        init: Some(_),
+        ..
+    } = stmt
+    else {
+        return false;
+    };
+    is_temp_name(name) && is_pure_expr(function, facts, path)
 }
 
-// Conservative purity: only value/var arithmetic that has no side effects and no
-// place dependence beyond its named operands. Matches (and never exceeds) what the
-// prior text heuristic inlined, so inlining decisions are unchanged.
-fn is_pure_expr(expr: &Expr) -> bool {
-    crate::fixups::facts::is_movable_pure_expr(expr)
+fn is_pure_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    facts
+        .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
+        .is_some_and(|fact| fact.purity == Purity::MovablePure)
 }
 
-fn stmt_contains_call(stmt: &Stmt) -> bool {
-    walk::stmt_exprs_any(stmt, &mut |expr| {
-        matches!(
-            expr,
-            Expr::Call { .. }
-                | Expr::MethodCall { .. }
-                | Expr::MethodCallGeneric { .. }
-                | Expr::Macro { .. }
-        )
-    })
+fn stmt_contains_call(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    facts
+        .effect(function, EffectSubject::Stmt, &AstPath(path.to_vec()))
+        .is_some_and(|fact| {
+            fact.effects.contains(&EffectKind::ReadOnlyCall)
+                || fact.effects.contains(&EffectKind::UnknownCall)
+                || fact.effects.contains(&EffectKind::MethodCall)
+                || fact.effects.contains(&EffectKind::MacroExpansion)
+        })
 }
 
 fn is_receiver_use(stmt: &Stmt, name: &str) -> bool {
@@ -161,16 +194,49 @@ fn is_temp_name(name: &str) -> bool {
         .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|b| b.is_ascii_digit()))
 }
 
+fn stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
+    let mut path = body_path.to_vec();
+    path.push(PathSegment::Stmt(index));
+    path
+}
+
+fn direct_stmt_index(body_path: &[PathSegment], read: &AstPath) -> Option<usize> {
+    let rest = read.0.strip_prefix(body_path)?;
+    match rest {
+        [PathSegment::Stmt(index), ..] => Some(*index),
+        _ => None,
+    }
+}
+
+fn binding_name(facts: &FixupFacts, binding: crate::fixups::facts::BindingId) -> Option<&str> {
+    facts
+        .bindings
+        .iter()
+        .find(|fact| fact.id == binding)
+        .map(|fact| fact.name.as_str())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{BinOp, Type};
+    use crate::rust_ast::{BinOp, Item, Program, Type};
 
     fn inlined(stmts: Vec<Stmt>) -> String {
-        let mut f = func(vec![], None, stmts);
-        fixup(&mut f.body);
-        emit(f)
+        let mut program = Program {
+            items: vec![Item::Fn(func(vec![], None, stmts))],
+        };
+        loop {
+            let analyzed = crate::fixups::facts::analyze(program.clone());
+            let facts = analyzed.facts;
+            let Item::Fn(f) = &mut program.items[0] else {
+                unreachable!();
+            };
+            if !fixup(&mut f.body, FunctionId(0), &facts) {
+                break;
+            }
+        }
+        program.emit()
     }
 
     #[test]

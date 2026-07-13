@@ -9,22 +9,33 @@
 //! preserved), and only when the temp is unused in its entire lexical scope, so
 //! a used call result is left materialized.
 
-use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
+use crate::fixups::facts::{
+    AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment,
+};
 use crate::fixups::support::walk;
-use crate::rust_ast::{Block, Expr, IndentStmt, Stmt};
+use crate::rust_ast::{Block, IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) {
-    scope(body, None);
+pub(in crate::fixups) fn fixup(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+) {
+    scope(body, function, facts, &mut Vec::new());
 }
 
-/// Process one lexical scope: `stmts` plus the optional trailing value `tail`
-/// that the enclosing block evaluates to (so a temp read only by the tail counts
-/// as used).
-fn scope(stmts: &mut Vec<IndentStmt>, tail: Option<&Expr>) {
-    for stmt in stmts.iter_mut() {
-        recurse(&mut stmt.stmt);
+fn scope(
+    stmts: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    for (index, stmt) in stmts.iter_mut().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            recurse(&mut stmt.stmt, function, facts, path);
+        });
     }
     for i in 0..stmts.len() {
+        let def_path = stmt_path(path, i);
         let name = match &stmts[i].stmt {
             Stmt::Let {
                 name,
@@ -34,16 +45,16 @@ fn scope(stmts: &mut Vec<IndentStmt>, tail: Option<&Expr>) {
             } if is_temp_name(name) => name.clone(),
             _ => continue,
         };
-        if !init_has_call(&stmts[i].stmt) {
+        if !init_has_call(function, facts, &def_path) {
             continue;
         }
-        let uses: usize = stmts
-            .iter()
-            .skip(i + 1)
-            .map(|stmt| stmt_ident_count(&stmt.stmt, &name))
-            .sum::<usize>()
-            + tail.map_or(0, |tail| expr_ident_count(tail, &name));
-        if uses != 0 {
+        let Some(binding) = facts.binding_by_local_path(function, &name, &AstPath(def_path)) else {
+            continue;
+        };
+        if facts
+            .def_use(binding)
+            .is_none_or(|fact| !fact.reads.is_empty())
+        {
             continue;
         }
         let init = match &mut stmts[i].stmt {
@@ -56,53 +67,91 @@ fn scope(stmts: &mut Vec<IndentStmt>, tail: Option<&Expr>) {
     }
 }
 
-fn recurse(stmt: &mut Stmt) {
+fn recurse(stmt: &mut Stmt, function: FunctionId, facts: &FixupFacts, path: &mut Vec<PathSegment>) {
     match stmt {
         Stmt::If {
             then_body,
             else_body,
             ..
         } => {
-            scope(then_body, None);
-            scope(else_body, None);
+            walk::with_path_segment(path, PathSegment::Then, |path| {
+                scope(then_body, function, facts, path);
+            });
+            walk::with_path_segment(path, PathSegment::Else, |path| {
+                scope(else_body, function, facts, path);
+            });
         }
         Stmt::LetIf {
             then_body,
-            then_value,
             else_body,
-            else_value,
             ..
         } => {
-            scope(then_body, Some(then_value));
-            scope(else_body, Some(else_value));
+            walk::with_path_segment(path, PathSegment::Then, |path| {
+                scope(then_body, function, facts, path);
+            });
+            walk::with_path_segment(path, PathSegment::Else, |path| {
+                scope(else_body, function, facts, path);
+            });
         }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            scope(body, None)
+        Stmt::Loop { body, .. } => {
+            walk::with_path_segment(path, PathSegment::LoopBody, |path| {
+                scope(body, function, facts, path);
+            });
         }
-        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => scope_block(body),
+        Stmt::Scope { body } => {
+            walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
+                scope(body, function, facts, path);
+            });
+        }
+        Stmt::LabeledBlock { body, .. } => {
+            walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
+                scope(body, function, facts, path);
+            });
+        }
+        Stmt::Unsafe { body } => {
+            walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
+                scope_block(body, function, facts, path);
+            });
+        }
+        Stmt::While { body, .. } => {
+            walk::with_path_segment(path, PathSegment::WhileBody, |path| {
+                scope_block(body, function, facts, path);
+            });
+        }
+        Stmt::Block(body) => {
+            walk::with_path_segment(path, PathSegment::BlockBody, |path| {
+                scope_block(body, function, facts, path);
+            });
+        }
         Stmt::Match { arms, .. } => {
-            for arm in arms {
-                scope(&mut arm.body, None);
+            for (index, arm) in arms.iter_mut().enumerate() {
+                walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
+                    scope(&mut arm.body, function, facts, path);
+                });
             }
         }
         _ => {}
     }
 }
 
-fn scope_block(block: &mut Block) {
-    scope(&mut block.stmts, block.tail.as_deref());
+fn scope_block(
+    block: &mut Block,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    scope(&mut block.stmts, function, facts, path);
 }
 
-fn init_has_call(stmt: &Stmt) -> bool {
-    walk::stmt_exprs_any(stmt, &mut |expr| {
-        matches!(
-            expr,
-            Expr::Call { .. }
-                | Expr::MethodCall { .. }
-                | Expr::MethodCallGeneric { .. }
-                | Expr::Macro { .. }
-        )
-    })
+fn init_has_call(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    facts
+        .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
+        .is_some_and(|fact| {
+            fact.effects.contains(&EffectKind::ReadOnlyCall)
+                || fact.effects.contains(&EffectKind::UnknownCall)
+                || fact.effects.contains(&EffectKind::MethodCall)
+                || fact.effects.contains(&EffectKind::MacroExpansion)
+        })
 }
 
 fn is_temp_name(name: &str) -> bool {
@@ -110,16 +159,29 @@ fn is_temp_name(name: &str) -> bool {
         .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|b| b.is_ascii_digit()))
 }
 
+fn stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
+    let mut path = body_path.to_vec();
+    path.push(PathSegment::Stmt(index));
+    path
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::Type;
+    use crate::rust_ast::{Expr, Item, Program, Type};
 
     fn dropped(stmts: Vec<Stmt>) -> String {
-        let mut f = func(vec![], None, stmts);
-        fixup(&mut f.body);
-        emit(f)
+        let mut program = Program {
+            items: vec![Item::Fn(func(vec![], None, stmts))],
+        };
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        let facts = analyzed.facts;
+        let Item::Fn(f) = &mut program.items[0] else {
+            unreachable!();
+        };
+        fixup(&mut f.body, FunctionId(0), &facts);
+        program.emit()
     }
 
     #[test]

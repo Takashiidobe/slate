@@ -12,27 +12,67 @@ use crate::rust_ast::{Item, Program};
 
 pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { program, .. } = facts::analyze(program);
-    let sigs = rewrite::call_args::collect_signatures(&program);
-    let mut program = Program {
-        items: program
-            .items
-            .into_iter()
-            .map(|item| match item {
-                Item::Fn(mut f) => {
-                    rewrite::inline_temps::fixup(&mut f.body);
-                    rewrite::param_spills::fixup(&mut f);
-                    rewrite::zero_init::fixup(&mut f.body);
-                    rewrite::compound_assign::fixup(&mut f.body);
-                    rewrite::call_args::fixup(&mut f.body, &sigs);
-                    rewrite::retval::fixup(&mut f);
-                    rewrite::drop_call_results::fixup(&mut f.body);
-                    rewrite::string_lift::fixup(&mut f.body);
-                    Item::Fn(f)
-                }
-                item => item,
-            })
-            .collect(),
-    };
+    let mut program = program;
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        let mut changed = false;
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            if let Item::Fn(f) = item
+                && let Some(function) = facts.function_by_item_index(item_index)
+                && rewrite::inline_temps::fixup(&mut f.body, function, &facts)
+            {
+                changed = true;
+                break;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+    for item in program.items.iter_mut() {
+        if let Item::Fn(f) = item {
+            rewrite::param_spills::fixup(f);
+            rewrite::zero_init::fixup(&mut f.body);
+        }
+    }
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            rewrite::compound_assign::fixup(&mut f.body, function, &facts);
+        }
+    }
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        let mut changed = false;
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            if let Item::Fn(f) = item
+                && let Some(function) = facts.function_by_item_index(item_index)
+                && rewrite::call_args::fixup(&mut f.body, function, &facts)
+            {
+                changed = true;
+                break;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+    for item in program.items.iter_mut() {
+        if let Item::Fn(f) = item {
+            rewrite::retval::fixup(f);
+        }
+    }
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            rewrite::drop_call_results::fixup(&mut f.body, function, &facts);
+            rewrite::string_lift::fixup(&mut f.body);
+        }
+    }
     let facts::AnalyzedProgram {
         program: analyzed_program,
         mut facts,
