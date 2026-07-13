@@ -1,5 +1,6 @@
 //! Rust cleanup passes that run after faithful CIR lowering.
 
+mod borrow_alias;
 mod call_args;
 mod compound_assign;
 mod counted_loop;
