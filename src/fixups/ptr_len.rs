@@ -1,27 +1,20 @@
 use std::collections::BTreeMap;
 
+use crate::fixups::facts::{
+    BindingId, BindingKind, FixupFacts, FunctionId, PtrLenSliceFact, PtrLenUnsupportedCallsiteFact,
+};
 use crate::fixups::support::walk;
 use crate::rust_ast::{
     Block, Expr, FnDef, FnParam, Ident, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type,
 };
 
-pub(super) fn fixup(program: &mut Program) {
-    let candidates = collect_candidates(program);
-    if candidates.is_empty() {
-        return;
-    }
+pub(super) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+    let candidates = collect_candidates(program, facts);
+    collect_callsites(program, facts, &candidates);
+}
 
-    let observed = collect_callsites(program, &candidates);
-    let plans = candidates
-        .into_iter()
-        .filter_map(|(name, candidate)| {
-            let calls = observed.get(&name)?;
-            if calls.has_unsupported {
-                return None;
-            }
-            plan_for_candidate(candidate, calls).map(|plan| (name, plan))
-        })
-        .collect::<BTreeMap<_, _>>();
+pub(super) fn fixup(program: &mut Program, facts: &FixupFacts) {
+    let plans = plans_from_facts(facts);
     if plans.is_empty() {
         return;
     }
@@ -38,10 +31,11 @@ pub(super) fn fixup(program: &mut Program) {
 
 #[derive(Clone)]
 struct Candidate {
+    function: FunctionId,
+    ptr_param: BindingId,
+    len_param: BindingId,
     ptr_index: usize,
     len_index: usize,
-    ptr_name: String,
-    len_name: String,
     ptr_mutable: bool,
     elem: Type,
     len_ty: Type,
@@ -60,41 +54,31 @@ struct Plan {
 
 #[derive(Clone)]
 struct Callsite {
-    ptr_index: usize,
-    len_index: usize,
     ptr_mutable: bool,
     array_len: u64,
 }
 
-#[derive(Default)]
-struct ObservedCalls {
-    supported: Vec<Callsite>,
-    has_unsupported: bool,
-}
-
-impl std::ops::Deref for ObservedCalls {
-    type Target = [Callsite];
-
-    fn deref(&self) -> &Self::Target {
-        &self.supported
-    }
-}
-
-fn collect_candidates(program: &Program) -> BTreeMap<String, Candidate> {
+fn collect_candidates(program: &Program, facts: &FixupFacts) -> BTreeMap<String, Candidate> {
     program
         .items
         .iter()
-        .filter_map(|item| {
+        .enumerate()
+        .filter_map(|(item_index, item)| {
             let Item::Fn(f) = item else {
                 return None;
             };
-            let candidate = adjacent_ptr_len_pair(&f.params)?;
+            let function = facts.function_by_item_index(item_index)?;
+            let candidate = adjacent_ptr_len_pair(function, &f.params, facts)?;
             Some((f.name.clone(), candidate))
         })
         .collect()
 }
 
-fn adjacent_ptr_len_pair(params: &[FnParam]) -> Option<Candidate> {
+fn adjacent_ptr_len_pair(
+    function: FunctionId,
+    params: &[FnParam],
+    facts: &FixupFacts,
+) -> Option<Candidate> {
     for (i, pair) in params.windows(2).enumerate() {
         let Type::Ptr { mutable, inner } = &pair[0].ty else {
             continue;
@@ -102,11 +86,14 @@ fn adjacent_ptr_len_pair(params: &[FnParam]) -> Option<Candidate> {
         if !is_integer_type(&pair[1].ty) {
             continue;
         }
+        let ptr_param = facts.binding_by_param_index(function, i)?;
+        let len_param = facts.binding_by_param_index(function, i + 1)?;
         return Some(Candidate {
+            function,
+            ptr_param,
+            len_param,
             ptr_index: i,
             len_index: i + 1,
-            ptr_name: pair[0].name.clone(),
-            len_name: pair[1].name.clone(),
             ptr_mutable: *mutable,
             elem: (**inner).clone(),
             len_ty: pair[1].ty.clone(),
@@ -137,18 +124,20 @@ fn is_integer_type(ty: &Type) -> bool {
 
 fn collect_callsites(
     program: &Program,
+    facts: &mut FixupFacts,
     candidates: &BTreeMap<String, Candidate>,
-) -> BTreeMap<String, ObservedCalls> {
-    let mut calls = BTreeMap::new();
-    for item in &program.items {
+) {
+    for (item_index, item) in program.items.iter().enumerate() {
         let Item::Fn(f) = item else {
+            continue;
+        };
+        let Some(caller) = facts.function_by_item_index(item_index) else {
             continue;
         };
         let mut arrays = BTreeMap::new();
         collect_body_arrays(&f.body, &mut arrays);
-        collect_body_calls(&f.body, candidates, &arrays, &mut calls);
+        collect_body_calls(caller, &f.body, facts, candidates, &arrays);
     }
-    calls
 }
 
 fn collect_body_arrays(body: &[IndentStmt], arrays: &mut BTreeMap<String, u64>) {
@@ -195,10 +184,11 @@ fn collect_block_arrays(block: &Block, arrays: &mut BTreeMap<String, u64>) {
 }
 
 fn collect_body_calls(
+    caller: FunctionId,
     body: &[IndentStmt],
+    facts: &mut FixupFacts,
     candidates: &BTreeMap<String, Candidate>,
     arrays: &BTreeMap<String, u64>,
-    calls: &mut BTreeMap<String, ObservedCalls>,
 ) {
     for indent in body {
         walk::stmt_exprs(&indent.stmt, &mut |expr| {
@@ -211,10 +201,29 @@ fn collect_body_calls(
             if !candidates.contains_key(name.as_str()) {
                 return;
             }
-            let entry = calls.entry(name.as_str().into()).or_default();
             match callsite(expr, candidates, arrays) {
-                Some((_, callsite)) => entry.supported.push(callsite),
-                None => entry.has_unsupported = true,
+                Some((_, callsite)) => {
+                    let candidate = &candidates[name.as_str()];
+                    facts.ptr_len_slices.push(PtrLenSliceFact {
+                        caller,
+                        callee: candidate.function,
+                        ptr_param: candidate.ptr_param,
+                        len_param: candidate.len_param,
+                        backing_array_len: callsite.array_len,
+                        mutable: candidate.ptr_mutable || callsite.ptr_mutable,
+                        elem_ty: candidate.elem.clone(),
+                        len_ty: candidate.len_ty.clone(),
+                    });
+                }
+                None => {
+                    let candidate = &candidates[name.as_str()];
+                    facts
+                        .ptr_len_unsupported_callsites
+                        .push(PtrLenUnsupportedCallsiteFact {
+                            caller,
+                            callee: candidate.function,
+                        });
+                }
             }
         });
     }
@@ -242,8 +251,6 @@ fn callsite(
     Some((
         name.as_str().into(),
         Callsite {
-            ptr_index: candidate.ptr_index,
-            len_index: candidate.len_index,
             ptr_mutable,
             array_len,
         },
@@ -279,27 +286,60 @@ fn integer_value(expr: &Expr) -> Option<u64> {
     }
 }
 
-fn plan_for_candidate(candidate: Candidate, calls: &[Callsite]) -> Option<Plan> {
-    if calls.is_empty() {
-        return None;
+fn plans_from_facts(facts: &FixupFacts) -> BTreeMap<String, Plan> {
+    let mut grouped = BTreeMap::<FunctionId, Vec<&PtrLenSliceFact>>::new();
+    for fact in &facts.ptr_len_slices {
+        grouped.entry(fact.callee).or_default().push(fact);
     }
-    if !calls.iter().all(|call| {
-        call.ptr_index == candidate.ptr_index
-            && call.len_index == candidate.len_index
-            && call.array_len > 0
-    }) {
-        return None;
-    }
-    let mutable = candidate.ptr_mutable || calls.iter().any(|call| call.ptr_mutable);
-    Some(Plan {
-        ptr_index: candidate.ptr_index,
-        len_index: candidate.len_index,
-        ptr_name: candidate.ptr_name,
-        len_name: candidate.len_name,
-        mutable,
-        elem: candidate.elem,
-        len_ty: candidate.len_ty,
-    })
+
+    grouped
+        .into_iter()
+        .filter(|(function, calls)| {
+            !calls.is_empty()
+                && !facts
+                    .ptr_len_unsupported_callsites
+                    .iter()
+                    .any(|unsupported| unsupported.callee == *function)
+                && calls.iter().all(|call| call.backing_array_len > 0)
+        })
+        .filter_map(|(function, calls)| {
+            let first = calls[0];
+            if !calls
+                .iter()
+                .all(|call| call.ptr_param == first.ptr_param && call.len_param == first.len_param)
+            {
+                return None;
+            }
+            let function_fact = facts.functions.iter().find(|fact| fact.id == function)?;
+            let ptr_binding = facts
+                .bindings
+                .iter()
+                .find(|binding| binding.id == first.ptr_param)?;
+            let len_binding = facts
+                .bindings
+                .iter()
+                .find(|binding| binding.id == first.len_param)?;
+            let BindingKind::Param { index: ptr_index } = ptr_binding.kind else {
+                return None;
+            };
+            let BindingKind::Param { index: len_index } = len_binding.kind else {
+                return None;
+            };
+            let mutable = calls.iter().any(|call| call.mutable);
+            Some((
+                function_fact.name.clone(),
+                Plan {
+                    ptr_index,
+                    len_index,
+                    ptr_name: ptr_binding.name.clone(),
+                    len_name: len_binding.name.clone(),
+                    mutable,
+                    elem: first.elem_ty.clone(),
+                    len_ty: first.len_ty.clone(),
+                },
+            ))
+        })
+        .collect()
 }
 
 fn rewrite_function(f: &mut FnDef, plan: &Plan) {
@@ -380,8 +420,17 @@ fn rewrite_calls_in_body(body: &mut [IndentStmt], plans: &BTreeMap<String, Plan>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::fixups::facts;
     use crate::fixups::test_support::*;
     use crate::rust_ast::{Item, Program};
+
+    fn analyze_collect_fixup(program: &mut Program) -> FixupFacts {
+        let analyzed = facts::analyze(program.clone());
+        let mut facts = analyzed.facts;
+        collect_facts(program, &mut facts);
+        fixup(program, &facts);
+        facts
+    }
 
     #[test]
     fn rewrites_full_array_pointer_len_calls_to_slice_params() {
@@ -430,8 +479,23 @@ mod tests {
             ],
         };
 
-        fixup(&mut program);
+        let facts = analyze_collect_fixup(&mut program);
 
+        assert_eq!(facts.ptr_len_slices.len(), 1);
+        let ptr_binding = facts
+            .bindings
+            .iter()
+            .find(|binding| binding.id == facts.ptr_len_slices[0].ptr_param)
+            .unwrap();
+        let len_binding = facts
+            .bindings
+            .iter()
+            .find(|binding| binding.id == facts.ptr_len_slices[0].len_param)
+            .unwrap();
+        assert_eq!(ptr_binding.name, "items");
+        assert_eq!(len_binding.name, "len");
+        assert_eq!(facts.ptr_len_slices[0].backing_array_len, 4);
+        assert!(facts.ptr_len_slices[0].mutable);
         assert_eq!(
             program.emit(),
             "\
@@ -488,8 +552,10 @@ fn main() {
             ],
         };
 
-        fixup(&mut program);
+        let facts = analyze_collect_fixup(&mut program);
 
+        assert!(facts.ptr_len_slices.is_empty());
+        assert_eq!(facts.ptr_len_unsupported_callsites.len(), 1);
         assert!(program.emit().contains("fn f(items: *mut i32, len: i32)"));
     }
 
@@ -533,8 +599,10 @@ fn main() {
             ],
         };
 
-        fixup(&mut program);
+        let facts = analyze_collect_fixup(&mut program);
 
+        assert_eq!(facts.ptr_len_slices.len(), 1);
+        assert_eq!(facts.ptr_len_unsupported_callsites.len(), 1);
         assert!(program.emit().contains("fn f(items: *mut i32, len: i32)"));
     }
 }
