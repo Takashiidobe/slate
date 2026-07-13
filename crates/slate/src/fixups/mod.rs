@@ -106,7 +106,11 @@ pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_copy::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::string_copy::prune_unused_externs(&mut program, &facts);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_libc::fixup(&mut program, &facts);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::string_libc::prune_unused_externs(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item

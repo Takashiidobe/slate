@@ -17,54 +17,11 @@
 //!   slot; the between-statements guard keeps its side effect from being
 //!   reordered.
 
-use std::collections::HashMap;
-
 use crate::fixups::facts::{
     AstPath, CallArgPinning, CallCallee, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
 };
 use crate::fixups::support::walk;
-use crate::rust_ast::{Expr, ExternDecl, IndentStmt, Item, Program, Stmt, Type};
-
-pub(in crate::fixups) struct Signature {
-    params: Vec<Type>,
-    variadic: bool,
-}
-
-pub(in crate::fixups) type Signatures = HashMap<String, Signature>;
-
-pub(in crate::fixups) fn collect_signatures(program: &Program) -> Signatures {
-    let mut sigs = Signatures::new();
-    let mut record = |name: &str, params: Vec<Type>, variadic: bool| {
-        sigs.insert(name.to_string(), Signature { params, variadic });
-    };
-    for item in &program.items {
-        match item {
-            Item::Fn(f) => record(
-                &f.name,
-                f.params.iter().map(|p| p.ty.clone()).collect(),
-                false,
-            ),
-            Item::Func(f) => record(
-                &f.name,
-                f.params.iter().map(|p| p.ty.clone()).collect(),
-                false,
-            ),
-            Item::ExternBlock { decls, .. } => {
-                for decl in decls {
-                    if let ExternDecl::Fn(d) = decl {
-                        record(
-                            &d.name,
-                            d.params.iter().map(|p| p.ty.clone()).collect(),
-                            d.variadic,
-                        );
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-    sigs
-}
+use crate::rust_ast::{Expr, IndentStmt, Stmt};
 
 pub(in crate::fixups) fn fixup(
     body: &mut Vec<IndentStmt>,
@@ -433,7 +390,12 @@ fn binding_name(facts: &FixupFacts, binding: crate::fixups::facts::BindingId) ->
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{ExternDecl, ExternFnDecl, FnParam, Item, Program, Stmt};
+    use crate::rust_ast::{ExternDecl, ExternFnDecl, FnParam, Item, Program, Stmt, Type};
+
+    struct Signature {
+        params: Vec<Type>,
+        variadic: bool,
+    }
 
     fn sig(params: &[&str], variadic: bool) -> Signature {
         Signature {

@@ -1,5 +1,5 @@
 use crate::fixups::facts::{
-    AstPath, ConstValue, FixupFacts, FunctionId, PathSegment, StringBufferProvenance,
+    AstPath, CallCallee, ConstValue, FixupFacts, FunctionId, PathSegment, StringBufferProvenance,
     StringRecoveryCandidate, ValueSubject,
 };
 use crate::rust_ast::{
@@ -15,7 +15,6 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
             fixup_body(&mut f.body, function, facts);
         }
     }
-    prune_unused_externs(program);
 }
 
 #[derive(Clone)]
@@ -777,8 +776,8 @@ fn is_copy_func(name: &str) -> bool {
     matches!(name, "strcpy" | "strncpy" | "strcat" | "strncat")
 }
 
-fn prune_unused_externs(program: &mut Program) {
-    let used = copy_calls(program);
+pub(in crate::fixups) fn prune_unused_externs(program: &mut Program, facts: &FixupFacts) {
+    let used = direct_calls(facts);
     program.items.retain_mut(|item| match item {
         Item::ExternBlock { decls, .. } => {
             decls.retain(|decl| match decl {
@@ -791,93 +790,18 @@ fn prune_unused_externs(program: &mut Program) {
     });
 }
 
-fn copy_calls(program: &Program) -> Vec<String> {
-    let mut calls = Vec::new();
-    for item in &program.items {
-        if let Item::Fn(f) = item {
-            collect_copy_calls_body(&f.body, &mut calls);
-        }
-    }
+fn direct_calls(facts: &FixupFacts) -> Vec<String> {
+    let mut calls = facts
+        .callsites
+        .iter()
+        .filter_map(|callsite| match &callsite.callee {
+            CallCallee::Direct { name, .. } => Some(name.clone()),
+            CallCallee::Indirect => None,
+        })
+        .collect::<Vec<_>>();
     calls.sort();
     calls.dedup();
     calls
-}
-
-fn collect_copy_calls_body(body: &[IndentStmt], calls: &mut Vec<String>) {
-    for indent in body {
-        collect_copy_calls_stmt(&indent.stmt, calls);
-    }
-}
-
-fn collect_copy_calls_block(block: &Block, calls: &mut Vec<String>) {
-    collect_copy_calls_body(&block.stmts, calls);
-    if let Some(tail) = &block.tail {
-        collect_copy_calls_expr(tail, calls);
-    }
-}
-
-fn collect_copy_calls_stmt(stmt: &Stmt, calls: &mut Vec<String>) {
-    match stmt {
-        Stmt::Let { init, .. } => {
-            if let Some(expr) = init {
-                collect_copy_calls_expr(expr, calls);
-            }
-        }
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            collect_copy_calls_expr(target, calls);
-            collect_copy_calls_expr(value, calls);
-        }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => collect_copy_calls_expr(expr, calls),
-        Stmt::If {
-            cond,
-            then_body,
-            else_body,
-        } => {
-            collect_copy_calls_expr(cond, calls);
-            collect_copy_calls_body(then_body, calls);
-            collect_copy_calls_body(else_body, calls);
-        }
-        Stmt::LetIf {
-            cond,
-            then_body,
-            then_value,
-            else_body,
-            else_value,
-            ..
-        } => {
-            collect_copy_calls_expr(cond, calls);
-            collect_copy_calls_body(then_body, calls);
-            collect_copy_calls_expr(then_value, calls);
-            collect_copy_calls_body(else_body, calls);
-            collect_copy_calls_expr(else_value, calls);
-        }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            collect_copy_calls_body(body, calls);
-        }
-        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-            collect_copy_calls_block(body, calls);
-        }
-        Stmt::Match { expr, arms } => {
-            collect_copy_calls_expr(expr, calls);
-            for arm in arms {
-                collect_copy_calls_body(&arm.body, calls);
-            }
-        }
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
-    }
-}
-
-fn collect_copy_calls_expr(expr: &Expr, calls: &mut Vec<String>) {
-    if let Expr::Call { func, .. } = expr
-        && let Expr::Var(name) = &**func
-        && is_copy_func(name.as_str())
-    {
-        calls.push(name.as_str().into());
-    }
-    expr_children_any(expr, &mut |expr| {
-        collect_copy_calls_expr(expr, calls);
-        false
-    });
 }
 
 fn expr_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
