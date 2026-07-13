@@ -1,9 +1,9 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingKind, CastFact, CastKind, CastRequirement, FixupFacts, FunctionId, PathSegment,
 };
-use crate::fixups::support::walk;
 use crate::rust_ast::{
     AtomicType, Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type,
     UnaryOp,

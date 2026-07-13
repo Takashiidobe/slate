@@ -1,7 +1,7 @@
+use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, FixupFacts, FunctionId, PathSegment, PrintfArgFact, PrintfCallFact,
 };
-use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, FnParam, IndentStmt, Item, Program, RustValue, Stmt, Type};
 use std::collections::BTreeMap;
 

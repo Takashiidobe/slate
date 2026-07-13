@@ -2,7 +2,6 @@ use crate::fixups::facts::{
     AstPath, ConstValue, FixupFacts, FunctionId, PathSegment, StringBufferProvenance,
     StringRecoveryCandidate, ValueSubject,
 };
-use crate::fixups::support::walk;
 use crate::rust_ast::{
     Block, Expr, ExternDecl, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type,
 };
@@ -308,7 +307,7 @@ fn expr_allows_lift(expr: &Expr, name: &str, liftable: &BTreeSet<String>) -> boo
 }
 
 fn expr_mentions_var(expr: &Expr, name: &str) -> bool {
-    walk::exprs_any(
+    expr_any(
         expr,
         &mut |expr| matches!(expr, Expr::Var(v) if v.as_str() == name),
     )
@@ -375,7 +374,7 @@ fn printf_conversions(expr: &Expr) -> Option<Vec<u8>> {
 }
 
 fn expr_mentions_pointer_view(expr: &Expr, name: &str) -> bool {
-    walk::exprs_any(expr, &mut |expr| {
+    expr_any(expr, &mut |expr| {
         pointer_view_source(expr).is_some_and(|source| source == name)
     })
 }
@@ -796,19 +795,216 @@ fn copy_calls(program: &Program) -> Vec<String> {
     let mut calls = Vec::new();
     for item in &program.items {
         if let Item::Fn(f) = item {
-            walk::body_exprs(&f.body, &mut |expr| {
-                if let Expr::Call { func, .. } = expr
-                    && let Expr::Var(name) = &**func
-                    && is_copy_func(name.as_str())
-                {
-                    calls.push(name.as_str().into());
-                }
-            });
+            collect_copy_calls_body(&f.body, &mut calls);
         }
     }
     calls.sort();
     calls.dedup();
     calls
+}
+
+fn collect_copy_calls_body(body: &[IndentStmt], calls: &mut Vec<String>) {
+    for indent in body {
+        collect_copy_calls_stmt(&indent.stmt, calls);
+    }
+}
+
+fn collect_copy_calls_block(block: &Block, calls: &mut Vec<String>) {
+    collect_copy_calls_body(&block.stmts, calls);
+    if let Some(tail) = &block.tail {
+        collect_copy_calls_expr(tail, calls);
+    }
+}
+
+fn collect_copy_calls_stmt(stmt: &Stmt, calls: &mut Vec<String>) {
+    match stmt {
+        Stmt::Let { init, .. } => {
+            if let Some(expr) = init {
+                collect_copy_calls_expr(expr, calls);
+            }
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            collect_copy_calls_expr(target, calls);
+            collect_copy_calls_expr(value, calls);
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => collect_copy_calls_expr(expr, calls),
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            collect_copy_calls_expr(cond, calls);
+            collect_copy_calls_body(then_body, calls);
+            collect_copy_calls_body(else_body, calls);
+        }
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            collect_copy_calls_expr(cond, calls);
+            collect_copy_calls_body(then_body, calls);
+            collect_copy_calls_expr(then_value, calls);
+            collect_copy_calls_body(else_body, calls);
+            collect_copy_calls_expr(else_value, calls);
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            collect_copy_calls_body(body, calls);
+        }
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            collect_copy_calls_block(body, calls);
+        }
+        Stmt::Match { expr, arms } => {
+            collect_copy_calls_expr(expr, calls);
+            for arm in arms {
+                collect_copy_calls_body(&arm.body, calls);
+            }
+        }
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+    }
+}
+
+fn collect_copy_calls_expr(expr: &Expr, calls: &mut Vec<String>) {
+    if let Expr::Call { func, .. } = expr
+        && let Expr::Var(name) = &**func
+        && is_copy_func(name.as_str())
+    {
+        calls.push(name.as_str().into());
+    }
+    expr_children_any(expr, &mut |expr| {
+        collect_copy_calls_expr(expr, calls);
+        false
+    });
+}
+
+fn expr_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
+    pred(expr) || expr_children_any(expr, &mut |expr| expr_any(expr, pred))
+}
+
+fn expr_children_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
+    match expr {
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. }
+        | Expr::Closure { body: expr, .. }
+        | Expr::AtomicRef { ptr: expr, .. }
+        | Expr::AtomicLoad { ptr: expr, .. } => pred(expr),
+        Expr::Binary { lhs, rhs, .. }
+        | Expr::Index {
+            base: lhs,
+            index: rhs,
+        } => pred(lhs) || pred(rhs),
+        Expr::Call { func, args } => pred(func) || args.iter().any(pred),
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            pred(recv) || args.iter().any(pred)
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => pred(base),
+        Expr::StructLit { fields, .. } => fields.iter().any(|(_, value)| pred(value)),
+        Expr::ArrayLit(elems) => elems.iter().any(pred),
+        Expr::ArrayRepeat { elem, .. } => pred(elem),
+        Expr::Macro { args, .. } => args.iter().any(pred),
+        Expr::Match { expr, arms } => pred(expr) || arms.iter().any(|arm| pred(&arm.value)),
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => pred(cond) || pred(then_expr) || pred(else_expr),
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            block
+                .stmts
+                .iter()
+                .any(|indent| stmt_expr_any(&indent.stmt, pred))
+                || block.tail.as_deref().is_some_and(pred)
+        }
+        Expr::AtomicStore { ptr, value, .. }
+        | Expr::AtomicFetch { ptr, value, .. }
+        | Expr::AtomicSwap { ptr, value, .. } => pred(ptr) || pred(value),
+        Expr::AtomicCompareExchange {
+            ptr,
+            expected,
+            desired,
+            ..
+        } => pred(ptr) || pred(expected) || pred(desired),
+        Expr::CopyNonoverlapping { src, dst, .. } => pred(src) || pred(dst),
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => pred(src) || pred(dst) || pred(count),
+        Expr::WriteBytes { dst, val, count } => pred(dst) || pred(val) || pred(count),
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::Var(_)
+        | Expr::Path(_)
+        | Expr::Todo(_)
+        | Expr::AtomicFence { .. } => false,
+    }
+}
+
+fn stmt_expr_any(stmt: &Stmt, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
+    match stmt {
+        Stmt::Let { init, .. } => init.as_ref().is_some_and(pred),
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            pred(target) || pred(value)
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => pred(expr),
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            pred(cond)
+                || then_body
+                    .iter()
+                    .any(|indent| stmt_expr_any(&indent.stmt, pred))
+                || else_body
+                    .iter()
+                    .any(|indent| stmt_expr_any(&indent.stmt, pred))
+        }
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            pred(cond)
+                || then_body
+                    .iter()
+                    .any(|indent| stmt_expr_any(&indent.stmt, pred))
+                || pred(then_value)
+                || else_body
+                    .iter()
+                    .any(|indent| stmt_expr_any(&indent.stmt, pred))
+                || pred(else_value)
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            body.iter().any(|indent| stmt_expr_any(&indent.stmt, pred))
+        }
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            body.stmts
+                .iter()
+                .any(|indent| stmt_expr_any(&indent.stmt, pred))
+                || body.tail.as_deref().is_some_and(pred)
+        }
+        Stmt::Match { expr, arms } => {
+            pred(expr)
+                || arms.iter().any(|arm| {
+                    arm.body
+                        .iter()
+                        .any(|indent| stmt_expr_any(&indent.stmt, pred))
+                })
+        }
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
+    }
 }
 
 #[cfg(test)]

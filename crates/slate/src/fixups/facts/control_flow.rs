@@ -1,10 +1,10 @@
 use std::collections::BTreeSet;
 
+use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, ControlFlowExit, ControlFlowFact, ControlFlowSubject, FixupFacts, FunctionId,
     PathSegment,
 };
-use crate::fixups::support::walk;
 use crate::rust_ast::{Block, IndentStmt, Item, Label, Program, Stmt};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
