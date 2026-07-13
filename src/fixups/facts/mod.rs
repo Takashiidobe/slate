@@ -16,6 +16,7 @@ pub(super) struct FixupFacts {
     pub(super) loops: Vec<LoopFact>,
     pub(super) borrow_alias: Vec<BorrowAliasFact>,
     pub(super) def_use: Vec<DefUseFact>,
+    pub(super) effects: Vec<EffectFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
@@ -95,6 +96,15 @@ pub(super) struct DefUseFact {
     pub(super) reads: Vec<AstPath>,
     pub(super) writes: Vec<AstPath>,
     pub(super) last_use: Option<AstPath>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct EffectFact {
+    pub(super) function: FunctionId,
+    pub(super) subject: EffectSubject,
+    pub(super) path: AstPath,
+    pub(super) purity: Purity,
+    pub(super) effects: BTreeSet<EffectKind>,
 }
 
 #[derive(Debug, Clone)]
@@ -203,6 +213,33 @@ pub(super) enum SliceLoopAccess {
     Mutable,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum EffectSubject {
+    Expr,
+    Stmt,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum Purity {
+    MovablePure,
+    ReadOnly,
+    Effectful,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum EffectKind {
+    ReadOnlyCall,
+    UnknownCall,
+    MethodCall,
+    MacroExpansion,
+    VolatileRead,
+    VolatileWrite,
+    AtomicRead,
+    AtomicWrite,
+    MemoryWrite,
+    UnknownSideEffect,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) enum BorrowAliasState {
     ReadOnly,
@@ -286,6 +323,7 @@ pub(super) enum PathSegment {
     WhileBody,
     BlockBody,
     BlockTail,
+    Expr(usize),
 }
 
 impl FixupFacts {
@@ -340,6 +378,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     collector.program(&program);
     super::borrow_alias::collect_facts(&program, &mut collector.facts);
     super::def_use::collect_facts(&program, &mut collector.facts);
+    super::effects::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
         facts: collector.facts,
