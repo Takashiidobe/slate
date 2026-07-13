@@ -3,6 +3,7 @@
 mod call_args;
 mod compound_assign;
 mod drop_call_results;
+mod facts;
 mod idents;
 mod inline_temps;
 mod param_spills;
@@ -22,6 +23,10 @@ mod test_support;
 use crate::rust_ast::{Item, Program};
 
 pub fn apply(program: Program) -> Program {
+    let facts::AnalyzedProgram {
+        program,
+        facts: _facts,
+    } = facts::analyze(program);
     let sigs = call_args::collect_signatures(&program);
     let mut program = Program {
         items: program
