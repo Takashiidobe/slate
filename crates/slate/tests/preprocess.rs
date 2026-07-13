@@ -82,6 +82,9 @@ fn records_source_ranges_without_diagnostics() {
         "pointer_width_targets.c",
         "arm_endian_targets.c",
         "ndebug.c",
+        "feature_single.c",
+        "feature_multiple.c",
+        "feature_nested.c",
     ] {
         let doc = record_cfg(source, &[]);
         assert!(
@@ -110,17 +113,17 @@ fn records_source_ranges_without_diagnostics() {
 /// diagnostic that names the macro and its source line, distinct from a
 /// predicate shape we cannot normalize at all (slate-lq0.6).
 #[test]
-fn reports_unknown_project_macro_with_kind_and_location() {
-    let doc = record_cfg("reject/unmapped_predicate.c", &[]);
+fn reports_reserved_system_macro_with_kind_and_location() {
+    let doc = record_cfg("reject/system_macro_feature.c", &[]);
     let diags = doc["diagnostics"].as_array().expect("diagnostics array");
     let unmapped = diags
         .iter()
         .find(|d| d["kind"] == Value::from("unmapped-macro"))
         .expect("an unmapped-macro diagnostic");
-    assert_eq!(unmapped["line"].as_u64().unwrap(), 3);
+    assert_eq!(unmapped["line"].as_u64().unwrap(), 1);
     let message = unmapped["message"].as_str().unwrap();
     assert!(
-        message.contains("PROJECT_FEATURE_X"),
+        message.contains("_FILE_OFFSET_BITS"),
         "diagnostic should name the macro: {message}"
     );
     assert!(

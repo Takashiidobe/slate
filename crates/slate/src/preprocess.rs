@@ -8,9 +8,9 @@
 //! the branch is active for a given macro environment. Later stages join this
 //! metadata to lowered items to recover `#[cfg(...)]` gates.
 //!
-//! Scope is deliberately narrow: predicates are normalized only for the known
-//! target/debug macros; anything else is kept as an opaque diagnostic rather
-//! than guessed.
+//! Scope is deliberately narrow: predicates are normalized only for known
+//! target/debug macros and project-style feature macros; anything else is kept
+//! as an opaque diagnostic rather than guessed.
 
 use crate::rust_ast::Cfg;
 use std::collections::BTreeMap;
@@ -212,7 +212,7 @@ fn unmapped_atoms(expr: &PredExpr) -> Vec<String> {
 fn collect_unmapped(expr: &PredExpr, out: &mut Vec<String>) {
     match expr {
         PredExpr::Defined(name) => {
-            if known_cfg(name).is_none() && !out.contains(name) {
+            if macro_cfg(name).is_none() && !out.contains(name) {
                 out.push(name.clone());
             }
         }
@@ -481,9 +481,36 @@ fn known_cfg(macro_name: &str) -> Option<Cfg> {
     })
 }
 
+fn feature_cfg(macro_name: &str) -> Option<Cfg> {
+    if macro_name.starts_with('_') {
+        return None;
+    }
+    let mut feature = String::new();
+    let mut prev_underscore = false;
+    for ch in macro_name.chars() {
+        if ch.is_ascii_alphanumeric() {
+            feature.push(ch.to_ascii_lowercase());
+            prev_underscore = false;
+        } else if !prev_underscore {
+            feature.push('_');
+            prev_underscore = true;
+        }
+    }
+    let feature = feature.trim_matches('_');
+    if feature.is_empty() {
+        None
+    } else {
+        Some(opt("feature", feature))
+    }
+}
+
+fn macro_cfg(macro_name: &str) -> Option<Cfg> {
+    known_cfg(macro_name).or_else(|| feature_cfg(macro_name))
+}
+
 pub(crate) fn pred_to_cfg(expr: &PredExpr) -> Option<Cfg> {
     match expr {
-        PredExpr::Defined(name) => known_cfg(name),
+        PredExpr::Defined(name) => macro_cfg(name),
         PredExpr::Opaque(_) => None,
         PredExpr::Not(inner) => pred_to_cfg(inner).map(negate_cfg),
         PredExpr::Or(items) => combine_cfg(items, CfgList::Any),
@@ -706,8 +733,14 @@ mod tests {
     }
 
     #[test]
-    fn unknown_macro_has_no_cfg() {
-        assert!(pred_to_cfg(&PredExpr::Defined("PROJECT_FOO".into())).is_none());
+    fn project_macro_maps_to_feature_cfg() {
+        let cfg = pred_to_cfg(&PredExpr::Defined("PROJECT_FOO".into()));
+        assert_eq!(cfg_str(&cfg).as_deref(), Some("feature = \"project_foo\""));
+    }
+
+    #[test]
+    fn unknown_system_macro_has_no_cfg() {
+        assert!(pred_to_cfg(&PredExpr::Defined("_FILE_OFFSET_BITS".into())).is_none());
     }
 
     #[test]
@@ -779,14 +812,14 @@ mod tests {
     }
 
     #[test]
-    fn unknown_macro_is_distinguished_from_opaque_shape() {
-        let src = "#if defined(PROJECT_FEATURE_X)\nX\n#endif\n";
+    fn reserved_macro_is_distinguished_from_opaque_shape() {
+        let src = "#if defined(_FILE_OFFSET_BITS)\nX\n#endif\n";
         let pp = record(src, &macros(&[]));
         let diag = &pp.diagnostics[0];
         assert_eq!(diag.kind, DiagnosticKind::UnmappedMacro);
         assert_eq!(diag.line, 1);
         assert!(
-            diag.message.contains("PROJECT_FEATURE_X"),
+            diag.message.contains("_FILE_OFFSET_BITS"),
             "should name the unmapped macro, got: {}",
             diag.message
         );
@@ -794,8 +827,8 @@ mod tests {
 
     #[test]
     fn inactive_unmapped_branch_is_flagged_uncovered() {
-        // linux branch is active (mapped); the unknown-macro branch is inactive.
-        let src = "#if defined(__linux__)\nL\n#elif defined(PROJECT_X)\nP\n#endif\n";
+        // linux branch is active (mapped); the reserved-macro branch is inactive.
+        let src = "#if defined(__linux__)\nL\n#elif defined(_FILE_OFFSET_BITS)\nP\n#endif\n";
         let pp = record(src, &macros(&["__linux__"]));
         let unmapped = pp
             .diagnostics
