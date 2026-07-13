@@ -91,25 +91,21 @@ pub fn apply(program: Program) -> Program {
             && let Some(function) = facts.function_by_item_index(item_index)
         {
             rewrite::drop_call_results::fixup(&mut f.body, function, &facts);
+        }
+    }
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
             rewrite::string_lift::fixup(&mut f.body, function, &facts);
         }
     }
-    let facts::AnalyzedProgram {
-        program: analyzed_program,
-        mut facts,
-    } = facts::analyze(program);
-    program = analyzed_program;
-    facts::ptr_len::collect_facts(&program, &mut facts);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::ptr_len::fixup(&mut program, &facts);
-    facts::slice_index::collect_facts(&program, &mut facts);
-    facts::counted_loop::collect_facts(&program, &mut facts);
-    facts::loop_shapes::collect_facts(&program, &mut facts);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_copy::fixup(&mut program, &facts);
-    let facts::AnalyzedProgram {
-        program: analyzed_program,
-        facts,
-    } = facts::analyze(program);
-    program = analyzed_program;
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_libc::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     for (item_index, item) in program.items.iter_mut().enumerate() {
