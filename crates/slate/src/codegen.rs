@@ -237,9 +237,16 @@ impl<W: Write> Codegen<W> {
         }
         self.out.write_str("#[derive(Clone, Copy)]\n")?;
         let kw = if r.is_union { "union" } else { "struct" };
+        if let Some(vis) = r.vis.keyword() {
+            write!(self.out, "{vis} ")?;
+        }
         writeln!(self.out, "{kw} {} {{", r.name)?;
         for (name, ty) in &r.fields {
-            write!(self.out, "    {}: ", name.as_str())?;
+            self.out.write_str("    ")?;
+            if let Some(vis) = r.field_vis.keyword() {
+                write!(self.out, "{vis} ")?;
+            }
+            write!(self.out, "{}: ", name.as_str())?;
             self.ty(ty)?;
             self.out.write_str(",\n")?;
         }

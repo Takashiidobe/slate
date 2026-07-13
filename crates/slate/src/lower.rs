@@ -26,6 +26,10 @@ pub struct ProjectInfo {
     pub cross_module_globals: BTreeMap<String, String>,
     /// modules the crate root declares with `mod <name>;` (empty for non-root).
     pub child_modules: Vec<String>,
+    /// records emitted by a shared module rather than by each generated module.
+    pub shared_records: BTreeSet<String>,
+    /// module name that owns shared record definitions.
+    pub shared_type_module: Option<String>,
     /// emit function and global definitions as `pub` so other modules can import them.
     pub emit_pub: bool,
 }
@@ -93,6 +97,44 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         cross_uses: Vec::new(),
     };
     lowerer.lower_module(cir, c)
+}
+
+pub fn lower_shared_records(records: &[crate::c_ast::Record]) -> Program {
+    let items = std::iter::once(Item::CrateAttrs(vec![CrateAttr::Allow(vec![
+        Lint::DeadCode,
+        Lint::Unused,
+        Lint::NonSnakeCase,
+        Lint::NonUpperCaseGlobals,
+    ])]))
+    .chain(records.iter().filter_map(|record| {
+        lower_record_def(record, Visibility::Pub, Visibility::Pub, true).map(Item::Record)
+    }))
+    .collect();
+    Program { items }
+}
+
+fn lower_record_def(
+    record: &crate::c_ast::Record,
+    vis: Visibility,
+    field_vis: Visibility,
+    allow_empty: bool,
+) -> Option<RecordDef> {
+    if record.fields.is_empty() && !allow_empty {
+        return None;
+    }
+    let fields = record
+        .fields
+        .iter()
+        .map(|field| (sanitize_ident(&field.name), c_type_to_type(&field.ty)))
+        .collect();
+    Some(RecordDef {
+        vis,
+        field_vis,
+        is_union: record.kind == RecordKind::Union,
+        allow_non_camel_case: false,
+        name: sanitize_ident(&record.name).into_string(),
+        fields,
+    })
 }
 
 struct Lowerer<'a> {
@@ -238,6 +280,10 @@ impl<'a> Lowerer<'a> {
             }
         }
         for record in &c.records {
+            let name = sanitize_ident(&record.name).into_string();
+            if self.project.shared_records.contains(&name) {
+                continue;
+            }
             if let Some(item) = self.lower_record(record) {
                 items.push(item);
             }
@@ -439,6 +485,17 @@ impl<'a> Lowerer<'a> {
                 name: Ident::from(name.as_str()),
             })
             .collect();
+        if let Some(module) = &self.project.shared_type_module {
+            for record in &self.project.shared_records {
+                wiring.push(Item::Use {
+                    path: Path::new([
+                        Ident::from("crate"),
+                        Ident::from(module.as_str()),
+                        Ident::from(record.as_str()),
+                    ]),
+                });
+            }
+        }
         wiring.append(&mut self.cross_uses);
         for (offset, item) in wiring.into_iter().enumerate() {
             items.insert(1 + offset, item);
@@ -594,25 +651,7 @@ impl<'a> Lowerer<'a> {
     }
 
     fn lower_record(&mut self, record: &crate::c_ast::Record) -> Option<Item> {
-        if record.fields.is_empty() {
-            return None;
-        }
-        let fields = record
-            .fields
-            .iter()
-            .map(|field| {
-                (
-                    sanitize_ident(&field.name),
-                    self.record_field_type(&field.ty),
-                )
-            })
-            .collect();
-        Some(Item::Record(RecordDef {
-            is_union: record.kind == RecordKind::Union,
-            allow_non_camel_case: false,
-            name: sanitize_ident(&record.name).into_string(),
-            fields,
-        }))
+        lower_record_def(record, Visibility::Private, Visibility::Private, false).map(Item::Record)
     }
 
     fn standard_record_defs(&self) -> Vec<Item> {
@@ -719,7 +758,8 @@ impl<'a> Lowerer<'a> {
         }
         let body = op.regions.first().unwrap();
         if body.blocks.len() > 1 {
-            f.lower_dispatch(body);
+            let returns_value = !matches!(ret, None | Some(Type::Unit));
+            f.lower_dispatch(body, returns_value);
         } else {
             f.lower_block(entry);
         }
@@ -3450,7 +3490,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    fn lower_dispatch(&mut self, body: &Region) {
+    fn lower_dispatch(&mut self, body: &Region, returns_value: bool) {
         let n = self.label_counter;
         self.label_counter += 1;
         let loop_label = Label::new(format!("__dispatch{n}"));
@@ -3502,9 +3542,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 body,
             });
         }
+        let fallthrough = if returns_value {
+            Stmt::Expr(Expr::Macro {
+                name: "unreachable".into(),
+                args: Vec::new(),
+            })
+        } else {
+            Stmt::Break(Some(loop_label.clone()))
+        };
         arms.push(MatchArm {
             pattern: Pattern::Wildcard,
-            body: vec![Self::indent_stmt(Stmt::Break(Some(loop_label.clone())))],
+            body: vec![Self::indent_stmt(fallthrough)],
         });
         self.push_stmt(Stmt::Let {
             name: state_var.clone(),
@@ -4585,6 +4633,8 @@ fn standard_record_def(name: &str) -> RecordDef {
         _ => Vec::new(),
     };
     RecordDef {
+        vis: Visibility::Private,
+        field_vis: Visibility::Private,
         is_union: false,
         allow_non_camel_case: true,
         name: name.to_string(),

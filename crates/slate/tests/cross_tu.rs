@@ -84,6 +84,17 @@ fn library_project_creates_cargo_crate_without_main() {
     let math_rs = std::fs::read_to_string(crate_dir.join("src/math.rs")).expect("read math.rs");
     assert!(math_rs.contains("pub fn square"));
     assert!(crate_dir.join("tests/run_smoke.rs").is_file());
+
+    let check = std::process::Command::new("cargo")
+        .args(["check", "--quiet", "--lib", "--manifest-path"])
+        .arg(crate_dir.join("Cargo.toml"))
+        .output()
+        .expect("cargo check generated lib crate");
+    assert!(
+        check.status.success(),
+        "generated lib crate should type-check:\n{}",
+        String::from_utf8_lossy(&check.stderr)
+    );
 }
 
 #[test]

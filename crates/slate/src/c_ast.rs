@@ -1,7 +1,7 @@
 //! Clang AST oracle for source-level facts that CIR may not preserve.
 
 use serde_json::Value;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 /// A parsed C translation unit.
@@ -154,19 +154,50 @@ pub fn parse_file_with_args(src: &Path, extra_args: &[String]) -> Result<Unit, S
     )
 }
 
+pub fn parse_file_with_project_records(src: &Path, project_root: &Path) -> Result<Unit, String> {
+    let project_root = project_root
+        .canonicalize()
+        .map_err(|e| format!("canonicalize {}: {e}", project_root.display()))?;
+    let out = Command::new(clang())
+        .args(["-Xclang", "-ast-dump=json", "-fsyntax-only"])
+        .args(crate::cir::emit::target_args())
+        .arg(src)
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", clang()))?;
+    if !out.status.success() {
+        return Err(format!(
+            "clang -ast-dump=json failed:\n{}",
+            String::from_utf8_lossy(&out.stderr)
+        ));
+    }
+    parse_json_with_record_roots(
+        &String::from_utf8_lossy(&out.stdout),
+        &src.to_string_lossy(),
+        &[project_root],
+    )
+}
+
 /// Parse a Clang JSON AST dump into a compact [`Unit`].
 pub fn parse(src: &str) -> Result<Unit, String> {
     parse_json(src, "")
 }
 
 pub fn parse_json(json: &str, source_file: &str) -> Result<Unit, String> {
+    parse_json_with_record_roots(json, source_file, &[])
+}
+
+fn parse_json_with_record_roots(
+    json: &str,
+    source_file: &str,
+    record_roots: &[PathBuf],
+) -> Result<Unit, String> {
     let root: Value =
         serde_json::from_str(json).map_err(|e| format!("parse clang AST JSON: {e}"))?;
     let mut enums = Vec::new();
     let mut records = Vec::new();
     let mut functions = Vec::new();
     collect_enums(&root, source_file, &mut enums);
-    collect_records(&root, source_file, &mut records);
+    collect_records(&root, source_file, record_roots, &mut records);
     collect_functions(&root, source_file, &mut functions);
     Ok(Unit {
         enums,
@@ -199,26 +230,50 @@ fn collect_functions(node: &Value, source_file: &str, out: &mut Vec<Function>) {
     }
 }
 
-fn collect_records(node: &Value, source_file: &str, out: &mut Vec<Record>) {
+fn collect_records(
+    node: &Value,
+    source_file: &str,
+    record_roots: &[PathBuf],
+    out: &mut Vec<Record>,
+) {
     if kind(node) == Some("RecordDecl")
-        && is_source_node(node, source_file)
+        && (is_source_node(node, source_file) || is_in_record_roots(node, record_roots))
         && node
             .get("completeDefinition")
             .and_then(Value::as_bool)
             .unwrap_or(false)
     {
-        if let Some(record) = extract_record(node) {
+        if let Some(record) = extract_record(node, None) {
             out.push(record);
         }
-        return;
     }
-    for child in children(node) {
-        collect_records(child, source_file, out);
+    let kids = children(node);
+    for (i, child) in kids.iter().enumerate() {
+        if kind(child) == Some("RecordDecl")
+            && is_included_record(child, source_file, record_roots)
+            && child
+                .get("completeDefinition")
+                .and_then(Value::as_bool)
+                .unwrap_or(false)
+            && child
+                .get("name")
+                .and_then(Value::as_str)
+                .unwrap_or("")
+                .is_empty()
+        {
+            if let Some(record) = next_anonymous_field_name(&kids, i + 1)
+                .and_then(|name| extract_record(child, Some(name)))
+            {
+                out.push(record);
+                continue;
+            }
+        }
+        collect_records(child, source_file, record_roots, out);
     }
 }
 
-fn extract_record(node: &Value) -> Option<Record> {
-    let name = node.get("name")?.as_str()?.to_string();
+fn extract_record(node: &Value, name_override: Option<String>) -> Option<Record> {
+    let name = name_override.or_else(|| node.get("name")?.as_str().map(str::to_string))?;
     if name.is_empty() {
         return None;
     }
@@ -242,6 +297,24 @@ fn extract_record(node: &Value) -> Option<Record> {
         kind: record_kind,
         fields,
     })
+}
+
+fn anonymous_record_name_from_field(node: &Value) -> Option<String> {
+    if kind(node) != Some("FieldDecl") {
+        return None;
+    }
+    let ty = qual_type(node)?;
+    let name = ty
+        .strip_prefix("struct (unnamed at ")
+        .or_else(|| ty.strip_prefix("union (unnamed at "))?
+        .strip_suffix(')')?;
+    Some(format!("(unnamed at {name})"))
+}
+
+fn next_anonymous_field_name(kids: &[&Value], start: usize) -> Option<String> {
+    kids.iter()
+        .skip(start)
+        .find_map(|sibling| anonymous_record_name_from_field(sibling))
 }
 
 fn extract_enum(node: &Value) -> Option<Enum> {
@@ -607,11 +680,24 @@ fn is_source_node(node: &Value, source_file: &str) -> bool {
     has_source_loc_without_file(node) && !has_included_from(node)
 }
 
+fn is_included_record(node: &Value, source_file: &str, record_roots: &[PathBuf]) -> bool {
+    is_source_node(node, source_file) || is_in_record_roots(node, record_roots)
+}
+
 fn same_source_file(file: &str, source_file: &str) -> bool {
     file == source_file
         || Path::new(file) == Path::new(source_file)
         || file.ends_with(source_file)
         || source_file.ends_with(file)
+}
+
+fn is_in_record_roots(node: &Value, record_roots: &[PathBuf]) -> bool {
+    !record_roots.is_empty()
+        && source_files(node).into_iter().any(|file| {
+            record_roots
+                .iter()
+                .any(|root| Path::new(file).starts_with(root))
+        })
 }
 
 fn source_files(node: &Value) -> Vec<&str> {
@@ -635,6 +721,7 @@ fn collect_source_files<'a>(node: Option<&'a Value>, out: &mut Vec<&'a str>) {
     if let Some(file) = node.get("file").and_then(Value::as_str) {
         out.push(file);
     }
+    collect_source_files(node.get("includedFrom"), out);
     collect_source_files(node.get("spellingLoc"), out);
     collect_source_files(node.get("expansionLoc"), out);
 }

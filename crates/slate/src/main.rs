@@ -10,7 +10,7 @@ mod lower;
 mod preprocess;
 mod rust_ast;
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
@@ -138,6 +138,30 @@ fn rust_ident(name: &str) -> String {
     out
 }
 
+fn collect_record_type_names(ty: &c_ast::CType, out: &mut BTreeSet<String>) {
+    match ty {
+        c_ast::CType::Ptr(inner) | c_ast::CType::Array(inner, _) => {
+            collect_record_type_names(inner, out);
+        }
+        c_ast::CType::FuncPtr { ret, params } => {
+            collect_record_type_names(ret, out);
+            for param in params {
+                collect_record_type_names(param, out);
+            }
+        }
+        c_ast::CType::Record(name) => {
+            out.insert(rust_ident(name));
+        }
+        _ => {}
+    }
+}
+
+fn collect_record_field_type_names(record: &c_ast::Record, out: &mut BTreeSet<String>) {
+    for field in &record.fields {
+        collect_record_type_names(&field.ty, out);
+    }
+}
+
 fn cargo() -> String {
     std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into())
 }
@@ -222,6 +246,8 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
 
     let mut defined: BTreeMap<String, String> = BTreeMap::new();
     let mut defined_globals: BTreeMap<String, String> = BTreeMap::new();
+    let mut shared_records = BTreeMap::new();
+    let mut referenced_record_types = BTreeSet::new();
     for (stem, path) in &modules {
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
         for sym in lower::defined_functions(&module) {
@@ -230,11 +256,28 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         for sym in lower::defined_globals(&module) {
             defined_globals.insert(sym, stem.clone());
         }
+        let unit = c_ast::parse_file_with_project_records(path, project_dir)?;
+        for record in unit.records {
+            collect_record_field_type_names(&record, &mut referenced_record_types);
+            shared_records
+                .entry(rust_ident(&record.name))
+                .or_insert(record);
+        }
     }
+    for name in referenced_record_types {
+        shared_records.entry(name.clone()).or_insert(c_ast::Record {
+            name,
+            kind: c_ast::RecordKind::Struct,
+            fields: Vec::new(),
+        });
+    }
+    let shared_record_names: BTreeSet<String> = shared_records.keys().cloned().collect();
 
     let project = lower::ProjectInfo {
         cross_module: defined,
         cross_module_globals: defined_globals,
+        shared_records: shared_record_names,
+        shared_type_module: Some("types".into()),
         child_modules: Vec::new(),
         emit_pub: true,
     };
@@ -242,7 +285,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     let mut written = Vec::new();
     for (stem, path) in &modules {
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
-        let unit = c_ast::parse_file(path)?;
+        let unit = c_ast::parse_file_with_project_records(path, project_dir)?;
         let mut ctx = ctx::Ctx::default();
         let program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
         for d in &ctx.diagnostics.items {
@@ -257,10 +300,24 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         written.push(output);
     }
 
-    let lib_rs = modules
-        .iter()
-        .map(|(stem, _)| format!("pub mod {stem};\n"))
-        .collect::<String>();
+    if !shared_records.is_empty() {
+        let records: Vec<_> = shared_records.into_values().collect();
+        let output = crate_src.join("types.rs");
+        std::fs::write(&output, lower::lower_shared_records(&records).emit())
+            .map_err(|e| format!("write {}: {e}", output.display()))?;
+        written.push(output);
+    }
+
+    let mut lib_rs = String::new();
+    if project.shared_type_module.is_some() {
+        lib_rs.push_str("pub mod types;\n");
+    }
+    lib_rs.push_str(
+        &modules
+            .iter()
+            .map(|(stem, _)| format!("pub mod {stem};\n"))
+            .collect::<String>(),
+    );
     let lib_rs_path = crate_src.join("lib.rs");
     std::fs::write(&lib_rs_path, lib_rs)
         .map_err(|e| format!("write {}: {e}", lib_rs_path.display()))?;
@@ -330,6 +387,8 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
             } else {
                 Vec::new()
             },
+            shared_records: BTreeSet::new(),
+            shared_type_module: None,
             emit_pub: true,
         };
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
