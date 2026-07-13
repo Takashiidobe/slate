@@ -196,6 +196,63 @@
           "expected_stdout": "1\n"
         }
       ]
+    },
+    {
+      "source": "feature_single.c",
+      "variants": [
+        {
+          "name": "my_feature",
+          "predicate": "defined(MY_FEATURE)",
+          "rust_cfg": "feature = \"my_feature\"",
+          "expected_stdout": "10\n"
+        }
+      ],
+      "fallback": {
+        "rust_cfg": "not(feature = \"my_feature\")",
+        "expected_stdout": "20\n"
+      }
+    },
+    {
+      "source": "feature_multiple.c",
+      "variants": [
+        {
+          "name": "first_feature",
+          "predicate": "defined(FIRST_FEATURE)",
+          "rust_cfg": "feature = \"first_feature\"",
+          "expected_stdout": "1\n"
+        },
+        {
+          "name": "second_feature",
+          "predicate": "defined(SECOND_FEATURE)",
+          "rust_cfg": "feature = \"second_feature\"",
+          "expected_stdout": "3\n"
+        }
+      ],
+      "fallback": {
+        "rust_cfg": "not(feature = \"first_feature\")",
+        "expected_stdout": "2\n"
+      }
+    },
+    {
+      "source": "feature_nested.c",
+      "variants": [
+        {
+          "name": "outer_feature",
+          "predicate": "defined(OUTER_FEATURE)",
+          "rust_cfg": "feature = \"outer_feature\"",
+          "expected_stdout": "12\n"
+        },
+        {
+          "name": "inner_feature",
+          "predicate": "defined(INNER_FEATURE)",
+          "rust_cfg": "feature = \"inner_feature\"",
+          "expected_stdout": "11\n"
+        }
+      ],
+      "fallback": {
+        "rust_cfg": "not(feature = \"outer_feature\")",
+        "expected_stdout": "20\n"
+      }
     }
   ]
 }

@@ -22,12 +22,13 @@ right mode when you have one target in mind.
 1. records the preprocessor conditional regions of the source (the oracle in
    `src/preprocess.rs`; see [passes.md](passes.md));
 2. maps each branch predicate to a Rust `cfg`;
-3. re-runs Clang/CIR once per branch — each with the branch's macros pinned
-   (`-D` its atoms, `-U` the rest) so exactly that branch is active — and lowers
-   each observed variant through the normal CIR path;
-4. merges the results: items that are byte-for-byte identical across variants are
-   emitted once; items that differ are emitted once per variant behind the
-   branch's `#[cfg(...)]` attribute.
+3. re-runs Clang/CIR once per branch of each conditional region — each with
+   that region's macros pinned (`-D` its atoms, `-U` the rest) so exactly that
+   branch is active while independent regions stay on their default branch — and
+   lowers each observed variant through the normal CIR path;
+4. merges the results: items outside conditional regions are emitted once; items
+   inside a recovered region are emitted once per branch behind that branch's
+   `#[cfg(...)]` attribute.
 
 Recovering the untaken branches genuinely requires the extra Clang/CIR
 invocations — there is no way to see them from a single preprocessed view.
@@ -37,9 +38,10 @@ lowering, so `translate-cfg` is a safe superset of `translate` for such files.
 
 ## Supported predicate → `cfg` mappings
 
-Only these `defined(MACRO)` predicates (and boolean combinations of them with
-`!`, `&&`, `||`) map to a Rust `cfg`. The table is the source of truth in
-`known_cfg` (`src/preprocess.rs`).
+These `defined(MACRO)` predicates (and boolean combinations of them with `!`,
+`&&`, `||`) map to built-in Rust `cfg`s. Project-style macros also map to Cargo
+features as described below. The table is the source of truth in `known_cfg`
+(`src/preprocess.rs`).
 
 | C predicate                | Rust `cfg`                  |
 | -------------------------- | --------------------------- |
@@ -68,6 +70,14 @@ Only these `defined(MACRO)` predicates (and boolean combinations of them with
 | `defined(__AARCH64EL__)`   | `all(target_arch = "aarch64", target_endian = "little")` |
 | `defined(NDEBUG)`          | `not(debug_assertions)`     |
 
+Project feature macros are identifiers that do not start with `_` and are not
+one of the built-in mappings above. They map mechanically to Cargo features:
+`defined(MY_FEATURE)` becomes `feature = "my_feature"`, and
+`#ifndef MY_FEATURE` becomes `not(feature = "my_feature")`. Non-alphanumeric
+characters collapse to `_`, and the feature name is lowercased. A C build that
+previously selected a branch with `-DMY_FEATURE` should select the translated
+Rust branch with `--features my_feature`.
+
 Combinations compose as expected: `||` becomes `any(...)`, `&&` becomes
 `all(...)`, `!` becomes `not(...)`, and `#else` becomes the negation of the
 `any(...)` of its chain's prior predicates (so the `#else` of a lone
@@ -80,16 +90,16 @@ not exact: C build systems can define `NDEBUG` independently of optimization
 level, whereas Rust's `debug_assertions` tracks the profile. A project that
 decouples the two will need to override this mapping.
 
-## Providing project-specific configurations
+## Project feature configurations
 
-Slate deliberately does **not** guess arbitrary macro combinations. It only
-merges branches whose predicates are in the table above. To translate a variant
-selected by a project-specific macro, pin it yourself and use single-config
-mode:
-
-```sh
-SLATE_CLANG_ARGS="-DMY_FEATURE=1" slate translate file.c
-```
+Slate deliberately keeps project macro handling boolean. `translate-cfg` can
+recover whole-item branches gated by `#ifdef MY_FEATURE`,
+`#if defined(MY_FEATURE)`, and boolean combinations of such predicates. Multiple
+independent top-level regions are handled per region rather than as a cross
+product, and nested regions are supported while the generated branch count stays
+within the built-in cap of 16 variants. If a source exceeds that cap,
+`translate-cfg` refuses with a diagnostic pointing at the region instead of
+exploding into an unbounded matrix.
 
 Run `slate record-cfg file.c [clang args...]` to see the recorded conditional
 regions, their normalized predicates, mapped `cfg`s, and which branch is active
@@ -104,12 +114,13 @@ emits these as structured `diagnostics` entries (`kind`, `line`, `message`),
 distinguishing two predicate classes so you know whether to add a config-matrix
 entry or rewrite the source:
 
-- **`unmapped-macro`** — a clean `defined(...)` predicate that names a macro with
-  no entry in the table above (e.g. a project-specific `defined(MY_FEATURE)`).
-  The predicate is *recorded and understood* — it just needs a user-supplied
-  mapping. The diagnostic names the offending macro(s). A branch that is also
-  inactive in the queried config is flagged **uncovered**: it would vanish from
-  the output entirely.
+- **`unmapped-macro`** — a clean `defined(...)` predicate that names a reserved
+  or system-style macro with no Rust cfg mapping, such as `_FILE_OFFSET_BITS` or
+  an unsupported compiler identity macro. The predicate is *recorded and
+  understood*, but Slate refuses to pretend it is a Cargo feature because those
+  macros often reshape ABI, libc, or compiler behavior. The diagnostic names the
+  offending macro(s). A branch that is also inactive in the queried config is
+  flagged **uncovered**: it would vanish from the output entirely.
 - **`opaque-predicate`** — a predicate whose *shape* is outside the
   boolean-over-`defined()` subset (arithmetic, comparisons, bare macros, e.g.
   `#if VERSION > 3`), which cannot be normalized to a `cfg` at all.
@@ -124,14 +135,15 @@ conditional region cannot be stitched as whole Rust items. These split into
 *unsupported-but-recorded predicates* and *code shapes that cannot be merged
 cleanly*:
 
-- **Unmapped predicates** — a predicate with no entry in the table above
-  (the `unmapped-macro`/`opaque-predicate` classes above).
+- **Unmapped predicates** — a predicate with no built-in cfg or project-feature
+  mapping (the `unmapped-macro`/`opaque-predicate` classes above).
 - **Fragment cuts** — a directive inside a function or record body, where the cut
   does not fall on an item boundary.
-- **Multiple or nested chains** — currently only a single top-level
-  `#if`/`#endif` chain is merged.
+- **Too many region variants** — nested and independent chains are bounded by
+  the 16-variant cap.
 - **Predicates that cannot be isolated** — e.g. a negated or `#ifndef` opening
   branch that the pinning heuristic cannot make uniquely active.
 
-Out of scope for now: expression-fragment macro surgery and arbitrary
-combinatorial macro exploration.
+Out of scope for now: expression-fragment macro surgery, value-carrying
+predicates such as `#if FOO == 2`, and arbitrary combinatorial macro
+exploration.

@@ -171,6 +171,46 @@ fn translates_ndebug_variants_to_debug_assertion_cfg_items() {
 }
 
 #[test]
+fn translates_single_custom_macro_to_feature_cfg_items() {
+    let rust = translate_cfg("feature_single.c");
+
+    assert!(rust.contains("#[cfg(feature = \"my_feature\")]\nfn feature_code() -> i32"));
+    assert!(rust.contains("#[cfg(not(feature = \"my_feature\"))]\nfn feature_code() -> i32"));
+    assert!(rust.contains("i32 = 10;"));
+    assert!(rust.contains("i32 = 20;"));
+    assert_eq!(rust.matches("fn main()").count(), 1);
+}
+
+#[test]
+fn translates_independent_custom_macro_chains_without_cross_product() {
+    let rust = translate_cfg("feature_multiple.c");
+
+    assert!(rust.contains("#[cfg(feature = \"first_feature\")]\nfn first_code() -> i32"));
+    assert!(rust.contains("#[cfg(not(feature = \"first_feature\"))]\nfn first_code() -> i32"));
+    assert!(rust.contains("#[cfg(feature = \"second_feature\")]\nfn second_code() -> i32"));
+    assert!(rust.contains("#[cfg(not(feature = \"second_feature\"))]\nfn second_code() -> i32"));
+    assert!(!rust.contains("all(feature = \"first_feature\", feature = \"second_feature\")"));
+    assert_eq!(rust.matches("fn first_code()").count(), 2);
+    assert_eq!(rust.matches("fn second_code()").count(), 2);
+    assert_eq!(rust.matches("fn main()").count(), 1);
+}
+
+#[test]
+fn translates_nested_custom_macro_chains_with_parent_cfg() {
+    let rust = translate_cfg("feature_nested.c");
+
+    assert!(rust.contains(
+        "#[cfg(all(feature = \"outer_feature\", feature = \"inner_feature\"))]\nfn nested_code() -> i32"
+    ));
+    assert!(rust.contains(
+        "#[cfg(all(feature = \"outer_feature\", not(feature = \"inner_feature\")))]\nfn nested_code() -> i32"
+    ));
+    assert!(rust.contains("#[cfg(not(feature = \"outer_feature\"))]\nfn nested_code() -> i32"));
+    assert_eq!(rust.matches("fn nested_code()").count(), 3);
+    assert_eq!(rust.matches("fn main()").count(), 1);
+}
+
+#[test]
 fn cfg_translated_fixtures_compile_for_current_host() {
     let work_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/cfg-translate-compile");
     for name in [
@@ -181,6 +221,9 @@ fn cfg_translated_fixtures_compile_for_current_host() {
         "pointer_width_targets.c",
         "arm_endian_targets.c",
         "ndebug.c",
+        "feature_single.c",
+        "feature_multiple.c",
+        "feature_nested.c",
     ] {
         let rust = translate_cfg(name);
         let rs = write_generated(name, &rust);
@@ -201,7 +244,7 @@ fn refuses_conditional_inside_a_function_body() {
 
 #[test]
 fn refuses_predicate_without_a_known_cfg_mapping() {
-    let err = translate_cfg_err("reject/unmapped_predicate.c");
+    let err = translate_cfg_err("reject/system_macro_feature.c");
     assert!(
         err.contains("does not map to a known Rust cfg"),
         "expected unmapped-predicate diagnostic, got:\n{err}"
@@ -209,11 +252,11 @@ fn refuses_predicate_without_a_known_cfg_mapping() {
 }
 
 #[test]
-fn refuses_multiple_conditional_chains() {
-    let err = translate_cfg_err("reject/two_chains.c");
+fn refuses_cfg_plans_above_the_variant_cap() {
+    let err = translate_cfg_err("reject/too_many_feature_chains.c");
     assert!(
-        err.contains("conditional chains found"),
-        "expected multi-chain diagnostic, got:\n{err}"
+        err.contains("configuration variant cap"),
+        "expected variant-cap diagnostic, got:\n{err}"
     );
 }
 
