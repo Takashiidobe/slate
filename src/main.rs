@@ -244,6 +244,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     std::fs::create_dir_all(&crate_src)
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
 
+    let mut loaded_modules = Vec::new();
     let mut defined: BTreeMap<String, String> = BTreeMap::new();
     let mut defined_globals: BTreeMap<String, String> = BTreeMap::new();
     let mut shared_records = BTreeMap::new();
@@ -257,12 +258,13 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             defined_globals.insert(sym, stem.clone());
         }
         let unit = c_ast::parse_file_with_project_records(path, project_dir)?;
-        for record in unit.records {
+        for record in &unit.records {
             collect_record_field_type_names(&record, &mut referenced_record_types);
             shared_records
                 .entry(rust_ident(&record.name))
-                .or_insert(record);
+                .or_insert_with(|| record.clone());
         }
+        loaded_modules.push((stem.clone(), path.clone(), module, unit));
     }
     for name in referenced_record_types {
         shared_records.entry(name.clone()).or_insert(c_ast::Record {
@@ -283,9 +285,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     };
 
     let mut written = Vec::new();
-    for (stem, path) in &modules {
-        let module = cir::parse_module(&cir::emit_generic(path)?)?;
-        let unit = c_ast::parse_file_with_project_records(path, project_dir)?;
+    for (stem, path, module, unit) in loaded_modules {
         let mut ctx = ctx::Ctx::default();
         let program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
         for d in &ctx.diagnostics.items {
