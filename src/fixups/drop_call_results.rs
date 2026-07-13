@@ -10,7 +10,7 @@
 //! a used call result is left materialized.
 
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
-use crate::fixups::inline_temps::walk_stmt_exprs;
+use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, IndentStmt, Stmt};
 
 pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
@@ -94,17 +94,15 @@ fn scope_block(block: &mut Block) {
 }
 
 fn init_has_call(stmt: &Stmt) -> bool {
-    let mut found = false;
-    walk_stmt_exprs(stmt, &mut |expr| {
-        found |= matches!(
+    walk::stmt_exprs_any(stmt, &mut |expr| {
+        matches!(
             expr,
             Expr::Call { .. }
                 | Expr::MethodCall { .. }
                 | Expr::MethodCallGeneric { .. }
                 | Expr::Macro { .. }
-        );
-    });
-    found
+        )
+    })
 }
 
 fn is_temp_name(name: &str) -> bool {
