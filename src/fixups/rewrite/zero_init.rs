@@ -4,7 +4,7 @@
 use crate::fixups::idents::{expr_ident, expr_ident_count};
 use crate::rust_ast::{Expr, IndentStmt, RustValue, Stmt};
 
-pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
+pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) {
     for stmt in body.iter_mut() {
         for_nested_body(&mut stmt.stmt, fixup);
     }

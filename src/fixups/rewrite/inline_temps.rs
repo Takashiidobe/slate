@@ -6,7 +6,7 @@ use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, IndentStmt, Stmt};
 
-pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
+pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) {
     fixup_with_tails(body, &[]);
 }
 
@@ -130,7 +130,7 @@ fn is_pure_temp_let(stmt: &Stmt) -> bool {
 // place dependence beyond its named operands. Matches (and never exceeds) what the
 // prior text heuristic inlined, so inlining decisions are unchanged.
 fn is_pure_expr(expr: &Expr) -> bool {
-    super::effects::is_movable_pure_expr(expr)
+    crate::fixups::facts::is_movable_pure_expr(expr)
 }
 
 fn stmt_contains_call(stmt: &Stmt) -> bool {

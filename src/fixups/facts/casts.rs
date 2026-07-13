@@ -9,7 +9,7 @@ use crate::rust_ast::{
     UnaryOp,
 };
 
-pub(super) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.casts.clear();
     let mut all = Vec::new();
     for (item_index, item) in program.items.iter().enumerate() {
