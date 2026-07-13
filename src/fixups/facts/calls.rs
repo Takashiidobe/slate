@@ -1,11 +1,11 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, CallArgFact, CallArgPinning, CallCallee, CallParamFact,
     CallSignatureFact, CallSignatureSource, CallsiteFact, FixupFacts, FunctionId, LibcCallSemantic,
     PathSegment, SignatureId,
 };
-use crate::fixups::support::walk;
 use crate::rust_ast::{
     Block, Expr, ExternDecl, FnParam, IndentStmt, Item, Param, Pattern, Program, Stmt, Type,
 };

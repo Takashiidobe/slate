@@ -210,21 +210,146 @@ fn single_arg_use(
 }
 
 fn find_arg_slot(stmt: &Stmt, name: &str) -> Option<usize> {
-    let mut result = None;
-    walk::stmt_exprs(stmt, &mut |expr| {
-        if result.is_some() {
-            return;
+    match stmt {
+        Stmt::Let { init, .. } => init
+            .as_ref()
+            .and_then(|expr| find_arg_slot_expr(expr, name)),
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            find_arg_slot_expr(target, name).or_else(|| find_arg_slot_expr(value, name))
         }
-        if let Expr::Call { func, args } = expr
-            && matches!(&**func, Expr::Var(_))
-            && let Some(slot) = args
-                .iter()
-                .position(|arg| matches!(arg, Expr::Var(v) if v.as_str() == name))
-        {
-            result = Some(slot);
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => find_arg_slot_expr(expr, name),
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => find_arg_slot_expr(cond, name)
+            .or_else(|| find_arg_slot_body(then_body, name))
+            .or_else(|| find_arg_slot_body(else_body, name)),
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => find_arg_slot_expr(cond, name)
+            .or_else(|| find_arg_slot_body(then_body, name))
+            .or_else(|| find_arg_slot_expr(then_value, name))
+            .or_else(|| find_arg_slot_body(else_body, name))
+            .or_else(|| find_arg_slot_expr(else_value, name)),
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            find_arg_slot_body(body, name)
         }
-    });
-    result
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            find_arg_slot_body(&body.stmts, name).or_else(|| {
+                body.tail
+                    .as_deref()
+                    .and_then(|tail| find_arg_slot_expr(tail, name))
+            })
+        }
+        Stmt::Match { expr, arms } => find_arg_slot_expr(expr, name).or_else(|| {
+            arms.iter()
+                .find_map(|arm| find_arg_slot_body(&arm.body, name))
+        }),
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => None,
+    }
+}
+
+fn find_arg_slot_body(body: &[IndentStmt], name: &str) -> Option<usize> {
+    body.iter()
+        .find_map(|indent| find_arg_slot(&indent.stmt, name))
+}
+
+fn find_arg_slot_expr(expr: &Expr, name: &str) -> Option<usize> {
+    if let Expr::Call { func, args } = expr
+        && matches!(&**func, Expr::Var(_))
+        && let Some(slot) = args
+            .iter()
+            .position(|arg| matches!(arg, Expr::Var(v) if v.as_str() == name))
+    {
+        return Some(slot);
+    }
+    match expr {
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. }
+        | Expr::Closure { body: expr, .. }
+        | Expr::AtomicRef { ptr: expr, .. }
+        | Expr::AtomicLoad { ptr: expr, .. } => find_arg_slot_expr(expr, name),
+        Expr::Binary { lhs, rhs, .. }
+        | Expr::Index {
+            base: lhs,
+            index: rhs,
+        } => find_arg_slot_expr(lhs, name).or_else(|| find_arg_slot_expr(rhs, name)),
+        Expr::Call { func, args } => find_arg_slot_expr(func, name)
+            .or_else(|| args.iter().find_map(|arg| find_arg_slot_expr(arg, name))),
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            find_arg_slot_expr(recv, name)
+                .or_else(|| args.iter().find_map(|arg| find_arg_slot_expr(arg, name)))
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => find_arg_slot_expr(base, name),
+        Expr::StructLit { fields, .. } => fields
+            .iter()
+            .find_map(|(_, value)| find_arg_slot_expr(value, name)),
+        Expr::ArrayLit(elems) => elems.iter().find_map(|elem| find_arg_slot_expr(elem, name)),
+        Expr::ArrayRepeat { elem, .. } => find_arg_slot_expr(elem, name),
+        Expr::Macro { args, .. } => args.iter().find_map(|arg| find_arg_slot_expr(arg, name)),
+        Expr::Match { expr, arms } => find_arg_slot_expr(expr, name).or_else(|| {
+            arms.iter()
+                .find_map(|arm| find_arg_slot_expr(&arm.value, name))
+        }),
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => find_arg_slot_expr(cond, name)
+            .or_else(|| find_arg_slot_expr(then_expr, name))
+            .or_else(|| find_arg_slot_expr(else_expr, name)),
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            find_arg_slot_body(&block.stmts, name).or_else(|| {
+                block
+                    .tail
+                    .as_deref()
+                    .and_then(|tail| find_arg_slot_expr(tail, name))
+            })
+        }
+        Expr::AtomicStore { ptr, value, .. }
+        | Expr::AtomicFetch { ptr, value, .. }
+        | Expr::AtomicSwap { ptr, value, .. } => {
+            find_arg_slot_expr(ptr, name).or_else(|| find_arg_slot_expr(value, name))
+        }
+        Expr::AtomicCompareExchange {
+            ptr,
+            expected,
+            desired,
+            ..
+        } => find_arg_slot_expr(ptr, name)
+            .or_else(|| find_arg_slot_expr(expected, name))
+            .or_else(|| find_arg_slot_expr(desired, name)),
+        Expr::CopyNonoverlapping { src, dst, .. } => {
+            find_arg_slot_expr(src, name).or_else(|| find_arg_slot_expr(dst, name))
+        }
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => find_arg_slot_expr(src, name)
+            .or_else(|| find_arg_slot_expr(dst, name))
+            .or_else(|| find_arg_slot_expr(count, name)),
+        Expr::WriteBytes { dst, val, count } => find_arg_slot_expr(dst, name)
+            .or_else(|| find_arg_slot_expr(val, name))
+            .or_else(|| find_arg_slot_expr(count, name)),
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::Var(_)
+        | Expr::Path(_)
+        | Expr::Todo(_)
+        | Expr::AtomicFence { .. } => None,
+    }
 }
 
 fn inlinable(

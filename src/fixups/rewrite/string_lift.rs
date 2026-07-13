@@ -255,22 +255,163 @@ fn assignment_index(def_path: &[PathSegment], assignment_path: &[PathSegment]) -
 }
 
 fn stmt_allows_lift(stmt: &Stmt, name: &str, liftable: &BTreeSet<String>) -> bool {
-    walk::stmt_exprs_all_with(
-        stmt,
-        &mut |stmt| match stmt {
-            Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-                Some(!expr_mentions_var(target, name) && expr_allows_lift(value, name, liftable))
-            }
-            _ => None,
-        },
-        &mut |expr| expr_allows_lift_override(expr, name, liftable),
-    )
+    match stmt {
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_allows_lift(expr, name, liftable),
+        Stmt::Let { init, .. } => init
+            .as_ref()
+            .is_none_or(|expr| expr_allows_lift(expr, name, liftable)),
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            !expr_mentions_var(target, name) && expr_allows_lift(value, name, liftable)
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            expr_allows_lift(cond, name, liftable)
+                && body_allows_lift(then_body, name, liftable)
+                && body_allows_lift(else_body, name, liftable)
+        }
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            expr_allows_lift(cond, name, liftable)
+                && body_allows_lift(then_body, name, liftable)
+                && expr_allows_lift(then_value, name, liftable)
+                && body_allows_lift(else_body, name, liftable)
+                && expr_allows_lift(else_value, name, liftable)
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            body_allows_lift(body, name, liftable)
+        }
+        Stmt::While { cond, body } => {
+            expr_allows_lift(cond, name, liftable) && block_allows_lift(body, name, liftable)
+        }
+        Stmt::Block(body) | Stmt::Unsafe { body } => block_allows_lift(body, name, liftable),
+        Stmt::Match { expr, arms } => {
+            expr_allows_lift(expr, name, liftable)
+                && arms
+                    .iter()
+                    .all(|arm| body_allows_lift(&arm.body, name, liftable))
+        }
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => true,
+    }
+}
+
+fn body_allows_lift(body: &[IndentStmt], name: &str, liftable: &BTreeSet<String>) -> bool {
+    body.iter()
+        .all(|indent| stmt_allows_lift(&indent.stmt, name, liftable))
+}
+
+fn block_allows_lift(
+    block: &crate::rust_ast::Block,
+    name: &str,
+    liftable: &BTreeSet<String>,
+) -> bool {
+    body_allows_lift(&block.stmts, name, liftable)
+        && block
+            .tail
+            .as_deref()
+            .is_none_or(|tail| expr_allows_lift(tail, name, liftable))
 }
 
 fn expr_allows_lift(expr: &Expr, name: &str, liftable: &BTreeSet<String>) -> bool {
-    walk::exprs_all_with(expr, &mut |expr| {
-        expr_allows_lift_override(expr, name, liftable)
-    })
+    if let Some(result) = expr_allows_lift_override(expr, name, liftable) {
+        return result;
+    }
+    match expr {
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. }
+        | Expr::Closure { body: expr, .. }
+        | Expr::AtomicRef { ptr: expr, .. }
+        | Expr::AtomicLoad { ptr: expr, .. } => expr_allows_lift(expr, name, liftable),
+        Expr::Binary { lhs, rhs, .. }
+        | Expr::Index {
+            base: lhs,
+            index: rhs,
+        } => expr_allows_lift(lhs, name, liftable) && expr_allows_lift(rhs, name, liftable),
+        Expr::Call { func, args } => {
+            expr_allows_lift(func, name, liftable)
+                && args.iter().all(|arg| expr_allows_lift(arg, name, liftable))
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            expr_allows_lift(recv, name, liftable)
+                && args.iter().all(|arg| expr_allows_lift(arg, name, liftable))
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => expr_allows_lift(base, name, liftable),
+        Expr::StructLit { fields, .. } => fields
+            .iter()
+            .all(|(_, value)| expr_allows_lift(value, name, liftable)),
+        Expr::ArrayLit(elems) => elems
+            .iter()
+            .all(|elem| expr_allows_lift(elem, name, liftable)),
+        Expr::ArrayRepeat { elem, .. } => expr_allows_lift(elem, name, liftable),
+        Expr::Macro { args, .. } => args.iter().all(|arg| expr_allows_lift(arg, name, liftable)),
+        Expr::Match { expr, arms } => {
+            expr_allows_lift(expr, name, liftable)
+                && arms
+                    .iter()
+                    .all(|arm| expr_allows_lift(&arm.value, name, liftable))
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            expr_allows_lift(cond, name, liftable)
+                && expr_allows_lift(then_expr, name, liftable)
+                && expr_allows_lift(else_expr, name, liftable)
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => block_allows_lift(block, name, liftable),
+        Expr::AtomicStore { ptr, value, .. }
+        | Expr::AtomicFetch { ptr, value, .. }
+        | Expr::AtomicSwap { ptr, value, .. } => {
+            expr_allows_lift(ptr, name, liftable) && expr_allows_lift(value, name, liftable)
+        }
+        Expr::AtomicCompareExchange {
+            ptr,
+            expected,
+            desired,
+            ..
+        } => {
+            expr_allows_lift(ptr, name, liftable)
+                && expr_allows_lift(expected, name, liftable)
+                && expr_allows_lift(desired, name, liftable)
+        }
+        Expr::CopyNonoverlapping { src, dst, .. } => {
+            expr_allows_lift(src, name, liftable) && expr_allows_lift(dst, name, liftable)
+        }
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => {
+            expr_allows_lift(src, name, liftable)
+                && expr_allows_lift(dst, name, liftable)
+                && expr_allows_lift(count, name, liftable)
+        }
+        Expr::WriteBytes { dst, val, count } => {
+            expr_allows_lift(dst, name, liftable)
+                && expr_allows_lift(val, name, liftable)
+                && expr_allows_lift(count, name, liftable)
+        }
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::Var(_)
+        | Expr::Path(_)
+        | Expr::Todo(_)
+        | Expr::AtomicFence { .. } => true,
+    }
 }
 
 fn expr_allows_lift_override(expr: &Expr, name: &str, liftable: &BTreeSet<String>) -> Option<bool> {
