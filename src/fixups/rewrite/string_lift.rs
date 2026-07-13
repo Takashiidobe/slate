@@ -1,13 +1,31 @@
+use crate::fixups::facts::{
+    AstPath, FixupFacts, FunctionId, PathSegment, StringBufferProvenance, StringRecoveryCandidate,
+};
 use crate::fixups::support::walk;
 use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 use std::collections::BTreeSet;
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) {
-    fixup_nested(body);
-    let liftable = liftable_names(body);
+pub(in crate::fixups) fn fixup(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+) {
+    fixup_nested(body, function, facts, &mut Vec::new());
+    fixup_body(body, function, facts, &mut Vec::new());
+}
+
+fn fixup_body(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    let liftable = liftable_names(body, function, facts, path);
     let mut i = 0;
     while i < body.len() {
-        let Some((name, lifted, remove_index)) = lift_candidate(body, i) else {
+        let stmt_path = stmt_path(path, i);
+        let Some((name, lifted, remove_index)) = lift_candidate(body, function, facts, &stmt_path)
+        else {
             i += 1;
             continue;
         };
@@ -42,10 +60,16 @@ pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) {
     }
 }
 
-fn liftable_names(body: &[IndentStmt]) -> BTreeSet<String> {
+fn liftable_names(
+    body: &[IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> BTreeSet<String> {
     let candidates = (0..body.len())
         .filter_map(|i| {
-            lift_candidate(body, i).map(|(name, _, remove_index)| (name, i, remove_index))
+            lift_candidate(body, function, facts, &stmt_path(path, i))
+                .map(|(name, _, remove_index)| (name, i, remove_index))
         })
         .collect::<Vec<_>>();
     let mut liftable = candidates
@@ -73,35 +97,55 @@ fn liftable_names(body: &[IndentStmt]) -> BTreeSet<String> {
     }
 }
 
-fn fixup_nested(body: &mut [IndentStmt]) {
-    for indent in body {
-        match &mut indent.stmt {
-            Stmt::If {
-                then_body,
-                else_body,
-                ..
-            }
-            | Stmt::LetIf {
-                then_body,
-                else_body,
-                ..
-            } => {
-                fixup(then_body);
-                fixup(else_body);
-            }
-            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-                fixup(body);
-            }
-            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-                fixup(&mut body.stmts);
-            }
-            Stmt::Match { arms, .. } => {
-                for arm in arms {
-                    fixup(&mut arm.body);
+fn fixup_nested(
+    body: &mut [IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    for (index, indent) in body.iter_mut().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            match &mut indent.stmt {
+                Stmt::If {
+                    then_body,
+                    else_body,
+                    ..
                 }
+                | Stmt::LetIf {
+                    then_body,
+                    else_body,
+                    ..
+                } => {
+                    walk::with_path_segment(path, PathSegment::Then, |path| {
+                        fixup_nested(then_body, function, facts, path);
+                        fixup_body(then_body, function, facts, path);
+                    });
+                    walk::with_path_segment(path, PathSegment::Else, |path| {
+                        fixup_nested(else_body, function, facts, path);
+                        fixup_body(else_body, function, facts, path);
+                    });
+                }
+                Stmt::Loop { body, .. }
+                | Stmt::Scope { body }
+                | Stmt::LabeledBlock { body, .. } => {
+                    fixup_nested(body, function, facts, path);
+                    fixup_body(body, function, facts, path);
+                }
+                Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                    fixup_nested(&mut body.stmts, function, facts, path);
+                    fixup_body(&mut body.stmts, function, facts, path);
+                }
+                Stmt::Match { arms, .. } => {
+                    for (arm_index, arm) in arms.iter_mut().enumerate() {
+                        walk::with_path_segment(path, PathSegment::MatchArm(arm_index), |path| {
+                            fixup_nested(&mut arm.body, function, facts, path);
+                            fixup_body(&mut arm.body, function, facts, path);
+                        });
+                    }
+                }
+                _ => {}
             }
-            _ => {}
-        }
+        });
     }
 }
 
@@ -110,80 +154,58 @@ struct Lifted {
     expr: Expr,
 }
 
-fn lift_candidate(body: &[IndentStmt], i: usize) -> Option<(String, Lifted, Option<usize>)> {
-    let Stmt::Let {
-        name,
-        mutable: true,
-        ty: Some(ty),
-        init,
-    } = &body.get(i)?.stmt
-    else {
-        return None;
-    };
-    if !is_char_array(ty) {
-        return None;
-    }
-    if let Some(init) = init.as_ref().and_then(lift_array_literal) {
-        return Some((name.clone(), init, None));
-    }
-    if !init.as_ref().is_some_and(is_zero_array) {
-        return None;
-    }
-    for (index, indent) in body.iter().enumerate().skip(i + 1) {
-        match &indent.stmt {
-            Stmt::Assign {
-                target: Expr::Var(target),
-                value,
-            } if target.as_str() == name => {
-                return Some((name.clone(), lift_array_literal(value)?, Some(index)));
+fn lift_candidate(
+    body: &[IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<(String, Lifted, Option<usize>)> {
+    let buffer = facts.string_buffer_at(function, &AstPath(path.to_vec()))?;
+    let name = facts.binding_name(buffer.binding)?.to_owned();
+    let lifted = lifted_buffer(buffer)?;
+    let remove_index = match &buffer.provenance {
+        StringBufferProvenance::Literal => {
+            if facts
+                .def_use(buffer.binding)
+                .is_some_and(|def_use| !def_use.writes.is_empty())
+            {
+                return None;
             }
-            stmt if stmt_mentions_var(stmt, name) => return None,
-            _ => {}
+            None
         }
-    }
-    None
-}
-
-fn is_char_array(ty: &Type) -> bool {
-    matches!(
-        ty,
-        Type::Array { elem, .. }
-            if matches!(&**elem, Type::Prim(Prim::I8 | Prim::U8))
-    )
-}
-
-fn is_zero_array(expr: &Expr) -> bool {
-    matches!(
-        expr,
-        Expr::ArrayRepeat { elem, .. }
-            if matches!(&**elem, Expr::Value(RustValue::I64(0) | RustValue::I128(0)))
-    )
-}
-
-fn lift_array_literal(expr: &Expr) -> Option<Lifted> {
-    let Expr::ArrayLit(elems) = expr else {
-        return None;
+        StringBufferProvenance::AssignedLiteral { assignment } => {
+            Some(assignment_index(path, &assignment.0)?)
+        }
+        _ => return None,
     };
-    let mut bytes = elems.iter().map(byte_literal).collect::<Option<Vec<_>>>()?;
-    if bytes.pop() != Some(0) {
+    if remove_index.is_some_and(|index| index >= body.len()) {
         return None;
     }
-    if bytes.contains(&0) {
+    Some((name, lifted, remove_index))
+}
+
+fn lifted_buffer(buffer: &crate::fixups::facts::StringBufferFact) -> Option<Lifted> {
+    let bytes = buffer.bytes.clone()?;
+    if buffer
+        .candidates
+        .contains(&StringRecoveryCandidate::BorrowedStr)
+    {
+        let text = String::from_utf8(bytes).ok()?;
+        return Some(Lifted {
+            ty: str_ref_type(),
+            expr: Expr::Str(text),
+        });
+    }
+    if buffer
+        .candidates
+        .contains(&StringRecoveryCandidate::BorrowedBytes)
+    {
         return Some(Lifted {
             ty: byte_slice_ref_type(),
             expr: Expr::ByteStr(bytes),
         });
     }
-    match String::from_utf8(bytes.clone()) {
-        Ok(text) => Some(Lifted {
-            ty: str_ref_type(),
-            expr: Expr::Str(text),
-        }),
-        Err(_) => Some(Lifted {
-            ty: byte_slice_ref_type(),
-            expr: Expr::ByteStr(bytes),
-        }),
-    }
+    None
 }
 
 fn str_ref_type() -> Type {
@@ -208,6 +230,24 @@ fn byte_literal(expr: &Expr) -> Option<u8> {
         _ => return None,
     };
     u8::try_from(n).ok()
+}
+
+fn stmt_path(path: &[PathSegment], index: usize) -> Vec<PathSegment> {
+    let mut path = path.to_vec();
+    path.push(PathSegment::Stmt(index));
+    path
+}
+
+fn assignment_index(def_path: &[PathSegment], assignment_path: &[PathSegment]) -> Option<usize> {
+    let parent = def_path.get(..def_path.len().checked_sub(1)?)?;
+    let assignment_parent = assignment_path.get(..assignment_path.len().checked_sub(1)?)?;
+    if assignment_parent != parent {
+        return None;
+    }
+    match assignment_path.last()? {
+        PathSegment::Stmt(index) => Some(*index),
+        _ => None,
+    }
 }
 
 fn stmt_allows_lift(stmt: &Stmt, name: &str, liftable: &BTreeSet<String>) -> bool {
@@ -427,7 +467,20 @@ fn rewrite_pointer_view_expr(expr: &mut Expr, name: &str) -> bool {
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{Block, Expr, Stmt, Type};
+    use crate::rust_ast::{Block, Expr, Item, Program, Stmt, Type};
+
+    fn fixed(params: Vec<crate::rust_ast::FnParam>, ret: Option<&str>, stmts: Vec<Stmt>) -> String {
+        let mut program = Program {
+            items: vec![Item::Fn(func(params, ret, stmts))],
+        };
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        let facts = analyzed.facts;
+        let Item::Fn(f) = &mut program.items[0] else {
+            unreachable!();
+        };
+        fixup(&mut f.body, FunctionId(0), &facts);
+        program.emit()
+    }
 
     fn bytes(values: &[i64]) -> Expr {
         Expr::ArrayLit(values.iter().copied().map(int).collect())
@@ -452,8 +505,7 @@ mod tests {
 
     #[test]
     fn lifts_utf8_nul_terminated_char_array_used_by_printf() {
-        let out = after_body(
-            fixup,
+        let out = fixed(
             vec![],
             None,
             vec![
@@ -483,8 +535,7 @@ fn f() {
 
     #[test]
     fn lifts_non_utf8_bytes_to_slice() {
-        let out = after_body(
-            fixup,
+        let out = fixed(
             vec![],
             None,
             vec![
@@ -506,8 +557,7 @@ fn f() {
 
     #[test]
     fn leaves_indexed_or_mutated_buffers_raw() {
-        let indexed = after_body(
-            fixup,
+        let indexed = fixed(
             vec![],
             None,
             vec![
@@ -528,8 +578,7 @@ fn f() {
         );
         assert!(indexed.contains("let mut s: [i8; 3] = [0; 3];"));
 
-        let mutated = after_body(
-            fixup,
+        let mutated = fixed(
             vec![],
             None,
             vec![
@@ -550,8 +599,7 @@ fn f() {
 
     #[test]
     fn leaves_unliftable_initializer_raw() {
-        let out = after_body(
-            fixup,
+        let out = fixed(
             vec![],
             None,
             vec![Stmt::Let {
@@ -567,8 +615,7 @@ fn f() {
 
     #[test]
     fn leaves_buffers_raw_when_printf_would_remain_raw() {
-        let out = after_body(
-            fixup,
+        let out = fixed(
             vec![],
             None,
             vec![
@@ -603,8 +650,7 @@ fn f() {
 
     #[test]
     fn lifts_hoisted_declaration_with_later_initializer() {
-        let out = after_body(
-            fixup,
+        let out = fixed(
             vec![],
             None,
             vec![
