@@ -10,6 +10,12 @@
           "expected_stdout": "10\n"
         },
         {
+          "name": "android",
+          "predicate": "defined(__ANDROID__)",
+          "rust_cfg": "target_os = \"android\"",
+          "expected_stdout": "25\n"
+        },
+        {
           "name": "linux",
           "predicate": "defined(__linux__)",
           "rust_cfg": "target_os = \"linux\"",
@@ -20,11 +26,47 @@
           "predicate": "defined(__APPLE__)",
           "rust_cfg": "target_vendor = \"apple\"",
           "expected_stdout": "30\n"
+        },
+        {
+          "name": "freebsd",
+          "predicate": "defined(__FreeBSD__)",
+          "rust_cfg": "target_os = \"freebsd\"",
+          "expected_stdout": "35\n"
         }
       ],
       "fallback": {
-        "rust_cfg": "not(any(windows, target_os = \"linux\", target_vendor = \"apple\"))",
+        "rust_cfg": "not(any(windows, target_os = \"android\", target_os = \"linux\", target_vendor = \"apple\", target_os = \"freebsd\"))",
         "expected_stdout": "40\n"
+      }
+    },
+    {
+      "source": "win64_target.c",
+      "variants": [
+        {
+          "name": "win64",
+          "predicate": "defined(_WIN64)",
+          "rust_cfg": "all(windows, target_pointer_width = \"64\")",
+          "expected_stdout": "64\n"
+        }
+      ],
+      "fallback": {
+        "rust_cfg": "not(all(windows, target_pointer_width = \"64\"))",
+        "expected_stdout": "0\n"
+      }
+    },
+    {
+      "source": "unix_target.c",
+      "variants": [
+        {
+          "name": "unix",
+          "predicate": "defined(__unix__) || defined(__unix)",
+          "rust_cfg": "unix",
+          "expected_stdout": "1\n"
+        }
+      ],
+      "fallback": {
+        "rust_cfg": "not(unix)",
+        "expected_stdout": "0\n"
       }
     },
     {
@@ -37,6 +79,12 @@
           "expected_stdout": "64\n"
         },
         {
+          "name": "x86",
+          "predicate": "defined(__i386__) || defined(_M_IX86)",
+          "rust_cfg": "target_arch = \"x86\"",
+          "expected_stdout": "86\n"
+        },
+        {
           "name": "aarch64",
           "predicate": "defined(__aarch64__) || defined(_M_ARM64)",
           "rust_cfg": "target_arch = \"aarch64\"",
@@ -47,10 +95,88 @@
           "predicate": "defined(__arm__) || defined(_M_ARM)",
           "rust_cfg": "target_arch = \"arm\"",
           "expected_stdout": "32\n"
+        },
+        {
+          "name": "powerpc64",
+          "predicate": "defined(__powerpc64__) || defined(__PPC64__)",
+          "rust_cfg": "target_arch = \"powerpc64\"",
+          "expected_stdout": "640\n"
+        },
+        {
+          "name": "powerpc",
+          "predicate": "defined(__powerpc__) || defined(__POWERPC__) || defined(_M_PPC)",
+          "rust_cfg": "target_arch = \"powerpc\"",
+          "expected_stdout": "320\n"
+        },
+        {
+          "name": "wasm64",
+          "predicate": "defined(__wasm64__)",
+          "rust_cfg": "target_arch = \"wasm64\"",
+          "expected_stdout": "6400\n"
+        },
+        {
+          "name": "wasm32",
+          "predicate": "defined(__wasm32__)",
+          "rust_cfg": "target_arch = \"wasm32\"",
+          "expected_stdout": "3200\n"
+        },
+        {
+          "name": "riscv64",
+          "predicate": "defined(_M_RISCV64)",
+          "rust_cfg": "target_arch = \"riscv64\"",
+          "expected_stdout": "645\n"
+        },
+        {
+          "name": "riscv32",
+          "predicate": "defined(_M_RISCV32)",
+          "rust_cfg": "target_arch = \"riscv32\"",
+          "expected_stdout": "325\n"
         }
       ],
       "fallback": {
-        "rust_cfg": "not(any(target_arch = \"x86_64\", target_arch = \"aarch64\", target_arch = \"arm\"))",
+        "rust_cfg": "not(any(target_arch = \"x86_64\", target_arch = \"x86\", target_arch = \"aarch64\", target_arch = \"arm\", target_arch = \"powerpc64\", target_arch = \"powerpc\", target_arch = \"wasm64\", target_arch = \"wasm32\", target_arch = \"riscv64\", target_arch = \"riscv32\"))",
+        "expected_stdout": "0\n"
+      }
+    },
+    {
+      "source": "pointer_width_targets.c",
+      "variants": [
+        {
+          "name": "lp64",
+          "predicate": "defined(__LP64__) || defined(_LP64)",
+          "rust_cfg": "target_pointer_width = \"64\"",
+          "expected_stdout": "64\n"
+        },
+        {
+          "name": "ilp32",
+          "predicate": "defined(__ILP32__) || defined(_ILP32)",
+          "rust_cfg": "target_pointer_width = \"32\"",
+          "expected_stdout": "32\n"
+        }
+      ],
+      "fallback": {
+        "rust_cfg": "not(any(target_pointer_width = \"64\", target_pointer_width = \"32\"))",
+        "expected_stdout": "0\n"
+      }
+    },
+    {
+      "source": "arm_endian_targets.c",
+      "variants": [
+        {
+          "name": "arm_big_endian",
+          "predicate": "defined(__ARMEB__) || defined(__AARCH64EB__)",
+          "rust_cfg": "any(all(target_arch = \"arm\", target_endian = \"big\"), all(target_arch = \"aarch64\", target_endian = \"big\"))",
+          "expected_stdout": "100\n"
+        },
+        {
+          "name": "arm_little_endian",
+          "predicate": "defined(__ARMEL__) || defined(__AARCH64EL__)",
+          "rust_cfg": "any(all(target_arch = \"arm\", target_endian = \"little\"), all(target_arch = \"aarch64\", target_endian = \"little\"))",
+          "expected_stdout": "200\n"
+        }
+      ],
+      "fallback": {
+        "rust_cfg": "not(any(any(all(target_arch = \"arm\", target_endian = \"big\"), all(target_arch = \"aarch64\", target_endian = \"big\")), any(all(target_arch = \"arm\", target_endian = \"little\"), all(target_arch = \"aarch64\", target_endian = \"little\"))))",
         "expected_stdout": "0\n"
       }
     },
