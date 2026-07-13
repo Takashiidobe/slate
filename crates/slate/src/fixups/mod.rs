@@ -6,6 +6,7 @@ mod compound_assign;
 mod counted_loop;
 mod def_use;
 mod drop_call_results;
+mod effects;
 mod facts;
 mod idents;
 mod inline_temps;
