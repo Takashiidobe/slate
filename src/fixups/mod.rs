@@ -9,13 +9,20 @@ mod support;
 #[cfg(test)]
 mod test_support;
 
-use crate::rust_ast::{Item, Program};
+use crate::rust_ast::{Block, IndentStmt, Item, Program, Stmt};
 
 pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { program, .. } = facts::analyze(program);
     let mut program = program;
-    loop {
+    let inline_round_limit = if program_stmt_count(&program) > 2_000 {
+        5
+    } else {
+        usize::MAX
+    };
+    let mut rounds = 0;
+    while rounds < inline_round_limit {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        rounds += 1;
         let mut changed = false;
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
@@ -23,7 +30,6 @@ pub fn apply(program: Program) -> Program {
                 && rewrite::inline_temps::fixup(&mut f.body, function, &facts)
             {
                 changed = true;
-                break;
             }
         }
         if !changed {
@@ -47,7 +53,6 @@ pub fn apply(program: Program) -> Program {
                 && rewrite::zero_init::fixup(&mut f.body, function, &facts)
             {
                 changed = true;
-                break;
             }
         }
         if !changed {
@@ -71,7 +76,6 @@ pub fn apply(program: Program) -> Program {
                 && rewrite::call_args::fixup(&mut f.body, function, &facts)
             {
                 changed = true;
-                break;
             }
         }
         if !changed {
@@ -127,6 +131,49 @@ pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::printf_format::fixup(&mut program, &facts);
     program
+}
+
+fn program_stmt_count(program: &Program) -> usize {
+    program
+        .items
+        .iter()
+        .map(|item| match item {
+            Item::Fn(f) => stmt_count(&f.body),
+            _ => 0,
+        })
+        .sum()
+}
+
+fn stmt_count(stmts: &[IndentStmt]) -> usize {
+    stmts
+        .iter()
+        .map(|stmt| {
+            1 + match &stmt.stmt {
+                Stmt::LetIf {
+                    then_body,
+                    else_body,
+                    ..
+                }
+                | Stmt::If {
+                    then_body,
+                    else_body,
+                    ..
+                } => stmt_count(then_body) + stmt_count(else_body),
+                Stmt::Loop { body, .. }
+                | Stmt::Scope { body }
+                | Stmt::LabeledBlock { body, .. } => stmt_count(body),
+                Stmt::Unsafe { body } | Stmt::Block(body) | Stmt::While { body, .. } => {
+                    block_stmt_count(body)
+                }
+                Stmt::Match { arms, .. } => arms.iter().map(|arm| stmt_count(&arm.body)).sum(),
+                _ => 0,
+            }
+        })
+        .sum()
+}
+
+fn block_stmt_count(block: &Block) -> usize {
+    stmt_count(&block.stmts)
 }
 
 #[cfg(test)]
