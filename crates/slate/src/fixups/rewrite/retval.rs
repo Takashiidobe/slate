@@ -4,7 +4,7 @@
 use crate::fixups::idents::{expr_ident, stmt_ident_count};
 use crate::rust_ast::{Expr, FnDef, IndentStmt, Path, Prim, Stmt, Type};
 
-pub(super) fn fixup(f: &mut FnDef) {
+pub(in crate::fixups) fn fixup(f: &mut FnDef) {
     collapse_return_slot(&mut f.body);
     if f.name == "main" {
         collapse_main_exit_slot(&mut f.body);

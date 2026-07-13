@@ -7,7 +7,7 @@
 use crate::fixups::idents::expr_ident;
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Stmt};
 
-pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
+pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) {
     for indent in body.iter_mut() {
         match &mut indent.stmt {
             Stmt::If {
@@ -71,7 +71,7 @@ fn is_compound_op(op: BinOp) -> bool {
 // Same conservative purity as inline_temps: value/var arithmetic with no side
 // effects, so `a op= rhs` cannot reorder or duplicate an effect.
 fn is_pure_expr(expr: &Expr) -> bool {
-    super::effects::is_movable_pure_expr(expr)
+    crate::fixups::facts::is_movable_pure_expr(expr)
 }
 
 #[cfg(test)]

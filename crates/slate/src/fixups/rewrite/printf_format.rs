@@ -2,7 +2,7 @@ use crate::rust_ast::{BinOp, RustValue};
 use crate::rust_ast::{Block, Expr, ExternDecl, FnParam, IndentStmt, Item, Program, Stmt, Type};
 use std::collections::BTreeMap;
 
-pub(super) fn fixup(program: &mut Program) {
+pub(in crate::fixups) fn fixup(program: &mut Program) {
     if has_unsupported_printf(program) {
         return;
     }
