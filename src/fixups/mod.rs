@@ -2,6 +2,7 @@
 
 mod borrow_alias;
 mod call_args;
+mod calls;
 mod compound_assign;
 mod counted_loop;
 mod def_use;
