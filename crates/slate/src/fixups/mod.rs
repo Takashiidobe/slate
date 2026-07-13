@@ -11,6 +11,7 @@ mod printf_format;
 mod ptr_len;
 mod remove_mut;
 mod retval;
+mod slice_index;
 mod string_copy;
 mod string_libc;
 mod string_lift;
@@ -52,6 +53,7 @@ pub fn apply(program: Program) -> Program {
     program = analyzed_program;
     ptr_len::collect_facts(&program, &mut facts);
     ptr_len::fixup(&mut program, &facts);
+    slice_index::collect_facts(&program, &mut facts);
     string_copy::fixup(&mut program);
     string_libc::fixup(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
