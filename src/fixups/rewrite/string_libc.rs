@@ -1,12 +1,18 @@
+use crate::fixups::facts::{
+    AstPath, BindingKind, FixupFacts, FunctionId, PathSegment, StringBufferKind,
+};
+use crate::fixups::support::walk;
 use crate::rust_ast::{BinOp, Block, Expr, ExternDecl, Ident, IndentStmt, Item, Path, Prim, Type};
 use crate::rust_ast::{Program, RustValue, Stmt};
 use std::collections::BTreeMap;
 
-pub(in crate::fixups) fn fixup(program: &mut Program) {
-    for item in &mut program.items {
-        if let Item::Fn(f) = item {
-            let mut env = BTreeMap::new();
-            fixup_body(&mut f.body, &mut env);
+pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            let mut env = root_env(function, facts);
+            fixup_body(&mut f.body, function, facts, &mut env, &mut Vec::new());
         }
     }
     prune_unused_externs(program);
@@ -30,7 +36,13 @@ struct Compare {
     rhs: Expr,
 }
 
-fn fixup_body(body: &mut Vec<IndentStmt>, env: &mut BTreeMap<String, StringKind>) {
+fn fixup_body(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    env: &mut BTreeMap<String, StringKind>,
+    path: &mut Vec<PathSegment>,
+) {
     let mut temps = BTreeMap::new();
     let mut remove = Vec::new();
     for i in 0..body.len() {
@@ -49,18 +61,64 @@ fn fixup_body(body: &mut Vec<IndentStmt>, env: &mut BTreeMap<String, StringKind>
             temps.insert(name, compare);
             remove.push(i);
         } else {
-            fixup_stmt(&mut body[i].stmt, env, &temps);
-            if let Stmt::Let {
-                name, ty: Some(ty), ..
-            } = &body[i].stmt
-                && let Some(kind) = lifted_kind(ty)
-            {
-                env.insert(name.clone(), kind);
-            }
+            let mut stmt_path = stmt_path(path, i);
+            fixup_stmt(
+                &mut body[i].stmt,
+                function,
+                facts,
+                env,
+                &temps,
+                &mut stmt_path,
+            );
+            record_local_string_kind(&body[i].stmt, function, facts, env, &stmt_path);
         }
     }
     for i in remove.into_iter().rev() {
         body.remove(i);
+    }
+}
+
+fn root_env(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, StringKind> {
+    facts
+        .bindings
+        .iter()
+        .filter(|binding| binding.function == function)
+        .filter(|binding| matches!(binding.kind, BindingKind::Param { .. }))
+        .filter_map(|binding| {
+            let kind = facts
+                .string_buffer(binding.id)
+                .and_then(string_kind_for_buffer)?;
+            Some((binding.name.clone(), kind))
+        })
+        .collect()
+}
+
+fn record_local_string_kind(
+    stmt: &Stmt,
+    function: FunctionId,
+    facts: &FixupFacts,
+    env: &mut BTreeMap<String, StringKind>,
+    path: &[PathSegment],
+) {
+    let Stmt::Let { name, .. } = stmt else {
+        return;
+    };
+    let Some(binding) = facts.binding_by_local_path(function, name, &AstPath(path.to_vec())) else {
+        return;
+    };
+    if let Some(kind) = facts
+        .string_buffer(binding)
+        .and_then(string_kind_for_buffer)
+    {
+        env.insert(name.clone(), kind);
+    }
+}
+
+fn string_kind_for_buffer(buffer: &crate::fixups::facts::StringBufferFact) -> Option<StringKind> {
+    match buffer.kind {
+        StringBufferKind::BorrowedStr | StringBufferKind::OwnedString => Some(StringKind::Str),
+        StringBufferKind::BorrowedBytes => Some(StringKind::Bytes),
+        StringBufferKind::CharArray => None,
     }
 }
 
@@ -272,8 +330,11 @@ fn expr_libc_string_calls(expr: &Expr, calls: &mut Vec<String>) {
 
 fn fixup_stmt(
     stmt: &mut Stmt,
+    function: FunctionId,
+    facts: &FixupFacts,
     env: &BTreeMap<String, StringKind>,
     temps: &BTreeMap<String, Compare>,
+    path: &mut Vec<PathSegment>,
 ) {
     match stmt {
         Stmt::Let { ty, init, .. } => {
@@ -301,8 +362,12 @@ fn fixup_stmt(
             fixup_expr(cond, env, temps);
             let mut then_env = env.clone();
             let mut else_env = env.clone();
-            fixup_body(then_body, &mut then_env);
-            fixup_body(else_body, &mut else_env);
+            walk::with_path_segment(path, PathSegment::Then, |path| {
+                fixup_body(then_body, function, facts, &mut then_env, path);
+            });
+            walk::with_path_segment(path, PathSegment::Else, |path| {
+                fixup_body(else_body, function, facts, &mut else_env, path);
+            });
         }
         Stmt::LetIf {
             cond,
@@ -315,34 +380,46 @@ fn fixup_stmt(
             fixup_expr(cond, env, temps);
             let mut then_env = env.clone();
             let mut else_env = env.clone();
-            fixup_body(then_body, &mut then_env);
+            walk::with_path_segment(path, PathSegment::Then, |path| {
+                fixup_body(then_body, function, facts, &mut then_env, path);
+            });
             fixup_expr(then_value, &then_env, temps);
-            fixup_body(else_body, &mut else_env);
+            walk::with_path_segment(path, PathSegment::Else, |path| {
+                fixup_body(else_body, function, facts, &mut else_env, path);
+            });
             fixup_expr(else_value, &else_env, temps);
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             let mut nested_env = env.clone();
-            fixup_body(body, &mut nested_env);
+            fixup_body(body, function, facts, &mut nested_env, path);
         }
         Stmt::While { cond, body } => {
             fixup_expr(cond, env, temps);
-            fixup_block(body, env);
+            fixup_block(body, function, facts, env, path);
         }
-        Stmt::Block(body) | Stmt::Unsafe { body } => fixup_block(body, env),
+        Stmt::Block(body) | Stmt::Unsafe { body } => fixup_block(body, function, facts, env, path),
         Stmt::Match { expr, arms } => {
             fixup_expr(expr, env, temps);
-            for arm in arms {
+            for (index, arm) in arms.iter_mut().enumerate() {
                 let mut arm_env = env.clone();
-                fixup_body(&mut arm.body, &mut arm_env);
+                walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
+                    fixup_body(&mut arm.body, function, facts, &mut arm_env, path);
+                });
             }
         }
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
     }
 }
 
-fn fixup_block(block: &mut Block, env: &BTreeMap<String, StringKind>) {
+fn fixup_block(
+    block: &mut Block,
+    function: FunctionId,
+    facts: &FixupFacts,
+    env: &BTreeMap<String, StringKind>,
+    path: &mut Vec<PathSegment>,
+) {
     let mut block_env = env.clone();
-    fixup_body(&mut block.stmts, &mut block_env);
+    fixup_body(&mut block.stmts, function, facts, &mut block_env, path);
     if let Some(tail) = &mut block.tail {
         fixup_expr(tail, &block_env, &BTreeMap::new());
     }
@@ -418,7 +495,13 @@ fn fixup_expr(
             fixup_expr(then_expr, env, temps);
             fixup_expr(else_expr, env, temps);
         }
-        Expr::Block(block) | Expr::Unsafe(block) => fixup_block(block, env),
+        Expr::Block(block) | Expr::Unsafe(block) => fixup_block(
+            block,
+            FunctionId(usize::MAX),
+            &FixupFacts::default(),
+            env,
+            &mut Vec::new(),
+        ),
         Expr::CopyNonoverlapping { src, dst, .. } => {
             fixup_expr(src, env, temps);
             fixup_expr(dst, env, temps);
@@ -923,49 +1006,55 @@ fn path_expr<const N: usize>(segments: [&str; N]) -> Expr {
     Expr::Path(Path::new(segments.into_iter().map(Ident::new)))
 }
 
+fn stmt_path(path: &[PathSegment], index: usize) -> Vec<PathSegment> {
+    let mut path = path.to_vec();
+    path.push(PathSegment::Stmt(index));
+    path
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
+    use crate::rust_ast::{Item, Program};
 
-    fn fixup_test_body(body: &mut Vec<IndentStmt>) {
-        let mut env = BTreeMap::new();
-        fixup_body(body, &mut env);
+    fn fixed(stmts: Vec<Stmt>) -> String {
+        let mut program = Program {
+            items: vec![Item::Fn(func(vec![], None, stmts))],
+        };
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        fixup(&mut program, &analyzed.facts);
+        program.emit()
     }
 
     #[test]
     fn rewrites_strlen_on_lifted_str() {
-        let out = after_body(
-            fixup_test_body,
-            vec![],
-            None,
-            vec![
-                Stmt::Let {
-                    name: "s".into(),
-                    mutable: false,
-                    ty: Some(Type::parse("&str")),
-                    init: Some(Expr::Str("abc".into())),
-                },
-                temp(
-                    "n",
-                    "u64",
-                    Expr::Unsafe(Box::new(Block {
-                        stmts: vec![],
-                        tail: Some(Box::new(call(
-                            "strlen",
-                            vec![Expr::Cast {
-                                expr: Box::new(Expr::MethodCall {
-                                    recv: Box::new(var("s")),
-                                    method: "as_ptr".into(),
-                                    args: vec![],
-                                }),
-                                ty: Type::parse("*mut i8"),
-                            }],
-                        ))),
-                    })),
-                ),
-            ],
-        );
+        let out = fixed(vec![
+            Stmt::Let {
+                name: "s".into(),
+                mutable: false,
+                ty: Some(Type::parse("&str")),
+                init: Some(Expr::Str("abc".into())),
+            },
+            temp(
+                "n",
+                "u64",
+                Expr::Unsafe(Box::new(Block {
+                    stmts: vec![],
+                    tail: Some(Box::new(call(
+                        "strlen",
+                        vec![Expr::Cast {
+                            expr: Box::new(Expr::MethodCall {
+                                recv: Box::new(var("s")),
+                                method: "as_ptr".into(),
+                                args: vec![],
+                            }),
+                            ty: Type::parse("*mut i8"),
+                        }],
+                    ))),
+                })),
+            ),
+        ]);
 
         assert!(out.contains("let n: usize = s.len();"));
         assert!(!out.contains("strlen("));
@@ -973,54 +1062,49 @@ mod tests {
 
     #[test]
     fn rewrites_strcmp_temp_comparison() {
-        let out = after_body(
-            fixup_test_body,
-            vec![],
-            None,
-            vec![
-                Stmt::Let {
-                    name: "a".into(),
-                    mutable: false,
-                    ty: Some(Type::parse("&str")),
-                    init: Some(Expr::Str("a".into())),
-                },
-                Stmt::Let {
-                    name: "b".into(),
-                    mutable: false,
-                    ty: Some(Type::parse("&str")),
-                    init: Some(Expr::Str("b".into())),
-                },
-                temp(
-                    "c",
-                    "i32",
-                    Expr::Unsafe(Box::new(Block {
-                        stmts: vec![],
-                        tail: Some(Box::new(call(
-                            "strcmp",
-                            vec![
-                                Expr::Cast {
-                                    expr: Box::new(Expr::MethodCall {
-                                        recv: Box::new(var("a")),
-                                        method: "as_ptr".into(),
-                                        args: vec![],
-                                    }),
-                                    ty: Type::parse("*mut i8"),
-                                },
-                                Expr::Cast {
-                                    expr: Box::new(Expr::MethodCall {
-                                        recv: Box::new(var("b")),
-                                        method: "as_ptr".into(),
-                                        args: vec![],
-                                    }),
-                                    ty: Type::parse("*mut i8"),
-                                },
-                            ],
-                        ))),
-                    })),
-                ),
-                temp("lt", "bool", bin(BinOp::Lt, var("c"), int(0))),
-            ],
-        );
+        let out = fixed(vec![
+            Stmt::Let {
+                name: "a".into(),
+                mutable: false,
+                ty: Some(Type::parse("&str")),
+                init: Some(Expr::Str("a".into())),
+            },
+            Stmt::Let {
+                name: "b".into(),
+                mutable: false,
+                ty: Some(Type::parse("&str")),
+                init: Some(Expr::Str("b".into())),
+            },
+            temp(
+                "c",
+                "i32",
+                Expr::Unsafe(Box::new(Block {
+                    stmts: vec![],
+                    tail: Some(Box::new(call(
+                        "strcmp",
+                        vec![
+                            Expr::Cast {
+                                expr: Box::new(Expr::MethodCall {
+                                    recv: Box::new(var("a")),
+                                    method: "as_ptr".into(),
+                                    args: vec![],
+                                }),
+                                ty: Type::parse("*mut i8"),
+                            },
+                            Expr::Cast {
+                                expr: Box::new(Expr::MethodCall {
+                                    recv: Box::new(var("b")),
+                                    method: "as_ptr".into(),
+                                    args: vec![],
+                                }),
+                                ty: Type::parse("*mut i8"),
+                            },
+                        ],
+                    ))),
+                })),
+            ),
+            temp("lt", "bool", bin(BinOp::Lt, var("c"), int(0))),
+        ]);
 
         assert!(out.contains("let lt: bool = a.cmp(b) == std::cmp::Ordering::Less;"));
         assert!(!out.contains("strcmp("));
