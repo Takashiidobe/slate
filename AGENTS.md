@@ -19,6 +19,14 @@ For parallel agent work, branch selection, and git worktree rules, follow
 [WORKFLOW.md](WORKFLOW.md). Agents must check both ready and in-progress beads
 and avoid starting tickets linked to active work.
 
+## Fixup Traversal Helpers
+
+When writing or modifying fixups, favor the existing traversal helpers over
+private recursive walkers. Fact collectors should use `src/fixups/facts/walk.rs`;
+rewrite passes should use `src/fixups/support/walk.rs`. If a traversal shape is
+missing, extend the shared helper once instead of adding a pass-local `exprs`,
+`stmt_exprs`, or body walker.
+
 ## Non-Interactive Shell Commands
 
 File ops may be aliased to `-i` on this host and hang waiting for y/n. Always use
