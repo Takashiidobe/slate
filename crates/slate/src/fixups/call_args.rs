@@ -20,7 +20,7 @@
 use std::collections::HashMap;
 
 use crate::fixups::idents::stmt_ident_count;
-use crate::fixups::inline_temps::walk_stmt_exprs;
+use crate::fixups::support::walk;
 use crate::rust_ast::{Expr, ExternDecl, IndentStmt, Item, Program, Stmt, Type, UnaryOp};
 
 pub(super) struct Signature {
@@ -156,7 +156,7 @@ fn single_arg_use(
 
 fn find_arg_slot(stmt: &Stmt, name: &str) -> Option<(String, usize)> {
     let mut result = None;
-    walk_stmt_exprs(stmt, &mut |expr| {
+    walk::stmt_exprs(stmt, &mut |expr| {
         if result.is_some() {
             return;
         }
