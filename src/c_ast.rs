@@ -262,6 +262,7 @@ fn collect_records(
                 .is_empty()
         {
             if let Some(record) = next_anonymous_field_name(&kids, i + 1)
+                .or_else(|| next_anonymous_typedef_name(&kids, i + 1))
                 .and_then(|name| extract_record(child, Some(name)))
             {
                 out.push(record);
@@ -315,6 +316,19 @@ fn next_anonymous_field_name(kids: &[&Value], start: usize) -> Option<String> {
     kids.iter()
         .skip(start)
         .find_map(|sibling| anonymous_record_name_from_field(sibling))
+}
+
+// `typedef struct { ... } name;` gives an otherwise-anonymous record the typedef
+// name for linkage, so Clang prints its underlying type as `struct name`. Adopt
+// that name so the record is emitted and matches CIR's `!rec_name` references.
+fn next_anonymous_typedef_name(kids: &[&Value], start: usize) -> Option<String> {
+    let sibling = kids.get(start)?;
+    if kind(sibling) != Some("TypedefDecl") {
+        return None;
+    }
+    let name = sibling.get("name")?.as_str()?;
+    let ty = qual_type(sibling)?;
+    (ty == format!("struct {name}") || ty == format!("union {name}")).then(|| name.to_string())
 }
 
 fn extract_enum(node: &Value) -> Option<Enum> {
