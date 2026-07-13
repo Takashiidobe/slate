@@ -509,6 +509,24 @@ fn string_libc_calls_use_lifted_string_operations() {
 }
 
 #[test]
+fn ptr_len_pairs_use_slice_params_for_full_array_calls() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-ptr-len-slice");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("ptr_len_slice.c");
+    let generated = tmp.join("ptr_len_slice.generated.rs");
+    support::translate(&c_src, &generated).expect("translate ptr_len_slice fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated ptr_len_slice rust");
+
+    assert!(rust.contains("fn sum(mut items: &mut [i32]) -> i32"));
+    assert!(rust.contains("fn bump(mut items: &mut [i32]) -> ()"));
+    assert!(rust.contains("let len: i32 = items.len() as i32;"));
+    assert!(rust.contains("sum(values.as_mut_slice())"));
+    assert!(rust.contains("bump(values.as_mut_slice())"));
+    assert!(!rust.contains("sum(values.as_mut_ptr(), 4)"));
+    assert!(!rust.contains("bump(values.as_mut_ptr(), 4)"));
+}
+
+#[test]
 fn string_copy_calls_use_lifted_string_operations() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-string-copy");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

@@ -7,6 +7,7 @@ mod idents;
 mod inline_temps;
 mod param_spills;
 mod printf_format;
+mod ptr_len;
 mod remove_mut;
 mod retval;
 mod string_copy;
@@ -42,6 +43,7 @@ pub fn apply(program: Program) -> Program {
             })
             .collect(),
     };
+    ptr_len::fixup(&mut program);
     string_copy::fixup(&mut program);
     string_libc::fixup(&mut program);
     for item in &mut program.items {
