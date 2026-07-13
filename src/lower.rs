@@ -1491,12 +1491,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             expr: Box::new(expr),
         };
         if let Some(member) = self.member_ptrs.get(ptr) {
-            addr_of(Expr::Field {
+            let place = addr_of(Expr::Field {
                 base: Box::new(member.base.clone()),
                 field: member.field.clone(),
-            })
+            });
+            if member.unsafe_access {
+                Self::unsafe_expr(place)
+            } else {
+                place
+            }
         } else if let Some(element) = self.element_ptrs.get(ptr) {
-            addr_of(self.element_place_expr(element))
+            let place = addr_of(self.element_place_expr(element));
+            if element.unsafe_access {
+                Self::unsafe_expr(place)
+            } else {
+                place
+            }
         } else if let Some(slot) = self.slots.get(ptr) {
             addr_of(Expr::Var(slot.clone().into()))
         } else if let Some(global) = self.global_name(ptr) {
@@ -2250,7 +2260,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let base = self.place_or_deref_expr(base_ptr);
         let field = sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string();
-        let unsafe_access = self.ptr_requires_unsafe(base_ptr) || self.op_base_is_union(op);
+        let unsafe_access = self.place_expr(base_ptr).is_none()
+            || self.ptr_requires_unsafe(base_ptr)
+            || self.op_base_is_union(op);
         self.member_ptrs.insert(
             result.clone(),
             MemberPtr {
@@ -2354,7 +2366,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let base_ptr = &op.operands[0];
         let base = self.place_or_deref_expr(base_ptr);
         let index = self.operand_expr(&op.operands[1]);
-        let unsafe_access = self.ptr_requires_unsafe(base_ptr);
+        let unsafe_access =
+            self.place_expr(base_ptr).is_none() || self.ptr_requires_unsafe(base_ptr);
         self.element_ptrs.insert(
             result.clone(),
             ElementPtr {
