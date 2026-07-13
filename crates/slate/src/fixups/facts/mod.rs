@@ -17,8 +17,6 @@ pub(super) mod slice_index;
 pub(super) mod strings;
 pub(super) mod values;
 
-pub(super) use effects::is_movable_pure_expr;
-
 #[derive(Debug, Clone)]
 pub(super) struct AnalyzedProgram {
     pub(super) program: Program,
@@ -801,6 +799,50 @@ impl FixupFacts {
             .iter()
             .find(|fact| fact.binding == binding)
             .is_some_and(|fact| fact.required)
+    }
+
+    pub(super) fn def_use(&self, binding: BindingId) -> Option<&DefUseFact> {
+        self.def_use.iter().find(|fact| fact.binding == binding)
+    }
+
+    pub(super) fn effect(
+        &self,
+        function: FunctionId,
+        subject: EffectSubject,
+        path: &AstPath,
+    ) -> Option<&EffectFact> {
+        self.effects
+            .iter()
+            .find(|fact| fact.function == function && fact.subject == subject && &fact.path == path)
+    }
+
+    pub(super) fn callsite(&self, function: FunctionId, path: &AstPath) -> Option<&CallsiteFact> {
+        self.callsites
+            .iter()
+            .find(|fact| fact.function == function && &fact.path == path)
+    }
+
+    pub(super) fn call_arg_at(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<(&CallsiteFact, &CallArgFact)> {
+        self.callsites
+            .iter()
+            .filter(|fact| fact.function == function)
+            .find_map(|callsite| {
+                callsite
+                    .args
+                    .iter()
+                    .find(|arg| &arg.path == path)
+                    .map(|arg| (callsite, arg))
+            })
+    }
+
+    pub(super) fn cast_at(&self, function: FunctionId, path: &AstPath) -> Option<&CastFact> {
+        self.casts
+            .iter()
+            .find(|fact| fact.function == function && &fact.path == path)
     }
 }
 

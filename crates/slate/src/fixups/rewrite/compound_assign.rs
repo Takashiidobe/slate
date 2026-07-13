@@ -4,49 +4,97 @@
 //! form. Restricted to simple local slots (a plain variable target) with a pure
 //! rhs, so it never reorders a side effect or touches a volatile/complex lvalue.
 
+use crate::fixups::facts::{AstPath, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity};
 use crate::fixups::idents::expr_ident;
+use crate::fixups::support::walk;
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) {
-    for indent in body.iter_mut() {
-        match &mut indent.stmt {
-            Stmt::If {
-                then_body,
-                else_body,
-                ..
-            }
-            | Stmt::LetIf {
-                then_body,
-                else_body,
-                ..
-            } => {
-                fixup(then_body);
-                fixup(else_body);
-            }
-            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-                fixup(body)
-            }
-            Stmt::Unsafe { body } => fixup(&mut body.stmts),
-            Stmt::Assign { target, value } => {
-                if let Some((op, rhs)) = compound_parts(target, value) {
-                    indent.stmt = Stmt::CompoundAssign {
-                        target: target.clone(),
-                        op,
-                        value: rhs,
-                    };
+pub(in crate::fixups) fn fixup(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+) {
+    fixup_at(body, function, facts, &mut Vec::new());
+}
+
+fn fixup_at(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    for (index, indent) in body.iter_mut().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            match &mut indent.stmt {
+                Stmt::If {
+                    then_body,
+                    else_body,
+                    ..
                 }
+                | Stmt::LetIf {
+                    then_body,
+                    else_body,
+                    ..
+                } => {
+                    walk::with_path_segment(path, PathSegment::Then, |path| {
+                        fixup_at(then_body, function, facts, path);
+                    });
+                    walk::with_path_segment(path, PathSegment::Else, |path| {
+                        fixup_at(else_body, function, facts, path);
+                    });
+                }
+                Stmt::Loop { body, .. } => {
+                    walk::with_path_segment(path, PathSegment::LoopBody, |path| {
+                        fixup_at(body, function, facts, path);
+                    });
+                }
+                Stmt::Scope { body } => {
+                    walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
+                        fixup_at(body, function, facts, path);
+                    });
+                }
+                Stmt::LabeledBlock { body, .. } => {
+                    walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
+                        fixup_at(body, function, facts, path);
+                    });
+                }
+                Stmt::Unsafe { body } => {
+                    walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
+                        fixup_at(&mut body.stmts, function, facts, path);
+                    });
+                }
+                Stmt::Assign { target, value } => {
+                    if let Some((op, rhs)) = compound_parts(target, value, function, facts, path) {
+                        indent.stmt = Stmt::CompoundAssign {
+                            target: target.clone(),
+                            op,
+                            value: rhs,
+                        };
+                    }
+                }
+                _ => {}
             }
-            _ => {}
-        }
+        });
     }
 }
 
-fn compound_parts(target: &Expr, value: &Expr) -> Option<(BinOp, Expr)> {
+fn compound_parts(
+    target: &Expr,
+    value: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<(BinOp, Expr)> {
     let name = expr_ident(target)?;
     let Expr::Binary { op, lhs, rhs } = value else {
         return None;
     };
-    if !is_compound_op(*op) || expr_ident(lhs) != Some(name) || !is_pure_expr(rhs) {
+    let mut rhs_path = path.to_vec();
+    rhs_path.push(PathSegment::Expr(1));
+    if !is_compound_op(*op)
+        || expr_ident(lhs) != Some(name)
+        || !is_pure_expr(function, facts, &rhs_path)
+    {
         return None;
     }
     Some((*op, (**rhs).clone()))
@@ -68,22 +116,38 @@ fn is_compound_op(op: BinOp) -> bool {
     )
 }
 
-// Same conservative purity as inline_temps: value/var arithmetic with no side
-// effects, so `a op= rhs` cannot reorder or duplicate an effect.
-fn is_pure_expr(expr: &Expr) -> bool {
-    crate::fixups::facts::is_movable_pure_expr(expr)
+fn is_pure_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    facts
+        .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
+        .is_some_and(|fact| fact.purity == Purity::MovablePure)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::Type;
+    use crate::rust_ast::{Item, Program, Type};
+
+    fn after_facts(
+        params: Vec<crate::rust_ast::FnParam>,
+        ret: Option<&str>,
+        stmts: Vec<Stmt>,
+    ) -> String {
+        let mut program = Program {
+            items: vec![Item::Fn(func(params, ret, stmts))],
+        };
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        let facts = analyzed.facts;
+        let Item::Fn(f) = &mut program.items[0] else {
+            unreachable!();
+        };
+        fixup(&mut f.body, FunctionId(0), &facts);
+        program.emit()
+    }
 
     #[test]
     fn recovers_every_arithmetic_and_bitwise_form() {
-        let out = after_body(
-            fixup,
+        let out = after_facts(
             vec![],
             None,
             vec![
@@ -121,8 +185,7 @@ fn f() {
 
     #[test]
     fn keeps_assignment_when_lhs_is_not_the_target() {
-        let out = after_body(
-            fixup,
+        let out = after_facts(
             vec![],
             None,
             vec![
@@ -144,8 +207,7 @@ fn f() {
 
     #[test]
     fn keeps_assignment_when_rhs_is_impure() {
-        let out = after_body(
-            fixup,
+        let out = after_facts(
             vec![],
             None,
             vec![
@@ -167,8 +229,7 @@ fn f() {
 
     #[test]
     fn keeps_comparison_assignment() {
-        let out = after_body(
-            fixup,
+        let out = after_facts(
             vec![],
             None,
             vec![
