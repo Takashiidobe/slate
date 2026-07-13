@@ -11,6 +11,7 @@ mod facts;
 mod idents;
 mod inline_temps;
 mod param_spills;
+mod places;
 mod printf_format;
 mod ptr_len;
 mod remove_mut;
