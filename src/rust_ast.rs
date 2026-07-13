@@ -232,6 +232,8 @@ pub struct EnumConst {
 
 #[derive(Debug, Clone)]
 pub struct RecordDef {
+    pub vis: Visibility,
+    pub field_vis: Visibility,
     pub is_union: bool,
     pub allow_non_camel_case: bool,
     pub name: String,
