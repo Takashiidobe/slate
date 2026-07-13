@@ -195,6 +195,7 @@ fn peel_empty_unsafe(expr: &Expr) -> &Expr {
 
 fn const_c_string(expr: &Expr) -> Option<Vec<u8>> {
     match expr {
+        Expr::Str(s) => Some(s.as_bytes().to_vec()),
         Expr::ByteStr(bytes) => Some(trim_c_nul(bytes)),
         Expr::Cast { expr, .. } => const_c_string(expr),
         Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
@@ -613,11 +614,27 @@ fn prefixed_nonzero_integer_format(
 }
 
 fn const_c_string_arg(arg: &Expr, env: &PrintfEnv) -> Option<String> {
-    let bytes = const_c_string(env.resolve_const(arg))?;
+    let bytes = pointer_view_source(arg)
+        .and_then(|name| env.consts.get(name))
+        .and_then(const_c_string)
+        .or_else(|| const_c_string(env.resolve_const(arg)))?;
     if bytes.contains(&0) {
         return None;
     }
     String::from_utf8(bytes).ok()
+}
+
+fn pointer_view_source(expr: &Expr) -> Option<&str> {
+    match expr {
+        Expr::Cast { expr, .. } => pointer_view_source(expr),
+        Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
+            match &**recv {
+                Expr::Var(name) => Some(name.as_str()),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
 }
 
 fn const_c_char_arg(arg: &Expr, env: &PrintfEnv) -> Option<String> {
