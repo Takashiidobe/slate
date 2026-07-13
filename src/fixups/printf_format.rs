@@ -509,12 +509,54 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, env: &PrintfEnv) -> Option
         ConversionKind::Integer(IntegerArg::Alternate(format)) => {
             Some(alternate_integer_arg(arg, format))
         }
-        ConversionKind::String => const_c_string_arg(arg, env).map(Expr::Str),
+        ConversionKind::String => printf_string_arg(arg, env),
         ConversionKind::Char => const_c_char_arg(arg, env).map(Expr::Str),
         ConversionKind::Float => Some(arg.clone()),
         ConversionKind::Pointer if is_printf_pointer_arg(arg, env) => Some(arg.clone()),
         ConversionKind::Pointer => None,
     }
+}
+
+fn printf_string_arg(arg: &Expr, env: &PrintfEnv) -> Option<Expr> {
+    if let Some(value) = const_c_string_arg(arg, env) {
+        return Some(Expr::Str(value));
+    }
+    let stripped = strip_pointer_view(arg);
+    match stripped {
+        Expr::Var(name)
+            if env
+                .types
+                .get(name.as_str())
+                .is_some_and(type_is_rust_string) =>
+        {
+            Some(stripped.clone())
+        }
+        _ => None,
+    }
+}
+
+fn strip_pointer_view(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr, .. } => strip_pointer_view(expr),
+        Expr::MethodCall { recv, method, args }
+            if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
+        {
+            strip_pointer_view(recv)
+        }
+        Expr::ArrayPtr { array, .. } => strip_pointer_view(array),
+        _ => expr,
+    }
+}
+
+fn type_is_rust_string(ty: &Type) -> bool {
+    matches!(ty, Type::Custom(name) if name == "String")
+        || matches!(
+            ty,
+            Type::Ref {
+                mutable: false,
+                inner,
+            } if matches!(&**inner, Type::Str)
+        )
 }
 
 fn alternate_integer_arg(arg: &Expr, format: AlternateIntegerFormat) -> Expr {
