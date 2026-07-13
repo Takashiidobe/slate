@@ -31,6 +31,8 @@ pub(super) struct FixupFacts {
     pub(super) slice_index_ranges: Vec<SliceIndexRangeFact>,
     pub(super) slice_pointer_indexes: Vec<SlicePointerIndexFact>,
     pub(super) counted_slice_loops: Vec<CountedSliceLoopFact>,
+    pub(super) loop_shapes: Vec<LoopShapeFact>,
+    pub(super) loop_shape_rejections: Vec<LoopShapeRejectionFact>,
     pub(super) relations: Vec<FactRelation>,
 }
 
@@ -441,6 +443,80 @@ pub(super) struct CountedSliceLoopFact {
     pub(super) access: SliceLoopAccess,
     pub(super) loop_path: AstPath,
     pub(super) body_path: AstPath,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct LoopShapeFact {
+    pub(super) function: FunctionId,
+    pub(super) loop_id: LoopId,
+    pub(super) kind: LoopShapeKind,
+    pub(super) induction: Option<BindingId>,
+    pub(super) accumulators: Vec<BindingId>,
+    pub(super) collections: Vec<BindingId>,
+    pub(super) mutation_targets: Vec<BindingId>,
+    pub(super) loop_path: AstPath,
+    pub(super) body_path: AstPath,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum LoopShapeKind {
+    Counted { access: SliceLoopAccess },
+    Reduction { op: ReductionOp },
+    Search { result: SearchResult },
+    Copy,
+    Fill,
+    Sentinel { target: SentinelTarget },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum ReductionOp {
+    Add,
+    Mul,
+    BitAnd,
+    BitOr,
+    BitXor,
+    And,
+    Or,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum SearchResult {
+    BreaksOnMatch,
+    AssignsFlag,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum SentinelTarget {
+    IndexedCollection,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct LoopShapeRejectionFact {
+    pub(super) function: FunctionId,
+    pub(super) loop_id: LoopId,
+    pub(super) attempted: LoopShapeKindTag,
+    pub(super) reason: LoopShapeRejection,
+    pub(super) loop_path: AstPath,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum LoopShapeKindTag {
+    Counted,
+    Reduction,
+    Search,
+    Copy,
+    Fill,
+    Sentinel,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum LoopShapeRejection {
+    AmbiguousBody,
+    MissingCollection,
+    MissingInduction,
+    MissingMutation,
+    MultipleMutations,
+    UnsupportedControlFlow,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

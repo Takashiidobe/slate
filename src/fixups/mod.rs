@@ -11,6 +11,7 @@ mod effects;
 mod facts;
 mod idents;
 mod inline_temps;
+mod loop_shapes;
 mod param_spills;
 mod places;
 mod printf_format;
@@ -63,6 +64,7 @@ pub fn apply(program: Program) -> Program {
     ptr_len::fixup(&mut program, &facts);
     slice_index::collect_facts(&program, &mut facts);
     counted_loop::collect_facts(&program, &mut facts);
+    loop_shapes::collect_facts(&program, &mut facts);
     string_copy::fixup(&mut program);
     string_libc::fixup(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
