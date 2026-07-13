@@ -50,15 +50,47 @@ fn translates_os_macro_variants_to_cfg_items() {
     let rust = translate_cfg("os_targets.c");
 
     assert!(rust.contains("#[cfg(windows)]\nfn os_code() -> i32"));
+    assert!(rust.contains("#[cfg(target_os = \"android\")]\nfn os_code() -> i32"));
     assert!(rust.contains("#[cfg(target_os = \"linux\")]\nfn os_code() -> i32"));
     assert!(rust.contains("#[cfg(target_vendor = \"apple\")]\nfn os_code() -> i32"));
+    assert!(rust.contains("#[cfg(target_os = \"freebsd\")]\nfn os_code() -> i32"));
     assert!(rust.contains(
-        "#[cfg(not(any(windows, target_os = \"linux\", target_vendor = \"apple\")))]\nfn os_code() -> i32"
+        "#[cfg(not(any(windows, target_os = \"android\", target_os = \"linux\", target_vendor = \"apple\", target_os = \"freebsd\")))]\nfn os_code() -> i32"
     ));
     assert!(rust.contains("i32 = 10;"));
+    assert!(rust.contains("i32 = 25;"));
     assert!(rust.contains("i32 = 20;"));
     assert!(rust.contains("i32 = 30;"));
+    assert!(rust.contains("i32 = 35;"));
     assert!(rust.contains("i32 = 40;"));
+    assert_eq!(rust.matches("fn main()").count(), 1);
+}
+
+#[test]
+fn translates_win64_macro_to_composed_cfg_item() {
+    let rust = translate_cfg("win64_target.c");
+
+    assert!(
+        rust.contains(
+            "#[cfg(all(windows, target_pointer_width = \"64\"))]\nfn win64_code() -> i32"
+        )
+    );
+    assert!(rust.contains(
+        "#[cfg(not(all(windows, target_pointer_width = \"64\")))]\nfn win64_code() -> i32"
+    ));
+    assert!(rust.contains("i32 = 64;"));
+    assert!(rust.contains("i32 = 0;"));
+    assert_eq!(rust.matches("fn main()").count(), 1);
+}
+
+#[test]
+fn translates_unix_macro_to_cfg_item() {
+    let rust = translate_cfg("unix_target.c");
+
+    assert!(rust.contains("#[cfg(unix)]\nfn unix_code() -> i32"));
+    assert!(rust.contains("#[cfg(not(unix))]\nfn unix_code() -> i32"));
+    assert!(rust.contains("i32 = 1;"));
+    assert!(rust.contains("i32 = 0;"));
     assert_eq!(rust.matches("fn main()").count(), 1);
 }
 
@@ -67,14 +99,62 @@ fn translates_arch_macro_variants_to_cfg_items() {
     let rust = translate_cfg("arch_targets.c");
 
     assert!(rust.contains("#[cfg(target_arch = \"x86_64\")]\nfn arch_code() -> i32"));
+    assert!(rust.contains("#[cfg(target_arch = \"x86\")]\nfn arch_code() -> i32"));
     assert!(rust.contains("#[cfg(target_arch = \"aarch64\")]\nfn arch_code() -> i32"));
     assert!(rust.contains("#[cfg(target_arch = \"arm\")]\nfn arch_code() -> i32"));
+    assert!(rust.contains("#[cfg(target_arch = \"powerpc64\")]\nfn arch_code() -> i32"));
+    assert!(rust.contains("#[cfg(target_arch = \"powerpc\")]\nfn arch_code() -> i32"));
+    assert!(rust.contains("#[cfg(target_arch = \"wasm64\")]\nfn arch_code() -> i32"));
+    assert!(rust.contains("#[cfg(target_arch = \"wasm32\")]\nfn arch_code() -> i32"));
+    assert!(rust.contains("#[cfg(target_arch = \"riscv64\")]\nfn arch_code() -> i32"));
+    assert!(rust.contains("#[cfg(target_arch = \"riscv32\")]\nfn arch_code() -> i32"));
     assert!(rust.contains(
-        "#[cfg(not(any(target_arch = \"x86_64\", target_arch = \"aarch64\", target_arch = \"arm\")))]\nfn arch_code() -> i32"
+        "#[cfg(not(any(target_arch = \"x86_64\", target_arch = \"x86\", target_arch = \"aarch64\", target_arch = \"arm\", target_arch = \"powerpc64\", target_arch = \"powerpc\", target_arch = \"wasm64\", target_arch = \"wasm32\", target_arch = \"riscv64\", target_arch = \"riscv32\")))]\nfn arch_code() -> i32"
     ));
     assert!(rust.contains("i32 = 64;"));
+    assert!(rust.contains("i32 = 86;"));
     assert!(rust.contains("i32 = 128;"));
     assert!(rust.contains("i32 = 32;"));
+    assert!(rust.contains("i32 = 640;"));
+    assert!(rust.contains("i32 = 320;"));
+    assert!(rust.contains("i32 = 6400;"));
+    assert!(rust.contains("i32 = 3200;"));
+    assert!(rust.contains("i32 = 645;"));
+    assert!(rust.contains("i32 = 325;"));
+    assert!(rust.contains("i32 = 0;"));
+    assert_eq!(rust.matches("fn main()").count(), 1);
+}
+
+#[test]
+fn translates_pointer_width_macro_variants_to_cfg_items() {
+    let rust = translate_cfg("pointer_width_targets.c");
+
+    assert!(rust.contains("#[cfg(target_pointer_width = \"64\")]\nfn pointer_width_code() -> i32"));
+    assert!(rust.contains("#[cfg(target_pointer_width = \"32\")]\nfn pointer_width_code() -> i32"));
+    assert!(rust.contains(
+        "#[cfg(not(any(target_pointer_width = \"64\", target_pointer_width = \"32\")))]\nfn pointer_width_code() -> i32"
+    ));
+    assert!(rust.contains("i32 = 64;"));
+    assert!(rust.contains("i32 = 32;"));
+    assert!(rust.contains("i32 = 0;"));
+    assert_eq!(rust.matches("fn main()").count(), 1);
+}
+
+#[test]
+fn translates_arm_endian_macro_variants_to_cfg_items() {
+    let rust = translate_cfg("arm_endian_targets.c");
+
+    assert!(rust.contains(
+        "#[cfg(any(all(target_arch = \"arm\", target_endian = \"big\"), all(target_arch = \"aarch64\", target_endian = \"big\")))]\nfn arm_endian_code() -> i32"
+    ));
+    assert!(rust.contains(
+        "#[cfg(any(all(target_arch = \"arm\", target_endian = \"little\"), all(target_arch = \"aarch64\", target_endian = \"little\")))]\nfn arm_endian_code() -> i32"
+    ));
+    assert!(rust.contains(
+        "#[cfg(not(any(any(all(target_arch = \"arm\", target_endian = \"big\"), all(target_arch = \"aarch64\", target_endian = \"big\")), any(all(target_arch = \"arm\", target_endian = \"little\"), all(target_arch = \"aarch64\", target_endian = \"little\")))))]\nfn arm_endian_code() -> i32"
+    ));
+    assert!(rust.contains("i32 = 100;"));
+    assert!(rust.contains("i32 = 200;"));
     assert!(rust.contains("i32 = 0;"));
     assert_eq!(rust.matches("fn main()").count(), 1);
 }
@@ -93,7 +173,15 @@ fn translates_ndebug_variants_to_debug_assertion_cfg_items() {
 #[test]
 fn cfg_translated_fixtures_compile_for_current_host() {
     let work_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/cfg-translate-compile");
-    for name in ["os_targets.c", "arch_targets.c", "ndebug.c"] {
+    for name in [
+        "os_targets.c",
+        "win64_target.c",
+        "unix_target.c",
+        "arch_targets.c",
+        "pointer_width_targets.c",
+        "arm_endian_targets.c",
+        "ndebug.c",
+    ] {
         let rust = translate_cfg(name);
         let rs = write_generated(name, &rust);
         let package = format!("cfg_{}", name.trim_end_matches(".c"));
