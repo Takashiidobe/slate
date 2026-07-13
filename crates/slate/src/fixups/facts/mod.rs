@@ -27,6 +27,7 @@ pub(super) struct AnalyzedProgram {
 pub(super) struct FixupFacts {
     pub(super) functions: Vec<FunctionFact>,
     pub(super) bindings: Vec<BindingFact>,
+    pub(super) binding_types: Vec<BindingTypeFact>,
     pub(super) loops: Vec<LoopFact>,
     pub(super) borrow_alias: Vec<BorrowAliasFact>,
     pub(super) def_use: Vec<DefUseFact>,
@@ -78,6 +79,12 @@ pub(super) struct BindingFact {
     pub(super) name: String,
     pub(super) kind: BindingKind,
     pub(super) path: AstPath,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct BindingTypeFact {
+    pub(super) binding: BindingId,
+    pub(super) rendered: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -794,6 +801,32 @@ impl FixupFacts {
             .map(|binding| binding.id)
     }
 
+    pub(super) fn binding_name(&self, binding: BindingId) -> Option<&str> {
+        self.bindings
+            .iter()
+            .find(|fact| fact.id == binding)
+            .map(|fact| fact.name.as_str())
+    }
+
+    pub(super) fn local_binding_at(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&BindingFact> {
+        self.bindings.iter().find(|binding| {
+            binding.function == function
+                && binding.kind == BindingKind::Local
+                && &binding.path == path
+        })
+    }
+
+    pub(super) fn binding_type(&self, binding: BindingId) -> Option<&str> {
+        self.binding_types
+            .iter()
+            .find(|fact| fact.binding == binding)
+            .map(|fact| fact.rendered.as_str())
+    }
+
     pub(super) fn binding_requires_mut(&self, binding: BindingId) -> bool {
         self.mutability
             .iter()
@@ -814,6 +847,49 @@ impl FixupFacts {
         self.effects
             .iter()
             .find(|fact| fact.function == function && fact.subject == subject && &fact.path == path)
+    }
+
+    pub(super) fn control_flow(
+        &self,
+        function: FunctionId,
+        subject: ControlFlowSubject,
+        path: &AstPath,
+    ) -> Option<&ControlFlowFact> {
+        self.control_flow
+            .iter()
+            .find(|fact| fact.function == function && fact.subject == subject && &fact.path == path)
+    }
+
+    pub(super) fn place(&self, function: FunctionId, path: &AstPath) -> Option<&PlaceFact> {
+        self.places
+            .iter()
+            .find(|fact| fact.function == function && &fact.path == path)
+    }
+
+    pub(super) fn value(
+        &self,
+        function: FunctionId,
+        subject: ValueSubject,
+        path: &AstPath,
+    ) -> Option<&ValueFact> {
+        self.values
+            .iter()
+            .find(|fact| fact.function == function && fact.subject == subject && &fact.path == path)
+    }
+
+    pub(super) fn has_value(
+        &self,
+        function: FunctionId,
+        subject: ValueSubject,
+        path: &AstPath,
+        value: &ConstValue,
+    ) -> bool {
+        self.values.iter().any(|fact| {
+            fact.function == function
+                && fact.subject == subject
+                && &fact.path == path
+                && &fact.value == value
+        })
     }
 
     pub(super) fn callsite(&self, function: FunctionId, path: &AstPath) -> Option<&CallsiteFact> {
@@ -882,6 +958,7 @@ impl Collector {
                     param.name.clone(),
                     BindingKind::Param { index },
                     AstPath::default(),
+                    Some(param.ty.clone()),
                 );
             }
             self.body(function, &f.body, &mut Vec::new());
@@ -905,6 +982,7 @@ impl Collector {
         name: String,
         kind: BindingKind,
         path: AstPath,
+        ty: Option<Type>,
     ) -> BindingId {
         let id = BindingId(self.facts.bindings.len());
         self.facts.bindings.push(BindingFact {
@@ -914,6 +992,12 @@ impl Collector {
             kind,
             path,
         });
+        if let Some(ty) = ty {
+            self.facts.binding_types.push(BindingTypeFact {
+                binding: id,
+                rendered: ty.render(),
+            });
+        }
         id
     }
 
@@ -942,16 +1026,18 @@ impl Collector {
 
     fn stmt(&mut self, function: FunctionId, stmt: &Stmt, path: &mut Vec<PathSegment>) {
         match stmt {
-            Stmt::Let { name, .. } => {
+            Stmt::Let { name, ty, .. } => {
                 self.push_binding(
                     function,
                     name.clone(),
                     BindingKind::Local,
                     AstPath(path.clone()),
+                    ty.clone(),
                 );
             }
             Stmt::LetIf {
                 name,
+                ty,
                 then_body,
                 else_body,
                 ..
@@ -961,6 +1047,7 @@ impl Collector {
                     name.clone(),
                     BindingKind::Local,
                     AstPath(path.clone()),
+                    ty.clone(),
                 );
                 path.push(PathSegment::Then);
                 self.body(function, then_body, path);

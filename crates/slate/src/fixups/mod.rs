@@ -29,10 +29,28 @@ pub fn apply(program: Program) -> Program {
             break;
         }
     }
-    for item in program.items.iter_mut() {
-        if let Item::Fn(f) = item {
-            rewrite::param_spills::fixup(f);
-            rewrite::zero_init::fixup(&mut f.body);
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            rewrite::param_spills::fixup(f, function, &facts);
+        }
+    }
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        let mut changed = false;
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            if let Item::Fn(f) = item
+                && let Some(function) = facts.function_by_item_index(item_index)
+                && rewrite::zero_init::fixup(&mut f.body, function, &facts)
+            {
+                changed = true;
+                break;
+            }
+        }
+        if !changed {
+            break;
         }
     }
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
@@ -59,9 +77,12 @@ pub fn apply(program: Program) -> Program {
             break;
         }
     }
-    for item in program.items.iter_mut() {
-        if let Item::Fn(f) = item {
-            rewrite::retval::fixup(f);
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            rewrite::retval::fixup(f, function, &facts);
         }
     }
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
