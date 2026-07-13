@@ -748,7 +748,7 @@ fn classify_bytes(mut bytes: Vec<u8>) -> LiteralBytes {
     };
     let all_after_nul = bytes[nul..].iter().all(|byte| *byte == 0);
     let all_zero = bytes.iter().all(|byte| *byte == 0);
-    let interior_nul = bytes[..nul].contains(&0) || bytes[nul + 1..].contains(&0);
+    let interior_nul = !all_after_nul;
     let payload = if all_after_nul {
         bytes.truncate(nul);
         bytes
