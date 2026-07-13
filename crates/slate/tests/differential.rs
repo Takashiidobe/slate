@@ -481,3 +481,24 @@ fn string_lift_recovers_safe_local_string_buffers() {
     assert!(rust.contains("let mut mutate: [i8; 4] = [0; 4];"));
     assert!(rust.contains("mutate.as_mut_ptr()"));
 }
+
+#[test]
+fn string_libc_calls_use_lifted_string_operations() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-string-libc");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("string_libc_fixup.c");
+    let generated = tmp.join("string_libc_fixup.generated.rs");
+    support::translate(&c_src, &generated).expect("translate string_libc_fixup fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated string_libc rust");
+
+    assert!(rust.contains("let alpha: &str = \"abc\";"));
+    assert!(rust.contains("let bytes_a: &[u8] = b\"\\xff\\x01\";"));
+    assert!(rust.contains("alpha.len()"));
+    assert!(rust.contains("alpha == alpha"));
+    assert!(rust.contains("alpha.cmp(beta) == std::cmp::Ordering::Less"));
+    assert!(rust.contains(".split_at(std::cmp::min("));
+    assert!(!rust.contains("unsafe { strlen("));
+    assert!(!rust.contains("unsafe { strcmp("));
+    assert!(!rust.contains("unsafe { strncmp("));
+    assert!(!rust.contains("unsafe { memcmp("));
+}
