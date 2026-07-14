@@ -5,28 +5,51 @@ use crate::fixups::facts::{
     AstPath, BindingId, ControlFlowSubject, FixupFacts, FunctionId, PathSegment, PlaceAccess,
     PlaceKind,
 };
-use crate::fixups::idents::expr_ident;
+use crate::fixups::idents::{expr_ident, stmt_ident_count};
+use crate::fixups::support::walk;
 use crate::rust_ast::{Expr, FnDef, IndentStmt, Path, Prim, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
-    collapse_return_slot(&mut f.body, function, facts);
+    collapse_return_slots(&mut f.body, function, facts, &mut Vec::new());
+    remove_unused_retval_decl(&mut f.body);
     if f.name == "main" {
         collapse_main_exit_slot(&mut f.body, function, facts);
     }
 }
 
-fn collapse_return_slot(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFacts) {
-    let Some(fact) = facts
+fn collapse_return_slots(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    for (index, stmt) in body.iter_mut().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |nested, path| {
+                collapse_return_slots(nested, function, facts, path);
+            });
+        });
+    }
+
+    let mut collapses: Vec<_> = facts
         .retval_collapses
         .iter()
-        .find(|fact| fact.function == function)
-    else {
-        return;
-    };
-    let Some(ret_index) = direct_stmt_index(&fact.return_path) else {
-        return;
-    };
-    let Some(value_index) = direct_stmt_index(&fact.value_path) else {
+        .filter(|fact| fact.function == function)
+        .filter_map(|fact| Some((direct_stmt_index(path, &fact.return_path)?, fact)))
+        .collect();
+    collapses.sort_by_key(|(ret_index, _)| *ret_index);
+    for (ret_index, fact) in collapses.into_iter().rev() {
+        collapse_return_slot(body, path, ret_index, fact);
+    }
+}
+
+fn collapse_return_slot(
+    body: &mut Vec<IndentStmt>,
+    body_path: &[PathSegment],
+    ret_index: usize,
+    fact: &crate::fixups::facts::RetvalCollapseFact,
+) {
+    let Some(value_index) = direct_stmt_index(body_path, &fact.value_path) else {
         return;
     };
     if ret_index >= body.len() || value_index >= body.len() {
@@ -41,7 +64,7 @@ fn collapse_return_slot(body: &mut Vec<IndentStmt>, function: FunctionId, facts:
     };
     let mut remove = Vec::new();
     for path in &fact.remove_paths {
-        let Some(index) = direct_stmt_index(path) else {
+        let Some(index) = direct_stmt_index(body_path, path) else {
             return;
         };
         if index >= body.len() || index == ret_index {
@@ -57,6 +80,30 @@ fn collapse_return_slot(body: &mut Vec<IndentStmt>, function: FunctionId, facts:
     };
     body[ret_index].stmt = Stmt::Return(Some(value));
     for index in remove.into_iter().rev() {
+        body.remove(index);
+    }
+}
+
+fn remove_unused_retval_decl(body: &mut Vec<IndentStmt>) {
+    let Some(index) = body.iter().position(|indent| {
+        matches!(
+            &indent.stmt,
+            Stmt::Let {
+                name,
+                mutable: true,
+                ..
+            } if name == "__retval"
+        )
+    }) else {
+        return;
+    };
+    let uses = body
+        .iter()
+        .enumerate()
+        .filter(|(i, _)| *i != index)
+        .map(|(_, indent)| stmt_ident_count(&indent.stmt, "__retval"))
+        .sum::<usize>();
+    if uses == 0 {
         body.remove(index);
     }
 }
@@ -219,11 +266,12 @@ fn stmt_path(index: usize) -> Vec<PathSegment> {
     vec![PathSegment::Stmt(index)]
 }
 
-fn direct_stmt_index(path: &AstPath) -> Option<usize> {
-    let [PathSegment::Stmt(index)] = path.0.as_slice() else {
-        return None;
-    };
-    Some(*index)
+fn direct_stmt_index(body_path: &[PathSegment], path: &AstPath) -> Option<usize> {
+    let rest = path.0.strip_prefix(body_path)?;
+    match rest {
+        [PathSegment::Stmt(index)] => Some(*index),
+        _ => None,
+    }
 }
 
 #[cfg(test)]
@@ -237,7 +285,8 @@ mod tests {
         let Item::Fn(f) = &mut program.items[0] else {
             unreachable!();
         };
-        collapse_return_slot(&mut f.body, FunctionId(0), &analyzed.facts);
+        collapse_return_slots(&mut f.body, FunctionId(0), &analyzed.facts, &mut Vec::new());
+        remove_unused_retval_decl(&mut f.body);
     }
 
     fn retval_after_body(
@@ -330,17 +379,30 @@ fn f() -> i32 {
     }
 
     #[test]
-    fn does_not_collapse_when_retval_read_elsewhere() {
-        let stmts = vec![
-            let_mut("__retval", "i32", int(0)),
-            assign("__retval", int(1)),
-            let_mut("x", "i32", var("__retval")),
-            assign("__retval", var("x")),
-            Stmt::Return(Some(var("__retval"))),
-        ];
-        let expected = emit(func(vec![], Some("i32"), stmts.clone()));
+    fn collapses_final_store_when_retval_was_read_elsewhere() {
+        let out = retval_after_body(
+            vec![],
+            Some("i32"),
+            vec![
+                let_mut("__retval", "i32", int(0)),
+                assign("__retval", int(1)),
+                let_mut("x", "i32", var("__retval")),
+                assign("__retval", var("x")),
+                Stmt::Return(Some(var("__retval"))),
+            ],
+        );
 
-        assert_eq!(retval_after_body(vec![], Some("i32"), stmts), expected);
+        assert_eq!(
+            out,
+            "\
+fn f() -> i32 {
+    let mut __retval: i32 = 0;
+    __retval = 1;
+    let mut x: i32 = __retval;
+    return x;
+}
+"
+        );
     }
 
     #[test]
@@ -354,6 +416,45 @@ fn f() -> i32 {
         let expected = emit(func(vec![], Some("i32"), stmts.clone()));
 
         assert_eq!(retval_after_body(vec![], Some("i32"), stmts), expected);
+    }
+
+    #[test]
+    fn collapses_nested_branch_retval_store_and_fallthrough() {
+        let out = retval_after_body(
+            vec![],
+            Some("i32"),
+            vec![
+                let_mut("__retval", "i32", int(0)),
+                Stmt::If {
+                    cond: var("cond"),
+                    then_body: vec![
+                        IndentStmt {
+                            depth: 0,
+                            stmt: assign("__retval", call("op", vec![var("value")])),
+                        },
+                        IndentStmt {
+                            depth: 0,
+                            stmt: Stmt::Return(Some(var("__retval"))),
+                        },
+                    ],
+                    else_body: vec![],
+                },
+                assign("__retval", var("value")),
+                Stmt::Return(Some(var("__retval"))),
+            ],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() -> i32 {
+    if cond {
+        return op(value);
+    }
+    return value;
+}
+"
+        );
     }
 
     #[test]
