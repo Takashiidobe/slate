@@ -18,6 +18,7 @@ pub struct Program {
 pub enum Item {
     Func(Func),
     Fn(FnDef),
+    Comment(Comment),
     CrateAttrs(Vec<CrateAttr>),
     Mod {
         name: Ident,
@@ -46,6 +47,11 @@ pub enum Item {
         item: Box<Item>,
     },
     Raw(String),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Comment {
+    pub lines: Vec<String>,
 }
 
 /// A `cfg(..)` predicate, rendered as the inside of a `#[cfg(..)]` attribute.
@@ -226,25 +232,35 @@ pub struct Method {
 
 #[derive(Debug, Clone)]
 pub struct EnumConst {
+    pub comments: Vec<Comment>,
     pub name: String,
     pub value: i64,
 }
 
 #[derive(Debug, Clone)]
 pub struct EnumDef {
+    pub comments: Vec<Comment>,
     pub vis: Visibility,
     pub name: String,
     pub variants: Vec<EnumConst>,
 }
 
 #[derive(Debug, Clone)]
+pub struct RecordField {
+    pub comments: Vec<Comment>,
+    pub name: Ident,
+    pub ty: Type,
+}
+
+#[derive(Debug, Clone)]
 pub struct RecordDef {
+    pub comments: Vec<Comment>,
     pub vis: Visibility,
     pub field_vis: Visibility,
     pub is_union: bool,
     pub allow_non_camel_case: bool,
     pub name: String,
-    pub fields: Vec<(Ident, Type)>,
+    pub fields: Vec<RecordField>,
 }
 
 #[derive(Debug, Clone)]

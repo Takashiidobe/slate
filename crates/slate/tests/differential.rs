@@ -482,6 +482,22 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
 }
 
 #[test]
+fn preserves_documentation_comments_on_enums() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-comments");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("comments.c");
+    let generated = tmp.join("comments.generated.rs");
+    support::translate(&c_src, &generated).expect("translate comments fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated comments rust");
+
+    assert!(rust.contains("/// selects an operating mode\n#[repr(C)]"));
+    assert!(rust.contains("    /// disable processing\n    MODE_OFF = 0,"));
+    assert!(rust.contains("    /// enable processing\n    MODE_ON = 1,"));
+    assert!(rust.contains("/// stores a selected mode\n#[repr(C)]"));
+    assert!(rust.contains("    /// current mode value\n    mode: Mode,"));
+}
+
+#[test]
 fn string_lift_recovers_safe_local_string_buffers() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-string-lift");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

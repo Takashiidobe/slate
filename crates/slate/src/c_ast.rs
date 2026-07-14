@@ -27,6 +27,7 @@ pub struct Unit {
 #[derive(Debug, Clone)]
 pub struct Record {
     pub name: String,
+    pub comments: Vec<String>,
     pub kind: RecordKind,
     pub fields: Vec<Decl>,
 }
@@ -41,12 +42,14 @@ pub enum RecordKind {
 pub struct Enum {
     pub name: String,
     pub tag: Option<String>,
+    pub comments: Vec<String>,
     pub variants: Vec<EnumVariant>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EnumVariant {
     pub name: String,
+    pub comments: Vec<String>,
     pub value: i64,
 }
 
@@ -66,6 +69,7 @@ pub struct Function {
 #[derive(Debug, Clone)]
 pub struct Decl {
     pub name: String,
+    pub comments: Vec<String>,
     pub ty: CType,
 }
 
@@ -150,7 +154,12 @@ pub fn parse_file(src: &Path) -> Result<Unit, String> {
 
 pub fn parse_file_with_args(src: &Path, extra_args: &[String]) -> Result<Unit, String> {
     let out = Command::new(clang())
-        .args(["-Xclang", "-ast-dump=json", "-fsyntax-only"])
+        .args([
+            "-Xclang",
+            "-ast-dump=json",
+            "-fsyntax-only",
+            "-fparse-all-comments",
+        ])
         .args(crate::cir::emit::target_args())
         .args(extra_args)
         .arg(src)
@@ -173,7 +182,12 @@ pub fn parse_file_with_project_records(src: &Path, project_root: &Path) -> Resul
         .canonicalize()
         .map_err(|e| format!("canonicalize {}: {e}", project_root.display()))?;
     let out = Command::new(clang())
-        .args(["-Xclang", "-ast-dump=json", "-fsyntax-only"])
+        .args([
+            "-Xclang",
+            "-ast-dump=json",
+            "-fsyntax-only",
+            "-fparse-all-comments",
+        ])
         .args(crate::cir::emit::target_args())
         .arg(src)
         .output()
@@ -358,12 +372,14 @@ fn extract_record(node: &Value, name_override: Option<String>) -> Option<Record>
         .filter_map(|child| {
             Some(Decl {
                 name: child.get("name")?.as_str()?.to_string(),
+                comments: attached_comment(child),
                 ty: parse_c_type(qual_type(child).unwrap_or("int")),
             })
         })
         .collect();
     Some(Record {
         name,
+        comments: attached_comment(node),
         kind: record_kind,
         fields,
     })
@@ -427,13 +443,19 @@ fn extract_enum(node: &Value, enum_typedefs: &HashMap<String, String>) -> Option
             continue;
         }
         let name = child.get("name")?.as_str()?.to_string();
+        let comments = attached_comment(child);
         let value = enum_constant_value(child).unwrap_or(next_value);
         next_value = value + 1;
-        variants.push(EnumVariant { name, value });
+        variants.push(EnumVariant {
+            name,
+            comments,
+            value,
+        });
     }
     Some(Enum {
         name,
         tag,
+        comments: attached_comment(node),
         variants,
     })
 }
@@ -457,6 +479,7 @@ fn extract_function(node: &Value) -> Option<Function> {
         .filter_map(|child| {
             Some(Decl {
                 name: child.get("name")?.as_str()?.to_string(),
+                comments: attached_comment(child),
                 ty: parse_c_type(qual_type(child).unwrap_or("int")),
             })
         })
@@ -513,7 +536,14 @@ fn parse_decl_stmt(node: &Value) -> Option<Stmt> {
     let name = decl.get("name")?.as_str()?.to_string();
     let ty = parse_c_type(qual_type(decl).unwrap_or("int"));
     let init = children(decl).first().and_then(|child| parse_expr(child));
-    Some(Stmt::Decl(Decl { name, ty }, init))
+    Some(Stmt::Decl(
+        Decl {
+            name,
+            comments: attached_comment(decl),
+            ty,
+        },
+        init,
+    ))
 }
 
 fn parse_for_stmt(node: &Value) -> Option<Stmt> {
@@ -904,6 +934,37 @@ fn location_has_included_from(node: Option<&Value>) -> bool {
     node.get("includedFrom").is_some()
         || location_has_included_from(node.get("spellingLoc"))
         || location_has_included_from(node.get("expansionLoc"))
+}
+
+fn attached_comment(node: &Value) -> Vec<String> {
+    children(node)
+        .iter()
+        .find(|child| kind(child) == Some("FullComment"))
+        .map_or_else(Vec::new, |child| full_comment_lines(child))
+}
+
+fn full_comment_lines(node: &Value) -> Vec<String> {
+    let mut lines = Vec::new();
+    collect_comment_text(node, &mut lines);
+    lines
+}
+
+fn collect_comment_text(node: &Value, out: &mut Vec<String>) {
+    if kind(node) == Some("TextComment")
+        && let Some(text) = node.get("text").and_then(Value::as_str)
+    {
+        let line = normalize_comment_line(text);
+        if !line.is_empty() {
+            out.push(line);
+        }
+    }
+    for child in children(node) {
+        collect_comment_text(child, out);
+    }
+}
+
+fn normalize_comment_line(line: &str) -> String {
+    line.trim().trim_start_matches('*').trim_start().to_string()
 }
 
 fn loc(node: &Value) -> Option<Loc> {

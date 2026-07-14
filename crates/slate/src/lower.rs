@@ -7,8 +7,8 @@ use crate::rust_ast::{
     AtomicOrdering, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType, CrateAttr, Derive,
     EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam,
     GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint, MatchArm, Method,
-    Path, Pattern, Prim, Program, RecordDef, Repr, RustValue, StdTrait, Stmt, StructDef,
-    StructFields, TraitBound, Type, UnaryOp, Visibility,
+    Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue, StdTrait, Stmt,
+    StructDef, StructFields, TraitBound, Type, UnaryOp, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -146,12 +146,14 @@ fn lower_enum_def(enm: &crate::c_ast::Enum, vis: Visibility) -> Option<EnumDef> 
         return None;
     }
     Some(EnumDef {
+        comments: comments(&enm.comments),
         vis,
         name: sanitize_ident(&enm.name).into_string(),
         variants: enm
             .variants
             .iter()
             .map(|variant| EnumConst {
+                comments: comments(&variant.comments),
                 name: sanitize_ident(&variant.name).into_string(),
                 value: variant.value,
             })
@@ -171,9 +173,14 @@ fn lower_record_def(
     let fields = record
         .fields
         .iter()
-        .map(|field| (sanitize_ident(&field.name), c_type_to_type(&field.ty)))
+        .map(|field| RecordField {
+            comments: comments(&field.comments),
+            name: sanitize_ident(&field.name),
+            ty: c_type_to_type(&field.ty),
+        })
         .collect();
     Some(RecordDef {
+        comments: comments(&record.comments),
         vis,
         field_vis,
         is_union: record.kind == RecordKind::Union,
@@ -181,6 +188,16 @@ fn lower_record_def(
         name: sanitize_ident(&record.name).into_string(),
         fields,
     })
+}
+
+fn comments(lines: &[String]) -> Vec<crate::rust_ast::Comment> {
+    if lines.is_empty() {
+        Vec::new()
+    } else {
+        vec![crate::rust_ast::Comment {
+            lines: lines.to_vec(),
+        }]
+    }
 }
 
 struct Lowerer<'a> {
@@ -4971,11 +4988,13 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
                     .get(&(key.clone(), i as i64))
                     .cloned()
                     .unwrap_or_else(|| format!("f{i}")),
+                comments: Vec::new(),
                 ty: cir_type_to_ctype(field_ty, &module.aliases),
             })
             .collect();
         records.push(crate::c_ast::Record {
             name: name.to_string(),
+            comments: Vec::new(),
             kind: if is_union {
                 RecordKind::Union
             } else {
@@ -5002,7 +5021,7 @@ fn standard_record_def(name: &str) -> RecordDef {
         mutable: true,
         inner: Box::new(Type::Prim(Prim::I8)),
     };
-    let fields: Vec<(Ident, Type)> = match name {
+    let fields: Vec<RecordField> = match name {
         "div_t" => vec![("quot".into(), i32_ty()), ("rem".into(), i32_ty())],
         "ldiv_t" | "lldiv_t" | "imaxdiv_t" => {
             vec![("quot".into(), i64_ty()), ("rem".into(), i64_ty())]
@@ -5047,8 +5066,16 @@ fn standard_record_def(name: &str) -> RecordDef {
             ("int_n_sign_posn".into(), i8_ty()),
         ],
         _ => Vec::new(),
-    };
+    }
+    .into_iter()
+    .map(|(name, ty)| RecordField {
+        comments: Vec::new(),
+        name,
+        ty,
+    })
+    .collect();
     RecordDef {
+        comments: Vec::new(),
         vis: Visibility::Private,
         field_vis: Visibility::Private,
         is_union: false,
