@@ -34,6 +34,9 @@ pub(in crate::fixups) fn nested_bodies_with_path(
         Stmt::Loop { body, .. } => {
             with_path_segment(path, PathSegment::LoopBody, |path| f(body, path));
         }
+        Stmt::For { body, .. } => {
+            with_path_segment(path, PathSegment::ForBody, |path| f(body, path));
+        }
         Stmt::Scope { body } => {
             with_path_segment(path, PathSegment::ScopeBody, |path| f(body, path));
         }
@@ -87,6 +90,9 @@ pub(in crate::fixups) fn nested_bodies_mut_with_path(
         }
         Stmt::Loop { body, .. } => {
             with_path_segment(path, PathSegment::LoopBody, |path| f(body, path));
+        }
+        Stmt::For { body, .. } => {
+            with_path_segment(path, PathSegment::ForBody, |path| f(body, path));
         }
         Stmt::Scope { body } => {
             with_path_segment(path, PathSegment::ScopeBody, |path| f(body, path));
@@ -147,6 +153,9 @@ pub(in crate::fixups) fn nested_body_vecs_mut_with_path(
         }
         Stmt::Loop { body, .. } => {
             with_path_segment(path, PathSegment::LoopBody, |path| f(body, path));
+        }
+        Stmt::For { body, .. } => {
+            with_path_segment(path, PathSegment::ForBody, |path| f(body, path));
         }
         Stmt::Scope { body } => {
             with_path_segment(path, PathSegment::ScopeBody, |path| f(body, path));
@@ -217,6 +226,7 @@ pub(in crate::fixups) fn stmt_expr_any(stmt: &Stmt, pred: &mut impl FnMut(&Expr)
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             body_expr_any(body, pred)
         }
+        Stmt::For { iter, body, .. } => expr_any(iter, pred) || body_expr_any(body, pred),
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
             body_expr_any(&body.stmts, pred)
                 || body
@@ -372,6 +382,10 @@ pub(in crate::fixups) fn stmt_exprs_mut_with(
             body_exprs_mut_with(else_body, f);
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            body_exprs_mut_with(body, f);
+        }
+        Stmt::For { iter, body, .. } => {
+            exprs_mut_with(iter, f);
             body_exprs_mut_with(body, f);
         }
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
@@ -583,6 +597,12 @@ pub(in crate::fixups) fn stmt_exprs_mut_with_path(
         }
         Stmt::Loop { body, .. } => {
             with_path_segment(path, PathSegment::LoopBody, |path| {
+                body_exprs_mut_with_path(body, path, f);
+            });
+        }
+        Stmt::For { iter, body, .. } => {
+            stmt_root_expr_mut_with_path(iter, 0, path, f);
+            with_path_segment(path, PathSegment::ForBody, |path| {
                 body_exprs_mut_with_path(body, path, f);
             });
         }
@@ -904,6 +924,14 @@ mod tests {
                     body: vec![marker("x")],
                 },
                 PathSegment::LoopBody,
+            ),
+            (
+                Stmt::For {
+                    pat: "x".into(),
+                    iter: var("xs"),
+                    body: vec![marker("x")],
+                },
+                PathSegment::ForBody,
             ),
             (
                 Stmt::Scope {

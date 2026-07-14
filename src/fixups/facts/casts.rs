@@ -163,6 +163,15 @@ impl<'a> Collector<'a> {
                     self.body(body, path, true)
                 });
             }
+            Stmt::For { pat, iter, body } => {
+                self.expr(iter, path);
+                walk::with_path_segment(path, PathSegment::ForBody, |path| {
+                    self.scopes.push(BTreeMap::new());
+                    self.bind(pat.to_string(), None);
+                    self.body(body, path, false);
+                    self.scopes.pop();
+                });
+            }
             Stmt::Scope { body } => {
                 walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
                     self.body(body, path, true)
