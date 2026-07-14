@@ -1,7 +1,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::{
-    AstPath, CallCallee, FixupFacts, FunctionId, HeapOwnershipKind, PathSegment,
+    AstPath, CallCallee, FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind,
+    HeapReadSafety, HeapResizeKind, PathSegment,
 };
 use crate::fixups::support::walk;
 use crate::rust_ast::{
@@ -32,7 +33,9 @@ pub(in crate::fixups) fn prune_unused_externs(program: &mut Program, facts: &Fix
     program.items.retain_mut(|item| match item {
         Item::ExternBlock { decls, .. } => {
             decls.retain(|decl| match decl {
-                ExternDecl::Fn(f) if matches!(f.name.as_str(), "malloc" | "free") => {
+                ExternDecl::Fn(f)
+                    if matches!(f.name.as_str(), "malloc" | "calloc" | "realloc" | "free") =>
+                {
                     used.contains(&f.name)
                 }
                 _ => true,
@@ -46,10 +49,38 @@ pub(in crate::fixups) fn prune_unused_externs(program: &mut Program, facts: &Fix
 fn plans_by_function(facts: &FixupFacts) -> BTreeMap<FunctionId, Vec<Plan>> {
     let mut by_function = BTreeMap::new();
     for fact in &facts.heap_ownership {
-        if fact.kind != HeapOwnershipKind::ScalarBox {
+        let kind = fact.kind;
+        if kind == HeapOwnershipKind::VecBuffer
+            && fact.read_safety == HeapReadSafety::MayReadUninitialized
+        {
             continue;
         }
         let Some(pointer_name) = facts.binding_name(fact.pointer) else {
+            continue;
+        };
+        let Some(init) = init_for_fact(fact) else {
+            continue;
+        };
+        let count = count_for_extent(&fact.extent);
+        if kind == HeapOwnershipKind::VecBuffer && count.is_none() {
+            continue;
+        }
+        let reallocs = fact
+            .reallocations
+            .iter()
+            .map(|realloc| {
+                Some(ReallocPlan {
+                    source_temp_stmt: previous_stmt_index(&realloc.allocation_path)
+                        .and_then(|index| index.checked_sub(1)),
+                    size_stmt: previous_stmt_index(&realloc.allocation_path),
+                    allocation_stmt: stmt_index(&realloc.allocation_path),
+                    assign_stmt: stmt_index(&realloc.assign_path),
+                    resize: realloc.resize,
+                    count: count_for_extent(&realloc.new_extent)?,
+                })
+            })
+            .collect::<Option<Vec<_>>>();
+        let Some(reallocs) = reallocs else {
             continue;
         };
         by_function
@@ -57,6 +88,7 @@ fn plans_by_function(facts: &FixupFacts) -> BTreeMap<FunctionId, Vec<Plan>> {
             .or_insert_with(Vec::new)
             .push(Plan {
                 pointer_name: pointer_name.to_string(),
+                kind,
                 pointer_stmt: stmt_index(&fact.pointer_path),
                 size_stmt: fact
                     .size_temp
@@ -67,7 +99,10 @@ fn plans_by_function(facts: &FixupFacts) -> BTreeMap<FunctionId, Vec<Plan>> {
                     .free_temp
                     .and_then(|_| previous_stmt_index(&fact.free_path)),
                 free_stmt: stmt_index(&fact.free_path),
+                reallocs,
                 elem_ty: fact.elem_ty.clone(),
+                init,
+                count,
             });
     }
     by_function
@@ -76,13 +111,60 @@ fn plans_by_function(facts: &FixupFacts) -> BTreeMap<FunctionId, Vec<Plan>> {
 #[derive(Clone)]
 struct Plan {
     pointer_name: String,
+    kind: HeapOwnershipKind,
     pointer_stmt: Option<usize>,
     size_stmt: Option<usize>,
     allocation_stmt: Option<usize>,
     assign_stmt: Option<usize>,
     free_temp_stmt: Option<usize>,
     free_stmt: Option<usize>,
+    reallocs: Vec<ReallocPlan>,
     elem_ty: Type,
+    init: Expr,
+    count: Option<Expr>,
+}
+
+#[derive(Clone)]
+struct ReallocPlan {
+    source_temp_stmt: Option<usize>,
+    size_stmt: Option<usize>,
+    allocation_stmt: Option<usize>,
+    assign_stmt: Option<usize>,
+    resize: HeapResizeKind,
+    count: Expr,
+}
+
+#[derive(Clone)]
+struct OwnedPlan {
+    kind: HeapOwnershipKind,
+}
+
+struct OwnedHeap {
+    plans: BTreeMap<String, OwnedPlan>,
+    aliases: BTreeMap<String, String>,
+}
+
+impl OwnedHeap {
+    fn new(plans: &[Plan]) -> Self {
+        Self {
+            plans: plans
+                .iter()
+                .map(|plan| (plan.pointer_name.clone(), OwnedPlan { kind: plan.kind }))
+                .collect(),
+            aliases: BTreeMap::new(),
+        }
+    }
+
+    fn owner_for(&self, name: &str) -> Option<String> {
+        if self.plans.contains_key(name) {
+            return Some(name.to_string());
+        }
+        self.aliases.get(name).cloned()
+    }
+
+    fn kind_for_owner(&self, owner: &str) -> Option<HeapOwnershipKind> {
+        self.plans.get(owner).map(|plan| plan.kind)
+    }
 }
 
 fn rewrite_body(body: &mut Vec<IndentStmt>, plans: &[Plan]) {
@@ -96,6 +178,7 @@ fn rewrite_body(body: &mut Vec<IndentStmt>, plans: &[Plan]) {
         }
         for index in [
             plan.size_stmt,
+            calloc_count_stmt(body, plan.allocation_stmt),
             plan.allocation_stmt,
             plan.assign_stmt,
             plan.free_temp_stmt,
@@ -106,14 +189,33 @@ fn rewrite_body(body: &mut Vec<IndentStmt>, plans: &[Plan]) {
         {
             remove.insert(index);
         }
+        for realloc in &plan.reallocs {
+            for index in [
+                realloc.source_temp_stmt,
+                realloc.size_stmt,
+                realloc.allocation_stmt,
+            ]
+            .into_iter()
+            .flatten()
+            {
+                remove.insert(index);
+            }
+            if let Some(assign_stmt) = realloc.assign_stmt
+                && let Some(indent) = body.get_mut(assign_stmt)
+            {
+                indent.stmt = realloc_stmt(&plan.pointer_name, realloc, &plan.init);
+            }
+        }
     }
 
-    let owned: BTreeSet<_> = plans
-        .iter()
-        .map(|plan| plan.pointer_name.as_str())
-        .collect();
+    let mut owned = OwnedHeap::new(plans);
     for (index, indent) in body.iter_mut().enumerate() {
         if remove.contains(&index) {
+            continue;
+        }
+        if let Some((alias, owner)) = owned_alias(&indent.stmt, &owned) {
+            owned.aliases.insert(alias, owner);
+            remove.insert(index);
             continue;
         }
         rewrite_owned_stmt(&mut indent.stmt, &owned);
@@ -139,23 +241,103 @@ fn rewrite_pointer_decl(stmt: &mut Stmt, plan: &Plan) {
         return;
     }
     *mutable = true;
-    *ty = Some(Type::Generic {
-        name: "Box".into(),
-        args: vec![plan.elem_ty.clone()],
-    });
-    *init = Some(box_new(&plan.elem_ty));
+    match plan.kind {
+        HeapOwnershipKind::ScalarBox => {
+            *ty = Some(Type::Generic {
+                name: "Box".into(),
+                args: vec![plan.elem_ty.clone()],
+            });
+            *init = Some(box_new(&plan.elem_ty));
+        }
+        HeapOwnershipKind::VecBuffer => {
+            *ty = Some(Type::Generic {
+                name: "Vec".into(),
+                args: vec![plan.elem_ty.clone()],
+            });
+            *init = Some(vec_repeat(
+                plan.init.clone(),
+                plan.count
+                    .clone()
+                    .unwrap_or_else(|| Expr::Value(RustValue::I64(0))),
+                &plan.elem_ty,
+            ));
+        }
+    }
 }
 
-fn rewrite_owned_stmt(stmt: &mut Stmt, owned: &BTreeSet<&str>) {
+fn owned_alias(stmt: &Stmt, owned: &OwnedHeap) -> Option<(String, String)> {
+    let Stmt::Let {
+        name,
+        init: Some(Expr::Var(source)),
+        ..
+    } = stmt
+    else {
+        return None;
+    };
+    let owner = owned.owner_for(source.as_str())?;
+    Some((name.clone(), owner))
+}
+
+fn calloc_count_stmt(body: &[IndentStmt], allocation_stmt: Option<usize>) -> Option<usize> {
+    let allocation_stmt = allocation_stmt?;
+    let count_stmt = allocation_stmt.checked_sub(2)?;
+    let Stmt::Let {
+        name: count_name,
+        init: Some(_),
+        ..
+    } = &body.get(count_stmt)?.stmt
+    else {
+        return None;
+    };
+    let Stmt::Let {
+        init: Some(Expr::Unsafe(block)),
+        ..
+    } = &body.get(allocation_stmt)?.stmt
+    else {
+        return None;
+    };
+    let Some(Expr::Call { func, args }) = block.tail.as_deref() else {
+        return None;
+    };
+    if !matches!(&**func, Expr::Var(name) if name.as_str() == "calloc") || args.len() != 2 {
+        return None;
+    }
+    (size_arg_name(&args[0]) == Some(count_name.as_str())).then_some(count_stmt)
+}
+
+fn size_arg_name(expr: &Expr) -> Option<&str> {
+    match expr {
+        Expr::Var(name) => Some(name.as_str()),
+        Expr::Cast { expr, .. } => size_arg_name(expr),
+        _ => None,
+    }
+}
+
+fn realloc_stmt(pointer_name: &str, realloc: &ReallocPlan, init: &Expr) -> Stmt {
+    match realloc.resize {
+        HeapResizeKind::Shrink => Stmt::Expr(Expr::MethodCall {
+            recv: Box::new(Expr::Var(pointer_name.to_string().into())),
+            method: "truncate".into(),
+            args: vec![usize_expr(realloc.count.clone())],
+        }),
+        HeapResizeKind::Grow | HeapResizeKind::SameOrUnknown => Stmt::Expr(Expr::MethodCall {
+            recv: Box::new(Expr::Var(pointer_name.to_string().into())),
+            method: "resize".into(),
+            args: vec![usize_expr(realloc.count.clone()), init.clone()],
+        }),
+    }
+}
+
+fn rewrite_owned_stmt(stmt: &mut Stmt, owned: &OwnedHeap) {
     match stmt {
-        Stmt::Unsafe { body }
-            if body.tail.is_none()
-                && body.stmts.len() == 1
-                && stmt_can_leave_unsafe(&body.stmts[0].stmt, owned) =>
-        {
+        Stmt::Unsafe { body } if body.tail.is_none() && body.stmts.len() == 1 => {
             let mut replacement = body.stmts[0].stmt.clone();
             rewrite_owned_stmt(&mut replacement, owned);
-            *stmt = replacement;
+            if stmt_can_leave_unsafe(&replacement, owned) {
+                *stmt = replacement;
+            } else if let Stmt::Unsafe { body } = stmt {
+                body.stmts[0].stmt = replacement;
+            }
         }
         Stmt::Unsafe { body } => rewrite_owned_block(body, owned),
         Stmt::Block(body) | Stmt::While { body, .. } => rewrite_owned_block(body, owned),
@@ -203,26 +385,26 @@ fn rewrite_owned_stmt(stmt: &mut Stmt, owned: &BTreeSet<&str>) {
     }
 }
 
-fn rewrite_owned_body(body: &mut [IndentStmt], owned: &BTreeSet<&str>) {
+fn rewrite_owned_body(body: &mut [IndentStmt], owned: &OwnedHeap) {
     for indent in body {
         rewrite_owned_stmt(&mut indent.stmt, owned);
     }
 }
 
-fn rewrite_owned_block(block: &mut Block, owned: &BTreeSet<&str>) {
+fn rewrite_owned_block(block: &mut Block, owned: &OwnedHeap) {
     rewrite_owned_body(&mut block.stmts, owned);
     if let Some(tail) = &mut block.tail {
         rewrite_owned_expr(tail, owned);
     }
 }
 
-fn rewrite_owned_expr(expr: &mut Expr, owned: &BTreeSet<&str>) {
-    if let Some(replacement) = owned_unsafe_tail(expr, owned) {
+fn rewrite_owned_expr(expr: &mut Expr, owned: &OwnedHeap) {
+    if let Some(replacement) = owned_heap_access(expr, owned) {
         *expr = replacement;
         return;
     }
     walk::exprs_mut_with(expr, &mut |expr| {
-        if let Some(replacement) = owned_unsafe_tail(expr, owned) {
+        if let Some(replacement) = owned_heap_access(expr, owned) {
             *expr = replacement;
             return false;
         }
@@ -230,7 +412,7 @@ fn rewrite_owned_expr(expr: &mut Expr, owned: &BTreeSet<&str>) {
     });
 }
 
-fn stmt_can_leave_unsafe(stmt: &Stmt, owned: &BTreeSet<&str>) -> bool {
+fn stmt_can_leave_unsafe(stmt: &Stmt, owned: &OwnedHeap) -> bool {
     match stmt {
         Stmt::Assign { target, value } => {
             expr_can_leave_unsafe(target, owned) && expr_can_leave_unsafe(value, owned)
@@ -243,39 +425,116 @@ fn stmt_can_leave_unsafe(stmt: &Stmt, owned: &BTreeSet<&str>) -> bool {
     }
 }
 
-fn expr_can_leave_unsafe(expr: &Expr, owned: &BTreeSet<&str>) -> bool {
+fn expr_can_leave_unsafe(expr: &Expr, owned: &OwnedHeap) -> bool {
     let mut ok = true;
     crate::fixups::facts::walk::exprs(expr, &mut |expr| {
-        if matches!(expr, Expr::Unsafe(_)) && owned_unsafe_tail(expr, owned).is_none() {
+        if matches!(expr, Expr::Unsafe(_)) && owned_heap_access(expr, owned).is_none() {
             ok = false;
         }
     });
     ok
 }
 
-fn owned_unsafe_tail(expr: &Expr, owned: &BTreeSet<&str>) -> Option<Expr> {
-    let Expr::Unsafe(block) = expr else {
-        return None;
-    };
-    if !block.stmts.is_empty() {
-        return None;
-    }
-    let tail = block.tail.as_deref()?;
-    if owned_deref(tail, owned) {
-        Some(tail.clone())
-    } else {
-        None
+fn owned_heap_access(expr: &Expr, owned: &OwnedHeap) -> Option<Expr> {
+    match expr {
+        Expr::Unsafe(block) if block.stmts.is_empty() => {
+            heap_deref_replacement(block.tail.as_deref()?, owned)
+        }
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr,
+        } => pointer_replacement(expr, owned),
+        _ => None,
     }
 }
 
-fn owned_deref(expr: &Expr, owned: &BTreeSet<&str>) -> bool {
-    matches!(
+fn heap_deref_replacement(expr: &Expr, owned: &OwnedHeap) -> Option<Expr> {
+    let Expr::Unary {
+        op: UnaryOp::Deref,
         expr,
-        Expr::Unary {
-            op: UnaryOp::Deref,
-            expr
-        } if matches!(&**expr, Expr::Var(name) if owned.contains(name.as_str()))
-    )
+    } = expr
+    else {
+        return None;
+    };
+    pointer_replacement(expr, owned)
+}
+
+fn pointer_replacement(expr: &Expr, owned: &OwnedHeap) -> Option<Expr> {
+    match expr {
+        Expr::Var(name) => {
+            let owner = owned.owner_for(name.as_str())?;
+            if owned.kind_for_owner(&owner)? != HeapOwnershipKind::ScalarBox {
+                return None;
+            }
+            Some(Expr::Unary {
+                op: UnaryOp::Deref,
+                expr: Box::new(Expr::Var(owner.into())),
+            })
+        }
+        Expr::Unsafe(block) if block.stmts.is_empty() => {
+            pointer_replacement(block.tail.as_deref()?, owned)
+        }
+        Expr::MethodCall { recv, method, args } if method == "add" && args.len() == 1 => {
+            let Expr::Var(base) = recv.as_ref() else {
+                return None;
+            };
+            let owner = owned.owner_for(base.as_str())?;
+            if owned.kind_for_owner(&owner)? != HeapOwnershipKind::VecBuffer {
+                return None;
+            }
+            Some(Expr::Index {
+                base: Box::new(Expr::Var(owner.into())),
+                index: Box::new(args[0].clone()),
+            })
+        }
+        _ => None,
+    }
+}
+
+fn init_for_fact(fact: &HeapOwnershipFact) -> Option<Expr> {
+    match fact.kind {
+        HeapOwnershipKind::ScalarBox => Some(default_value(&fact.elem_ty)),
+        HeapOwnershipKind::VecBuffer => match fact.read_safety {
+            HeapReadSafety::ZeroInitialized | HeapReadSafety::ReadsAfterWrites => {
+                Some(default_value(&fact.elem_ty))
+            }
+            HeapReadSafety::MayReadUninitialized => None,
+        },
+    }
+}
+
+fn count_for_extent(extent: &HeapExtent) -> Option<Expr> {
+    match extent {
+        HeapExtent::Scalar => Some(Expr::Value(RustValue::I64(1))),
+        HeapExtent::Elements { count } => Some(count.clone()),
+        HeapExtent::Unknown => None,
+    }
+}
+
+fn vec_repeat(elem: Expr, count: Expr, elem_ty: &Type) -> Expr {
+    Expr::MethodCallGeneric {
+        recv: Box::new(Expr::MethodCall {
+            recv: Box::new(Expr::Call {
+                func: Box::new(Expr::Var("std::iter::repeat".into())),
+                args: vec![elem],
+            }),
+            method: "take".into(),
+            args: vec![usize_expr(count)],
+        }),
+        method: "collect".into(),
+        type_args: vec![Type::Generic {
+            name: "Vec".into(),
+            args: vec![elem_ty.clone()],
+        }],
+        args: Vec::new(),
+    }
+}
+
+fn usize_expr(expr: Expr) -> Expr {
+    Expr::Cast {
+        expr: Box::new(expr),
+        ty: Type::Prim(Prim::Usize),
+    }
 }
 
 fn box_new(ty: &Type) -> Expr {
