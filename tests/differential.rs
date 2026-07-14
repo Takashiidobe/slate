@@ -753,8 +753,13 @@ fn memchr_calls_use_iter_position_when_source_is_iterable() {
 
     assert!(rust.contains("buf.as_slice().iter().position("));
     assert!(rust.contains("(*__slate_byte as u8) == ((_v1 as i32) as u8)"));
+    assert!(rust.contains("let _v6 = buf.as_slice().iter().position("));
+    assert!(rust.contains("let _v14: bool = _v6.is_none();"));
     assert!(rust.contains("Some(3).map_or(std::ptr::null_mut()"));
     assert!(rust.contains("word.as_mut_ptr().add(__slate_index)"));
+    assert!(!rust.contains("let mut miss"));
+    assert!(!rust.contains("miss = _v6 as *mut u8"));
+    assert!(!rust.contains("miss == std::ptr::null_mut()"));
     assert!(!rust.contains("fn __slate_memchr("));
     assert!(!rust.contains("from_raw_parts"));
     assert!(!rust.contains("while i < n"));
