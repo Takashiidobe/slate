@@ -7,7 +7,7 @@ use crate::fixups::facts::{
     PathSegment, SignatureId,
 };
 use crate::rust_ast::{
-    Block, Expr, ExternDecl, FnParam, IndentStmt, Item, Param, Pattern, Program, Stmt, Type,
+    Block, Expr, ExternDecl, FnParam, IndentStmt, Item, Pattern, Program, Stmt, Type,
 };
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -50,16 +50,6 @@ fn collect_signatures(program: &Program, facts: &FixupFacts) -> Vec<CallSignatur
                     f.name.clone(),
                     CallSignatureSource::Function(function),
                     params_from_fn_params(&f.params),
-                    false,
-                    f.ret.clone(),
-                );
-            }
-            Item::Func(f) => {
-                push_signature(
-                    &mut signatures,
-                    f.name.clone(),
-                    CallSignatureSource::FuncItem { item_index },
-                    params_from_params(&f.params),
                     false,
                     f.ret.clone(),
                 );
@@ -110,14 +100,6 @@ fn collect_cfg_signature(
                 );
             }
         }
-        Item::Func(f) => push_signature(
-            signatures,
-            f.name.clone(),
-            CallSignatureSource::FuncItem { item_index },
-            params_from_params(&f.params),
-            false,
-            f.ret.clone(),
-        ),
         Item::ExternBlock { decls, .. } => {
             for (decl_index, decl) in decls.iter().enumerate() {
                 let ExternDecl::Fn(f) = decl else {
@@ -162,18 +144,6 @@ fn push_signature(
 }
 
 fn params_from_fn_params(params: &[FnParam]) -> Vec<CallParamFact> {
-    params
-        .iter()
-        .enumerate()
-        .map(|(index, param)| CallParamFact {
-            index,
-            name: param.name.clone(),
-            ty: param.ty.clone(),
-        })
-        .collect()
-}
-
-fn params_from_params(params: &[Param]) -> Vec<CallParamFact> {
     params
         .iter()
         .enumerate()
@@ -663,9 +633,7 @@ mod tests {
     use super::*;
     use crate::fixups::facts;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{
-        Block, Expr, ExternDecl, ExternFnDecl, Func, Item, Param, Program, Stmt, Type,
-    };
+    use crate::rust_ast::{Expr, ExternDecl, ExternFnDecl, Item, Program, Stmt, Type};
 
     fn analyzed(items: Vec<Item>) -> facts::FixupFacts {
         facts::analyze(Program { items }).facts
@@ -707,18 +675,9 @@ mod tests {
     }
 
     #[test]
-    fn records_function_func_and_extern_signatures() {
+    fn records_function_and_extern_signatures() {
         let facts = analyzed(vec![
             Item::Fn(func(vec![param("x", "i32")], Some("i32"), vec![])),
-            Item::Func(Func {
-                name: "legacy".into(),
-                params: vec![Param {
-                    name: "p".into(),
-                    ty: Type::parse("*mut i8"),
-                }],
-                ret: None,
-                body: Block::default(),
-            }),
             extern_fn("printf", vec![("fmt", "*mut i8")], true, Some("i32")),
         ]);
 
@@ -731,18 +690,11 @@ mod tests {
         assert_eq!(f.params[0].ty.render(), "i32");
         assert_eq!(f.ret.as_ref().unwrap().render(), "i32");
 
-        let legacy = signature(&facts, "legacy");
-        assert!(matches!(
-            legacy.source,
-            CallSignatureSource::FuncItem { item_index: 1 }
-        ));
-        assert!(!legacy.variadic);
-
         let printf = signature(&facts, "printf");
         assert!(matches!(
             printf.source,
             CallSignatureSource::Extern {
-                item_index: 2,
+                item_index: 1,
                 decl_index: 0
             }
         ));
