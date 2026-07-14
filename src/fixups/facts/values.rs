@@ -208,6 +208,7 @@ impl<'a> Collector<'a> {
             Expr::Value(value) => values_for_rust_value(value),
             Expr::Str(s) => values_for_string(s),
             Expr::ByteStr(bytes) => values_for_bytes(bytes),
+            Expr::CStr(bytes) => BTreeSet::from([ConstValue::CStringBytes(bytes.clone())]),
             Expr::Var(name) => self
                 .binding_for_name(name.as_str())
                 .and_then(|binding| self.values_by_binding.get(&binding).cloned())

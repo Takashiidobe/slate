@@ -518,6 +518,7 @@ pub enum Expr {
     Str(String),
     HexFloat(String),
     ByteStr(Vec<u8>),
+    CStr(Vec<u8>),
     Var(Ident),
     Unary {
         op: UnaryOp,
@@ -870,6 +871,7 @@ impl Expr {
             | Expr::Str(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
+            | Expr::CStr(_)
             | Expr::Var(_)
             | Expr::Path(_) => false,
             Expr::Unary { expr, .. }
