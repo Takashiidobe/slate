@@ -92,7 +92,15 @@ fn library_project_creates_cargo_crate_without_main() {
     let smoke_rs =
         std::fs::read_to_string(crate_dir.join("tests/run_smoke.rs")).expect("read run_smoke.rs");
     assert!(smoke_rs.contains("use slate_crate::types::shared_mode_t;"));
+    assert!(smoke_rs.contains("use slate_crate::math::square;"));
+    assert!(smoke_rs.contains("use slate_crate::state::bump;"));
+    assert!(!smoke_rs.contains("fn square"));
+    assert!(!smoke_rs.contains("fn bump"));
     assert!(!smoke_rs.contains("enum shared_mode_t"));
+    let manifest = std::fs::read_to_string(crate_dir.join("Cargo.toml")).expect("read manifest");
+    assert!(manifest.contains("[[test]]"));
+    assert!(manifest.contains("name = \"run_smoke\""));
+    assert!(manifest.contains("harness = false"));
 
     let check = std::process::Command::new("cargo")
         .args(["check", "--quiet", "--lib", "--manifest-path"])
@@ -113,6 +121,16 @@ fn library_project_creates_cargo_crate_without_main() {
         check_tests.status.success(),
         "generated integration tests should type-check:\n{}",
         String::from_utf8_lossy(&check_tests.stderr)
+    );
+    let run_tests = std::process::Command::new("cargo")
+        .args(["test", "--quiet", "--tests", "--manifest-path"])
+        .arg(crate_dir.join("Cargo.toml"))
+        .output()
+        .expect("cargo run generated tests");
+    assert!(
+        run_tests.status.success(),
+        "generated integration tests should run:\n{}",
+        String::from_utf8_lossy(&run_tests.stderr)
     );
 }
 
