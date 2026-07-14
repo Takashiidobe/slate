@@ -18,6 +18,7 @@ pub(super) mod ptr_len;
 pub(super) mod retval;
 pub(super) mod slice_index;
 pub(super) mod strings;
+pub(super) mod temp_chains;
 pub(super) mod values;
 pub(super) mod walk;
 
@@ -60,6 +61,7 @@ pub(super) struct FixupFacts {
     pub(super) loop_shapes: Vec<LoopShapeFact>,
     pub(super) loop_shape_rejections: Vec<LoopShapeRejectionFact>,
     pub(super) retval_collapses: Vec<RetvalCollapseFact>,
+    pub(super) temp_chains: Vec<TempChainFact>,
     pub(super) relations: Vec<FactRelation>,
 }
 
@@ -149,6 +151,15 @@ pub(super) struct RetvalCollapseFact {
     pub(super) return_path: AstPath,
     pub(super) value_path: AstPath,
     pub(super) remove_paths: Vec<AstPath>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct TempChainFact {
+    pub(super) function: FunctionId,
+    pub(super) binding: BindingId,
+    pub(super) producer_path: AstPath,
+    pub(super) consumer_path: AstPath,
+    pub(super) dependencies: Vec<BindingId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1121,6 +1132,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     control_flow::collect_facts(&program, &mut collector.facts);
     places::collect_facts(&program, &mut collector.facts);
     retval::collect_facts(&program, &mut collector.facts);
+    temp_chains::collect_facts(&program, &mut collector.facts);
     values::collect_facts(&program, &mut collector.facts);
     calls::collect_facts(&program, &mut collector.facts);
     casts::collect_facts(&program, &mut collector.facts);
