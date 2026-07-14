@@ -41,7 +41,6 @@ pub enum Item {
     Record(RecordDef),
     Struct(StructDef),
     Impl(ImplBlock),
-    /// A `#[cfg(..)]`-gated item: the predicate plus the item it guards.
     Cfg {
         cfg: Cfg,
         item: Box<Item>,
@@ -54,9 +53,6 @@ pub struct Comment {
     pub lines: Vec<String>,
 }
 
-/// A `cfg(..)` predicate, rendered as the inside of a `#[cfg(..)]` attribute.
-/// `Flag` is a bare atom (`windows`, `debug_assertions`); `Opt` is a `key =
-/// "value"` pair (`target_arch = "x86_64"`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Cfg {
     Flag(String),
@@ -72,8 +68,6 @@ impl Cfg {
     }
 }
 
-/// A struct definition richer than [`RecordDef`]: attributes, generics, and a
-/// tuple-or-named body, none of which `RecordDef` can express.
 #[derive(Debug, Clone)]
 pub struct StructDef {
     pub attrs: Vec<Attr>,
@@ -88,7 +82,6 @@ pub enum StructFields {
     Named(Vec<(String, Type)>),
 }
 
-/// An item's visibility modifier. `Private` renders no keyword.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Visibility {
     Private,
@@ -104,7 +97,6 @@ impl Visibility {
     }
 }
 
-/// A crate-level inner attribute (`#![..]`).
 #[derive(Debug, Clone)]
 pub enum CrateAttr {
     Allow(Vec<Lint>),
@@ -489,8 +481,6 @@ impl std::fmt::Display for Ident {
     }
 }
 
-/// A `::`-separated path (`crate::foo::bar`). Aliases (`use x as y`) are not
-/// modeled yet; add them to codegen when a path actually needs one.
 #[derive(Debug, Clone)]
 pub struct Path {
     pub segments: Vec<Ident>,
