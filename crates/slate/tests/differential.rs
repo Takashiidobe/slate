@@ -401,8 +401,7 @@ fn main_retval_boilerplate_is_collapsed() {
 
     support::translate(&c_src, &generated).expect("translate add fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated add rust");
-    assert!(rust.contains("fn main() -> std::process::ExitCode"));
-    assert!(rust.contains("return std::process::ExitCode::from((0 as i32) as u8);"));
+    assert!(rust.contains("fn main() {"));
     assert!(!rust.contains("std::process::exit(0 as i32);"));
     assert!(!rust.contains("__retval"));
     assert!(!rust.contains("let _v14: i32 ="));

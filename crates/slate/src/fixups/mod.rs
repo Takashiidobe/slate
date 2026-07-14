@@ -168,7 +168,7 @@ pub fn apply(program: Program) -> Program {
     rewrite::c_strings::fixup(&mut program, &facts);
     for item in &mut program.items {
         if let Item::Fn(f) = item {
-            rewrite::main_exit_return::fixup(f);
+            rewrite::main_zero_exit::fixup(f);
         }
     }
     program
