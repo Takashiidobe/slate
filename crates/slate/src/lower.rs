@@ -5,10 +5,10 @@ use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
     AtomicOrdering, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType, CrateAttr, Derive,
-    EnumConst, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam, GenericParam,
-    Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint, MatchArm, Method, Path, Pattern,
-    Prim, Program, RecordDef, Repr, RustValue, StdTrait, Stmt, StructDef, StructFields, TraitBound,
-    Type, UnaryOp, Visibility,
+    EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam,
+    GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint, MatchArm, Method,
+    Path, Pattern, Prim, Program, RecordDef, Repr, RustValue, StdTrait, Stmt, StructDef,
+    StructFields, TraitBound, Type, UnaryOp, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -28,8 +28,12 @@ pub struct ProjectInfo {
     pub child_modules: Vec<String>,
     /// records emitted by a shared module rather than by each generated module.
     pub shared_records: BTreeSet<String>,
+    /// enums emitted by a shared module rather than by each generated module.
+    pub shared_enums: BTreeSet<String>,
     /// module name that owns shared record definitions.
     pub shared_type_module: Option<String>,
+    /// root segment for shared type imports; defaults to `crate`.
+    pub shared_type_crate: Option<String>,
     /// emit function and global definitions as `pub` so other modules can import them.
     pub emit_pub: bool,
 }
@@ -78,6 +82,11 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         .iter()
         .map(|record| (sanitize_ident(&record.name).into_string(), record.clone()))
         .collect();
+    let enums: BTreeMap<String, crate::c_ast::Enum> = c
+        .enums
+        .iter()
+        .map(|enm| (sanitize_ident(&enm.name).into_string(), enm.clone()))
+        .collect();
     for record in &anon_records {
         records
             .entry(sanitize_ident(&record.name).into_string())
@@ -87,6 +96,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         ctx,
         aliases: cir.aliases.clone(),
         records,
+        enums,
         anon_records,
         globals: BTreeMap::new(),
         extern_globals: BTreeMap::new(),
@@ -107,18 +117,44 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
     lowerer.lower_module(cir, c)
 }
 
-pub fn lower_shared_records(records: &[crate::c_ast::Record]) -> Program {
+pub fn lower_shared_types(
+    records: &[crate::c_ast::Record],
+    enums: &[crate::c_ast::Enum],
+) -> Program {
     let items = std::iter::once(Item::CrateAttrs(vec![CrateAttr::Allow(vec![
         Lint::DeadCode,
         Lint::Unused,
         Lint::NonSnakeCase,
         Lint::NonUpperCaseGlobals,
     ])]))
+    .chain(
+        enums
+            .iter()
+            .filter_map(|enm| lower_enum_def(enm, Visibility::Pub).map(Item::Enum)),
+    )
     .chain(records.iter().filter_map(|record| {
         lower_record_def(record, Visibility::Pub, Visibility::Pub, true).map(Item::Record)
     }))
     .collect();
     Program { items }
+}
+
+fn lower_enum_def(enm: &crate::c_ast::Enum, vis: Visibility) -> Option<EnumDef> {
+    if enm.variants.is_empty() {
+        return None;
+    }
+    Some(EnumDef {
+        vis,
+        name: sanitize_ident(&enm.name).into_string(),
+        variants: enm
+            .variants
+            .iter()
+            .map(|variant| EnumConst {
+                name: sanitize_ident(&variant.name).into_string(),
+                value: variant.value,
+            })
+            .collect(),
+    })
 }
 
 fn lower_record_def(
@@ -149,6 +185,7 @@ struct Lowerer<'a> {
     ctx: &'a mut Ctx,
     aliases: BTreeMap<String, String>,
     records: BTreeMap<String, crate::c_ast::Record>,
+    enums: BTreeMap<String, crate::c_ast::Enum>,
     /// Function-local anonymous record types recovered from the CIR (libyaml's
     /// STACK/QUEUE macro locals). Numbered per-TU, so emitted per-module rather
     /// than into the shared type module.
@@ -181,6 +218,7 @@ struct Lowerer<'a> {
 struct FunctionLowerer<'a, 'b> {
     parent: &'a mut Lowerer<'b>,
     values: BTreeMap<String, Val>,
+    const_int_values: BTreeMap<String, i128>,
     slots: BTreeMap<String, String>,
     slot_types: BTreeMap<String, Type>,
     member_ptrs: BTreeMap<String, MemberPtr>,
@@ -232,6 +270,7 @@ struct SwitchCase<'a> {
 struct MemberPtr {
     base: Expr,
     field: String,
+    field_ty: Option<Type>,
     unsafe_access: bool,
 }
 
@@ -287,6 +326,10 @@ impl<'a> Lowerer<'a> {
         ])])];
 
         for enm in &c.enums {
+            let name = sanitize_ident(&enm.name).into_string();
+            if self.project.shared_enums.contains(&name) {
+                continue;
+            }
             if let Some(item) = self.lower_enum(enm) {
                 items.push(item);
             }
@@ -505,10 +548,20 @@ impl<'a> Lowerer<'a> {
             })
             .collect();
         if let Some(module) = &self.project.shared_type_module {
+            let root = self.project.shared_type_crate.as_deref().unwrap_or("crate");
+            for enm in &self.project.shared_enums {
+                wiring.push(Item::Use {
+                    path: Path::new([
+                        Ident::from(root),
+                        Ident::from(module.as_str()),
+                        Ident::from(enm.as_str()),
+                    ]),
+                });
+            }
             for record in &self.project.shared_records {
                 wiring.push(Item::Use {
                     path: Path::new([
-                        Ident::from("crate"),
+                        Ident::from(root),
                         Ident::from(module.as_str()),
                         Ident::from(record.as_str()),
                     ]),
@@ -655,18 +708,7 @@ impl<'a> Lowerer<'a> {
     }
 
     fn lower_enum(&mut self, enm: &crate::c_ast::Enum) -> Option<Item> {
-        if enm.variants.is_empty() {
-            return None;
-        }
-        let consts = enm
-            .variants
-            .iter()
-            .map(|variant| EnumConst {
-                name: sanitize_ident(&variant.name).into_string(),
-                value: variant.value,
-            })
-            .collect();
-        Some(Item::Enum(consts))
+        lower_enum_def(enm, Visibility::Private).map(Item::Enum)
     }
 
     fn lower_record(&mut self, record: &crate::c_ast::Record) -> Option<Item> {
@@ -752,6 +794,7 @@ impl<'a> Lowerer<'a> {
         let mut f = FunctionLowerer {
             parent: self,
             values: BTreeMap::new(),
+            const_int_values: BTreeMap::new(),
             slots: BTreeMap::new(),
             slot_types: BTreeMap::new(),
             member_ptrs: BTreeMap::new(),
@@ -988,6 +1031,14 @@ impl<'a> Lowerer<'a> {
     fn default_value_expr(&self, ty: &Type) -> Expr {
         match ty {
             Type::Custom(name) => {
+                if let Some(enm) = self.enums.get(name)
+                    && let Some(variant) = enm.variants.first()
+                {
+                    return Expr::Path(Path::new([
+                        Ident::from(name.as_str()),
+                        Ident::from(sanitize_ident(&variant.name).as_str()),
+                    ]));
+                }
                 if let Some(record) = self.records.get(name) {
                     match record.kind {
                         RecordKind::Struct => {
@@ -1038,6 +1089,14 @@ impl<'a> Lowerer<'a> {
             },
             _ => default_value_for_type(ty),
         }
+    }
+
+    fn type_is_enum(&self, ty: &Type) -> bool {
+        matches!(ty, Type::Custom(name) if self.enums.contains_key(name))
+    }
+
+    fn type_is_enum_ptr(&self, ty: &Type) -> bool {
+        matches!(ty, Type::Ptr { inner, .. } if self.type_is_enum(inner))
     }
 
     fn render_const_value_expr(&self, ty: &Type, raw: &str) -> Option<Expr> {
@@ -1112,6 +1171,18 @@ impl<'a> Lowerer<'a> {
             Some(Expr::ArrayLit(out))
         } else if raw.starts_with("#cir.zero") {
             Some(self.default_value_expr(ty))
+        } else if let Type::Custom(name) = ty
+            && let Some(enm) = self.enums.get(name)
+            && let Some(value) = parse_cir_int(raw)
+            && let Some(variant) = enm
+                .variants
+                .iter()
+                .find(|variant| i128::from(variant.value) == value)
+        {
+            Some(Expr::Path(Path::new([
+                Ident::from(name.as_str()),
+                Ident::from(sanitize_ident(&variant.name).as_str()),
+            ])))
         } else {
             parse_cir_scalar_expr(raw)
         }
@@ -1156,6 +1227,7 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
         CType::Array(inner, None) => ptr(inner),
         CType::Record(name) if name == "_IO_FILE" => Type::CLib(CLibType::File),
         CType::Record(name) => Type::Custom(sanitize_ident(name).into_string()),
+        CType::Enum(name) => Type::Custom(sanitize_ident(name).into_string()),
     }
 }
 
@@ -1167,6 +1239,7 @@ fn ctype_uses_long_double(ty: &crate::c_ast::CType) -> bool {
         CType::FuncPtr { ret, params } => {
             ctype_uses_long_double(ret) || params.iter().any(ctype_uses_long_double)
         }
+        CType::Enum(_) => false,
         _ => false,
     }
 }
@@ -1324,7 +1397,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
         let value_ty = operand_types.first().copied();
-        let value = if value_ty.is_some_and(is_cir_function_pointer_type) {
+        let mut value = if value_ty.is_some_and(is_cir_function_pointer_type) {
             self.function_pointer_operand_expr(&op.operands[0])
         } else if value_ty.is_some_and(|ty| ty.starts_with("!cir.ptr<")) {
             self.pointer_operand_expr(&op.operands[0])
@@ -1332,6 +1405,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.operand_expr(&op.operands[0])
         };
         let ptr = &op.operands[1];
+        value = self.coerce_store_value(ptr, value, &op.operands[0]);
         if !attr_bool(op, "is_volatile") && self.try_atomic_store(op, ptr, value_ty, value.clone())
         {
             return;
@@ -1448,7 +1522,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(ptr) = op.operands.first() else {
             return;
         };
-        let value = if attr_bool(op, "is_volatile") {
+        let mut value = if attr_bool(op, "is_volatile") {
             Self::unsafe_expr(Expr::Call {
                 func: Box::new(Expr::Path(Path::new(
                     ["std", "ptr", "read_volatile"].map(Ident::from),
@@ -1479,6 +1553,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 expr: Box::new(self.operand_expr(ptr)),
             })
         };
+        if let Some(member_ty) = self
+            .member_ptrs
+            .get(ptr)
+            .and_then(|member| member.field_ty.as_ref())
+            && let Some(result_ty) = op_result_type(op).map(|ty| self.parent.rust_type(ty))
+        {
+            if self.parent.type_is_enum(member_ty) && matches!(result_ty, Type::Prim(_)) {
+                value = Expr::Cast {
+                    expr: Box::new(value),
+                    ty: result_ty,
+                };
+            } else if self.parent.type_is_enum_ptr(member_ty)
+                && matches!(result_ty, Type::Ptr { .. })
+            {
+                value = Expr::Cast {
+                    expr: Box::new(value),
+                    ty: result_ty,
+                };
+            }
+        }
         self.materialize_expr(result, value, op_result_type(op));
     }
 
@@ -1537,6 +1631,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let raw = attr_str(op, "value").unwrap_or("");
         // MLIR may print a const as an attribute alias (e.g. `#false`); expand it.
         let raw = self.parent.aliases.get(raw).map_or(raw, String::as_str);
+        if let Some(value) = parse_cir_int(raw) {
+            self.const_int_values.insert(result.clone(), value);
+        }
         let result_ty = op_result_type(op);
         if let Some((re, im)) = parse_cir_const_complex(raw) {
             self.materialize_expr(
@@ -2265,6 +2362,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let base = self.place_or_deref_expr(base_ptr);
         let field = sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string();
+        let field_ty = self
+            .member_field_type(base_ptr, &field)
+            .or_else(|| self.member_field_type_from_op(op, &field));
         let unsafe_access = self.place_expr(base_ptr).is_none()
             || self.ptr_requires_unsafe(base_ptr)
             || self.op_base_is_union(op);
@@ -2273,9 +2373,88 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             MemberPtr {
                 base,
                 field,
+                field_ty,
                 unsafe_access,
             },
         );
+    }
+
+    fn coerce_store_value(&self, ptr: &str, value: Expr, value_operand: &str) -> Expr {
+        let Some(member) = self.member_ptrs.get(ptr) else {
+            return value;
+        };
+        let Some(field_ty) = &member.field_ty else {
+            return value;
+        };
+        if let Type::Custom(enum_name) = field_ty
+            && let Some(enm) = self.parent.enums.get(enum_name)
+        {
+            if let Some(value_int) = self.store_int_value(&value, value_operand)
+                && let Some(variant) = enm
+                    .variants
+                    .iter()
+                    .find(|variant| i128::from(variant.value) == value_int)
+            {
+                return Expr::Path(Path::new([
+                    Ident::from(enum_name.as_str()),
+                    Ident::from(sanitize_ident(&variant.name).as_str()),
+                ]));
+            }
+            return Self::unsafe_expr(Expr::Call {
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "mem", "transmute"].map(Ident::from),
+                ))),
+                args: vec![value],
+            });
+        }
+        if self.parent.type_is_enum_ptr(field_ty) {
+            return Expr::Cast {
+                expr: Box::new(value),
+                ty: field_ty.clone(),
+            };
+        }
+        value
+    }
+
+    fn store_int_value(&self, value: &Expr, value_operand: &str) -> Option<i128> {
+        expr_int_value(value).or_else(|| {
+            if let Some(value) = self.const_int_values.get(value_operand) {
+                return Some(*value);
+            }
+            let Val::Expr(expr) = self.values.get(value_operand)? else {
+                return None;
+            };
+            expr_int_value(expr)
+        })
+    }
+
+    fn member_field_type(&self, base_ptr: &str, field: &str) -> Option<Type> {
+        if let Some(Type::Custom(record_name)) = self.slot_types.get(base_ptr) {
+            return self.record_field_type_by_name(record_name, field);
+        }
+        if let Some(Type::Custom(record_name)) = self
+            .member_ptrs
+            .get(base_ptr)
+            .and_then(|member| member.field_ty.as_ref())
+        {
+            return self.record_field_type_by_name(record_name, field);
+        }
+        None
+    }
+
+    fn member_field_type_from_op(&self, op: &Op, field: &str) -> Option<Type> {
+        let base_ty = op_operand_types(op.ty.as_deref()?).first().copied()?;
+        let record_name = cir_ptr_pointee(base_ty).and_then(cir_record_name)?;
+        self.record_field_type_by_name(&sanitize_ident(record_name).into_string(), field)
+    }
+
+    fn record_field_type_by_name(&self, record_name: &str, field: &str) -> Option<Type> {
+        let record = self.parent.records.get(record_name)?;
+        record
+            .fields
+            .iter()
+            .find(|candidate| sanitize_ident(&candidate.name).as_str() == field)
+            .map(|candidate| c_type_to_type(&candidate.ty))
     }
 
     fn lower_set_bitfield(&mut self, op: &Op) {
@@ -4913,6 +5092,14 @@ fn default_value_for_type(ty: &Type) -> Expr {
         Type::Ptr { .. } => Expr::Value(RustValue::NullPtr),
         Type::FnPtr { .. } => Expr::Value(RustValue::None),
         _ => Expr::Value(RustValue::I64(0)),
+    }
+}
+
+fn expr_int_value(expr: &Expr) -> Option<i128> {
+    match expr {
+        Expr::Value(RustValue::I64(value)) => Some(i128::from(*value)),
+        Expr::Value(RustValue::I128(value)) => Some(*value),
+        _ => None,
     }
 }
 

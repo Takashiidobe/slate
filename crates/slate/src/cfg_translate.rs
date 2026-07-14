@@ -527,10 +527,7 @@ fn item_key(item: &Item) -> String {
                 .collect::<Vec<_>>()
                 .join("::")
         ),
-        Item::Enum(consts) => format!(
-            "enum:{}",
-            consts.first().map(|c| c.name.as_str()).unwrap_or_default()
-        ),
+        Item::Enum(e) => format!("enum:{}", e.name),
         Item::Record(r) => format!("record:{}", r.name),
         Item::Struct(s) => format!("struct:{}", s.name),
         Item::Impl(im) => format!("impl:{}", im.self_ty.render()),
