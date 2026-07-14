@@ -36,6 +36,8 @@ pub struct ProjectInfo {
     pub shared_type_crate: Option<String>,
     /// root segment for cross-module imports; defaults to `crate`.
     pub cross_module_crate: Option<String>,
+    /// function symbols whose generated Rust definitions require an unsafe caller.
+    pub unsafe_functions: BTreeSet<String>,
     /// emit function and global definitions as `pub` so other modules can import them.
     pub emit_pub: bool,
 }
@@ -43,6 +45,37 @@ pub struct ProjectInfo {
 /// CIR encodes external linkage as `linkage = 0`; a C `static` is nonzero.
 fn linkage_is_external(op: &Op) -> bool {
     attr_int(op, "linkage").unwrap_or(0) == 0
+}
+
+fn function_requires_unsafe_contract(op: &Op) -> bool {
+    let (params, _) = parse_function_type(attr_str(op, "function_type").unwrap_or(""));
+    if !params.iter().any(|ty| ty.starts_with("!cir.ptr<")) {
+        return false;
+    }
+
+    let mut ops = Vec::new();
+    collect_region_ops_recursive(op, &mut ops);
+    let mut local_ptrs = BTreeSet::new();
+    for op in ops {
+        if op.name == "cir.alloca" {
+            local_ptrs.extend(op.results.iter().cloned());
+        } else if matches!(op.name.as_str(), "cir.get_member" | "cir.get_element")
+            && op
+                .operands
+                .first()
+                .is_some_and(|base| local_ptrs.contains(base))
+        {
+            local_ptrs.extend(op.results.iter().cloned());
+        } else if matches!(op.name.as_str(), "cir.load" | "cir.store")
+            && op
+                .operands
+                .last()
+                .is_some_and(|ptr| !local_ptrs.contains(ptr))
+        {
+            return true;
+        }
+    }
+    false
 }
 
 pub fn defined_functions(module: &Module) -> Vec<String> {
@@ -68,6 +101,19 @@ pub fn defined_globals(module: &Module) -> Vec<String> {
                 && linkage_is_external(op)
         })
         .filter_map(|op| attr_str(op, "sym_name").map(|name| sanitize_ident(name).into_string()))
+        .collect()
+}
+
+pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
+    let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
+        return BTreeSet::new();
+    };
+    region_ops(module_op)
+        .iter()
+        .filter(|op| op.name == "cir.func" && !region_ops(op).is_empty() && linkage_is_external(op))
+        .filter(|op| function_requires_unsafe_contract(op))
+        .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
+        .filter(|name| name != "main")
         .collect()
 }
 
@@ -114,6 +160,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_memchr: std::cell::Cell::new(false),
         variadic_defs: BTreeSet::new(),
         project: project.clone(),
+        unsafe_functions: project.unsafe_functions.clone(),
         cross_uses: Vec::new(),
     };
     lowerer.lower_module(cir, c)
@@ -230,6 +277,7 @@ struct Lowerer<'a> {
     uses_memchr: std::cell::Cell<bool>,
     variadic_defs: BTreeSet<String>,
     project: ProjectInfo,
+    unsafe_functions: BTreeSet<String>,
     /// `use crate::<mod>::<sym>;` items for body-less decls resolved to a sibling.
     cross_uses: Vec<Item>,
 }
@@ -544,6 +592,8 @@ impl<'a> Lowerer<'a> {
                     .insert(attr_str(op, "sym_name").unwrap().to_string());
             }
         }
+        self.unsafe_functions
+            .extend(unsafe_defined_functions(module));
 
         for op in ops {
             if op.name != "cir.func" || region_ops(op).is_empty() {
@@ -818,7 +868,7 @@ impl<'a> Lowerer<'a> {
             None
         };
 
-        let (vis, unsafe_extern_c, ret, prelude) = if is_main {
+        let (vis, extern_c, ret, prelude) = if is_main {
             params.clear();
             (
                 Visibility::Private,
@@ -832,7 +882,7 @@ impl<'a> Lowerer<'a> {
             } else {
                 Visibility::Private
             };
-            let unsafe_extern_c = if is_variadic {
+            let extern_c = if is_variadic {
                 self.uses_c_variadic.set(true);
                 self.variadic_defs.insert(name.to_string());
                 true
@@ -840,9 +890,10 @@ impl<'a> Lowerer<'a> {
                 false
             };
             let ret = Some(self.rust_type(ret_ty.as_deref().unwrap_or("()")));
-            (vis, unsafe_extern_c, ret, Vec::<Stmt>::new())
+            (vis, extern_c, ret, Vec::<Stmt>::new())
         };
 
+        let unsafe_ = extern_c || self.unsafe_functions.contains(name);
         let mut f = FunctionLowerer {
             parent: self,
             values: BTreeMap::new(),
@@ -880,7 +931,8 @@ impl<'a> Lowerer<'a> {
         }
         Some(Item::Fn(FnDef {
             vis,
-            unsafe_extern_c,
+            unsafe_,
+            extern_c,
             name: name.to_string(),
             params,
             ret,
@@ -3021,6 +3073,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Self::unsafe_expr(call)
         } else if self.parent.externs.contains_key(&callee_name)
             || self.parent.variadic_defs.contains(&callee_name)
+            || self.parent.unsafe_functions.contains(&callee_name)
         {
             Self::unsafe_expr(call)
         } else {
@@ -4141,6 +4194,13 @@ fn region_ops(op: &Op) -> Vec<&Op> {
         .collect()
 }
 
+fn collect_region_ops_recursive<'a>(op: &'a Op, out: &mut Vec<&'a Op>) {
+    for child in region_ops(op) {
+        out.push(child);
+        collect_region_ops_recursive(child, out);
+    }
+}
+
 fn op_mentions_long_double(op: &Op) -> bool {
     op.ty
         .as_deref()
@@ -4711,7 +4771,8 @@ fn memchr_prelude() -> Item {
 
     Item::Fn(FnDef {
         vis: Visibility::Private,
-        unsafe_extern_c: false,
+        unsafe_: false,
+        extern_c: false,
         name: "__slate_memchr".into(),
         params: vec![
             FnParam {
