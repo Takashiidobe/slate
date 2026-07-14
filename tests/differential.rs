@@ -411,8 +411,11 @@ fn function_pointer_presence_checks_use_option_methods() {
     assert!(!rust.contains("!= None"));
     assert!(!rust.contains("== None"));
     assert!(!rust.contains("std::ptr::null_mut()"));
-    assert!(rust.contains("__retval = _v1.unwrap()(_v2);"));
+    assert!(rust.contains("return _v1.unwrap()(_v2);"));
+    assert!(rust.contains("return value;"));
     assert!(!rust.contains("let _v3: i32 = _v1.unwrap()(_v2);"));
+    assert!(!rust.contains("__retval = _v1.unwrap()(_v2);"));
+    assert!(!rust.contains("__retval = value;"));
 }
 
 #[test]
