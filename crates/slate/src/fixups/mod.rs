@@ -148,6 +148,8 @@ pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::ptr_len::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::slice_index::fixup(&mut program, &facts);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_copy::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_copy::prune_unused_externs(&mut program, &facts);
