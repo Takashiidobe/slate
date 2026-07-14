@@ -238,6 +238,7 @@ struct FunctionLowerer<'a, 'b> {
     parent: &'a mut Lowerer<'b>,
     values: BTreeMap<String, Val>,
     const_int_values: BTreeMap<String, i128>,
+    function_pointer_null_values: BTreeSet<String>,
     slots: BTreeMap<String, String>,
     slot_types: BTreeMap<String, Type>,
     member_ptrs: BTreeMap<String, MemberPtr>,
@@ -846,6 +847,7 @@ impl<'a> Lowerer<'a> {
             parent: self,
             values: BTreeMap::new(),
             const_int_values: BTreeMap::new(),
+            function_pointer_null_values: BTreeSet::new(),
             slots: BTreeMap::new(),
             slot_types: BTreeMap::new(),
             member_ptrs: BTreeMap::new(),
@@ -1705,7 +1707,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         if raw.starts_with("#cir.ptr<null>") {
-            self.materialize_expr(result, Expr::Value(RustValue::NullPtr), result_ty);
+            let value = if result_ty.is_some_and(is_cir_function_pointer_type) {
+                self.function_pointer_null_values.insert(result.clone());
+                Expr::Value(RustValue::None)
+            } else {
+                Expr::Value(RustValue::NullPtr)
+            };
+            self.materialize_expr(result, value, result_ty);
             return;
         }
         let value = if result_ty.is_some_and(is_long_double) {
@@ -2348,6 +2356,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
+        if let Some(expr) = self.lower_function_pointer_null_cmp(op) {
+            self.materialize_expr(result, expr, Some("!cir.bool"));
+            return;
+        }
         let lhs = self.operand_expr(&op.operands[0]);
         let rhs = self.operand_expr(&op.operands[1]);
         let cmp = match attr_int(op, "kind") {
@@ -2368,6 +2380,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             },
             Some("!cir.bool"),
         );
+    }
+
+    fn lower_function_pointer_null_cmp(&self, op: &Op) -> Option<Expr> {
+        let kind = attr_int(op, "kind")?;
+        let (nonnull_operand, method) = match (
+            self.is_function_pointer_null_operand(&op.operands[0]),
+            self.is_function_pointer_null_operand(&op.operands[1]),
+            kind,
+        ) {
+            (false, true, 4) => (&op.operands[0], "is_none"),
+            (false, true, 5) => (&op.operands[0], "is_some"),
+            (true, false, 4) => (&op.operands[1], "is_none"),
+            (true, false, 5) => (&op.operands[1], "is_some"),
+            _ => return None,
+        };
+        Some(Expr::MethodCall {
+            recv: Box::new(self.function_pointer_operand_expr(nonnull_operand)),
+            method: method.into(),
+            args: Vec::new(),
+        })
     }
 
     fn lower_get_global(&mut self, op: &Op) {
@@ -2431,6 +2463,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn coerce_store_value(&self, ptr: &str, value: Expr, value_operand: &str) -> Expr {
+        if self
+            .slot_types
+            .get(ptr)
+            .is_some_and(|ty| matches!(ty, Type::FnPtr { .. }))
+            && self.is_function_pointer_none_expr(&value)
+        {
+            return Expr::Value(RustValue::None);
+        }
         let Some(member) = self.member_ptrs.get(ptr) else {
             return value;
         };
@@ -2752,6 +2792,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         expr: Box::new(self.operand_expr(src)),
                         ty: Type::Prim(Prim::Usize),
                     }),
+                })
+            }
+            _ if result_ty == "!cir.bool" && is_cir_function_pointer_type(operand_ty) => {
+                Val::Expr(Expr::MethodCall {
+                    recv: Box::new(self.function_pointer_operand_expr(src)),
+                    method: "is_some".into(),
+                    args: Vec::new(),
                 })
             }
             _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(Expr::Binary {
@@ -3967,14 +4014,37 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn function_pointer_operand_expr(&self, operand: &str) -> Expr {
+        if self.function_pointer_null_values.contains(operand) {
+            return Expr::Value(RustValue::None);
+        }
         match self.values.get(operand) {
             Some(Val::Global(name)) if !self.parent.strings.contains_key(name) => Expr::Call {
                 func: Box::new(Expr::Var("Some".into())),
                 args: vec![Expr::Var(sanitize_ident(name))],
             },
+            Some(Val::Expr(expr)) if self.is_function_pointer_none_expr(expr) => {
+                Expr::Value(RustValue::None)
+            }
             Some(value) => value.to_expr(&self.parent.strings),
             None => self.operand_expr(operand),
         }
+    }
+
+    fn is_function_pointer_null_operand(&self, operand: &str) -> bool {
+        if self.function_pointer_null_values.contains(operand) {
+            return true;
+        }
+        matches!(
+            self.values.get(operand),
+            Some(Val::Expr(expr)) if self.is_function_pointer_none_expr(expr)
+        )
+    }
+
+    fn is_function_pointer_none_expr(&self, expr: &Expr) -> bool {
+        matches!(
+            expr,
+            Expr::Value(RustValue::None) | Expr::Value(RustValue::NullPtr)
+        )
     }
 
     fn call_arg_expr(&self, operand: &str, ty: &str) -> Expr {
