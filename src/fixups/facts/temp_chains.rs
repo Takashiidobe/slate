@@ -3,6 +3,7 @@ use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
     TempChainFact,
 };
+use crate::fixups::idents::expr_ident;
 use crate::rust_ast::{IndentStmt, Item, Program, Stmt};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -55,9 +56,11 @@ fn temp_chain_at(
     else {
         return None;
     };
-    if !is_temp_name(name) || !is_movable_pure_expr(function, facts, def_path) {
+    if !is_temp_name(name) {
         return None;
     }
+    let is_movable_pure = is_movable_pure_expr(function, facts, def_path);
+    let is_effectful = is_effectful_expr(function, facts, def_path);
     let producer_path = AstPath(def_path.to_vec());
     let binding = facts.binding_by_local_path(function, name, &producer_path)?;
     let def_use = facts.def_use(binding)?;
@@ -70,9 +73,16 @@ fn temp_chain_at(
     if consumer_index <= def_index || consumer_index >= body.len() {
         return None;
     }
-    if !(def_index + 1..consumer_index).all(|index| {
-        is_movable_pure_temp_let(function, facts, &body[index].stmt, producer_prefix, index)
-    }) {
+    if is_movable_pure {
+        if !(def_index + 1..consumer_index).all(|index| {
+            is_movable_pure_temp_let(function, facts, &body[index].stmt, producer_prefix, index)
+        }) {
+            return None;
+        }
+    } else if !(is_effectful
+        && consumer_index == def_index + 1
+        && immediate_effectful_consumer(&body[consumer_index].stmt, name))
+    {
         return None;
     }
     Some(TempChainFact {
@@ -112,6 +122,22 @@ fn is_movable_pure_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSe
     facts
         .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
         .is_some_and(|fact| fact.purity == Purity::MovablePure)
+}
+
+fn is_effectful_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    facts
+        .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
+        .is_some_and(|fact| fact.purity == Purity::Effectful)
+}
+
+fn immediate_effectful_consumer(stmt: &Stmt, name: &str) -> bool {
+    match stmt {
+        Stmt::Assign { target, value } => {
+            expr_ident(target) == Some("__retval") && expr_ident(value) == Some(name)
+        }
+        Stmt::Return(Some(expr)) => expr_ident(expr) == Some(name),
+        _ => false,
+    }
 }
 
 fn temp_dependencies(
@@ -302,6 +328,63 @@ mod tests {
                 PathSegment::UnsafeBody,
                 PathSegment::Stmt(0),
             ])
+        );
+    }
+
+    #[test]
+    fn records_immediate_effectful_return_slot_temp() {
+        let facts = analyzed(vec![
+            let_mut("__retval", "i32", int(0)),
+            temp("_v1", "i32", call("op", vec![var("value")])),
+            assign("__retval", var("_v1")),
+            Stmt::Return(Some(var("__retval"))),
+        ]);
+
+        let v1 = chain_for(&facts, "_v1");
+        assert_eq!(v1.producer_path, AstPath(vec![PathSegment::Stmt(1)]));
+        assert_eq!(v1.consumer_path, AstPath(vec![PathSegment::Stmt(2)]));
+    }
+
+    #[test]
+    fn records_immediate_effectful_return_temp() {
+        let facts = analyzed(vec![
+            temp("_v1", "i32", call("op", vec![var("value")])),
+            Stmt::Return(Some(var("_v1"))),
+        ]);
+
+        let v1 = chain_for(&facts, "_v1");
+        assert_eq!(v1.producer_path, AstPath(vec![PathSegment::Stmt(0)]));
+        assert_eq!(v1.consumer_path, AstPath(vec![PathSegment::Stmt(1)]));
+    }
+
+    #[test]
+    fn rejects_non_adjacent_effectful_temp() {
+        let facts = analyzed(vec![
+            temp("_v1", "i32", call("op", vec![var("value")])),
+            temp("_v2", "i32", int(1)),
+            assign("__retval", var("_v1")),
+        ]);
+
+        assert!(
+            !facts
+                .temp_chains
+                .iter()
+                .any(|fact| { facts.binding_name(fact.binding) == Some("_v1") })
+        );
+    }
+
+    #[test]
+    fn rejects_effectful_temp_into_non_return_slot_assignment() {
+        let facts = analyzed(vec![
+            temp("_v1", "i32", call("op", vec![var("value")])),
+            assign("value", var("_v1")),
+        ]);
+
+        assert!(
+            !facts
+                .temp_chains
+                .iter()
+                .any(|fact| { facts.binding_name(fact.binding) == Some("_v1") })
         );
     }
 }

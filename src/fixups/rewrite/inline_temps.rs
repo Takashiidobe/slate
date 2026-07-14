@@ -308,6 +308,64 @@ fn f() {
     }
 
     #[test]
+    fn inlines_immediate_effectful_temp_into_return_slot() {
+        let out = inlined(vec![
+            let_mut("__retval", "i32", int(0)),
+            temp("_v1", "i32", call("op", vec![var("value")])),
+            assign("__retval", var("_v1")),
+            Stmt::Return(Some(var("__retval"))),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let mut __retval: i32 = 0;
+    __retval = op(value);
+    return __retval;
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_immediate_effectful_temp_into_return() {
+        let out = inlined(vec![
+            temp("_v1", "i32", call("op", vec![var("value")])),
+            Stmt::Return(Some(var("_v1"))),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    return op(value);
+}
+"
+        );
+    }
+
+    #[test]
+    fn does_not_inline_non_adjacent_effectful_temp() {
+        let out = inlined(vec![
+            temp("_v1", "i32", call("op", vec![var("value")])),
+            temp("_v2", "i32", int(1)),
+            assign("__retval", var("_v1")),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let _v1: i32 = op(value);
+    let _v2: i32 = 1;
+    __retval = _v1;
+}
+"
+        );
+    }
+
+    #[test]
     fn does_not_cross_side_effecting_statement() {
         let out = inlined(vec![
             temp("_v0", "i32", var("a")),
