@@ -17,6 +17,7 @@ pub(super) mod printf;
 pub(super) mod ptr_len;
 pub(super) mod retval;
 pub(super) mod slice_index;
+pub(super) mod string_params;
 pub(super) mod strings;
 pub(super) mod temp_chains;
 pub(super) mod values;
@@ -47,6 +48,7 @@ pub(super) struct FixupFacts {
     pub(super) string_pointer_views: Vec<StringPointerViewFact>,
     pub(super) string_libc_uses: Vec<StringLibcUseFact>,
     pub(super) string_lift_plans: Vec<StringLiftPlanFact>,
+    pub(super) string_param_lifts: Vec<StringParamLiftFact>,
     pub(super) string_copy_rewrites: Vec<StringCopyRewriteFact>,
     pub(super) c_string_literals: Vec<CStringLiteralFact>,
     pub(super) heap_ownership: Vec<HeapOwnershipFact>,
@@ -398,6 +400,13 @@ pub(super) struct StringLiftPlanFact {
     pub(super) path: AstPath,
     pub(super) recovery: StringRecoveryCandidate,
     pub(super) remove_assignment: Option<AstPath>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct StringParamLiftFact {
+    pub(super) callee: FunctionId,
+    pub(super) param: BindingId,
+    pub(super) index: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1134,6 +1143,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     calls::collect_facts(&program, &mut collector.facts);
     casts::collect_facts(&program, &mut collector.facts);
     strings::collect_facts(&program, &mut collector.facts);
+    string_params::collect_facts(&program, &mut collector.facts);
     heap_ownership::collect_facts(&program, &mut collector.facts);
     printf::collect_facts(&program, &mut collector.facts);
     strings::collect_rewrite_facts(&program, &mut collector.facts);

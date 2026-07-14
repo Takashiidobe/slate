@@ -2,11 +2,11 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, ConstValue, FixupFacts, FunctionId, NulTermination,
-    PathSegment, StringBufferFact, StringBufferKind, StringBufferProvenance, StringBufferRejection,
-    StringCopyRewrite, StringCopyRewriteFact, StringLibcFunction, StringLibcUseFact,
-    StringLiftPlanFact, StringPointerViewFact, StringPointerViewKind, StringRecoveryCandidate,
-    ValueSubject,
+    AstPath, BindingId, BindingKind, CallCallee, CallSignatureSource, ConstValue, FixupFacts,
+    FunctionId, NulTermination, PathSegment, StringBufferFact, StringBufferKind,
+    StringBufferProvenance, StringBufferRejection, StringCopyRewrite, StringCopyRewriteFact,
+    StringLibcFunction, StringLibcUseFact, StringLiftPlanFact, StringPointerViewFact,
+    StringPointerViewKind, StringRecoveryCandidate, ValueSubject,
 };
 use crate::rust_ast::{
     Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
@@ -480,6 +480,20 @@ fn use_allowed(
     }) {
         return true;
     }
+    if facts.callsites.iter().any(|callsite| {
+        callsite.function == function
+            && path_starts_with(&use_path.0, &callsite.path.0)
+            && callsite.args.iter().any(|arg| {
+                paths_overlap(&use_path.0, &arg.path.0)
+                    && direct_callee_function(facts, callsite).is_some_and(|callee| {
+                        facts.string_param_lifts.iter().any(|lift| {
+                            lift.callee == callee && lift.index == arg.slot && lift.param != binding
+                        })
+                    })
+            })
+    }) {
+        return true;
+    }
     facts.string_libc_uses.iter().any(|libc| {
         libc.function == function
             && path_starts_with(&use_path.0, &libc.path.0)
@@ -783,6 +797,27 @@ fn path_starts_with(path: &[PathSegment], prefix: &[PathSegment]) -> bool {
     path.len() >= prefix.len() && &path[..prefix.len()] == prefix
 }
 
+fn paths_overlap(a: &[PathSegment], b: &[PathSegment]) -> bool {
+    path_starts_with(a, b) || path_starts_with(b, a)
+}
+
+fn direct_callee_function(
+    facts: &FixupFacts,
+    callsite: &crate::fixups::facts::CallsiteFact,
+) -> Option<FunctionId> {
+    let CallCallee::Direct {
+        signature: Some(signature),
+        ..
+    } = callsite.callee
+    else {
+        return None;
+    };
+    match facts.call_signatures.get(signature.0)?.source {
+        CallSignatureSource::Function(function) => Some(function),
+        CallSignatureSource::Extern { .. } => None,
+    }
+}
+
 fn assignment_index(def_path: &[PathSegment], assignment_path: &[PathSegment]) -> Option<usize> {
     let parent = def_path.get(..def_path.len().checked_sub(1)?)?;
     let assignment_parent = assignment_path.get(..assignment_path.len().checked_sub(1)?)?;
@@ -848,13 +883,23 @@ impl<'a> Collector<'a> {
             .bindings
             .iter()
             .filter(|binding| binding.function == self.function)
-            .filter_map(|binding| match binding.kind {
+            .filter_map(|binding| match &binding.kind {
                 BindingKind::Param { .. } => Some((binding.name.clone(), binding.id)),
                 BindingKind::Local => None,
             })
             .collect();
         for (name, id) in params {
             self.bind(name, Some(id));
+            if let Some(ty) = self
+                .facts
+                .binding_type(id)
+                .map(Type::parse)
+                .as_ref()
+                .and_then(|ty| lifted_kind(ty))
+            {
+                self.summaries
+                    .insert(id, BufferSummary::new(id, AstPath::default(), ty));
+            }
         }
     }
 
