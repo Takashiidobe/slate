@@ -10,6 +10,7 @@ pub(super) mod printf_format;
 pub(super) mod ptr_len;
 pub(super) mod remove_mut;
 pub(super) mod retval;
+pub(super) mod singleton_scopes;
 pub(super) mod string_copy;
 pub(super) mod string_libc;
 pub(super) mod string_lift;

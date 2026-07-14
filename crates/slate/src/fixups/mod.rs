@@ -59,6 +59,19 @@ pub fn apply(program: Program) -> Program {
             break;
         }
     }
+    loop {
+        let mut changed = false;
+        for item in &mut program.items {
+            if let Item::Fn(f) = item
+                && rewrite::singleton_scopes::fixup(&mut f.body)
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
