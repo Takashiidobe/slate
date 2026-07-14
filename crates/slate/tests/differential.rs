@@ -889,6 +889,65 @@ fn scalar_heap_owner_uses_box_drop() {
 }
 
 #[test]
+fn heap_malloc_buffer_uses_vec_drop() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-heap-vec-malloc");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("heap_vec_malloc.c");
+    let generated = tmp.join("heap_vec_malloc.generated.rs");
+    support::translate(&c_src, &generated).expect("translate heap_vec_malloc fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated heap_vec_malloc rust");
+
+    assert!(rust.contains(
+        "let mut p: Vec<i32> = std::iter::repeat(0).take(3 as usize).collect::<Vec<i32>>();"
+    ));
+    assert!(rust.contains("p[0] = _v5;"));
+    assert!(rust.contains("p[1] = _v8;"));
+    assert!(rust.contains("p[2] = _v11;"));
+    assert!(!rust.contains("fn malloc("));
+    assert!(!rust.contains("fn free("));
+    assert!(!rust.contains(".add("));
+}
+
+#[test]
+fn heap_calloc_buffer_uses_zeroed_vec_drop() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-heap-vec-calloc");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("heap_vec_calloc.c");
+    let generated = tmp.join("heap_vec_calloc.generated.rs");
+    support::translate(&c_src, &generated).expect("translate heap_vec_calloc fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated heap_vec_calloc rust");
+
+    assert!(rust.contains(
+        "let p: Vec<i32> = std::iter::repeat(0).take(4 as usize).collect::<Vec<i32>>();"
+    ));
+    assert!(rust.contains("let _v6: i32 = p[0];"));
+    assert!(rust.contains("let _v9: i32 = p[3];"));
+    assert!(!rust.contains("fn calloc("));
+    assert!(!rust.contains("fn free("));
+    assert!(!rust.contains(".add("));
+}
+
+#[test]
+fn heap_realloc_growth_uses_vec_resize() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-heap-vec-realloc");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("heap_vec_realloc.c");
+    let generated = tmp.join("heap_vec_realloc.generated.rs");
+    support::translate(&c_src, &generated).expect("translate heap_vec_realloc fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated heap_vec_realloc rust");
+
+    assert!(rust.contains(
+        "let mut p: Vec<i32> = std::iter::repeat(0).take(2 as usize).collect::<Vec<i32>>();"
+    ));
+    assert!(rust.contains("p.resize(4 as usize, 0);"));
+    assert!(rust.contains("p[2] = _v16;"));
+    assert!(rust.contains("p[3] = _v19;"));
+    assert!(!rust.contains("fn realloc("));
+    assert!(!rust.contains("unsafe { realloc("));
+    assert!(!rust.contains(".add("));
+}
+
+#[test]
 fn string_copy_calls_use_lifted_string_operations() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-string-copy");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

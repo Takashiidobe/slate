@@ -204,7 +204,12 @@ fn allocation_temp(
             })
         }
         Expr::Var(callee) if callee.as_str() == "calloc" && args.len() == 2 => {
-            let count = strip_casts(&args[0]).clone();
+            let count_name = size_arg_name(&args[0]).map(str::to_owned);
+            let count = count_name
+                .as_deref()
+                .and_then(|name| temp_init_near_before(body, index, name))
+                .cloned()
+                .unwrap_or_else(|| strip_casts(&args[0]).clone());
             let size_name = size_arg_name(&args[1]).map(str::to_owned);
             let elem_size = size_name
                 .as_deref()
@@ -233,6 +238,30 @@ fn size_arg_name(expr: &Expr) -> Option<&str> {
 
 fn temp_init_before<'a>(body: &'a [IndentStmt], index: usize, name: &str) -> Option<&'a Expr> {
     let stmt = &body.get(index.checked_sub(1)?)?.stmt;
+    let Stmt::Let {
+        name: binding,
+        init: Some(init),
+        ..
+    } = stmt
+    else {
+        return None;
+    };
+    (binding == name).then_some(init)
+}
+
+fn temp_init_near_before<'a>(body: &'a [IndentStmt], index: usize, name: &str) -> Option<&'a Expr> {
+    for offset in 1..=2 {
+        if let Some(stmt_index) = index.checked_sub(offset)
+            && let Some(init) = temp_init_at(body, stmt_index, name)
+        {
+            return Some(init);
+        }
+    }
+    None
+}
+
+fn temp_init_at<'a>(body: &'a [IndentStmt], index: usize, name: &str) -> Option<&'a Expr> {
+    let stmt = &body.get(index)?.stmt;
     let Stmt::Let {
         name: binding,
         init: Some(init),
@@ -627,6 +656,9 @@ fn realloc_call_on_source(expr: &Expr, source_name: &str, size_name: &str) -> bo
 
 fn heap_use(stmt: &Stmt, names: &BTreeSet<String>) -> Option<HeapUseKind> {
     match stmt {
+        Stmt::Unsafe { body } if body.tail.is_none() && body.stmts.len() == 1 => {
+            heap_use(&body.stmts[0].stmt, names)
+        }
         Stmt::Assign { target, .. } => place_heap_use(target, names).map(|index| match index {
             Some(index) => HeapUseKind::IndexedWrite { index },
             None => HeapUseKind::ScalarWrite,
