@@ -107,6 +107,7 @@ pub enum CrateAttr {
 pub enum Lint {
     DeadCode,
     Unused,
+    NonCamelCaseTypes,
     NonSnakeCase,
     NonUpperCaseGlobals,
     ArithmeticOverflow,
@@ -117,6 +118,7 @@ impl Lint {
         match self {
             Lint::DeadCode => "dead_code",
             Lint::Unused => "unused",
+            Lint::NonCamelCaseTypes => "non_camel_case_types",
             Lint::NonSnakeCase => "non_snake_case",
             Lint::NonUpperCaseGlobals => "non_upper_case_globals",
             Lint::ArithmeticOverflow => "arithmetic_overflow",
@@ -139,6 +141,7 @@ impl Feature {
 
 #[derive(Debug, Clone)]
 pub enum Attr {
+    Allow(Vec<Lint>),
     Repr(Vec<Repr>),
     Derive(Vec<Derive>),
 }
@@ -153,6 +156,10 @@ pub enum Repr {
 pub enum Derive {
     Clone,
     Copy,
+    PartialEq,
+    Eq,
+    Debug,
+    Hash,
 }
 
 #[derive(Debug, Clone)]
@@ -231,6 +238,7 @@ pub struct EnumConst {
 #[derive(Debug, Clone)]
 pub struct EnumDef {
     pub comments: Vec<Comment>,
+    pub attrs: Vec<Attr>,
     pub vis: Visibility,
     pub name: String,
     pub variants: Vec<EnumConst>,
@@ -1159,5 +1167,43 @@ impl Type {
             Some(p) => Type::Prim(p),
             None => Type::Custom(s.to_string()),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn enum_attrs_emit_from_ast() {
+        let program = Program {
+            items: vec![Item::Enum(EnumDef {
+                comments: vec![],
+                attrs: vec![
+                    Attr::Repr(vec![Repr::C]),
+                    Attr::Allow(vec![Lint::NonCamelCaseTypes]),
+                    Attr::Derive(vec![
+                        Derive::Clone,
+                        Derive::Copy,
+                        Derive::PartialEq,
+                        Derive::Eq,
+                        Derive::Debug,
+                        Derive::Hash,
+                    ]),
+                ],
+                vis: Visibility::Private,
+                name: "Mode".into(),
+                variants: vec![EnumConst {
+                    comments: vec![],
+                    name: "MODE_ON".into(),
+                    value: 1,
+                }],
+            })],
+        };
+
+        assert_eq!(
+            program.emit(),
+            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]\nenum Mode {\n    MODE_ON = 1,\n}\n\n"
+        );
     }
 }

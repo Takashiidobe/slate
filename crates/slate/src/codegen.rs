@@ -275,10 +275,7 @@ impl<W: Write> Codegen<W> {
         for comment in &e.comments {
             self.comment(comment, 0)?;
         }
-        self.out.write_str("#[repr(C)]\n")?;
-        self.out.write_str("#[allow(non_camel_case_types)]\n")?;
-        self.out
-            .write_str("#[derive(Clone, Copy, PartialEq, Eq)]\n")?;
+        self.attrs(&e.attrs)?;
         if let Some(vis) = e.vis.keyword() {
             write!(self.out, "{vis} ")?;
         }
@@ -293,11 +290,7 @@ impl<W: Write> Codegen<W> {
     }
 
     fn struct_def(&mut self, s: &StructDef) -> fmt::Result {
-        for attr in &s.attrs {
-            self.out.write_str("#[")?;
-            self.attr(attr)?;
-            self.out.write_str("]\n")?;
-        }
+        self.attrs(&s.attrs)?;
         write!(self.out, "struct {}", s.name)?;
         self.generics(&s.generics)?;
         match &s.fields {
@@ -323,6 +316,15 @@ impl<W: Write> Codegen<W> {
         }
     }
 
+    fn attrs(&mut self, attrs: &[Attr]) -> fmt::Result {
+        for attr in attrs {
+            self.out.write_str("#[")?;
+            self.attr(attr)?;
+            self.out.write_str("]\n")?;
+        }
+        Ok(())
+    }
+
     fn crate_attr(&mut self, attr: &CrateAttr) -> fmt::Result {
         let (kind, lints) = match attr {
             CrateAttr::Allow(lints) => ("allow", lints),
@@ -343,6 +345,16 @@ impl<W: Write> Codegen<W> {
 
     fn attr(&mut self, attr: &Attr) -> fmt::Result {
         match attr {
+            Attr::Allow(items) => {
+                self.out.write_str("allow(")?;
+                for (i, item) in items.iter().enumerate() {
+                    if i > 0 {
+                        self.out.write_str(", ")?;
+                    }
+                    self.out.write_str(item.spelling())?;
+                }
+                self.out.write_char(')')
+            }
             Attr::Repr(items) => {
                 self.out.write_str("repr(")?;
                 for (i, r) in items.iter().enumerate() {
@@ -365,6 +377,10 @@ impl<W: Write> Codegen<W> {
                     self.out.write_str(match d {
                         Derive::Clone => "Clone",
                         Derive::Copy => "Copy",
+                        Derive::PartialEq => "PartialEq",
+                        Derive::Eq => "Eq",
+                        Derive::Debug => "Debug",
+                        Derive::Hash => "Hash",
                     })?;
                 }
                 self.out.write_char(')')
