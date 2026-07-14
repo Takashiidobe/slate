@@ -274,6 +274,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     let mut loaded_modules = Vec::new();
     let mut defined: BTreeMap<String, String> = BTreeMap::new();
     let mut defined_globals: BTreeMap<String, String> = BTreeMap::new();
+    let mut unsafe_functions = BTreeSet::new();
     let mut shared_records = BTreeMap::new();
     let mut shared_enums = BTreeMap::new();
     let mut referenced_record_types = BTreeSet::new();
@@ -285,6 +286,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         for sym in lower::defined_globals(&module) {
             defined_globals.insert(sym, stem.clone());
         }
+        unsafe_functions.extend(lower::unsafe_defined_functions(&module));
         let unit = c_ast::parse_file_with_project_records(path, project_dir)?;
         for enm in &unit.enums {
             shared_enums
@@ -318,6 +320,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         shared_type_module: Some("types".into()),
         shared_type_crate: None,
         cross_module_crate: None,
+        unsafe_functions,
         child_modules: Vec::new(),
         emit_pub: true,
     };
@@ -375,6 +378,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             let test_project = lower::ProjectInfo {
                 cross_module: project.cross_module.clone(),
                 cross_module_globals: project.cross_module_globals.clone(),
+                unsafe_functions: project.unsafe_functions.clone(),
                 shared_records: project.shared_records.clone(),
                 shared_enums: project.shared_enums.clone(),
                 shared_type_module: Some("types".into()),
@@ -416,6 +420,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
     // pass 1: which unit defines which function/global, and which owns `main`.
     let mut defined: BTreeMap<String, String> = BTreeMap::new();
     let mut defined_globals: BTreeMap<String, String> = BTreeMap::new();
+    let mut unsafe_functions = BTreeSet::new();
     let mut root: Option<String> = None;
     for (stem, path) in &modules {
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
@@ -429,6 +434,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
         for sym in lower::defined_globals(&module) {
             defined_globals.insert(sym, stem.clone());
         }
+        unsafe_functions.extend(lower::unsafe_defined_functions(&module));
     }
     let root = root.ok_or("translate-project: no unit defines main")?;
     let siblings: Vec<String> = modules
@@ -446,6 +452,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
         let project = lower::ProjectInfo {
             cross_module: defined.clone(),
             cross_module_globals: defined_globals.clone(),
+            unsafe_functions: unsafe_functions.clone(),
             child_modules: if is_root {
                 siblings.clone()
             } else {

@@ -546,7 +546,8 @@ mod tests {
     fn fn_item(name: &str, ret: i64) -> Item {
         Item::Fn(FnDef {
             vis: Visibility::Private,
-            unsafe_extern_c: false,
+            unsafe_: false,
+            extern_c: false,
             name: name.to_string(),
             params: Vec::new(),
             ret: None,

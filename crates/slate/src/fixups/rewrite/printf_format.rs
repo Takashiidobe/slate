@@ -885,7 +885,8 @@ mod tests {
                 },
                 Item::Fn(crate::rust_ast::FnDef {
                     vis: Visibility::Private,
-                    unsafe_extern_c: false,
+                    unsafe_: false,
+                    extern_c: false,
                     name: "main".into(),
                     params: vec![],
                     ret: None,

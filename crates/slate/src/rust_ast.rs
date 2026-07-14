@@ -284,7 +284,8 @@ pub struct ExternFnDecl {
 #[derive(Debug, Clone)]
 pub struct FnDef {
     pub vis: Visibility,
-    pub unsafe_extern_c: bool,
+    pub unsafe_: bool,
+    pub extern_c: bool,
     pub name: String,
     pub params: Vec<FnParam>,
     pub ret: Option<Type>,

@@ -328,7 +328,8 @@ fn f() -> i32 {
     fn collapses_main_retval_store_into_exit() {
         let out = fixed_fn(FnDef {
             vis: Visibility::Private,
-            unsafe_extern_c: false,
+            unsafe_: false,
+            extern_c: false,
             name: "main".into(),
             params: vec![],
             ret: None,
@@ -360,7 +361,8 @@ fn main() {
     fn does_not_collapse_main_when_retval_read_elsewhere() {
         let f = FnDef {
             vis: Visibility::Private,
-            unsafe_extern_c: false,
+            unsafe_: false,
+            extern_c: false,
             name: "main".into(),
             params: vec![],
             ret: None,
