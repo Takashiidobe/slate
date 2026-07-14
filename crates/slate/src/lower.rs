@@ -1674,10 +1674,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if let Some(slot) = self.slots.get(ptr) {
             Expr::Var(slot.clone().into())
         } else {
-            Self::unsafe_expr(Expr::Unary {
-                op: UnaryOp::Deref,
-                expr: Box::new(self.operand_expr(ptr)),
-            })
+            Self::unsafe_deref_expr(self.operand_expr(ptr))
         };
         if let Some(member_ty) = self
             .member_ptrs
@@ -2923,17 +2920,56 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let base = self.operand_expr(&op.operands[0]);
         let index = self.operand_expr(&op.operands[1]);
+        let (method, args) = self.ptr_stride_method_and_args(op, index);
         self.values.insert(
             result.clone(),
             Val::Expr(Self::unsafe_expr(Expr::MethodCall {
                 recv: Box::new(base),
-                method: "offset".into(),
-                args: vec![Expr::Cast {
-                    expr: Box::new(index),
-                    ty: crate::rust_ast::Type::Prim(Prim::Isize),
-                }],
+                method,
+                args,
             })),
         );
+    }
+
+    fn ptr_stride_method_and_args(&self, op: &Op, index: Expr) -> (String, Vec<Expr>) {
+        if let Some(index_operand) = op.operands.get(1) {
+            if let Some(value) = self.const_int_values.get(index_operand)
+                && *value >= 0
+            {
+                return ("add".into(), vec![int_value_expr(*value)]);
+            }
+            if op_operand_types(op.ty.as_deref().unwrap_or(""))
+                .get(1)
+                .is_some_and(|ty| self.cir_int_is_unsigned(ty))
+            {
+                return (
+                    "add".into(),
+                    vec![Expr::Cast {
+                        expr: Box::new(index),
+                        ty: Type::Prim(Prim::Usize),
+                    }],
+                );
+            }
+        }
+        (
+            "offset".into(),
+            vec![Expr::Cast {
+                expr: Box::new(index),
+                ty: Type::Prim(Prim::Isize),
+            }],
+        )
+    }
+
+    fn cir_int_is_unsigned(&self, ty: &str) -> bool {
+        let resolved = self.parent.aliases.get(ty).map_or(ty, String::as_str);
+        if let Some((signed, _)) = parse_cir_int_type(resolved) {
+            return !signed;
+        }
+        resolved
+            .trim()
+            .strip_prefix("!cir.int<")
+            .and_then(|rest| rest.split(',').next())
+            .is_some_and(|sign| sign.trim() == "u")
     }
 
     fn lower_call(&mut self, op: &Op) {
@@ -3131,8 +3167,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 3 {
             return;
         }
-        let dst = self.byte_ptr_operand(&op.operands[0], true);
-        let src = self.byte_ptr_operand(&op.operands[1], false);
+        let dst = Self::without_empty_unsafe(self.byte_ptr_operand(&op.operands[0], true));
+        let src = Self::without_empty_unsafe(self.byte_ptr_operand(&op.operands[1], false));
         let count = self.usize_operand(&op.operands[2]);
         self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::PtrCopy {
             src: Box::new(src),
@@ -3148,7 +3184,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 3 {
             return;
         }
-        let dst = self.byte_ptr_operand(&op.operands[0], true);
+        let dst = Self::without_empty_unsafe(self.byte_ptr_operand(&op.operands[0], true));
         let val = Expr::Cast {
             expr: Box::new(self.operand_expr(&op.operands[1])),
             ty: Type::Prim(Prim::U8),
@@ -4155,6 +4191,34 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             stmts: Vec::new(),
             tail: Some(Box::new(value)),
         }))
+    }
+
+    fn unsafe_deref_expr(value: Expr) -> Expr {
+        match value {
+            Expr::Unsafe(block) if block.stmts.is_empty() && block.tail.is_some() => {
+                Self::unsafe_expr(Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: block.tail.expect("checked above"),
+                })
+            }
+            value => Self::unsafe_expr(Expr::Unary {
+                op: UnaryOp::Deref,
+                expr: Box::new(value),
+            }),
+        }
+    }
+
+    fn without_empty_unsafe(value: Expr) -> Expr {
+        match value {
+            Expr::Unsafe(block) if block.stmts.is_empty() && block.tail.is_some() => {
+                Self::without_empty_unsafe(*block.tail.expect("checked above"))
+            }
+            Expr::Cast { expr, ty } => Expr::Cast {
+                expr: Box::new(Self::without_empty_unsafe(*expr)),
+                ty,
+            },
+            value => value,
+        }
     }
 
     fn and_expr(lhs: Expr, rhs: Expr) -> Expr {
