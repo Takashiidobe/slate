@@ -34,6 +34,8 @@ pub struct ProjectInfo {
     pub shared_type_module: Option<String>,
     /// root segment for shared type imports; defaults to `crate`.
     pub shared_type_crate: Option<String>,
+    /// root segment for cross-module imports; defaults to `crate`.
+    pub cross_module_crate: Option<String>,
     /// emit function and global definitions as `pub` so other modules can import them.
     pub emit_pub: bool,
 }
@@ -385,9 +387,14 @@ impl<'a> Lowerer<'a> {
         for (name, ty) in &self.extern_globals {
             // an extern global defined in a sibling TU becomes a module import.
             if let Some(module) = self.project.cross_module_globals.get(name) {
+                let root = self
+                    .project
+                    .cross_module_crate
+                    .as_deref()
+                    .unwrap_or("crate");
                 self.cross_uses.push(Item::Use {
                     path: Path::new([
-                        Ident::from("crate"),
+                        Ident::from(root),
                         Ident::from(module.as_str()),
                         Ident::from(name.as_str()),
                     ]),
@@ -414,9 +421,14 @@ impl<'a> Lowerer<'a> {
             // a prototype whose definition lives in a sibling TU becomes a module
             // import; the call then flows through the normal (non-extern) path.
             if let Some(module) = self.project.cross_module.get(name) {
+                let root = self
+                    .project
+                    .cross_module_crate
+                    .as_deref()
+                    .unwrap_or("crate");
                 self.cross_uses.push(Item::Use {
                     path: Path::new([
-                        Ident::from("crate"),
+                        Ident::from(root),
                         Ident::from(module.as_str()),
                         Ident::from(name),
                     ]),
