@@ -83,7 +83,16 @@ fn library_project_creates_cargo_crate_without_main() {
 
     let math_rs = std::fs::read_to_string(crate_dir.join("src/math.rs")).expect("read math.rs");
     assert!(math_rs.contains("pub fn square"));
+    assert!(math_rs.contains("use crate::types::shared_mode_t;"));
+    assert!(math_rs.contains("value.mode = shared_mode_t::SHARED_READY;"));
+    let types_rs = std::fs::read_to_string(crate_dir.join("src/types.rs")).expect("read types.rs");
+    assert!(types_rs.contains("pub enum shared_mode_t"));
+    assert!(types_rs.contains("SHARED_READY = 1"));
     assert!(crate_dir.join("tests/run_smoke.rs").is_file());
+    let smoke_rs =
+        std::fs::read_to_string(crate_dir.join("tests/run_smoke.rs")).expect("read run_smoke.rs");
+    assert!(smoke_rs.contains("use slate_crate::types::shared_mode_t;"));
+    assert!(!smoke_rs.contains("enum shared_mode_t"));
 
     let check = std::process::Command::new("cargo")
         .args(["check", "--quiet", "--lib", "--manifest-path"])
@@ -94,6 +103,16 @@ fn library_project_creates_cargo_crate_without_main() {
         check.status.success(),
         "generated lib crate should type-check:\n{}",
         String::from_utf8_lossy(&check.stderr)
+    );
+    let check_tests = std::process::Command::new("cargo")
+        .args(["check", "--quiet", "--tests", "--manifest-path"])
+        .arg(crate_dir.join("Cargo.toml"))
+        .output()
+        .expect("cargo check generated tests");
+    assert!(
+        check_tests.status.success(),
+        "generated integration tests should type-check:\n{}",
+        String::from_utf8_lossy(&check_tests.stderr)
     );
 }
 
