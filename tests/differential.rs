@@ -188,6 +188,30 @@ fn final_return_temps_are_collapsed() {
 }
 
 #[test]
+fn pointer_arithmetic_uses_clearer_safe_offset_forms() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pointer-arithmetic");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let pointers_c = fixtures_dir().join("pointers.c");
+    let pointers_generated = tmp.join("pointers.generated.rs");
+    support::translate(&pointers_c, &pointers_generated).expect("translate pointers fixture");
+    let pointers =
+        std::fs::read_to_string(&pointers_generated).expect("read generated pointers rust");
+    assert!(pointers.contains("return unsafe { *_v8.offset(_v9 as isize) };"));
+    assert!(!pointers.contains("unsafe { *unsafe {"));
+    assert!(!pointers.contains(".add(_v9"));
+
+    let bcopy_c = fixtures_dir().join("mem_bcopy_overlap.c");
+    let bcopy_generated = tmp.join("mem_bcopy_overlap.generated.rs");
+    support::translate(&bcopy_c, &bcopy_generated).expect("translate mem_bcopy_overlap fixture");
+    let bcopy =
+        std::fs::read_to_string(&bcopy_generated).expect("read generated mem_bcopy_overlap rust");
+    assert!(bcopy.contains("buf.as_mut_ptr().add(2)"));
+    assert!(!bcopy.contains("buf.as_mut_ptr().offset(2"));
+    assert!(!bcopy.contains("unsafe { buf.as_mut_ptr().add(2) }"));
+}
+
+#[test]
 fn redundant_singleton_scopes_are_unwrapped() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-singleton-scopes");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
