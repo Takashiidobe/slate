@@ -268,6 +268,8 @@ pub(in crate::fixups) fn expr_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> b
         Expr::StructLit { fields, .. } => fields.iter().any(|(_, value)| expr_any(value, pred)),
         Expr::ArrayLit(elems) => elems.iter().any(|elem| expr_any(elem, pred)),
         Expr::ArrayRepeat { elem, .. } => expr_any(elem, pred),
+        Expr::VecLit(elems) => elems.iter().any(|elem| expr_any(elem, pred)),
+        Expr::VecRepeat { elem, len } => expr_any(elem, pred) || expr_any(len, pred),
         Expr::Macro { args, .. } => args.iter().any(|arg| expr_any(arg, pred)),
         Expr::Match { expr, arms } => {
             expr_any(expr, pred) || arms.iter().any(|arm| expr_any(&arm.value, pred))
@@ -438,6 +440,15 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
             }
         }
         Expr::ArrayRepeat { elem, .. } => exprs_mut_with(elem, f),
+        Expr::VecLit(elems) => {
+            for elem in elems {
+                exprs_mut_with(elem, f);
+            }
+        }
+        Expr::VecRepeat { elem, len } => {
+            exprs_mut_with(elem, f);
+            exprs_mut_with(len, f);
+        }
         Expr::Macro { args, .. } => {
             for arg in args {
                 exprs_mut_with(arg, f);
@@ -711,6 +722,21 @@ pub(in crate::fixups) fn exprs_mut_with_path(
         Expr::ArrayRepeat { elem, .. } => {
             with_path_segment(path, PathSegment::Expr(0), |path| {
                 exprs_mut_with_path(elem, path, f);
+            });
+        }
+        Expr::VecLit(elems) => {
+            for (index, elem) in elems.iter_mut().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index), |path| {
+                    exprs_mut_with_path(elem, path, f);
+                });
+            }
+        }
+        Expr::VecRepeat { elem, len } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(elem, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_mut_with_path(len, path, f);
             });
         }
         Expr::Macro { args, .. } => {

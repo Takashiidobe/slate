@@ -198,6 +198,8 @@ pub(super) fn expr_ident_count(expr: &Expr, name: &str) -> usize {
         }
         Expr::ArrayLit(elems) => elems.iter().map(|elem| expr_ident_count(elem, name)).sum(),
         Expr::ArrayRepeat { elem, .. } => expr_ident_count(elem, name),
+        Expr::VecLit(elems) => elems.iter().map(|elem| expr_ident_count(elem, name)).sum(),
+        Expr::VecRepeat { elem, len } => expr_ident_count(elem, name) + expr_ident_count(len, name),
         Expr::Closure { params, body } => {
             if params.iter().any(|p| p.as_str() == name) {
                 0

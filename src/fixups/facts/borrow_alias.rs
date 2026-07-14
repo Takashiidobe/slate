@@ -285,13 +285,17 @@ impl<'a> Collector<'a> {
                     self.expr(value, path);
                 }
             }
-            Expr::ArrayLit(elems) | Expr::Macro { args: elems, .. } => {
+            Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => {
                 for elem in elems {
                     self.expr(elem, path);
                 }
             }
             Expr::ArrayRepeat { elem, .. } | Expr::Closure { body: elem, .. } => {
                 self.expr(elem, path)
+            }
+            Expr::VecRepeat { elem, len } => {
+                self.expr(elem, path);
+                self.expr(len, path);
             }
             Expr::Match { expr, arms } => {
                 self.expr(expr, path);

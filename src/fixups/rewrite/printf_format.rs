@@ -762,6 +762,8 @@ fn expr_has_printf_call(expr: &Expr) -> bool {
         }
         Expr::ArrayLit(elems) => elems.iter().any(expr_has_printf_call),
         Expr::ArrayRepeat { elem, .. } => expr_has_printf_call(elem),
+        Expr::VecLit(elems) => elems.iter().any(expr_has_printf_call),
+        Expr::VecRepeat { elem, len } => expr_has_printf_call(elem) || expr_has_printf_call(len),
         Expr::Macro { args, .. } => args.iter().any(expr_has_printf_call),
         Expr::Closure { body, .. } => expr_has_printf_call(body),
         Expr::Match { expr, arms } => {

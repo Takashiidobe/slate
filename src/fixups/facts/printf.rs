@@ -262,7 +262,7 @@ fn visit_expr(
                 });
             }
         }
-        Expr::ArrayLit(elems) | Expr::Macro { args: elems, .. } => {
+        Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => {
             for (index, elem) in elems.iter().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index), |path| {
                     visit_expr(function, elem, env, path, calls)
@@ -272,6 +272,14 @@ fn visit_expr(
         Expr::ArrayRepeat { elem, .. } | Expr::Closure { body: elem, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
                 visit_expr(function, elem, env, path, calls)
+            });
+        }
+        Expr::VecRepeat { elem, len } => {
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                visit_expr(function, elem, env, path, calls)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                visit_expr(function, len, env, path, calls)
             });
         }
         Expr::Match { expr: value, arms } => {
