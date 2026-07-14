@@ -150,6 +150,22 @@ pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::slice_index::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    if rewrite::slice_loop::fixup(&mut program, &facts) {
+        loop {
+            let mut changed = false;
+            for item in &mut program.items {
+                if let Item::Fn(f) = item
+                    && rewrite::singleton_scopes::fixup(&mut f.body)
+                {
+                    changed = true;
+                }
+            }
+            if !changed {
+                break;
+            }
+        }
+    }
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_copy::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_copy::prune_unused_externs(&mut program, &facts);
@@ -251,6 +267,7 @@ fn stmt_count(stmts: &[IndentStmt]) -> usize {
                     ..
                 } => stmt_count(then_body) + stmt_count(else_body),
                 Stmt::Loop { body, .. }
+                | Stmt::For { body, .. }
                 | Stmt::Scope { body }
                 | Stmt::LabeledBlock { body, .. } => stmt_count(body),
                 Stmt::Unsafe { body } | Stmt::Block(body) | Stmt::While { body, .. } => {

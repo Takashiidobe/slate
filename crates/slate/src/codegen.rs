@@ -636,6 +636,13 @@ impl<W: Write> Codegen<W> {
                 self.indent_stmts(body, depth + 1)?;
                 writeln!(self.out, "{pad}}}")
             }
+            Stmt::For { pat, iter, body } => {
+                write!(self.out, "{pad}for {pat} in ")?;
+                self.expr(iter)?;
+                self.out.write_str(" {\n")?;
+                self.indent_stmts(body, depth + 1)?;
+                writeln!(self.out, "{pad}}}")
+            }
             Stmt::Scope { body } => {
                 writeln!(self.out, "{pad}{{")?;
                 self.indent_stmts(body, depth + 1)?;

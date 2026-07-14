@@ -731,6 +731,7 @@ fn stmt_has_printf_call(stmt: &Stmt) -> bool {
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             body_has_printf_call(body)
         }
+        Stmt::For { iter, body, .. } => expr_has_printf_call(iter) || body_has_printf_call(body),
         Stmt::Match { expr, arms } => {
             expr_has_printf_call(expr) || arms.iter().any(|arm| body_has_printf_call(&arm.body))
         }

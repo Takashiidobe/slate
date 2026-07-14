@@ -209,6 +209,9 @@ fn find_arg_use(stmt: &Stmt, name: &str) -> Option<ArgUse> {
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             find_arg_use_body(body, name)
         }
+        Stmt::For { iter, body, .. } => {
+            find_arg_use_expr(iter, name).or_else(|| find_arg_use_body(body, name))
+        }
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
             find_arg_use_body(&body.stmts, name).or_else(|| {
                 body.tail

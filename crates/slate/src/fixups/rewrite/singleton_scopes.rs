@@ -43,7 +43,7 @@ fn unwrap_singleton_scope(indent: &mut IndentStmt) -> bool {
 fn is_unwrappable(stmt: &Stmt) -> bool {
     matches!(
         stmt,
-        Stmt::If { .. } | Stmt::Loop { .. } | Stmt::Match { .. }
+        Stmt::If { .. } | Stmt::Loop { .. } | Stmt::For { .. } | Stmt::Match { .. }
     )
 }
 
