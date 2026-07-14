@@ -63,7 +63,8 @@ pub(super) fn param(name: &str, ty: &str) -> FnParam {
 pub(super) fn func(params: Vec<FnParam>, ret: Option<&str>, stmts: Vec<Stmt>) -> FnDef {
     FnDef {
         vis: Visibility::Private,
-        unsafe_extern_c: false,
+        unsafe_: false,
+        extern_c: false,
         name: "f".into(),
         params,
         ret: ret.map(Type::parse),
@@ -101,7 +102,8 @@ pub(super) fn after_fn(pass: fn(&mut FnDef), f: FnDef) -> String {
 pub(super) fn migrated_fn(body: Vec<Stmt>) -> FnDef {
     FnDef {
         vis: Visibility::Private,
-        unsafe_extern_c: false,
+        unsafe_: false,
+        extern_c: false,
         name: "add".into(),
         params: vec![
             FnParam {
