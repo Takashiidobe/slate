@@ -248,6 +248,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     let mut defined: BTreeMap<String, String> = BTreeMap::new();
     let mut defined_globals: BTreeMap<String, String> = BTreeMap::new();
     let mut shared_records = BTreeMap::new();
+    let mut shared_enums = BTreeMap::new();
     let mut referenced_record_types = BTreeSet::new();
     for (stem, path) in &modules {
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
@@ -258,6 +259,11 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             defined_globals.insert(sym, stem.clone());
         }
         let unit = c_ast::parse_file_with_project_records(path, project_dir)?;
+        for enm in &unit.enums {
+            shared_enums
+                .entry(rust_ident(&enm.name))
+                .or_insert_with(|| enm.clone());
+        }
         for record in &unit.records {
             collect_record_field_type_names(&record, &mut referenced_record_types);
             shared_records
@@ -274,12 +280,15 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         });
     }
     let shared_record_names: BTreeSet<String> = shared_records.keys().cloned().collect();
+    let shared_enum_names: BTreeSet<String> = shared_enums.keys().cloned().collect();
 
     let project = lower::ProjectInfo {
         cross_module: defined,
         cross_module_globals: defined_globals,
         shared_records: shared_record_names,
+        shared_enums: shared_enum_names,
         shared_type_module: Some("types".into()),
+        shared_type_crate: None,
         child_modules: Vec::new(),
         emit_pub: true,
     };
@@ -300,10 +309,11 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         written.push(output);
     }
 
-    if !shared_records.is_empty() {
+    if !shared_records.is_empty() || !shared_enums.is_empty() {
         let records: Vec<_> = shared_records.into_values().collect();
+        let enums: Vec<_> = shared_enums.into_values().collect();
         let output = crate_src.join("types.rs");
-        std::fs::write(&output, lower::lower_shared_records(&records).emit())
+        std::fs::write(&output, lower::lower_shared_types(&records, &enums).emit())
             .map_err(|e| format!("write {}: {e}", output.display()))?;
         written.push(output);
     }
@@ -329,8 +339,26 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         std::fs::create_dir_all(&crate_tests)
             .map_err(|e| format!("create {}: {e}", crate_tests.display()))?;
         for (stem, path) in collect_c_modules(&tests_dir)? {
+            let module = cir::parse_module(&cir::emit_generic(&path)?)?;
+            let unit = c_ast::parse_file_with_project_records(&path, project_dir)?;
+            let test_project = lower::ProjectInfo {
+                shared_records: project.shared_records.clone(),
+                shared_enums: project.shared_enums.clone(),
+                shared_type_module: Some("types".into()),
+                shared_type_crate: Some(package_name(crate_dir)),
+                emit_pub: true,
+                ..lower::ProjectInfo::default()
+            };
+            let mut ctx = ctx::Ctx::default();
+            let program = lower::lower_with_project(&module, &unit, &mut ctx, &test_project);
+            for d in &ctx.diagnostics.items {
+                eprintln!("{:?}: {}", d.severity, d.message);
+            }
+            if ctx.diagnostics.has_errors() {
+                return Err(format!("lowering failed for {}", path.display()));
+            }
             let output = crate_tests.join(stem).with_extension("rs");
-            std::fs::write(&output, translate(&path)?)
+            std::fs::write(&output, fixups::apply(program).emit())
                 .map_err(|e| format!("write {}: {e}", output.display()))?;
             written.push(output);
         }
@@ -388,7 +416,9 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
                 Vec::new()
             },
             shared_records: BTreeSet::new(),
+            shared_enums: BTreeSet::new(),
             shared_type_module: None,
+            shared_type_crate: None,
             emit_pub: true,
         };
         let module = cir::parse_module(&cir::emit_generic(path)?)?;

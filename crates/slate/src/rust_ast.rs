@@ -36,7 +36,7 @@ pub enum Item {
         abi: String,
         decls: Vec<ExternDecl>,
     },
-    Enum(Vec<EnumConst>),
+    Enum(EnumDef),
     Record(RecordDef),
     Struct(StructDef),
     Impl(ImplBlock),
@@ -228,6 +228,13 @@ pub struct Method {
 pub struct EnumConst {
     pub name: String,
     pub value: i64,
+}
+
+#[derive(Debug, Clone)]
+pub struct EnumDef {
+    pub vis: Visibility,
+    pub name: String,
+    pub variants: Vec<EnumConst>,
 }
 
 #[derive(Debug, Clone)]
