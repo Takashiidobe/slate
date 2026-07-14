@@ -160,6 +160,18 @@ fn cross_tu_functions() {
 }
 
 #[test]
+fn public_pointer_deref_functions_are_unsafe() {
+    let rs_dir = build_and_diff("unsafe_public");
+
+    let pointers_rs =
+        std::fs::read_to_string(rs_dir.join("pointers.rs")).expect("read pointers.rs");
+    assert!(pointers_rs.contains("pub unsafe fn read_ptr"));
+
+    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
+    assert!(main_rs.contains("unsafe { read_ptr("));
+}
+
+#[test]
 fn cross_tu_static_linkage() {
     let rs_dir = build_and_diff("static_linkage");
 

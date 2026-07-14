@@ -1586,7 +1586,8 @@ mod tests {
         let program = Program {
             items: vec![Item::Fn(FnDef {
                 vis: Visibility::Private,
-                unsafe_extern_c: false,
+                unsafe_: false,
+                extern_c: false,
                 name: "f".into(),
                 params: Vec::new(),
                 ret: None,
