@@ -91,6 +91,7 @@ impl<'a> Collector<'a> {
             | Stmt::Unsafe { .. }
             | Stmt::If { .. }
             | Stmt::Loop { .. }
+            | Stmt::For { .. }
             | Stmt::Match { .. }
             | Stmt::Break(_)
             | Stmt::Continue(_)
@@ -350,7 +351,7 @@ fn analyze_stmt(
                 && analyze_body(else_body, slices, state)
                 && analyze_expr(else_value, AccessMode::Read, slices, state)
         }
-        Stmt::Loop { .. } | Stmt::While { .. } => false,
+        Stmt::Loop { .. } | Stmt::For { .. } | Stmt::While { .. } => false,
         Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => analyze_body(body, slices, state),
         Stmt::Unsafe { body } | Stmt::Block(body) => analyze_body(&body.stmts, slices, state),
         Stmt::Match { expr, arms } => {

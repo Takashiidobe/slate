@@ -909,6 +909,7 @@ pub(super) enum MutabilityReason {
 pub(super) enum LoopKind {
     Loop,
     While,
+    For,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -938,6 +939,7 @@ pub(super) enum PathSegment {
     Then,
     Else,
     LoopBody,
+    ForBody,
     ScopeBody,
     LabeledBody,
     MatchArm(usize),
@@ -1361,6 +1363,19 @@ impl Collector {
                 self.body(function, body, path);
                 path.pop();
             }
+            Stmt::For { pat, body, .. } => {
+                self.push_loop(function, LoopKind::For, AstPath(path.clone()));
+                self.push_binding(
+                    function,
+                    pat.clone(),
+                    BindingKind::Local,
+                    AstPath(path.clone()),
+                    None,
+                );
+                path.push(PathSegment::ForBody);
+                self.body(function, body, path);
+                path.pop();
+            }
             Stmt::Scope { body } => {
                 path.push(PathSegment::ScopeBody);
                 self.body(function, body, path);
@@ -1468,6 +1483,10 @@ fn collect_required_stmt(stmt: &Stmt, required: &mut BTreeMap<String, BTreeSet<M
             collect_required_mut(else_body, required);
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            collect_required_mut(body, required);
+        }
+        Stmt::For { iter, body, .. } => {
+            collect_expr_hazards(iter, required);
             collect_required_mut(body, required);
         }
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {

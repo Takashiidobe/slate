@@ -59,6 +59,14 @@ pub(super) fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
                     .map(|stmt| stmt_ident_count(&stmt.stmt, name))
                     .sum::<usize>()
         }
+        Stmt::For { pat, iter, body } => {
+            usize::from(pat == name)
+                + expr_ident_count(iter, name)
+                + body
+                    .iter()
+                    .map(|stmt| stmt_ident_count(&stmt.stmt, name))
+                    .sum::<usize>()
+        }
         Stmt::LabeledBlock { label, body } => {
             ident_count(label.as_str(), name)
                 + body
