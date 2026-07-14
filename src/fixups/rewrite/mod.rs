@@ -7,6 +7,7 @@ pub(super) mod final_return_temps;
 pub(super) mod heap_ownership;
 pub(super) mod inline_temps;
 pub(super) mod main_zero_exit;
+pub(super) mod memchr_prelude;
 pub(super) mod param_spills;
 pub(super) mod printf_format;
 pub(super) mod ptr_len;
