@@ -257,7 +257,8 @@ fn f(a: i32) -> i32 {
     fn removes_mut_in_nested_bodies() {
         let f = FnDef {
             vis: Visibility::Private,
-            unsafe_extern_c: false,
+            unsafe_: false,
+            extern_c: false,
             name: "f".into(),
             params: vec![],
             ret: None,

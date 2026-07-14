@@ -214,8 +214,11 @@ impl<W: Write> Codegen<W> {
         if let Some(kw) = f.vis.keyword() {
             write!(self.out, "{kw} ")?;
         }
-        if f.unsafe_extern_c {
-            self.out.write_str("unsafe extern \"C\" ")?;
+        if f.unsafe_ {
+            self.out.write_str("unsafe ")?;
+        }
+        if f.extern_c {
+            self.out.write_str("extern \"C\" ")?;
         }
         write!(self.out, "fn {}(", f.name)?;
         for (i, p) in f.params.iter().enumerate() {
