@@ -864,19 +864,32 @@ fn ptr_len_pairs_use_slice_params_for_full_array_calls() {
     assert!(rust.contains("fn sum(mut items: &mut [i32]) -> i32"));
     assert!(rust.contains("fn bump(mut items: &mut [i32]) -> ()"));
     assert!(rust.contains("let len: i32 = items.len() as i32;"));
-    assert!(rust.contains("for item in items.iter()"));
-    assert!(rust.contains("for item in items.iter_mut()"));
-    assert!(rust.contains("let _v7: i32 = *item;"));
-    assert!(rust.contains("*item = _v8;"));
+    assert!(rust.contains("let _v7: i32 = items[(i as usize)];"));
+    assert!(rust.contains("items[(i as usize)] = _v8;"));
     assert!(rust.contains("sum(values.as_mut_slice())"));
     assert!(rust.contains("bump(values.as_mut_slice())"));
-    assert!(!rust.contains("loop {"));
-    assert!(!rust.contains("break;"));
-    assert!(!rust.contains("items[(i as usize)]"));
+    assert!(!rust.contains("for item in items.iter()"));
+    assert!(!rust.contains("for item in items.iter_mut()"));
+    assert!(!rust.contains("__slate_item"));
     assert!(!rust.contains(".offset("));
     assert!(!rust.contains("items.as_mut_ptr()"));
     assert!(!rust.contains("sum(values.as_mut_ptr(), 4)"));
     assert!(!rust.contains("bump(values.as_mut_ptr(), 4)"));
+}
+
+#[test]
+fn ptr_len_slice_loop_uses_materialized_item_name() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-ptr-len-slice-item");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("ptr_len_slice_item.c");
+    let generated = tmp.join("ptr_len_slice_item.generated.rs");
+    support::translate(&c_src, &generated).expect("translate ptr_len_slice_item fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated ptr_len_slice_item rust");
+
+    assert!(rust.contains("for item in items.iter()"));
+    assert!(rust.contains("total += *item;"));
+    assert!(!rust.contains("let item: i32 = items[(i as usize)];"));
+    assert!(!rust.contains("__slate_item"));
 }
 
 #[test]
