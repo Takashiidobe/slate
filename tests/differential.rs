@@ -897,9 +897,7 @@ fn heap_malloc_buffer_uses_vec_drop() {
     support::translate(&c_src, &generated).expect("translate heap_vec_malloc fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated heap_vec_malloc rust");
 
-    assert!(rust.contains(
-        "let mut p: Vec<i32> = std::iter::repeat(0).take(3 as usize).collect::<Vec<i32>>();"
-    ));
+    assert!(rust.contains("let mut p: Vec<i32> = vec![0; 3usize];"));
     assert!(rust.contains("p[0] = _v5;"));
     assert!(rust.contains("p[1] = _v8;"));
     assert!(rust.contains("p[2] = _v11;"));
@@ -917,9 +915,7 @@ fn heap_calloc_buffer_uses_zeroed_vec_drop() {
     support::translate(&c_src, &generated).expect("translate heap_vec_calloc fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated heap_vec_calloc rust");
 
-    assert!(rust.contains(
-        "let p: Vec<i32> = std::iter::repeat(0).take(4 as usize).collect::<Vec<i32>>();"
-    ));
+    assert!(rust.contains("let p: Vec<i32> = vec![0; 4usize];"));
     assert!(rust.contains("let _v6: i32 = p[0];"));
     assert!(rust.contains("let _v9: i32 = p[3];"));
     assert!(!rust.contains("fn calloc("));
@@ -936,10 +932,8 @@ fn heap_realloc_growth_uses_vec_resize() {
     support::translate(&c_src, &generated).expect("translate heap_vec_realloc fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated heap_vec_realloc rust");
 
-    assert!(rust.contains(
-        "let mut p: Vec<i32> = std::iter::repeat(0).take(2 as usize).collect::<Vec<i32>>();"
-    ));
-    assert!(rust.contains("p.resize(4 as usize, 0);"));
+    assert!(rust.contains("let mut p: Vec<i32> = vec![0; 2usize];"));
+    assert!(rust.contains("p.resize(4usize, 0);"));
     assert!(rust.contains("p[2] = _v16;"));
     assert!(rust.contains("p[3] = _v19;"));
     assert!(!rust.contains("fn realloc("));

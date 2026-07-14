@@ -327,6 +327,27 @@ impl<'a> Collector<'a> {
                     len: *len as u64,
                 })
             }
+            Expr::VecLit(elems) => {
+                let elem_ty = elems.iter().enumerate().find_map(|(index, elem)| {
+                    walk::with_path_segment(path, PathSegment::Expr(index), |path| {
+                        self.expr(elem, path)
+                    })
+                });
+                elem_ty.map(|elem| Type::Generic {
+                    name: "Vec".into(),
+                    args: vec![elem],
+                })
+            }
+            Expr::VecRepeat { elem, len } => {
+                let elem = walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    self.expr(elem, path)
+                })?;
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(len, path));
+                Some(Type::Generic {
+                    name: "Vec".into(),
+                    args: vec![elem],
+                })
+            }
             Expr::Block(block) => walk::with_path_segment(path, PathSegment::BlockBody, |path| {
                 self.block(block, path)
             }),
@@ -593,6 +614,7 @@ fn classify_prim_cast(from: Prim, to: Prim, reasons: &mut BTreeSet<CastRequireme
 fn literal_type(value: &RustValue) -> Option<Type> {
     match value {
         RustValue::I64(_) => Some(Type::Prim(Prim::I64)),
+        RustValue::Usize(_) => Some(Type::Prim(Prim::Usize)),
         RustValue::I128(_) => Some(Type::Prim(Prim::I128)),
         RustValue::Bool(_) => Some(Type::Prim(Prim::Bool)),
         RustValue::Float(_) => Some(Type::Prim(Prim::F64)),
@@ -603,7 +625,9 @@ fn literal_type(value: &RustValue) -> Option<Type> {
 fn is_numeric_literal(expr: &Expr) -> bool {
     matches!(
         expr,
-        Expr::Value(RustValue::I64(_) | RustValue::I128(_) | RustValue::Float(_))
+        Expr::Value(
+            RustValue::I64(_) | RustValue::Usize(_) | RustValue::I128(_) | RustValue::Float(_),
+        )
     )
 }
 
