@@ -1,0 +1,256 @@
+use crate::fixups::facts::walk;
+use crate::fixups::facts::{
+    AstPath, BindingId, BindingKind, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
+    TempChainFact,
+};
+use crate::rust_ast::{IndentStmt, Item, Program, Stmt};
+
+pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+    facts.temp_chains.clear();
+    let mut all = Vec::new();
+    for (item_index, item) in program.items.iter().enumerate() {
+        let Item::Fn(f) = item else {
+            continue;
+        };
+        let Some(function) = facts.function_by_item_index(item_index) else {
+            continue;
+        };
+        collect_body(function, &f.body, facts, &mut Vec::new(), &mut all);
+    }
+    facts.temp_chains = all;
+}
+
+fn collect_body(
+    function: FunctionId,
+    body: &[IndentStmt],
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+    out: &mut Vec<TempChainFact>,
+) {
+    for (index, indent) in body.iter().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            if let Some(fact) = temp_chain_at(function, body, index, facts, path) {
+                out.push(fact);
+            }
+            walk::nested_bodies_with_path(&indent.stmt, path, &mut |nested, path| {
+                collect_body(function, nested, facts, path, out);
+            });
+        });
+    }
+}
+
+fn temp_chain_at(
+    function: FunctionId,
+    body: &[IndentStmt],
+    def_index: usize,
+    facts: &FixupFacts,
+    def_path: &[PathSegment],
+) -> Option<TempChainFact> {
+    let Stmt::Let {
+        name,
+        mutable: false,
+        init: Some(_),
+        ..
+    } = &body[def_index].stmt
+    else {
+        return None;
+    };
+    if !is_temp_name(name) || !is_movable_pure_expr(function, facts, def_path) {
+        return None;
+    }
+    let producer_path = AstPath(def_path.to_vec());
+    let binding = facts.binding_by_local_path(function, name, &producer_path)?;
+    let def_use = facts.def_use(binding)?;
+    if !def_use.writes.is_empty() || def_use.reads.len() != 1 {
+        return None;
+    }
+    let consumer_path = def_use.reads[0].clone();
+    let (consumer_prefix, consumer_index) = direct_stmt_parent(&consumer_path)?;
+    let producer_prefix = &def_path[..def_path.len().checked_sub(1)?];
+    if consumer_prefix != producer_prefix
+        || consumer_index <= def_index
+        || consumer_index >= body.len()
+    {
+        return None;
+    }
+    if !(def_index + 1..consumer_index).all(|index| {
+        is_movable_pure_temp_let(function, facts, &body[index].stmt, producer_prefix, index)
+    }) {
+        return None;
+    }
+    Some(TempChainFact {
+        function,
+        binding,
+        producer_path,
+        consumer_path,
+        dependencies: temp_dependencies(function, facts, &AstPath(def_path.to_vec()), binding),
+    })
+}
+
+fn is_movable_pure_temp_let(
+    function: FunctionId,
+    facts: &FixupFacts,
+    stmt: &Stmt,
+    parent_path: &[PathSegment],
+    index: usize,
+) -> bool {
+    let Stmt::Let {
+        name,
+        mutable: false,
+        init: Some(_),
+        ..
+    } = stmt
+    else {
+        return false;
+    };
+    if !is_temp_name(name) {
+        return false;
+    }
+    let mut path = parent_path.to_vec();
+    path.push(PathSegment::Stmt(index));
+    is_movable_pure_expr(function, facts, &path)
+}
+
+fn is_movable_pure_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    facts
+        .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
+        .is_some_and(|fact| fact.purity == Purity::MovablePure)
+}
+
+fn temp_dependencies(
+    function: FunctionId,
+    facts: &FixupFacts,
+    producer_path: &AstPath,
+    binding: BindingId,
+) -> Vec<BindingId> {
+    facts
+        .def_use
+        .iter()
+        .filter(|def_use| def_use.function == function && def_use.binding != binding)
+        .filter(|def_use| def_use.reads.iter().any(|read| read == producer_path))
+        .filter_map(|def_use| {
+            let binding = facts
+                .bindings
+                .iter()
+                .find(|binding| binding.id == def_use.binding)?;
+            if binding.kind == BindingKind::Local && is_temp_name(&binding.name) {
+                Some(binding.id)
+            } else {
+                None
+            }
+        })
+        .collect()
+}
+
+fn direct_stmt_parent(path: &AstPath) -> Option<(&[PathSegment], usize)> {
+    let (PathSegment::Stmt(index), parent) = path.0.split_last()? else {
+        return None;
+    };
+    Some((parent, *index))
+}
+
+fn is_temp_name(name: &str) -> bool {
+    name.strip_prefix("_v")
+        .is_some_and(|suffix| !suffix.is_empty() && suffix.chars().all(|c| c.is_ascii_digit()))
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::fixups::facts::{self, AstPath, BindingId, FunctionId, PathSegment, TempChainFact};
+    use crate::fixups::test_support::*;
+    use crate::rust_ast::{BinOp, Item, Program, Stmt};
+
+    fn analyzed(stmts: Vec<Stmt>) -> facts::FixupFacts {
+        facts::analyze(Program {
+            items: vec![Item::Fn(func(
+                vec![param("op", "i32"), param("value", "i32")],
+                Some("i32"),
+                stmts,
+            ))],
+        })
+        .facts
+    }
+
+    fn binding_for(facts: &facts::FixupFacts, name: &str, path: AstPath) -> BindingId {
+        facts
+            .binding_by_local_path(FunctionId(0), name, &path)
+            .unwrap()
+    }
+
+    fn chain_for<'a>(facts: &'a facts::FixupFacts, name: &str) -> &'a TempChainFact {
+        let binding = facts
+            .bindings
+            .iter()
+            .find(|binding| binding.function == FunctionId(0) && binding.name == name)
+            .unwrap()
+            .id;
+        facts
+            .temp_chains
+            .iter()
+            .find(|fact| fact.binding == binding)
+            .unwrap()
+    }
+
+    #[test]
+    fn records_pure_single_use_temp_chains() {
+        let facts = analyzed(vec![
+            temp("_v1", "i32", var("op")),
+            temp("_v2", "i32", var("value")),
+            temp("_v3", "i32", bin(BinOp::Add, var("_v1"), var("_v2"))),
+            Stmt::Return(Some(var("_v3"))),
+        ]);
+
+        let v1 = chain_for(&facts, "_v1");
+        assert_eq!(v1.producer_path, AstPath(vec![PathSegment::Stmt(0)]));
+        assert_eq!(v1.consumer_path, AstPath(vec![PathSegment::Stmt(2)]));
+        assert!(v1.dependencies.is_empty());
+
+        let v2 = chain_for(&facts, "_v2");
+        assert_eq!(v2.producer_path, AstPath(vec![PathSegment::Stmt(1)]));
+        assert_eq!(v2.consumer_path, AstPath(vec![PathSegment::Stmt(2)]));
+        assert!(v2.dependencies.is_empty());
+
+        let v3 = chain_for(&facts, "_v3");
+        assert_eq!(v3.producer_path, AstPath(vec![PathSegment::Stmt(2)]));
+        assert_eq!(v3.consumer_path, AstPath(vec![PathSegment::Stmt(3)]));
+        assert_eq!(
+            v3.dependencies,
+            vec![
+                binding_for(&facts, "_v1", AstPath(vec![PathSegment::Stmt(0)])),
+                binding_for(&facts, "_v2", AstPath(vec![PathSegment::Stmt(1)])),
+            ]
+        );
+    }
+
+    #[test]
+    fn rejects_temp_chains_crossing_unknown_call_barriers() {
+        let facts = analyzed(vec![
+            temp("_v1", "i32", var("op")),
+            Stmt::Expr(call("mystery", vec![])),
+            temp("_v2", "i32", bin(BinOp::Add, var("_v1"), int(1))),
+        ]);
+
+        assert!(
+            !facts
+                .temp_chains
+                .iter()
+                .any(|fact| { facts.binding_name(fact.binding) == Some("_v1") })
+        );
+    }
+
+    #[test]
+    fn rejects_temp_chains_crossing_memory_write_barriers() {
+        let facts = analyzed(vec![
+            temp("_v1", "i32", var("value")),
+            assign("value", int(1)),
+            temp("_v2", "i32", bin(BinOp::Add, var("_v1"), int(1))),
+        ]);
+
+        assert!(
+            !facts
+                .temp_chains
+                .iter()
+                .any(|fact| { facts.binding_name(fact.binding) == Some("_v1") })
+        );
+    }
+}
