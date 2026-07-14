@@ -124,6 +124,40 @@ fn final_return_temps_are_collapsed() {
 }
 
 #[test]
+fn redundant_singleton_scopes_are_unwrapped() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-singleton-scopes");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    for fixture in ["conditionals", "function_prototypes"] {
+        let c_src = fixtures_dir().join(format!("{fixture}.c"));
+        let generated = tmp.join(format!("{fixture}.generated.rs"));
+        support::translate(&c_src, &generated)
+            .unwrap_or_else(|err| panic!("translate {fixture} fixture: {err}"));
+        let rust = std::fs::read_to_string(&generated)
+            .unwrap_or_else(|err| panic!("read generated {fixture} rust: {err}"));
+
+        assert!(
+            !rust.contains("\n    {\n        if "),
+            "{fixture} kept a redundant top-level if scope"
+        );
+        assert!(
+            !rust.contains("\n        {\n            if "),
+            "{fixture} kept a redundant nested if scope"
+        );
+    }
+
+    let conditionals = std::fs::read_to_string(tmp.join("conditionals.generated.rs"))
+        .expect("read generated conditionals rust");
+    assert!(conditionals.contains("if n < 0 {\n        return -1;"));
+    assert!(conditionals.contains("} else {\n        if n == 0 {"));
+    assert!(conditionals.contains("if n < 10 {\n        r = 10;"));
+
+    let prototypes = std::fs::read_to_string(tmp.join("function_prototypes.generated.rs"))
+        .expect("read generated function_prototypes rust");
+    assert!(prototypes.contains("if n == 0 {\n        return 1;"));
+}
+
+#[test]
 fn compound_assignment_temps_are_inlined() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-compound-fixup");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
