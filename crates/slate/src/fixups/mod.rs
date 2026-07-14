@@ -90,6 +90,21 @@ pub fn apply(program: Program) -> Program {
             rewrite::retval::fixup(f, function, &facts);
         }
     }
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        let mut changed = false;
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            if let Item::Fn(f) = item
+                && let Some(function) = facts.function_by_item_index(item_index)
+                && rewrite::final_return_temps::fixup(&mut f.body, function, &facts)
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
