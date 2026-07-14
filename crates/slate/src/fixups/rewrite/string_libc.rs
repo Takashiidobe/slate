@@ -162,6 +162,10 @@ fn fixup_stmt(
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             fixup_body(body, function, facts, path);
         }
+        Stmt::For { iter, body, .. } => {
+            fixup_expr(iter, function, facts, temps, path);
+            fixup_body(body, function, facts, path);
+        }
         Stmt::While { cond, body } => {
             fixup_expr(cond, function, facts, temps, path);
             fixup_block(body, function, facts, path);
@@ -1192,6 +1196,10 @@ fn stmt_temp_uses_are_zero_comparisons(stmt: &Stmt, name: &str) -> bool {
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             temp_uses_are_zero_comparisons(body, name)
+        }
+        Stmt::For { iter, body, .. } => {
+            expr_temp_uses_are_zero_comparisons(iter, name)
+                && temp_uses_are_zero_comparisons(body, name)
         }
         Stmt::While { cond, body } => {
             expr_temp_uses_are_zero_comparisons(cond, name)

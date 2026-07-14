@@ -112,6 +112,9 @@ fn rewrite_stmt(stmt: &mut Stmt, plans: &[Plan], path: &[PathSegment]) -> bool {
         Stmt::If { cond, .. } | Stmt::While { cond, .. } => {
             changed |= rewrite_expr(cond, &stmt_plans, false);
         }
+        Stmt::For { iter, .. } => {
+            changed |= rewrite_expr(iter, &stmt_plans, false);
+        }
         Stmt::LetIf {
             cond,
             then_value,

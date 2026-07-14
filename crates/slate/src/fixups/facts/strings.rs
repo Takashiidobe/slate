@@ -1035,6 +1035,16 @@ impl<'a> Collector<'a> {
                     self.body(body, path, true)
                 });
             }
+            Stmt::For { pat, iter, body } => {
+                self.expr(iter, path);
+                let binding = self.local_binding(pat, path);
+                walk::with_path_segment(path, PathSegment::ForBody, |path| {
+                    self.scopes.push(BTreeMap::new());
+                    self.bind(pat.to_string(), binding);
+                    self.body(body, path, false);
+                    self.scopes.pop();
+                });
+            }
             Stmt::Scope { body } => {
                 walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
                     self.body(body, path, true)
@@ -1258,9 +1268,7 @@ impl<'a> Collector<'a> {
         init: Option<&Expr>,
         path: &[PathSegment],
     ) {
-        let binding =
-            self.facts
-                .binding_by_local_path(self.function, name, &AstPath(path.to_vec()));
+        let binding = self.local_binding(name, path);
         self.bind(name.to_string(), binding);
         let Some(binding) = binding else {
             return;
@@ -1273,6 +1281,11 @@ impl<'a> Collector<'a> {
             return;
         };
         self.summaries.insert(binding, summary);
+    }
+
+    fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId> {
+        self.facts
+            .binding_by_local_path(self.function, name, &AstPath(path.to_vec()))
     }
 
     fn summary_for_binding(

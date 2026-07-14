@@ -119,6 +119,12 @@ impl Collector {
                     effects.extend(self.body(body, path));
                 });
             }
+            Stmt::For { iter, body, .. } => {
+                effects.extend(self.expr(iter, path));
+                walk::with_path_segment(path, PathSegment::ForBody, |path| {
+                    effects.extend(self.body(body, path));
+                });
+            }
             Stmt::Scope { body } => {
                 walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
                     effects.extend(self.body(body, path));
