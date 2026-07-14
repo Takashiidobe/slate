@@ -657,6 +657,35 @@ fn string_libc_calls_use_lifted_string_operations() {
 }
 
 #[test]
+fn qsort_bsearch_calls_use_slice_sort_and_search() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-qsort-bsearch");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("qsort_bsearch_fixup.c");
+    let generated = tmp.join("qsort_bsearch_fixup.generated.rs");
+    support::translate(&c_src, &generated).expect("translate qsort_bsearch_fixup fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated qsort_bsearch rust");
+
+    assert!(
+        rust.contains(
+            "nums.as_mut_slice().sort_by(|__slate_a, __slate_b| __slate_a.cmp(__slate_b));"
+        )
+    );
+    assert!(
+        rust.contains("nums.as_slice().binary_search_by(|__slate_probe| __slate_probe.cmp(&key))")
+    );
+    assert!(rust.contains(
+        "items.as_mut_slice().sort_by(|__slate_a, __slate_b| __slate_a.key.cmp(&__slate_b.key));"
+    ));
+    assert!(rust.contains(
+        "items.as_slice().binary_search_by(|__slate_probe| __slate_probe.key.cmp(&needle.key))"
+    ));
+    assert!(!rust.contains("fn qsort("));
+    assert!(!rust.contains("fn bsearch("));
+    assert!(!rust.contains("unsafe { qsort("));
+    assert!(!rust.contains("unsafe { bsearch("));
+}
+
+#[test]
 fn numeric_parse_calls_use_runtime_parse_support() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-numeric-parse");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

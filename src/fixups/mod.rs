@@ -144,6 +144,12 @@ pub fn apply(program: Program) -> Program {
     rewrite::string_libc::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_libc::prune_unused_externs(&mut program, &facts);
+    let facts::AnalyzedProgram {
+        mut program,
+        facts: _,
+    } = facts::analyze(program);
+    rewrite::sort_search::fixup(&mut program);
+    rewrite::sort_search::prune_unused_externs(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::heap_ownership::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
