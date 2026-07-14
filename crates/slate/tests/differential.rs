@@ -393,6 +393,23 @@ fn call_lowering_preserves_function_pointer_and_extern_shapes() {
 }
 
 #[test]
+fn function_pointer_presence_checks_use_option_methods() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-fnptr-presence");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_src = fixtures_dir().join("function_pointer_presence.c");
+    let generated = tmp.join("function_pointer_presence.generated.rs");
+    support::translate(&c_src, &generated).expect("translate function pointer presence fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated function pointer rust");
+
+    assert!(rust.contains(".is_some()"));
+    assert!(rust.contains(".is_none()"));
+    assert!(!rust.contains("!= None"));
+    assert!(!rust.contains("== None"));
+    assert!(!rust.contains("std::ptr::null_mut()"));
+}
+
+#[test]
 fn switch_and_dispatch_use_block_match_arms() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-control-ast");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
