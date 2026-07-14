@@ -378,6 +378,7 @@ fn fixup_expr(
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
         | Expr::AtomicFence { .. }
@@ -1311,6 +1312,7 @@ fn expr_temp_uses_are_zero_comparisons(expr: &Expr, name: &str) -> bool {
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
         | Expr::AtomicFence { .. }

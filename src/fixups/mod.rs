@@ -130,6 +130,8 @@ pub fn apply(program: Program) -> Program {
     }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::printf_format::fixup(&mut program, &facts);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::c_strings::fixup(&mut program, &facts);
     program
 }
 

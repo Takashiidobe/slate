@@ -1,3 +1,4 @@
+use crate::fixups::facts::PathSegment;
 pub(in crate::fixups) use crate::fixups::support::walk::{
     nested_bodies_with_path, with_path_segment,
 };
@@ -74,6 +75,7 @@ pub(in crate::fixups) fn exprs(expr: &Expr, f: &mut impl FnMut(&Expr)) {
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
         | Expr::Todo(_)
@@ -175,6 +177,327 @@ pub(in crate::fixups) fn exprs(expr: &Expr, f: &mut impl FnMut(&Expr)) {
     }
 }
 
+pub(in crate::fixups) fn body_exprs_with_path(
+    body: &[IndentStmt],
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&Expr, &mut Vec<PathSegment>),
+) {
+    for (index, indent) in body.iter().enumerate() {
+        with_path_segment(path, PathSegment::Stmt(index), |path| {
+            stmt_exprs_with_path(&indent.stmt, path, f);
+        });
+    }
+}
+
+pub(in crate::fixups) fn block_exprs_with_path(
+    block: &Block,
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&Expr, &mut Vec<PathSegment>),
+) {
+    body_exprs_with_path(&block.stmts, path, f);
+    if let Some(tail) = &block.tail {
+        with_path_segment(path, PathSegment::BlockTail, |path| {
+            exprs_with_path(tail, path, f);
+        });
+    }
+}
+
+pub(in crate::fixups) fn stmt_exprs_with_path(
+    stmt: &Stmt,
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&Expr, &mut Vec<PathSegment>),
+) {
+    match stmt {
+        Stmt::Let { init, .. } => {
+            if let Some(expr) = init {
+                stmt_root_expr_with_path(expr, 0, path, f);
+            }
+        }
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            stmt_root_expr_with_path(cond, 0, path, f);
+            with_path_segment(path, PathSegment::Then, |path| {
+                body_exprs_with_path(then_body, path, f);
+                stmt_root_expr_with_path(then_value, 0, path, f);
+            });
+            with_path_segment(path, PathSegment::Else, |path| {
+                body_exprs_with_path(else_body, path, f);
+                stmt_root_expr_with_path(else_value, 0, path, f);
+            });
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            stmt_root_expr_with_path(target, 0, path, f);
+            stmt_root_expr_with_path(value, 1, path, f);
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => stmt_root_expr_with_path(expr, 0, path, f),
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            stmt_root_expr_with_path(cond, 0, path, f);
+            with_path_segment(path, PathSegment::Then, |path| {
+                body_exprs_with_path(then_body, path, f);
+            });
+            with_path_segment(path, PathSegment::Else, |path| {
+                body_exprs_with_path(else_body, path, f);
+            });
+        }
+        Stmt::Loop { body, .. } => {
+            with_path_segment(path, PathSegment::LoopBody, |path| {
+                body_exprs_with_path(body, path, f);
+            });
+        }
+        Stmt::Scope { body } => {
+            with_path_segment(path, PathSegment::ScopeBody, |path| {
+                body_exprs_with_path(body, path, f);
+            });
+        }
+        Stmt::LabeledBlock { body, .. } => {
+            with_path_segment(path, PathSegment::LabeledBody, |path| {
+                body_exprs_with_path(body, path, f);
+            });
+        }
+        Stmt::Unsafe { body } => {
+            with_path_segment(path, PathSegment::UnsafeBody, |path| {
+                block_exprs_with_path(body, path, f);
+            });
+        }
+        Stmt::While { cond, body } => {
+            stmt_root_expr_with_path(cond, 0, path, f);
+            with_path_segment(path, PathSegment::WhileBody, |path| {
+                block_exprs_with_path(body, path, f);
+            });
+        }
+        Stmt::Block(body) => {
+            with_path_segment(path, PathSegment::BlockBody, |path| {
+                block_exprs_with_path(body, path, f);
+            });
+        }
+        Stmt::Match { expr, arms } => {
+            stmt_root_expr_with_path(expr, 0, path, f);
+            for (index, arm) in arms.iter().enumerate() {
+                with_path_segment(path, PathSegment::MatchArm(index), |path| {
+                    body_exprs_with_path(&arm.body, path, f);
+                });
+            }
+        }
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+    }
+}
+
+fn stmt_root_expr_with_path(
+    expr: &Expr,
+    index: usize,
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&Expr, &mut Vec<PathSegment>),
+) {
+    with_path_segment(path, PathSegment::Expr(index), |path| {
+        exprs_with_path(expr, path, f);
+    });
+}
+
+pub(in crate::fixups) fn exprs_with_path(
+    expr: &Expr,
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&Expr, &mut Vec<PathSegment>),
+) {
+    f(expr, path);
+    match expr {
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::CStr(_)
+        | Expr::Var(_)
+        | Expr::Path(_)
+        | Expr::Todo(_)
+        | Expr::AtomicFence { .. } => {}
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(expr, path, f);
+            });
+        }
+        Expr::Binary { lhs, rhs, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(lhs, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_with_path(rhs, path, f);
+            });
+        }
+        Expr::Call { func, args } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(func, path, f);
+            });
+            for (index, arg) in args.iter().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index + 1), |path| {
+                    exprs_with_path(arg, path, f);
+                });
+            }
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(recv, path, f);
+            });
+            for (index, arg) in args.iter().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index + 1), |path| {
+                    exprs_with_path(arg, path, f);
+                });
+            }
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(base, path, f);
+            });
+        }
+        Expr::Index { base, index } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(base, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_with_path(index, path, f);
+            });
+        }
+        Expr::StructLit { fields, .. } => {
+            for (index, (_, value)) in fields.iter().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index), |path| {
+                    exprs_with_path(value, path, f);
+                });
+            }
+        }
+        Expr::ArrayLit(elems) => {
+            for (index, elem) in elems.iter().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index), |path| {
+                    exprs_with_path(elem, path, f);
+                });
+            }
+        }
+        Expr::ArrayRepeat { elem, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(elem, path, f);
+            });
+        }
+        Expr::Macro { args, .. } => {
+            for (index, arg) in args.iter().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index), |path| {
+                    exprs_with_path(arg, path, f);
+                });
+            }
+        }
+        Expr::Closure { body, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(body, path, f);
+            });
+        }
+        Expr::Match { expr, arms } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(expr, path, f);
+            });
+            for (index, arm) in arms.iter().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index + 1), |path| {
+                    exprs_with_path(&arm.value, path, f);
+                });
+            }
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(cond, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_with_path(then_expr, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(2), |path| {
+                exprs_with_path(else_expr, path, f);
+            });
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            with_path_segment(path, PathSegment::BlockBody, |path| {
+                block_exprs_with_path(block, path, f);
+            });
+        }
+        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(ptr, path, f);
+            });
+        }
+        Expr::AtomicStore { ptr, value, .. }
+        | Expr::AtomicFetch { ptr, value, .. }
+        | Expr::AtomicSwap { ptr, value, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(ptr, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_with_path(value, path, f);
+            });
+        }
+        Expr::AtomicCompareExchange {
+            ptr,
+            expected,
+            desired,
+            ..
+        } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(ptr, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_with_path(expected, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(2), |path| {
+                exprs_with_path(desired, path, f);
+            });
+        }
+        Expr::CopyNonoverlapping { src, dst, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(src, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_with_path(dst, path, f);
+            });
+        }
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(src, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_with_path(dst, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(2), |path| {
+                exprs_with_path(count, path, f);
+            });
+        }
+        Expr::WriteBytes { dst, val, count } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(dst, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_with_path(val, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(2), |path| {
+                exprs_with_path(count, path, f);
+            });
+        }
+    }
+}
+
 pub(in crate::fixups) fn body_exprs_any(
     body: &[IndentStmt],
     pred: &mut impl FnMut(&Expr) -> bool,
@@ -245,6 +568,7 @@ pub(in crate::fixups) fn exprs_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> 
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
         | Expr::Todo(_)
@@ -420,6 +744,7 @@ fn exprs_all_with_hooks(
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
         | Expr::Todo(_)
@@ -601,6 +926,7 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
         | Expr::Todo(_)

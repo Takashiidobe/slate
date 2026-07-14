@@ -289,6 +289,19 @@ fn simple_printfs_are_recovered_as_format_macros() {
 }
 
 #[test]
+fn nul_terminated_char_pointer_literals_use_c_string_syntax() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-c-string-literal");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("c_string_literal.c");
+    let generated = tmp.join("c_string_literal.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate c string literal fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated c string literal rust");
+    assert!(rust.contains("c\"write error\".as_ptr() as *mut i8"));
+    assert!(!rust.contains("b\"write error\\0\".as_ptr()"));
+}
+
+#[test]
 fn control_flow_conditions_drop_redundant_parens() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-redundant-parens");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

@@ -208,6 +208,7 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
         | Expr::Todo(_)
@@ -305,6 +306,331 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
             exprs_mut_with(dst, f);
             exprs_mut_with(val, f);
             exprs_mut_with(count, f);
+        }
+    }
+}
+
+pub(in crate::fixups) fn body_exprs_mut_with_path(
+    body: &mut [IndentStmt],
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&mut Expr, &mut Vec<PathSegment>) -> bool,
+) {
+    for (index, indent) in body.iter_mut().enumerate() {
+        with_path_segment(path, PathSegment::Stmt(index), |path| {
+            stmt_exprs_mut_with_path(&mut indent.stmt, path, f);
+        });
+    }
+}
+
+pub(in crate::fixups) fn block_exprs_mut_with_path(
+    block: &mut Block,
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&mut Expr, &mut Vec<PathSegment>) -> bool,
+) {
+    body_exprs_mut_with_path(&mut block.stmts, path, f);
+    if let Some(tail) = &mut block.tail {
+        with_path_segment(path, PathSegment::BlockTail, |path| {
+            exprs_mut_with_path(tail, path, f);
+        });
+    }
+}
+
+pub(in crate::fixups) fn stmt_exprs_mut_with_path(
+    stmt: &mut Stmt,
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&mut Expr, &mut Vec<PathSegment>) -> bool,
+) {
+    match stmt {
+        Stmt::Let { init, .. } => {
+            if let Some(expr) = init {
+                stmt_root_expr_mut_with_path(expr, 0, path, f);
+            }
+        }
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            stmt_root_expr_mut_with_path(cond, 0, path, f);
+            with_path_segment(path, PathSegment::Then, |path| {
+                body_exprs_mut_with_path(then_body, path, f);
+                stmt_root_expr_mut_with_path(then_value, 0, path, f);
+            });
+            with_path_segment(path, PathSegment::Else, |path| {
+                body_exprs_mut_with_path(else_body, path, f);
+                stmt_root_expr_mut_with_path(else_value, 0, path, f);
+            });
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            stmt_root_expr_mut_with_path(target, 0, path, f);
+            stmt_root_expr_mut_with_path(value, 1, path, f);
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
+            stmt_root_expr_mut_with_path(expr, 0, path, f);
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            stmt_root_expr_mut_with_path(cond, 0, path, f);
+            with_path_segment(path, PathSegment::Then, |path| {
+                body_exprs_mut_with_path(then_body, path, f);
+            });
+            with_path_segment(path, PathSegment::Else, |path| {
+                body_exprs_mut_with_path(else_body, path, f);
+            });
+        }
+        Stmt::Loop { body, .. } => {
+            with_path_segment(path, PathSegment::LoopBody, |path| {
+                body_exprs_mut_with_path(body, path, f);
+            });
+        }
+        Stmt::Scope { body } => {
+            with_path_segment(path, PathSegment::ScopeBody, |path| {
+                body_exprs_mut_with_path(body, path, f);
+            });
+        }
+        Stmt::LabeledBlock { body, .. } => {
+            with_path_segment(path, PathSegment::LabeledBody, |path| {
+                body_exprs_mut_with_path(body, path, f);
+            });
+        }
+        Stmt::Unsafe { body } => {
+            with_path_segment(path, PathSegment::UnsafeBody, |path| {
+                block_exprs_mut_with_path(body, path, f);
+            });
+        }
+        Stmt::While { cond, body } => {
+            stmt_root_expr_mut_with_path(cond, 0, path, f);
+            with_path_segment(path, PathSegment::WhileBody, |path| {
+                block_exprs_mut_with_path(body, path, f);
+            });
+        }
+        Stmt::Block(body) => {
+            with_path_segment(path, PathSegment::BlockBody, |path| {
+                block_exprs_mut_with_path(body, path, f);
+            });
+        }
+        Stmt::Match { expr, arms } => {
+            stmt_root_expr_mut_with_path(expr, 0, path, f);
+            for (index, arm) in arms.iter_mut().enumerate() {
+                with_path_segment(path, PathSegment::MatchArm(index), |path| {
+                    body_exprs_mut_with_path(&mut arm.body, path, f);
+                });
+            }
+        }
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+    }
+}
+
+fn stmt_root_expr_mut_with_path(
+    expr: &mut Expr,
+    index: usize,
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&mut Expr, &mut Vec<PathSegment>) -> bool,
+) {
+    with_path_segment(path, PathSegment::Expr(index), |path| {
+        exprs_mut_with_path(expr, path, f);
+    });
+}
+
+pub(in crate::fixups) fn exprs_mut_with_path(
+    expr: &mut Expr,
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&mut Expr, &mut Vec<PathSegment>) -> bool,
+) {
+    if !f(expr, path) {
+        return;
+    }
+    match expr {
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::CStr(_)
+        | Expr::Var(_)
+        | Expr::Path(_)
+        | Expr::Todo(_)
+        | Expr::AtomicFence { .. } => {}
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(expr, path, f);
+            });
+        }
+        Expr::Binary { lhs, rhs, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(lhs, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_mut_with_path(rhs, path, f);
+            });
+        }
+        Expr::Call { func, args } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(func, path, f);
+            });
+            for (index, arg) in args.iter_mut().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index + 1), |path| {
+                    exprs_mut_with_path(arg, path, f);
+                });
+            }
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(recv, path, f);
+            });
+            for (index, arg) in args.iter_mut().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index + 1), |path| {
+                    exprs_mut_with_path(arg, path, f);
+                });
+            }
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(base, path, f);
+            });
+        }
+        Expr::Index { base, index } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(base, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_mut_with_path(index, path, f);
+            });
+        }
+        Expr::StructLit { fields, .. } => {
+            for (index, (_, value)) in fields.iter_mut().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index), |path| {
+                    exprs_mut_with_path(value, path, f);
+                });
+            }
+        }
+        Expr::ArrayLit(elems) => {
+            for (index, elem) in elems.iter_mut().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index), |path| {
+                    exprs_mut_with_path(elem, path, f);
+                });
+            }
+        }
+        Expr::ArrayRepeat { elem, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(elem, path, f);
+            });
+        }
+        Expr::Macro { args, .. } => {
+            for (index, arg) in args.iter_mut().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index), |path| {
+                    exprs_mut_with_path(arg, path, f);
+                });
+            }
+        }
+        Expr::Closure { body, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(body, path, f);
+            });
+        }
+        Expr::Match { expr, arms } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(expr, path, f);
+            });
+            for (index, arm) in arms.iter_mut().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index + 1), |path| {
+                    exprs_mut_with_path(&mut arm.value, path, f);
+                });
+            }
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(cond, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_mut_with_path(then_expr, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(2), |path| {
+                exprs_mut_with_path(else_expr, path, f);
+            });
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            with_path_segment(path, PathSegment::BlockBody, |path| {
+                block_exprs_mut_with_path(block, path, f);
+            });
+        }
+        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(ptr, path, f);
+            });
+        }
+        Expr::AtomicStore { ptr, value, .. }
+        | Expr::AtomicFetch { ptr, value, .. }
+        | Expr::AtomicSwap { ptr, value, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(ptr, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_mut_with_path(value, path, f);
+            });
+        }
+        Expr::AtomicCompareExchange {
+            ptr,
+            expected,
+            desired,
+            ..
+        } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(ptr, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_mut_with_path(expected, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(2), |path| {
+                exprs_mut_with_path(desired, path, f);
+            });
+        }
+        Expr::CopyNonoverlapping { src, dst, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(src, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_mut_with_path(dst, path, f);
+            });
+        }
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(src, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_mut_with_path(dst, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(2), |path| {
+                exprs_mut_with_path(count, path, f);
+            });
+        }
+        Expr::WriteBytes { dst, val, count } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(dst, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_mut_with_path(val, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(2), |path| {
+                exprs_mut_with_path(count, path, f);
+            });
         }
     }
 }
