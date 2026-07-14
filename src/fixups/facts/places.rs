@@ -147,6 +147,7 @@ impl Collector {
             | Expr::Str(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
+            | Expr::CStr(_)
             | Expr::Var(_)
             | Expr::Path(_)
             | Expr::Todo(_)
