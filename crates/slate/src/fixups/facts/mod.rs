@@ -229,9 +229,6 @@ pub(super) struct CallSignatureFact {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum CallSignatureSource {
     Function(FunctionId),
-    FuncItem {
-        item_index: usize,
-    },
     Extern {
         item_index: usize,
         decl_index: usize,

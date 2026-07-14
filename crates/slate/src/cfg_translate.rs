@@ -516,7 +516,6 @@ fn item_key(item: &Item) -> String {
         Item::CrateAttrs(_) => "crate-attrs".into(),
         Item::Comment(comment) => format!("comment:{}", comment.lines.join("\n")),
         Item::ExternBlock { .. } => "extern".into(),
-        Item::Func(f) => format!("fn:{}", f.name),
         Item::Fn(f) => format!("fn:{}", f.name),
         Item::Static { name, .. } => format!("static:{name}"),
         Item::Mod { name } => format!("mod:{name}"),

@@ -14,8 +14,8 @@ use std::fmt::{self, Write};
 
 use crate::rust_ast::{
     AtomicOrdering, AtomicRmwOp, AtomicType, Attr, Block, Cfg, Comment, CrateAttr, Derive, Expr,
-    ExternDecl, FnDef, Func, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method, Path,
-    Program, RecordDef, Repr, RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
+    ExternDecl, FnDef, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method, Path, Program,
+    RecordDef, Repr, RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
 };
 
 const INDENT: &str = "    ";
@@ -112,7 +112,6 @@ impl<W: Write> Codegen<W> {
 
     fn item(&mut self, item: &Item) -> fmt::Result {
         match item {
-            Item::Func(f) => self.func(f)?,
             Item::Fn(f) => self.fn_def(f)?,
             Item::Comment(comment) => self.comment(comment, 0)?,
             Item::CrateAttrs(attrs) => {
@@ -488,25 +487,6 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str(";\n")
             }
         }
-    }
-
-    fn func(&mut self, f: &Func) -> fmt::Result {
-        write!(self.out, "fn {}(", f.name)?;
-        for (i, p) in f.params.iter().enumerate() {
-            if i > 0 {
-                self.out.write_str(", ")?;
-            }
-            write!(self.out, "{}: ", p.name)?;
-            self.ty(&p.ty)?;
-        }
-        self.out.write_char(')')?;
-        if let Some(ret) = &f.ret {
-            self.out.write_str(" -> ")?;
-            self.ty(ret)?;
-        }
-        self.out.write_str(" {\n")?;
-        self.block(&f.body, 1)?;
-        self.out.write_str("}\n")
     }
 
     fn block(&mut self, block: &Block, depth: usize) -> fmt::Result {
