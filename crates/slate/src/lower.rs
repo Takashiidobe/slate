@@ -1655,10 +1655,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if let Some(global) = self.global_name(ptr) {
             Self::unsafe_expr(Expr::Var(global.into()))
         } else if let Some(member) = self.member_ptrs.get(ptr) {
-            Self::unsafe_expr(Expr::Field {
+            let place = Expr::Field {
                 base: Box::new(member.base.clone()),
                 field: member.field.clone(),
-            })
+            };
+            if member.unsafe_access {
+                Self::unsafe_expr(place)
+            } else {
+                place
+            }
         } else if let Some(element) = self.element_ptrs.get(ptr) {
             let place = self.element_place_expr(element);
             if element.unsafe_access {
