@@ -333,6 +333,7 @@ pub(super) struct StringBufferFact {
 pub(super) enum StringBufferKind {
     CharArray,
     BorrowedStr,
+    BorrowedCStr,
     BorrowedBytes,
     OwnedString,
 }
@@ -357,6 +358,7 @@ pub(super) enum NulTermination {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) enum StringRecoveryCandidate {
     BorrowedStr,
+    BorrowedCStr,
     BorrowedBytes,
     OwnedString,
 }
