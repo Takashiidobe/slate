@@ -16,4 +16,5 @@ pub(super) mod sort_search;
 pub(super) mod string_copy;
 pub(super) mod string_libc;
 pub(super) mod string_lift;
+pub(super) mod string_params;
 pub(super) mod zero_init;
