@@ -864,8 +864,12 @@ fn ptr_len_pairs_use_slice_params_for_full_array_calls() {
     assert!(rust.contains("fn sum(mut items: &mut [i32]) -> i32"));
     assert!(rust.contains("fn bump(mut items: &mut [i32]) -> ()"));
     assert!(rust.contains("let len: i32 = items.len() as i32;"));
+    assert!(rust.contains("let _v7: i32 = items[(i as usize)];"));
+    assert!(rust.contains("items[(i as usize)] = _v8;"));
     assert!(rust.contains("sum(values.as_mut_slice())"));
     assert!(rust.contains("bump(values.as_mut_slice())"));
+    assert!(!rust.contains(".offset("));
+    assert!(!rust.contains("items.as_mut_ptr()"));
     assert!(!rust.contains("sum(values.as_mut_ptr(), 4)"));
     assert!(!rust.contains("bump(values.as_mut_ptr(), 4)"));
 }
