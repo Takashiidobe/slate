@@ -112,6 +112,15 @@ fn stmt(
                 body(function, nested, &mut nested_env, path, calls)
             });
         }
+        Stmt::For {
+            iter, body: nested, ..
+        } => {
+            visit_expr(function, iter, env, path, calls);
+            let mut nested_env = env.clone();
+            walk::with_path_segment(path, PathSegment::ForBody, |path| {
+                body(function, nested, &mut nested_env, path, calls)
+            });
+        }
         Stmt::Scope { body: nested } => {
             let mut nested_env = env.clone();
             walk::with_path_segment(path, PathSegment::ScopeBody, |path| {

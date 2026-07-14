@@ -150,6 +150,7 @@ impl Collector {
                 ..
             } => self.branch(then_body, else_body, path, reachable),
             Stmt::Loop { label, body } => self.loop_stmt(label.as_ref(), body, path, reachable),
+            Stmt::For { body, .. } => self.for_stmt(body, path, reachable),
             Stmt::While { body, .. } => self.while_stmt(body, path, reachable),
             Stmt::Scope { body } => walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
                 self.body(body, path, reachable)
@@ -255,6 +256,33 @@ impl Collector {
     ) -> Summary {
         let body_summary = walk::with_path_segment(path, PathSegment::WhileBody, |path| {
             self.block(body, path, reachable)
+        });
+        let mut exits = BTreeSet::new();
+        for exit in body_summary.exits {
+            match exit {
+                ControlFlowExit::Break(None) | ControlFlowExit::Continue(None) => {}
+                _ => {
+                    exits.insert(exit);
+                }
+            }
+        }
+        Summary {
+            reachable,
+            falls_through: reachable,
+            exits,
+            has_unreachable_tail: body_summary.has_unreachable_tail,
+            expression_eligible: false,
+        }
+    }
+
+    fn for_stmt(
+        &mut self,
+        body: &[IndentStmt],
+        path: &mut Vec<PathSegment>,
+        reachable: bool,
+    ) -> Summary {
+        let body_summary = walk::with_path_segment(path, PathSegment::ForBody, |path| {
+            self.body(body, path, reachable)
         });
         let mut exits = BTreeSet::new();
         for exit in body_summary.exits {

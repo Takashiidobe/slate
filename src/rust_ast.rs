@@ -409,6 +409,11 @@ pub enum Stmt {
         label: Option<Label>,
         body: Vec<IndentStmt>,
     },
+    For {
+        pat: String,
+        iter: Expr,
+        body: Vec<IndentStmt>,
+    },
     Scope {
         body: Vec<IndentStmt>,
     },
@@ -1062,6 +1067,19 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.substitute_var(name, replacement),
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
+        Stmt::For { iter, body, pat } => {
+            let mut changed = if pat == name {
+                false
+            } else {
+                iter.substitute_var(name, replacement)
+            };
+            if pat != name {
+                for stmt in body {
+                    changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                }
+            }
+            changed
+        }
         Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             let mut changed = false;
             for stmt in body {

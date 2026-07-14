@@ -85,6 +85,7 @@ impl<'a> Collector<'a> {
                 ..
             } => self.collect_let(name, ty.as_ref(), init, path),
             Stmt::Loop { .. } => {}
+            Stmt::For { iter, .. } => self.collect_expr_offsets(iter, path),
             Stmt::While { cond, .. } => self.collect_expr_offsets(cond, path),
             Stmt::Unsafe { .. } | Stmt::Block(_) => {}
             Stmt::LetIf {

@@ -91,6 +91,7 @@ impl<'a> Collector<'a> {
             | Stmt::Unsafe { .. }
             | Stmt::If { .. }
             | Stmt::Loop { .. }
+            | Stmt::For { .. }
             | Stmt::Scope { .. }
             | Stmt::LabeledBlock { .. }
             | Stmt::Match { .. }

@@ -103,6 +103,10 @@ impl Collector {
             Stmt::Loop { body, .. } => {
                 walk::with_path_segment(path, PathSegment::LoopBody, |path| self.body(body, path));
             }
+            Stmt::For { iter, body, .. } => {
+                self.expr(iter, path);
+                walk::with_path_segment(path, PathSegment::ForBody, |path| self.body(body, path));
+            }
             Stmt::Scope { body } => {
                 walk::with_path_segment(path, PathSegment::ScopeBody, |path| self.body(body, path));
             }
