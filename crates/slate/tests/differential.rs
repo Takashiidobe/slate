@@ -743,7 +743,7 @@ fn string_libc_calls_use_lifted_string_operations() {
 }
 
 #[test]
-fn memchr_helper_uses_slice_position() {
+fn memchr_calls_use_iter_position_when_source_is_iterable() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memchr-helper");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
     let c_src = fixtures_dir().join("mem_memchr.c");
@@ -751,11 +751,12 @@ fn memchr_helper_uses_slice_position() {
     support::translate(&c_src, &generated).expect("translate mem_memchr fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated mem_memchr rust");
 
-    assert!(rust.contains("fn __slate_memchr("));
-    assert!(rust.contains("let haystack = unsafe { std::slice::from_raw_parts(bytes, n) };"));
-    assert!(rust.contains("haystack.iter().position(|x| *x == b)"));
-    assert!(rust.contains("Some(i) => unsafe { bytes.add(i) as *mut core::ffi::c_void }"));
-    assert!(rust.contains("None => std::ptr::null_mut()"));
+    assert!(rust.contains("buf.as_slice().iter().position("));
+    assert!(rust.contains("(*__slate_byte as u8) == ((_v1 as i32) as u8)"));
+    assert!(rust.contains("Some(3).map_or(std::ptr::null_mut()"));
+    assert!(rust.contains("word.as_mut_ptr().add(__slate_index)"));
+    assert!(!rust.contains("fn __slate_memchr("));
+    assert!(!rust.contains("from_raw_parts"));
     assert!(!rust.contains("while i < n"));
 }
 
