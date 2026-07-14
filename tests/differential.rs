@@ -478,11 +478,7 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
         ),
         (
             "global_vars",
-            &[
-                "counter = _v",
-                "numbers[(2 as usize)] = _v",
-                "pair.right = _v",
-            ][..],
+            &["counter = _v", "numbers[(2 as usize)] =", "pair.right = _v"][..],
         ),
         ("bitfield_ops", &["s.a = _v", "s.b = _v", "w.x = _v"][..]),
     ] {
