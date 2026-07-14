@@ -111,8 +111,28 @@ fn final_return_temps_are_collapsed() {
 
     let arrays = std::fs::read_to_string(tmp.join("arrays.generated.rs"))
         .expect("read generated arrays rust");
-    assert!(arrays.contains("return values[(2 as usize)];"));
+    assert!(arrays.contains("return values[2];"));
     assert!(arrays.contains("return values[((index as i64) as usize)];"));
+    assert!(
+        !arrays.contains("(0 as usize)")
+            && !arrays.contains("(1 as usize)")
+            && !arrays.contains("(2 as usize)"),
+        "arrays kept literal index casts"
+    );
+
+    let array_types = fixtures_dir().join("array_types.c");
+    let array_types_generated = tmp.join("array_types.generated.rs");
+    support::translate(&array_types, &array_types_generated)
+        .expect("translate array_types fixture");
+    let array_types_rust =
+        std::fs::read_to_string(&array_types_generated).expect("read generated array_types rust");
+    assert!(
+        !array_types_rust.contains("(0 as usize)")
+            && !array_types_rust.contains("(1 as usize)")
+            && !array_types_rust.contains("(2 as usize)"),
+        "array_types kept literal index casts"
+    );
+    assert!(array_types_rust.contains("return values[((index as i64) as usize)];"));
 
     let pointers = std::fs::read_to_string(tmp.join("pointers.generated.rs"))
         .expect("read generated pointers rust");
@@ -547,15 +567,12 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
     for (fixture, expected) in [
         (
             "pointers",
-            &["local = value;", "*slot = _v", "values[(2 as usize)] = 12;"][..],
+            &["local = value;", "*slot = _v", "values[2] = 12;"][..],
         ),
-        (
-            "struct_with_array",
-            &["b.data[(0 as usize)] = 10;", "b.len = 3;"][..],
-        ),
+        ("struct_with_array", &["b.data[0] = 10;", "b.len = 3;"][..]),
         (
             "global_vars",
-            &["counter = _v", "numbers[(2 as usize)] =", "pair.right = _v"][..],
+            &["counter = _v", "numbers[2] =", "pair.right = _v"][..],
         ),
         ("bitfield_ops", &["s.a = _v", "s.b = _v", "w.x = _v"][..]),
     ] {
