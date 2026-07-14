@@ -134,12 +134,24 @@ pub fn apply(program: Program) -> Program {
             rewrite::string_lift::fixup(&mut f.body, function, &facts);
         }
     }
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        if !rewrite::string_params::fixup(&mut program, &facts) {
+            break;
+        }
+    }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::ptr_len::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_copy::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_copy::prune_unused_externs(&mut program, &facts);
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        if !rewrite::string_params::fixup(&mut program, &facts) {
+            break;
+        }
+    }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_libc::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
@@ -164,6 +176,16 @@ pub fn apply(program: Program) -> Program {
     }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::printf_format::fixup(&mut program, &facts);
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        if !rewrite::string_params::fixup(&mut program, &facts) {
+            break;
+        }
+    }
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::string_libc::fixup(&mut program, &facts);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::string_libc::prune_unused_externs(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::c_strings::fixup(&mut program, &facts);
     for item in &mut program.items {
