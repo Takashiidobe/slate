@@ -743,6 +743,23 @@ fn string_libc_calls_use_lifted_string_operations() {
 }
 
 #[test]
+fn memchr_helper_uses_slice_position() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memchr-helper");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("mem_memchr.c");
+    let generated = tmp.join("mem_memchr.generated.rs");
+    support::translate(&c_src, &generated).expect("translate mem_memchr fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated mem_memchr rust");
+
+    assert!(rust.contains("fn __slate_memchr("));
+    assert!(rust.contains("let haystack = unsafe { std::slice::from_raw_parts(bytes, n) };"));
+    assert!(rust.contains("haystack.iter().position(|x| *x == b)"));
+    assert!(rust.contains("Some(i) => unsafe { bytes.add(i) as *mut core::ffi::c_void }"));
+    assert!(rust.contains("None => std::ptr::null_mut()"));
+    assert!(!rust.contains("while i < n"));
+}
+
+#[test]
 fn internal_char_pointer_params_lift_to_str() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-string-param-lift");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
