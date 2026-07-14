@@ -6,7 +6,7 @@ use crate::fixups::facts::{
     AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment,
 };
 use crate::fixups::support::walk;
-use crate::rust_ast::{Block, Expr, IndentStmt, Stmt};
+use crate::rust_ast::{Block, Expr, IndentStmt, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(
     body: &mut Vec<IndentStmt>,
@@ -32,6 +32,7 @@ fn fixup_at(
             name,
             mutable: false,
             init: Some(init),
+            ty,
             ..
         } = &body[i].stmt
         else {
@@ -46,7 +47,9 @@ fn fixup_at(
         };
         let name = name.clone();
         let init = init.clone();
-        let Some(use_index) = temp_chain_use_index(body, i, binding, function, facts, path) else {
+        let Some(use_index) =
+            temp_chain_use_index(body, i, binding, ty.as_ref(), function, facts, path)
+        else {
             continue;
         };
         if body[use_index].stmt.substitute_var(&name, &init) {
@@ -117,6 +120,7 @@ fn temp_chain_use_index(
     body: &[IndentStmt],
     def_index: usize,
     binding: crate::fixups::facts::BindingId,
+    ty: Option<&Type>,
     function: FunctionId,
     facts: &FixupFacts,
     body_path: &[PathSegment],
@@ -131,8 +135,10 @@ fn temp_chain_use_index(
         return None;
     }
     let use_path = stmt_path(body_path, use_index);
-    if stmt_contains_call(function, facts, &use_path)
-        || is_receiver_use(&body[use_index].stmt, binding_name(facts, binding)?)
+    let name = binding_name(facts, binding)?;
+    let allowed_receiver = is_option_receiver_use(&body[use_index].stmt, name, ty);
+    if (stmt_contains_call(function, facts, &use_path) && !allowed_receiver)
+        || (is_receiver_use(&body[use_index].stmt, name) && !allowed_receiver)
     {
         return None;
     }
@@ -159,6 +165,30 @@ fn is_receiver_use(stmt: &Stmt, name: &str) -> bool {
         };
         matches!(receiver, Some(Expr::Var(v)) if v.as_str() == name)
     })
+}
+
+fn is_option_receiver_use(stmt: &Stmt, name: &str, ty: Option<&Type>) -> bool {
+    if !ty.is_some_and(is_option_like_type) {
+        return false;
+    }
+    walk::stmt_expr_any(stmt, &mut |expr| {
+        matches!(
+            expr,
+            Expr::MethodCall { recv, method, args }
+                if matches!(method.as_str(), "is_some" | "is_none" | "unwrap")
+                    && args.is_empty()
+                    && matches!(&**recv, Expr::Var(v) if v.as_str() == name)
+        )
+    })
+}
+
+fn is_option_like_type(ty: &Type) -> bool {
+    match ty {
+        Type::FnPtr { .. } => true,
+        Type::Generic { name, .. } => name == "Option",
+        Type::Custom(name) => name.starts_with("Option<"),
+        _ => false,
+    }
 }
 
 fn is_temp_name(name: &str) -> bool {
@@ -431,6 +461,36 @@ fn f() {
     let _v0: i32 = 2147483647;
     let _v1: i32 = 1;
     let _v2 = _v0.overflowing_add(_v1);
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_option_presence_check_receivers() {
+        let out = inlined(vec![
+            temp("_v0", "Option<fn(i32) -> i32>", var("op")),
+            Stmt::If {
+                cond: Expr::MethodCall {
+                    recv: Box::new(var("_v0")),
+                    method: "is_some".into(),
+                    args: vec![],
+                },
+                then_body: vec![IndentStmt {
+                    depth: 0,
+                    stmt: Stmt::Return(Some(var("value"))),
+                }],
+                else_body: vec![],
+            },
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    if op.is_some() {
+        return value;
+    }
 }
 "
         );

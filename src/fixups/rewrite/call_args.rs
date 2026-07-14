@@ -60,13 +60,14 @@ fn fixup_at(
         };
         let name = name.clone();
         let init = init.clone();
-        let Some((use_index, slot)) = single_arg_use(body, i, binding, function, facts, path)
+        let Some((use_index, arg_use)) = single_arg_use(body, i, binding, function, facts, path)
         else {
             continue;
         };
+        let slot = arg_use.slot();
         let mut arg_path = stmt_path(path, use_index);
         arg_path.push(PathSegment::Expr(slot + 1));
-        if !inlinable(function, facts, &def_path, &arg_path) {
+        if !inlinable(function, facts, &def_path, &arg_path, arg_use) {
             continue;
         }
         if body[use_index].stmt.substitute_var(&name, &init) {
@@ -131,10 +132,9 @@ fn fixup_nested(
     false
 }
 
-/// The single use of `name` after `def_index`, as `(use_index, callee, slot)`,
-/// when that use is a top-level argument of a `name`-free call to a plain-ident
-/// callee and every statement in between is a pure temp-let (so the definition
-/// can move to the use site without crossing a side effect).
+/// The single use of `name` after `def_index`, as `(use_index, arg_use)`,
+/// when that use is a top-level argument of a pinned call and every statement in
+/// between is a pure temp-let.
 fn single_arg_use(
     body: &[IndentStmt],
     def_index: usize,
@@ -142,7 +142,7 @@ fn single_arg_use(
     function: FunctionId,
     facts: &FixupFacts,
     body_path: &[PathSegment],
-) -> Option<(usize, usize)> {
+) -> Option<(usize, ArgUse)> {
     let reads = &facts.def_use(binding)?.reads;
     if reads.len() != 1 {
         return None;
@@ -152,7 +152,7 @@ fn single_arg_use(
         return None;
     }
     let name = binding_name(facts, binding)?;
-    let slot = find_arg_slot(&body[use_index].stmt, name)?;
+    let arg_use = find_arg_use(&body[use_index].stmt, name)?;
     for index in def_index + 1..use_index {
         if !is_pure_temp_let(
             &body[index].stmt,
@@ -163,25 +163,37 @@ fn single_arg_use(
             return None;
         }
     }
-    Some((use_index, slot))
+    Some((use_index, arg_use))
 }
 
-fn find_arg_slot(stmt: &Stmt, name: &str) -> Option<usize> {
-    match stmt {
-        Stmt::Let { init, .. } => init
-            .as_ref()
-            .and_then(|expr| find_arg_slot_expr(expr, name)),
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            find_arg_slot_expr(target, name).or_else(|| find_arg_slot_expr(value, name))
+#[derive(Clone, Copy)]
+enum ArgUse {
+    DirectCall { slot: usize },
+    FunctionPointerCall { slot: usize },
+}
+
+impl ArgUse {
+    fn slot(self) -> usize {
+        match self {
+            ArgUse::DirectCall { slot } | ArgUse::FunctionPointerCall { slot } => slot,
         }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => find_arg_slot_expr(expr, name),
+    }
+}
+
+fn find_arg_use(stmt: &Stmt, name: &str) -> Option<ArgUse> {
+    match stmt {
+        Stmt::Let { init, .. } => init.as_ref().and_then(|expr| find_arg_use_expr(expr, name)),
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            find_arg_use_expr(target, name).or_else(|| find_arg_use_expr(value, name))
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => find_arg_use_expr(expr, name),
         Stmt::If {
             cond,
             then_body,
             else_body,
-        } => find_arg_slot_expr(cond, name)
-            .or_else(|| find_arg_slot_body(then_body, name))
-            .or_else(|| find_arg_slot_body(else_body, name)),
+        } => find_arg_use_expr(cond, name)
+            .or_else(|| find_arg_use_body(then_body, name))
+            .or_else(|| find_arg_use_body(else_body, name)),
         Stmt::LetIf {
             cond,
             then_body,
@@ -189,42 +201,46 @@ fn find_arg_slot(stmt: &Stmt, name: &str) -> Option<usize> {
             else_body,
             else_value,
             ..
-        } => find_arg_slot_expr(cond, name)
-            .or_else(|| find_arg_slot_body(then_body, name))
-            .or_else(|| find_arg_slot_expr(then_value, name))
-            .or_else(|| find_arg_slot_body(else_body, name))
-            .or_else(|| find_arg_slot_expr(else_value, name)),
+        } => find_arg_use_expr(cond, name)
+            .or_else(|| find_arg_use_body(then_body, name))
+            .or_else(|| find_arg_use_expr(then_value, name))
+            .or_else(|| find_arg_use_body(else_body, name))
+            .or_else(|| find_arg_use_expr(else_value, name)),
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            find_arg_slot_body(body, name)
+            find_arg_use_body(body, name)
         }
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-            find_arg_slot_body(&body.stmts, name).or_else(|| {
+            find_arg_use_body(&body.stmts, name).or_else(|| {
                 body.tail
                     .as_deref()
-                    .and_then(|tail| find_arg_slot_expr(tail, name))
+                    .and_then(|tail| find_arg_use_expr(tail, name))
             })
         }
-        Stmt::Match { expr, arms } => find_arg_slot_expr(expr, name).or_else(|| {
+        Stmt::Match { expr, arms } => find_arg_use_expr(expr, name).or_else(|| {
             arms.iter()
-                .find_map(|arm| find_arg_slot_body(&arm.body, name))
+                .find_map(|arm| find_arg_use_body(&arm.body, name))
         }),
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => None,
     }
 }
 
-fn find_arg_slot_body(body: &[IndentStmt], name: &str) -> Option<usize> {
+fn find_arg_use_body(body: &[IndentStmt], name: &str) -> Option<ArgUse> {
     body.iter()
-        .find_map(|indent| find_arg_slot(&indent.stmt, name))
+        .find_map(|indent| find_arg_use(&indent.stmt, name))
 }
 
-fn find_arg_slot_expr(expr: &Expr, name: &str) -> Option<usize> {
+fn find_arg_use_expr(expr: &Expr, name: &str) -> Option<ArgUse> {
     if let Expr::Call { func, args } = expr
-        && matches!(&**func, Expr::Var(_))
         && let Some(slot) = args
             .iter()
             .position(|arg| matches!(arg, Expr::Var(v) if v.as_str() == name))
     {
-        return Some(slot);
+        if matches!(&**func, Expr::Var(_)) {
+            return Some(ArgUse::DirectCall { slot });
+        }
+        if is_option_unwrap_callee(func) {
+            return Some(ArgUse::FunctionPointerCall { slot });
+        }
     }
     match expr {
         Expr::Unary { expr, .. }
@@ -234,70 +250,70 @@ fn find_arg_slot_expr(expr: &Expr, name: &str) -> Option<usize> {
         | Expr::Transmute { expr, .. }
         | Expr::Closure { body: expr, .. }
         | Expr::AtomicRef { ptr: expr, .. }
-        | Expr::AtomicLoad { ptr: expr, .. } => find_arg_slot_expr(expr, name),
+        | Expr::AtomicLoad { ptr: expr, .. } => find_arg_use_expr(expr, name),
         Expr::Binary { lhs, rhs, .. }
         | Expr::Index {
             base: lhs,
             index: rhs,
-        } => find_arg_slot_expr(lhs, name).or_else(|| find_arg_slot_expr(rhs, name)),
-        Expr::Call { func, args } => find_arg_slot_expr(func, name)
-            .or_else(|| args.iter().find_map(|arg| find_arg_slot_expr(arg, name))),
+        } => find_arg_use_expr(lhs, name).or_else(|| find_arg_use_expr(rhs, name)),
+        Expr::Call { func, args } => find_arg_use_expr(func, name)
+            .or_else(|| args.iter().find_map(|arg| find_arg_use_expr(arg, name))),
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            find_arg_slot_expr(recv, name)
-                .or_else(|| args.iter().find_map(|arg| find_arg_slot_expr(arg, name)))
+            find_arg_use_expr(recv, name)
+                .or_else(|| args.iter().find_map(|arg| find_arg_use_expr(arg, name)))
         }
         Expr::Field { base, .. }
         | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => find_arg_slot_expr(base, name),
+        | Expr::ArrayPtr { array: base, .. } => find_arg_use_expr(base, name),
         Expr::StructLit { fields, .. } => fields
             .iter()
-            .find_map(|(_, value)| find_arg_slot_expr(value, name)),
-        Expr::ArrayLit(elems) => elems.iter().find_map(|elem| find_arg_slot_expr(elem, name)),
-        Expr::ArrayRepeat { elem, .. } => find_arg_slot_expr(elem, name),
-        Expr::Macro { args, .. } => args.iter().find_map(|arg| find_arg_slot_expr(arg, name)),
-        Expr::Match { expr, arms } => find_arg_slot_expr(expr, name).or_else(|| {
+            .find_map(|(_, value)| find_arg_use_expr(value, name)),
+        Expr::ArrayLit(elems) => elems.iter().find_map(|elem| find_arg_use_expr(elem, name)),
+        Expr::ArrayRepeat { elem, .. } => find_arg_use_expr(elem, name),
+        Expr::Macro { args, .. } => args.iter().find_map(|arg| find_arg_use_expr(arg, name)),
+        Expr::Match { expr, arms } => find_arg_use_expr(expr, name).or_else(|| {
             arms.iter()
-                .find_map(|arm| find_arg_slot_expr(&arm.value, name))
+                .find_map(|arm| find_arg_use_expr(&arm.value, name))
         }),
         Expr::If {
             cond,
             then_expr,
             else_expr,
-        } => find_arg_slot_expr(cond, name)
-            .or_else(|| find_arg_slot_expr(then_expr, name))
-            .or_else(|| find_arg_slot_expr(else_expr, name)),
+        } => find_arg_use_expr(cond, name)
+            .or_else(|| find_arg_use_expr(then_expr, name))
+            .or_else(|| find_arg_use_expr(else_expr, name)),
         Expr::Block(block) | Expr::Unsafe(block) => {
-            find_arg_slot_body(&block.stmts, name).or_else(|| {
+            find_arg_use_body(&block.stmts, name).or_else(|| {
                 block
                     .tail
                     .as_deref()
-                    .and_then(|tail| find_arg_slot_expr(tail, name))
+                    .and_then(|tail| find_arg_use_expr(tail, name))
             })
         }
         Expr::AtomicStore { ptr, value, .. }
         | Expr::AtomicFetch { ptr, value, .. }
         | Expr::AtomicSwap { ptr, value, .. } => {
-            find_arg_slot_expr(ptr, name).or_else(|| find_arg_slot_expr(value, name))
+            find_arg_use_expr(ptr, name).or_else(|| find_arg_use_expr(value, name))
         }
         Expr::AtomicCompareExchange {
             ptr,
             expected,
             desired,
             ..
-        } => find_arg_slot_expr(ptr, name)
-            .or_else(|| find_arg_slot_expr(expected, name))
-            .or_else(|| find_arg_slot_expr(desired, name)),
+        } => find_arg_use_expr(ptr, name)
+            .or_else(|| find_arg_use_expr(expected, name))
+            .or_else(|| find_arg_use_expr(desired, name)),
         Expr::CopyNonoverlapping { src, dst, .. } => {
-            find_arg_slot_expr(src, name).or_else(|| find_arg_slot_expr(dst, name))
+            find_arg_use_expr(src, name).or_else(|| find_arg_use_expr(dst, name))
         }
         Expr::PtrCopy {
             src, dst, count, ..
-        } => find_arg_slot_expr(src, name)
-            .or_else(|| find_arg_slot_expr(dst, name))
-            .or_else(|| find_arg_slot_expr(count, name)),
-        Expr::WriteBytes { dst, val, count } => find_arg_slot_expr(dst, name)
-            .or_else(|| find_arg_slot_expr(val, name))
-            .or_else(|| find_arg_slot_expr(count, name)),
+        } => find_arg_use_expr(src, name)
+            .or_else(|| find_arg_use_expr(dst, name))
+            .or_else(|| find_arg_use_expr(count, name)),
+        Expr::WriteBytes { dst, val, count } => find_arg_use_expr(dst, name)
+            .or_else(|| find_arg_use_expr(val, name))
+            .or_else(|| find_arg_use_expr(count, name)),
         Expr::Value(_)
         | Expr::Str(_)
         | Expr::HexFloat(_)
@@ -310,12 +326,23 @@ fn find_arg_slot_expr(expr: &Expr, name: &str) -> Option<usize> {
     }
 }
 
+fn is_option_unwrap_callee(expr: &Expr) -> bool {
+    matches!(
+        expr,
+        Expr::MethodCall { method, args, .. } if method == "unwrap" && args.is_empty()
+    )
+}
+
 fn inlinable(
     function: FunctionId,
     facts: &FixupFacts,
     def_path: &[PathSegment],
     arg_path: &[PathSegment],
+    arg_use: ArgUse,
 ) -> bool {
+    if matches!(arg_use, ArgUse::FunctionPointerCall { .. }) {
+        return is_pure_expr(function, facts, def_path);
+    }
     if facts
         .callsite(function, &AstPath(def_path.to_vec()))
         .is_some_and(|callsite| {
@@ -508,6 +535,33 @@ fn f() {
 fn f() {
     let _v0: i32 = 5;
     mystery(_v0);
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_pure_args_into_function_pointer_call() {
+        let out = run(
+            vec![],
+            vec![
+                temp("_v0", "i32", var("value")),
+                Stmt::Return(Some(Expr::Call {
+                    func: Box::new(Expr::MethodCall {
+                        recv: Box::new(var("op")),
+                        method: "unwrap".into(),
+                        args: vec![],
+                    }),
+                    args: vec![var("_v0")],
+                })),
+            ],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    return op.unwrap()(value);
 }
 "
         );
