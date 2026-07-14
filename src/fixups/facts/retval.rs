@@ -1,3 +1,4 @@
+use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, ControlFlowSubject, FixupFacts, FunctionId, PathSegment, PlaceAccess,
     PlaceKind, RetvalCollapseFact,
@@ -15,7 +16,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        collect_body(function, &f.body, facts, &mut all);
+        collect_body(function, &f.body, facts, &mut Vec::new(), &mut all);
     }
     facts.retval_collapses = all;
 }
@@ -24,10 +25,18 @@ fn collect_body(
     function: FunctionId,
     body: &[IndentStmt],
     facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
     out: &mut Vec<RetvalCollapseFact>,
 ) {
+    for (index, indent) in body.iter().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_bodies_with_path(&indent.stmt, path, &mut |nested, path| {
+                collect_body(function, nested, facts, path, out);
+            });
+        });
+    }
     for ret_index in 1..body.len() {
-        let ret_path = stmt_path(ret_index);
+        let ret_path = stmt_path(path, ret_index);
         if !reachable_stmt(function, facts, &ret_path) {
             continue;
         }
@@ -42,9 +51,12 @@ fn collect_body(
         else {
             continue;
         };
-        if let Some(fact) = initialized_decl_return(function, body, ret_index, binding, facts) {
+        if let Some(fact) = initialized_decl_return(function, body, ret_index, binding, facts, path)
+        {
             out.push(fact);
-        } else if let Some(fact) = assigned_slot_return(function, body, ret_index, binding, facts) {
+        } else if let Some(fact) =
+            assigned_slot_return(function, body, ret_index, binding, facts, path)
+        {
             out.push(fact);
         }
     }
@@ -56,6 +68,7 @@ fn initialized_decl_return(
     ret_index: usize,
     binding: BindingId,
     facts: &FixupFacts,
+    parent_path: &[PathSegment],
 ) -> Option<RetvalCollapseFact> {
     let decl_index = ret_index.checked_sub(1)?;
     let Stmt::Let {
@@ -70,8 +83,8 @@ fn initialized_decl_return(
         return None;
     }
     let def_use = facts.def_use(binding)?;
-    let decl_path = AstPath(stmt_path(decl_index));
-    let ret_path = AstPath(stmt_path(ret_index));
+    let decl_path = AstPath(stmt_path(parent_path, decl_index));
+    let ret_path = AstPath(stmt_path(parent_path, ret_index));
     if def_use.definition != decl_path
         || !def_use.writes.is_empty()
         || def_use.reads != [ret_path.clone()]
@@ -92,38 +105,29 @@ fn assigned_slot_return(
     ret_index: usize,
     binding: BindingId,
     facts: &FixupFacts,
+    parent_path: &[PathSegment],
 ) -> Option<RetvalCollapseFact> {
     let store_index = ret_index.checked_sub(1)?;
     let Stmt::Assign { target, .. } = &body[store_index].stmt else {
         return None;
     };
-    if !store_writes_binding(function, facts, store_index, binding, target) {
+    let store_path = AstPath(stmt_path(parent_path, store_index));
+    if !store_writes_binding(function, facts, &store_path, binding, target) {
         return None;
     }
-    let def_use = facts.def_use(binding)?;
-    let ret_path = AstPath(stmt_path(ret_index));
-    let store_path = AstPath(stmt_path(store_index));
-    if def_use.definition.0.len() != 1
-        || def_use.reads != [ret_path.clone()]
-        || def_use.writes != [store_path.clone()]
-    {
-        return None;
-    }
-    let [PathSegment::Stmt(decl_index)] = def_use.definition.0.as_slice() else {
-        return None;
-    };
+    let ret_path = AstPath(stmt_path(parent_path, ret_index));
     Some(RetvalCollapseFact {
         function,
         return_path: ret_path,
         value_path: store_path.clone(),
-        remove_paths: vec![store_path, AstPath(stmt_path(*decl_index))],
+        remove_paths: vec![store_path],
     })
 }
 
 fn store_writes_binding(
     function: FunctionId,
     facts: &FixupFacts,
-    index: usize,
+    path: &AstPath,
     binding: BindingId,
     target: &Expr,
 ) -> bool {
@@ -133,13 +137,11 @@ fn store_writes_binding(
     if expr_ident(target) != Some(name) {
         return false;
     }
-    facts
-        .place(function, &AstPath(stmt_path(index)))
-        .is_some_and(|fact| {
-            fact.access == PlaceAccess::Write
-                && fact.ordinary_slot
-                && matches!(&fact.kind, PlaceKind::Local { name: place } if place == name)
-        })
+    facts.place(function, path).is_some_and(|fact| {
+        fact.access == PlaceAccess::Write
+            && fact.ordinary_slot
+            && matches!(&fact.kind, PlaceKind::Local { name: place } if place == name)
+    })
 }
 
 fn reachable_stmt(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
@@ -148,8 +150,10 @@ fn reachable_stmt(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]
         .is_some_and(|fact| fact.reachable)
 }
 
-fn stmt_path(index: usize) -> Vec<PathSegment> {
-    vec![PathSegment::Stmt(index)]
+fn stmt_path(parent_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
+    let mut path = parent_path.to_vec();
+    path.push(PathSegment::Stmt(index));
+    path
 }
 
 #[cfg(test)]
