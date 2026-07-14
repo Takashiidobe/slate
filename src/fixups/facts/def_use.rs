@@ -327,6 +327,7 @@ impl<'a> Collector<'a> {
             | Expr::Str(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
+            | Expr::CStr(_)
             | Expr::AtomicFence { .. }
             | Expr::Todo(_)
             | Expr::Path(_) => {}
