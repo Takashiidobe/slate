@@ -16,7 +16,6 @@ pub struct Program {
 
 #[derive(Debug, Clone)]
 pub enum Item {
-    Func(Func),
     Fn(FnDef),
     Comment(Comment),
     CrateAttrs(Vec<CrateAttr>),
@@ -352,20 +351,6 @@ pub enum AtomicRmwOp {
     Nand,
     Max,
     Min,
-}
-
-#[derive(Debug, Clone)]
-pub struct Func {
-    pub name: String,
-    pub params: Vec<Param>,
-    pub ret: Option<Type>,
-    pub body: Block,
-}
-
-#[derive(Debug, Clone)]
-pub struct Param {
-    pub name: String,
-    pub ty: Type,
 }
 
 #[derive(Debug, Default, Clone)]

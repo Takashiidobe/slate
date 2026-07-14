@@ -91,6 +91,39 @@ fn volatile_uses_rust_volatile_intrinsics() {
 }
 
 #[test]
+fn final_return_temps_are_collapsed() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-final-return-temps");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    for fixture in ["arrays", "pointers", "volatile", "function_pointers"] {
+        let c_src = fixtures_dir().join(format!("{fixture}.c"));
+        let generated = tmp.join(format!("{fixture}.generated.rs"));
+        support::translate(&c_src, &generated)
+            .unwrap_or_else(|err| panic!("translate {fixture} fixture: {err}"));
+        let rust = std::fs::read_to_string(&generated)
+            .unwrap_or_else(|err| panic!("read generated {fixture} rust: {err}"));
+
+        assert!(
+            !rust.contains("return _v"),
+            "{fixture} kept a synthetic return temp"
+        );
+    }
+
+    let arrays = std::fs::read_to_string(tmp.join("arrays.generated.rs"))
+        .expect("read generated arrays rust");
+    assert!(arrays.contains("return values[(2 as usize)];"));
+    assert!(arrays.contains("return values[((index as i64) as usize)];"));
+
+    let pointers = std::fs::read_to_string(tmp.join("pointers.generated.rs"))
+        .expect("read generated pointers rust");
+    assert!(pointers.contains("return unsafe { *slot };"));
+
+    let volatile = std::fs::read_to_string(tmp.join("volatile.generated.rs"))
+        .expect("read generated volatile rust");
+    assert!(volatile.contains("std::ptr::read_volatile"));
+}
+
+#[test]
 fn compound_assignment_temps_are_inlined() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-compound-fixup");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
