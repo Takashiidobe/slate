@@ -1,8 +1,13 @@
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, FixupFacts, FunctionId, HeapOwnershipFact, HeapOwnershipKind, PathSegment,
+    AstPath, BindingId, FixupFacts, FunctionId, HeapAllocationKind, HeapExtent, HeapInitKind,
+    HeapOwnershipFact, HeapOwnershipKind, HeapReadSafety, HeapReallocFact, HeapResizeKind,
+    HeapUseFact, HeapUseKind, PathSegment,
 };
-use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, RustValue, Stmt, Type};
+use crate::rust_ast::{
+    BinOp, Block, Expr, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
+};
+use std::collections::BTreeSet;
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.heap_ownership.clear();
@@ -27,13 +32,14 @@ fn collect_body(function: FunctionId, body: &[IndentStmt], facts: &mut FixupFact
         else {
             continue;
         };
-        let Some(candidate) = find_allocation(function, body, facts, index + 1, pointer_name)
+        let Some(candidate) =
+            find_allocation(function, body, facts, index + 1, pointer_name, &elem_ty)
         else {
             continue;
         };
-        if !heap_uses_are_owned(body, pointer_name, &candidate) {
+        let Some(kind) = kind_for_extent(&candidate.extent) else {
             continue;
-        }
+        };
         facts.heap_ownership.push(HeapOwnershipFact {
             function,
             pointer,
@@ -45,7 +51,13 @@ fn collect_body(function: FunctionId, body: &[IndentStmt], facts: &mut FixupFact
             assign_path: AstPath(vec![PathSegment::Stmt(candidate.assign_index)]),
             free_path: AstPath(vec![PathSegment::Stmt(candidate.free_index)]),
             elem_ty,
-            kind: HeapOwnershipKind::ScalarBox,
+            allocation: candidate.allocation,
+            extent: candidate.extent.clone(),
+            init: candidate.init,
+            read_safety: candidate.read_safety,
+            uses: candidate.uses,
+            reallocations: candidate.reallocations,
+            kind,
         });
     }
 }
@@ -57,6 +69,13 @@ struct Candidate {
     allocation_temp: BindingId,
     size_temp: Option<BindingId>,
     free_temp: Option<BindingId>,
+    allocation: HeapAllocationKind,
+    extent: HeapExtent,
+    init: HeapInitKind,
+    elem_ty: Type,
+    read_safety: HeapReadSafety,
+    uses: Vec<HeapUseFact>,
+    reallocations: Vec<HeapReallocFact>,
 }
 
 fn find_allocation(
@@ -65,73 +84,62 @@ fn find_allocation(
     facts: &FixupFacts,
     start: usize,
     pointer_name: &str,
+    elem_ty: &Type,
 ) -> Option<Candidate> {
     for allocation_index in start..body.len() {
-        let Some((allocation_name, size_name)) = malloc_temp(&body[allocation_index].stmt) else {
+        let Some(allocation_call) = allocation_temp(
+            &body[allocation_index].stmt,
+            body,
+            allocation_index,
+            elem_ty,
+        ) else {
             continue;
         };
         let allocation_path = AstPath(vec![PathSegment::Stmt(allocation_index)]);
         let allocation_temp =
-            facts.binding_by_local_path(function, allocation_name, &allocation_path)?;
-        let size_temp = size_name.and_then(|name| {
-            if allocation_index == 0 {
-                return None;
-            }
-            facts.binding_by_local_path(
-                function,
-                name,
-                &AstPath(vec![PathSegment::Stmt(allocation_index - 1)]),
-            )
-        });
+            facts.binding_by_local_path(function, &allocation_call.name, &allocation_path)?;
+        let size_temp = temp_binding_before(
+            function,
+            facts,
+            body,
+            allocation_index,
+            allocation_call.size_name.as_deref(),
+        );
 
         for assign_index in allocation_index + 1..body.len() {
-            if !assigns_allocated_pointer(&body[assign_index].stmt, pointer_name, allocation_name) {
+            if !assigns_allocated_pointer(
+                &body[assign_index].stmt,
+                pointer_name,
+                &allocation_call.name,
+            ) {
                 continue;
             }
-            let (free_index, free_temp) =
-                single_free(function, body, facts, assign_index + 1, pointer_name)?;
-            return Some(Candidate {
+            let mut candidate = Candidate {
                 allocation_index,
                 assign_index,
-                free_index,
+                free_index: 0,
                 allocation_temp,
                 size_temp,
-                free_temp,
-            });
+                free_temp: None,
+                allocation: allocation_call.kind,
+                extent: allocation_call.extent.clone(),
+                init: allocation_call.init,
+                elem_ty: elem_ty.clone(),
+                read_safety: HeapReadSafety::MayReadUninitialized,
+                uses: Vec::new(),
+                reallocations: Vec::new(),
+            };
+            let (free_index, free_temp, uses, reallocations, read_safety) =
+                heap_uses_are_owned(function, body, facts, pointer_name, &candidate)?;
+            candidate.free_index = free_index;
+            candidate.free_temp = free_temp;
+            candidate.uses = uses;
+            candidate.reallocations = reallocations;
+            candidate.read_safety = read_safety;
+            return Some(Candidate { ..candidate });
         }
     }
     None
-}
-
-fn single_free(
-    function: FunctionId,
-    body: &[IndentStmt],
-    facts: &FixupFacts,
-    start: usize,
-    pointer_name: &str,
-) -> Option<(usize, Option<BindingId>)> {
-    let mut found = None;
-    for index in start..body.len() {
-        if free_call_on_pointer(&body[index].stmt, pointer_name) {
-            if found.is_some() {
-                return None;
-            }
-            found = Some((index, None));
-            continue;
-        }
-        if index + 1 < body.len()
-            && let Some(temp) = pointer_alias_temp(&body[index].stmt, pointer_name)
-            && free_call_on_pointer(&body[index + 1].stmt, temp)
-        {
-            if found.is_some() {
-                return None;
-            }
-            let path = AstPath(vec![PathSegment::Stmt(index)]);
-            let binding = facts.binding_by_local_path(function, temp, &path)?;
-            found = Some((index + 1, Some(binding)));
-        }
-    }
-    found
 }
 
 fn null_pointer_decl(stmt: &Stmt) -> Option<(&str, Type)> {
@@ -150,7 +158,20 @@ fn null_pointer_decl(stmt: &Stmt) -> Option<(&str, Type)> {
     Some((name.as_str(), (**inner).clone()))
 }
 
-fn malloc_temp(stmt: &Stmt) -> Option<(&str, Option<&str>)> {
+struct AllocationCall {
+    name: String,
+    size_name: Option<String>,
+    kind: HeapAllocationKind,
+    extent: HeapExtent,
+    init: HeapInitKind,
+}
+
+fn allocation_temp(
+    stmt: &Stmt,
+    body: &[IndentStmt],
+    index: usize,
+    elem_ty: &Type,
+) -> Option<AllocationCall> {
     let Stmt::Let {
         name,
         init: Some(init),
@@ -159,27 +180,153 @@ fn malloc_temp(stmt: &Stmt) -> Option<(&str, Option<&str>)> {
     else {
         return None;
     };
-    malloc_call_size_name(init).map(|size| (name.as_str(), size))
-}
-
-fn malloc_call_size_name(expr: &Expr) -> Option<Option<&str>> {
-    let Expr::Unsafe(block) = expr else {
+    let Expr::Unsafe(block) = init else {
         return None;
     };
     let call = block.tail.as_deref()?;
     let Expr::Call { func, args } = call else {
         return None;
     };
-    if !matches!(&**func, Expr::Var(name) if name.as_str() == "malloc") || args.len() != 1 {
-        return None;
+    match &**func {
+        Expr::Var(callee) if callee.as_str() == "malloc" && args.len() == 1 => {
+            let size_name = size_arg_name(&args[0]).map(str::to_owned);
+            let size_expr = size_name
+                .as_deref()
+                .and_then(|name| temp_init_before(body, index, name))
+                .cloned()
+                .unwrap_or_else(|| strip_casts(&args[0]).clone());
+            Some(AllocationCall {
+                name: name.to_string(),
+                size_name,
+                kind: HeapAllocationKind::Malloc,
+                extent: extent_from_malloc_size(&size_expr, elem_ty),
+                init: HeapInitKind::Uninitialized,
+            })
+        }
+        Expr::Var(callee) if callee.as_str() == "calloc" && args.len() == 2 => {
+            let count = strip_casts(&args[0]).clone();
+            let size_name = size_arg_name(&args[1]).map(str::to_owned);
+            let elem_size = size_name
+                .as_deref()
+                .and_then(|name| temp_init_before(body, index, name))
+                .cloned()
+                .unwrap_or_else(|| strip_casts(&args[1]).clone());
+            Some(AllocationCall {
+                name: name.to_string(),
+                size_name,
+                kind: HeapAllocationKind::Calloc,
+                extent: extent_from_calloc_args(count, &elem_size, elem_ty),
+                init: HeapInitKind::Zeroed,
+            })
+        }
+        _ => None,
     }
-    Some(size_arg_name(&args[0]))
 }
 
 fn size_arg_name(expr: &Expr) -> Option<&str> {
     match expr {
         Expr::Var(name) => Some(name.as_str()),
         Expr::Cast { expr, .. } => size_arg_name(expr),
+        _ => None,
+    }
+}
+
+fn temp_init_before<'a>(body: &'a [IndentStmt], index: usize, name: &str) -> Option<&'a Expr> {
+    let stmt = &body.get(index.checked_sub(1)?)?.stmt;
+    let Stmt::Let {
+        name: binding,
+        init: Some(init),
+        ..
+    } = stmt
+    else {
+        return None;
+    };
+    (binding == name).then_some(init)
+}
+
+fn temp_binding_before(
+    function: FunctionId,
+    facts: &FixupFacts,
+    body: &[IndentStmt],
+    index: usize,
+    name: Option<&str>,
+) -> Option<BindingId> {
+    let name = name?;
+    if index == 0 {
+        return None;
+    }
+    temp_init_before(body, index, name)?;
+    facts.binding_by_local_path(function, name, &AstPath(vec![PathSegment::Stmt(index - 1)]))
+}
+
+fn strip_casts(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr, .. } => strip_casts(expr),
+        _ => expr,
+    }
+}
+
+fn extent_from_malloc_size(size: &Expr, elem_ty: &Type) -> HeapExtent {
+    let Some(elem_size) = type_size_bytes(elem_ty) else {
+        return HeapExtent::Unknown;
+    };
+    if int_value(size) == Some(elem_size) {
+        return HeapExtent::Scalar;
+    }
+    if let Some(count) = mul_count_for_elem_size(size, elem_size) {
+        return HeapExtent::Elements { count };
+    }
+    HeapExtent::Unknown
+}
+
+fn extent_from_calloc_args(count: Expr, elem_size: &Expr, elem_ty: &Type) -> HeapExtent {
+    let Some(type_size) = type_size_bytes(elem_ty) else {
+        return HeapExtent::Unknown;
+    };
+    if int_value(elem_size) != Some(type_size) {
+        return HeapExtent::Unknown;
+    }
+    if int_value(&count) == Some(1) {
+        HeapExtent::Scalar
+    } else {
+        HeapExtent::Elements { count }
+    }
+}
+
+fn mul_count_for_elem_size(expr: &Expr, elem_size: i64) -> Option<Expr> {
+    let Expr::Binary {
+        op: BinOp::Mul,
+        lhs,
+        rhs,
+    } = strip_casts(expr)
+    else {
+        return None;
+    };
+    if int_value(lhs) == Some(elem_size) {
+        return Some((**rhs).clone());
+    }
+    if int_value(rhs) == Some(elem_size) {
+        return Some((**lhs).clone());
+    }
+    None
+}
+
+fn int_value(expr: &Expr) -> Option<i64> {
+    match strip_casts(expr) {
+        Expr::Value(RustValue::I64(value)) => Some(*value),
+        Expr::Value(RustValue::I128(value)) => i64::try_from(*value).ok(),
+        _ => None,
+    }
+}
+
+fn type_size_bytes(ty: &Type) -> Option<i64> {
+    match ty {
+        Type::Prim(Prim::Bool | Prim::I8 | Prim::U8) => Some(1),
+        Type::Prim(Prim::I16 | Prim::U16) => Some(2),
+        Type::Prim(Prim::I32 | Prim::U32 | Prim::F32) => Some(4),
+        Type::Prim(Prim::I64 | Prim::U64 | Prim::F64 | Prim::Isize | Prim::Usize) => Some(8),
+        Type::Prim(Prim::I128 | Prim::U128) => Some(16),
+        Type::Ptr { .. } => Some(8),
         _ => None,
     }
 }
@@ -216,14 +363,16 @@ fn pointer_alias_temp<'a>(stmt: &'a Stmt, pointer_name: &str) -> Option<&'a str>
     }
 }
 
-fn free_call_on_pointer(stmt: &Stmt, pointer_name: &str) -> bool {
+fn free_call_on_any(stmt: &Stmt, names: &BTreeSet<String>) -> bool {
     let Stmt::Expr(expr) = stmt else {
         return false;
     };
     let Expr::Unsafe(block) = expr else {
         return false;
     };
-    block_tail_free_arg(block).is_some_and(|arg| cast_source_var(arg) == Some(pointer_name))
+    block_tail_free_arg(block)
+        .and_then(cast_source_var)
+        .is_some_and(|name| names.contains(name))
 }
 
 fn block_tail_free_arg(block: &Block) -> Option<&Expr> {
@@ -237,50 +386,309 @@ fn block_tail_free_arg(block: &Block) -> Option<&Expr> {
     }
 }
 
-fn heap_uses_are_owned(body: &[IndentStmt], pointer_name: &str, candidate: &Candidate) -> bool {
-    let mut free_calls = 0;
-    for (index, indent) in body.iter().enumerate() {
-        if index == candidate.assign_index
-            || index == candidate.allocation_index
-            || index == candidate.free_index
-            || Some(index) == candidate.size_temp.map(|_| candidate.allocation_index - 1)
-        {
-            continue;
-        }
-        if uses_pointer_as_free_alias(index, indent, body, pointer_name, candidate) {
-            continue;
-        }
-        if pointer_alias_temp(&indent.stmt, pointer_name).is_some()
-            || reassigns_pointer(&indent.stmt, pointer_name)
-        {
-            return false;
-        }
-        if free_call_on_pointer(&indent.stmt, pointer_name) {
-            free_calls += 1;
-            continue;
-        }
-        if stmt_escapes_pointer(&indent.stmt, pointer_name) {
-            return false;
-        }
-    }
-    free_calls == 0
-}
-
-fn uses_pointer_as_free_alias(
-    index: usize,
-    indent: &IndentStmt,
+fn heap_uses_are_owned(
+    function: FunctionId,
     body: &[IndentStmt],
+    facts: &FixupFacts,
     pointer_name: &str,
     candidate: &Candidate,
-) -> bool {
-    if candidate.free_temp.is_none() || index + 1 != candidate.free_index {
-        return false;
+) -> Option<(
+    usize,
+    Option<BindingId>,
+    Vec<HeapUseFact>,
+    Vec<HeapReallocFact>,
+    HeapReadSafety,
+)> {
+    let mut aliases = BTreeSet::from([pointer_name.to_string()]);
+    let mut free: Option<(usize, Option<BindingId>)> = None;
+    let mut uses = Vec::new();
+    let mut reallocations = Vec::new();
+    let mut written = BTreeSet::new();
+    let mut may_read_uninit = false;
+    let mut index = 0;
+    while index < body.len() {
+        let indent = &body[index];
+        if index == candidate.assign_index
+            || index == candidate.allocation_index
+            || Some(index) == candidate.size_temp.map(|_| candidate.allocation_index - 1)
+        {
+            index += 1;
+            continue;
+        }
+        if let Some(realloc) = realloc_at(
+            function,
+            body,
+            facts,
+            index,
+            pointer_name,
+            &aliases,
+            candidate,
+        ) {
+            reallocations.push(realloc.fact);
+            index = realloc.next_index;
+            continue;
+        }
+        if let Some(alias) = pointer_alias_temp_from_any(&indent.stmt, &aliases) {
+            aliases.insert(alias.to_string());
+            index += 1;
+            continue;
+        }
+        if free_call_on_any(&indent.stmt, &aliases) {
+            if free.is_some() {
+                return None;
+            }
+            let free_temp = free_temp_before(function, body, facts, index, pointer_name);
+            uses.push(HeapUseFact {
+                path: AstPath(vec![PathSegment::Stmt(index)]),
+                kind: HeapUseKind::Free,
+            });
+            free = Some((index, free_temp));
+            index += 1;
+            continue;
+        }
+        if let Some(use_kind) = heap_use(&indent.stmt, &aliases) {
+            match &use_kind {
+                HeapUseKind::ScalarWrite => {
+                    written.insert(None);
+                }
+                HeapUseKind::IndexedWrite { index } => {
+                    if let Some(value) = int_value(index) {
+                        written.insert(Some(value));
+                    }
+                }
+                HeapUseKind::ScalarRead => {
+                    if candidate.init == HeapInitKind::Uninitialized && !written.contains(&None) {
+                        may_read_uninit = true;
+                    }
+                }
+                HeapUseKind::IndexedRead { index } => {
+                    if candidate.init == HeapInitKind::Uninitialized
+                        && int_value(index).is_none_or(|value| !written.contains(&Some(value)))
+                    {
+                        may_read_uninit = true;
+                    }
+                }
+                HeapUseKind::Free => {}
+            }
+            uses.push(HeapUseFact {
+                path: AstPath(vec![PathSegment::Stmt(index)]),
+                kind: use_kind,
+            });
+            index += 1;
+            continue;
+        }
+        if reassigns_pointer(&indent.stmt, pointer_name)
+            || stmt_mentions_any_pointer(&indent.stmt, &aliases)
+        {
+            return None;
+        }
+        index += 1;
     }
-    let Some(alias) = pointer_alias_temp(&indent.stmt, pointer_name) else {
+    let (free_index, free_temp) = free?;
+    let read_safety = if candidate.init == HeapInitKind::Zeroed {
+        HeapReadSafety::ZeroInitialized
+    } else if may_read_uninit {
+        HeapReadSafety::MayReadUninitialized
+    } else {
+        HeapReadSafety::ReadsAfterWrites
+    };
+    Some((free_index, free_temp, uses, reallocations, read_safety))
+}
+
+fn pointer_alias_temp_from_any<'a>(stmt: &'a Stmt, names: &BTreeSet<String>) -> Option<&'a str> {
+    let Stmt::Let {
+        name,
+        init: Some(Expr::Var(source)),
+        ..
+    } = stmt
+    else {
+        return None;
+    };
+    names.contains(source.as_str()).then_some(name.as_str())
+}
+
+fn free_temp_before(
+    function: FunctionId,
+    body: &[IndentStmt],
+    facts: &FixupFacts,
+    index: usize,
+    pointer_name: &str,
+) -> Option<BindingId> {
+    let prev_index = index.checked_sub(1)?;
+    let alias = pointer_alias_temp(&body.get(prev_index)?.stmt, pointer_name)?;
+    facts.binding_by_local_path(
+        function,
+        alias,
+        &AstPath(vec![PathSegment::Stmt(prev_index)]),
+    )
+}
+
+struct ReallocAt {
+    fact: HeapReallocFact,
+    next_index: usize,
+}
+
+fn realloc_at(
+    function: FunctionId,
+    body: &[IndentStmt],
+    facts: &FixupFacts,
+    index: usize,
+    pointer_name: &str,
+    aliases: &BTreeSet<String>,
+    candidate: &Candidate,
+) -> Option<ReallocAt> {
+    let source_name = pointer_alias_temp_from_any(&body.get(index)?.stmt, aliases)?;
+    let size_index = index + 1;
+    let realloc_index = index + 2;
+    let assign_index = index + 3;
+    let size_stmt = &body.get(size_index)?.stmt;
+    let Stmt::Let {
+        name: size_name,
+        init: Some(size_expr),
+        ..
+    } = size_stmt
+    else {
+        return None;
+    };
+    let Stmt::Let {
+        name: allocation_name,
+        init: Some(realloc_expr),
+        ..
+    } = &body.get(realloc_index)?.stmt
+    else {
+        return None;
+    };
+    if !realloc_call_on_source(realloc_expr, source_name, size_name) {
+        return None;
+    }
+    if !assigns_allocated_pointer(&body.get(assign_index)?.stmt, pointer_name, allocation_name) {
+        return None;
+    }
+    let source_temp = facts.binding_by_local_path(
+        function,
+        source_name,
+        &AstPath(vec![PathSegment::Stmt(index)]),
+    );
+    let allocation_temp = facts.binding_by_local_path(
+        function,
+        allocation_name,
+        &AstPath(vec![PathSegment::Stmt(realloc_index)]),
+    )?;
+    let size_temp = facts.binding_by_local_path(
+        function,
+        size_name,
+        &AstPath(vec![PathSegment::Stmt(size_index)]),
+    );
+    let new_extent = extent_from_malloc_size(size_expr, &candidate.elem_ty);
+    let resize = resize_kind(&candidate.extent, &new_extent);
+    Some(ReallocAt {
+        fact: HeapReallocFact {
+            source_temp,
+            allocation_temp,
+            size_temp,
+            allocation_path: AstPath(vec![PathSegment::Stmt(realloc_index)]),
+            assign_path: AstPath(vec![PathSegment::Stmt(assign_index)]),
+            new_extent,
+            init: HeapInitKind::Uninitialized,
+            resize,
+        },
+        next_index: assign_index + 1,
+    })
+}
+
+fn resize_kind(old: &HeapExtent, new: &HeapExtent) -> HeapResizeKind {
+    match (extent_count(old), extent_count(new)) {
+        (Some(old), Some(new)) if new > old => HeapResizeKind::Grow,
+        (Some(old), Some(new)) if new < old => HeapResizeKind::Shrink,
+        _ => HeapResizeKind::SameOrUnknown,
+    }
+}
+
+fn extent_count(extent: &HeapExtent) -> Option<i64> {
+    match extent {
+        HeapExtent::Scalar => Some(1),
+        HeapExtent::Elements { count } => int_value(count),
+        HeapExtent::Unknown => None,
+    }
+}
+
+fn realloc_call_on_source(expr: &Expr, source_name: &str, size_name: &str) -> bool {
+    let Expr::Unsafe(block) = expr else {
         return false;
     };
-    body.get(candidate.free_index)
-        .is_some_and(|stmt| free_call_on_pointer(&stmt.stmt, alias))
+    let Some(Expr::Call { func, args }) = block.tail.as_deref() else {
+        return false;
+    };
+    matches!(&**func, Expr::Var(name) if name.as_str() == "realloc")
+        && args.len() == 2
+        && cast_source_var(&args[0]) == Some(source_name)
+        && size_arg_name(&args[1]) == Some(size_name)
+}
+
+fn heap_use(stmt: &Stmt, names: &BTreeSet<String>) -> Option<HeapUseKind> {
+    match stmt {
+        Stmt::Assign { target, .. } => place_heap_use(target, names).map(|index| match index {
+            Some(index) => HeapUseKind::IndexedWrite { index },
+            None => HeapUseKind::ScalarWrite,
+        }),
+        Stmt::Let {
+            init: Some(init), ..
+        } => value_heap_use(init, names).map(|index| match index {
+            Some(index) => HeapUseKind::IndexedRead { index },
+            None => HeapUseKind::ScalarRead,
+        }),
+        _ => None,
+    }
+}
+
+fn place_heap_use(expr: &Expr, names: &BTreeSet<String>) -> Option<Option<Expr>> {
+    let Expr::Unary {
+        op: UnaryOp::Deref,
+        expr,
+    } = expr
+    else {
+        return None;
+    };
+    pointer_expr_index(expr, names)
+}
+
+fn value_heap_use(expr: &Expr, names: &BTreeSet<String>) -> Option<Option<Expr>> {
+    let Expr::Unsafe(block) = expr else {
+        return None;
+    };
+    let Expr::Unary {
+        op: UnaryOp::Deref,
+        expr,
+    } = block.tail.as_deref()?
+    else {
+        return None;
+    };
+    pointer_expr_index(expr, names)
+}
+
+fn pointer_expr_index(expr: &Expr, names: &BTreeSet<String>) -> Option<Option<Expr>> {
+    match strip_unsafe(expr) {
+        Expr::Var(name) if names.contains(name.as_str()) => Some(None),
+        Expr::MethodCall { recv, method, args }
+            if method == "add" && args.len() == 1 && base_is_owned(recv, names) =>
+        {
+            Some(Some(strip_casts(&args[0]).clone()))
+        }
+        _ => None,
+    }
+}
+
+fn strip_unsafe(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Unsafe(block) if block.stmts.is_empty() => {
+            block.tail.as_deref().map(strip_unsafe).unwrap_or(expr)
+        }
+        _ => expr,
+    }
+}
+
+fn base_is_owned(expr: &Expr, names: &BTreeSet<String>) -> bool {
+    matches!(strip_unsafe(expr), Expr::Var(name) if names.contains(name.as_str()))
 }
 
 fn reassigns_pointer(stmt: &Stmt, pointer_name: &str) -> bool {
@@ -293,7 +701,7 @@ fn reassigns_pointer(stmt: &Stmt, pointer_name: &str) -> bool {
     )
 }
 
-fn stmt_escapes_pointer(stmt: &Stmt, pointer_name: &str) -> bool {
+fn stmt_mentions_any_pointer(stmt: &Stmt, names: &BTreeSet<String>) -> bool {
     let mut escaped = false;
     walk::stmt_exprs(stmt, &mut |expr| {
         if escaped {
@@ -304,13 +712,13 @@ fn stmt_escapes_pointer(stmt: &Stmt, pointer_name: &str) -> bool {
                 if matches!(&**func, Expr::Var(name) if name.as_str() == "free") {
                     return;
                 }
-                if args.iter().any(|arg| expr_mentions_var(arg, pointer_name)) {
+                if args.iter().any(|arg| expr_mentions_any(arg, names)) {
                     escaped = true;
                 }
             }
             Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-                if expr_mentions_var(recv, pointer_name)
-                    || args.iter().any(|arg| expr_mentions_var(arg, pointer_name))
+                if expr_mentions_any(recv, names)
+                    || args.iter().any(|arg| expr_mentions_any(arg, names))
                 {
                     escaped = true;
                 }
@@ -318,7 +726,7 @@ fn stmt_escapes_pointer(stmt: &Stmt, pointer_name: &str) -> bool {
             Expr::AddrOf { expr, .. }
             | Expr::Ref { expr, .. }
             | Expr::ArrayPtr { array: expr, .. }
-                if expr_mentions_var(expr, pointer_name) =>
+                if expr_mentions_any(expr, names) =>
             {
                 escaped = true;
             }
@@ -328,11 +736,19 @@ fn stmt_escapes_pointer(stmt: &Stmt, pointer_name: &str) -> bool {
     escaped
 }
 
-fn expr_mentions_var(expr: &Expr, needle: &str) -> bool {
+fn expr_mentions_any(expr: &Expr, names: &BTreeSet<String>) -> bool {
     walk::exprs_any(
         expr,
-        &mut |expr| matches!(expr, Expr::Var(name) if name.as_str() == needle),
+        &mut |expr| matches!(expr, Expr::Var(name) if names.contains(name.as_str())),
     )
+}
+
+fn kind_for_extent(extent: &HeapExtent) -> Option<HeapOwnershipKind> {
+    match extent {
+        HeapExtent::Scalar => Some(HeapOwnershipKind::ScalarBox),
+        HeapExtent::Elements { .. } => Some(HeapOwnershipKind::VecBuffer),
+        HeapExtent::Unknown => None,
+    }
 }
 
 #[cfg(test)]
@@ -371,6 +787,81 @@ mod tests {
                 }],
             })),
         }))
+    }
+
+    fn calloc_count(count: &str, size: &str) -> Expr {
+        Expr::Unsafe(Box::new(Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Call {
+                func: Box::new(var("calloc")),
+                args: vec![
+                    Expr::Cast {
+                        expr: Box::new(var(count)),
+                        ty: Type::Prim(crate::rust_ast::Prim::U64),
+                    },
+                    Expr::Cast {
+                        expr: Box::new(var(size)),
+                        ty: Type::Prim(crate::rust_ast::Prim::U64),
+                    },
+                ],
+            })),
+        }))
+    }
+
+    fn realloc_size(ptr: &str, size: &str) -> Expr {
+        Expr::Unsafe(Box::new(Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Call {
+                func: Box::new(var("realloc")),
+                args: vec![
+                    Expr::Cast {
+                        expr: Box::new(var(ptr)),
+                        ty: Type::parse("*mut core::ffi::c_void"),
+                    },
+                    Expr::Cast {
+                        expr: Box::new(var(size)),
+                        ty: Type::Prim(crate::rust_ast::Prim::U64),
+                    },
+                ],
+            })),
+        }))
+    }
+
+    fn alias(name: &str, source: &str) -> Stmt {
+        temp(name, "*mut i32", var(source))
+    }
+
+    fn heap_slot(alias: &str, index: i64) -> Expr {
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr: Box::new(Expr::Unsafe(Box::new(Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(Expr::MethodCall {
+                    recv: Box::new(var(alias)),
+                    method: "add".into(),
+                    args: vec![int(index)],
+                })),
+            }))),
+        }
+    }
+
+    fn heap_write(alias: &str, index: i64, value: i64) -> Stmt {
+        Stmt::Assign {
+            target: heap_slot(alias, index),
+            value: int(value),
+        }
+    }
+
+    fn heap_read(name: &str, alias: &str, index: i64) -> Stmt {
+        Stmt::Let {
+            name: name.into(),
+            mutable: false,
+            ty: Some(Type::parse("i32")),
+            init: Some(Expr::Unsafe(Box::new(Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(heap_slot(alias, index))),
+            }))),
+        }
     }
 
     fn free_ptr(ptr: &str) -> Stmt {
@@ -413,6 +904,11 @@ mod tests {
         let pointer = facts.binding_name(facts.heap_ownership[0].pointer).unwrap();
         assert_eq!(pointer, "p");
         assert_eq!(facts.heap_ownership[0].elem_ty.render(), "i32");
+        assert_eq!(facts.heap_ownership[0].kind, HeapOwnershipKind::ScalarBox);
+        assert_eq!(
+            facts.heap_ownership[0].read_safety,
+            HeapReadSafety::ReadsAfterWrites
+        );
     }
 
     #[test]
@@ -435,6 +931,142 @@ mod tests {
                     args: vec![int(1)],
                 },
             ),
+            free_ptr("p"),
+        ]);
+
+        assert!(facts.heap_ownership.is_empty());
+    }
+
+    #[test]
+    fn records_malloc_vec_owner_with_index_uses() {
+        let facts = analyzed(vec![
+            let_mut("p", "*mut i32", Expr::Value(RustValue::NullPtr)),
+            temp("size", "u64", bin(BinOp::Mul, int(4), int(3))),
+            temp("raw", "*mut core::ffi::c_void", malloc_size("size")),
+            assign(
+                "p",
+                Expr::Cast {
+                    expr: Box::new(var("raw")),
+                    ty: Type::parse("*mut i32"),
+                },
+            ),
+            alias("a0", "p"),
+            heap_write("a0", 0, 1),
+            alias("a1", "p"),
+            heap_write("a1", 1, 2),
+            alias("a2", "p"),
+            heap_read("r0", "a2", 0),
+            free_ptr("p"),
+        ]);
+
+        assert_eq!(facts.heap_ownership.len(), 1);
+        let fact = &facts.heap_ownership[0];
+        assert_eq!(fact.kind, HeapOwnershipKind::VecBuffer);
+        assert_eq!(fact.allocation, HeapAllocationKind::Malloc);
+        assert_eq!(fact.init, HeapInitKind::Uninitialized);
+        assert_eq!(fact.read_safety, HeapReadSafety::ReadsAfterWrites);
+        assert!(matches!(fact.extent, HeapExtent::Elements { .. }));
+        assert!(
+            fact.uses
+                .iter()
+                .any(|use_fact| matches!(use_fact.kind, HeapUseKind::IndexedWrite { .. }))
+        );
+        assert!(
+            fact.uses
+                .iter()
+                .any(|use_fact| matches!(use_fact.kind, HeapUseKind::IndexedRead { .. }))
+        );
+    }
+
+    #[test]
+    fn records_calloc_vec_owner_as_zero_initialized() {
+        let facts = analyzed(vec![
+            let_mut("p", "*mut i32", Expr::Value(RustValue::NullPtr)),
+            temp("count", "u64", int(4)),
+            temp("size", "u64", int(4)),
+            temp(
+                "raw",
+                "*mut core::ffi::c_void",
+                calloc_count("count", "size"),
+            ),
+            assign(
+                "p",
+                Expr::Cast {
+                    expr: Box::new(var("raw")),
+                    ty: Type::parse("*mut i32"),
+                },
+            ),
+            alias("a0", "p"),
+            heap_read("r0", "a0", 3),
+            free_ptr("p"),
+        ]);
+
+        assert_eq!(facts.heap_ownership.len(), 1);
+        let fact = &facts.heap_ownership[0];
+        assert_eq!(fact.kind, HeapOwnershipKind::VecBuffer);
+        assert_eq!(fact.allocation, HeapAllocationKind::Calloc);
+        assert_eq!(fact.init, HeapInitKind::Zeroed);
+        assert_eq!(fact.read_safety, HeapReadSafety::ZeroInitialized);
+    }
+
+    #[test]
+    fn records_realloc_growth_on_owned_vec() {
+        let facts = analyzed(vec![
+            let_mut("p", "*mut i32", Expr::Value(RustValue::NullPtr)),
+            temp("size0", "u64", bin(BinOp::Mul, int(4), int(2))),
+            temp("raw0", "*mut core::ffi::c_void", malloc_size("size0")),
+            assign(
+                "p",
+                Expr::Cast {
+                    expr: Box::new(var("raw0")),
+                    ty: Type::parse("*mut i32"),
+                },
+            ),
+            alias("a0", "p"),
+            heap_write("a0", 0, 1),
+            alias("old", "p"),
+            temp("size1", "u64", bin(BinOp::Mul, int(4), int(4))),
+            temp(
+                "raw1",
+                "*mut core::ffi::c_void",
+                realloc_size("old", "size1"),
+            ),
+            assign(
+                "p",
+                Expr::Cast {
+                    expr: Box::new(var("raw1")),
+                    ty: Type::parse("*mut i32"),
+                },
+            ),
+            alias("a1", "p"),
+            heap_write("a1", 2, 3),
+            free_ptr("p"),
+        ]);
+
+        assert_eq!(facts.heap_ownership.len(), 1);
+        let fact = &facts.heap_ownership[0];
+        assert_eq!(fact.reallocations.len(), 1);
+        assert_eq!(fact.reallocations[0].resize, HeapResizeKind::Grow);
+        assert!(matches!(
+            fact.reallocations[0].new_extent,
+            HeapExtent::Elements { .. }
+        ));
+    }
+
+    #[test]
+    fn rejects_heap_pointer_escape_through_unknown_call() {
+        let facts = analyzed(vec![
+            let_mut("p", "*mut i32", Expr::Value(RustValue::NullPtr)),
+            temp("size", "u64", bin(BinOp::Mul, int(4), int(3))),
+            temp("raw", "*mut core::ffi::c_void", malloc_size("size")),
+            assign(
+                "p",
+                Expr::Cast {
+                    expr: Box::new(var("raw")),
+                    ty: Type::parse("*mut i32"),
+                },
+            ),
+            Stmt::Expr(call("take", vec![var("p")])),
             free_ptr("p"),
         ]);
 

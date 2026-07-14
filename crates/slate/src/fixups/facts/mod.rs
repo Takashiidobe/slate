@@ -446,12 +446,79 @@ pub(super) struct HeapOwnershipFact {
     pub(super) assign_path: AstPath,
     pub(super) free_path: AstPath,
     pub(super) elem_ty: Type,
+    pub(super) allocation: HeapAllocationKind,
+    pub(super) extent: HeapExtent,
+    pub(super) init: HeapInitKind,
+    pub(super) read_safety: HeapReadSafety,
+    pub(super) uses: Vec<HeapUseFact>,
+    pub(super) reallocations: Vec<HeapReallocFact>,
     pub(super) kind: HeapOwnershipKind,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum HeapOwnershipKind {
     ScalarBox,
+    VecBuffer,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum HeapAllocationKind {
+    Malloc,
+    Calloc,
+}
+
+#[derive(Debug, Clone)]
+pub(super) enum HeapExtent {
+    Scalar,
+    Elements { count: Expr },
+    Unknown,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum HeapInitKind {
+    Uninitialized,
+    Zeroed,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum HeapReadSafety {
+    ZeroInitialized,
+    ReadsAfterWrites,
+    MayReadUninitialized,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct HeapUseFact {
+    pub(super) path: AstPath,
+    pub(super) kind: HeapUseKind,
+}
+
+#[derive(Debug, Clone)]
+pub(super) enum HeapUseKind {
+    ScalarRead,
+    ScalarWrite,
+    IndexedRead { index: Expr },
+    IndexedWrite { index: Expr },
+    Free,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct HeapReallocFact {
+    pub(super) source_temp: Option<BindingId>,
+    pub(super) allocation_temp: BindingId,
+    pub(super) size_temp: Option<BindingId>,
+    pub(super) allocation_path: AstPath,
+    pub(super) assign_path: AstPath,
+    pub(super) new_extent: HeapExtent,
+    pub(super) init: HeapInitKind,
+    pub(super) resize: HeapResizeKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum HeapResizeKind {
+    Grow,
+    Shrink,
+    SameOrUnknown,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
