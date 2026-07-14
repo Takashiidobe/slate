@@ -2,10 +2,9 @@ use crate::fixups::facts::{
     AstPath, CountedLoopBound, CountedLoopIndexUse, CountedLoopStart, CountedLoopStep,
     CountedSliceLoopFact, FixupFacts, FunctionId, PathSegment, SliceLoopAccess,
 };
+use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
 use crate::rust_ast::{Expr, Ident, IndentStmt, Item, Program, Stmt, UnaryOp};
-
-const ITEM_NAME: &str = "__slate_item";
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
     let mut changed = false;
@@ -92,11 +91,12 @@ fn replacement_for_pair(
         SliceLoopAccess::Mutable => "iter_mut",
     };
     let mut body = loop_body[1..loop_body.len() - 1].to_vec();
-    rewrite_index_uses(&mut body, &slice_name, index_name.as_str());
+    let item_name = element_name_for(&slice_name, index_name.as_str(), &body);
+    rewrite_index_uses(&mut body, &slice_name, index_name.as_str(), &item_name);
     Some(IndentStmt {
         depth: pair[1].depth,
         stmt: Stmt::For {
-            pat: ITEM_NAME.into(),
+            pat: item_name,
             iter: Expr::MethodCall {
                 recv: Box::new(Expr::Var(Ident::new(slice_name))),
                 method: method.into(),
@@ -107,11 +107,47 @@ fn replacement_for_pair(
     })
 }
 
-fn rewrite_index_uses(body: &mut [IndentStmt], slice_name: &str, index_name: &str) {
+fn element_name_for(slice_name: &str, index_name: &str, body: &[IndentStmt]) -> String {
+    let base = singular_element_name(slice_name);
+    let mut candidate = base.clone();
+    let mut suffix = 1;
+    while candidate == index_name || body_uses_name(body, &candidate) {
+        candidate = format!("{base}_{suffix}");
+        suffix += 1;
+    }
+    candidate
+}
+
+fn singular_element_name(slice_name: &str) -> String {
+    if let Some(stem) = slice_name.strip_suffix("ies")
+        && !stem.is_empty()
+    {
+        return format!("{stem}y");
+    }
+    if let Some(stem) = slice_name.strip_suffix('s')
+        && !stem.is_empty()
+        && !stem.ends_with('s')
+    {
+        return stem.to_string();
+    }
+    "item".into()
+}
+
+fn body_uses_name(body: &[IndentStmt], name: &str) -> bool {
+    body.iter()
+        .any(|indent| stmt_ident_count(&indent.stmt, name) > 0)
+}
+
+fn rewrite_index_uses(
+    body: &mut [IndentStmt],
+    slice_name: &str,
+    index_name: &str,
+    item_name: &str,
+) {
     for indent in body {
         walk::stmt_exprs_mut_with(&mut indent.stmt, &mut |expr| {
             if is_slice_index(expr, slice_name, index_name) {
-                *expr = item_deref();
+                *expr = item_deref(item_name);
                 return false;
             }
             true
@@ -135,10 +171,10 @@ fn is_index_expr(expr: &Expr, index_name: &str) -> bool {
     }
 }
 
-fn item_deref() -> Expr {
+fn item_deref(item_name: &str) -> Expr {
     Expr::Unary {
         op: UnaryOp::Deref,
-        expr: Box::new(Expr::Var(Ident::new(ITEM_NAME))),
+        expr: Box::new(Expr::Var(Ident::new(item_name))),
     }
 }
 
@@ -234,9 +270,93 @@ mod tests {
         assert!(fixup(&mut program, &facts));
         let out = program.emit();
 
-        assert!(out.contains("for __slate_item in items.iter()"));
-        assert!(out.contains("let _v7: i32 = *__slate_item;"));
+        assert!(out.contains("for item in items.iter()"));
+        assert!(out.contains("let _v7: i32 = *item;"));
         assert!(!out.contains("loop {"));
         assert!(!out.contains("items[(i as usize)]"));
+    }
+
+    #[test]
+    fn avoids_capturing_existing_element_name_uses() {
+        let mut program = Program {
+            items: vec![Item::Fn(func(
+                vec![
+                    FnParam {
+                        name: "items".into(),
+                        mutable: true,
+                        ty: Type::parse("&mut [i32]"),
+                    },
+                    FnParam {
+                        name: "item".into(),
+                        mutable: false,
+                        ty: Type::Prim(Prim::I32),
+                    },
+                ],
+                Some("i32"),
+                vec![
+                    Stmt::Let {
+                        name: "len".into(),
+                        mutable: false,
+                        ty: Some(Type::Prim(Prim::I32)),
+                        init: Some(Expr::Cast {
+                            expr: Box::new(Expr::MethodCall {
+                                recv: Box::new(var("items")),
+                                method: "len".into(),
+                                args: vec![],
+                            }),
+                            ty: Type::Prim(Prim::I32),
+                        }),
+                    },
+                    let_mut("total", "i32", int(0)),
+                    Stmt::Scope {
+                        body: vec![
+                            stmt(let_mut("i", "i32", int(0))),
+                            stmt(Stmt::Loop {
+                                label: None,
+                                body: vec![
+                                    stmt(Stmt::If {
+                                        cond: Expr::Unary {
+                                            op: UnaryOp::Not,
+                                            expr: Box::new(bin(BinOp::Lt, var("i"), var("len"))),
+                                        },
+                                        then_body: vec![stmt(Stmt::Break(None))],
+                                        else_body: vec![],
+                                    }),
+                                    stmt(Stmt::Scope {
+                                        body: vec![
+                                            stmt(temp("_v7", "i32", indexed_item())),
+                                            stmt(Stmt::CompoundAssign {
+                                                target: var("total"),
+                                                op: BinOp::Add,
+                                                value: var("_v7"),
+                                            }),
+                                            stmt(Stmt::CompoundAssign {
+                                                target: var("total"),
+                                                op: BinOp::Add,
+                                                value: var("item"),
+                                            }),
+                                        ],
+                                    }),
+                                    stmt(Stmt::CompoundAssign {
+                                        target: var("i"),
+                                        op: BinOp::Add,
+                                        value: int(1),
+                                    }),
+                                ],
+                            }),
+                        ],
+                    },
+                    Stmt::Return(Some(var("total"))),
+                ],
+            ))],
+        };
+        let facts = facts::analyze(program.clone()).facts;
+
+        assert!(fixup(&mut program, &facts));
+        let out = program.emit();
+
+        assert!(out.contains("for item_1 in items.iter()"));
+        assert!(out.contains("let _v7: i32 = *item_1;"));
+        assert!(out.contains("total += item;"));
     }
 }
