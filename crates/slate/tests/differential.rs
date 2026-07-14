@@ -91,6 +91,50 @@ fn volatile_uses_rust_volatile_intrinsics() {
 }
 
 #[test]
+fn safe_struct_field_reads_do_not_use_unsafe() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-field-unsafe");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let structs_c = fixtures_dir().join("structs.c");
+    let structs_generated = tmp.join("structs.generated.rs");
+    support::translate(&structs_c, &structs_generated).expect("translate structs fixture");
+    let structs_rust =
+        std::fs::read_to_string(&structs_generated).expect("read generated structs rust");
+    assert!(structs_rust.contains("let _v2: i32 = p.left;"));
+    assert!(structs_rust.contains("let _v3: i32 = p.right;"));
+    assert!(structs_rust.contains("return p.left;"));
+    assert!(!structs_rust.contains("unsafe { p.left }"));
+    assert!(!structs_rust.contains("unsafe { p.right }"));
+
+    let mixed_c = fixtures_dir().join("non_int_fields.c");
+    let mixed_generated = tmp.join("non_int_fields.generated.rs");
+    support::translate(&mixed_c, &mixed_generated).expect("translate non_int_fields fixture");
+    let mixed_rust =
+        std::fs::read_to_string(&mixed_generated).expect("read generated non_int_fields rust");
+    assert!(mixed_rust.contains("let _v4: i8 = m.tag;"));
+    assert!(mixed_rust.contains("let _v6: u8 = m.code;"));
+    assert!(mixed_rust.contains("let _v8: f32 = m.ratio;"));
+    assert!(mixed_rust.contains("let _v10: f64 = m.total;"));
+    assert!(mixed_rust.contains("return unsafe { s.total };"));
+    assert!(mixed_rust.contains("let _v1: i8 = unsafe { s.tag };"));
+
+    let unions_c = fixtures_dir().join("unions.c");
+    let unions_generated = tmp.join("unions.generated.rs");
+    support::translate(&unions_c, &unions_generated).expect("translate unions fixture");
+    let unions_rust =
+        std::fs::read_to_string(&unions_generated).expect("read generated unions rust");
+    assert!(unions_rust.contains("return unsafe { p.left };"));
+
+    let globals_c = fixtures_dir().join("global_vars.c");
+    let globals_generated = tmp.join("global_vars.generated.rs");
+    support::translate(&globals_c, &globals_generated).expect("translate global_vars fixture");
+    let globals_rust =
+        std::fs::read_to_string(&globals_generated).expect("read generated global_vars rust");
+    assert!(globals_rust.contains("let _v13: i32 = unsafe { pair.right };"));
+    assert!(globals_rust.contains("let _v15: i32 = unsafe { pair.left };"));
+}
+
+#[test]
 fn final_return_temps_are_collapsed() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-final-return-temps");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
