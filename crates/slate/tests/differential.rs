@@ -407,12 +407,16 @@ fn function_pointer_presence_checks_use_option_methods() {
     let rust = std::fs::read_to_string(&generated).expect("read generated function pointer rust");
 
     assert!(rust.contains(".is_some()"));
+    assert!(rust.contains("if op.is_some()"));
     assert!(rust.contains(".is_none()"));
     assert!(!rust.contains("!= None"));
     assert!(!rust.contains("== None"));
     assert!(!rust.contains("std::ptr::null_mut()"));
-    assert!(rust.contains("return _v1.unwrap()(_v2);"));
+    assert!(rust.contains("return op.unwrap()(value);"));
     assert!(rust.contains("return value;"));
+    assert!(!rust.contains("let _v0: Option<fn(i32) -> i32> = op;"));
+    assert!(!rust.contains("let _v1: Option<fn(i32) -> i32> = op;"));
+    assert!(!rust.contains("let _v2: i32 = value;"));
     assert!(!rust.contains("let _v3: i32 = _v1.unwrap()(_v2);"));
     assert!(!rust.contains("__retval = _v1.unwrap()(_v2);"));
     assert!(!rust.contains("__retval = value;"));
