@@ -717,7 +717,8 @@ fn string_libc_calls_use_lifted_string_operations() {
     assert!(
         rust.contains("hay.find(|__slate_ch| reject.contains(__slate_ch)).unwrap_or(hay.len())")
     );
-    assert!(rust.contains("Some(hay.len()).map_or(std::ptr::null_mut()"));
+    assert!(rust.contains("let _v43 = Some(hay.len());"));
+    assert!(rust.contains("let _v45: bool = _v43.is_some();"));
     assert!(rust.contains("let utf8: &str = \"h\\u{e9}\";"));
     assert!(rust.contains("utf8.as_bytes().iter().position("));
     assert!(!rust.contains("fn strlen("));
@@ -753,12 +754,21 @@ fn memchr_calls_use_iter_position_when_source_is_iterable() {
 
     assert!(rust.contains("buf.as_slice().iter().position("));
     assert!(rust.contains("(*__slate_byte as u8) == ((_v1 as i32) as u8)"));
+    assert!(rust.contains("let _v3 = buf.as_slice().iter().position("));
     assert!(rust.contains("let _v6 = buf.as_slice().iter().position("));
+    assert!(rust.contains("let _v9 = Some(3);"));
+    assert!(rust.contains("let _v11: i64 = _v3.unwrap() as i64;"));
     assert!(rust.contains("let _v14: bool = _v6.is_none();"));
-    assert!(rust.contains("Some(3).map_or(std::ptr::null_mut()"));
-    assert!(rust.contains("word.as_mut_ptr().add(__slate_index)"));
+    assert!(rust.contains("let _v16: i64 = _v9.unwrap() as i64;"));
+    assert!(!rust.contains("let mut hit"));
     assert!(!rust.contains("let mut miss"));
+    assert!(!rust.contains("let mut nul"));
+    assert!(!rust.contains("map_or(std::ptr::null_mut()"));
+    assert!(!rust.contains(".add(__slate_index)"));
+    assert!(!rust.contains(".offset_from("));
+    assert!(!rust.contains("hit = _v3 as *mut u8"));
     assert!(!rust.contains("miss = _v6 as *mut u8"));
+    assert!(!rust.contains("nul = _v9 as *mut i8"));
     assert!(!rust.contains("miss == std::ptr::null_mut()"));
     assert!(!rust.contains("fn __slate_memchr("));
     assert!(!rust.contains("from_raw_parts"));
