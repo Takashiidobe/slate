@@ -756,7 +756,8 @@ mod tests {
             items: vec![
                 Item::Fn(crate::rust_ast::FnDef {
                     vis: crate::rust_ast::Visibility::Private,
-                    unsafe_extern_c: false,
+                    unsafe_: false,
+                    extern_c: false,
                     name: "add".into(),
                     params: vec![param("a", "i32"), param("b", "i32")],
                     ret: Some(Type::parse("i32")),
