@@ -155,12 +155,7 @@ impl<W: Write> Codegen<W> {
                 }
                 self.out.write_str("}\n")?;
             }
-            Item::Enum(consts) => {
-                for c in consts {
-                    writeln!(self.out, "const {}: i32 = {};", c.name, c.value)?;
-                }
-                self.out.write_char('\n')?;
-            }
+            Item::Enum(e) => self.enum_def(e)?,
             Item::Record(r) => self.record(r)?,
             Item::Struct(s) => self.struct_def(s)?,
             Item::Impl(im) => self.impl_block(im)?,
@@ -249,6 +244,21 @@ impl<W: Write> Codegen<W> {
             write!(self.out, "{}: ", name.as_str())?;
             self.ty(ty)?;
             self.out.write_str(",\n")?;
+        }
+        self.out.write_str("}\n\n")
+    }
+
+    fn enum_def(&mut self, e: &crate::rust_ast::EnumDef) -> fmt::Result {
+        self.out.write_str("#[repr(C)]\n")?;
+        self.out.write_str("#[allow(non_camel_case_types)]\n")?;
+        self.out
+            .write_str("#[derive(Clone, Copy, PartialEq, Eq)]\n")?;
+        if let Some(vis) = e.vis.keyword() {
+            write!(self.out, "{vis} ")?;
+        }
+        writeln!(self.out, "enum {} {{", e.name)?;
+        for variant in &e.variants {
+            writeln!(self.out, "    {} = {},", variant.name, variant.value)?;
         }
         self.out.write_str("}\n\n")
     }

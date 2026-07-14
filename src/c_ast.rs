@@ -13,6 +13,7 @@ thread_local! {
     // Clang gives a C enum an unsigned underlying type unless an enumerator is
     // negative; CIR follows suit, so parse_c_type resolves enum signedness here.
     static ENUM_SIGNED: RefCell<HashMap<String, bool>> = RefCell::new(HashMap::new());
+    static ENUM_TYPEDEFS: RefCell<HashMap<String, String>> = RefCell::new(HashMap::new());
 }
 
 /// A parsed C translation unit.
@@ -38,7 +39,8 @@ pub enum RecordKind {
 
 #[derive(Debug, Clone)]
 pub struct Enum {
-    pub name: Option<String>,
+    pub name: String,
+    pub tag: Option<String>,
     pub variants: Vec<EnumVariant>,
 }
 
@@ -77,6 +79,7 @@ pub enum CType {
     FuncPtr { ret: Box<CType>, params: Vec<CType> },
     Array(Box<CType>, Option<u64>),
     Record(String),
+    Enum(String),
 }
 
 #[derive(Debug, Clone)]
@@ -210,10 +213,13 @@ fn parse_json_with_record_roots(
     let mut enum_signed = HashMap::new();
     collect_enum_signedness(&root, &mut enum_signed);
     ENUM_SIGNED.with(|table| *table.borrow_mut() = enum_signed);
+    let mut enum_typedefs = HashMap::new();
+    collect_enum_typedefs(&root, &mut enum_typedefs);
+    ENUM_TYPEDEFS.with(|table| *table.borrow_mut() = enum_typedefs.clone());
     let mut enums = Vec::new();
     let mut records = Vec::new();
     let mut functions = Vec::new();
-    collect_enums(&root, source_file, &mut enums);
+    collect_enums(&root, source_file, record_roots, &enum_typedefs, &mut enums);
     collect_records(&root, source_file, record_roots, &mut records);
     collect_functions(&root, source_file, &mut functions);
     Ok(Unit {
@@ -251,15 +257,37 @@ fn collect_enum_signedness(node: &Value, out: &mut HashMap<String, bool>) {
     }
 }
 
-fn collect_enums(node: &Value, source_file: &str, out: &mut Vec<Enum>) {
-    if kind(node) == Some("EnumDecl") && is_source_node(node, source_file) {
-        if let Some(enm) = extract_enum(node) {
+fn collect_enum_typedefs(node: &Value, out: &mut HashMap<String, String>) {
+    let kids = children(node);
+    for (i, child) in kids.iter().enumerate() {
+        if kind(child) == Some("EnumDecl")
+            && let Some(tag) = child.get("name").and_then(Value::as_str)
+            && !tag.is_empty()
+            && let Some(alias) = next_enum_typedef_name(&kids, i + 1, tag)
+        {
+            out.entry(tag.to_string()).or_insert(alias);
+        }
+        collect_enum_typedefs(child, out);
+    }
+}
+
+fn collect_enums(
+    node: &Value,
+    source_file: &str,
+    record_roots: &[PathBuf],
+    enum_typedefs: &HashMap<String, String>,
+    out: &mut Vec<Enum>,
+) {
+    if kind(node) == Some("EnumDecl")
+        && (is_source_node(node, source_file) || is_in_record_roots(node, record_roots))
+    {
+        if let Some(enm) = extract_enum(node, enum_typedefs) {
             out.push(enm);
         }
         return;
     }
     for child in children(node) {
-        collect_enums(child, source_file, out);
+        collect_enums(child, source_file, record_roots, enum_typedefs, out);
     }
 }
 
@@ -372,8 +400,26 @@ fn next_anonymous_typedef_name(kids: &[&Value], start: usize) -> Option<String> 
     (ty == format!("struct {name}") || ty == format!("union {name}")).then(|| name.to_string())
 }
 
-fn extract_enum(node: &Value) -> Option<Enum> {
-    let name = node.get("name").and_then(Value::as_str).map(str::to_string);
+fn next_enum_typedef_name(kids: &[&Value], start: usize, tag: &str) -> Option<String> {
+    let sibling = kids.get(start)?;
+    if kind(sibling) != Some("TypedefDecl") {
+        return None;
+    }
+    let name = sibling.get("name")?.as_str()?;
+    let ty = qual_type(sibling)?;
+    (ty == format!("enum {tag}")).then(|| name.to_string())
+}
+
+fn extract_enum(node: &Value, enum_typedefs: &HashMap<String, String>) -> Option<Enum> {
+    let tag = node.get("name").and_then(Value::as_str).map(str::to_string);
+    let name = tag
+        .as_deref()
+        .and_then(|tag| enum_typedefs.get(tag))
+        .cloned()
+        .or_else(|| tag.clone())?;
+    if name.is_empty() {
+        return None;
+    }
     let mut next_value = 0;
     let mut variants = Vec::new();
     for child in children(node) {
@@ -385,7 +431,11 @@ fn extract_enum(node: &Value) -> Option<Enum> {
         next_value = value + 1;
         variants.push(EnumVariant { name, value });
     }
-    Some(Enum { name, variants })
+    Some(Enum {
+        name,
+        tag,
+        variants,
+    })
 }
 
 fn enum_constant_value(node: &Value) -> Option<i64> {
@@ -632,10 +682,7 @@ fn parse_c_type(s: &str) -> CType {
     } else if let Some(underlying) = lookup_typedef(s) {
         parse_c_type(&underlying)
     } else if let Some(name) = s.strip_prefix("enum ") {
-        CType::Int {
-            signed: enum_is_signed(name.trim()),
-            bits: 32,
-        }
+        CType::Enum(enum_rust_name(name.trim()))
     } else if s.contains("unsigned") {
         CType::Int {
             signed: false,
@@ -658,6 +705,16 @@ fn lookup_typedef(name: &str) -> Option<String> {
 
 fn enum_is_signed(name: &str) -> bool {
     ENUM_SIGNED.with(|table| table.borrow().get(name).copied().unwrap_or(false))
+}
+
+fn enum_rust_name(name: &str) -> String {
+    ENUM_TYPEDEFS.with(|table| {
+        table
+            .borrow()
+            .get(name)
+            .cloned()
+            .unwrap_or_else(|| name.to_string())
+    })
 }
 
 fn parse_function_pointer_qual_type(s: &str) -> Option<(CType, Vec<CType>)> {
