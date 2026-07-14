@@ -194,6 +194,7 @@ fn lower_enum_def(enm: &crate::c_ast::Enum, vis: Visibility) -> Option<EnumDef> 
     }
     Some(EnumDef {
         comments: comments(&enm.comments),
+        attrs: enum_attrs(),
         vis,
         name: sanitize_ident(&enm.name).into_string(),
         variants: enm
@@ -206,6 +207,21 @@ fn lower_enum_def(enm: &crate::c_ast::Enum, vis: Visibility) -> Option<EnumDef> 
             })
             .collect(),
     })
+}
+
+fn enum_attrs() -> Vec<RustAttr> {
+    vec![
+        RustAttr::Repr(vec![Repr::C]),
+        RustAttr::Allow(vec![Lint::NonCamelCaseTypes]),
+        RustAttr::Derive(vec![
+            Derive::Clone,
+            Derive::Copy,
+            Derive::PartialEq,
+            Derive::Eq,
+            Derive::Debug,
+            Derive::Hash,
+        ]),
+    ]
 }
 
 fn lower_record_def(

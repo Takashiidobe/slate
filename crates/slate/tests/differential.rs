@@ -584,6 +584,7 @@ fn preserves_documentation_comments_on_enums() {
     let rust = std::fs::read_to_string(&generated).expect("read generated comments rust");
 
     assert!(rust.contains("/// selects an operating mode\n#[repr(C)]"));
+    assert!(rust.contains("#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]\nenum Mode"));
     assert!(rust.contains("    /// disable processing\n    MODE_OFF = 0,"));
     assert!(rust.contains("    /// enable processing\n    MODE_ON = 1,"));
     assert!(rust.contains("/// stores a selected mode\n#[repr(C)]"));
