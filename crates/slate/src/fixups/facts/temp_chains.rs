@@ -64,13 +64,10 @@ fn temp_chain_at(
     if !def_use.writes.is_empty() || def_use.reads.len() != 1 {
         return None;
     }
-    let consumer_path = def_use.reads[0].clone();
-    let (consumer_prefix, consumer_index) = direct_stmt_parent(&consumer_path)?;
     let producer_prefix = &def_path[..def_path.len().checked_sub(1)?];
-    if consumer_prefix != producer_prefix
-        || consumer_index <= def_index
-        || consumer_index >= body.len()
-    {
+    let consumer_path = def_use.reads[0].clone();
+    let consumer_index = consumer_stmt_index(producer_prefix, &consumer_path)?;
+    if consumer_index <= def_index || consumer_index >= body.len() {
         return None;
     }
     if !(def_index + 1..consumer_index).all(|index| {
@@ -142,11 +139,14 @@ fn temp_dependencies(
         .collect()
 }
 
-fn direct_stmt_parent(path: &AstPath) -> Option<(&[PathSegment], usize)> {
-    let (PathSegment::Stmt(index), parent) = path.0.split_last()? else {
-        return None;
-    };
-    Some((parent, *index))
+fn consumer_stmt_index(parent_path: &[PathSegment], path: &AstPath) -> Option<usize> {
+    let rest = path.0.strip_prefix(parent_path)?;
+    match rest {
+        [PathSegment::Stmt(index)]
+        | [PathSegment::Stmt(index), PathSegment::Expr(_), ..]
+        | [PathSegment::Stmt(index), PathSegment::UnsafeBody, ..] => Some(*index),
+        _ => None,
+    }
 }
 
 fn is_temp_name(name: &str) -> bool {
@@ -158,7 +158,7 @@ fn is_temp_name(name: &str) -> bool {
 mod tests {
     use crate::fixups::facts::{self, AstPath, BindingId, FunctionId, PathSegment, TempChainFact};
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{BinOp, Item, Program, Stmt};
+    use crate::rust_ast::{BinOp, Expr, Item, Program, Stmt, UnaryOp};
 
     fn analyzed(stmts: Vec<Stmt>) -> facts::FixupFacts {
         facts::analyze(Program {
@@ -251,6 +251,57 @@ mod tests {
                 .temp_chains
                 .iter()
                 .any(|fact| { facts.binding_name(fact.binding) == Some("_v1") })
+        );
+    }
+
+    #[test]
+    fn records_chains_with_nested_expression_reads() {
+        let facts = analyzed(vec![
+            temp("_v1", "*mut i32", var("slot")),
+            Stmt::Assign {
+                target: Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(var("_v1")),
+                },
+                value: int(5),
+            },
+        ]);
+
+        let v1 = chain_for(&facts, "_v1");
+        assert_eq!(v1.producer_path, AstPath(vec![PathSegment::Stmt(0)]));
+        assert_eq!(v1.consumer_path, AstPath(vec![PathSegment::Stmt(1)]));
+    }
+
+    #[test]
+    fn records_chains_into_unsafe_wrapper_statements() {
+        let facts = analyzed(vec![
+            temp("_v1", "*mut i32", var("slot")),
+            Stmt::Unsafe {
+                body: crate::rust_ast::Block {
+                    stmts: vec![crate::rust_ast::IndentStmt {
+                        depth: 2,
+                        stmt: Stmt::Assign {
+                            target: Expr::Unary {
+                                op: UnaryOp::Deref,
+                                expr: Box::new(var("_v1")),
+                            },
+                            value: int(5),
+                        },
+                    }],
+                    tail: None,
+                },
+            },
+        ]);
+
+        let v1 = chain_for(&facts, "_v1");
+        assert_eq!(v1.producer_path, AstPath(vec![PathSegment::Stmt(0)]));
+        assert_eq!(
+            v1.consumer_path,
+            AstPath(vec![
+                PathSegment::Stmt(1),
+                PathSegment::UnsafeBody,
+                PathSegment::Stmt(0),
+            ])
         );
     }
 }

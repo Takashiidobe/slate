@@ -3,7 +3,7 @@
 //! rendering elides redundant parens.
 
 use crate::fixups::facts::{
-    AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
+    AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment,
 };
 use crate::fixups::support::walk;
 use crate::rust_ast::{Block, Expr, IndentStmt, Stmt};
@@ -37,7 +37,7 @@ fn fixup_at(
         else {
             continue;
         };
-        if !is_temp_name(name) || !is_pure_expr(function, facts, &def_path) {
+        if !is_temp_name(name) {
             continue;
         }
         let Some(binding) = facts.binding_by_local_path(function, name, &AstPath(def_path.clone()))
@@ -46,7 +46,7 @@ fn fixup_at(
         };
         let name = name.clone();
         let init = init.clone();
-        let Some(use_index) = single_safe_use(body, i, binding, function, facts, path) else {
+        let Some(use_index) = temp_chain_use_index(body, i, binding, function, facts, path) else {
             continue;
         };
         if body[use_index].stmt.substitute_var(&name, &init) {
@@ -113,7 +113,7 @@ fn inline_nested_temps(
     false
 }
 
-fn single_safe_use(
+fn temp_chain_use_index(
     body: &[IndentStmt],
     def_index: usize,
     binding: crate::fixups::facts::BindingId,
@@ -121,11 +121,12 @@ fn single_safe_use(
     facts: &FixupFacts,
     body_path: &[PathSegment],
 ) -> Option<usize> {
-    let reads = &facts.def_use(binding)?.reads;
-    if reads.len() != 1 {
-        return None;
-    }
-    let use_index = direct_stmt_index(body_path, &reads[0])?;
+    let fact = facts.temp_chains.iter().find(|fact| {
+        fact.function == function
+            && fact.binding == binding
+            && fact.producer_path == AstPath(stmt_path(body_path, def_index))
+    })?;
+    let use_index = direct_stmt_index(body_path, &fact.consumer_path)?;
     if use_index <= def_index || use_index >= body.len() {
         return None;
     }
@@ -135,36 +136,7 @@ fn single_safe_use(
     {
         return None;
     }
-    for index in def_index + 1..use_index {
-        let path = stmt_path(body_path, index);
-        if !is_pure_temp_let(&body[index].stmt, function, facts, &path) {
-            return None;
-        }
-    }
     Some(use_index)
-}
-
-fn is_pure_temp_let(
-    stmt: &Stmt,
-    function: FunctionId,
-    facts: &FixupFacts,
-    path: &[PathSegment],
-) -> bool {
-    let Stmt::Let {
-        name,
-        init: Some(_),
-        ..
-    } = stmt
-    else {
-        return false;
-    };
-    is_temp_name(name) && is_pure_expr(function, facts, path)
-}
-
-fn is_pure_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
-    facts
-        .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
-        .is_some_and(|fact| fact.purity == Purity::MovablePure)
 }
 
 fn stmt_contains_call(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
@@ -179,7 +151,7 @@ fn stmt_contains_call(function: FunctionId, facts: &FixupFacts, path: &[PathSegm
 }
 
 fn is_receiver_use(stmt: &Stmt, name: &str) -> bool {
-    stmt_expr_any(stmt, &mut |expr| {
+    walk::stmt_expr_any(stmt, &mut |expr| {
         let receiver = match expr {
             Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => Some(&**recv),
             Expr::Field { base, .. } | Expr::TupleField { base, .. } => Some(&**base),
@@ -187,129 +159,6 @@ fn is_receiver_use(stmt: &Stmt, name: &str) -> bool {
         };
         matches!(receiver, Some(Expr::Var(v)) if v.as_str() == name)
     })
-}
-
-fn stmt_expr_any(stmt: &Stmt, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
-    match stmt {
-        Stmt::Let { init, .. } => init.as_ref().is_some_and(|expr| expr_any(expr, pred)),
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            expr_any(target, pred) || expr_any(value, pred)
-        }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_any(expr, pred),
-        Stmt::If {
-            cond,
-            then_body,
-            else_body,
-        } => {
-            expr_any(cond, pred) || body_expr_any(then_body, pred) || body_expr_any(else_body, pred)
-        }
-        Stmt::LetIf {
-            cond,
-            then_body,
-            then_value,
-            else_body,
-            else_value,
-            ..
-        } => {
-            expr_any(cond, pred)
-                || body_expr_any(then_body, pred)
-                || expr_any(then_value, pred)
-                || body_expr_any(else_body, pred)
-                || expr_any(else_value, pred)
-        }
-        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            body_expr_any(body, pred)
-        }
-        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-            body_expr_any(&body.stmts, pred)
-                || body
-                    .tail
-                    .as_deref()
-                    .is_some_and(|tail| expr_any(tail, pred))
-        }
-        Stmt::Match { expr, arms } => {
-            expr_any(expr, pred) || arms.iter().any(|arm| body_expr_any(&arm.body, pred))
-        }
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
-    }
-}
-
-fn body_expr_any(body: &[IndentStmt], pred: &mut impl FnMut(&Expr) -> bool) -> bool {
-    body.iter().any(|indent| stmt_expr_any(&indent.stmt, pred))
-}
-
-fn expr_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
-    if pred(expr) {
-        return true;
-    }
-    match expr {
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. }
-        | Expr::Closure { body: expr, .. }
-        | Expr::AtomicRef { ptr: expr, .. }
-        | Expr::AtomicLoad { ptr: expr, .. } => expr_any(expr, pred),
-        Expr::Binary { lhs, rhs, .. }
-        | Expr::Index {
-            base: lhs,
-            index: rhs,
-        } => expr_any(lhs, pred) || expr_any(rhs, pred),
-        Expr::Call { func, args } => {
-            expr_any(func, pred) || args.iter().any(|arg| expr_any(arg, pred))
-        }
-        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            expr_any(recv, pred) || args.iter().any(|arg| expr_any(arg, pred))
-        }
-        Expr::Field { base, .. }
-        | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => expr_any(base, pred),
-        Expr::StructLit { fields, .. } => fields.iter().any(|(_, value)| expr_any(value, pred)),
-        Expr::ArrayLit(elems) => elems.iter().any(|elem| expr_any(elem, pred)),
-        Expr::ArrayRepeat { elem, .. } => expr_any(elem, pred),
-        Expr::Macro { args, .. } => args.iter().any(|arg| expr_any(arg, pred)),
-        Expr::Match { expr, arms } => {
-            expr_any(expr, pred) || arms.iter().any(|arm| expr_any(&arm.value, pred))
-        }
-        Expr::If {
-            cond,
-            then_expr,
-            else_expr,
-        } => expr_any(cond, pred) || expr_any(then_expr, pred) || expr_any(else_expr, pred),
-        Expr::Block(block) | Expr::Unsafe(block) => {
-            body_expr_any(&block.stmts, pred)
-                || block
-                    .tail
-                    .as_deref()
-                    .is_some_and(|tail| expr_any(tail, pred))
-        }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => expr_any(ptr, pred) || expr_any(value, pred),
-        Expr::AtomicCompareExchange {
-            ptr,
-            expected,
-            desired,
-            ..
-        } => expr_any(ptr, pred) || expr_any(expected, pred) || expr_any(desired, pred),
-        Expr::CopyNonoverlapping { src, dst, .. } => expr_any(src, pred) || expr_any(dst, pred),
-        Expr::PtrCopy {
-            src, dst, count, ..
-        } => expr_any(src, pred) || expr_any(dst, pred) || expr_any(count, pred),
-        Expr::WriteBytes { dst, val, count } => {
-            expr_any(dst, pred) || expr_any(val, pred) || expr_any(count, pred)
-        }
-        Expr::Value(_)
-        | Expr::Str(_)
-        | Expr::HexFloat(_)
-        | Expr::ByteStr(_)
-        | Expr::CStr(_)
-        | Expr::Var(_)
-        | Expr::Path(_)
-        | Expr::Todo(_)
-        | Expr::AtomicFence { .. } => false,
-    }
 }
 
 fn is_temp_name(name: &str) -> bool {
@@ -381,6 +230,25 @@ fn f() {
     let mut a: i32 = 0;
     a = 20;
     a = a - 5;
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_temp_chains_from_facts() {
+        let out = inlined(vec![
+            temp("_v1", "i32", var("op")),
+            temp("_v2", "i32", var("value")),
+            temp("_v3", "i32", bin(BinOp::Add, var("_v1"), var("_v2"))),
+            Stmt::Return(Some(var("_v3"))),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    return op + value;
 }
 "
         );
