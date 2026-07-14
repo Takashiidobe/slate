@@ -225,6 +225,10 @@ impl<'a> Collector<'a> {
                     len: bytes.len() as u64,
                 }),
             }),
+            Expr::CStr(_) => Some(Type::Ref {
+                mutable: false,
+                inner: Box::new(Type::Custom("core::ffi::CStr".to_string())),
+            }),
             Expr::Unary { op, expr } => {
                 let inner = walk::with_path_segment(path, PathSegment::Expr(0), |path| {
                     self.expr(expr, path)

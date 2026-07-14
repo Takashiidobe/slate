@@ -3,6 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
 
 pub(super) mod borrow_alias;
+pub(super) mod c_strings;
 pub(super) mod calls;
 pub(super) mod casts;
 pub(super) mod control_flow;
@@ -45,6 +46,7 @@ pub(super) struct FixupFacts {
     pub(super) string_libc_uses: Vec<StringLibcUseFact>,
     pub(super) string_lift_plans: Vec<StringLiftPlanFact>,
     pub(super) string_copy_rewrites: Vec<StringCopyRewriteFact>,
+    pub(super) c_string_literals: Vec<CStringLiteralFact>,
     pub(super) heap_ownership: Vec<HeapOwnershipFact>,
     pub(super) printf_calls: Vec<PrintfCallFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
@@ -386,6 +388,13 @@ pub(super) struct StringCopyRewriteFact {
     pub(super) path: AstPath,
     pub(super) dst: BindingId,
     pub(super) rewrite: StringCopyRewrite,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct CStringLiteralFact {
+    pub(super) function: FunctionId,
+    pub(super) receiver_path: AstPath,
+    pub(super) bytes: Vec<u8>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1072,6 +1081,16 @@ impl FixupFacts {
             .find(|fact| fact.function == function && &fact.path == path)
     }
 
+    pub(super) fn c_string_literal(
+        &self,
+        function: FunctionId,
+        receiver_path: &AstPath,
+    ) -> Option<&CStringLiteralFact> {
+        self.c_string_literals
+            .iter()
+            .find(|fact| fact.function == function && &fact.receiver_path == receiver_path)
+    }
+
     pub(super) fn printf_call(
         &self,
         function: FunctionId,
@@ -1098,6 +1117,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     heap_ownership::collect_facts(&program, &mut collector.facts);
     printf::collect_facts(&program, &mut collector.facts);
     strings::collect_rewrite_facts(&program, &mut collector.facts);
+    c_strings::collect_facts(&program, &mut collector.facts);
     ptr_len::collect_facts(&program, &mut collector.facts);
     slice_index::collect_facts(&program, &mut collector.facts);
     counted_loop::collect_facts(&program, &mut collector.facts);

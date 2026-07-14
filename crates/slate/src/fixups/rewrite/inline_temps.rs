@@ -304,6 +304,7 @@ fn expr_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
         | Expr::Todo(_)
