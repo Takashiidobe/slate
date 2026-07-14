@@ -692,6 +692,28 @@ impl<'a> Lowerer<'a> {
             } else {
                 self.const_zero_globals.insert(name.to_string());
             }
+        } else if let Some(target) = parse_cir_global_view(raw) {
+            if is_c_global
+                && let Some(ty) = ty
+                && let Some(bytes) = self.strings.get(target)
+            {
+                self.globals.insert(
+                    rust_name.clone(),
+                    GlobalVar {
+                        name: rust_name,
+                        ty: ty.clone(),
+                        init: Expr::Cast {
+                            expr: Box::new(Expr::MethodCall {
+                                recv: Box::new(Expr::ByteStr(bytes.clone())),
+                                method: "as_ptr".into(),
+                                args: Vec::new(),
+                            }),
+                            ty,
+                        },
+                        external: linkage_is_external(op),
+                    },
+                );
+            }
         } else if let Some(init) = parse_cir_scalar_expr(raw) {
             let ty = ty.unwrap_or_else(|| self.rust_type("!s32i"));
             let external = linkage_is_external(op);
@@ -5119,6 +5141,12 @@ fn parse_cir_scalar_expr(s: &str) -> Option<Expr> {
                 .starts_with("#cir.ptr<null>")
                 .then_some(Expr::Value(RustValue::NullPtr))
         })
+}
+
+fn parse_cir_global_view(s: &str) -> Option<&str> {
+    let s = s.trim_start().strip_prefix("#cir.global_view<@")?;
+    let end = s.find('>')?;
+    Some(s[..end].trim_matches('"'))
 }
 
 fn int_value_expr(n: i128) -> Expr {
