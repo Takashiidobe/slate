@@ -302,6 +302,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     for name in referenced_record_types {
         shared_records.entry(name.clone()).or_insert(c_ast::Record {
             name,
+            comments: Vec::new(),
             kind: c_ast::RecordKind::Struct,
             fields: Vec::new(),
         });
