@@ -381,6 +381,10 @@ fn call_lowering_preserves_function_pointer_and_extern_shapes() {
         std::fs::read_to_string(&fp_generated).expect("read generated function pointer rust");
     assert!(fp_rust.contains("Some(add_pair)"));
     assert!(fp_rust.contains(".unwrap()("));
+    assert!(fp_rust.contains("return lhs + rhs;"));
+    assert!(fp_rust.contains("return lhs * rhs;"));
+    assert!(!fp_rust.contains("let mut __retval: i32 = lhs + rhs;"));
+    assert!(!fp_rust.contains("let mut __retval: i32 = lhs * rhs;"));
 
     let extern_c = fixtures_dir().join("extern_decl.c");
     let extern_generated = tmp.join("extern_decl.generated.rs");

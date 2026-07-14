@@ -16,54 +16,46 @@ pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &Fixu
 }
 
 fn collapse_return_slot(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFacts) {
-    let Some((ret_index, binding)) = body.iter().enumerate().find_map(|(index, stmt)| match &stmt
-        .stmt
-    {
-        Stmt::Return(Some(Expr::Var(name))) => {
-            let path = stmt_path(index);
-            if !reachable_stmt(function, facts, &path) {
-                return None;
-            }
-            facts
-                .bindings
-                .iter()
-                .find(|binding| binding.function == function && binding.name == name.as_str())
-                .map(|binding| (index, binding.id))
-        }
-        _ => None,
-    }) else {
+    let Some(fact) = facts
+        .retval_collapses
+        .iter()
+        .find(|fact| fact.function == function)
+    else {
         return;
     };
-    if ret_index == 0 {
+    let Some(ret_index) = direct_stmt_index(&fact.return_path) else {
+        return;
+    };
+    let Some(value_index) = direct_stmt_index(&fact.value_path) else {
+        return;
+    };
+    if ret_index >= body.len() || value_index >= body.len() {
         return;
     }
-
-    let store_index = ret_index - 1;
-    let value = match &body[store_index].stmt {
-        Stmt::Assign { target, value }
-            if store_writes_binding(function, facts, store_index, binding, target) =>
-        {
-            value.clone()
-        }
+    let value = match &body[value_index].stmt {
+        Stmt::Let {
+            init: Some(init), ..
+        } => init.clone(),
+        Stmt::Assign { value, .. } => value.clone(),
         _ => return,
     };
-
-    let Some(def_use) = facts.def_use(binding) else {
-        return;
-    };
-    if def_use.definition.0.len() != 1
-        || def_use.reads != [AstPath(stmt_path(ret_index))]
-        || def_use.writes != [AstPath(stmt_path(store_index))]
-    {
-        return;
+    let mut remove = Vec::new();
+    for path in &fact.remove_paths {
+        let Some(index) = direct_stmt_index(path) else {
+            return;
+        };
+        if index >= body.len() || index == ret_index {
+            return;
+        }
+        remove.push(index);
     }
-    let [PathSegment::Stmt(decl_index)] = def_use.definition.0.as_slice() else {
+    remove.sort_unstable();
+    remove.dedup();
+
+    let Stmt::Return(Some(_)) = &body[ret_index].stmt else {
         return;
     };
-
     body[ret_index].stmt = Stmt::Return(Some(value));
-    let mut remove = [store_index, *decl_index];
-    remove.sort_unstable();
     for index in remove.into_iter().rev() {
         body.remove(index);
     }
@@ -227,6 +219,13 @@ fn stmt_path(index: usize) -> Vec<PathSegment> {
     vec![PathSegment::Stmt(index)]
 }
 
+fn direct_stmt_index(path: &AstPath) -> Option<usize> {
+    let [PathSegment::Stmt(index)] = path.0.as_slice() else {
+        return None;
+    };
+    Some(*index)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -295,6 +294,39 @@ fn f() -> i32 {
 }
 "
         );
+    }
+
+    #[test]
+    fn collapses_declaration_initialized_retval_return() {
+        let out = retval_after_body(
+            vec![],
+            Some("i32"),
+            vec![
+                let_mut("__retval", "i32", bin(BinOp::BitAnd, var("a"), var("b"))),
+                Stmt::Return(Some(var("__retval"))),
+            ],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() -> i32 {
+    return a & b;
+}
+"
+        );
+    }
+
+    #[test]
+    fn does_not_collapse_declaration_initialized_retval_when_read_elsewhere() {
+        let stmts = vec![
+            let_mut("__retval", "i32", bin(BinOp::BitAnd, var("a"), var("b"))),
+            let_mut("x", "i32", var("__retval")),
+            Stmt::Return(Some(var("__retval"))),
+        ];
+        let expected = emit(func(vec![], Some("i32"), stmts.clone()));
+
+        assert_eq!(retval_after_body(vec![], Some("i32"), stmts), expected);
     }
 
     #[test]
