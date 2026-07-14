@@ -15,6 +15,7 @@ pub(super) mod loop_shapes;
 pub(super) mod places;
 pub(super) mod printf;
 pub(super) mod ptr_len;
+pub(super) mod retval;
 pub(super) mod slice_index;
 pub(super) mod strings;
 pub(super) mod values;
@@ -58,6 +59,7 @@ pub(super) struct FixupFacts {
     pub(super) counted_slice_loops: Vec<CountedSliceLoopFact>,
     pub(super) loop_shapes: Vec<LoopShapeFact>,
     pub(super) loop_shape_rejections: Vec<LoopShapeRejectionFact>,
+    pub(super) retval_collapses: Vec<RetvalCollapseFact>,
     pub(super) relations: Vec<FactRelation>,
 }
 
@@ -139,6 +141,14 @@ pub(super) struct DefUseFact {
     pub(super) reads: Vec<AstPath>,
     pub(super) writes: Vec<AstPath>,
     pub(super) last_use: Option<AstPath>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct RetvalCollapseFact {
+    pub(super) function: FunctionId,
+    pub(super) return_path: AstPath,
+    pub(super) value_path: AstPath,
+    pub(super) remove_paths: Vec<AstPath>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1110,6 +1120,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     effects::collect_facts(&program, &mut collector.facts);
     control_flow::collect_facts(&program, &mut collector.facts);
     places::collect_facts(&program, &mut collector.facts);
+    retval::collect_facts(&program, &mut collector.facts);
     values::collect_facts(&program, &mut collector.facts);
     calls::collect_facts(&program, &mut collector.facts);
     casts::collect_facts(&program, &mut collector.facts);
