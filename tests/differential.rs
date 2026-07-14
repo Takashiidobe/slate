@@ -658,6 +658,27 @@ fn string_libc_calls_use_lifted_string_operations() {
 }
 
 #[test]
+fn internal_char_pointer_params_lift_to_str() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-string-param-lift");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_src = fixtures_dir().join("string_param_lift.c");
+    let generated = tmp.join("string_param_lift.generated.rs");
+    support::translate(&c_src, &generated).expect("translate string_param_lift fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated string_param_lift rust");
+
+    assert!(rust.contains("fn parse_num(s: &str) -> i32"));
+    assert!(rust.contains("fn forward_num(s: &str) -> i32"));
+    assert!(rust.contains("fn text_len(s: &str) -> i32"));
+    assert!(rust.contains("return __slate_runtime::parse_i32(_v0);"));
+    assert!(rust.contains("let _v1: usize = _v0.len();"));
+    assert!(rust.contains("forward_num(digits)"));
+    assert!(rust.contains("text_len(word)"));
+    assert!(!rust.contains("fn atoi("));
+    assert!(!rust.contains("fn strlen("));
+}
+
+#[test]
 fn qsort_bsearch_calls_use_slice_sort_and_search() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-qsort-bsearch");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
