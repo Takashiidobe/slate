@@ -514,6 +514,7 @@ fn render_item(item: &Item) -> String {
 fn item_key(item: &Item) -> String {
     match item {
         Item::CrateAttrs(_) => "crate-attrs".into(),
+        Item::Comment(comment) => format!("comment:{}", comment.lines.join("\n")),
         Item::ExternBlock { .. } => "extern".into(),
         Item::Func(f) => format!("fn:{}", f.name),
         Item::Fn(f) => format!("fn:{}", f.name),
