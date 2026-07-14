@@ -126,6 +126,132 @@ pub(in crate::fixups) fn nested_bodies_mut_with_path(
     }
 }
 
+pub(in crate::fixups) fn stmt_expr_any(stmt: &Stmt, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
+    match stmt {
+        Stmt::Let { init, .. } => init.as_ref().is_some_and(|expr| expr_any(expr, pred)),
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            expr_any(target, pred) || expr_any(value, pred)
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_any(expr, pred),
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            expr_any(cond, pred) || body_expr_any(then_body, pred) || body_expr_any(else_body, pred)
+        }
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            expr_any(cond, pred)
+                || body_expr_any(then_body, pred)
+                || expr_any(then_value, pred)
+                || body_expr_any(else_body, pred)
+                || expr_any(else_value, pred)
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            body_expr_any(body, pred)
+        }
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            body_expr_any(&body.stmts, pred)
+                || body
+                    .tail
+                    .as_deref()
+                    .is_some_and(|tail| expr_any(tail, pred))
+        }
+        Stmt::Match { expr, arms } => {
+            expr_any(expr, pred) || arms.iter().any(|arm| body_expr_any(&arm.body, pred))
+        }
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
+    }
+}
+
+pub(in crate::fixups) fn body_expr_any(
+    body: &[IndentStmt],
+    pred: &mut impl FnMut(&Expr) -> bool,
+) -> bool {
+    body.iter().any(|indent| stmt_expr_any(&indent.stmt, pred))
+}
+
+pub(in crate::fixups) fn expr_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
+    if pred(expr) {
+        return true;
+    }
+    match expr {
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. }
+        | Expr::Closure { body: expr, .. }
+        | Expr::AtomicRef { ptr: expr, .. }
+        | Expr::AtomicLoad { ptr: expr, .. } => expr_any(expr, pred),
+        Expr::Binary { lhs, rhs, .. }
+        | Expr::Index {
+            base: lhs,
+            index: rhs,
+        } => expr_any(lhs, pred) || expr_any(rhs, pred),
+        Expr::Call { func, args } => {
+            expr_any(func, pred) || args.iter().any(|arg| expr_any(arg, pred))
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            expr_any(recv, pred) || args.iter().any(|arg| expr_any(arg, pred))
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => expr_any(base, pred),
+        Expr::StructLit { fields, .. } => fields.iter().any(|(_, value)| expr_any(value, pred)),
+        Expr::ArrayLit(elems) => elems.iter().any(|elem| expr_any(elem, pred)),
+        Expr::ArrayRepeat { elem, .. } => expr_any(elem, pred),
+        Expr::Macro { args, .. } => args.iter().any(|arg| expr_any(arg, pred)),
+        Expr::Match { expr, arms } => {
+            expr_any(expr, pred) || arms.iter().any(|arm| expr_any(&arm.value, pred))
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => expr_any(cond, pred) || expr_any(then_expr, pred) || expr_any(else_expr, pred),
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            body_expr_any(&block.stmts, pred)
+                || block
+                    .tail
+                    .as_deref()
+                    .is_some_and(|tail| expr_any(tail, pred))
+        }
+        Expr::AtomicStore { ptr, value, .. }
+        | Expr::AtomicFetch { ptr, value, .. }
+        | Expr::AtomicSwap { ptr, value, .. } => expr_any(ptr, pred) || expr_any(value, pred),
+        Expr::AtomicCompareExchange {
+            ptr,
+            expected,
+            desired,
+            ..
+        } => expr_any(ptr, pred) || expr_any(expected, pred) || expr_any(desired, pred),
+        Expr::CopyNonoverlapping { src, dst, .. } => expr_any(src, pred) || expr_any(dst, pred),
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => expr_any(src, pred) || expr_any(dst, pred) || expr_any(count, pred),
+        Expr::WriteBytes { dst, val, count } => {
+            expr_any(dst, pred) || expr_any(val, pred) || expr_any(count, pred)
+        }
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::CStr(_)
+        | Expr::Var(_)
+        | Expr::Path(_)
+        | Expr::Todo(_)
+        | Expr::AtomicFence { .. } => false,
+    }
+}
+
 pub(in crate::fixups) fn body_exprs_mut_with(
     body: &mut [IndentStmt],
     f: &mut impl FnMut(&mut Expr) -> bool,
