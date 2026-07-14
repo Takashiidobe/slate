@@ -13,9 +13,9 @@
 use std::fmt::{self, Write};
 
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, Attr, Block, Cfg, CrateAttr, Derive, Expr, ExternDecl,
-    FnDef, Func, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method, Path, Program,
-    RecordDef, Repr, RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
+    AtomicOrdering, AtomicRmwOp, AtomicType, Attr, Block, Cfg, Comment, CrateAttr, Derive, Expr,
+    ExternDecl, FnDef, Func, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method, Path,
+    Program, RecordDef, Repr, RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
 };
 
 const INDENT: &str = "    ";
@@ -114,6 +114,7 @@ impl<W: Write> Codegen<W> {
         match item {
             Item::Func(f) => self.func(f)?,
             Item::Fn(f) => self.fn_def(f)?,
+            Item::Comment(comment) => self.comment(comment, 0)?,
             Item::CrateAttrs(attrs) => {
                 for attr in attrs {
                     self.out.write_str("#![")?;
@@ -166,6 +167,20 @@ impl<W: Write> Codegen<W> {
                 self.item(item)?;
             }
             Item::Raw(s) => writeln!(self.out, "{s}")?,
+        }
+        Ok(())
+    }
+
+    fn comment(&mut self, comment: &Comment, depth: usize) -> fmt::Result {
+        for line in &comment.lines {
+            for _ in 0..depth {
+                self.out.write_str(INDENT)?;
+            }
+            if line.is_empty() {
+                self.out.write_str("///\n")?;
+            } else {
+                writeln!(self.out, "/// {line}")?;
+            }
         }
         Ok(())
     }
@@ -226,6 +241,9 @@ impl<W: Write> Codegen<W> {
     }
 
     fn record(&mut self, r: &RecordDef) -> fmt::Result {
+        for comment in &r.comments {
+            self.comment(comment, 0)?;
+        }
         self.out.write_str("#[repr(C)]\n")?;
         if r.allow_non_camel_case {
             self.out.write_str("#[allow(non_camel_case_types)]\n")?;
@@ -236,19 +254,25 @@ impl<W: Write> Codegen<W> {
             write!(self.out, "{vis} ")?;
         }
         writeln!(self.out, "{kw} {} {{", r.name)?;
-        for (name, ty) in &r.fields {
+        for field in &r.fields {
+            for comment in &field.comments {
+                self.comment(comment, 1)?;
+            }
             self.out.write_str("    ")?;
             if let Some(vis) = r.field_vis.keyword() {
                 write!(self.out, "{vis} ")?;
             }
-            write!(self.out, "{}: ", name.as_str())?;
-            self.ty(ty)?;
+            write!(self.out, "{}: ", field.name.as_str())?;
+            self.ty(&field.ty)?;
             self.out.write_str(",\n")?;
         }
         self.out.write_str("}\n\n")
     }
 
     fn enum_def(&mut self, e: &crate::rust_ast::EnumDef) -> fmt::Result {
+        for comment in &e.comments {
+            self.comment(comment, 0)?;
+        }
         self.out.write_str("#[repr(C)]\n")?;
         self.out.write_str("#[allow(non_camel_case_types)]\n")?;
         self.out
@@ -258,6 +282,9 @@ impl<W: Write> Codegen<W> {
         }
         writeln!(self.out, "enum {} {{", e.name)?;
         for variant in &e.variants {
+            for comment in &variant.comments {
+                self.comment(comment, 1)?;
+            }
             writeln!(self.out, "    {} = {},", variant.name, variant.value)?;
         }
         self.out.write_str("}\n\n")
