@@ -183,6 +183,47 @@ fn package_name(crate_dir: &Path) -> String {
     }
 }
 
+fn lib_crate_manifest(package: &str, tests: &[String]) -> String {
+    let test_targets: String = tests
+        .iter()
+        .map(|test| {
+            format!(
+                r#"
+[[test]]
+name = "{test}"
+path = "tests/{test}.rs"
+harness = false
+"#
+            )
+        })
+        .collect();
+    format!(
+        r#"[package]
+name = "{package}"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+libc = "0.2"
+
+[profile.dev]
+overflow-checks = false
+{test_targets}"#
+    )
+}
+
+fn write_lib_crate_manifest(
+    crate_dir: &Path,
+    package: &str,
+    tests: &[String],
+) -> Result<(), String> {
+    std::fs::write(
+        crate_dir.join("Cargo.toml"),
+        lib_crate_manifest(package, tests),
+    )
+    .map_err(|e| format!("write {}: {e}", crate_dir.join("Cargo.toml").display()))
+}
+
 fn init_lib_crate(crate_dir: &Path) -> Result<(), String> {
     std::fs::create_dir_all(crate_dir)
         .map_err(|e| format!("create {}: {e}", crate_dir.display()))?;
@@ -202,21 +243,7 @@ fn init_lib_crate(crate_dir: &Path) -> Result<(), String> {
         }
     }
 
-    let manifest = format!(
-        r#"[package]
-name = "{package}"
-version = "0.0.0"
-edition = "2024"
-
-[dependencies]
-libc = "0.2"
-
-[profile.dev]
-overflow-checks = false
-"#
-    );
-    std::fs::write(crate_dir.join("Cargo.toml"), manifest)
-        .map_err(|e| format!("write {}: {e}", crate_dir.join("Cargo.toml").display()))?;
+    write_lib_crate_manifest(crate_dir, &package, &[])?;
     let main_rs = crate_dir.join("src/main.rs");
     if main_rs.exists() {
         std::fs::remove_file(&main_rs).map_err(|e| format!("remove {}: {e}", main_rs.display()))?;
@@ -289,6 +316,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         shared_enums: shared_enum_names,
         shared_type_module: Some("types".into()),
         shared_type_crate: None,
+        cross_module_crate: None,
         child_modules: Vec::new(),
         emit_pub: true,
     };
@@ -334,18 +362,23 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     written.push(lib_rs_path);
 
     let tests_dir = project_dir.join("tests");
+    let mut test_modules = Vec::new();
     if tests_dir.is_dir() {
         let crate_tests = crate_dir.join("tests");
         std::fs::create_dir_all(&crate_tests)
             .map_err(|e| format!("create {}: {e}", crate_tests.display()))?;
+        let package = package_name(crate_dir);
         for (stem, path) in collect_c_modules(&tests_dir)? {
             let module = cir::parse_module(&cir::emit_generic(&path)?)?;
             let unit = c_ast::parse_file_with_project_records(&path, project_dir)?;
             let test_project = lower::ProjectInfo {
+                cross_module: project.cross_module.clone(),
+                cross_module_globals: project.cross_module_globals.clone(),
                 shared_records: project.shared_records.clone(),
                 shared_enums: project.shared_enums.clone(),
                 shared_type_module: Some("types".into()),
-                shared_type_crate: Some(package_name(crate_dir)),
+                shared_type_crate: Some(package.clone()),
+                cross_module_crate: Some(package.clone()),
                 emit_pub: true,
                 ..lower::ProjectInfo::default()
             };
@@ -357,12 +390,14 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             if ctx.diagnostics.has_errors() {
                 return Err(format!("lowering failed for {}", path.display()));
             }
-            let output = crate_tests.join(stem).with_extension("rs");
+            let output = crate_tests.join(&stem).with_extension("rs");
             std::fs::write(&output, fixups::apply(program).emit())
                 .map_err(|e| format!("write {}: {e}", output.display()))?;
             written.push(output);
+            test_modules.push(stem);
         }
     }
+    write_lib_crate_manifest(crate_dir, &package_name(crate_dir), &test_modules)?;
 
     Ok(written
         .into_iter()
@@ -419,6 +454,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
             shared_enums: BTreeSet::new(),
             shared_type_module: None,
             shared_type_crate: None,
+            cross_module_crate: None,
             emit_pub: true,
         };
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
