@@ -200,6 +200,14 @@ pub fn apply(program: Program) -> Program {
             break;
         }
     }
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            rewrite::string_lift::fixup_c_strings(&mut f.body, function, &facts);
+        }
+    }
     for item in &mut program.items {
         if let Item::Fn(f) = item {
             rewrite::memchr_prelude::fixup(f);

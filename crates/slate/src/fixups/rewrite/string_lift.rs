@@ -10,8 +10,38 @@ pub(in crate::fixups) fn fixup(
     function: FunctionId,
     facts: &FixupFacts,
 ) {
-    fixup_nested(body, function, facts, &mut Vec::new());
-    fixup_body(body, function, facts, &mut Vec::new());
+    fixup_with_recoveries(
+        body,
+        function,
+        facts,
+        &[
+            StringRecoveryCandidate::BorrowedStr,
+            StringRecoveryCandidate::BorrowedBytes,
+        ],
+    );
+}
+
+pub(in crate::fixups) fn fixup_c_strings(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+) {
+    fixup_with_recoveries(
+        body,
+        function,
+        facts,
+        &[StringRecoveryCandidate::BorrowedCStr],
+    );
+}
+
+fn fixup_with_recoveries(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    recoveries: &[StringRecoveryCandidate],
+) {
+    fixup_nested(body, function, facts, &mut Vec::new(), recoveries);
+    fixup_body(body, function, facts, &mut Vec::new(), recoveries);
 }
 
 fn fixup_body(
@@ -19,12 +49,14 @@ fn fixup_body(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    recoveries: &[StringRecoveryCandidate],
 ) {
     let mut removals = BTreeSet::new();
     let mut i = 0;
     while i < body.len() {
         let stmt_path = stmt_path(path, i);
-        let Some((name, lifted, remove_index)) = lift_candidate(body, function, facts, &stmt_path)
+        let Some((name, lifted, remove_index)) =
+            lift_candidate(body, function, facts, &stmt_path, recoveries)
         else {
             i += 1;
             continue;
@@ -56,6 +88,7 @@ fn fixup_nested(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    recoveries: &[StringRecoveryCandidate],
 ) {
     for (index, indent) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
@@ -71,29 +104,29 @@ fn fixup_nested(
                     ..
                 } => {
                     walk::with_path_segment(path, PathSegment::Then, |path| {
-                        fixup_nested(then_body, function, facts, path);
-                        fixup_body(then_body, function, facts, path);
+                        fixup_nested(then_body, function, facts, path, recoveries);
+                        fixup_body(then_body, function, facts, path, recoveries);
                     });
                     walk::with_path_segment(path, PathSegment::Else, |path| {
-                        fixup_nested(else_body, function, facts, path);
-                        fixup_body(else_body, function, facts, path);
+                        fixup_nested(else_body, function, facts, path, recoveries);
+                        fixup_body(else_body, function, facts, path, recoveries);
                     });
                 }
                 Stmt::Loop { body, .. }
                 | Stmt::Scope { body }
                 | Stmt::LabeledBlock { body, .. } => {
-                    fixup_nested(body, function, facts, path);
-                    fixup_body(body, function, facts, path);
+                    fixup_nested(body, function, facts, path, recoveries);
+                    fixup_body(body, function, facts, path, recoveries);
                 }
                 Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-                    fixup_nested(&mut body.stmts, function, facts, path);
-                    fixup_body(&mut body.stmts, function, facts, path);
+                    fixup_nested(&mut body.stmts, function, facts, path, recoveries);
+                    fixup_body(&mut body.stmts, function, facts, path, recoveries);
                 }
                 Stmt::Match { arms, .. } => {
                     for (arm_index, arm) in arms.iter_mut().enumerate() {
                         walk::with_path_segment(path, PathSegment::MatchArm(arm_index), |path| {
-                            fixup_nested(&mut arm.body, function, facts, path);
-                            fixup_body(&mut arm.body, function, facts, path);
+                            fixup_nested(&mut arm.body, function, facts, path, recoveries);
+                            fixup_body(&mut arm.body, function, facts, path, recoveries);
                         });
                     }
                 }
@@ -113,6 +146,7 @@ fn lift_candidate(
     function: FunctionId,
     facts: &FixupFacts,
     path: &[PathSegment],
+    recoveries: &[StringRecoveryCandidate],
 ) -> Option<(String, Lifted, Option<usize>)> {
     let buffer = facts.string_buffer_at(function, &AstPath(path.to_vec()))?;
     let name = facts.binding_name(buffer.binding)?.to_owned();
@@ -120,10 +154,7 @@ fn lift_candidate(
         plan.function == function
             && plan.binding == buffer.binding
             && plan.path.0 == path
-            && matches!(
-                plan.recovery,
-                StringRecoveryCandidate::BorrowedStr | StringRecoveryCandidate::BorrowedBytes
-            )
+            && recoveries.contains(&plan.recovery)
     })?;
     let lifted = lifted_buffer(buffer, plan.recovery)?;
     let remove_index = match &buffer.provenance {
@@ -158,6 +189,15 @@ fn lifted_buffer(
             expr: Expr::ByteStr(bytes),
         });
     }
+    if recovery == StringRecoveryCandidate::BorrowedCStr {
+        if !buffer.ascii_only || buffer.interior_nul {
+            return None;
+        }
+        return Some(Lifted {
+            ty: cstr_ref_type(),
+            expr: Expr::CStr(bytes),
+        });
+    }
     None
 }
 
@@ -172,6 +212,13 @@ fn byte_slice_ref_type() -> Type {
     Type::Ref {
         mutable: false,
         inner: Box::new(Type::Slice(Box::new(Type::Prim(Prim::U8)))),
+    }
+}
+
+fn cstr_ref_type() -> Type {
+    Type::Ref {
+        mutable: false,
+        inner: Box::new(Type::Custom("core::ffi::CStr".into())),
     }
 }
 
@@ -246,6 +293,23 @@ mod tests {
     use crate::rust_ast::{Block, Expr, Item, Program, Stmt, Type};
 
     fn fixed(params: Vec<crate::rust_ast::FnParam>, ret: Option<&str>, stmts: Vec<Stmt>) -> String {
+        fixed_with(params, ret, stmts, fixup)
+    }
+
+    fn fixed_cstr(
+        params: Vec<crate::rust_ast::FnParam>,
+        ret: Option<&str>,
+        stmts: Vec<Stmt>,
+    ) -> String {
+        fixed_with(params, ret, stmts, fixup_c_strings)
+    }
+
+    fn fixed_with(
+        params: Vec<crate::rust_ast::FnParam>,
+        ret: Option<&str>,
+        stmts: Vec<Stmt>,
+        pass: fn(&mut Vec<IndentStmt>, FunctionId, &FixupFacts),
+    ) -> String {
         let mut program = Program {
             items: vec![Item::Fn(func(params, ret, stmts))],
         };
@@ -254,12 +318,20 @@ mod tests {
         let Item::Fn(f) = &mut program.items[0] else {
             unreachable!();
         };
-        fixup(&mut f.body, FunctionId(0), &facts);
+        pass(&mut f.body, FunctionId(0), &facts);
         program.emit()
     }
 
     fn bytes(values: &[i64]) -> Expr {
         Expr::ArrayLit(values.iter().copied().map(int).collect())
+    }
+
+    fn as_mut_ptr(name: &str) -> Expr {
+        Expr::MethodCall {
+            recv: Box::new(var(name)),
+            method: "as_mut_ptr".into(),
+            args: Vec::new(),
+        }
     }
 
     fn printf_arg(name: &str) -> Stmt {
@@ -329,6 +401,38 @@ fn f() {
         );
 
         assert!(out.contains("let s: &[u8] = b\"\\xffA\";"));
+    }
+
+    #[test]
+    fn lifts_memchr_only_ascii_char_array_to_cstr() {
+        let out = fixed_cstr(
+            vec![],
+            None,
+            vec![
+                let_mut(
+                    "s",
+                    "[i8; 4]",
+                    Expr::ArrayRepeat {
+                        elem: Box::new(int(0)),
+                        len: 4,
+                    },
+                ),
+                assign("s", bytes(&[97, 98, 99, 0])),
+                Stmt::Let {
+                    name: "p".into(),
+                    mutable: false,
+                    ty: Some(Type::parse("*mut core::ffi::c_void")),
+                    init: Some(call(
+                        "__slate_memchr",
+                        vec![as_mut_ptr("s"), int(0), int(4)],
+                    )),
+                },
+            ],
+        );
+
+        assert!(out.contains("let s: &core::ffi::CStr = c\"abc\";"));
+        assert!(out.contains("__slate_memchr(s.as_ptr() as *mut i8, 0, 4)"));
+        assert!(!out.contains("s = [97, 98, 99, 0];"));
     }
 
     #[test]
