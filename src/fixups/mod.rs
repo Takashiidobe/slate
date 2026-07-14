@@ -80,6 +80,11 @@ pub fn apply(program: Program) -> Program {
             rewrite::compound_assign::fixup(&mut f.body, function, &facts);
         }
     }
+    for item in &mut program.items {
+        if let Item::Fn(f) = item {
+            rewrite::constant_index_casts::fixup(&mut f.body);
+        }
+    }
     loop {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
         let mut changed = false;
