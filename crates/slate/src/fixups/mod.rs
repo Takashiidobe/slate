@@ -194,6 +194,12 @@ pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::c_strings::fixup(&mut program, &facts);
     rewrite::memchr_prelude::fixup_calls(&mut program, &facts);
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        if !rewrite::nullable_pointer::fixup(&mut program, &facts) {
+            break;
+        }
+    }
     for item in &mut program.items {
         if let Item::Fn(f) = item {
             rewrite::memchr_prelude::fixup(f);
