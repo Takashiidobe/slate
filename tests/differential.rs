@@ -756,6 +756,7 @@ fn memchr_calls_use_iter_position_when_source_is_iterable() {
     assert!(rust.contains("(*__slate_byte as u8) == ((_v1 as i32) as u8)"));
     assert!(rust.contains("let _v3 = buf.as_slice().iter().position("));
     assert!(rust.contains("let _v6 = buf.as_slice().iter().position("));
+    assert!(rust.contains("let word: &core::ffi::CStr = c\"abc\";"));
     assert!(rust.contains("let _v9 = Some(3);"));
     assert!(rust.contains("let _v11: i64 = _v3.unwrap() as i64;"));
     assert!(rust.contains("let _v14: bool = _v6.is_none();"));
@@ -763,6 +764,8 @@ fn memchr_calls_use_iter_position_when_source_is_iterable() {
     assert!(!rust.contains("let mut hit"));
     assert!(!rust.contains("let mut miss"));
     assert!(!rust.contains("let mut nul"));
+    assert!(!rust.contains("let mut word: [i8; 4]"));
+    assert!(!rust.contains("word = [97, 98, 99, 0];"));
     assert!(!rust.contains("map_or(std::ptr::null_mut()"));
     assert!(!rust.contains(".add(__slate_index)"));
     assert!(!rust.contains(".offset_from("));

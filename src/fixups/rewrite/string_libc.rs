@@ -710,7 +710,7 @@ fn string_kind_for_buffer(buffer: &StringBufferFact) -> Option<StringKind> {
     match buffer.kind {
         StringBufferKind::BorrowedStr | StringBufferKind::OwnedString => Some(StringKind::Str),
         StringBufferKind::BorrowedBytes => Some(StringKind::Bytes),
-        StringBufferKind::CharArray => None,
+        StringBufferKind::BorrowedCStr | StringBufferKind::CharArray => None,
     }
 }
 

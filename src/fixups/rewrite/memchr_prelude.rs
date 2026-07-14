@@ -65,6 +65,7 @@ struct Source {
 enum SourceKind {
     U8Collection,
     Bytes,
+    CStr,
     Str,
 }
 
@@ -125,6 +126,7 @@ fn source_for_arg(expr: &Expr, function: FunctionId, facts: &FixupFacts) -> Opti
             && !buffer.interior_nul;
         let kind = match buffer.kind {
             StringBufferKind::BorrowedStr | StringBufferKind::OwnedString => SourceKind::Str,
+            StringBufferKind::BorrowedCStr => SourceKind::CStr,
             StringBufferKind::BorrowedBytes => SourceKind::Bytes,
             StringBufferKind::CharArray => source_kind_for_type(facts.binding_type(binding)?)?,
         };
@@ -133,6 +135,7 @@ fn source_for_arg(expr: &Expr, function: FunctionId, facts: &FixupFacts) -> Opti
                 NulIndex::Const(buffer.bytes.as_ref().map_or(0, Vec::len))
             }
             StringBufferKind::BorrowedStr
+            | StringBufferKind::BorrowedCStr
             | StringBufferKind::BorrowedBytes
             | StringBufferKind::OwnedString => NulIndex::SourceLen,
         });
@@ -332,6 +335,7 @@ fn byte_source_expr(source: Source) -> Expr {
     match source.kind {
         SourceKind::U8Collection => method(var(&source.name), "as_slice", Vec::new()),
         SourceKind::Bytes => var(&source.name),
+        SourceKind::CStr => method(var(&source.name), "to_bytes", Vec::new()),
         SourceKind::Str => method(var(&source.name), "as_bytes", Vec::new()),
     }
 }
@@ -393,7 +397,7 @@ fn source_ptr(source: Source) -> Expr {
         SourceKind::U8Collection | SourceKind::Bytes => {
             method(var(&source.name), method_name, Vec::new())
         }
-        SourceKind::Str => method(var(&source.name), "as_ptr", Vec::new()),
+        SourceKind::CStr | SourceKind::Str => method(var(&source.name), "as_ptr", Vec::new()),
     }
 }
 
