@@ -15,6 +15,7 @@ pub(super) mod ptr_len;
 pub(super) mod remove_mut;
 pub(super) mod retval;
 pub(super) mod singleton_scopes;
+pub(super) mod slice_index;
 pub(super) mod sort_search;
 pub(super) mod string_copy;
 pub(super) mod string_libc;
