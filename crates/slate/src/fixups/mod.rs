@@ -166,6 +166,11 @@ pub fn apply(program: Program) -> Program {
     rewrite::printf_format::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::c_strings::fixup(&mut program, &facts);
+    for item in &mut program.items {
+        if let Item::Fn(f) = item {
+            rewrite::main_exit_return::fixup(f);
+        }
+    }
     program
 }
 
