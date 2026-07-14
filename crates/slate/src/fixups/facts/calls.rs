@@ -398,7 +398,7 @@ impl<'a> Collector<'a> {
                     });
                 }
             }
-            Expr::ArrayLit(elems) | Expr::Macro { args: elems, .. } => {
+            Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => {
                 for (index, elem) in elems.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index), |path| {
                         self.expr(elem, path, None)
@@ -408,6 +408,14 @@ impl<'a> Collector<'a> {
             Expr::ArrayRepeat { elem, .. } | Expr::Closure { body: elem, .. } => {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| {
                     self.expr(elem, path, None)
+                });
+            }
+            Expr::VecRepeat { elem, len } => {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    self.expr(elem, path, None)
+                });
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                    self.expr(len, path, None)
                 });
             }
             Expr::Match { expr, arms } => {

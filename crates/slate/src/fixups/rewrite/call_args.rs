@@ -270,6 +270,10 @@ fn find_arg_use_expr(expr: &Expr, name: &str) -> Option<ArgUse> {
             .find_map(|(_, value)| find_arg_use_expr(value, name)),
         Expr::ArrayLit(elems) => elems.iter().find_map(|elem| find_arg_use_expr(elem, name)),
         Expr::ArrayRepeat { elem, .. } => find_arg_use_expr(elem, name),
+        Expr::VecLit(elems) => elems.iter().find_map(|elem| find_arg_use_expr(elem, name)),
+        Expr::VecRepeat { elem, len } => {
+            find_arg_use_expr(elem, name).or_else(|| find_arg_use_expr(len, name))
+        }
         Expr::Macro { args, .. } => args.iter().find_map(|arg| find_arg_use_expr(arg, name)),
         Expr::Match { expr, arms } => find_arg_use_expr(expr, name).or_else(|| {
             arms.iter()

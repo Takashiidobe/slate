@@ -264,7 +264,7 @@ fn fixup_expr(
                 });
             }
         }
-        Expr::ArrayLit(elems) | Expr::Macro { args: elems, .. } => {
+        Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => {
             for (index, elem) in elems.iter_mut().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index), |path| {
                     fixup_expr(elem, function, facts, temps, path)
@@ -274,6 +274,14 @@ fn fixup_expr(
         Expr::ArrayRepeat { elem, .. } | Expr::Closure { body: elem, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
                 fixup_expr(elem, function, facts, temps, path)
+            });
+        }
+        Expr::VecRepeat { elem, len } => {
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(elem, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                fixup_expr(len, function, facts, temps, path)
             });
         }
         Expr::Match { expr, arms } => {
@@ -1251,6 +1259,13 @@ fn expr_temp_uses_are_zero_comparisons(expr: &Expr, name: &str) -> bool {
             .iter()
             .all(|elem| expr_temp_uses_are_zero_comparisons(elem, name)),
         Expr::ArrayRepeat { elem, .. } => expr_temp_uses_are_zero_comparisons(elem, name),
+        Expr::VecLit(elems) => elems
+            .iter()
+            .all(|elem| expr_temp_uses_are_zero_comparisons(elem, name)),
+        Expr::VecRepeat { elem, len } => {
+            expr_temp_uses_are_zero_comparisons(elem, name)
+                && expr_temp_uses_are_zero_comparisons(len, name)
+        }
         Expr::Macro { args, .. } => args
             .iter()
             .all(|arg| expr_temp_uses_are_zero_comparisons(arg, name)),

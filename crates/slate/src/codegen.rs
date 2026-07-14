@@ -804,6 +804,18 @@ impl<W: Write> Codegen<W> {
                 self.expr(elem)?;
                 write!(self.out, "; {len}]")
             }
+            Expr::VecLit(elems) => {
+                self.out.write_str("vec![")?;
+                self.args(elems)?;
+                self.out.write_char(']')
+            }
+            Expr::VecRepeat { elem, len } => {
+                self.out.write_str("vec![")?;
+                self.expr(elem)?;
+                self.out.write_str("; ")?;
+                self.expr(len)?;
+                self.out.write_char(']')
+            }
             Expr::Macro { name, args } => {
                 write!(self.out, "{name}!(")?;
                 self.args(args)?;
@@ -1037,6 +1049,7 @@ impl<W: Write> Codegen<W> {
     fn value(&mut self, value: &RustValue) -> fmt::Result {
         match value {
             RustValue::I64(n) => write!(self.out, "{n}"),
+            RustValue::Usize(n) => write!(self.out, "{n}usize"),
             RustValue::I128(n) => write!(self.out, "{n}"),
             RustValue::Float(n) => {
                 if n.fract() == 0.0 {

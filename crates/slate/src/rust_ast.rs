@@ -432,6 +432,7 @@ pub enum Stmt {
 #[derive(Debug, Clone)]
 pub enum RustValue {
     I64(i64),
+    Usize(usize),
     I128(i128),
     Float(f64),
     Bool(bool),
@@ -568,6 +569,11 @@ pub enum Expr {
     ArrayRepeat {
         elem: Box<Expr>,
         len: usize,
+    },
+    VecLit(Vec<Expr>),
+    VecRepeat {
+        elem: Box<Expr>,
+        len: Box<Expr>,
     },
     Macro {
         name: String,
@@ -980,6 +986,18 @@ impl Expr {
                 changed
             }
             Expr::ArrayRepeat { elem, .. } => elem.substitute_var(name, replacement),
+            Expr::VecLit(elems) => {
+                let mut changed = false;
+                for elem in elems {
+                    changed |= elem.substitute_var(name, replacement);
+                }
+                changed
+            }
+            Expr::VecRepeat { elem, len } => {
+                let e = elem.substitute_var(name, replacement);
+                let l = len.substitute_var(name, replacement);
+                e || l
+            }
             Expr::Closure { params, body } => {
                 if params.iter().any(|p| p.as_str() == name) {
                     false

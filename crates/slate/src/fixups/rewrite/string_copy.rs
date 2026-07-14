@@ -351,6 +351,15 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>) {
             }
         }
         Expr::ArrayRepeat { elem, .. } => rewrite_expr_pointer_views(elem, liftable),
+        Expr::VecLit(elems) => {
+            for elem in elems {
+                rewrite_expr_pointer_views(elem, liftable);
+            }
+        }
+        Expr::VecRepeat { elem, len } => {
+            rewrite_expr_pointer_views(elem, liftable);
+            rewrite_expr_pointer_views(len, liftable);
+        }
         Expr::Macro { args, .. } => {
             for arg in args {
                 rewrite_expr_pointer_views(arg, liftable);
@@ -569,6 +578,8 @@ fn expr_children_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool 
         Expr::StructLit { fields, .. } => fields.iter().any(|(_, value)| pred(value)),
         Expr::ArrayLit(elems) => elems.iter().any(pred),
         Expr::ArrayRepeat { elem, .. } => pred(elem),
+        Expr::VecLit(elems) => elems.iter().any(pred),
+        Expr::VecRepeat { elem, len } => pred(elem) || pred(len),
         Expr::Macro { args, .. } => args.iter().any(pred),
         Expr::Match { expr, arms } => pred(expr) || arms.iter().any(|arm| pred(&arm.value)),
         Expr::If {

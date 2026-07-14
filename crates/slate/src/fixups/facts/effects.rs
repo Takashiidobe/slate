@@ -247,8 +247,17 @@ impl Collector {
                     effects.extend(self.child_expr(elem, path, index));
                 }
             }
+            Expr::VecLit(elems) => {
+                for (index, elem) in elems.iter().enumerate() {
+                    effects.extend(self.child_expr(elem, path, index));
+                }
+            }
             Expr::ArrayRepeat { elem, .. } | Expr::Closure { body: elem, .. } => {
                 effects.extend(self.child_expr(elem, path, 0));
+            }
+            Expr::VecRepeat { elem, len } => {
+                effects.extend(self.child_expr(elem, path, 0));
+                effects.extend(self.child_expr(len, path, 1));
             }
             Expr::Macro { args, .. } => {
                 effects.insert(EffectKind::MacroExpansion);

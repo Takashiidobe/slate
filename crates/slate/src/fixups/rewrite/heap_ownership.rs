@@ -254,13 +254,14 @@ fn rewrite_pointer_decl(stmt: &mut Stmt, plan: &Plan) {
                 name: "Vec".into(),
                 args: vec![plan.elem_ty.clone()],
             });
-            *init = Some(vec_repeat(
-                plan.init.clone(),
-                plan.count
-                    .clone()
-                    .unwrap_or_else(|| Expr::Value(RustValue::I64(0))),
-                &plan.elem_ty,
-            ));
+            *init = Some(Expr::VecRepeat {
+                elem: Box::new(plan.init.clone()),
+                len: Box::new(usize_expr(
+                    plan.count
+                        .clone()
+                        .unwrap_or_else(|| Expr::Value(RustValue::Usize(0))),
+                )),
+            });
         }
     }
 }
@@ -511,29 +512,28 @@ fn count_for_extent(extent: &HeapExtent) -> Option<Expr> {
     }
 }
 
-fn vec_repeat(elem: Expr, count: Expr, elem_ty: &Type) -> Expr {
-    Expr::MethodCallGeneric {
-        recv: Box::new(Expr::MethodCall {
-            recv: Box::new(Expr::Call {
-                func: Box::new(Expr::Var("std::iter::repeat".into())),
-                args: vec![elem],
-            }),
-            method: "take".into(),
-            args: vec![usize_expr(count)],
-        }),
-        method: "collect".into(),
-        type_args: vec![Type::Generic {
-            name: "Vec".into(),
-            args: vec![elem_ty.clone()],
-        }],
-        args: Vec::new(),
-    }
-}
-
 fn usize_expr(expr: Expr) -> Expr {
-    Expr::Cast {
-        expr: Box::new(expr),
-        ty: Type::Prim(Prim::Usize),
+    match expr {
+        Expr::Value(RustValue::Usize(_)) => expr,
+        Expr::Value(RustValue::I64(n)) => match usize::try_from(n) {
+            Ok(n) => Expr::Value(RustValue::Usize(n)),
+            Err(_) => Expr::Cast {
+                expr: Box::new(Expr::Value(RustValue::I64(n))),
+                ty: Type::Prim(Prim::Usize),
+            },
+        },
+        Expr::Value(RustValue::I128(n)) => match usize::try_from(n) {
+            Ok(n) => Expr::Value(RustValue::Usize(n)),
+            Err(_) => Expr::Cast {
+                expr: Box::new(Expr::Value(RustValue::I128(n))),
+                ty: Type::Prim(Prim::Usize),
+            },
+        },
+        Expr::Cast { expr, ty } if matches!(ty, Type::Prim(Prim::Usize)) => Expr::Cast { expr, ty },
+        expr => Expr::Cast {
+            expr: Box::new(expr),
+            ty: Type::Prim(Prim::Usize),
+        },
     }
 }
 

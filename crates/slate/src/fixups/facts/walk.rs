@@ -119,6 +119,15 @@ pub(in crate::fixups) fn exprs(expr: &Expr, f: &mut impl FnMut(&Expr)) {
             }
         }
         Expr::ArrayRepeat { elem, .. } => exprs(elem, f),
+        Expr::VecLit(elems) => {
+            for elem in elems {
+                exprs(elem, f);
+            }
+        }
+        Expr::VecRepeat { elem, len } => {
+            exprs(elem, f);
+            exprs(len, f);
+        }
         Expr::Macro { args, .. } => {
             for arg in args {
                 exprs(arg, f);
@@ -390,6 +399,21 @@ pub(in crate::fixups) fn exprs_with_path(
                 exprs_with_path(elem, path, f);
             });
         }
+        Expr::VecLit(elems) => {
+            for (index, elem) in elems.iter().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index), |path| {
+                    exprs_with_path(elem, path, f);
+                });
+            }
+        }
+        Expr::VecRepeat { elem, len } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(elem, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_with_path(len, path, f);
+            });
+        }
         Expr::Macro { args, .. } => {
             for (index, arg) in args.iter().enumerate() {
                 with_path_segment(path, PathSegment::Expr(index), |path| {
@@ -592,6 +616,8 @@ pub(in crate::fixups) fn exprs_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> 
         Expr::StructLit { fields, .. } => fields.iter().any(|(_, value)| exprs_any(value, pred)),
         Expr::ArrayLit(elems) => elems.iter().any(|elem| exprs_any(elem, pred)),
         Expr::ArrayRepeat { elem, .. } => exprs_any(elem, pred),
+        Expr::VecLit(elems) => elems.iter().any(|elem| exprs_any(elem, pred)),
+        Expr::VecRepeat { elem, len } => exprs_any(elem, pred) || exprs_any(len, pred),
         Expr::Macro { args, .. } => args.iter().any(|arg| exprs_any(arg, pred)),
         Expr::Closure { body, .. } => exprs_any(body, pred),
         Expr::Match { expr, arms } => {
@@ -784,6 +810,13 @@ fn exprs_all_with_hooks(
             .iter()
             .all(|elem| exprs_all_with_hooks(elem, stmt_hook, expr_hook)),
         Expr::ArrayRepeat { elem, .. } => exprs_all_with_hooks(elem, stmt_hook, expr_hook),
+        Expr::VecLit(elems) => elems
+            .iter()
+            .all(|elem| exprs_all_with_hooks(elem, stmt_hook, expr_hook)),
+        Expr::VecRepeat { elem, len } => {
+            exprs_all_with_hooks(elem, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(len, stmt_hook, expr_hook)
+        }
         Expr::Macro { args, .. } => args
             .iter()
             .all(|arg| exprs_all_with_hooks(arg, stmt_hook, expr_hook)),
@@ -970,6 +1003,15 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
             }
         }
         Expr::ArrayRepeat { elem, .. } => exprs_mut_with(elem, f),
+        Expr::VecLit(elems) => {
+            for elem in elems {
+                exprs_mut_with(elem, f);
+            }
+        }
+        Expr::VecRepeat { elem, len } => {
+            exprs_mut_with(elem, f);
+            exprs_mut_with(len, f);
+        }
         Expr::Macro { args, .. } => {
             for arg in args {
                 exprs_mut_with(arg, f);

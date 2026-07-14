@@ -236,6 +236,16 @@ impl<'a> Collector<'a> {
                 }
                 BTreeSet::from([ConstValue::ArrayLength(elems.len())])
             }
+            Expr::VecRepeat { elem, len } => {
+                self.child_expr(elem, path, 0);
+                self.child_expr(len, path, 1)
+            }
+            Expr::VecLit(elems) => {
+                for (index, elem) in elems.iter().enumerate() {
+                    self.child_expr(elem, path, index);
+                }
+                BTreeSet::new()
+            }
             Expr::Call { func, args } => {
                 self.child_expr(func, path, 0);
                 for (index, arg) in args.iter().enumerate() {
@@ -480,6 +490,15 @@ fn values_for_rust_value(value: &RustValue) -> BTreeSet<ConstValue> {
             values.insert(ConstValue::Integer(i128::from(*n)));
             if let Ok(n) = usize::try_from(*n) {
                 values.insert(ConstValue::Usize(n));
+            }
+            if *n == 0 {
+                values.insert(ConstValue::Zero);
+            }
+        }
+        RustValue::Usize(n) => {
+            values.insert(ConstValue::Usize(*n));
+            if let Ok(n) = i128::try_from(*n) {
+                values.insert(ConstValue::Integer(n));
             }
             if *n == 0 {
                 values.insert(ConstValue::Zero);

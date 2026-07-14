@@ -450,10 +450,14 @@ fn analyze_expr(
         Expr::StructLit { fields, .. } => fields
             .iter()
             .all(|(_, expr)| analyze_expr(expr, AccessMode::Read, slices, state)),
-        Expr::ArrayLit(elems) | Expr::Macro { args: elems, .. } => elems
+        Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => elems
             .iter()
             .all(|expr| analyze_expr(expr, AccessMode::Read, slices, state)),
         Expr::ArrayRepeat { elem, len: _ } => analyze_expr(elem, AccessMode::Read, slices, state),
+        Expr::VecRepeat { elem, len } => {
+            analyze_expr(elem, AccessMode::Read, slices, state)
+                && analyze_expr(len, AccessMode::Read, slices, state)
+        }
         Expr::Closure { body, .. } => analyze_expr(body, AccessMode::Read, slices, state),
         Expr::Match { expr, arms } => {
             analyze_expr(expr, AccessMode::Read, slices, state)
@@ -592,6 +596,7 @@ fn is_one(expr: &Expr) -> bool {
 fn integer_value(expr: &Expr) -> Option<i128> {
     match expr {
         Expr::Value(RustValue::I64(n)) => Some(i128::from(*n)),
+        Expr::Value(RustValue::Usize(n)) => i128::try_from(*n).ok(),
         Expr::Value(RustValue::I128(n)) => Some(*n),
         Expr::Cast { expr, .. } => integer_value(expr),
         _ => None,
