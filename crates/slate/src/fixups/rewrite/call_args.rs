@@ -302,6 +302,7 @@ fn find_arg_slot_expr(expr: &Expr, name: &str) -> Option<usize> {
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
         | Expr::Todo(_)

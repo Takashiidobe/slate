@@ -508,7 +508,9 @@ fn analyze_expr(
                 && analyze_expr(count, AccessMode::Read, slices, state)
         }
         Expr::AtomicFence { .. } | Expr::Path(_) | Expr::Todo(_) => true,
-        Expr::Value(_) | Expr::Str(_) | Expr::HexFloat(_) | Expr::ByteStr(_) => true,
+        Expr::Value(_) | Expr::Str(_) | Expr::HexFloat(_) | Expr::ByteStr(_) | Expr::CStr(_) => {
+            true
+        }
     }
 }
 

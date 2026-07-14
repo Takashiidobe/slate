@@ -806,6 +806,7 @@ fn expr_has_printf_call(expr: &Expr) -> bool {
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
         | Expr::AtomicFence { .. }
