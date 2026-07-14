@@ -376,6 +376,10 @@ fn rewrite_owned_stmt(stmt: &mut Stmt, owned: &OwnedHeap) {
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             rewrite_owned_body(body, owned);
         }
+        Stmt::For { iter, body, .. } => {
+            rewrite_owned_expr(iter, owned);
+            rewrite_owned_body(body, owned);
+        }
         Stmt::Match { expr, arms } => {
             rewrite_owned_expr(expr, owned);
             for arm in arms {

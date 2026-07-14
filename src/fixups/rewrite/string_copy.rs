@@ -270,6 +270,10 @@ fn rewrite_stmt(
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             rewrite_body(body, function, facts, path, liftable);
         }
+        Stmt::For { iter, body, .. } => {
+            rewrite_expr_pointer_views(iter, liftable);
+            rewrite_body(body, function, facts, path, liftable);
+        }
         Stmt::While { cond, body } => {
             rewrite_expr_pointer_views(cond, liftable);
             rewrite_block_pointer_views(body, function, facts, path, liftable);
@@ -660,6 +664,9 @@ fn stmt_expr_any(stmt: &Stmt, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             body.iter().any(|indent| stmt_expr_any(&indent.stmt, pred))
+        }
+        Stmt::For { iter, body, .. } => {
+            pred(iter) || body.iter().any(|indent| stmt_expr_any(&indent.stmt, pred))
         }
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
             body.stmts
