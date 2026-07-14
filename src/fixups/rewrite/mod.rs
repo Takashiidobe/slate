@@ -5,6 +5,7 @@ pub(super) mod drop_call_results;
 pub(super) mod final_return_temps;
 pub(super) mod heap_ownership;
 pub(super) mod inline_temps;
+pub(super) mod main_exit_return;
 pub(super) mod param_spills;
 pub(super) mod printf_format;
 pub(super) mod ptr_len;
