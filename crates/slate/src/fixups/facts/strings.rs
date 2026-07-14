@@ -87,6 +87,14 @@ fn collect_body_rewrite_facts(
         StringRecoveryCandidate::BorrowedStr,
         consts,
     );
+    let borrowed_cstr = liftable_bindings(
+        function,
+        body,
+        path,
+        facts,
+        StringRecoveryCandidate::BorrowedCStr,
+        consts,
+    );
     let borrowed_bytes = liftable_bindings(
         function,
         body,
@@ -103,6 +111,18 @@ fn collect_body_rewrite_facts(
         StringRecoveryCandidate::OwnedString,
         consts,
     );
+    for binding in borrowed_cstr {
+        if let Some(plan) = lift_plan_for_binding(
+            function,
+            body,
+            path,
+            facts,
+            binding,
+            StringRecoveryCandidate::BorrowedCStr,
+        ) {
+            plans.push(plan);
+        }
+    }
     for binding in borrowed {
         if let Some(plan) = lift_plan_for_binding(
             function,
@@ -470,7 +490,7 @@ fn use_allowed(
     use_path: &AstPath,
     facts: &FixupFacts,
     binding: BindingId,
-    _recovery: StringRecoveryCandidate,
+    recovery: StringRecoveryCandidate,
     liftable: &BTreeSet<BindingId>,
 ) -> bool {
     if facts.printf_calls.iter().any(|printf| {
@@ -479,6 +499,20 @@ fn use_allowed(
             && printf_allows_lift(function, printf, facts, binding)
     }) {
         return true;
+    }
+    if recovery == StringRecoveryCandidate::BorrowedCStr {
+        return facts.callsites.iter().any(|callsite| {
+            callsite.function == function
+                && path_starts_with(&use_path.0, &callsite.path.0)
+                && matches!(
+                    &callsite.callee,
+                    CallCallee::Direct { name, .. } if name == "__slate_memchr"
+                )
+                && callsite
+                    .args
+                    .iter()
+                    .any(|arg| paths_overlap(&use_path.0, &arg.path.0))
+        });
     }
     if facts.callsites.iter().any(|callsite| {
         callsite.function == function
@@ -1286,6 +1320,12 @@ impl<'a> Collector<'a> {
                     summary.interior_nul = bytes.contains(&0);
                     summary.ascii_only = bytes.is_ascii();
                 }
+                Expr::CStr(bytes) => {
+                    summary.bytes = Some(bytes.clone());
+                    summary.nul_termination = NulTermination::Terminated;
+                    summary.interior_nul = false;
+                    summary.ascii_only = bytes.is_ascii();
+                }
                 _ => {}
             }
         }
@@ -1465,6 +1505,9 @@ impl BufferSummary {
         }
         match self.kind {
             StringBufferKind::BorrowedStr => BTreeSet::from([StringRecoveryCandidate::BorrowedStr]),
+            StringBufferKind::BorrowedCStr => {
+                BTreeSet::from([StringRecoveryCandidate::BorrowedCStr])
+            }
             StringBufferKind::BorrowedBytes => {
                 BTreeSet::from([StringRecoveryCandidate::BorrowedBytes])
             }
@@ -1482,10 +1525,14 @@ impl BufferSummary {
                 {
                     match &self.bytes {
                         Some(bytes) if !self.interior_nul && std::str::from_utf8(bytes).is_ok() => {
-                            BTreeSet::from([
+                            let mut candidates = BTreeSet::from([
                                 StringRecoveryCandidate::BorrowedStr,
                                 StringRecoveryCandidate::OwnedString,
-                            ])
+                            ]);
+                            if self.ascii_only {
+                                candidates.insert(StringRecoveryCandidate::BorrowedCStr);
+                            }
+                            candidates
                         }
                         Some(_) => BTreeSet::from([StringRecoveryCandidate::BorrowedBytes]),
                         None => BTreeSet::new(),
@@ -1512,6 +1559,7 @@ fn lifted_kind(ty: &Type) -> Option<StringBufferKind> {
             inner,
         } => match &**inner {
             Type::Str => Some(StringBufferKind::BorrowedStr),
+            Type::Custom(name) if name == "core::ffi::CStr" => Some(StringBufferKind::BorrowedCStr),
             Type::Slice(elem) if matches!(&**elem, Type::Prim(Prim::U8)) => {
                 Some(StringBufferKind::BorrowedBytes)
             }
