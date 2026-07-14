@@ -1,39 +1,32 @@
-use crate::rust_ast::{Expr, FnDef, Ident, IndentStmt, Path, Prim, Stmt, Type};
+use crate::rust_ast::{Expr, FnDef, IndentStmt, Path, Prim, RustValue, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(f: &mut FnDef) {
     if f.name != "main" {
         return;
     }
-    let Some(exit_arg) = final_main_exit_arg(&mut f.body) else {
-        return;
+    if final_main_exit_is_zero(&f.body) {
+        f.body.pop();
     };
-
-    f.ret = Some(Type::Custom("std::process::ExitCode".into()));
-    *exit_arg = exit_code_expr(exit_arg.clone());
 }
 
-fn final_main_exit_arg(body: &mut [IndentStmt]) -> Option<&mut Expr> {
-    let stmt = &mut body.last_mut()?.stmt;
+fn final_main_exit_is_zero(body: &[IndentStmt]) -> bool {
+    let Some(stmt) = body.last().map(|indent| &indent.stmt) else {
+        return false;
+    };
     let Stmt::Expr(Expr::Call { func, args }) = stmt else {
-        return None;
+        return false;
     };
     if !is_std_process_exit(func) || args.len() != 1 {
-        return None;
+        return false;
     }
-    *stmt = Stmt::Return(Some(args.pop()?));
-    let Stmt::Return(Some(expr)) = stmt else {
-        unreachable!();
-    };
-    Some(expr)
+    is_zero_exit_arg(&args[0])
 }
 
-fn exit_code_expr(expr: Expr) -> Expr {
-    Expr::Call {
-        func: Box::new(Expr::Path(path(["std", "process", "ExitCode", "from"]))),
-        args: vec![Expr::Cast {
-            expr: Box::new(expr),
-            ty: Type::Prim(Prim::U8),
-        }],
+fn is_zero_exit_arg(expr: &Expr) -> bool {
+    match expr {
+        Expr::Value(RustValue::I64(0) | RustValue::I128(0)) => true,
+        Expr::Cast { expr, ty } if matches!(ty, Type::Prim(Prim::I32)) => is_zero_exit_arg(expr),
+        _ => false,
     }
 }
 
@@ -49,15 +42,11 @@ fn is_std_process_exit(expr: &Expr) -> bool {
             .all(|(segment, expected)| segment.as_str() == expected)
 }
 
-fn path<const N: usize>(segments: [&str; N]) -> Path {
-    Path::new(segments.into_iter().map(Ident::from))
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{Item, Program, Visibility};
+    use crate::rust_ast::{Ident, Item, Program, Visibility};
 
     fn std_process_exit(expr: Expr) -> Expr {
         Expr::Call {
@@ -74,8 +63,12 @@ mod tests {
         .emit()
     }
 
+    fn path<const N: usize>(segments: [&str; N]) -> Path {
+        Path::new(segments.into_iter().map(Ident::from))
+    }
+
     #[test]
-    fn rewrites_final_main_exit_to_exit_code_return() {
+    fn elides_final_main_zero_exit() {
         let out = fixed_fn(FnDef {
             vis: Visibility::Private,
             unsafe_: false,
@@ -95,15 +88,58 @@ mod tests {
         assert_eq!(
             out,
             "\
-fn main() -> std::process::ExitCode {
-    return std::process::ExitCode::from((0 as i32) as u8);
+fn main() {
 }
 "
         );
     }
 
     #[test]
-    fn leaves_non_main_exit_call_unchanged() {
+    fn leaves_final_main_nonzero_exit_unchanged() {
+        let f = FnDef {
+            vis: Visibility::Private,
+            unsafe_: false,
+            extern_c: false,
+            name: "main".into(),
+            params: vec![],
+            ret: None,
+            body: vec![IndentStmt {
+                depth: 1,
+                stmt: Stmt::Expr(std_process_exit(int(1))),
+            }],
+        };
+        let expected = Program {
+            items: vec![Item::Fn(f.clone())],
+        }
+        .emit();
+
+        assert_eq!(fixed_fn(f), expected);
+    }
+
+    #[test]
+    fn leaves_final_main_dynamic_exit_unchanged() {
+        let f = FnDef {
+            vis: Visibility::Private,
+            unsafe_: false,
+            extern_c: false,
+            name: "main".into(),
+            params: vec![],
+            ret: None,
+            body: vec![IndentStmt {
+                depth: 1,
+                stmt: Stmt::Expr(std_process_exit(var("status"))),
+            }],
+        };
+        let expected = Program {
+            items: vec![Item::Fn(f.clone())],
+        }
+        .emit();
+
+        assert_eq!(fixed_fn(f), expected);
+    }
+
+    #[test]
+    fn leaves_non_main_zero_exit_call_unchanged() {
         let f = FnDef {
             vis: Visibility::Private,
             unsafe_: false,
@@ -113,7 +149,7 @@ fn main() -> std::process::ExitCode {
             ret: None,
             body: vec![IndentStmt {
                 depth: 1,
-                stmt: Stmt::Expr(std_process_exit(int(1))),
+                stmt: Stmt::Expr(std_process_exit(int(0))),
             }],
         };
         let expected = Program {
