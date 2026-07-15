@@ -376,6 +376,14 @@ impl<'a> Collector<'a> {
                 }
                 None
             }
+            Expr::TupleStructLit { fields, .. } => {
+                for (index, value) in fields.iter().enumerate() {
+                    walk::with_path_segment(path, PathSegment::Expr(index), |path| {
+                        self.expr(value, path)
+                    });
+                }
+                None
+            }
             Expr::Macro { args, .. } => {
                 for (index, arg) in args.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index), |path| {

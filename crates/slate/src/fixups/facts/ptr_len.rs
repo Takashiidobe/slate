@@ -368,6 +368,9 @@ fn expr_mutates_pointer_alias(
         Expr::StructLit { fields, .. } => fields
             .iter()
             .any(|(_, expr)| expr_mutates_pointer_alias(expr, aliases, AccessMode::Read)),
+        Expr::TupleStructLit { fields, .. } => fields
+            .iter()
+            .any(|expr| expr_mutates_pointer_alias(expr, aliases, AccessMode::Read)),
         Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => elems
             .iter()
             .any(|expr| expr_mutates_pointer_alias(expr, aliases, AccessMode::Read)),

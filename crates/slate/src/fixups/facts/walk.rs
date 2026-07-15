@@ -121,6 +121,11 @@ pub(in crate::fixups) fn exprs(expr: &Expr, f: &mut impl FnMut(&Expr)) {
                 exprs(value, f);
             }
         }
+        Expr::TupleStructLit { fields, .. } => {
+            for value in fields {
+                exprs(value, f);
+            }
+        }
         Expr::ArrayLit(elems) => {
             for elem in elems {
                 exprs(elem, f);
@@ -409,6 +414,13 @@ pub(in crate::fixups) fn exprs_with_path(
                 });
             }
         }
+        Expr::TupleStructLit { fields, .. } => {
+            for (index, value) in fields.iter().enumerate() {
+                with_path_segment(path, PathSegment::Expr(index), |path| {
+                    exprs_with_path(value, path, f);
+                });
+            }
+        }
         Expr::ArrayLit(elems) => {
             for (index, elem) in elems.iter().enumerate() {
                 with_path_segment(path, PathSegment::Expr(index), |path| {
@@ -638,6 +650,7 @@ pub(in crate::fixups) fn exprs_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> 
         | Expr::ArrayPtr { array: base, .. } => exprs_any(base, pred),
         Expr::Index { base, index } => exprs_any(base, pred) || exprs_any(index, pred),
         Expr::StructLit { fields, .. } => fields.iter().any(|(_, value)| exprs_any(value, pred)),
+        Expr::TupleStructLit { fields, .. } => fields.iter().any(|value| exprs_any(value, pred)),
         Expr::ArrayLit(elems) => elems.iter().any(|elem| exprs_any(elem, pred)),
         Expr::ArrayRepeat { elem, .. } => exprs_any(elem, pred),
         Expr::VecLit(elems) => elems.iter().any(|elem| exprs_any(elem, pred)),
@@ -838,6 +851,9 @@ fn exprs_all_with_hooks(
         Expr::StructLit { fields, .. } => fields
             .iter()
             .all(|(_, value)| exprs_all_with_hooks(value, stmt_hook, expr_hook)),
+        Expr::TupleStructLit { fields, .. } => fields
+            .iter()
+            .all(|value| exprs_all_with_hooks(value, stmt_hook, expr_hook)),
         Expr::ArrayLit(elems) => elems
             .iter()
             .all(|elem| exprs_all_with_hooks(elem, stmt_hook, expr_hook)),
@@ -1034,6 +1050,11 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
         }
         Expr::StructLit { fields, .. } => {
             for (_, value) in fields {
+                exprs_mut_with(value, f);
+            }
+        }
+        Expr::TupleStructLit { fields, .. } => {
+            for value in fields {
                 exprs_mut_with(value, f);
             }
         }

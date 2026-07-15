@@ -588,6 +588,9 @@ fn analyze_expr(
         Expr::StructLit { fields, .. } => fields
             .iter()
             .all(|(_, expr)| analyze_expr(expr, AccessMode::Read, slices, state)),
+        Expr::TupleStructLit { fields, .. } => fields
+            .iter()
+            .all(|expr| analyze_expr(expr, AccessMode::Read, slices, state)),
         Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => elems
             .iter()
             .all(|expr| analyze_expr(expr, AccessMode::Read, slices, state)),

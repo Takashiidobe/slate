@@ -276,6 +276,13 @@ fn fixup_expr(
                 });
             }
         }
+        Expr::TupleStructLit { fields, .. } => {
+            for (index, value) in fields.iter_mut().enumerate() {
+                walk::with_path_segment(path, PathSegment::Expr(index), |path| {
+                    fixup_expr(value, function, facts, temps, path)
+                });
+            }
+        }
         Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => {
             for (index, elem) in elems.iter_mut().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index), |path| {
@@ -1349,6 +1356,9 @@ fn expr_temp_uses_are_zero_comparisons(expr: &Expr, name: &str) -> bool {
         Expr::StructLit { fields, .. } => fields
             .iter()
             .all(|(_, value)| expr_temp_uses_are_zero_comparisons(value, name)),
+        Expr::TupleStructLit { fields, .. } => fields
+            .iter()
+            .all(|value| expr_temp_uses_are_zero_comparisons(value, name)),
         Expr::ArrayLit(elems) => elems
             .iter()
             .all(|elem| expr_temp_uses_are_zero_comparisons(elem, name)),

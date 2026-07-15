@@ -353,6 +353,11 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>) {
                 rewrite_expr_pointer_views(value, liftable);
             }
         }
+        Expr::TupleStructLit { fields, .. } => {
+            for value in fields {
+                rewrite_expr_pointer_views(value, liftable);
+            }
+        }
         Expr::ArrayLit(elems) => {
             for elem in elems {
                 rewrite_expr_pointer_views(elem, liftable);
@@ -588,6 +593,7 @@ fn expr_children_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool 
         | Expr::TupleField { base, .. }
         | Expr::ArrayPtr { array: base, .. } => pred(base),
         Expr::StructLit { fields, .. } => fields.iter().any(|(_, value)| pred(value)),
+        Expr::TupleStructLit { fields, .. } => fields.iter().any(pred),
         Expr::ArrayLit(elems) => elems.iter().any(pred),
         Expr::ArrayRepeat { elem, .. } => pred(elem),
         Expr::VecLit(elems) => elems.iter().any(pred),

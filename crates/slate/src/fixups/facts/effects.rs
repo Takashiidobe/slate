@@ -33,6 +33,12 @@ pub(in crate::fixups) fn is_movable_pure_expr(expr: &Expr) -> bool {
         Expr::Unary { op, expr } => !matches!(op, UnaryOp::Not) && is_movable_pure_expr(expr),
         Expr::Binary { lhs, rhs, .. } => is_movable_pure_expr(lhs) && is_movable_pure_expr(rhs),
         Expr::Index { base, index } => is_movable_pure_expr(base) && is_movable_pure_expr(index),
+        Expr::StructLit { fields, .. } => {
+            fields.iter().all(|(_, value)| is_movable_pure_expr(value))
+        }
+        Expr::TupleStructLit { fields, .. } => fields.iter().all(is_movable_pure_expr),
+        Expr::ArrayLit(elems) => elems.iter().all(is_movable_pure_expr),
+        Expr::ArrayRepeat { elem, .. } => is_movable_pure_expr(elem),
         _ => false,
     }
 }
@@ -251,6 +257,11 @@ impl Collector {
             }
             Expr::StructLit { fields, .. } => {
                 for (index, (_, value)) in fields.iter().enumerate() {
+                    effects.extend(self.child_expr(value, path, index));
+                }
+            }
+            Expr::TupleStructLit { fields, .. } => {
+                for (index, value) in fields.iter().enumerate() {
                     effects.extend(self.child_expr(value, path, index));
                 }
             }
