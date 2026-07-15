@@ -1207,6 +1207,13 @@ impl<'a> Collector<'a> {
                     });
                 }
             }
+            Expr::TupleStructLit { fields, .. } => {
+                for (index, value) in fields.iter().enumerate() {
+                    walk::with_path_segment(path, PathSegment::Expr(index), |path| {
+                        self.expr(value, path)
+                    });
+                }
+            }
             Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => {
                 for (index, elem) in elems.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index), |path| {

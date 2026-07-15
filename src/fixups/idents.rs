@@ -205,6 +205,16 @@ pub(super) fn expr_ident_count(expr: &Expr, name: &str) -> usize {
                     .map(|(field, value)| ident_count(field, name) + expr_ident_count(value, name))
                     .sum::<usize>()
         }
+        Expr::TupleStructLit {
+            name: type_name,
+            fields,
+        } => {
+            ident_count(type_name, name)
+                + fields
+                    .iter()
+                    .map(|value| expr_ident_count(value, name))
+                    .sum::<usize>()
+        }
         Expr::ArrayLit(elems) => elems.iter().map(|elem| expr_ident_count(elem, name)).sum(),
         Expr::ArrayRepeat { elem, .. } => expr_ident_count(elem, name),
         Expr::VecLit(elems) => elems.iter().map(|elem| expr_ident_count(elem, name)).sum(),

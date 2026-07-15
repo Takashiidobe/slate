@@ -78,6 +78,28 @@ fn generated_differential() {
 }
 
 #[test]
+fn anonymous_local_structs_use_generated_tuple_structs() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-anon-local-struct");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("anon_local_struct.c");
+    let generated = tmp.join("anon_local_struct.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate anon_local_struct fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated anon_local_struct rust");
+
+    assert!(rust.contains("struct __slate_anonymous_struct_0(i32, i32);"));
+    assert!(
+        rust.contains("let point: __slate_anonymous_struct_0 = __slate_anonymous_struct_0(3, 4);")
+    );
+    assert!(rust.contains("point.0"));
+    assert!(rust.contains("point.1"));
+    assert!(!rust.contains("struct anon_0"));
+    assert!(!rust.contains("anon_0 { x:"));
+    assert!(!rust.contains("point.x"));
+    assert!(!rust.contains("point.y"));
+}
+
+#[test]
 fn pthread_opaque_types_use_libc_paths() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pthread-types");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

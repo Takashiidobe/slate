@@ -574,6 +574,10 @@ pub enum Expr {
         name: String,
         fields: Vec<(String, Expr)>,
     },
+    TupleStructLit {
+        name: String,
+        fields: Vec<Expr>,
+    },
     ArrayLit(Vec<Expr>),
     ArrayRepeat {
         elem: Box<Expr>,
@@ -992,6 +996,13 @@ impl Expr {
             Expr::StructLit { fields, .. } => {
                 let mut changed = false;
                 for (_, value) in fields {
+                    changed |= value.substitute_var(name, replacement);
+                }
+                changed
+            }
+            Expr::TupleStructLit { fields, .. } => {
+                let mut changed = false;
+                for value in fields {
                     changed |= value.substitute_var(name, replacement);
                 }
                 changed

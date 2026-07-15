@@ -261,6 +261,11 @@ impl<'a> Collector<'a> {
                     self.expr(value, path);
                 }
             }
+            Expr::TupleStructLit { fields, .. } => {
+                for value in fields {
+                    self.expr(value, path);
+                }
+            }
             Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => {
                 for elem in elems {
                     self.expr(elem, path);

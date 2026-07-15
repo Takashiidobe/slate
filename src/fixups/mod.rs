@@ -16,6 +16,7 @@ pub fn apply(program: Program) -> Program {
     let mut program = program;
     inline_temps_to_fixpoint(&mut program, InlinePass::Early);
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+    rewrite::anonymous_structs::fixup(&mut program, &facts);
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
             && let Some(function) = facts.function_by_item_index(item_index)
