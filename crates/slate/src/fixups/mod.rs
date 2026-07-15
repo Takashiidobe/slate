@@ -14,28 +14,7 @@ use crate::rust_ast::{Block, IndentStmt, Item, Program, Stmt};
 pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { program, .. } = facts::analyze(program);
     let mut program = program;
-    let inline_round_limit = if program_stmt_count(&program) > 2_000 {
-        5
-    } else {
-        usize::MAX
-    };
-    let mut rounds = 0;
-    while rounds < inline_round_limit {
-        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-        rounds += 1;
-        let mut changed = false;
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-                && rewrite::inline_temps::fixup(&mut f.body, function, &facts)
-            {
-                changed = true;
-            }
-        }
-        if !changed {
-            break;
-        }
-    }
+    inline_temps_to_fixpoint(&mut program, InlinePass::Early);
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
@@ -201,6 +180,7 @@ pub fn apply(program: Program) -> Program {
             break;
         }
     }
+    remove_mut(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_libc::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
@@ -231,6 +211,7 @@ pub fn apply(program: Program) -> Program {
             break;
         }
     }
+    remove_mut(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_libc::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
@@ -260,12 +241,63 @@ pub fn apply(program: Program) -> Program {
         }
     }
     rewrite::memchr_prelude::prune_unused_helper(&mut program);
+    inline_temps_to_fixpoint(&mut program, InlinePass::Late);
+    remove_mut(&mut program);
     for item in &mut program.items {
         if let Item::Fn(f) = item {
             rewrite::main_zero_exit::fixup(f);
         }
     }
     program
+}
+
+#[derive(Clone, Copy)]
+enum InlinePass {
+    Early,
+    Late,
+}
+
+fn inline_temps_to_fixpoint(program: &mut Program, pass: InlinePass) {
+    let inline_round_limit = if program_stmt_count(program) > 2_000 {
+        5
+    } else {
+        usize::MAX
+    };
+    let mut rounds = 0;
+    while rounds < inline_round_limit {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        rounds += 1;
+        let mut changed = false;
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            if let Item::Fn(f) = item
+                && let Some(function) = facts.function_by_item_index(item_index)
+                && match pass {
+                    InlinePass::Early => {
+                        rewrite::early_inline_temps::fixup(&mut f.body, function, &facts)
+                    }
+                    InlinePass::Late => {
+                        rewrite::late_inline_temps::fixup(&mut f.body, function, &facts)
+                    }
+                }
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+}
+
+fn remove_mut(program: &mut Program) {
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            rewrite::remove_mut::fixup(f, function, &facts);
+        }
+    }
 }
 
 fn program_stmt_count(program: &Program) -> usize {
