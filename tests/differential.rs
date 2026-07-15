@@ -78,6 +78,19 @@ fn generated_differential() {
 }
 
 #[test]
+fn pthread_opaque_types_use_libc_paths() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pthread-types");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("mt-atomics.c");
+    let generated = tmp.join("mt-atomics.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate mt-atomics fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated mt-atomics rust");
+    assert!(rust.contains("*mut libc::pthread_attr_t"));
+    assert!(!rust.contains("*mut pthread_attr_t"));
+}
+
+#[test]
 fn volatile_uses_rust_volatile_intrinsics() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-volatile");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
