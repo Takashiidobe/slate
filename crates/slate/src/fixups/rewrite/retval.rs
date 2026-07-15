@@ -1,6 +1,7 @@
 //! Collapse a return-value slot store into the final return or main exit when
 //! the slot is used only for that round trip.
 
+use crate::fixups::facts::effects::is_movable_pure_expr;
 use crate::fixups::facts::{
     AstPath, BindingId, ControlFlowSubject, FixupFacts, FunctionId, PathSegment, PlaceAccess,
     PlaceKind,
@@ -109,13 +110,12 @@ fn remove_unused_retval_decl(body: &mut Vec<IndentStmt>) {
 }
 
 fn collapse_main_exit_slot(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFacts) {
-    let Some((exit_index, temp_name, cast_ty)) =
+    let Some((exit_index, temp_name)) =
         body.iter()
             .enumerate()
             .find_map(|(index, stmt)| match &stmt.stmt {
                 Stmt::Expr(expr) if reachable_stmt(function, facts, &stmt_path(index)) => {
-                    main_exit_arg_temp(expr)
-                        .map(|(name, ty)| (index, name.to_string(), ty.cloned()))
+                    main_exit_arg_temp(expr).map(|name| (index, name.to_string()))
                 }
                 _ => None,
             })
@@ -168,9 +168,10 @@ fn collapse_main_exit_slot(body: &mut Vec<IndentStmt>, function: FunctionId, fac
     let Some(temp_def_use) = facts.def_use(temp_binding) else {
         return;
     };
+    let store_path = AstPath(stmt_path(store_index));
     if retval_def_use.definition.0.len() != 1
         || retval_def_use.reads != [AstPath(stmt_path(temp_index))]
-        || retval_def_use.writes != [AstPath(stmt_path(store_index))]
+        || !retval_def_use.writes.contains(&store_path)
         || temp_def_use.reads != [AstPath(stmt_path(exit_index))]
         || !temp_def_use.writes.is_empty()
     {
@@ -180,27 +181,32 @@ fn collapse_main_exit_slot(body: &mut Vec<IndentStmt>, function: FunctionId, fac
         return;
     };
 
-    let replacement = if let Some(ty) = cast_ty {
-        Expr::Cast {
-            expr: Box::new(value),
-            ty,
+    let mut remove = vec![temp_index, store_index, *decl_index];
+    for write in &retval_def_use.writes {
+        let Some(index) = direct_stmt_index(&[], write) else {
+            return;
+        };
+        if index == store_index {
+            continue;
         }
-    } else {
-        value
-    };
+        if index > store_index || !pure_retval_write(function, facts, index, retval_binding, body) {
+            return;
+        }
+        remove.push(index);
+    }
 
     let Stmt::Expr(expr) = &mut body[exit_index].stmt else {
         unreachable!();
     };
-    replace_main_exit_arg(expr, replacement);
-    let mut remove = [temp_index, store_index, *decl_index];
+    replace_main_exit_arg(expr, value);
     remove.sort_unstable();
+    remove.dedup();
     for index in remove.into_iter().rev() {
         body.remove(index);
     }
 }
 
-fn main_exit_arg_temp(expr: &Expr) -> Option<(&str, Option<&Type>)> {
+fn main_exit_arg_temp(expr: &Expr) -> Option<&str> {
     let Expr::Call { func, args } = expr else {
         return None;
     };
@@ -208,10 +214,11 @@ fn main_exit_arg_temp(expr: &Expr) -> Option<(&str, Option<&Type>)> {
         return None;
     }
     match &args[0] {
-        Expr::Cast { expr, ty } if matches!(ty, Type::Prim(Prim::I32)) => {
-            expr_ident(expr).map(|name| (name, Some(ty)))
-        }
-        arg => expr_ident(arg).map(|name| (name, None)),
+        Expr::Cast {
+            expr,
+            ty: Type::Prim(Prim::I32),
+        } => expr_ident(expr),
+        arg => expr_ident(arg),
     }
 }
 
@@ -254,6 +261,22 @@ fn store_writes_binding(
                 && fact.ordinary_slot
                 && matches!(&fact.kind, PlaceKind::Local { name: place } if place == name)
         })
+}
+
+fn pure_retval_write(
+    function: FunctionId,
+    facts: &FixupFacts,
+    index: usize,
+    binding: BindingId,
+    body: &[IndentStmt],
+) -> bool {
+    let Some(stmt) = body.get(index).map(|indent| &indent.stmt) else {
+        return false;
+    };
+    let Stmt::Assign { target, value } = stmt else {
+        return false;
+    };
+    store_writes_binding(function, facts, index, binding, target) && is_movable_pure_expr(value)
 }
 
 fn reachable_stmt(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
@@ -484,7 +507,43 @@ fn f() -> i32 {
             out,
             "\
 fn main() {
-    std::process::exit(0 as i32);
+    std::process::exit(0);
+}
+"
+        );
+    }
+
+    #[test]
+    fn collapses_main_retval_tail_after_prior_pure_writes() {
+        let out = fixed_fn(FnDef {
+            vis: Visibility::Private,
+            unsafe_: false,
+            extern_c: false,
+            name: "main".into(),
+            params: vec![],
+            ret: None,
+            body: vec![
+                let_mut("__retval", "i32", int(0)),
+                assign("__retval", int(0)),
+                Stmt::Expr(call("observe", vec![])),
+                assign("__retval", int(0)),
+                temp("_v1", "i32", var("__retval")),
+                Stmt::Expr(std_process_exit(Expr::Cast {
+                    expr: Box::new(var("_v1")),
+                    ty: Type::Prim(Prim::I32),
+                })),
+            ]
+            .into_iter()
+            .map(|stmt| IndentStmt { depth: 1, stmt })
+            .collect(),
+        });
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    observe();
+    std::process::exit(0);
 }
 "
         );

@@ -268,6 +268,8 @@ fn address_of_array_elements_use_safe_indexes() {
 
     assert!(rust.contains("values[1] + values[3]"));
     assert!(rust.contains("3 - 1"));
+    assert!(!rust.contains("__retval"));
+    assert!(!rust.contains("std::process::exit"));
     assert!(!rust.contains("unsafe { *p }"));
     assert!(!rust.contains("unsafe { *q }"));
     assert!(!rust.contains(".offset_from("));
