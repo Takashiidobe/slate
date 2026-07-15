@@ -230,6 +230,8 @@ pub fn apply(program: Program) -> Program {
     rewrite::memchr_prelude::prune_unused_helper(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::array_element_pointer_origin::fixup(&mut program, &facts);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::buffer_cursor::fixup(&mut program, &facts);
     inline_temps_to_fixpoint(&mut program, InlinePass::Late);
     zero_init_to_fixpoint(&mut program);
     remove_mut(&mut program);
