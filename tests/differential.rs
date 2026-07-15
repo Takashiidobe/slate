@@ -166,6 +166,21 @@ fn counted_varargs_loop_uses_range_for() {
 }
 
 #[test]
+fn array_init_literal_counted_loop_uses_range_for() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-array-init-loop");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("array_init.c");
+    let generated = tmp.join("array_init.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate array_init fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated array_init rust");
+
+    assert!(rust.contains("for i in 0..5 {"));
+    assert!(rust.contains("sum += a[((i as i64) as usize)];"));
+    assert!(!rust.contains("if !(i < 5)"));
+}
+
+#[test]
 fn volatile_uses_rust_volatile_intrinsics() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-volatile");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

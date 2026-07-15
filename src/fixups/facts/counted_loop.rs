@@ -6,7 +6,7 @@ use crate::fixups::facts::{
     CountedLoopStep, CountedSliceLoopFact, FixupFacts, FunctionId, LoopId, LoopKind, PathSegment,
     SliceLoopAccess,
 };
-use crate::fixups::idents::stmt_ident_count;
+use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -173,7 +173,7 @@ impl<'a> Collector<'a> {
         let index =
             self.facts
                 .binding_by_local_path(self.function, index_name.as_str(), &index_path)?;
-        let bound = self.unique_binding_for_bound(range.bound)?;
+        let bound = self.range_bound(range.bound, index_name.as_str())?;
 
         let mut loop_path = parent_path.to_vec();
         loop_path.push(body_segment);
@@ -284,18 +284,11 @@ impl<'a> Collector<'a> {
             .map(|loop_fact| loop_fact.id)
     }
 
-    fn unique_binding_for_bound(&self, bound: &Expr) -> Option<BindingId> {
-        let Expr::Var(name) = bound else {
+    fn range_bound(&self, bound: &Expr, index_name: &str) -> Option<Expr> {
+        if expr_ident_count(bound, index_name) != 0 || !is_range_bound_expr(bound) {
             return None;
-        };
-        let mut matches = self
-            .facts
-            .bindings
-            .iter()
-            .filter(|binding| binding.function == self.function && binding.name == name.as_str())
-            .map(|binding| binding.id);
-        let first = matches.next()?;
-        matches.next().is_none().then_some(first)
+        }
+        Some(bound.clone())
     }
 }
 
@@ -739,8 +732,41 @@ fn integer_value(expr: &Expr) -> Option<i128> {
         Expr::Value(RustValue::I64(n)) => Some(i128::from(*n)),
         Expr::Value(RustValue::Usize(n)) => i128::try_from(*n).ok(),
         Expr::Value(RustValue::I128(n)) => Some(*n),
+        Expr::Unary {
+            op: crate::rust_ast::UnaryOp::Neg,
+            expr,
+        } => integer_value(expr)?.checked_neg(),
+        Expr::Binary { op, lhs, rhs } => {
+            let lhs = integer_value(lhs)?;
+            let rhs = integer_value(rhs)?;
+            match op {
+                BinOp::Add => lhs.checked_add(rhs),
+                BinOp::Sub => lhs.checked_sub(rhs),
+                BinOp::Mul => lhs.checked_mul(rhs),
+                BinOp::Div => (rhs != 0).then(|| lhs.checked_div(rhs)).flatten(),
+                BinOp::Rem => (rhs != 0).then(|| lhs.checked_rem(rhs)).flatten(),
+                _ => None,
+            }
+        }
         Expr::Cast { expr, .. } => integer_value(expr),
         _ => None,
+    }
+}
+
+fn is_range_bound_expr(expr: &Expr) -> bool {
+    match peel_casts(expr) {
+        Expr::Var(_) => true,
+        Expr::Value(RustValue::I64(n)) => *n >= 0,
+        Expr::Value(RustValue::Usize(_)) => true,
+        Expr::Value(RustValue::I128(n)) => *n >= 0,
+        Expr::Binary { op, lhs, rhs } => {
+            matches!(
+                op,
+                BinOp::Add | BinOp::Sub | BinOp::Mul | BinOp::Div | BinOp::Rem
+            ) && is_range_bound_expr(lhs)
+                && is_range_bound_expr(rhs)
+        }
+        _ => false,
     }
 }
 

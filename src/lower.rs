@@ -695,10 +695,7 @@ impl<'a> Lowerer<'a> {
         };
         if let Some(mut bytes) = parse_cir_const_array(raw) {
             if is_c_global && let Some(ty) = ty {
-                let elems: Vec<Expr> = bytes
-                    .iter()
-                    .map(|b| Expr::Value(RustValue::I64(i64::from(*b))))
-                    .collect();
+                let elems = byte_array_elems(&bytes, &ty);
                 self.globals.insert(
                     rust_name.clone(),
                     GlobalVar {
@@ -1604,10 +1601,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         match self.values.get(src) {
             Some(Val::Global(name)) => {
                 if let Some(bytes) = self.parent.strings.get(name) {
-                    let elems: Vec<Expr> = bytes
-                        .iter()
-                        .map(|b| Expr::Value(RustValue::I64(i64::from(*b))))
-                        .collect();
+                    let ty = self.slot_types.get(dst)?;
+                    let elems = byte_array_elems(bytes, ty);
                     Some(render_array_literal_expr(
                         &elems,
                         dst_len.unwrap_or(elems.len()),
@@ -5230,6 +5225,27 @@ fn type_array_len(ty: &Type) -> Option<u64> {
         Type::Array { len, .. } => Some(*len),
         _ => None,
     }
+}
+
+fn byte_array_elems(bytes: &[u8], ty: &Type) -> Vec<Expr> {
+    let signed = matches!(
+        ty,
+        Type::Array {
+            elem,
+            ..
+        } if matches!(&**elem, Type::Prim(Prim::I8))
+    );
+    bytes
+        .iter()
+        .map(|byte| {
+            let value = if signed {
+                i64::from(i8::from_ne_bytes([*byte]))
+            } else {
+                i64::from(*byte)
+            };
+            Expr::Value(RustValue::I64(value))
+        })
+        .collect()
 }
 
 fn standard_record_def(name: &str) -> RecordDef {
