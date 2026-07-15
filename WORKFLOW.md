@@ -96,16 +96,19 @@ git status --short --branch
 bd show <id>
 ```
 
-Use narrow tests while developing. Before handoff, run the ticket's acceptance
+Use narrow tests while developing. Before the final commit or handoff, fix
+`cargo clippy` warnings first, then format, then run the ticket's acceptance
 tests. For fixture work, usually run:
 
 ```bash
+cargo clippy --all-targets --all-features
+cargo fmt
 cargo test --test differential generated_differential
 cargo test --test stdlib_coverage
 ```
 
-Run `cargo fmt` before handoff. Leave no generated, temporary, or unrelated
-files in the branch. Do not rewrite unrelated user changes.
+Leave no generated, temporary, or unrelated files in the branch. Do not rewrite
+unrelated user changes.
 
 ## Stop For Human Review
 
@@ -133,8 +136,9 @@ the diff, and decide when to merge.
 cd /home/takashi/Projects/slate
 git status --short --branch
 git merge --no-ff work/<id>
+cargo clippy --all-targets --all-features
 cargo fmt
-cargo test
+cargo nextest r --release
 bd close <id> --reason "Implemented <summary>. Verified with <commands>."
 bd ready
 bd list --status=in_progress
