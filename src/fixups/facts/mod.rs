@@ -5,6 +5,7 @@ use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
 pub(super) mod anonymous_structs;
 pub(super) mod array_element_pointer_origin;
 pub(super) mod borrow_alias;
+pub(super) mod buffer_cursor;
 pub(super) mod c_strings;
 pub(super) mod calls;
 pub(super) mod casts;
@@ -62,6 +63,7 @@ pub(super) struct FixupFacts {
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
     pub(super) array_element_pointer_origins: Vec<ArrayElementPointerOriginFact>,
+    pub(super) buffer_pointer_fields: Vec<BufferPointerFieldFact>,
     pub(super) anonymous_structs: Vec<AnonymousStructFact>,
     pub(super) slice_pointer_views: Vec<SlicePointerViewFact>,
     pub(super) slice_index_ranges: Vec<SliceIndexRangeFact>,
@@ -121,6 +123,15 @@ pub(super) struct AnonymousStructFact {
 pub(super) struct AnonymousStructFieldFact {
     pub(super) name: String,
     pub(super) ty: Type,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct BufferPointerFieldFact {
+    pub(super) function: FunctionId,
+    pub(super) buffer: BindingId,
+    pub(super) array: BindingId,
+    pub(super) field: String,
+    pub(super) index: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1356,6 +1367,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     file_ownership::collect_facts(&program, &mut collector.facts);
     ptr_len::collect_facts(&program, &mut collector.facts);
     array_element_pointer_origin::collect_facts(&program, &mut collector.facts);
+    buffer_cursor::collect_facts(&program, &mut collector.facts);
     slice_index::collect_facts(&program, &mut collector.facts);
     counted_loop::collect_facts(&program, &mut collector.facts);
     loop_shapes::collect_facts(&program, &mut collector.facts);

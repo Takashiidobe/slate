@@ -100,6 +100,28 @@ fn anonymous_local_structs_use_generated_tuple_structs() {
 }
 
 #[test]
+fn buffer_pointer_cursor_uses_safe_array_indexes() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-buffer-cursor");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("anon_local_struct.c");
+    let generated = tmp.join("anon_local_struct.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate anon_local_struct fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated anon_local_struct rust");
+
+    assert!(rust.contains("storage[0] ="));
+    assert!(rust.contains("storage[1] ="));
+    assert!(rust.contains("println!(\"{}\", 2 as i64);"));
+    assert!(rust.contains("println!(\"{}\", 4 as i64);"));
+    assert!(!rust.contains("let buf:"));
+    assert!(!rust.contains("buf.pointer"));
+    assert!(!rust.contains("buf.start"));
+    assert!(!rust.contains("buf.end"));
+    assert!(!rust.contains("offset_from"));
+    assert!(!rust.contains("unsafe {\n        *"));
+}
+
+#[test]
 fn pthread_opaque_types_use_libc_paths() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pthread-types");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
