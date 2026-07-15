@@ -1435,6 +1435,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.ternary" => self.lower_ternary(op),
             "cir.get_global" => self.lower_get_global(op),
             "cir.get_member" => self.lower_get_member(op),
+            "cir.extract_member" => self.lower_extract_member(op),
+            "cir.insert_member" => self.lower_insert_member(op),
             "cir.get_bitfield" => self.lower_get_bitfield(op),
             "cir.set_bitfield" => self.lower_set_bitfield(op),
             "cir.get_element" => self.lower_get_element(op),
@@ -2776,6 +2778,105 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 unsafe_access,
             },
         );
+    }
+
+    fn lower_extract_member(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(base) = op.operands.first() else {
+            return;
+        };
+        let Some(field) = self.value_member_field(op, 0) else {
+            self.emit_todo("cir.extract_member");
+            return;
+        };
+        self.materialize_expr(
+            result,
+            Expr::Field {
+                base: Box::new(self.operand_expr(base)),
+                field,
+            },
+            op_result_type(op),
+        );
+    }
+
+    fn lower_insert_member(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let Some(index) = aggregate_member_index(op) else {
+            self.emit_todo("cir.insert_member");
+            return;
+        };
+        let Some(record_name) = op_result_type(op)
+            .map(|ty| self.parent.rust_type(ty))
+            .and_then(|ty| match ty {
+                Type::Custom(name) => Some(name),
+                _ => None,
+            })
+        else {
+            self.emit_todo("cir.insert_member");
+            return;
+        };
+        let Some(record) = self.parent.records.get(&record_name) else {
+            self.emit_todo("cir.insert_member");
+            return;
+        };
+        if record.kind != RecordKind::Struct {
+            self.emit_todo("cir.insert_member");
+            return;
+        }
+        if index >= record.fields.len() {
+            self.emit_todo("cir.insert_member");
+            return;
+        }
+        let base = self.operand_expr(&op.operands[0]);
+        let value = self.operand_expr(&op.operands[1]);
+        let fields = record
+            .fields
+            .iter()
+            .enumerate()
+            .map(|(i, field)| {
+                let field = sanitize_ident(&field.name).into_string();
+                let expr = if i == index {
+                    value.clone()
+                } else {
+                    Expr::Field {
+                        base: Box::new(base.clone()),
+                        field: field.clone(),
+                    }
+                };
+                (field, expr)
+            })
+            .collect();
+        self.materialize_expr(
+            result,
+            Expr::StructLit {
+                name: record_name,
+                fields,
+            },
+            op_result_type(op),
+        );
+    }
+
+    fn value_member_field(&self, op: &Op, operand_index: usize) -> Option<String> {
+        let index = aggregate_member_index(op)?;
+        let record_ty = op_operand_types(op.ty.as_deref()?)
+            .get(operand_index)
+            .copied()?;
+        let Type::Custom(record_name) = self.parent.rust_type(record_ty) else {
+            return None;
+        };
+        self.parent
+            .records
+            .get(&record_name)?
+            .fields
+            .get(index)
+            .map(|field| sanitize_ident(&field.name).into_string())
     }
 
     fn coerce_store_value(&self, ptr: &str, value: Expr, value_operand: &str) -> Expr {
@@ -4560,6 +4661,12 @@ fn attr_int(op: &Op, key: &str) -> Option<i64> {
     op.attrs.get(key).and_then(Attr::as_int)
 }
 
+fn aggregate_member_index(op: &Op) -> Option<usize> {
+    attr_int(op, "index")
+        .or_else(|| attr_int(op, "index_attr"))
+        .and_then(|index| usize::try_from(index).ok())
+}
+
 fn attr_bool(op: &Op, key: &str) -> bool {
     op.attrs.contains_key(key)
 }
@@ -5940,4 +6047,85 @@ fn split_top_level(s: &str, delimiter: char) -> Vec<&str> {
     }
     parts.push(&s[start..]);
     parts
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::c_ast::{CType, Decl, Record, RecordKind, Unit};
+
+    fn pair_unit() -> Unit {
+        Unit {
+            records: vec![Record {
+                name: "Pair".into(),
+                comments: Vec::new(),
+                kind: RecordKind::Struct,
+                fields: vec![
+                    Decl {
+                        name: "left".into(),
+                        comments: Vec::new(),
+                        ty: CType::Int {
+                            signed: true,
+                            bits: 32,
+                        },
+                    },
+                    Decl {
+                        name: "right".into(),
+                        comments: Vec::new(),
+                        ty: CType::Int {
+                            signed: true,
+                            bits: 32,
+                        },
+                    },
+                ],
+            }],
+            ..Unit::default()
+        }
+    }
+
+    fn lower_cir(text: &str) -> String {
+        let module = crate::cir::parse_module(text).expect("parse synthetic CIR");
+        let mut ctx = Ctx::default();
+        lower(&module, &pair_unit(), &mut ctx).emit()
+    }
+
+    #[test]
+    fn lowers_extract_member_from_record_value() {
+        let rust = lower_cir(
+            r#"
+!s32i = !cir.int<s, 32>
+!rec_Pair = !cir.struct<"Pair" {!s32i, !s32i}>
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<(!rec_Pair) -> !s32i>, sym_name = "right"}> ({
+  ^bb0(%arg0: !rec_Pair):
+    %0 = "cir.extract_member"(%arg0) <{index = 1 : i64}> : (!rec_Pair) -> !s32i
+    "cir.return"(%0) : (!s32i) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(rust.contains("fn right(arg0: Pair) -> i32 {"));
+        assert!(rust.contains("let _v0: i32 = arg0.right;"));
+        assert!(rust.contains("return _v0;"));
+    }
+
+    #[test]
+    fn lowers_insert_member_to_record_value_rebuild() {
+        let rust = lower_cir(
+            r#"
+!s32i = !cir.int<s, 32>
+!rec_Pair = !cir.struct<"Pair" {!s32i, !s32i}>
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<(!rec_Pair, !s32i) -> !rec_Pair>, sym_name = "replace_left"}> ({
+  ^bb0(%arg0: !rec_Pair, %arg1: !s32i):
+    %0 = "cir.insert_member"(%arg0, %arg1) <{index = 0 : i64}> : (!rec_Pair, !s32i) -> !rec_Pair
+    "cir.return"(%0) : (!rec_Pair) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(rust.contains("fn replace_left(arg0: Pair, arg1: i32) -> Pair {"));
+        assert!(rust.contains("let _v0: Pair = Pair { left: arg1, right: arg0.right };"));
+        assert!(rust.contains("return _v0;"));
+    }
 }
