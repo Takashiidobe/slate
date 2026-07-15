@@ -196,6 +196,39 @@ fn f(a: i32) -> i32 {
     }
 
     #[test]
+    fn keeps_mut_when_deref_assigned() {
+        let out = run(vec![
+            let_mut(
+                "p",
+                "Box<i32>",
+                Expr::Call {
+                    func: Box::new(Expr::Var("Box::<i32>::new".into())),
+                    args: vec![int(0)],
+                },
+            ),
+            Stmt::Assign {
+                target: Expr::Unary {
+                    op: crate::rust_ast::UnaryOp::Deref,
+                    expr: Box::new(var("p")),
+                },
+                value: int(1),
+            },
+            Stmt::Return(Some(var("a"))),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f(a: i32) -> i32 {
+    let mut p: Box<i32> = Box::<i32>::new(0);
+    *p = 1;
+    return a;
+}
+"
+        );
+    }
+
+    #[test]
     fn keeps_mut_when_used_as_method_receiver() {
         let out = run(vec![
             let_mut(
@@ -221,6 +254,48 @@ fn f(a: i32) -> i32 {
     let mut items: Vec<i32> = Vec::new();
     items.push(1);
     return a;
+}
+"
+        );
+    }
+
+    #[test]
+    fn removes_mut_for_read_only_slice_method_receivers() {
+        let mut f = func(
+            vec![param("items", "&[i32]")],
+            Some("i32"),
+            vec![
+                temp(
+                    "len",
+                    "i32",
+                    Expr::Cast {
+                        expr: Box::new(Expr::MethodCall {
+                            recv: Box::new(var("items")),
+                            method: "len".into(),
+                            args: Vec::new(),
+                        }),
+                        ty: crate::rust_ast::Type::parse("i32"),
+                    },
+                ),
+                Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(var("items")),
+                    method: "iter".into(),
+                    args: Vec::new(),
+                }),
+                Stmt::Return(Some(var("len"))),
+            ],
+        );
+        f.params[0].mutable = true;
+
+        let out = run_fn(f);
+
+        assert_eq!(
+            out,
+            "\
+fn f(items: &[i32]) -> i32 {
+    let len: i32 = items.len() as i32;
+    items.iter();
+    return len;
 }
 "
         );

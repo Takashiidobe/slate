@@ -890,7 +890,7 @@ fn ptr_len_pairs_use_slice_params_for_full_array_calls() {
     support::translate(&c_src, &generated).expect("translate ptr_len_slice fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated ptr_len_slice rust");
 
-    assert!(rust.contains("fn sum(mut items: &[i32]) -> i32"));
+    assert!(rust.contains("fn sum(items: &[i32]) -> i32"));
     assert!(rust.contains("fn bump(mut items: &mut [i32]) -> ()"));
     assert!(rust.contains("let len: i32 = items.len() as i32;"));
     assert!(rust.contains("let _v7: i32 = items[(i as usize)];"));
@@ -915,7 +915,7 @@ fn ptr_len_slice_loop_uses_materialized_item_name() {
     support::translate(&c_src, &generated).expect("translate ptr_len_slice_item fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated ptr_len_slice_item rust");
 
-    assert!(rust.contains("fn sum_items(mut items: &[i32]) -> i32"));
+    assert!(rust.contains("fn sum_items(items: &[i32]) -> i32"));
     assert!(rust.contains("for item in items.iter()"));
     assert!(rust.contains("sum_items(values.as_slice())"));
     assert!(rust.contains("total += *item;"));

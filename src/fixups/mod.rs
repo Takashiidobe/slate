@@ -166,6 +166,14 @@ pub fn apply(program: Program) -> Program {
         }
     }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            rewrite::remove_mut::fixup(f, function, &facts);
+        }
+    }
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_copy::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_copy::prune_unused_externs(&mut program, &facts);

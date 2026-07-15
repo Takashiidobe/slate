@@ -217,6 +217,20 @@ impl<'a> Collector<'a> {
                     self.expr(arg, path);
                 }
             }
+            Expr::MethodCall { recv, method, args } if is_read_only_receiver_method(method) => {
+                self.expr(recv, path);
+                for arg in args {
+                    self.expr(arg, path);
+                }
+            }
+            Expr::MethodCallGeneric {
+                recv, method, args, ..
+            } if is_read_only_receiver_method(method) => {
+                self.expr(recv, path);
+                for arg in args {
+                    self.expr(arg, path);
+                }
+            }
             Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
                 self.record_expr_vars(
                     recv,
@@ -397,7 +411,7 @@ impl<'a> Collector<'a> {
             Expr::Unary {
                 op: UnaryOp::Deref,
                 expr,
-            } => self.expr(expr, path),
+            } => self.place(expr, PlaceAccess::MutateProjection, path),
             Expr::Ref { expr, .. } | Expr::AddrOf { expr, .. } | Expr::Cast { expr, .. } => {
                 self.place(expr, access, path);
             }
@@ -444,6 +458,13 @@ impl<'a> Collector<'a> {
             .find(|binding| binding.function == self.function && binding.name == name)
             .map(|binding| binding.id)
     }
+}
+
+fn is_read_only_receiver_method(method: &str) -> bool {
+    matches!(
+        method,
+        "len" | "is_empty" | "iter" | "as_slice" | "as_ptr" | "first" | "last" | "get"
+    )
 }
 
 #[derive(Clone, Copy)]
