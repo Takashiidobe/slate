@@ -99,8 +99,11 @@ fn counted_varargs_loop_uses_range_for() {
 
     support::translate(&c_src, &generated).expect("translate varargs fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated varargs rust");
+    assert!(rust.contains("mut ap: ..."));
     assert!(rust.contains("for _ in 0..n {"));
     assert!(rust.contains("total += _v"));
+    assert!(!rust.contains("__slate_va_args.clone()"));
+    assert!(!rust.contains("let mut ap: core::ffi::VaList<'_>;"));
     assert!(!rust.contains("if !(i < n)"));
 }
 
