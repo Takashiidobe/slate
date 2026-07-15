@@ -101,11 +101,17 @@ fn counted_varargs_loop_uses_range_for() {
     let rust = std::fs::read_to_string(&generated).expect("read generated varargs rust");
     assert!(rust.contains("mut ap: ..."));
     assert!(rust.contains("for _ in 0..n {"));
+    assert!(rust.contains("let mut total: i32 = 0;"));
     assert!(rust.contains("total += unsafe { ap.next_arg::<i32>() };"));
-    assert!(rust.contains("first = unsafe { ap.next_arg::<i32>() };"));
-    assert!(rust.contains("second = unsafe { ap.next_arg::<i32>() };"));
+    assert!(rust.contains("let first: i32 = unsafe { ap.next_arg::<i32>() };"));
+    assert!(rust.contains("let second: i32 = unsafe { ap.next_arg::<i32>() };"));
     assert!(rust.contains("println!(\"{}\", unsafe { sum(4, 10, 20, 30, 40) });"));
     assert!(rust.contains("println!(\"{}\", unsafe { pick_second(5, 7, 9) });"));
+    assert!(!rust.contains("total = 0;"));
+    assert!(!rust.contains("let mut first: i32 = 0;"));
+    assert!(!rust.contains("let mut second: i32 = 0;"));
+    assert!(!rust.contains("first = unsafe { ap.next_arg::<i32>() };"));
+    assert!(!rust.contains("second = unsafe { ap.next_arg::<i32>() };"));
     assert!(!rust.contains("let _v5: i32 = unsafe { ap.next_arg::<i32>() };"));
     assert!(!rust.contains("let _v0: i32 = unsafe { ap.next_arg::<i32>() };"));
     assert!(!rust.contains("let _v1: i32 = 4;"));
@@ -579,14 +585,16 @@ fn unnecessary_mut_bindings_are_removed() {
     support::translate(&compound_c, &compound_generated).expect("translate compound fixture");
     let compound_rust =
         std::fs::read_to_string(&compound_generated).expect("read generated compound rust");
-    assert!(compound_rust.contains("let mut a: i32 = 0;"));
+    assert!(compound_rust.contains("let mut a: i32 = 20;"));
+    assert!(!compound_rust.contains("let mut a: i32 = 0;"));
 
     let pointers_c = fixtures_dir().join("pointers.c");
     let pointers_generated = tmp.join("pointers.generated.rs");
     support::translate(&pointers_c, &pointers_generated).expect("translate pointers fixture");
     let pointers_rust =
         std::fs::read_to_string(&pointers_generated).expect("read generated pointers rust");
-    assert!(pointers_rust.contains("let mut local: i32 = 0;"));
+    assert!(pointers_rust.contains("let mut local: i32 = value;"));
+    assert!(!pointers_rust.contains("let mut local: i32 = 0;"));
     assert!(pointers_rust.contains("std::ptr::addr_of_mut!(local)"));
 }
 
@@ -700,7 +708,11 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
     for (fixture, expected) in [
         (
             "pointers",
-            &["local = value;", "*slot = _v", "values[2] = 12;"][..],
+            &[
+                "let mut local: i32 = value;",
+                "*slot = _v",
+                "values[2] = 12;",
+            ][..],
         ),
         ("struct_with_array", &["b.data[0] = 10;", "b.len = 3;"][..]),
         (

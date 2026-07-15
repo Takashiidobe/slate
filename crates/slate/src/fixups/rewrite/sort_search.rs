@@ -298,7 +298,9 @@ fn comparator_plan(f: &FnDef) -> Option<ComparatorPlan> {
                 init: Some(init),
                 ..
             } => {
-                if let Some(source) = compare_source(init, &aliases) {
+                if let Some(ptr) = pointer_source(init, &aliases) {
+                    aliases.insert(name.as_str().to_string(), ptr);
+                } else if let Some(source) = compare_source(init, &aliases) {
                     values.insert(name.clone(), source);
                 }
             }

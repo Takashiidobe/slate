@@ -23,21 +23,7 @@ pub fn apply(program: Program) -> Program {
             rewrite::param_spills::fixup(f, function, &facts);
         }
     }
-    loop {
-        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-        let mut changed = false;
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-                && rewrite::zero_init::fixup(&mut f.body, function, &facts)
-            {
-                changed = true;
-            }
-        }
-        if !changed {
-            break;
-        }
-    }
+    zero_init_to_fixpoint(&mut program);
     loop {
         let mut changed = false;
         for item in &mut program.items {
@@ -242,6 +228,7 @@ pub fn apply(program: Program) -> Program {
     }
     rewrite::memchr_prelude::prune_unused_helper(&mut program);
     inline_temps_to_fixpoint(&mut program, InlinePass::Late);
+    zero_init_to_fixpoint(&mut program);
     remove_mut(&mut program);
     for item in &mut program.items {
         if let Item::Fn(f) = item {
@@ -249,6 +236,24 @@ pub fn apply(program: Program) -> Program {
         }
     }
     program
+}
+
+fn zero_init_to_fixpoint(program: &mut Program) {
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        let mut changed = false;
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            if let Item::Fn(f) = item
+                && let Some(function) = facts.function_by_item_index(item_index)
+                && rewrite::zero_init::fixup(&mut f.body, function, &facts)
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
