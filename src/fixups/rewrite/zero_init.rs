@@ -2,7 +2,8 @@
 //! overwrites it, when the assignment does not read the placeholder.
 
 use crate::fixups::facts::{
-    AstPath, ConstValue, FixupFacts, FunctionId, PathSegment, PlaceAccess, PlaceKind, ValueSubject,
+    AstPath, ConstValue, EffectSubject, FixupFacts, FunctionId, PathSegment, PlaceAccess,
+    PlaceKind, Purity, ValueSubject,
 };
 use crate::fixups::idents::expr_ident;
 use crate::fixups::support::walk;
@@ -44,24 +45,101 @@ fn fixup_at(
         if !binding_is_zero(function, facts, binding, &decl_path) {
             continue;
         }
-        let assign_path = stmt_path(path, i + 1);
-        let Stmt::Assign { target, value } = &body[i + 1].stmt else {
+        let Some(assign_index) =
+            first_overwriting_assignment(body, i, name, function, facts, binding, path)
+        else {
             continue;
         };
-        if expr_ident(target) != Some(name.as_str())
-            || !assignment_writes_binding(function, facts, binding, &assign_path)
-            || assignment_reads_binding(facts, binding, &assign_path)
-        {
-            continue;
-        }
+        let Stmt::Assign { value, .. } = &body[assign_index].stmt else {
+            unreachable!();
+        };
         let value = value.clone();
         if let Stmt::Let { init, .. } = &mut body[i].stmt {
             *init = Some(value);
         }
-        body.remove(i + 1);
+        body.remove(assign_index);
         return true;
     }
     false
+}
+
+fn first_overwriting_assignment(
+    body: &[IndentStmt],
+    decl_index: usize,
+    name: &str,
+    function: FunctionId,
+    facts: &FixupFacts,
+    binding: crate::fixups::facts::BindingId,
+    body_path: &[PathSegment],
+) -> Option<usize> {
+    for (index, indent) in body.iter().enumerate().skip(decl_index + 1) {
+        let path = stmt_path(body_path, index);
+        match &indent.stmt {
+            Stmt::Assign { target, .. } if expr_ident(target) == Some(name) => {
+                if assignment_writes_binding(function, facts, binding, &path)
+                    && !assignment_reads_binding(facts, binding, &path)
+                    && !assignment_reads_intervening_binding(
+                        body, decl_index, index, function, facts, body_path, &path,
+                    )
+                {
+                    return Some(index);
+                }
+                return None;
+            }
+            stmt if can_cross_intervening_stmt(function, facts, binding, &path, stmt) => {}
+            _ => return None,
+        }
+    }
+    None
+}
+
+fn assignment_reads_intervening_binding(
+    body: &[IndentStmt],
+    decl_index: usize,
+    assign_index: usize,
+    function: FunctionId,
+    facts: &FixupFacts,
+    body_path: &[PathSegment],
+    assign_path: &[PathSegment],
+) -> bool {
+    body.iter()
+        .enumerate()
+        .take(assign_index)
+        .skip(decl_index + 1)
+        .any(|(index, indent)| {
+            let Stmt::Let { name, .. } = &indent.stmt else {
+                return false;
+            };
+            let path = stmt_path(body_path, index);
+            facts
+                .binding_by_local_path(function, name, &AstPath(path))
+                .and_then(|binding| facts.def_use(binding))
+                .is_some_and(|def_use| {
+                    def_use
+                        .reads
+                        .iter()
+                        .any(|read| read.0.as_slice().starts_with(assign_path))
+                })
+        })
+}
+
+fn can_cross_intervening_stmt(
+    function: FunctionId,
+    facts: &FixupFacts,
+    binding: crate::fixups::facts::BindingId,
+    path: &[PathSegment],
+    stmt: &Stmt,
+) -> bool {
+    let Stmt::Let { init, .. } = stmt else {
+        return false;
+    };
+    if assignment_reads_binding(facts, binding, path) {
+        return false;
+    }
+    init.is_none()
+        || facts
+            .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
+            .is_some_and(|fact| fact.purity == Purity::MovablePure)
 }
 
 fn fixup_nested(
@@ -150,6 +228,11 @@ fn assignment_writes_binding(
                 && fact.ordinary_slot
                 && matches!(&fact.kind, PlaceKind::Local { name: place } if place == name)
         })
+        && facts.def_use(binding).is_some_and(|fact| {
+            fact.writes
+                .iter()
+                .any(|write| write.0.as_slice().starts_with(path))
+        })
 }
 
 fn assignment_reads_binding(
@@ -210,6 +293,122 @@ mod tests {
 fn f() -> i32 {
     let mut c: i32 = a + b;
     return c;
+}
+"
+        );
+    }
+
+    #[test]
+    fn fuses_zero_init_with_immediate_effectful_assignment() {
+        let out = fixed(
+            vec![],
+            Some("i32"),
+            vec![
+                let_mut("c", "i32", int(0)),
+                assign("c", call("next_arg", vec![])),
+                Stmt::Return(Some(var("c"))),
+            ],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() -> i32 {
+    let mut c: i32 = next_arg();
+    return c;
+}
+"
+        );
+    }
+
+    #[test]
+    fn fuses_zero_init_with_immediate_unsafe_effectful_assignment() {
+        let out = fixed(
+            vec![],
+            Some("i32"),
+            vec![
+                let_mut("c", "i32", int(0)),
+                assign(
+                    "c",
+                    crate::rust_ast::Expr::Unsafe(Box::new(Block {
+                        stmts: Vec::new(),
+                        tail: Some(Box::new(call("next_arg", vec![]))),
+                    })),
+                ),
+                Stmt::Return(Some(var("c"))),
+            ],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() -> i32 {
+    let mut c: i32 = unsafe { next_arg() };
+    return c;
+}
+"
+        );
+    }
+
+    #[test]
+    fn fuses_zero_init_across_pure_placeholder_declarations() {
+        let out = fixed(
+            vec![],
+            Some("i32"),
+            vec![
+                let_mut("first", "i32", int(0)),
+                let_mut("second", "i32", int(0)),
+                assign("first", call("next_arg", vec![])),
+                assign("second", call("next_arg", vec![])),
+                Stmt::Return(Some(bin(BinOp::Add, var("first"), var("second")))),
+            ],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() -> i32 {
+    let mut first: i32 = next_arg();
+    let mut second: i32 = next_arg();
+    return first + second;
+}
+"
+        );
+    }
+
+    #[test]
+    fn does_not_cross_declaration_read_by_assignment() {
+        let stmts = vec![
+            let_mut("__retval", "i32", int(0)),
+            temp("_v1", "i32", int(1)),
+            assign("__retval", var("_v1")),
+            Stmt::Return(Some(var("__retval"))),
+        ];
+        let expected = emit(func(vec![], Some("i32"), stmts.clone()));
+
+        assert_eq!(fixed(vec![], Some("i32"), stmts), expected);
+    }
+
+    #[test]
+    fn folds_shadowed_name_assignment_into_matching_binding_only() {
+        let out = fixed(
+            vec![],
+            Some("i32"),
+            vec![
+                let_mut("_atomictmp", "i32", int(0)),
+                let_mut("_atomictmp", "i32", int(0)),
+                assign("_atomictmp", int(100)),
+                Stmt::Return(Some(var("_atomictmp"))),
+            ],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() -> i32 {
+    let mut _atomictmp: i32 = 0;
+    let mut _atomictmp: i32 = 100;
+    return _atomictmp;
 }
 "
         );
