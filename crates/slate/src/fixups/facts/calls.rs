@@ -642,6 +642,12 @@ fn libc_semantics(name: &str) -> BTreeSet<LibcCallSemantic> {
         "strncat" => BTreeSet::from([LibcCallSemantic::StrNCat]),
         "memcpy" => BTreeSet::from([LibcCallSemantic::MemCpy]),
         "memset" => BTreeSet::from([LibcCallSemantic::MemSet]),
+        "fopen" => BTreeSet::from([LibcCallSemantic::FOpen]),
+        "fread" => BTreeSet::from([LibcCallSemantic::FRead]),
+        "fwrite" => BTreeSet::from([LibcCallSemantic::FWrite]),
+        "fgets" => BTreeSet::from([LibcCallSemantic::FGets]),
+        "fputs" => BTreeSet::from([LibcCallSemantic::FPuts]),
+        "fclose" => BTreeSet::from([LibcCallSemantic::FClose]),
         _ => BTreeSet::new(),
     }
 }
