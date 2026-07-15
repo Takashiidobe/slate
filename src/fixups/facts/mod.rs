@@ -2,6 +2,7 @@ use std::collections::BTreeSet;
 
 use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
 
+pub(super) mod array_element_pointer_origin;
 pub(super) mod borrow_alias;
 pub(super) mod c_strings;
 pub(super) mod calls;
@@ -59,6 +60,7 @@ pub(super) struct FixupFacts {
     pub(super) printf_calls: Vec<PrintfCallFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
+    pub(super) array_element_pointer_origins: Vec<ArrayElementPointerOriginFact>,
     pub(super) slice_pointer_views: Vec<SlicePointerViewFact>,
     pub(super) slice_index_ranges: Vec<SliceIndexRangeFact>,
     pub(super) slice_pointer_indexes: Vec<SlicePointerIndexFact>,
@@ -704,6 +706,16 @@ pub(super) struct PtrLenUnsupportedCallsiteFact {
 }
 
 #[derive(Debug, Clone)]
+pub(super) struct ArrayElementPointerOriginFact {
+    pub(super) function: FunctionId,
+    pub(super) pointer: BindingId,
+    pub(super) base: BindingId,
+    pub(super) index: Expr,
+    pub(super) mutable: bool,
+    pub(super) path: AstPath,
+}
+
+#[derive(Debug, Clone)]
 pub(super) struct SlicePointerViewFact {
     pub(super) function: FunctionId,
     pub(super) pointer: BindingId,
@@ -1327,6 +1339,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     c_strings::collect_facts(&program, &mut collector.facts);
     file_ownership::collect_facts(&program, &mut collector.facts);
     ptr_len::collect_facts(&program, &mut collector.facts);
+    array_element_pointer_origin::collect_facts(&program, &mut collector.facts);
     slice_index::collect_facts(&program, &mut collector.facts);
     counted_loop::collect_facts(&program, &mut collector.facts);
     loop_shapes::collect_facts(&program, &mut collector.facts);

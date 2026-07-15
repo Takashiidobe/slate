@@ -1,0 +1,627 @@
+use std::collections::{BTreeMap, BTreeSet};
+
+use crate::fixups::facts::walk;
+use crate::fixups::facts::{
+    ArrayElementPointerOriginFact, AstPath, BindingId, FixupFacts, FunctionId, PathSegment,
+};
+use crate::rust_ast::{Block, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
+
+pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+    facts.array_element_pointer_origins.clear();
+    let mut all = Vec::new();
+    for (item_index, item) in program.items.iter().enumerate() {
+        let Item::Fn(f) = item else {
+            continue;
+        };
+        let Some(function) = facts.function_by_item_index(item_index) else {
+            continue;
+        };
+        let mut collector = Collector::new(function, facts);
+        collector.enter_scope();
+        collector.body(&f.body, &mut Vec::new(), false);
+        collector.exit_scope();
+        all.extend(collector.finish());
+    }
+    facts.array_element_pointer_origins = all;
+}
+
+struct Collector<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
+    scopes: Vec<BTreeMap<String, BindingId>>,
+    candidates: Vec<Candidate>,
+}
+
+#[derive(Clone)]
+struct Candidate {
+    pointer: BindingId,
+    base: BindingId,
+    index: Expr,
+    mutable: bool,
+    path: AstPath,
+    kind: CandidateKind,
+}
+
+#[derive(Clone, Copy)]
+enum CandidateKind {
+    LetInit,
+    Assign,
+}
+
+struct OriginSource {
+    base_name: Ident,
+    index: Expr,
+    mutable: bool,
+}
+
+impl<'a> Collector<'a> {
+    fn new(function: FunctionId, facts: &'a FixupFacts) -> Self {
+        Self {
+            function,
+            facts,
+            scopes: Vec::new(),
+            candidates: Vec::new(),
+        }
+    }
+
+    fn enter_scope(&mut self) {
+        self.scopes.push(BTreeMap::new());
+    }
+
+    fn exit_scope(&mut self) {
+        self.scopes.pop();
+    }
+
+    fn finish(self) -> Vec<ArrayElementPointerOriginFact> {
+        let Self {
+            function,
+            facts,
+            candidates,
+            ..
+        } = self;
+        let pointers_with_overwritten_init_origins =
+            overwritten_init_origin_pointers(facts, &candidates);
+        candidates
+            .into_iter()
+            .filter(|candidate| pointer_write_shape_is_unambiguous(facts, candidate))
+            .filter(|candidate| {
+                !pointers_with_overwritten_init_origins.contains(&candidate.pointer)
+            })
+            .map(|candidate| ArrayElementPointerOriginFact {
+                function,
+                pointer: candidate.pointer,
+                base: candidate.base,
+                index: candidate.index,
+                mutable: candidate.mutable,
+                path: candidate.path,
+            })
+            .collect()
+    }
+
+    fn body(&mut self, body: &[IndentStmt], path: &mut Vec<PathSegment>, scoped: bool) {
+        if scoped {
+            self.enter_scope();
+        }
+        for (index, indent) in body.iter().enumerate() {
+            walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+                self.stmt(&indent.stmt, path);
+            });
+        }
+        if scoped {
+            self.exit_scope();
+        }
+    }
+
+    fn block(&mut self, block: &Block, path: &mut Vec<PathSegment>) {
+        self.enter_scope();
+        self.body(&block.stmts, path, false);
+        self.exit_scope();
+    }
+
+    fn stmt(&mut self, stmt: &Stmt, path: &mut Vec<PathSegment>) {
+        match stmt {
+            Stmt::Let { name, ty, init, .. } => {
+                if let Some(init) = init {
+                    self.collect_let_origin(name, init, path);
+                }
+                self.record_array_binding(name, ty.as_ref(), path);
+            }
+            Stmt::Assign { target, value } => self.collect_assign_origin(target, value, path),
+            Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            } => {
+                walk::with_path_segment(path, PathSegment::Then, |path| {
+                    self.body(then_body, path, true)
+                });
+                walk::with_path_segment(path, PathSegment::Else, |path| {
+                    self.body(else_body, path, true)
+                });
+            }
+            Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                walk::with_path_segment(path, PathSegment::Then, |path| {
+                    self.body(then_body, path, true)
+                });
+                walk::with_path_segment(path, PathSegment::Else, |path| {
+                    self.body(else_body, path, true)
+                });
+            }
+            Stmt::Loop { body, .. } => {
+                walk::with_path_segment(path, PathSegment::LoopBody, |path| {
+                    self.body(body, path, true)
+                });
+            }
+            Stmt::For { body, .. } => {
+                walk::with_path_segment(path, PathSegment::ForBody, |path| {
+                    self.body(body, path, true)
+                });
+            }
+            Stmt::Scope { body } => {
+                walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
+                    self.body(body, path, true)
+                });
+            }
+            Stmt::LabeledBlock { body, .. } => {
+                walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
+                    self.body(body, path, true)
+                });
+            }
+            Stmt::Unsafe { body } => {
+                walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
+                    self.block(body, path)
+                });
+            }
+            Stmt::While { body, .. } => {
+                walk::with_path_segment(path, PathSegment::WhileBody, |path| {
+                    self.block(body, path)
+                });
+            }
+            Stmt::Block(body) => {
+                walk::with_path_segment(path, PathSegment::BlockBody, |path| {
+                    self.block(body, path)
+                });
+            }
+            Stmt::Match { arms, .. } => {
+                for (index, arm) in arms.iter().enumerate() {
+                    walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
+                        self.body(&arm.body, path, true)
+                    });
+                }
+            }
+            Stmt::CompoundAssign { .. }
+            | Stmt::Expr(_)
+            | Stmt::Return(_)
+            | Stmt::Break(_)
+            | Stmt::Continue(_) => {}
+        }
+    }
+
+    fn collect_let_origin(&mut self, name: &str, init: &Expr, path: &[PathSegment]) {
+        let ast_path = AstPath(path.to_vec());
+        let Some(pointer) = self
+            .facts
+            .binding_by_local_path(self.function, name, &ast_path)
+        else {
+            return;
+        };
+        if !self.binding_is_pointer(pointer) {
+            return;
+        }
+        let Some(source) = origin_source(init) else {
+            return;
+        };
+        let Some(base) = self.array_binding(source.base_name.as_str()) else {
+            return;
+        };
+        self.candidates.push(Candidate {
+            pointer,
+            base,
+            index: source.index,
+            mutable: source.mutable,
+            path: ast_path,
+            kind: CandidateKind::LetInit,
+        });
+    }
+
+    fn collect_assign_origin(&mut self, target: &Expr, value: &Expr, path: &[PathSegment]) {
+        let Expr::Var(name) = target else {
+            return;
+        };
+        let ast_path = AstPath(path.to_vec());
+        let Some(pointer) = self.binding_written_at(name.as_str(), &ast_path) else {
+            return;
+        };
+        if !self.binding_is_pointer(pointer) {
+            return;
+        }
+        let Some(source) = origin_source(value) else {
+            return;
+        };
+        let Some(base) = self.array_binding(source.base_name.as_str()) else {
+            return;
+        };
+        self.candidates.push(Candidate {
+            pointer,
+            base,
+            index: source.index,
+            mutable: source.mutable,
+            path: ast_path,
+            kind: CandidateKind::Assign,
+        });
+    }
+
+    fn record_array_binding(&mut self, name: &str, ty: Option<&Type>, path: &[PathSegment]) {
+        if !matches!(ty, Some(Type::Array { .. })) {
+            return;
+        }
+        let ast_path = AstPath(path.to_vec());
+        if let Some(binding) = self
+            .facts
+            .binding_by_local_path(self.function, name, &ast_path)
+            && let Some(scope) = self.scopes.last_mut()
+        {
+            scope.insert(name.to_string(), binding);
+        }
+    }
+
+    fn array_binding(&self, name: &str) -> Option<BindingId> {
+        self.scopes
+            .iter()
+            .rev()
+            .find_map(|scope| scope.get(name).copied())
+    }
+
+    fn binding_written_at(&self, name: &str, path: &AstPath) -> Option<BindingId> {
+        self.facts
+            .bindings
+            .iter()
+            .filter(|binding| binding.function == self.function && binding.name == name)
+            .find(|binding| {
+                self.facts
+                    .def_use(binding.id)
+                    .is_some_and(|def_use| def_use.writes.iter().any(|write| write == path))
+            })
+            .map(|binding| binding.id)
+    }
+
+    fn binding_is_pointer(&self, binding: BindingId) -> bool {
+        self.facts
+            .binding_types
+            .iter()
+            .find(|fact| fact.binding == binding)
+            .is_some_and(|fact| fact.rendered.starts_with('*'))
+    }
+}
+
+fn pointer_write_shape_is_unambiguous(facts: &FixupFacts, candidate: &Candidate) -> bool {
+    let Some(def_use) = facts.def_use(candidate.pointer) else {
+        return false;
+    };
+    match candidate.kind {
+        CandidateKind::LetInit => def_use.writes.is_empty(),
+        CandidateKind::Assign => {
+            def_use.writes.len() == 1 && def_use.writes.first() == Some(&candidate.path)
+        }
+    }
+}
+
+fn overwritten_init_origin_pointers(
+    facts: &FixupFacts,
+    candidates: &[Candidate],
+) -> BTreeSet<BindingId> {
+    candidates
+        .iter()
+        .filter(|candidate| matches!(candidate.kind, CandidateKind::LetInit))
+        .filter(|candidate| {
+            facts
+                .def_use(candidate.pointer)
+                .is_some_and(|def_use| !def_use.writes.is_empty())
+        })
+        .map(|candidate| candidate.pointer)
+        .collect()
+}
+
+fn origin_source(expr: &Expr) -> Option<OriginSource> {
+    match peel_casts(expr) {
+        Expr::AddrOf { mutable, expr } => indexed_array_origin(expr, *mutable),
+        Expr::MethodCall { recv, method, args } if args.len() == 1 => {
+            let mutable = match method.as_str() {
+                "add" | "offset" => true,
+                _ => return None,
+            };
+            let (base_name, base_mutable) = array_pointer_source(recv)?;
+            let index = integer_expr(&args[0])?;
+            Some(OriginSource {
+                base_name: base_name.clone(),
+                index,
+                mutable: mutable || base_mutable,
+            })
+        }
+        _ => None,
+    }
+}
+
+fn indexed_array_origin(expr: &Expr, mutable: bool) -> Option<OriginSource> {
+    let Expr::Index { base, index } = expr else {
+        return None;
+    };
+    let Expr::Var(base_name) = &**base else {
+        return None;
+    };
+    Some(OriginSource {
+        base_name: base_name.clone(),
+        index: integer_expr(index)?,
+        mutable,
+    })
+}
+
+fn array_pointer_source(expr: &Expr) -> Option<(&Ident, bool)> {
+    match peel_casts(expr) {
+        Expr::ArrayPtr { array, mutable } => {
+            let Expr::Var(name) = &**array else {
+                return None;
+            };
+            Some((name, *mutable))
+        }
+        Expr::MethodCall { recv, method, args } if args.is_empty() => {
+            let mutable = match method.as_str() {
+                "as_ptr" => false,
+                "as_mut_ptr" => true,
+                _ => return None,
+            };
+            let Expr::Var(name) = &**recv else {
+                return None;
+            };
+            Some((name, mutable))
+        }
+        _ => None,
+    }
+}
+
+fn peel_casts(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr, .. } => peel_casts(expr),
+        _ => expr,
+    }
+}
+
+fn integer_expr(expr: &Expr) -> Option<Expr> {
+    match peel_casts(expr) {
+        Expr::Value(RustValue::I64(_)) | Expr::Value(RustValue::I128(_)) => Some(expr.clone()),
+        _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::fixups::facts;
+    use crate::fixups::test_support::*;
+    use crate::rust_ast::{Path, Prim, UnaryOp};
+
+    fn analyze(stmts: Vec<Stmt>) -> FixupFacts {
+        facts::analyze(Program {
+            items: vec![Item::Fn(func(vec![], None, stmts))],
+        })
+        .facts
+    }
+
+    fn array(name: &str) -> Stmt {
+        Stmt::Let {
+            name: name.to_string(),
+            mutable: true,
+            ty: Some(Type::parse("[i32; 4]")),
+            init: Some(Expr::ArrayRepeat {
+                elem: Box::new(int(0)),
+                len: 4,
+            }),
+        }
+    }
+
+    fn ptr_null(name: &str) -> Stmt {
+        let_mut(
+            name,
+            "*mut i32",
+            Expr::Call {
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "ptr", "null_mut"].map(Ident::from),
+                ))),
+                args: Vec::new(),
+            },
+        )
+    }
+
+    fn addr_of_index(array: &str, index: Expr) -> Expr {
+        Expr::AddrOf {
+            mutable: true,
+            expr: Box::new(Expr::Index {
+                base: Box::new(var(array)),
+                index: Box::new(index),
+            }),
+        }
+    }
+
+    fn deref(expr: Expr) -> Expr {
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr: Box::new(expr),
+        }
+    }
+
+    fn names(facts: &FixupFacts, fact: &ArrayElementPointerOriginFact) -> (String, String) {
+        (
+            facts.binding_name(fact.pointer).unwrap().to_string(),
+            facts.binding_name(fact.base).unwrap().to_string(),
+        )
+    }
+
+    #[test]
+    fn collects_direct_let_addr_of_array_index_origin() {
+        let facts = analyze(vec![
+            array("values"),
+            temp("p", "*mut i32", addr_of_index("values", int(1))),
+        ]);
+
+        assert_eq!(facts.array_element_pointer_origins.len(), 1);
+        let fact = &facts.array_element_pointer_origins[0];
+        assert_eq!(names(&facts, fact), ("p".into(), "values".into()));
+        assert_eq!(fact.index.render(), "1");
+        assert!(fact.mutable);
+    }
+
+    #[test]
+    fn collects_single_assignment_addr_of_array_index_origin() {
+        let facts = analyze(vec![
+            array("values"),
+            ptr_null("p"),
+            assign("p", addr_of_index("values", int(3))),
+        ]);
+
+        assert_eq!(facts.array_element_pointer_origins.len(), 1);
+        let fact = &facts.array_element_pointer_origins[0];
+        assert_eq!(names(&facts, fact), ("p".into(), "values".into()));
+        assert_eq!(fact.index.render(), "3");
+    }
+
+    #[test]
+    fn collects_as_mut_ptr_add_constant_origin() {
+        let facts = analyze(vec![
+            array("values"),
+            temp(
+                "p",
+                "*mut i32",
+                Expr::MethodCall {
+                    recv: Box::new(Expr::MethodCall {
+                        recv: Box::new(var("values")),
+                        method: "as_mut_ptr".into(),
+                        args: Vec::new(),
+                    }),
+                    method: "add".into(),
+                    args: vec![int(2)],
+                },
+            ),
+        ]);
+
+        assert_eq!(facts.array_element_pointer_origins.len(), 1);
+        let fact = &facts.array_element_pointer_origins[0];
+        assert_eq!(names(&facts, fact), ("p".into(), "values".into()));
+        assert_eq!(fact.index.render(), "2");
+    }
+
+    #[test]
+    fn rejects_non_array_base() {
+        let facts = analyze(vec![
+            let_mut("value", "i32", int(0)),
+            temp("p", "*mut i32", addr_of_index("value", int(0))),
+        ]);
+
+        assert!(facts.array_element_pointer_origins.is_empty());
+    }
+
+    #[test]
+    fn rejects_non_constant_index() {
+        let facts = analyze(vec![
+            array("values"),
+            temp("i", "i32", int(1)),
+            temp("p", "*mut i32", addr_of_index("values", var("i"))),
+        ]);
+
+        assert!(facts.array_element_pointer_origins.is_empty());
+    }
+
+    #[test]
+    fn rejects_ambiguous_pointer_writes() {
+        let facts = analyze(vec![
+            array("values"),
+            ptr_null("p"),
+            assign("p", addr_of_index("values", int(1))),
+            assign("p", addr_of_index("values", int(2))),
+        ]);
+
+        assert!(facts.array_element_pointer_origins.is_empty());
+    }
+
+    #[test]
+    fn rejects_declaration_origin_when_pointer_is_reassigned() {
+        let facts = analyze(vec![
+            array("values"),
+            temp("p", "*mut i32", addr_of_index("values", int(1))),
+            assign("p", addr_of_index("values", int(2))),
+        ]);
+
+        assert!(facts.array_element_pointer_origins.is_empty());
+    }
+
+    #[test]
+    fn rejects_unsupported_atomic_pointer_context() {
+        let facts = analyze(vec![
+            array("values"),
+            temp(
+                "p",
+                "*mut i32",
+                Expr::AtomicRef {
+                    ty: crate::rust_ast::AtomicType::I32,
+                    ptr: Box::new(addr_of_index("values", int(1))),
+                },
+            ),
+        ]);
+
+        assert!(facts.array_element_pointer_origins.is_empty());
+    }
+
+    #[test]
+    fn keeps_shadowed_array_origins_separate() {
+        let facts = analyze(vec![
+            array("values"),
+            Stmt::Scope {
+                body: vec![
+                    IndentStmt {
+                        depth: 2,
+                        stmt: array("values"),
+                    },
+                    IndentStmt {
+                        depth: 2,
+                        stmt: temp("p", "*mut i32", addr_of_index("values", int(1))),
+                    },
+                ],
+            },
+        ]);
+
+        assert_eq!(facts.array_element_pointer_origins.len(), 1);
+        let fact = &facts.array_element_pointer_origins[0];
+        assert_eq!(names(&facts, fact), ("p".into(), "values".into()));
+        assert_eq!(
+            facts
+                .bindings
+                .iter()
+                .find(|binding| binding.id == fact.base)
+                .unwrap()
+                .path,
+            AstPath(vec![
+                PathSegment::Stmt(1),
+                PathSegment::ScopeBody,
+                PathSegment::Stmt(0)
+            ])
+        );
+    }
+
+    #[test]
+    fn rejects_non_pointer_destination() {
+        let facts = analyze(vec![
+            array("values"),
+            Stmt::Let {
+                name: "p".into(),
+                mutable: false,
+                ty: Some(Type::Prim(Prim::I32)),
+                init: Some(deref(addr_of_index("values", int(1)))),
+            },
+        ]);
+
+        assert!(facts.array_element_pointer_origins.is_empty());
+    }
+}
