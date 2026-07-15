@@ -256,6 +256,24 @@ fn pointer_arithmetic_uses_clearer_safe_offset_forms() {
 }
 
 #[test]
+fn address_of_array_elements_use_safe_indexes() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-array-element-pointer");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_src = fixtures_dir().join("address_of_array_element.c");
+    let generated = tmp.join("address_of_array_element.generated.rs");
+    support::translate(&c_src, &generated).expect("translate address_of_array_element fixture");
+    let rust =
+        std::fs::read_to_string(&generated).expect("read generated address_of_array_element rust");
+
+    assert!(rust.contains("values[1] + values[3]"));
+    assert!(rust.contains("3 - 1"));
+    assert!(!rust.contains("unsafe { *p }"));
+    assert!(!rust.contains("unsafe { *q }"));
+    assert!(!rust.contains(".offset_from("));
+}
+
+#[test]
 fn redundant_singleton_scopes_are_unwrapped() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-singleton-scopes");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
@@ -719,7 +737,14 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
             "global_vars",
             &["counter = _v", "numbers[2] =", "pair.right = _v"][..],
         ),
-        ("bitfield_ops", &["s.a = _v", "s.b = _v", "w.x = _v"][..]),
+        (
+            "bitfield_ops",
+            &[
+                "s.a = 5 << 29 >> 29;",
+                "s.b = -3 << 27 >> 27;",
+                "w.x = 1099511627775 << 24 >> 24;",
+            ][..],
+        ),
     ] {
         let c_src = fixtures_dir().join(format!("{fixture}.c"));
         let generated = tmp.join(format!("{fixture}.generated.rs"));
@@ -947,8 +972,9 @@ fn ptr_len_pairs_use_slice_params_for_full_array_calls() {
     assert!(rust.contains("fn sum(items: &[i32]) -> i32"));
     assert!(rust.contains("fn bump(mut items: &mut [i32]) -> ()"));
     assert!(rust.contains("let len: i32 = items.len() as i32;"));
-    assert!(rust.contains("let _v7: i32 = items[(i as usize)];"));
-    assert!(rust.contains("items[(i as usize)] = _v7 + _v4;"));
+    assert!(rust.contains("total += items[(i as usize)];"));
+    assert!(rust.contains("items[(i as usize)] = items[(i as usize)] + 1;"));
+    assert!(!rust.contains("let _v7: i32 = items[(i as usize)];"));
     assert!(!rust.contains("items[(i as usize)] = _v8;"));
     assert!(rust.contains("sum(values.as_slice())"));
     assert!(rust.contains("bump(values.as_mut_slice())"));
@@ -1025,8 +1051,7 @@ fn heap_calloc_buffer_uses_zeroed_vec_drop() {
     let rust = std::fs::read_to_string(&generated).expect("read generated heap_vec_calloc rust");
 
     assert!(rust.contains("let p: Vec<i32> = vec![0; 4usize];"));
-    assert!(rust.contains("let _v6: i32 = p[0];"));
-    assert!(rust.contains("let _v9: i32 = p[3];"));
+    assert!(rust.contains("println!(\"{}\", p[0] + p[3]);"));
     assert!(!rust.contains("fn calloc("));
     assert!(!rust.contains("fn free("));
     assert!(!rust.contains(".add("));

@@ -299,8 +299,22 @@ fn is_effectful_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegme
 fn type_stable_arg_init(init: &Expr, ty: Option<&Type>) -> bool {
     match init {
         Expr::Var(_) | Expr::Cast { .. } => true,
+        Expr::Binary { .. } => ty.is_some() && !contains_integer_literal(init),
+        Expr::Index { .. } => ty.is_some(),
         Expr::Value(RustValue::I64(_)) => matches!(ty, Some(Type::Prim(Prim::I32))),
         Expr::Value(RustValue::Bool(_)) => true,
+        _ => false,
+    }
+}
+
+fn contains_integer_literal(expr: &Expr) -> bool {
+    match expr {
+        Expr::Value(RustValue::I64(_) | RustValue::I128(_) | RustValue::Usize(_)) => true,
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => contains_integer_literal(expr),
+        Expr::Binary { lhs, rhs, .. } => {
+            contains_integer_literal(lhs) || contains_integer_literal(rhs)
+        }
+        Expr::Index { base, .. } => contains_integer_literal(base),
         _ => false,
     }
 }

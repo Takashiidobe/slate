@@ -29,8 +29,10 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn is_movable_pure_expr(expr: &Expr) -> bool {
     match expr {
         Expr::Value(_) | Expr::Var(_) => true,
+        Expr::Cast { expr, .. } => is_movable_pure_expr(expr),
         Expr::Unary { op, expr } => !matches!(op, UnaryOp::Not) && is_movable_pure_expr(expr),
         Expr::Binary { lhs, rhs, .. } => is_movable_pure_expr(lhs) && is_movable_pure_expr(rhs),
+        Expr::Index { base, index } => is_movable_pure_expr(base) && is_movable_pure_expr(index),
         _ => false,
     }
 }
