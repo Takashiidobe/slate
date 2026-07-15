@@ -4,7 +4,7 @@ use crate::fixups::facts::{
     TempChainFact,
 };
 use crate::fixups::idents::expr_ident;
-use crate::rust_ast::{IndentStmt, Item, Program, Stmt};
+use crate::rust_ast::{Expr, IndentStmt, Item, Program, Stmt};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.temp_chains.clear();
@@ -133,9 +133,44 @@ fn is_effectful_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegme
 fn immediate_effectful_consumer(stmt: &Stmt, name: &str) -> bool {
     match stmt {
         Stmt::Assign { target, value } => {
-            expr_ident(target) == Some("__retval") && expr_ident(value) == Some(name)
+            expr_ident(target).is_some() && expr_ident(value) == Some(name)
+        }
+        Stmt::CompoundAssign { target, value, .. } => {
+            expr_ident(target).is_some() && expr_ident(value) == Some(name)
         }
         Stmt::Return(Some(expr)) => expr_ident(expr) == Some(name),
+        Stmt::Expr(expr) => simple_macro_arg_use(expr, name),
+        _ => false,
+    }
+}
+
+fn simple_macro_arg_use(expr: &Expr, name: &str) -> bool {
+    match expr {
+        Expr::Macro { args, .. } => {
+            args.iter().any(|arg| expr_ident(arg) == Some(name))
+                && args
+                    .iter()
+                    .filter(|arg| expr_ident(arg) != Some(name))
+                    .all(is_obviously_pure_expr)
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| simple_macro_arg_use(tail, name)),
+        _ => false,
+    }
+}
+
+fn is_obviously_pure_expr(expr: &Expr) -> bool {
+    match expr {
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::ByteStr(_)
+        | Expr::CStr(_)
+        | Expr::HexFloat(_)
+        | Expr::Var(_)
+        | Expr::Path(_) => true,
+        Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => is_obviously_pure_expr(expr),
         _ => false,
     }
 }
@@ -374,17 +409,14 @@ mod tests {
     }
 
     #[test]
-    fn rejects_effectful_temp_into_non_return_slot_assignment() {
+    fn records_immediate_effectful_local_assignment_temp() {
         let facts = analyzed(vec![
             temp("_v1", "i32", call("op", vec![var("value")])),
             assign("value", var("_v1")),
         ]);
 
-        assert!(
-            !facts
-                .temp_chains
-                .iter()
-                .any(|fact| { facts.binding_name(fact.binding) == Some("_v1") })
-        );
+        let v1 = chain_for(&facts, "_v1");
+        assert_eq!(v1.producer_path, AstPath(vec![PathSegment::Stmt(0)]));
+        assert_eq!(v1.consumer_path, AstPath(vec![PathSegment::Stmt(1)]));
     }
 }

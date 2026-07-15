@@ -101,7 +101,15 @@ fn counted_varargs_loop_uses_range_for() {
     let rust = std::fs::read_to_string(&generated).expect("read generated varargs rust");
     assert!(rust.contains("mut ap: ..."));
     assert!(rust.contains("for _ in 0..n {"));
-    assert!(rust.contains("total += _v"));
+    assert!(rust.contains("total += unsafe { ap.next_arg::<i32>() };"));
+    assert!(rust.contains("first = unsafe { ap.next_arg::<i32>() };"));
+    assert!(rust.contains("second = unsafe { ap.next_arg::<i32>() };"));
+    assert!(rust.contains("println!(\"{}\", unsafe { sum(4, 10, 20, 30, 40) });"));
+    assert!(rust.contains("println!(\"{}\", unsafe { pick_second(5, 7, 9) });"));
+    assert!(!rust.contains("let _v5: i32 = unsafe { ap.next_arg::<i32>() };"));
+    assert!(!rust.contains("let _v0: i32 = unsafe { ap.next_arg::<i32>() };"));
+    assert!(!rust.contains("let _v1: i32 = 4;"));
+    assert!(!rust.contains("let _v6: i32 = unsafe { sum("));
     assert!(!rust.contains("__slate_va_args.clone()"));
     assert!(!rust.contains("let mut ap: core::ffi::VaList<'_>;"));
     assert!(!rust.contains("if !(i < n)"));
@@ -303,7 +311,8 @@ fn unused_call_result_temps_are_dropped() {
 
     support::translate(&c_src, &generated).expect("translate compound fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated compound rust");
-    assert!(rust.contains("println!(\"{}\", _v"));
+    assert!(rust.contains("println!(\"{}\", a);"));
+    assert!(!rust.contains("println!(\"{}\", _v"));
     assert!(!rust.contains(": i32 = unsafe { printf("));
     assert!(!rust.contains(": i32 = println!("));
 }
@@ -416,7 +425,8 @@ fn simple_printfs_are_recovered_as_format_macros() {
         .expect("translate printf string/char fixture");
     let string_char_rust = std::fs::read_to_string(&string_char_generated)
         .expect("read generated printf string/char rust");
-    assert!(string_char_rust.contains("println!(\"{} {} {} {}\", \"tag\", \"A\", \"\\n\", _v3);"));
+    assert!(string_char_rust.contains("println!(\"{} {} {} {}\", \"tag\", \"A\", \"\\n\", 7);"));
+    assert!(!string_char_rust.contains("println!(\"{} {} {} {}\", \"tag\", \"A\", \"\\n\", _v3);"));
     assert!(string_char_rust.contains("print!(\"literal={}\", \"tail\");"));
     assert!(!string_char_rust.contains("fn printf("));
     assert!(!string_char_rust.contains("unsafe { printf("));
@@ -815,7 +825,8 @@ fn memchr_calls_use_iter_position_when_source_is_iterable() {
     assert!(rust.contains("let _v9 = Some(3);"));
     assert!(rust.contains("let _v11: i64 = _v3.unwrap() as i64;"));
     assert!(rust.contains("let _v14: bool = _v6.is_none();"));
-    assert!(rust.contains("let _v16: i64 = _v9.unwrap() as i64;"));
+    assert!(rust.contains("println!(\"{} {} {}\", _v11, _v14 as i32, _v9.unwrap() as i64);"));
+    assert!(!rust.contains("let _v16: i64 = _v9.unwrap() as i64;"));
     assert!(!rust.contains("let mut hit"));
     assert!(!rust.contains("let mut miss"));
     assert!(!rust.contains("let mut nul"));
@@ -846,7 +857,8 @@ fn internal_char_pointer_params_lift_to_str() {
     assert!(rust.contains("fn parse_num(s: &str) -> i32"));
     assert!(rust.contains("fn forward_num(s: &str) -> i32"));
     assert!(rust.contains("fn text_len(s: &str) -> i32"));
-    assert!(rust.contains("return __slate_runtime::parse_i32(_v0);"));
+    assert!(rust.contains("return __slate_runtime::parse_i32(s);"));
+    assert!(rust.contains("return parse_num(s);"));
     assert!(rust.contains("let _v1: usize = _v0.len();"));
     assert!(rust.contains("forward_num(digits)"));
     assert!(rust.contains("text_len(word)"));
@@ -924,7 +936,8 @@ fn ptr_len_pairs_use_slice_params_for_full_array_calls() {
     assert!(rust.contains("fn bump(mut items: &mut [i32]) -> ()"));
     assert!(rust.contains("let len: i32 = items.len() as i32;"));
     assert!(rust.contains("let _v7: i32 = items[(i as usize)];"));
-    assert!(rust.contains("items[(i as usize)] = _v8;"));
+    assert!(rust.contains("items[(i as usize)] = _v7 + _v4;"));
+    assert!(!rust.contains("items[(i as usize)] = _v8;"));
     assert!(rust.contains("sum(values.as_slice())"));
     assert!(rust.contains("bump(values.as_mut_slice())"));
     assert!(!rust.contains("for item in items.iter()"));
@@ -964,7 +977,8 @@ fn scalar_heap_owner_uses_box_drop() {
 
     assert!(rust.contains("let mut p: Box<i32> = Box::<i32>::new(0);"));
     assert!(rust.contains("*p = 41;"));
-    assert!(rust.contains("*p = _v"));
+    assert!(rust.contains("*p = *p + 1;"));
+    assert!(!rust.contains("*p = _v"));
     assert!(!rust.contains("fn malloc("));
     assert!(!rust.contains("fn free("));
     assert!(!rust.contains("unsafe { malloc("));
@@ -981,9 +995,9 @@ fn heap_malloc_buffer_uses_vec_drop() {
     let rust = std::fs::read_to_string(&generated).expect("read generated heap_vec_malloc rust");
 
     assert!(rust.contains("let mut p: Vec<i32> = vec![0; 3usize];"));
-    assert!(rust.contains("p[0] = _v5;"));
-    assert!(rust.contains("p[1] = _v8;"));
-    assert!(rust.contains("p[2] = _v11;"));
+    assert!(rust.contains("p[0] = 1;"));
+    assert!(rust.contains("p[1] = 2;"));
+    assert!(rust.contains("p[2] = 3;"));
     assert!(!rust.contains("fn malloc("));
     assert!(!rust.contains("fn free("));
     assert!(!rust.contains(".add("));
@@ -1017,8 +1031,8 @@ fn heap_realloc_growth_uses_vec_resize() {
 
     assert!(rust.contains("let mut p: Vec<i32> = vec![0; 2usize];"));
     assert!(rust.contains("p.resize(4usize, 0);"));
-    assert!(rust.contains("p[2] = _v16;"));
-    assert!(rust.contains("p[3] = _v19;"));
+    assert!(rust.contains("p[2] = 3;"));
+    assert!(rust.contains("p[3] = 4;"));
     assert!(!rust.contains("fn realloc("));
     assert!(!rust.contains("unsafe { realloc("));
     assert!(!rust.contains(".add("));
@@ -1039,10 +1053,10 @@ fn string_copy_calls_use_lifted_string_operations() {
     assert!(rust.contains("append.push_str(\"bar\");"));
     assert!(rust.contains("trunc_copy = \"abc\".to_owned();"));
     assert!(rust.contains("trunc_append.push_str(\"suf\");"));
-    assert!(rust.contains("let _v7: usize = trunc_append.len();"));
-    assert!(
-        rust.contains("println!(\"{} {} {} {} {}\", copy, append, trunc_copy, trunc_append, _v7);")
-    );
+    assert!(!rust.contains("let _v7: usize = trunc_append.len();"));
+    assert!(rust.contains(
+        "println!(\"{} {} {} {} {}\", copy, append, trunc_copy, trunc_append, trunc_append.len());"
+    ));
     for name in ["strcpy", "strncpy", "strcat", "strncat"] {
         assert!(!rust.contains(&format!("fn {name}(")));
         assert!(!rust.contains(&format!("unsafe {{ {name}(")));
