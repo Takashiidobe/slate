@@ -13,7 +13,6 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 
 | Priority | Notes | Ops |
 | --- | --- | --- |
-| P1 | aggregate value mutation/extraction | `cir.extract_member`, `cir.insert_member` |
 | P2 | math builtins/libm | `cir.acos`, `cir.asin`, `cir.atan`, `cir.atan2`, `cir.cos`, `cir.exp`, `cir.exp2`, `cir.fmaximum`, `cir.fminimum`, `cir.fmod`, `cir.llrint`, `cir.llround`, `cir.log`, `cir.log10`, `cir.log2`, `cir.lrint`, `cir.lround`, `cir.pow`, `cir.roundeven`, `cir.sin`, `cir.sqrt`, `cir.tan` |
 | P2 | integer bit builtins | `cir.bitreverse`, `cir.byte_swap`, `cir.clrsb`, `cir.clz`, `cir.ctz`, `cir.ffs`, `cir.parity`, `cir.popcount`, `cir.rotate` |
 | P2 | constant/object-size queries | `cir.is_constant`, `cir.objsize` |
@@ -117,6 +116,8 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
   - [x] `cir.complex.div`
   - [x] `cir.complex.conj`
 - [x] aggregates/pointers
+  - [x] `cir.extract_member`
+  - [x] `cir.insert_member`
   - [x] `cir.get_member`
   - [x] `cir.get_element`
   - [x] `cir.ptr_stride`
