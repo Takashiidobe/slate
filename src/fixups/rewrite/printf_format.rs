@@ -107,6 +107,11 @@ fn fixup_stmt(
                 fixup_body_with_env(body, function, facts, path);
             });
         }
+        Stmt::For { body, .. } => {
+            walk::with_path_segment(path, PathSegment::ForBody, |path| {
+                fixup_body_with_env(body, function, facts, path);
+            });
+        }
         Stmt::Scope { body } => {
             walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
                 fixup_body_with_env(body, function, facts, path);
@@ -974,6 +979,38 @@ fn main() {
     loop {
         print!(\"{} \", x);
         break;
+    }
+    println!();
+}
+"
+        );
+    }
+
+    #[test]
+    fn rewrites_printf_calls_inside_for_loops_before_trailing_newline() {
+        let mut program = program_with_body(vec![
+            Stmt::For {
+                pat: "i".into(),
+                iter: Expr::Range {
+                    start: Box::new(int(0)),
+                    end: Box::new(int(3)),
+                },
+                body: vec![IndentStmt {
+                    depth: 0,
+                    stmt: printf_stmt(b"%d \0", var("i")),
+                }],
+            },
+            printf_stmt_args(b"\n\0", vec![]),
+        ]);
+        run_fixup(&mut program);
+        let out = program.emit();
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    for i in 0..3 {
+        print!(\"{} \", i);
     }
     println!();
 }

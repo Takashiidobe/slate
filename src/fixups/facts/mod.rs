@@ -772,12 +772,12 @@ pub(super) struct SlicePointerIndexFact {
     pub(super) path: AstPath,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub(super) struct CountedLoopFact {
     pub(super) function: FunctionId,
     pub(super) loop_id: LoopId,
     pub(super) index: BindingId,
-    pub(super) bound: BindingId,
+    pub(super) bound: Expr,
     pub(super) start: CountedLoopStart,
     pub(super) step: CountedLoopStep,
     pub(super) index_use: CountedLoopIndexUse,
