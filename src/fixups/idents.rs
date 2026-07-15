@@ -169,6 +169,7 @@ pub(super) fn expr_ident_count(expr: &Expr, name: &str) -> usize {
                 + expr_ident_count(desired, name)
         }
         Expr::Binary { lhs, rhs, .. } => expr_ident_count(lhs, name) + expr_ident_count(rhs, name),
+        Expr::Range { start, end } => expr_ident_count(start, name) + expr_ident_count(end, name),
         Expr::Call { func, args } => {
             expr_ident_count(func, name)
                 + args

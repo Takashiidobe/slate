@@ -234,6 +234,10 @@ impl<'a> Collector<'a> {
                 self.expr(lhs, path);
                 self.expr(rhs, path);
             }
+            Expr::Range { start, end } => {
+                self.expr(start, path);
+                self.expr(end, path);
+            }
             Expr::Call { func, args } => {
                 self.expr(func, path);
                 for arg in args {

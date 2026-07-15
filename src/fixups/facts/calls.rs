@@ -386,6 +386,14 @@ impl<'a> Collector<'a> {
                     self.expr(rhs, path, None)
                 });
             }
+            Expr::Range { start, end } => {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    self.expr(start, path, None)
+                });
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                    self.expr(end, path, None)
+                });
+            }
             Expr::Field { base, .. }
             | Expr::TupleField { base, .. }
             | Expr::ArrayPtr { array: base, .. } => {

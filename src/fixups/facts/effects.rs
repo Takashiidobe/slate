@@ -215,6 +215,10 @@ impl Collector {
                 effects.extend(self.child_expr(lhs, path, 0));
                 effects.extend(self.child_expr(rhs, path, 1));
             }
+            Expr::Range { start, end } => {
+                effects.extend(self.child_expr(start, path, 0));
+                effects.extend(self.child_expr(end, path, 1));
+            }
             Expr::Call { func, args } => {
                 let call_effect = call_effect(func);
                 effects.insert(call_effect);

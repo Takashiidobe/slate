@@ -166,6 +166,22 @@ pub fn apply(program: Program) -> Program {
         }
     }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    if rewrite::range_loop::fixup(&mut program, &facts) {
+        loop {
+            let mut changed = false;
+            for item in &mut program.items {
+                if let Item::Fn(f) = item
+                    && rewrite::singleton_scopes::fixup(&mut f.body)
+                {
+                    changed = true;
+                }
+            }
+            if !changed {
+                break;
+            }
+        }
+    }
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
             && let Some(function) = facts.function_by_item_index(item_index)
