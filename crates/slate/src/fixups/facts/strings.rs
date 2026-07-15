@@ -2,11 +2,12 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, CallCallee, CallSignatureSource, ConstValue, FixupFacts,
-    FunctionId, NulTermination, PathSegment, StringBufferFact, StringBufferKind,
-    StringBufferProvenance, StringBufferRejection, StringCopyRewrite, StringCopyRewriteFact,
-    StringLibcFunction, StringLibcUseFact, StringLiftPlanFact, StringPointerViewFact,
-    StringPointerViewKind, StringRecoveryCandidate, ValueSubject,
+    AsciiNumericSign, AsciiNumericStringFact, AstPath, BindingId, BindingKind, CallCallee,
+    CallSignatureSource, ConstValue, FixupFacts, FunctionId, NulTermination, PathSegment,
+    StringBufferFact, StringBufferKind, StringBufferProvenance, StringBufferRejection,
+    StringCopyRewrite, StringCopyRewriteFact, StringLibcFunction, StringLibcUseFact,
+    StringLiftPlanFact, StringPointerViewFact, StringPointerViewKind, StringRecoveryCandidate,
+    ValueSubject,
 };
 use crate::rust_ast::{
     Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
@@ -14,6 +15,7 @@ use crate::rust_ast::{
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.string_buffers.clear();
+    facts.ascii_numeric_strings.clear();
     facts.string_pointer_views.clear();
     facts.string_libc_uses.clear();
 
@@ -36,9 +38,36 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         libc_uses.extend(collected.libc_uses);
     }
 
+    facts.ascii_numeric_strings = collect_ascii_numeric_strings(&buffers);
     facts.string_buffers = buffers;
     facts.string_pointer_views = pointer_views;
     facts.string_libc_uses = libc_uses;
+}
+
+fn collect_ascii_numeric_strings(buffers: &[StringBufferFact]) -> Vec<AsciiNumericStringFact> {
+    buffers
+        .iter()
+        .filter_map(|buffer| {
+            let bytes = buffer.bytes.as_deref()?;
+            let (sign, digits) = ascii_numeric_token(bytes)?;
+            Some(AsciiNumericStringFact {
+                function: buffer.function,
+                binding: buffer.binding,
+                path: buffer.path.clone(),
+                sign,
+                digits,
+            })
+        })
+        .collect()
+}
+
+fn ascii_numeric_token(bytes: &[u8]) -> Option<(AsciiNumericSign, usize)> {
+    let (sign, digits) = match bytes.first() {
+        Some(b'+') => (AsciiNumericSign::Plus, &bytes[1..]),
+        Some(b'-') => (AsciiNumericSign::Minus, &bytes[1..]),
+        _ => (AsciiNumericSign::None, bytes),
+    };
+    (!digits.is_empty() && digits.iter().all(u8::is_ascii_digit)).then_some((sign, digits.len()))
 }
 
 pub(in crate::fixups) fn collect_rewrite_facts(program: &Program, facts: &mut FixupFacts) {
@@ -1788,6 +1817,16 @@ mod tests {
             .unwrap()
     }
 
+    fn numeric_for(
+        facts: &facts::FixupFacts,
+        binding: BindingId,
+    ) -> Option<&AsciiNumericStringFact> {
+        facts
+            .ascii_numeric_strings
+            .iter()
+            .find(|fact| fact.binding == binding)
+    }
+
     #[test]
     fn records_literal_and_zero_initialized_char_buffers() {
         let facts = analyzed(vec![
@@ -1826,6 +1865,33 @@ mod tests {
             zero.candidates
                 .contains(&StringRecoveryCandidate::OwnedString)
         );
+    }
+
+    #[test]
+    fn records_ascii_numeric_whole_tokens_only() {
+        let facts = analyzed(vec![
+            let_mut("positive", "[i8; 4]", bytes(&[52, 50, 48, 0])),
+            let_mut("negative", "[i8; 3]", bytes(&[45, 55, 0])),
+            let_mut("prefixed", "[i8; 4]", bytes(&[32, 52, 50, 0])),
+            let_mut("partial", "[i8; 5]", bytes(&[52, 50, 120, 0, 0])),
+            let_mut("sign_only", "[i8; 2]", bytes(&[45, 0])),
+        ]);
+        let positive = binding_for(&facts, "positive", AstPath(vec![PathSegment::Stmt(0)]));
+        let negative = binding_for(&facts, "negative", AstPath(vec![PathSegment::Stmt(1)]));
+        let prefixed = binding_for(&facts, "prefixed", AstPath(vec![PathSegment::Stmt(2)]));
+        let partial = binding_for(&facts, "partial", AstPath(vec![PathSegment::Stmt(3)]));
+        let sign_only = binding_for(&facts, "sign_only", AstPath(vec![PathSegment::Stmt(4)]));
+
+        let positive = numeric_for(&facts, positive).unwrap();
+        assert_eq!(positive.sign, AsciiNumericSign::None);
+        assert_eq!(positive.digits, 3);
+        assert_eq!(
+            numeric_for(&facts, negative).unwrap().sign,
+            AsciiNumericSign::Minus
+        );
+        assert!(numeric_for(&facts, prefixed).is_none());
+        assert!(numeric_for(&facts, partial).is_none());
+        assert!(numeric_for(&facts, sign_only).is_none());
     }
 
     #[test]

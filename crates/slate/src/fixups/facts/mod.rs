@@ -45,6 +45,7 @@ pub(super) struct FixupFacts {
     pub(super) call_signatures: Vec<CallSignatureFact>,
     pub(super) callsites: Vec<CallsiteFact>,
     pub(super) string_buffers: Vec<StringBufferFact>,
+    pub(super) ascii_numeric_strings: Vec<AsciiNumericStringFact>,
     pub(super) string_pointer_views: Vec<StringPointerViewFact>,
     pub(super) string_libc_uses: Vec<StringLibcUseFact>,
     pub(super) string_lift_plans: Vec<StringLiftPlanFact>,
@@ -327,6 +328,22 @@ pub(super) struct StringBufferFact {
     pub(super) ascii_only: bool,
     pub(super) candidates: BTreeSet<StringRecoveryCandidate>,
     pub(super) rejections: BTreeSet<StringBufferRejection>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct AsciiNumericStringFact {
+    pub(super) function: FunctionId,
+    pub(super) binding: BindingId,
+    pub(super) path: AstPath,
+    pub(super) sign: AsciiNumericSign,
+    pub(super) digits: usize,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum AsciiNumericSign {
+    None,
+    Plus,
+    Minus,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1125,6 +1142,15 @@ impl FixupFacts {
 
     pub(super) fn string_buffer(&self, binding: BindingId) -> Option<&StringBufferFact> {
         self.string_buffers
+            .iter()
+            .find(|fact| fact.binding == binding)
+    }
+
+    pub(super) fn ascii_numeric_string(
+        &self,
+        binding: BindingId,
+    ) -> Option<&AsciiNumericStringFact> {
+        self.ascii_numeric_strings
             .iter()
             .find(|fact| fact.binding == binding)
     }
