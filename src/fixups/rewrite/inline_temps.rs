@@ -6,23 +6,31 @@ use crate::fixups::facts::{
     AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment,
 };
 use crate::fixups::support::walk;
-use crate::rust_ast::{Block, Expr, IndentStmt, Stmt, Type};
+use crate::rust_ast::{Block, Expr, IndentStmt, Prim, RustValue, Stmt, Type};
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(in crate::fixups) enum Phase {
+    Early,
+    Late,
+}
 
 pub(in crate::fixups) fn fixup(
     body: &mut Vec<IndentStmt>,
     function: FunctionId,
     facts: &FixupFacts,
+    phase: Phase,
 ) -> bool {
-    fixup_at(body, function, facts, &mut Vec::new())
+    fixup_at(body, function, facts, phase, &mut Vec::new())
 }
 
 fn fixup_at(
     body: &mut Vec<IndentStmt>,
     function: FunctionId,
     facts: &FixupFacts,
+    phase: Phase,
     path: &mut Vec<PathSegment>,
 ) -> bool {
-    if inline_nested_temps(body, function, facts, path) {
+    if inline_nested_temps(body, function, facts, phase, path) {
         return true;
     }
     for i in 0..body.len() {
@@ -47,9 +55,21 @@ fn fixup_at(
         };
         let name = name.clone();
         let init = init.clone();
-        let Some(use_index) =
-            temp_chain_use_index(body, i, binding, ty.as_ref(), function, facts, path)
-        else {
+        let Some(use_index) = temp_chain_use_index(
+            body,
+            i,
+            TempCandidate {
+                binding,
+                init: &init,
+                ty: ty.as_ref(),
+            },
+            InlineEnv {
+                function,
+                facts,
+                body_path: path,
+                phase,
+            },
+        ) else {
             continue;
         };
         if body[use_index].stmt.substitute_var(&name, &init) {
@@ -64,6 +84,7 @@ fn inline_nested_temps(
     body: &mut [IndentStmt],
     function: FunctionId,
     facts: &FixupFacts,
+    phase: Phase,
     path: &mut Vec<PathSegment>,
 ) -> bool {
     for (index, stmt) in body.iter_mut().enumerate() {
@@ -80,31 +101,36 @@ fn inline_nested_temps(
                     ..
                 } => {
                     walk::with_path_segment(path, PathSegment::Then, |path| {
-                        fixup_at(then_body, function, facts, path)
+                        fixup_at(then_body, function, facts, phase, path)
                     }) || walk::with_path_segment(path, PathSegment::Else, |path| {
-                        fixup_at(else_body, function, facts, path)
+                        fixup_at(else_body, function, facts, phase, path)
                     })
                 }
                 Stmt::Loop { body, .. } => {
                     walk::with_path_segment(path, PathSegment::LoopBody, |path| {
-                        fixup_at(body, function, facts, path)
+                        fixup_at(body, function, facts, phase, path)
+                    })
+                }
+                Stmt::For { body, .. } => {
+                    walk::with_path_segment(path, PathSegment::ForBody, |path| {
+                        fixup_at(body, function, facts, phase, path)
                     })
                 }
                 Stmt::Scope { body } => {
                     walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
-                        fixup_at(body, function, facts, path)
+                        fixup_at(body, function, facts, phase, path)
                     })
                 }
                 Stmt::LabeledBlock { body, .. } => {
                     walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
-                        fixup_at(body, function, facts, path)
+                        fixup_at(body, function, facts, phase, path)
                     })
                 }
                 Stmt::Unsafe { body } => {
                     let Block { stmts, tail } = body;
                     let _ = tail;
                     walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
-                        fixup_at(stmts, function, facts, path)
+                        fixup_at(stmts, function, facts, phase, path)
                     })
                 }
                 _ => false,
@@ -116,28 +142,56 @@ fn inline_nested_temps(
     false
 }
 
+#[derive(Clone, Copy)]
+struct TempCandidate<'a> {
+    binding: crate::fixups::facts::BindingId,
+    init: &'a Expr,
+    ty: Option<&'a Type>,
+}
+
+#[derive(Clone, Copy)]
+struct InlineEnv<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
+    body_path: &'a [PathSegment],
+    phase: Phase,
+}
+
 fn temp_chain_use_index(
     body: &[IndentStmt],
     def_index: usize,
-    binding: crate::fixups::facts::BindingId,
-    ty: Option<&Type>,
-    function: FunctionId,
-    facts: &FixupFacts,
-    body_path: &[PathSegment],
+    temp: TempCandidate<'_>,
+    env: InlineEnv<'_>,
 ) -> Option<usize> {
-    let fact = facts.temp_chains.iter().find(|fact| {
-        fact.function == function
-            && fact.binding == binding
-            && fact.producer_path == AstPath(stmt_path(body_path, def_index))
+    let fact = env.facts.temp_chains.iter().find(|fact| {
+        fact.function == env.function
+            && fact.binding == temp.binding
+            && fact.producer_path == AstPath(stmt_path(env.body_path, def_index))
     })?;
-    let use_index = direct_stmt_index(body_path, &fact.consumer_path)?;
+    let use_index = direct_stmt_index(env.body_path, &fact.consumer_path)?;
     if use_index <= def_index || use_index >= body.len() {
         return None;
     }
-    let use_path = stmt_path(body_path, use_index);
-    let name = binding_name(facts, binding)?;
-    let allowed_receiver = is_option_receiver_use(&body[use_index].stmt, name, ty);
-    if (stmt_contains_call(function, facts, &use_path) && !allowed_receiver)
+    let use_path = stmt_path(env.body_path, use_index);
+    let name = binding_name(env.facts, temp.binding)?;
+    let allowed_receiver = is_option_receiver_use(&body[use_index].stmt, name, temp.ty);
+    let producer_path = stmt_path(env.body_path, def_index);
+    if env.phase == Phase::Early
+        && is_effectful_expr(env.function, env.facts, &producer_path)
+        && !early_effectful_consumer(&body[use_index].stmt, name)
+    {
+        return None;
+    }
+    let allowed_arg = is_allowed_argument_use(ArgumentUse {
+        stmt: &body[use_index].stmt,
+        name,
+        init: temp.init,
+        ty: temp.ty,
+        producer_path: &producer_path,
+        adjacent: use_index == def_index + 1,
+        env,
+    });
+    if (stmt_contains_call(env.function, env.facts, &use_path) && !allowed_receiver && !allowed_arg)
         || (is_receiver_use(&body[use_index].stmt, name) && !allowed_receiver)
     {
         return None;
@@ -191,6 +245,132 @@ fn is_option_like_type(ty: &Type) -> bool {
     }
 }
 
+fn early_effectful_consumer(stmt: &Stmt, name: &str) -> bool {
+    match stmt {
+        Stmt::Assign { target, value } => {
+            matches!(target, Expr::Var(target) if target.as_str() == "__retval")
+                && matches!(value, Expr::Var(value) if value.as_str() == name)
+        }
+        Stmt::Return(Some(expr)) => matches!(expr, Expr::Var(value) if value.as_str() == name),
+        _ => false,
+    }
+}
+
+struct ArgumentUse<'a> {
+    stmt: &'a Stmt,
+    name: &'a str,
+    init: &'a Expr,
+    ty: Option<&'a Type>,
+    producer_path: &'a [PathSegment],
+    adjacent: bool,
+    env: InlineEnv<'a>,
+}
+
+fn is_allowed_argument_use(arg: ArgumentUse<'_>) -> bool {
+    if arg.env.phase == Phase::Early {
+        return false;
+    }
+    if is_effectful_expr(arg.env.function, arg.env.facts, arg.producer_path) {
+        return arg.adjacent && simple_macro_arg_use(arg.stmt, arg.name);
+    }
+    type_stable_arg_init(arg.init, arg.ty) && call_or_macro_arg_use(arg.stmt, arg.name)
+}
+
+fn is_effectful_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
+    facts
+        .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
+        .is_some_and(|fact| {
+            fact.effects.iter().any(|effect| {
+                matches!(
+                    effect,
+                    EffectKind::UnknownCall
+                        | EffectKind::MethodCall
+                        | EffectKind::MacroExpansion
+                        | EffectKind::UnknownSideEffect
+                        | EffectKind::VolatileRead
+                        | EffectKind::VolatileWrite
+                        | EffectKind::AtomicWrite
+                        | EffectKind::MemoryWrite
+                )
+            })
+        })
+}
+
+fn type_stable_arg_init(init: &Expr, ty: Option<&Type>) -> bool {
+    match init {
+        Expr::Var(_) | Expr::Cast { .. } => true,
+        Expr::Value(RustValue::I64(_)) => matches!(ty, Some(Type::Prim(Prim::I32))),
+        Expr::Value(RustValue::Bool(_)) => true,
+        _ => false,
+    }
+}
+
+fn call_or_macro_arg_use(stmt: &Stmt, name: &str) -> bool {
+    match stmt {
+        Stmt::Let { init, .. } => init
+            .as_ref()
+            .is_some_and(|expr| call_or_macro_arg_use_expr(expr, name)),
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            call_or_macro_arg_use_expr(target, name) || call_or_macro_arg_use_expr(value, name)
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => call_or_macro_arg_use_expr(expr, name),
+        _ => false,
+    }
+}
+
+fn call_or_macro_arg_use_expr(expr: &Expr, name: &str) -> bool {
+    match expr {
+        Expr::Call { args, .. } | Expr::Macro { args, .. } => args
+            .iter()
+            .any(|arg| matches!(arg, Expr::Var(var) if var.as_str() == name)),
+        Expr::Block(block) | Expr::Unsafe(block) => block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| call_or_macro_arg_use_expr(tail, name)),
+        Expr::Cast { expr, .. } => call_or_macro_arg_use_expr(expr, name),
+        _ => false,
+    }
+}
+
+fn simple_macro_arg_use(stmt: &Stmt, name: &str) -> bool {
+    match stmt {
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => simple_macro_arg_use_expr(expr, name),
+        _ => false,
+    }
+}
+
+fn simple_macro_arg_use_expr(expr: &Expr, name: &str) -> bool {
+    match expr {
+        Expr::Macro { args, .. } => {
+            args.iter()
+                .any(|arg| matches!(arg, Expr::Var(var) if var.as_str() == name))
+                && args.iter().all(|arg| {
+                    matches!(arg, Expr::Var(var) if var.as_str() == name)
+                        || is_obviously_pure_expr(arg)
+                })
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| simple_macro_arg_use_expr(tail, name)),
+        _ => false,
+    }
+}
+
+fn is_obviously_pure_expr(expr: &Expr) -> bool {
+    match expr {
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::ByteStr(_)
+        | Expr::CStr(_)
+        | Expr::HexFloat(_)
+        | Expr::Var(_)
+        | Expr::Path(_) => true,
+        Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => is_obviously_pure_expr(expr),
+        _ => false,
+    }
+}
+
 fn is_temp_name(name: &str) -> bool {
     name.strip_prefix("_v")
         .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|b| b.is_ascii_digit()))
@@ -222,9 +402,17 @@ fn binding_name(facts: &FixupFacts, binding: crate::fixups::facts::BindingId) ->
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{BinOp, Item, Program, Type};
+    use crate::rust_ast::{BinOp, Block, Item, Program, Type};
 
     fn inlined(stmts: Vec<Stmt>) -> String {
+        inlined_with_phase(stmts, Phase::Late)
+    }
+
+    fn early_inlined(stmts: Vec<Stmt>) -> String {
+        inlined_with_phase(stmts, Phase::Early)
+    }
+
+    fn inlined_with_phase(stmts: Vec<Stmt>, phase: Phase) -> String {
         let mut program = Program {
             items: vec![Item::Fn(func(vec![], None, stmts))],
         };
@@ -234,7 +422,7 @@ mod tests {
             let Item::Fn(f) = &mut program.items[0] else {
                 unreachable!();
             };
-            if !fixup(&mut f.body, FunctionId(0), &facts) {
+            if !fixup(&mut f.body, FunctionId(0), &facts, phase) {
                 break;
             }
         }
@@ -370,6 +558,165 @@ fn f() {
             "\
 fn f() {
     return op(value);
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_immediate_effectful_temp_into_local_assignment() {
+        let out = inlined(vec![
+            let_mut("first", "i32", int(0)),
+            temp("_v0", "i32", call("next_arg", vec![])),
+            assign("first", var("_v0")),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let mut first: i32 = 0;
+    first = next_arg();
+}
+"
+        );
+    }
+
+    #[test]
+    fn early_pass_keeps_effectful_temp_into_local_assignment() {
+        let out = early_inlined(vec![
+            let_mut("first", "i32", int(0)),
+            temp("_v0", "i32", call("next_arg", vec![])),
+            assign("first", var("_v0")),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let mut first: i32 = 0;
+    let _v0: i32 = next_arg();
+    first = _v0;
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_immediate_effectful_temp_into_local_compound_assignment() {
+        let out = inlined(vec![
+            let_mut("total", "i32", int(0)),
+            temp("_v0", "i32", call("next_arg", vec![])),
+            Stmt::CompoundAssign {
+                target: var("total"),
+                op: BinOp::Add,
+                value: var("_v0"),
+            },
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let mut total: i32 = 0;
+    total += next_arg();
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_temps_inside_for_body() {
+        let out = inlined(vec![Stmt::For {
+            pat: "_".into(),
+            iter: var("items"),
+            body: vec![
+                IndentStmt {
+                    depth: 0,
+                    stmt: temp("_v0", "i32", call("next_arg", vec![])),
+                },
+                IndentStmt {
+                    depth: 0,
+                    stmt: Stmt::CompoundAssign {
+                        target: var("total"),
+                        op: BinOp::Add,
+                        value: var("_v0"),
+                    },
+                },
+            ],
+        }]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    for _ in items {
+        total += next_arg();
+    }
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_i32_literal_temps_into_unsafe_call_arguments() {
+        let out = inlined(vec![
+            temp("_v1", "i32", int(4)),
+            temp("_v2", "i32", int(10)),
+            Stmt::Expr(Expr::Unsafe(Box::new(Block {
+                stmts: vec![],
+                tail: Some(Box::new(call("sum", vec![var("_v1"), var("_v2")]))),
+            }))),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    unsafe { sum(4, 10) };
+}
+"
+        );
+    }
+
+    #[test]
+    fn early_pass_keeps_call_argument_temps() {
+        let out = early_inlined(vec![
+            temp("_v1", "i32", int(4)),
+            temp("_v2", "i32", int(10)),
+            Stmt::Expr(Expr::Unsafe(Box::new(Block {
+                stmts: vec![],
+                tail: Some(Box::new(call("sum", vec![var("_v1"), var("_v2")]))),
+            }))),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let _v1: i32 = 4;
+    let _v2: i32 = 10;
+    unsafe { sum(_v1, _v2) };
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_immediate_effectful_temp_into_simple_macro_argument() {
+        let out = inlined(vec![
+            temp("_v0", "i32", call("sum", vec![])),
+            Stmt::Expr(Expr::Macro {
+                name: "println".into(),
+                args: vec![Expr::Str("{}".into()), var("_v0")],
+            }),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    println!(\"{}\", sum());
 }
 "
         );

@@ -1,19 +1,62 @@
 //! Remove `mut` from bindings whose analyzed facts do not require mutation.
 
-use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
+use crate::fixups::facts::{
+    AstPath, BindingId, BorrowAliasReason, CallArgPinning, FixupFacts, FunctionId, PathSegment,
+};
 use crate::fixups::support::walk;
-use crate::rust_ast::{FnDef, IndentStmt, Stmt};
+use crate::rust_ast::{FnDef, IndentStmt, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
     for (index, param) in f.params.iter_mut().enumerate() {
+        if matches!(param.ty, Type::Variadic | Type::VaList) {
+            continue;
+        }
         if facts
             .binding_by_param_index(function, index)
-            .is_some_and(|binding| !facts.binding_requires_mut(binding))
+            .is_some_and(|binding| param_can_drop_mut(binding, facts))
         {
             param.mutable = false;
         }
     }
     remove_unneeded_mut(&mut f.body, function, facts, &mut Vec::new());
+}
+
+fn param_can_drop_mut(binding: BindingId, facts: &FixupFacts) -> bool {
+    if !facts.binding_requires_mut(binding) {
+        return true;
+    }
+    let Some(def_use) = facts.def_use(binding) else {
+        return false;
+    };
+    if !def_use.writes.is_empty() {
+        return false;
+    }
+    let Some(alias) = facts
+        .borrow_alias
+        .iter()
+        .find(|fact| fact.binding == binding)
+    else {
+        return true;
+    };
+    if !alias.reasons.iter().all(|reason| {
+        matches!(
+            reason,
+            BorrowAliasReason::Read | BorrowAliasReason::UnknownCallEscape
+        )
+    }) {
+        return false;
+    }
+    def_use.reads.iter().all(|read| {
+        facts
+            .call_arg_at(alias.function, read)
+            .is_none_or(|(_, arg)| {
+                arg.pinning == CallArgPinning::DeclaredParam
+                    && matches!(
+                        arg.declared_ty.as_ref(),
+                        Some(Type::Ref { mutable: false, .. })
+                    )
+            })
+    })
 }
 
 fn remove_unneeded_mut(
@@ -84,6 +127,16 @@ mod tests {
         emit(f)
     }
 
+    fn run_program(program: Program, item_index: usize) -> String {
+        let analyzed = facts::analyze(program);
+        let mut program = analyzed.program;
+        let Item::Fn(f) = &mut program.items[item_index] else {
+            unreachable!();
+        };
+        fixup(f, facts::FunctionId(item_index), &analyzed.facts);
+        emit(f.clone())
+    }
+
     #[test]
     fn removes_mut_from_params_and_locals_that_are_not_reassigned() {
         let out = run(vec![
@@ -101,6 +154,62 @@ mod tests {
 fn f(a: i32) -> i32 {
     let c: i32 = a + 1;
     return c;
+}
+"
+        );
+    }
+
+    #[test]
+    fn removes_mut_from_param_passed_to_declared_param_call() {
+        let mut caller = func(
+            vec![param("s", "&str")],
+            Some("i32"),
+            vec![Stmt::Return(Some(call("parse_num", vec![var("s")])))],
+        );
+        caller.name = "forward_num".into();
+        caller.params[0].mutable = true;
+        let mut callee = func(
+            vec![param("s", "&str")],
+            Some("i32"),
+            vec![Stmt::Return(Some(int(0)))],
+        );
+        callee.name = "parse_num".into();
+
+        let out = run_program(
+            Program {
+                items: vec![Item::Fn(callee), Item::Fn(caller)],
+            },
+            1,
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn forward_num(s: &str) -> i32 {
+    return parse_num(s);
+}
+"
+        );
+    }
+
+    #[test]
+    fn keeps_mut_on_variadic_param() {
+        let mut f = func(vec![], Some("i32"), vec![Stmt::Return(Some(int(0)))]);
+        f.unsafe_ = true;
+        f.extern_c = true;
+        f.params.push(crate::rust_ast::FnParam {
+            name: "ap".into(),
+            mutable: true,
+            ty: Type::Variadic,
+        });
+
+        let out = run_fn(f);
+
+        assert_eq!(
+            out,
+            "\
+unsafe extern \"C\" fn f(mut ap: ...) -> i32 {
+    return 0;
 }
 "
         );
