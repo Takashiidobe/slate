@@ -10,6 +10,7 @@ pub(super) mod control_flow;
 pub(super) mod counted_loop;
 pub(super) mod def_use;
 pub(super) mod effects;
+pub(super) mod file_ownership;
 pub(super) mod heap_ownership;
 pub(super) mod loop_shapes;
 pub(super) mod places;
@@ -52,6 +53,7 @@ pub(super) struct FixupFacts {
     pub(super) string_param_lifts: Vec<StringParamLiftFact>,
     pub(super) string_copy_rewrites: Vec<StringCopyRewriteFact>,
     pub(super) c_string_literals: Vec<CStringLiteralFact>,
+    pub(super) file_ownership: Vec<FileOwnershipFact>,
     pub(super) heap_ownership: Vec<HeapOwnershipFact>,
     pub(super) printf_calls: Vec<PrintfCallFact>,
     pub(super) mutability: Vec<BindingMutabilityFact>,
@@ -295,6 +297,12 @@ pub(super) enum LibcCallSemantic {
     StrNCat,
     MemCpy,
     MemSet,
+    FOpen,
+    FRead,
+    FWrite,
+    FGets,
+    FPuts,
+    FClose,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -441,6 +449,47 @@ pub(super) struct CStringLiteralFact {
     pub(super) function: FunctionId,
     pub(super) receiver_path: AstPath,
     pub(super) bytes: Vec<u8>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct FileOwnershipFact {
+    pub(super) function: FunctionId,
+    pub(super) handle: BindingId,
+    pub(super) open_temp: BindingId,
+    pub(super) close_temp: Option<BindingId>,
+    pub(super) handle_path: AstPath,
+    pub(super) open_path: AstPath,
+    pub(super) assign_path: AstPath,
+    pub(super) close_path: AstPath,
+    pub(super) path_arg: AstPath,
+    pub(super) mode_arg: AstPath,
+    pub(super) mode: Option<FileOpenMode>,
+    pub(super) uses: Vec<FileUseFact>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum FileOpenMode {
+    Read,
+    Write,
+    Append,
+    ReadUpdate,
+    WriteUpdate,
+    AppendUpdate,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct FileUseFact {
+    pub(super) path: AstPath,
+    pub(super) kind: FileUseKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum FileUseKind {
+    FRead,
+    FWrite,
+    FGets,
+    FPuts,
+    FClose,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1224,6 +1273,12 @@ impl FixupFacts {
             .iter()
             .find(|fact| fact.function == function && &fact.path == path)
     }
+
+    pub(super) fn file_ownership(&self, handle: BindingId) -> Option<&FileOwnershipFact> {
+        self.file_ownership
+            .iter()
+            .find(|fact| fact.handle == handle)
+    }
 }
 
 pub(super) fn analyze(program: Program) -> AnalyzedProgram {
@@ -1245,6 +1300,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     printf::collect_facts(&program, &mut collector.facts);
     strings::collect_rewrite_facts(&program, &mut collector.facts);
     c_strings::collect_facts(&program, &mut collector.facts);
+    file_ownership::collect_facts(&program, &mut collector.facts);
     ptr_len::collect_facts(&program, &mut collector.facts);
     slice_index::collect_facts(&program, &mut collector.facts);
     counted_loop::collect_facts(&program, &mut collector.facts);
