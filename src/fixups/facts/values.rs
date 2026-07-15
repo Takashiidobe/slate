@@ -232,6 +232,11 @@ impl<'a> Collector<'a> {
                 let rhs = self.child_expr(rhs, path, 1);
                 fold_binary(*op, &lhs, &rhs).unwrap_or_default()
             }
+            Expr::Range { start, end } => {
+                self.child_expr(start, path, 0);
+                self.child_expr(end, path, 1);
+                BTreeSet::new()
+            }
             Expr::Cast { expr, ty } => {
                 let child = self.child_expr(expr, path, 0);
                 fold_cast(&child, ty)

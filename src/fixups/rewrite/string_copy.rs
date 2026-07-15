@@ -325,6 +325,10 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>) {
             rewrite_expr_pointer_views(lhs, liftable);
             rewrite_expr_pointer_views(rhs, liftable);
         }
+        Expr::Range { start, end } => {
+            rewrite_expr_pointer_views(start, liftable);
+            rewrite_expr_pointer_views(end, liftable);
+        }
         Expr::Call { func, args } => {
             rewrite_expr_pointer_views(func, liftable);
             for arg in args {
@@ -568,6 +572,10 @@ fn expr_children_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool 
         | Expr::AtomicRef { ptr: expr, .. }
         | Expr::AtomicLoad { ptr: expr, .. } => pred(expr),
         Expr::Binary { lhs, rhs, .. }
+        | Expr::Range {
+            start: lhs,
+            end: rhs,
+        }
         | Expr::Index {
             base: lhs,
             index: rhs,

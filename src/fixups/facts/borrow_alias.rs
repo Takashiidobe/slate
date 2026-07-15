@@ -293,6 +293,10 @@ impl<'a> Collector<'a> {
                 self.expr(lhs, path);
                 self.expr(rhs, path);
             }
+            Expr::Range { start, end } => {
+                self.expr(start, path);
+                self.expr(end, path);
+            }
             Expr::Field { base, .. } | Expr::TupleField { base, .. } => self.expr(base, path),
             Expr::Index { base, index } => {
                 self.expr(base, path);

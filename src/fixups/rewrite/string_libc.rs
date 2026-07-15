@@ -226,6 +226,14 @@ fn fixup_expr(
                 fixup_expr(rhs, function, facts, temps, path)
             });
         }
+        Expr::Range { start, end } => {
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(start, function, facts, temps, path)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                fixup_expr(end, function, facts, temps, path)
+            });
+        }
         Expr::Call { func, args } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
                 fixup_expr(func, function, facts, temps, path)
@@ -1314,6 +1322,10 @@ fn expr_temp_uses_are_zero_comparisons(expr: &Expr, name: &str) -> bool {
         Expr::Binary { lhs, rhs, .. } => {
             expr_temp_uses_are_zero_comparisons(lhs, name)
                 && expr_temp_uses_are_zero_comparisons(rhs, name)
+        }
+        Expr::Range { start, end } => {
+            expr_temp_uses_are_zero_comparisons(start, name)
+                && expr_temp_uses_are_zero_comparisons(end, name)
         }
         Expr::Call { func, args } => {
             expr_temp_uses_are_zero_comparisons(func, name)

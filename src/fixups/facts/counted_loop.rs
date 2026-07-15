@@ -2,12 +2,15 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, CountedLoopBound, CountedLoopIndexUse, CountedLoopStart, CountedLoopStep,
-    CountedSliceLoopFact, FixupFacts, FunctionId, LoopId, LoopKind, PathSegment, SliceLoopAccess,
+    AstPath, BindingId, CountedLoopBound, CountedLoopFact, CountedLoopIndexUse, CountedLoopStart,
+    CountedLoopStep, CountedSliceLoopFact, FixupFacts, FunctionId, LoopId, LoopKind, PathSegment,
+    SliceLoopAccess,
 };
+use crate::fixups::idents::stmt_ident_count;
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+    facts.counted_loops.clear();
     facts.counted_slice_loops.clear();
     for (item_index, item) in program.items.iter().enumerate() {
         let Item::Fn(f) = item else {
@@ -120,16 +123,90 @@ impl<'a> Collector<'a> {
         body_segment: PathSegment,
     ) {
         for (index, pair) in body.windows(2).enumerate() {
-            let Some(candidate) =
-                self.loop_candidate(pair, parent_path, body_segment.clone(), index)
-            else {
-                continue;
-            };
-            self.facts.counted_slice_loops.push(candidate);
+            if let Some(candidate) =
+                self.counted_loop_candidate(pair, parent_path, body_segment.clone(), index)
+            {
+                self.facts.counted_loops.push(candidate);
+            }
+            if let Some(candidate) =
+                self.slice_loop_candidate(pair, parent_path, body_segment.clone(), index)
+            {
+                self.facts.counted_slice_loops.push(candidate);
+            }
         }
     }
 
-    fn loop_candidate(
+    fn counted_loop_candidate(
+        &self,
+        pair: &[IndentStmt],
+        parent_path: &[PathSegment],
+        body_segment: PathSegment,
+        index_stmt: usize,
+    ) -> Option<CountedLoopFact> {
+        let Stmt::Let {
+            name: index_name,
+            init: Some(init),
+            ..
+        } = &pair[0].stmt
+        else {
+            return None;
+        };
+        if !is_zero(init) {
+            return None;
+        }
+        let Stmt::Loop {
+            body: loop_body, ..
+        } = &pair[1].stmt
+        else {
+            return None;
+        };
+
+        let range = canonical_counted_range(loop_body, index_name.as_str())?;
+        if !is_straight_line_body(&loop_body[range.body_start..range.increment_stmt]) {
+            return None;
+        }
+
+        let mut index_path = parent_path.to_vec();
+        index_path.push(body_segment.clone());
+        index_path.push(PathSegment::Stmt(index_stmt));
+        let index_path = AstPath(index_path);
+        let index =
+            self.facts
+                .binding_by_local_path(self.function, index_name.as_str(), &index_path)?;
+        let bound = self.unique_binding_for_bound(range.bound)?;
+
+        let mut loop_path = parent_path.to_vec();
+        loop_path.push(body_segment);
+        loop_path.push(PathSegment::Stmt(index_stmt + 1));
+        let loop_path = AstPath(loop_path);
+        let loop_id = self.loop_by_path(&loop_path)?;
+
+        let mut body_path = loop_path.0.clone();
+        body_path.push(PathSegment::LoopBody);
+        let body_path = AstPath(body_path);
+        let index_use = if loop_body[range.body_start..range.increment_stmt]
+            .iter()
+            .any(|indent| stmt_ident_count(&indent.stmt, index_name) > 0)
+        {
+            CountedLoopIndexUse::Other
+        } else {
+            CountedLoopIndexUse::Unused
+        };
+
+        Some(CountedLoopFact {
+            function: self.function,
+            loop_id,
+            index,
+            bound,
+            start: CountedLoopStart::Zero,
+            step: CountedLoopStep::One,
+            index_use,
+            loop_path,
+            body_path,
+        })
+    }
+
+    fn slice_loop_candidate(
         &self,
         pair: &[IndentStmt],
         parent_path: &[PathSegment],
@@ -154,7 +231,7 @@ impl<'a> Collector<'a> {
             return None;
         };
 
-        let range = canonical_loop_range(loop_body, index_name.as_str(), self)?;
+        let range = canonical_slice_loop_range(loop_body, index_name.as_str(), self)?;
         let mut index_path = parent_path.to_vec();
         index_path.push(body_segment.clone());
         index_path.push(PathSegment::Stmt(index_stmt));
@@ -206,19 +283,38 @@ impl<'a> Collector<'a> {
             })
             .map(|loop_fact| loop_fact.id)
     }
+
+    fn unique_binding_for_bound(&self, bound: &Expr) -> Option<BindingId> {
+        let Expr::Var(name) = bound else {
+            return None;
+        };
+        let mut matches = self
+            .facts
+            .bindings
+            .iter()
+            .filter(|binding| binding.function == self.function && binding.name == name.as_str())
+            .map(|binding| binding.id);
+        let first = matches.next()?;
+        matches.next().is_none().then_some(first)
+    }
 }
 
-struct LoopRange {
+struct SliceLoopRange {
     slice: BindingId,
     body_start: usize,
     increment_stmt: usize,
 }
 
-fn canonical_loop_range(
-    body: &[IndentStmt],
+struct CountedRange<'a> {
+    bound: &'a Expr,
+    body_start: usize,
+    increment_stmt: usize,
+}
+
+fn canonical_counted_range<'a>(
+    body: &'a [IndentStmt],
     index_name: &str,
-    collector: &Collector<'_>,
-) -> Option<LoopRange> {
+) -> Option<CountedRange<'a>> {
     let first = body.first()?;
     let Stmt::If {
         cond, then_body, ..
@@ -233,10 +329,6 @@ fn canonical_loop_range(
     if index.as_str() != index_name {
         return None;
     }
-    let slice = match bound {
-        Expr::Var(len) => collector.len_aliases.get(len.as_str()).copied()?,
-        expr => collector.slice_len_source(expr)?,
-    };
     let increment_stmt = body.len().checked_sub(1)?;
     if increment_stmt == 0 || !increments_by_one(&body[increment_stmt].stmt, index) {
         return None;
@@ -247,11 +339,52 @@ fn canonical_loop_range(
     {
         return None;
     }
-    Some(LoopRange {
-        slice,
+    Some(CountedRange {
+        bound,
         body_start: 1,
         increment_stmt,
     })
+}
+
+fn canonical_slice_loop_range(
+    body: &[IndentStmt],
+    index_name: &str,
+    collector: &Collector<'_>,
+) -> Option<SliceLoopRange> {
+    let range = canonical_counted_range(body, index_name)?;
+    let slice = match range.bound {
+        Expr::Var(len) => collector.len_aliases.get(len.as_str()).copied()?,
+        expr => collector.slice_len_source(expr)?,
+    };
+    Some(SliceLoopRange {
+        slice,
+        body_start: range.body_start,
+        increment_stmt: range.increment_stmt,
+    })
+}
+
+fn is_straight_line_body(body: &[IndentStmt]) -> bool {
+    body.iter()
+        .all(|indent| is_straight_line_stmt(&indent.stmt))
+}
+
+fn is_straight_line_stmt(stmt: &Stmt) -> bool {
+    match stmt {
+        Stmt::Let { .. } | Stmt::Assign { .. } | Stmt::CompoundAssign { .. } | Stmt::Expr(_) => {
+            true
+        }
+        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => is_straight_line_body(body),
+        Stmt::Unsafe { body } | Stmt::Block(body) => is_straight_line_body(&body.stmts),
+        Stmt::LetIf { .. }
+        | Stmt::If { .. }
+        | Stmt::Loop { .. }
+        | Stmt::For { .. }
+        | Stmt::Match { .. }
+        | Stmt::Break(_)
+        | Stmt::Continue(_)
+        | Stmt::While { .. }
+        | Stmt::Return(_) => false,
+    }
 }
 
 fn analyze_loop_body(
@@ -431,6 +564,10 @@ fn analyze_expr(
         Expr::Binary { lhs, rhs, .. } => {
             analyze_expr(lhs, AccessMode::Read, slices, state)
                 && analyze_expr(rhs, AccessMode::Read, slices, state)
+        }
+        Expr::Range { start, end } => {
+            analyze_expr(start, AccessMode::Read, slices, state)
+                && analyze_expr(end, AccessMode::Read, slices, state)
         }
         Expr::Call { func, args } => {
             analyze_expr(func, AccessMode::Read, slices, state)

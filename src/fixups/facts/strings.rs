@@ -1164,6 +1164,10 @@ impl<'a> Collector<'a> {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(lhs, path));
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(rhs, path));
             }
+            Expr::Range { start, end } => {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(start, path));
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(end, path));
+            }
             Expr::Call { func, args } => {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(func, path));
                 for (index, arg) in args.iter().enumerate() {

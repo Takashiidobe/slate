@@ -752,6 +752,7 @@ fn expr_has_printf_call(expr: &Expr) -> bool {
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => expr_has_printf_call(expr),
         Expr::Binary { lhs, rhs, .. } => expr_has_printf_call(lhs) || expr_has_printf_call(rhs),
+        Expr::Range { start, end } => expr_has_printf_call(start) || expr_has_printf_call(end),
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
             expr_has_printf_call(recv) || args.iter().any(expr_has_printf_call)
         }

@@ -535,6 +535,10 @@ pub enum Expr {
         lhs: Box<Expr>,
         rhs: Box<Expr>,
     },
+    Range {
+        start: Box<Expr>,
+        end: Box<Expr>,
+    },
     Call {
         func: Box<Expr>,
         args: Vec<Expr>,
@@ -949,6 +953,11 @@ impl Expr {
                 let l = lhs.substitute_var(name, replacement);
                 let r = rhs.substitute_var(name, replacement);
                 l || r
+            }
+            Expr::Range { start, end } => {
+                let s = start.substitute_var(name, replacement);
+                let e = end.substitute_var(name, replacement);
+                s || e
             }
             Expr::Call { func, args } => {
                 let mut changed = func.substitute_var(name, replacement);
