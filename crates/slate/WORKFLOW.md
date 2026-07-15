@@ -15,14 +15,6 @@ bd list --status=in_progress
 bd list --status=open
 ```
 
-**Prefer parallel-safe tickets.** The cleanest work to pick up cold is a ticket
-that only adds isolated fixtures — new probes under `tests/stdlib/<header>/` (the
-`slate-nk3.*` epic) or new C fixtures under `tests/fixtures/`. These don't touch
-the lowerer, so they merge without conflicts even while other agents are active.
-See [docs/adding-features.md](docs/adding-features.md) for the stdlib-probe
-recipe. Reach for lowerer-heavy tickets only when no isolated-fixture work is
-ready.
-
 `bd ready` is not enough. A ready ticket can still overlap active work through
 linked beads or shared implementation areas.
 
@@ -35,14 +27,6 @@ bd children <id>
 ```
 
 If the ticket has a parent, inspect the parent and sibling children too.
-
-Do not start when any linked item is already `in_progress`. Linked items include
-the ticket, parent epics, child tickets, prerequisites, dependents, siblings, and
-tickets that clearly touch the same core files or feature surface.
-
-To judge file-level overlap fast, read each `in_progress` ticket's notes for its
-recorded touched files (see [Claim Before Branching](#claim-before-branching));
-fall back to the description only when notes are absent.
 
 Do not implement against an epic directly; pick or create a concrete child
 ticket.
@@ -122,6 +106,26 @@ cargo test --test stdlib_coverage
 
 Run `cargo fmt` before handoff. Leave no generated, temporary, or unrelated
 files in the branch. Do not rewrite unrelated user changes.
+
+## Stop For Human Review
+
+Do not merge the branch when a human wants review before integration. Stop after
+committing the worktree changes and show the command to open the worktree:
+
+```bash
+cd /home/takashi/Projects/slate-<id>
+```
+
+Also show the coordination-checkout review commands:
+
+```bash
+cd /home/takashi/Projects/slate
+git diff main..work/<id>
+git log --oneline main..work/<id>
+```
+
+Leave the worktree and branch intact so the human can open the directory, inspect
+the diff, and decide when to merge.
 
 ## Integrate From Coordination Checkout
 
