@@ -457,6 +457,31 @@ fn nul_terminated_char_pointer_literals_use_c_string_syntax() {
 }
 
 #[test]
+fn literal_fopen_fputs_fclose_owner_uses_open_options() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-stdio-file-write");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("stdio_file_write.c");
+    let generated = tmp.join("stdio_file_write.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate stdio file write fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated stdio file write rust");
+
+    let remove_index = rust
+        .find("unsafe { remove((c\"slate_stdio_file_write.tmp\"")
+        .expect("generated rust should keep remove call");
+    let open_index = rust
+        .find("let mut f = std::fs::OpenOptions::new().write(true).create(true).truncate(true).open(\"slate_stdio_file_write.tmp\").unwrap_or_else")
+        .expect("generated rust should open literal write-only owner with OpenOptions");
+    assert!(
+        remove_index < open_index,
+        "remove call must remain before the rewritten open"
+    );
+    assert!(rust.contains("std::io::Write::write_all(&mut f, b\"owned\\n\").unwrap();"));
+    assert!(!rust.contains("unsafe { fputs((c\"owned\\n\""));
+    assert!(rust.contains("unsafe { fgets("));
+}
+
+#[test]
 fn control_flow_conditions_drop_redundant_parens() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-redundant-parens");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

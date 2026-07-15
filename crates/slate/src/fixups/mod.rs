@@ -211,6 +211,8 @@ pub fn apply(program: Program) -> Program {
     rewrite::string_libc::prune_unused_externs(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::c_strings::fixup(&mut program, &facts);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::stdio::fixup(&mut program, &facts);
     rewrite::memchr_prelude::fixup_calls(&mut program, &facts);
     loop {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
