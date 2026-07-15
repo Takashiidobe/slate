@@ -3,7 +3,7 @@ use crate::fixups::facts::{
     FunctionId, PathSegment,
 };
 use crate::fixups::support::walk;
-use crate::rust_ast::{Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt};
+use crate::rust_ast::{Expr, IndentStmt, Item, Program, RustValue, Stmt};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
     let mut changed = false;
@@ -40,7 +40,7 @@ fn rewrite_body(
         let Some(fact) = loop_fact(function, facts, &AstPath(loop_path)) else {
             continue;
         };
-        let Some(replacement) = replacement_for_pair(&body[index..index + 2], fact, facts) else {
+        let Some(replacement) = replacement_for_pair(&body[index..index + 2], fact) else {
             continue;
         };
         body.splice(index..index + 2, [replacement]);
@@ -62,11 +62,7 @@ fn loop_fact<'a>(
     })
 }
 
-fn replacement_for_pair(
-    pair: &[IndentStmt],
-    fact: &CountedLoopFact,
-    facts: &FixupFacts,
-) -> Option<IndentStmt> {
+fn replacement_for_pair(pair: &[IndentStmt], fact: &CountedLoopFact) -> Option<IndentStmt> {
     let Stmt::Let {
         name: index_name, ..
     } = &pair[0].stmt
@@ -87,7 +83,7 @@ fn replacement_for_pair(
         CountedLoopIndexUse::Other => index_name.clone(),
         CountedLoopIndexUse::SliceIndexOnly => return None,
     };
-    let bound_name = facts.binding_name(fact.bound)?;
+    let bound = fact.bound.clone();
     let body = flatten_single_scope(loop_body[1..loop_body.len() - 1].to_vec());
     Some(IndentStmt {
         depth: pair[1].depth,
@@ -95,7 +91,7 @@ fn replacement_for_pair(
             pat,
             iter: Expr::Range {
                 start: Box::new(Expr::Value(RustValue::I64(0))),
-                end: Box::new(Expr::Var(Ident::new(bound_name))),
+                end: Box::new(bound),
             },
             body,
         },
@@ -126,6 +122,10 @@ mod tests {
     }
 
     fn counted_body(body_stmt: Stmt) -> Stmt {
+        counted_body_with_bound(var("n"), body_stmt)
+    }
+
+    fn counted_body_with_bound(bound: Expr, body_stmt: Stmt) -> Stmt {
         Stmt::Scope {
             body: vec![
                 stmt(let_mut("i", "i32", int(0))),
@@ -135,7 +135,7 @@ mod tests {
                         stmt(Stmt::If {
                             cond: Expr::Unary {
                                 op: UnaryOp::Not,
-                                expr: Box::new(bin(BinOp::Lt, var("i"), var("n"))),
+                                expr: Box::new(bin(BinOp::Lt, var("i"), bound)),
                             },
                             then_body: vec![stmt(Stmt::Break(None))],
                             else_body: Vec::new(),
@@ -207,5 +207,64 @@ mod tests {
 
         assert!(out.contains("for i in 0..n"));
         assert!(out.contains("total += i;"));
+    }
+
+    #[test]
+    fn rewrites_literal_bound_counted_loop_to_range_for() {
+        let mut program = Program {
+            items: vec![Item::Fn(func(
+                Vec::new(),
+                Some("i32"),
+                vec![
+                    let_mut("total", "i32", int(0)),
+                    counted_body_with_bound(
+                        int(5),
+                        Stmt::CompoundAssign {
+                            target: var("total"),
+                            op: BinOp::Add,
+                            value: var("i"),
+                        },
+                    ),
+                    Stmt::Return(Some(var("total"))),
+                ],
+            ))],
+        };
+        let facts = facts::analyze(program.clone()).facts;
+
+        assert!(fixup(&mut program, &facts));
+        let out = program.emit();
+
+        assert!(out.contains("for i in 0..5"));
+        assert!(out.contains("total += i;"));
+        assert!(!out.contains("loop {"));
+    }
+
+    #[test]
+    fn rewrites_reducible_integer_bound_counted_loop_to_range_for() {
+        let mut program = Program {
+            items: vec![Item::Fn(func(
+                Vec::new(),
+                Some("i32"),
+                vec![
+                    let_mut("total", "i32", int(0)),
+                    counted_body_with_bound(
+                        bin(BinOp::Add, int(2), int(3)),
+                        Stmt::CompoundAssign {
+                            target: var("total"),
+                            op: BinOp::Add,
+                            value: var("i"),
+                        },
+                    ),
+                    Stmt::Return(Some(var("total"))),
+                ],
+            ))],
+        };
+        let facts = facts::analyze(program.clone()).facts;
+
+        assert!(fixup(&mut program, &facts));
+        let out = program.emit();
+
+        assert!(out.contains("for i in 0..(2 + 3)"));
+        assert!(!out.contains("loop {"));
     }
 }

@@ -525,7 +525,7 @@ fn use_allowed(
     if facts.printf_calls.iter().any(|printf| {
         printf.function == function
             && path_starts_with(&use_path.0, &printf.path.0)
-            && printf_allows_lift(function, printf, facts, binding)
+            && printf_allows_lift(function, printf, facts, binding, liftable)
     }) {
         return true;
     }
@@ -590,7 +590,11 @@ fn printf_allows_lift(
     printf: &crate::fixups::facts::PrintfCallFact,
     facts: &FixupFacts,
     binding: BindingId,
+    liftable: &BTreeSet<BindingId>,
 ) -> bool {
+    if !all_printf_string_args_allow_lift(function, facts, binding, liftable) {
+        return false;
+    }
     let Some(conversions) = printf.format.as_deref().and_then(simple_printf_conversions) else {
         return false;
     };
@@ -605,6 +609,48 @@ fn printf_allows_lift(
                         view.source != binding || (*conversion == b's' && arg.pointer)
                     })
             })
+}
+
+fn all_printf_string_args_allow_lift(
+    function: FunctionId,
+    facts: &FixupFacts,
+    binding: BindingId,
+    liftable: &BTreeSet<BindingId>,
+) -> bool {
+    facts
+        .printf_calls
+        .iter()
+        .filter(|printf| printf.function == function)
+        .all(|printf| {
+            let Some(conversions) = printf.format.as_deref().and_then(simple_printf_conversions)
+            else {
+                return false;
+            };
+            conversions.len() == printf.arg_facts.len()
+                && conversions
+                    .iter()
+                    .zip(&printf.arg_facts)
+                    .all(|(conversion, arg)| match *conversion {
+                        b's' => {
+                            printf_string_arg_allows_lift(function, facts, binding, liftable, arg)
+                        }
+                        _ => true,
+                    })
+        })
+}
+
+fn printf_string_arg_allows_lift(
+    function: FunctionId,
+    facts: &FixupFacts,
+    binding: BindingId,
+    liftable: &BTreeSet<BindingId>,
+    arg: &crate::fixups::facts::PrintfArgFact,
+) -> bool {
+    arg.const_string.is_some()
+        || arg.rust_string
+        || facts
+            .string_pointer_view(function, &arg.path)
+            .is_some_and(|view| view.source == binding || liftable.contains(&view.source))
 }
 
 fn copy_rewrite_for_expr(
@@ -1686,7 +1732,11 @@ fn byte_literal(expr: &Expr) -> Option<u8> {
         Expr::Cast { expr, .. } => return byte_literal(expr),
         _ => return None,
     };
-    u8::try_from(n).ok()
+    if (-128..=255).contains(&n) {
+        Some(n as u8)
+    } else {
+        None
+    }
 }
 
 fn var_name(expr: &Expr) -> Option<&str> {
@@ -1876,6 +1926,17 @@ mod tests {
             zero.candidates
                 .contains(&StringRecoveryCandidate::OwnedString)
         );
+    }
+
+    #[test]
+    fn records_signed_i8_string_literal_bytes() {
+        let facts = analyzed(vec![let_mut("utf8", "[i8; 4]", bytes(&[104, -61, -87, 0]))]);
+        let utf8 = buffer_for(
+            &facts,
+            binding_for(&facts, "utf8", AstPath(vec![PathSegment::Stmt(0)])),
+        );
+
+        assert_eq!(utf8.bytes, Some("hé".as_bytes().to_vec()));
     }
 
     #[test]

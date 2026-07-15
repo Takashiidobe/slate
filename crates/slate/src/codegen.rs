@@ -741,9 +741,9 @@ impl<W: Write> Codegen<W> {
                 self.expr_prec(rhs, rmin)
             }
             Expr::Range { start, end } => {
-                self.expr_prec(start, PREC_RANGE + 1)?;
+                self.range_endpoint(start)?;
                 self.out.write_str("..")?;
-                self.expr_prec(end, PREC_RANGE + 1)
+                self.range_endpoint(end)
             }
             Expr::Call { func, args } => {
                 self.expr_prec(func, PREC_CALL)?;
@@ -1018,6 +1018,14 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char(')')
             }
             Expr::Todo(note) => write!(self.out, "todo!({note:?})"),
+        }
+    }
+
+    fn range_endpoint(&mut self, expr: &Expr) -> fmt::Result {
+        if matches!(expr, Expr::Binary { .. }) {
+            self.parenthesized(expr)
+        } else {
+            self.expr_prec(expr, PREC_RANGE + 1)
         }
     }
 
