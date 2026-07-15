@@ -182,6 +182,8 @@ pub fn apply(program: Program) -> Program {
         }
     }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::va_list::fixup(&mut program, &facts);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
             && let Some(function) = facts.function_by_item_index(item_index)
