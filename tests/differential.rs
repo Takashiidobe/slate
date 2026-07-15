@@ -840,7 +840,11 @@ fn numeric_parse_calls_use_runtime_parse_support() {
     assert!(rust.contains("#![allow("));
     assert!(rust.contains("mod __slate_runtime"));
     assert!(rust.contains(".parse::<i32>().unwrap_or(0)"));
-    assert!(rust.contains("__slate_runtime::parse_i32(whole)"));
+    assert!(rust.contains("whole_long.parse::<i64>().unwrap_or(0)"));
+    assert!(rust.contains("whole_unsigned.parse::<u64>().unwrap_or(0)"));
+    assert!(!rust.contains("__slate_runtime::parse_i32(whole)"));
+    assert!(!rust.contains("__slate_runtime::parse_i64(whole_long)"));
+    assert!(!rust.contains("__slate_runtime::parse_u64(whole_unsigned)"));
     assert!(rust.contains("__slate_runtime::parse_i64(leading)"));
     assert!(rust.contains("__slate_runtime::parse_i64(large)"));
     assert!(rust.contains("__slate_runtime::parse_u64(empty)"));
