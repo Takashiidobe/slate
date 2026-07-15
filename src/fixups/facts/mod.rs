@@ -21,6 +21,7 @@ pub(super) mod slice_index;
 pub(super) mod string_params;
 pub(super) mod strings;
 pub(super) mod temp_chains;
+pub(super) mod va_list;
 pub(super) mod values;
 pub(super) mod walk;
 
@@ -67,6 +68,7 @@ pub(super) struct FixupFacts {
     pub(super) loop_shape_rejections: Vec<LoopShapeRejectionFact>,
     pub(super) retval_collapses: Vec<RetvalCollapseFact>,
     pub(super) temp_chains: Vec<TempChainFact>,
+    pub(super) va_list_aliases: Vec<VaListAliasFact>,
     pub(super) relations: Vec<FactRelation>,
 }
 
@@ -158,6 +160,15 @@ pub(super) struct TempChainFact {
     pub(super) producer_path: AstPath,
     pub(super) consumer_path: AstPath,
     pub(super) dependencies: Vec<BindingId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct VaListAliasFact {
+    pub(super) function: FunctionId,
+    pub(super) param: BindingId,
+    pub(super) local: BindingId,
+    pub(super) local_decl_path: AstPath,
+    pub(super) clone_assign_path: AstPath,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1319,6 +1330,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     slice_index::collect_facts(&program, &mut collector.facts);
     counted_loop::collect_facts(&program, &mut collector.facts);
     loop_shapes::collect_facts(&program, &mut collector.facts);
+    va_list::collect_facts(&program, &mut collector.facts);
     AnalyzedProgram {
         program,
         facts: collector.facts,
