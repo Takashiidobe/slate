@@ -432,6 +432,9 @@ fn file_mode(expr: &Expr) -> Option<FileOpenMode> {
         Expr::ByteStr(bytes) => mode_from_bytes(bytes.strip_suffix(&[0]).unwrap_or(bytes)),
         Expr::Str(s) => mode_from_bytes(s.as_bytes()),
         Expr::Cast { expr, .. } => file_mode(expr),
+        Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
+            file_mode(recv)
+        }
         _ => None,
     }
 }
