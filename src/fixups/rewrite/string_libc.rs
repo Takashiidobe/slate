@@ -1,6 +1,6 @@
 use crate::fixups::facts::{
-    AstPath, CallCallee, ConstValue, FixupFacts, FunctionId, PathSegment, StringBufferFact,
-    StringBufferKind, StringLibcFunction, ValueSubject,
+    AsciiNumericSign, AstPath, CallCallee, ConstValue, FixupFacts, FunctionId, PathSegment,
+    StringBufferFact, StringBufferKind, StringLibcFunction, ValueSubject,
 };
 use crate::fixups::runtime;
 use crate::fixups::support::walk;
@@ -595,35 +595,109 @@ fn supported_numeric_parse_call(
     if source.kind != StringKind::Str {
         return None;
     }
-    let helper = match (name.as_str(), usage.callee) {
-        ("atoi", StringLibcFunction::Atoi) if args.len() == 1 => "parse_i32",
-        ("atol", StringLibcFunction::Atol) if args.len() == 1 => "parse_i64",
+    let (helper, direct) = match (name.as_str(), usage.callee) {
+        ("atoi", StringLibcFunction::Atoi) if args.len() == 1 => ("parse_i32", ParseTarget::I32),
+        ("atol", StringLibcFunction::Atol) if args.len() == 1 => ("parse_i64", ParseTarget::I64),
         ("strtol", StringLibcFunction::StrTol)
             if args.len() == 3
                 && is_null_at(&args[1], function, facts, &call_arg_path(expr, path, 1))
                 && is_ten_at(&args[2], function, facts, &call_arg_path(expr, path, 2)) =>
         {
-            "parse_i64"
+            ("parse_i64", ParseTarget::I64)
         }
         ("strtoul", StringLibcFunction::StrToul)
             if args.len() == 3
                 && is_null_at(&args[1], function, facts, &call_arg_path(expr, path, 1))
                 && is_ten_at(&args[2], function, facts, &call_arg_path(expr, path, 2)) =>
         {
-            "parse_u64"
+            ("parse_u64", ParseTarget::U64)
         }
         ("strtod", StringLibcFunction::StrTod)
             if args.len() == 2
                 && is_null_at(&args[1], function, facts, &call_arg_path(expr, path, 1)) =>
         {
-            "parse_f64"
+            ("parse_f64", ParseTarget::F64)
         }
         _ => return None,
     };
+    if let Some(target) = direct.integer()
+        && let Some(replacement) =
+            direct_numeric_parse(facts, usage.pointer_args[0], source.name.as_str(), target)
+    {
+        return Some(replacement);
+    }
     Some(Expr::Call {
         func: Box::new(runtime::numeric_parse_path(helper)),
         args: vec![Expr::Var(source.name.into())],
     })
+}
+
+#[derive(Clone, Copy)]
+enum ParseTarget {
+    I32,
+    I64,
+    U64,
+    F64,
+}
+
+impl ParseTarget {
+    fn integer(self) -> Option<IntegerParseTarget> {
+        match self {
+            Self::I32 => Some(IntegerParseTarget::I32),
+            Self::I64 => Some(IntegerParseTarget::I64),
+            Self::U64 => Some(IntegerParseTarget::U64),
+            Self::F64 => None,
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+enum IntegerParseTarget {
+    I32,
+    I64,
+    U64,
+}
+
+fn direct_numeric_parse(
+    facts: &FixupFacts,
+    binding: crate::fixups::facts::BindingId,
+    source: &str,
+    target: IntegerParseTarget,
+) -> Option<Expr> {
+    let numeric = facts.ascii_numeric_string(binding)?;
+    let buffer = facts.string_buffer(binding)?;
+    let bytes = buffer.bytes.as_deref()?;
+    let text = std::str::from_utf8(bytes).ok()?;
+    if !target_accepts(text, numeric.sign, target) {
+        return None;
+    }
+    Some(Expr::MethodCall {
+        recv: Box::new(Expr::MethodCallGeneric {
+            recv: Box::new(Expr::Var(source.into())),
+            method: "parse".into(),
+            type_args: vec![parse_target_type(target)],
+            args: Vec::new(),
+        }),
+        method: "unwrap_or".into(),
+        args: vec![Expr::Value(RustValue::I64(0))],
+    })
+}
+
+fn target_accepts(text: &str, sign: AsciiNumericSign, target: IntegerParseTarget) -> bool {
+    match target {
+        IntegerParseTarget::I32 => text.parse::<i32>().is_ok(),
+        IntegerParseTarget::I64 => text.parse::<i64>().is_ok(),
+        IntegerParseTarget::U64 if sign == AsciiNumericSign::Minus => false,
+        IntegerParseTarget::U64 => text.parse::<u64>().is_ok(),
+    }
+}
+
+fn parse_target_type(target: IntegerParseTarget) -> Type {
+    match target {
+        IntegerParseTarget::I32 => Type::Prim(Prim::I32),
+        IntegerParseTarget::I64 => Type::Prim(Prim::I64),
+        IntegerParseTarget::U64 => Type::Prim(Prim::U64),
+    }
 }
 
 fn supported_compare_call(
