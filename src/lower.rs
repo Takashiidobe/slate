@@ -1347,6 +1347,8 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
         },
         CType::Array(inner, None) => ptr(inner),
         CType::Record(name) if name == "_IO_FILE" => Type::CLib(CLibType::File),
+        CType::Record(name) if name == "pthread" => Type::CLib(CLibType::Pthread),
+        CType::Record(name) if name == "pthread_attr_t" => Type::CLib(CLibType::PthreadAttr),
         CType::Record(name) => Type::Custom(sanitize_ident(name).into_string()),
         CType::Enum(name) => Type::Custom(sanitize_ident(name).into_string()),
     }
@@ -4959,10 +4961,11 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
             len,
         }
     } else if let Some(name) = cir_record_name(ty) {
-        if name == "_IO_FILE" {
-            Type::CLib(CLibType::File)
-        } else {
-            Type::Custom(sanitize_ident(name).into_string())
+        match name {
+            "_IO_FILE" => Type::CLib(CLibType::File),
+            "pthread" => Type::CLib(CLibType::Pthread),
+            "pthread_attr_t" => Type::CLib(CLibType::PthreadAttr),
+            _ => Type::Custom(sanitize_ident(name).into_string()),
         }
     } else {
         Type::Prim(Prim::I32)

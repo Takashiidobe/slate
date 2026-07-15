@@ -699,6 +699,8 @@ pub enum Type {
 pub enum CLibType {
     Void,
     File,
+    Pthread,
+    PthreadAttr,
 }
 
 impl CLibType {
@@ -706,6 +708,8 @@ impl CLibType {
         match self {
             CLibType::Void => "core::ffi::c_void",
             CLibType::File => "libc::FILE",
+            CLibType::Pthread => "libc::pthread_t",
+            CLibType::PthreadAttr => "libc::pthread_attr_t",
         }
     }
 }
