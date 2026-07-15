@@ -808,6 +808,11 @@ impl<W: Write> Codegen<W> {
                 }
                 self.out.write_str(" }")
             }
+            Expr::TupleStructLit { name, fields } => {
+                write!(self.out, "{name}(")?;
+                self.args(fields)?;
+                self.out.write_char(')')
+            }
             Expr::ArrayLit(elems) => {
                 self.out.write_char('[')?;
                 self.args(elems)?;

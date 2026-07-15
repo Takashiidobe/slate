@@ -276,10 +276,28 @@ impl<'a> Collector<'a> {
                 BTreeSet::new()
             }
             Expr::StructLit { fields, .. } => {
+                let mut all_zero = !fields.is_empty();
                 for (index, (_, value)) in fields.iter().enumerate() {
-                    self.child_expr(value, path, index);
+                    let values = self.child_expr(value, path, index);
+                    all_zero &= values.contains(&ConstValue::Zero);
                 }
-                BTreeSet::new()
+                if all_zero {
+                    BTreeSet::from([ConstValue::Zero])
+                } else {
+                    BTreeSet::new()
+                }
+            }
+            Expr::TupleStructLit { fields, .. } => {
+                let mut all_zero = !fields.is_empty();
+                for (index, value) in fields.iter().enumerate() {
+                    let values = self.child_expr(value, path, index);
+                    all_zero &= values.contains(&ConstValue::Zero);
+                }
+                if all_zero {
+                    BTreeSet::from([ConstValue::Zero])
+                } else {
+                    BTreeSet::new()
+                }
             }
             Expr::Macro { args, .. } => {
                 for (index, arg) in args.iter().enumerate() {

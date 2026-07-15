@@ -2,6 +2,7 @@ use std::collections::BTreeSet;
 
 use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
 
+pub(super) mod anonymous_structs;
 pub(super) mod array_element_pointer_origin;
 pub(super) mod borrow_alias;
 pub(super) mod c_strings;
@@ -61,6 +62,7 @@ pub(super) struct FixupFacts {
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
     pub(super) array_element_pointer_origins: Vec<ArrayElementPointerOriginFact>,
+    pub(super) anonymous_structs: Vec<AnonymousStructFact>,
     pub(super) slice_pointer_views: Vec<SlicePointerViewFact>,
     pub(super) slice_index_ranges: Vec<SliceIndexRangeFact>,
     pub(super) slice_pointer_indexes: Vec<SlicePointerIndexFact>,
@@ -106,6 +108,19 @@ pub(super) struct BindingFact {
 pub(super) struct BindingTypeFact {
     pub(super) binding: BindingId,
     pub(super) rendered: String,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct AnonymousStructFact {
+    pub(super) original_name: String,
+    pub(super) generated_name: String,
+    pub(super) fields: Vec<AnonymousStructFieldFact>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct AnonymousStructFieldFact {
+    pub(super) name: String,
+    pub(super) ty: Type,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1321,6 +1336,7 @@ impl FixupFacts {
 pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     let mut collector = Collector::default();
     collector.program(&program);
+    anonymous_structs::collect_facts(&program, &mut collector.facts);
     borrow_alias::collect_facts(&program, &mut collector.facts);
     def_use::collect_facts(&program, &mut collector.facts);
     effects::collect_facts(&program, &mut collector.facts);

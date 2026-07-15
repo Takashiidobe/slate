@@ -762,6 +762,7 @@ fn expr_has_printf_call(expr: &Expr) -> bool {
         Expr::StructLit { fields, .. } => {
             fields.iter().any(|(_, value)| expr_has_printf_call(value))
         }
+        Expr::TupleStructLit { fields, .. } => fields.iter().any(expr_has_printf_call),
         Expr::ArrayLit(elems) => elems.iter().any(expr_has_printf_call),
         Expr::ArrayRepeat { elem, .. } => expr_has_printf_call(elem),
         Expr::VecLit(elems) => elems.iter().any(expr_has_printf_call),

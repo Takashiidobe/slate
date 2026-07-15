@@ -275,6 +275,9 @@ fn find_arg_use_expr(expr: &Expr, name: &str) -> Option<ArgUse> {
         Expr::StructLit { fields, .. } => fields
             .iter()
             .find_map(|(_, value)| find_arg_use_expr(value, name)),
+        Expr::TupleStructLit { fields, .. } => fields
+            .iter()
+            .find_map(|value| find_arg_use_expr(value, name)),
         Expr::ArrayLit(elems) => elems.iter().find_map(|elem| find_arg_use_expr(elem, name)),
         Expr::ArrayRepeat { elem, .. } => find_arg_use_expr(elem, name),
         Expr::VecLit(elems) => elems.iter().find_map(|elem| find_arg_use_expr(elem, name)),
