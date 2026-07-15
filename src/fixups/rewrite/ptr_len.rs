@@ -230,15 +230,15 @@ mod tests {
                 Item::Fn(func(
                     vec![param("items", "*mut i32"), param("len", "i32")],
                     Some("i32"),
-                    vec![
-                        Stmt::Let {
-                            name: "tmp".into(),
-                            mutable: false,
-                            ty: Some(Type::parse("*mut i32")),
-                            init: Some(var("items")),
+                    vec![Stmt::Return(Some(Expr::Unsafe(Box::new(
+                        crate::rust_ast::Block {
+                            stmts: Vec::new(),
+                            tail: Some(Box::new(Expr::Unary {
+                                op: crate::rust_ast::UnaryOp::Deref,
+                                expr: Box::new(var("items")),
+                            })),
                         },
-                        Stmt::Return(Some(var("len"))),
-                    ],
+                    ))))],
                 )),
                 Item::Fn(main),
             ],
@@ -260,22 +260,74 @@ mod tests {
         assert_eq!(ptr_binding.name, "items");
         assert_eq!(len_binding.name, "len");
         assert_eq!(facts.ptr_len_slices[0].backing_array_len, 4);
-        assert!(facts.ptr_len_slices[0].mutable);
+        assert!(!facts.ptr_len_slices[0].mutable);
         assert_eq!(
             program.emit(),
             "\
-fn f(items: &mut [i32]) -> i32 {
+fn f(items: &[i32]) -> i32 {
     let len: i32 = items.len() as i32;
-    let tmp: *mut i32 = items.as_mut_ptr();
-    return len;
+    return unsafe { *items.as_ptr() };
 }
 
 fn main() {
     let mut values: [i32; 4] = [0; 4];
-    f(values.as_mut_slice());
+    f(values.as_slice());
 }
 "
         );
+    }
+
+    #[test]
+    fn keeps_slice_param_mutable_when_pointer_is_written() {
+        let mut main = func(
+            Vec::new(),
+            None,
+            vec![
+                let_mut(
+                    "values",
+                    "[i32; 4]",
+                    Expr::ArrayRepeat {
+                        elem: Box::new(int(0)),
+                        len: 4,
+                    },
+                ),
+                Stmt::Expr(call(
+                    "f",
+                    vec![
+                        Expr::MethodCall {
+                            recv: Box::new(var("values")),
+                            method: "as_mut_ptr".into(),
+                            args: Vec::new(),
+                        },
+                        int(4),
+                    ],
+                )),
+            ],
+        );
+        main.name = "main".into();
+        let mut program = Program {
+            items: vec![
+                Item::Fn(func(
+                    vec![param("items", "*mut i32"), param("len", "i32")],
+                    None,
+                    vec![Stmt::Assign {
+                        target: Expr::Unary {
+                            op: crate::rust_ast::UnaryOp::Deref,
+                            expr: Box::new(var("items")),
+                        },
+                        value: int(1),
+                    }],
+                )),
+                Item::Fn(main),
+            ],
+        };
+
+        let facts = analyze_collect_fixup(&mut program);
+
+        assert_eq!(facts.ptr_len_slices.len(), 1);
+        assert!(facts.ptr_len_slices[0].mutable);
+        assert!(program.emit().contains("fn f(items: &mut [i32])"));
+        assert!(program.emit().contains("f(values.as_mut_slice());"));
     }
 
     #[test]
