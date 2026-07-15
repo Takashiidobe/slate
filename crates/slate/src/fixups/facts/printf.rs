@@ -229,6 +229,14 @@ fn visit_expr(
                 visit_expr(function, rhs, env, path, calls)
             });
         }
+        Expr::Range { start, end } => {
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                visit_expr(function, start, env, path, calls)
+            });
+            walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                visit_expr(function, end, env, path, calls)
+            });
+        }
         Expr::Call { func, args } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
                 visit_expr(function, func, env, path, calls)

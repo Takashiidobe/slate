@@ -24,6 +24,7 @@ const INDENT: &str = "    ";
 // lowerer emits are modeled; anything atomic or brace/paren-delimited renders at
 // PREC_ATOM so it never needs wrapping.
 const PREC_CAST: u8 = 4;
+const PREC_RANGE: u8 = 2;
 const PREC_CAST_OPERAND: u8 = 12;
 const PREC_PREFIX: u8 = 13;
 const PREC_CALL: u8 = 14;
@@ -31,6 +32,7 @@ const PREC_ATOM: u8 = 15;
 
 fn expr_prec(expr: &Expr) -> u8 {
     match expr {
+        Expr::Range { .. } => PREC_RANGE,
         Expr::Binary { op, .. } => op.precedence(),
         Expr::Cast { .. } => PREC_CAST,
         Expr::Unary { .. } | Expr::Ref { .. } => PREC_PREFIX,
@@ -737,6 +739,11 @@ impl<W: Write> Codegen<W> {
                 self.expr_prec(lhs, lmin)?;
                 write!(self.out, " {} ", op.spelling())?;
                 self.expr_prec(rhs, rmin)
+            }
+            Expr::Range { start, end } => {
+                self.expr_prec(start, PREC_RANGE + 1)?;
+                self.out.write_str("..")?;
+                self.expr_prec(end, PREC_RANGE + 1)
             }
             Expr::Call { func, args } => {
                 self.expr_prec(func, PREC_CALL)?;

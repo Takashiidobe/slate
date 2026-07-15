@@ -91,6 +91,20 @@ fn pthread_opaque_types_use_libc_paths() {
 }
 
 #[test]
+fn counted_varargs_loop_uses_range_for() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-varargs-loop");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("varargs.c");
+    let generated = tmp.join("varargs.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate varargs fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated varargs rust");
+    assert!(rust.contains("for _ in 0..n {"));
+    assert!(rust.contains("total += _v"));
+    assert!(!rust.contains("if !(i < n)"));
+}
+
+#[test]
 fn volatile_uses_rust_volatile_intrinsics() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-volatile");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

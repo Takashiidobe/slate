@@ -93,6 +93,10 @@ pub(in crate::fixups) fn exprs(expr: &Expr, f: &mut impl FnMut(&Expr)) {
             exprs(lhs, f);
             exprs(rhs, f);
         }
+        Expr::Range { start, end } => {
+            exprs(start, f);
+            exprs(end, f);
+        }
         Expr::Call { func, args } => {
             exprs(func, f);
             for arg in args {
@@ -355,6 +359,14 @@ pub(in crate::fixups) fn exprs_with_path(
                 exprs_with_path(rhs, path, f);
             });
         }
+        Expr::Range { start, end } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(start, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_with_path(end, path, f);
+            });
+        }
         Expr::Call { func, args } => {
             with_path_segment(path, PathSegment::Expr(0), |path| {
                 exprs_with_path(func, path, f);
@@ -614,6 +626,7 @@ pub(in crate::fixups) fn exprs_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> 
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => exprs_any(expr, pred),
         Expr::Binary { lhs, rhs, .. } => exprs_any(lhs, pred) || exprs_any(rhs, pred),
+        Expr::Range { start, end } => exprs_any(start, pred) || exprs_any(end, pred),
         Expr::Call { func, args } => {
             exprs_any(func, pred) || args.iter().any(|arg| exprs_any(arg, pred))
         }
@@ -798,6 +811,10 @@ fn exprs_all_with_hooks(
         Expr::Binary { lhs, rhs, .. } => {
             exprs_all_with_hooks(lhs, stmt_hook, expr_hook)
                 && exprs_all_with_hooks(rhs, stmt_hook, expr_hook)
+        }
+        Expr::Range { start, end } => {
+            exprs_all_with_hooks(start, stmt_hook, expr_hook)
+                && exprs_all_with_hooks(end, stmt_hook, expr_hook)
         }
         Expr::Call { func, args } => {
             exprs_all_with_hooks(func, stmt_hook, expr_hook)
@@ -991,6 +1008,10 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
         Expr::Binary { lhs, rhs, .. } => {
             exprs_mut_with(lhs, f);
             exprs_mut_with(rhs, f);
+        }
+        Expr::Range { start, end } => {
+            exprs_mut_with(start, f);
+            exprs_mut_with(end, f);
         }
         Expr::Call { func, args } => {
             exprs_mut_with(func, f);

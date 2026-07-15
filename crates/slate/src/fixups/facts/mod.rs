@@ -61,6 +61,7 @@ pub(super) struct FixupFacts {
     pub(super) slice_pointer_views: Vec<SlicePointerViewFact>,
     pub(super) slice_index_ranges: Vec<SliceIndexRangeFact>,
     pub(super) slice_pointer_indexes: Vec<SlicePointerIndexFact>,
+    pub(super) counted_loops: Vec<CountedLoopFact>,
     pub(super) counted_slice_loops: Vec<CountedSliceLoopFact>,
     pub(super) loop_shapes: Vec<LoopShapeFact>,
     pub(super) loop_shape_rejections: Vec<LoopShapeRejectionFact>,
@@ -723,6 +724,19 @@ pub(super) struct SlicePointerIndexFact {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct CountedLoopFact {
+    pub(super) function: FunctionId,
+    pub(super) loop_id: LoopId,
+    pub(super) index: BindingId,
+    pub(super) bound: BindingId,
+    pub(super) start: CountedLoopStart,
+    pub(super) step: CountedLoopStep,
+    pub(super) index_use: CountedLoopIndexUse,
+    pub(super) loop_path: AstPath,
+    pub(super) body_path: AstPath,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct CountedSliceLoopFact {
     pub(super) function: FunctionId,
     pub(super) loop_id: LoopId,
@@ -844,6 +858,8 @@ pub(super) enum CountedLoopStep {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum CountedLoopIndexUse {
+    Unused,
+    Other,
     SliceIndexOnly,
 }
 

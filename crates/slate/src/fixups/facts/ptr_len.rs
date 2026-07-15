@@ -313,6 +313,10 @@ fn expr_mutates_pointer_alias(
             expr_mutates_pointer_alias(lhs, aliases, AccessMode::Read)
                 || expr_mutates_pointer_alias(rhs, aliases, AccessMode::Read)
         }
+        Expr::Range { start, end } => {
+            expr_mutates_pointer_alias(start, aliases, AccessMode::Read)
+                || expr_mutates_pointer_alias(end, aliases, AccessMode::Read)
+        }
         Expr::Call { func, args } => {
             if expr_mutates_pointer_alias(func, aliases, AccessMode::Read) {
                 return true;

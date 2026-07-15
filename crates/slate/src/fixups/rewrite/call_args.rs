@@ -255,6 +255,10 @@ fn find_arg_use_expr(expr: &Expr, name: &str) -> Option<ArgUse> {
         | Expr::AtomicRef { ptr: expr, .. }
         | Expr::AtomicLoad { ptr: expr, .. } => find_arg_use_expr(expr, name),
         Expr::Binary { lhs, rhs, .. }
+        | Expr::Range {
+            start: lhs,
+            end: rhs,
+        }
         | Expr::Index {
             base: lhs,
             index: rhs,

@@ -262,6 +262,10 @@ pub(in crate::fixups) fn expr_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> b
         | Expr::AtomicRef { ptr: expr, .. }
         | Expr::AtomicLoad { ptr: expr, .. } => expr_any(expr, pred),
         Expr::Binary { lhs, rhs, .. }
+        | Expr::Range {
+            start: lhs,
+            end: rhs,
+        }
         | Expr::Index {
             base: lhs,
             index: rhs,
@@ -423,6 +427,10 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
         Expr::Binary { lhs, rhs, .. } => {
             exprs_mut_with(lhs, f);
             exprs_mut_with(rhs, f);
+        }
+        Expr::Range { start, end } => {
+            exprs_mut_with(start, f);
+            exprs_mut_with(end, f);
         }
         Expr::Call { func, args } => {
             exprs_mut_with(func, f);
@@ -688,6 +696,14 @@ pub(in crate::fixups) fn exprs_mut_with_path(
             });
             with_path_segment(path, PathSegment::Expr(1), |path| {
                 exprs_mut_with_path(rhs, path, f);
+            });
+        }
+        Expr::Range { start, end } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_mut_with_path(start, path, f);
+            });
+            with_path_segment(path, PathSegment::Expr(1), |path| {
+                exprs_mut_with_path(end, path, f);
             });
         }
         Expr::Call { func, args } => {

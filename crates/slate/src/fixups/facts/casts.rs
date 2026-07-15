@@ -260,6 +260,11 @@ impl<'a> Collector<'a> {
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(rhs, path));
                 lhs
             }
+            Expr::Range { start, end } => {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(start, path));
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(end, path));
+                None
+            }
             Expr::Ref { mutable, expr } => {
                 let inner = walk::with_path_segment(path, PathSegment::Expr(0), |path| {
                     self.expr(expr, path)
