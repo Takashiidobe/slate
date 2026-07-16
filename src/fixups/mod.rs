@@ -157,6 +157,7 @@ pub fn apply(program: Program) -> Program {
     rewrite::heap_ownership::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::heap_ownership::prune_unused_externs(&mut program, &facts);
+    dead_locals_to_fixpoint(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
@@ -309,6 +310,24 @@ fn late_loop_cleanup(program: &mut Program) {
                 {
                     changed = true;
                 }
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+}
+
+fn dead_locals_to_fixpoint(program: &mut Program) {
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        let mut changed = false;
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            if let Item::Fn(f) = item
+                && let Some(function) = facts.function_by_item_index(item_index)
+                && rewrite::dead_locals::fixup(&mut f.body, function, &facts)
+            {
+                changed = true;
             }
         }
         if !changed {
