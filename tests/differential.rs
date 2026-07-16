@@ -1413,6 +1413,7 @@ fn heap_malloc_buffer_uses_vec_drop() {
     assert!(rust.contains("p[0] = 1;"));
     assert!(rust.contains("p[1] = 2;"));
     assert!(rust.contains("p[2] = 3;"));
+    assert!(!rust.contains("let _v"));
     assert!(!rust.contains("fn malloc("));
     assert!(!rust.contains("fn free("));
     assert!(!rust.contains(".add("));
