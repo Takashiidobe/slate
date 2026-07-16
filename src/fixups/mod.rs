@@ -117,35 +117,11 @@ pub fn apply(program: Program) -> Program {
     rewrite::slice_index::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     if rewrite::slice_loop::fixup(&mut program, &facts) {
-        loop {
-            let mut changed = false;
-            for item in &mut program.items {
-                if let Item::Fn(f) = item
-                    && rewrite::singleton_scopes::fixup(&mut f.body)
-                {
-                    changed = true;
-                }
-            }
-            if !changed {
-                break;
-            }
-        }
+        late_loop_cleanup(&mut program);
     }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     if rewrite::range_loop::fixup(&mut program, &facts) {
-        loop {
-            let mut changed = false;
-            for item in &mut program.items {
-                if let Item::Fn(f) = item
-                    && rewrite::singleton_scopes::fixup(&mut f.body)
-                {
-                    changed = true;
-                }
-            }
-            if !changed {
-                break;
-            }
-        }
+        late_loop_cleanup(&mut program);
     }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::va_list::fixup(&mut program, &facts);
@@ -253,6 +229,28 @@ fn zero_init_to_fixpoint(program: &mut Program) {
                 && rewrite::zero_init::fixup(&mut f.body, function, &facts)
             {
                 changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+}
+
+fn late_loop_cleanup(program: &mut Program) {
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        let mut changed = false;
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            if let Item::Fn(f) = item {
+                if rewrite::singleton_scopes::fixup(&mut f.body) {
+                    changed = true;
+                }
+                if let Some(function) = facts.function_by_item_index(item_index)
+                    && rewrite::dead_locals::fixup(&mut f.body, function, &facts)
+                {
+                    changed = true;
+                }
             }
         }
         if !changed {
