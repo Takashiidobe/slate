@@ -8,7 +8,7 @@ use crate::rust_ast::{
     CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
     FnDef, FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint,
     MatchArm, Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue,
-    StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, Visibility,
+    SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -183,9 +183,11 @@ pub fn lower_shared_types(
             .iter()
             .filter_map(|enm| lower_enum_def(enm, Visibility::Pub).map(Item::Enum)),
     )
-    .chain(records.iter().filter_map(|record| {
-        lower_record_def(record, Visibility::Pub, Visibility::Pub, true).map(Item::Record)
-    }))
+    .chain(
+        records
+            .iter()
+            .flat_map(|record| lower_record_def(record, Visibility::Pub, Visibility::Pub, true)),
+    )
     .collect();
     Program { items }
 }
@@ -231,11 +233,12 @@ fn lower_record_def(
     vis: Visibility,
     field_vis: Visibility,
     allow_empty: bool,
-) -> Option<RecordDef> {
+) -> Vec<Item> {
     if record.fields.is_empty() && !allow_empty {
-        return None;
+        return Vec::new();
     }
-    let fields = record
+    let is_union = record.kind == RecordKind::Union;
+    let fields: Vec<RecordField> = record
         .fields
         .iter()
         .map(|field| RecordField {
@@ -244,15 +247,141 @@ fn lower_record_def(
             ty: c_type_to_type(&field.ty),
         })
         .collect();
-    Some(RecordDef {
+    let name = sanitize_ident(&record.name).into_string();
+
+    if record.packed
+        && let Some(align) = record.align
+    {
+        return lower_packed_aligned_wrapper(&name, fields, is_union, vis, field_vis, align);
+    }
+
+    vec![Item::Record(RecordDef {
         comments: comments(&record.comments),
         vis,
         field_vis,
-        is_union: record.kind == RecordKind::Union,
+        is_union,
         allow_non_camel_case: false,
-        name: sanitize_ident(&record.name).into_string(),
+        name,
         fields,
-    })
+        packed: record.packed,
+        align: record.align,
+    })]
+}
+
+/// The synthetic name of the byte-packed inner struct behind a combined
+/// `packed, aligned(N)` wrapper (see [`lower_packed_aligned_wrapper`]). Shared
+/// by definition and struct-literal construction so both agree on the name.
+fn packed_aligned_inner_name(name: &str) -> String {
+    format!("{name}__packed")
+}
+
+/// Rust rejects `#[repr(packed, align(N))]` on one type (E0587: conflicting
+/// packed and align hints), but C's combined
+/// `__attribute__((packed, aligned(N)))` needs both: byte-tight field packing
+/// *and* a forced outer alignment/size. Reproduce it as a packed inner struct
+/// wrapped in an aligned newtype, with `Deref`/`DerefMut` forwarding so callers
+/// still write `value.field` for everything but literal construction. Verified
+/// against clang to match `sizeof`/`_Alignof`/`offsetof` exactly.
+fn lower_packed_aligned_wrapper(
+    name: &str,
+    fields: Vec<RecordField>,
+    is_union: bool,
+    vis: Visibility,
+    field_vis: Visibility,
+    align: u32,
+) -> Vec<Item> {
+    let inner_name = packed_aligned_inner_name(name);
+    let inner = Item::Record(RecordDef {
+        comments: Vec::new(),
+        vis,
+        field_vis,
+        is_union,
+        allow_non_camel_case: false,
+        name: inner_name.clone(),
+        fields,
+        packed: true,
+        align: None,
+    });
+    let outer = Item::Struct(StructDef {
+        attrs: vec![
+            RustAttr::Repr(vec![Repr::C, Repr::Align(align)]),
+            RustAttr::Derive(vec![Derive::Clone, Derive::Copy]),
+        ],
+        vis,
+        generics: vec![],
+        name: name.to_string(),
+        fields: StructFields::Tuple(vec![Type::Custom(inner_name.clone())]),
+    });
+    let self_field = |mutable| Expr::Ref {
+        mutable,
+        expr: Box::new(Expr::Field {
+            base: Box::new(Expr::Var("self".into())),
+            field: "0".into(),
+        }),
+    };
+    let deref = Item::Impl(ImplBlock {
+        generics: vec![],
+        trait_: Some(StdTrait::Deref),
+        self_ty: Type::Custom(name.to_string()),
+        items: vec![
+            ImplItem::AssocType {
+                name: "Target".into(),
+                ty: Type::Custom(inner_name.clone()),
+            },
+            ImplItem::Method(Method {
+                name: "deref".into(),
+                self_kind: SelfKind::Ref,
+                params: vec![],
+                ret: Some(Type::Ref {
+                    mutable: false,
+                    inner: Box::new(Type::Custom(inner_name.clone())),
+                }),
+                body: self_field(false),
+            }),
+        ],
+    });
+    let deref_mut = Item::Impl(ImplBlock {
+        generics: vec![],
+        trait_: Some(StdTrait::DerefMut),
+        self_ty: Type::Custom(name.to_string()),
+        items: vec![ImplItem::Method(Method {
+            name: "deref_mut".into(),
+            self_kind: SelfKind::RefMut,
+            params: vec![],
+            ret: Some(Type::Ref {
+                mutable: true,
+                inner: Box::new(Type::Custom(inner_name)),
+            }),
+            body: self_field(true),
+        })],
+    });
+    vec![inner, outer, deref, deref_mut]
+}
+
+/// Struct-literal name for a record: the synthetic packed-inner name for a
+/// combined packed+aligned record (see [`lower_packed_aligned_wrapper`]), the
+/// record's own name otherwise.
+fn record_lit_name(record: &crate::c_ast::Record) -> String {
+    let name = sanitize_ident(&record.name).into_string();
+    if record.packed && record.align.is_some() {
+        packed_aligned_inner_name(&name)
+    } else {
+        name
+    }
+}
+
+/// Wraps a record literal in the aligned newtype when `record` is a combined
+/// packed+aligned record, so construction matches [`lower_packed_aligned_wrapper`]'s
+/// two-item shape (`Name(Name__packed { .. })`); a no-op otherwise.
+fn wrap_record_lit(record: &crate::c_ast::Record, lit: Expr) -> Expr {
+    if record.packed && record.align.is_some() {
+        Expr::TupleStructLit {
+            name: sanitize_ident(&record.name).into_string(),
+            fields: vec![lit],
+        }
+    } else {
+        lit
+    }
 }
 
 fn comments(lines: &[String]) -> Vec<crate::rust_ast::Comment> {
@@ -447,16 +576,15 @@ impl<'a> Lowerer<'a> {
             if self.project.shared_records.contains(&name) {
                 continue;
             }
-            if let Some(item) = self.lower_record(record) {
-                items.push(item);
-            }
+            items.extend(self.lower_record(record));
         }
         for record in &self.anon_records {
-            if let Some(def) =
-                lower_record_def(record, Visibility::Private, Visibility::Private, false)
-            {
-                items.push(Item::Record(def));
-            }
+            items.extend(lower_record_def(
+                record,
+                Visibility::Private,
+                Visibility::Private,
+                false,
+            ));
         }
         items.extend(self.standard_record_defs());
 
@@ -872,8 +1000,8 @@ impl<'a> Lowerer<'a> {
         lower_enum_def(enm, Visibility::Private).map(Item::Enum)
     }
 
-    fn lower_record(&mut self, record: &crate::c_ast::Record) -> Option<Item> {
-        lower_record_def(record, Visibility::Private, Visibility::Private, false).map(Item::Record)
+    fn lower_record(&mut self, record: &crate::c_ast::Record) -> Vec<Item> {
+        lower_record_def(record, Visibility::Private, Visibility::Private, false)
     }
 
     fn standard_record_defs(&self) -> Vec<Item> {
@@ -1223,20 +1351,26 @@ impl<'a> Lowerer<'a> {
                                     )
                                 })
                                 .collect();
-                            return Expr::StructLit {
-                                name: sanitize_ident(&record.name).into_string(),
-                                fields,
-                            };
+                            return wrap_record_lit(
+                                record,
+                                Expr::StructLit {
+                                    name: record_lit_name(record),
+                                    fields,
+                                },
+                            );
                         }
                         RecordKind::Union => {
                             if let Some(field) = record.fields.first() {
-                                return Expr::StructLit {
-                                    name: sanitize_ident(&record.name).into_string(),
-                                    fields: vec![(
-                                        sanitize_ident(&field.name).into_string(),
-                                        self.default_value_expr(&c_type_to_type(&field.ty)),
-                                    )],
-                                };
+                                return wrap_record_lit(
+                                    record,
+                                    Expr::StructLit {
+                                        name: record_lit_name(record),
+                                        fields: vec![(
+                                            sanitize_ident(&field.name).into_string(),
+                                            self.default_value_expr(&c_type_to_type(&field.ty)),
+                                        )],
+                                    },
+                                );
                             }
                         }
                     }
@@ -1303,10 +1437,13 @@ impl<'a> Lowerer<'a> {
                             (sanitize_ident(&field.name).into_string(), value)
                         })
                         .collect();
-                    Some(Expr::StructLit {
-                        name: sanitize_ident(&record.name).into_string(),
-                        fields,
-                    })
+                    Some(wrap_record_lit(
+                        record,
+                        Expr::StructLit {
+                            name: record_lit_name(record),
+                            fields,
+                        },
+                    ))
                 }
                 RecordKind::Union => {
                     let field = record.fields.first()?;
@@ -1315,10 +1452,13 @@ impl<'a> Lowerer<'a> {
                         .first()
                         .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
                         .unwrap_or_else(|| self.default_value_expr(&field_ty));
-                    Some(Expr::StructLit {
-                        name: sanitize_ident(&record.name).into_string(),
-                        fields: vec![(sanitize_ident(&field.name).into_string(), value)],
-                    })
+                    Some(wrap_record_lit(
+                        record,
+                        Expr::StructLit {
+                            name: record_lit_name(record),
+                            fields: vec![(sanitize_ident(&field.name).into_string(), value)],
+                        },
+                    ))
                 }
             }
         } else if raw.starts_with("#cir.const_array<[") {
@@ -3419,10 +3559,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .collect();
         self.materialize_expr(
             result,
-            Expr::StructLit {
-                name: record_name,
-                fields,
-            },
+            wrap_record_lit(
+                record,
+                Expr::StructLit {
+                    name: record_lit_name(record),
+                    fields,
+                },
+            ),
             op_result_type(op),
         );
     }
@@ -5778,7 +5921,7 @@ fn long_double_field(base: &str) -> Expr {
 fn long_double_op_impl(trait_: StdTrait, params: Vec<FnParam>, arg: Expr) -> Item {
     let method = Method {
         name: trait_.method().into(),
-        takes_self: true,
+        self_kind: SelfKind::Value,
         params,
         ret: Some(long_double_ty()),
         body: Expr::Call {
@@ -5827,6 +5970,7 @@ fn long_double_prelude() -> Vec<Item> {
                 RustAttr::Repr(vec![Repr::C, Repr::Align(16)]),
                 RustAttr::Derive(vec![Derive::Clone, Derive::Copy]),
             ],
+            vis: Visibility::Private,
             generics: vec![],
             name: LONG_DOUBLE_TY.into(),
             fields: StructFields::Tuple(vec![Type::Prim(Prim::F64)]),
@@ -5877,7 +6021,7 @@ fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
     };
     let method = Method {
         name: trait_.method().into(),
-        takes_self: true,
+        self_kind: SelfKind::Value,
         params: vec![FnParam {
             name: "o".into(),
             mutable: false,
@@ -5932,6 +6076,7 @@ fn complex_prelude() -> Vec<Item> {
                 RustAttr::Repr(vec![Repr::C]),
                 RustAttr::Derive(vec![Derive::Clone, Derive::Copy]),
             ],
+            vis: Visibility::Private,
             generics: vec![GenericParam {
                 name: "T".into(),
                 bounds: vec![],
@@ -6440,6 +6585,8 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
                 RecordKind::Struct
             },
             fields,
+            packed: false,
+            align: None,
         });
     }
     records
@@ -6542,6 +6689,8 @@ fn standard_record_def(name: &str) -> RecordDef {
         allow_non_camel_case: true,
         name: name.to_string(),
         fields,
+        packed: false,
+        align: None,
     }
 }
 
@@ -6989,6 +7138,8 @@ mod tests {
                         },
                     },
                 ],
+                packed: false,
+                align: None,
             }],
             ..Unit::default()
         }

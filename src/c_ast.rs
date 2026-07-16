@@ -30,6 +30,10 @@ pub struct Record {
     pub comments: Vec<String>,
     pub kind: RecordKind,
     pub fields: Vec<Decl>,
+    /// `__attribute__((packed))` on the record itself.
+    pub packed: bool,
+    /// `__attribute__((aligned(N)))` on the record itself, evaluated by Clang.
+    pub align: Option<u32>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -377,12 +381,46 @@ fn extract_record(node: &Value, name_override: Option<String>) -> Option<Record>
             })
         })
         .collect();
+    let (packed, align) = record_layout_attrs(node);
     Some(Record {
         name,
         comments: attached_comment(node),
         kind: record_kind,
         fields,
+        packed,
+        align,
     })
+}
+
+/// Scans a `RecordDecl`'s direct attribute children for `__attribute__((packed))`
+/// and `__attribute__((aligned(N)))`, returning the record's own alignment
+/// request (not per-field attributes, which affect layout differently).
+fn record_layout_attrs(node: &Value) -> (bool, Option<u32>) {
+    let mut packed = false;
+    let mut align = None;
+    for child in children(node) {
+        match kind(child) {
+            Some("PackedAttr") => packed = true,
+            Some("AlignedAttr") => {
+                if let Some(n) = constant_expr_value(child) {
+                    align = Some(align.unwrap_or(0).max(n));
+                }
+            }
+            _ => {}
+        }
+    }
+    (packed, align)
+}
+
+/// Recovers the Clang-evaluated integer from an attribute's `ConstantExpr`
+/// child, e.g. the `16` in `__attribute__((aligned(16)))`.
+fn constant_expr_value(node: &Value) -> Option<u32> {
+    if kind(node) == Some("ConstantExpr")
+        && let Some(v) = node.get("value").and_then(Value::as_str)
+    {
+        return v.parse().ok();
+    }
+    children(node).iter().find_map(|c| constant_expr_value(c))
 }
 
 fn anonymous_record_name_from_field(node: &Value) -> Option<String> {
