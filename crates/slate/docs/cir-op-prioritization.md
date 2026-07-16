@@ -13,7 +13,6 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 
 | Priority | Notes | Ops |
 | --- | --- | --- |
-| P2 | integer bit builtins | `cir.bitreverse`, `cir.byte_swap`, `cir.clrsb`, `cir.clz`, `cir.ctz`, `cir.ffs`, `cir.parity`, `cir.popcount`, `cir.rotate` |
 | P2 | constant/object-size queries | `cir.is_constant`, `cir.objsize` |
 | P3 | inline assembly | `cir.asm` |
 | P3 | assumptions | `cir.assume` |
@@ -75,7 +74,16 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
   - [x] `cir.mul.overflow`
 - [x] scalar bitwise/logical
   - [x] `cir.and`
+  - [x] `cir.bitreverse`
+  - [x] `cir.byte_swap`
+  - [x] `cir.clrsb`
+  - [x] `cir.clz`
+  - [x] `cir.ctz`
+  - [x] `cir.ffs`
   - [x] `cir.or`
+  - [x] `cir.parity`
+  - [x] `cir.popcount`
+  - [x] `cir.rotate`
   - [x] `cir.xor`
   - [x] `cir.not`
   - [x] `cir.shift`
