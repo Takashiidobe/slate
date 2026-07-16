@@ -160,6 +160,8 @@ fn atomic_temp_allocas_forward_instead_of_shadowed_locals() {
     assert!(rust.contains("expected = v;"));
     assert!(rust.contains("expected2 = v;"));
     assert!(!rust.contains(".is_ok()"));
+    assert!(!rust.contains("enum memory_order"));
+    assert!(!rust.contains("struct atomic_flag"));
 }
 
 #[test]
