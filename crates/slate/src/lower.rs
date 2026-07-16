@@ -57,13 +57,12 @@ fn function_requires_unsafe_contract(op: &Op) -> bool {
     collect_region_ops_recursive(op, &mut ops);
     let mut local_ptrs = BTreeSet::new();
     for op in ops {
-        if op.name == "cir.alloca" {
-            local_ptrs.extend(op.results.iter().cloned());
-        } else if matches!(op.name.as_str(), "cir.get_member" | "cir.get_element")
-            && op
-                .operands
-                .first()
-                .is_some_and(|base| local_ptrs.contains(base))
+        if op.name == "cir.alloca"
+            || (matches!(op.name.as_str(), "cir.get_member" | "cir.get_element")
+                && op
+                    .operands
+                    .first()
+                    .is_some_and(|base| local_ptrs.contains(base)))
         {
             local_ptrs.extend(op.results.iter().cloned());
         } else if matches!(op.name.as_str(), "cir.load" | "cir.store")
@@ -1796,20 +1795,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .get(ptr)
             .and_then(|member| member.field_ty.as_ref())
             && let Some(result_ty) = op_result_type(op).map(|ty| self.parent.rust_type(ty))
+            && ((self.parent.type_is_enum(member_ty) && matches!(result_ty, Type::Prim(_)))
+                || (self.parent.type_is_enum_ptr(member_ty)
+                    && matches!(result_ty, Type::Ptr { .. })))
         {
-            if self.parent.type_is_enum(member_ty) && matches!(result_ty, Type::Prim(_)) {
-                value = Expr::Cast {
-                    expr: Box::new(value),
-                    ty: result_ty,
-                };
-            } else if self.parent.type_is_enum_ptr(member_ty)
-                && matches!(result_ty, Type::Ptr { .. })
-            {
-                value = Expr::Cast {
-                    expr: Box::new(value),
-                    ty: result_ty,
-                };
-            }
+            value = Expr::Cast {
+                expr: Box::new(value),
+                ty: result_ty,
+            };
         }
         self.materialize_expr(result, value, op_result_type(op));
     }

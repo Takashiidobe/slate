@@ -25,7 +25,10 @@ fn final_main_exit_is_zero(body: &[IndentStmt]) -> bool {
 fn is_zero_exit_arg(expr: &Expr) -> bool {
     match expr {
         Expr::Value(RustValue::I64(0) | RustValue::I128(0)) => true,
-        Expr::Cast { expr, ty } if matches!(ty, Type::Prim(Prim::I32)) => is_zero_exit_arg(expr),
+        Expr::Cast {
+            expr,
+            ty: Type::Prim(Prim::I32),
+        } => is_zero_exit_arg(expr),
         _ => false,
     }
 }

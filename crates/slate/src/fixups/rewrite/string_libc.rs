@@ -15,7 +15,7 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
         if let Item::Fn(f) = item
             && let Some(function) = facts.function_by_item_index(item_index)
         {
-            fixup_body(&mut f.body, function, facts, &mut Vec::new());
+            fixup_body(&mut f.body, function, facts, &Vec::new());
         }
     }
     runtime::ensure_numeric_parse(program);
@@ -44,7 +44,7 @@ fn fixup_body(
     body: &mut Vec<IndentStmt>,
     function: FunctionId,
     facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
+    path: &[PathSegment],
 ) {
     let mut temps = BTreeMap::new();
     let mut remove = Vec::new();
@@ -429,7 +429,7 @@ fn replacement_expr(
     function: FunctionId,
     facts: &FixupFacts,
     temps: &BTreeMap<String, Compare>,
-    path: &mut Vec<PathSegment>,
+    path: &[PathSegment],
 ) -> Option<Expr> {
     if let Some((compare, op)) = temp_zero_comparison(expr, temps) {
         return Some(compare_to_bool(compare, op));
@@ -1066,7 +1066,7 @@ fn is_null_at(expr: &Expr, function: FunctionId, facts: &FixupFacts, path: &[Pat
             peel_empty_unsafe(expr),
             Expr::Call { func, args }
                 if args.is_empty()
-                    && matches_null_path(&**func)
+                    && matches_null_path(func)
         )
 }
 

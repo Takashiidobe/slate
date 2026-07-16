@@ -180,7 +180,7 @@ fn file_uses_are_owned(
             if !saw_null_guard {
                 return None;
             }
-            if kind == FileUseKind::FClose {
+            if kind == FileUseKind::Close {
                 if close.is_some() {
                     return None;
                 }
@@ -339,15 +339,11 @@ fn file_use(stmt: &Stmt, aliases: &BTreeSet<String>) -> Option<FileUseKind> {
         return None;
     };
     match callee.as_str() {
-        "fread" if args.len() == 4 && arg_is_handle(&args[3], aliases) => Some(FileUseKind::FRead),
-        "fwrite" if args.len() == 4 && arg_is_handle(&args[3], aliases) => {
-            Some(FileUseKind::FWrite)
-        }
-        "fgets" if args.len() == 3 && arg_is_handle(&args[2], aliases) => Some(FileUseKind::FGets),
-        "fputs" if args.len() == 2 && arg_is_handle(&args[1], aliases) => Some(FileUseKind::FPuts),
-        "fclose" if args.len() == 1 && arg_is_handle(&args[0], aliases) => {
-            Some(FileUseKind::FClose)
-        }
+        "fread" if args.len() == 4 && arg_is_handle(&args[3], aliases) => Some(FileUseKind::Read),
+        "fwrite" if args.len() == 4 && arg_is_handle(&args[3], aliases) => Some(FileUseKind::Write),
+        "fgets" if args.len() == 3 && arg_is_handle(&args[2], aliases) => Some(FileUseKind::Gets),
+        "fputs" if args.len() == 2 && arg_is_handle(&args[1], aliases) => Some(FileUseKind::Puts),
+        "fclose" if args.len() == 1 && arg_is_handle(&args[0], aliases) => Some(FileUseKind::Close),
         _ => None,
     }
 }
@@ -641,7 +637,7 @@ mod tests {
         assert_eq!(owner.mode, Some(FileOpenMode::WriteUpdate));
         assert_eq!(
             owner.uses.iter().map(|use_| use_.kind).collect::<Vec<_>>(),
-            vec![FileUseKind::FPuts, FileUseKind::FClose]
+            vec![FileUseKind::Puts, FileUseKind::Close]
         );
         assert!(facts.file_ownership(owner.handle).is_some());
         assert_eq!(owner.path_arg, call_arg_path(1, 0));
@@ -732,11 +728,11 @@ mod tests {
                 .map(|use_| use_.kind)
                 .collect::<Vec<_>>(),
             vec![
-                FileUseKind::FRead,
-                FileUseKind::FWrite,
-                FileUseKind::FGets,
-                FileUseKind::FPuts,
-                FileUseKind::FClose,
+                FileUseKind::Read,
+                FileUseKind::Write,
+                FileUseKind::Gets,
+                FileUseKind::Puts,
+                FileUseKind::Close,
             ]
         );
     }

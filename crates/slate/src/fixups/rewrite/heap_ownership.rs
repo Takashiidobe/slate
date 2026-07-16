@@ -259,7 +259,7 @@ fn rewrite_pointer_decl(stmt: &mut Stmt, plan: &Plan) {
                 len: Box::new(usize_expr(
                     plan.count
                         .clone()
-                        .unwrap_or_else(|| Expr::Value(RustValue::Usize(0))),
+                        .unwrap_or(Expr::Value(RustValue::Usize(0))),
                 )),
             });
         }

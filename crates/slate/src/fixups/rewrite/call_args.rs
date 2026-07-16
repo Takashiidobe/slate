@@ -121,13 +121,8 @@ fn single_arg_use(
     }
     let name = binding_name(facts, binding)?;
     let arg_use = find_arg_use(&body[use_index].stmt, name)?;
-    for index in def_index + 1..use_index {
-        if !is_pure_temp_let(
-            &body[index].stmt,
-            function,
-            facts,
-            &stmt_path(body_path, index),
-        ) {
+    for (index, indent) in body.iter().enumerate().take(use_index).skip(def_index + 1) {
+        if !is_pure_temp_let(&indent.stmt, function, facts, &stmt_path(body_path, index)) {
             return None;
         }
     }

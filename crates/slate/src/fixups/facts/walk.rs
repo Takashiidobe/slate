@@ -1235,8 +1235,10 @@ mod tests {
         assert!(stmt_exprs_all_with(
             &stmt,
             &mut |stmt| match stmt {
-                Stmt::Assign { target, value } if matches!(target, Expr::Var(name) if name.as_str() == "target") =>
-                {
+                Stmt::Assign {
+                    target: Expr::Var(name),
+                    value,
+                } if name.as_str() == "target" => {
                     Some(exprs_all_with(value, &mut |expr| match expr {
                         Expr::Var(name) if name.as_str() == "bad" => Some(true),
                         _ => None,
@@ -1258,8 +1260,10 @@ mod tests {
         assert!(!stmt_exprs_all_with(
             &stmt,
             &mut |stmt| match stmt {
-                Stmt::Assign { target, .. } if matches!(target, Expr::Var(name) if name.as_str() == "target") =>
-                {
+                Stmt::Assign {
+                    target: Expr::Var(name),
+                    ..
+                } if name.as_str() == "target" => {
                     Some(false)
                 }
                 _ => None,
@@ -1281,8 +1285,10 @@ mod tests {
         assert!(!stmt_exprs_all_with(
             &stmt,
             &mut |stmt| match stmt {
-                Stmt::Assign { target, .. } if matches!(target, Expr::Var(name) if name.as_str() == "target") =>
-                {
+                Stmt::Assign {
+                    target: Expr::Var(name),
+                    ..
+                } if name.as_str() == "target" => {
                     Some(false)
                 }
                 _ => None,

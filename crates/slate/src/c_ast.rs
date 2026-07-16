@@ -767,7 +767,7 @@ fn parse_function_qual_type(s: &str) -> Option<(CType, Vec<CType>)> {
 }
 
 fn parse_function_params(params: &str) -> Vec<CType> {
-    let params = if params.is_empty() || params == "void" {
+    if params.is_empty() || params == "void" {
         Vec::new()
     } else {
         split_c_type_list(params)
@@ -775,8 +775,7 @@ fn parse_function_params(params: &str) -> Vec<CType> {
             .filter(|param| !param.is_empty() && *param != "...")
             .map(parse_c_type)
             .collect()
-    };
-    params
+    }
 }
 
 fn split_c_type_list(s: &str) -> impl Iterator<Item = &str> {

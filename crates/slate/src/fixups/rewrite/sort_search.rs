@@ -56,7 +56,7 @@ struct ArrayBinding {
 }
 
 fn rewrite_body(
-    body: &mut Vec<IndentStmt>,
+    body: &mut [IndentStmt],
     records: &BTreeMap<String, Layout>,
     comparators: &BTreeMap<String, ComparatorPlan>,
 ) {

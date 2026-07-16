@@ -41,14 +41,14 @@ fn fixup_with_recoveries(
     recoveries: &[StringRecoveryCandidate],
 ) {
     fixup_nested(body, function, facts, &mut Vec::new(), recoveries);
-    fixup_body(body, function, facts, &mut Vec::new(), recoveries);
+    fixup_body(body, function, facts, &Vec::new(), recoveries);
 }
 
 fn fixup_body(
     body: &mut Vec<IndentStmt>,
     function: FunctionId,
     facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
+    path: &[PathSegment],
     recoveries: &[StringRecoveryCandidate],
 ) {
     let mut removals = BTreeSet::new();

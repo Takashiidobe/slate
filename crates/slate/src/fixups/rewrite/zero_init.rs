@@ -2,8 +2,8 @@
 //! overwrites it, when the assignment does not read the placeholder.
 
 use crate::fixups::facts::{
-    AstPath, ConstValue, EffectSubject, FixupFacts, FunctionId, PathSegment, PlaceAccess,
-    PlaceKind, Purity, ValueSubject,
+    AstPath, BindingId, ConstValue, EffectSubject, FixupFacts, FunctionId, PathSegment,
+    PlaceAccess, PlaceKind, Purity, ValueSubject,
 };
 use crate::fixups::idents::expr_ident;
 use crate::fixups::support::walk;
@@ -50,16 +50,14 @@ fn fixup_at(
             continue;
         }
         let mut move_decl_to_assignment = false;
-        let mut assign_index = first_overwriting_assignment(
-            body,
-            i,
-            &name,
+        let ctx = ZeroInitContext {
             function,
             facts,
             binding,
             cross_effects,
-            path,
-        );
+            body_path: path,
+        };
+        let mut assign_index = first_overwriting_assignment(body, i, &name, &ctx);
         if assign_index.is_none() && cross_effects {
             assign_index =
                 first_deferred_initialization(body, i, &name, function, facts, binding, path);
@@ -93,15 +91,19 @@ fn fixup_at(
     false
 }
 
+struct ZeroInitContext<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
+    binding: BindingId,
+    cross_effects: bool,
+    body_path: &'a [PathSegment],
+}
+
 fn first_overwriting_assignment(
     body: &[IndentStmt],
     decl_index: usize,
     name: &str,
-    function: FunctionId,
-    facts: &FixupFacts,
-    binding: crate::fixups::facts::BindingId,
-    cross_effects: bool,
-    body_path: &[PathSegment],
+    ctx: &ZeroInitContext<'_>,
 ) -> Option<usize> {
     let (assign_index, value) =
         body.iter()
@@ -113,33 +115,38 @@ fn first_overwriting_assignment(
                 }
                 _ => None,
             })?;
-    let assign_path = stmt_path(body_path, assign_index);
-    if !assignment_writes_binding(function, facts, binding, &assign_path)
-        || assignment_reads_binding(facts, binding, &assign_path)
+    let assign_path = stmt_path(ctx.body_path, assign_index);
+    if !assignment_writes_binding(ctx.function, ctx.facts, ctx.binding, &assign_path)
+        || assignment_reads_binding(ctx.facts, ctx.binding, &assign_path)
         || assignment_reads_intervening_binding(
             body,
             decl_index,
             assign_index,
-            function,
-            facts,
-            body_path,
+            ctx.function,
+            ctx.facts,
+            ctx.body_path,
             &assign_path,
         )
     {
         return None;
     }
     let value_reads_nothing = reads_nothing(value);
-    for index in (decl_index + 1)..assign_index {
-        let path = stmt_path(body_path, index);
-        if can_cross_intervening_stmt(function, facts, binding, &path, &body[index].stmt) {
+    for (index, indent) in body
+        .iter()
+        .enumerate()
+        .take(assign_index)
+        .skip(decl_index + 1)
+    {
+        let path = stmt_path(ctx.body_path, index);
+        if can_cross_intervening_stmt(ctx.function, ctx.facts, ctx.binding, &path, &indent.stmt) {
             continue;
         }
         // a constant store reads nothing, so removing it is safe past any effect
         // as long as the crossed statement neither reads nor writes the binding.
-        if cross_effects
+        if ctx.cross_effects
             && value_reads_nothing
-            && !assignment_reads_binding(facts, binding, &path)
-            && !binding_written_under(facts, binding, &path)
+            && !assignment_reads_binding(ctx.facts, ctx.binding, &path)
+            && !binding_written_under(ctx.facts, ctx.binding, &path)
         {
             continue;
         }

@@ -255,9 +255,10 @@ fn alias_edge(
 fn transparent_alias_value(expr: &Expr, source_name: &str) -> bool {
     match expr {
         Expr::Var(name) => name.as_str() == source_name,
-        Expr::Cast { expr, ty } if matches!(ty, Type::Ptr { .. }) => {
-            transparent_alias_value(expr, source_name)
-        }
+        Expr::Cast {
+            expr,
+            ty: Type::Ptr { .. },
+        } => transparent_alias_value(expr, source_name),
         _ => false,
     }
 }
@@ -320,9 +321,10 @@ fn pointer_add_base(expr: &Expr, index_param: &str) -> Option<Expr> {
         Expr::Unsafe(block) | Expr::Block(block) if block.stmts.is_empty() => {
             pointer_add_base(block.tail.as_deref()?, index_param)
         }
-        Expr::Cast { expr, ty } if matches!(ty, Type::Ptr { .. }) => {
-            pointer_add_base(expr, index_param)
-        }
+        Expr::Cast {
+            expr,
+            ty: Type::Ptr { .. },
+        } => pointer_add_base(expr, index_param),
         Expr::MethodCall { recv, method, args } if method == "add" && args.len() == 1 => {
             matches!(&args[0], Expr::Var(name) if name.as_str() == index_param)
                 .then(|| (**recv).clone())

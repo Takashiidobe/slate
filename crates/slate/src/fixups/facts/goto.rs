@@ -7,6 +7,16 @@ use std::collections::BTreeSet;
 
 use crate::rust_ast::{Expr, ExprMatchArm, IndentStmt, MatchArm, Pattern, RustValue, Stmt};
 
+type LoweredSwitchParts<'a> = (
+    &'a str,
+    &'a Expr,
+    &'a str,
+    &'a [ExprMatchArm],
+    &'a str,
+    &'a [MatchArm],
+    usize,
+);
+
 #[derive(Debug, Clone)]
 pub(crate) struct CfgNode {
     pub(crate) labels: Vec<String>,
@@ -556,10 +566,7 @@ fn switch_transfer(
     (!arms.is_empty()).then_some((selector_expr.clone(), arms, consumed))
 }
 
-fn lowered_switch_parts(
-    stmts: &[IndentStmt],
-    i: usize,
-) -> Option<(&str, &Expr, &str, &[ExprMatchArm], &str, &[MatchArm], usize)> {
+fn lowered_switch_parts(stmts: &[IndentStmt], i: usize) -> Option<LoweredSwitchParts<'_>> {
     if let Some(parts) = stmts
         .get(i)
         .and_then(|stmt| lowered_switch_scope_parts(&stmt.stmt))
@@ -569,9 +576,7 @@ fn lowered_switch_parts(
     lowered_switch_flat_parts(stmts, i)
 }
 
-fn lowered_switch_scope_parts(
-    stmt: &Stmt,
-) -> Option<(&str, &Expr, &str, &[ExprMatchArm], &str, &[MatchArm], usize)> {
+fn lowered_switch_scope_parts(stmt: &Stmt) -> Option<LoweredSwitchParts<'_>> {
     let Stmt::Scope { body } = stmt else {
         return None;
     };
@@ -590,10 +595,7 @@ fn lowered_switch_scope_parts(
     )
 }
 
-fn lowered_switch_flat_parts(
-    body: &[IndentStmt],
-    i: usize,
-) -> Option<(&str, &Expr, &str, &[ExprMatchArm], &str, &[MatchArm], usize)> {
+fn lowered_switch_flat_parts(body: &[IndentStmt], i: usize) -> Option<LoweredSwitchParts<'_>> {
     let [
         IndentStmt {
             stmt:

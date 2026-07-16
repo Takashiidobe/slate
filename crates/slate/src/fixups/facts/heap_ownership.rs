@@ -9,6 +9,14 @@ use crate::rust_ast::{
 };
 use std::collections::BTreeSet;
 
+type OwnedHeapUses = (
+    usize,
+    Option<BindingId>,
+    Vec<HeapUseFact>,
+    Vec<HeapReallocFact>,
+    HeapReadSafety,
+);
+
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.heap_ownership.clear();
     for (item_index, item) in program.items.iter().enumerate() {
@@ -421,13 +429,7 @@ fn heap_uses_are_owned(
     facts: &FixupFacts,
     pointer_name: &str,
     candidate: &Candidate,
-) -> Option<(
-    usize,
-    Option<BindingId>,
-    Vec<HeapUseFact>,
-    Vec<HeapReallocFact>,
-    HeapReadSafety,
-)> {
+) -> Option<OwnedHeapUses> {
     let mut aliases = BTreeSet::from([pointer_name.to_string()]);
     let mut free: Option<(usize, Option<BindingId>)> = None;
     let mut uses = Vec::new();

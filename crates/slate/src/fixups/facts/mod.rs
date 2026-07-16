@@ -458,9 +458,9 @@ pub(super) struct StringPointerViewFact {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum StringPointerViewKind {
-    AsPtr,
-    AsMutPtr,
-    ArrayPtr,
+    As,
+    AsMut,
+    Array,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -536,11 +536,11 @@ pub(super) struct FileUseFact {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum FileUseKind {
-    FRead,
-    FWrite,
-    FGets,
-    FPuts,
-    FClose,
+    Read,
+    Write,
+    Gets,
+    Puts,
+    Close,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

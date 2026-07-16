@@ -2,11 +2,11 @@ use crate::fixups::facts::PathSegment;
 use crate::fixups::support::walk;
 use crate::rust_ast::{IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) -> bool {
+pub(in crate::fixups) fn fixup(body: &mut [IndentStmt]) -> bool {
     fixup_at(body, &mut Vec::new())
 }
 
-fn fixup_at(body: &mut Vec<IndentStmt>, path: &mut Vec<PathSegment>) -> bool {
+fn fixup_at(body: &mut [IndentStmt], path: &mut Vec<PathSegment>) -> bool {
     for index in 0..body.len() {
         let mut changed = false;
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {

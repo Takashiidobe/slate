@@ -15,16 +15,12 @@ use crate::fixups::facts::{
 use crate::fixups::support::walk;
 use crate::rust_ast::{Block, IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-) {
+pub(in crate::fixups) fn fixup(body: &mut [IndentStmt], function: FunctionId, facts: &FixupFacts) {
     scope(body, function, facts, &mut Vec::new());
 }
 
 fn scope(
-    stmts: &mut Vec<IndentStmt>,
+    stmts: &mut [IndentStmt],
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
@@ -34,9 +30,9 @@ fn scope(
             recurse(&mut stmt.stmt, function, facts, path);
         });
     }
-    for i in 0..stmts.len() {
+    for (i, stmt) in stmts.iter_mut().enumerate() {
         let def_path = stmt_path(path, i);
-        let name = match &stmts[i].stmt {
+        let name = match &stmt.stmt {
             Stmt::Let {
                 name,
                 mutable: false,
@@ -57,12 +53,12 @@ fn scope(
         {
             continue;
         }
-        let init = match &mut stmts[i].stmt {
+        let init = match &mut stmt.stmt {
             Stmt::Let { init, .. } => init.take(),
             _ => None,
         };
         if let Some(init) = init {
-            stmts[i].stmt = Stmt::Expr(init);
+            stmt.stmt = Stmt::Expr(init);
         }
     }
 }
