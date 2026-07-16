@@ -377,7 +377,10 @@ fn binding_name(facts: &FixupFacts, binding: crate::fixups::facts::BindingId) ->
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{BinOp, Block, Item, MatchArm, Pattern, Program, Type};
+    use crate::rust_ast::{
+        AtomicOrdering, AtomicPlace, AtomicType, BinOp, Block, Item, MatchArm, Pattern, Program,
+        Type,
+    };
 
     fn inlined(stmts: Vec<Stmt>) -> String {
         inlined_with_phase(stmts, Phase::Late)
@@ -822,6 +825,31 @@ fn f() {
 fn f() {
     let _v0: i32 = std::ptr::read_volatile(p);
     b = _v0;
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_adjacent_atomic_result_temp_into_assignment() {
+        let out = inlined(vec![
+            temp(
+                "_v0",
+                "i32",
+                Expr::AtomicLoad {
+                    ty: AtomicType::I32,
+                    place: AtomicPlace::Local("a".into()),
+                    ordering: AtomicOrdering::SeqCst,
+                },
+            ),
+            assign("loaded", var("_v0")),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    loaded = a.load(std::sync::atomic::Ordering::SeqCst);
 }
 "
         );
