@@ -52,6 +52,14 @@ pub fn apply(program: Program) -> Program {
             rewrite::constant_index_casts::fixup(&mut f.body);
         }
     }
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item
+            && let Some(function) = facts.function_by_item_index(item_index)
+        {
+            rewrite::unnecessary_casts::fixup(&mut f.body, function, &facts);
+        }
+    }
     loop {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
         let mut changed = false;
