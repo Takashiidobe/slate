@@ -307,6 +307,8 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             comments: Vec::new(),
             kind: c_ast::RecordKind::Struct,
             fields: Vec::new(),
+            packed: false,
+            align: None,
         });
     }
     let shared_record_names: BTreeSet<String> = shared_records.keys().cloned().collect();

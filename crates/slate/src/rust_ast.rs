@@ -70,6 +70,7 @@ impl Cfg {
 #[derive(Debug, Clone)]
 pub struct StructDef {
     pub attrs: Vec<Attr>,
+    pub vis: Visibility,
     pub generics: Vec<GenericParam>,
     pub name: String,
     pub fields: StructFields,
@@ -150,6 +151,7 @@ pub enum Attr {
 pub enum Repr {
     C,
     Align(u32),
+    Packed,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -181,6 +183,8 @@ pub enum StdTrait {
     Mul,
     Div,
     Neg,
+    Deref,
+    DerefMut,
 }
 
 impl StdTrait {
@@ -191,6 +195,8 @@ impl StdTrait {
             StdTrait::Mul => "core::ops::Mul",
             StdTrait::Div => "core::ops::Div",
             StdTrait::Neg => "core::ops::Neg",
+            StdTrait::Deref => "core::ops::Deref",
+            StdTrait::DerefMut => "core::ops::DerefMut",
         }
     }
 
@@ -201,6 +207,8 @@ impl StdTrait {
             StdTrait::Mul => "mul",
             StdTrait::Div => "div",
             StdTrait::Neg => "neg",
+            StdTrait::Deref => "deref",
+            StdTrait::DerefMut => "deref_mut",
         }
     }
 }
@@ -222,10 +230,18 @@ pub enum ImplItem {
 #[derive(Debug, Clone)]
 pub struct Method {
     pub name: String,
-    pub takes_self: bool,
+    pub self_kind: SelfKind,
     pub params: Vec<FnParam>,
     pub ret: Option<Type>,
     pub body: Expr,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SelfKind {
+    None,
+    Value,
+    Ref,
+    RefMut,
 }
 
 #[derive(Debug, Clone)]
@@ -260,6 +276,12 @@ pub struct RecordDef {
     pub allow_non_camel_case: bool,
     pub name: String,
     pub fields: Vec<RecordField>,
+    /// `__attribute__((packed))`; mutually exclusive with `align` — Rust rejects
+    /// combining `repr(packed)` and `repr(align(N))` on one type (E0587). The
+    /// packed+aligned combination is lowered as a wrapper pair instead, see
+    /// `lower_packed_aligned_wrapper`.
+    pub packed: bool,
+    pub align: Option<u32>,
 }
 
 #[derive(Debug, Clone)]
