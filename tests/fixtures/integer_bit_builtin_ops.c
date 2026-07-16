@@ -1,10 +1,10 @@
 #include <stdio.h>
 
 int main(void) {
-    volatile unsigned int u = 0x12345678u;
-    volatile unsigned int z = 0u;
-    volatile int s = -12345;
-    volatile unsigned int sh = 5u;
+    unsigned int u = 0x12345678u;
+    unsigned int z = 0u;
+    int s = -12345;
+    unsigned int sh = 5u;
 
     unsigned int rev = __builtin_bitreverse32(u);
     unsigned int swapped = __builtin_bswap32(u);
