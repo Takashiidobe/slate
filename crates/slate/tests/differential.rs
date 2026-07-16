@@ -135,6 +135,18 @@ fn atomic_temp_allocas_forward_instead_of_shadowed_locals() {
     assert!(!rust.contains("atomic_temp"));
     assert!(!rust.contains("cmpxchg_bool"));
     assert!(rust.contains(".store(100, std::sync::atomic::Ordering::SeqCst)"));
+    assert!(
+        rust.contains("let loaded: i32 = a.load(std::sync::atomic::Ordering::SeqCst);"),
+        "{rust}"
+    );
+    assert!(
+        rust.contains("let fa: i32 = a.fetch_add(5, std::sync::atomic::Ordering::SeqCst);"),
+        "{rust}"
+    );
+    assert!(
+        rust.contains("let xchg_old: i32 = a.swap(7, std::sync::atomic::Ordering::SeqCst);"),
+        "{rust}"
+    );
     assert!(rust.contains(".fetch_add(5, std::sync::atomic::Ordering::SeqCst)"));
     assert!(rust.contains(".fetch_sub(10, std::sync::atomic::Ordering::SeqCst)"));
     assert!(rust.contains(".swap(7, std::sync::atomic::Ordering::SeqCst)"));
