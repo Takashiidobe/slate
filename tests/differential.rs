@@ -203,8 +203,8 @@ fn safe_struct_field_reads_do_not_use_unsafe() {
     support::translate(&structs_c, &structs_generated).expect("translate structs fixture");
     let structs_rust =
         std::fs::read_to_string(&structs_generated).expect("read generated structs rust");
-    assert!(structs_rust.contains("let _v2: i32 = p.left;"));
-    assert!(structs_rust.contains("let _v3: i32 = p.right;"));
+    assert!(structs_rust.contains("return p.left + p.right;"));
+    assert!(structs_rust.contains("p.left = p.right + 2;"));
     assert!(structs_rust.contains("return p.left;"));
     assert!(!structs_rust.contains("unsafe { p.left }"));
     assert!(!structs_rust.contains("unsafe { p.right }"));
@@ -904,6 +904,38 @@ fn file_scope_globals_emit_static_mut_definitions() {
     assert!(rust.contains("static mut zeroed: i32 = 0;"));
     assert!(rust.contains("static mut numbers: [i32; 4] = [1, 2, 0, 0];"));
     assert!(rust.contains("static mut pair: Pair = Pair { left: 3, right: 5 };"));
+}
+
+#[test]
+fn aggregate_value_member_ops_inline_member_access_temps() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-aggregate-members");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("aggregate_value_member_ops.c");
+    let generated = tmp.join("aggregate_value_member_ops.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate aggregate member fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated aggregate member rust");
+    assert!(rust.contains(
+        "\
+fn take_pair(p: Pair) -> i32 {
+    return p.left * 10 + p.right;
+}
+"
+    ));
+    assert!(rust.contains(
+        "\
+fn nested_total(n: Nested) -> i32 {
+    return n.inner.left + n.inner.right + n.tag;
+}
+"
+    ));
+    assert!(rust.contains(
+        "\
+fn array_value(w: WithArray) -> i32 {
+    return w.data[1] + w.marker;
+}
+"
+    ));
 }
 
 #[test]
