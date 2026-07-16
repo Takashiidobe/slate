@@ -14,14 +14,11 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 | Priority | Notes | Ops |
 | --- | --- | --- |
 | P3 | inline assembly | `cir.asm` |
-| P3 | assumptions | `cir.assume` |
 | P3 | labels-as-values/computed goto | `cir.block_address` |
 | P3 | target/cache builtins | `cir.clear_cache`, `cir.prefetch` |
 | P3 | setjmp/EH-adjacent lowering | `cir.eh.setjmp` |
-| P3 | branch prediction hint | `cir.expect` |
 | P3 | frame/stack builtins | `cir.frame_address`, `cir.stackrestore`, `cir.stacksave` |
 | P3 | LLVM intrinsic escape hatch | `cir.call_llvm_intrinsic` |
-| P3 | traps and unreachable paths | `cir.trap`, `cir.unreachable` |
 | P3 | vector extensions | `cir.vec.*` |
 
 ## Excluded 
@@ -45,6 +42,11 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 - [x] builtin queries
   - [x] `cir.is_constant`
   - [x] `cir.objsize`
+- [x] control-flow builtins
+  - [x] `cir.assume`
+  - [x] `cir.expect`
+  - [x] `cir.trap`
+  - [x] `cir.unreachable`
 - [x] calls/returns
   - [x] `cir.call`
   - [x] `cir.return`
