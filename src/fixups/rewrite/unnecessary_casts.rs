@@ -1,0 +1,221 @@
+//! Simplify casts whose typed context already preserves behavior.
+
+use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
+use crate::fixups::support::walk;
+use crate::rust_ast::{BinOp, Expr, IndentStmt, Prim, Stmt, Type};
+
+pub(in crate::fixups) fn fixup(
+    body: &mut [IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+) -> bool {
+    fixup_at(body, function, facts, &mut Vec::new())
+}
+
+fn fixup_at(
+    body: &mut [IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) -> bool {
+    let mut changed = false;
+    for (index, indent) in body.iter_mut().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_mut_with_path(&mut indent.stmt, path, &mut |body, path| {
+                changed |= fixup_at(body, function, facts, path);
+            });
+            if let Stmt::Assign { value, .. } = &mut indent.stmt {
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                    changed |= simplify_assignment_value(value, function, facts, path);
+                });
+            }
+        });
+    }
+    changed
+}
+
+fn simplify_assignment_value(
+    value: &mut Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> bool {
+    let Some(replacement) = simplified_narrow_binary(value, function, facts, path) else {
+        return false;
+    };
+    *value = replacement;
+    true
+}
+
+fn simplified_narrow_binary(
+    value: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<Expr> {
+    let Expr::Cast { expr, ty: outer_ty } = value else {
+        return None;
+    };
+    let Type::Prim(target) = outer_ty else {
+        return None;
+    };
+    if !is_promoted_narrow_int(*target) {
+        return None;
+    }
+    let Expr::Binary { op, lhs, rhs } = &**expr else {
+        return None;
+    };
+    if !matches!(op, BinOp::Add) {
+        return None;
+    }
+    let outer = facts.cast_at(function, &AstPath(path.to_vec()))?;
+    if !type_is_prim(outer.from.as_ref(), Prim::I32) || !owned_type_is_prim(&outer.to, *target) {
+        return None;
+    }
+    let lhs_path = binary_child_path(path, 0);
+    let rhs_path = binary_child_path(path, 1);
+    let lhs = stripped_operand(lhs, *target, function, facts, &lhs_path)?;
+    let rhs = stripped_operand(rhs, *target, function, facts, &rhs_path)?;
+    Some(Expr::Binary {
+        op: *op,
+        lhs: Box::new(lhs),
+        rhs: Box::new(rhs),
+    })
+}
+
+fn stripped_operand(
+    operand: &Expr,
+    target: Prim,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> Option<Expr> {
+    let Expr::Cast { expr, ty } = operand else {
+        return None;
+    };
+    if !owned_type_is_prim(ty, Prim::I32) {
+        return None;
+    }
+    let fact = facts.cast_at(function, &AstPath(path.to_vec()))?;
+    if !type_is_prim(fact.from.as_ref(), target) || !owned_type_is_prim(&fact.to, Prim::I32) {
+        return None;
+    }
+    Some((**expr).clone())
+}
+
+fn binary_child_path(path: &[PathSegment], child: usize) -> Vec<PathSegment> {
+    let mut out = path.to_vec();
+    out.push(PathSegment::Expr(0));
+    out.push(PathSegment::Expr(child));
+    out
+}
+
+fn type_is_prim(ty: Option<&Type>, expected: Prim) -> bool {
+    matches!(ty, Some(Type::Prim(actual)) if *actual == expected)
+}
+
+fn owned_type_is_prim(ty: &Type, expected: Prim) -> bool {
+    matches!(ty, Type::Prim(actual) if *actual == expected)
+}
+
+fn is_promoted_narrow_int(prim: Prim) -> bool {
+    matches!(prim, Prim::I8 | Prim::U8 | Prim::I16 | Prim::U16)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::fixups::test_support::*;
+    use crate::rust_ast::{Item, Program};
+
+    fn cast(expr: Expr, ty: &str) -> Expr {
+        Expr::Cast {
+            expr: Box::new(expr),
+            ty: Type::parse(ty),
+        }
+    }
+
+    fn index(base: Expr, index: Expr) -> Expr {
+        Expr::Index {
+            base: Box::new(base),
+            index: Box::new(index),
+        }
+    }
+
+    fn inlined(stmts: Vec<Stmt>) -> String {
+        let mut program = Program {
+            items: vec![Item::Fn(func(vec![], None, stmts))],
+        };
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        let facts = analyzed.facts;
+        let Item::Fn(f) = &mut program.items[0] else {
+            unreachable!();
+        };
+        fixup(&mut f.body, FunctionId(0), &facts);
+        program.emit()
+    }
+
+    #[test]
+    fn strips_promoted_narrow_integer_addition_casts_in_assignment() {
+        let out = inlined(vec![
+            let_mut(
+                "values",
+                "[i8; 3]",
+                Expr::ArrayRepeat {
+                    elem: Box::new(int(0)),
+                    len: 3,
+                },
+            ),
+            Stmt::Assign {
+                target: index(var("values"), int(2)),
+                value: cast(
+                    bin(
+                        BinOp::Add,
+                        cast(index(var("values"), int(0)), "i32"),
+                        cast(index(var("values"), int(1)), "i32"),
+                    ),
+                    "i8",
+                ),
+            },
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let mut values: [i8; 3] = [0; 3];
+    values[2] = values[0] + values[1];
+}
+"
+        );
+    }
+
+    #[test]
+    fn keeps_mismatched_and_non_assignment_casts() {
+        let out = inlined(vec![
+            let_mut(
+                "values",
+                "[i8; 3]",
+                Expr::ArrayRepeat {
+                    elem: Box::new(int(0)),
+                    len: 3,
+                },
+            ),
+            Stmt::Assign {
+                target: index(var("values"), int(2)),
+                value: cast(
+                    bin(
+                        BinOp::Add,
+                        cast(index(var("values"), int(0)), "i32"),
+                        cast(index(var("values"), int(1)), "i64"),
+                    ),
+                    "i8",
+                ),
+            },
+            Stmt::Return(Some(cast(index(var("values"), int(2)), "i32"))),
+        ]);
+
+        assert!(out.contains("values[2] = ((values[0] as i32) + (values[1] as i64)) as i8;"));
+        assert!(out.contains("return values[2] as i32;"));
+    }
+}

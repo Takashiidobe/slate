@@ -279,6 +279,8 @@ fn final_return_temps_are_collapsed() {
             && !array_types_rust.contains("(2 as usize)"),
         "array_types kept literal index casts"
     );
+    assert!(array_types_rust.contains("values[2] = values[0] + values[1];"));
+    assert!(!array_types_rust.contains("((values[0] as i32) + (values[1] as i32)) as i8"));
     assert!(array_types_rust.contains("return values[((index as i64) as usize)];"));
 
     let pointers = std::fs::read_to_string(tmp.join("pointers.generated.rs"))
