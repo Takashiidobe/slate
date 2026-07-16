@@ -4,6 +4,7 @@ use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
 
 pub(super) mod anonymous_structs;
 pub(super) mod array_element_pointer_origin;
+pub(super) mod atomic_locals;
 pub(super) mod borrow_alias;
 pub(super) mod buffer_cursor;
 pub(super) mod c_strings;
@@ -66,6 +67,7 @@ pub(super) struct FixupFacts {
     pub(super) array_element_pointer_origins: Vec<ArrayElementPointerOriginFact>,
     pub(super) buffer_pointer_fields: Vec<BufferPointerFieldFact>,
     pub(super) anonymous_structs: Vec<AnonymousStructFact>,
+    pub(super) atomic_locals: Vec<AtomicLocalFact>,
     pub(super) slice_pointer_views: Vec<SlicePointerViewFact>,
     pub(super) slice_index_ranges: Vec<SliceIndexRangeFact>,
     pub(super) slice_pointer_indexes: Vec<SlicePointerIndexFact>,
@@ -111,6 +113,15 @@ pub(super) struct BindingFact {
 pub(super) struct BindingTypeFact {
     pub(super) binding: BindingId,
     pub(super) rendered: String,
+}
+
+/// A `let mut <name>: <int>` local whose every use is the pointer operand of
+/// an atomic op of width `ty`; safe to re-declare as native `AtomicN` storage.
+#[derive(Debug, Clone)]
+pub(super) struct AtomicLocalFact {
+    pub(super) function: FunctionId,
+    pub(super) name: String,
+    pub(super) ty: crate::rust_ast::AtomicType,
 }
 
 #[derive(Debug, Clone)]
@@ -1368,6 +1379,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     file_ownership::collect_facts(&program, &mut collector.facts);
     ptr_len::collect_facts(&program, &mut collector.facts);
     array_element_pointer_origin::collect_facts(&program, &mut collector.facts);
+    atomic_locals::collect_facts(&program, &mut collector.facts);
     buffer_cursor::collect_facts(&program, &mut collector.facts);
     slice_index::collect_facts(&program, &mut collector.facts);
     counted_loop::collect_facts(&program, &mut collector.facts);

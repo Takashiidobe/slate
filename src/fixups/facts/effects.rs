@@ -315,27 +315,36 @@ impl Collector {
                     effects.extend(self.block(block, path));
                 });
             }
-            Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
+            Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
                 effects.insert(EffectKind::AtomicRead);
-                effects.extend(self.child_expr(ptr, path, 0));
+                if let Some(ptr) = place.ptr_expr() {
+                    effects.extend(self.child_expr(ptr, path, 0));
+                }
             }
-            Expr::AtomicStore { ptr, value, .. }
-            | Expr::AtomicFetch { ptr, value, .. }
-            | Expr::AtomicSwap { ptr, value, .. } => {
+            Expr::AtomicStore { place, value, .. }
+            | Expr::AtomicFetch { place, value, .. }
+            | Expr::AtomicSwap { place, value, .. } => {
                 effects.insert(EffectKind::AtomicWrite);
                 effects.insert(EffectKind::MemoryWrite);
-                effects.extend(self.child_expr(ptr, path, 0));
+                if let Some(ptr) = place.ptr_expr() {
+                    effects.extend(self.child_expr(ptr, path, 0));
+                }
                 effects.extend(self.child_expr(value, path, 1));
             }
+            Expr::AtomicNew { value, .. } => {
+                effects.extend(self.child_expr(value, path, 0));
+            }
             Expr::AtomicCompareExchange {
-                ptr,
+                place,
                 expected,
                 desired,
                 ..
             } => {
                 effects.insert(EffectKind::AtomicWrite);
                 effects.insert(EffectKind::MemoryWrite);
-                effects.extend(self.child_expr(ptr, path, 0));
+                if let Some(ptr) = place.ptr_expr() {
+                    effects.extend(self.child_expr(ptr, path, 0));
+                }
                 effects.extend(self.child_expr(expected, path, 1));
                 effects.extend(self.child_expr(desired, path, 2));
             }
@@ -415,7 +424,9 @@ mod tests {
     use super::*;
     use crate::fixups::facts;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{AtomicOrdering, AtomicType, BinOp, Expr, Item, Program, Stmt};
+    use crate::rust_ast::{
+        AtomicOrdering, AtomicPlace, AtomicType, BinOp, Expr, Item, Program, Stmt,
+    };
 
     fn analyzed(stmts: Vec<Stmt>) -> facts::FixupFacts {
         facts::analyze(Program {
@@ -517,12 +528,12 @@ mod tests {
             Stmt::Expr(call("std::ptr::write_volatile", vec![var("p"), int(1)])),
             Stmt::Expr(Expr::AtomicLoad {
                 ty: AtomicType::I32,
-                ptr: Box::new(var("p")),
+                place: AtomicPlace::Ptr(Box::new(var("p"))),
                 ordering: AtomicOrdering::SeqCst,
             }),
             Stmt::Expr(Expr::AtomicStore {
                 ty: AtomicType::I32,
-                ptr: Box::new(var("p")),
+                place: AtomicPlace::Ptr(Box::new(var("p"))),
                 value: Box::new(int(2)),
                 ordering: AtomicOrdering::SeqCst,
             }),
