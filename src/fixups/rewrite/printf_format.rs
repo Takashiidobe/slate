@@ -829,8 +829,8 @@ mod tests {
     use super::*;
     use crate::fixups::test_support::*;
     use crate::rust_ast::{
-        Block, Expr, ExternDecl, ExternFnDecl, FnParam, IndentStmt, Item, Prim, Program, Stmt,
-        Type, Visibility,
+        Block, Expr, ExternDecl, ExternFnDecl, FnParam, IndentStmt, Item, MatchArm, Pattern, Prim,
+        Program, Stmt, Type, Visibility,
     };
 
     fn printf_decl() -> ExternDecl {
@@ -946,6 +946,33 @@ fn main() {
             "\
 fn main() {
     println!();
+}
+"
+        );
+    }
+
+    #[test]
+    fn rewrites_printf_calls_inside_match_arms() {
+        let out = run(Stmt::Match {
+            expr: var("state"),
+            arms: vec![MatchArm {
+                pattern: Pattern::I64(0),
+                body: vec![IndentStmt {
+                    depth: 0,
+                    stmt: printf_stmt(b"%d\n\0", var("sum")),
+                }],
+            }],
+        });
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    match state {
+        0 => {
+            println!(\"{}\", sum);
+        }
+    }
 }
 "
         );

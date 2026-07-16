@@ -6,16 +6,16 @@ use crate::fixups::facts::{
     AstPath, BindingId, ControlFlowSubject, FixupFacts, FunctionId, PathSegment, PlaceAccess,
     PlaceKind,
 };
-use crate::fixups::idents::{expr_ident, stmt_ident_count};
+use crate::fixups::idents::{expr_ident, expr_ident_count, stmt_ident_count};
 use crate::fixups::support::walk;
 use crate::rust_ast::{Expr, FnDef, IndentStmt, Path, Prim, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
     collapse_return_slots(&mut f.body, function, facts, &mut Vec::new());
-    remove_unused_retval_decl(&mut f.body);
     if f.name == "main" {
-        collapse_main_exit_slot(&mut f.body, function, facts);
+        collapse_main_exit_slots(&mut f.body, function, facts, &mut Vec::new());
     }
+    remove_unused_retval_artifacts(&mut f.body);
 }
 
 fn collapse_return_slots(
@@ -109,12 +109,130 @@ fn remove_unused_retval_decl(body: &mut Vec<IndentStmt>) {
     }
 }
 
-fn collapse_main_exit_slot(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFacts) {
+fn remove_unused_retval_artifacts(body: &mut Vec<IndentStmt>) {
+    if retval_read_count(body) != 0 {
+        return;
+    }
+    remove_unused_retval_writes(body);
+    remove_unused_retval_decl(body);
+}
+
+fn retval_read_count(body: &[IndentStmt]) -> usize {
+    body.iter()
+        .map(|indent| stmt_retval_read_count(&indent.stmt))
+        .sum()
+}
+
+fn stmt_retval_read_count(stmt: &Stmt) -> usize {
+    match stmt {
+        Stmt::Let { init, .. } => init
+            .as_ref()
+            .map_or(0, |expr| expr_ident_count(expr, "__retval")),
+        Stmt::Assign { target, value } if expr_ident(target) == Some("__retval") => {
+            expr_ident_count(value, "__retval")
+        }
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            expr_ident_count(cond, "__retval")
+                + retval_read_count(then_body)
+                + expr_ident_count(then_value, "__retval")
+                + retval_read_count(else_body)
+                + expr_ident_count(else_value, "__retval")
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            expr_ident_count(cond, "__retval")
+                + retval_read_count(then_body)
+                + retval_read_count(else_body)
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } => retval_read_count(body),
+        Stmt::For { iter, body, .. } => {
+            expr_ident_count(iter, "__retval") + retval_read_count(body)
+        }
+        Stmt::LabeledBlock { body, .. } => retval_read_count(body),
+        Stmt::Match { expr, arms } => {
+            expr_ident_count(expr, "__retval")
+                + arms
+                    .iter()
+                    .map(|arm| retval_read_count(&arm.body))
+                    .sum::<usize>()
+        }
+        Stmt::Unsafe { body } | Stmt::Block(body) => {
+            retval_read_count(&body.stmts)
+                + body
+                    .tail
+                    .as_ref()
+                    .map_or(0, |tail| expr_ident_count(tail, "__retval"))
+        }
+        Stmt::While { cond, body } => {
+            expr_ident_count(cond, "__retval")
+                + retval_read_count(&body.stmts)
+                + body
+                    .tail
+                    .as_ref()
+                    .map_or(0, |tail| expr_ident_count(tail, "__retval"))
+        }
+        other => stmt_ident_count(other, "__retval"),
+    }
+}
+
+fn remove_unused_retval_writes(body: &mut Vec<IndentStmt>) {
+    for indent in body.iter_mut() {
+        let mut path = Vec::new();
+        walk::nested_body_vecs_mut_with_path(&mut indent.stmt, &mut path, &mut |body, _| {
+            remove_unused_retval_writes(body);
+        });
+    }
+    body.retain(|indent| !is_removable_retval_write(&indent.stmt));
+}
+
+fn is_removable_retval_write(stmt: &Stmt) -> bool {
+    match stmt {
+        Stmt::Assign { target, value } if expr_ident(target) == Some("__retval") => {
+            is_movable_pure_expr(value)
+        }
+        _ => false,
+    }
+}
+
+fn collapse_main_exit_slots(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+) {
+    for (index, stmt) in body.iter_mut().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |nested, path| {
+                collapse_main_exit_slots(nested, function, facts, path);
+            });
+        });
+    }
+    collapse_main_exit_slot(body, function, facts, path);
+}
+
+fn collapse_main_exit_slot(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    body_path: &[PathSegment],
+) {
     let Some((exit_index, temp_name)) =
         body.iter()
             .enumerate()
             .find_map(|(index, stmt)| match &stmt.stmt {
-                Stmt::Expr(expr) if reachable_stmt(function, facts, &stmt_path(index)) => {
+                Stmt::Expr(expr)
+                    if reachable_stmt(function, facts, &stmt_path(body_path, index)) =>
+                {
                     main_exit_arg_temp(expr).map(|name| (index, name.to_string()))
                 }
                 _ => None,
@@ -139,7 +257,7 @@ fn collapse_main_exit_slot(body: &mut Vec<IndentStmt>, function: FunctionId, fac
     let Some(retval_name) = retval_name else {
         return;
     };
-    let temp_path = AstPath(stmt_path(temp_index));
+    let temp_path = AstPath(stmt_path(body_path, temp_index));
     let Some(temp_binding) = facts.binding_by_local_path(function, &temp_name, &temp_path) else {
         return;
     };
@@ -155,7 +273,13 @@ fn collapse_main_exit_slot(body: &mut Vec<IndentStmt>, function: FunctionId, fac
     let store_index = temp_index - 1;
     let value = match &body[store_index].stmt {
         Stmt::Assign { target, value }
-            if store_writes_binding(function, facts, store_index, retval_binding, target) =>
+            if store_writes_binding(
+                function,
+                facts,
+                &stmt_path(body_path, store_index),
+                retval_binding,
+                target,
+            ) =>
         {
             value.clone()
         }
@@ -168,31 +292,28 @@ fn collapse_main_exit_slot(body: &mut Vec<IndentStmt>, function: FunctionId, fac
     let Some(temp_def_use) = facts.def_use(temp_binding) else {
         return;
     };
-    let store_path = AstPath(stmt_path(store_index));
-    if retval_def_use.definition.0.len() != 1
-        || retval_def_use.reads != [AstPath(stmt_path(temp_index))]
+    let store_path = AstPath(stmt_path(body_path, store_index));
+    if retval_def_use.reads != [AstPath(stmt_path(body_path, temp_index))]
         || !retval_def_use.writes.contains(&store_path)
-        || temp_def_use.reads != [AstPath(stmt_path(exit_index))]
+        || temp_def_use.reads != [AstPath(stmt_path(body_path, exit_index))]
         || !temp_def_use.writes.is_empty()
     {
         return;
     }
-    let [PathSegment::Stmt(decl_index)] = retval_def_use.definition.0.as_slice() else {
-        return;
-    };
 
-    let mut remove = vec![temp_index, store_index, *decl_index];
+    let mut remove = vec![temp_index, store_index];
     for write in &retval_def_use.writes {
-        let Some(index) = direct_stmt_index(&[], write) else {
-            return;
-        };
-        if index == store_index {
-            continue;
+        if let Some(index) = direct_stmt_index(body_path, write) {
+            if index == store_index {
+                continue;
+            }
+            if index > store_index
+                || !pure_retval_write(function, facts, index, retval_binding, body)
+            {
+                return;
+            }
+            remove.push(index);
         }
-        if index > store_index || !pure_retval_write(function, facts, index, retval_binding, body) {
-            return;
-        }
-        remove.push(index);
     }
 
     let Stmt::Expr(expr) = &mut body[exit_index].stmt else {
@@ -244,7 +365,7 @@ fn is_std_process_exit(expr: &Expr) -> bool {
 fn store_writes_binding(
     function: FunctionId,
     facts: &FixupFacts,
-    index: usize,
+    path: &[PathSegment],
     binding: BindingId,
     target: &Expr,
 ) -> bool {
@@ -255,7 +376,7 @@ fn store_writes_binding(
         return false;
     }
     facts
-        .place(function, &AstPath(stmt_path(index)))
+        .place(function, &AstPath(path.to_vec()))
         .is_some_and(|fact| {
             fact.access == PlaceAccess::Write
                 && fact.ordinary_slot
@@ -276,7 +397,8 @@ fn pure_retval_write(
     let Stmt::Assign { target, value } = stmt else {
         return false;
     };
-    store_writes_binding(function, facts, index, binding, target) && is_movable_pure_expr(value)
+    store_writes_binding(function, facts, &stmt_path(&[], index), binding, target)
+        && is_movable_pure_expr(value)
 }
 
 fn reachable_stmt(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
@@ -285,8 +407,10 @@ fn reachable_stmt(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]
         .is_some_and(|fact| fact.reachable)
 }
 
-fn stmt_path(index: usize) -> Vec<PathSegment> {
-    vec![PathSegment::Stmt(index)]
+fn stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
+    let mut path = body_path.to_vec();
+    path.push(PathSegment::Stmt(index));
+    path
 }
 
 fn direct_stmt_index(body_path: &[PathSegment], path: &AstPath) -> Option<usize> {
@@ -301,7 +425,7 @@ fn direct_stmt_index(body_path: &[PathSegment], path: &AstPath) -> Option<usize>
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{BinOp, Ident, Item, Program, Visibility};
+    use crate::rust_ast::{BinOp, Ident, Item, MatchArm, Pattern, Program, Visibility};
 
     fn retval_body(program: &mut Program) {
         let analyzed = crate::fixups::facts::analyze(program.clone());
@@ -508,6 +632,60 @@ fn f() -> i32 {
             "\
 fn main() {
     std::process::exit(0);
+}
+"
+        );
+    }
+
+    #[test]
+    fn collapses_main_retval_store_inside_match_arm() {
+        let out = fixed_fn(FnDef {
+            vis: Visibility::Private,
+            unsafe_: false,
+            extern_c: false,
+            name: "main".into(),
+            params: vec![],
+            ret: None,
+            body: vec![
+                let_mut("__retval", "i32", int(0)),
+                Stmt::Match {
+                    expr: var("state"),
+                    arms: vec![MatchArm {
+                        pattern: Pattern::I64(0),
+                        body: vec![
+                            IndentStmt {
+                                depth: 0,
+                                stmt: assign("__retval", int(0)),
+                            },
+                            IndentStmt {
+                                depth: 0,
+                                stmt: temp("_v1", "i32", var("__retval")),
+                            },
+                            IndentStmt {
+                                depth: 0,
+                                stmt: Stmt::Expr(std_process_exit(Expr::Cast {
+                                    expr: Box::new(var("_v1")),
+                                    ty: Type::Prim(Prim::I32),
+                                })),
+                            },
+                        ],
+                    }],
+                },
+            ]
+            .into_iter()
+            .map(|stmt| IndentStmt { depth: 1, stmt })
+            .collect(),
+        });
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    match state {
+        0 => {
+            std::process::exit(0);
+        }
+    }
 }
 "
         );

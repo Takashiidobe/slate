@@ -46,7 +46,7 @@ fn is_std_process_exit(expr: &Expr) -> bool {
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{Ident, Item, Program, Visibility};
+    use crate::rust_ast::{Ident, Item, MatchArm, Pattern, Program, Visibility};
 
     fn std_process_exit(expr: Expr) -> Expr {
         Expr::Call {
@@ -179,6 +179,37 @@ fn main() {
                     stmt: Stmt::Return(None),
                 },
             ],
+        };
+        let expected = Program {
+            items: vec![Item::Fn(f.clone())],
+        }
+        .emit();
+
+        assert_eq!(fixed_fn(f), expected);
+    }
+
+    #[test]
+    fn leaves_nested_match_arm_zero_exit_unchanged() {
+        let f = FnDef {
+            vis: Visibility::Private,
+            unsafe_: false,
+            extern_c: false,
+            name: "main".into(),
+            params: vec![],
+            ret: None,
+            body: vec![IndentStmt {
+                depth: 1,
+                stmt: Stmt::Match {
+                    expr: var("state"),
+                    arms: vec![MatchArm {
+                        pattern: Pattern::I64(0),
+                        body: vec![IndentStmt {
+                            depth: 0,
+                            stmt: Stmt::Expr(std_process_exit(int(0))),
+                        }],
+                    }],
+                },
+            }],
         };
         let expected = Program {
             items: vec![Item::Fn(f.clone())],
