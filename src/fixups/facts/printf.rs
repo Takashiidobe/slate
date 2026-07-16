@@ -391,30 +391,41 @@ fn visit_expr(
                 visit_expr(function, count, env, path, calls, facts)
             });
         }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, ptr, env, path, calls, facts)
-            });
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            if let Some(ptr) = place.ptr_expr() {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    visit_expr(function, ptr, env, path, calls, facts)
+                });
+            }
         }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, ptr, env, path, calls, facts)
-            });
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            if let Some(ptr) = place.ptr_expr() {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    visit_expr(function, ptr, env, path, calls, facts)
+                });
+            }
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
                 visit_expr(function, value, env, path, calls, facts)
             });
         }
+        Expr::AtomicNew { value, .. } => {
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                visit_expr(function, value, env, path, calls, facts)
+            });
+        }
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, ptr, env, path, calls, facts)
-            });
+            if let Some(ptr) = place.ptr_expr() {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    visit_expr(function, ptr, env, path, calls, facts)
+                });
+            }
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
                 visit_expr(function, expected, env, path, calls, facts)
             });

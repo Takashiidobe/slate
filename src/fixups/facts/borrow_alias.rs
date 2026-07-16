@@ -249,40 +249,47 @@ impl<'a> Collector<'a> {
                     self.expr(arg, path);
                 }
             }
-            Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-                self.record_expr_vars(
-                    ptr,
-                    BorrowAliasReason::AtomicAccess,
-                    BorrowAliasUseKind::AtomicAccess,
-                    path,
-                );
-                self.expr(ptr, path);
+            Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    self.record_expr_vars(
+                        ptr,
+                        BorrowAliasReason::AtomicAccess,
+                        BorrowAliasUseKind::AtomicAccess,
+                        path,
+                    );
+                    self.expr(ptr, path);
+                }
             }
-            Expr::AtomicStore { ptr, value, .. }
-            | Expr::AtomicFetch { ptr, value, .. }
-            | Expr::AtomicSwap { ptr, value, .. } => {
-                self.record_expr_vars(
-                    ptr,
-                    BorrowAliasReason::AtomicAccess,
-                    BorrowAliasUseKind::AtomicAccess,
-                    path,
-                );
-                self.expr(ptr, path);
+            Expr::AtomicStore { place, value, .. }
+            | Expr::AtomicFetch { place, value, .. }
+            | Expr::AtomicSwap { place, value, .. } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    self.record_expr_vars(
+                        ptr,
+                        BorrowAliasReason::AtomicAccess,
+                        BorrowAliasUseKind::AtomicAccess,
+                        path,
+                    );
+                    self.expr(ptr, path);
+                }
                 self.expr(value, path);
             }
+            Expr::AtomicNew { value, .. } => self.expr(value, path),
             Expr::AtomicCompareExchange {
-                ptr,
+                place,
                 expected,
                 desired,
                 ..
             } => {
-                self.record_expr_vars(
-                    ptr,
-                    BorrowAliasReason::AtomicAccess,
-                    BorrowAliasUseKind::AtomicAccess,
-                    path,
-                );
-                self.expr(ptr, path);
+                if let Some(ptr) = place.ptr_expr() {
+                    self.record_expr_vars(
+                        ptr,
+                        BorrowAliasReason::AtomicAccess,
+                        BorrowAliasUseKind::AtomicAccess,
+                        path,
+                    );
+                    self.expr(ptr, path);
+                }
                 self.expr(expected, path);
                 self.expr(desired, path);
             }
@@ -511,7 +518,7 @@ mod tests {
     use super::*;
     use crate::fixups::facts;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{AtomicOrdering, AtomicType, Expr, Item, Program, Stmt};
+    use crate::rust_ast::{AtomicOrdering, AtomicPlace, AtomicType, Expr, Item, Program, Stmt};
 
     fn analyzed(stmts: Vec<Stmt>) -> facts::FixupFacts {
         facts::analyze(Program {
@@ -657,7 +664,7 @@ mod tests {
             ),
             Stmt::Expr(Expr::AtomicLoad {
                 ty: AtomicType::I32,
-                ptr: Box::new(var("ptr")),
+                place: AtomicPlace::Ptr(Box::new(var("ptr"))),
                 ordering: AtomicOrdering::SeqCst,
             }),
         ]);

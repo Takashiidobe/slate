@@ -428,24 +428,40 @@ impl<'a> Collector<'a> {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(expr, path));
                 Some(to.clone())
             }
-            Expr::AtomicRef { ptr, ty } | Expr::AtomicLoad { ptr, ty, .. } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(ptr, path));
+            Expr::AtomicRef { place, ty } | Expr::AtomicLoad { place, ty, .. } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                        self.expr(ptr, path)
+                    });
+                }
                 Some(atomic_rust_type(*ty))
             }
-            Expr::AtomicStore { ptr, value, .. }
-            | Expr::AtomicFetch { ptr, value, .. }
-            | Expr::AtomicSwap { ptr, value, .. } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(ptr, path));
+            Expr::AtomicStore { place, value, .. }
+            | Expr::AtomicFetch { place, value, .. }
+            | Expr::AtomicSwap { place, value, .. } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                        self.expr(ptr, path)
+                    });
+                }
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(value, path));
                 None
             }
+            Expr::AtomicNew { value, .. } => {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(value, path));
+                None
+            }
             Expr::AtomicCompareExchange {
-                ptr,
+                place,
                 expected,
                 desired,
                 ..
             } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(ptr, path));
+                if let Some(ptr) = place.ptr_expr() {
+                    walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                        self.expr(ptr, path)
+                    });
+                }
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| {
                     self.expr(expected, path)
                 });
