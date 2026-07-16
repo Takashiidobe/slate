@@ -516,6 +516,18 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(!string_char_rust.contains("fn printf("));
     assert!(!string_char_rust.contains("unsafe { printf("));
 
+    let array_init_c = fixtures_dir().join("array_init.c");
+    let array_init_generated = tmp.join("array_init.generated.rs");
+    support::translate(&array_init_c, &array_init_generated).expect("translate array_init fixture");
+    let array_init_rust =
+        std::fs::read_to_string(&array_init_generated).expect("read generated array_init rust");
+    assert!(array_init_rust.contains("println!(\"{}\", sum);"));
+    assert!(array_init_rust.contains("println!(\"{} {}\", partial[1], partial[3]);"));
+    assert!(array_init_rust.contains("println!(\"{}\", s);"));
+    assert!(array_init_rust.contains("println!(\"{} {}\", \"hi\", _v"));
+    assert!(!array_init_rust.contains("fn printf("));
+    assert!(!array_init_rust.contains("unsafe { printf("));
+
     let rejected_c = fixtures_dir().join("printf_string_char_rejected.c");
     let rejected_generated = tmp.join("printf_string_char_rejected.generated.rs");
     support::translate(&rejected_c, &rejected_generated)
@@ -523,7 +535,7 @@ fn simple_printfs_are_recovered_as_format_macros() {
     let rejected_rust = std::fs::read_to_string(&rejected_generated)
         .expect("read generated rejected printf string/char rust");
     assert!(rejected_rust.contains("let buf: &str = \"hey\";"));
-    assert!(rejected_rust.contains("println!(\"{}\", \"hey\");"));
+    assert!(rejected_rust.contains("println!(\"{}\", buf);"));
     assert!(!rejected_rust.contains("fn printf("));
     assert!(!rejected_rust.contains("unsafe { printf("));
 
