@@ -1,6 +1,6 @@
 //! Rust cleanup passes that run after faithful CIR lowering.
 
-mod facts;
+pub(crate) mod facts;
 mod idents;
 mod rewrite;
 mod runtime;
