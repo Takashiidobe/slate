@@ -18,7 +18,7 @@ fn fixup_once(body: &mut Vec<IndentStmt>) -> bool {
         let Some((alias, source)) = alias_def(&body[def_index].stmt) else {
             continue;
         };
-        let Some(use_index) = single_later_use(body, def_index, &alias) else {
+        let Some(use_index) = single_later_use_stmt(body, def_index, &alias) else {
             continue;
         };
         if source_changes_between(body, def_index, use_index, &source)
@@ -68,20 +68,18 @@ fn alias_def(stmt: &Stmt) -> Option<(String, String)> {
     Some((name.clone(), source.as_str().to_string()))
 }
 
-fn single_later_use(body: &[IndentStmt], def_index: usize, alias: &str) -> Option<usize> {
+fn single_later_use_stmt(body: &[IndentStmt], def_index: usize, alias: &str) -> Option<usize> {
     let mut use_index = None;
-    let mut count = 0;
     for (index, indent) in body.iter().enumerate().skip(def_index + 1) {
         let stmt_count = stmt_ident_count(&indent.stmt, alias);
         if stmt_count == 0 {
             continue;
         }
-        count += stmt_count;
-        if use_index.is_none() {
-            use_index = Some(index);
+        if use_index.replace(index).is_some() {
+            return None;
         }
     }
-    (count == 1).then_some(use_index?)
+    use_index
 }
 
 fn source_changes_between(
@@ -215,7 +213,7 @@ fn is_temp_name(name: &str) -> bool {
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{Expr, RustValue, Stmt};
+    use crate::rust_ast::{Expr, RustValue, Stmt, Type};
 
     fn run(stmts: Vec<Stmt>) -> String {
         after_body(
@@ -235,6 +233,22 @@ mod tests {
         })
     }
 
+    fn let_stmt(name: &str, ty: &str, init: Expr) -> Stmt {
+        Stmt::Let {
+            name: name.into(),
+            mutable: false,
+            ty: Some(Type::parse(ty)),
+            init: Some(init),
+        }
+    }
+
+    fn cast(expr: Expr, ty: &str) -> Expr {
+        Expr::Cast {
+            expr: Box::new(expr),
+            ty: Type::parse(ty),
+        }
+    }
+
     #[test]
     fn inlines_single_use_var_alias_into_macro_arg() {
         let out = run(vec![
@@ -252,6 +266,42 @@ fn f() {
 }
 "
         );
+    }
+
+    #[test]
+    fn inlines_alias_used_multiple_times_in_one_statement() {
+        let out = run(vec![
+            temp("_v13", "u32", var("u")),
+            let_stmt(
+                "first_set",
+                "i32",
+                Expr::If {
+                    cond: Box::new(bin(
+                        crate::rust_ast::BinOp::Eq,
+                        cast(var("_v13"), "i32"),
+                        int(0),
+                    )),
+                    then_expr: Box::new(int(0)),
+                    else_expr: Box::new(bin(
+                        crate::rust_ast::BinOp::Add,
+                        cast(
+                            Expr::MethodCall {
+                                recv: Box::new(cast(var("_v13"), "i32")),
+                                method: "trailing_zeros".into(),
+                                args: vec![],
+                            },
+                            "i32",
+                        ),
+                        int(1),
+                    )),
+                },
+            ),
+        ]);
+
+        assert!(!out.contains("_v13"));
+        assert!(out.contains("if (u as i32) == 0"));
+        assert!(out.contains("(u as i32).trailing_zeros() as i32"));
+        assert!(out.contains("+ 1"));
     }
 
     #[test]
