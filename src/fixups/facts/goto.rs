@@ -269,7 +269,7 @@ impl DispatchLoop {
         target >= self.states.len()
     }
 
-    fn cfg_nodes(&self) -> Vec<CfgNode> {
+    pub(crate) fn cfg_nodes(&self) -> Vec<CfgNode> {
         self.states
             .iter()
             .map(|state| {
