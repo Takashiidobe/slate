@@ -13,7 +13,6 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 
 | Priority | Notes | Ops |
 | --- | --- | --- |
-| P2 | constant/object-size queries | `cir.is_constant`, `cir.objsize` |
 | P3 | inline assembly | `cir.asm` |
 | P3 | assumptions | `cir.assume` |
 | P3 | labels-as-values/computed goto | `cir.block_address` |
@@ -43,6 +42,9 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
   - [x] `cir.store`
   - [x] `cir.copy`
   - [x] `cir.cast`
+- [x] builtin queries
+  - [x] `cir.is_constant`
+  - [x] `cir.objsize`
 - [x] calls/returns
   - [x] `cir.call`
   - [x] `cir.return`
