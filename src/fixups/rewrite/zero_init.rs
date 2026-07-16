@@ -7,23 +7,25 @@ use crate::fixups::facts::{
 };
 use crate::fixups::idents::expr_ident;
 use crate::fixups::support::walk;
-use crate::rust_ast::{IndentStmt, Stmt};
+use crate::rust_ast::{Expr, IndentStmt, Stmt, UnaryOp};
 
 pub(in crate::fixups) fn fixup(
     body: &mut Vec<IndentStmt>,
     function: FunctionId,
     facts: &FixupFacts,
+    cross_effects: bool,
 ) -> bool {
-    fixup_at(body, function, facts, &mut Vec::new())
+    fixup_at(body, function, facts, cross_effects, &mut Vec::new())
 }
 
 fn fixup_at(
     body: &mut Vec<IndentStmt>,
     function: FunctionId,
     facts: &FixupFacts,
+    cross_effects: bool,
     path: &mut Vec<PathSegment>,
 ) -> bool {
-    if fixup_nested(body, function, facts, path) {
+    if fixup_nested(body, function, facts, cross_effects, path) {
         return true;
     }
     for i in 0..body.len().saturating_sub(1) {
@@ -45,9 +47,16 @@ fn fixup_at(
         if !binding_is_zero(function, facts, binding, &decl_path) {
             continue;
         }
-        let Some(assign_index) =
-            first_overwriting_assignment(body, i, name, function, facts, binding, path)
-        else {
+        let Some(assign_index) = first_overwriting_assignment(
+            body,
+            i,
+            name,
+            function,
+            facts,
+            binding,
+            cross_effects,
+            path,
+        ) else {
             continue;
         };
         let Stmt::Assign { value, .. } = &body[assign_index].stmt else {
@@ -70,27 +79,78 @@ fn first_overwriting_assignment(
     function: FunctionId,
     facts: &FixupFacts,
     binding: crate::fixups::facts::BindingId,
+    cross_effects: bool,
     body_path: &[PathSegment],
 ) -> Option<usize> {
-    for (index, indent) in body.iter().enumerate().skip(decl_index + 1) {
-        let path = stmt_path(body_path, index);
-        match &indent.stmt {
-            Stmt::Assign { target, .. } if expr_ident(target) == Some(name) => {
-                if assignment_writes_binding(function, facts, binding, &path)
-                    && !assignment_reads_binding(facts, binding, &path)
-                    && !assignment_reads_intervening_binding(
-                        body, decl_index, index, function, facts, body_path, &path,
-                    )
-                {
-                    return Some(index);
+    let (assign_index, value) =
+        body.iter()
+            .enumerate()
+            .skip(decl_index + 1)
+            .find_map(|(index, indent)| match &indent.stmt {
+                Stmt::Assign { target, value } if expr_ident(target) == Some(name) => {
+                    Some((index, value))
                 }
-                return None;
-            }
-            stmt if can_cross_intervening_stmt(function, facts, binding, &path, stmt) => {}
-            _ => return None,
-        }
+                _ => None,
+            })?;
+    let assign_path = stmt_path(body_path, assign_index);
+    if !assignment_writes_binding(function, facts, binding, &assign_path)
+        || assignment_reads_binding(facts, binding, &assign_path)
+        || assignment_reads_intervening_binding(
+            body,
+            decl_index,
+            assign_index,
+            function,
+            facts,
+            body_path,
+            &assign_path,
+        )
+    {
+        return None;
     }
-    None
+    let value_reads_nothing = reads_nothing(value);
+    for index in (decl_index + 1)..assign_index {
+        let path = stmt_path(body_path, index);
+        if can_cross_intervening_stmt(function, facts, binding, &path, &body[index].stmt) {
+            continue;
+        }
+        // a constant store reads nothing, so removing it is safe past any effect
+        // as long as the crossed statement neither reads nor writes the binding.
+        if cross_effects
+            && value_reads_nothing
+            && !assignment_reads_binding(facts, binding, &path)
+            && !binding_written_under(facts, binding, &path)
+        {
+            continue;
+        }
+        return None;
+    }
+    Some(assign_index)
+}
+
+fn reads_nothing(expr: &Expr) -> bool {
+    match expr {
+        Expr::Value(_) | Expr::Str(_) | Expr::ByteStr(_) | Expr::CStr(_) | Expr::HexFloat(_) => {
+            true
+        }
+        Expr::Cast { expr, .. } => reads_nothing(expr),
+        Expr::Unary { op, expr } => {
+            matches!(op, UnaryOp::Neg | UnaryOp::Not) && reads_nothing(expr)
+        }
+        Expr::Binary { lhs, rhs, .. } => reads_nothing(lhs) && reads_nothing(rhs),
+        _ => false,
+    }
+}
+
+fn binding_written_under(
+    facts: &FixupFacts,
+    binding: crate::fixups::facts::BindingId,
+    path: &[PathSegment],
+) -> bool {
+    facts.def_use(binding).is_some_and(|fact| {
+        fact.writes
+            .iter()
+            .any(|write| write.0.as_slice().starts_with(path))
+    })
 }
 
 fn assignment_reads_intervening_binding(
@@ -146,13 +206,14 @@ fn fixup_nested(
     body: &mut [IndentStmt],
     function: FunctionId,
     facts: &FixupFacts,
+    cross_effects: bool,
     path: &mut Vec<PathSegment>,
 ) -> bool {
     for (index, stmt) in body.iter_mut().enumerate() {
         let mut changed = false;
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |body, path| {
-                if !changed && fixup_at(body, function, facts, path) {
+                if !changed && fixup_at(body, function, facts, cross_effects, path) {
                     changed = true;
                 }
             });
@@ -226,6 +287,23 @@ mod tests {
     use crate::rust_ast::{BinOp, Block, Item, MatchArm, Pattern, Program};
 
     fn fixed(params: Vec<crate::rust_ast::FnParam>, ret: Option<&str>, stmts: Vec<Stmt>) -> String {
+        fixed_with(params, ret, stmts, false)
+    }
+
+    fn fixed_crossing(
+        params: Vec<crate::rust_ast::FnParam>,
+        ret: Option<&str>,
+        stmts: Vec<Stmt>,
+    ) -> String {
+        fixed_with(params, ret, stmts, true)
+    }
+
+    fn fixed_with(
+        params: Vec<crate::rust_ast::FnParam>,
+        ret: Option<&str>,
+        stmts: Vec<Stmt>,
+        cross_effects: bool,
+    ) -> String {
         let mut program = Program {
             items: vec![Item::Fn(func(params, ret, stmts))],
         };
@@ -234,7 +312,7 @@ mod tests {
             let Item::Fn(f) = &mut program.items[0] else {
                 unreachable!();
             };
-            if !fixup(&mut f.body, FunctionId(0), &analyzed.facts) {
+            if !fixup(&mut f.body, FunctionId(0), &analyzed.facts, cross_effects) {
                 break;
             }
         }
@@ -465,5 +543,52 @@ fn f() -> i32 {
         let expected = emit(func(vec![], Some("i32"), stmts.clone()));
 
         assert_eq!(fixed(vec![], Some("i32"), stmts), expected);
+    }
+
+    #[test]
+    fn crossing_mode_drops_constant_store_past_effectful_statement() {
+        let out = fixed_crossing(
+            vec![],
+            None,
+            vec![
+                let_mut("x", "i32", int(0)),
+                Stmt::Expr(call("side_effect", vec![])),
+                assign("x", int(0)),
+            ],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let mut x: i32 = 0;
+    side_effect();
+}
+"
+        );
+    }
+
+    #[test]
+    fn conservative_mode_keeps_constant_store_past_effectful_statement() {
+        let stmts = vec![
+            let_mut("x", "i32", int(0)),
+            Stmt::Expr(call("side_effect", vec![])),
+            assign("x", int(0)),
+        ];
+        let expected = emit(func(vec![], None, stmts.clone()));
+
+        assert_eq!(fixed(vec![], None, stmts), expected);
+    }
+
+    #[test]
+    fn crossing_mode_keeps_reading_store_past_effectful_statement() {
+        let stmts = vec![
+            let_mut("x", "i32", int(0)),
+            Stmt::Expr(call("side_effect", vec![])),
+            assign("x", var("y")),
+        ];
+        let expected = emit(func(vec![], None, stmts.clone()));
+
+        assert_eq!(fixed_crossing(vec![], None, stmts), expected);
     }
 }
