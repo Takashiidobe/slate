@@ -819,6 +819,7 @@ fn const_c_string(expr: &Expr) -> Option<Vec<u8>> {
     match expr {
         Expr::Str(s) => Some(s.as_bytes().to_vec()),
         Expr::ByteStr(bytes) => Some(bytes.strip_suffix(&[0]).unwrap_or(bytes).to_vec()),
+        Expr::CStr(bytes) => Some(bytes.clone()),
         Expr::Cast { expr, .. } => const_c_string(expr),
         Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
             const_c_string(recv)
