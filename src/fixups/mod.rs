@@ -221,6 +221,21 @@ pub fn apply(program: Program) -> Program {
     rewrite::atomic_locals::fixup(&mut program, &facts);
     inline_temps_to_fixpoint(&mut program, InlinePass::Late);
     zero_init_to_fixpoint(&mut program, true);
+    loop {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+        let mut changed = false;
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            if let Item::Fn(f) = item
+                && let Some(function) = facts.function_by_item_index(item_index)
+                && rewrite::atomic_compare_exchange::fixup(&mut f.body, function, &facts)
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
     remove_mut(&mut program);
     for item in &mut program.items {
         if let Item::Fn(f) = item {
