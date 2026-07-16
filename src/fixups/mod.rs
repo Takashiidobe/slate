@@ -26,19 +26,7 @@ pub fn apply(program: Program) -> Program {
         }
     }
     zero_init_to_fixpoint(&mut program, false);
-    loop {
-        let mut changed = false;
-        for item in &mut program.items {
-            if let Item::Fn(f) = item
-                && rewrite::singleton_scopes::fixup(&mut f.body)
-            {
-                changed = true;
-            }
-        }
-        if !changed {
-            break;
-        }
-    }
+    singleton_scopes_to_fixpoint(&mut program);
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
@@ -47,6 +35,8 @@ pub fn apply(program: Program) -> Program {
             rewrite::compound_assign::fixup(&mut f.body, function, &facts);
         }
     }
+    cleanup_for_continues(&mut program);
+    singleton_scopes_to_fixpoint(&mut program);
     for item in &mut program.items {
         if let Item::Fn(f) = item {
             rewrite::constant_index_casts::fixup(&mut f.body);
@@ -251,6 +241,38 @@ fn structure_goto(program: &mut Program) {
     for item in &mut program.items {
         if let Item::Fn(f) = item {
             while rewrite::goto::fixup(&mut f.body) {}
+        }
+    }
+}
+
+fn cleanup_for_continues(program: &mut Program) {
+    loop {
+        let mut changed = false;
+        for item in &mut program.items {
+            if let Item::Fn(f) = item
+                && rewrite::for_continue::fixup(&mut f.body)
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+}
+
+fn singleton_scopes_to_fixpoint(program: &mut Program) {
+    loop {
+        let mut changed = false;
+        for item in &mut program.items {
+            if let Item::Fn(f) = item
+                && rewrite::singleton_scopes::fixup(&mut f.body)
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
         }
     }
 }
