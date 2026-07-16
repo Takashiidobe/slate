@@ -237,6 +237,7 @@ pub fn apply(program: Program) -> Program {
         }
     }
     remove_mut(&mut program);
+    inline_var_aliases_to_fixpoint(&mut program);
     rewrite::unused_items::fixup(&mut program);
     for item in &mut program.items {
         if let Item::Fn(f) = item {
@@ -339,6 +340,22 @@ fn remove_mut(program: &mut Program) {
             && let Some(function) = facts.function_by_item_index(item_index)
         {
             rewrite::remove_mut::fixup(f, function, &facts);
+        }
+    }
+}
+
+fn inline_var_aliases_to_fixpoint(program: &mut Program) {
+    loop {
+        let mut changed = false;
+        for item in &mut program.items {
+            if let Item::Fn(f) = item
+                && rewrite::var_aliases::fixup(&mut f.body)
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
         }
     }
 }
