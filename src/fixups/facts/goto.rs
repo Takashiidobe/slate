@@ -258,8 +258,9 @@ pub(crate) enum Transfer {
         else_: Box<ArmFlow>,
     },
     Return(Option<Expr>),
-    /// `unreachable!()`, `break 'L`, `std::process::exit(..)` and other divergence.
-    Diverge,
+    /// `unreachable!()`, `break 'L`, `std::process::exit(..)` and other
+    /// divergence; carries the original terminal statement for re-emission.
+    Diverge(Box<Stmt>),
 }
 
 impl DispatchLoop {
@@ -311,6 +312,15 @@ impl DispatchState {
     }
 }
 
+impl ArmFlow {
+    /// Distinct states this flow's transfer tree jumps to.
+    pub(crate) fn gotos(&self) -> Vec<usize> {
+        let mut out = Vec::new();
+        collect_gotos(self, &mut out);
+        out
+    }
+}
+
 fn collect_gotos(flow: &ArmFlow, out: &mut Vec<usize>) {
     match &flow.transfer {
         Transfer::Goto(target) => {
@@ -322,7 +332,7 @@ fn collect_gotos(flow: &ArmFlow, out: &mut Vec<usize>) {
             collect_gotos(then_, out);
             collect_gotos(else_, out);
         }
-        Transfer::Return(_) | Transfer::Diverge => {}
+        Transfer::Return(_) | Transfer::Diverge(_) => {}
     }
 }
 
@@ -421,6 +431,8 @@ fn parse_flow(
     loop_label: &str,
     dynamic: &mut bool,
 ) -> Option<ArmFlow> {
+    let stmts = flatten_scopes(stmts);
+    let stmts = &stmts[..];
     let mut prefix = Vec::new();
     let mut i = 0;
     while i < stmts.len() {
@@ -461,13 +473,13 @@ fn parse_flow(
             Stmt::Break(_) | Stmt::Continue(_) => {
                 return Some(ArmFlow {
                     prefix,
-                    transfer: Transfer::Diverge,
+                    transfer: Transfer::Diverge(Box::new(stmts[i].stmt.clone())),
                 });
             }
             Stmt::Expr(expr) if expr_diverges(expr) => {
                 return Some(ArmFlow {
                     prefix,
-                    transfer: Transfer::Diverge,
+                    transfer: Transfer::Diverge(Box::new(stmts[i].stmt.clone())),
                 });
             }
             _ => {
@@ -477,6 +489,22 @@ fn parse_flow(
         }
     }
     None
+}
+
+/// Inline plain lexical scopes so a branch spilled into `{ let _v = ...; if ... }`
+/// reads as a flat statement stream. Compiler temps are uniquely named, so
+/// dropping the block boundary is safe here. Labeled blocks stay — they are
+/// break targets.
+fn flatten_scopes(stmts: &[IndentStmt]) -> Vec<IndentStmt> {
+    let mut out = Vec::new();
+    for s in stmts {
+        if let Stmt::Scope { body } = &s.stmt {
+            out.extend(flatten_scopes(body));
+        } else {
+            out.push(s.clone());
+        }
+    }
+    out
 }
 
 /// `__stateN = <value>; continue 'L` at position `i`; returns the target state
@@ -517,10 +545,24 @@ fn expr_diverges(expr: &Expr) -> bool {
                 "unreachable" | "panic" | "todo" | "unimplemented"
             )
         }
-        Expr::Call { func, .. } => var_name(func)
+        Expr::Call { func, .. } => callee_name(func)
             .as_deref()
             .is_some_and(|name| name.ends_with("process::exit") || name == "abort"),
         _ => false,
+    }
+}
+
+fn callee_name(expr: &Expr) -> Option<String> {
+    match expr {
+        Expr::Var(ident) => Some(ident.as_str().to_string()),
+        Expr::Path(path) => Some(
+            path.segments
+                .iter()
+                .map(|s| s.as_str())
+                .collect::<Vec<_>>()
+                .join("::"),
+        ),
+        _ => None,
     }
 }
 

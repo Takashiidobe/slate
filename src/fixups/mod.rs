@@ -14,6 +14,7 @@ use crate::rust_ast::{Block, IndentStmt, Item, Program, Stmt};
 pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { program, .. } = facts::analyze(program);
     let mut program = program;
+    structure_goto(&mut program);
     inline_temps_to_fixpoint(&mut program, InlinePass::Early);
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     rewrite::anonymous_structs::fixup(&mut program, &facts);
@@ -217,6 +218,14 @@ pub fn apply(program: Program) -> Program {
         }
     }
     program
+}
+
+fn structure_goto(program: &mut Program) {
+    for item in &mut program.items {
+        if let Item::Fn(f) = item {
+            while rewrite::goto::fixup(&mut f.body) {}
+        }
+    }
 }
 
 fn zero_init_to_fixpoint(program: &mut Program) {
