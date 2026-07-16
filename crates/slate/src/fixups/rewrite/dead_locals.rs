@@ -1,6 +1,8 @@
-use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
+use crate::fixups::facts::{
+    AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment,
+};
 use crate::fixups::support::walk;
-use crate::rust_ast::{BinOp, Expr, IndentStmt, Stmt, UnaryOp};
+use crate::rust_ast::{Expr, IndentStmt, Stmt};
 
 pub(in crate::fixups) fn fixup(
     body: &mut Vec<IndentStmt>,
@@ -60,58 +62,48 @@ fn removable_dead_local(
     facts
         .def_use(binding)
         .is_some_and(|def_use| def_use.reads.is_empty() && def_use.writes.is_empty())
-        && discardable_init(init)
+        && discardable_init(init, function, facts, path)
 }
 
-fn discardable_init(expr: &Expr) -> bool {
+fn discardable_init(
+    expr: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> bool {
+    if discardable_known_method(expr) {
+        return true;
+    }
+    let Some(effect) = facts.effect(function, EffectSubject::Expr, &AstPath(path.to_vec())) else {
+        return false;
+    };
+    effect.effects.iter().all(discardable_effect)
+}
+
+fn discardable_effect(effect: &EffectKind) -> bool {
+    !matches!(
+        effect,
+        EffectKind::ReadOnlyCall
+            | EffectKind::UnknownCall
+            | EffectKind::MethodCall
+            | EffectKind::MacroExpansion
+            | EffectKind::VolatileRead
+            | EffectKind::VolatileWrite
+            | EffectKind::AtomicRead
+            | EffectKind::AtomicWrite
+            | EffectKind::MemoryWrite
+            | EffectKind::UnknownSideEffect
+    )
+}
+
+fn discardable_known_method(expr: &Expr) -> bool {
     match expr {
-        Expr::Cast { expr, .. } | Expr::Transmute { expr, .. } => discardable_init(expr),
-        Expr::Unary { op, expr } => !matches!(op, UnaryOp::Deref) && discardable_init(expr),
-        Expr::Binary { op, lhs, rhs } if discardable_binary_op(*op) => {
-            (discardable_init(lhs) && side_expr_discardable(rhs))
-                || (side_expr_discardable(lhs) && discardable_init(rhs))
-        }
+        Expr::Cast { expr, .. } | Expr::Transmute { expr, .. } => discardable_known_method(expr),
         Expr::MethodCall { recv, method, args } if method == "len" && args.is_empty() => {
             discardable_receiver(recv)
         }
         _ => false,
     }
-}
-
-fn side_expr_discardable(expr: &Expr) -> bool {
-    match expr {
-        Expr::Value(_) | Expr::Var(_) | Expr::Str(_) | Expr::ByteStr(_) | Expr::CStr(_) => true,
-        Expr::Cast { expr, .. } | Expr::Transmute { expr, .. } => side_expr_discardable(expr),
-        Expr::Unary { op, expr } => !matches!(op, UnaryOp::Deref) && side_expr_discardable(expr),
-        Expr::Binary { op, lhs, rhs } if discardable_binary_op(*op) => {
-            side_expr_discardable(lhs) && side_expr_discardable(rhs)
-        }
-        _ => false,
-    }
-}
-
-fn discardable_binary_op(op: BinOp) -> bool {
-    matches!(
-        op,
-        BinOp::Add
-            | BinOp::Sub
-            | BinOp::Mul
-            | BinOp::Div
-            | BinOp::Rem
-            | BinOp::Shl
-            | BinOp::Shr
-            | BinOp::BitAnd
-            | BinOp::BitOr
-            | BinOp::BitXor
-            | BinOp::Eq
-            | BinOp::Ne
-            | BinOp::Lt
-            | BinOp::Le
-            | BinOp::Gt
-            | BinOp::Ge
-            | BinOp::And
-            | BinOp::Or
-    )
 }
 
 fn discardable_receiver(expr: &Expr) -> bool {
@@ -137,7 +129,7 @@ mod tests {
     use super::*;
     use crate::fixups::facts;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{Item, Program, Type};
+    use crate::rust_ast::{BinOp, Item, Program, Type};
 
     fn after(stmts: Vec<Stmt>) -> String {
         let mut program = Program {
@@ -171,16 +163,28 @@ mod tests {
         let out = after(vec![
             let_mut("len", "i32", len_call()),
             let_mut("total", "i32", int(0)),
+            Stmt::Return(Some(var("total"))),
         ]);
 
-        assert_eq!(
-            out,
-            "\
-fn f(items: &[i32]) {
-    let mut total: i32 = 0;
-}
-"
-        );
+        assert!(!out.contains("len"));
+        assert!(out.contains("let mut total: i32 = 0;"));
+        assert!(out.contains("return total;"));
+    }
+
+    #[test]
+    fn removes_unused_local_with_pure_value_init() {
+        let out = after(vec![
+            let_mut("literal", "i32", int(0)),
+            let_mut("copy", "i32", var("items_len")),
+            let_mut("math", "i32", bin(BinOp::Add, var("items_len"), int(1))),
+            let_mut("total", "i32", int(0)),
+            Stmt::Return(Some(var("total"))),
+        ]);
+
+        assert!(!out.contains("literal"));
+        assert!(!out.contains("copy"));
+        assert!(!out.contains("math"));
+        assert!(out.contains("let mut total: i32 = 0;"));
     }
 
     #[test]
@@ -194,10 +198,36 @@ fn f(items: &[i32]) {
     }
 
     #[test]
+    fn keeps_unused_local_with_volatile_read_init() {
+        let out = after(vec![
+            let_mut(
+                "read",
+                "i32",
+                Expr::Call {
+                    func: Box::new(Expr::Path(crate::rust_ast::Path::new([
+                        "std".into(),
+                        "ptr".into(),
+                        "read_volatile".into(),
+                    ]))),
+                    args: vec![Expr::AddrOf {
+                        mutable: false,
+                        expr: Box::new(var("items_len")),
+                    }],
+                },
+            ),
+            let_mut("total", "i32", int(0)),
+            Stmt::Return(Some(var("total"))),
+        ]);
+
+        assert!(out.contains("let mut read: i32 = std::ptr::read_volatile"));
+    }
+
+    #[test]
     fn keeps_read_local() {
         let out = after(vec![
             let_mut("len", "i32", len_call()),
             let_mut("total", "i32", var("len")),
+            Stmt::Return(Some(var("total"))),
         ]);
 
         assert!(out.contains("let mut len: i32 = items.len() as i32;"));
