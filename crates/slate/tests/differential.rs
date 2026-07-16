@@ -159,6 +159,27 @@ fn atomic_temp_allocas_forward_instead_of_shadowed_locals() {
     assert!(rust.contains("Ok(_) => true"));
     assert!(rust.contains("expected = v;"));
     assert!(rust.contains("expected2 = v;"));
+    for alias in [
+        "let _v30: i32 = loaded;",
+        "let _v31: i32 = fa;",
+        "let _v32: i32 = fs;",
+        "let _v33: i32 = fand;",
+        "let _v34: i32 = forr;",
+        "let _v35: i32 = fxor;",
+        "let _v36: i32 = xchg_old;",
+        "let _v37: i32 = ok;",
+        "let _v38: i32 = expected;",
+        "let _v39: i32 = bad;",
+        "let _v40: i32 = expected2;",
+    ] {
+        assert!(!rust.contains(alias), "{alias} survived in:\n{rust}");
+    }
+    assert!(
+        rust.contains(
+            "println!(\"{} {} {} {} {} {} {} {} {} {} {} {}\", loaded, fa, fs, fand, forr, fxor, xchg_old, ok, expected, bad, expected2, _v41);"
+        ),
+        "{rust}"
+    );
     assert!(!rust.contains(".is_ok()"));
     assert!(!rust.contains("enum memory_order"));
     assert!(!rust.contains("struct atomic_flag"));
@@ -406,7 +427,7 @@ fn pointer_arithmetic_uses_clearer_safe_offset_forms() {
     support::translate(&pointers_c, &pointers_generated).expect("translate pointers fixture");
     let pointers =
         std::fs::read_to_string(&pointers_generated).expect("read generated pointers rust");
-    assert!(pointers.contains("return unsafe { *_v8.offset(_v9 as isize) };"));
+    assert!(pointers.contains("return unsafe { *ptr.offset(index as isize) };"));
     assert!(!pointers.contains("unsafe { *unsafe {"));
     assert!(!pointers.contains(".add(_v9"));
 
@@ -1222,7 +1243,7 @@ fn internal_char_pointer_params_lift_to_str() {
     assert!(rust.contains("fn text_len(s: &str) -> i32"));
     assert!(rust.contains("return __slate_runtime::parse_i32(s);"));
     assert!(rust.contains("return parse_num(s);"));
-    assert!(rust.contains("let _v1: usize = _v0.len();"));
+    assert!(rust.contains("let _v1: usize = s.len();"));
     assert!(rust.contains("forward_num(digits)"));
     assert!(rust.contains("text_len(word)"));
     assert!(!rust.contains("fn atoi("));
