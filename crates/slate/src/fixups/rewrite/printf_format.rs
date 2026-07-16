@@ -229,6 +229,7 @@ fn const_c_string(expr: &Expr) -> Option<Vec<u8>> {
     match expr {
         Expr::Str(s) => Some(s.as_bytes().to_vec()),
         Expr::ByteStr(bytes) => Some(trim_c_nul(bytes)),
+        Expr::CStr(bytes) => Some(bytes.clone()),
         Expr::Cast { expr, .. } => const_c_string(expr),
         Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
             const_c_string(recv)
@@ -554,15 +555,14 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> O
 }
 
 fn printf_string_arg(arg: &Expr, fact: &PrintfArgFact) -> Option<Expr> {
+    let stripped = strip_pointer_view(arg);
+    if fact.rust_string {
+        return Some(stripped.clone());
+    }
     if let Some(value) = &fact.const_string {
         return Some(Expr::Str(value.clone()));
     }
-    let stripped = strip_pointer_view(arg);
-    if fact.rust_string {
-        Some(stripped.clone())
-    } else {
-        None
-    }
+    None
 }
 
 fn strip_pointer_view(expr: &Expr) -> &Expr {
