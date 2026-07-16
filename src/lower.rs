@@ -1401,18 +1401,40 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.not" => self.lower_not(op),
             "cir.minus" | "cir.fneg" => self.lower_neg(op),
             "cir.abs" => self.lower_abs(op),
+            "cir.acos" => self.lower_unary_method(op, "acos"),
+            "cir.asin" => self.lower_unary_method(op, "asin"),
+            "cir.atan" => self.lower_unary_method(op, "atan"),
+            "cir.atan2" => self.lower_binary_method(op, "atan2"),
             "cir.ceil" => self.lower_unary_method(op, "ceil"),
             "cir.copysign" => self.lower_binary_method(op, "copysign"),
+            "cir.cos" => self.lower_unary_method(op, "cos"),
+            "cir.exp" => self.lower_unary_method(op, "exp"),
+            "cir.exp2" => self.lower_unary_method(op, "exp2"),
             "cir.fabs" => self.lower_unary_method(op, "abs"),
+            "cir.fmaximum" => self.lower_binary_method(op, "max"),
+            "cir.fminimum" => self.lower_binary_method(op, "min"),
+            "cir.fmod" => self.lower_binary(op, BinOp::Rem),
             "cir.floor" => self.lower_unary_method(op, "floor"),
             "cir.fmaxnum" => self.lower_binary_method(op, "max"),
             "cir.fminnum" => self.lower_binary_method(op, "min"),
             "cir.is_fp_class" => self.lower_is_fp_class(op),
+            "cir.llrint" => self.lower_unary_cast_method(op, "round_ties_even"),
+            "cir.llround" => self.lower_unary_cast_method(op, "round"),
+            "cir.log" => self.lower_unary_method(op, "ln"),
+            "cir.log10" => self.lower_unary_method(op, "log10"),
+            "cir.log2" => self.lower_unary_method(op, "log2"),
+            "cir.lrint" => self.lower_unary_cast_method(op, "round_ties_even"),
+            "cir.lround" => self.lower_unary_cast_method(op, "round"),
             "cir.modf" => self.lower_modf(op),
             "cir.nearbyint" => self.lower_unary_method(op, "round_ties_even"),
+            "cir.pow" => self.lower_binary_method(op, "powf"),
             "cir.rint" => self.lower_unary_method(op, "round_ties_even"),
             "cir.round" => self.lower_unary_method(op, "round"),
+            "cir.roundeven" => self.lower_unary_method(op, "round_ties_even"),
             "cir.signbit" => self.lower_signbit(op),
+            "cir.sin" => self.lower_unary_method(op, "sin"),
+            "cir.sqrt" => self.lower_unary_method(op, "sqrt"),
+            "cir.tan" => self.lower_unary_method(op, "tan"),
             "cir.trunc" => self.lower_unary_method(op, "trunc"),
             "cir.fadd" => self.lower_binary(op, BinOp::Add),
             "cir.fsub" => self.lower_binary(op, BinOp::Sub),
@@ -2418,6 +2440,28 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 method: method.into(),
                 args: vec![],
             }
+        };
+        self.materialize_expr(result, expr, result_ty);
+    }
+
+    fn lower_unary_cast_method(&mut self, op: &Op, method: &str) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let result_ty = op_result_type(op);
+        let ty = result_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or(Type::Prim(Prim::I64));
+        let expr = Expr::Cast {
+            expr: Box::new(Expr::MethodCall {
+                recv: Box::new(self.operand_expr(value)),
+                method: method.into(),
+                args: Vec::new(),
+            }),
+            ty,
         };
         self.materialize_expr(result, expr, result_ty);
     }
@@ -6127,5 +6171,83 @@ mod tests {
         assert!(rust.contains("fn replace_left(arg0: Pair, arg1: i32) -> Pair {"));
         assert!(rust.contains("let _v0: Pair = Pair { left: arg1, right: arg0.right };"));
         assert!(rust.contains("return _v0;"));
+    }
+
+    #[test]
+    fn lowers_direct_float_math_ops_to_methods() {
+        let rust = lower_cir(
+            r#"
+!s64i = !cir.int<s, 64>
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<(!cir.double, !cir.double) -> !cir.double>, sym_name = "math"}> ({
+  ^bb0(%arg0: !cir.double, %arg1: !cir.double):
+    %0 = "cir.sin"(%arg0) : (!cir.double) -> !cir.double
+    %1 = "cir.cos"(%arg0) : (!cir.double) -> !cir.double
+    %2 = "cir.pow"(%0, %1) : (!cir.double, !cir.double) -> !cir.double
+    %3 = "cir.fmod"(%2, %arg1) : (!cir.double, !cir.double) -> !cir.double
+    %4 = "cir.acos"(%arg0) : (!cir.double) -> !cir.double
+    %5 = "cir.asin"(%arg0) : (!cir.double) -> !cir.double
+    %6 = "cir.atan"(%arg0) : (!cir.double) -> !cir.double
+    %7 = "cir.atan2"(%arg0, %arg1) : (!cir.double, !cir.double) -> !cir.double
+    %8 = "cir.exp"(%arg0) : (!cir.double) -> !cir.double
+    %9 = "cir.exp2"(%arg0) : (!cir.double) -> !cir.double
+    %10 = "cir.log"(%arg1) : (!cir.double) -> !cir.double
+    %11 = "cir.log10"(%arg1) : (!cir.double) -> !cir.double
+    %12 = "cir.log2"(%arg1) : (!cir.double) -> !cir.double
+    %13 = "cir.roundeven"(%arg1) : (!cir.double) -> !cir.double
+    %14 = "cir.sqrt"(%arg1) : (!cir.double) -> !cir.double
+    %15 = "cir.tan"(%arg0) : (!cir.double) -> !cir.double
+    %16 = "cir.fmaximum"(%14, %15) : (!cir.double, !cir.double) -> !cir.double
+    %17 = "cir.fminimum"(%16, %3) : (!cir.double, !cir.double) -> !cir.double
+    "cir.return"(%17) : (!cir.double) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(!rust.contains("todo!"));
+        assert!(rust.contains("let _v0: f64 = arg0.sin();"));
+        assert!(rust.contains("let _v1: f64 = arg0.cos();"));
+        assert!(rust.contains("let _v2: f64 = _v0.powf(_v1);"));
+        assert!(rust.contains("let _v3: f64 = _v2 % arg1;"));
+        assert!(rust.contains("arg0.acos()"));
+        assert!(rust.contains("arg0.asin()"));
+        assert!(rust.contains("arg0.atan()"));
+        assert!(rust.contains("arg0.atan2(arg1)"));
+        assert!(rust.contains("arg0.exp()"));
+        assert!(rust.contains("arg0.exp2()"));
+        assert!(rust.contains("arg1.ln()"));
+        assert!(rust.contains("arg1.log10()"));
+        assert!(rust.contains("arg1.log2()"));
+        assert!(rust.contains("arg1.round_ties_even()"));
+        assert!(rust.contains("arg1.sqrt()"));
+        assert!(rust.contains("arg0.tan()"));
+        assert!(rust.contains("_v14.max(_v15)"));
+        assert!(rust.contains("_v16.min(_v3)"));
+    }
+
+    #[test]
+    fn lowers_direct_integer_rounding_ops_to_casted_methods() {
+        let rust = lower_cir(
+            r#"
+!s64i = !cir.int<s, 64>
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<(!cir.double) -> !s64i>, sym_name = "rounding"}> ({
+  ^bb0(%arg0: !cir.double):
+    %0 = "cir.lround"(%arg0) : (!cir.double) -> !s64i
+    %1 = "cir.llround"(%arg0) : (!cir.double) -> !s64i
+    %2 = "cir.lrint"(%arg0) : (!cir.double) -> !s64i
+    %3 = "cir.llrint"(%arg0) : (!cir.double) -> !s64i
+    %4 = "cir.add"(%0, %1) : (!s64i, !s64i) -> !s64i
+    %5 = "cir.add"(%2, %3) : (!s64i, !s64i) -> !s64i
+    %6 = "cir.add"(%4, %5) : (!s64i, !s64i) -> !s64i
+    "cir.return"(%6) : (!s64i) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(rust.contains("let _v0: i64 = arg0.round() as i64;"));
+        assert!(rust.contains("let _v1: i64 = arg0.round() as i64;"));
+        assert!(rust.contains("let _v2: i64 = arg0.round_ties_even() as i64;"));
+        assert!(rust.contains("let _v3: i64 = arg0.round_ties_even() as i64;"));
     }
 }

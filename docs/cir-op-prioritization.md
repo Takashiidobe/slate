@@ -13,7 +13,6 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 
 | Priority | Notes | Ops |
 | --- | --- | --- |
-| P2 | math builtins/libm | `cir.acos`, `cir.asin`, `cir.atan`, `cir.atan2`, `cir.cos`, `cir.exp`, `cir.exp2`, `cir.fmaximum`, `cir.fminimum`, `cir.fmod`, `cir.llrint`, `cir.llround`, `cir.log`, `cir.log10`, `cir.log2`, `cir.lrint`, `cir.lround`, `cir.pow`, `cir.roundeven`, `cir.sin`, `cir.sqrt`, `cir.tan` |
 | P2 | integer bit builtins | `cir.bitreverse`, `cir.byte_swap`, `cir.clrsb`, `cir.clz`, `cir.ctz`, `cir.ffs`, `cir.parity`, `cir.popcount`, `cir.rotate` |
 | P2 | constant/object-size queries | `cir.is_constant`, `cir.objsize` |
 | P3 | inline assembly | `cir.asm` |
@@ -91,18 +90,40 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
   - [x] `cir.fdiv`
 - [x] float math/classification
   - [x] `cir.abs`
+  - [x] `cir.acos`
+  - [x] `cir.asin`
+  - [x] `cir.atan`
+  - [x] `cir.atan2`
   - [x] `cir.ceil`
   - [x] `cir.copysign`
+  - [x] `cir.cos`
+  - [x] `cir.exp`
+  - [x] `cir.exp2`
   - [x] `cir.fabs`
+  - [x] `cir.fmaximum`
+  - [x] `cir.fminimum`
+  - [x] `cir.fmod`
   - [x] `cir.fmaxnum`
   - [x] `cir.fminnum`
   - [x] `cir.floor`
   - [x] `cir.is_fp_class`
+  - [x] `cir.llrint`
+  - [x] `cir.llround`
+  - [x] `cir.log`
+  - [x] `cir.log10`
+  - [x] `cir.log2`
+  - [x] `cir.lrint`
+  - [x] `cir.lround`
   - [x] `cir.modf`
   - [x] `cir.nearbyint`
+  - [x] `cir.pow`
   - [x] `cir.rint`
   - [x] `cir.round`
+  - [x] `cir.roundeven`
   - [x] `cir.signbit`
+  - [x] `cir.sin`
+  - [x] `cir.sqrt`
+  - [x] `cir.tan`
   - [x] `cir.trunc`
 - [x] complex
   - [x] `cir.complex.create`
