@@ -1209,6 +1209,7 @@ impl<W: Write> Codegen<W> {
             }
             Type::Unit => self.out.write_str("()"),
             Type::Variadic => self.out.write_str("..."),
+            Type::Never => self.out.write_char('!'),
         }
     }
 }

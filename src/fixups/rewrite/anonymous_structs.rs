@@ -322,7 +322,8 @@ fn rewrite_type(ty: &mut Type, plans: &BTreeMap<String, Plan>) -> bool {
         | Type::VaList
         | Type::Str
         | Type::Unit
-        | Type::Variadic => false,
+        | Type::Variadic
+        | Type::Never => false,
     }
 }
 
