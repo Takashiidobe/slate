@@ -31,5 +31,6 @@ pub(super) mod string_copy;
 pub(super) mod string_libc;
 pub(super) mod string_lift;
 pub(super) mod string_params;
+pub(super) mod unnecessary_casts;
 pub(super) mod va_list;
 pub(super) mod zero_init;
