@@ -609,22 +609,27 @@ fn analyze_expr(
                 && analyze_expr(else_expr, AccessMode::Read, slices, state)
         }
         Expr::Block(block) | Expr::Unsafe(block) => analyze_body(&block.stmts, slices, state),
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-            analyze_expr(ptr, AccessMode::Read, slices, state)
-        }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            analyze_expr(ptr, AccessMode::Mutate, slices, state)
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => place
+            .ptr_expr()
+            .is_none_or(|ptr| analyze_expr(ptr, AccessMode::Read, slices, state)),
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            place
+                .ptr_expr()
+                .is_none_or(|ptr| analyze_expr(ptr, AccessMode::Mutate, slices, state))
                 && analyze_expr(value, AccessMode::Read, slices, state)
         }
+        Expr::AtomicNew { value, .. } => analyze_expr(value, AccessMode::Read, slices, state),
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            analyze_expr(ptr, AccessMode::Mutate, slices, state)
+            place
+                .ptr_expr()
+                .is_none_or(|ptr| analyze_expr(ptr, AccessMode::Mutate, slices, state))
                 && analyze_expr(expected, AccessMode::Read, slices, state)
                 && analyze_expr(desired, AccessMode::Read, slices, state)
         }

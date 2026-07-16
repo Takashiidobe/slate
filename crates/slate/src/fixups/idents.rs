@@ -1,6 +1,6 @@
 //! Identifier-counting helpers shared across fixup passes.
 
-use crate::rust_ast::{Block, Expr, Pattern, Stmt};
+use crate::rust_ast::{AtomicPlace, Block, Expr, Pattern, Stmt};
 
 pub(super) fn expr_ident(expr: &Expr) -> Option<&str> {
     match expr {
@@ -124,6 +124,15 @@ fn block_ident_count(block: &Block, name: &str) -> usize {
             .map_or(0, |tail| expr_ident_count(tail, name))
 }
 
+/// A promoted atomic local (`AtomicPlace::Local`) is a read of that name even
+/// though no `Expr::Var` node exists for it.
+fn atomic_place_ident_count(place: &AtomicPlace, name: &str) -> usize {
+    match place {
+        AtomicPlace::Ptr(ptr) => expr_ident_count(ptr, name),
+        AtomicPlace::Local(local) => usize::from(local.as_str() == name),
+    }
+}
+
 pub(super) fn expr_ident_count(expr: &Expr, name: &str) -> usize {
     match expr {
         Expr::Value(_) => 0,
@@ -152,19 +161,22 @@ pub(super) fn expr_ident_count(expr: &Expr, name: &str) -> usize {
                 + expr_ident_count(count, name)
         }
         Expr::AtomicFence { .. } | Expr::Todo(_) => 0,
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => expr_ident_count(ptr, name),
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            expr_ident_count(ptr, name) + expr_ident_count(value, name)
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            atomic_place_ident_count(place, name)
         }
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            atomic_place_ident_count(place, name) + expr_ident_count(value, name)
+        }
+        Expr::AtomicNew { value, .. } => expr_ident_count(value, name),
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            expr_ident_count(ptr, name)
+            atomic_place_ident_count(place, name)
                 + expr_ident_count(expected, name)
                 + expr_ident_count(desired, name)
         }

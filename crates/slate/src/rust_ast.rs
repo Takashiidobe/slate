@@ -325,7 +325,39 @@ pub enum Pattern {
     TupleStruct { name: Ident, fields: Vec<Pattern> },
 }
 
-#[derive(Debug, Clone, Copy)]
+/// The object an atomic operation acts on: an unsafe `AtomicN::from_ptr(<ptr>)`
+/// view over a plain integer slot, or a safe method call on a local whose
+/// storage is the atomic wrapper itself.
+#[derive(Debug, Clone)]
+pub enum AtomicPlace {
+    Ptr(Box<Expr>),
+    Local(Ident),
+}
+
+impl AtomicPlace {
+    pub fn ptr_expr(&self) -> Option<&Expr> {
+        match self {
+            AtomicPlace::Ptr(ptr) => Some(ptr),
+            AtomicPlace::Local(_) => None,
+        }
+    }
+
+    pub fn ptr_expr_mut(&mut self) -> Option<&mut Expr> {
+        match self {
+            AtomicPlace::Ptr(ptr) => Some(ptr),
+            AtomicPlace::Local(_) => None,
+        }
+    }
+
+    pub fn local(&self) -> Option<&Ident> {
+        match self {
+            AtomicPlace::Ptr(_) => None,
+            AtomicPlace::Local(name) => Some(name),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AtomicType {
     I8,
     U8,
@@ -621,39 +653,45 @@ pub enum Expr {
     },
     AtomicRef {
         ty: AtomicType,
-        ptr: Box<Expr>,
+        place: AtomicPlace,
     },
     AtomicLoad {
         ty: AtomicType,
-        ptr: Box<Expr>,
+        place: AtomicPlace,
         ordering: AtomicOrdering,
     },
     AtomicStore {
         ty: AtomicType,
-        ptr: Box<Expr>,
+        place: AtomicPlace,
         value: Box<Expr>,
         ordering: AtomicOrdering,
     },
     AtomicFetch {
         ty: AtomicType,
         op: AtomicRmwOp,
-        ptr: Box<Expr>,
+        place: AtomicPlace,
         value: Box<Expr>,
         ordering: AtomicOrdering,
     },
     AtomicSwap {
         ty: AtomicType,
-        ptr: Box<Expr>,
+        place: AtomicPlace,
         value: Box<Expr>,
         ordering: AtomicOrdering,
     },
     AtomicCompareExchange {
         ty: AtomicType,
-        ptr: Box<Expr>,
+        place: AtomicPlace,
         expected: Box<Expr>,
         desired: Box<Expr>,
         success: AtomicOrdering,
         failure: AtomicOrdering,
+    },
+    /// `std::sync::atomic::AtomicN::new(<value>)` — initializer for a local
+    /// promoted to native atomic storage.
+    AtomicNew {
+        ty: AtomicType,
+        value: Box<Expr>,
     },
     AtomicFence {
         ordering: AtomicOrdering,
@@ -932,23 +970,28 @@ impl Expr {
                 d || v || c
             }
             Expr::AtomicFence { .. } | Expr::Todo(_) => false,
-            Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-                ptr.substitute_var(name, replacement)
-            }
-            Expr::AtomicStore { ptr, value, .. }
-            | Expr::AtomicFetch { ptr, value, .. }
-            | Expr::AtomicSwap { ptr, value, .. } => {
-                let p = ptr.substitute_var(name, replacement);
+            Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => place
+                .ptr_expr_mut()
+                .is_some_and(|ptr| ptr.substitute_var(name, replacement)),
+            Expr::AtomicStore { place, value, .. }
+            | Expr::AtomicFetch { place, value, .. }
+            | Expr::AtomicSwap { place, value, .. } => {
+                let p = place
+                    .ptr_expr_mut()
+                    .is_some_and(|ptr| ptr.substitute_var(name, replacement));
                 let v = value.substitute_var(name, replacement);
                 p || v
             }
+            Expr::AtomicNew { value, .. } => value.substitute_var(name, replacement),
             Expr::AtomicCompareExchange {
-                ptr,
+                place,
                 expected,
                 desired,
                 ..
             } => {
-                let p = ptr.substitute_var(name, replacement);
+                let p = place
+                    .ptr_expr_mut()
+                    .is_some_and(|ptr| ptr.substitute_var(name, replacement));
                 let e = expected.substitute_var(name, replacement);
                 let d = desired.substitute_var(name, replacement);
                 p || e || d

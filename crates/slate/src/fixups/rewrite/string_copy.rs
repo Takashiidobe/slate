@@ -413,22 +413,29 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>) {
             rewrite_expr_pointer_views(val, liftable);
             rewrite_expr_pointer_views(count, liftable);
         }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-            rewrite_expr_pointer_views(ptr, liftable);
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            if let Some(ptr) = place.ptr_expr_mut() {
+                rewrite_expr_pointer_views(ptr, liftable);
+            }
         }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            rewrite_expr_pointer_views(ptr, liftable);
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            if let Some(ptr) = place.ptr_expr_mut() {
+                rewrite_expr_pointer_views(ptr, liftable);
+            }
             rewrite_expr_pointer_views(value, liftable);
         }
+        Expr::AtomicNew { value, .. } => rewrite_expr_pointer_views(value, liftable),
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            rewrite_expr_pointer_views(ptr, liftable);
+            if let Some(ptr) = place.ptr_expr_mut() {
+                rewrite_expr_pointer_views(ptr, liftable);
+            }
             rewrite_expr_pointer_views(expected, liftable);
             rewrite_expr_pointer_views(desired, liftable);
         }
@@ -574,8 +581,10 @@ fn expr_children_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool 
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. }
         | Expr::Closure { body: expr, .. }
-        | Expr::AtomicRef { ptr: expr, .. }
-        | Expr::AtomicLoad { ptr: expr, .. } => pred(expr),
+        | Expr::AtomicNew { value: expr, .. } => pred(expr),
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            place.ptr_expr().is_some_and(&mut *pred)
+        }
         Expr::Binary { lhs, rhs, .. }
         | Expr::Range {
             start: lhs,
@@ -612,15 +621,17 @@ fn expr_children_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool 
                 .any(|indent| stmt_expr_any(&indent.stmt, pred))
                 || block.tail.as_deref().is_some_and(pred)
         }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => pred(ptr) || pred(value),
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            place.ptr_expr().is_some_and(&mut *pred) || pred(value)
+        }
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
-        } => pred(ptr) || pred(expected) || pred(desired),
+        } => place.ptr_expr().is_some_and(&mut *pred) || pred(expected) || pred(desired),
         Expr::CopyNonoverlapping { src, dst, .. } => pred(src) || pred(dst),
         Expr::PtrCopy {
             src, dst, count, ..

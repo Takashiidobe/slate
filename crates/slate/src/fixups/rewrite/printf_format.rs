@@ -796,19 +796,22 @@ fn expr_has_printf_call(expr: &Expr) -> bool {
         Expr::WriteBytes { dst, val, count } => {
             expr_has_printf_call(dst) || expr_has_printf_call(val) || expr_has_printf_call(count)
         }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => expr_has_printf_call(ptr),
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            expr_has_printf_call(ptr) || expr_has_printf_call(value)
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            place.ptr_expr().is_some_and(expr_has_printf_call)
         }
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            place.ptr_expr().is_some_and(expr_has_printf_call) || expr_has_printf_call(value)
+        }
+        Expr::AtomicNew { value, .. } => expr_has_printf_call(value),
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            expr_has_printf_call(ptr)
+            place.ptr_expr().is_some_and(expr_has_printf_call)
                 || expr_has_printf_call(expected)
                 || expr_has_printf_call(desired)
         }
