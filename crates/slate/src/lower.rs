@@ -1418,6 +1418,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.atan2" => self.lower_binary_method(op, "atan2"),
             "cir.assume" => {}
             "cir.ceil" => self.lower_unary_method(op, "ceil"),
+            "cir.clear_cache" => {}
             "cir.copysign" => self.lower_binary_method(op, "copysign"),
             "cir.cos" => self.lower_unary_method(op, "cos"),
             "cir.exp" => self.lower_unary_method(op, "exp"),
@@ -1441,12 +1442,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.modf" => self.lower_modf(op),
             "cir.nearbyint" => self.lower_unary_method(op, "round_ties_even"),
             "cir.pow" => self.lower_binary_method(op, "powf"),
+            "cir.prefetch" => {}
             "cir.rint" => self.lower_unary_method(op, "round_ties_even"),
             "cir.round" => self.lower_unary_method(op, "round"),
             "cir.roundeven" => self.lower_unary_method(op, "round_ties_even"),
             "cir.signbit" => self.lower_signbit(op),
             "cir.sin" => self.lower_unary_method(op, "sin"),
             "cir.sqrt" => self.lower_unary_method(op, "sqrt"),
+            "cir.frame_address" => self.lower_opaque_pointer(op, true),
+            "cir.stacksave" => self.lower_opaque_pointer(op, false),
+            "cir.stackrestore" => {}
             "cir.tan" => self.lower_unary_method(op, "tan"),
             "cir.trap" => self.lower_trap(),
             "cir.trunc" => self.lower_unary_method(op, "trunc"),
@@ -2544,6 +2549,28 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             name: "unreachable".into(),
             args: Vec::new(),
         }));
+    }
+
+    fn lower_opaque_pointer(&mut self, op: &Op, non_null: bool) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let result_ty = op_result_type(op);
+        let ty = result_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or(Type::Ptr {
+                mutable: true,
+                inner: Box::new(Type::CLib(CLibType::Void)),
+            });
+        let addr = if non_null { 1 } else { 0 };
+        self.materialize_expr(
+            result,
+            Expr::Cast {
+                expr: Box::new(Expr::Value(RustValue::Usize(addr))),
+                ty,
+            },
+            result_ty,
+        );
     }
 
     fn lower_is_constant(&mut self, op: &Op) {
@@ -6575,6 +6602,34 @@ mod tests {
         assert!(rust.contains("let _v1: i32 = arg0;"));
         assert!(rust.contains("std::process::abort();"));
         assert!(rust.contains("unreachable!();"));
+    }
+
+    #[test]
+    fn lowers_direct_target_and_stack_builtin_ops() {
+        let rust = lower_cir(
+            r#"
+!u8i = !cir.int<u, 8>
+!u32i = !cir.int<u, 32>
+!void = !cir.void
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<(!cir.ptr<!void>) -> !cir.ptr<!u8i>>, sym_name = "target_hooks"}> ({
+  ^bb0(%arg0: !cir.ptr<!void>):
+    "cir.clear_cache"(%arg0, %arg0) : (!cir.ptr<!void>, !cir.ptr<!void>) -> ()
+    "cir.prefetch"(%arg0) <{locality = 3 : i32}> : (!cir.ptr<!void>) -> ()
+    %0 = "cir.const"() <{value = #cir.int<0> : !u32i}> : () -> !u32i
+    %1 = "cir.frame_address"(%0) : (!u32i) -> !cir.ptr<!u8i>
+    %2 = "cir.stacksave"() : () -> !cir.ptr<!void>
+    "cir.stackrestore"(%2) : (!cir.ptr<!void>) -> ()
+    "cir.return"(%1) : (!cir.ptr<!u8i>) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(!rust.contains("todo!"));
+        assert!(rust.contains("let _v1: *mut u8 = 1usize as *mut u8;"));
+        assert!(
+            rust.contains("let _v2: *mut core::ffi::c_void = 0usize as *mut core::ffi::c_void;")
+        );
     }
 
     #[test]
