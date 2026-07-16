@@ -237,6 +237,7 @@ pub fn apply(program: Program) -> Program {
         }
     }
     remove_mut(&mut program);
+    rewrite::unused_items::fixup(&mut program);
     for item in &mut program.items {
         if let Item::Fn(f) = item {
             rewrite::main_zero_exit::fixup(f);
