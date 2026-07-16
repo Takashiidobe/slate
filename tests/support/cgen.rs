@@ -13,7 +13,7 @@
 //! `double _Complex` `+`/`-`/`*`/`/` with `__real__`/`__imag__` extraction,
 //! arrays, pointers, structs, unions, typedef aliases, fixed-width typedefs,
 //! `_Bool`/`bool`, `sizeof`, type qualifiers, static globals, enum constants, and
-//! `printf("%d\n", ...)` / `printf("%f\n", ...)`).
+//! single-threaded integer atomics, and `printf("%d\n", ...)` / `printf("%f\n", ...)`).
 //!
 //! Correctness rests on keeping the two sides in agreement on the operations
 //! the differential harness actually compares. Integer overflow is *not* one of
@@ -116,6 +116,7 @@ struct Gen {
     has_function_pointer: bool,
     has_long_double: bool,
     has_complex: bool,
+    has_atomics: bool,
 }
 
 /// Generate a complete, self-contained C program for `seed`.
@@ -141,6 +142,7 @@ pub fn generate(seed: u64) -> String {
         has_function_pointer: false,
         has_long_double: false,
         has_complex: false,
+        has_atomics: false,
     };
     g.program();
     g.out
@@ -162,9 +164,13 @@ impl Gen {
         self.has_function_pointer = self.rng.chance(70);
         self.has_long_double = self.rng.chance(70);
         self.has_complex = self.rng.chance(70);
+        self.has_atomics = self.rng.chance(70);
 
         if self.has_bool {
             self.line("#include <stdbool.h>");
+        }
+        if self.has_atomics {
+            self.line("#include <stdatomic.h>");
         }
         if self.has_fixed_width {
             self.line("#include <stddef.h>");
@@ -876,6 +882,9 @@ impl Gen {
         if self.has_complex {
             self.emit_complex_use();
         }
+        if self.has_atomics {
+            self.emit_atomic_use();
+        }
         self.emit_shift_compound_use();
         self.emit_array_use();
         self.emit_pointer_use();
@@ -1023,6 +1032,72 @@ impl Gen {
         self.printf("(int)(100.0 * __imag__ cplxq)");
     }
 
+    fn emit_atomic_use(&mut self) {
+        let a_init = self.rng.int_in(0, CONST_MAX);
+        let store = self.rng.int_in(10, 20);
+        let add = self.rng.int_in(1, 4);
+        let sub = self.rng.int_in(1, 3);
+        let mask = self.bit_mask(15);
+        let desired = self.rng.int_in(21, 30);
+        let u_init = self.rng.int_in(20, 80);
+        let xor_mask = self.bit_mask(31) as u64;
+        let i8_init = self.rng.int_in(-8, 8);
+        let i8_add = self.rng.int_in(1, 4);
+
+        self.line(&format!("_Atomic int atomic_i = {a_init};"));
+        self.line(&format!(
+            "atomic_store_explicit(&atomic_i, {store}, memory_order_release);"
+        ));
+        self.printf("atomic_load_explicit(&atomic_i, memory_order_acquire)");
+        let add_order = self.rmw_ordering();
+        self.printf(&format!(
+            "atomic_fetch_add_explicit(&atomic_i, {add}, {add_order})"
+        ));
+        let sub_order = self.rmw_ordering();
+        self.printf(&format!(
+            "atomic_fetch_sub_explicit(&atomic_i, {sub}, {sub_order})"
+        ));
+        let and_order = self.rmw_ordering();
+        self.printf(&format!(
+            "atomic_fetch_and_explicit(&atomic_i, {mask}, {and_order})"
+        ));
+        let exchange_order = self.rmw_ordering();
+        self.printf(&format!(
+            "atomic_exchange_explicit(&atomic_i, {desired}, {exchange_order})"
+        ));
+        self.line(&format!("int atomic_expected = {desired};"));
+        let cmp_success = self.rmw_ordering();
+        let cmp_failure = self.load_ordering();
+        self.printf(&format!(
+            "atomic_compare_exchange_strong_explicit(&atomic_i, &atomic_expected, {}, {cmp_success}, {cmp_failure})",
+            desired + add
+        ));
+        self.printf("atomic_expected");
+        self.printf("atomic_load_explicit(&atomic_i, memory_order_consume)");
+
+        self.line(&format!("_Atomic unsigned int atomic_u = {u_init}u;"));
+        let or_order = self.rmw_ordering();
+        let or_expr = format!(
+            "atomic_fetch_or_explicit(&atomic_u, {}u, {or_order})",
+            mask as u64
+        );
+        self.printf_fmt("%u", &or_expr);
+        let xor_order = self.rmw_ordering();
+        let xor_expr = format!("atomic_fetch_xor_explicit(&atomic_u, {xor_mask}u, {xor_order})");
+        self.printf_fmt("%u", &xor_expr);
+        self.printf_fmt(
+            "%u",
+            "atomic_load_explicit(&atomic_u, memory_order_relaxed)",
+        );
+
+        self.line(&format!("_Atomic signed char atomic_c = {i8_init};"));
+        self.printf("atomic_fetch_add_explicit(&atomic_c, 1, memory_order_relaxed)");
+        self.printf(&format!(
+            "atomic_exchange_explicit(&atomic_c, {i8_add}, memory_order_acquire)"
+        ));
+        self.printf("atomic_load_explicit(&atomic_c, memory_order_seq_cst)");
+    }
+
     // Floats print through the same libc::printf on both sides, so `%f` output
     // is byte-identical; identical IEEE-754 f64 ops in the same order agree.
     // Divisors are held nonzero to keep every value well-defined and finite.
@@ -1153,6 +1228,25 @@ impl Gen {
         self.line(&format!("printf(\"%f\\n\", {expr});"));
     }
 
+    fn load_ordering(&mut self) -> &'static str {
+        match self.rng.below(4) {
+            0 => "memory_order_relaxed",
+            1 => "memory_order_consume",
+            2 => "memory_order_acquire",
+            _ => "memory_order_seq_cst",
+        }
+    }
+
+    fn rmw_ordering(&mut self) -> &'static str {
+        match self.rng.below(5) {
+            0 => "memory_order_relaxed",
+            1 => "memory_order_acquire",
+            2 => "memory_order_release",
+            3 => "memory_order_acq_rel",
+            _ => "memory_order_seq_cst",
+        }
+    }
+
     fn int_type(&self) -> &'static str {
         if self.has_typedef { "fuzz_int" } else { "int" }
     }
@@ -1267,6 +1361,7 @@ mod tests {
                 has_function_pointer: false,
                 has_long_double: false,
                 has_complex: false,
+                has_atomics: false,
             };
             g.program();
             for f in &g.funcs {
@@ -1420,5 +1515,26 @@ mod tests {
         assert!(corpus.contains("(int)__real__ cplxs"));
         assert!(corpus.contains("double _Complex cplxp = cplxa * cplxb;"));
         assert!(corpus.contains("(int)(100.0 * __imag__ cplxq)"));
+    }
+
+    #[test]
+    fn emits_atomic_uses() {
+        let corpus = (0..512u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("#include <stdatomic.h>"));
+        assert!(corpus.contains("_Atomic int atomic_i = "));
+        assert!(corpus.contains("atomic_store_explicit(&atomic_i, "));
+        assert!(corpus.contains("atomic_load_explicit(&atomic_i, memory_order_acquire)"));
+        assert!(corpus.contains("atomic_fetch_add_explicit(&atomic_i, "));
+        assert!(corpus.contains("atomic_fetch_sub_explicit(&atomic_i, "));
+        assert!(corpus.contains("atomic_fetch_and_explicit(&atomic_i, "));
+        assert!(corpus.contains("atomic_exchange_explicit(&atomic_i, "));
+        assert!(
+            corpus
+                .contains("atomic_compare_exchange_strong_explicit(&atomic_i, &atomic_expected, ")
+        );
+        assert!(corpus.contains("_Atomic unsigned int atomic_u = "));
+        assert!(corpus.contains("atomic_fetch_or_explicit(&atomic_u, "));
+        assert!(corpus.contains("atomic_fetch_xor_explicit(&atomic_u, "));
+        assert!(corpus.contains("_Atomic signed char atomic_c = "));
     }
 }
