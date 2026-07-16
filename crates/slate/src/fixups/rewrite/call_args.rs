@@ -220,8 +220,10 @@ fn find_arg_use_expr(expr: &Expr, name: &str) -> Option<ArgUse> {
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. }
         | Expr::Closure { body: expr, .. }
-        | Expr::AtomicRef { ptr: expr, .. }
-        | Expr::AtomicLoad { ptr: expr, .. } => find_arg_use_expr(expr, name),
+        | Expr::AtomicNew { value: expr, .. } => find_arg_use_expr(expr, name),
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => place
+            .ptr_expr()
+            .and_then(|ptr| find_arg_use_expr(ptr, name)),
         Expr::Binary { lhs, rhs, .. }
         | Expr::Range {
             start: lhs,
@@ -272,17 +274,20 @@ fn find_arg_use_expr(expr: &Expr, name: &str) -> Option<ArgUse> {
                     .and_then(|tail| find_arg_use_expr(tail, name))
             })
         }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            find_arg_use_expr(ptr, name).or_else(|| find_arg_use_expr(value, name))
-        }
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => place
+            .ptr_expr()
+            .and_then(|ptr| find_arg_use_expr(ptr, name))
+            .or_else(|| find_arg_use_expr(value, name)),
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
-        } => find_arg_use_expr(ptr, name)
+        } => place
+            .ptr_expr()
+            .and_then(|ptr| find_arg_use_expr(ptr, name))
             .or_else(|| find_arg_use_expr(expected, name))
             .or_else(|| find_arg_use_expr(desired, name)),
         Expr::CopyNonoverlapping { src, dst, .. } => {

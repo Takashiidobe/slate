@@ -566,7 +566,10 @@ mod tests {
                 "*mut i32",
                 Expr::AtomicRef {
                     ty: crate::rust_ast::AtomicType::I32,
-                    ptr: Box::new(addr_of_index("values", int(1))),
+                    place: crate::rust_ast::AtomicPlace::Ptr(Box::new(addr_of_index(
+                        "values",
+                        int(1),
+                    ))),
                 },
             ),
         ]);

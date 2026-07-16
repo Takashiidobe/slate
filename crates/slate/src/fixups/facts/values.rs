@@ -361,24 +361,34 @@ impl<'a> Collector<'a> {
                 });
                 BTreeSet::new()
             }
-            Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-                self.child_expr(ptr, path, 0);
+            Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    self.child_expr(ptr, path, 0);
+                }
                 BTreeSet::new()
             }
-            Expr::AtomicStore { ptr, value, .. }
-            | Expr::AtomicFetch { ptr, value, .. }
-            | Expr::AtomicSwap { ptr, value, .. } => {
-                self.child_expr(ptr, path, 0);
+            Expr::AtomicStore { place, value, .. }
+            | Expr::AtomicFetch { place, value, .. }
+            | Expr::AtomicSwap { place, value, .. } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    self.child_expr(ptr, path, 0);
+                }
                 self.child_expr(value, path, 1);
                 BTreeSet::new()
             }
+            Expr::AtomicNew { value, .. } => {
+                self.child_expr(value, path, 0);
+                BTreeSet::new()
+            }
             Expr::AtomicCompareExchange {
-                ptr,
+                place,
                 expected,
                 desired,
                 ..
             } => {
-                self.child_expr(ptr, path, 0);
+                if let Some(ptr) = place.ptr_expr() {
+                    self.child_expr(ptr, path, 0);
+                }
                 self.child_expr(expected, path, 1);
                 self.child_expr(desired, path, 2);
                 BTreeSet::new()

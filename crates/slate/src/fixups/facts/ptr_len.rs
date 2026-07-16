@@ -408,22 +408,29 @@ fn expr_mutates_pointer_alias(
             aliases,
             if *mutable { AccessMode::Mutate } else { mode },
         ),
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-            expr_mutates_pointer_alias(ptr, aliases, AccessMode::Read)
-        }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            expr_mutates_pointer_alias(ptr, aliases, AccessMode::Mutate)
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => place
+            .ptr_expr()
+            .is_some_and(|ptr| expr_mutates_pointer_alias(ptr, aliases, AccessMode::Read)),
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            place
+                .ptr_expr()
+                .is_some_and(|ptr| expr_mutates_pointer_alias(ptr, aliases, AccessMode::Mutate))
                 || expr_mutates_pointer_alias(value, aliases, AccessMode::Read)
         }
+        Expr::AtomicNew { value, .. } => {
+            expr_mutates_pointer_alias(value, aliases, AccessMode::Read)
+        }
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            expr_mutates_pointer_alias(ptr, aliases, AccessMode::Mutate)
+            place
+                .ptr_expr()
+                .is_some_and(|ptr| expr_mutates_pointer_alias(ptr, aliases, AccessMode::Mutate))
                 || expr_mutates_pointer_alias(expected, aliases, AccessMode::Read)
                 || expr_mutates_pointer_alias(desired, aliases, AccessMode::Read)
         }
