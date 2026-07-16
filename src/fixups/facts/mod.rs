@@ -68,6 +68,7 @@ pub(super) struct FixupFacts {
     pub(super) buffer_pointer_fields: Vec<BufferPointerFieldFact>,
     pub(super) anonymous_structs: Vec<AnonymousStructFact>,
     pub(super) atomic_locals: Vec<AtomicLocalFact>,
+    pub(super) atomic_globals: Vec<AtomicGlobalFact>,
     pub(super) slice_pointer_views: Vec<SlicePointerViewFact>,
     pub(super) slice_index_ranges: Vec<SliceIndexRangeFact>,
     pub(super) slice_pointer_indexes: Vec<SlicePointerIndexFact>,
@@ -120,6 +121,12 @@ pub(super) struct BindingTypeFact {
 #[derive(Debug, Clone)]
 pub(super) struct AtomicLocalFact {
     pub(super) function: FunctionId,
+    pub(super) name: String,
+    pub(super) ty: crate::rust_ast::AtomicType,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct AtomicGlobalFact {
     pub(super) name: String,
     pub(super) ty: crate::rust_ast::AtomicType,
 }
