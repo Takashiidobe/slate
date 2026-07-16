@@ -33,40 +33,61 @@ fn fixup_at(
         let Stmt::Let {
             name,
             mutable: true,
-            ty: Some(_),
+            ty: Some(ty),
             init: Some(_),
         } = &body[i].stmt
         else {
             continue;
         };
+        let name = name.clone();
+        let ty = ty.clone();
         let Some(binding) =
-            facts.binding_by_local_path(function, name, &AstPath(decl_path.clone()))
+            facts.binding_by_local_path(function, &name, &AstPath(decl_path.clone()))
         else {
             continue;
         };
         if !binding_is_zero(function, facts, binding, &decl_path) {
             continue;
         }
-        let Some(assign_index) = first_overwriting_assignment(
+        let mut move_decl_to_assignment = false;
+        let mut assign_index = first_overwriting_assignment(
             body,
             i,
-            name,
+            &name,
             function,
             facts,
             binding,
             cross_effects,
             path,
-        ) else {
+        );
+        if assign_index.is_none() && cross_effects {
+            assign_index =
+                first_deferred_initialization(body, i, &name, function, facts, binding, path);
+            move_decl_to_assignment = assign_index.is_some();
+        }
+        let Some(assign_index) = assign_index else {
             continue;
         };
         let Stmt::Assign { value, .. } = &body[assign_index].stmt else {
             unreachable!();
         };
         let value = value.clone();
-        if let Stmt::Let { init, .. } = &mut body[i].stmt {
+        if move_decl_to_assignment {
+            let depth = body[assign_index].depth;
+            body[assign_index] = IndentStmt {
+                depth,
+                stmt: Stmt::Let {
+                    name,
+                    mutable: true,
+                    ty: Some(ty),
+                    init: Some(value),
+                },
+            };
+            body.remove(i);
+        } else if let Stmt::Let { init, .. } = &mut body[i].stmt {
             *init = Some(value);
+            body.remove(assign_index);
         }
-        body.remove(assign_index);
         return true;
     }
     false
@@ -125,6 +146,59 @@ fn first_overwriting_assignment(
         return None;
     }
     Some(assign_index)
+}
+
+fn first_deferred_initialization(
+    body: &[IndentStmt],
+    decl_index: usize,
+    name: &str,
+    function: FunctionId,
+    facts: &FixupFacts,
+    binding: crate::fixups::facts::BindingId,
+    body_path: &[PathSegment],
+) -> Option<usize> {
+    let (assign_index, _) =
+        body.iter()
+            .enumerate()
+            .skip(decl_index + 1)
+            .find_map(|(index, indent)| match &indent.stmt {
+                Stmt::Assign { target, value } if expr_ident(target) == Some(name) => {
+                    Some((index, value))
+                }
+                _ => None,
+            })?;
+    let assign_path = stmt_path(body_path, assign_index);
+    if !assignment_writes_binding(function, facts, binding, &assign_path)
+        || !can_move_decl_to_assignment(
+            decl_index,
+            assign_index,
+            facts,
+            binding,
+            body_path,
+            &assign_path,
+        )
+    {
+        return None;
+    }
+    Some(assign_index)
+}
+
+fn can_move_decl_to_assignment(
+    decl_index: usize,
+    assign_index: usize,
+    facts: &FixupFacts,
+    binding: crate::fixups::facts::BindingId,
+    body_path: &[PathSegment],
+    assign_path: &[PathSegment],
+) -> bool {
+    if assignment_reads_binding(facts, binding, assign_path) {
+        return false;
+    }
+    (decl_index + 1..assign_index).all(|index| {
+        let path = stmt_path(body_path, index);
+        !assignment_reads_binding(facts, binding, &path)
+            && !binding_written_under(facts, binding, &path)
+    })
 }
 
 fn reads_nothing(expr: &Expr) -> bool {
@@ -612,10 +686,33 @@ fn f() {
     }
 
     #[test]
-    fn crossing_mode_keeps_reading_store_past_effectful_statement() {
+    fn crossing_mode_moves_unused_declaration_to_reading_assignment() {
+        let out = fixed_crossing(
+            vec![],
+            None,
+            vec![
+                let_mut("x", "i32", int(0)),
+                Stmt::Expr(call("side_effect", vec![])),
+                assign("x", var("y")),
+            ],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    side_effect();
+    let mut x: i32 = y;
+}
+"
+        );
+    }
+
+    #[test]
+    fn crossing_mode_keeps_declaration_when_read_before_assignment() {
         let stmts = vec![
             let_mut("x", "i32", int(0)),
-            Stmt::Expr(call("side_effect", vec![])),
+            Stmt::Expr(call("side_effect", vec![var("x")])),
             assign("x", var("y")),
         ];
         let expected = emit(func(vec![], None, stmts.clone()));
