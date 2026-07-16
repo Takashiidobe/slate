@@ -1416,11 +1416,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.asin" => self.lower_unary_method(op, "asin"),
             "cir.atan" => self.lower_unary_method(op, "atan"),
             "cir.atan2" => self.lower_binary_method(op, "atan2"),
+            "cir.assume" => {}
             "cir.ceil" => self.lower_unary_method(op, "ceil"),
             "cir.copysign" => self.lower_binary_method(op, "copysign"),
             "cir.cos" => self.lower_unary_method(op, "cos"),
             "cir.exp" => self.lower_unary_method(op, "exp"),
             "cir.exp2" => self.lower_unary_method(op, "exp2"),
+            "cir.expect" => self.lower_expect(op),
             "cir.fabs" => self.lower_unary_method(op, "abs"),
             "cir.fmaximum" => self.lower_binary_method(op, "max"),
             "cir.fminimum" => self.lower_binary_method(op, "min"),
@@ -1446,7 +1448,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.sin" => self.lower_unary_method(op, "sin"),
             "cir.sqrt" => self.lower_unary_method(op, "sqrt"),
             "cir.tan" => self.lower_unary_method(op, "tan"),
+            "cir.trap" => self.lower_trap(),
             "cir.trunc" => self.lower_unary_method(op, "trunc"),
+            "cir.unreachable" => self.lower_unreachable(),
             "cir.fadd" => self.lower_binary(op, BinOp::Add),
             "cir.fsub" => self.lower_binary(op, BinOp::Sub),
             "cir.fmul" => self.lower_binary(op, BinOp::Mul),
@@ -2514,6 +2518,32 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             args: vec![self.operand_expr(&op.operands[1])],
         };
         self.materialize_expr(result, expr, op_result_type(op));
+    }
+
+    fn lower_expect(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        self.materialize_expr(result, self.operand_expr(value), op_result_type(op));
+    }
+
+    fn lower_trap(&mut self) {
+        self.push_stmt(Stmt::Expr(Expr::Call {
+            func: Box::new(Expr::Path(Path::new(
+                ["std", "process", "abort"].map(Ident::from),
+            ))),
+            args: Vec::new(),
+        }));
+    }
+
+    fn lower_unreachable(&mut self) {
+        self.push_stmt(Stmt::Expr(Expr::Macro {
+            name: "unreachable".into(),
+            args: Vec::new(),
+        }));
     }
 
     fn lower_is_constant(&mut self, op: &Op) {
@@ -5035,10 +5065,12 @@ fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
 /// Whether a dispatch block ends in its own control transfer (so the dispatch
 /// loop must not append a fall-through to the next state).
 fn block_diverges(block: &Block) -> bool {
-    block
-        .ops
-        .last()
-        .is_some_and(|op| matches!(op.name.as_str(), "cir.return" | "cir.br" | "cir.goto"))
+    block.ops.last().is_some_and(|op| {
+        matches!(
+            op.name.as_str(),
+            "cir.return" | "cir.br" | "cir.goto" | "cir.trap" | "cir.unreachable"
+        )
+    })
 }
 
 fn region_ends_control_flow(region: &Region) -> bool {
@@ -5051,7 +5083,7 @@ fn region_ends_control_flow(region: &Region) -> bool {
         .is_some_and(|op| {
             matches!(
                 op.name.as_str(),
-                "cir.break" | "cir.continue" | "cir.return"
+                "cir.break" | "cir.continue" | "cir.return" | "cir.trap" | "cir.unreachable"
             )
         })
 }
@@ -6513,6 +6545,36 @@ mod tests {
         assert!(!rust.contains("todo!"));
         assert!(rust.contains("let _v0: u64 = u64::MAX;"));
         assert!(rust.contains("let _v1: u64 = 0;"));
+    }
+
+    #[test]
+    fn lowers_direct_control_flow_builtin_ops() {
+        let rust = lower_cir(
+            r#"
+!s32i = !cir.int<s, 32>
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<(!s32i) -> !s32i>, sym_name = "likely"}> ({
+  ^bb0(%arg0: !s32i):
+    %0 = "cir.const"() <{value = #cir.int<1> : !s32i}> : () -> !s32i
+    %1 = "cir.expect"(%arg0, %0) : (!s32i, !s32i) -> !s32i
+    %2 = "cir.const"() <{value = #cir.int<0> : !s32i}> : () -> !s32i
+    %3 = "cir.cmp"(%1, %2) <{kind = 5 : i32}> : (!s32i, !s32i) -> !cir.bool
+    "cir.assume"(%3) <{bundle_kind = 0 : i32}> : (!cir.bool) -> ()
+    "cir.return"(%1) : (!s32i) -> ()
+  }) : () -> ()
+  "cir.func"() <{function_type = !cir.func<() -> ()>, sym_name = "stop"}> ({
+    "cir.trap"() : () -> ()
+  }) : () -> ()
+  "cir.func"() <{function_type = !cir.func<() -> ()>, sym_name = "impossible"}> ({
+    "cir.unreachable"() : () -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(!rust.contains("todo!"));
+        assert!(rust.contains("let _v1: i32 = arg0;"));
+        assert!(rust.contains("std::process::abort();"));
+        assert!(rust.contains("unreachable!();"));
     }
 
     #[test]
