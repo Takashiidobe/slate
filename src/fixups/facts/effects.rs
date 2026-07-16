@@ -32,6 +32,9 @@ pub(in crate::fixups) fn is_movable_pure_expr(expr: &Expr) -> bool {
         Expr::Cast { expr, .. } => is_movable_pure_expr(expr),
         Expr::Unary { op, expr } => !matches!(op, UnaryOp::Not) && is_movable_pure_expr(expr),
         Expr::Binary { lhs, rhs, .. } => is_movable_pure_expr(lhs) && is_movable_pure_expr(rhs),
+        Expr::MethodCall { recv, method, args } if is_pure_primitive_bit_method(method) => {
+            is_movable_pure_bit_operand(recv) && args.iter().all(is_movable_pure_expr)
+        }
         Expr::Field { base, .. } | Expr::TupleField { base, .. } => is_movable_pure_expr(base),
         Expr::Index { base, index } => is_movable_pure_expr(base) && is_movable_pure_expr(index),
         Expr::StructLit { fields, .. } => {
@@ -40,8 +43,50 @@ pub(in crate::fixups) fn is_movable_pure_expr(expr: &Expr) -> bool {
         Expr::TupleStructLit { fields, .. } => fields.iter().all(is_movable_pure_expr),
         Expr::ArrayLit(elems) => elems.iter().all(is_movable_pure_expr),
         Expr::ArrayRepeat { elem, .. } => is_movable_pure_expr(elem),
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            is_movable_pure_expr(cond)
+                && is_movable_pure_expr(then_expr)
+                && is_movable_pure_expr(else_expr)
+        }
         _ => false,
     }
+}
+
+fn is_movable_pure_bit_operand(expr: &Expr) -> bool {
+    match expr {
+        Expr::Unary {
+            op: UnaryOp::Not,
+            expr,
+        } => is_movable_pure_bit_operand(expr),
+        Expr::Cast { expr, .. } => is_movable_pure_bit_operand(expr),
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            is_movable_pure_expr(cond)
+                && is_movable_pure_bit_operand(then_expr)
+                && is_movable_pure_bit_operand(else_expr)
+        }
+        _ => is_movable_pure_expr(expr),
+    }
+}
+
+fn is_pure_primitive_bit_method(method: &str) -> bool {
+    matches!(
+        method,
+        "reverse_bits"
+            | "swap_bytes"
+            | "leading_zeros"
+            | "trailing_zeros"
+            | "count_ones"
+            | "rotate_left"
+            | "rotate_right"
+    )
 }
 
 struct Collector {
@@ -239,7 +284,17 @@ impl Collector {
                     effects.extend(self.child_expr(arg, path, index + 1));
                 }
             }
-            Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            Expr::MethodCall { recv, method, args } => {
+                effects.extend(self.child_expr(recv, path, 0));
+                for (index, arg) in args.iter().enumerate() {
+                    effects.extend(self.child_expr(arg, path, index + 1));
+                }
+                if !is_pure_primitive_bit_method(method) {
+                    effects.insert(EffectKind::MethodCall);
+                    effects.insert(EffectKind::UnknownSideEffect);
+                }
+            }
+            Expr::MethodCallGeneric { recv, args, .. } => {
                 effects.insert(EffectKind::MethodCall);
                 effects.insert(EffectKind::UnknownSideEffect);
                 effects.extend(self.child_expr(recv, path, 0));
