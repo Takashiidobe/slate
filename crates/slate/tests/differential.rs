@@ -779,6 +779,30 @@ fn control_flow_conditions_drop_redundant_parens() {
 }
 
 #[test]
+fn integer_bit_builtins_inline_pure_temps() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-integer-bit-builtins");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("integer_bit_builtin_ops.c");
+    let generated = tmp.join("integer_bit_builtin_ops.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate integer bit builtin fixture");
+    let rust =
+        std::fs::read_to_string(&generated).expect("read generated integer bit builtin rust");
+
+    assert!(!rust.contains("let _v"), "{rust}");
+    assert!(rust.contains("let leading: i32 = u.leading_zeros() as i32;"));
+    assert!(rust.contains("let trailing: i32 = u.trailing_zeros() as i32;"));
+    assert!(rust.contains(
+        "let first_set: i32 = if (u as i32) == 0 { 0 } else { ((u as i32).trailing_zeros() as i32) + 1 };"
+    ));
+    assert!(rust.contains("let ones: i32 = u.count_ones() as i32;"));
+    assert!(rust.contains("let odd: i32 = (u.count_ones() & 1) as i32;"));
+    assert!(rust.contains(
+        "let redundant_sign: i32 = (if s < 0 { !s } else { s }.leading_zeros() as i32) - 1;"
+    ));
+}
+
+#[test]
 fn for_continue_uses_structured_guards_without_synthetic_labels() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-for-continue");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
