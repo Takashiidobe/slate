@@ -747,9 +747,12 @@ fn switch_and_dispatch_use_block_match_arms() {
     let goto_generated = tmp.join("goto_if_scope.generated.rs");
     support::translate(&goto_c, &goto_generated).expect("translate goto fixture");
     let goto_rust = std::fs::read_to_string(&goto_generated).expect("read generated goto rust");
-    assert!(goto_rust.contains("match __state0 {\n            0 => {"));
-    assert!(goto_rust.contains("'__dispatch0: loop"));
-    assert!(!goto_rust.contains("_ => break '__dispatch0,"));
+    assert!(!goto_rust.contains("__state0"));
+    assert!(!goto_rust.contains("__dispatch0"));
+    assert!(
+        goto_rust.contains("if n < 0 {\n        cls = -1;\n    } else {\n        cls = 1;\n    }")
+    );
+    assert!(goto_rust.contains("println!(\"{}\", cls);"));
 
     let goto_forward_c = fixtures_dir().join("goto_forward.c");
     let goto_forward_generated = tmp.join("goto_forward.generated.rs");
