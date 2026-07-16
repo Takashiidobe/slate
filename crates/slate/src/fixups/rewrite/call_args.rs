@@ -85,47 +85,15 @@ fn fixup_nested(
     path: &mut Vec<PathSegment>,
 ) -> bool {
     for (index, stmt) in body.iter_mut().enumerate() {
-        if walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            match &mut stmt.stmt {
-                Stmt::If {
-                    then_body,
-                    else_body,
-                    ..
+        let mut changed = false;
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |body, path| {
+                if !changed && fixup_at(body, function, facts, path) {
+                    changed = true;
                 }
-                | Stmt::LetIf {
-                    then_body,
-                    else_body,
-                    ..
-                } => {
-                    walk::with_path_segment(path, PathSegment::Then, |path| {
-                        fixup_at(then_body, function, facts, path)
-                    }) || walk::with_path_segment(path, PathSegment::Else, |path| {
-                        fixup_at(else_body, function, facts, path)
-                    })
-                }
-                Stmt::Loop { body, .. } => {
-                    walk::with_path_segment(path, PathSegment::LoopBody, |path| {
-                        fixup_at(body, function, facts, path)
-                    })
-                }
-                Stmt::Scope { body } => {
-                    walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
-                        fixup_at(body, function, facts, path)
-                    })
-                }
-                Stmt::LabeledBlock { body, .. } => {
-                    walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
-                        fixup_at(body, function, facts, path)
-                    })
-                }
-                Stmt::Unsafe { body } => {
-                    walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
-                        fixup_at(&mut body.stmts, function, facts, path)
-                    })
-                }
-                _ => false,
-            }
-        }) {
+            });
+        });
+        if changed {
             return true;
         }
     }
@@ -432,7 +400,9 @@ fn binding_name(facts: &FixupFacts, binding: crate::fixups::facts::BindingId) ->
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{ExternDecl, ExternFnDecl, FnParam, Item, Program, Stmt, Type};
+    use crate::rust_ast::{
+        ExternDecl, ExternFnDecl, FnParam, Item, MatchArm, Pattern, Program, Stmt, Type,
+    };
 
     struct Signature {
         params: Vec<Type>,
@@ -576,6 +546,46 @@ fn f() {
             "\
 fn f() {
     return op.unwrap()(value);
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_call_args_inside_match_arm() {
+        let out = run(
+            vec![("add", sig(&["i32", "i32"], false))],
+            vec![Stmt::Match {
+                expr: var("state"),
+                arms: vec![MatchArm {
+                    pattern: Pattern::I64(0),
+                    body: vec![
+                        IndentStmt {
+                            depth: 0,
+                            stmt: temp("_v1", "i32", int(2)),
+                        },
+                        IndentStmt {
+                            depth: 0,
+                            stmt: temp("_v2", "i32", int(3)),
+                        },
+                        IndentStmt {
+                            depth: 0,
+                            stmt: Stmt::Expr(call("add", vec![var("_v1"), var("_v2")])),
+                        },
+                    ],
+                }],
+            }],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    match state {
+        0 => {
+            add(2, 3);
+        }
+    }
 }
 "
         );

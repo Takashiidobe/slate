@@ -7,7 +7,7 @@ use crate::fixups::facts::{
 };
 use crate::fixups::idents::expr_ident;
 use crate::fixups::support::walk;
-use crate::rust_ast::{Block, IndentStmt, Stmt};
+use crate::rust_ast::{IndentStmt, Stmt};
 
 pub(in crate::fixups) fn fixup(
     body: &mut Vec<IndentStmt>,
@@ -149,49 +149,15 @@ fn fixup_nested(
     path: &mut Vec<PathSegment>,
 ) -> bool {
     for (index, stmt) in body.iter_mut().enumerate() {
-        if walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            match &mut stmt.stmt {
-                Stmt::If {
-                    then_body,
-                    else_body,
-                    ..
+        let mut changed = false;
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |body, path| {
+                if !changed && fixup_at(body, function, facts, path) {
+                    changed = true;
                 }
-                | Stmt::LetIf {
-                    then_body,
-                    else_body,
-                    ..
-                } => {
-                    walk::with_path_segment(path, PathSegment::Then, |path| {
-                        fixup_at(then_body, function, facts, path)
-                    }) || walk::with_path_segment(path, PathSegment::Else, |path| {
-                        fixup_at(else_body, function, facts, path)
-                    })
-                }
-                Stmt::Loop { body, .. } => {
-                    walk::with_path_segment(path, PathSegment::LoopBody, |path| {
-                        fixup_at(body, function, facts, path)
-                    })
-                }
-                Stmt::Scope { body } => {
-                    walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
-                        fixup_at(body, function, facts, path)
-                    })
-                }
-                Stmt::LabeledBlock { body, .. } => {
-                    walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
-                        fixup_at(body, function, facts, path)
-                    })
-                }
-                Stmt::Unsafe { body } => {
-                    let Block { stmts, tail } = body;
-                    let _ = tail;
-                    walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
-                        fixup_at(stmts, function, facts, path)
-                    })
-                }
-                _ => false,
-            }
-        }) {
+            });
+        });
+        if changed {
             return true;
         }
     }
@@ -257,7 +223,7 @@ fn stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{BinOp, Item, Program};
+    use crate::rust_ast::{BinOp, Block, Item, MatchArm, Pattern, Program};
 
     fn fixed(params: Vec<crate::rust_ast::FnParam>, ret: Option<&str>, stmts: Vec<Stmt>) -> String {
         let mut program = Program {
@@ -345,6 +311,43 @@ fn f() -> i32 {
 fn f() -> i32 {
     let mut c: i32 = unsafe { next_arg() };
     return c;
+}
+"
+        );
+    }
+
+    #[test]
+    fn fuses_zero_init_inside_match_arm() {
+        let out = fixed(
+            vec![],
+            None,
+            vec![Stmt::Match {
+                expr: var("state"),
+                arms: vec![MatchArm {
+                    pattern: Pattern::I64(0),
+                    body: vec![
+                        IndentStmt {
+                            depth: 0,
+                            stmt: let_mut("c", "i32", int(0)),
+                        },
+                        IndentStmt {
+                            depth: 0,
+                            stmt: assign("c", bin(BinOp::Add, var("a"), var("b"))),
+                        },
+                    ],
+                }],
+            }],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    match state {
+        0 => {
+            let mut c: i32 = a + b;
+        }
+    }
 }
 "
         );

@@ -25,54 +25,17 @@ fn fixup_at(
 ) {
     for (index, indent) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            match &mut indent.stmt {
-                Stmt::If {
-                    then_body,
-                    else_body,
-                    ..
+            walk::nested_body_vecs_mut_with_path(&mut indent.stmt, path, &mut |body, path| {
+                fixup_at(body, function, facts, path);
+            });
+            if let Stmt::Assign { target, value } = &mut indent.stmt
+                && let Some((op, rhs)) = compound_parts(target, value, function, facts, path)
+            {
+                indent.stmt = Stmt::CompoundAssign {
+                    target: target.clone(),
+                    op,
+                    value: rhs,
                 }
-                | Stmt::LetIf {
-                    then_body,
-                    else_body,
-                    ..
-                } => {
-                    walk::with_path_segment(path, PathSegment::Then, |path| {
-                        fixup_at(then_body, function, facts, path);
-                    });
-                    walk::with_path_segment(path, PathSegment::Else, |path| {
-                        fixup_at(else_body, function, facts, path);
-                    });
-                }
-                Stmt::Loop { body, .. } => {
-                    walk::with_path_segment(path, PathSegment::LoopBody, |path| {
-                        fixup_at(body, function, facts, path);
-                    });
-                }
-                Stmt::Scope { body } => {
-                    walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
-                        fixup_at(body, function, facts, path);
-                    });
-                }
-                Stmt::LabeledBlock { body, .. } => {
-                    walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
-                        fixup_at(body, function, facts, path);
-                    });
-                }
-                Stmt::Unsafe { body } => {
-                    walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
-                        fixup_at(&mut body.stmts, function, facts, path);
-                    });
-                }
-                Stmt::Assign { target, value } => {
-                    if let Some((op, rhs)) = compound_parts(target, value, function, facts, path) {
-                        indent.stmt = Stmt::CompoundAssign {
-                            target: target.clone(),
-                            op,
-                            value: rhs,
-                        };
-                    }
-                }
-                _ => {}
             }
         });
     }
@@ -126,7 +89,7 @@ fn is_pure_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) 
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{Item, Program, Type};
+    use crate::rust_ast::{Item, MatchArm, Pattern, Program, Type};
 
     fn after_facts(
         params: Vec<crate::rust_ast::FnParam>,
@@ -200,6 +163,37 @@ fn f() {
 fn f() {
     let mut a: i32 = 20;
     a = 5 - a;
+}
+"
+        );
+    }
+
+    #[test]
+    fn recovers_compound_assignment_inside_match_arms() {
+        let out = after_facts(
+            vec![],
+            None,
+            vec![Stmt::Match {
+                expr: var("state"),
+                arms: vec![MatchArm {
+                    pattern: Pattern::I64(0),
+                    body: vec![IndentStmt {
+                        depth: 0,
+                        stmt: assign("sum", bin(BinOp::Add, var("sum"), var("i"))),
+                    }],
+                }],
+            }],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    match state {
+        0 => {
+            sum += i;
+        }
+    }
 }
 "
         );

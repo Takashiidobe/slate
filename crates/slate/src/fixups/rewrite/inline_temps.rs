@@ -6,7 +6,7 @@ use crate::fixups::facts::{
     AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment,
 };
 use crate::fixups::support::walk;
-use crate::rust_ast::{Block, Expr, IndentStmt, Prim, RustValue, Stmt, Type};
+use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(in crate::fixups) enum Phase {
@@ -88,54 +88,15 @@ fn inline_nested_temps(
     path: &mut Vec<PathSegment>,
 ) -> bool {
     for (index, stmt) in body.iter_mut().enumerate() {
-        if walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            match &mut stmt.stmt {
-                Stmt::If {
-                    then_body,
-                    else_body,
-                    ..
+        let mut changed = false;
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |body, path| {
+                if !changed && fixup_at(body, function, facts, phase, path) {
+                    changed = true;
                 }
-                | Stmt::LetIf {
-                    then_body,
-                    else_body,
-                    ..
-                } => {
-                    walk::with_path_segment(path, PathSegment::Then, |path| {
-                        fixup_at(then_body, function, facts, phase, path)
-                    }) || walk::with_path_segment(path, PathSegment::Else, |path| {
-                        fixup_at(else_body, function, facts, phase, path)
-                    })
-                }
-                Stmt::Loop { body, .. } => {
-                    walk::with_path_segment(path, PathSegment::LoopBody, |path| {
-                        fixup_at(body, function, facts, phase, path)
-                    })
-                }
-                Stmt::For { body, .. } => {
-                    walk::with_path_segment(path, PathSegment::ForBody, |path| {
-                        fixup_at(body, function, facts, phase, path)
-                    })
-                }
-                Stmt::Scope { body } => {
-                    walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
-                        fixup_at(body, function, facts, phase, path)
-                    })
-                }
-                Stmt::LabeledBlock { body, .. } => {
-                    walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
-                        fixup_at(body, function, facts, phase, path)
-                    })
-                }
-                Stmt::Unsafe { body } => {
-                    let Block { stmts, tail } = body;
-                    let _ = tail;
-                    walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
-                        fixup_at(stmts, function, facts, phase, path)
-                    })
-                }
-                _ => false,
-            }
-        }) {
+            });
+        });
+        if changed {
             return true;
         }
     }
@@ -416,7 +377,7 @@ fn binding_name(facts: &FixupFacts, binding: crate::fixups::facts::BindingId) ->
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{BinOp, Block, Item, Program, Type};
+    use crate::rust_ast::{BinOp, Block, Item, MatchArm, Pattern, Program, Type};
 
     fn inlined(stmts: Vec<Stmt>) -> String {
         inlined_with_phase(stmts, Phase::Late)
@@ -666,6 +627,47 @@ fn f() {
 fn f() {
     for _ in items {
         total += next_arg();
+    }
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_temps_inside_match_arms() {
+        let out = inlined(vec![Stmt::Match {
+            expr: var("state"),
+            arms: vec![MatchArm {
+                pattern: Pattern::I64(0),
+                body: vec![
+                    IndentStmt {
+                        depth: 0,
+                        stmt: temp("_v0", "i32", var("sum")),
+                    },
+                    IndentStmt {
+                        depth: 0,
+                        stmt: temp("_v1", "i32", var("i")),
+                    },
+                    IndentStmt {
+                        depth: 0,
+                        stmt: temp("_v2", "i32", bin(BinOp::Add, var("_v0"), var("_v1"))),
+                    },
+                    IndentStmt {
+                        depth: 0,
+                        stmt: assign("sum", var("_v2")),
+                    },
+                ],
+            }],
+        }]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    match state {
+        0 => {
+            sum = sum + i;
+        }
     }
 }
 "

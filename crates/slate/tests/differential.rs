@@ -748,7 +748,45 @@ fn switch_and_dispatch_use_block_match_arms() {
     support::translate(&goto_c, &goto_generated).expect("translate goto fixture");
     let goto_rust = std::fs::read_to_string(&goto_generated).expect("read generated goto rust");
     assert!(goto_rust.contains("match __state0 {\n            0 => {"));
+    assert!(goto_rust.contains("'__dispatch0: loop"));
     assert!(!goto_rust.contains("_ => break '__dispatch0,"));
+
+    let goto_forward_c = fixtures_dir().join("goto_forward.c");
+    let goto_forward_generated = tmp.join("goto_forward.generated.rs");
+    support::translate(&goto_forward_c, &goto_forward_generated)
+        .expect("translate forward goto fixture");
+    let goto_forward_rust =
+        std::fs::read_to_string(&goto_forward_generated).expect("read generated forward goto rust");
+    assert!(goto_forward_rust.contains("'__dispatch0: loop"));
+    assert!(goto_forward_rust.contains("match __state0 {\n            0 => {"));
+    assert!(goto_forward_rust.contains("__state0 = 2;"));
+
+    let goto_loop_c = fixtures_dir().join("goto_backward_loop.c");
+    let goto_loop_generated = tmp.join("goto_backward_loop.generated.rs");
+    support::translate(&goto_loop_c, &goto_loop_generated).expect("translate goto loop fixture");
+    let goto_loop_rust =
+        std::fs::read_to_string(&goto_loop_generated).expect("read generated goto loop rust");
+    assert!(!goto_loop_rust.contains("__state0"));
+    assert!(!goto_loop_rust.contains("__dispatch0"));
+    assert!(goto_loop_rust.contains("loop {"));
+    assert!(goto_loop_rust.contains("if !(i < 5) {\n            break;\n        }"));
+    assert!(goto_loop_rust.contains("sum += i;"));
+    assert!(goto_loop_rust.contains("i += 1;"));
+    assert!(goto_loop_rust.contains("println!(\"{}\", sum);"));
+    assert!(!goto_loop_rust.contains("__retval"));
+    assert!(!goto_loop_rust.contains("let _v3: i32 = sum;"));
+    assert!(!goto_loop_rust.contains("let _v15: i32 = __retval;"));
+
+    let goto_irreducible_c = fixtures_dir().join("goto_irreducible.c");
+    let goto_irreducible_generated = tmp.join("goto_irreducible.generated.rs");
+    support::translate(&goto_irreducible_c, &goto_irreducible_generated)
+        .expect("translate irreducible goto fixture");
+    let goto_irreducible_rust = std::fs::read_to_string(&goto_irreducible_generated)
+        .expect("read generated irreducible goto rust");
+    assert!(goto_irreducible_rust.contains("'__dispatch0: loop"));
+    assert!(goto_irreducible_rust.contains("match __state0 {\n            0 => {"));
+    assert!(goto_irreducible_rust.contains("__state0 = 2;"));
+    assert!(goto_irreducible_rust.contains("__state0 = 1;"));
 }
 
 #[test]

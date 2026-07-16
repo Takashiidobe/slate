@@ -1,5 +1,6 @@
 use crate::fixups::facts::{AstPath, BindingId, FixupFacts, FunctionId, PathSegment};
 use crate::fixups::idents::stmt_ident_count;
+use crate::fixups::support::walk;
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
@@ -21,7 +22,15 @@ fn fixup_body(
     path: &mut Vec<PathSegment>,
 ) -> bool {
     for index in 0..body.len() {
-        if fixup_nested(&mut body[index].stmt, function, facts, path, index) {
+        let mut changed = false;
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_mut_with_path(&mut body[index].stmt, path, &mut |body, path| {
+                if !changed && fixup_body(body, function, facts, path) {
+                    changed = true;
+                }
+            });
+        });
+        if changed {
             return true;
         }
     }
@@ -33,57 +42,6 @@ fn fixup_body(
         return true;
     }
     false
-}
-
-fn fixup_nested(
-    stmt: &mut Stmt,
-    function: FunctionId,
-    facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
-    index: usize,
-) -> bool {
-    path.push(PathSegment::Stmt(index));
-    let changed = match stmt {
-        Stmt::If {
-            then_body,
-            else_body,
-            ..
-        }
-        | Stmt::LetIf {
-            then_body,
-            else_body,
-            ..
-        } => {
-            path.push(PathSegment::Then);
-            let then_changed = fixup_body(then_body, function, facts, path);
-            path.pop();
-            path.push(PathSegment::Else);
-            let else_changed = !then_changed && fixup_body(else_body, function, facts, path);
-            path.pop();
-            then_changed || else_changed
-        }
-        Stmt::Loop { body, .. } => {
-            path.push(PathSegment::LoopBody);
-            let changed = fixup_body(body, function, facts, path);
-            path.pop();
-            changed
-        }
-        Stmt::Scope { body } => {
-            path.push(PathSegment::ScopeBody);
-            let changed = fixup_body(body, function, facts, path);
-            path.pop();
-            changed
-        }
-        Stmt::LabeledBlock { body, .. } => {
-            path.push(PathSegment::LabeledBody);
-            let changed = fixup_body(body, function, facts, path);
-            path.pop();
-            changed
-        }
-        _ => false,
-    };
-    path.pop();
-    changed
 }
 
 struct Plan {
@@ -640,7 +598,7 @@ mod tests {
     use super::*;
     use crate::fixups::facts;
     use crate::fixups::test_support::{emit, func};
-    use crate::rust_ast::{Block, CLibType, Prim, RustValue, Type};
+    use crate::rust_ast::{Block, CLibType, MatchArm, Pattern, Prim, RustValue, Type};
 
     #[test]
     fn rewrites_null_only_nullable_pointer_chain_to_option() {
@@ -744,6 +702,51 @@ mod tests {
                         }),
                     },
                 ],
+            ))],
+        };
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+
+        assert!(fixup(&mut program, &facts));
+        let out = emit(match program.items.remove(0) {
+            Item::Fn(f) => f,
+            _ => unreachable!(),
+        });
+        assert!(out.contains("let _v6 = Some(1);"));
+        assert!(out.contains("let is_miss: bool = _v6.is_none();"));
+        assert!(!out.contains("map_or"));
+    }
+
+    #[test]
+    fn rewrites_nullable_pointer_observation_inside_match_arm() {
+        let mut program = Program {
+            items: vec![Item::Fn(func(
+                Vec::new(),
+                None,
+                vec![Stmt::Match {
+                    expr: Expr::Var("state".into()),
+                    arms: vec![MatchArm {
+                        pattern: Pattern::I64(0),
+                        body: vec![
+                            IndentStmt {
+                                depth: 0,
+                                stmt: option_pointer_temp("_v6"),
+                            },
+                            IndentStmt {
+                                depth: 0,
+                                stmt: Stmt::Let {
+                                    name: "is_miss".into(),
+                                    mutable: false,
+                                    ty: Some(Type::Prim(Prim::Bool)),
+                                    init: Some(Expr::Binary {
+                                        op: BinOp::Eq,
+                                        lhs: Box::new(Expr::Var("_v6".into())),
+                                        rhs: Box::new(null_mut()),
+                                    }),
+                                },
+                            },
+                        ],
+                    }],
+                }],
             ))],
         };
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
