@@ -19,7 +19,7 @@ use crate::fixups::facts::goto::{
     self, ArmFlow, CfgEdge, CfgNode, DispatchLoop, NaturalLoop, Transfer, cycle_entry_targets,
     cyclic_sccs, dominators, natural_loop,
 };
-use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Stmt, Type, UnaryOp};
+use crate::rust_ast::{Expr, IndentStmt, MatchArm, Prim, RustValue, Stmt, Type, UnaryOp};
 
 pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) -> bool {
     for dispatch in goto::recognize_dispatch_loops(body) {
@@ -36,6 +36,7 @@ fn structure(dispatch: &DispatchLoop) -> Option<Vec<IndentStmt>> {
         return None;
     }
     structure_acyclic(dispatch)
+        .or_else(|| structure_multi_exit_self_loop(dispatch))
         .or_else(|| structure_self_loop(dispatch))
         .or_else(|| structure_localized_cycle(dispatch))
 }
@@ -115,6 +116,55 @@ fn structure_acyclic(dispatch: &DispatchLoop) -> Option<Vec<IndentStmt>> {
 }
 
 // --- single self-loop -----------------------------------------------------
+
+fn structure_multi_exit_self_loop(dispatch: &DispatchLoop) -> Option<Vec<IndentStmt>> {
+    let n = dispatch.states.len();
+    let analysis = Analysis::new(dispatch);
+    if !analysis.irreducible.is_empty() || analysis.natural_loops.len() != 1 {
+        return None;
+    }
+    let nl = &analysis.natural_loops[0];
+    if nl.header != nl.latch || nl.nodes != BTreeSet::from([nl.header]) {
+        return None;
+    }
+    let header = nl.header;
+    let successors = dispatch.states[header].successors();
+    if !successors.contains(&header)
+        || successors.iter().any(|&t| t >= n)
+        || successors.iter().all(|&t| t == header)
+    {
+        return None;
+    }
+
+    let all: BTreeSet<usize> = (0..n).collect();
+    let exit_seeds: Vec<usize> = successors
+        .iter()
+        .copied()
+        .filter(|&t| t != header)
+        .collect();
+    let mut exit_region = BTreeSet::new();
+    for seed in exit_seeds {
+        exit_region.extend(reach_within(dispatch, seed, &sub(&all, &nl.nodes)));
+    }
+    let prefix_region: BTreeSet<usize> = reach_within(dispatch, dispatch.entry, &all)
+        .difference(&union(&nl.nodes, &exit_region))
+        .copied()
+        .collect();
+
+    let mut out = Vec::new();
+    let mut prefix = Structurer::new(dispatch, prefix_region);
+    prefix.compute_order();
+    out.extend(prefix.emit_state(dispatch.entry, &BTreeSet::new()));
+
+    let mut exits = Structurer::new(dispatch, exit_region);
+    exits.compute_order();
+    let loop_body = emit_self_loop_flow(&dispatch.states[header].flow, header, &mut exits)?;
+    out.push(ind(Stmt::Loop {
+        label: None,
+        body: loop_body,
+    }));
+    Some(out)
+}
 
 fn structure_self_loop(dispatch: &DispatchLoop) -> Option<Vec<IndentStmt>> {
     let n = dispatch.states.len();
@@ -474,6 +524,34 @@ impl<'a> Structurer<'a> {
                 }
                 out
             }
+            Transfer::Switch { expr, arms } => {
+                let join = self.find_switch_join(arms);
+                let inner_stop = match join {
+                    Some(j) => {
+                        let mut s = stop.clone();
+                        s.insert(j);
+                        s
+                    }
+                    None => stop.clone(),
+                };
+                let match_arms = arms
+                    .iter()
+                    .map(|arm| MatchArm {
+                        pattern: arm.pattern.clone(),
+                        body: self.emit_flow(&arm.flow, &inner_stop),
+                    })
+                    .collect();
+                let mut out = vec![ind(Stmt::Match {
+                    expr: expr.clone(),
+                    arms: match_arms,
+                })];
+                if let Some(j) = join
+                    && !stop.contains(&j)
+                {
+                    out.extend(self.emit_state(j, stop));
+                }
+                out
+            }
         }
     }
 
@@ -486,6 +564,128 @@ impl<'a> Structurer<'a> {
             .intersection(&else_reach)
             .copied()
             .min_by_key(|state| self.order_of.get(state).copied().unwrap_or(usize::MAX))
+    }
+
+    fn find_switch_join(
+        &self,
+        arms: &[crate::fixups::facts::goto::SwitchFlowArm],
+    ) -> Option<usize> {
+        let mut reaches = arms.iter().map(|arm| self.reach(&arm.flow.gotos()));
+        let first = reaches.next()?;
+        reaches
+            .fold(first, |acc, reach| {
+                acc.intersection(&reach).copied().collect()
+            })
+            .into_iter()
+            .min_by_key(|state| self.order_of.get(state).copied().unwrap_or(usize::MAX))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::rust_ast::{BinOp, Label, MatchArm, Pattern};
+
+    fn ind(stmt: Stmt) -> IndentStmt {
+        IndentStmt { depth: 0, stmt }
+    }
+
+    fn var(name: &str) -> Expr {
+        Expr::Var(name.into())
+    }
+
+    fn int(v: i64) -> Expr {
+        Expr::Value(RustValue::I64(v))
+    }
+
+    fn goto(state: i64) -> Vec<IndentStmt> {
+        vec![
+            ind(Stmt::Assign {
+                target: var("__state0"),
+                value: int(state),
+            }),
+            ind(Stmt::Continue(Some(Label::new("__dispatch0")))),
+        ]
+    }
+
+    fn arm(index: i64, body: Vec<IndentStmt>) -> MatchArm {
+        MatchArm {
+            pattern: Pattern::I64(index),
+            body,
+        }
+    }
+
+    fn wildcard(body: Vec<IndentStmt>) -> MatchArm {
+        MatchArm {
+            pattern: Pattern::Wildcard,
+            body,
+        }
+    }
+
+    fn dispatch(arms: Vec<MatchArm>) -> Vec<IndentStmt> {
+        vec![
+            ind(Stmt::Let {
+                name: "__state0".into(),
+                mutable: true,
+                ty: None,
+                init: Some(int(0)),
+            }),
+            ind(Stmt::Loop {
+                label: Some(Label::new("__dispatch0")),
+                body: vec![ind(Stmt::Match {
+                    expr: var("__state0"),
+                    arms,
+                })],
+            }),
+        ]
+    }
+
+    #[test]
+    fn structures_single_header_loop_with_multiple_exits() {
+        let cond_sum = Expr::Binary {
+            op: BinOp::Gt,
+            lhs: Box::new(var("sum")),
+            rhs: Box::new(int(100)),
+        };
+        let cond_i = Expr::Binary {
+            op: BinOp::Lt,
+            lhs: Box::new(var("i")),
+            rhs: Box::new(int(5)),
+        };
+        let mut body = dispatch(vec![
+            arm(0, goto(1)),
+            arm(
+                1,
+                vec![
+                    ind(Stmt::CompoundAssign {
+                        target: var("sum"),
+                        op: BinOp::Add,
+                        value: var("i"),
+                    }),
+                    ind(Stmt::If {
+                        cond: cond_sum,
+                        then_body: goto(2),
+                        else_body: Vec::new(),
+                    }),
+                    ind(Stmt::CompoundAssign {
+                        target: var("i"),
+                        op: BinOp::Add,
+                        value: int(1),
+                    }),
+                    ind(Stmt::If {
+                        cond: cond_i,
+                        then_body: goto(1),
+                        else_body: Vec::new(),
+                    }),
+                    ind(Stmt::Return(None)),
+                ],
+            ),
+            arm(2, vec![ind(Stmt::Return(None))]),
+            wildcard(vec![ind(Stmt::Break(Some(Label::new("__dispatch0"))))]),
+        ]);
+
+        assert!(fixup(&mut body));
+        assert!(matches!(body[0].stmt, Stmt::Loop { .. }));
     }
 }
 
@@ -528,13 +728,87 @@ fn render_branch(
 }
 
 fn diverges(stmts: &[IndentStmt]) -> bool {
-    matches!(
-        stmts.last().map(|s| &s.stmt),
-        Some(Stmt::Return(_) | Stmt::Break(_) | Stmt::Continue(_))
-    )
+    match stmts.last().map(|s| &s.stmt) {
+        Some(Stmt::Return(_) | Stmt::Break(_) | Stmt::Continue(_)) => true,
+        Some(Stmt::Expr(expr)) => expr_diverges(expr),
+        _ => false,
+    }
+}
+
+fn expr_diverges(expr: &Expr) -> bool {
+    match expr {
+        Expr::Macro { name, .. } => {
+            matches!(
+                name.as_str(),
+                "unreachable" | "panic" | "todo" | "unimplemented"
+            )
+        }
+        Expr::Call { func, .. } => callee_name(func)
+            .as_deref()
+            .is_some_and(|name| name.ends_with("process::exit") || name == "abort"),
+        _ => false,
+    }
+}
+
+fn callee_name(expr: &Expr) -> Option<String> {
+    match expr {
+        Expr::Var(ident) => Some(ident.as_str().to_string()),
+        Expr::Path(path) => Some(
+            path.segments
+                .iter()
+                .map(|s| s.as_str())
+                .collect::<Vec<_>>()
+                .join("::"),
+        ),
+        _ => None,
+    }
 }
 
 // --- small helpers --------------------------------------------------------
+
+fn emit_self_loop_flow(
+    flow: &ArmFlow,
+    header: usize,
+    exits: &mut Structurer<'_>,
+) -> Option<Vec<IndentStmt>> {
+    let mut out = flow.prefix.clone();
+    out.extend(emit_self_loop_transfer(&flow.transfer, header, exits)?);
+    Some(out)
+}
+
+fn emit_self_loop_transfer(
+    transfer: &Transfer,
+    header: usize,
+    exits: &mut Structurer<'_>,
+) -> Option<Vec<IndentStmt>> {
+    match transfer {
+        Transfer::Goto(target) if *target == header => Some(vec![ind(Stmt::Continue(None))]),
+        Transfer::Goto(target) => {
+            let out = exits.emit_state(*target, &BTreeSet::new());
+            diverges(&out).then_some(out)
+        }
+        Transfer::Return(value) => Some(vec![ind(Stmt::Return(value.clone()))]),
+        Transfer::Diverge(stmt) => Some(vec![ind((**stmt).clone())]),
+        Transfer::Branch { cond, then_, else_ } => {
+            let then_stmts = emit_self_loop_flow(then_, header, exits)?;
+            let else_stmts = emit_self_loop_flow(else_, header, exits)?;
+            Some(render_branch(cond.clone(), then_stmts, else_stmts))
+        }
+        Transfer::Switch { expr, arms } => {
+            let mut match_arms = Vec::new();
+            for arm in arms {
+                match_arms.push(MatchArm {
+                    pattern: arm.pattern.clone(),
+                    body: emit_self_loop_flow(&arm.flow, header, exits)?,
+                });
+            }
+            Some(vec![ind(Stmt::Match {
+                expr: expr.clone(),
+                arms: match_arms,
+            })])
+        }
+    }
+}
 
 fn is_goto_to(flow: &ArmFlow, target: usize) -> bool {
     goto_target(flow) == Some(target)
