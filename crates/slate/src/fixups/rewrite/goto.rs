@@ -2,26 +2,42 @@
 //!
 //! The lowerer emits every goto-bearing function as a state-machine dispatch
 //! loop (correct but temp-heavy). This fixup recognizes that loop and, when the
-//! state graph is reducible, rewrites it into ordinary `if`/`else`/sequence
-//! Rust so the downstream cleanup passes can see the real shape. Disabling it
-//! leaves the correct dispatch loop untouched.
+//! state graph is reducible enough, rewrites it into ordinary
+//! `if`/`else`/`loop`/sequence Rust so the downstream cleanup passes can see the
+//! real shape. Disabling it leaves the correct dispatch loop untouched.
 //!
-//! This pass structures **acyclic** reducible regions only; cyclic (loop) and
-//! irreducible regions stay as dispatch loops for now.
+//! Three shapes are recovered, tried in order:
+//!   * acyclic reducible regions → `if`/`else`/sequence;
+//!   * a single self-loop (`while`-style guard) → `loop { ..; if !cond break }`;
+//!   * a single irreducible cycle → residual `loop { match __blockN }` peeled
+//!     from its acyclic preheader/exit.
+//! Anything else (dynamic jump tables, multi-loop nests) stays a dispatch loop.
 
 use std::collections::BTreeSet;
 
-use crate::fixups::facts::goto::{self, ArmFlow, DispatchLoop, Transfer};
-use crate::rust_ast::{Expr, IndentStmt, Stmt, UnaryOp};
+use crate::fixups::facts::goto::{
+    self, ArmFlow, CfgEdge, CfgNode, DispatchLoop, NaturalLoop, Transfer, cycle_entry_targets,
+    cyclic_sccs, dominators, natural_loop,
+};
+use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Stmt, Type, UnaryOp};
 
 pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) -> bool {
     for dispatch in goto::recognize_dispatch_loops(body) {
-        if let Some(structured) = structure_acyclic(&dispatch) {
+        if let Some(structured) = structure(&dispatch) {
             replace_region(body, &dispatch, structured);
             return true;
         }
     }
     false
+}
+
+fn structure(dispatch: &DispatchLoop) -> Option<Vec<IndentStmt>> {
+    if dispatch.dynamic {
+        return None;
+    }
+    structure_acyclic(dispatch)
+        .or_else(|| structure_self_loop(dispatch))
+        .or_else(|| structure_localized_cycle(dispatch))
 }
 
 fn replace_region(
@@ -37,6 +53,42 @@ fn replace_region(
     body.remove(dispatch.let_index);
 }
 
+// --- shared CFG analysis --------------------------------------------------
+
+struct Analysis {
+    nodes: Vec<CfgNode>,
+    natural_loops: Vec<NaturalLoop>,
+    irreducible: Vec<Vec<usize>>,
+}
+
+impl Analysis {
+    fn new(dispatch: &DispatchLoop) -> Self {
+        let nodes = dispatch.cfg_nodes();
+        let doms = dominators(dispatch.entry, &nodes);
+        let backedges: Vec<CfgEdge> = nodes
+            .iter()
+            .flat_map(|node| node.successors.iter())
+            .filter(|edge| doms.get(edge.from).is_some_and(|d| d.contains(&edge.to)))
+            .cloned()
+            .collect();
+        let natural_loops = backedges
+            .iter()
+            .map(|edge| natural_loop(edge, &nodes))
+            .collect();
+        let irreducible = cyclic_sccs(&nodes)
+            .into_iter()
+            .filter(|cycle| cycle_entry_targets(cycle, &nodes).len() > 1)
+            .collect();
+        Analysis {
+            nodes,
+            natural_loops,
+            irreducible,
+        }
+    }
+}
+
+// --- acyclic --------------------------------------------------------------
+
 fn structure_acyclic(dispatch: &DispatchLoop) -> Option<Vec<IndentStmt>> {
     if !dispatch.is_reducible() {
         return None;
@@ -49,7 +101,8 @@ fn structure_acyclic(dispatch: &DispatchLoop) -> Option<Vec<IndentStmt>> {
             return None;
         }
     }
-    let mut structurer = Structurer::new(dispatch, n);
+    let region: BTreeSet<usize> = (0..n).collect();
+    let mut structurer = Structurer::new(dispatch, region);
     if structurer.has_cycle() {
         return None;
     }
@@ -61,19 +114,237 @@ fn structure_acyclic(dispatch: &DispatchLoop) -> Option<Vec<IndentStmt>> {
     Some(stmts)
 }
 
+// --- single self-loop -----------------------------------------------------
+
+fn structure_self_loop(dispatch: &DispatchLoop) -> Option<Vec<IndentStmt>> {
+    let n = dispatch.states.len();
+    let analysis = Analysis::new(dispatch);
+    if !analysis.irreducible.is_empty() || analysis.natural_loops.len() != 1 {
+        return None;
+    }
+    let nl = &analysis.natural_loops[0];
+    if nl.header != nl.latch || nl.nodes != BTreeSet::from([nl.header]) {
+        return None;
+    }
+    let header = nl.header;
+    if dispatch.states[header]
+        .successors()
+        .iter()
+        .any(|&t| t >= n && t != n)
+    {
+        return None;
+    }
+    let Transfer::Branch { cond, then_, else_ } = &dispatch.states[header].flow.transfer else {
+        return None;
+    };
+    let then_back = is_goto_to(then_, header);
+    let else_back = is_goto_to(else_, header);
+    if then_back == else_back {
+        return None;
+    }
+    // the back-edge arm re-enters the loop; the other arm leaves it. break when
+    // the loop condition fails.
+    let (guard_cond, back_arm, exit_arm) = if then_back {
+        (not_expr(cond.clone()), then_, else_)
+    } else {
+        (cond.clone(), else_, then_)
+    };
+    if !back_arm.prefix.is_empty() {
+        return None;
+    }
+
+    let all: BTreeSet<usize> = (0..n).collect();
+    let exit_states: BTreeSet<usize> = match goto_target(exit_arm) {
+        Some(x) if x < n => reach_within(dispatch, x, &sub(&all, &nl.nodes)),
+        Some(_) => return None,
+        None => BTreeSet::new(),
+    };
+    let reach_entry = reach_within(dispatch, dispatch.entry, &all);
+    let prefix_region: BTreeSet<usize> = reach_entry
+        .difference(&union(&nl.nodes, &exit_states))
+        .copied()
+        .collect();
+
+    let mut out = Vec::new();
+    let mut prefix = Structurer::new(dispatch, prefix_region);
+    prefix.compute_order();
+    out.extend(prefix.emit_state(dispatch.entry, &BTreeSet::new()));
+
+    let mut loop_body = dispatch.states[header].flow.prefix.clone();
+    loop_body.push(ind(Stmt::If {
+        cond: guard_cond,
+        then_body: vec![ind(Stmt::Break(None))],
+        else_body: Vec::new(),
+    }));
+    out.push(ind(Stmt::Loop {
+        label: None,
+        body: loop_body,
+    }));
+
+    let mut exit = Structurer::new(dispatch, exit_states);
+    exit.compute_order();
+    out.extend(exit.emit_flow(exit_arm, &BTreeSet::new()));
+    Some(out)
+}
+
+// --- single irreducible cycle ---------------------------------------------
+
+fn structure_localized_cycle(dispatch: &DispatchLoop) -> Option<Vec<IndentStmt>> {
+    let n = dispatch.states.len();
+    let analysis = Analysis::new(dispatch);
+    if analysis.irreducible.len() != 1 {
+        return None;
+    }
+    let cycle_nodes = analysis.irreducible[0].clone();
+    let cycle: BTreeSet<usize> = cycle_nodes.iter().copied().collect();
+    if cycle.contains(&dispatch.entry) {
+        return None;
+    }
+    // the preheader must be the region entry: everything before the cycle is the
+    // entry state's own branch into it.
+    if cycle_nodes
+        .iter()
+        .any(|&node| dispatch.states[node].successors().iter().any(|&t| t >= n))
+    {
+        return None;
+    }
+
+    let mut exits = BTreeSet::new();
+    let mut entry_edges = Vec::new();
+    for node in &analysis.nodes {
+        for edge in &node.successors {
+            match (cycle.contains(&edge.from), cycle.contains(&edge.to)) {
+                (true, false) => {
+                    exits.insert(edge.to);
+                }
+                (false, true) => entry_edges.push(edge.clone()),
+                _ => {}
+            }
+        }
+    }
+    if exits.len() != 1 || entry_edges.is_empty() {
+        return None;
+    }
+    let exit_state = *exits.iter().next().unwrap();
+    let preheader = entry_edges[0].from;
+    if preheader != dispatch.entry || entry_edges.iter().any(|e| e.from != preheader) {
+        return None;
+    }
+
+    let block_var = block_var_name(&dispatch.state_var);
+    let mut out = vec![ind(Stmt::Let {
+        name: block_var.clone(),
+        mutable: true,
+        ty: Some(Type::Prim(Prim::I32)),
+        init: None,
+    })];
+    out.extend(emit_preheader(
+        &dispatch.states[preheader].flow,
+        &cycle,
+        &block_var,
+    )?);
+
+    let mut arms = Vec::new();
+    for &node in &cycle_nodes {
+        let body = emit_cycle_arm(&dispatch.states[node].flow, &cycle, exit_state, &block_var)?;
+        arms.push(crate::rust_ast::MatchArm {
+            pattern: crate::rust_ast::Pattern::I64(node as i64),
+            body,
+        });
+    }
+    if arms.len() == 2 {
+        let last = arms.pop().unwrap();
+        arms.push(crate::rust_ast::MatchArm {
+            pattern: crate::rust_ast::Pattern::Wildcard,
+            body: last.body,
+        });
+    }
+    out.push(ind(Stmt::Loop {
+        label: None,
+        body: vec![ind(Stmt::Match {
+            expr: Expr::Var(block_var.clone().into()),
+            arms,
+        })],
+    }));
+
+    let all: BTreeSet<usize> = (0..n).collect();
+    let exit_region = reach_within(dispatch, exit_state, &sub(&all, &cycle));
+    let mut exit = Structurer::new(dispatch, exit_region);
+    exit.compute_order();
+    out.extend(exit.emit_state(exit_state, &BTreeSet::new()));
+    Some(out)
+}
+
+/// Structure the acyclic preheader, rewriting each edge into the cycle as a
+/// `__blockN = target` assignment.
+fn emit_preheader(
+    flow: &ArmFlow,
+    cycle: &BTreeSet<usize>,
+    block_var: &str,
+) -> Option<Vec<IndentStmt>> {
+    let mut out = flow.prefix.clone();
+    match &flow.transfer {
+        Transfer::Goto(target) if cycle.contains(target) => {
+            out.push(assign_block(block_var, *target));
+        }
+        Transfer::Branch { cond, then_, else_ } => {
+            out.push(ind(Stmt::If {
+                cond: cond.clone(),
+                then_body: emit_preheader(then_, cycle, block_var)?,
+                else_body: emit_preheader(else_, cycle, block_var)?,
+            }));
+        }
+        _ => return None,
+    }
+    Some(out)
+}
+
+/// Structure one cycle node's arm: internal edges set `__blockN` and `continue`;
+/// the single exit edge becomes `break`.
+fn emit_cycle_arm(
+    flow: &ArmFlow,
+    cycle: &BTreeSet<usize>,
+    exit_state: usize,
+    block_var: &str,
+) -> Option<Vec<IndentStmt>> {
+    let mut out = flow.prefix.clone();
+    match &flow.transfer {
+        Transfer::Goto(target) if cycle.contains(target) => {
+            out.push(assign_block(block_var, *target));
+            out.push(ind(Stmt::Continue(None)));
+        }
+        Transfer::Goto(target) if *target == exit_state => {
+            out.push(ind(Stmt::Break(None)));
+        }
+        Transfer::Branch { cond, then_, else_ } => {
+            out.push(ind(Stmt::If {
+                cond: cond.clone(),
+                then_body: emit_cycle_arm(then_, cycle, exit_state, block_var)?,
+                else_body: emit_cycle_arm(else_, cycle, exit_state, block_var)?,
+            }));
+        }
+        Transfer::Return(value) => out.push(ind(Stmt::Return(value.clone()))),
+        Transfer::Diverge(stmt) => out.push(ind((**stmt).clone())),
+        _ => return None,
+    }
+    Some(out)
+}
+
+// --- region emitter (acyclic within a fixed set of states) ----------------
+
 struct Structurer<'a> {
     dispatch: &'a DispatchLoop,
-    n: usize,
-    order_of: Vec<usize>,
+    region: BTreeSet<usize>,
+    order_of: std::collections::BTreeMap<usize, usize>,
     visited: BTreeSet<usize>,
 }
 
 impl<'a> Structurer<'a> {
-    fn new(dispatch: &'a DispatchLoop, n: usize) -> Self {
+    fn new(dispatch: &'a DispatchLoop, region: BTreeSet<usize>) -> Self {
         Structurer {
             dispatch,
-            n,
-            order_of: vec![usize::MAX; n],
+            region,
+            order_of: std::collections::BTreeMap::new(),
             visited: BTreeSet::new(),
         }
     }
@@ -82,7 +353,7 @@ impl<'a> Structurer<'a> {
         self.dispatch.states[state]
             .successors()
             .into_iter()
-            .filter(|&t| t < self.n)
+            .filter(|t| self.region.contains(t))
             .collect()
     }
 
@@ -92,7 +363,11 @@ impl<'a> Structurer<'a> {
 
     fn reach(&self, seeds: &[usize]) -> BTreeSet<usize> {
         let mut reached = BTreeSet::new();
-        let mut stack: Vec<usize> = seeds.iter().copied().filter(|&t| t < self.n).collect();
+        let mut stack: Vec<usize> = seeds
+            .iter()
+            .copied()
+            .filter(|t| self.region.contains(t))
+            .collect();
         while let Some(state) = stack.pop() {
             if reached.insert(state) {
                 stack.extend(self.succ(state));
@@ -102,35 +377,45 @@ impl<'a> Structurer<'a> {
     }
 
     fn has_cycle(&self) -> bool {
-        let mut state = vec![0u8; self.n]; // 0 = unseen, 1 = on-stack, 2 = done
+        let mut color = std::collections::BTreeMap::new();
         let mut cycle = false;
-        for start in 0..self.n {
-            if state[start] == 0 {
-                self.detect_cycle(start, &mut state, &mut cycle);
+        for &start in &self.region {
+            if !color.contains_key(&start) {
+                self.detect_cycle(start, &mut color, &mut cycle);
             }
         }
         cycle
     }
 
-    fn detect_cycle(&self, node: usize, state: &mut [u8], cycle: &mut bool) {
-        state[node] = 1;
+    fn detect_cycle(
+        &self,
+        node: usize,
+        color: &mut std::collections::BTreeMap<usize, u8>,
+        cycle: &mut bool,
+    ) {
+        color.insert(node, 1);
         for next in self.succ(node) {
-            match state[next] {
-                1 => *cycle = true,
-                0 => self.detect_cycle(next, state, cycle),
+            match color.get(&next) {
+                Some(1) => *cycle = true,
+                None => self.detect_cycle(next, color, cycle),
                 _ => {}
             }
         }
-        state[node] = 2;
+        color.insert(node, 2);
     }
 
     fn compute_order(&mut self) {
         let mut order = Vec::new();
         let mut seen = BTreeSet::new();
-        self.postorder(self.dispatch.entry, &mut seen, &mut order);
+        if self.region.contains(&self.dispatch.entry) {
+            self.postorder(self.dispatch.entry, &mut seen, &mut order);
+        }
+        for &state in &self.region {
+            self.postorder(state, &mut seen, &mut order);
+        }
         order.reverse();
         for (rank, state) in order.iter().enumerate() {
-            self.order_of[*state] = rank;
+            self.order_of.insert(*state, rank);
         }
     }
 
@@ -145,7 +430,7 @@ impl<'a> Structurer<'a> {
     }
 
     fn emit_state(&mut self, state: usize, stop: &BTreeSet<usize>) -> Vec<IndentStmt> {
-        if !self.visited.insert(state) {
+        if !self.region.contains(&state) || !self.visited.insert(state) {
             return Vec::new();
         }
         let flow = self.dispatch.states[state].flow.clone();
@@ -161,7 +446,7 @@ impl<'a> Structurer<'a> {
     fn emit_transfer(&mut self, transfer: &Transfer, stop: &BTreeSet<usize>) -> Vec<IndentStmt> {
         match transfer {
             Transfer::Goto(target) => {
-                if stop.contains(target) {
+                if stop.contains(target) || !self.region.contains(target) {
                     Vec::new()
                 } else {
                     self.emit_state(*target, stop)
@@ -200,7 +485,7 @@ impl<'a> Structurer<'a> {
         then_reach
             .intersection(&else_reach)
             .copied()
-            .min_by_key(|state| self.order_of[*state])
+            .min_by_key(|state| self.order_of.get(state).copied().unwrap_or(usize::MAX))
     }
 }
 
@@ -247,6 +532,64 @@ fn diverges(stmts: &[IndentStmt]) -> bool {
         stmts.last().map(|s| &s.stmt),
         Some(Stmt::Return(_) | Stmt::Break(_) | Stmt::Continue(_))
     )
+}
+
+// --- small helpers --------------------------------------------------------
+
+fn is_goto_to(flow: &ArmFlow, target: usize) -> bool {
+    goto_target(flow) == Some(target)
+}
+
+fn goto_target(flow: &ArmFlow) -> Option<usize> {
+    if flow.prefix.is_empty()
+        && let Transfer::Goto(t) = &flow.transfer
+    {
+        Some(*t)
+    } else {
+        None
+    }
+}
+
+fn reach_within(
+    dispatch: &DispatchLoop,
+    entry: usize,
+    region: &BTreeSet<usize>,
+) -> BTreeSet<usize> {
+    let mut reached = BTreeSet::new();
+    let mut stack = Vec::new();
+    if region.contains(&entry) {
+        stack.push(entry);
+    }
+    while let Some(state) = stack.pop() {
+        if reached.insert(state) {
+            for t in dispatch.states[state].successors() {
+                if region.contains(&t) {
+                    stack.push(t);
+                }
+            }
+        }
+    }
+    reached
+}
+
+fn block_var_name(state_var: &str) -> String {
+    let suffix = state_var.strip_prefix("__state").unwrap_or("0");
+    format!("__block{suffix}")
+}
+
+fn assign_block(block_var: &str, target: usize) -> IndentStmt {
+    ind(Stmt::Assign {
+        target: Expr::Var(block_var.to_string().into()),
+        value: Expr::Value(RustValue::I64(target as i64)),
+    })
+}
+
+fn union(a: &BTreeSet<usize>, b: &BTreeSet<usize>) -> BTreeSet<usize> {
+    a.union(b).copied().collect()
+}
+
+fn sub(a: &BTreeSet<usize>, b: &BTreeSet<usize>) -> BTreeSet<usize> {
+    a.difference(b).copied().collect()
 }
 
 fn not_expr(cond: Expr) -> Expr {
