@@ -65,6 +65,7 @@ fn rewrite_item(item: &mut Item, plans: &BTreeMap<String, Plan>, facts: &FixupFa
                     Attr::Repr(vec![Repr::C]),
                     Attr::Derive(vec![Derive::Clone, Derive::Copy]),
                 ],
+                vis: record.vis,
                 generics: vec![],
                 name: plan.generated_name,
                 fields: StructFields::Tuple(
@@ -351,6 +352,8 @@ mod tests {
                     is_union: false,
                     allow_non_camel_case: false,
                     name: "anon_0".into(),
+                    packed: false,
+                    align: None,
                     fields: vec![
                         RecordField {
                             comments: vec![],
