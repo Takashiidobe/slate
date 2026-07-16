@@ -43,7 +43,13 @@ fn unwrap_singleton_scope(indent: &mut IndentStmt) -> bool {
 fn is_unwrappable(stmt: &Stmt) -> bool {
     matches!(
         stmt,
-        Stmt::If { .. } | Stmt::Loop { .. } | Stmt::For { .. } | Stmt::Match { .. }
+        Stmt::If { .. }
+            | Stmt::Loop { .. }
+            | Stmt::For { .. }
+            | Stmt::Match { .. }
+            | Stmt::Assign { .. }
+            | Stmt::CompoundAssign { .. }
+            | Stmt::Expr(_)
     )
 }
 
@@ -137,6 +143,27 @@ mod tests {
         }]);
 
         assert!(got.contains("    {\n        let mut x: i32 = 1;\n    }\n"));
+    }
+
+    #[test]
+    fn unwraps_singleton_assignment_scope() {
+        let got = after(vec![Stmt::For {
+            pat: "item".into(),
+            iter: call("items", vec![]),
+            body: vec![stmt(Stmt::Scope {
+                body: vec![stmt(crate::rust_ast::Stmt::CompoundAssign {
+                    target: var("total"),
+                    op: crate::rust_ast::BinOp::Add,
+                    value: crate::rust_ast::Expr::Unary {
+                        op: crate::rust_ast::UnaryOp::Deref,
+                        expr: Box::new(var("item")),
+                    },
+                })],
+            })],
+        }]);
+
+        assert!(got.contains("    for item in items() {\n        total += *item;\n    }\n"));
+        assert!(!got.contains("    for item in items() {\n        {\n"));
     }
 
     #[test]
