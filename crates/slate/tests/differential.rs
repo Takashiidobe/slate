@@ -525,6 +525,15 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(array_init_rust.contains("println!(\"{} {}\", partial[1], partial[3]);"));
     assert!(array_init_rust.contains("println!(\"{}\", s);"));
     assert!(array_init_rust.contains("println!(\"{} {}\", \"hi\", _v"));
+    assert!(array_init_rust.contains("let a: [i32; 5] = [1, 2, 3, 4, 5];"));
+    assert!(array_init_rust.contains("let partial: [i32; 4] = [7, 8, 0, 0];"));
+    assert!(array_init_rust.contains("let padded: [i8; 8] = [104, 105, 0, 0, 0, 0, 0, 0];"));
+    assert!(!array_init_rust.contains("let mut a: [i32; 5] = [0; 5];"));
+    assert!(!array_init_rust.contains("let mut partial: [i32; 4] = [0; 4];"));
+    assert!(!array_init_rust.contains("let mut padded: [i8; 8] = [0; 8];"));
+    assert!(!array_init_rust.contains("a = [1, 2, 3, 4, 5];"));
+    assert!(!array_init_rust.contains("partial = [7, 8, 0, 0];"));
+    assert!(!array_init_rust.contains("padded = [104, 105, 0, 0, 0, 0, 0, 0];"));
     assert!(!array_init_rust.contains("fn printf("));
     assert!(!array_init_rust.contains("unsafe { printf("));
 
@@ -968,7 +977,7 @@ fn string_lift_recovers_safe_local_string_buffers() {
     let rust = std::fs::read_to_string(&generated).expect("read generated string_lift rust");
 
     assert!(rust.contains("let greeting: &str = \"h\\u{e9}\";"));
-    assert!(rust.contains("let mut mutate: [i8; 4] = [0; 4];"));
+    assert!(rust.contains("let mut mutate: [i8; 4] = [97, 98, 99, 0];"));
     assert!(rust.contains("mutate.as_mut_ptr()"));
 }
 
