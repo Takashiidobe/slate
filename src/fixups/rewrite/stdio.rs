@@ -62,7 +62,7 @@ fn plan_for_fact(
     if !fact
         .uses
         .iter()
-        .all(|use_| matches!(use_.kind, FileUseKind::FPuts | FileUseKind::FClose))
+        .all(|use_| matches!(use_.kind, FileUseKind::Puts | FileUseKind::Close))
     {
         return None;
     }
@@ -90,20 +90,20 @@ fn plan_for_fact(
     for use_ in &fact.uses {
         let use_index = stmt_index(&use_.path)?;
         match use_.kind {
-            FileUseKind::FPuts => {
+            FileUseKind::Puts => {
                 let bytes = fputs_literal(&body.get(use_index)?.stmt)?;
                 replacements.insert(use_index, write_all_stmt(handle, bytes));
                 if previous_aliases_handle(body, use_index, handle) {
                     remove.insert(use_index - 1);
                 }
             }
-            FileUseKind::FClose => {
+            FileUseKind::Close => {
                 remove.insert(use_index);
                 if previous_aliases_handle(body, use_index, handle) {
                     remove.insert(use_index - 1);
                 }
             }
-            FileUseKind::FRead | FileUseKind::FWrite | FileUseKind::FGets => return None,
+            FileUseKind::Read | FileUseKind::Write | FileUseKind::Gets => return None,
         }
     }
     Some(Plan {

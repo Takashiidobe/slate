@@ -76,7 +76,7 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn stmt(&mut self, stmt: &Stmt, path: &mut Vec<PathSegment>) {
+    fn stmt(&mut self, stmt: &Stmt, path: &[PathSegment]) {
         match stmt {
             Stmt::Let {
                 name,
@@ -116,14 +116,8 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn collect_let(
-        &mut self,
-        name: &str,
-        ty: Option<&Type>,
-        init: &Expr,
-        path: &mut Vec<PathSegment>,
-    ) {
-        let ast_path = AstPath(path.clone());
+    fn collect_let(&mut self, name: &str, ty: Option<&Type>, init: &Expr, path: &[PathSegment]) {
+        let ast_path = AstPath(path.to_vec());
         let Some(binding) = self
             .facts
             .binding_by_local_path(self.function, name, &ast_path)
@@ -184,7 +178,7 @@ impl<'a> Collector<'a> {
     fn collect_counted_loops(
         &mut self,
         body: &[IndentStmt],
-        parent_path: &mut [PathSegment],
+        parent_path: &[PathSegment],
         body_segment: PathSegment,
     ) {
         for (index, pair) in body.windows(2).enumerate() {
@@ -237,7 +231,7 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn collect_expr_offsets<T: OffsetWalk>(&mut self, node: &T, path: &mut Vec<PathSegment>) {
+    fn collect_expr_offsets<T: OffsetWalk>(&mut self, node: &T, path: &[PathSegment]) {
         node.offset_exprs(&mut |expr| {
             let Some((pointer, offset_index, unit)) =
                 pointer_offset(expr, self.function, self.facts)
@@ -264,7 +258,7 @@ impl<'a> Collector<'a> {
                     offset_index,
                     ranged_index,
                     unit,
-                    path: AstPath(path.clone()),
+                    path: AstPath(path.to_vec()),
                 });
         });
     }

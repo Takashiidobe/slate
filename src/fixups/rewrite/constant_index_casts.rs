@@ -1,7 +1,7 @@
 use crate::fixups::support::walk;
 use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Type};
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) {
+pub(in crate::fixups) fn fixup(body: &mut [IndentStmt]) {
     walk::body_exprs_mut_with(body, &mut |expr| {
         if let Expr::Index { index, .. } = expr
             && let Some(replacement) = simplified_index(index)
@@ -49,7 +49,7 @@ mod tests {
     #[test]
     fn strips_nonnegative_literal_usize_index_casts() {
         let out = after_body(
-            fixup,
+            |body| fixup(body),
             vec![],
             None,
             vec![
@@ -77,7 +77,7 @@ fn f() {
     #[test]
     fn keeps_dynamic_and_potentially_signed_index_casts() {
         let out = after_body(
-            fixup,
+            |body| fixup(body),
             vec![param("index", "i32")],
             None,
             vec![

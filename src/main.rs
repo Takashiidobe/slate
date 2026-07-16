@@ -294,7 +294,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
                 .or_insert_with(|| enm.clone());
         }
         for record in &unit.records {
-            collect_record_field_type_names(&record, &mut referenced_record_types);
+            collect_record_field_type_names(record, &mut referenced_record_types);
             shared_records
                 .entry(rust_ident(&record.name))
                 .or_insert_with(|| record.clone());

@@ -199,10 +199,10 @@ fn all_callers_prove_arg(
                 return false;
             };
             let expr = expr_at_path(program, callsite.function, &arg.path);
-            let ok = expr.is_some_and(|expr| {
+
+            expr.is_some_and(|expr| {
                 expr_is_liftable_source(expr, callsite.function, &arg.path, facts, active)
-            });
-            ok
+            })
         })
 }
 

@@ -59,7 +59,7 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn stmt(&mut self, stmt: &Stmt, path: &mut Vec<PathSegment>) {
+    fn stmt(&mut self, stmt: &Stmt, path: &[PathSegment]) {
         match stmt {
             Stmt::Let {
                 name,
@@ -67,7 +67,7 @@ impl<'a> Collector<'a> {
                 init: Some(init),
                 ..
             } => {
-                let ast_path = AstPath(path.clone());
+                let ast_path = AstPath(path.to_vec());
                 if ty.as_ref().is_some_and(|ty| slice_elem_ty(ty).is_some())
                     && let Some(binding) =
                         self.facts
