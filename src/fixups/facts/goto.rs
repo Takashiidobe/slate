@@ -5,7 +5,7 @@
 
 use std::collections::BTreeSet;
 
-use crate::rust_ast::{Expr, IndentStmt, RustValue, Stmt};
+use crate::rust_ast::{Expr, ExprMatchArm, IndentStmt, MatchArm, Pattern, RustValue, Stmt};
 
 #[derive(Debug, Clone)]
 pub(crate) struct CfgNode {
@@ -257,10 +257,20 @@ pub(crate) enum Transfer {
         then_: Box<ArmFlow>,
         else_: Box<ArmFlow>,
     },
+    Switch {
+        expr: Expr,
+        arms: Vec<SwitchFlowArm>,
+    },
     Return(Option<Expr>),
     /// `unreachable!()`, `break 'L`, `std::process::exit(..)` and other
     /// divergence; carries the original terminal statement for re-emission.
     Diverge(Box<Stmt>),
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct SwitchFlowArm {
+    pub(crate) pattern: Pattern,
+    pub(crate) flow: ArmFlow,
 }
 
 impl DispatchLoop {
@@ -331,6 +341,11 @@ fn collect_gotos(flow: &ArmFlow, out: &mut Vec<usize>) {
         Transfer::Branch { then_, else_, .. } => {
             collect_gotos(then_, out);
             collect_gotos(else_, out);
+        }
+        Transfer::Switch { arms, .. } => {
+            for arm in arms {
+                collect_gotos(&arm.flow, out);
+            }
         }
         Transfer::Return(_) | Transfer::Diverge(_) => {}
     }
@@ -443,6 +458,15 @@ fn parse_flow(
                 transfer: Transfer::Goto(target),
             });
         }
+        if let Some((expr, arms, consumed)) =
+            switch_transfer(stmts, i, state_var, loop_label, dynamic)
+        {
+            let _ = consumed;
+            return Some(ArmFlow {
+                prefix,
+                transfer: Transfer::Switch { expr, arms },
+            });
+        }
         match &stmts[i].stmt {
             Stmt::If {
                 cond,
@@ -489,6 +513,174 @@ fn parse_flow(
         }
     }
     None
+}
+
+fn switch_transfer(
+    stmts: &[IndentStmt],
+    i: usize,
+    state_var: &str,
+    dispatch_label: &str,
+    dynamic: &mut bool,
+) -> Option<(Expr, Vec<SwitchFlowArm>, usize)> {
+    let (
+        _selector_name,
+        selector_expr,
+        _case_name,
+        selector_arms,
+        switch_label,
+        case_arms,
+        consumed,
+    ) = lowered_switch_parts(stmts, i)?;
+    let mut case_flows = std::collections::BTreeMap::new();
+    for arm in case_arms {
+        let index = match &arm.pattern {
+            Pattern::I64(v) if *v >= 0 => *v as usize,
+            Pattern::I128(v) if *v >= 0 => *v as usize,
+            Pattern::Wildcard => continue,
+            _ => return None,
+        };
+        let flow =
+            parse_switch_case_flow(&arm.body, state_var, dispatch_label, switch_label, dynamic)?;
+        case_flows.insert(index, flow);
+    }
+
+    let mut arms = Vec::new();
+    for arm in selector_arms {
+        let case = const_usize(&arm.value)?;
+        let flow = case_flows.get(&case)?.clone();
+        arms.push(SwitchFlowArm {
+            pattern: arm.pattern.clone(),
+            flow,
+        });
+    }
+    (!arms.is_empty()).then_some((selector_expr.clone(), arms, consumed))
+}
+
+fn lowered_switch_parts(
+    stmts: &[IndentStmt],
+    i: usize,
+) -> Option<(&str, &Expr, &str, &[ExprMatchArm], &str, &[MatchArm], usize)> {
+    if let Some(parts) = stmts
+        .get(i)
+        .and_then(|stmt| lowered_switch_scope_parts(&stmt.stmt))
+    {
+        return Some(parts);
+    }
+    lowered_switch_flat_parts(stmts, i)
+}
+
+fn lowered_switch_scope_parts(
+    stmt: &Stmt,
+) -> Option<(&str, &Expr, &str, &[ExprMatchArm], &str, &[MatchArm], usize)> {
+    let Stmt::Scope { body } = stmt else {
+        return None;
+    };
+    lowered_switch_flat_parts(body, 0).map(
+        |(selector_name, selector_expr, case_name, selector_arms, switch_label, case_arms, _)| {
+            (
+                selector_name,
+                selector_expr,
+                case_name,
+                selector_arms,
+                switch_label,
+                case_arms,
+                1,
+            )
+        },
+    )
+}
+
+fn lowered_switch_flat_parts(
+    body: &[IndentStmt],
+    i: usize,
+) -> Option<(&str, &Expr, &str, &[ExprMatchArm], &str, &[MatchArm], usize)> {
+    let [
+        IndentStmt {
+            stmt:
+                Stmt::Let {
+                    name: selector_name,
+                    init: Some(selector_expr),
+                    ..
+                },
+            ..
+        },
+        IndentStmt {
+            stmt:
+                Stmt::Let {
+                    name: case_name,
+                    init:
+                        Some(Expr::Match {
+                            expr,
+                            arms: selector_arms,
+                        }),
+                    ..
+                },
+            ..
+        },
+        IndentStmt {
+            stmt:
+                Stmt::Loop {
+                    label: Some(switch_label),
+                    body: loop_body,
+                },
+            ..
+        },
+    ] = &body.get(i..i + 3)?
+    else {
+        return None;
+    };
+    if var_name(expr).as_deref() != Some(selector_name.as_str()) {
+        return None;
+    }
+    let [
+        IndentStmt {
+            stmt:
+                Stmt::Match {
+                    expr: case_expr,
+                    arms: case_arms,
+                },
+            ..
+        },
+    ] = &loop_body[..]
+    else {
+        return None;
+    };
+    if var_name(case_expr).as_deref() != Some(case_name.as_str()) {
+        return None;
+    }
+    Some((
+        selector_name,
+        selector_expr,
+        case_name,
+        selector_arms,
+        switch_label.as_str(),
+        case_arms,
+        3,
+    ))
+}
+
+fn parse_switch_case_flow(
+    body: &[IndentStmt],
+    state_var: &str,
+    dispatch_label: &str,
+    switch_label: &str,
+    dynamic: &mut bool,
+) -> Option<ArmFlow> {
+    let mut trimmed = body.to_vec();
+    loop {
+        match trimmed.last().map(|s| &s.stmt) {
+            Some(Stmt::Assign { target, .. }) if var_name(target).as_deref() != Some(state_var) => {
+                trimmed.pop();
+            }
+            Some(Stmt::Continue(Some(label)) | Stmt::Break(Some(label)))
+                if label.as_str() == switch_label =>
+            {
+                trimmed.pop();
+            }
+            _ => break,
+        }
+    }
+    parse_flow(&trimmed, state_var, dispatch_label, dynamic)
 }
 
 /// Inline plain lexical scopes so a branch spilled into `{ let _v = ...; if ... }`

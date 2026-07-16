@@ -754,6 +754,18 @@ fn switch_and_dispatch_use_block_match_arms() {
     );
     assert!(goto_rust.contains("println!(\"{}\", cls);"));
 
+    let goto_return_c = fixtures_dir().join("goto_return_value.c");
+    let goto_return_generated = tmp.join("goto_return_value.generated.rs");
+    support::translate(&goto_return_c, &goto_return_generated)
+        .expect("translate goto return fixture");
+    let goto_return_rust =
+        std::fs::read_to_string(&goto_return_generated).expect("read generated goto return rust");
+    assert!(!goto_return_rust.contains("__state0"));
+    assert!(!goto_return_rust.contains("__dispatch0"));
+    assert!(goto_return_rust.contains("if n < 0 {\n        return -1;\n    }"));
+    assert!(goto_return_rust.contains("if n == 0 {\n        return 0;\n    }"));
+    assert!(goto_return_rust.contains("return 1;"));
+
     let goto_forward_c = fixtures_dir().join("goto_forward.c");
     let goto_forward_generated = tmp.join("goto_forward.generated.rs");
     support::translate(&goto_forward_c, &goto_forward_generated)
@@ -765,6 +777,30 @@ fn switch_and_dispatch_use_block_match_arms() {
     assert!(goto_forward_rust.contains("let x: i32 = 1;"));
     assert!(goto_forward_rust.contains("println!(\"{}\", x);"));
     assert!(!goto_forward_rust.contains("x = 99;"));
+
+    let goto_nested_c = fixtures_dir().join("goto_nested_if.c");
+    let goto_nested_generated = tmp.join("goto_nested_if.generated.rs");
+    support::translate(&goto_nested_c, &goto_nested_generated)
+        .expect("translate nested goto fixture");
+    let goto_nested_rust =
+        std::fs::read_to_string(&goto_nested_generated).expect("read generated nested goto rust");
+    assert!(!goto_nested_rust.contains("__state0"));
+    assert!(!goto_nested_rust.contains("__dispatch0"));
+    assert!(goto_nested_rust.contains(
+        "if a > 0 {\n        if b > 0 {\n            r = 1;\n        } else {\n            r = 2;\n        }\n    } else {\n        r = 3;\n    }"
+    ));
+
+    let goto_switch_c = fixtures_dir().join("goto_switch_forward.c");
+    let goto_switch_generated = tmp.join("goto_switch_forward.generated.rs");
+    support::translate(&goto_switch_c, &goto_switch_generated)
+        .expect("translate switch goto fixture");
+    let goto_switch_rust =
+        std::fs::read_to_string(&goto_switch_generated).expect("read generated switch goto rust");
+    assert!(!goto_switch_rust.contains("__state0"));
+    assert!(!goto_switch_rust.contains("__dispatch0"));
+    assert!(goto_switch_rust.contains("match x {\n        1 => {"));
+    assert!(goto_switch_rust.contains("r = 20;"));
+    assert!(goto_switch_rust.contains("_ => {\n            r = 30;"));
 
     let goto_loop_c = fixtures_dir().join("goto_backward_loop.c");
     let goto_loop_generated = tmp.join("goto_backward_loop.generated.rs");
@@ -782,6 +818,18 @@ fn switch_and_dispatch_use_block_match_arms() {
     assert!(!goto_loop_rust.contains("let _v3: i32 = sum;"));
     assert!(!goto_loop_rust.contains("let _v15: i32 = __retval;"));
 
+    let goto_multi_exit_c = fixtures_dir().join("goto_multi_exit_loop.c");
+    let goto_multi_exit_generated = tmp.join("goto_multi_exit_loop.generated.rs");
+    support::translate(&goto_multi_exit_c, &goto_multi_exit_generated)
+        .expect("translate multi-exit goto loop fixture");
+    let goto_multi_exit_rust = std::fs::read_to_string(&goto_multi_exit_generated)
+        .expect("read generated multi-exit goto loop rust");
+    assert!(!goto_multi_exit_rust.contains("__state0"));
+    assert!(!goto_multi_exit_rust.contains("__dispatch0"));
+    assert!(goto_multi_exit_rust.contains("loop {\n        sum += i;"));
+    assert!(goto_multi_exit_rust.contains("println!(\"overflow\");"));
+    assert!(goto_multi_exit_rust.contains("if i < 5 {\n            continue;\n        }"));
+
     let goto_irreducible_c = fixtures_dir().join("goto_irreducible.c");
     let goto_irreducible_generated = tmp.join("goto_irreducible.generated.rs");
     support::translate(&goto_irreducible_c, &goto_irreducible_generated)
@@ -797,6 +845,16 @@ fn switch_and_dispatch_use_block_match_arms() {
     assert!(goto_irreducible_rust.contains("println!(\"{}\", x);"));
     // the zero-init decl absorbs the redundant `x = 0;` store past the volatile write
     assert!(!goto_irreducible_rust.contains("\n    x = 0;"));
+
+    let computed_goto_c = fixtures_dir().join("computed_goto_ops.c");
+    let computed_goto_generated = tmp.join("computed_goto_ops.generated.rs");
+    support::translate(&computed_goto_c, &computed_goto_generated)
+        .expect("translate computed goto fixture");
+    let computed_goto_rust = std::fs::read_to_string(&computed_goto_generated)
+        .expect("read generated computed goto rust");
+    assert!(computed_goto_rust.contains("__state0 = [2, 3, 4]"));
+    assert!(computed_goto_rust.contains("continue '__dispatch0;"));
+    assert!(computed_goto_rust.contains("match __state0 {"));
 }
 
 #[test]
