@@ -47,6 +47,34 @@ fn linkage_is_external(op: &Op) -> bool {
     attr_int(op, "linkage").unwrap_or(0) == 0
 }
 
+/// True when a function body provably never falls off the end: its last op
+/// before the always-present structural `cir.return`/`cir.yield` terminator
+/// is a call tagged `{noreturn}` by CIR, unwrapping one level of `cir.scope`
+/// wrapping. `cir.return` is emitted even for genuinely divergent bodies (e.g.
+/// an unconditional infinite loop), so its presence says nothing about
+/// reachability — only what precedes it does.
+fn region_ends_in_noreturn_call(region: &Region) -> bool {
+    if region.blocks.len() != 1 {
+        return false;
+    }
+    let Some(block) = region.blocks.first() else {
+        return false;
+    };
+    let ops: &[Op] = match block.ops.last() {
+        Some(last) if last.name == "cir.return" || last.name == "cir.yield" => {
+            &block.ops[..block.ops.len() - 1]
+        }
+        _ => &block.ops,
+    };
+    match ops.last() {
+        Some(op) if op.name == "cir.call" => attr_bool(op, "noreturn"),
+        Some(op) if op.name == "cir.scope" => {
+            op.regions.first().is_some_and(region_ends_in_noreturn_call)
+        }
+        _ => false,
+    }
+}
+
 fn function_requires_unsafe_contract(op: &Op) -> bool {
     let (params, _) = parse_function_type(attr_str(op, "function_type").unwrap_or(""));
     if !params.iter().any(|ty| ty.starts_with("!cir.ptr<")) {
@@ -678,7 +706,10 @@ impl<'a> Lowerer<'a> {
                 continue;
             }
             let function_type = attr_str(op, "function_type").unwrap_or("");
-            let (decl, params, ret) = self.extern_fn_signature(name, function_type);
+            let (mut decl, params, ret) = self.extern_fn_signature(name, function_type);
+            if attr_bool(op, "noreturn") {
+                decl.ret = Some(Type::Never);
+            }
             self.externs.insert(name.to_string(), params);
             self.extern_returns.insert(name.to_string(), ret.clone());
             if name == "strtold" && ret.as_deref() == Some(LONG_DOUBLE_TY) {
@@ -1081,6 +1112,19 @@ impl<'a> Lowerer<'a> {
             (vis, extern_c, ret, Vec::<Stmt>::new())
         };
 
+        let diverges = !is_main
+            && attr_bool(op, "noreturn")
+            && op.regions.first().is_some_and(region_ends_in_noreturn_call);
+        if !is_main && attr_bool(op, "noreturn") && !diverges {
+            self.ctx.diagnostics.warn(
+                format!(
+                    "lower: __attribute__((noreturn)) on `{name}` does not structurally prove divergence; keeping its declared return type"
+                ),
+                op.loc.clone(),
+            );
+        }
+        let ret = if diverges { Some(Type::Never) } else { ret };
+
         let unsafe_ = extern_c || self.unsafe_functions.contains(name);
         let mut f = FunctionLowerer {
             parent: self,
@@ -1122,6 +1166,9 @@ impl<'a> Lowerer<'a> {
             f.lower_dispatch(body, returns_value);
         } else {
             f.lower_block(entry);
+        }
+        if diverges && matches!(f.body.last().map(|s| &s.stmt), Some(Stmt::Return(None))) {
+            f.body.pop();
         }
         Some(Item::Fn(FnDef {
             vis,
@@ -6367,7 +6414,8 @@ fn type_mentions_long_double(ty: &Type) -> bool {
         | Type::VaList
         | Type::Str
         | Type::Unit
-        | Type::Variadic => false,
+        | Type::Variadic
+        | Type::Never => false,
     }
 }
 
@@ -6390,7 +6438,8 @@ fn type_mentions_complex(ty: &Type) -> bool {
         | Type::VaList
         | Type::Str
         | Type::Unit
-        | Type::Variadic => false,
+        | Type::Variadic
+        | Type::Never => false,
     }
 }
 
