@@ -122,6 +122,26 @@ fn buffer_pointer_cursor_uses_safe_array_indexes() {
 }
 
 #[test]
+fn atomic_temp_allocas_forward_instead_of_shadowed_locals() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-atomic-temps");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("atomics.c");
+    let generated = tmp.join("atomics.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate atomics fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated atomics rust");
+
+    assert!(!rust.contains("_atomictmp"));
+    assert!(!rust.contains("atomic_temp"));
+    assert!(!rust.contains("cmpxchg_bool"));
+    assert!(rust.contains(".store(100, std::sync::atomic::Ordering::SeqCst)"));
+    assert!(rust.contains(".fetch_add(5, std::sync::atomic::Ordering::SeqCst)"));
+    assert!(rust.contains(".fetch_sub(10, std::sync::atomic::Ordering::SeqCst)"));
+    assert!(rust.contains(".swap(7, std::sync::atomic::Ordering::SeqCst)"));
+    assert!(rust.contains(".compare_exchange(expected, 42, "));
+}
+
+#[test]
 fn pthread_opaque_types_use_libc_paths() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pthread-types");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
