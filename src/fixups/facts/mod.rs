@@ -14,6 +14,7 @@ pub(super) mod counted_loop;
 pub(super) mod def_use;
 pub(super) mod effects;
 pub(super) mod file_ownership;
+pub(crate) mod goto;
 pub(super) mod heap_ownership;
 pub(super) mod loop_shapes;
 pub(super) mod places;
