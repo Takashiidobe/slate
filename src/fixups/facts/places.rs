@@ -258,28 +258,47 @@ impl Collector {
                     self.block(block, path)
                 });
             }
-            Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
+            Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
                 self.record_atomic(AtomicPlaceAccess::Read, path);
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(ptr, path));
+                if let Some(ptr) = place.ptr_expr() {
+                    walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                        self.expr(ptr, path)
+                    });
+                }
             }
-            Expr::AtomicStore { ptr, value, .. } => {
+            Expr::AtomicStore { place, value, .. } => {
                 self.record_atomic(AtomicPlaceAccess::Write, path);
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(ptr, path));
+                if let Some(ptr) = place.ptr_expr() {
+                    walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                        self.expr(ptr, path)
+                    });
+                }
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(value, path));
             }
-            Expr::AtomicFetch { ptr, value, .. } | Expr::AtomicSwap { ptr, value, .. } => {
+            Expr::AtomicFetch { place, value, .. } | Expr::AtomicSwap { place, value, .. } => {
                 self.record_atomic(AtomicPlaceAccess::ReadWrite, path);
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(ptr, path));
+                if let Some(ptr) = place.ptr_expr() {
+                    walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                        self.expr(ptr, path)
+                    });
+                }
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(value, path));
+            }
+            Expr::AtomicNew { value, .. } => {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(value, path));
             }
             Expr::AtomicCompareExchange {
-                ptr,
+                place,
                 expected,
                 desired,
                 ..
             } => {
                 self.record_atomic(AtomicPlaceAccess::ReadWrite, path);
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(ptr, path));
+                if let Some(ptr) = place.ptr_expr() {
+                    walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                        self.expr(ptr, path)
+                    });
+                }
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| {
                     self.expr(expected, path)
                 });
@@ -467,7 +486,9 @@ mod tests {
     use super::*;
     use crate::fixups::facts;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{AtomicOrdering, AtomicType, Expr, Item, Program, Stmt, Type};
+    use crate::rust_ast::{
+        AtomicOrdering, AtomicPlace, AtomicType, Expr, Item, Program, Stmt, Type,
+    };
 
     fn analyzed(stmts: Vec<Stmt>) -> facts::FixupFacts {
         facts::analyze(Program {
@@ -606,12 +627,12 @@ mod tests {
             Stmt::Expr(call("std::ptr::write_volatile", vec![var("p"), int(1)])),
             Stmt::Expr(Expr::AtomicLoad {
                 ty: AtomicType::I32,
-                ptr: Box::new(var("p")),
+                place: AtomicPlace::Ptr(Box::new(var("p"))),
                 ordering: AtomicOrdering::SeqCst,
             }),
             Stmt::Expr(Expr::AtomicStore {
                 ty: AtomicType::I32,
-                ptr: Box::new(var("p")),
+                place: AtomicPlace::Ptr(Box::new(var("p"))),
                 value: Box::new(int(2)),
                 ordering: AtomicOrdering::SeqCst,
             }),

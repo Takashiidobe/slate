@@ -163,20 +163,29 @@ pub(in crate::fixups) fn exprs(expr: &Expr, f: &mut impl FnMut(&Expr)) {
             exprs(else_expr, f);
         }
         Expr::Block(block) | Expr::Unsafe(block) => block_exprs(block, f),
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => exprs(ptr, f),
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            exprs(ptr, f);
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            if let Some(ptr) = place.ptr_expr() {
+                exprs(ptr, f);
+            }
+        }
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            if let Some(ptr) = place.ptr_expr() {
+                exprs(ptr, f);
+            }
             exprs(value, f);
         }
+        Expr::AtomicNew { value, .. } => exprs(value, f),
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            exprs(ptr, f);
+            if let Some(ptr) = place.ptr_expr() {
+                exprs(ptr, f);
+            }
             exprs(expected, f);
             exprs(desired, f);
         }
@@ -490,30 +499,41 @@ pub(in crate::fixups) fn exprs_with_path(
                 block_exprs_with_path(block, path, f);
             });
         }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-            with_path_segment(path, PathSegment::Expr(0), |path| {
-                exprs_with_path(ptr, path, f);
-            });
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            if let Some(ptr) = place.ptr_expr() {
+                with_path_segment(path, PathSegment::Expr(0), |path| {
+                    exprs_with_path(ptr, path, f);
+                });
+            }
         }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            with_path_segment(path, PathSegment::Expr(0), |path| {
-                exprs_with_path(ptr, path, f);
-            });
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            if let Some(ptr) = place.ptr_expr() {
+                with_path_segment(path, PathSegment::Expr(0), |path| {
+                    exprs_with_path(ptr, path, f);
+                });
+            }
             with_path_segment(path, PathSegment::Expr(1), |path| {
                 exprs_with_path(value, path, f);
             });
         }
+        Expr::AtomicNew { value, .. } => {
+            with_path_segment(path, PathSegment::Expr(0), |path| {
+                exprs_with_path(value, path, f);
+            });
+        }
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            with_path_segment(path, PathSegment::Expr(0), |path| {
-                exprs_with_path(ptr, path, f);
-            });
+            if let Some(ptr) = place.ptr_expr() {
+                with_path_segment(path, PathSegment::Expr(0), |path| {
+                    exprs_with_path(ptr, path, f);
+                });
+            }
             with_path_segment(path, PathSegment::Expr(1), |path| {
                 exprs_with_path(expected, path, f);
             });
@@ -666,16 +686,25 @@ pub(in crate::fixups) fn exprs_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> 
             else_expr,
         } => exprs_any(cond, pred) || exprs_any(then_expr, pred) || exprs_any(else_expr, pred),
         Expr::Block(block) | Expr::Unsafe(block) => block_exprs_any(block, pred),
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => exprs_any(ptr, pred),
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => exprs_any(ptr, pred) || exprs_any(value, pred),
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            place.ptr_expr().is_some_and(|ptr| exprs_any(ptr, pred))
+        }
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            place.ptr_expr().is_some_and(|ptr| exprs_any(ptr, pred)) || exprs_any(value, pred)
+        }
+        Expr::AtomicNew { value, .. } => exprs_any(value, pred),
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
-        } => exprs_any(ptr, pred) || exprs_any(expected, pred) || exprs_any(desired, pred),
+        } => {
+            place.ptr_expr().is_some_and(|ptr| exprs_any(ptr, pred))
+                || exprs_any(expected, pred)
+                || exprs_any(desired, pred)
+        }
         Expr::CopyNonoverlapping { src, dst, .. } => exprs_any(src, pred) || exprs_any(dst, pred),
         Expr::PtrCopy {
             src, dst, count, ..
@@ -887,22 +916,27 @@ fn exprs_all_with_hooks(
         Expr::Block(block) | Expr::Unsafe(block) => {
             block_exprs_all_with(block, stmt_hook, expr_hook)
         }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-            exprs_all_with_hooks(ptr, stmt_hook, expr_hook)
-        }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            exprs_all_with_hooks(ptr, stmt_hook, expr_hook)
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => place
+            .ptr_expr()
+            .is_none_or(|ptr| exprs_all_with_hooks(ptr, stmt_hook, expr_hook)),
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            place
+                .ptr_expr()
+                .is_none_or(|ptr| exprs_all_with_hooks(ptr, stmt_hook, expr_hook))
                 && exprs_all_with_hooks(value, stmt_hook, expr_hook)
         }
+        Expr::AtomicNew { value, .. } => exprs_all_with_hooks(value, stmt_hook, expr_hook),
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            exprs_all_with_hooks(ptr, stmt_hook, expr_hook)
+            place
+                .ptr_expr()
+                .is_none_or(|ptr| exprs_all_with_hooks(ptr, stmt_hook, expr_hook))
                 && exprs_all_with_hooks(expected, stmt_hook, expr_hook)
                 && exprs_all_with_hooks(desired, stmt_hook, expr_hook)
         }
@@ -1095,20 +1129,29 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
             exprs_mut_with(else_expr, f);
         }
         Expr::Block(block) | Expr::Unsafe(block) => block_exprs_mut_with(block, f),
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => exprs_mut_with(ptr, f),
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            exprs_mut_with(ptr, f);
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            if let Some(ptr) = place.ptr_expr_mut() {
+                exprs_mut_with(ptr, f);
+            }
+        }
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            if let Some(ptr) = place.ptr_expr_mut() {
+                exprs_mut_with(ptr, f);
+            }
             exprs_mut_with(value, f);
         }
+        Expr::AtomicNew { value, .. } => exprs_mut_with(value, f),
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            exprs_mut_with(ptr, f);
+            if let Some(ptr) = place.ptr_expr_mut() {
+                exprs_mut_with(ptr, f);
+            }
             exprs_mut_with(expected, f);
             exprs_mut_with(desired, f);
         }

@@ -142,6 +142,25 @@ fn atomic_temp_allocas_forward_instead_of_shadowed_locals() {
 }
 
 #[test]
+fn non_escaping_atomic_local_gets_native_atomic_storage() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-atomic-locals");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("atomics.c");
+    let generated = tmp.join("atomics.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate atomics fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated atomics rust");
+
+    assert!(rust.contains("let a = std::sync::atomic::AtomicI32::new(0);"));
+    assert!(rust.contains("a.store(100, std::sync::atomic::Ordering::SeqCst);"));
+    assert!(rust.contains("a.fetch_add(5, std::sync::atomic::Ordering::SeqCst)"));
+    assert!(rust.contains("a.compare_exchange(expected, 42, "));
+    assert!(!rust.contains("from_ptr"));
+    assert!(!rust.contains("unsafe"));
+    assert!(!rust.contains("let mut a"));
+}
+
+#[test]
 fn pthread_opaque_types_use_libc_paths() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pthread-types");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

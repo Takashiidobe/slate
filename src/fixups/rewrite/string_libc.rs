@@ -370,30 +370,41 @@ fn fixup_expr(
                 fixup_expr(count, function, facts, temps, path)
             });
         }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(ptr, function, facts, temps, path)
-            });
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            if let Some(ptr) = place.ptr_expr_mut() {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    fixup_expr(ptr, function, facts, temps, path)
+                });
+            }
         }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(ptr, function, facts, temps, path)
-            });
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            if let Some(ptr) = place.ptr_expr_mut() {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    fixup_expr(ptr, function, facts, temps, path)
+                });
+            }
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
                 fixup_expr(value, function, facts, temps, path)
             });
         }
+        Expr::AtomicNew { value, .. } => {
+            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                fixup_expr(value, function, facts, temps, path)
+            });
+        }
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(ptr, function, facts, temps, path)
-            });
+            if let Some(ptr) = place.ptr_expr_mut() {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    fixup_expr(ptr, function, facts, temps, path)
+                });
+            }
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
                 fixup_expr(expected, function, facts, temps, path)
             });
@@ -1408,22 +1419,27 @@ fn expr_temp_uses_are_zero_comparisons(expr: &Expr, name: &str) -> bool {
                 && expr_temp_uses_are_zero_comparisons(val, name)
                 && expr_temp_uses_are_zero_comparisons(count, name)
         }
-        Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => {
-            expr_temp_uses_are_zero_comparisons(ptr, name)
-        }
-        Expr::AtomicStore { ptr, value, .. }
-        | Expr::AtomicFetch { ptr, value, .. }
-        | Expr::AtomicSwap { ptr, value, .. } => {
-            expr_temp_uses_are_zero_comparisons(ptr, name)
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => place
+            .ptr_expr()
+            .is_none_or(|ptr| expr_temp_uses_are_zero_comparisons(ptr, name)),
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            place
+                .ptr_expr()
+                .is_none_or(|ptr| expr_temp_uses_are_zero_comparisons(ptr, name))
                 && expr_temp_uses_are_zero_comparisons(value, name)
         }
+        Expr::AtomicNew { value, .. } => expr_temp_uses_are_zero_comparisons(value, name),
         Expr::AtomicCompareExchange {
-            ptr,
+            place,
             expected,
             desired,
             ..
         } => {
-            expr_temp_uses_are_zero_comparisons(ptr, name)
+            place
+                .ptr_expr()
+                .is_none_or(|ptr| expr_temp_uses_are_zero_comparisons(ptr, name))
                 && expr_temp_uses_are_zero_comparisons(expected, name)
                 && expr_temp_uses_are_zero_comparisons(desired, name)
         }

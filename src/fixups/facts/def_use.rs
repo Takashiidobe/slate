@@ -4,7 +4,9 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, DefUseFact, FixupFacts, FunctionId, PathSegment,
 };
-use crate::rust_ast::{Block, Expr, Ident, IndentStmt, Item, Pattern, Program, Stmt, UnaryOp};
+use crate::rust_ast::{
+    AtomicPlace, Block, Expr, Ident, IndentStmt, Item, Pattern, Program, Stmt, UnaryOp,
+};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.def_use.clear();
@@ -313,20 +315,23 @@ impl<'a> Collector<'a> {
                 });
             }
             Expr::Ref { expr, .. } | Expr::AddrOf { expr, .. } => self.expr(expr, path),
-            Expr::AtomicRef { ptr, .. } | Expr::AtomicLoad { ptr, .. } => self.expr(ptr, path),
-            Expr::AtomicStore { ptr, value, .. }
-            | Expr::AtomicFetch { ptr, value, .. }
-            | Expr::AtomicSwap { ptr, value, .. } => {
-                self.expr(ptr, path);
+            Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+                self.atomic_place(place, path)
+            }
+            Expr::AtomicStore { place, value, .. }
+            | Expr::AtomicFetch { place, value, .. }
+            | Expr::AtomicSwap { place, value, .. } => {
+                self.atomic_place(place, path);
                 self.expr(value, path);
             }
+            Expr::AtomicNew { value, .. } => self.expr(value, path),
             Expr::AtomicCompareExchange {
-                ptr,
+                place,
                 expected,
                 desired,
                 ..
             } => {
-                self.expr(ptr, path);
+                self.atomic_place(place, path);
                 self.expr(expected, path);
                 self.expr(desired, path);
             }
@@ -410,6 +415,15 @@ impl<'a> Collector<'a> {
     fn bind(&mut self, name: String, binding: Option<BindingId>) {
         if let Some(scope) = self.scopes.last_mut() {
             scope.insert(name, binding);
+        }
+    }
+
+    // a promoted atomic local reads the binding; its contents change only
+    // through the atomic op itself, never by reassigning the binding.
+    fn atomic_place(&mut self, place: &AtomicPlace, path: &mut Vec<PathSegment>) {
+        match place {
+            AtomicPlace::Ptr(ptr) => self.expr(ptr, path),
+            AtomicPlace::Local(name) => self.record_read(name, path),
         }
     }
 

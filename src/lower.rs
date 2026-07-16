@@ -4,11 +4,11 @@ use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType, CrateAttr, Derive,
-    EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam,
-    GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint, MatchArm, Method,
-    Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue, StdTrait, Stmt,
-    StructDef, StructFields, TraitBound, Type, UnaryOp, Visibility,
+    AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType,
+    CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
+    FnDef, FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint,
+    MatchArm, Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue,
+    StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -4146,13 +4146,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.lower_atomic_fetch_nonatomic(op, &result, val, ty, binop);
             return;
         };
-        let fetched = Expr::AtomicFetch {
+        let fetched = Self::unsafe_expr(Expr::AtomicFetch {
             ty: atomic_ty,
             op: atomic_rmw_op(binop),
-            ptr: Box::new(self.store_address_expr(&op.operands[0])),
+            place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.operands[0]))),
             value: Box::new(val.clone()),
             ordering: rust_ordering(attr_int(op, "mem_order").unwrap_or(5)),
-        };
+        });
         // std atomics always return the pre-op value; `fetch_first` wants that,
         // otherwise recompute the post-op value the op just stored.
         if attr_bool(op, "fetch_first") {
@@ -4223,12 +4223,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let val = self.operand_expr(&op.operands[1]);
         let ty = self.atomic_rust_type(op);
         if let Some(atomic_ty) = atomic_type(&ty) {
-            let expr = Expr::AtomicSwap {
+            let expr = Self::unsafe_expr(Expr::AtomicSwap {
                 ty: atomic_ty,
-                ptr: Box::new(self.store_address_expr(&op.operands[0])),
+                place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.operands[0]))),
                 value: Box::new(val),
                 ordering: rust_ordering(attr_int(op, "mem_order").unwrap_or(5)),
-            };
+            });
             self.materialize_expr(&result, expr, op_result_type(op));
             return;
         }
@@ -4275,14 +4275,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     name: "Result".into(),
                     args: vec![ty.clone(), ty.clone()],
                 }),
-                init: Some(Expr::AtomicCompareExchange {
+                init: Some(Self::unsafe_expr(Expr::AtomicCompareExchange {
                     ty: atomic_ty,
-                    ptr: Box::new(self.store_address_expr(&op.operands[0])),
+                    place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.operands[0]))),
                     expected: Box::new(expected),
                     desired: Box::new(desired),
                     success: rust_ordering(attr_int(op, "succ_order").unwrap_or(5)),
                     failure: load_ordering(attr_int(op, "fail_order").unwrap_or(5)),
-                }),
+                })),
             });
             let old = self.next_temp();
             self.push_stmt(Stmt::Let {
@@ -4386,11 +4386,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mem_order = attr_int(op, "mem_order")?;
         let ty = op_result_type(op).map(|ty| self.parent.rust_type(ty))?;
         let atomic_ty = atomic_type(&ty)?;
-        Some(Expr::AtomicLoad {
+        Some(Self::unsafe_expr(Expr::AtomicLoad {
             ty: atomic_ty,
-            ptr: Box::new(self.store_address_expr(ptr)),
+            place: AtomicPlace::Ptr(Box::new(self.store_address_expr(ptr))),
             ordering: load_ordering(mem_order),
-        })
+        }))
     }
 
     fn try_atomic_store(
@@ -4410,12 +4410,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         else {
             return false;
         };
-        self.push_stmt(Stmt::Expr(Expr::AtomicStore {
+        self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::AtomicStore {
             ty: wrapper,
-            ptr: Box::new(self.store_address_expr(ptr)),
+            place: AtomicPlace::Ptr(Box::new(self.store_address_expr(ptr))),
             value: Box::new(value),
             ordering: store_ordering(mem_order),
-        }));
+        })));
         true
     }
 
