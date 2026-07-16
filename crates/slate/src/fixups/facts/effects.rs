@@ -32,6 +32,7 @@ pub(in crate::fixups) fn is_movable_pure_expr(expr: &Expr) -> bool {
         Expr::Cast { expr, .. } => is_movable_pure_expr(expr),
         Expr::Unary { op, expr } => !matches!(op, UnaryOp::Not) && is_movable_pure_expr(expr),
         Expr::Binary { lhs, rhs, .. } => is_movable_pure_expr(lhs) && is_movable_pure_expr(rhs),
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } => is_movable_pure_expr(base),
         Expr::Index { base, index } => is_movable_pure_expr(base) && is_movable_pure_expr(index),
         Expr::StructLit { fields, .. } => {
             fields.iter().all(|(_, value)| is_movable_pure_expr(value))
@@ -447,6 +448,41 @@ mod tests {
         assert_eq!(expr.purity, Purity::MovablePure);
         assert!(expr.effects.is_empty());
         assert!(is_movable_pure_expr(&bin(BinOp::Add, var("a"), int(1))));
+    }
+
+    #[test]
+    fn classifies_pure_member_and_index_reads_as_movable_pure() {
+        let field = Expr::Field {
+            base: Box::new(var("p")),
+            field: "left".into(),
+        };
+        let nested_index = Expr::Index {
+            base: Box::new(Expr::Field {
+                base: Box::new(var("w")),
+                field: "data".into(),
+            }),
+            index: Box::new(int(1)),
+        };
+        let facts = analyzed(vec![
+            temp("x", "i32", field.clone()),
+            temp("y", "i32", nested_index.clone()),
+        ]);
+
+        let field_fact = effect_for(
+            &facts,
+            EffectSubject::Expr,
+            AstPath(vec![PathSegment::Stmt(0)]),
+        );
+        assert_eq!(field_fact.purity, Purity::MovablePure);
+
+        let index_fact = effect_for(
+            &facts,
+            EffectSubject::Expr,
+            AstPath(vec![PathSegment::Stmt(1)]),
+        );
+        assert_eq!(index_fact.purity, Purity::MovablePure);
+        assert!(is_movable_pure_expr(&field));
+        assert!(is_movable_pure_expr(&nested_index));
     }
 
     #[test]
