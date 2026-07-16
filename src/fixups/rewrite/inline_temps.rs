@@ -448,6 +448,33 @@ fn f() {
     }
 
     #[test]
+    fn inlines_member_access_temps_into_arithmetic() {
+        let left = Expr::Field {
+            base: Box::new(var("p")),
+            field: "left".into(),
+        };
+        let right = Expr::Field {
+            base: Box::new(var("p")),
+            field: "right".into(),
+        };
+        let out = inlined(vec![
+            temp("_v0", "i32", left),
+            temp("_v1", "i32", bin(BinOp::Mul, var("_v0"), int(10))),
+            temp("_v2", "i32", right),
+            Stmt::Return(Some(bin(BinOp::Add, var("_v1"), var("_v2")))),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    return p.left * 10 + p.right;
+}
+"
+        );
+    }
+
+    #[test]
     fn keeps_temp_that_feeds_a_branch_value() {
         // a temp used once in the branch body (the store) and once as the branch's
         // yielded value must not be inlined away, or the tail reference dangles.
