@@ -25,7 +25,7 @@ pub fn apply(program: Program) -> Program {
             rewrite::param_spills::fixup(f, function, &facts);
         }
     }
-    zero_init_to_fixpoint(&mut program);
+    zero_init_to_fixpoint(&mut program, false);
     loop {
         let mut changed = false;
         for item in &mut program.items {
@@ -210,7 +210,7 @@ pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::buffer_cursor::fixup(&mut program, &facts);
     inline_temps_to_fixpoint(&mut program, InlinePass::Late);
-    zero_init_to_fixpoint(&mut program);
+    zero_init_to_fixpoint(&mut program, true);
     remove_mut(&mut program);
     for item in &mut program.items {
         if let Item::Fn(f) = item {
@@ -228,14 +228,14 @@ fn structure_goto(program: &mut Program) {
     }
 }
 
-fn zero_init_to_fixpoint(program: &mut Program) {
+fn zero_init_to_fixpoint(program: &mut Program, cross_effects: bool) {
     loop {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
         let mut changed = false;
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
-                && rewrite::zero_init::fixup(&mut f.body, function, &facts)
+                && rewrite::zero_init::fixup(&mut f.body, function, &facts, cross_effects)
             {
                 changed = true;
             }

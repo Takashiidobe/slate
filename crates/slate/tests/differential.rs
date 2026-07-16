@@ -795,6 +795,8 @@ fn switch_and_dispatch_use_block_match_arms() {
     assert!(goto_irreducible_rust.contains("__block0 = 2;"));
     assert!(goto_irreducible_rust.contains("__block0 = 1;"));
     assert!(goto_irreducible_rust.contains("println!(\"{}\", x);"));
+    // the zero-init decl absorbs the redundant `x = 0;` store past the volatile write
+    assert!(!goto_irreducible_rust.contains("\n    x = 0;"));
 }
 
 #[test]
