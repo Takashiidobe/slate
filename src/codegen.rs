@@ -13,9 +13,9 @@
 use std::fmt::{self, Write};
 
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, Attr, Block, Cfg, Comment, CrateAttr, Derive, Expr,
-    ExternDecl, FnDef, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method, Path, Program,
-    RecordDef, Repr, RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
+    AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr, Block, Cfg, Comment, CrateAttr,
+    Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method,
+    Path, Program, RecordDef, Repr, RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
 };
 
 const INDENT: &str = "    ";
@@ -901,69 +901,73 @@ impl<W: Write> Codegen<W> {
                 self.expr(expr)?;
                 self.out.write_char(')')
             }
-            Expr::AtomicRef { ty, ptr } => self.atomic_ref(*ty, ptr),
-            Expr::AtomicLoad { ty, ptr, ordering } => {
-                self.out.write_str("unsafe { ")?;
-                self.atomic_ref(*ty, ptr)?;
-                write!(self.out, ".load({}) }}", ordering_str(*ordering))
+            Expr::AtomicRef { ty, place } => self.atomic_ref(*ty, place),
+            Expr::AtomicLoad {
+                ty,
+                place,
+                ordering,
+            } => {
+                self.atomic_ref(*ty, place)?;
+                write!(self.out, ".load({})", ordering_str(*ordering))
             }
             Expr::AtomicStore {
                 ty,
-                ptr,
+                place,
                 value,
                 ordering,
             } => {
-                self.out.write_str("unsafe { ")?;
-                self.atomic_ref(*ty, ptr)?;
+                self.atomic_ref(*ty, place)?;
                 self.out.write_str(".store(")?;
                 self.expr(value)?;
-                write!(self.out, ", {}) }}", ordering_str(*ordering))
+                write!(self.out, ", {})", ordering_str(*ordering))
             }
             Expr::AtomicFetch {
                 ty,
                 op,
-                ptr,
+                place,
                 value,
                 ordering,
             } => {
-                self.out.write_str("unsafe { ")?;
-                self.atomic_ref(*ty, ptr)?;
+                self.atomic_ref(*ty, place)?;
                 write!(self.out, ".{}(", rmw_method(*op))?;
                 self.expr(value)?;
-                write!(self.out, ", {}) }}", ordering_str(*ordering))
+                write!(self.out, ", {})", ordering_str(*ordering))
             }
             Expr::AtomicSwap {
                 ty,
-                ptr,
+                place,
                 value,
                 ordering,
             } => {
-                self.out.write_str("unsafe { ")?;
-                self.atomic_ref(*ty, ptr)?;
+                self.atomic_ref(*ty, place)?;
                 self.out.write_str(".swap(")?;
                 self.expr(value)?;
-                write!(self.out, ", {}) }}", ordering_str(*ordering))
+                write!(self.out, ", {})", ordering_str(*ordering))
             }
             Expr::AtomicCompareExchange {
                 ty,
-                ptr,
+                place,
                 expected,
                 desired,
                 success,
                 failure,
             } => {
-                self.out.write_str("unsafe { ")?;
-                self.atomic_ref(*ty, ptr)?;
+                self.atomic_ref(*ty, place)?;
                 self.out.write_str(".compare_exchange(")?;
                 self.expr(expected)?;
                 self.out.write_str(", ")?;
                 self.expr(desired)?;
                 write!(
                     self.out,
-                    ", {}, {}) }}",
+                    ", {}, {})",
                     ordering_str(*success),
                     ordering_str(*failure)
                 )
+            }
+            Expr::AtomicNew { ty, value } => {
+                write!(self.out, "std::sync::atomic::{}::new(", atomic_wrapper(*ty))?;
+                self.expr(value)?;
+                self.out.write_char(')')
             }
             Expr::AtomicFence { ordering } => {
                 write!(
@@ -1029,14 +1033,19 @@ impl<W: Write> Codegen<W> {
         }
     }
 
-    fn atomic_ref(&mut self, ty: AtomicType, ptr: &Expr) -> fmt::Result {
-        write!(
-            self.out,
-            "std::sync::atomic::{}::from_ptr(",
-            atomic_wrapper(ty)
-        )?;
-        self.expr(ptr)?;
-        self.out.write_char(')')
+    fn atomic_ref(&mut self, ty: AtomicType, place: &AtomicPlace) -> fmt::Result {
+        match place {
+            AtomicPlace::Ptr(ptr) => {
+                write!(
+                    self.out,
+                    "std::sync::atomic::{}::from_ptr(",
+                    atomic_wrapper(ty)
+                )?;
+                self.expr(ptr)?;
+                self.out.write_char(')')
+            }
+            AtomicPlace::Local(name) => self.out.write_str(name.as_str()),
+        }
     }
 
     // A prefix operator over another prefix form (`- -a`, `&&x`) tokenizes as
