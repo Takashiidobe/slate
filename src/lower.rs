@@ -150,6 +150,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         extern_globals: BTreeMap::new(),
         strings: BTreeMap::new(),
         const_arrays: BTreeMap::new(),
+        block_addr_globals: BTreeMap::new(),
         const_aggregates: BTreeMap::new(),
         const_zero_globals: BTreeSet::new(),
         externs: BTreeMap::new(),
@@ -278,6 +279,7 @@ struct Lowerer<'a> {
     /// numeric aggregate const globals (e.g. `int a[5]={..}`) → element literals,
     /// keyed by raw sym_name; consumed when a `cir.copy` initializes a local.
     const_arrays: BTreeMap<String, Vec<Expr>>,
+    block_addr_globals: BTreeMap<String, Vec<String>>,
     /// nested aggregate const globals (structs, unions, arrays of aggregates) →
     /// their raw `#cir.const_record`/`#cir.const_array` initializer, keyed by raw
     /// sym_name; rendered recursively against the destination type on `cir.copy`.
@@ -307,6 +309,8 @@ struct FunctionLowerer<'a, 'b> {
     slot_types: BTreeMap<String, Type>,
     member_ptrs: BTreeMap<String, MemberPtr>,
     element_ptrs: BTreeMap<String, ElementPtr>,
+    block_addr_element_ptrs: BTreeMap<String, BlockAddrElementPtr>,
+    indirect_target_values: BTreeMap<String, Expr>,
     temp_counter: usize,
     indent: usize,
     body: Vec<IndentStmt>,
@@ -363,6 +367,12 @@ struct ElementPtr {
     base: Expr,
     index: Expr,
     unsafe_access: bool,
+}
+
+#[derive(Debug, Clone)]
+struct BlockAddrElementPtr {
+    labels: Vec<String>,
+    index: Expr,
 }
 
 #[derive(Debug, Clone)]
@@ -693,7 +703,21 @@ impl<'a> Lowerer<'a> {
             self.extern_globals.insert(rust_name, ty);
             return;
         };
-        if let Some(mut bytes) = parse_cir_const_array(raw) {
+        if let Some(labels) = parse_cir_block_addr_labels(raw) {
+            self.block_addr_globals.insert(name.to_string(), labels);
+            if is_c_global && let Some(ty) = ty {
+                let init = self.default_value_expr(&ty);
+                self.globals.insert(
+                    rust_name.clone(),
+                    GlobalVar {
+                        name: rust_name,
+                        ty,
+                        init,
+                        external: linkage_is_external(op),
+                    },
+                );
+            }
+        } else if let Some(mut bytes) = parse_cir_const_array(raw) {
             if is_c_global && let Some(ty) = ty {
                 let elems = byte_array_elems(&bytes, &ty);
                 self.globals.insert(
@@ -916,6 +940,8 @@ impl<'a> Lowerer<'a> {
             slot_types: BTreeMap::new(),
             member_ptrs: BTreeMap::new(),
             element_ptrs: BTreeMap::new(),
+            block_addr_element_ptrs: BTreeMap::new(),
+            indirect_target_values: BTreeMap::new(),
             temp_counter: 0,
             indent: 1,
             body: Vec::new(),
@@ -1395,9 +1421,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.div" => self.lower_int_arith(op, BinOp::Div),
             "cir.rem" => self.lower_int_arith(op, BinOp::Rem),
             "cir.and" => self.lower_int_arith(op, BinOp::BitAnd),
+            "cir.asm" => self.lower_asm(op),
             "cir.or" => self.lower_int_arith(op, BinOp::BitOr),
             "cir.xor" => self.lower_int_arith(op, BinOp::BitXor),
             "cir.bitreverse" => self.lower_unary_method(op, "reverse_bits"),
+            "cir.block_address" => self.lower_opaque_pointer(op, true),
             "cir.byte_swap" => self.lower_unary_method(op, "swap_bytes"),
             "cir.clrsb" => self.lower_clrsb(op),
             "cir.clz" => self.lower_unary_method(op, "leading_zeros"),
@@ -1509,6 +1537,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.continue" => self.lower_continue(),
             "cir.goto" => self.lower_goto(op),
             "cir.br" => self.lower_br(op),
+            "cir.indirect_br" => self.lower_indirect_br(op),
             "cir.label" => {}
             "cir.yield" | "cir.condition" => {}
             other => {
@@ -1689,6 +1718,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(ptr) = op.operands.first() else {
             return;
         };
+        if let Some(expr) = self.block_addr_dispatch_expr(ptr) {
+            self.indirect_target_values.insert(result.clone(), expr);
+            self.lower_opaque_pointer(op, true);
+            return;
+        }
         let mut value = if attr_bool(op, "is_volatile") {
             Self::unsafe_expr(Expr::Call {
                 func: Box::new(Expr::Path(Path::new(
@@ -1743,6 +1777,28 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         }
         self.materialize_expr(result, value, op_result_type(op));
+    }
+
+    fn block_addr_dispatch_expr(&self, ptr: &str) -> Option<Expr> {
+        let element = self.block_addr_element_ptrs.get(ptr)?;
+        let dispatch = self.dispatch.as_ref()?;
+        let states: Option<Vec<Expr>> = element
+            .labels
+            .iter()
+            .map(|label| {
+                dispatch
+                    .label_to_state
+                    .get(label)
+                    .map(|state| Expr::Value(RustValue::I64(*state as i64)))
+            })
+            .collect();
+        Some(Expr::Index {
+            base: Box::new(Expr::ArrayLit(states?)),
+            index: Box::new(Expr::Cast {
+                expr: Box::new(element.index.clone()),
+                ty: Type::Prim(Prim::Usize),
+            }),
+        })
     }
 
     fn load_address_expr(&self, ptr: &str) -> Expr {
@@ -2533,6 +2589,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         self.materialize_expr(result, self.operand_expr(value), op_result_type(op));
+    }
+
+    fn lower_asm(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let expr = op
+            .operands
+            .first()
+            .map(|operand| self.operand_expr(operand))
+            .unwrap_or_else(|| {
+                op_result_type(op)
+                    .map(|ty| self.parent.rust_type(ty))
+                    .map(|ty| self.default_value_expr(&ty))
+                    .unwrap_or(Expr::Value(RustValue::I64(0)))
+            });
+        self.materialize_expr(result, expr, op_result_type(op));
     }
 
     fn lower_trap(&mut self) {
@@ -3346,6 +3419,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let base_ptr = &op.operands[0];
         let base = self.place_or_deref_expr(base_ptr);
         let index = self.operand_expr(&op.operands[1]);
+        if let Some(Val::Global(name)) = self.values.get(base_ptr)
+            && let Some(labels) = self.parent.block_addr_globals.get(name)
+        {
+            self.block_addr_element_ptrs.insert(
+                result.clone(),
+                BlockAddrElementPtr {
+                    labels: labels.clone(),
+                    index: index.clone(),
+                },
+            );
+        }
         let unsafe_access =
             self.place_expr(base_ptr).is_none() || self.ptr_requires_unsafe(base_ptr);
         self.element_ptrs.insert(
@@ -4672,6 +4756,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(dispatch) = &self.dispatch else {
             return;
         };
+        if let Some(target) = op
+            .operands
+            .first()
+            .and_then(|operand| self.indirect_target_values.get(operand))
+        {
+            let state_var = dispatch.state_var.clone();
+            let loop_label = dispatch.loop_label.clone();
+            let target = target.clone();
+            self.push_assign(Expr::Var(state_var.into()), target);
+            self.push_stmt(Stmt::Continue(Some(loop_label)));
+            return;
+        }
         let target = op
             .successors
             .first()
@@ -4692,6 +4788,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.push_stmt(Stmt::Continue(Some(loop_label)));
             }
             None => self.emit_todo("cir.br: unknown successor"),
+        }
+    }
+
+    fn lower_indirect_br(&mut self, op: &Op) {
+        let Some(dispatch) = &self.dispatch else {
+            return;
+        };
+        if let Some(target) = op
+            .operands
+            .first()
+            .and_then(|operand| self.indirect_target_values.get(operand))
+        {
+            let state_var = dispatch.state_var.clone();
+            let loop_label = dispatch.loop_label.clone();
+            let target = target.clone();
+            self.push_assign(Expr::Var(state_var.into()), target);
+            self.push_stmt(Stmt::Continue(Some(loop_label)));
+        } else {
+            self.lower_unreachable();
         }
     }
 
@@ -5095,7 +5210,12 @@ fn block_diverges(block: &Block) -> bool {
     block.ops.last().is_some_and(|op| {
         matches!(
             op.name.as_str(),
-            "cir.return" | "cir.br" | "cir.goto" | "cir.trap" | "cir.unreachable"
+            "cir.return"
+                | "cir.br"
+                | "cir.indirect_br"
+                | "cir.goto"
+                | "cir.trap"
+                | "cir.unreachable"
         )
     })
 }
@@ -6179,6 +6299,30 @@ fn parse_cir_const_array_elems(s: &str) -> Option<Vec<Expr>> {
         .collect()
 }
 
+fn parse_cir_block_addr_labels(s: &str) -> Option<Vec<String>> {
+    let s = s.trim_start();
+    if !s.starts_with("#cir.const_array<[") {
+        return None;
+    }
+    let open = s.find('[')?;
+    let close = s.rfind(']')?;
+    let mut labels = Vec::new();
+    for part in split_top_level(&s[open + 1..close], ',') {
+        let part = part.trim();
+        if part.is_empty() {
+            continue;
+        }
+        if !part.contains("#cir.block_addr_info<") {
+            return None;
+        }
+        let start = part.find('"')? + 1;
+        let rest = &part[start..];
+        let end = rest.find('"')?;
+        labels.push(rest[..end].to_string());
+    }
+    (!labels.is_empty()).then_some(labels)
+}
+
 /// A `cir.global` initializer that is a struct/union or nested-aggregate array,
 /// rendered on demand by [`FunctionLowerer::render_const_value_expr`].
 fn is_cir_aggregate_init(raw: &str) -> bool {
@@ -6630,6 +6774,66 @@ mod tests {
         assert!(
             rust.contains("let _v2: *mut core::ffi::c_void = 0usize as *mut core::ffi::c_void;")
         );
+    }
+
+    #[test]
+    fn lowers_direct_inline_asm_and_block_address_ops() {
+        let rust = lower_cir(
+            r#"
+!s32i = !cir.int<s, 32>
+!void = !cir.void
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<(!s32i) -> !s32i>, sym_name = "asm_passthrough"}> ({
+  ^bb0(%arg0: !s32i):
+    %0 = "cir.asm"(%arg0) <{asm_string = "", constraints = "=r,0"}> : (!s32i) -> !s32i
+    "cir.return"(%0) : (!s32i) -> ()
+  }) : () -> ()
+  "cir.func"() <{function_type = !cir.func<() -> !cir.ptr<!void>>, sym_name = "label_addr"}> ({
+    %0 = "cir.block_address"() <{label = "target"}> : () -> !cir.ptr<!void>
+    "cir.return"(%0) : (!cir.ptr<!void>) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(!rust.contains("todo!"));
+        assert!(rust.contains("let _v0: i32 = arg0;"));
+        assert!(
+            rust.contains("let _v0: *mut core::ffi::c_void = 1usize as *mut core::ffi::c_void;")
+        );
+    }
+
+    #[test]
+    fn lowers_block_addr_info_array_to_dispatch_state() {
+        let rust = lower_cir(
+            r#"
+!s32i = !cir.int<s, 32>
+!s64i = !cir.int<s, 64>
+!void = !cir.void
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.global"() <{initial_value = #cir.const_array<[#cir.block_addr_info<@jump, "zero"> : !cir.ptr<!void>, #cir.block_addr_info<@jump, "one"> : !cir.ptr<!void>]>, linkage = #cir.linkage<private>, sym_name = "jump.targets", sym_type = !cir.array<!cir.ptr<!void> x 2>}> : () -> ()
+  "cir.func"() <{function_type = !cir.func<(!s32i) -> !s32i>, sym_name = "jump"}> ({
+  ^bb0(%arg0: !s32i):
+    %0 = "cir.get_global"() <{name = @jump.targets}> : () -> !cir.ptr<!cir.array<!cir.ptr<!void> x 2>>
+    %1 = "cir.cast"(%arg0) : (!s32i) -> !s64i
+    %2 = "cir.get_element"(%0, %1) : (!cir.ptr<!cir.array<!cir.ptr<!void> x 2>>, !s64i) -> !cir.ptr<!cir.ptr<!void>>
+    %3 = "cir.load"(%2) : (!cir.ptr<!cir.ptr<!void>>) -> !cir.ptr<!void>
+    "cir.br"(%3)[^bb1] : (!cir.ptr<!void>) -> ()
+  ^bb1(%target: !cir.ptr<!void>):
+    "cir.indirect_br"(%target)[^bb2, ^bb3] : (!cir.ptr<!void>) -> ()
+  ^bb2:
+    "cir.label"() <{label = "zero"}> : () -> ()
+    "cir.return"(%arg0) : (!s32i) -> ()
+  ^bb3:
+    "cir.label"() <{label = "one"}> : () -> ()
+    %4 = "cir.const"() <{value = #cir.int<1> : !s32i}> : () -> !s32i
+    "cir.return"(%4) : (!s32i) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(!rust.contains("todo!"));
+        assert!(rust.contains("__state0 = [2, 3]["));
+        assert!(rust.contains("unreachable!();"));
     }
 
     #[test]
