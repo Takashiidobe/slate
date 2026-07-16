@@ -150,7 +150,16 @@ fn atomic_temp_allocas_forward_instead_of_shadowed_locals() {
     assert!(rust.contains(".fetch_add(5, std::sync::atomic::Ordering::SeqCst)"));
     assert!(rust.contains(".fetch_sub(10, std::sync::atomic::Ordering::SeqCst)"));
     assert!(rust.contains(".swap(7, std::sync::atomic::Ordering::SeqCst)"));
-    assert!(rust.contains(".compare_exchange(expected, 42, "));
+    assert!(rust.contains(
+        "let ok: i32 = match a.compare_exchange(expected, 42, std::sync::atomic::Ordering::SeqCst, std::sync::atomic::Ordering::SeqCst)"
+    ));
+    assert!(rust.contains(
+        "let bad: i32 = match a.compare_exchange(expected2, 0, std::sync::atomic::Ordering::SeqCst, std::sync::atomic::Ordering::SeqCst)"
+    ));
+    assert!(rust.contains("Ok(_) => true"));
+    assert!(rust.contains("expected = v;"));
+    assert!(rust.contains("expected2 = v;"));
+    assert!(!rust.contains(".is_ok()"));
 }
 
 #[test]
