@@ -1397,6 +1397,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.and" => self.lower_int_arith(op, BinOp::BitAnd),
             "cir.or" => self.lower_int_arith(op, BinOp::BitOr),
             "cir.xor" => self.lower_int_arith(op, BinOp::BitXor),
+            "cir.bitreverse" => self.lower_unary_method(op, "reverse_bits"),
+            "cir.byte_swap" => self.lower_unary_method(op, "swap_bytes"),
+            "cir.clrsb" => self.lower_clrsb(op),
+            "cir.clz" => self.lower_unary_method(op, "leading_zeros"),
+            "cir.ctz" => self.lower_unary_method(op, "trailing_zeros"),
+            "cir.ffs" => self.lower_ffs(op),
+            "cir.parity" => self.lower_parity(op),
+            "cir.popcount" => self.lower_unary_method(op, "count_ones"),
+            "cir.rotate" => self.lower_rotate(op),
             "cir.shift" => self.lower_shift(op),
             "cir.not" => self.lower_not(op),
             "cir.minus" | "cir.fneg" => self.lower_neg(op),
@@ -2462,6 +2471,119 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 args: Vec::new(),
             }),
             ty,
+        };
+        self.materialize_expr(result, expr, result_ty);
+    }
+
+    fn lower_parity(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let expr = Expr::Binary {
+            op: BinOp::BitAnd,
+            lhs: Box::new(Expr::MethodCall {
+                recv: Box::new(self.operand_expr(value)),
+                method: "count_ones".into(),
+                args: Vec::new(),
+            }),
+            rhs: Box::new(Expr::Value(RustValue::I64(1))),
+        };
+        self.materialize_expr(result, expr, op_result_type(op));
+    }
+
+    fn lower_rotate(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let method = if attr_bool(op, "rotateLeft") {
+            "rotate_left"
+        } else {
+            "rotate_right"
+        };
+        let expr = Expr::MethodCall {
+            recv: Box::new(self.operand_expr(&op.operands[0])),
+            method: method.into(),
+            args: vec![self.operand_expr(&op.operands[1])],
+        };
+        self.materialize_expr(result, expr, op_result_type(op));
+    }
+
+    fn lower_ffs(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let result_ty = op_result_type(op);
+        let ty = result_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or(Type::Prim(Prim::I32));
+        let value = self.operand_expr(value);
+        let expr = Expr::If {
+            cond: Box::new(Expr::Binary {
+                op: BinOp::Eq,
+                lhs: Box::new(value.clone()),
+                rhs: Box::new(Expr::Value(RustValue::I64(0))),
+            }),
+            then_expr: Box::new(Expr::Value(RustValue::I64(0))),
+            else_expr: Box::new(Expr::Binary {
+                op: BinOp::Add,
+                lhs: Box::new(Expr::Cast {
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(value),
+                        method: "trailing_zeros".into(),
+                        args: Vec::new(),
+                    }),
+                    ty,
+                }),
+                rhs: Box::new(Expr::Value(RustValue::I64(1))),
+            }),
+        };
+        self.materialize_expr(result, expr, result_ty);
+    }
+
+    fn lower_clrsb(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let result_ty = op_result_type(op);
+        let ty = result_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or(Type::Prim(Prim::I32));
+        let value = self.operand_expr(value);
+        let sign_stripped = Expr::If {
+            cond: Box::new(Expr::Binary {
+                op: BinOp::Lt,
+                lhs: Box::new(value.clone()),
+                rhs: Box::new(Expr::Value(RustValue::I64(0))),
+            }),
+            then_expr: Box::new(Expr::Unary {
+                op: UnaryOp::Not,
+                expr: Box::new(value.clone()),
+            }),
+            else_expr: Box::new(value),
+        };
+        let expr = Expr::Binary {
+            op: BinOp::Sub,
+            lhs: Box::new(Expr::Cast {
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(sign_stripped),
+                    method: "leading_zeros".into(),
+                    args: Vec::new(),
+                }),
+                ty,
+            }),
+            rhs: Box::new(Expr::Value(RustValue::I64(1))),
         };
         self.materialize_expr(result, expr, result_ty);
     }
@@ -6249,5 +6371,63 @@ mod tests {
         assert!(rust.contains("let _v1: i64 = arg0.round() as i64;"));
         assert!(rust.contains("let _v2: i64 = arg0.round_ties_even() as i64;"));
         assert!(rust.contains("let _v3: i64 = arg0.round_ties_even() as i64;"));
+    }
+
+    #[test]
+    fn lowers_direct_integer_bit_ops_to_methods() {
+        let rust = lower_cir(
+            r#"
+!u32i = !cir.int<u, 32>
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<(!u32i, !u32i) -> !u32i>, sym_name = "bits"}> ({
+  ^bb0(%arg0: !u32i, %arg1: !u32i):
+    %0 = "cir.bitreverse"(%arg0) : (!u32i) -> !u32i
+    %1 = "cir.byte_swap"(%0) : (!u32i) -> !u32i
+    %2 = "cir.clz"(%1) <{poison_zero}> : (!u32i) -> !u32i
+    %3 = "cir.ctz"(%1) <{poison_zero}> : (!u32i) -> !u32i
+    %4 = "cir.popcount"(%1) : (!u32i) -> !u32i
+    %5 = "cir.parity"(%1) : (!u32i) -> !u32i
+    %6 = "cir.rotate"(%4, %arg1) <{rotateLeft}> : (!u32i, !u32i) -> !u32i
+    %7 = "cir.rotate"(%6, %arg1) : (!u32i, !u32i) -> !u32i
+    "cir.return"(%7) : (!u32i) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(!rust.contains("todo!"));
+        assert!(rust.contains("let _v0: u32 = arg0.reverse_bits();"));
+        assert!(rust.contains("let _v1: u32 = _v0.swap_bytes();"));
+        assert!(rust.contains("let _v2: u32 = _v1.leading_zeros();"));
+        assert!(rust.contains("let _v3: u32 = _v1.trailing_zeros();"));
+        assert!(rust.contains("let _v4: u32 = _v1.count_ones();"));
+        assert!(rust.contains("let _v5: u32 = _v1.count_ones() & 1;"));
+        assert!(rust.contains("let _v6: u32 = _v4.rotate_left(arg1);"));
+        assert!(rust.contains("let _v7: u32 = _v6.rotate_right(arg1);"));
+    }
+
+    #[test]
+    fn lowers_ffs_and_clrsb_with_c_semantics() {
+        let rust = lower_cir(
+            r#"
+!s32i = !cir.int<s, 32>
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<(!s32i) -> !s32i>, sym_name = "signed_bits"}> ({
+  ^bb0(%arg0: !s32i):
+    %0 = "cir.ffs"(%arg0) : (!s32i) -> !s32i
+    %1 = "cir.clrsb"(%arg0) : (!s32i) -> !s32i
+    %2 = "cir.add"(%0, %1) : (!s32i, !s32i) -> !s32i
+    "cir.return"(%2) : (!s32i) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(!rust.contains("todo!"));
+        assert!(rust.contains("let _v0: i32 = if arg0 == 0"));
+        assert!(rust.contains("arg0.trailing_zeros() as i32"));
+        assert!(rust.contains("+ 1"));
+        assert!(rust.contains("let _v1: i32 ="));
+        assert!(rust.contains("if arg0 < 0 { !arg0 } else { arg0 }"));
+        assert!(rust.contains(".leading_zeros() as i32"));
+        assert!(rust.contains("- 1"));
     }
 }
