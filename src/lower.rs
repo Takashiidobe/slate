@@ -1454,7 +1454,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.asin" => self.lower_unary_method(op, "asin"),
             "cir.atan" => self.lower_unary_method(op, "atan"),
             "cir.atan2" => self.lower_binary_method(op, "atan2"),
-            "cir.assume" => {}
+            "cir.assume" => self.lower_assume(op),
             "cir.ceil" => self.lower_unary_method(op, "ceil"),
             "cir.clear_cache" => {}
             "cir.copysign" => self.lower_binary_method(op, "copysign"),
@@ -2629,6 +2629,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         self.materialize_expr(result, self.operand_expr(value), op_result_type(op));
+    }
+
+    fn lower_assume(&mut self, op: &Op) {
+        let Some(cond) = op.operands.first() else {
+            return;
+        };
+        self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
+            func: Box::new(Expr::Path(Path::new(
+                ["core", "hint", "assert_unchecked"].map(Ident::from),
+            ))),
+            args: vec![self.operand_expr(cond)],
+        })));
     }
 
     fn lower_asm(&mut self, op: &Op) {
@@ -7084,6 +7096,7 @@ mod tests {
         );
         assert!(!rust.contains("todo!"));
         assert!(rust.contains("let _v1: i32 = arg0;"));
+        assert!(rust.contains("unsafe { core::hint::assert_unchecked(_v3) };"));
         assert!(rust.contains("std::process::abort();"));
         assert!(rust.contains("unreachable!();"));
     }

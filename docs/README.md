@@ -35,6 +35,8 @@ small C subset. This is the supported fixture-level surface today:
 - integer constants, loads/stores, comparisons, increment, unary `-`, logical
   `!`/`&&`/`||`, bitwise `~`/`&`/`|`/`^`/`<<`/`>>`, compound assignment
   operators, and the binary arithmetic operators `+`, `-`, `*`, `/`, `%`.
+- `__builtin_assume` preserves C's violated-assumption UB contract by emitting
+  `unsafe { core::hint::assert_unchecked(...) }`.
 - `float`/`double` parameters, locals, return values, and constants, mapped to
   Rust `f32`/`f64`, with `+`/`-`/`*`/`/`, comparisons, and int/float casts.
 - `long double` parameters, locals, return values, constants, arithmetic, and
