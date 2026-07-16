@@ -15,7 +15,8 @@ use std::fmt::{self, Write};
 use crate::rust_ast::{
     AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr, Block, Cfg, Comment, CrateAttr,
     Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method,
-    Path, Program, RecordDef, Repr, RustValue, Stmt, StructDef, StructFields, TraitBound, Type,
+    Path, Program, RecordDef, Repr, RustValue, SelfKind, Stmt, StructDef, StructFields, TraitBound,
+    Type,
 };
 
 const INDENT: &str = "    ";
@@ -248,7 +249,14 @@ impl<W: Write> Codegen<W> {
         for comment in &r.comments {
             self.comment(comment, 0)?;
         }
-        self.out.write_str("#[repr(C)]\n")?;
+        let mut repr = vec![Repr::C];
+        if r.packed {
+            repr.push(Repr::Packed);
+        }
+        if let Some(n) = r.align {
+            repr.push(Repr::Align(n));
+        }
+        self.attrs(&[Attr::Repr(repr)])?;
         if r.allow_non_camel_case {
             self.out.write_str("#[allow(non_camel_case_types)]\n")?;
         }
@@ -293,6 +301,9 @@ impl<W: Write> Codegen<W> {
 
     fn struct_def(&mut self, s: &StructDef) -> fmt::Result {
         self.attrs(&s.attrs)?;
+        if let Some(vis) = s.vis.keyword() {
+            write!(self.out, "{vis} ")?;
+        }
         write!(self.out, "struct {}", s.name)?;
         self.generics(&s.generics)?;
         match &s.fields {
@@ -366,6 +377,7 @@ impl<W: Write> Codegen<W> {
                     match r {
                         Repr::C => self.out.write_str("C")?,
                         Repr::Align(n) => write!(self.out, "align({n})")?,
+                        Repr::Packed => self.out.write_str("packed")?,
                     }
                 }
                 self.out.write_char(')')
@@ -449,8 +461,14 @@ impl<W: Write> Codegen<W> {
     fn method(&mut self, m: &Method) -> fmt::Result {
         write!(self.out, "{INDENT}fn {}(", m.name)?;
         let mut first = true;
-        if m.takes_self {
-            self.out.write_str("self")?;
+        let self_kw = match m.self_kind {
+            SelfKind::None => None,
+            SelfKind::Value => Some("self"),
+            SelfKind::Ref => Some("&self"),
+            SelfKind::RefMut => Some("&mut self"),
+        };
+        if let Some(kw) = self_kw {
+            self.out.write_str(kw)?;
             first = false;
         }
         for p in &m.params {
