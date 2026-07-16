@@ -42,6 +42,8 @@ mod tests {
                 is_union: false,
                 allow_non_camel_case: false,
                 name: "anon_0".into(),
+                packed: false,
+                align: None,
                 fields: vec![
                     RecordField {
                         comments: vec![],

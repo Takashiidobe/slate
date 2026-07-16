@@ -530,6 +530,7 @@ mod tests {
                 Item::Enum(enum_def("memory_order", &["memory_order_seq_cst"])),
                 Item::Struct(StructDef {
                     attrs: Vec::new(),
+                    vis: Visibility::Private,
                     generics: Vec::new(),
                     name: "atomic_flag".into(),
                     fields: StructFields::Named(vec![("_Value".into(), Type::Prim(Prim::Bool))]),
@@ -557,6 +558,8 @@ mod tests {
                     is_union: false,
                     allow_non_camel_case: false,
                     name: "node".into(),
+                    packed: false,
+                    align: None,
                     fields: vec![RecordField {
                         comments: Vec::new(),
                         name: Ident::from("order"),
@@ -612,6 +615,7 @@ mod tests {
                 Item::Record(record_with_field("node", "payload")),
                 Item::Struct(StructDef {
                     attrs: Vec::new(),
+                    vis: Visibility::Private,
                     generics: Vec::new(),
                     name: "payload".into(),
                     fields: StructFields::Tuple(vec![Type::Prim(Prim::I32)]),
@@ -664,6 +668,8 @@ mod tests {
             is_union: false,
             allow_non_camel_case: false,
             name: name.into(),
+            packed: false,
+            align: None,
             fields: vec![RecordField {
                 comments: Vec::new(),
                 name: Ident::from("field"),
