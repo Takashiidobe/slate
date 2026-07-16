@@ -511,7 +511,8 @@ fn collect_type_refs(ty: &Type, refs: &mut BTreeSet<String>) {
         | Type::VaList
         | Type::Str
         | Type::Unit
-        | Type::Variadic => {}
+        | Type::Variadic
+        | Type::Never => {}
     }
 }
 

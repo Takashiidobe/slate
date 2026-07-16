@@ -761,6 +761,7 @@ pub enum Type {
     FnPtr { params: Vec<Type>, ret: Box<Type> },
     Unit,
     Variadic,
+    Never,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
