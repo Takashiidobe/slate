@@ -242,8 +242,12 @@ impl<'a> Collector<'a> {
                 fold_cast(&child, ty)
             }
             Expr::ArrayRepeat { elem, len } => {
-                self.child_expr(elem, path, 0);
-                BTreeSet::from([ConstValue::ArrayLength(*len)])
+                let values = self.child_expr(elem, path, 0);
+                let mut out = BTreeSet::from([ConstValue::ArrayLength(*len)]);
+                if values.contains(&ConstValue::Zero) {
+                    out.insert(ConstValue::Zero);
+                }
+                out
             }
             Expr::ArrayLit(elems) => {
                 for (index, elem) in elems.iter().enumerate() {

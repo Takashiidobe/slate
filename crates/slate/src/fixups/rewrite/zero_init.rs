@@ -284,7 +284,7 @@ fn stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{BinOp, Block, Item, MatchArm, Pattern, Program};
+    use crate::rust_ast::{BinOp, Block, Expr, Item, MatchArm, Pattern, Program};
 
     fn fixed(params: Vec<crate::rust_ast::FnParam>, ret: Option<&str>, stmts: Vec<Stmt>) -> String {
         fixed_with(params, ret, stmts, false)
@@ -337,6 +337,37 @@ mod tests {
 fn f() -> i32 {
     let mut c: i32 = a + b;
     return c;
+}
+"
+        );
+    }
+
+    #[test]
+    fn fuses_repeated_zero_array_with_immediate_literal_assignment() {
+        let out = fixed(
+            vec![],
+            None,
+            vec![
+                let_mut(
+                    "a",
+                    "[i32; 3]",
+                    Expr::ArrayRepeat {
+                        elem: Box::new(int(0)),
+                        len: 3,
+                    },
+                ),
+                Stmt::Assign {
+                    target: var("a"),
+                    value: Expr::ArrayLit(vec![int(1), int(2), int(3)]),
+                },
+            ],
+        );
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    let mut a: [i32; 3] = [1, 2, 3];
 }
 "
         );
