@@ -757,9 +757,11 @@ fn switch_and_dispatch_use_block_match_arms() {
         .expect("translate forward goto fixture");
     let goto_forward_rust =
         std::fs::read_to_string(&goto_forward_generated).expect("read generated forward goto rust");
-    assert!(goto_forward_rust.contains("'__dispatch0: loop"));
-    assert!(goto_forward_rust.contains("match __state0 {\n            0 => {"));
-    assert!(goto_forward_rust.contains("__state0 = 2;"));
+    assert!(!goto_forward_rust.contains("__state0"));
+    assert!(!goto_forward_rust.contains("__dispatch0"));
+    assert!(goto_forward_rust.contains("let x: i32 = 1;"));
+    assert!(goto_forward_rust.contains("println!(\"{}\", x);"));
+    assert!(!goto_forward_rust.contains("x = 99;"));
 
     let goto_loop_c = fixtures_dir().join("goto_backward_loop.c");
     let goto_loop_generated = tmp.join("goto_backward_loop.generated.rs");
@@ -783,10 +785,13 @@ fn switch_and_dispatch_use_block_match_arms() {
         .expect("translate irreducible goto fixture");
     let goto_irreducible_rust = std::fs::read_to_string(&goto_irreducible_generated)
         .expect("read generated irreducible goto rust");
-    assert!(goto_irreducible_rust.contains("'__dispatch0: loop"));
-    assert!(goto_irreducible_rust.contains("match __state0 {\n            0 => {"));
-    assert!(goto_irreducible_rust.contains("__state0 = 2;"));
-    assert!(goto_irreducible_rust.contains("__state0 = 1;"));
+    assert!(!goto_irreducible_rust.contains("__state0"));
+    assert!(!goto_irreducible_rust.contains("__dispatch0"));
+    assert!(goto_irreducible_rust.contains("let mut __block0: i32;"));
+    assert!(goto_irreducible_rust.contains("loop {\n        match __block0 {"));
+    assert!(goto_irreducible_rust.contains("__block0 = 2;"));
+    assert!(goto_irreducible_rust.contains("__block0 = 1;"));
+    assert!(goto_irreducible_rust.contains("println!(\"{}\", x);"));
 }
 
 #[test]

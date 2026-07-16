@@ -391,6 +391,14 @@ struct StructuredGotoLoop {
     label: String,
 }
 
+#[derive(Debug, Clone)]
+struct LocalizedCycle {
+    preheader: usize,
+    nodes: Vec<usize>,
+    default_entry: usize,
+    exit: usize,
+}
+
 impl DispatchCfg {
     fn analyze(region: &Region) -> Self {
         let mut label_to_block = BTreeMap::new();
@@ -489,6 +497,62 @@ impl DispatchCfg {
             preheader: entry.from,
             header: natural_loop.header,
             label,
+        })
+    }
+
+    fn has_only_static_targets(&self) -> bool {
+        self.unsupported
+            .iter()
+            .all(|unsupported| matches!(unsupported, CfgUnsupported::IrreducibleCycle(_)))
+    }
+
+    fn localized_cycle(&self) -> Option<LocalizedCycle> {
+        if !self.has_only_static_targets() {
+            return None;
+        }
+        let cycles = cyclic_sccs(&self.nodes)
+            .into_iter()
+            .filter(|cycle| cycle.len() > 1)
+            .collect::<Vec<_>>();
+        if cycles.len() != 1 {
+            return None;
+        }
+        let nodes = cycles.into_iter().next()?;
+        let cycle = nodes.iter().copied().collect::<BTreeSet<_>>();
+        if cycle.contains(&self.entry) {
+            return None;
+        }
+
+        let mut exits = BTreeSet::new();
+        let mut entries = Vec::new();
+        for node in &self.nodes {
+            for edge in &node.successors {
+                let from_in_cycle = cycle.contains(&edge.from);
+                let to_in_cycle = cycle.contains(&edge.to);
+                if from_in_cycle && !to_in_cycle {
+                    exits.insert(edge.to);
+                } else if !from_in_cycle && to_in_cycle {
+                    entries.push(edge.clone());
+                }
+            }
+        }
+        if exits.len() != 1 || entries.is_empty() {
+            return None;
+        }
+        let preheader = entries[0].from;
+        if entries.iter().any(|edge| edge.from != preheader) {
+            return None;
+        }
+        let default_entry = entries
+            .iter()
+            .find(|edge| edge.kind != CfgEdgeKind::Goto)
+            .or_else(|| entries.first())
+            .map(|edge| edge.to)?;
+        Some(LocalizedCycle {
+            preheader,
+            nodes,
+            default_entry,
+            exit: *exits.iter().next()?,
         })
     }
 }
@@ -4959,10 +5023,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn try_lower_structured_goto(&mut self, body: &Region) -> bool {
+        let cfg = DispatchCfg::analyze(body);
+        if self.try_lower_acyclic_static_goto(body, &cfg) {
+            return true;
+        }
+        if let Some(shape) = cfg.localized_cycle()
+            && self.try_lower_localized_cycle(body, &cfg, &shape)
+        {
+            return true;
+        }
         if body.blocks.len() != 2 {
             return false;
         }
-        let cfg = DispatchCfg::analyze(body);
         let Some(shape) = cfg.simple_self_loop() else {
             return false;
         };
@@ -4989,6 +5061,217 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.lower_op(op);
         }
         true
+    }
+
+    fn try_lower_acyclic_static_goto(&mut self, body: &Region, cfg: &DispatchCfg) -> bool {
+        if !cfg.has_only_static_targets() || !cyclic_sccs(&cfg.nodes).is_empty() {
+            return false;
+        }
+        let mut current = cfg.entry;
+        let mut seen = BTreeSet::new();
+        let mut path = Vec::new();
+        loop {
+            if current >= body.blocks.len() || !seen.insert(current) {
+                return false;
+            }
+            path.push(current);
+            let successors = cfg.nodes[current]
+                .successors
+                .iter()
+                .map(|edge| edge.to)
+                .collect::<BTreeSet<_>>();
+            match successors.len() {
+                0 => break,
+                1 => current = *successors.iter().next().unwrap(),
+                _ => return false,
+            }
+        }
+        for block in path {
+            self.lower_block(&body.blocks[block]);
+        }
+        true
+    }
+
+    fn try_lower_localized_cycle(
+        &mut self,
+        body: &Region,
+        cfg: &DispatchCfg,
+        shape: &LocalizedCycle,
+    ) -> bool {
+        if shape.preheader >= body.blocks.len() || shape.exit >= body.blocks.len() {
+            return false;
+        }
+        let cycle = shape.nodes.iter().copied().collect::<BTreeSet<_>>();
+        if !localized_cycle_preheader_is_supported(
+            &body.blocks[shape.preheader],
+            cfg,
+            shape,
+            &cycle,
+        ) || shape
+            .nodes
+            .iter()
+            .any(|node| !localized_cycle_arm_is_supported(&body.blocks[*node], cfg, *node, &cycle))
+        {
+            return false;
+        }
+        let state_var = format!("__block{}", self.label_counter);
+        self.label_counter += 1;
+        self.push_stmt(Stmt::Let {
+            name: state_var.clone(),
+            mutable: true,
+            ty: Some(Type::Prim(Prim::I32)),
+            init: None,
+        });
+        if !self.lower_cycle_preheader(
+            &body.blocks[shape.preheader],
+            cfg,
+            shape,
+            &cycle,
+            &state_var,
+        ) {
+            return false;
+        }
+
+        let mut arms = Vec::new();
+        for node in &shape.nodes {
+            let Some(body) =
+                self.localized_cycle_arm(&body.blocks[*node], cfg, *node, &cycle, &state_var)
+            else {
+                unreachable!("localized cycle arms are prevalidated");
+            };
+            let pattern = int_pattern(*node as i128);
+            arms.push(MatchArm { pattern, body });
+        }
+        if arms.len() == 2 {
+            let last = arms.pop().unwrap();
+            arms.push(MatchArm {
+                pattern: Pattern::Wildcard,
+                body: last.body,
+            });
+        }
+        self.push_stmt(Stmt::Loop {
+            label: None,
+            body: vec![Self::indent_stmt(Stmt::Match {
+                expr: Expr::Var(state_var.into()),
+                arms,
+            })],
+        });
+        self.lower_block(&body.blocks[shape.exit]);
+        true
+    }
+
+    fn lower_cycle_preheader(
+        &mut self,
+        block: &Block,
+        cfg: &DispatchCfg,
+        shape: &LocalizedCycle,
+        cycle: &BTreeSet<usize>,
+        state_var: &str,
+    ) -> bool {
+        let entry_edges = cfg.nodes[shape.preheader]
+            .successors
+            .iter()
+            .filter(|edge| cycle.contains(&edge.to))
+            .collect::<Vec<_>>();
+        let conditional = entry_edges
+            .iter()
+            .find(|edge| edge.to != shape.default_entry && edge.kind == CfgEdgeKind::Goto)
+            .copied();
+        if let Some(edge) = conditional {
+            let Some(label) = cfg.nodes[edge.to].labels.first().cloned() else {
+                return false;
+            };
+            let Some(guard_index) = structured_loop_guard_index(block, &label) else {
+                return false;
+            };
+            for op in &block.ops[..guard_index] {
+                self.lower_op(op);
+            }
+            let cond = self.local_guard_condition(&block.ops[guard_index], &label);
+            self.push_stmt(Stmt::If {
+                cond,
+                then_body: vec![Self::indent_stmt(Self::assign_stmt(
+                    Expr::Var(state_var.to_string().into()),
+                    Expr::Value(RustValue::I64(edge.to as i64)),
+                ))],
+                else_body: vec![Self::indent_stmt(Self::assign_stmt(
+                    Expr::Var(state_var.to_string().into()),
+                    Expr::Value(RustValue::I64(shape.default_entry as i64)),
+                ))],
+            });
+        } else {
+            self.lower_block(block);
+            self.push_assign(
+                Expr::Var(state_var.to_string().into()),
+                Expr::Value(RustValue::I64(shape.default_entry as i64)),
+            );
+        }
+        true
+    }
+
+    fn localized_cycle_arm(
+        &mut self,
+        block: &Block,
+        cfg: &DispatchCfg,
+        node: usize,
+        cycle: &BTreeSet<usize>,
+        state_var: &str,
+    ) -> Option<Vec<IndentStmt>> {
+        let internal_edges = cfg.nodes[node]
+            .successors
+            .iter()
+            .filter(|edge| cycle.contains(&edge.to) && edge.to != node)
+            .collect::<Vec<_>>();
+        if internal_edges.len() != 1 {
+            return None;
+        }
+        let target = internal_edges[0].to;
+        let target_label = cfg.nodes[target].labels.first()?.clone();
+        let guard_index = structured_loop_guard_index(block, &target_label)?;
+        Some(self.capture_body(|this| {
+            for op in &block.ops[..guard_index] {
+                this.lower_op(op);
+            }
+            let cond = this.local_guard_condition(&block.ops[guard_index], &target_label);
+            this.push_stmt(Stmt::If {
+                cond,
+                then_body: vec![
+                    Self::indent_stmt(Self::assign_stmt(
+                        Expr::Var(state_var.to_string().into()),
+                        Expr::Value(RustValue::I64(target as i64)),
+                    )),
+                    Self::indent_stmt(Stmt::Continue(None)),
+                ],
+                else_body: vec![Self::indent_stmt(Stmt::Break(None))],
+            });
+        }))
+    }
+
+    fn local_guard_condition(&mut self, op: &Op, label: &str) -> Expr {
+        if op.name == "cir.if" {
+            return op
+                .operands
+                .first()
+                .map(|operand| self.operand_expr(operand))
+                .unwrap_or(Expr::Value(RustValue::Bool(false)));
+        }
+        let Some(region) = op.regions.first() else {
+            return Expr::Value(RustValue::Bool(false));
+        };
+        let Some(block) = region.blocks.first() else {
+            return Expr::Value(RustValue::Bool(false));
+        };
+        let Some(guard_index) = scoped_loop_guard_index(op, label) else {
+            return Expr::Value(RustValue::Bool(false));
+        };
+        for inner in &block.ops[..guard_index] {
+            self.lower_op(inner);
+        }
+        block.ops[guard_index]
+            .operands
+            .first()
+            .map(|operand| self.operand_expr(operand))
+            .unwrap_or(Expr::Value(RustValue::Bool(false)))
     }
 
     fn lower_structured_loop_guard(&mut self, op: &Op, label: &str) {
@@ -5681,6 +5964,49 @@ fn region_is_single_goto_to_label(region: &Region, label: &str) -> bool {
         return false;
     };
     ops.next().is_none() && op.name == "cir.goto" && attr_str(op, "label") == Some(label)
+}
+
+fn localized_cycle_preheader_is_supported(
+    block: &Block,
+    cfg: &DispatchCfg,
+    shape: &LocalizedCycle,
+    cycle: &BTreeSet<usize>,
+) -> bool {
+    let entry_edges = cfg.nodes[shape.preheader]
+        .successors
+        .iter()
+        .filter(|edge| cycle.contains(&edge.to))
+        .collect::<Vec<_>>();
+    let Some(edge) = entry_edges
+        .iter()
+        .find(|edge| edge.to != shape.default_entry && edge.kind == CfgEdgeKind::Goto)
+    else {
+        return true;
+    };
+    cfg.nodes[edge.to]
+        .labels
+        .first()
+        .is_some_and(|label| structured_loop_guard_index(block, label).is_some())
+}
+
+fn localized_cycle_arm_is_supported(
+    block: &Block,
+    cfg: &DispatchCfg,
+    node: usize,
+    cycle: &BTreeSet<usize>,
+) -> bool {
+    let internal_edges = cfg.nodes[node]
+        .successors
+        .iter()
+        .filter(|edge| cycle.contains(&edge.to) && edge.to != node)
+        .collect::<Vec<_>>();
+    if internal_edges.len() != 1 {
+        return false;
+    }
+    cfg.nodes[internal_edges[0].to]
+        .labels
+        .first()
+        .is_some_and(|label| structured_loop_guard_index(block, label).is_some())
 }
 
 fn collect_dispatch_successors(
