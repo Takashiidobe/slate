@@ -257,6 +257,12 @@ fn pthread_opaque_types_use_libc_paths() {
     let rust = std::fs::read_to_string(&generated).expect("read generated mt-atomics rust");
     assert!(rust.contains("*mut libc::pthread_attr_t"));
     assert!(!rust.contains("*mut pthread_attr_t"));
+    assert!(rust.contains(
+        "static counter: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);"
+    ));
+    assert!(rust.contains("counter.fetch_add(1, std::sync::atomic::Ordering::SeqCst)"));
+    assert!(rust.contains("counter.load(std::sync::atomic::Ordering::SeqCst)"));
+    assert!(!rust.contains("AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter))"));
 }
 
 #[test]

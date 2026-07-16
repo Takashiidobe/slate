@@ -1,13 +1,14 @@
-//! Prove a local integer slot is only ever touched through atomic ops on its
+//! Prove an integer slot is only ever touched through atomic ops on its
 //! address, so the rewrite can give it native `AtomicN` storage and safe
 //! direct method calls.
 
 use crate::fixups::facts::{AtomicLocalFact, FixupFacts, walk};
-use crate::fixups::idents::stmt_ident_count;
+use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::rust_ast::{AtomicPlace, AtomicType, Expr, IndentStmt, Item, Prim, Program, Stmt, Type};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.atomic_locals.clear();
+    facts.atomic_globals.clear();
     let mut all = Vec::new();
     for (item_index, item) in program.items.iter().enumerate() {
         let Item::Fn(f) = item else {
@@ -21,6 +22,10 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         }
     }
     facts.atomic_locals = all;
+    facts.atomic_globals = promotable_globals(program)
+        .into_iter()
+        .map(|(name, ty)| crate::fixups::facts::AtomicGlobalFact { name, ty })
+        .collect();
 }
 
 /// A local is promotable when it is declared `let mut <name>: <int> = <init>;`
@@ -51,6 +56,57 @@ fn promotable_locals(body: &[IndentStmt]) -> Vec<(String, AtomicType)> {
             });
             // the declaration binder itself accounts for one count
             !mismatched && qualifying > 0 && total == qualifying + 1
+        })
+        .collect()
+}
+
+fn promotable_globals(program: &Program) -> Vec<(String, AtomicType)> {
+    let mut decls = Vec::new();
+    for item in &program.items {
+        if let Item::Static {
+            mutable: true,
+            name,
+            ty: Type::Prim(prim),
+            ..
+        } = item
+            && let Some(atomic_ty) = prim_atomic_type(*prim)
+        {
+            decls.push((name.clone(), atomic_ty));
+        }
+    }
+    decls
+        .into_iter()
+        .filter(|(name, ty)| {
+            if program
+                .items
+                .iter()
+                .any(|item| item_declares_local(item, name))
+            {
+                return false;
+            }
+            let total: usize = program
+                .items
+                .iter()
+                .map(|item| item_ident_count(item, name))
+                .sum();
+            let mut qualifying = 0usize;
+            let mut mismatched = false;
+            for item in &program.items {
+                let Item::Fn(f) = item else {
+                    continue;
+                };
+                walk::body_exprs(&f.body, &mut |expr| match atomic_ptr_local(expr) {
+                    Some((global, node_ty)) if global == name => {
+                        if node_ty == Some(*ty) {
+                            qualifying += 1;
+                        } else {
+                            mismatched = true;
+                        }
+                    }
+                    _ => {}
+                });
+            }
+            !mismatched && qualifying > 0 && total == qualifying
         })
         .collect()
 }
@@ -95,6 +151,68 @@ fn collect_decls(body: &[IndentStmt], decls: &mut Vec<(String, AtomicType)>) {
             }
             _ => {}
         }
+    }
+}
+
+fn item_declares_local(item: &Item, name: &str) -> bool {
+    match item {
+        Item::Fn(f) => body_declares_local(&f.body, name),
+        Item::Cfg { item, .. } => item_declares_local(item, name),
+        _ => false,
+    }
+}
+
+fn body_declares_local(body: &[IndentStmt], name: &str) -> bool {
+    body.iter().any(|indent| match &indent.stmt {
+        Stmt::Let { name: local, .. } => local == name,
+        Stmt::LetIf {
+            name: local,
+            then_body,
+            else_body,
+            ..
+        } => {
+            local == name
+                || body_declares_local(then_body, name)
+                || body_declares_local(else_body, name)
+        }
+        Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => body_declares_local(then_body, name) || body_declares_local(else_body, name),
+        Stmt::Loop { body, .. }
+        | Stmt::For { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. } => body_declares_local(body, name),
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            body_declares_local(&body.stmts, name)
+        }
+        Stmt::Match { arms, .. } => arms.iter().any(|arm| body_declares_local(&arm.body, name)),
+        _ => false,
+    })
+}
+
+fn item_ident_count(item: &Item, name: &str) -> usize {
+    match item {
+        Item::Fn(f) => f
+            .body
+            .iter()
+            .map(|indent| stmt_ident_count(&indent.stmt, name))
+            .sum(),
+        Item::Static {
+            name: static_name,
+            ty: _,
+            init,
+            ..
+        } => {
+            if static_name == name {
+                0
+            } else {
+                expr_ident_count(init, name)
+            }
+        }
+        Item::Cfg { item, .. } => item_ident_count(item, name),
+        _ => 0,
     }
 }
 
