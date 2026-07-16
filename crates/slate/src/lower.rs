@@ -162,6 +162,8 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         project: project.clone(),
         unsafe_functions: project.unsafe_functions.clone(),
         cross_uses: Vec::new(),
+        ctor_calls: Vec::new(),
+        dtor_calls: Vec::new(),
     };
     lowerer.lower_module(cir, c)
 }
@@ -297,6 +299,12 @@ struct Lowerer<'a> {
     unsafe_functions: BTreeSet<String>,
     /// `use crate::<mod>::<sym>;` items for body-less decls resolved to a sibling.
     cross_uses: Vec<Item>,
+    /// `__attribute__((constructor))` functions, in call order, spliced into the
+    /// start of `main`.
+    ctor_calls: Vec<String>,
+    /// `__attribute__((destructor))` functions, in call order, spliced before
+    /// every `main` return/exit site.
+    dtor_calls: Vec<String>,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -460,6 +468,14 @@ impl<'a> Lowerer<'a> {
         };
 
         let ops = region_ops(module_op);
+        let has_main = ops.iter().any(|op| {
+            op.name == "cir.func"
+                && attr_str(op, "sym_name") == Some("main")
+                && !region_ops(op).is_empty()
+        });
+        let hooks = collect_lifecycle_hooks(&ops, has_main, &mut self.ctx.diagnostics);
+        self.ctor_calls = hooks.ctors;
+        self.dtor_calls = hooks.dtors;
         for op in &ops {
             if op.name == "cir.global" {
                 self.collect_global(op);
@@ -913,12 +929,13 @@ impl<'a> Lowerer<'a> {
 
         let (vis, extern_c, ret, prelude) = if is_main {
             params.clear();
-            (
-                Visibility::Private,
-                false,
-                None,
-                self.main_arg_bindings(entry),
-            )
+            let mut prelude = self.main_arg_bindings(entry);
+            prelude.extend(
+                self.ctor_calls
+                    .iter()
+                    .map(|name| hook_call_stmt(name, &self.unsafe_functions)),
+            );
+            (Visibility::Private, false, None, prelude)
         } else {
             let vis = if self.project.emit_pub && linkage_is_external(op) {
                 Visibility::Pub
@@ -4477,6 +4494,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|operand| self.operand_expr(operand));
         if self.is_main {
             let code = value.unwrap_or(Expr::Value(RustValue::I64(0)));
+            let dtor_stmts: Vec<Stmt> = self
+                .parent
+                .dtor_calls
+                .iter()
+                .map(|name| hook_call_stmt(name, &self.parent.unsafe_functions))
+                .collect();
+            for stmt in dtor_stmts {
+                self.push_stmt(stmt);
+            }
             self.push_stmt(Stmt::Expr(Expr::Call {
                 func: Box::new(Expr::Path(Path::new(
                     ["std", "process", "exit"].map(Ident::from),
@@ -5237,6 +5263,101 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 }
 
+/// Constructor/destructor call order for one translation unit.
+struct LifecycleHooks {
+    /// `__attribute__((constructor))` functions, ascending priority (ties in
+    /// declaration order) — matches `.init_array` execution order.
+    ctors: Vec<String>,
+    /// `__attribute__((destructor))` functions, in the reverse of their own
+    /// ascending-priority/declaration-order build list — matches how
+    /// `.fini_array` is built like `.init_array` but run back to front.
+    dtors: Vec<String>,
+}
+
+/// Scans top-level `cir.func` ops for `global_ctor_priority`/`global_dtor_priority`
+/// (present whenever the source had `__attribute__((constructor))`/`(destructor)`,
+/// defaulting to priority 65535 when none was given) and orders the hooks the way
+/// glibc's `.init_array`/`.fini_array` would run them. Hooks this TU can't wire up
+/// (no `main` to splice into, or a non-`void(void)` signature) are diagnosed and
+/// dropped rather than silently ignored.
+fn collect_lifecycle_hooks(
+    ops: &[&Op],
+    has_main: bool,
+    diagnostics: &mut crate::ctx::Diagnostics,
+) -> LifecycleHooks {
+    let mut ctors: Vec<(i64, String)> = Vec::new();
+    let mut dtors: Vec<(i64, String)> = Vec::new();
+    for op in ops {
+        if op.name != "cir.func" || region_ops(op).is_empty() {
+            continue;
+        }
+        let is_ctor = op.attrs.contains_key("global_ctor_priority");
+        let is_dtor = op.attrs.contains_key("global_dtor_priority");
+        if !is_ctor && !is_dtor {
+            continue;
+        }
+        let Some(name) = attr_str(op, "sym_name") else {
+            continue;
+        };
+        if function_type_has_params(attr_str(op, "function_type").unwrap_or("")) {
+            diagnostics.warn(
+                format!(
+                    "lower: __attribute__((constructor/destructor)) on `{name}` with a non-void(void) signature is not supported; hook dropped"
+                ),
+                op.loc.clone(),
+            );
+            continue;
+        }
+        if !has_main {
+            diagnostics.warn(
+                format!(
+                    "lower: __attribute__((constructor/destructor)) on `{name}` needs a `main` in this translation unit to splice into; hook dropped"
+                ),
+                op.loc.clone(),
+            );
+            continue;
+        }
+        if is_ctor {
+            ctors.push((
+                attr_int(op, "global_ctor_priority").unwrap_or(65535),
+                name.to_string(),
+            ));
+        }
+        if is_dtor {
+            dtors.push((
+                attr_int(op, "global_dtor_priority").unwrap_or(65535),
+                name.to_string(),
+            ));
+        }
+    }
+    ctors.sort_by_key(|(prio, _)| *prio);
+    dtors.sort_by_key(|(prio, _)| *prio);
+    let mut dtor_order: Vec<String> = dtors.into_iter().map(|(_, name)| name).collect();
+    dtor_order.reverse();
+    LifecycleHooks {
+        ctors: ctors.into_iter().map(|(_, name)| name).collect(),
+        dtors: dtor_order,
+    }
+}
+
+/// A no-arg call to a locally defined function, wrapped in `unsafe {}` when the
+/// callee requires it (mirrors the wrapping `lower_call` applies at call sites).
+fn hook_call_stmt(name: &str, unsafe_functions: &BTreeSet<String>) -> Stmt {
+    let call = Expr::Call {
+        func: Box::new(Expr::Var(name.to_string().into())),
+        args: Vec::new(),
+    };
+    let call = if unsafe_functions.contains(name) {
+        Expr::Unsafe(Box::new(crate::rust_ast::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(call)),
+        }))
+    } else {
+        call
+    };
+    Stmt::Expr(call)
+}
+
 fn region_ops(op: &Op) -> Vec<&Op> {
     op.regions
         .iter()
@@ -5607,6 +5728,23 @@ fn parse_function_type(s: &str) -> (Vec<String>, Option<String>) {
         .map(str::to_string)
         .collect();
     (params, Some(ret.trim().to_string()))
+}
+
+/// Whether a `!cir.func<..>` type declares any parameters. Void-returning
+/// functions have no `->` in the printed type, so this can't reuse
+/// `parse_function_type` (which treats a missing arrow as "nothing parsed").
+fn function_type_has_params(s: &str) -> bool {
+    let Some(inner) = s
+        .strip_prefix("!cir.func<")
+        .and_then(|s| s.strip_suffix('>'))
+    else {
+        return false;
+    };
+    let params = split_top_level_arrow(inner).map_or(inner, |(params, _)| params);
+    let params = params.trim().trim_start_matches('(').trim_end_matches(')');
+    split_top_level(params, ',')
+        .into_iter()
+        .any(|s| !s.trim().is_empty())
 }
 
 /// Whether a `!cir.func<..>` type ends its parameter list with `...`.
@@ -7275,5 +7413,97 @@ mod tests {
         assert!(rust.contains("if arg0 < 0 { !arg0 } else { arg0 }"));
         assert!(rust.contains(".leading_zeros() as i32"));
         assert!(rust.contains("- 1"));
+    }
+
+    #[test]
+    fn function_type_has_params_handles_void_return_with_and_without_arrow() {
+        // void-returning `cir.func` types print without a `->` at all.
+        assert!(!function_type_has_params("!cir.func<()>"));
+        assert!(!function_type_has_params("!cir.func<() -> !s32i>"));
+        assert!(function_type_has_params(
+            "!cir.func<(!s32i, !cir.ptr<!cir.ptr<!s8i>>, !cir.ptr<!cir.ptr<!s8i>>)>"
+        ));
+        assert!(function_type_has_params("!cir.func<(!s32i) -> !s32i>"));
+    }
+
+    fn hook_op(name: &str, priority_attr: &str, priority: i64) -> Op {
+        let mut op = empty_op("cir.func");
+        op.attrs.insert("sym_name".into(), Attr::Str(name.into()));
+        op.attrs
+            .insert("function_type".into(), Attr::Type("!cir.func<()>".into()));
+        op.attrs.insert(priority_attr.into(), Attr::Int(priority));
+        op.regions.push(Region {
+            blocks: vec![Block {
+                ops: vec![empty_op("cir.return")],
+                ..Block::default()
+            }],
+        });
+        op
+    }
+
+    #[test]
+    fn collect_lifecycle_hooks_orders_ctors_ascending_and_dtors_reversed() {
+        // priorities and expected order verified against a real clang/glibc binary:
+        // ctors run 101, 200, then no-priority(65535) last; dtors mirror-build the
+        // same list by priority, then run it back to front.
+        let a = hook_op("a", "global_ctor_priority", 200);
+        let b = hook_op("b", "global_ctor_priority", 101);
+        let e = hook_op("e", "global_ctor_priority", 65535);
+        let c = hook_op("c", "global_dtor_priority", 200);
+        let d = hook_op("d", "global_dtor_priority", 101);
+        let f = hook_op("f", "global_dtor_priority", 65535);
+        let ops = vec![&a, &b, &e, &c, &d, &f];
+        let mut diagnostics = crate::ctx::Diagnostics::default();
+        let hooks = collect_lifecycle_hooks(&ops, true, &mut diagnostics);
+        assert_eq!(hooks.ctors, vec!["b", "a", "e"]);
+        assert_eq!(hooks.dtors, vec!["f", "c", "d"]);
+        assert!(diagnostics.items.is_empty());
+    }
+
+    #[test]
+    fn collect_lifecycle_hooks_breaks_same_priority_ties_by_declaration_order() {
+        // also verified against a real binary: equal-priority ctors keep
+        // declaration order; equal-priority dtors run in the reverse.
+        let x = hook_op("x", "global_ctor_priority", 150);
+        let y = hook_op("y", "global_ctor_priority", 150);
+        let p = hook_op("p", "global_dtor_priority", 150);
+        let q = hook_op("q", "global_dtor_priority", 150);
+        let ops = vec![&x, &y, &p, &q];
+        let mut diagnostics = crate::ctx::Diagnostics::default();
+        let hooks = collect_lifecycle_hooks(&ops, true, &mut diagnostics);
+        assert_eq!(hooks.ctors, vec!["x", "y"]);
+        assert_eq!(hooks.dtors, vec!["q", "p"]);
+    }
+
+    #[test]
+    fn collect_lifecycle_hooks_diagnoses_and_drops_non_void_signature() {
+        let mut hook = hook_op("hook", "global_ctor_priority", 65535);
+        hook.attrs.insert(
+            "function_type".into(),
+            Attr::Type(
+                "!cir.func<(!s32i, !cir.ptr<!cir.ptr<!s8i>>, !cir.ptr<!cir.ptr<!s8i>>)>".into(),
+            ),
+        );
+        let ops = vec![&hook];
+        let mut diagnostics = crate::ctx::Diagnostics::default();
+        let hooks = collect_lifecycle_hooks(&ops, true, &mut diagnostics);
+        assert!(hooks.ctors.is_empty());
+        assert_eq!(diagnostics.items.len(), 1);
+        assert!(
+            diagnostics.items[0]
+                .message
+                .contains("non-void(void) signature")
+        );
+    }
+
+    #[test]
+    fn collect_lifecycle_hooks_diagnoses_and_drops_without_main() {
+        let hook = hook_op("hook", "global_dtor_priority", 65535);
+        let ops = vec![&hook];
+        let mut diagnostics = crate::ctx::Diagnostics::default();
+        let hooks = collect_lifecycle_hooks(&ops, false, &mut diagnostics);
+        assert!(hooks.dtors.is_empty());
+        assert_eq!(diagnostics.items.len(), 1);
+        assert!(diagnostics.items[0].message.contains("needs a `main`"));
     }
 }
