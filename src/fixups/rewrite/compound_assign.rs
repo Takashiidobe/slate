@@ -9,16 +9,12 @@ use crate::fixups::idents::expr_ident;
 use crate::fixups::support::walk;
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-) {
+pub(in crate::fixups) fn fixup(body: &mut [IndentStmt], function: FunctionId, facts: &FixupFacts) {
     fixup_at(body, function, facts, &mut Vec::new());
 }
 
 fn fixup_at(
-    body: &mut Vec<IndentStmt>,
+    body: &mut [IndentStmt],
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,

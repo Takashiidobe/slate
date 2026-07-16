@@ -274,6 +274,12 @@ fn liftable_bindings(
         .collect::<BTreeSet<_>>();
     loop {
         let before = liftable.clone();
+        let ctx = LiftContext {
+            function,
+            facts,
+            liftable: &before,
+            consts,
+        };
         liftable.retain(|binding| {
             let Some((_, index, remove_index)) = candidates
                 .iter()
@@ -288,16 +294,7 @@ fn liftable_bindings(
                 .enumerate()
                 .all(|(offset, indent)| {
                     let stmt_path = stmt_path(path, scan_start + offset);
-                    stmt_allows_lift(
-                        function,
-                        &indent.stmt,
-                        &stmt_path,
-                        facts,
-                        *binding,
-                        recovery,
-                        &before,
-                        consts,
-                    )
+                    stmt_allows_lift(&ctx, &indent.stmt, &stmt_path, *binding, recovery)
                 })
         });
         if liftable == before {
@@ -310,6 +307,13 @@ struct LiftCandidate {
     binding: BindingId,
     remove_index: Option<usize>,
     remove_assignment: Option<AstPath>,
+}
+
+struct LiftContext<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
+    liftable: &'a BTreeSet<BindingId>,
+    consts: &'a BTreeMap<String, usize>,
 }
 
 fn lift_plan_for_binding(
@@ -407,75 +411,80 @@ fn collect_copy_rewrites(
 }
 
 fn stmt_allows_lift(
-    function: FunctionId,
+    ctx: &LiftContext<'_>,
     stmt: &Stmt,
     path: &[PathSegment],
-    facts: &FixupFacts,
     binding: BindingId,
     recovery: StringRecoveryCandidate,
-    liftable: &BTreeSet<BindingId>,
-    consts: &BTreeMap<String, usize>,
 ) -> bool {
     if let Stmt::Expr(expr) = stmt
         && recovery == StringRecoveryCandidate::OwnedString
-        && copy_rewrite_for_expr(function, expr, path, facts, liftable, consts).is_some()
+        && copy_rewrite_for_expr(
+            ctx.function,
+            expr,
+            path,
+            ctx.facts,
+            ctx.liftable,
+            ctx.consts,
+        )
+        .is_some()
     {
         return true;
     }
-    let uses = binding_uses_under(facts, function, binding, path);
-    uses.into_iter()
-        .all(|use_path| use_allowed(function, &use_path, facts, binding, recovery, liftable))
+    let uses = binding_uses_under(ctx.facts, ctx.function, binding, path);
+    uses.into_iter().all(|use_path| {
+        use_allowed(
+            ctx.function,
+            &use_path,
+            ctx.facts,
+            binding,
+            recovery,
+            ctx.liftable,
+        )
+    })
 }
 
 fn body_allows_lift(
-    function: FunctionId,
+    ctx: &LiftContext<'_>,
     body: &[IndentStmt],
     path: &[PathSegment],
-    facts: &FixupFacts,
     binding: BindingId,
     recovery: StringRecoveryCandidate,
-    liftable: &BTreeSet<BindingId>,
-    consts: &BTreeMap<String, usize>,
 ) -> bool {
     body.iter().enumerate().all(|(index, indent)| {
         stmt_allows_lift(
-            function,
+            ctx,
             &indent.stmt,
             &stmt_path(path, index),
-            facts,
             binding,
             recovery,
-            liftable,
-            consts,
         )
     })
 }
 
 fn block_allows_lift(
-    function: FunctionId,
+    ctx: &LiftContext<'_>,
     block: &Block,
     path: &[PathSegment],
-    facts: &FixupFacts,
     binding: BindingId,
     recovery: StringRecoveryCandidate,
-    liftable: &BTreeSet<BindingId>,
-    consts: &BTreeMap<String, usize>,
 ) -> bool {
-    body_allows_lift(
-        function,
-        &block.stmts,
-        path,
-        facts,
-        binding,
-        recovery,
-        liftable,
-        consts,
-    ) && block.tail.as_deref().is_none_or(|_tail| {
-        let tail_path = child_path(path, PathSegment::BlockTail);
-        binding_uses_under(facts, function, binding, &tail_path)
-            .into_iter()
-            .all(|use_path| use_allowed(function, &use_path, facts, binding, recovery, liftable))
-    })
+    body_allows_lift(ctx, &block.stmts, path, binding, recovery)
+        && block.tail.as_deref().is_none_or(|_tail| {
+            let tail_path = child_path(path, PathSegment::BlockTail);
+            binding_uses_under(ctx.facts, ctx.function, binding, &tail_path)
+                .into_iter()
+                .all(|use_path| {
+                    use_allowed(
+                        ctx.function,
+                        &use_path,
+                        ctx.facts,
+                        binding,
+                        recovery,
+                        ctx.liftable,
+                    )
+                })
+        })
 }
 fn binding_uses_under(
     facts: &FixupFacts,
@@ -664,15 +673,11 @@ fn copy_rewrite_for_expr(
     let Expr::Call { args, .. } = peel_empty_unsafe(expr) else {
         return None;
     };
-    let Some(libc) = facts.string_libc_use(function, &AstPath(path.to_vec())) else {
-        return None;
-    };
+    let libc = facts.string_libc_use(function, &AstPath(path.to_vec()))?;
     match libc.callee {
         StringLibcFunction::StrCpy if args.len() == 2 => {
             let arg_path = call_arg_path(expr, path, 0);
-            let Some(dst) = pointer_view_binding(function, &arg_path, facts) else {
-                return None;
-            };
+            let dst = pointer_view_binding(function, &arg_path, facts)?;
             if !liftable.contains(&dst) {
                 return None;
             }
@@ -868,11 +873,8 @@ fn simple_printf_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, u8)> {
         b's' | b'c' => return Some((i + 1, bytes[i])),
         _ => {}
     }
-    loop {
-        match bytes.get(i).copied()? {
-            b'-' | b'+' | b'#' | b'0' | b' ' => i += 1,
-            _ => break,
-        }
+    while let b'-' | b'+' | b'#' | b'0' | b' ' = bytes.get(i).copied()? {
+        i += 1;
     }
     while bytes.get(i).is_some_and(u8::is_ascii_digit) {
         i += 1;
@@ -1005,7 +1007,7 @@ impl<'a> Collector<'a> {
                 .binding_type(id)
                 .map(Type::parse)
                 .as_ref()
-                .and_then(|ty| lifted_kind(ty))
+                .and_then(lifted_kind)
             {
                 self.summaries
                     .insert(id, BufferSummary::new(id, AstPath::default(), ty));
@@ -1531,13 +1533,13 @@ impl<'a> Collector<'a> {
             Expr::MethodCall { recv, method, args } if args.is_empty() => {
                 let source = var_name(recv)?;
                 match method.as_str() {
-                    "as_ptr" => Some((source, StringPointerViewKind::AsPtr, false)),
-                    "as_mut_ptr" => Some((source, StringPointerViewKind::AsMutPtr, true)),
+                    "as_ptr" => Some((source, StringPointerViewKind::As, false)),
+                    "as_mut_ptr" => Some((source, StringPointerViewKind::AsMut, true)),
                     _ => None,
                 }
             }
             Expr::ArrayPtr { array, mutable } => {
-                Some((var_name(array)?, StringPointerViewKind::ArrayPtr, *mutable))
+                Some((var_name(array)?, StringPointerViewKind::Array, *mutable))
             }
             Expr::Cast { expr, .. }
             | Expr::Unary { expr, .. }
@@ -2078,7 +2080,7 @@ mod tests {
             .iter()
             .find(|fact| fact.source == s)
             .unwrap();
-        assert_eq!(pointer.kind, StringPointerViewKind::ArrayPtr);
+        assert_eq!(pointer.kind, StringPointerViewKind::Array);
         assert!(pointer.mutable);
         assert_eq!(
             pointer.path,
