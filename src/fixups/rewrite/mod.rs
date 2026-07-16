@@ -11,6 +11,7 @@ pub(super) mod dead_locals;
 pub(super) mod drop_call_results;
 pub(super) mod early_inline_temps;
 pub(super) mod final_return_temps;
+pub(super) mod for_continue;
 pub(super) mod goto;
 pub(super) mod heap_ownership;
 pub(super) mod inline_temps;
