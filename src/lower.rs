@@ -1403,6 +1403,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.clz" => self.lower_unary_method(op, "leading_zeros"),
             "cir.ctz" => self.lower_unary_method(op, "trailing_zeros"),
             "cir.ffs" => self.lower_ffs(op),
+            "cir.is_constant" => self.lower_is_constant(op),
+            "cir.objsize" => self.lower_objsize(op),
             "cir.parity" => self.lower_parity(op),
             "cir.popcount" => self.lower_unary_method(op, "count_ones"),
             "cir.rotate" => self.lower_rotate(op),
@@ -2512,6 +2514,69 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             args: vec![self.operand_expr(&op.operands[1])],
         };
         self.materialize_expr(result, expr, op_result_type(op));
+    }
+
+    fn lower_is_constant(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let is_constant = self.const_int_values.contains_key(value)
+            || self.values.get(value).is_some_and(|value| match value {
+                Val::Expr(expr) => matches!(
+                    expr,
+                    Expr::Value(_)
+                        | Expr::Str(_)
+                        | Expr::HexFloat(_)
+                        | Expr::ByteStr(_)
+                        | Expr::CStr(_)
+                        | Expr::Path(_)
+                ),
+                Val::Global(_) => true,
+            });
+        let result_ty = op_result_type(op);
+        let expr = self.bool_or_int_literal(is_constant, result_ty);
+        self.materialize_expr(result, expr, result_ty);
+    }
+
+    fn lower_objsize(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let result_ty = op_result_type(op);
+        let expr = if attr_bool(op, "min") {
+            self.zero_literal(result_ty)
+        } else {
+            self.max_literal(result_ty)
+        };
+        self.materialize_expr(result, expr, result_ty);
+    }
+
+    fn bool_or_int_literal(&self, value: bool, cir_ty: Option<&str>) -> Expr {
+        match cir_ty.map(|ty| self.parent.rust_type(ty)) {
+            Some(Type::Prim(Prim::Bool)) => Expr::Value(RustValue::Bool(value)),
+            _ => Expr::Value(RustValue::I64(if value { 1 } else { 0 })),
+        }
+    }
+
+    fn zero_literal(&self, cir_ty: Option<&str>) -> Expr {
+        match cir_ty.map(|ty| self.parent.rust_type(ty)) {
+            Some(Type::Prim(Prim::Bool)) => Expr::Value(RustValue::Bool(false)),
+            _ => Expr::Value(RustValue::I64(0)),
+        }
+    }
+
+    fn max_literal(&self, cir_ty: Option<&str>) -> Expr {
+        match cir_ty.map(|ty| self.parent.rust_type(ty)) {
+            Some(Type::Prim(Prim::Bool)) => Expr::Value(RustValue::Bool(true)),
+            Some(Type::Prim(prim)) => Expr::Path(Path::new([
+                Ident::from(prim.spelling()),
+                Ident::from("MAX"),
+            ])),
+            _ => Expr::Value(RustValue::I64(-1)),
+        }
     }
 
     fn lower_ffs(&mut self, op: &Op) {
@@ -6403,6 +6468,51 @@ mod tests {
         assert!(rust.contains("let _v5: u32 = _v1.count_ones() & 1;"));
         assert!(rust.contains("let _v6: u32 = _v4.rotate_left(arg1);"));
         assert!(rust.contains("let _v7: u32 = _v6.rotate_right(arg1);"));
+    }
+
+    #[test]
+    fn lowers_direct_constant_query_ops() {
+        let rust = lower_cir(
+            r#"
+!s32i = !cir.int<s, 32>
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<(!s32i) -> !s32i>, sym_name = "constant_query"}> ({
+  ^bb0(%arg0: !s32i):
+    %0 = "cir.const"() <{value = #cir.int<5> : !s32i}> : () -> !s32i
+    %1 = "cir.is_constant"(%0) : (!s32i) -> !s32i
+    %2 = "cir.is_constant"(%arg0) : (!s32i) -> !s32i
+    %3 = "cir.add"(%1, %2) : (!s32i, !s32i) -> !s32i
+    "cir.return"(%3) : (!s32i) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(!rust.contains("todo!"));
+        assert!(rust.contains("let _v0: i32 = 5;"));
+        assert!(rust.contains("let _v1: i32 = 1;"));
+        assert!(rust.contains("let _v2: i32 = 0;"));
+    }
+
+    #[test]
+    fn lowers_direct_object_size_queries() {
+        let rust = lower_cir(
+            r#"
+!u64i = !cir.int<u, 64>
+!void = !cir.void
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<(!cir.ptr<!void>) -> !u64i>, sym_name = "object_size"}> ({
+  ^bb0(%arg0: !cir.ptr<!void>):
+    %0 = "cir.objsize"(%arg0) <{nullunknown}> : (!cir.ptr<!void>) -> !u64i
+    %1 = "cir.objsize"(%arg0) <{min, nullunknown}> : (!cir.ptr<!void>) -> !u64i
+    %2 = "cir.add"(%0, %1) : (!u64i, !u64i) -> !u64i
+    "cir.return"(%2) : (!u64i) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(!rust.contains("todo!"));
+        assert!(rust.contains("let _v0: u64 = u64::MAX;"));
+        assert!(rust.contains("let _v1: u64 = 0;"));
     }
 
     #[test]
