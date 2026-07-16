@@ -13,7 +13,7 @@
 <program> ::= <include_list> <decl_list> <function_list> ;
 
 <include_list> ::= <include> <include_list> | <include> ;
-<include> ::= "#include <stdio.h>" | "#include <stdint.h>" | "#include <stddef.h>" | "#include <stdbool.h>" ;
+<include> ::= "#include <stdio.h>" | "#include <stdint.h>" | "#include <stddef.h>" | "#include <stdbool.h>" | "#include <stdatomic.h>" ;
 
 # ----- top-level declarations -----
 
@@ -49,7 +49,7 @@
 # ----- statements -----
 
 <stmt_list> ::= <stmt> <stmt_list> | <stmt> ;
-<stmt> ::= <declaration> | <assignment> | <compound_assignment> | <for_loop> | <while_loop> | <if_stmt> | <switch_stmt> | <call_stmt> | <return_stmt> | <break_stmt> | <continue_stmt> | <goto_stmt> | <labeled_stmt> ;
+<stmt> ::= <declaration> | <assignment> | <compound_assignment> | <atomic_stmt> | <for_loop> | <while_loop> | <if_stmt> | <switch_stmt> | <call_stmt> | <return_stmt> | <break_stmt> | <continue_stmt> | <goto_stmt> | <labeled_stmt> ;
 
 <declaration> ::= <scalar_declaration> | <array_declaration> ;
 <scalar_declaration> ::= <type> <ident> "=" <expr> ";" ;
@@ -65,6 +65,7 @@
 <case> ::= "case" <int> ":" <stmt_list> ;
 <default_case> ::= "default" ":" <stmt_list> | "" ;
 <call_stmt> ::= <call> ";" ;
+<atomic_stmt> ::= <atomic_store> ";" | <atomic_expr> ";" ;
 <return_stmt> ::= "return" <expr> ";" | "return" ";" ;
 <break_stmt> ::= "break" ";" ;
 <continue_stmt> ::= "continue" ";" ;
@@ -74,7 +75,7 @@
 # ----- expressions -----
 
 <expr> ::= <term> | <unary_op> <term> | <term> <binary_op> <expr> | "(" <expr> <cmp_op> <expr> ")" | "(" <expr> <logical_op> <expr> ")" ;
-<term> ::= <int> | <float> | <char> | <lvalue> | "&" <lvalue> | <cast_expr> | <call> | <function_pointer_call> | <sizeof> | "(" <expr> ")" ;
+<term> ::= <int> | <float> | <char> | <lvalue> | "&" <lvalue> | <cast_expr> | <call> | <function_pointer_call> | <atomic_expr> | <sizeof> | "(" <expr> ")" ;
 <lvalue> ::= <ident> | "*" <term> | <ident> "." <ident> | <ident> "[" <expr> "]" ;
 <binary_op> ::= <arith_op> | <bitwise_op> | <shift_op> ;
 <arith_op> ::= "+" | "-" | "*" | "/" | "%" ;
@@ -90,6 +91,19 @@
 <arg_list> ::= <expr> "," <arg_list> | <expr> ;
 <sizeof> ::= "sizeof" "(" <sizeof_arg> ")" ;
 <sizeof_arg> ::= "int" | <ident> | "struct" <ident> | "union" <ident> ;
+
+# ----- single-threaded atomics -----
+
+<atomic_store> ::= "atomic_store_explicit" "(" "&" <ident> "," <expr> "," <store_ordering> ")" ;
+<atomic_expr> ::= <atomic_load> | <atomic_fetch> | <atomic_exchange> | <atomic_compare_exchange> ;
+<atomic_load> ::= "atomic_load_explicit" "(" "&" <ident> "," <load_ordering> ")" ;
+<atomic_fetch> ::= <atomic_fetch_op> "(" "&" <ident> "," <expr> "," <rmw_ordering> ")" ;
+<atomic_fetch_op> ::= "atomic_fetch_add_explicit" | "atomic_fetch_sub_explicit" | "atomic_fetch_and_explicit" | "atomic_fetch_or_explicit" | "atomic_fetch_xor_explicit" ;
+<atomic_exchange> ::= "atomic_exchange_explicit" "(" "&" <ident> "," <expr> "," <rmw_ordering> ")" ;
+<atomic_compare_exchange> ::= "atomic_compare_exchange_strong_explicit" "(" "&" <ident> "," "&" <ident> "," <expr> "," <rmw_ordering> "," <load_ordering> ")" ;
+<load_ordering> ::= "memory_order_relaxed" | "memory_order_consume" | "memory_order_acquire" | "memory_order_seq_cst" ;
+<store_ordering> ::= "memory_order_relaxed" | "memory_order_release" | "memory_order_seq_cst" ;
+<rmw_ordering> ::= "memory_order_relaxed" | "memory_order_acquire" | "memory_order_release" | "memory_order_acq_rel" | "memory_order_seq_cst" ;
 
 # ----- types and lexical tokens -----
 
