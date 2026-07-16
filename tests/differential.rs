@@ -779,6 +779,34 @@ fn control_flow_conditions_drop_redundant_parens() {
 }
 
 #[test]
+fn for_continue_uses_structured_guards_without_synthetic_labels() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-for-continue");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let continue_c = fixtures_dir().join("continue_for.c");
+    let continue_generated = tmp.join("continue_for.generated.rs");
+    support::translate(&continue_c, &continue_generated).expect("translate continue_for fixture");
+    let continue_rust =
+        std::fs::read_to_string(&continue_generated).expect("read generated continue_for rust");
+    assert!(!continue_rust.contains("__continue"));
+    assert!(!continue_rust.contains("__loop"));
+    assert!(continue_rust.contains("if i % 2 != 0 {"));
+    assert!(continue_rust.contains("total += i;"));
+
+    let combined_c = fixtures_dir().join("loop_break_continue.c");
+    let combined_generated = tmp.join("loop_break_continue.generated.rs");
+    support::translate(&combined_c, &combined_generated)
+        .expect("translate loop_break_continue fixture");
+    let combined_rust = std::fs::read_to_string(&combined_generated)
+        .expect("read generated loop_break_continue rust");
+    assert!(!combined_rust.contains("__continue"));
+    assert!(!combined_rust.contains("__loop"));
+    assert!(combined_rust.contains("if c != r {"));
+    assert!(combined_rust.contains("if c > 4 {"));
+    assert!(combined_rust.contains("break;"));
+}
+
+#[test]
 fn main_retval_boilerplate_is_collapsed() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-main-retval-fixup");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
