@@ -169,7 +169,7 @@ fn stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{Expr, Item, Program, Type};
+    use crate::rust_ast::{Expr, Item, MatchArm, Pattern, Program, Type};
 
     fn dropped(stmts: Vec<Stmt>) -> String {
         let mut program = Program {
@@ -219,6 +219,33 @@ fn f() {
             "\
 fn f() {
     unsafe { printf(fmt) };
+}
+"
+        );
+    }
+
+    #[test]
+    fn drops_unused_call_result_binding_inside_match_arm() {
+        let out = dropped(vec![Stmt::Match {
+            expr: var("state"),
+            arms: vec![MatchArm {
+                pattern: Pattern::I64(0),
+                body: vec![IndentStmt {
+                    depth: 0,
+                    stmt: temp("_v1", "i32", call("printf", vec![var("fmt")])),
+                }],
+            }],
+        }]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    match state {
+        0 => {
+            printf(fmt);
+        }
+    }
 }
 "
         );
