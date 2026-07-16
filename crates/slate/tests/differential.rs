@@ -184,6 +184,48 @@ fn non_escaping_atomic_local_gets_native_atomic_storage() {
 }
 
 #[test]
+fn expanded_atomic_fixtures_cover_orderings_flag_fallbacks_and_widths() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-atomic-expanded");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let explicit = translate_fixture(&tmp, "atomic_explicit_orderings");
+    assert!(explicit.contains(".store(10, std::sync::atomic::Ordering::Relaxed)"));
+    assert!(explicit.contains(".store(20, std::sync::atomic::Ordering::Release)"));
+    assert!(explicit.contains(".load(std::sync::atomic::Ordering::Acquire)"));
+    assert!(explicit.contains(".fetch_add(2, std::sync::atomic::Ordering::AcqRel)"));
+    assert!(explicit.contains(".swap(5, std::sync::atomic::Ordering::Acquire)"));
+    assert!(explicit.contains("std::sync::atomic::fence(std::sync::atomic::Ordering::Release);"));
+    assert!(explicit.contains("std::sync::atomic::fence(std::sync::atomic::Ordering::Acquire);"));
+    assert!(!explicit.contains("std::sync::atomic::fence(std::sync::atomic::Ordering::Relaxed);"));
+
+    let flag = translate_fixture(&tmp, "atomic_flag_ops");
+    assert!(flag.contains("struct atomic_flag"));
+    assert!(flag.contains("std::sync::atomic::AtomicU8::from_ptr"));
+    assert!(flag.contains(".swap(_v8, std::sync::atomic::Ordering::Acquire)"));
+    assert!(flag.contains(".store(_v6, std::sync::atomic::Ordering::Release)"));
+
+    let fallbacks = translate_fixture(&tmp, "atomic_fallbacks");
+    assert!(!fallbacks.contains("AtomicF32"));
+    assert!(fallbacks.contains("*std::ptr::addr_of_mut!(f) = _v3 + _v2;"));
+    assert!(fallbacks.contains("let _v14: *mut i32 = unsafe { *std::ptr::addr_of_mut!(p) };"));
+    assert!(fallbacks.contains("*std::ptr::addr_of_mut!(p) = _v13;"));
+
+    let widths = translate_fixture(&tmp, "atomic_widths");
+    assert!(widths.contains("std::sync::atomic::AtomicU8::new(250)"));
+    assert!(widths.contains("std::sync::atomic::AtomicI8::new(-5)"));
+    assert!(widths.contains("std::sync::atomic::AtomicU32::new(1000)"));
+    assert!(widths.contains("std::sync::atomic::AtomicI64::new(-10000000000)"));
+}
+
+fn translate_fixture(tmp: &Path, fixture: &str) -> String {
+    let c_src = fixtures_dir().join(format!("{fixture}.c"));
+    let generated = tmp.join(format!("{fixture}.generated.rs"));
+    support::translate(&c_src, &generated)
+        .unwrap_or_else(|err| panic!("translate {fixture}: {err}"));
+    std::fs::read_to_string(&generated).unwrap_or_else(|err| panic!("read {fixture}: {err}"))
+}
+
+#[test]
 fn pthread_opaque_types_use_libc_paths() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pthread-types");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
