@@ -13,9 +13,7 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 
 | Priority | Notes | Ops |
 | --- | --- | --- |
-| P3 | setjmp/EH-adjacent lowering | `cir.eh.setjmp` |
-| P3 | LLVM intrinsic escape hatch | `cir.call_llvm_intrinsic` |
-| P3 | vector extensions | `cir.vec.*` |
+| P3 | setjmp/longjmp non-local control flow | source currently emits a `returns_twice` `_setjmp` call, not `cir.eh.setjmp` |
 
 ## Excluded 
 
@@ -53,6 +51,15 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
   - [x] `cir.asm`
   - [x] `cir.block_address`
   - [x] `cir.indirect_br`
+  - [x] `cir.eh.setjmp` initial-return lowering
+  - [x] `cir.call_llvm_intrinsic` deliberate panic fallback
+- [x] vector extensions
+  - [x] `!cir.vector`
+  - [x] `#cir.const_vector`
+  - [x] vector `cir.add`
+  - [x] `cir.vec.extract`
+  - [x] `cir.vec.insert` with constant index
+  - [x] `cir.vec.shuffle`
 - [x] calls/returns
   - [x] `cir.call`
   - [x] `cir.return`

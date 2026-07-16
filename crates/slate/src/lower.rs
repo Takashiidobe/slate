@@ -1538,6 +1538,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "cir.goto" => self.lower_goto(op),
             "cir.br" => self.lower_br(op),
             "cir.indirect_br" => self.lower_indirect_br(op),
+            "cir.vec.extract" => self.lower_vec_extract(op),
+            "cir.vec.insert" => self.lower_vec_insert(op),
+            "cir.vec.shuffle" => self.lower_vec_shuffle(op),
+            "cir.eh.setjmp" => self.lower_eh_setjmp(op),
+            "cir.call_llvm_intrinsic" => {
+                self.lower_unsupported_value(op, "cir.call_llvm_intrinsic")
+            }
             "cir.label" => {}
             "cir.yield" | "cir.condition" => {}
             other => {
@@ -1860,6 +1867,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.const_int_values.insert(result.clone(), value);
         }
         let result_ty = op_result_type(op);
+        if let Some(value) = parse_cir_const_vector(raw) {
+            self.materialize_expr(result, value, result_ty);
+            return;
+        }
         if let Some((re, im)) = parse_cir_const_complex(raw) {
             self.materialize_expr(
                 result,
@@ -2292,6 +2303,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
+        if let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) {
+            self.materialize_expr(
+                result,
+                self.vector_binary_expr(&op.operands[0], &op.operands[1], len, rust_op),
+                op_result_type(op),
+            );
+            return;
+        }
         let lhs = self.operand_expr(&op.operands[0]);
         let rhs = self.operand_expr(&op.operands[1]);
         let ty = op_result_type(op);
@@ -2606,6 +2625,140 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .unwrap_or(Expr::Value(RustValue::I64(0)))
             });
         self.materialize_expr(result, expr, op_result_type(op));
+    }
+
+    fn lower_eh_setjmp(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        self.materialize_expr(result, Expr::Value(RustValue::I64(0)), op_result_type(op));
+    }
+
+    fn lower_unsupported_value(&mut self, op: &Op, note: &str) {
+        let Some(result) = op.results.first() else {
+            self.push_stmt(Stmt::Expr(Expr::Macro {
+                name: "panic".into(),
+                args: vec![Expr::Str(format!("unsupported CIR op: {note}"))],
+            }));
+            return;
+        };
+        self.materialize_expr(
+            result,
+            Expr::Macro {
+                name: "panic".into(),
+                args: vec![Expr::Str(format!("unsupported CIR op: {note}"))],
+            },
+            op_result_type(op),
+        );
+    }
+
+    fn vector_binary_expr(&self, lhs: &str, rhs: &str, len: u64, op: BinOp) -> Expr {
+        let lhs = self.operand_expr(lhs);
+        let rhs = self.operand_expr(rhs);
+        Expr::ArrayLit(
+            (0..len)
+                .map(|i| Expr::Binary {
+                    op,
+                    lhs: Box::new(vector_index_expr(lhs.clone(), i)),
+                    rhs: Box::new(vector_index_expr(rhs.clone(), i)),
+                })
+                .collect(),
+        )
+    }
+
+    fn lower_vec_extract(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        self.materialize_expr(
+            result,
+            Expr::Index {
+                base: Box::new(self.operand_expr(&op.operands[0])),
+                index: Box::new(Expr::Cast {
+                    expr: Box::new(self.operand_expr(&op.operands[1])),
+                    ty: Type::Prim(Prim::Usize),
+                }),
+            },
+            op_result_type(op),
+        );
+    }
+
+    fn lower_vec_insert(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 3 {
+            return;
+        }
+        let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) else {
+            self.lower_unsupported_value(op, "cir.vec.insert");
+            return;
+        };
+        let Some(index) = self
+            .const_int_values
+            .get(&op.operands[2])
+            .and_then(|i| u64::try_from(*i).ok())
+            .filter(|i| *i < len)
+        else {
+            self.lower_unsupported_value(op, "cir.vec.insert dynamic index");
+            return;
+        };
+        let base = self.operand_expr(&op.operands[0]);
+        let value = self.operand_expr(&op.operands[1]);
+        self.materialize_expr(
+            result,
+            Expr::ArrayLit(
+                (0..len)
+                    .map(|i| {
+                        if i == index {
+                            value.clone()
+                        } else {
+                            vector_index_expr(base.clone(), i)
+                        }
+                    })
+                    .collect(),
+            ),
+            op_result_type(op),
+        );
+    }
+
+    fn lower_vec_shuffle(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) else {
+            self.lower_unsupported_value(op, "cir.vec.shuffle");
+            return;
+        };
+        let indices = attr_int_array(op, "indices").unwrap_or_default();
+        if indices.len() != len as usize {
+            self.lower_unsupported_value(op, "cir.vec.shuffle indices");
+            return;
+        }
+        let lhs = self.operand_expr(&op.operands[0]);
+        let rhs = self.operand_expr(&op.operands[1]);
+        self.materialize_expr(
+            result,
+            Expr::ArrayLit(
+                indices
+                    .into_iter()
+                    .map(|index| {
+                        if index < len {
+                            vector_index_expr(lhs.clone(), index)
+                        } else {
+                            vector_index_expr(rhs.clone(), index - len)
+                        }
+                    })
+                    .collect(),
+            ),
+            op_result_type(op),
+        );
     }
 
     fn lower_trap(&mut self) {
@@ -5064,6 +5217,26 @@ fn attr_int(op: &Op, key: &str) -> Option<i64> {
     op.attrs.get(key).and_then(Attr::as_int)
 }
 
+fn attr_int_array(op: &Op, key: &str) -> Option<Vec<u64>> {
+    let Attr::Array(values) = op.attrs.get(key)? else {
+        return None;
+    };
+    values
+        .iter()
+        .map(|value| {
+            value
+                .as_int()
+                .and_then(|value| u64::try_from(value).ok())
+                .or_else(|| {
+                    value
+                        .as_str()
+                        .and_then(parse_cir_int)
+                        .and_then(|value| u64::try_from(value).ok())
+                })
+        })
+        .collect()
+}
+
 fn aggregate_member_index(op: &Op) -> Option<usize> {
     attr_int(op, "index")
         .or_else(|| attr_int(op, "index_attr"))
@@ -5708,6 +5881,11 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
         .and_then(|s| s.strip_suffix('>'))
     {
         Type::Complex(Box::new(rust_type_with_aliases(inner, aliases)))
+    } else if let Some((inner, len)) = parse_cir_vector_type(ty) {
+        Type::Array {
+            elem: Box::new(rust_type_with_aliases(&inner, aliases)),
+            len,
+        }
     } else if let Some(inner) = ty
         .strip_prefix("!cir.ptr<")
         .and_then(|s| s.strip_suffix('>'))
@@ -5816,6 +5994,15 @@ fn parse_cir_array_type(ty: &str) -> Option<(String, u64)> {
         .strip_prefix("!cir.array<")
         .and_then(|s| s.strip_suffix('>'))?;
     let (element, len) = inner.rsplit_once(" x ")?;
+    Some((element.trim().to_string(), len.trim().parse().ok()?))
+}
+
+fn parse_cir_vector_type(ty: &str) -> Option<(String, u64)> {
+    let inner = ty
+        .trim()
+        .strip_prefix("!cir.vector<")
+        .and_then(|s| s.strip_suffix('>'))?;
+    let (len, element) = inner.split_once(" x ")?;
     Some((element.trim().to_string(), len.trim().parse().ok()?))
 }
 
@@ -6175,6 +6362,13 @@ fn render_array_literal_expr(elems: &[Expr], len: usize, default: Expr) -> Expr 
     Expr::ArrayLit(out)
 }
 
+fn vector_index_expr(base: Expr, index: u64) -> Expr {
+    Expr::Index {
+        base: Box::new(base),
+        index: Box::new(Expr::Value(RustValue::Usize(index as usize))),
+    }
+}
+
 fn parse_cir_scalar_expr(s: &str) -> Option<Expr> {
     parse_cir_int(s)
         .map(int_value_expr)
@@ -6185,6 +6379,21 @@ fn parse_cir_scalar_expr(s: &str) -> Option<Expr> {
                 .starts_with("#cir.ptr<null>")
                 .then_some(Expr::Value(RustValue::NullPtr))
         })
+}
+
+fn parse_cir_const_vector(s: &str) -> Option<Expr> {
+    let s = s.trim_start();
+    let start = s.find("#cir.const_vector<[")?;
+    let rest = &s[start + "#cir.const_vector<[".len()..];
+    let close = rest.find("]>")?;
+    Some(Expr::ArrayLit(
+        split_top_level(&rest[..close], ',')
+            .into_iter()
+            .map(str::trim)
+            .filter(|part| !part.is_empty())
+            .map(parse_cir_scalar_expr)
+            .collect::<Option<Vec<_>>>()?,
+    ))
 }
 
 fn parse_cir_global_view(s: &str) -> Option<&str> {
@@ -6834,6 +7043,68 @@ mod tests {
         assert!(!rust.contains("todo!"));
         assert!(rust.contains("__state0 = [2, 3]["));
         assert!(rust.contains("unreachable!();"));
+    }
+
+    #[test]
+    fn lowers_direct_vector_extension_ops() {
+        let rust = lower_cir(
+            r#"
+!s32i = !cir.int<s, 32>
+!s64i = !cir.int<s, 64>
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<() -> !s32i>, sym_name = "vectors"}> ({
+    %0 = "cir.const"() <{value = #cir.const_vector<[#cir.int<1> : !s32i, #cir.int<2> : !s32i, #cir.int<3> : !s32i, #cir.int<4> : !s32i]> : !cir.vector<4 x !s32i>}> : () -> !cir.vector<4 x !s32i>
+    %1 = "cir.const"() <{value = #cir.const_vector<[#cir.int<5> : !s32i, #cir.int<6> : !s32i, #cir.int<7> : !s32i, #cir.int<8> : !s32i]> : !cir.vector<4 x !s32i>}> : () -> !cir.vector<4 x !s32i>
+    %2 = "cir.add"(%0, %1) : (!cir.vector<4 x !s32i>, !cir.vector<4 x !s32i>) -> !cir.vector<4 x !s32i>
+    %3 = "cir.const"() <{value = #cir.int<9> : !s32i}> : () -> !s32i
+    %4 = "cir.const"() <{value = #cir.int<1> : !s32i}> : () -> !s32i
+    %5 = "cir.vec.insert"(%2, %3, %4) : (!cir.vector<4 x !s32i>, !s32i, !s32i) -> !cir.vector<4 x !s32i>
+    %6 = "cir.vec.shuffle"(%5, %5) <{indices = [#cir.int<3> : !s64i, #cir.int<2> : !s64i, #cir.int<1> : !s64i, #cir.int<0> : !s64i]}> : (!cir.vector<4 x !s32i>, !cir.vector<4 x !s32i>) -> !cir.vector<4 x !s32i>
+    %7 = "cir.const"() <{value = #cir.int<0> : !s32i}> : () -> !s32i
+    %8 = "cir.vec.extract"(%6, %7) : (!cir.vector<4 x !s32i>, !s32i) -> !s32i
+    "cir.return"(%8) : (!s32i) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(!rust.contains("todo!"));
+        assert!(rust.contains("let _v0: [i32; 4] = [1, 2, 3, 4];"));
+        assert!(rust.contains("_v0[0usize] + _v1[0usize]"));
+        assert!(rust.contains("let _v5: [i32; 4] = [_v2[0usize], _v3, _v2[2usize], _v2[3usize]];"));
+        assert!(
+            rust.contains(
+                "let _v6: [i32; 4] = [_v5[3usize], _v5[2usize], _v5[1usize], _v5[0usize]];"
+            )
+        );
+        assert!(rust.contains("let _v8: i32 = _v6["));
+        assert!(rust.contains("as usize"));
+    }
+
+    #[test]
+    fn lowers_direct_eh_setjmp_and_intrinsic_escape_hatch() {
+        let rust = lower_cir(
+            r#"
+!s32i = !cir.int<s, 32>
+!void = !cir.void
+"builtin.module"() <{sym_name = "t.c"}> ({
+  "cir.func"() <{function_type = !cir.func<() -> !s32i>, sym_name = "setjmp_initial"}> ({
+    %0 = "cir.eh.setjmp"() : () -> !s32i
+    "cir.return"(%0) : (!s32i) -> ()
+  }) : () -> ()
+  "cir.func"() <{function_type = !cir.func<() -> !s32i>, sym_name = "intrinsic_escape"}> ({
+    %0 = "cir.call_llvm_intrinsic"() <{intrin = "llvm.example"}> : () -> !s32i
+    "cir.return"(%0) : (!s32i) -> ()
+  }) : () -> ()
+}) : () -> ()
+"#,
+        );
+        assert!(!rust.contains("todo!"));
+        assert!(rust.contains("let _v0: i32 = 0;"));
+        assert!(
+            rust.contains(
+                "let _v0: i32 = panic!(\"unsupported CIR op: cir.call_llvm_intrinsic\");"
+            )
+        );
     }
 
     #[test]
