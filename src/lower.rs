@@ -322,6 +322,13 @@ struct FunctionLowerer<'a, 'b> {
     dispatch: Option<DispatchCtx>,
     /// Alloca results hoisted above the dispatch loop so locals outlive block arms.
     hoisted: BTreeSet<String>,
+    /// Compiler-temp allocas (see `forwardable_temp_allocas`) lowered as forwarded
+    /// SSA values instead of named locals.
+    forward_allocas: BTreeSet<String>,
+    /// Forwarded value recorded at each forward alloca's single store.
+    forward_values: BTreeMap<String, Expr>,
+    /// Names bound by immutable `let`s; safe to forward across statements.
+    immutable_temps: BTreeSet<String>,
     /// `va_list` SSA values (the `ap` alloca and its array-decay casts) → slot name.
     va_places: BTreeMap<String, String>,
     va_args_param: Option<String>,
@@ -950,6 +957,9 @@ impl<'a> Lowerer<'a> {
             label_counter: 0,
             dispatch: None,
             hoisted: BTreeSet::new(),
+            forward_allocas: forwardable_temp_allocas(op.regions.first()?),
+            forward_values: BTreeMap::new(),
+            immutable_temps: BTreeSet::new(),
             va_places: BTreeMap::new(),
             va_args_param,
         };
@@ -958,6 +968,7 @@ impl<'a> Lowerer<'a> {
             f.push_stmt(stmt);
         }
         for (arg, _) in &entry.args {
+            f.immutable_temps.insert(arg.clone());
             f.values
                 .insert(arg.clone(), Val::Expr(Expr::Var(arg.clone().into())));
         }
@@ -1561,6 +1572,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(result) = op.results.first() else {
             return;
         };
+        // a forwarded compiler temp carries one SSA value: its single store
+        // records the value and its single load reads it back, so no local.
+        if self.forward_allocas.contains(result) {
+            if let Some(ty) = self.pointee_type(op.ty.as_deref().unwrap_or("")) {
+                self.slot_types.insert(result.clone(), ty);
+            }
+            return;
+        }
         // hoisted allocas were already declared above the dispatch loop.
         if self.hoisted.contains(result) && self.dispatch.is_some() {
             return;
@@ -1611,6 +1630,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let ptr = &op.operands[1];
         value = self.coerce_store_value(ptr, value, &op.operands[0]);
+        if self.forward_allocas.contains(ptr) {
+            let value = self.forward_safe_value(value, value_ty);
+            self.forward_values.insert(ptr.clone(), value);
+            return;
+        }
         if !attr_bool(op, "is_volatile") && self.try_atomic_store(op, ptr, value_ty, value.clone())
         {
             return;
@@ -1725,6 +1749,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(ptr) = op.operands.first() else {
             return;
         };
+        if let Some(value) = self.forward_values.get(ptr) {
+            self.values.insert(result.clone(), Val::Expr(value.clone()));
+            return;
+        }
         if let Some(expr) = self.block_addr_dispatch_expr(ptr) {
             self.indirect_target_values.insert(result.clone(), expr);
             self.lower_opaque_pointer(op, true);
@@ -4180,6 +4208,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             new
         };
+        self.immutable_temps.insert(bound.clone());
         self.values
             .insert(result.to_string(), Val::Expr(Expr::Var(bound.into())));
     }
@@ -4221,6 +4250,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             },
             val,
         );
+        self.immutable_temps.insert(old.clone());
         self.values.insert(result, Val::Expr(Expr::Var(old.into())));
     }
 
@@ -4290,6 +4320,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     args: vec![],
                 }),
             });
+            self.immutable_temps.insert(old.clone());
+            self.immutable_temps.insert(ok.clone());
             self.values
                 .insert(op.results[0].clone(), Val::Expr(Expr::Var(old.into())));
             self.values
@@ -4329,6 +4361,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             )))],
             else_body: Vec::new(),
         });
+        self.immutable_temps.insert(old.clone());
+        self.immutable_temps.insert(ok.clone());
         self.values
             .insert(op.results[0].clone(), Val::Expr(Expr::Var(old.into())));
         self.values
@@ -4974,8 +5008,32 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ty: Some(ty),
             init: Some(expr),
         });
+        self.immutable_temps.insert(name.clone());
         self.values
             .insert(result.to_string(), Val::Expr(Expr::Var(name.into())));
+    }
+
+    /// A value forwarded past its store must not observe later mutation:
+    /// literals and immutable bindings forward as-is, anything else is
+    /// snapshotted into a fresh immutable temp at the store site.
+    fn forward_safe_value(&mut self, value: Expr, cir_ty: Option<&str>) -> Expr {
+        let stable = match &value {
+            Expr::Value(_) => true,
+            Expr::Var(name) => self.immutable_temps.contains(name.as_str()),
+            _ => false,
+        };
+        if stable {
+            return value;
+        }
+        let name = self.next_temp();
+        self.push_stmt(Stmt::Let {
+            name: name.clone(),
+            mutable: false,
+            ty: cir_ty.map(|ty| self.parent.rust_type(ty)),
+            init: Some(value),
+        });
+        self.immutable_temps.insert(name.clone());
+        Expr::Var(name.into())
     }
 
     fn operand_expr(&self, operand: &str) -> Expr {
@@ -5245,6 +5303,73 @@ fn aggregate_member_index(op: &Op) -> Option<usize> {
 
 fn attr_bool(op: &Op, key: &str) -> bool {
     op.attrs.contains_key(key)
+}
+
+/// Alloca results for clang-generated temps (`.atomictmp`, `atomic-temp`,
+/// `cmpxchg.bool` — names no C identifier can spell) whose only uses are one
+/// plain store followed by one plain load in the same block. Such a slot
+/// carries a single SSA value, so the lowerer forwards it instead of declaring
+/// one shadowed named local per call site.
+fn forwardable_temp_allocas(body: &Region) -> BTreeSet<String> {
+    #[derive(Default)]
+    struct Uses {
+        stores: usize,
+        loads: usize,
+        store_at: Option<(usize, usize)>,
+        load_at: Option<(usize, usize)>,
+        escapes: bool,
+    }
+    fn plain_access(op: &Op) -> bool {
+        attr_int(op, "mem_order").is_none() && !attr_bool(op, "is_volatile")
+    }
+    fn walk(blocks: &[Block], next_block: &mut usize, uses: &mut BTreeMap<String, Uses>) {
+        for block in blocks {
+            let block_id = *next_block;
+            *next_block += 1;
+            for (pos, op) in block.ops.iter().enumerate() {
+                if op.name == "cir.alloca"
+                    && let Some(name) = op.attrs.get("name").and_then(Attr::as_str)
+                    && name.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_')
+                    && let Some(result) = op.results.first()
+                {
+                    uses.entry(result.clone()).or_default();
+                }
+                for (i, operand) in op.operands.iter().enumerate() {
+                    let Some(u) = uses.get_mut(operand) else {
+                        continue;
+                    };
+                    match op.name.as_str() {
+                        "cir.store" if i == 1 && plain_access(op) => {
+                            u.stores += 1;
+                            u.store_at = Some((block_id, pos));
+                        }
+                        "cir.load" if i == 0 && plain_access(op) => {
+                            u.loads += 1;
+                            u.load_at = Some((block_id, pos));
+                        }
+                        _ => u.escapes = true,
+                    }
+                }
+                for region in &op.regions {
+                    walk(&region.blocks, next_block, uses);
+                }
+            }
+        }
+    }
+    let mut uses = BTreeMap::new();
+    walk(&body.blocks, &mut 0, &mut uses);
+    uses.into_iter()
+        .filter(|(_, u)| {
+            !u.escapes
+                && u.stores == 1
+                && u.loads == 1
+                && matches!(
+                    (u.store_at, u.load_at),
+                    (Some((sb, sp)), Some((lb, lp))) if sb == lb && sp < lp
+                )
+        })
+        .map(|(result, _)| result)
+        .collect()
 }
 
 fn atomic_type(rust_ty: &Type) -> Option<AtomicType> {
