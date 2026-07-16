@@ -809,6 +809,19 @@ fn integer_bit_builtins_inline_pure_temps() {
 }
 
 #[test]
+fn control_flow_assume_preserves_ub_contract() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-control-flow-builtins");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("control_flow_builtin_ops.c");
+    let generated = tmp.join("control_flow_builtin_ops.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate control-flow builtin fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated control-flow rust");
+
+    assert!(rust.contains("unsafe { core::hint::assert_unchecked("));
+}
+
+#[test]
 fn for_continue_uses_structured_guards_without_synthetic_labels() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-for-continue");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

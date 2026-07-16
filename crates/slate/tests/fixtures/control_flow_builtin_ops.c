@@ -8,6 +8,11 @@ static int likely_nonzero(int x) {
     return -1;
 }
 
+static int assume_true(int x) {
+    __builtin_assume(1);
+    return x + 1;
+}
+
 static int guarded_trap(int x) {
     if (x < 0) {
         __builtin_trap();
@@ -25,8 +30,9 @@ static int guarded_unreachable(int x) {
 int main(void) {
     volatile int input = 5;
     int a = likely_nonzero(input);
-    int b = guarded_trap(input);
-    int c = guarded_unreachable(input);
-    printf("%d %d %d\n", a, b, c);
+    int b = assume_true(input);
+    int c = guarded_trap(input);
+    int d = guarded_unreachable(input);
+    printf("%d %d %d %d\n", a, b, c, d);
     return 0;
 }
