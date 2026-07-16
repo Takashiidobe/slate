@@ -326,7 +326,7 @@ pub enum Pattern {
 }
 
 /// The object an atomic operation acts on: an unsafe `AtomicN::from_ptr(<ptr>)`
-/// view over a plain integer slot, or a safe method call on a local whose
+/// view over a plain integer slot, or a safe method call on a slot whose
 /// storage is the atomic wrapper itself.
 #[derive(Debug, Clone)]
 pub enum AtomicPlace {

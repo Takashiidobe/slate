@@ -1,16 +1,22 @@
-//! Give proven non-escaping `_Atomic` locals native atomic storage: the
+//! Give proven non-escaping `_Atomic` slots native atomic storage: the
 //! declaration becomes `let <name> = std::sync::atomic::AtomicN::new(<init>);`
 //! and every `unsafe { AtomicN::from_ptr(addr_of_mut!(<name>)).op(..) }` view
-//! becomes a safe direct method call on the local.
+//! becomes a safe direct method call on the slot.
 
 use std::collections::BTreeMap;
 
 use crate::fixups::facts::{FixupFacts, atomic_locals};
 use crate::fixups::support::walk;
-use crate::rust_ast::{AtomicPlace, AtomicType, Expr, IndentStmt, Item, Program, Stmt};
+use crate::rust_ast::{AtomicPlace, AtomicType, Expr, IndentStmt, Item, Program, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
     let mut changed = false;
+    let promoted_globals: BTreeMap<String, AtomicType> = facts
+        .atomic_globals
+        .iter()
+        .map(|fact| (fact.name.clone(), fact.ty))
+        .collect();
+    rewrite_statics(program, &promoted_globals, &mut changed);
     for (item_index, item) in program.items.iter_mut().enumerate() {
         let Item::Fn(f) = item else {
             continue;
@@ -18,12 +24,15 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> boo
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let promoted: BTreeMap<String, AtomicType> = facts
+        let mut promoted: BTreeMap<String, AtomicType> = facts
             .atomic_locals
             .iter()
             .filter(|fact| fact.function == function)
             .map(|fact| (fact.name.clone(), fact.ty))
             .collect();
+        for (name, ty) in &promoted_globals {
+            promoted.entry(name.clone()).or_insert(*ty);
+        }
         if promoted.is_empty() {
             continue;
         }
@@ -34,6 +43,44 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> boo
         });
     }
     changed
+}
+
+fn rewrite_statics(
+    program: &mut Program,
+    promoted: &BTreeMap<String, AtomicType>,
+    changed: &mut bool,
+) {
+    for item in &mut program.items {
+        match item {
+            Item::Static {
+                mutable,
+                name,
+                ty,
+                init,
+                ..
+            } => {
+                if let Some(atomic_ty) = promoted.get(name) {
+                    *mutable = false;
+                    *ty = Type::Custom(atomic_type_path(*atomic_ty).into());
+                    *init = Expr::AtomicNew {
+                        ty: *atomic_ty,
+                        value: Box::new(init.clone()),
+                    };
+                    *changed = true;
+                }
+            }
+            Item::Cfg { item, .. } => {
+                let mut nested = Program {
+                    items: vec![item.as_ref().clone()],
+                };
+                rewrite_statics(&mut nested, promoted, changed);
+                if let Some(rewritten) = nested.items.into_iter().next() {
+                    **item = rewritten;
+                }
+            }
+            _ => {}
+        }
+    }
 }
 
 fn rewrite_decls(
@@ -129,12 +176,28 @@ fn promote_place(expr: &mut Expr, promoted: &BTreeMap<String, AtomicType>) -> bo
     true
 }
 
+fn atomic_type_path(ty: AtomicType) -> &'static str {
+    match ty {
+        AtomicType::I8 => "std::sync::atomic::AtomicI8",
+        AtomicType::U8 => "std::sync::atomic::AtomicU8",
+        AtomicType::I16 => "std::sync::atomic::AtomicI16",
+        AtomicType::U16 => "std::sync::atomic::AtomicU16",
+        AtomicType::I32 => "std::sync::atomic::AtomicI32",
+        AtomicType::U32 => "std::sync::atomic::AtomicU32",
+        AtomicType::I64 => "std::sync::atomic::AtomicI64",
+        AtomicType::U64 => "std::sync::atomic::AtomicU64",
+        AtomicType::Isize => "std::sync::atomic::AtomicIsize",
+        AtomicType::Usize => "std::sync::atomic::AtomicUsize",
+        AtomicType::Bool => "std::sync::atomic::AtomicBool",
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::fixups::facts;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{AtomicOrdering, Block, Item, Stmt};
+    use crate::rust_ast::{AtomicOrdering, Block, Item, Stmt, Type, Visibility};
 
     fn apply(mut program: Program) -> String {
         let analyzed = facts::analyze(program.clone());
@@ -228,5 +291,55 @@ fn f() {
         ]));
         assert!(out.contains("let mut a: i64 = 0;"));
         assert!(out.contains("from_ptr"));
+    }
+
+    fn program_with_static(name: &str, stmts: Vec<Stmt>) -> Program {
+        Program {
+            items: vec![
+                Item::Static {
+                    vis: Visibility::Private,
+                    mutable: true,
+                    name: name.into(),
+                    ty: Type::parse("i32"),
+                    init: int(0),
+                },
+                Item::Fn(func(vec![], None, stmts)),
+            ],
+        }
+    }
+
+    #[test]
+    fn promotes_global_used_only_through_atomic_ops() {
+        let out = apply(program_with_static(
+            "counter",
+            vec![
+                Stmt::Expr(unsafe_expr(atomic_store("counter", int(100)))),
+                temp("loaded", "i32", unsafe_expr(atomic_load("counter"))),
+            ],
+        ));
+        assert_eq!(
+            out,
+            "\
+static counter: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
+
+fn f() {
+    counter.store(100, std::sync::atomic::Ordering::SeqCst);
+    let loaded: i32 = counter.load(std::sync::atomic::Ordering::SeqCst);
+}
+"
+        );
+    }
+
+    #[test]
+    fn plain_global_read_keeps_baseline_from_ptr_path() {
+        let out = apply(program_with_static(
+            "counter",
+            vec![
+                Stmt::Expr(unsafe_expr(atomic_store("counter", int(100)))),
+                temp("copy", "i32", var("counter")),
+            ],
+        ));
+        assert!(out.contains("static mut counter: i32 = 0;"));
+        assert!(out.contains("AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter))"));
     }
 }
