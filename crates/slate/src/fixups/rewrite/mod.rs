@@ -5,6 +5,7 @@ pub(super) mod c_strings;
 pub(super) mod call_args;
 pub(super) mod compound_assign;
 pub(super) mod constant_index_casts;
+pub(super) mod dead_locals;
 pub(super) mod drop_call_results;
 pub(super) mod early_inline_temps;
 pub(super) mod final_return_temps;
