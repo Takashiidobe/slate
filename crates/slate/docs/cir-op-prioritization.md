@@ -15,9 +15,7 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
 | --- | --- | --- |
 | P3 | inline assembly | `cir.asm` |
 | P3 | labels-as-values/computed goto | `cir.block_address` |
-| P3 | target/cache builtins | `cir.clear_cache`, `cir.prefetch` |
 | P3 | setjmp/EH-adjacent lowering | `cir.eh.setjmp` |
-| P3 | frame/stack builtins | `cir.frame_address`, `cir.stackrestore`, `cir.stacksave` |
 | P3 | LLVM intrinsic escape hatch | `cir.call_llvm_intrinsic` |
 | P3 | vector extensions | `cir.vec.*` |
 
@@ -47,6 +45,12 @@ Planning draft for C-relevant CIR support. C++-only ops are omitted.
   - [x] `cir.expect`
   - [x] `cir.trap`
   - [x] `cir.unreachable`
+- [x] target/frame/stack builtins
+  - [x] `cir.clear_cache`
+  - [x] `cir.prefetch`
+  - [x] `cir.frame_address`
+  - [x] `cir.stacksave`
+  - [x] `cir.stackrestore`
 - [x] calls/returns
   - [x] `cir.call`
   - [x] `cir.return`
