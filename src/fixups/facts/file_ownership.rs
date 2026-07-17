@@ -529,7 +529,7 @@ fn strip_cast(expr: &Expr) -> &Expr {
     }
 }
 
-fn buf_ptr_var(expr: &Expr) -> Option<String> {
+pub(in crate::fixups) fn buf_ptr_var(expr: &Expr) -> Option<String> {
     let Expr::ArrayPtr { array, .. } = strip_cast(expr) else {
         return None;
     };
