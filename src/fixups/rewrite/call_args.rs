@@ -356,8 +356,8 @@ fn is_pure_temp_let(
 ) -> bool {
     matches!(stmt, Stmt::Let { name, init: Some(_), .. } if is_temp_name(name))
         && facts.effects.iter().any(|fact| {
-            fact.function == function
-                && fact.path == AstPath(path.to_vec())
+            fact.site.function == function
+                && fact.site.path == AstPath(path.to_vec())
                 && fact.subject == EffectSubject::Expr
                 && fact.purity == Purity::MovablePure
         })

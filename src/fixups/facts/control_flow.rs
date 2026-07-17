@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, ControlFlowExit, ControlFlowFact, ControlFlowSubject, FixupFacts, FunctionId,
-    PathSegment,
+    PathSegment, Site,
 };
 use crate::rust_ast::{Block, IndentStmt, Item, Label, Program, Stmt};
 
@@ -335,9 +335,11 @@ impl Collector {
 
     fn push(&mut self, subject: ControlFlowSubject, path: &[PathSegment], summary: &Summary) {
         self.facts.push(ControlFlowFact {
-            function: self.function,
+            site: Site {
+                function: self.function,
+                path: AstPath(path.to_vec()),
+            },
             subject,
-            path: AstPath(path.to_vec()),
             reachable: summary.reachable,
             falls_through: summary.falls_through,
             exits: summary.exits.clone(),
@@ -378,7 +380,7 @@ mod tests {
         facts
             .control_flow
             .iter()
-            .find(|fact| fact.subject == subject && fact.path == path)
+            .find(|fact| fact.subject == subject && fact.site.path == path)
             .unwrap()
     }
 

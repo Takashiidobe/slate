@@ -3,6 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingKind, CastFact, CastKind, CastRequirement, FixupFacts, FunctionId, PathSegment,
+    Site,
 };
 use crate::rust_ast::{
     AtomicType, Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type,
@@ -512,8 +513,10 @@ impl<'a> Collector<'a> {
             CastKind::NoOp | CastKind::ReferenceCoercion | CastKind::SliceCoercion
         ) && !abi_required;
         self.casts.push(CastFact {
-            function: self.function,
-            path: AstPath(path.to_vec()),
+            site: Site {
+                function: self.function,
+                path: AstPath(path.to_vec()),
+            },
             from,
             to,
             kind,
@@ -528,7 +531,7 @@ impl<'a> Collector<'a> {
         self.facts
             .callsites
             .iter()
-            .filter(|callsite| callsite.function == self.function)
+            .filter(|callsite| callsite.site.function == self.function)
             .flat_map(|callsite| callsite.args.iter())
             .any(|arg| {
                 arg.path == path
@@ -545,7 +548,7 @@ impl<'a> Collector<'a> {
         self.facts
             .callsites
             .iter()
-            .find(|callsite| callsite.function == self.function && callsite.path == path)
+            .find(|callsite| callsite.site.function == self.function && callsite.site.path == path)
             .and_then(|callsite| callsite.ret.clone())
     }
 

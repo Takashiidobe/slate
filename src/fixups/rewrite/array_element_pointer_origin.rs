@@ -41,7 +41,7 @@ fn origins_for_function(function: FunctionId, facts: &FixupFacts) -> BTreeMap<St
     facts
         .array_element_pointer_origins
         .iter()
-        .filter(|fact| fact.function == function)
+        .filter(|fact| fact.site.function == function)
         .filter_map(|fact| {
             Some((
                 facts.binding_name(fact.pointer)?.to_string(),
