@@ -257,6 +257,34 @@ mod tests {
         )
     }
 
+    fn offset_deref(ptr: &str, index: &str) -> Expr {
+        Expr::Unsafe(Box::new(crate::rust_ast::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Unary {
+                op: crate::rust_ast::UnaryOp::Deref,
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(var(ptr)),
+                    method: "offset".into(),
+                    args: vec![var(index)],
+                }),
+            })),
+        }))
+    }
+
+    fn pointer_len_loop(ptr: &str, len: Expr) -> Stmt {
+        Stmt::For {
+            pat: "i".into(),
+            iter: Expr::Range {
+                start: Box::new(int(0)),
+                end: Box::new(len),
+            },
+            body: vec![IndentStmt {
+                depth: 2,
+                stmt: Stmt::Expr(offset_deref(ptr, "i")),
+            }],
+        }
+    }
+
     #[test]
     fn rewrites_full_array_pointer_len_calls_to_slice_params() {
         let mut main = func(Vec::new(), None, vec![array_decl(4), array_call("f", 4, 4)]);
@@ -266,15 +294,16 @@ mod tests {
                 Item::Fn(func(
                     vec![param("items", "*mut i32"), param("len", "i32")],
                     Some("i32"),
-                    vec![Stmt::Return(Some(Expr::Unsafe(Box::new(
-                        crate::rust_ast::Block {
+                    vec![
+                        pointer_len_loop("items", var("len")),
+                        Stmt::Return(Some(Expr::Unsafe(Box::new(crate::rust_ast::Block {
                             stmts: Vec::new(),
                             tail: Some(Box::new(Expr::Unary {
                                 op: crate::rust_ast::UnaryOp::Deref,
                                 expr: Box::new(var("items")),
                             })),
-                        },
-                    ))))],
+                        })))),
+                    ],
                 )),
                 Item::Fn(main),
             ],
@@ -301,6 +330,9 @@ mod tests {
             "\
 fn f(items: &[i32]) -> i32 {
     let len: i32 = items.len() as i32;
+    for i in 0..len {
+                unsafe { *items.as_ptr().offset(i) };
+    }
     return unsafe { *items.as_ptr() };
 }
 
@@ -321,13 +353,16 @@ fn main() {
                 Item::Fn(func(
                     vec![param("items", "*mut i32"), param("len", "i32")],
                     None,
-                    vec![Stmt::Assign {
-                        target: Expr::Unary {
-                            op: crate::rust_ast::UnaryOp::Deref,
-                            expr: Box::new(var("items")),
+                    vec![
+                        pointer_len_loop("items", var("len")),
+                        Stmt::Assign {
+                            target: Expr::Unary {
+                                op: crate::rust_ast::UnaryOp::Deref,
+                                expr: Box::new(var("items")),
+                            },
+                            value: int(1),
                         },
-                        value: int(1),
-                    }],
+                    ],
                 )),
                 Item::Fn(main),
             ],
@@ -350,7 +385,7 @@ fn main() {
                 Item::Fn(func(
                     vec![param("items", "*mut i32"), param("len", "i32")],
                     None,
-                    vec![Stmt::Return(None)],
+                    vec![pointer_len_loop("items", var("len")), Stmt::Return(None)],
                 )),
                 Item::Fn(main),
             ],
@@ -360,6 +395,87 @@ fn main() {
 
         assert!(facts.ptr_len_slices.is_empty());
         assert!(program.emit().contains("fn f(items: *mut i32, len: i32)"));
+    }
+
+    #[test]
+    fn leaves_unrelated_equal_printable_param_in_place() {
+        let mut main = func(Vec::new(), None, vec![array_decl(5), array_call("f", 5, 5)]);
+        main.name = "main".into();
+        let mut program = Program {
+            items: vec![
+                Item::Fn(func(
+                    vec![param("items", "*mut i32"), param("printable", "i32")],
+                    None,
+                    vec![
+                        Stmt::Expr(var("printable")),
+                        pointer_len_loop("items", int(5)),
+                        Stmt::Return(None),
+                    ],
+                )),
+                Item::Fn(main),
+            ],
+        };
+
+        let facts = analyze_collect_fixup(&mut program);
+
+        assert!(facts.ptr_len_slices.is_empty());
+        assert!(
+            program
+                .emit()
+                .contains("fn f(items: *mut i32, printable: i32)")
+        );
+    }
+
+    #[test]
+    fn rewrites_non_adjacent_real_length_param() {
+        let mut main = func(
+            Vec::new(),
+            None,
+            vec![
+                array_decl(4),
+                Stmt::Expr(call(
+                    "f",
+                    vec![
+                        Expr::MethodCall {
+                            recv: Box::new(var("values")),
+                            method: "as_mut_ptr".into(),
+                            args: Vec::new(),
+                        },
+                        int(5),
+                        int(4),
+                    ],
+                )),
+            ],
+        );
+        main.name = "main".into();
+        let mut program = Program {
+            items: vec![
+                Item::Fn(func(
+                    vec![
+                        param("items", "*mut i32"),
+                        param("printable", "i32"),
+                        param("length", "i32"),
+                    ],
+                    None,
+                    vec![
+                        Stmt::Expr(var("printable")),
+                        pointer_len_loop("items", var("length")),
+                        Stmt::Return(None),
+                    ],
+                )),
+                Item::Fn(main),
+            ],
+        };
+
+        let facts = analyze_collect_fixup(&mut program);
+
+        assert_eq!(facts.ptr_len_slices.len(), 1);
+        assert!(
+            program
+                .emit()
+                .contains("fn f(items: &[i32], printable: i32)")
+        );
+        assert!(program.emit().contains("f(values.as_slice(), 5);"));
     }
 
     #[test]
@@ -379,7 +495,7 @@ fn main() {
                 Item::Fn(func(
                     vec![param("items", "*mut i32"), param("len", "i32")],
                     None,
-                    vec![Stmt::Return(None)],
+                    vec![pointer_len_loop("items", var("len")), Stmt::Return(None)],
                 )),
                 Item::Fn(main),
             ],
@@ -410,7 +526,7 @@ fn main() {
         let mut inner = func(
             vec![param("items", "*mut i32"), param("len", "i32")],
             None,
-            vec![Stmt::Return(None)],
+            vec![pointer_len_loop("items", var("len")), Stmt::Return(None)],
         );
         inner.name = "inner".into();
 
@@ -462,9 +578,9 @@ fn main() {
         let mut program = Program {
             items: vec![
                 Item::Fn(func(
-                    vec![param("items", "*mut i32"), param("len", "i32")],
+                    vec![param("items", "*mut i32"), param("count", "i32")],
                     None,
-                    vec![Stmt::Return(None)],
+                    vec![pointer_len_loop("items", var("count")), Stmt::Return(None)],
                 )),
                 Item::Fn(main),
             ],
@@ -528,7 +644,11 @@ fn main() {
                         param("blen", "i32"),
                     ],
                     None,
-                    vec![Stmt::Return(None)],
+                    vec![
+                        pointer_len_loop("a", var("alen")),
+                        pointer_len_loop("b", var("blen")),
+                        Stmt::Return(None),
+                    ],
                 )),
                 Item::Fn(main),
             ],

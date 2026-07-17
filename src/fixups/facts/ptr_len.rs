@@ -2,7 +2,7 @@ use std::collections::BTreeSet;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, CallCallee, CallsiteFact, FixupFacts, FunctionId,
+    AstPath, BindingId, BindingKind, CallCallee, CallsiteFact, FixupFacts, FunctionId, PathSegment,
     PtrLenSliceFact,
 };
 use crate::rust_ast::{
@@ -51,6 +51,8 @@ struct Candidate {
     function_name: String,
     ptr_index: usize,
     len_index: usize,
+    ptr_name: String,
+    len_name: String,
     mutable: bool,
     elem: Type,
     len_ty: Type,
@@ -71,28 +73,32 @@ fn collect_candidates(program: &Program, facts: &FixupFacts) -> Vec<Candidate> {
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        for (i, pair) in f.params.windows(2).enumerate() {
-            let Type::Ptr { mutable, inner } = &pair[0].ty else {
+        for (ptr_index, ptr_param) in f.params.iter().enumerate() {
+            let Type::Ptr { mutable, inner } = &ptr_param.ty else {
                 continue;
             };
-            if !is_integer_type(&pair[1].ty) {
+            let Some(ptr) = facts.binding_by_param_index(function, ptr_index) else {
                 continue;
+            };
+            for (len_index, len_param) in f.params.iter().enumerate() {
+                if ptr_index == len_index || !is_integer_type(&len_param.ty) {
+                    continue;
+                }
+                let Some(len) = facts.binding_by_param_index(function, len_index) else {
+                    continue;
+                };
+                candidates.push(Candidate {
+                    key: Key { function, ptr, len },
+                    function_name: f.name.clone(),
+                    ptr_index,
+                    len_index,
+                    ptr_name: ptr_param.name.to_string(),
+                    len_name: len_param.name.to_string(),
+                    mutable: *mutable && pointer_param_mutated(&f.body, ptr_param.name.as_str()),
+                    elem: (**inner).clone(),
+                    len_ty: len_param.ty.clone(),
+                });
             }
-            let Some(ptr) = facts.binding_by_param_index(function, i) else {
-                continue;
-            };
-            let Some(len) = facts.binding_by_param_index(function, i + 1) else {
-                continue;
-            };
-            candidates.push(Candidate {
-                key: Key { function, ptr, len },
-                function_name: f.name.clone(),
-                ptr_index: i,
-                len_index: i + 1,
-                mutable: *mutable && pointer_param_mutated(&f.body, pair[0].name.as_str()),
-                elem: (**inner).clone(),
-                len_ty: pair[1].ty.clone(),
-            });
         }
     }
     candidates
@@ -130,7 +136,450 @@ fn candidate_is_sound(
         && facts
             .def_use(candidate.key.len)
             .is_some_and(|def_use| def_use.writes.is_empty())
+        && len_reads_are_length_uses(program, candidate, facts, active)
         && all_callers_prove(program, candidate, facts, active)
+}
+
+fn len_reads_are_length_uses(
+    program: &Program,
+    candidate: &Candidate,
+    facts: &FixupFacts,
+    active: &BTreeSet<Key>,
+) -> bool {
+    let Some(def_use) = facts.def_use(candidate.key.len) else {
+        return false;
+    };
+    if def_use.reads.is_empty() {
+        return false;
+    }
+    let mut allowed = Vec::new();
+    collect_length_use_paths(program, candidate, facts, active, &mut allowed);
+    def_use.reads.iter().all(|read| {
+        allowed
+            .iter()
+            .any(|path: &AstPath| walk::paths_overlap(&read.0, &path.0))
+    })
+}
+
+fn collect_length_use_paths(
+    program: &Program,
+    candidate: &Candidate,
+    facts: &FixupFacts,
+    active: &BTreeSet<Key>,
+    allowed: &mut Vec<AstPath>,
+) {
+    if let Some(item_index) = facts.function_item_index(candidate.key.function)
+        && let Some(Item::Fn(f)) = program.items.get(item_index)
+    {
+        collect_bounded_loop_paths(
+            &f.body,
+            candidate.key.function,
+            candidate,
+            facts,
+            &mut Vec::new(),
+            allowed,
+        );
+    }
+    for callsite in facts
+        .callsites
+        .iter()
+        .filter(|callsite| callsite.function == candidate.key.function)
+    {
+        if call_forwards_pair(callsite, candidate, facts, active) {
+            allowed.push(callsite.path.clone());
+        }
+    }
+}
+
+fn collect_bounded_loop_paths(
+    body: &[IndentStmt],
+    function: FunctionId,
+    candidate: &Candidate,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+    allowed: &mut Vec<AstPath>,
+) {
+    for (index, indent) in body.iter().enumerate() {
+        path.push(PathSegment::Stmt(index));
+        collect_bounded_loop_paths_in_stmt(&indent.stmt, function, candidate, facts, path, allowed);
+        path.pop();
+    }
+}
+
+fn collect_bounded_loop_paths_in_stmt(
+    stmt: &Stmt,
+    function: FunctionId,
+    candidate: &Candidate,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+    allowed: &mut Vec<AstPath>,
+) {
+    match stmt {
+        Stmt::For { pat, iter, body }
+            if range_ends_at_binding(
+                iter,
+                function,
+                &AstPath(path.clone()),
+                candidate.key.len,
+                facts,
+            ) && body_accesses_pointer_index(body, &candidate.ptr_name, pat) =>
+        {
+            allowed.push(AstPath(path.clone()));
+            path.push(PathSegment::ForBody);
+            collect_bounded_loop_paths(body, function, candidate, facts, path, allowed);
+            path.pop();
+        }
+        Stmt::For { body, .. } => {
+            path.push(PathSegment::ForBody);
+            collect_bounded_loop_paths(body, function, candidate, facts, path, allowed);
+            path.pop();
+        }
+        Stmt::If {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        } => {
+            path.push(PathSegment::Then);
+            collect_bounded_loop_paths(then_body, function, candidate, facts, path, allowed);
+            path.pop();
+            path.push(PathSegment::Else);
+            collect_bounded_loop_paths(else_body, function, candidate, facts, path, allowed);
+            path.pop();
+        }
+        Stmt::Loop { body, .. }
+            if lowered_loop_index(body, function, candidate, facts, path).is_some_and(
+                |index| body_accesses_pointer_index(body, &candidate.ptr_name, &index),
+            ) =>
+        {
+            allowed.push(AstPath(path.clone()));
+            path.push(PathSegment::LoopBody);
+            collect_bounded_loop_paths(body, function, candidate, facts, path, allowed);
+            path.pop();
+        }
+        Stmt::Loop { body, .. } => {
+            path.push(PathSegment::LoopBody);
+            collect_bounded_loop_paths(body, function, candidate, facts, path, allowed);
+            path.pop();
+        }
+        Stmt::Scope { body } => {
+            path.push(PathSegment::ScopeBody);
+            collect_bounded_loop_paths(body, function, candidate, facts, path, allowed);
+            path.pop();
+        }
+        Stmt::LabeledBlock { body, .. } => {
+            path.push(PathSegment::LabeledBody);
+            collect_bounded_loop_paths(body, function, candidate, facts, path, allowed);
+            path.pop();
+        }
+        Stmt::Unsafe { body } => {
+            path.push(PathSegment::UnsafeBody);
+            collect_bounded_loop_paths(&body.stmts, function, candidate, facts, path, allowed);
+            path.pop();
+        }
+        Stmt::While { body, .. } | Stmt::Block(body) => {
+            path.push(PathSegment::WhileBody);
+            collect_bounded_loop_paths(&body.stmts, function, candidate, facts, path, allowed);
+            path.pop();
+        }
+        Stmt::Match { arms, .. } => {
+            for (index, arm) in arms.iter().enumerate() {
+                path.push(PathSegment::MatchArm(index));
+                collect_bounded_loop_paths(&arm.body, function, candidate, facts, path, allowed);
+                path.pop();
+            }
+        }
+        _ => {}
+    }
+}
+
+fn range_ends_at_binding(
+    expr: &Expr,
+    function: FunctionId,
+    path: &AstPath,
+    binding: BindingId,
+    facts: &FixupFacts,
+) -> bool {
+    let Expr::Range { end, .. } = expr else {
+        return false;
+    };
+    resolve_len_binding(end, function, path, facts) == Some(binding)
+}
+
+fn body_accesses_pointer_index(body: &[IndentStmt], ptr_name: &str, index_name: &str) -> bool {
+    let mut aliases = PointerIndexAliases::new(ptr_name, index_name);
+    body.iter()
+        .any(|indent| stmt_accesses_pointer_index(&indent.stmt, &mut aliases))
+}
+
+fn lowered_loop_index(
+    body: &[IndentStmt],
+    function: FunctionId,
+    candidate: &Candidate,
+    facts: &FixupFacts,
+    loop_path: &[PathSegment],
+) -> Option<String> {
+    for (index, indent) in body.iter().enumerate() {
+        let Stmt::If {
+            cond, then_body, ..
+        } = &indent.stmt
+        else {
+            continue;
+        };
+        if !matches!(
+            then_body.as_slice(),
+            [IndentStmt {
+                stmt: Stmt::Break(None),
+                ..
+            }]
+        ) {
+            continue;
+        }
+        let mut path = loop_path.to_vec();
+        path.push(PathSegment::LoopBody);
+        path.push(PathSegment::Stmt(index));
+        if let Some(index) =
+            loop_bound_index(cond, function, &AstPath(path), candidate.key.len, facts)
+        {
+            return Some(index);
+        }
+    }
+    None
+}
+
+fn loop_bound_index(
+    cond: &Expr,
+    function: FunctionId,
+    path: &AstPath,
+    len: BindingId,
+    facts: &FixupFacts,
+) -> Option<String> {
+    let Expr::Unary {
+        op: UnaryOp::Not,
+        expr,
+    } = cond
+    else {
+        return None;
+    };
+    let Expr::Binary { op, lhs, rhs } = peel_cast(expr) else {
+        return None;
+    };
+    if !matches!(op, crate::rust_ast::BinOp::Lt)
+        || resolve_len_binding(rhs, function, path, facts) != Some(len)
+    {
+        return None;
+    }
+    let Expr::Var(index) = peel_cast(lhs) else {
+        return None;
+    };
+    Some(index.to_string())
+}
+
+#[derive(Clone)]
+struct PointerIndexAliases {
+    ptrs: BTreeSet<String>,
+    indexes: BTreeSet<String>,
+}
+
+impl PointerIndexAliases {
+    fn new(ptr_name: &str, index_name: &str) -> Self {
+        Self {
+            ptrs: BTreeSet::from([ptr_name.to_string()]),
+            indexes: BTreeSet::from([index_name.to_string()]),
+        }
+    }
+
+    fn is_ptr(&self, expr: &Expr) -> bool {
+        matches!(peel_cast(expr), Expr::Var(name) if self.ptrs.contains(name.as_str()))
+    }
+
+    fn is_index(&self, expr: &Expr) -> bool {
+        matches!(peel_cast(expr), Expr::Var(name) if self.indexes.contains(name.as_str()))
+    }
+}
+
+fn stmt_accesses_pointer_index(stmt: &Stmt, aliases: &mut PointerIndexAliases) -> bool {
+    match stmt {
+        Stmt::Let { name, init, .. } => {
+            if let Some(init) = init {
+                if expr_accesses_pointer_index(init, aliases) {
+                    return true;
+                }
+                if aliases.is_ptr(peel_pointer_view(init)) {
+                    aliases.ptrs.insert(name.clone());
+                }
+                if aliases.is_index(init) {
+                    aliases.indexes.insert(name.clone());
+                }
+            }
+            false
+        }
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            expr_accesses_pointer_index(cond, aliases)
+                || body_accesses_pointer_index_with_aliases(then_body, &mut aliases.clone())
+                || expr_accesses_pointer_index(then_value, &mut aliases.clone())
+                || body_accesses_pointer_index_with_aliases(else_body, &mut aliases.clone())
+                || expr_accesses_pointer_index(else_value, &mut aliases.clone())
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            expr_accesses_pointer_index(target, aliases)
+                || expr_accesses_pointer_index(value, aliases)
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_accesses_pointer_index(expr, aliases),
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            expr_accesses_pointer_index(cond, aliases)
+                || body_accesses_pointer_index_with_aliases(then_body, &mut aliases.clone())
+                || body_accesses_pointer_index_with_aliases(else_body, &mut aliases.clone())
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::For { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. } => {
+            body_accesses_pointer_index_with_aliases(body, &mut aliases.clone())
+        }
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            body_accesses_pointer_index_with_aliases(&body.stmts, &mut aliases.clone())
+                || body
+                    .tail
+                    .as_deref()
+                    .is_some_and(|tail| expr_accesses_pointer_index(tail, &mut aliases.clone()))
+        }
+        Stmt::Match { expr, arms } => {
+            expr_accesses_pointer_index(expr, aliases)
+                || arms.iter().any(|arm| {
+                    body_accesses_pointer_index_with_aliases(&arm.body, &mut aliases.clone())
+                })
+        }
+    }
+}
+
+fn body_accesses_pointer_index_with_aliases(
+    body: &[IndentStmt],
+    aliases: &mut PointerIndexAliases,
+) -> bool {
+    body.iter()
+        .any(|indent| stmt_accesses_pointer_index(&indent.stmt, aliases))
+}
+
+fn expr_accesses_pointer_index(expr: &Expr, aliases: &mut PointerIndexAliases) -> bool {
+    if pointer_index_expr(expr, aliases) {
+        return true;
+    }
+    walk::exprs_any(expr, &mut |expr| pointer_index_expr(expr, aliases))
+}
+
+fn pointer_index_expr(expr: &Expr, aliases: &PointerIndexAliases) -> bool {
+    match expr {
+        Expr::Index { base, index } => aliases.is_ptr(base) && aliases.is_index(index),
+        Expr::MethodCall { .. } => pointer_offset_expr(expr, aliases),
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr,
+        } => pointer_offset_expr(expr, aliases),
+        Expr::Unsafe(block) | Expr::Block(block) => block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| pointer_index_expr(tail, aliases)),
+        _ => false,
+    }
+}
+
+fn pointer_offset_expr(expr: &Expr, aliases: &PointerIndexAliases) -> bool {
+    let Expr::MethodCall { recv, method, args } = peel_cast(expr) else {
+        return false;
+    };
+    matches!(
+        method.as_str(),
+        "offset" | "add" | "wrapping_offset" | "wrapping_add"
+    ) && aliases.is_ptr(recv)
+        && matches!(args.as_slice(), [arg] if aliases.is_index(arg))
+}
+
+fn call_forwards_pair(
+    callsite: &CallsiteFact,
+    candidate: &Candidate,
+    facts: &FixupFacts,
+    active: &BTreeSet<Key>,
+) -> bool {
+    let CallCallee::Direct { name, .. } = &callsite.callee else {
+        return false;
+    };
+    let Some(callee) = facts
+        .functions
+        .iter()
+        .find(|function| function.name == *name)
+        .map(|function| function.id)
+    else {
+        return false;
+    };
+    active
+        .iter()
+        .filter(|key| key.function == callee)
+        .any(|key| call_forwards_to_key(callsite, candidate, *key, facts))
+}
+
+fn call_forwards_to_key(
+    callsite: &CallsiteFact,
+    candidate: &Candidate,
+    target: Key,
+    facts: &FixupFacts,
+) -> bool {
+    let Some(ptr_index) = param_index(facts, target.ptr) else {
+        return false;
+    };
+    let Some(len_index) = param_index(facts, target.len) else {
+        return false;
+    };
+    let Some(ptr_arg) = callsite.args.iter().find(|arg| arg.slot == ptr_index) else {
+        return false;
+    };
+    let Some(len_arg) = callsite.args.iter().find(|arg| arg.slot == len_index) else {
+        return false;
+    };
+    let ptr_ok = facts
+        .binding_read_under(
+            callsite.function,
+            candidate.ptr_name.as_str(),
+            &ptr_arg.path,
+        )
+        .or_else(|| facts.binding_named(callsite.function, candidate.ptr_name.as_str()))
+        == Some(candidate.key.ptr);
+    let len_ok = facts
+        .binding_read_under(
+            callsite.function,
+            candidate.len_name.as_str(),
+            &len_arg.path,
+        )
+        .or_else(|| facts.binding_named(callsite.function, candidate.len_name.as_str()))
+        == Some(candidate.key.len);
+    ptr_ok && len_ok
+}
+
+fn param_index(facts: &FixupFacts, binding: BindingId) -> Option<usize> {
+    facts
+        .bindings
+        .iter()
+        .find(|fact| fact.id == binding)
+        .and_then(|fact| match fact.kind {
+            BindingKind::Param { index } => Some(index),
+            BindingKind::Local => None,
+        })
 }
 
 fn all_callers_prove(
