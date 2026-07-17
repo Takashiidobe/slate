@@ -845,6 +845,41 @@ fn literal_fopen_fputs_fclose_owner_uses_open_options() {
     assert!(rust.contains("std::io::Write::write_all(&mut f, b\"owned\\n\").unwrap();"));
     assert!(!rust.contains("unsafe { fputs((c\"owned\\n\""));
     assert!(rust.contains("unsafe { fgets("));
+
+    let drop_index = rust
+        .find("drop(f);")
+        .expect("close before the later reopen must become an explicit drop");
+    let reopen_index = rust
+        .find("fopen((c\"slate_stdio_file_write.tmp\".as_ptr()")
+        .expect("generated rust should reopen the same path");
+    assert!(
+        drop_index < reopen_index,
+        "explicit drop must precede the reopen of the same path"
+    );
+}
+
+#[test]
+fn close_before_remove_owner_preserves_close_timing_as_explicit_drop() {
+    let tmp =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-stdio-close-before-remove");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("stdio_file_close_before_remove.c");
+    let generated = tmp.join("stdio_file_close_before_remove.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate stdio close-before-remove fixture");
+    let rust =
+        std::fs::read_to_string(&generated).expect("read generated stdio close-before-remove rust");
+
+    let drop_index = rust
+        .find("drop(f);")
+        .expect("close before a later remove of the same path must become an explicit drop");
+    let remove_index = rust
+        .find("unsafe { remove(")
+        .expect("generated rust should keep the remove call");
+    assert!(
+        drop_index < remove_index,
+        "explicit drop must precede the later remove of the same path"
+    );
 }
 
 #[test]
