@@ -147,6 +147,7 @@ pub enum Attr {
     Repr(Vec<Repr>),
     Derive(Vec<Derive>),
     NoMangle,
+    LinkSection(String),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

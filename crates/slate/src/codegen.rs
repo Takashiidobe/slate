@@ -404,6 +404,13 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char(')')
             }
             Attr::NoMangle => self.out.write_str("unsafe(no_mangle)"),
+            Attr::LinkSection(section) => {
+                write!(
+                    self.out,
+                    "unsafe(link_section = {})",
+                    string_literal(section)
+                )
+            }
         }
     }
 
