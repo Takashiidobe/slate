@@ -1,6 +1,6 @@
 //! lower: combine the CIR Op-tree with the C AST oracle into Rust output.
 
-use crate::c_ast::{RecordKind, Unit};
+use crate::c_ast::{LayoutQuery, RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
@@ -11,7 +11,7 @@ use crate::rust_ast::{
     SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, UsedKind,
     Visibility,
 };
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 /// How a translation unit fits into a multi-file project: which symbols other
 /// units define, which sibling modules the crate root must declare, and whether
@@ -291,6 +291,11 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         cross_uses: Vec::new(),
         ctor_calls: Vec::new(),
         dtor_calls: Vec::new(),
+        layout_queries: c
+            .functions
+            .iter()
+            .map(|function| (function.name.clone(), function.layout_queries.clone()))
+            .collect(),
     };
     lowerer.lower_module(cir, c)
 }
@@ -564,6 +569,7 @@ struct Lowerer<'a> {
     /// `__attribute__((destructor))` functions, in call order, spliced before
     /// every `main` return/exit site.
     dtor_calls: Vec<String>,
+    layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -598,6 +604,7 @@ struct FunctionLowerer<'a, 'b> {
     /// `va_list` SSA values (the `ap` alloca and its array-decay casts) → slot name.
     va_places: BTreeMap<String, String>,
     va_args_param: Option<String>,
+    layout_queries: VecDeque<LayoutQuery>,
 }
 
 /// Maps CIR jump targets to dispatch-loop states for a `goto`-bearing function.
@@ -1405,6 +1412,12 @@ impl<'a> Lowerer<'a> {
             self.uses_linkage.set(true);
         }
         let unsafe_ = is_variadic || self.unsafe_functions.contains(name);
+        let layout_queries: VecDeque<_> = self
+            .layout_queries
+            .get(name)
+            .cloned()
+            .unwrap_or_default()
+            .into();
         let mut f = FunctionLowerer {
             parent: self,
             values: BTreeMap::new(),
@@ -1429,6 +1442,7 @@ impl<'a> Lowerer<'a> {
             immutable_temps: BTreeSet::new(),
             va_places: BTreeMap::new(),
             va_args_param,
+            layout_queries,
         };
 
         for stmt in prelude {
@@ -1731,6 +1745,40 @@ impl<'a> Lowerer<'a> {
         matches!(ty, Type::Ptr { inner, .. } if self.type_is_enum(inner))
     }
 
+    fn layout_query_value(&self, query: &LayoutQuery) -> Option<i128> {
+        match query {
+            LayoutQuery::Size(ty) => c_layout(ty, &self.records).map(|layout| layout.size),
+            LayoutQuery::Align(ty) => c_layout(ty, &self.records).map(|layout| layout.align),
+            LayoutQuery::Offset { record, field } => {
+                record_field_offset(record, field, &self.records)
+            }
+        }
+        .map(i128::from)
+    }
+
+    fn layout_query_expr(&self, query: &LayoutQuery) -> Option<Expr> {
+        match query {
+            LayoutQuery::Size(ty @ crate::c_ast::CType::Record(_)) => {
+                Some(layout_call("size_of", &c_type_to_type(ty)))
+            }
+            LayoutQuery::Align(ty @ crate::c_ast::CType::Record(_)) => {
+                Some(layout_call("align_of", &c_type_to_type(ty)))
+            }
+            LayoutQuery::Size(_) | LayoutQuery::Align(_) => None,
+            LayoutQuery::Offset { record, field } => {
+                let source_record = self.records.get(&sanitize_ident(record).into_string())?;
+                if source_record.packed && source_record.align.is_some() {
+                    return None;
+                }
+                let record = sanitize_ident(record).into_string();
+                Some(Expr::Macro {
+                    name: "std::mem::offset_of".into(),
+                    args: vec![Expr::Var(record.into()), Expr::Var(sanitize_ident(field))],
+                })
+            }
+        }
+    }
+
     fn render_const_value_expr(&self, ty: &Type, raw: &str) -> Option<Expr> {
         let raw = raw.trim();
         if let Some((re, im)) = parse_cir_const_complex(raw) {
@@ -1868,6 +1916,140 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
         CType::Record(name) if name == "pthread_attr_t" => Type::CLib(CLibType::PthreadAttr),
         CType::Record(name) => Type::Custom(sanitize_ident(name).into_string()),
         CType::Enum(name) => Type::Custom(sanitize_ident(name).into_string()),
+    }
+}
+
+#[derive(Clone, Copy)]
+struct CLayout {
+    size: u64,
+    align: u64,
+}
+
+fn layout_call(name: &str, ty: &Type) -> Expr {
+    Expr::Call {
+        func: Box::new(Expr::Var(
+            format!("std::mem::{name}::<{}>", ty.render()).into(),
+        )),
+        args: Vec::new(),
+    }
+}
+
+fn c_layout(
+    ty: &crate::c_ast::CType,
+    records: &BTreeMap<String, crate::c_ast::Record>,
+) -> Option<CLayout> {
+    use crate::c_ast::CType;
+    match ty {
+        CType::Void => Some(CLayout { size: 0, align: 1 }),
+        CType::Bool => Some(CLayout { size: 1, align: 1 }),
+        CType::Int { bits, .. } => scalar_layout(*bits),
+        CType::Float { bits: 80 } => Some(CLayout {
+            size: 16,
+            align: 16,
+        }),
+        CType::Float { bits } => scalar_layout(*bits),
+        CType::Ptr(_) | CType::FuncPtr { .. } => Some(CLayout { size: 8, align: 8 }),
+        CType::Array(elem, Some(len)) => {
+            let elem = c_layout(elem, records)?;
+            Some(CLayout {
+                size: align_to(elem.size, elem.align) * len,
+                align: elem.align,
+            })
+        }
+        CType::Array(elem, None) => c_layout(&CType::Ptr(elem.clone()), records),
+        CType::Record(name) => record_layout(name, records),
+        CType::Enum(_) => scalar_layout(32),
+    }
+}
+
+fn scalar_layout(bits: u32) -> Option<CLayout> {
+    let bytes = u64::from(bits).checked_div(8)?;
+    let bytes = bytes.max(1);
+    Some(CLayout {
+        size: bytes,
+        align: bytes,
+    })
+}
+
+fn record_layout(name: &str, records: &BTreeMap<String, crate::c_ast::Record>) -> Option<CLayout> {
+    let record = records.get(&sanitize_ident(name).into_string())?;
+    let natural_align = record_natural_align(record, records)?;
+    let align = record
+        .align
+        .map(u64::from)
+        .unwrap_or(natural_align)
+        .max(natural_align);
+    match record.kind {
+        RecordKind::Struct => {
+            let mut offset = 0;
+            for field in &record.fields {
+                let field_layout = c_layout(&field.ty, records)?;
+                let field_align = if record.packed { 1 } else { field_layout.align };
+                offset = align_to(offset, field_align);
+                offset += field_layout.size;
+            }
+            Some(CLayout {
+                size: align_to(offset, align),
+                align,
+            })
+        }
+        RecordKind::Union => {
+            let size = record
+                .fields
+                .iter()
+                .filter_map(|field| c_layout(&field.ty, records).map(|layout| layout.size))
+                .max()
+                .unwrap_or(0);
+            Some(CLayout {
+                size: align_to(size, align),
+                align,
+            })
+        }
+    }
+}
+
+fn record_natural_align(
+    record: &crate::c_ast::Record,
+    records: &BTreeMap<String, crate::c_ast::Record>,
+) -> Option<u64> {
+    if record.packed {
+        return Some(1);
+    }
+    record
+        .fields
+        .iter()
+        .map(|field| c_layout(&field.ty, records).map(|layout| layout.align))
+        .max()
+        .unwrap_or(Some(1))
+}
+
+fn record_field_offset(
+    record_name: &str,
+    field_name: &str,
+    records: &BTreeMap<String, crate::c_ast::Record>,
+) -> Option<u64> {
+    let record = records.get(&sanitize_ident(record_name).into_string())?;
+    if record.kind != RecordKind::Struct {
+        return None;
+    }
+    let mut offset = 0;
+    for field in &record.fields {
+        let field_layout = c_layout(&field.ty, records)?;
+        let field_align = if record.packed { 1 } else { field_layout.align };
+        offset = align_to(offset, field_align);
+        if field.name == field_name {
+            return Some(offset);
+        }
+        offset += field_layout.size;
+    }
+    None
+}
+
+fn align_to(value: u64, align: u64) -> u64 {
+    if align <= 1 {
+        value
+    } else {
+        value.div_ceil(align) * align
     }
 }
 
@@ -2367,11 +2549,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let raw = attr_str(op, "value").unwrap_or("");
         // MLIR may print a const as an attribute alias (e.g. `#false`); expand it.
-        let raw = self.parent.aliases.get(raw).map_or(raw, String::as_str);
+        let raw = self
+            .parent
+            .aliases
+            .get(raw)
+            .cloned()
+            .unwrap_or_else(|| raw.to_string());
+        let raw = raw.as_str();
         if let Some(value) = parse_cir_int(raw) {
             self.const_int_values.insert(result.clone(), value);
         }
         let result_ty = op_result_type(op);
+        if let Some(value) = parse_cir_int(raw)
+            && let Some(expr) = self.next_layout_query_expr(value, result_ty)
+        {
+            self.materialize_expr(result, expr, result_ty);
+            return;
+        }
         if let Some(value) = parse_cir_const_vector(raw) {
             self.materialize_expr(result, value, result_ty);
             return;
@@ -2416,6 +2610,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             parse_cir_scalar_expr(raw).unwrap_or(Expr::Value(RustValue::I64(0)))
         };
         self.materialize_expr(result, value, result_ty);
+    }
+
+    fn next_layout_query_expr(&mut self, value: i128, result_ty: Option<&str>) -> Option<Expr> {
+        let query = self.layout_queries.front()?;
+        let expected = self.parent.layout_query_value(query)?;
+        if expected != value {
+            return None;
+        }
+        let expr = self.parent.layout_query_expr(query);
+        self.layout_queries.pop_front();
+        let mut expr = expr?;
+        if let Some(result_ty) = result_ty {
+            expr = Expr::Cast {
+                expr: Box::new(expr),
+                ty: self.parent.rust_type(result_ty),
+            };
+        }
+        Some(expr)
     }
 
     fn lower_complex_create(&mut self, op: &Op) {

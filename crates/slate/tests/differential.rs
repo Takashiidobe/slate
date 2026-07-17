@@ -421,9 +421,17 @@ fn struct_field_initialization_is_folded_into_literal() {
         rust.contains("let s: Aligned = Aligned { a: 5, b: 4660 };"),
         "expected folded struct initializer:\n{rust}"
     );
+    assert!(rust.contains("std::mem::size_of::<Aligned>() as u64"));
+    assert!(rust.contains("std::mem::align_of::<Aligned>() as u64"));
+    assert!(rust.contains("std::mem::offset_of!(Aligned, a) as u64"));
+    assert!(rust.contains("std::mem::offset_of!(Aligned, b) as u64"));
     assert!(!rust.contains("let mut s: Aligned = Aligned { a: 0, b: 0 };"));
     assert!(!rust.contains("s.a = 5;"));
     assert!(!rust.contains("s.b = 4660;"));
+    assert!(!rust.contains("let _v3: u64 = 16;"));
+    assert!(!rust.contains("let _v4: u64 = 16;"));
+    assert!(!rust.contains("let _v6: u64 = 0;"));
+    assert!(!rust.contains("let _v7: u64 = 4;"));
 }
 
 #[test]

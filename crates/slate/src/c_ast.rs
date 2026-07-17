@@ -68,6 +68,7 @@ pub struct Function {
     pub loc: Option<Loc>,
     /// Raw Clang JSON node for demand-driven facts the small AST has not modeled.
     pub raw: Option<Value>,
+    pub layout_queries: Vec<LayoutQuery>,
 }
 
 #[derive(Debug, Clone)]
@@ -88,6 +89,13 @@ pub enum CType {
     Array(Box<CType>, Option<u64>),
     Record(String),
     Enum(String),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum LayoutQuery {
+    Size(CType),
+    Align(CType),
+    Offset { record: String, field: String },
 }
 
 #[derive(Debug, Clone)]
@@ -239,7 +247,10 @@ fn parse_json_with_record_roots(
     let mut functions = Vec::new();
     collect_enums(&root, source_file, record_roots, &enum_typedefs, &mut enums);
     collect_records(&root, source_file, record_roots, &mut records);
-    collect_functions(&root, source_file, &mut functions);
+    let source_text = (!source_file.is_empty())
+        .then(|| std::fs::read_to_string(source_file).ok())
+        .flatten();
+    collect_functions(&root, source_file, source_text.as_deref(), &mut functions);
     Ok(Unit {
         enums,
         records,
@@ -309,15 +320,20 @@ fn collect_enums(
     }
 }
 
-fn collect_functions(node: &Value, source_file: &str, out: &mut Vec<Function>) {
+fn collect_functions(
+    node: &Value,
+    source_file: &str,
+    source_text: Option<&str>,
+    out: &mut Vec<Function>,
+) {
     if kind(node) == Some("FunctionDecl") && is_source_node(node, source_file) && has_body(node) {
-        if let Some(function) = extract_function(node) {
+        if let Some(function) = extract_function(node, source_text) {
             out.push(function);
         }
         return;
     }
     for child in children(node) {
-        collect_functions(child, source_file, out);
+        collect_functions(child, source_file, source_text, out);
     }
 }
 
@@ -507,7 +523,7 @@ fn enum_constant_value(node: &Value) -> Option<i64> {
         .and_then(|value| value.parse().ok())
 }
 
-fn extract_function(node: &Value) -> Option<Function> {
+fn extract_function(node: &Value, source_text: Option<&str>) -> Option<Function> {
     let name = node.get("name")?.as_str()?.to_string();
     let fn_qual_type = qual_type(node).unwrap_or("int ()");
     let (ret, _) = parse_function_decl_qual_type(fn_qual_type);
@@ -534,7 +550,85 @@ fn extract_function(node: &Value) -> Option<Function> {
         body,
         loc: loc(node),
         raw: Some(node.clone()),
+        layout_queries: collect_layout_queries(node, source_text),
     })
+}
+
+fn collect_layout_queries(node: &Value, source_text: Option<&str>) -> Vec<LayoutQuery> {
+    let mut out = Vec::new();
+    collect_layout_queries_at(node, source_text, &mut out);
+    out
+}
+
+fn collect_layout_queries_at(node: &Value, source_text: Option<&str>, out: &mut Vec<LayoutQuery>) {
+    match kind(node) {
+        Some("UnaryExprOrTypeTraitExpr") => {
+            let ty = node
+                .get("argType")
+                .and_then(|arg| arg.get("qualType"))
+                .and_then(Value::as_str)
+                .map(parse_c_type);
+            match (node.get("name").and_then(Value::as_str), ty) {
+                (Some("sizeof"), Some(ty)) => out.push(LayoutQuery::Size(ty)),
+                (Some("alignof" | "_Alignof" | "__alignof"), Some(ty)) => {
+                    out.push(LayoutQuery::Align(ty))
+                }
+                _ => {}
+            }
+        }
+        Some("OffsetOfExpr") => {
+            if let Some(query) = source_text.and_then(|source| {
+                expansion_offset(node).and_then(|offset| parse_offsetof(source, offset))
+            }) {
+                out.push(query);
+            }
+        }
+        _ => {}
+    }
+    for child in children(node) {
+        collect_layout_queries_at(child, source_text, out);
+    }
+}
+
+fn expansion_offset(node: &Value) -> Option<usize> {
+    let begin = node.get("range")?.get("begin")?;
+    begin
+        .get("expansionLoc")
+        .unwrap_or(begin)
+        .get("offset")?
+        .as_u64()
+        .map(|offset| offset as usize)
+}
+
+fn parse_offsetof(source: &str, offset: usize) -> Option<LayoutQuery> {
+    let rest = source.get(offset..)?;
+    let args = rest.strip_prefix("offsetof")?;
+    let args = args.get(args.find('(')? + 1..)?;
+    let close = matching_paren(args)?;
+    let args: Vec<_> = split_c_type_list(&args[..close]).collect();
+    let [ty, field] = args.as_slice() else {
+        return None;
+    };
+    let CType::Record(record) = parse_c_type(ty) else {
+        return None;
+    };
+    Some(LayoutQuery::Offset {
+        record,
+        field: field.trim().to_string(),
+    })
+}
+
+fn matching_paren(s: &str) -> Option<usize> {
+    let mut depth = 0usize;
+    for (idx, ch) in s.char_indices() {
+        match ch {
+            '(' => depth += 1,
+            ')' if depth == 0 => return Some(idx),
+            ')' => depth -= 1,
+            _ => {}
+        }
+    }
+    None
 }
 
 fn parse_compound_stmt(node: &Value) -> Vec<Stmt> {

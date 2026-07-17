@@ -62,6 +62,7 @@ fn rewrite_body(
 ) {
     let mut arrays = BTreeMap::new();
     let mut ints = BTreeMap::new();
+    let mut layout_sizes = BTreeMap::new();
 
     for indent in body.iter_mut() {
         if let Some((name, array)) = array_decl(&indent.stmt) {
@@ -70,10 +71,18 @@ fn rewrite_body(
         if let Some((name, value)) = integer_decl(&indent.stmt, &ints) {
             ints.insert(name, value);
         }
+        if let Some((name, ty)) = layout_size_decl(&indent.stmt) {
+            layout_sizes.insert(name, ty);
+        }
 
-        if let Some(replacement) =
-            replacement_stmt(&indent.stmt, &arrays, &ints, records, comparators)
-        {
+        if let Some(replacement) = replacement_stmt(
+            &indent.stmt,
+            &arrays,
+            &ints,
+            &layout_sizes,
+            records,
+            comparators,
+        ) {
             indent.stmt = replacement;
             continue;
         }
@@ -88,29 +97,35 @@ fn replacement_stmt(
     stmt: &Stmt,
     arrays: &BTreeMap<String, ArrayBinding>,
     ints: &BTreeMap<String, i128>,
+    layout_sizes: &BTreeMap<String, Type>,
     records: &BTreeMap<String, Layout>,
     comparators: &BTreeMap<String, ComparatorPlan>,
 ) -> Option<Stmt> {
     match stmt {
         Stmt::Expr(expr) => {
-            qsort_replacement(expr, arrays, ints, records, comparators).map(Stmt::Expr)
+            qsort_replacement(expr, arrays, ints, layout_sizes, records, comparators)
+                .map(Stmt::Expr)
         }
         Stmt::Unsafe { body } => body
             .tail
             .as_deref()
-            .and_then(|tail| qsort_replacement(tail, arrays, ints, records, comparators))
+            .and_then(|tail| {
+                qsort_replacement(tail, arrays, ints, layout_sizes, records, comparators)
+            })
             .map(Stmt::Expr),
         Stmt::Let {
             name,
             mutable,
             ty,
             init: Some(init),
-        } => bsearch_replacement(init, arrays, ints, records, comparators).map(|expr| Stmt::Let {
-            name: name.clone(),
-            mutable: *mutable,
-            ty: ty.clone(),
-            init: Some(expr),
-        }),
+        } => bsearch_replacement(init, arrays, ints, layout_sizes, records, comparators).map(
+            |expr| Stmt::Let {
+                name: name.clone(),
+                mutable: *mutable,
+                ty: ty.clone(),
+                init: Some(expr),
+            },
+        ),
         _ => None,
     }
 }
@@ -119,6 +134,7 @@ fn qsort_replacement(
     expr: &Expr,
     arrays: &BTreeMap<String, ArrayBinding>,
     ints: &BTreeMap<String, i128>,
+    layout_sizes: &BTreeMap<String, Type>,
     records: &BTreeMap<String, Layout>,
     comparators: &BTreeMap<String, ComparatorPlan>,
 ) -> Option<Expr> {
@@ -133,8 +149,7 @@ fn qsort_replacement(
     if len != i128::from(array.len) {
         return None;
     }
-    let elem_size = integer_value(&args[2], ints)?;
-    if elem_size != i128::from(type_size(&array.elem_ty, records)?) {
+    if !elem_size_matches(&args[2], &array.elem_ty, ints, layout_sizes, records) {
         return None;
     }
     let comparator = comparators.get(comparator_arg(&args[3])?)?;
@@ -157,6 +172,7 @@ fn bsearch_replacement(
     expr: &Expr,
     arrays: &BTreeMap<String, ArrayBinding>,
     ints: &BTreeMap<String, i128>,
+    layout_sizes: &BTreeMap<String, Type>,
     records: &BTreeMap<String, Layout>,
     comparators: &BTreeMap<String, ComparatorPlan>,
 ) -> Option<Expr> {
@@ -172,8 +188,7 @@ fn bsearch_replacement(
     if len != i128::from(array.len) {
         return None;
     }
-    let elem_size = integer_value(&args[3], ints)?;
-    if elem_size != i128::from(type_size(&array.elem_ty, records)?) {
+    if !elem_size_matches(&args[3], &array.elem_ty, ints, layout_sizes, records) {
         return None;
     }
     let comparator = comparators.get(comparator_arg(&args[4])?)?;
@@ -507,6 +522,18 @@ fn integer_decl(stmt: &Stmt, ints: &BTreeMap<String, i128>) -> Option<(String, i
     integer_value(init, ints).map(|value| (name.clone(), value))
 }
 
+fn layout_size_decl(stmt: &Stmt) -> Option<(String, Type)> {
+    let Stmt::Let {
+        name,
+        init: Some(init),
+        ..
+    } = stmt
+    else {
+        return None;
+    };
+    layout_size_type(init).map(|ty| (name.clone(), ty))
+}
+
 fn integer_value(expr: &Expr, ints: &BTreeMap<String, i128>) -> Option<i128> {
     match strip_casts(expr) {
         Expr::Value(RustValue::I64(n)) => Some(i128::from(*n)),
@@ -514,6 +541,37 @@ fn integer_value(expr: &Expr, ints: &BTreeMap<String, i128>) -> Option<i128> {
         Expr::Var(name) => ints.get(name.as_str()).copied(),
         _ => None,
     }
+}
+
+fn elem_size_matches(
+    expr: &Expr,
+    elem_ty: &Type,
+    ints: &BTreeMap<String, i128>,
+    layout_sizes: &BTreeMap<String, Type>,
+    records: &BTreeMap<String, Layout>,
+) -> bool {
+    if let Some(size) = integer_value(expr, ints) {
+        return Some(size) == type_size(elem_ty, records).map(i128::from);
+    }
+    layout_size_value(expr, layout_sizes).is_some_and(|ty| same_type(&ty, elem_ty))
+}
+
+fn layout_size_value(expr: &Expr, layout_sizes: &BTreeMap<String, Type>) -> Option<Type> {
+    match strip_casts(expr) {
+        Expr::Var(name) => layout_sizes.get(name.as_str()).cloned(),
+        expr => layout_size_type(expr),
+    }
+}
+
+fn layout_size_type(expr: &Expr) -> Option<Type> {
+    let (name, args) = direct_call(strip_casts(expr))?;
+    if !args.is_empty() {
+        return None;
+    }
+    let ty = name
+        .strip_prefix("std::mem::size_of::<")?
+        .strip_suffix('>')?;
+    Some(Type::parse(ty))
 }
 
 fn strip_casts(expr: &Expr) -> &Expr {
@@ -739,6 +797,66 @@ mod tests {
                         ),
                         temp("n", "u64", int(3)),
                         temp("sz", "u64", int(4)),
+                        Stmt::Expr(Expr::Unsafe(Box::new(Block {
+                            stmts: Vec::new(),
+                            tail: Some(Box::new(call(
+                                "qsort",
+                                vec![
+                                    Expr::Cast {
+                                        expr: Box::new(Expr::MethodCall {
+                                            recv: Box::new(var("items")),
+                                            method: "as_mut_ptr".into(),
+                                            args: Vec::new(),
+                                        }),
+                                        ty: void_ptr(),
+                                    },
+                                    var("n"),
+                                    var("sz"),
+                                    call("Some", vec![var("cmp")]),
+                                ],
+                            ))),
+                        }))),
+                    ],
+                )),
+            ],
+        };
+        fixup(&mut program);
+        prune_unused_externs(&mut program);
+        let rust = program.emit();
+
+        assert!(rust.contains(
+            "items.as_mut_slice().sort_by(|__slate_a, __slate_b| __slate_a.cmp(__slate_b));"
+        ));
+        assert!(!rust.contains("fn qsort("));
+    }
+
+    #[test]
+    fn rewrites_qsort_call_with_size_of_type() {
+        let mut program = Program {
+            items: vec![
+                qsort_decl(),
+                cmp_int(),
+                Item::Fn(func(
+                    Vec::new(),
+                    None,
+                    vec![
+                        let_mut(
+                            "items",
+                            "[i32; 3]",
+                            Expr::ArrayRepeat {
+                                elem: Box::new(int(0)),
+                                len: 3,
+                            },
+                        ),
+                        temp("n", "u64", int(3)),
+                        temp(
+                            "sz",
+                            "u64",
+                            Expr::Cast {
+                                expr: Box::new(call("std::mem::size_of::<i32>", Vec::new())),
+                                ty: Type::Prim(Prim::U64),
+                            },
+                        ),
                         Stmt::Expr(Expr::Unsafe(Box::new(Block {
                             stmts: Vec::new(),
                             tail: Some(Box::new(call(
