@@ -275,6 +275,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     let mut defined: BTreeMap<String, String> = BTreeMap::new();
     let mut defined_globals: BTreeMap<String, String> = BTreeMap::new();
     let mut unsafe_functions = BTreeSet::new();
+    let mut crate_features = BTreeSet::new();
     let mut shared_records = BTreeMap::new();
     let mut shared_enums = BTreeMap::new();
     let mut referenced_record_types = BTreeSet::new();
@@ -287,6 +288,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             defined_globals.insert(sym, stem.clone());
         }
         unsafe_functions.extend(lower::unsafe_defined_functions(&module));
+        crate_features.extend(lower::required_features(&module));
         let unit = c_ast::parse_file_with_project_records(path, project_dir)?;
         for enm in &unit.enums {
             shared_enums
@@ -323,6 +325,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         shared_type_crate: None,
         cross_module_crate: None,
         unsafe_functions,
+        crate_features,
         child_modules: Vec::new(),
         emit_pub: true,
     };
@@ -353,6 +356,9 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     }
 
     let mut lib_rs = String::new();
+    for feature in &project.crate_features {
+        lib_rs.push_str(&format!("#![feature({})]\n", feature.spelling()));
+    }
     if project.shared_type_module.is_some() {
         lib_rs.push_str("pub mod types;\n");
     }
@@ -386,6 +392,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
                 shared_type_module: Some("types".into()),
                 shared_type_crate: Some(package.clone()),
                 cross_module_crate: Some(package.clone()),
+                crate_features: project.crate_features.clone(),
                 emit_pub: true,
                 ..lower::ProjectInfo::default()
             };
@@ -423,6 +430,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
     let mut defined: BTreeMap<String, String> = BTreeMap::new();
     let mut defined_globals: BTreeMap<String, String> = BTreeMap::new();
     let mut unsafe_functions = BTreeSet::new();
+    let mut crate_features = BTreeSet::new();
     let mut root: Option<String> = None;
     for (stem, path) in &modules {
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
@@ -437,6 +445,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
             defined_globals.insert(sym, stem.clone());
         }
         unsafe_functions.extend(lower::unsafe_defined_functions(&module));
+        crate_features.extend(lower::required_features(&module));
     }
     let root = root.ok_or("translate-project: no unit defines main")?;
     let siblings: Vec<String> = modules
@@ -466,6 +475,11 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
             shared_type_crate: None,
             cross_module_crate: None,
             emit_pub: true,
+            crate_features: if is_root {
+                crate_features.clone()
+            } else {
+                BTreeSet::new()
+            },
         };
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
         let unit = c_ast::parse_file(path)?;
