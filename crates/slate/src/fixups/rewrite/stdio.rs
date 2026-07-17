@@ -98,7 +98,11 @@ fn plan_for_fact(
                 }
             }
             FileUseKind::Close => {
-                remove.insert(use_index);
+                if use_index == body.len() - 1 {
+                    remove.insert(use_index);
+                } else {
+                    replacements.insert(use_index, drop_stmt(handle));
+                }
                 if previous_aliases_handle(body, use_index, handle) {
                     remove.insert(use_index - 1);
                 }
@@ -194,6 +198,13 @@ fn write_all_stmt(handle: &str, bytes: Vec<u8>) -> Stmt {
         }),
         method: "unwrap".into(),
         args: Vec::new(),
+    })
+}
+
+fn drop_stmt(handle: &str) -> Stmt {
+    Stmt::Expr(Expr::Call {
+        func: Box::new(Expr::Var("drop".into())),
+        args: vec![Expr::Var(handle.into())],
     })
 }
 
@@ -392,6 +403,51 @@ mod tests {
         assert!(out.contains("std::io::Write::write_all(&mut f, b\"owned\\n\").unwrap();"));
         assert!(!out.contains("unsafe { fopen("));
         assert!(!out.contains("unsafe { fputs("));
+        assert!(!out.contains("unsafe { fclose("));
+    }
+
+    #[test]
+    fn rewrites_close_followed_by_more_statements_as_explicit_drop() {
+        let out = run(vec![
+            Stmt::Let {
+                name: "f".into(),
+                mutable: true,
+                ty: Some(Type::parse("*mut libc::FILE")),
+                init: Some(Expr::Value(RustValue::NullPtr)),
+            },
+            temp(
+                "_v0",
+                "*mut libc::FILE",
+                unsafe_call(
+                    "fopen",
+                    vec![Expr::CStr(b"out.txt".to_vec()), Expr::CStr(b"w".to_vec())],
+                ),
+            ),
+            assign("f", var("_v0")),
+            Stmt::If {
+                cond: var("f"),
+                then_body: vec![IndentStmt {
+                    depth: 2,
+                    stmt: Stmt::Expr(Expr::Call {
+                        func: Box::new(Expr::Path(crate::rust_ast::Path::new(
+                            ["std", "process", "exit"].into_iter().map(Ident::new),
+                        ))),
+                        args: vec![int(0)],
+                    }),
+                }],
+                else_body: Vec::new(),
+            },
+            temp("_v1", "*mut libc::FILE", var("f")),
+            Stmt::Expr(unsafe_call(
+                "fputs",
+                vec![Expr::CStr(b"owned\n".to_vec()), var("_v1")],
+            )),
+            temp("_v2", "*mut libc::FILE", var("f")),
+            Stmt::Expr(unsafe_call("fclose", vec![var("_v2")])),
+            Stmt::Expr(call("remove", vec![Expr::CStr(b"out.txt".to_vec())])),
+        ]);
+
+        assert!(out.contains("drop(f);"), "{out}");
         assert!(!out.contains("unsafe { fclose("));
     }
 }
