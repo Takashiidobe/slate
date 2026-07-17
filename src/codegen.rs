@@ -404,6 +404,7 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char(')')
             }
             Attr::NoMangle => self.out.write_str("unsafe(no_mangle)"),
+            Attr::WeakLinkage => self.out.write_str("linkage = \"weak\""),
             Attr::LinkSection(section) => {
                 write!(
                     self.out,

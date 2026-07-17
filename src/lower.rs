@@ -39,25 +39,53 @@ pub struct ProjectInfo {
     pub cross_module_crate: Option<String>,
     /// function symbols whose generated Rust definitions require an unsafe caller.
     pub unsafe_functions: BTreeSet<String>,
+    /// crate-level feature gates needed by sibling modules.
+    pub crate_features: BTreeSet<Feature>,
     /// emit function and global definitions as `pub` so other modules can import them.
     pub emit_pub: bool,
 }
 
-/// CIR encodes external linkage as `linkage = 0`; a C `static` is nonzero.
+const WEAK_ANY_LINKAGE: i64 = 4;
+
+/// CIR encodes external linkage as `linkage = 0`; weak definitions are external too.
 fn linkage_is_external(op: &Op) -> bool {
-    attr_int(op, "linkage").unwrap_or(0) == 0
+    matches!(attr_int(op, "linkage").unwrap_or(0), 0 | WEAK_ANY_LINKAGE)
 }
 
-fn symbol_attrs(no_mangle: bool, section: Option<&str>, used: &[UsedKind]) -> Vec<RustAttr> {
+fn linkage_is_weak(op: &Op) -> bool {
+    attr_int(op, "linkage") == Some(WEAK_ANY_LINKAGE)
+}
+
+fn symbol_attrs(
+    no_mangle: bool,
+    weak_linkage: bool,
+    section: Option<&str>,
+    used: &[UsedKind],
+) -> Vec<RustAttr> {
     let mut attrs = Vec::new();
     if no_mangle {
         attrs.push(RustAttr::NoMangle);
+    }
+    if weak_linkage {
+        attrs.push(RustAttr::WeakLinkage);
     }
     if let Some(section) = section {
         attrs.push(RustAttr::LinkSection(section.to_string()));
     }
     attrs.extend(used.iter().copied().map(RustAttr::Used));
     attrs
+}
+
+fn insert_crate_feature(items: &mut [Item], feature: Feature) {
+    let Some(Item::CrateAttrs(attrs)) = items.first_mut() else {
+        return;
+    };
+    if !attrs
+        .iter()
+        .any(|attr| matches!(attr, CrateAttr::Feature(existing) if *existing == feature))
+    {
+        attrs.insert(0, CrateAttr::Feature(feature));
+    }
 }
 
 /// True when a function body provably never falls off the end: its last op
@@ -157,6 +185,27 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
         .collect()
 }
 
+pub fn required_features(module: &Module) -> BTreeSet<Feature> {
+    let mut features = BTreeSet::new();
+    let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
+        return features;
+    };
+    for op in region_ops(module_op) {
+        if linkage_is_weak(op) {
+            features.insert(Feature::Linkage);
+        }
+        if op.name == "cir.func" {
+            let function_type = attr_str(op, "function_type").unwrap_or("");
+            if function_type_is_variadic(function_type) {
+                features.insert(Feature::CVariadic);
+            }
+        } else if op.name == "cir.global" && matches!(attr_str(op, "sym_name"), Some("llvm.used")) {
+            features.insert(Feature::UsedWithArg);
+        }
+    }
+    features
+}
+
 /// Lower a parsed CIR module (with the C AST as an oracle) to a Rust program.
 pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
     lower_with_project(cir, c, ctx, &ProjectInfo::default())
@@ -199,6 +248,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_long_double: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
         uses_c_variadic: std::cell::Cell::new(false),
+        uses_linkage: std::cell::Cell::new(false),
         uses_used_with_arg: std::cell::Cell::new(false),
         uses_memchr: std::cell::Cell::new(false),
         variadic_defs: BTreeSet::new(),
@@ -466,6 +516,7 @@ struct Lowerer<'a> {
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
     uses_c_variadic: std::cell::Cell<bool>,
+    uses_linkage: std::cell::Cell<bool>,
     uses_used_with_arg: std::cell::Cell<bool>,
     uses_memchr: std::cell::Cell<bool>,
     variadic_defs: BTreeSet<String>,
@@ -569,6 +620,7 @@ struct GlobalVar {
     ty: Type,
     init: Expr,
     external: bool,
+    weak: bool,
     section: Option<String>,
     used: Vec<UsedKind>,
 }
@@ -671,8 +723,16 @@ impl<'a> Lowerer<'a> {
             {
                 self.uses_used_with_arg.set(true);
             }
+            if global.weak {
+                self.uses_linkage.set(true);
+            }
             items.push(Item::Static {
-                attrs: symbol_attrs(global_external_def, global.section.as_deref(), &global.used),
+                attrs: symbol_attrs(
+                    global_external_def,
+                    global.weak,
+                    global.section.as_deref(),
+                    &global.used,
+                ),
                 vis: global_vis,
                 mutable: true,
                 name: global.name.clone(),
@@ -890,15 +950,17 @@ impl<'a> Lowerer<'a> {
         }
 
         // grouped with the crate-level `#![allow(..)]` so both stay at the top.
-        if self.uses_c_variadic.get()
-            && let Some(Item::CrateAttrs(attrs)) = items.first_mut()
-        {
-            attrs.insert(0, CrateAttr::Feature(Feature::CVariadic));
+        if self.uses_c_variadic.get() {
+            insert_crate_feature(&mut items, Feature::CVariadic);
         }
-        if self.uses_used_with_arg.get()
-            && let Some(Item::CrateAttrs(attrs)) = items.first_mut()
-        {
-            attrs.insert(0, CrateAttr::Feature(Feature::UsedWithArg));
+        if self.uses_linkage.get() {
+            insert_crate_feature(&mut items, Feature::Linkage);
+        }
+        if self.uses_used_with_arg.get() {
+            insert_crate_feature(&mut items, Feature::UsedWithArg);
+        }
+        for feature in &self.project.crate_features {
+            insert_crate_feature(&mut items, *feature);
         }
 
         Program { items }
@@ -913,6 +975,7 @@ impl<'a> Lowerer<'a> {
         }
         let rust_name = sanitize_ident(name).into_string();
         let ty = attr_str(op, "sym_type").map(|ty| self.rust_type(ty));
+        let weak = linkage_is_weak(op);
         let section = attr_str(op, "section").map(str::to_owned);
         let used = self
             .used_symbols
@@ -938,6 +1001,7 @@ impl<'a> Lowerer<'a> {
                         ty,
                         init,
                         external: linkage_is_external(op),
+                        weak,
                         section: section.clone(),
                         used: used.clone(),
                     },
@@ -957,6 +1021,7 @@ impl<'a> Lowerer<'a> {
                             Expr::Value(RustValue::I64(0)),
                         ),
                         external: linkage_is_external(op),
+                        weak,
                         section: section.clone(),
                         used: used.clone(),
                     },
@@ -979,6 +1044,7 @@ impl<'a> Lowerer<'a> {
                                 Expr::Value(RustValue::I64(0)),
                             ),
                             external: linkage_is_external(op),
+                            weak,
                             section: section.clone(),
                             used: used.clone(),
                         },
@@ -997,6 +1063,7 @@ impl<'a> Lowerer<'a> {
                             ty,
                             init,
                             external: linkage_is_external(op),
+                            weak,
                             section: section.clone(),
                             used: used.clone(),
                         },
@@ -1020,6 +1087,7 @@ impl<'a> Lowerer<'a> {
                             len: len as usize,
                         },
                         external: linkage_is_external(op),
+                        weak,
                         section: section.clone(),
                         used: used.clone(),
                     },
@@ -1038,6 +1106,7 @@ impl<'a> Lowerer<'a> {
                         init: self.default_value_expr(&ty),
                         ty,
                         external: linkage_is_external(op),
+                        weak,
                         section: section.clone(),
                         used: used.clone(),
                     },
@@ -1064,6 +1133,7 @@ impl<'a> Lowerer<'a> {
                             ty,
                         },
                         external: linkage_is_external(op),
+                        weak,
                         section: section.clone(),
                         used: used.clone(),
                     },
@@ -1079,6 +1149,7 @@ impl<'a> Lowerer<'a> {
                     ty,
                     init,
                     external,
+                    weak,
                     section,
                     used,
                 },
@@ -1189,9 +1260,13 @@ impl<'a> Lowerer<'a> {
 
         let attrs = symbol_attrs(
             !is_main && self.project.emit_pub && linkage_is_external(op),
+            linkage_is_weak(op),
             attr_str(op, "section"),
             &[],
         );
+        if linkage_is_weak(op) {
+            self.uses_linkage.set(true);
+        }
         let unsafe_ = is_variadic || self.unsafe_functions.contains(name);
         let mut f = FunctionLowerer {
             parent: self,
