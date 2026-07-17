@@ -140,7 +140,7 @@ change; "once" means it runs exactly one time per `apply` call.
 30. `c_strings` - mark/simplify recognized C-string literals - once.
 31. `stdio` - `fopen`/`fputs`/`fclose` sequences to `File`/`OpenOptions` owners - once.
 32. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls - once.
-33. `nullable_pointer` - recover `Option<*T>` null-check idioms - to fixpoint (its own `loop { ... }`).
+33. `nullable_pointer` - recover `Option<*T>` null-check idioms - to fixpoint (its own `loop { ... }`); runs directly after its only producers - the two `string_libc::fixup` runs and `memchr_prelude::fixup_calls` (32), the sole places that emit the `<index>.map_or(null_mut(), |i| ptr.add(i) as *T)` shape it rewrites. Despite the name, it has no relationship to the pointer-provenance cluster (`slice_index`/`slice_loop`/`array_element_pointer_origin`/`buffer_cursor`): those match constant-index pointer arithmetic, this matches dynamic-index `Option`-wrapped search results, and the two never touch the same bindings.
 34. `string_lift::fixup_c_strings` then `memchr_prelude` / `memchr_prelude::prune_unused_helper` - a second, narrower string-lift pass plus memchr-helper cleanup - once each.
 35. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing - once.
 36. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops - once.
