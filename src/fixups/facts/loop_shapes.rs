@@ -3,8 +3,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, FixupFacts, FunctionId, LoopId, LoopKind, LoopShapeFact, LoopShapeKind,
-    LoopShapeKindTag, LoopShapeRejection, LoopShapeRejectionFact, PathSegment, ReductionOp,
-    SearchResult, SentinelTarget, SliceLoopAccess,
+    LoopShapeKindTag, LoopShapeRejection, LoopShapeRejectionFact, LoopSite, PathSegment,
+    ReductionOp, SearchResult, SentinelTarget, SliceLoopAccess,
 };
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
@@ -190,13 +190,16 @@ impl<'a> Collector<'a> {
         body_path.push(PathSegment::LoopBody);
 
         Some(CanonicalLoop {
-            loop_id,
+            site: LoopSite {
+                function: self.function,
+                loop_id,
+                loop_path,
+                body_path: AstPath(body_path),
+            },
             index_name: Ident::new(index_name.as_str()),
             index_binding,
             bound_collection,
             body: &body[1..increment_stmt],
-            loop_path,
-            body_path: AstPath(body_path),
         })
     }
 
@@ -209,29 +212,26 @@ impl<'a> Collector<'a> {
         };
         if analysis.unsupported_control {
             self.reject(
-                candidate.loop_id,
+                candidate.site.loop_id,
+                &candidate.site.loop_path,
                 LoopShapeKindTag::Counted,
                 LoopShapeRejection::UnsupportedControlFlow,
-                &candidate.loop_path,
             );
         } else if analysis.collections.is_empty() {
             self.reject(
-                candidate.loop_id,
+                candidate.site.loop_id,
+                &candidate.site.loop_path,
                 LoopShapeKindTag::Counted,
                 LoopShapeRejection::MissingCollection,
-                &candidate.loop_path,
             );
         } else {
             self.push_shape(LoopShapeFact {
-                function: self.function,
-                loop_id: candidate.loop_id,
+                site: candidate.site.clone(),
                 kind: LoopShapeKind::Counted { access },
                 induction: Some(candidate.index_binding),
                 accumulators: Vec::new(),
                 collections: sorted_bindings(&analysis.collections),
                 mutation_targets: sorted_bindings(&analysis.mutated_collections),
-                loop_path: candidate.loop_path.clone(),
-                body_path: candidate.body_path.clone(),
             });
         }
 
@@ -244,90 +244,78 @@ impl<'a> Collector<'a> {
             Ok((accumulator, op)) => {
                 if let Some(accumulator) = self.binding_by_name(accumulator.as_str()) {
                     self.push_shape(LoopShapeFact {
-                        function: self.function,
-                        loop_id: candidate.loop_id,
+                        site: candidate.site.clone(),
                         kind: LoopShapeKind::Reduction { op },
                         induction: Some(candidate.index_binding),
                         accumulators: vec![accumulator],
                         collections: sorted_bindings(&analysis.collections),
                         mutation_targets: Vec::new(),
-                        loop_path: candidate.loop_path.clone(),
-                        body_path: candidate.body_path.clone(),
                     });
                 } else {
                     self.reject(
-                        candidate.loop_id,
+                        candidate.site.loop_id,
+                        &candidate.site.loop_path,
                         LoopShapeKindTag::Reduction,
                         LoopShapeRejection::MissingMutation,
-                        &candidate.loop_path,
                     );
                 }
             }
             Err(reason) => self.reject(
-                candidate.loop_id,
+                candidate.site.loop_id,
+                &candidate.site.loop_path,
                 LoopShapeKindTag::Reduction,
                 reason,
-                &candidate.loop_path,
             ),
         }
 
         match search_shape(candidate.body, &candidate.index_name, &self.slices) {
             Ok(result) => self.push_shape(LoopShapeFact {
-                function: self.function,
-                loop_id: candidate.loop_id,
+                site: candidate.site.clone(),
                 kind: LoopShapeKind::Search { result },
                 induction: Some(candidate.index_binding),
                 accumulators: Vec::new(),
                 collections: sorted_bindings(&analysis.collections),
                 mutation_targets: Vec::new(),
-                loop_path: candidate.loop_path.clone(),
-                body_path: candidate.body_path.clone(),
             }),
             Err(reason) => self.reject(
-                candidate.loop_id,
+                candidate.site.loop_id,
+                &candidate.site.loop_path,
                 LoopShapeKindTag::Search,
                 reason,
-                &candidate.loop_path,
             ),
         }
 
         match copy_shape(candidate.body, &candidate.index_name, &self.slices) {
             Ok((src, dst)) => self.push_shape(LoopShapeFact {
-                function: self.function,
-                loop_id: candidate.loop_id,
+                site: candidate.site.clone(),
                 kind: LoopShapeKind::Copy,
                 induction: Some(candidate.index_binding),
                 accumulators: Vec::new(),
                 collections: sorted_bindings(&BTreeSet::from([src, dst])),
                 mutation_targets: vec![dst],
-                loop_path: candidate.loop_path.clone(),
-                body_path: candidate.body_path.clone(),
             }),
             Err(reason) => self.reject(
-                candidate.loop_id,
+                candidate.site.loop_id,
+                &candidate.site.loop_path,
                 LoopShapeKindTag::Copy,
                 reason,
-                &candidate.loop_path,
             ),
         }
 
         match fill_shape(candidate.body, &candidate.index_name, &self.slices) {
             Ok(dst) => self.push_shape(LoopShapeFact {
-                function: self.function,
-                loop_id: candidate.loop_id,
+                site: candidate.site.clone(),
                 kind: LoopShapeKind::Fill,
                 induction: Some(candidate.index_binding),
                 accumulators: Vec::new(),
                 collections: vec![dst],
                 mutation_targets: vec![dst],
-                loop_path: candidate.loop_path.clone(),
-                body_path: candidate.body_path.clone(),
             }),
             Err(reason) => self.reject(
-                candidate.loop_id,
+                candidate.site.loop_id,
+                &candidate.site.loop_path,
                 LoopShapeKindTag::Fill,
                 reason,
-                &candidate.loop_path,
             ),
         }
 
@@ -347,18 +335,18 @@ impl<'a> Collector<'a> {
         let Some((collection, index_name)) = sentinel_cond(cond, &self.slices) else {
             self.reject(
                 loop_id,
+                &loop_path,
                 LoopShapeKindTag::Sentinel,
                 LoopShapeRejection::MissingCollection,
-                &loop_path,
             );
             return;
         };
         let Some(induction) = self.binding_by_name(index_name.as_str()) else {
             self.reject(
                 loop_id,
+                &loop_path,
                 LoopShapeKindTag::Sentinel,
                 LoopShapeRejection::MissingInduction,
-                &loop_path,
             );
             return;
         };
@@ -369,17 +357,21 @@ impl<'a> Collector<'a> {
         {
             self.reject(
                 loop_id,
+                &loop_path,
                 LoopShapeKindTag::Sentinel,
                 LoopShapeRejection::MissingInduction,
-                &loop_path,
             );
             return;
         }
         let mut body_path = path.to_vec();
         body_path.push(PathSegment::WhileBody);
         self.push_shape(LoopShapeFact {
-            function: self.function,
-            loop_id,
+            site: LoopSite {
+                function: self.function,
+                loop_id,
+                loop_path,
+                body_path: AstPath(body_path),
+            },
             kind: LoopShapeKind::Sentinel {
                 target: SentinelTarget::IndexedCollection,
             },
@@ -387,8 +379,6 @@ impl<'a> Collector<'a> {
             accumulators: Vec::new(),
             collections: vec![collection],
             mutation_targets: Vec::new(),
-            loop_path,
-            body_path: AstPath(body_path),
         });
     }
 
@@ -399,9 +389,9 @@ impl<'a> Collector<'a> {
     fn reject(
         &mut self,
         loop_id: LoopId,
+        loop_path: &AstPath,
         attempted: LoopShapeKindTag,
         reason: LoopShapeRejection,
-        loop_path: &AstPath,
     ) {
         self.facts
             .loop_shape_rejections
@@ -449,13 +439,11 @@ impl<'a> Collector<'a> {
 }
 
 struct CanonicalLoop<'a> {
-    loop_id: LoopId,
+    site: LoopSite,
     index_name: Ident,
     index_binding: BindingId,
     bound_collection: BindingId,
     body: &'a [IndentStmt],
-    loop_path: AstPath,
-    body_path: AstPath,
 }
 
 struct BodyAnalysis {

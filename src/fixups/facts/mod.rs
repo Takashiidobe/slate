@@ -782,23 +782,30 @@ pub(super) struct SlicePointerIndexFact {
     pub(super) path: AstPath,
 }
 
-#[derive(Debug, Clone)]
-pub(super) struct CountedLoopFact {
+/// Identifies a specific loop and its body across the several loop-shape
+/// facts, which all key off the same `(function, loop_id, loop_path,
+/// body_path)` tuple recorded once per canonical-loop candidate.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct LoopSite {
     pub(super) function: FunctionId,
     pub(super) loop_id: LoopId,
+    pub(super) loop_path: AstPath,
+    pub(super) body_path: AstPath,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct CountedLoopFact {
+    pub(super) site: LoopSite,
     pub(super) index: BindingId,
     pub(super) bound: Expr,
     pub(super) start: CountedLoopStart,
     pub(super) step: CountedLoopStep,
     pub(super) index_use: CountedLoopIndexUse,
-    pub(super) loop_path: AstPath,
-    pub(super) body_path: AstPath,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct CountedSliceLoopFact {
-    pub(super) function: FunctionId,
-    pub(super) loop_id: LoopId,
+    pub(super) site: LoopSite,
     pub(super) index: BindingId,
     pub(super) slice: BindingId,
     pub(super) start: CountedLoopStart,
@@ -806,21 +813,16 @@ pub(super) struct CountedSliceLoopFact {
     pub(super) step: CountedLoopStep,
     pub(super) index_use: CountedLoopIndexUse,
     pub(super) access: SliceLoopAccess,
-    pub(super) loop_path: AstPath,
-    pub(super) body_path: AstPath,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct LoopShapeFact {
-    pub(super) function: FunctionId,
-    pub(super) loop_id: LoopId,
+    pub(super) site: LoopSite,
     pub(super) kind: LoopShapeKind,
     pub(super) induction: Option<BindingId>,
     pub(super) accumulators: Vec<BindingId>,
     pub(super) collections: Vec<BindingId>,
     pub(super) mutation_targets: Vec<BindingId>,
-    pub(super) loop_path: AstPath,
-    pub(super) body_path: AstPath,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
