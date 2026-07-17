@@ -131,12 +131,14 @@ impl Lint {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Feature {
     CVariadic,
+    UsedWithArg,
 }
 
 impl Feature {
     pub fn spelling(self) -> &'static str {
         match self {
             Feature::CVariadic => "c_variadic",
+            Feature::UsedWithArg => "used_with_arg",
         }
     }
 }
@@ -148,6 +150,14 @@ pub enum Attr {
     Derive(Vec<Derive>),
     NoMangle,
     LinkSection(String),
+    Used(UsedKind),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum UsedKind {
+    Plain,
+    Compiler,
+    Linker,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

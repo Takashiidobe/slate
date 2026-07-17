@@ -411,6 +411,11 @@ impl<W: Write> Codegen<W> {
                     string_literal(section)
                 )
             }
+            Attr::Used(kind) => match kind {
+                crate::rust_ast::UsedKind::Plain => self.out.write_str("used"),
+                crate::rust_ast::UsedKind::Compiler => self.out.write_str("used(compiler)"),
+                crate::rust_ast::UsedKind::Linker => self.out.write_str("used(linker)"),
+            },
         }
     }
 
