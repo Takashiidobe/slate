@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use crate::fixups::support::walk;
 use crate::rust_ast::{
@@ -17,24 +17,6 @@ pub(in crate::fixups) fn fixup(program: &mut Program) {
             rewrite_body(&mut f.body, &records, &comparators);
         }
     }
-}
-
-pub(in crate::fixups) fn prune_unused_externs(program: &mut Program) {
-    let used = direct_calls(program);
-    program.items.retain_mut(|item| match item {
-        Item::ExternBlock { decls, .. } => {
-            decls.retain(|decl| match decl {
-                crate::rust_ast::ExternDecl::Fn(f)
-                    if matches!(f.name.as_str(), "qsort" | "bsearch") =>
-                {
-                    used.contains(&f.name)
-                }
-                _ => true,
-            });
-            !decls.is_empty()
-        }
-        _ => true,
-    });
 }
 
 #[derive(Clone, PartialEq, Eq)]
@@ -679,27 +661,6 @@ fn same_type(a: &Type, b: &Type) -> bool {
     crate::codegen::type_to_string(a) == crate::codegen::type_to_string(b)
 }
 
-fn direct_calls(program: &Program) -> BTreeSet<String> {
-    let mut used = BTreeSet::new();
-    for item in &program.items {
-        if let Item::Fn(f) = item {
-            collect_direct_calls(&f.body, &mut used);
-        }
-    }
-    used
-}
-
-fn collect_direct_calls(body: &[IndentStmt], used: &mut BTreeSet<String>) {
-    for indent in body {
-        walk::stmt_expr_any(&indent.stmt, &mut |expr| {
-            if let Some((name, _)) = direct_call(expr) {
-                used.insert(name.to_string());
-            }
-            false
-        });
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -821,7 +782,9 @@ mod tests {
             ],
         };
         fixup(&mut program);
-        prune_unused_externs(&mut program);
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        program = analyzed.program;
+        crate::fixups::rewrite::prune_unused_externs::fixup(&mut program, &analyzed.facts);
         let rust = program.emit();
 
         assert!(rust.contains(
@@ -881,7 +844,9 @@ mod tests {
             ],
         };
         fixup(&mut program);
-        prune_unused_externs(&mut program);
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        program = analyzed.program;
+        crate::fixups::rewrite::prune_unused_externs::fixup(&mut program, &analyzed.facts);
         let rust = program.emit();
 
         assert!(rust.contains(

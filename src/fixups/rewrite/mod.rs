@@ -21,6 +21,7 @@ pub(super) mod memchr_prelude;
 pub(super) mod nullable_pointer;
 pub(super) mod param_spills;
 pub(super) mod printf_format;
+pub(super) mod prune_unused_externs;
 pub(super) mod ptr_len;
 pub(super) mod range_loop;
 pub(super) mod remove_mut;
