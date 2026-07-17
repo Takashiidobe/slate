@@ -128,9 +128,10 @@ impl Lint {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Feature {
     CVariadic,
+    Linkage,
     UsedWithArg,
 }
 
@@ -138,6 +139,7 @@ impl Feature {
     pub fn spelling(self) -> &'static str {
         match self {
             Feature::CVariadic => "c_variadic",
+            Feature::Linkage => "linkage",
             Feature::UsedWithArg => "used_with_arg",
         }
     }
@@ -149,6 +151,7 @@ pub enum Attr {
     Repr(Vec<Repr>),
     Derive(Vec<Derive>),
     NoMangle,
+    WeakLinkage,
     LinkSection(String),
     Used(UsedKind),
 }

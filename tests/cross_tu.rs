@@ -345,3 +345,83 @@ fn used_and_retain_attrs_preserve_dead_statics() {
         &["retain_only"],
     );
 }
+
+#[test]
+fn weak_linkage_attrs_emit_for_globals_and_functions() {
+    let rs_dir = build_and_diff("weak_linkage");
+
+    let weak_rs = std::fs::read_to_string(rs_dir.join("weak.rs")).expect("read weak.rs");
+    assert!(weak_rs.contains("#![feature(linkage)]"));
+    assert!(
+        weak_rs.contains("#[unsafe(no_mangle)]\n#[linkage = \"weak\"]\npub static mut weak_global"),
+        "weak global should be exported as a weak C symbol:\n{weak_rs}"
+    );
+    assert!(
+        weak_rs.contains(
+            "#[unsafe(no_mangle)]\n#[linkage = \"weak\"]\npub extern \"C\" fn fallback_value"
+        ),
+        "weak function should be exported as a weak C ABI symbol:\n{weak_rs}"
+    );
+}
+
+#[test]
+fn generated_weak_symbols_lose_to_strong_external_definitions() {
+    let dir = fixture_dir("weak_override");
+    let work = cross_tu_work_dir("weak_override");
+    std::fs::create_dir_all(&work).expect("create weak override work dir");
+
+    let weak_rs = work.join("weak.rs");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate")
+        .arg(dir.join("weak.c"))
+        .output()
+        .expect("translate weak.c");
+    assert!(
+        output.status.success(),
+        "translate weak.c failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    std::fs::write(&weak_rs, output.stdout).expect("write weak.rs");
+
+    let libweak = work.join("libweak.a");
+    let rustc = std::env::var("RUSTC").unwrap_or_else(|_| "rustc".into());
+    let output = std::process::Command::new(rustc)
+        .args(["--edition=2024", "--crate-type", "staticlib"])
+        .arg(&weak_rs)
+        .arg("-o")
+        .arg(&libweak)
+        .output()
+        .expect("compile generated weak staticlib");
+    assert!(
+        output.status.success(),
+        "rustc staticlib failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let bin = work.join("strong_wins");
+    let cc = std::env::var("SLATE_CC").unwrap_or_else(|_| "clang".into());
+    let output = std::process::Command::new(cc)
+        .args(["-O0", "-std=c11"])
+        .arg(dir.join("strong_main.c"))
+        .args(["-Wl,--whole-archive"])
+        .arg(&libweak)
+        .args(["-Wl,--no-whole-archive", "-o"])
+        .arg(&bin)
+        .output()
+        .expect("link strong C definitions with generated weak Rust staticlib");
+    assert!(
+        output.status.success(),
+        "C/Rust link failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let output = std::process::Command::new(&bin)
+        .output()
+        .expect("run strong wins binary");
+    assert!(
+        output.status.success(),
+        "strong wins binary failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(String::from_utf8_lossy(&output.stdout), "42 91\n");
+}
