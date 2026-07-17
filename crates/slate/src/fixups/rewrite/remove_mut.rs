@@ -196,7 +196,7 @@ fn forward_num(s: &str) -> i32 {
     fn keeps_mut_on_variadic_param() {
         let mut f = func(vec![], Some("i32"), vec![Stmt::Return(Some(int(0)))]);
         f.unsafe_ = true;
-        f.extern_c = true;
+        f.abi = Some(crate::rust_ast::Abi::C);
         f.params.push(crate::rust_ast::FnParam {
             name: "ap".into(),
             mutable: true,
@@ -440,9 +440,10 @@ fn f(a: i32) -> i32 {
     #[test]
     fn removes_mut_in_nested_bodies() {
         let f = FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "f".into(),
             params: vec![],
             ret: None,
