@@ -26,6 +26,7 @@ pub fn apply(program: Program) -> Program {
         }
     }
     zero_init_to_fixpoint(&mut program, false);
+    struct_field_init_to_fixpoint(&mut program);
     singleton_scopes_to_fixpoint(&mut program);
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     for (item_index, item) in program.items.iter_mut().enumerate() {
@@ -286,6 +287,22 @@ fn zero_init_to_fixpoint(program: &mut Program, cross_effects: bool) {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
                 && rewrite::zero_init::fixup(&mut f.body, function, &facts, cross_effects)
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+}
+
+fn struct_field_init_to_fixpoint(program: &mut Program) {
+    loop {
+        let mut changed = false;
+        for item in &mut program.items {
+            if let Item::Fn(f) = item
+                && rewrite::struct_field_init::fixup(&mut f.body)
             {
                 changed = true;
             }
