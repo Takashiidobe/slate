@@ -1,12 +1,12 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::{
-    AstPath, CallCallee, FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind,
+    AstPath, FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind,
     HeapReadSafety, HeapResizeKind, PathSegment,
 };
 use crate::fixups::support::walk;
 use crate::rust_ast::{
-    Block, Expr, ExternDecl, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
+    Block, Expr, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
@@ -26,24 +26,6 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
         };
         rewrite_body(&mut f.body, function_plans);
     }
-}
-
-pub(in crate::fixups) fn prune_unused_externs(program: &mut Program, facts: &FixupFacts) {
-    let used = direct_calls(facts);
-    program.items.retain_mut(|item| match item {
-        Item::ExternBlock { decls, .. } => {
-            decls.retain(|decl| match decl {
-                ExternDecl::Fn(f)
-                    if matches!(f.name.as_str(), "malloc" | "calloc" | "realloc" | "free") =>
-                {
-                    used.contains(&f.name)
-                }
-                _ => true,
-            });
-            !decls.is_empty()
-        }
-        _ => true,
-    });
 }
 
 fn plans_by_function(facts: &FixupFacts) -> BTreeMap<FunctionId, Vec<Plan>> {
@@ -566,15 +548,4 @@ fn stmt_index(path: &AstPath) -> Option<usize> {
 
 fn previous_stmt_index(path: &AstPath) -> Option<usize> {
     stmt_index(path).and_then(|index| index.checked_sub(1))
-}
-
-fn direct_calls(facts: &FixupFacts) -> BTreeSet<String> {
-    facts
-        .callsites
-        .iter()
-        .filter_map(|callsite| match &callsite.callee {
-            CallCallee::Direct { name, .. } => Some(name.clone()),
-            CallCallee::Indirect => None,
-        })
-        .collect()
 }

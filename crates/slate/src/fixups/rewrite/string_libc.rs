@@ -1,12 +1,10 @@
 use crate::fixups::facts::{
-    AsciiNumericSign, AstPath, CallCallee, ConstValue, FixupFacts, FunctionId, PathSegment,
-    StringBufferFact, StringBufferKind, StringLibcFunction, ValueSubject,
+    AsciiNumericSign, AstPath, ConstValue, FixupFacts, FunctionId, PathSegment, StringBufferFact,
+    StringBufferKind, StringLibcFunction, ValueSubject,
 };
 use crate::fixups::runtime;
 use crate::fixups::support::walk;
-use crate::rust_ast::{
-    BinOp, Block, Expr, ExternDecl, Ident, IndentStmt, Item, Path, Prim, Type, UnaryOp,
-};
+use crate::rust_ast::{BinOp, Block, Expr, Ident, IndentStmt, Item, Path, Prim, Type, UnaryOp};
 use crate::rust_ast::{Program, RustValue, Stmt};
 use std::collections::BTreeMap;
 
@@ -71,34 +69,6 @@ fn fixup_body(
     for i in remove.into_iter().rev() {
         body.remove(i);
     }
-}
-
-pub(in crate::fixups) fn prune_unused_externs(program: &mut Program, facts: &FixupFacts) {
-    let used = direct_calls(facts);
-    program.items.retain_mut(|item| match item {
-        Item::ExternBlock { decls, .. } => {
-            decls.retain(|decl| match decl {
-                ExternDecl::Fn(f) if is_libc_string_func(&f.name) => used.contains(&f.name),
-                _ => true,
-            });
-            !decls.is_empty()
-        }
-        _ => true,
-    });
-}
-
-fn direct_calls(facts: &FixupFacts) -> Vec<String> {
-    let mut calls = facts
-        .callsites
-        .iter()
-        .filter_map(|callsite| match &callsite.callee {
-            CallCallee::Direct { name, .. } => Some(name.clone()),
-            CallCallee::Indirect => None,
-        })
-        .collect::<Vec<_>>();
-    calls.sort();
-    calls.dedup();
-    calls
 }
 
 fn fixup_stmt(
@@ -769,31 +739,6 @@ fn supported_compare_call(
         }
         _ => None,
     }
-}
-
-fn is_libc_string_func(name: &str) -> bool {
-    matches!(
-        name,
-        "strlen"
-            | "strcmp"
-            | "strncmp"
-            | "memcmp"
-            | "strchr"
-            | "strrchr"
-            | "strstr"
-            | "strpbrk"
-            | "strspn"
-            | "strcspn"
-            | "atoi"
-            | "atol"
-            | "strtol"
-            | "strtoul"
-            | "strtod"
-            | "strcpy"
-            | "strncpy"
-            | "strcat"
-            | "strncat"
-    )
 }
 
 fn peel_empty_unsafe(expr: &Expr) -> &Expr {
