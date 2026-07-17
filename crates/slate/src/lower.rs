@@ -4,7 +4,7 @@ use crate::c_ast::{RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
-    AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType,
+    Abi, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType,
     CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
     FnDef, FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint,
     MatchArm, Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue,
@@ -45,6 +45,14 @@ pub struct ProjectInfo {
 /// CIR encodes external linkage as `linkage = 0`; a C `static` is nonzero.
 fn linkage_is_external(op: &Op) -> bool {
     attr_int(op, "linkage").unwrap_or(0) == 0
+}
+
+fn no_mangle_attrs(enabled: bool) -> Vec<RustAttr> {
+    if enabled {
+        vec![RustAttr::NoMangle]
+    } else {
+        Vec::new()
+    }
 }
 
 /// True when a function body provably never falls off the end: its last op
@@ -638,12 +646,14 @@ impl<'a> Lowerer<'a> {
             }
         }
         for global in self.globals.values() {
-            let global_vis = if self.project.emit_pub && global.external {
+            let global_external_def = self.project.emit_pub && global.external;
+            let global_vis = if global_external_def {
                 Visibility::Pub
             } else {
                 Visibility::Private
             };
             items.push(Item::Static {
+                attrs: no_mangle_attrs(global_external_def),
                 vis: global_vis,
                 mutable: true,
                 name: global.name.clone(),
@@ -1086,7 +1096,7 @@ impl<'a> Lowerer<'a> {
             None
         };
 
-        let (vis, extern_c, ret, prelude) = if is_main {
+        let (vis, abi, ret, prelude) = if is_main {
             params.clear();
             let mut prelude = self.main_arg_bindings(entry);
             prelude.extend(
@@ -1094,22 +1104,25 @@ impl<'a> Lowerer<'a> {
                     .iter()
                     .map(|name| hook_call_stmt(name, &self.unsafe_functions)),
             );
-            (Visibility::Private, false, None, prelude)
+            (Visibility::Private, None, None, prelude)
         } else {
-            let vis = if self.project.emit_pub && linkage_is_external(op) {
+            let external_def = self.project.emit_pub && linkage_is_external(op);
+            let vis = if external_def {
                 Visibility::Pub
             } else {
                 Visibility::Private
             };
-            let extern_c = if is_variadic {
+            let abi = if external_def || is_variadic {
+                Some(Abi::C)
+            } else {
+                None
+            };
+            if is_variadic {
                 self.uses_c_variadic.set(true);
                 self.variadic_defs.insert(name.to_string());
-                true
-            } else {
-                false
-            };
+            }
             let ret = Some(self.rust_type(ret_ty.as_deref().unwrap_or("()")));
-            (vis, extern_c, ret, Vec::<Stmt>::new())
+            (vis, abi, ret, Vec::<Stmt>::new())
         };
 
         let diverges = !is_main
@@ -1125,7 +1138,8 @@ impl<'a> Lowerer<'a> {
         }
         let ret = if diverges { Some(Type::Never) } else { ret };
 
-        let unsafe_ = extern_c || self.unsafe_functions.contains(name);
+        let attrs = no_mangle_attrs(!is_main && self.project.emit_pub && linkage_is_external(op));
+        let unsafe_ = is_variadic || self.unsafe_functions.contains(name);
         let mut f = FunctionLowerer {
             parent: self,
             values: BTreeMap::new(),
@@ -1171,9 +1185,10 @@ impl<'a> Lowerer<'a> {
             f.body.pop();
         }
         Some(Item::Fn(FnDef {
+            attrs,
             vis,
             unsafe_,
-            extern_c,
+            abi,
             name: name.to_string(),
             params,
             ret,
@@ -6255,9 +6270,10 @@ fn memchr_prelude() -> Item {
     ];
 
     Item::Fn(FnDef {
+        attrs: Vec::new(),
         vis: Visibility::Private,
         unsafe_: false,
-        extern_c: false,
+        abi: None,
         name: "__slate_memchr".into(),
         params: vec![
             FnParam {

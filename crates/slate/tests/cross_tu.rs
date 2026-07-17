@@ -82,7 +82,7 @@ fn library_project_creates_cargo_crate_without_main() {
     assert!(lib_rs.contains("pub mod state;"));
 
     let math_rs = std::fs::read_to_string(crate_dir.join("src/math.rs")).expect("read math.rs");
-    assert!(math_rs.contains("pub fn square"));
+    assert!(math_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn square"));
     assert!(math_rs.contains("use crate::types::shared_mode_t;"));
     assert!(math_rs.contains("value.mode = shared_mode_t::SHARED_READY;"));
     let types_rs = std::fs::read_to_string(crate_dir.join("src/types.rs")).expect("read types.rs");
@@ -154,8 +154,8 @@ fn cross_tu_functions() {
     );
     let math_rs = std::fs::read_to_string(rs_dir.join("math.rs")).expect("read math.rs");
     assert!(
-        math_rs.contains("pub fn square"),
-        "sibling defs must be pub"
+        math_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn square"),
+        "external-linkage sibling defs must be pub C ABI symbols"
     );
 }
 
@@ -165,7 +165,7 @@ fn public_pointer_deref_functions_are_unsafe() {
 
     let pointers_rs =
         std::fs::read_to_string(rs_dir.join("pointers.rs")).expect("read pointers.rs");
-    assert!(pointers_rs.contains("pub unsafe fn read_ptr"));
+    assert!(pointers_rs.contains("pub unsafe extern \"C\" fn read_ptr"));
 
     let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
     assert!(main_rs.contains("unsafe { read_ptr("));
@@ -191,16 +191,20 @@ fn cross_tu_static_linkage() {
 
     let other_rs = std::fs::read_to_string(rs_dir.join("other.rs")).expect("read other.rs");
     assert!(
-        other_rs.contains("pub fn compute"),
-        "external-linkage fn must be exported pub"
+        other_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn compute"),
+        "external-linkage fn must be exported as a pub C ABI symbol"
     );
     assert!(
-        !other_rs.contains("pub fn local") && other_rs.contains("fn local"),
-        "sibling's internal-linkage fn must not be pub"
+        !other_rs.contains("pub extern \"C\" fn local")
+            && !other_rs.contains("no_mangle)]\nfn local")
+            && other_rs.contains("fn local"),
+        "sibling's internal-linkage fn must not be externally exported"
     );
     assert!(
-        !other_rs.contains("pub static mut base") && other_rs.contains("static mut base"),
-        "sibling's internal-linkage global must not be pub"
+        !other_rs.contains("no_mangle)]\nstatic mut base")
+            && !other_rs.contains("pub static mut base")
+            && other_rs.contains("static mut base"),
+        "sibling's internal-linkage global must not be externally exported"
     );
 }
 
@@ -219,7 +223,11 @@ fn cross_tu_globals() {
     );
     let state_rs = std::fs::read_to_string(rs_dir.join("state.rs")).expect("read state.rs");
     assert!(
-        state_rs.contains("pub static mut counter"),
-        "the defining module must export the global as pub"
+        state_rs.contains("#[unsafe(no_mangle)]\npub static mut counter"),
+        "the defining module must export the global as a stable C symbol"
+    );
+    assert!(
+        state_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn bump"),
+        "the defining module must export external-linkage functions as stable C ABI symbols"
     );
 }

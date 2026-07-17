@@ -1738,9 +1738,10 @@ mod tests {
     fn records_branch_and_match_local_paths() {
         let program = Program {
             items: vec![Item::Fn(FnDef {
+                attrs: Vec::new(),
                 vis: Visibility::Private,
                 unsafe_: false,
-                extern_c: false,
+                abi: None,
                 name: "f".into(),
                 params: Vec::new(),
                 ret: None,

@@ -795,9 +795,10 @@ mod tests {
     fn analyzed(stmts: Vec<Stmt>) -> facts::FixupFacts {
         let program = Program {
             items: vec![Item::Fn(FnDef {
+                attrs: Vec::new(),
                 vis: Visibility::Private,
                 unsafe_: false,
-                extern_c: false,
+                abi: None,
                 name: "main".into(),
                 params: Vec::new(),
                 ret: None,

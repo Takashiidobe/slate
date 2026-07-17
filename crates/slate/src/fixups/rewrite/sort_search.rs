@@ -666,9 +666,10 @@ mod tests {
 
     fn cmp_int() -> Item {
         Item::Fn(FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "cmp".into(),
             params: vec![
                 param("a", "*mut core::ffi::c_void"),
