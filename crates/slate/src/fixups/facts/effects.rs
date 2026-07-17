@@ -3,6 +3,7 @@ use std::collections::BTreeSet;
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, EffectFact, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
+    Site,
 };
 use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, UnaryOp};
 
@@ -217,9 +218,11 @@ impl Collector {
         let purity = purity_for_stmt(&effects);
         let result = effects.clone();
         self.effects.push(EffectFact {
-            function: self.function,
+            site: Site {
+                function: self.function,
+                path: AstPath(path.clone()),
+            },
             subject: EffectSubject::Stmt,
-            path: AstPath(path.clone()),
             purity,
             effects,
         });
@@ -229,9 +232,11 @@ impl Collector {
     fn expr(&mut self, expr: &Expr, path: &mut Vec<PathSegment>) -> BTreeSet<EffectKind> {
         let effects = self.expr_inner(expr, path);
         self.effects.push(EffectFact {
-            function: self.function,
+            site: Site {
+                function: self.function,
+                path: AstPath(path.clone()),
+            },
             subject: EffectSubject::Expr,
-            path: AstPath(path.clone()),
             purity: purity_for_expr(expr, &effects),
             effects: effects.clone(),
         });
@@ -494,7 +499,7 @@ mod tests {
         facts
             .effects
             .iter()
-            .find(|fact| fact.subject == subject && fact.path == path)
+            .find(|fact| fact.subject == subject && fact.site.path == path)
             .unwrap()
     }
 

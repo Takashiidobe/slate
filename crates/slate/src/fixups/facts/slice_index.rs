@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, FixupFacts, FunctionId, IndexLowerBound, IndexUpperBound,
-    PathSegment, PointerOffsetUnit, SliceIndexRangeFact, SlicePointerIndexFact,
+    PathSegment, PointerOffsetUnit, Site, SliceIndexRangeFact, SlicePointerIndexFact,
     SlicePointerViewFact,
 };
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
@@ -148,12 +148,14 @@ impl<'a> Collector<'a> {
             && let Some(slice) = self.slices.get(slice_name.as_str())
         {
             let fact = SlicePointerViewFact {
-                function: self.function,
+                site: Site {
+                    function: self.function,
+                    path: ast_path.clone(),
+                },
                 pointer: binding,
                 slice: slice.binding,
                 mutable,
                 elem_ty: slice.elem_ty.clone(),
-                path: ast_path.clone(),
             };
             self.pointer_views.insert(binding, fact.clone());
             self.facts.slice_pointer_views.push(fact);
@@ -346,13 +348,15 @@ impl<'a> Collector<'a> {
             self.facts
                 .slice_pointer_indexes
                 .push(SlicePointerIndexFact {
-                    function: self.function,
+                    site: Site {
+                        function: self.function,
+                        path: AstPath(path.to_vec()),
+                    },
                     pointer,
                     slice: view.slice,
                     offset_index,
                     ranged_index,
                     unit,
-                    path: AstPath(path.to_vec()),
                 });
         });
     }

@@ -200,10 +200,10 @@ fn collect_length_use_paths(
     for callsite in facts
         .callsites
         .iter()
-        .filter(|callsite| callsite.function == candidate.key.function)
+        .filter(|callsite| callsite.site.function == candidate.key.function)
     {
         if call_forwards_pair(callsite, candidate, facts, active) {
-            allowed.push(callsite.path.clone());
+            allowed.push(callsite.site.path.clone());
         }
     }
 }
@@ -571,19 +571,19 @@ fn call_forwards_to_key(
     };
     let ptr_ok = facts
         .binding_read_under(
-            callsite.function,
+            callsite.site.function,
             candidate.ptr_name.as_str(),
             &ptr_arg.path,
         )
-        .or_else(|| facts.binding_named(callsite.function, candidate.ptr_name.as_str()))
+        .or_else(|| facts.binding_named(callsite.site.function, candidate.ptr_name.as_str()))
         == Some(candidate.key.ptr);
     let len_ok = facts
         .binding_read_under(
-            callsite.function,
+            callsite.site.function,
             candidate.len_name.as_str(),
             &len_arg.path,
         )
-        .or_else(|| facts.binding_named(callsite.function, candidate.len_name.as_str()))
+        .or_else(|| facts.binding_named(callsite.site.function, candidate.len_name.as_str()))
         == Some(candidate.key.len);
     ptr_ok && len_ok
 }
@@ -813,7 +813,7 @@ fn call_proves_pointer_extent(
     else {
         return false;
     };
-    let Some(ptr_expr) = walk::expr_at_path(facts, program, callsite.function, &ptr_arg.path)
+    let Some(ptr_expr) = walk::expr_at_path(facts, program, callsite.site.function, &ptr_arg.path)
     else {
         return false;
     };
@@ -821,7 +821,7 @@ fn call_proves_pointer_extent(
         pointer_length_source(
             program,
             ptr_expr,
-            callsite.function,
+            callsite.site.function,
             &ptr_arg.path,
             facts,
             active,
@@ -834,7 +834,7 @@ fn call_proves_pointer_extent(
 fn proven_pointer_calls(facts: &FixupFacts, candidate: &PointerCandidate) -> Vec<PtrLenSliceFact> {
     matching_callsites(facts, &candidate.function_name)
         .map(|callsite| PtrLenSliceFact {
-            caller: callsite.function,
+            caller: callsite.site.function,
             callee: candidate.function,
             ptr_param: candidate.ptr,
             len_param: None,
@@ -878,18 +878,18 @@ fn call_proves_pair(
     else {
         return false;
     };
-    let Some(ptr_expr) = walk::expr_at_path(facts, program, callsite.function, &ptr_arg.path)
+    let Some(ptr_expr) = walk::expr_at_path(facts, program, callsite.site.function, &ptr_arg.path)
     else {
         return false;
     };
-    let Some(len_expr) = walk::expr_at_path(facts, program, callsite.function, &len_arg.path)
+    let Some(len_expr) = walk::expr_at_path(facts, program, callsite.site.function, &len_arg.path)
     else {
         return false;
     };
     let Some(source) = pointer_length_source(
         program,
         ptr_expr,
-        callsite.function,
+        callsite.site.function,
         &ptr_arg.path,
         facts,
         active,
@@ -900,7 +900,8 @@ fn call_proves_pair(
     match source {
         LengthSource::Const(n) => integer_value(len_expr) == Some(n),
         LengthSource::Bound(target) => {
-            resolve_len_binding(len_expr, callsite.function, &len_arg.path, facts) == Some(target)
+            resolve_len_binding(len_expr, callsite.site.function, &len_arg.path, facts)
+                == Some(target)
         }
     }
 }
@@ -1027,7 +1028,7 @@ fn integer_value(expr: &Expr) -> Option<u64> {
 fn proven_calls(facts: &FixupFacts, candidate: &Candidate) -> Vec<PtrLenSliceFact> {
     matching_callsites(facts, &candidate.function_name)
         .map(|callsite| PtrLenSliceFact {
-            caller: callsite.function,
+            caller: callsite.site.function,
             callee: candidate.key.function,
             ptr_param: candidate.key.ptr,
             len_param: Some(candidate.key.len),

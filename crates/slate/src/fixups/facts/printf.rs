@@ -1,7 +1,7 @@
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, FixupFacts, FunctionId, NulTermination, PathSegment, PrintfArgFact,
-    PrintfCallFact, StringBufferProvenance, StringLibcFunction,
+    PrintfCallFact, Site, StringBufferProvenance, StringLibcFunction,
 };
 use crate::rust_ast::{Block, Expr, FnParam, IndentStmt, Item, Program, RustValue, Stmt, Type};
 use std::collections::BTreeMap;
@@ -206,8 +206,10 @@ fn visit_expr(
             })
             .collect();
         calls.push(PrintfCallFact {
-            function,
-            path: AstPath(path.to_vec()),
+            site: Site {
+                function,
+                path: AstPath(path.to_vec()),
+            },
             format: args.first().and_then(const_c_string),
             arg_paths: (1..args.len())
                 .map(|index| {
@@ -485,7 +487,7 @@ fn proven_local_c_string_arg(
 
 fn mutated_by_string_libc(function: FunctionId, facts: &FixupFacts, source: BindingId) -> bool {
     facts.string_libc_uses.iter().any(|use_fact| {
-        use_fact.function == function
+        use_fact.site.function == function
             && matches!(
                 use_fact.callee,
                 StringLibcFunction::StrCpy

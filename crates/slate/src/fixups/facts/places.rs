@@ -1,7 +1,7 @@
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, AtomicPlaceAccess, FixupFacts, FunctionId, PathSegment, PlaceAccess, PlaceFact,
-    PlaceKind, PlaceProjection, PlaceRoot, VolatileAccess,
+    PlaceKind, PlaceProjection, PlaceRoot, Site, VolatileAccess,
 };
 use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, UnaryOp};
 
@@ -358,8 +358,10 @@ impl Collector {
         let kind = classify_place(expr);
         let ordinary_slot = ordinary_slot(&kind);
         self.places.push(PlaceFact {
-            function: self.function,
-            path: AstPath(path.to_vec()),
+            site: Site {
+                function: self.function,
+                path: AstPath(path.to_vec()),
+            },
             access,
             readable: readable(access, &kind),
             assignable: assignable(access, &kind),
@@ -370,8 +372,10 @@ impl Collector {
 
     fn record_volatile(&mut self, access: VolatileAccess, path: &[PathSegment]) {
         self.places.push(PlaceFact {
-            function: self.function,
-            path: AstPath(path.to_vec()),
+            site: Site {
+                function: self.function,
+                path: AstPath(path.to_vec()),
+            },
             access: match access {
                 VolatileAccess::Read => PlaceAccess::Read,
                 VolatileAccess::Write => PlaceAccess::Write,
@@ -385,8 +389,10 @@ impl Collector {
 
     fn record_atomic(&mut self, access: AtomicPlaceAccess, path: &[PathSegment]) {
         self.places.push(PlaceFact {
-            function: self.function,
-            path: AstPath(path.to_vec()),
+            site: Site {
+                function: self.function,
+                path: AstPath(path.to_vec()),
+            },
             access: match access {
                 AtomicPlaceAccess::Read => PlaceAccess::Read,
                 AtomicPlaceAccess::Write => PlaceAccess::Write,
@@ -502,7 +508,11 @@ mod tests {
     }
 
     fn place_at(facts: &facts::FixupFacts, path: AstPath) -> &PlaceFact {
-        facts.places.iter().find(|fact| fact.path == path).unwrap()
+        facts
+            .places
+            .iter()
+            .find(|fact| fact.site.path == path)
+            .unwrap()
     }
 
     #[test]

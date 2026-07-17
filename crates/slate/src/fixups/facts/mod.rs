@@ -93,6 +93,15 @@ pub(super) struct LoopId(pub(super) usize);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct SignatureId(pub(super) usize);
 
+/// Identifies where a fact was recorded: which function, and the AST path
+/// within it. Most per-expression/-statement facts key lookups off this same
+/// `(function, path)` pair.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct Site {
+    pub(super) function: FunctionId,
+    pub(super) path: AstPath,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct FunctionFact {
     pub(super) id: FunctionId,
@@ -219,18 +228,16 @@ pub(super) struct VaListAliasFact {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct EffectFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) subject: EffectSubject,
-    pub(super) path: AstPath,
     pub(super) purity: Purity,
     pub(super) effects: BTreeSet<EffectKind>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct ControlFlowFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) subject: ControlFlowSubject,
-    pub(super) path: AstPath,
     pub(super) reachable: bool,
     pub(super) falls_through: bool,
     pub(super) exits: BTreeSet<ControlFlowExit>,
@@ -241,8 +248,7 @@ pub(super) struct ControlFlowFact {
 
 #[derive(Debug, Clone)]
 pub(super) struct CastFact {
-    pub(super) function: FunctionId,
-    pub(super) path: AstPath,
+    pub(super) site: Site,
     pub(super) from: Option<Type>,
     pub(super) to: Type,
     pub(super) kind: CastKind,
@@ -253,8 +259,7 @@ pub(super) struct CastFact {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct PlaceFact {
-    pub(super) function: FunctionId,
-    pub(super) path: AstPath,
+    pub(super) site: Site,
     pub(super) access: PlaceAccess,
     pub(super) kind: PlaceKind,
     pub(super) readable: bool,
@@ -264,9 +269,8 @@ pub(super) struct PlaceFact {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct ValueFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) subject: ValueSubject,
-    pub(super) path: AstPath,
     pub(super) value: ConstValue,
 }
 
@@ -299,8 +303,7 @@ pub(super) struct CallParamFact {
 
 #[derive(Debug, Clone)]
 pub(super) struct CallsiteFact {
-    pub(super) function: FunctionId,
-    pub(super) path: AstPath,
+    pub(super) site: Site,
     pub(super) callee: CallCallee,
     pub(super) args: Vec<CallArgFact>,
     pub(super) variadic_boundary: Option<usize>,
@@ -375,9 +378,8 @@ pub(super) enum ConstValue {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct StringBufferFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) binding: BindingId,
-    pub(super) path: AstPath,
     pub(super) kind: StringBufferKind,
     pub(super) provenance: StringBufferProvenance,
     pub(super) bytes: Option<Vec<u8>>,
@@ -390,9 +392,8 @@ pub(super) struct StringBufferFact {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct AsciiNumericStringFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) binding: BindingId,
-    pub(super) path: AstPath,
     pub(super) sign: AsciiNumericSign,
     pub(super) digits: usize,
 }
@@ -448,9 +449,8 @@ pub(super) enum StringBufferRejection {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct StringPointerViewFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) source: BindingId,
-    pub(super) path: AstPath,
     pub(super) mutable: bool,
     pub(super) kind: StringPointerViewKind,
 }
@@ -464,17 +464,15 @@ pub(super) enum StringPointerViewKind {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct StringLibcUseFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) callee: StringLibcFunction,
-    pub(super) path: AstPath,
     pub(super) pointer_args: Vec<BindingId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct StringLiftPlanFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) binding: BindingId,
-    pub(super) path: AstPath,
     pub(super) recovery: StringRecoveryCandidate,
     pub(super) remove_assignment: Option<AstPath>,
 }
@@ -488,8 +486,7 @@ pub(super) struct StringParamLiftFact {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct StringCopyRewriteFact {
-    pub(super) function: FunctionId,
-    pub(super) path: AstPath,
+    pub(super) site: Site,
     pub(super) dst: BindingId,
     pub(super) rewrite: StringCopyRewrite,
 }
@@ -639,8 +636,7 @@ pub(super) enum HeapResizeKind {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct PrintfCallFact {
-    pub(super) function: FunctionId,
-    pub(super) path: AstPath,
+    pub(super) site: Site,
     pub(super) format: Option<Vec<u8>>,
     pub(super) arg_paths: Vec<AstPath>,
     pub(super) arg_facts: Vec<PrintfArgFact>,
@@ -743,22 +739,20 @@ pub(super) struct PtrLenSliceFact {
 
 #[derive(Debug, Clone)]
 pub(super) struct ArrayElementPointerOriginFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) pointer: BindingId,
     pub(super) base: BindingId,
     pub(super) index: Expr,
     pub(super) mutable: bool,
-    pub(super) path: AstPath,
 }
 
 #[derive(Debug, Clone)]
 pub(super) struct SlicePointerViewFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) pointer: BindingId,
     pub(super) slice: BindingId,
     pub(super) mutable: bool,
     pub(super) elem_ty: Type,
-    pub(super) path: AstPath,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -773,13 +767,12 @@ pub(super) struct SliceIndexRangeFact {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct SlicePointerIndexFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) pointer: BindingId,
     pub(super) slice: BindingId,
     pub(super) offset_index: BindingId,
     pub(super) ranged_index: BindingId,
     pub(super) unit: PointerOffsetUnit,
-    pub(super) path: AstPath,
 }
 
 /// Identifies a specific loop and its body across the several loop-shape
@@ -1218,9 +1211,9 @@ impl FixupFacts {
         subject: EffectSubject,
         path: &AstPath,
     ) -> Option<&EffectFact> {
-        self.effects
-            .iter()
-            .find(|fact| fact.function == function && fact.subject == subject && &fact.path == path)
+        self.effects.iter().find(|fact| {
+            fact.site.function == function && fact.subject == subject && &fact.site.path == path
+        })
     }
 
     pub(super) fn control_flow(
@@ -1229,15 +1222,15 @@ impl FixupFacts {
         subject: ControlFlowSubject,
         path: &AstPath,
     ) -> Option<&ControlFlowFact> {
-        self.control_flow
-            .iter()
-            .find(|fact| fact.function == function && fact.subject == subject && &fact.path == path)
+        self.control_flow.iter().find(|fact| {
+            fact.site.function == function && fact.subject == subject && &fact.site.path == path
+        })
     }
 
     pub(super) fn place(&self, function: FunctionId, path: &AstPath) -> Option<&PlaceFact> {
         self.places
             .iter()
-            .find(|fact| fact.function == function && &fact.path == path)
+            .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
     pub(super) fn value(
@@ -1246,9 +1239,9 @@ impl FixupFacts {
         subject: ValueSubject,
         path: &AstPath,
     ) -> Option<&ValueFact> {
-        self.values
-            .iter()
-            .find(|fact| fact.function == function && fact.subject == subject && &fact.path == path)
+        self.values.iter().find(|fact| {
+            fact.site.function == function && fact.subject == subject && &fact.site.path == path
+        })
     }
 
     pub(super) fn has_value(
@@ -1259,9 +1252,9 @@ impl FixupFacts {
         value: &ConstValue,
     ) -> bool {
         self.values.iter().any(|fact| {
-            fact.function == function
+            fact.site.function == function
                 && fact.subject == subject
-                && &fact.path == path
+                && &fact.site.path == path
                 && &fact.value == value
         })
     }
@@ -1275,7 +1268,7 @@ impl FixupFacts {
         self.values
             .iter()
             .filter(move |fact| {
-                fact.function == function && fact.subject == subject && &fact.path == path
+                fact.site.function == function && fact.subject == subject && &fact.site.path == path
             })
             .map(|fact| &fact.value)
     }
@@ -1283,7 +1276,7 @@ impl FixupFacts {
     pub(super) fn callsite(&self, function: FunctionId, path: &AstPath) -> Option<&CallsiteFact> {
         self.callsites
             .iter()
-            .find(|fact| fact.function == function && &fact.path == path)
+            .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
     pub(super) fn call_arg_at(
@@ -1293,7 +1286,7 @@ impl FixupFacts {
     ) -> Option<(&CallsiteFact, &CallArgFact)> {
         self.callsites
             .iter()
-            .filter(|fact| fact.function == function)
+            .filter(|fact| fact.site.function == function)
             .find_map(|callsite| {
                 callsite
                     .args
@@ -1306,7 +1299,7 @@ impl FixupFacts {
     pub(super) fn cast_at(&self, function: FunctionId, path: &AstPath) -> Option<&CastFact> {
         self.casts
             .iter()
-            .find(|fact| fact.function == function && &fact.path == path)
+            .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
     pub(super) fn string_buffer(&self, binding: BindingId) -> Option<&StringBufferFact> {
@@ -1331,7 +1324,7 @@ impl FixupFacts {
     ) -> Option<&StringBufferFact> {
         self.string_buffers
             .iter()
-            .find(|fact| fact.function == function && &fact.path == path)
+            .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
     pub(super) fn string_pointer_view(
@@ -1341,7 +1334,7 @@ impl FixupFacts {
     ) -> Option<&StringPointerViewFact> {
         self.string_pointer_views
             .iter()
-            .find(|fact| fact.function == function && &fact.path == path)
+            .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
     pub(super) fn string_libc_use(
@@ -1351,7 +1344,7 @@ impl FixupFacts {
     ) -> Option<&StringLibcUseFact> {
         self.string_libc_uses
             .iter()
-            .find(|fact| fact.function == function && &fact.path == path)
+            .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
     pub(super) fn string_lift_plan(
@@ -1361,7 +1354,7 @@ impl FixupFacts {
     ) -> Option<&StringLiftPlanFact> {
         self.string_lift_plans
             .iter()
-            .find(|fact| fact.function == function && fact.binding == binding)
+            .find(|fact| fact.site.function == function && fact.binding == binding)
     }
 
     pub(super) fn string_copy_rewrite(
@@ -1371,7 +1364,7 @@ impl FixupFacts {
     ) -> Option<&StringCopyRewriteFact> {
         self.string_copy_rewrites
             .iter()
-            .find(|fact| fact.function == function && &fact.path == path)
+            .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
     pub(super) fn c_string_literal(
@@ -1391,7 +1384,7 @@ impl FixupFacts {
     ) -> Option<&PrintfCallFact> {
         self.printf_calls
             .iter()
-            .find(|fact| fact.function == function && &fact.path == path)
+            .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
     pub(super) fn file_ownership(&self, handle: BindingId) -> Option<&FileOwnershipFact> {

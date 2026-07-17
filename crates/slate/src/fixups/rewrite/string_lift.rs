@@ -151,9 +151,9 @@ fn lift_candidate(
     let buffer = facts.string_buffer_at(function, &AstPath(path.to_vec()))?;
     let name = facts.binding_name(buffer.binding)?.to_owned();
     let plan = facts.string_lift_plans.iter().find(|plan| {
-        plan.function == function
+        plan.site.function == function
             && plan.binding == buffer.binding
-            && plan.path.0 == path
+            && plan.site.path.0 == path
             && recoveries.contains(&plan.recovery)
     })?;
     let lifted = lifted_buffer(buffer, plan.recovery)?;

@@ -69,9 +69,9 @@ fn liftable_names(
                 .string_lift_plans
                 .iter()
                 .any(|plan| {
-                    plan.function == function
+                    plan.site.function == function
                         && plan.binding == buffer.binding
-                        && plan.path == buffer.path
+                        && plan.site.path == buffer.site.path
                         && plan.recovery == StringRecoveryCandidate::OwnedString
                 })
                 .then(|| facts.binding_name(buffer.binding).map(str::to_owned))
@@ -94,9 +94,9 @@ fn candidate_at(
         return None;
     }
     let plan = facts.string_lift_plans.iter().find(|plan| {
-        plan.function == function
+        plan.site.function == function
             && plan.binding == buffer.binding
-            && plan.path.0 == path
+            && plan.site.path.0 == path
             && plan.recovery == StringRecoveryCandidate::OwnedString
     })?;
     let init = match &buffer.provenance {

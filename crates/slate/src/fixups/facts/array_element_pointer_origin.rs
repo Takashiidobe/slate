@@ -2,7 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    ArrayElementPointerOriginFact, AstPath, BindingId, FixupFacts, FunctionId, PathSegment,
+    ArrayElementPointerOriginFact, AstPath, BindingId, FixupFacts, FunctionId, PathSegment, Site,
 };
 use crate::rust_ast::{Block, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
@@ -88,12 +88,14 @@ impl<'a> Collector<'a> {
                 !pointers_with_overwritten_init_origins.contains(&candidate.pointer)
             })
             .map(|candidate| ArrayElementPointerOriginFact {
-                function,
+                site: Site {
+                    function,
+                    path: candidate.path,
+                },
                 pointer: candidate.pointer,
                 base: candidate.base,
                 index: candidate.index,
                 mutable: candidate.mutable,
-                path: candidate.path,
             })
             .collect()
     }

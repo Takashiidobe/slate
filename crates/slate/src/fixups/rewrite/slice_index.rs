@@ -47,7 +47,7 @@ fn plans_by_function(facts: &FixupFacts) -> BTreeMap<FunctionId, Vec<Plan>> {
         let Some(view) = facts
             .slice_pointer_views
             .iter()
-            .find(|view| view.function == fact.function && view.pointer == fact.pointer)
+            .find(|view| view.site.function == fact.site.function && view.pointer == fact.pointer)
         else {
             continue;
         };
@@ -60,10 +60,10 @@ fn plans_by_function(facts: &FixupFacts) -> BTreeMap<FunctionId, Vec<Plan>> {
             continue;
         };
         by_function
-            .entry(fact.function)
+            .entry(fact.site.function)
             .or_insert_with(Vec::new)
             .push(Plan {
-                path: fact.path.clone(),
+                path: fact.site.path.clone(),
                 pointer_name: pointer_name.to_string(),
                 offset_name: offset_name.to_string(),
                 slice_name: slice_name.to_string(),
