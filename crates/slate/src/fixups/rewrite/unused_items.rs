@@ -1,6 +1,7 @@
 use crate::rust_ast::{
-    Block, Expr, ExternDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem, IndentStmt, Item,
-    MatchArm, Method, Pattern, Program, RecordDef, Stmt, StructDef, StructFields, TraitBound, Type,
+    Attr, Block, Expr, ExternDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem, IndentStmt,
+    Item, MatchArm, Method, Pattern, Program, RecordDef, Stmt, StructDef, StructFields, TraitBound,
+    Type,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -56,6 +57,9 @@ fn candidates(program: &Program) -> BTreeMap<usize, Candidate> {
 }
 
 fn candidate(item: &Item) -> Option<Candidate> {
+    if has_used_attr(item) {
+        return None;
+    }
     match item {
         Item::Enum(def) => Some(Candidate {
             name: def.name.clone(),
@@ -79,6 +83,21 @@ fn candidate(item: &Item) -> Option<Candidate> {
         Item::Cfg { item, .. } => candidate(item),
         _ => None,
     }
+}
+
+fn has_used_attr(item: &Item) -> bool {
+    match item {
+        Item::Fn(f) => attrs_have_used(&f.attrs),
+        Item::Static { attrs, .. } => attrs_have_used(attrs),
+        Item::Enum(def) => attrs_have_used(&def.attrs),
+        Item::Struct(def) => attrs_have_used(&def.attrs),
+        Item::Cfg { item, .. } => has_used_attr(item),
+        _ => false,
+    }
+}
+
+fn attrs_have_used(attrs: &[Attr]) -> bool {
+    attrs.iter().any(|attr| matches!(attr, Attr::Used(_)))
 }
 
 fn mark_refs(
