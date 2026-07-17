@@ -5,7 +5,9 @@ use crate::fixups::facts::{
     AstPath, BindingId, FileOpenMode, FileOwnershipFact, FileUseFact, FileUseKind, FixupFacts,
     FunctionId, PathSegment,
 };
-use crate::rust_ast::{Expr, IndentStmt, Item, Path, Program, RustValue, Stmt, Type};
+use crate::rust_ast::{
+    BinOp, Expr, IndentStmt, Item, Path, Program, RustValue, Stmt, Type, UnaryOp,
+};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.file_ownership.clear();
@@ -197,6 +199,26 @@ fn file_uses_are_owned(
             });
             continue;
         }
+        if let Stmt::Loop {
+            label: None,
+            body: loop_body,
+        } = &indent.stmt
+        {
+            if match_gets_loop(loop_body, &aliases).is_some() {
+                if !saw_null_guard || close.is_some() {
+                    return None;
+                }
+                uses.push(FileUseFact {
+                    path: AstPath(vec![PathSegment::Stmt(index)]),
+                    kind: FileUseKind::Gets,
+                });
+                continue;
+            }
+            if loop_mentions_any_handle(loop_body, &aliases) {
+                return None;
+            }
+            continue;
+        }
         if reassigns_handle(&indent.stmt, handle_name)
             || stmt_mentions_any_handle(&indent.stmt, &aliases)
         {
@@ -380,10 +402,7 @@ fn stmt_mentions_any_handle(stmt: &Stmt, aliases: &BTreeSet<String>) -> bool {
             return;
         }
         match expr {
-            Expr::Call { func, args } => {
-                if matches!(&**func, Expr::Var(callee) if supported_stdio_callee(callee.as_str())) {
-                    return;
-                }
+            Expr::Call { args, .. } => {
                 if args.iter().any(|arg| expr_mentions_any(arg, aliases)) {
                     escaped = true;
                 }
@@ -415,13 +434,6 @@ fn expr_mentions_any(expr: &Expr, aliases: &BTreeSet<String>) -> bool {
     )
 }
 
-fn supported_stdio_callee(name: &str) -> bool {
-    matches!(
-        name,
-        "fopen" | "fread" | "fwrite" | "fgets" | "fputs" | "fclose"
-    )
-}
-
 fn file_mode(expr: &Expr) -> Option<FileOpenMode> {
     match expr {
         Expr::CStr(bytes) => mode_from_bytes(bytes),
@@ -445,6 +457,214 @@ fn mode_from_bytes(bytes: &[u8]) -> Option<FileOpenMode> {
         b"a+" | b"a+b" | b"ab+" => Some(FileOpenMode::AppendUpdate),
         _ => None,
     }
+}
+
+pub(in crate::fixups) struct GetsLoopMatch {
+    pub buf_name: String,
+    pub buf_len: i64,
+}
+
+/// Recognizes exactly `while (fgets(buf, n, handle) != NULL) { fputs(buf, stdout); }`,
+/// lowered as `Loop { [..size/other temps, fgets-as-Let, null-check-break, Scope{echo}] }`.
+pub(in crate::fixups) fn match_gets_loop(
+    loop_body: &[IndentStmt],
+    aliases: &BTreeSet<String>,
+) -> Option<GetsLoopMatch> {
+    let mut local_aliases = aliases.clone();
+    let mut fgets_index = None;
+    for (index, indent) in loop_body.iter().enumerate() {
+        if let Some(alias) = handle_alias_temp(&indent.stmt, &local_aliases) {
+            local_aliases.insert(alias.to_string());
+            continue;
+        }
+        if matches!(
+            file_use(&indent.stmt, &local_aliases),
+            Some(FileUseKind::Gets)
+        ) {
+            fgets_index = Some(index);
+            break;
+        }
+    }
+    let fgets_index = fgets_index?;
+    let Stmt::Let {
+        name: result_name,
+        init: Some(init),
+        ..
+    } = &loop_body[fgets_index].stmt
+    else {
+        return None;
+    };
+    let Expr::Call { args, .. } = unsafe_tail(init)? else {
+        return None;
+    };
+    if args.len() != 3 {
+        return None;
+    }
+    let buf_name = buf_ptr_var(&args[0])?;
+    let buf_len = resolve_static_len(loop_body, fgets_index, &args[1])?;
+
+    let break_stmt = &loop_body.get(fgets_index + 1)?.stmt;
+    if !is_null_break(break_stmt, result_name) {
+        return None;
+    }
+
+    let scope_index = fgets_index + 2;
+    if scope_index != loop_body.len() - 1 {
+        return None;
+    }
+    let Stmt::Scope { body: scope_body } = &loop_body[scope_index].stmt else {
+        return None;
+    };
+    if !scope_echoes_buf_to_stdout(scope_body, &buf_name) {
+        return None;
+    }
+
+    Some(GetsLoopMatch { buf_name, buf_len })
+}
+
+fn strip_cast(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr: inner, .. } => strip_cast(inner),
+        _ => expr,
+    }
+}
+
+fn buf_ptr_var(expr: &Expr) -> Option<String> {
+    let Expr::ArrayPtr { array, .. } = strip_cast(expr) else {
+        return None;
+    };
+    let Expr::Var(name) = &**array else {
+        return None;
+    };
+    Some(name.as_str().to_string())
+}
+
+fn resolve_static_len(
+    loop_body: &[IndentStmt],
+    fgets_index: usize,
+    size_expr: &Expr,
+) -> Option<i64> {
+    if let Some(n) = literal_int(size_expr) {
+        return Some(n);
+    }
+    let Expr::Var(name) = strip_cast(size_expr) else {
+        return None;
+    };
+    loop_body[..fgets_index].iter().rev().find_map(|indent| {
+        let Stmt::Let {
+            name: let_name,
+            init: Some(init),
+            ..
+        } = &indent.stmt
+        else {
+            return None;
+        };
+        (let_name.as_str() == name.as_str())
+            .then(|| literal_int(init))
+            .flatten()
+    })
+}
+
+fn literal_int(expr: &Expr) -> Option<i64> {
+    match strip_cast(expr) {
+        Expr::Value(RustValue::I64(n)) => Some(*n),
+        Expr::Value(RustValue::Usize(n)) => Some(*n as i64),
+        Expr::Value(RustValue::I128(n)) => Some(*n as i64),
+        _ => None,
+    }
+}
+
+fn is_null_break(stmt: &Stmt, result_name: &str) -> bool {
+    let Stmt::If {
+        cond,
+        then_body,
+        else_body,
+    } = stmt
+    else {
+        return false;
+    };
+    if !else_body.is_empty() {
+        return false;
+    }
+    if !matches!(
+        then_body.as_slice(),
+        [IndentStmt {
+            stmt: Stmt::Break(None),
+            ..
+        }]
+    ) {
+        return false;
+    }
+    is_not_null_check(cond, result_name)
+}
+
+fn is_not_null_check(expr: &Expr, result_name: &str) -> bool {
+    let Expr::Unary {
+        op: UnaryOp::Not,
+        expr: inner,
+    } = expr
+    else {
+        return false;
+    };
+    let Expr::Binary {
+        op: BinOp::Ne,
+        lhs,
+        rhs,
+    } = &**inner
+    else {
+        return false;
+    };
+    matches!(&**lhs, Expr::Var(name) if name.as_str() == result_name) && is_null_expr(rhs)
+}
+
+fn is_null_expr(expr: &Expr) -> bool {
+    matches!(strip_cast(expr), Expr::Value(RustValue::NullPtr))
+}
+
+fn scope_echoes_buf_to_stdout(body: &[IndentStmt], buf_name: &str) -> bool {
+    let [first, second] = body else {
+        return false;
+    };
+    let Stmt::Let {
+        name: stdout_alias,
+        init: Some(init),
+        ..
+    } = &first.stmt
+    else {
+        return false;
+    };
+    if !is_stdout_expr(init) {
+        return false;
+    }
+    let Stmt::Expr(expr) = &second.stmt else {
+        return false;
+    };
+    let Expr::Call { func, args } = unsafe_tail(expr).unwrap_or(expr) else {
+        return false;
+    };
+    if !matches!(&**func, Expr::Var(callee) if callee.as_str() == "fputs") || args.len() != 2 {
+        return false;
+    }
+    buf_ptr_var(&args[0]).as_deref() == Some(buf_name)
+        && matches!(strip_cast(&args[1]), Expr::Var(name) if name.as_str() == stdout_alias.as_str())
+}
+
+fn is_stdout_expr(expr: &Expr) -> bool {
+    matches!(unsafe_tail(expr), Some(Expr::Var(name)) if name.as_str() == "stdout")
+}
+
+fn loop_mentions_any_handle(loop_body: &[IndentStmt], aliases: &BTreeSet<String>) -> bool {
+    let mut local_aliases = aliases.clone();
+    for indent in loop_body {
+        if let Some(alias) = handle_alias_temp(&indent.stmt, &local_aliases) {
+            local_aliases.insert(alias.to_string());
+            continue;
+        }
+        if stmt_mentions_any_handle(&indent.stmt, &local_aliases) {
+            return true;
+        }
+    }
+    false
 }
 
 fn call_arg_path(stmt_index: usize, arg_index: usize) -> AstPath {
@@ -735,5 +955,124 @@ mod tests {
                 FileUseKind::Close,
             ]
         );
+    }
+
+    fn indent(stmt: Stmt) -> IndentStmt {
+        IndentStmt { depth: 2, stmt }
+    }
+
+    fn cast(expr: Expr, ty: &str) -> Expr {
+        Expr::Cast {
+            expr: Box::new(expr),
+            ty: Type::parse(ty),
+        }
+    }
+
+    fn buf_ptr(name: &str) -> Expr {
+        cast(
+            Expr::ArrayPtr {
+                array: Box::new(var(name)),
+                mutable: true,
+            },
+            "*mut i8",
+        )
+    }
+
+    fn unsafe_var(name: &str) -> Expr {
+        Expr::Unsafe(Box::new(Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(var(name))),
+        }))
+    }
+
+    fn null_break_if(result_name: &str) -> Stmt {
+        Stmt::If {
+            cond: Expr::Unary {
+                op: crate::rust_ast::UnaryOp::Not,
+                expr: Box::new(bin(
+                    BinOp::Ne,
+                    var(result_name),
+                    cast(Expr::Value(RustValue::NullPtr), "*mut i8"),
+                )),
+            },
+            then_body: vec![indent(Stmt::Break(None))],
+            else_body: Vec::new(),
+        }
+    }
+
+    fn fgets_read_stmt(handle_alias: &str, buf_name: &str) -> IndentStmt {
+        indent(Stmt::Let {
+            name: "_vres".into(),
+            mutable: false,
+            ty: Some(Type::parse("*mut i8")),
+            init: Some(unsafe_call(
+                "fgets",
+                vec![
+                    buf_ptr(buf_name),
+                    cast(var("_vsize"), "i32"),
+                    cast(var(handle_alias), "*mut libc::FILE"),
+                ],
+            )),
+        })
+    }
+
+    fn echo_scope_stmts(buf_name: &str, extra: Vec<IndentStmt>) -> Vec<IndentStmt> {
+        let mut stmts = vec![
+            indent(temp("_vout", "*mut libc::FILE", unsafe_var("stdout"))),
+            indent(Stmt::Expr(unsafe_call(
+                "fputs",
+                vec![buf_ptr(buf_name), cast(var("_vout"), "*mut libc::FILE")],
+            ))),
+        ];
+        stmts.extend(extra);
+        stmts
+    }
+
+    fn gets_echo_loop(handle_alias: &str, buf_name: &str, scope_extra: Vec<IndentStmt>) -> Stmt {
+        Stmt::Loop {
+            label: None,
+            body: vec![
+                indent(temp("_vsize", "i32", int(64))),
+                fgets_read_stmt(handle_alias, buf_name),
+                indent(null_break_if("_vres")),
+                indent(Stmt::Scope {
+                    body: echo_scope_stmts(buf_name, scope_extra),
+                }),
+            ],
+        }
+    }
+
+    #[test]
+    fn records_gets_loop_as_single_owner_use() {
+        let facts = analyzed(guarded_body(vec![
+            gets_echo_loop("f", "line", Vec::new()),
+            temp("_vclose", "*mut libc::FILE", var("f")),
+            Stmt::Expr(unsafe_call("fclose", vec![var("_vclose")])),
+        ]));
+
+        assert_eq!(facts.file_ownership.len(), 1);
+        assert_eq!(
+            facts.file_ownership[0]
+                .uses
+                .iter()
+                .map(|use_| use_.kind)
+                .collect::<Vec<_>>(),
+            vec![FileUseKind::Gets, FileUseKind::Close]
+        );
+    }
+
+    #[test]
+    fn rejects_gets_loop_with_extra_body_statements() {
+        let facts = analyzed(guarded_body(vec![
+            gets_echo_loop(
+                "f",
+                "line",
+                vec![indent(Stmt::Expr(call("log_line", vec![buf_ptr("line")])))],
+            ),
+            temp("_vclose", "*mut libc::FILE", var("f")),
+            Stmt::Expr(unsafe_call("fclose", vec![var("_vclose")])),
+        ]));
+
+        assert!(facts.file_ownership.is_empty());
     }
 }
