@@ -346,7 +346,17 @@ fn canonical_slice_loop_range(
 ) -> Option<SliceLoopRange> {
     let range = canonical_counted_range(body, index_name)?;
     let slice = match range.bound {
-        Expr::Var(len) => collector.len_aliases.get(len.as_str()).copied()?,
+        Expr::Var(len) => collector
+            .len_aliases
+            .get(len.as_str())
+            .copied()
+            .or_else(|| {
+                indexed_body_slice(
+                    &body[range.body_start..range.increment_stmt],
+                    index_name,
+                    &collector.slices,
+                )
+            })?,
         expr => collector.slice_len_source(expr)?,
     };
     Some(SliceLoopRange {
@@ -354,6 +364,32 @@ fn canonical_slice_loop_range(
         body_start: range.body_start,
         increment_stmt: range.increment_stmt,
     })
+}
+
+fn indexed_body_slice(
+    body: &[IndentStmt],
+    index_name: &str,
+    slices: &BTreeMap<String, BindingId>,
+) -> Option<BindingId> {
+    let mut state = BodyAnalysis::new(&Ident::new(index_name));
+    for indent in body {
+        if let Stmt::Let {
+            name,
+            init: Some(init),
+            ..
+        } = &indent.stmt
+            && state.is_index_expr(init)
+        {
+            state.index_names.insert(name.to_string());
+            continue;
+        }
+        if !analyze_stmt(&indent.stmt, slices, &mut state) {
+            return None;
+        }
+    }
+    let mut slices = state.slices.into_iter();
+    let slice = slices.next()?;
+    slices.next().is_none().then_some(slice)
 }
 
 fn is_straight_line_body(body: &[IndentStmt]) -> bool {
