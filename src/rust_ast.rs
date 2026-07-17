@@ -26,6 +26,7 @@ pub enum Item {
         path: Path,
     },
     Static {
+        attrs: Vec<Attr>,
         vis: Visibility,
         mutable: bool,
         name: String,
@@ -145,6 +146,20 @@ pub enum Attr {
     Allow(Vec<Lint>),
     Repr(Vec<Repr>),
     Derive(Vec<Derive>),
+    NoMangle,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Abi {
+    C,
+}
+
+impl Abi {
+    pub fn spelling(self) -> &'static str {
+        match self {
+            Abi::C => "C",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -304,9 +319,10 @@ pub struct ExternFnDecl {
 
 #[derive(Debug, Clone)]
 pub struct FnDef {
+    pub attrs: Vec<Attr>,
     pub vis: Visibility,
     pub unsafe_: bool,
-    pub extern_c: bool,
+    pub abi: Option<Abi>,
     pub name: String,
     pub params: Vec<FnParam>,
     pub ret: Option<Type>,

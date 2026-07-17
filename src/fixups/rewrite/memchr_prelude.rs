@@ -554,9 +554,10 @@ mod tests {
     #[test]
     fn rewrites_memchr_helper_body_to_position_match() {
         let mut f = FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "__slate_memchr".into(),
             params: vec![
                 param("s", "*const core::ffi::c_void"),
