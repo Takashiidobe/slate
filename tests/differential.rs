@@ -1536,13 +1536,14 @@ fn ptr_len_slice_loop_uses_materialized_item_name() {
     support::translate(&c_src, &generated).expect("translate ptr_len_slice_item fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated ptr_len_slice_item rust");
 
+    // slice_loop first recovers `for item in items.iter() { total += *item; }`;
+    // slice_reduce then collapses that accumulator loop into `.sum()`.
     assert!(rust.contains("fn sum_items(items: &[i32], len: i32) -> i32"));
-    assert!(rust.contains("for item in items.iter()"));
+    assert!(rust.contains("let total: i32 = items.iter().sum();"));
     assert!(rust.contains("sum_items(values.as_slice(), 4)"));
-    assert!(rust.contains("    for item in items.iter() {\n        total += *item;\n    }\n"));
     assert!(!rust.contains("let len: i32 = items.len() as i32;"));
     assert!(!rust.contains("let item: i32 = items[(i as usize)];"));
-    assert!(!rust.contains("for item in items.iter() {\n        {\n"));
+    assert!(!rust.contains("for item in items.iter()"));
     assert!(!rust.contains("__slate_item"));
 }
 
