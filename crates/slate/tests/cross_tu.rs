@@ -53,6 +53,34 @@ fn build_and_diff(name: &str) -> PathBuf {
     rs_dir
 }
 
+fn cross_tu_work_dir(name: &str) -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/cross-tu")
+        .join(name)
+}
+
+fn assert_binary_sections(binary: &Path, sections: &[&str]) {
+    let out = std::process::Command::new("readelf")
+        .args(["-S", "--wide"])
+        .arg(binary)
+        .output()
+        .expect("run readelf");
+    assert!(
+        out.status.success(),
+        "readelf failed for {}:\n{}",
+        binary.display(),
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    for section in sections {
+        assert!(
+            stdout.contains(section),
+            "missing section {section} in {}:\n{stdout}",
+            binary.display()
+        );
+    }
+}
+
 #[test]
 fn library_project_creates_cargo_crate_without_main() {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -211,6 +239,7 @@ fn cross_tu_static_linkage() {
 #[test]
 fn cross_tu_globals() {
     let rs_dir = build_and_diff("globals");
+    let work = cross_tu_work_dir("globals");
 
     let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
     assert!(
@@ -223,11 +252,24 @@ fn cross_tu_globals() {
     );
     let state_rs = std::fs::read_to_string(rs_dir.join("state.rs")).expect("read state.rs");
     assert!(
-        state_rs.contains("#[unsafe(no_mangle)]\npub static mut counter"),
+        state_rs.contains(
+            "#[unsafe(no_mangle)]\n#[unsafe(link_section = \".slate_data\")]\npub static mut counter"
+        ),
         "the defining module must export the global as a stable C symbol"
     );
     assert!(
-        state_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn bump"),
+        state_rs.contains(
+            "#[unsafe(no_mangle)]\n#[unsafe(link_section = \".slate_fn\")]\npub extern \"C\" fn bump"
+        ),
         "the defining module must export external-linkage functions as stable C ABI symbols"
+    );
+    assert_binary_sections(&work.join("c_bin"), &[".slate_data", ".slate_fn"]);
+    assert_binary_sections(
+        &work
+            .join("globals_proj")
+            .join("target")
+            .join("debug")
+            .join("globals"),
+        &[".slate_data", ".slate_fn"],
     );
 }
