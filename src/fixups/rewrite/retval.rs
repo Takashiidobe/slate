@@ -607,9 +607,10 @@ fn f() -> i32 {
     #[test]
     fn collapses_main_retval_store_into_exit() {
         let out = fixed_fn(FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "main".into(),
             params: vec![],
             ret: None,
@@ -640,9 +641,10 @@ fn main() {
     #[test]
     fn collapses_main_retval_store_inside_match_arm() {
         let out = fixed_fn(FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "main".into(),
             params: vec![],
             ret: None,
@@ -694,9 +696,10 @@ fn main() {
     #[test]
     fn collapses_main_retval_tail_after_prior_pure_writes() {
         let out = fixed_fn(FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "main".into(),
             params: vec![],
             ret: None,
@@ -730,9 +733,10 @@ fn main() {
     #[test]
     fn does_not_collapse_main_when_retval_read_elsewhere() {
         let f = FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "main".into(),
             params: vec![],
             ret: None,

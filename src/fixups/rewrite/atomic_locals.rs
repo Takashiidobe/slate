@@ -297,6 +297,7 @@ fn f() {
         Program {
             items: vec![
                 Item::Static {
+                    attrs: Vec::new(),
                     vis: Visibility::Private,
                     mutable: true,
                     name: name.into(),
