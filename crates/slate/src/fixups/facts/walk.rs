@@ -1,8 +1,8 @@
-use crate::fixups::facts::PathSegment;
+use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
 pub(in crate::fixups) use crate::fixups::support::walk::{
     nested_bodies_with_path, with_path_segment,
 };
-use crate::rust_ast::{Block, Expr, IndentStmt, Stmt};
+use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt};
 
 pub(in crate::fixups) fn body_exprs(body: &[IndentStmt], f: &mut impl FnMut(&Expr)) {
     for stmt in body {
@@ -1171,6 +1171,138 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
             exprs_mut_with(val, f);
             exprs_mut_with(count, f);
         }
+    }
+}
+
+pub(in crate::fixups) fn path_starts_with(path: &[PathSegment], prefix: &[PathSegment]) -> bool {
+    path.len() >= prefix.len() && path[..prefix.len()] == *prefix
+}
+
+pub(in crate::fixups) fn paths_overlap(a: &[PathSegment], b: &[PathSegment]) -> bool {
+    path_starts_with(a, b) || path_starts_with(b, a)
+}
+
+/// Resolves an `AstPath` back to the `Expr` it was recorded from. Needed
+/// because the callback walkers above use HRTB closures, which can't hand
+/// back a reference tied to the caller's lifetime.
+pub(in crate::fixups) fn expr_at_path<'a>(
+    facts: &FixupFacts,
+    program: &'a Program,
+    function: FunctionId,
+    path: &AstPath,
+) -> Option<&'a Expr> {
+    let item_index = facts.function_item_index(function)?;
+    let Item::Fn(f) = &program.items[item_index] else {
+        return None;
+    };
+    expr_in_body(&f.body, &path.0)
+}
+
+fn expr_in_body<'a>(body: &'a [IndentStmt], path: &[PathSegment]) -> Option<&'a Expr> {
+    let [PathSegment::Stmt(index), rest @ ..] = path else {
+        return None;
+    };
+    stmt_expr_at(&body.get(*index)?.stmt, rest)
+}
+
+fn stmt_expr_at<'a>(stmt: &'a Stmt, path: &[PathSegment]) -> Option<&'a Expr> {
+    match stmt {
+        Stmt::Let {
+            init: Some(init), ..
+        } => expr_at(init, path),
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => match path {
+            [PathSegment::Expr(0), rest @ ..] => expr_at(target, rest),
+            [PathSegment::Expr(1), rest @ ..] => expr_at(value, rest),
+            _ => None,
+        },
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_at(expr, path),
+        Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => match path {
+            [PathSegment::Then, rest @ ..] => expr_in_body(then_body, rest),
+            [PathSegment::Else, rest @ ..] => expr_in_body(else_body, rest),
+            _ => None,
+        },
+        Stmt::Loop { body, .. } => match path {
+            [PathSegment::LoopBody, rest @ ..] => expr_in_body(body, rest),
+            _ => None,
+        },
+        Stmt::Scope { body } => match path {
+            [PathSegment::ScopeBody, rest @ ..] => expr_in_body(body, rest),
+            _ => None,
+        },
+        Stmt::LabeledBlock { body, .. } => match path {
+            [PathSegment::LabeledBody, rest @ ..] => expr_in_body(body, rest),
+            _ => None,
+        },
+        Stmt::For { body, .. } => match path {
+            [PathSegment::ForBody, rest @ ..] => expr_in_body(body, rest),
+            _ => None,
+        },
+        Stmt::Unsafe { body } => match path {
+            [PathSegment::UnsafeBody, rest @ ..] => expr_in_block(body, rest),
+            _ => None,
+        },
+        Stmt::While { body, .. } => match path {
+            [PathSegment::WhileBody, rest @ ..] => expr_in_block(body, rest),
+            _ => None,
+        },
+        Stmt::Block(body) => match path {
+            [PathSegment::BlockBody, rest @ ..] => expr_in_block(body, rest),
+            _ => None,
+        },
+        Stmt::Match { arms, .. } => match path {
+            [PathSegment::MatchArm(index), rest @ ..] => {
+                expr_in_body(&arms.get(*index)?.body, rest)
+            }
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+fn expr_in_block<'a>(block: &'a Block, path: &[PathSegment]) -> Option<&'a Expr> {
+    match path {
+        [PathSegment::BlockTail] => block.tail.as_deref(),
+        [PathSegment::BlockTail, rest @ ..] => expr_at(block.tail.as_deref()?, rest),
+        _ => expr_in_body(&block.stmts, path),
+    }
+}
+
+fn expr_at<'a>(expr: &'a Expr, path: &[PathSegment]) -> Option<&'a Expr> {
+    if path.is_empty() {
+        return Some(expr);
+    }
+    match (expr, path) {
+        (Expr::Call { func, .. }, [PathSegment::Expr(0), rest @ ..]) => expr_at(func, rest),
+        (Expr::Call { args, .. }, [PathSegment::Expr(index), rest @ ..]) if *index > 0 => {
+            expr_at(args.get(index - 1)?, rest)
+        }
+        (Expr::Cast { expr, .. }, [PathSegment::Expr(0), rest @ ..])
+        | (Expr::Unary { expr, .. }, [PathSegment::Expr(0), rest @ ..])
+        | (Expr::Ref { expr, .. }, [PathSegment::Expr(0), rest @ ..])
+        | (Expr::AddrOf { expr, .. }, [PathSegment::Expr(0), rest @ ..])
+        | (Expr::Transmute { expr, .. }, [PathSegment::Expr(0), rest @ ..])
+        | (Expr::MethodCall { recv: expr, .. }, [PathSegment::Expr(0), rest @ ..])
+        | (Expr::ArrayPtr { array: expr, .. }, [PathSegment::Expr(0), rest @ ..]) => {
+            expr_at(expr, rest)
+        }
+        (Expr::Binary { lhs, .. }, [PathSegment::Expr(0), rest @ ..])
+        | (Expr::Index { base: lhs, .. }, [PathSegment::Expr(0), rest @ ..]) => expr_at(lhs, rest),
+        (Expr::Binary { rhs, .. }, [PathSegment::Expr(1), rest @ ..])
+        | (Expr::Index { index: rhs, .. }, [PathSegment::Expr(1), rest @ ..]) => expr_at(rhs, rest),
+        (Expr::MethodCall { args, .. }, [PathSegment::Expr(index), rest @ ..]) if *index > 0 => {
+            expr_at(args.get(index - 1)?, rest)
+        }
+        (Expr::Macro { args, .. }, [PathSegment::Expr(index), rest @ ..])
+        | (Expr::ArrayLit(args), [PathSegment::Expr(index), rest @ ..]) => {
+            expr_at(args.get(*index)?, rest)
+        }
+        (Expr::Block(block), [PathSegment::BlockBody, rest @ ..])
+        | (Expr::Unsafe(block), [PathSegment::UnsafeBody, rest @ ..]) => expr_in_block(block, rest),
+        _ => None,
     }
 }
 

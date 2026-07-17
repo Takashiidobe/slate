@@ -1,80 +1,101 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    BindingId, FixupFacts, FunctionId, PtrLenSliceFact, PtrLenUnsupportedCallsiteFact,
+    AstPath, BindingId, BindingKind, CallCallee, CallsiteFact, FixupFacts, FunctionId,
+    PtrLenSliceFact,
 };
 use crate::rust_ast::{
-    Block, Expr, FnParam, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
+    Block, Expr, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.ptr_len_slices.clear();
-    facts.ptr_len_unsupported_callsites.clear();
+
     let candidates = collect_candidates(program, facts);
-    collect_callsites(program, facts, &candidates);
+    let mut active = candidates
+        .iter()
+        .map(|candidate| candidate.key)
+        .collect::<BTreeSet<_>>();
+
+    loop {
+        let before = active.clone();
+        active.retain(|key| {
+            candidates
+                .iter()
+                .find(|candidate| candidate.key == *key)
+                .is_some_and(|candidate| candidate_is_sound(program, candidate, facts, &before))
+        });
+        if active == before {
+            break;
+        }
+    }
+
+    facts.ptr_len_slices = candidates
+        .iter()
+        .filter(|candidate| active.contains(&candidate.key))
+        .flat_map(|candidate| proven_calls(facts, candidate))
+        .collect();
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+struct Key {
+    function: FunctionId,
+    ptr: BindingId,
+    len: BindingId,
 }
 
 #[derive(Clone)]
 struct Candidate {
-    function: FunctionId,
-    ptr_param: BindingId,
-    len_param: BindingId,
+    key: Key,
+    function_name: String,
     ptr_index: usize,
     len_index: usize,
-    body_mutable: bool,
+    mutable: bool,
     elem: Type,
     len_ty: Type,
 }
 
-#[derive(Clone)]
-struct Callsite {
-    array_len: u64,
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum LengthSource {
+    Const(u64),
+    Bound(BindingId),
 }
 
-fn collect_candidates(program: &Program, facts: &FixupFacts) -> BTreeMap<String, Candidate> {
-    program
-        .items
-        .iter()
-        .enumerate()
-        .filter_map(|(item_index, item)| {
-            let Item::Fn(f) = item else {
-                return None;
-            };
-            let function = facts.function_by_item_index(item_index)?;
-            let candidate = adjacent_ptr_len_pair(function, &f.params, &f.body, facts)?;
-            Some((f.name.clone(), candidate))
-        })
-        .collect()
-}
-
-fn adjacent_ptr_len_pair(
-    function: FunctionId,
-    params: &[FnParam],
-    body: &[IndentStmt],
-    facts: &FixupFacts,
-) -> Option<Candidate> {
-    for (i, pair) in params.windows(2).enumerate() {
-        let Type::Ptr { mutable, inner } = &pair[0].ty else {
+fn collect_candidates(program: &Program, facts: &FixupFacts) -> Vec<Candidate> {
+    let mut candidates = Vec::new();
+    for (item_index, item) in program.items.iter().enumerate() {
+        let Item::Fn(f) = item else {
             continue;
         };
-        if !is_integer_type(&pair[1].ty) {
+        let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
+        };
+        for (i, pair) in f.params.windows(2).enumerate() {
+            let Type::Ptr { mutable, inner } = &pair[0].ty else {
+                continue;
+            };
+            if !is_integer_type(&pair[1].ty) {
+                continue;
+            }
+            let Some(ptr) = facts.binding_by_param_index(function, i) else {
+                continue;
+            };
+            let Some(len) = facts.binding_by_param_index(function, i + 1) else {
+                continue;
+            };
+            candidates.push(Candidate {
+                key: Key { function, ptr, len },
+                function_name: f.name.clone(),
+                ptr_index: i,
+                len_index: i + 1,
+                mutable: *mutable && pointer_param_mutated(&f.body, pair[0].name.as_str()),
+                elem: (**inner).clone(),
+                len_ty: pair[1].ty.clone(),
+            });
         }
-        let ptr_param = facts.binding_by_param_index(function, i)?;
-        let len_param = facts.binding_by_param_index(function, i + 1)?;
-        return Some(Candidate {
-            function,
-            ptr_param,
-            len_param,
-            ptr_index: i,
-            len_index: i + 1,
-            body_mutable: *mutable && pointer_param_mutated(body, pair[0].name.as_str()),
-            elem: (**inner).clone(),
-            len_ty: pair[1].ty.clone(),
-        });
     }
-    None
+    candidates
 }
 
 fn is_integer_type(ty: &Type) -> bool {
@@ -97,111 +118,226 @@ fn is_integer_type(ty: &Type) -> bool {
     )
 }
 
-fn collect_callsites(
+fn candidate_is_sound(
     program: &Program,
-    facts: &mut FixupFacts,
-    candidates: &BTreeMap<String, Candidate>,
-) {
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(caller) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        let mut arrays = BTreeMap::new();
-        collect_body_arrays(&f.body, &mut arrays);
-        collect_body_calls(caller, &f.body, facts, candidates, &arrays);
-    }
+    candidate: &Candidate,
+    facts: &FixupFacts,
+    active: &BTreeSet<Key>,
+) -> bool {
+    facts
+        .def_use(candidate.key.ptr)
+        .is_some_and(|def_use| def_use.writes.is_empty())
+        && facts
+            .def_use(candidate.key.len)
+            .is_some_and(|def_use| def_use.writes.is_empty())
+        && all_callers_prove(program, candidate, facts, active)
 }
 
-fn collect_body_arrays(body: &[IndentStmt], arrays: &mut BTreeMap<String, u64>) {
-    for indent in body {
-        match &indent.stmt {
-            Stmt::Let {
-                name,
-                ty: Some(Type::Array { len, .. }),
-                ..
-            } => {
-                arrays.insert(name.clone(), *len);
-            }
-            Stmt::If {
-                then_body,
-                else_body,
-                ..
-            }
-            | Stmt::LetIf {
-                then_body,
-                else_body,
-                ..
-            } => {
-                collect_body_arrays(then_body, arrays);
-                collect_body_arrays(else_body, arrays);
-            }
-            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-                collect_body_arrays(body, arrays);
-            }
-            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-                collect_block_arrays(body, arrays);
-            }
-            Stmt::Match { arms, .. } => {
-                for arm in arms {
-                    collect_body_arrays(&arm.body, arrays);
-                }
-            }
-            _ => {}
+fn all_callers_prove(
+    program: &Program,
+    candidate: &Candidate,
+    facts: &FixupFacts,
+    active: &BTreeSet<Key>,
+) -> bool {
+    let calls = matching_callsites(facts, &candidate.function_name).collect::<Vec<_>>();
+    !calls.is_empty()
+        && calls
+            .iter()
+            .all(|callsite| call_proves_pair(program, callsite, candidate, facts, active))
+}
+
+fn matching_callsites<'a>(
+    facts: &'a FixupFacts,
+    function_name: &'a str,
+) -> impl Iterator<Item = &'a CallsiteFact> {
+    facts
+        .callsites
+        .iter()
+        .filter(move |callsite| match &callsite.callee {
+            CallCallee::Direct { name, .. } => name == function_name,
+            CallCallee::Indirect => false,
+        })
+}
+
+fn call_proves_pair(
+    program: &Program,
+    callsite: &CallsiteFact,
+    candidate: &Candidate,
+    facts: &FixupFacts,
+    active: &BTreeSet<Key>,
+) -> bool {
+    let Some(ptr_arg) = callsite
+        .args
+        .iter()
+        .find(|arg| arg.slot == candidate.ptr_index)
+    else {
+        return false;
+    };
+    let Some(len_arg) = callsite
+        .args
+        .iter()
+        .find(|arg| arg.slot == candidate.len_index)
+    else {
+        return false;
+    };
+    let Some(ptr_expr) = walk::expr_at_path(facts, program, callsite.function, &ptr_arg.path)
+    else {
+        return false;
+    };
+    let Some(len_expr) = walk::expr_at_path(facts, program, callsite.function, &len_arg.path)
+    else {
+        return false;
+    };
+    let Some(source) = pointer_length_source(
+        program,
+        ptr_expr,
+        callsite.function,
+        &ptr_arg.path,
+        facts,
+        active,
+        0,
+    ) else {
+        return false;
+    };
+    match source {
+        LengthSource::Const(n) => integer_value(len_expr) == Some(n),
+        LengthSource::Bound(target) => {
+            resolve_len_binding(len_expr, callsite.function, &len_arg.path, facts) == Some(target)
         }
     }
 }
 
-fn collect_block_arrays(block: &Block, arrays: &mut BTreeMap<String, u64>) {
-    collect_body_arrays(&block.stmts, arrays);
+const MAX_ALIAS_DEPTH: u32 = 8;
+
+/// Resolves a pointer-argument expression to a proof of how many elements it
+/// points at: either a compile-time-constant array length, or the identity of
+/// another binding proven (by an active candidate) to carry the same length.
+fn pointer_length_source(
+    program: &Program,
+    expr: &Expr,
+    function: FunctionId,
+    path: &AstPath,
+    facts: &FixupFacts,
+    active: &BTreeSet<Key>,
+    depth: u32,
+) -> Option<LengthSource> {
+    if depth > MAX_ALIAS_DEPTH {
+        return None;
+    }
+    let Expr::Var(name) = peel_pointer_view(expr) else {
+        return None;
+    };
+    let binding = facts
+        .binding_read_under(function, name.as_str(), path)
+        .or_else(|| facts.binding_named(function, name.as_str()))?;
+    binding_length_source(program, binding, function, facts, active, depth)
 }
 
-fn collect_body_calls(
-    caller: FunctionId,
-    body: &[IndentStmt],
-    facts: &mut FixupFacts,
-    candidates: &BTreeMap<String, Candidate>,
-    arrays: &BTreeMap<String, u64>,
-) {
-    for indent in body {
-        walk::stmt_exprs(&indent.stmt, &mut |expr| {
-            let Expr::Call { func, .. } = expr else {
-                return;
-            };
-            let Expr::Var(name) = &**func else {
-                return;
-            };
-            if !candidates.contains_key(name.as_str()) {
-                return;
-            }
-            match callsite(expr, candidates, arrays) {
-                Some((_, callsite)) => {
-                    let candidate = &candidates[name.as_str()];
-                    facts.ptr_len_slices.push(PtrLenSliceFact {
-                        caller,
-                        callee: candidate.function,
-                        ptr_param: candidate.ptr_param,
-                        len_param: candidate.len_param,
-                        backing_array_len: callsite.array_len,
-                        mutable: candidate.body_mutable,
-                        elem_ty: candidate.elem.clone(),
-                        len_ty: candidate.len_ty.clone(),
-                    });
-                }
-                None => {
-                    let candidate = &candidates[name.as_str()];
-                    facts
-                        .ptr_len_unsupported_callsites
-                        .push(PtrLenUnsupportedCallsiteFact {
-                            caller,
-                            callee: candidate.function,
-                        });
-                }
-            }
-        });
+fn binding_length_source(
+    program: &Program,
+    binding: BindingId,
+    function: FunctionId,
+    facts: &FixupFacts,
+    active: &BTreeSet<Key>,
+    depth: u32,
+) -> Option<LengthSource> {
+    if let Some(len) = facts.binding_type(binding).and_then(array_len_from_type) {
+        return Some(LengthSource::Const(len));
     }
+    if let Some(key) = active
+        .iter()
+        .find(|key| key.function == function && key.ptr == binding)
+    {
+        return Some(LengthSource::Bound(key.len));
+    }
+    let local = facts
+        .bindings
+        .iter()
+        .find(|fact| fact.id == binding && fact.kind == BindingKind::Local)?;
+    if !facts
+        .def_use(binding)
+        .is_some_and(|def_use| def_use.writes.is_empty())
+    {
+        return None;
+    }
+    let init = walk::expr_at_path(facts, program, function, &local.path)?;
+    pointer_length_source(
+        program,
+        init,
+        function,
+        &local.path,
+        facts,
+        active,
+        depth + 1,
+    )
+}
+
+fn array_len_from_type(rendered: &str) -> Option<u64> {
+    match Type::parse(rendered) {
+        Type::Array { len, .. } => Some(len),
+        _ => None,
+    }
+}
+
+fn resolve_len_binding(
+    expr: &Expr,
+    function: FunctionId,
+    path: &AstPath,
+    facts: &FixupFacts,
+) -> Option<BindingId> {
+    let Expr::Var(name) = peel_cast(expr) else {
+        return None;
+    };
+    facts
+        .binding_read_under(function, name.as_str(), path)
+        .or_else(|| facts.binding_named(function, name.as_str()))
+}
+
+fn peel_cast(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr, .. } => peel_cast(expr),
+        _ => expr,
+    }
+}
+
+fn peel_pointer_view(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr, .. }
+        | Expr::Unary { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => peel_pointer_view(expr),
+        Expr::MethodCall { recv, method, args }
+            if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
+        {
+            peel_pointer_view(recv)
+        }
+        Expr::ArrayPtr { array, .. } => peel_pointer_view(array),
+        _ => expr,
+    }
+}
+
+fn integer_value(expr: &Expr) -> Option<u64> {
+    match expr {
+        Expr::Value(RustValue::I64(n)) => u64::try_from(*n).ok(),
+        Expr::Value(RustValue::I128(n)) => u64::try_from(*n).ok(),
+        Expr::Cast { expr, .. } => integer_value(expr),
+        _ => None,
+    }
+}
+
+fn proven_calls(facts: &FixupFacts, candidate: &Candidate) -> Vec<PtrLenSliceFact> {
+    matching_callsites(facts, &candidate.function_name)
+        .map(|callsite| PtrLenSliceFact {
+            caller: callsite.function,
+            callee: candidate.key.function,
+            ptr_param: candidate.key.ptr,
+            len_param: candidate.key.len,
+            mutable: candidate.mutable,
+            elem_ty: candidate.elem.clone(),
+            len_ty: candidate.len_ty.clone(),
+        })
+        .collect()
 }
 
 fn pointer_param_mutated(body: &[IndentStmt], ptr_name: &str) -> bool {
@@ -489,55 +625,4 @@ fn method_is_pointer_arithmetic(method: &str) -> bool {
         method,
         "add" | "sub" | "offset" | "wrapping_add" | "wrapping_sub" | "wrapping_offset"
     )
-}
-
-fn callsite(
-    expr: &Expr,
-    candidates: &BTreeMap<String, Candidate>,
-    arrays: &BTreeMap<String, u64>,
-) -> Option<(String, Callsite)> {
-    let Expr::Call { func, args } = expr else {
-        return None;
-    };
-    let Expr::Var(name) = &**func else {
-        return None;
-    };
-    let candidate = candidates.get(name.as_str())?;
-    let ptr_arg = args.get(candidate.ptr_index)?;
-    let len_arg = args.get(candidate.len_index)?;
-    let (array_name, _) = array_pointer_arg(ptr_arg)?;
-    let array_len = *arrays.get(array_name.as_str())?;
-    if integer_value(len_arg)? != array_len {
-        return None;
-    }
-    Some((name.as_str().into(), Callsite { array_len }))
-}
-
-fn array_pointer_arg(expr: &Expr) -> Option<(String, bool)> {
-    match expr {
-        Expr::ArrayPtr { array, mutable } => {
-            let Expr::Var(name) = &**array else {
-                return None;
-            };
-            Some((name.as_str().into(), *mutable))
-        }
-        Expr::MethodCall { recv, method, args }
-            if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
-        {
-            let Expr::Var(name) = &**recv else {
-                return None;
-            };
-            Some((name.as_str().into(), method == "as_mut_ptr"))
-        }
-        _ => None,
-    }
-}
-
-fn integer_value(expr: &Expr) -> Option<u64> {
-    match expr {
-        Expr::Value(RustValue::I64(n)) => u64::try_from(*n).ok(),
-        Expr::Value(RustValue::I128(n)) => u64::try_from(*n).ok(),
-        Expr::Cast { expr, .. } => integer_value(expr),
-        _ => None,
-    }
 }

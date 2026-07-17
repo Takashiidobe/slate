@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use crate::fixups::facts::{BindingKind, FixupFacts, FunctionId, PtrLenSliceFact};
+use crate::fixups::facts::{BindingId, BindingKind, FixupFacts, FunctionId, PtrLenSliceFact};
 use crate::fixups::support::walk;
 use crate::rust_ast::{Expr, FnDef, Ident, IndentStmt, Item, Program, Stmt, Type};
 
@@ -12,8 +12,8 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
 
     for item in &mut program.items {
         if let Item::Fn(f) = item {
-            if let Some(plan) = plans.get(&f.name) {
-                rewrite_function(f, plan);
+            if let Some(fn_plans) = plans.get(&f.name) {
+                rewrite_function(f, fn_plans);
             }
             rewrite_calls_in_body(&mut f.body, &plans);
         }
@@ -31,75 +31,88 @@ struct Plan {
     len_ty: Type,
 }
 
-fn plans_from_facts(facts: &FixupFacts) -> BTreeMap<String, Plan> {
-    let mut grouped = BTreeMap::<FunctionId, Vec<&PtrLenSliceFact>>::new();
+/// A function's `(ptr, len)` pairs are always disjoint parameter slots: each
+/// pair spans an adjacent `(Ptr, integer)` window, and a slot used as one
+/// pair's `len` (an integer) can never simultaneously be another pair's `ptr`
+/// (which must be a pointer). So plans for the same function never contend
+/// for the same parameter index.
+fn plans_from_facts(facts: &FixupFacts) -> BTreeMap<String, Vec<Plan>> {
+    let mut grouped = BTreeMap::<(FunctionId, BindingId, BindingId), Vec<&PtrLenSliceFact>>::new();
     for fact in &facts.ptr_len_slices {
-        grouped.entry(fact.callee).or_default().push(fact);
+        grouped
+            .entry((fact.callee, fact.ptr_param, fact.len_param))
+            .or_default()
+            .push(fact);
     }
 
-    grouped
-        .into_iter()
-        .filter(|(function, calls)| {
-            !calls.is_empty()
-                && !facts
-                    .ptr_len_unsupported_callsites
-                    .iter()
-                    .any(|unsupported| unsupported.callee == *function)
-                && calls.iter().all(|call| call.backing_array_len > 0)
-        })
-        .filter_map(|(function, calls)| {
-            let first = calls[0];
-            if !calls
-                .iter()
-                .all(|call| call.ptr_param == first.ptr_param && call.len_param == first.len_param)
-            {
-                return None;
-            }
-            let function_fact = facts.functions.iter().find(|fact| fact.id == function)?;
-            let ptr_binding = facts
-                .bindings
-                .iter()
-                .find(|binding| binding.id == first.ptr_param)?;
-            let len_binding = facts
-                .bindings
-                .iter()
-                .find(|binding| binding.id == first.len_param)?;
-            let BindingKind::Param { index: ptr_index } = ptr_binding.kind else {
-                return None;
-            };
-            let BindingKind::Param { index: len_index } = len_binding.kind else {
-                return None;
-            };
-            let mutable = calls.iter().any(|call| call.mutable);
-            Some((
-                function_fact.name.clone(),
-                Plan {
-                    ptr_index,
-                    len_index,
-                    ptr_name: ptr_binding.name.clone(),
-                    len_name: len_binding.name.clone(),
-                    mutable,
-                    elem: first.elem_ty.clone(),
-                    len_ty: first.len_ty.clone(),
-                },
-            ))
-        })
-        .collect()
+    let mut plans = BTreeMap::<String, Vec<Plan>>::new();
+    for ((function, ptr_param, len_param), calls) in grouped {
+        let Some(function_fact) = facts.functions.iter().find(|fact| fact.id == function) else {
+            continue;
+        };
+        let Some(ptr_binding) = facts
+            .bindings
+            .iter()
+            .find(|binding| binding.id == ptr_param)
+        else {
+            continue;
+        };
+        let Some(len_binding) = facts
+            .bindings
+            .iter()
+            .find(|binding| binding.id == len_param)
+        else {
+            continue;
+        };
+        let BindingKind::Param { index: ptr_index } = ptr_binding.kind else {
+            continue;
+        };
+        let BindingKind::Param { index: len_index } = len_binding.kind else {
+            continue;
+        };
+        let mutable = calls.iter().any(|call| call.mutable);
+        let first = calls[0];
+        plans
+            .entry(function_fact.name.clone())
+            .or_default()
+            .push(Plan {
+                ptr_index,
+                len_index,
+                ptr_name: ptr_binding.name.clone(),
+                len_name: len_binding.name.clone(),
+                mutable,
+                elem: first.elem_ty.clone(),
+                len_ty: first.len_ty.clone(),
+            });
+    }
+    plans
 }
 
-fn rewrite_function(f: &mut FnDef, plan: &Plan) {
-    if f.params.len() <= plan.len_index {
+fn rewrite_function(f: &mut FnDef, plans: &[Plan]) {
+    if plans
+        .iter()
+        .any(|plan| f.params.len() <= plan.ptr_index || f.params.len() <= plan.len_index)
+    {
         return;
     }
-    f.params[plan.ptr_index].ty = Type::Ref {
-        mutable: plan.mutable,
-        inner: Box::new(Type::Slice(Box::new(plan.elem.clone()))),
-    };
-    f.params.remove(plan.len_index);
-    rewrite_body_pointer_param(&mut f.body, &plan.ptr_name, plan.mutable);
-    f.body.insert(
-        0,
-        IndentStmt {
+
+    for plan in plans {
+        f.params[plan.ptr_index].ty = Type::Ref {
+            mutable: plan.mutable,
+            inner: Box::new(Type::Slice(Box::new(plan.elem.clone()))),
+        };
+        rewrite_body_pointer_param(&mut f.body, &plan.ptr_name, plan.mutable);
+    }
+
+    let mut len_indices: Vec<usize> = plans.iter().map(|plan| plan.len_index).collect();
+    len_indices.sort_unstable_by(|a, b| b.cmp(a));
+    for len_index in len_indices {
+        f.params.remove(len_index);
+    }
+
+    let lets: Vec<IndentStmt> = plans
+        .iter()
+        .map(|plan| IndentStmt {
             depth: 1,
             stmt: Stmt::Let {
                 name: plan.len_name.clone(),
@@ -114,8 +127,9 @@ fn rewrite_function(f: &mut FnDef, plan: &Plan) {
                     ty: plan.len_ty.clone(),
                 }),
             },
-        },
-    );
+        })
+        .collect();
+    f.body.splice(0..0, lets);
 }
 
 fn rewrite_body_pointer_param(body: &mut [IndentStmt], name: &str, mutable: bool) {
@@ -132,7 +146,7 @@ fn rewrite_body_pointer_param(body: &mut [IndentStmt], name: &str, mutable: bool
     });
 }
 
-fn rewrite_calls_in_body(body: &mut [IndentStmt], plans: &BTreeMap<String, Plan>) {
+fn rewrite_calls_in_body(body: &mut [IndentStmt], plans: &BTreeMap<String, Vec<Plan>>) {
     walk::body_exprs_mut_with(body, &mut |expr| {
         let Expr::Call { func, args } = expr else {
             return true;
@@ -140,45 +154,66 @@ fn rewrite_calls_in_body(body: &mut [IndentStmt], plans: &BTreeMap<String, Plan>
         let Expr::Var(name) = &**func else {
             return true;
         };
-        let Some(plan) = plans.get(name.as_str()) else {
+        let Some(fn_plans) = plans.get(name.as_str()) else {
             return true;
         };
-        let Some((array_name, _)) = args.get(plan.ptr_index).and_then(array_pointer_arg) else {
+        if fn_plans
+            .iter()
+            .any(|plan| args.len() <= plan.ptr_index || args.len() <= plan.len_index)
+        {
+            return true;
+        }
+        let Some(array_names) = fn_plans
+            .iter()
+            .map(|plan| args.get(plan.ptr_index).and_then(array_pointer_arg))
+            .collect::<Option<Vec<_>>>()
+        else {
             return true;
         };
-        let slice = Expr::MethodCall {
-            recv: Box::new(Expr::Var(Ident::from(array_name))),
-            method: if plan.mutable {
-                "as_mut_slice"
-            } else {
-                "as_slice"
-            }
-            .into(),
-            args: Vec::new(),
-        };
-        args[plan.ptr_index] = slice;
-        args.remove(plan.len_index);
+
+        for (plan, array_name) in fn_plans.iter().zip(array_names) {
+            args[plan.ptr_index] = Expr::MethodCall {
+                recv: Box::new(Expr::Var(Ident::from(array_name))),
+                method: if plan.mutable {
+                    "as_mut_slice"
+                } else {
+                    "as_slice"
+                }
+                .into(),
+                args: Vec::new(),
+            };
+        }
+
+        let mut len_indices: Vec<usize> = fn_plans.iter().map(|plan| plan.len_index).collect();
+        len_indices.sort_unstable_by(|a, b| b.cmp(a));
+        for len_index in len_indices {
+            args.remove(len_index);
+        }
         false
     });
 }
 
-fn array_pointer_arg(expr: &Expr) -> Option<(String, bool)> {
+fn array_pointer_arg(expr: &Expr) -> Option<String> {
+    match peel_pointer_view(expr) {
+        Expr::Var(name) => Some(name.as_str().into()),
+        _ => None,
+    }
+}
+
+fn peel_pointer_view(expr: &Expr) -> &Expr {
     match expr {
-        Expr::ArrayPtr { array, mutable } => {
-            let Expr::Var(name) = &**array else {
-                return None;
-            };
-            Some((name.as_str().into(), *mutable))
-        }
+        Expr::Cast { expr, .. }
+        | Expr::Unary { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => peel_pointer_view(expr),
         Expr::MethodCall { recv, method, args }
             if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
         {
-            let Expr::Var(name) = &**recv else {
-                return None;
-            };
-            Some((name.as_str().into(), method == "as_mut_ptr"))
+            peel_pointer_view(recv)
         }
-        _ => None,
+        Expr::ArrayPtr { array, .. } => peel_pointer_view(array),
+        _ => expr,
     }
 }
 
@@ -197,33 +232,34 @@ mod tests {
         facts
     }
 
+    fn array_call(name: &str, _elems: i64, len_arg: i64) -> Stmt {
+        Stmt::Expr(call(
+            name,
+            vec![
+                Expr::MethodCall {
+                    recv: Box::new(var("values")),
+                    method: "as_mut_ptr".into(),
+                    args: Vec::new(),
+                },
+                int(len_arg),
+            ],
+        ))
+    }
+
+    fn array_decl(elems: i64) -> Stmt {
+        let_mut(
+            "values",
+            &format!("[i32; {elems}]"),
+            Expr::ArrayRepeat {
+                elem: Box::new(int(0)),
+                len: elems as usize,
+            },
+        )
+    }
+
     #[test]
     fn rewrites_full_array_pointer_len_calls_to_slice_params() {
-        let mut main = func(
-            Vec::new(),
-            None,
-            vec![
-                let_mut(
-                    "values",
-                    "[i32; 4]",
-                    Expr::ArrayRepeat {
-                        elem: Box::new(int(0)),
-                        len: 4,
-                    },
-                ),
-                Stmt::Expr(call(
-                    "f",
-                    vec![
-                        Expr::MethodCall {
-                            recv: Box::new(var("values")),
-                            method: "as_mut_ptr".into(),
-                            args: Vec::new(),
-                        },
-                        int(4),
-                    ],
-                )),
-            ],
-        );
+        let mut main = func(Vec::new(), None, vec![array_decl(4), array_call("f", 4, 4)]);
         main.name = "main".into();
         let mut program = Program {
             items: vec![
@@ -259,7 +295,6 @@ mod tests {
             .unwrap();
         assert_eq!(ptr_binding.name, "items");
         assert_eq!(len_binding.name, "len");
-        assert_eq!(facts.ptr_len_slices[0].backing_array_len, 4);
         assert!(!facts.ptr_len_slices[0].mutable);
         assert_eq!(
             program.emit(),
@@ -279,31 +314,7 @@ fn main() {
 
     #[test]
     fn keeps_slice_param_mutable_when_pointer_is_written() {
-        let mut main = func(
-            Vec::new(),
-            None,
-            vec![
-                let_mut(
-                    "values",
-                    "[i32; 4]",
-                    Expr::ArrayRepeat {
-                        elem: Box::new(int(0)),
-                        len: 4,
-                    },
-                ),
-                Stmt::Expr(call(
-                    "f",
-                    vec![
-                        Expr::MethodCall {
-                            recv: Box::new(var("values")),
-                            method: "as_mut_ptr".into(),
-                            args: Vec::new(),
-                        },
-                        int(4),
-                    ],
-                )),
-            ],
-        );
+        let mut main = func(Vec::new(), None, vec![array_decl(4), array_call("f", 4, 4)]);
         main.name = "main".into();
         let mut program = Program {
             items: vec![
@@ -332,31 +343,7 @@ fn main() {
 
     #[test]
     fn leaves_partial_lengths_raw() {
-        let mut main = func(
-            Vec::new(),
-            None,
-            vec![
-                let_mut(
-                    "values",
-                    "[i32; 4]",
-                    Expr::ArrayRepeat {
-                        elem: Box::new(int(0)),
-                        len: 4,
-                    },
-                ),
-                Stmt::Expr(call(
-                    "f",
-                    vec![
-                        Expr::MethodCall {
-                            recv: Box::new(var("values")),
-                            method: "as_mut_ptr".into(),
-                            args: Vec::new(),
-                        },
-                        int(3),
-                    ],
-                )),
-            ],
-        );
+        let mut main = func(Vec::new(), None, vec![array_decl(4), array_call("f", 4, 3)]);
         main.name = "main".into();
         let mut program = Program {
             items: vec![
@@ -372,7 +359,6 @@ fn main() {
         let facts = analyze_collect_fixup(&mut program);
 
         assert!(facts.ptr_len_slices.is_empty());
-        assert_eq!(facts.ptr_len_unsupported_callsites.len(), 1);
         assert!(program.emit().contains("fn f(items: *mut i32, len: i32)"));
     }
 
@@ -382,25 +368,8 @@ fn main() {
             Vec::new(),
             None,
             vec![
-                let_mut(
-                    "values",
-                    "[i32; 4]",
-                    Expr::ArrayRepeat {
-                        elem: Box::new(int(0)),
-                        len: 4,
-                    },
-                ),
-                Stmt::Expr(call(
-                    "f",
-                    vec![
-                        Expr::MethodCall {
-                            recv: Box::new(var("values")),
-                            method: "as_mut_ptr".into(),
-                            args: Vec::new(),
-                        },
-                        int(4),
-                    ],
-                )),
+                array_decl(4),
+                array_call("f", 4, 4),
                 Stmt::Expr(call("f", vec![var("unknown"), int(4)])),
             ],
         );
@@ -418,8 +387,178 @@ fn main() {
 
         let facts = analyze_collect_fixup(&mut program);
 
-        assert_eq!(facts.ptr_len_slices.len(), 1);
-        assert_eq!(facts.ptr_len_unsupported_callsites.len(), 1);
+        assert!(facts.ptr_len_slices.is_empty());
+        assert!(program.emit().contains("fn f(items: *mut i32, len: i32)"));
+    }
+
+    #[test]
+    fn proves_ptr_len_forwarded_unchanged_through_a_call_chain() {
+        let mut outer = func(
+            vec![param("q", "*mut i32"), param("qlen", "i32")],
+            None,
+            vec![Stmt::Expr(call("inner", vec![var("q"), var("qlen")]))],
+        );
+        outer.name = "outer".into();
+
+        let mut main = func(
+            Vec::new(),
+            None,
+            vec![array_decl(4), array_call("outer", 4, 4)],
+        );
+        main.name = "main".into();
+
+        let mut inner = func(
+            vec![param("items", "*mut i32"), param("len", "i32")],
+            None,
+            vec![Stmt::Return(None)],
+        );
+        inner.name = "inner".into();
+
+        let mut program = Program {
+            items: vec![Item::Fn(inner), Item::Fn(outer), Item::Fn(main)],
+        };
+
+        let facts = analyze_collect_fixup(&mut program);
+
+        assert_eq!(facts.ptr_len_slices.len(), 2);
+        // `q` is conservatively treated as mutated because `outer` forwards it
+        // into an opaque call (`inner`) rather than proving `inner` read-only.
+        assert!(program.emit().contains("fn inner(items: &[i32])"));
+        assert!(program.emit().contains("fn outer(q: &mut [i32])"));
+        assert!(program.emit().contains("inner(q.as_slice());"));
+        assert!(program.emit().contains("outer(values.as_mut_slice());"));
+    }
+
+    #[test]
+    fn shadowed_same_named_arrays_in_sibling_branches_resolve_independently() {
+        let mut main = func(
+            Vec::new(),
+            None,
+            vec![Stmt::If {
+                cond: var("cond"),
+                then_body: vec![IndentStmt {
+                    depth: 2,
+                    stmt: array_decl(4),
+                }]
+                .into_iter()
+                .chain(std::iter::once(IndentStmt {
+                    depth: 2,
+                    stmt: array_call("f", 4, 4),
+                }))
+                .collect(),
+                else_body: vec![IndentStmt {
+                    depth: 2,
+                    stmt: array_decl(2),
+                }]
+                .into_iter()
+                .chain(std::iter::once(IndentStmt {
+                    depth: 2,
+                    stmt: array_call("f", 2, 2),
+                }))
+                .collect(),
+            }],
+        );
+        main.name = "main".into();
+        let mut program = Program {
+            items: vec![
+                Item::Fn(func(
+                    vec![param("items", "*mut i32"), param("len", "i32")],
+                    None,
+                    vec![Stmt::Return(None)],
+                )),
+                Item::Fn(main),
+            ],
+        };
+
+        let facts = analyze_collect_fixup(&mut program);
+
+        assert_eq!(facts.ptr_len_slices.len(), 2);
+        assert!(program.emit().contains("fn f(items: &[i32])"));
+    }
+
+    #[test]
+    fn two_independent_ptr_len_pairs_on_one_function_both_convert() {
+        let mut main = func(
+            Vec::new(),
+            None,
+            vec![
+                let_mut(
+                    "a",
+                    "[i32; 4]",
+                    Expr::ArrayRepeat {
+                        elem: Box::new(int(0)),
+                        len: 4,
+                    },
+                ),
+                let_mut(
+                    "b",
+                    "[i32; 3]",
+                    Expr::ArrayRepeat {
+                        elem: Box::new(int(0)),
+                        len: 3,
+                    },
+                ),
+                Stmt::Expr(call(
+                    "f",
+                    vec![
+                        Expr::MethodCall {
+                            recv: Box::new(var("a")),
+                            method: "as_mut_ptr".into(),
+                            args: Vec::new(),
+                        },
+                        int(4),
+                        Expr::MethodCall {
+                            recv: Box::new(var("b")),
+                            method: "as_mut_ptr".into(),
+                            args: Vec::new(),
+                        },
+                        int(3),
+                    ],
+                )),
+            ],
+        );
+        main.name = "main".into();
+        let mut program = Program {
+            items: vec![
+                Item::Fn(func(
+                    vec![
+                        param("a", "*mut i32"),
+                        param("alen", "i32"),
+                        param("b", "*mut i32"),
+                        param("blen", "i32"),
+                    ],
+                    None,
+                    vec![Stmt::Return(None)],
+                )),
+                Item::Fn(main),
+            ],
+        };
+
+        let facts = analyze_collect_fixup(&mut program);
+
+        assert_eq!(facts.ptr_len_slices.len(), 2);
+        assert!(program.emit().contains("fn f(a: &[i32], b: &[i32])"));
+        assert!(program.emit().contains("f(a.as_slice(), b.as_slice());"));
+    }
+
+    #[test]
+    fn reassigned_len_param_is_not_converted() {
+        let mut main = func(Vec::new(), None, vec![array_decl(4), array_call("f", 4, 4)]);
+        main.name = "main".into();
+        let mut program = Program {
+            items: vec![
+                Item::Fn(func(
+                    vec![param("items", "*mut i32"), param("len", "i32")],
+                    None,
+                    vec![assign("len", int(0)), Stmt::Return(None)],
+                )),
+                Item::Fn(main),
+            ],
+        };
+
+        let facts = analyze_collect_fixup(&mut program);
+
+        assert!(facts.ptr_len_slices.is_empty());
         assert!(program.emit().contains("fn f(items: *mut i32, len: i32)"));
     }
 }
