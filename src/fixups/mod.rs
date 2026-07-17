@@ -121,6 +121,9 @@ pub fn apply(program: Program) -> Program {
     if rewrite::slice_loop::fixup(&mut program, &facts) {
         late_loop_cleanup(&mut program);
     }
+    if rewrite::slice_reduce::fixup(&mut program) {
+        late_loop_cleanup(&mut program);
+    }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     if rewrite::range_loop::fixup(&mut program, &facts) {
         late_loop_cleanup(&mut program);
