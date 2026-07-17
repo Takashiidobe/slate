@@ -36,6 +36,25 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         .filter(|candidate| active.contains(&candidate.key))
         .flat_map(|candidate| proven_calls(facts, candidate))
         .collect();
+    facts
+        .ptr_len_slices
+        .extend(proven_constant_extent_calls(program, facts, &active));
+    facts.ptr_len_slices.sort_by_key(|fact| {
+        (
+            fact.caller,
+            fact.callee,
+            fact.ptr_param,
+            fact.len_param.unwrap_or(BindingId(usize::MAX)),
+        )
+    });
+    facts.ptr_len_slices.dedup_by_key(|fact| {
+        (
+            fact.caller,
+            fact.callee,
+            fact.ptr_param,
+            fact.len_param.unwrap_or(BindingId(usize::MAX)),
+        )
+    });
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -55,7 +74,6 @@ struct Candidate {
     len_name: String,
     mutable: bool,
     elem: Type,
-    len_ty: Type,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -96,7 +114,6 @@ fn collect_candidates(program: &Program, facts: &FixupFacts) -> Vec<Candidate> {
                     len_name: len_param.name.to_string(),
                     mutable: *mutable && pointer_param_mutated(&f.body, ptr_param.name.as_str()),
                     elem: (**inner).clone(),
-                    len_ty: len_param.ty.clone(),
                 });
             }
         }
@@ -595,6 +612,238 @@ fn all_callers_prove(
             .all(|callsite| call_proves_pair(program, callsite, candidate, facts, active))
 }
 
+fn proven_constant_extent_calls(
+    program: &Program,
+    facts: &FixupFacts,
+    active: &BTreeSet<Key>,
+) -> Vec<PtrLenSliceFact> {
+    let mut out = Vec::new();
+    for (item_index, item) in program.items.iter().enumerate() {
+        let Item::Fn(f) = item else {
+            continue;
+        };
+        let Some(function) = facts.function_by_item_index(item_index) else {
+            continue;
+        };
+        for (ptr_index, param) in f.params.iter().enumerate() {
+            let Type::Ptr { mutable, inner } = &param.ty else {
+                continue;
+            };
+            let Some(ptr) = facts.binding_by_param_index(function, ptr_index) else {
+                continue;
+            };
+            if !facts
+                .def_use(ptr)
+                .is_some_and(|def_use| def_use.writes.is_empty())
+            {
+                continue;
+            }
+            let bounds = constant_pointer_extents(&f.body, param.name.as_str());
+            let [bound] = bounds.as_slice() else {
+                continue;
+            };
+            let candidate = PointerCandidate {
+                function,
+                function_name: f.name.clone(),
+                ptr,
+                ptr_index,
+                mutable: *mutable && pointer_param_mutated(&f.body, param.name.as_str()),
+                elem: (**inner).clone(),
+                bound: *bound,
+            };
+            if all_callers_prove_pointer_extent(program, &candidate, facts, active) {
+                out.extend(proven_pointer_calls(facts, &candidate));
+            }
+        }
+    }
+    out
+}
+
+struct PointerCandidate {
+    function: FunctionId,
+    function_name: String,
+    ptr: BindingId,
+    ptr_index: usize,
+    mutable: bool,
+    elem: Type,
+    bound: u64,
+}
+
+fn constant_pointer_extents(body: &[IndentStmt], ptr_name: &str) -> Vec<u64> {
+    let mut bounds = BTreeSet::new();
+    collect_constant_pointer_extents(body, ptr_name, &mut bounds);
+    bounds.into_iter().collect()
+}
+
+fn collect_constant_pointer_extents(
+    body: &[IndentStmt],
+    ptr_name: &str,
+    bounds: &mut BTreeSet<u64>,
+) {
+    for pair in body.windows(2) {
+        let Stmt::Let {
+            name: index_name,
+            init: Some(init),
+            ..
+        } = &pair[0].stmt
+        else {
+            continue;
+        };
+        if integer_value(init) != Some(0) {
+            continue;
+        }
+        let Stmt::Loop {
+            body: loop_body, ..
+        } = &pair[1].stmt
+        else {
+            continue;
+        };
+        if let Some(bound) = constant_lowered_loop_bound(loop_body, index_name.as_str())
+            && body_accesses_pointer_index(loop_body, ptr_name, index_name)
+        {
+            bounds.insert(bound);
+        }
+    }
+    for indent in body {
+        collect_constant_pointer_extents_stmt(&indent.stmt, ptr_name, bounds);
+    }
+}
+
+fn constant_lowered_loop_bound(body: &[IndentStmt], index_name: &str) -> Option<u64> {
+    let first = body.first()?;
+    let Stmt::If {
+        cond, then_body, ..
+    } = &first.stmt
+    else {
+        return None;
+    };
+    if !matches!(
+        then_body.as_slice(),
+        [IndentStmt {
+            stmt: Stmt::Break(None),
+            ..
+        }]
+    ) {
+        return None;
+    }
+    let Expr::Unary {
+        op: UnaryOp::Not,
+        expr,
+    } = cond
+    else {
+        return None;
+    };
+    let Expr::Binary { op, lhs, rhs } = peel_cast(expr) else {
+        return None;
+    };
+    if !matches!(op, crate::rust_ast::BinOp::Lt) {
+        return None;
+    }
+    let Expr::Var(index) = peel_cast(lhs) else {
+        return None;
+    };
+    (index.as_str() == index_name)
+        .then(|| integer_value(rhs))
+        .flatten()
+}
+
+fn collect_constant_pointer_extents_stmt(stmt: &Stmt, ptr_name: &str, bounds: &mut BTreeSet<u64>) {
+    match stmt {
+        Stmt::For { pat, iter, body } => {
+            if let Expr::Range { end, .. } = iter
+                && let Some(bound) = integer_value(end)
+                && body_accesses_pointer_index(body, ptr_name, pat)
+            {
+                bounds.insert(bound);
+            }
+            collect_constant_pointer_extents(body, ptr_name, bounds);
+        }
+        Stmt::If {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        } => {
+            collect_constant_pointer_extents(then_body, ptr_name, bounds);
+            collect_constant_pointer_extents(else_body, ptr_name, bounds);
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            collect_constant_pointer_extents(body, ptr_name, bounds)
+        }
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            collect_constant_pointer_extents(&body.stmts, ptr_name, bounds);
+        }
+        Stmt::Match { arms, .. } => {
+            for arm in arms {
+                collect_constant_pointer_extents(&arm.body, ptr_name, bounds);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn all_callers_prove_pointer_extent(
+    program: &Program,
+    candidate: &PointerCandidate,
+    facts: &FixupFacts,
+    active: &BTreeSet<Key>,
+) -> bool {
+    let calls = matching_callsites(facts, &candidate.function_name).collect::<Vec<_>>();
+    !calls.is_empty()
+        && calls
+            .iter()
+            .all(|callsite| call_proves_pointer_extent(program, callsite, candidate, facts, active))
+}
+
+fn call_proves_pointer_extent(
+    program: &Program,
+    callsite: &CallsiteFact,
+    candidate: &PointerCandidate,
+    facts: &FixupFacts,
+    active: &BTreeSet<Key>,
+) -> bool {
+    let Some(ptr_arg) = callsite
+        .args
+        .iter()
+        .find(|arg| arg.slot == candidate.ptr_index)
+    else {
+        return false;
+    };
+    let Some(ptr_expr) = walk::expr_at_path(facts, program, callsite.function, &ptr_arg.path)
+    else {
+        return false;
+    };
+    matches!(
+        pointer_length_source(
+            program,
+            ptr_expr,
+            callsite.function,
+            &ptr_arg.path,
+            facts,
+            active,
+            0,
+        ),
+        Some(LengthSource::Const(n)) if n == candidate.bound
+    )
+}
+
+fn proven_pointer_calls(facts: &FixupFacts, candidate: &PointerCandidate) -> Vec<PtrLenSliceFact> {
+    matching_callsites(facts, &candidate.function_name)
+        .map(|callsite| PtrLenSliceFact {
+            caller: callsite.function,
+            callee: candidate.function,
+            ptr_param: candidate.ptr,
+            len_param: None,
+            mutable: candidate.mutable,
+            elem_ty: candidate.elem.clone(),
+        })
+        .collect()
+}
+
 fn matching_callsites<'a>(
     facts: &'a FixupFacts,
     function_name: &'a str,
@@ -781,10 +1030,9 @@ fn proven_calls(facts: &FixupFacts, candidate: &Candidate) -> Vec<PtrLenSliceFac
             caller: callsite.function,
             callee: candidate.key.function,
             ptr_param: candidate.key.ptr,
-            len_param: candidate.key.len,
+            len_param: Some(candidate.key.len),
             mutable: candidate.mutable,
             elem_ty: candidate.elem.clone(),
-            len_ty: candidate.len_ty.clone(),
         })
         .collect()
 }

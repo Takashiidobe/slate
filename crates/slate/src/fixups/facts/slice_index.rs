@@ -2,8 +2,9 @@ use std::collections::BTreeMap;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, FixupFacts, FunctionId, IndexLowerBound, IndexUpperBound, PathSegment,
-    PointerOffsetUnit, SliceIndexRangeFact, SlicePointerIndexFact, SlicePointerViewFact,
+    AstPath, BindingId, BindingKind, FixupFacts, FunctionId, IndexLowerBound, IndexUpperBound,
+    PathSegment, PointerOffsetUnit, SliceIndexRangeFact, SlicePointerIndexFact,
+    SlicePointerViewFact,
 };
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
@@ -85,7 +86,10 @@ impl<'a> Collector<'a> {
                 ..
             } => self.collect_let(name, ty.as_ref(), init, path),
             Stmt::Loop { .. } => {}
-            Stmt::For { iter, .. } => self.collect_expr_offsets(iter, path),
+            Stmt::For { pat, iter, body } => {
+                self.collect_for_range(pat, iter, body, path);
+                self.collect_expr_offsets(iter, path);
+            }
             Stmt::While { cond, .. } => self.collect_expr_offsets(cond, path),
             Stmt::Unsafe { .. } | Stmt::Block(_) => {}
             Stmt::LetIf {
@@ -199,8 +203,15 @@ impl<'a> Collector<'a> {
             else {
                 continue;
             };
-            let Some(len) = canonical_loop_range(loop_body, index_name.as_str()) else {
-                continue;
+            let slice = match canonical_loop_range(loop_body, index_name.as_str()) {
+                Some(len) => self.len_aliases.get(len.as_str()).copied().or_else(|| {
+                    if self.is_param_bound(len.as_str()) {
+                        self.loop_body_indexed_slice(loop_body, index_name.as_str())
+                    } else {
+                        None
+                    }
+                }),
+                None => self.constant_loop_slice(loop_body, index_name.as_str()),
             };
 
             let mut index_path = parent_path.to_owned();
@@ -216,7 +227,7 @@ impl<'a> Collector<'a> {
             if let Some(index) =
                 self.facts
                     .binding_by_local_path(self.function, index_name.as_str(), &index_path)
-                && let Some(slice) = self.len_aliases.get(len.as_str()).copied()
+                && let Some(slice) = slice
             {
                 self.range_by_index.insert(index, slice);
                 self.facts.slice_index_ranges.push(SliceIndexRangeFact {
@@ -229,6 +240,89 @@ impl<'a> Collector<'a> {
                 });
             }
         }
+    }
+
+    fn constant_loop_slice(&self, body: &[IndentStmt], index_name: &str) -> Option<BindingId> {
+        let first = body.first()?;
+        let Stmt::If {
+            cond, then_body, ..
+        } = &first.stmt
+        else {
+            return None;
+        };
+        if !is_break_only(then_body) {
+            return None;
+        }
+        let (index, bound) = negated_less_than_bound(cond)?;
+        if index.as_str() != index_name || integer_value(bound).is_none() {
+            return None;
+        }
+        self.loop_body_indexed_slice(body, index_name)
+    }
+
+    fn collect_for_range(
+        &mut self,
+        index_name: &str,
+        iter: &Expr,
+        body: &[IndentStmt],
+        path: &[PathSegment],
+    ) {
+        let Expr::Range { start, end } = iter else {
+            return;
+        };
+        if integer_value(start) != Some(0) {
+            return;
+        }
+        if !self.is_supported_range_bound(end) {
+            return;
+        }
+        let Some(slice) = self.loop_body_indexed_slice(body, index_name) else {
+            return;
+        };
+        let ast_path = AstPath(path.to_vec());
+        let Some(index) = self
+            .facts
+            .binding_by_local_path(self.function, index_name, &ast_path)
+        else {
+            return;
+        };
+        self.range_by_index.insert(index, slice);
+        self.facts.slice_index_ranges.push(SliceIndexRangeFact {
+            function: self.function,
+            index,
+            slice,
+            lower: IndexLowerBound::Zero,
+            upper: IndexUpperBound::SliceLen,
+            loop_path: ast_path,
+        });
+    }
+
+    fn loop_body_indexed_slice(&self, body: &[IndentStmt], index_name: &str) -> Option<BindingId> {
+        let mut local = LoopSliceUse::new(index_name, &self.slices);
+        for indent in body {
+            if local.stmt(&indent.stmt) {
+                return local.found;
+            }
+        }
+        local.found
+    }
+
+    fn is_supported_range_bound(&self, expr: &Expr) -> bool {
+        if integer_value(expr).is_some() {
+            return true;
+        }
+        let Expr::Var(name) = peel_casts(expr) else {
+            return false;
+        };
+        self.len_aliases.contains_key(name.as_str()) || self.is_param_bound(name.as_str())
+    }
+
+    fn is_param_bound(&self, name: &str) -> bool {
+        self.facts.bindings.iter().rev().any(|binding| {
+            binding.function == self.function
+                && binding.name == name
+                && matches!(binding.kind, BindingKind::Param { .. })
+        })
     }
 
     fn collect_expr_offsets<T: OffsetWalk>(&mut self, node: &T, path: &[PathSegment]) {
@@ -261,6 +355,131 @@ impl<'a> Collector<'a> {
                     path: AstPath(path.to_vec()),
                 });
         });
+    }
+}
+
+struct LoopSliceUse<'a> {
+    index_name: &'a str,
+    slices: &'a BTreeMap<String, SliceBinding>,
+    pointer_aliases: BTreeMap<String, BindingId>,
+    index_aliases: Vec<String>,
+    found: Option<BindingId>,
+}
+
+impl<'a> LoopSliceUse<'a> {
+    fn new(index_name: &'a str, slices: &'a BTreeMap<String, SliceBinding>) -> Self {
+        Self {
+            index_name,
+            slices,
+            pointer_aliases: BTreeMap::new(),
+            index_aliases: vec![index_name.to_string()],
+            found: None,
+        }
+    }
+
+    fn stmt(&mut self, stmt: &Stmt) -> bool {
+        match stmt {
+            Stmt::Let {
+                name,
+                init: Some(init),
+                ..
+            } => {
+                if self.expr(init) {
+                    return true;
+                }
+                if let Some(slice) = self.slice_pointer_source(init) {
+                    self.pointer_aliases.insert(name.clone(), slice);
+                }
+                if self.is_index_expr(init) {
+                    self.index_aliases.push(name.clone());
+                }
+                false
+            }
+            Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+                self.expr(target) || self.expr(value)
+            }
+            Stmt::Expr(expr) | Stmt::Return(Some(expr)) => self.expr(expr),
+            Stmt::If {
+                cond,
+                then_body,
+                else_body,
+            } => self.expr(cond) || self.body(then_body) || self.body(else_body),
+            Stmt::LetIf {
+                cond,
+                then_body,
+                then_value,
+                else_body,
+                else_value,
+                ..
+            } => {
+                self.expr(cond)
+                    || self.body(then_body)
+                    || self.expr(then_value)
+                    || self.body(else_body)
+                    || self.expr(else_value)
+            }
+            Stmt::Loop { body, .. }
+            | Stmt::For { body, .. }
+            | Stmt::Scope { body }
+            | Stmt::LabeledBlock { body, .. } => self.body(body),
+            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                self.body(&body.stmts) || body.tail.as_deref().is_some_and(|expr| self.expr(expr))
+            }
+            Stmt::Match { expr, arms } => {
+                self.expr(expr) || arms.iter().any(|arm| self.body(&arm.body))
+            }
+            Stmt::Let { init: None, .. }
+            | Stmt::Return(None)
+            | Stmt::Break(_)
+            | Stmt::Continue(_) => false,
+        }
+    }
+
+    fn body(&mut self, body: &[IndentStmt]) -> bool {
+        body.iter().any(|indent| self.stmt(&indent.stmt))
+    }
+
+    fn expr(&mut self, expr: &Expr) -> bool {
+        if let Some(slice) = self.offset_slice(expr) {
+            self.found = Some(slice);
+            return true;
+        }
+        walk::exprs_any(expr, &mut |expr| {
+            if let Some(slice) = self.offset_slice(expr) {
+                self.found = Some(slice);
+                true
+            } else {
+                false
+            }
+        })
+    }
+
+    fn slice_pointer_source(&self, expr: &Expr) -> Option<BindingId> {
+        let (slice_name, _) = slice_pointer_source(peel_casts(expr))?;
+        self.slices
+            .get(slice_name.as_str())
+            .map(|slice| slice.binding)
+    }
+
+    fn offset_slice(&self, expr: &Expr) -> Option<BindingId> {
+        let Expr::MethodCall { recv, method, args } = peel_casts(expr) else {
+            return None;
+        };
+        if !matches!(
+            method.as_str(),
+            "offset" | "add" | "wrapping_offset" | "wrapping_add"
+        ) || !matches!(args.as_slice(), [arg] if self.is_index_expr(arg))
+        {
+            return None;
+        }
+        let Expr::Var(pointer) = peel_casts(recv) else {
+            return None;
+        };
+        self.pointer_aliases.get(pointer.as_str()).copied()
+    }
+
+    fn is_index_expr(&self, expr: &Expr) -> bool {
+        matches!(peel_casts(expr), Expr::Var(name) if self.index_aliases.iter().any(|alias| alias == name.as_str()))
     }
 }
 
@@ -315,6 +534,14 @@ fn is_break_only(body: &[IndentStmt]) -> bool {
 }
 
 fn negated_less_than(expr: &Expr) -> Option<(&Ident, &Ident)> {
+    let (index, bound) = negated_less_than_bound(expr)?;
+    let Expr::Var(len) = bound else {
+        return None;
+    };
+    Some((index, len))
+}
+
+fn negated_less_than_bound(expr: &Expr) -> Option<(&Ident, &Expr)> {
     let Expr::Unary {
         op: crate::rust_ast::UnaryOp::Not,
         expr,
@@ -333,10 +560,7 @@ fn negated_less_than(expr: &Expr) -> Option<(&Ident, &Ident)> {
     let Expr::Var(index) = &**lhs else {
         return None;
     };
-    let Expr::Var(len) = &**rhs else {
-        return None;
-    };
-    Some((index, len))
+    Some((index, rhs))
 }
 
 fn increments_by_one(stmt: &Stmt, index: &Ident) -> bool {
