@@ -55,8 +55,8 @@ fn loop_fact<'a>(
     loop_path: &AstPath,
 ) -> Option<&'a CountedSliceLoopFact> {
     facts.counted_slice_loops.iter().find(|fact| {
-        fact.function == function
-            && fact.loop_path == *loop_path
+        fact.site.function == function
+            && fact.site.loop_path == *loop_path
             && fact.start == CountedLoopStart::Zero
             && fact.bound == CountedLoopBound::SliceLen
             && fact.step == CountedLoopStep::One
