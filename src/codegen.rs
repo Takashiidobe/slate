@@ -13,10 +13,10 @@
 use std::fmt::{self, Write};
 
 use crate::rust_ast::{
-    AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr, Block, Cfg, Comment, CrateAttr,
-    Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock, ImplItem, IndentStmt, Item, Method,
-    Path, Program, RecordDef, Repr, RustValue, SelfKind, Stmt, StructDef, StructFields, TraitBound,
-    Type,
+    Abi, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr, Block, Cfg, Comment,
+    CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock, ImplItem, IndentStmt,
+    Item, Method, Path, Program, RecordDef, Repr, RustValue, SelfKind, Stmt, StructDef,
+    StructFields, TraitBound, Type,
 };
 
 const INDENT: &str = "    ";
@@ -131,12 +131,14 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str(";\n")?;
             }
             Item::Static {
+                attrs,
                 vis,
                 mutable,
                 name,
                 ty,
                 init,
             } => {
+                self.attrs(attrs)?;
                 if let Some(kw) = vis.keyword() {
                     write!(self.out, "{kw} ")?;
                 }
@@ -213,14 +215,16 @@ impl<W: Write> Codegen<W> {
     }
 
     fn fn_def(&mut self, f: &FnDef) -> fmt::Result {
+        self.attrs(&f.attrs)?;
         if let Some(kw) = f.vis.keyword() {
             write!(self.out, "{kw} ")?;
         }
         if f.unsafe_ {
             self.out.write_str("unsafe ")?;
         }
-        if f.extern_c {
-            self.out.write_str("extern \"C\" ")?;
+        if let Some(abi) = f.abi {
+            self.abi(abi)?;
+            self.out.write_char(' ')?;
         }
         write!(self.out, "fn {}(", f.name)?;
         for (i, p) in f.params.iter().enumerate() {
@@ -399,7 +403,12 @@ impl<W: Write> Codegen<W> {
                 }
                 self.out.write_char(')')
             }
+            Attr::NoMangle => self.out.write_str("unsafe(no_mangle)"),
         }
+    }
+
+    fn abi(&mut self, abi: Abi) -> fmt::Result {
+        write!(self.out, "extern \"{}\"", abi.spelling())
     }
 
     fn generics(&mut self, generics: &[GenericParam]) -> fmt::Result {

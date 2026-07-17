@@ -73,9 +73,10 @@ mod tests {
     #[test]
     fn elides_final_main_zero_exit() {
         let out = fixed_fn(FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "main".into(),
             params: vec![],
             ret: None,
@@ -100,9 +101,10 @@ fn main() {
     #[test]
     fn leaves_final_main_nonzero_exit_unchanged() {
         let f = FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "main".into(),
             params: vec![],
             ret: None,
@@ -122,9 +124,10 @@ fn main() {
     #[test]
     fn leaves_final_main_dynamic_exit_unchanged() {
         let f = FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "main".into(),
             params: vec![],
             ret: None,
@@ -144,9 +147,10 @@ fn main() {
     #[test]
     fn leaves_non_main_zero_exit_call_unchanged() {
         let f = FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "f".into(),
             params: vec![],
             ret: None,
@@ -166,9 +170,10 @@ fn main() {
     #[test]
     fn leaves_non_final_main_exit_call_unchanged() {
         let f = FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "main".into(),
             params: vec![],
             ret: None,
@@ -194,9 +199,10 @@ fn main() {
     #[test]
     fn leaves_nested_match_arm_zero_exit_unchanged() {
         let f = FnDef {
+            attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
-            extern_c: false,
+            abi: None,
             name: "main".into(),
             params: vec![],
             ret: None,

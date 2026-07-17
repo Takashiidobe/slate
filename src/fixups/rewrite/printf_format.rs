@@ -897,9 +897,10 @@ mod tests {
                     decls: vec![printf_decl()],
                 },
                 Item::Fn(crate::rust_ast::FnDef {
+                    attrs: Vec::new(),
                     vis: Visibility::Private,
                     unsafe_: false,
-                    extern_c: false,
+                    abi: None,
                     name: "main".into(),
                     params: vec![],
                     ret: None,

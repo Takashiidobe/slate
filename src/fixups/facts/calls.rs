@@ -757,9 +757,10 @@ mod tests {
         let program = Program {
             items: vec![
                 Item::Fn(crate::rust_ast::FnDef {
+                    attrs: Vec::new(),
                     vis: crate::rust_ast::Visibility::Private,
                     unsafe_: false,
-                    extern_c: false,
+                    abi: None,
                     name: "add".into(),
                     params: vec![param("a", "i32"), param("b", "i32")],
                     ret: Some(Type::parse("i32")),

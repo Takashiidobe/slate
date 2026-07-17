@@ -66,7 +66,10 @@ fn collect_candidates(program: &Program, facts: &FixupFacts) -> Vec<Candidate> {
             let Item::Fn(f) = item else {
                 return None;
             };
-            if f.name == "main" || f.unsafe_ || f.extern_c || !matches!(f.vis, Visibility::Private)
+            if f.name == "main"
+                || f.unsafe_
+                || f.abi.is_some()
+                || !matches!(f.vis, Visibility::Private)
             {
                 return None;
             }
