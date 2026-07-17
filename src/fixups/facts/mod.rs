@@ -63,7 +63,6 @@ pub(super) struct FixupFacts {
     pub(super) heap_ownership: Vec<HeapOwnershipFact>,
     pub(super) printf_calls: Vec<PrintfCallFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
-    pub(super) ptr_len_unsupported_callsites: Vec<PtrLenUnsupportedCallsiteFact>,
     pub(super) array_element_pointer_origins: Vec<ArrayElementPointerOriginFact>,
     pub(super) buffer_pointer_fields: Vec<BufferPointerFieldFact>,
     pub(super) anonymous_structs: Vec<AnonymousStructFact>,
@@ -738,16 +737,9 @@ pub(super) struct PtrLenSliceFact {
     pub(super) callee: FunctionId,
     pub(super) ptr_param: BindingId,
     pub(super) len_param: BindingId,
-    pub(super) backing_array_len: u64,
     pub(super) mutable: bool,
     pub(super) elem_ty: Type,
     pub(super) len_ty: Type,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) struct PtrLenUnsupportedCallsiteFact {
-    pub(super) caller: FunctionId,
-    pub(super) callee: FunctionId,
 }
 
 #[derive(Debug, Clone)]
@@ -1090,6 +1082,13 @@ impl FixupFacts {
             .map(|function| function.id)
     }
 
+    pub(super) fn function_item_index(&self, function: FunctionId) -> Option<usize> {
+        self.functions
+            .iter()
+            .find(|fact| fact.id == function)
+            .map(|fact| fact.item_index)
+    }
+
     pub(super) fn binding_by_param_index(
         &self,
         function: FunctionId,
@@ -1126,6 +1125,44 @@ impl FixupFacts {
             .iter()
             .find(|fact| fact.id == binding)
             .map(|fact| fact.name.as_str())
+    }
+
+    /// Most-recently-declared binding named `name` in `function`.
+    pub(super) fn binding_named(&self, function: FunctionId, name: &str) -> Option<BindingId> {
+        self.bindings
+            .iter()
+            .rev()
+            .find(|binding| binding.function == function && binding.name == name)
+            .map(|binding| binding.id)
+    }
+
+    /// The binding named `name` with a recorded read overlapping `path`, if
+    /// any. `path` may be shallower than the recorded read (def_use records
+    /// reads at whole-statement granularity) or deeper (e.g. a specific
+    /// call-argument sub-expression), so both directions of containment
+    /// count. The name filter matters because multiple differently-named
+    /// bindings read within the same statement (e.g. two pointer arguments
+    /// of one call) share that same coarse read path.
+    pub(super) fn binding_read_under(
+        &self,
+        function: FunctionId,
+        name: &str,
+        path: &AstPath,
+    ) -> Option<BindingId> {
+        self.def_use
+            .iter()
+            .find(|fact| {
+                fact.function == function
+                    && self
+                        .bindings
+                        .iter()
+                        .any(|binding| binding.id == fact.binding && binding.name == name)
+                    && fact
+                        .reads
+                        .iter()
+                        .any(|read| walk::paths_overlap(&read.0, &path.0))
+            })
+            .map(|fact| fact.binding)
     }
 
     pub(super) fn local_binding_at(
