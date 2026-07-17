@@ -425,3 +425,15 @@ fn generated_weak_symbols_lose_to_strong_external_definitions() {
     );
     assert_eq!(String::from_utf8_lossy(&output.stdout), "42 91\n");
 }
+
+#[test]
+fn function_alias_exports_forwarding_wrapper() {
+    let rs_dir = build_and_diff("alias_function");
+    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
+
+    assert!(main_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn alias_impl"));
+    assert!(
+        main_rs.contains("return real_impl(_0);"),
+        "alias wrapper should forward to real_impl:\n{main_rs}"
+    );
+}

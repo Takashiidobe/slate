@@ -152,7 +152,11 @@ pub fn defined_functions(module: &Module) -> Vec<String> {
     };
     region_ops(module_op)
         .iter()
-        .filter(|op| op.name == "cir.func" && !region_ops(op).is_empty() && linkage_is_external(op))
+        .filter(|op| {
+            op.name == "cir.func"
+                && linkage_is_external(op)
+                && (!region_ops(op).is_empty() || attr_symbol_ref(op, "aliasee").is_some())
+        })
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
         .collect()
 }
@@ -176,13 +180,29 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
     let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
         return BTreeSet::new();
     };
-    region_ops(module_op)
+    let ops = region_ops(module_op);
+    let mut unsafe_functions: BTreeSet<String> = ops
         .iter()
         .filter(|op| op.name == "cir.func" && !region_ops(op).is_empty() && linkage_is_external(op))
         .filter(|op| function_requires_unsafe_contract(op))
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
         .filter(|name| name != "main")
-        .collect()
+        .collect();
+    for op in ops {
+        if op.name != "cir.func" || !region_ops(op).is_empty() {
+            continue;
+        }
+        let Some(name) = attr_str(op, "sym_name") else {
+            continue;
+        };
+        let Some(target) = attr_symbol_ref(op, "aliasee") else {
+            continue;
+        };
+        if unsafe_functions.contains(target) {
+            unsafe_functions.insert(name.to_string());
+        }
+    }
+    unsafe_functions
 }
 
 pub fn required_features(module: &Module) -> BTreeSet<Feature> {
@@ -770,6 +790,9 @@ impl<'a> Lowerer<'a> {
             if op.name != "cir.func" || !region_ops(op).is_empty() {
                 continue;
             }
+            if attr_symbol_ref(op, "aliasee").is_some() {
+                continue;
+            }
             let Some(name) = attr_str(op, "sym_name") else {
                 continue;
             };
@@ -891,11 +914,16 @@ impl<'a> Lowerer<'a> {
         self.unsafe_functions
             .extend(unsafe_defined_functions(module));
 
-        for op in ops {
-            if op.name != "cir.func" || region_ops(op).is_empty() {
+        for op in &ops {
+            if op.name != "cir.func" {
                 continue;
             }
-            match self.lower_func(op) {
+            let item = if region_ops(op).is_empty() {
+                self.lower_func_alias(op, &ops)
+            } else {
+                self.lower_func(op)
+            };
+            match item {
                 Some(item) => items.push(item),
                 None => self.ctx.diagnostics.warn(
                     format!("lower: skipped function {:?}", attr_str(op, "sym_name")),
@@ -971,6 +999,15 @@ impl<'a> Lowerer<'a> {
             return;
         };
         if matches!(name, "llvm.compiler.used" | "llvm.used") {
+            return;
+        }
+        if let Some(target) = attr_symbol_ref(op, "aliasee") {
+            self.ctx.diagnostics.error(
+                format!(
+                    "lower: unsupported global alias `{name}` to `{target}`; Rust has no faithful static alias representation"
+                ),
+                op.loc.clone(),
+            );
             return;
         }
         let rust_name = sanitize_ident(name).into_string();
@@ -1155,6 +1192,78 @@ impl<'a> Lowerer<'a> {
                 },
             );
         }
+    }
+
+    fn lower_func_alias(&mut self, op: &Op, ops: &[&Op]) -> Option<Item> {
+        let name = attr_str(op, "sym_name")?;
+        let target = attr_symbol_ref(op, "aliasee")?;
+        let target_op = ops.iter().find(|candidate| {
+            candidate.name == "cir.func"
+                && attr_str(candidate, "sym_name") == Some(target)
+                && !region_ops(candidate).is_empty()
+        });
+        if target_op.is_none() {
+            self.ctx.diagnostics.error(
+                format!("lower: unsupported function alias `{name}` to external target `{target}`"),
+                op.loc.clone(),
+            );
+            return None;
+        }
+
+        let function_type = attr_str(op, "function_type").unwrap_or("");
+        let (decl, _, _) = self.extern_fn_signature(name, function_type);
+        if decl.variadic {
+            self.ctx.diagnostics.error(
+                format!("lower: unsupported variadic function alias `{name}` to `{target}`"),
+                op.loc.clone(),
+            );
+            return None;
+        }
+
+        let external_def = self.project.emit_pub && linkage_is_external(op);
+        let attrs = symbol_attrs(
+            external_def,
+            linkage_is_weak(op),
+            attr_str(op, "section"),
+            &[],
+        );
+        if linkage_is_weak(op) {
+            self.uses_linkage.set(true);
+        }
+        let args = decl
+            .params
+            .iter()
+            .map(|param| Expr::Var(param.name.clone().into()))
+            .collect();
+        let mut call = Expr::Call {
+            func: Box::new(Expr::Var(target.into())),
+            args,
+        };
+        let unsafe_ =
+            self.unsafe_functions.contains(name) || self.unsafe_functions.contains(target);
+        if unsafe_ {
+            call = FunctionLowerer::unsafe_expr(call);
+        }
+        let stmt = if decl.ret.is_some() {
+            Stmt::Return(Some(call))
+        } else {
+            Stmt::Expr(call)
+        };
+
+        Some(Item::Fn(FnDef {
+            attrs,
+            vis: if external_def {
+                Visibility::Pub
+            } else {
+                Visibility::Private
+            },
+            unsafe_,
+            abi: if external_def { Some(Abi::C) } else { None },
+            name: name.to_string(),
+            params: decl.params,
+            ret: decl.ret,
+            body: vec![IndentStmt { depth: 1, stmt }],
+        }))
     }
 
     fn lower_enum(&mut self, enm: &crate::c_ast::Enum) -> Option<Item> {
@@ -5770,6 +5879,12 @@ fn op_mentions_long_double(op: &Op) -> bool {
 
 fn attr_str<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
     op.attrs.get(key).and_then(Attr::as_str)
+}
+
+fn attr_symbol_ref<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
+    attr_str(op, key)
+        .and_then(|value| value.trim().strip_prefix('@'))
+        .map(|value| value.trim_matches('"'))
 }
 
 fn attr_int(op: &Op, key: &str) -> Option<i64> {
