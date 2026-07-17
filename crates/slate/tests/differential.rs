@@ -408,6 +408,25 @@ fn safe_struct_field_reads_do_not_use_unsafe() {
 }
 
 #[test]
+fn struct_field_initialization_is_folded_into_literal() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-struct-field-init");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("aligned_struct.c");
+    let generated = tmp.join("aligned_struct.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate aligned_struct fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated aligned_struct rust");
+
+    assert!(
+        rust.contains("let s: Aligned = Aligned { a: 5, b: 4660 };"),
+        "expected folded struct initializer:\n{rust}"
+    );
+    assert!(!rust.contains("let mut s: Aligned = Aligned { a: 0, b: 0 };"));
+    assert!(!rust.contains("s.a = 5;"));
+    assert!(!rust.contains("s.b = 4660;"));
+}
+
+#[test]
 fn final_return_temps_are_collapsed() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-final-return-temps");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

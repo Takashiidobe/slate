@@ -34,6 +34,7 @@ pub(super) mod string_copy;
 pub(super) mod string_libc;
 pub(super) mod string_lift;
 pub(super) mod string_params;
+pub(super) mod struct_field_init;
 pub(super) mod unnecessary_casts;
 pub(super) mod unused_items;
 pub(super) mod va_list;
