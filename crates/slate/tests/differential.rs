@@ -1491,6 +1491,25 @@ fn ptr_len_slice_loop_uses_materialized_item_name() {
 }
 
 #[test]
+fn ptr_len_lift_uses_extent_param_not_adjacent_printable() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-ptr-len-nonadjacent");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("ptr_len_nonadjacent.c");
+    let generated = tmp.join("ptr_len_nonadjacent.generated.rs");
+    support::translate(&c_src, &generated).expect("translate ptr_len_nonadjacent fixture");
+    let rust =
+        std::fs::read_to_string(&generated).expect("read generated ptr_len_nonadjacent rust");
+
+    assert!(rust.contains("fn sum_items(items: &[i32], printable: i32) -> i32"));
+    assert!(rust.contains("let length: i32 = items.len() as i32;"));
+    assert!(rust.contains("println!(\"this is another number: {}\", printable);"));
+    assert!(rust.contains("sum_items(values.as_slice(), 5)"));
+    assert!(!rust.contains("let printable: i32 = items.len() as i32;"));
+    assert!(!rust.contains("fn sum_items(items: &[i32])"));
+    assert!(!rust.contains("sum_items(values.as_slice())"));
+}
+
+#[test]
 fn scalar_heap_owner_uses_box_drop() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-heap-box");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
