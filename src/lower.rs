@@ -46,10 +46,24 @@ pub struct ProjectInfo {
 }
 
 const WEAK_ANY_LINKAGE: i64 = 4;
+const HIDDEN_VISIBILITY: i64 = 1;
+const PROTECTED_VISIBILITY: i64 = 2;
 
 /// CIR encodes external linkage as `linkage = 0`; weak definitions are external too.
 fn linkage_is_external(op: &Op) -> bool {
     matches!(attr_int(op, "linkage").unwrap_or(0), 0 | WEAK_ANY_LINKAGE)
+}
+
+fn visibility_allows_export(op: &Op) -> bool {
+    attr_int(op, "global_visibility").unwrap_or(0) != HIDDEN_VISIBILITY
+}
+
+fn externally_exported(op: &Op) -> bool {
+    linkage_is_external(op) && visibility_allows_export(op)
+}
+
+fn visibility_is_protected(op: &Op) -> bool {
+    attr_int(op, "global_visibility") == Some(PROTECTED_VISIBILITY)
 }
 
 fn linkage_is_weak(op: &Op) -> bool {
@@ -154,7 +168,7 @@ pub fn defined_functions(module: &Module) -> Vec<String> {
         .iter()
         .filter(|op| {
             op.name == "cir.func"
-                && linkage_is_external(op)
+                && externally_exported(op)
                 && (!region_ops(op).is_empty() || attr_symbol_ref(op, "aliasee").is_some())
         })
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
@@ -170,7 +184,7 @@ pub fn defined_globals(module: &Module) -> Vec<String> {
         .filter(|op| {
             op.name == "cir.global"
                 && attr_str(op, "initial_value").is_some()
-                && linkage_is_external(op)
+                && externally_exported(op)
         })
         .filter_map(|op| attr_str(op, "sym_name").map(|name| sanitize_ident(name).into_string()))
         .collect()
@@ -183,7 +197,7 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
     let ops = region_ops(module_op);
     let mut unsafe_functions: BTreeSet<String> = ops
         .iter()
-        .filter(|op| op.name == "cir.func" && !region_ops(op).is_empty() && linkage_is_external(op))
+        .filter(|op| op.name == "cir.func" && !region_ops(op).is_empty() && externally_exported(op))
         .filter(|op| function_requires_unsafe_contract(op))
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
         .filter(|name| name != "main")
@@ -1013,6 +1027,7 @@ impl<'a> Lowerer<'a> {
         let rust_name = sanitize_ident(name).into_string();
         let ty = attr_str(op, "sym_type").map(|ty| self.rust_type(ty));
         let weak = linkage_is_weak(op);
+        self.warn_protected_visibility(op, name);
         let section = attr_str(op, "section").map(str::to_owned);
         let used = self
             .used_symbols
@@ -1037,7 +1052,7 @@ impl<'a> Lowerer<'a> {
                         name: rust_name,
                         ty,
                         init,
-                        external: linkage_is_external(op),
+                        external: externally_exported(op),
                         weak,
                         section: section.clone(),
                         used: used.clone(),
@@ -1057,7 +1072,7 @@ impl<'a> Lowerer<'a> {
                             bytes.len(),
                             Expr::Value(RustValue::I64(0)),
                         ),
-                        external: linkage_is_external(op),
+                        external: externally_exported(op),
                         weak,
                         section: section.clone(),
                         used: used.clone(),
@@ -1080,7 +1095,7 @@ impl<'a> Lowerer<'a> {
                                 len as usize,
                                 Expr::Value(RustValue::I64(0)),
                             ),
-                            external: linkage_is_external(op),
+                            external: externally_exported(op),
                             weak,
                             section: section.clone(),
                             used: used.clone(),
@@ -1099,7 +1114,7 @@ impl<'a> Lowerer<'a> {
                             name: rust_name,
                             ty,
                             init,
-                            external: linkage_is_external(op),
+                            external: externally_exported(op),
                             weak,
                             section: section.clone(),
                             used: used.clone(),
@@ -1123,7 +1138,7 @@ impl<'a> Lowerer<'a> {
                             elem: Box::new(self.default_value_expr(&self.rust_type(&elem))),
                             len: len as usize,
                         },
-                        external: linkage_is_external(op),
+                        external: externally_exported(op),
                         weak,
                         section: section.clone(),
                         used: used.clone(),
@@ -1142,7 +1157,7 @@ impl<'a> Lowerer<'a> {
                         name: rust_name,
                         init: self.default_value_expr(&ty),
                         ty,
-                        external: linkage_is_external(op),
+                        external: externally_exported(op),
                         weak,
                         section: section.clone(),
                         used: used.clone(),
@@ -1169,7 +1184,7 @@ impl<'a> Lowerer<'a> {
                             }),
                             ty,
                         },
-                        external: linkage_is_external(op),
+                        external: externally_exported(op),
                         weak,
                         section: section.clone(),
                         used: used.clone(),
@@ -1178,7 +1193,7 @@ impl<'a> Lowerer<'a> {
             }
         } else if let Some(init) = parse_cir_scalar_expr(raw) {
             let ty = ty.unwrap_or_else(|| self.rust_type("!s32i"));
-            let external = linkage_is_external(op);
+            let external = externally_exported(op);
             self.globals.insert(
                 rust_name.clone(),
                 GlobalVar {
@@ -1220,7 +1235,8 @@ impl<'a> Lowerer<'a> {
             return None;
         }
 
-        let external_def = self.project.emit_pub && linkage_is_external(op);
+        let external_def = self.project.emit_pub && externally_exported(op);
+        self.warn_protected_visibility(op, name);
         let attrs = symbol_attrs(
             external_def,
             linkage_is_weak(op),
@@ -1268,6 +1284,17 @@ impl<'a> Lowerer<'a> {
 
     fn lower_enum(&mut self, enm: &crate::c_ast::Enum) -> Option<Item> {
         lower_enum_def(enm, Visibility::Private).map(Item::Enum)
+    }
+
+    fn warn_protected_visibility(&mut self, op: &Op, name: &str) {
+        if visibility_is_protected(op) {
+            self.ctx.diagnostics.warn(
+                format!(
+                    "lower: protected visibility on `{name}` has no faithful Rust representation; falling back to default exported visibility"
+                ),
+                op.loc.clone(),
+            );
+        }
     }
 
     fn lower_record(&mut self, record: &crate::c_ast::Record) -> Vec<Item> {
@@ -1335,7 +1362,7 @@ impl<'a> Lowerer<'a> {
             );
             (Visibility::Private, None, None, prelude)
         } else {
-            let external_def = self.project.emit_pub && linkage_is_external(op);
+            let external_def = self.project.emit_pub && externally_exported(op);
             let vis = if external_def {
                 Visibility::Pub
             } else {
@@ -1368,11 +1395,12 @@ impl<'a> Lowerer<'a> {
         let ret = if diverges { Some(Type::Never) } else { ret };
 
         let attrs = symbol_attrs(
-            !is_main && self.project.emit_pub && linkage_is_external(op),
+            !is_main && self.project.emit_pub && externally_exported(op),
             linkage_is_weak(op),
             attr_str(op, "section"),
             &[],
         );
+        self.warn_protected_visibility(op, name);
         if linkage_is_weak(op) {
             self.uses_linkage.set(true);
         }
