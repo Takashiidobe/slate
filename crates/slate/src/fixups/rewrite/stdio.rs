@@ -1,10 +1,12 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::fixups::facts::file_ownership::match_gets_loop;
+use crate::fixups::facts::file_ownership::{buf_ptr_var, match_gets_loop};
 use crate::fixups::facts::{
     AstPath, FileOpenMode, FileOwnershipFact, FileUseKind, FixupFacts, FunctionId, PathSegment,
 };
-use crate::rust_ast::{Block, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
+use crate::rust_ast::{
+    BinOp, Block, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type,
+};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
     let mut changed = false;
@@ -71,7 +73,11 @@ fn plan_for_fact(
     if !fact.uses.iter().all(|use_| {
         matches!(
             use_.kind,
-            FileUseKind::Puts | FileUseKind::Close | FileUseKind::Gets
+            FileUseKind::Puts
+                | FileUseKind::Close
+                | FileUseKind::Gets
+                | FileUseKind::Read
+                | FileUseKind::Write
         )
     }) {
         return None;
@@ -129,7 +135,24 @@ fn plan_for_fact(
                 let gets = match_gets_loop(loop_body, &aliases)?;
                 replacements.insert(use_index, gets_loop_stmt(handle, &gets));
             }
-            FileUseKind::Read | FileUseKind::Write => return None,
+            FileUseKind::Read => {
+                let (result, args) = read_write_call(&body.get(use_index)?.stmt, "fread")?;
+                let buf_name = buf_ptr_var(&args[0])?;
+                let expr = fread_expr(handle, &buf_name, &args[1], &args[2]);
+                replacements.insert(use_index, bind_result(result, expr));
+                if previous_aliases_handle(body, use_index, handle) {
+                    remove.insert(use_index - 1);
+                }
+            }
+            FileUseKind::Write => {
+                let (result, args) = read_write_call(&body.get(use_index)?.stmt, "fwrite")?;
+                let buf_name = buf_ptr_var(&args[0])?;
+                let expr = fwrite_expr(handle, &buf_name, &args[1], &args[2]);
+                replacements.insert(use_index, bind_result(result, expr));
+                if previous_aliases_handle(body, use_index, handle) {
+                    remove.insert(use_index - 1);
+                }
+            }
         }
     }
     Some(Plan {
@@ -342,6 +365,213 @@ fn write_stdout_stmt(buf_name: &str) -> Stmt {
     })
 }
 
+type ReadWriteResult = Option<(String, bool, Option<Type>)>;
+
+fn read_write_call<'a>(stmt: &'a Stmt, callee: &str) -> Option<(ReadWriteResult, &'a [Expr])> {
+    match stmt {
+        Stmt::Expr(expr) => Some((None, call_args(expr, callee)?)),
+        Stmt::Let {
+            name,
+            mutable,
+            ty,
+            init: Some(expr),
+        } => Some((
+            Some((name.clone(), *mutable, ty.clone())),
+            call_args(expr, callee)?,
+        )),
+        _ => None,
+    }
+}
+
+fn call_args<'a>(expr: &'a Expr, callee: &str) -> Option<&'a [Expr]> {
+    let Expr::Call { func, args } = unsafe_tail(expr)? else {
+        return None;
+    };
+    if !matches!(&**func, Expr::Var(name) if name.as_str() == callee) || args.len() != 4 {
+        return None;
+    }
+    Some(args)
+}
+
+fn bind_result(result: ReadWriteResult, expr: Expr) -> Stmt {
+    match result {
+        Some((name, mutable, ty)) => Stmt::Let {
+            name,
+            mutable,
+            ty,
+            init: Some(expr),
+        },
+        None => Stmt::Expr(expr),
+    }
+}
+
+fn read_write_cap(size: &Expr, nmemb: &Expr) -> Expr {
+    Expr::Binary {
+        op: BinOp::Mul,
+        lhs: Box::new(Expr::Cast {
+            expr: Box::new(size.clone()),
+            ty: Type::parse("usize"),
+        }),
+        rhs: Box::new(Expr::Cast {
+            expr: Box::new(nmemb.clone()),
+            ty: Type::parse("usize"),
+        }),
+    }
+}
+
+/// fwrite's source buffer is `[i8; N]`; `Write::write_all` needs `&[u8]`, so we build an
+/// unsafe byte-slice view over the same bytes rather than copying them.
+fn byte_slice_expr(buf_name: &str, cap: Expr) -> Expr {
+    Expr::Unsafe(Box::new(Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            func: Box::new(Expr::Var("std::slice::from_raw_parts".into())),
+            args: vec![
+                Expr::Cast {
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(Expr::Var(buf_name.into())),
+                        method: "as_ptr".into(),
+                        args: Vec::new(),
+                    }),
+                    ty: Type::parse("*const u8"),
+                },
+                cap,
+            ],
+        })),
+    }))
+}
+
+fn fwrite_expr(handle: &str, buf_name: &str, size: &Expr, nmemb: &Expr) -> Expr {
+    let cap = read_write_cap(size, nmemb);
+    let slice = byte_slice_expr(buf_name, cap);
+    let write_call = Stmt::Expr(Expr::MethodCall {
+        recv: Box::new(Expr::Call {
+            func: Box::new(Expr::Var("std::io::Write::write_all".into())),
+            args: vec![
+                Expr::Ref {
+                    mutable: true,
+                    expr: Box::new(Expr::Var(handle.into())),
+                },
+                slice,
+            ],
+        }),
+        method: "unwrap".into(),
+        args: Vec::new(),
+    });
+    Expr::Block(Box::new(Block {
+        stmts: vec![IndentStmt {
+            depth: 0,
+            stmt: write_call,
+        }],
+        tail: Some(Box::new(Expr::Cast {
+            expr: Box::new(nmemb.clone()),
+            ty: Type::parse("u64"),
+        })),
+    }))
+}
+
+/// fread's item-count return only counts whole items; a short read still deposits its
+/// partial trailing bytes into the destination buffer, so we read into a `Vec` (which
+/// tolerates short reads via `read_to_end`) and copy back only the bytes actually read.
+fn fread_expr(handle: &str, buf_name: &str, size: &Expr, nmemb: &Expr) -> Expr {
+    let cap = read_write_cap(size, nmemb);
+    let read_buf_let = Stmt::Let {
+        name: "_read_buf".into(),
+        mutable: true,
+        ty: Some(Type::parse("Vec<u8>")),
+        init: Some(Expr::Call {
+            func: Box::new(Expr::Var("Vec::new".into())),
+            args: Vec::new(),
+        }),
+    };
+    let take_expr = Expr::Call {
+        func: Box::new(Expr::Var("std::io::Read::take".into())),
+        args: vec![
+            Expr::Ref {
+                mutable: true,
+                expr: Box::new(Expr::Var(handle.into())),
+            },
+            Expr::Cast {
+                expr: Box::new(cap),
+                ty: Type::parse("u64"),
+            },
+        ],
+    };
+    let read_to_end_call = Expr::MethodCall {
+        recv: Box::new(Expr::Call {
+            func: Box::new(Expr::Var("std::io::Read::read_to_end".into())),
+            args: vec![
+                Expr::Ref {
+                    mutable: true,
+                    expr: Box::new(take_expr),
+                },
+                Expr::Ref {
+                    mutable: true,
+                    expr: Box::new(Expr::Var("_read_buf".into())),
+                },
+            ],
+        }),
+        method: "unwrap".into(),
+        args: Vec::new(),
+    };
+    let n_let = Stmt::Let {
+        name: "_n".into(),
+        mutable: false,
+        ty: None,
+        init: Some(read_to_end_call),
+    };
+    let copy_stmt = Stmt::Expr(Expr::Unsafe(Box::new(Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            func: Box::new(Expr::Var("std::ptr::copy_nonoverlapping".into())),
+            args: vec![
+                Expr::MethodCall {
+                    recv: Box::new(Expr::Var("_read_buf".into())),
+                    method: "as_ptr".into(),
+                    args: Vec::new(),
+                },
+                Expr::Cast {
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(Expr::Var(buf_name.into())),
+                        method: "as_mut_ptr".into(),
+                        args: Vec::new(),
+                    }),
+                    ty: Type::parse("*mut u8"),
+                },
+                Expr::Var("_n".into()),
+            ],
+        })),
+    })));
+    let item_count = Expr::Cast {
+        expr: Box::new(Expr::Binary {
+            op: BinOp::Div,
+            lhs: Box::new(Expr::Var("_n".into())),
+            rhs: Box::new(Expr::Cast {
+                expr: Box::new(size.clone()),
+                ty: Type::parse("usize"),
+            }),
+        }),
+        ty: Type::parse("u64"),
+    };
+    Expr::Block(Box::new(Block {
+        stmts: vec![
+            IndentStmt {
+                depth: 0,
+                stmt: read_buf_let,
+            },
+            IndentStmt {
+                depth: 0,
+                stmt: n_let,
+            },
+            IndentStmt {
+                depth: 0,
+                stmt: copy_stmt,
+            },
+        ],
+        tail: Some(Box::new(item_count)),
+    }))
+}
+
 fn open_failure_body(stmt: &Stmt) -> Option<Vec<IndentStmt>> {
     match stmt {
         Stmt::Scope { body } if body.len() == 2 => {
@@ -459,6 +689,26 @@ mod tests {
                     Some("i32"),
                 ),
                 extern_fn("fclose", vec![("stream", "*mut libc::FILE")], Some("i32")),
+                extern_fn(
+                    "fread",
+                    vec![
+                        ("ptr", "*mut core::ffi::c_void"),
+                        ("size", "u64"),
+                        ("nmemb", "u64"),
+                        ("stream", "*mut libc::FILE"),
+                    ],
+                    Some("u64"),
+                ),
+                extern_fn(
+                    "fwrite",
+                    vec![
+                        ("ptr", "*mut core::ffi::c_void"),
+                        ("size", "u64"),
+                        ("nmemb", "u64"),
+                        ("stream", "*mut libc::FILE"),
+                    ],
+                    Some("u64"),
+                ),
                 Item::Fn(func(vec![], None, stmts)),
             ],
         };
@@ -684,6 +934,156 @@ mod tests {
         );
         assert!(!out.contains("unsafe { fgets("), "{out}");
         assert!(!out.contains("unsafe { fclose("));
+    }
+
+    fn owned_handle_prelude(path: &str, mode: &str) -> Vec<Stmt> {
+        vec![
+            Stmt::Let {
+                name: "f".into(),
+                mutable: true,
+                ty: Some(Type::parse("*mut libc::FILE")),
+                init: Some(Expr::Value(RustValue::NullPtr)),
+            },
+            temp(
+                "_v0",
+                "*mut libc::FILE",
+                unsafe_call(
+                    "fopen",
+                    vec![
+                        Expr::CStr(path.as_bytes().to_vec()),
+                        Expr::CStr(mode.as_bytes().to_vec()),
+                    ],
+                ),
+            ),
+            assign("f", var("_v0")),
+            Stmt::If {
+                cond: var("f"),
+                then_body: vec![IndentStmt {
+                    depth: 2,
+                    stmt: Stmt::Expr(Expr::Call {
+                        func: Box::new(Expr::Path(crate::rust_ast::Path::new(
+                            ["std", "process", "exit"].into_iter().map(Ident::new),
+                        ))),
+                        args: vec![int(0)],
+                    }),
+                }],
+                else_body: Vec::new(),
+            },
+        ]
+    }
+
+    fn c_void_buf_ptr(name: &str) -> Expr {
+        cast(
+            cast(buf_ptr(name), "*mut core::ffi::c_void"),
+            "*mut core::ffi::c_void",
+        )
+    }
+
+    #[test]
+    fn rewrites_fwrite_return_into_write_all() {
+        let mut stmts = owned_handle_prelude("out.bin", "w");
+        stmts.push(Stmt::Let {
+            name: "wbuf".into(),
+            mutable: true,
+            ty: Some(Type::parse("[i8; 4]")),
+            init: Some(Expr::ArrayLit(vec![int(1), int(2), int(3), int(4)])),
+        });
+        stmts.push(temp("_v2", "*mut libc::FILE", var("f")));
+        stmts.push(Stmt::Let {
+            name: "n".into(),
+            mutable: false,
+            ty: Some(Type::parse("u64")),
+            init: Some(unsafe_call(
+                "fwrite",
+                vec![
+                    c_void_buf_ptr("wbuf"),
+                    int(1),
+                    int(4),
+                    cast(var("_v2"), "*mut libc::FILE"),
+                ],
+            )),
+        });
+        stmts.push(temp("_v3", "*mut libc::FILE", var("f")));
+        stmts.push(Stmt::Expr(unsafe_call("fclose", vec![var("_v3")])));
+
+        let out = run(stmts);
+
+        assert!(
+            out.contains(
+                "std::io::Write::write_all(&mut f, unsafe { std::slice::from_raw_parts(wbuf.as_ptr() as *const u8,"
+            ),
+            "{out}"
+        );
+        assert!(out.contains("let n: u64 ="), "{out}");
+        assert!(!out.contains("unsafe { fwrite("), "{out}");
+    }
+
+    #[test]
+    fn rewrites_fread_into_take_read_to_end() {
+        let mut stmts = owned_handle_prelude("in.bin", "r");
+        stmts.push(Stmt::Let {
+            name: "rbuf".into(),
+            mutable: true,
+            ty: Some(Type::parse("[i8; 4]")),
+            init: Some(Expr::ArrayLit(vec![int(0), int(0), int(0), int(0)])),
+        });
+        stmts.push(temp("_v2", "*mut libc::FILE", var("f")));
+        stmts.push(Stmt::Let {
+            name: "n".into(),
+            mutable: false,
+            ty: Some(Type::parse("u64")),
+            init: Some(unsafe_call(
+                "fread",
+                vec![
+                    c_void_buf_ptr("rbuf"),
+                    int(1),
+                    int(4),
+                    cast(var("_v2"), "*mut libc::FILE"),
+                ],
+            )),
+        });
+        stmts.push(temp("_v3", "*mut libc::FILE", var("f")));
+        stmts.push(Stmt::Expr(unsafe_call("fclose", vec![var("_v3")])));
+
+        let out = run(stmts);
+
+        assert!(
+            out.contains("std::io::Read::read_to_end(&mut std::io::Read::take(&mut f,"),
+            "{out}"
+        );
+        assert!(out.contains("std::ptr::copy_nonoverlapping"), "{out}");
+        assert!(out.contains("let n: u64 ="), "{out}");
+        assert!(!out.contains("unsafe { fread("), "{out}");
+    }
+
+    #[test]
+    fn rejects_fread_into_non_array_buffer() {
+        let mut stmts = owned_handle_prelude("in.bin", "r");
+        stmts.push(temp("_v2", "*mut libc::FILE", var("f")));
+        stmts.push(Stmt::Let {
+            name: "n".into(),
+            mutable: false,
+            ty: Some(Type::parse("u64")),
+            init: Some(unsafe_call(
+                "fread",
+                vec![
+                    cast(
+                        cast(var("buf"), "*mut core::ffi::c_void"),
+                        "*mut core::ffi::c_void",
+                    ),
+                    int(1),
+                    int(4),
+                    cast(var("_v2"), "*mut libc::FILE"),
+                ],
+            )),
+        });
+        stmts.push(temp("_v3", "*mut libc::FILE", var("f")));
+        stmts.push(Stmt::Expr(unsafe_call("fclose", vec![var("_v3")])));
+
+        let out = run(stmts);
+
+        assert!(out.contains("unsafe { fread("), "{out}");
+        assert!(out.contains("unsafe { fclose("), "{out}");
     }
 
     #[test]
