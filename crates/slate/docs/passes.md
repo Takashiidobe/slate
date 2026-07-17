@@ -14,15 +14,14 @@ Readability is recovered later by Rust fixups, not during baseline lowering.
 
 ## Current pipeline
 
-| Stage              | In -> Out                               | How                                                                    | Status                   |
-| ------------------ | --------------------------------------- | ---------------------------------------------------------------------- | ------------------------ |
-| **emit-cir**       | C -> CIR text                           | `clang -fclangir -emit-cir` piped to `cir-opt --mlir-print-op-generic` | implemented              |
-| **parse-cir**      | CIR text -> generic Op-tree + locs      | recursive-descent parser over MLIR generic form                        | implemented              |
-| **load-ast**       | C -> compact source context + raw JSON  | `clang -Xclang -ast-dump=json -fsyntax-only`                           | implemented              |
-| **lower**          | CIR + AST context -> Rust source        | match `op.name`; materialize temps; use `libc` / `unsafe`              | implemented              |
-| **fixups**         | baseline Rust AST -> cleaner Rust AST   | fixed cleanup pass entry point in `src/fixups/`                         | implemented boundary     |
-| **main-normalize** | C `main` return -> process exit         | emit `std::process::exit(code)`                                        | implemented inside lower |
-| **generated-diff** | C + generated Rust -> output comparison | build generated Rust with Cargo + `libc`, compare stdout + exit code   | implemented              |
+| Stage              | In -> Out                               | How                                                                    |
+| ------------------- | --------------------------------------- | ------------------------------------------------------------------------ |
+| **emit-cir**       | C -> CIR text                           | `clang -fclangir -emit-cir` piped to `cir-opt --mlir-print-op-generic` |
+| **parse-cir**      | CIR text -> generic Op-tree + locs      | recursive-descent parser over MLIR generic form                        |
+| **load-ast**       | C -> compact source context + raw JSON  | `clang -Xclang -ast-dump=json -fsyntax-only`                           |
+| **lower**          | CIR + AST context -> Rust source        | match `op.name`; materialize temps; use `libc` / `unsafe`              |
+| **fixups**         | baseline Rust AST -> cleaner Rust AST   | fixed cleanup pipeline, `src/fixups::apply`                            |
+| **generated-diff** | C + generated Rust -> output comparison | build generated Rust with Cargo + `libc`, compare stdout + exit code   |
 
 Current code path:
 
@@ -30,58 +29,12 @@ Current code path:
 emit-cir -> parse-cir -> load-ast -> lower(libc/unsafe) -> fixups -> generated-diff
 ```
 
-## Current baseline coverage
-
-The lowerer currently handles the fixture subset:
-
-- `cir.func`, `cir.alloca`, `cir.store`, `cir.load`, `cir.const`.
-- `cir.add`, `cir.inc`, `cir.cmp`.
-- `cir.get_global`, `cir.cast`, `cir.call`.
-- `cir.scope`, `cir.for`, `cir.while`, `cir.condition`, `cir.yield`,
-  `cir.return`.
-- global constant strings used by `printf`.
-- CIR integer aliases such as `!s32i = !cir.int<s, 32>`, mapped to Rust integer
-  primitives.
-- fixed-width `<stdint.h>` typedefs and `<stddef.h>` `size_t`, resolved through
-  Clang `desugaredQualType` and then lowered by CIR integer width.
-- source enum constants from Clang AST, emitted as Rust `const` items.
-- source union records from Clang AST, emitted as `#[repr(C)] union` items with
-  primitive scalar fields and basic `cir.get_member` field access.
-- source struct records from Clang AST, emitted as `#[repr(C)] struct` items
-  with primitive scalar fields and basic `cir.get_member` field access.
-- fixed-size CIR arrays of primitive scalar element types, emitted as Rust
-  arrays with basic `cir.get_element` indexed loads and stores.
-- `cir.ptr_stride`, pointer-valued stores/loads, and array-to-pointer decay,
-  emitted as raw Rust pointer operations.
-- `sizeof` expressions when Clang has folded them to CIR integer constants.
-- `cir.load` and `cir.store` with `is_volatile` for volatile-qualified
-  primitive scalar locals, parameters, fields, returns, and globals, emitted as
-  `std::ptr::read_volatile` and `std::ptr::write_volatile`.
-- file-scope `cir.global` integer and floating scalar values with constant
-  initializers, emitted as Rust `static mut` items.
-
-Unknown CIR ops emit a `todo!("cir.xyz")` expression and a diagnostic. That is
-intentional: failing loudly is better than silently dropping semantics.
-
-Current C fixture coverage:
-
-| Fixture            | Covered behavior                                                       |
-| ------------------ | ---------------------------------------------------------------------- |
-| `add.c`            | `int` functions, params, locals, addition, returns, calls              |
-| `loop_sum.c`       | `for` loops, comparisons, increments, compound addition                |
-| `while_loop.c`     | `while` loops, comparisons, increments, compound addition              |
-| `enums.c`          | enum constants, implicit values, explicit positive and negative values |
-| `unions.c`         | union declaration, integer fields, field writes, field reads           |
-| `structs.c`        | struct declaration, integer fields, field writes, field reads          |
-| `non_int_fields.c` | struct/union `char`, `unsigned char`, `float`, and `double` fields     |
-| `arrays.c`         | fixed-size local arrays, indexed stores, indexed loads                 |
-| `array_types.c`    | fixed-size local `char` and `double` arrays                            |
-| `pointers.c`       | pointer locals/params, address-of, dereference, pointer arithmetic     |
-| `sizeof.c`         | `sizeof` over primitive, array, struct, union, and expression forms    |
-| `volatile.c`       | volatile local stores and loads                                        |
-| `static_globals.c` | file-scope static integer global loads and stores                      |
-| `non_int_globals.c` | file-scope static non-int globals plus non-int params and returns      |
-| `stdint_types.c`   | `<stdint.h>` fixed-width typedefs and `<stddef.h>` `size_t`             |
+For what the baseline lowerer and fixup ladder currently cover, see
+[README.md](README.md) (categorized summary) and
+[cir-op-prioritization.md](cir-op-prioritization.md) (exhaustive CIR op
+checklist). Unknown CIR ops emit a `todo!("cir.xyz")` expression and a
+diagnostic — failing loudly is intentional; it is better than silently
+dropping semantics.
 
 ## Stage notes
 
@@ -112,15 +65,99 @@ The lowerer is the only stage that knows CIR op semantics. It emits **structured
 `format!`-ing into Rust text is not allowed. Keep the output as strongly typed as
 possible — favor a new enum variant over a `String` bridge, so the compiler
 enforces exhaustiveness and fixups can pattern-match the shape. If the AST cannot
-express a construct, extend `src/rust_ast.rs`. Fixups follow the same rule
+express something, add the node to `src/rust_ast.rs`. Fixups follow the same rule
 ([writing-a-fixup.md](writing-a-fixup.md)).
 
 ### fixups
 
 Fixups run after baseline lowering through the fixed `src/fixups::apply` entry
-point. They must preserve the fallback property: the lowered Rust remains correct
-without a given cleanup. Keep cleanup code outside the CIR visitor unless the
-baseline lowering itself is wrong.
+point (`src/fixups/mod.rs`). They must preserve the fallback property: the
+lowered Rust remains correct without a given cleanup. Keep cleanup code outside
+the CIR visitor unless the baseline lowering itself is wrong.
+
+The fixups directory is split by concern:
+
+- **`src/fixups/facts/`** — read-only analysis. `facts::analyze(program)`
+  returns `AnalyzedProgram { program, facts }`, where `facts: FixupFacts`
+  aggregates per-function analyses (definition/use, effects/purity, control
+  flow, casts, loop shapes, pointer/string/heap provenance, and more — one
+  module per concern, `src/fixups/facts/mod.rs` orchestrates them). Fact
+  collectors walk the tree with the shared, immutable walkers in
+  `src/fixups/facts/walk.rs`.
+- **`src/fixups/rewrite/`** — the actual AST-to-AST rewrite passes. Each
+  `fixup(...)` takes the AST to rewrite plus `&FixupFacts` (and, for
+  per-function passes, the `Function` fact record) and mutates in place,
+  usually returning whether it changed anything. Rewrites share the mutable,
+  path-aware walkers in `src/fixups/support/walk.rs`.
+- **`src/fixups/idents.rs`** — ident-occurrence counting, used to prove a
+  binding is single-use or dead before folding or dropping it.
+
+`apply` is a straight-line sequence, not a scheduler: it calls `facts::analyze`
+again whenever an earlier rewrite could have invalidated the facts a later pass
+needs, and re-runs several passes to a fixpoint (`inline_temps_to_fixpoint`,
+`zero_init_to_fixpoint`, `dead_locals_to_fixpoint`, ...) since one fold can
+expose another. Order matters — see
+[writing-a-fixup.md](writing-a-fixup.md#register-the-pass) for how to place a
+new pass in that sequence.
+
+### The pass sequence
+
+This is the order `src/fixups::apply` (`src/fixups/mod.rs`) actually runs in.
+Every pass listed below lives at `src/fixups/rewrite/<name>.rs` and exposes a
+`fixup` entry point, so the module name is enough to find it. "To fixpoint"
+means the pass re-runs - recomputing facts each round - until a round makes no
+change; "once" means it runs exactly one time per `apply` call.
+
+1. `goto` - restructure the goto dispatch loop into structured control flow - to fixpoint, per function (`structure_goto`).
+2. `early_inline_temps` - inline single-use pure temps, early variant - to fixpoint (`inline_temps_to_fixpoint`), capped at 5 rounds for very large functions (`> 2_000` statements) so pathological cases don't spin.
+3. `anonymous_structs` - hoist repeated anonymous-struct shapes into named structs - once.
+4. `param_spills` - fold a parameter's stack spill into its binding - once, per function.
+5. `zero_init` (`cross_effects = false`) - fuse a zero-init `let` with the assignment that overwrites it - to fixpoint (`zero_init_to_fixpoint`).
+6. `struct_field_init` - fold field assignments into the preceding struct literal - to fixpoint (`struct_field_init_to_fixpoint`).
+7. `singleton_scopes` - unwrap a one-statement `{ }` scope - to fixpoint (`singleton_scopes_to_fixpoint`).
+8. `compound_assign` - recover `a -= 5` - once, per function.
+9. `for_continue` - invert synthetic continue-blocks - to fixpoint (`cleanup_for_continues`), then `singleton_scopes` again to fixpoint.
+10. `constant_index_casts` - drop redundant `as usize` on constant indices - once, per function.
+11. `unnecessary_casts` - drop casts a typed context already makes redundant - once, per function.
+12. `call_args` - inline single-use call-argument temps - to fixpoint, per function, across the whole program.
+13. `retval` - collapse a return-slot store into the final return/exit - once, per function.
+14. `final_return_temps` - collapse a return-value temp into the final `return` - to fixpoint, per function, across the whole program.
+15. `drop_call_results` - turn `let _v = call();` into `call();` when unused - once, per function.
+16. `string_lift` - lift NUL-terminated buffers to `CStr`/`str`/byte slices - once, per function.
+17. `string_params` - turn a C-string pointer parameter into `&str` - to fixpoint (its own `loop { ... }`); re-run three more times later in the sequence (after `string_copy`, after `string_libc`'s first pass, and after `printf_format`), since each of those can create a new liftable parameter.
+18. `ptr_len` - pair a pointer+length parameter into a slice parameter - once.
+19. `slice_index` - rewrite pointer-offset derefs into `slice[i]` once the param is a slice - once.
+20. `slice_loop` - recover `for x in slice.iter()/.iter_mut()` - once; if it changed anything, `late_loop_cleanup` runs, itself `singleton_scopes` + `dead_locals` to fixpoint.
+21. `range_loop` - recover `for i in 0..bound` for the remaining counted loops - once; same conditional `late_loop_cleanup` as above.
+22. `va_list` - remove redundant `va_list` clone/alias bookkeeping - once.
+23. `remove_mut` - drop `mut` where facts prove no mutation - once, per function; re-run as a bare pass four more times later in the sequence, after each group of passes that could have made a binding provably immutable (`string_copy`, `heap_ownership`, `printf_format`, `atomic_compare_exchange`).
+24. `string_copy` then `string_copy::prune_unused_externs` - `strcpy`/`strcat`-only buffers to owned `String`, then drop now-dead `extern` decls - once each.
+25. `string_libc` then `string_libc::prune_unused_externs` - `strlen`/`strcmp`-family calls on lifted strings to native Rust - once each; repeated once more later (after `c_strings`) since lifting more C strings exposes more libc calls to rewrite.
+26. `sort_search` then `sort_search::prune_unused_externs` - `qsort`/`bsearch` to `.sort_by()`/`.binary_search_by()` - once each.
+27. `heap_ownership` then `heap_ownership::prune_unused_externs` - `malloc`/`calloc`/`realloc`/`free` to `Box`/`Vec` - once each.
+28. `dead_locals` - remove locals with no live, effectful use - to fixpoint (`dead_locals_to_fixpoint`), per function, across the program.
+29. `printf_format` - `printf`-family calls to `println!`/`print!` - once.
+30. `c_strings` - mark/simplify recognized C-string literals - once.
+31. `stdio` - `fopen`/`fputs`/`fclose` sequences to `File`/`OpenOptions` owners - once.
+32. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls - once.
+33. `nullable_pointer` - recover `Option<*T>` null-check idioms - to fixpoint (its own `loop { ... }`).
+34. `string_lift::fixup_c_strings` then `memchr_prelude` / `memchr_prelude::prune_unused_helper` - a second, narrower string-lift pass plus memchr-helper cleanup - once each.
+35. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing - once.
+36. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops - once.
+37. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage - once.
+38. `late_inline_temps` - inline single-use pure temps, late variant - to fixpoint (`inline_temps_to_fixpoint`, same round cap as step 2).
+39. `zero_init` (`cross_effects = true`) - same fusion as step 5, now allowed to cross intervening effects - to fixpoint.
+40. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, across the program.
+41. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint (`inline_var_aliases_to_fixpoint`).
+42. `unused_items` - remove dead top-level items - once.
+43. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
+
+The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
+because later groups can create new opportunities for earlier ones; re-running
+the whole pipeline to a global fixpoint was judged not worth the compile time,
+so those specific re-runs are placed by hand where they matter. If you add a
+pass that creates a similar opportunity for an earlier pass, place an explicit
+extra call rather than reaching for a global fixpoint loop.
 
 ## Adding a feature
 
@@ -129,32 +166,8 @@ arithmetic, new arithmetic operators, globals, `if`, `switch`.
 
 See [adding-features.md](adding-features.md) for the step-by-step workflow. The
 short version is: add a C fixture under `tests/fixtures/`, inspect CIR and Clang
-AST as needed, implement conservative baseline lowering, run `cargo test`, and
+AST as needed, implement conservative baseline lowering, run the test suite, and
 refresh ignored generated fixtures with `cargo run -- emit-fixtures`.
-
-## Known baseline gaps
-
-The next baseline features should be added one fixture at a time:
-
-- More scalar operations: subtraction, multiplication, division, modulo, bitwise
-  ops, logical ops, unary negation, and explicit casts.
-- Full control flow: `if`, `break`, `continue`, `switch`, and `goto`.
-- Aggregate types: broader arrays, broader structs and unions, more field
-  access, initialization, and layout-sensitive tests.
-- Pointers: address-of, dereference, pointer arithmetic, null, arrays as
-  pointers, and const-correctness.
-- Globals: static locals, non-integer globals, richer initialization, and
-  linkage.
-- Source model: typedefs, named enum types as variable types, prototypes, and
-  header-origin declarations.
-- Target model: signedness and width for all C integer spellings, enum
-  underlying type choices, pointer width, and ABI alignment.
-- Calls: non-`printf` libc functions, user prototypes without bodies, and
-  varargs beyond the direct `printf` fixture shape.
-
-For structs, start by extracting `RecordDecl` / `FieldDecl` from Clang AST, then
-emit `#[repr(C)]` Rust structs with C-compatible field types. Only after layout
-and field access are correct should you attempt any idiomatic Rust rewrite.
 
 ## Adding a fixup
 
