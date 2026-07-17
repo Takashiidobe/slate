@@ -305,6 +305,27 @@ fn pthread_opaque_types_use_libc_paths() {
 }
 
 #[test]
+fn lazy_singleton_recovers_once_lock() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-lazy-singleton");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let rust = translate_fixture(&tmp, "lazy_singleton");
+    assert!(
+        rust.contains(
+            "static cached_value: std::sync::OnceLock<i32> = std::sync::OnceLock::new();"
+        )
+    );
+    assert!(rust.contains("*cached_value.get_or_init(|| compute())"));
+    assert!(!rust.contains("static mut cached_value"));
+    assert!(!rust.contains("computed"));
+
+    let rust = translate_fixture(&tmp, "lazy_singleton_unsafe_alias");
+    assert!(rust.contains("static mut cached_value"));
+    assert!(rust.contains("static mut computed"));
+    assert!(!rust.contains("OnceLock"));
+}
+
+#[test]
 fn counted_varargs_loop_uses_range_for() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-varargs-loop");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

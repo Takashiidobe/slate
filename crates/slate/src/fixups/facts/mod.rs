@@ -17,6 +17,7 @@ pub(super) mod effects;
 pub(super) mod file_ownership;
 pub(crate) mod goto;
 pub(super) mod heap_ownership;
+pub(super) mod lazy_singleton;
 pub(super) mod loop_shapes;
 pub(super) mod places;
 pub(super) mod printf;
@@ -68,6 +69,7 @@ pub(super) struct FixupFacts {
     pub(super) anonymous_structs: Vec<AnonymousStructFact>,
     pub(super) atomic_locals: Vec<AtomicLocalFact>,
     pub(super) atomic_globals: Vec<AtomicGlobalFact>,
+    pub(super) lazy_init_singletons: Vec<LazyInitSingletonFact>,
     pub(super) slice_pointer_views: Vec<SlicePointerViewFact>,
     pub(super) slice_index_ranges: Vec<SliceIndexRangeFact>,
     pub(super) slice_pointer_indexes: Vec<SlicePointerIndexFact>,
@@ -137,6 +139,21 @@ pub(super) struct AtomicLocalFact {
 pub(super) struct AtomicGlobalFact {
     pub(super) name: String,
     pub(super) ty: crate::rust_ast::AtomicType,
+}
+
+/// A function whose entire body is the "static local guarded by an
+/// initialized flag" idiom: `flag_name` is a private int static written once
+/// (to a nonzero constant) and read once (as this guard's condition), and
+/// `payload_name` is a private static written only inside the same guard and
+/// read only by this function's trailing return. Safe to recover as
+/// `std::sync::OnceLock::get_or_init`.
+#[derive(Debug, Clone)]
+pub(super) struct LazyInitSingletonFact {
+    pub(super) function: FunctionId,
+    pub(super) flag_name: String,
+    pub(super) payload_name: String,
+    pub(super) payload_ty: Type,
+    pub(super) init_expr: Expr,
 }
 
 #[derive(Debug, Clone)]
@@ -1418,6 +1435,7 @@ pub(super) fn analyze(program: Program) -> AnalyzedProgram {
     ptr_len::collect_facts(&program, &mut collector.facts);
     array_element_pointer_origin::collect_facts(&program, &mut collector.facts);
     atomic_locals::collect_facts(&program, &mut collector.facts);
+    lazy_singleton::collect_facts(&program, &mut collector.facts);
     buffer_cursor::collect_facts(&program, &mut collector.facts);
     slice_index::collect_facts(&program, &mut collector.facts);
     counted_loop::collect_facts(&program, &mut collector.facts);

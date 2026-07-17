@@ -89,6 +89,8 @@ pub fn apply(program: Program) -> Program {
             break;
         }
     }
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::lazy_singleton::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
