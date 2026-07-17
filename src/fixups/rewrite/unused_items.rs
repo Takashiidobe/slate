@@ -342,6 +342,7 @@ fn collect_expr_refs(expr: &Expr, refs: &mut BTreeSet<String>) {
     match expr {
         Expr::Var(name) => {
             refs.insert(name.as_str().to_owned());
+            collect_layout_call_type_ref(name.as_str(), refs);
         }
         Expr::Path(path) => {
             for segment in &path.segments {
@@ -497,6 +498,17 @@ fn collect_expr_refs(expr: &Expr, refs: &mut BTreeSet<String>) {
         | Expr::Todo(_)
         | Expr::AtomicFence { .. } => {}
     }
+}
+
+fn collect_layout_call_type_ref(name: &str, refs: &mut BTreeSet<String>) {
+    let Some(ty) = name
+        .strip_prefix("std::mem::size_of::<")
+        .or_else(|| name.strip_prefix("std::mem::align_of::<"))
+        .and_then(|rest| rest.strip_suffix('>'))
+    else {
+        return;
+    };
+    refs.insert(ty.to_string());
 }
 
 fn collect_type_refs(ty: &Type, refs: &mut BTreeSet<String>) {
