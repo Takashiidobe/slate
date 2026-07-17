@@ -8,7 +8,8 @@ use crate::rust_ast::{
     CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
     FnDef, FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint,
     MatchArm, Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue,
-    SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, Visibility,
+    SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, UsedKind,
+    Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -47,7 +48,7 @@ fn linkage_is_external(op: &Op) -> bool {
     attr_int(op, "linkage").unwrap_or(0) == 0
 }
 
-fn symbol_attrs(no_mangle: bool, section: Option<&str>) -> Vec<RustAttr> {
+fn symbol_attrs(no_mangle: bool, section: Option<&str>, used: &[UsedKind]) -> Vec<RustAttr> {
     let mut attrs = Vec::new();
     if no_mangle {
         attrs.push(RustAttr::NoMangle);
@@ -55,6 +56,7 @@ fn symbol_attrs(no_mangle: bool, section: Option<&str>) -> Vec<RustAttr> {
     if let Some(section) = section {
         attrs.push(RustAttr::LinkSection(section.to_string()));
     }
+    attrs.extend(used.iter().copied().map(RustAttr::Used));
     attrs
 }
 
@@ -191,11 +193,13 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         block_addr_globals: BTreeMap::new(),
         const_aggregates: BTreeMap::new(),
         const_zero_globals: BTreeSet::new(),
+        used_symbols: BTreeMap::new(),
         externs: BTreeMap::new(),
         extern_returns: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
         uses_c_variadic: std::cell::Cell::new(false),
+        uses_used_with_arg: std::cell::Cell::new(false),
         uses_memchr: std::cell::Cell::new(false),
         variadic_defs: BTreeSet::new(),
         project: project.clone(),
@@ -454,6 +458,7 @@ struct Lowerer<'a> {
     /// sym_name; rendered recursively against the destination type on `cir.copy`.
     const_aggregates: BTreeMap<String, String>,
     const_zero_globals: BTreeSet<String>,
+    used_symbols: BTreeMap<String, Vec<UsedKind>>,
     /// external (body-less) functions → rust types of their fixed params; the
     /// call site uses this to `as`-cast args and wrap the call in `unsafe`.
     externs: BTreeMap<String, Vec<Type>>,
@@ -461,6 +466,7 @@ struct Lowerer<'a> {
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
     uses_c_variadic: std::cell::Cell<bool>,
+    uses_used_with_arg: std::cell::Cell<bool>,
     uses_memchr: std::cell::Cell<bool>,
     variadic_defs: BTreeSet<String>,
     project: ProjectInfo,
@@ -564,6 +570,7 @@ struct GlobalVar {
     init: Expr,
     external: bool,
     section: Option<String>,
+    used: Vec<UsedKind>,
 }
 
 #[derive(Debug, Clone)]
@@ -644,6 +651,7 @@ impl<'a> Lowerer<'a> {
         let hooks = collect_lifecycle_hooks(&ops, has_main, &mut self.ctx.diagnostics);
         self.ctor_calls = hooks.ctors;
         self.dtor_calls = hooks.dtors;
+        self.used_symbols = collect_used_symbols(&ops);
         for op in &ops {
             if op.name == "cir.global" {
                 self.collect_global(op);
@@ -656,8 +664,15 @@ impl<'a> Lowerer<'a> {
             } else {
                 Visibility::Private
             };
+            if global
+                .used
+                .iter()
+                .any(|kind| !matches!(kind, UsedKind::Plain))
+            {
+                self.uses_used_with_arg.set(true);
+            }
             items.push(Item::Static {
-                attrs: symbol_attrs(global_external_def, global.section.as_deref()),
+                attrs: symbol_attrs(global_external_def, global.section.as_deref(), &global.used),
                 vis: global_vis,
                 mutable: true,
                 name: global.name.clone(),
@@ -880,6 +895,11 @@ impl<'a> Lowerer<'a> {
         {
             attrs.insert(0, CrateAttr::Feature(Feature::CVariadic));
         }
+        if self.uses_used_with_arg.get()
+            && let Some(Item::CrateAttrs(attrs)) = items.first_mut()
+        {
+            attrs.insert(0, CrateAttr::Feature(Feature::UsedWithArg));
+        }
 
         Program { items }
     }
@@ -888,9 +908,17 @@ impl<'a> Lowerer<'a> {
         let Some(name) = attr_str(op, "sym_name") else {
             return;
         };
+        if matches!(name, "llvm.compiler.used" | "llvm.used") {
+            return;
+        }
         let rust_name = sanitize_ident(name).into_string();
         let ty = attr_str(op, "sym_type").map(|ty| self.rust_type(ty));
         let section = attr_str(op, "section").map(str::to_owned);
+        let used = self
+            .used_symbols
+            .get(&rust_name)
+            .cloned()
+            .unwrap_or_default();
         let is_c_global = !name.starts_with("__") && !name.starts_with(".str");
         let Some(raw) = attr_str(op, "initial_value") else {
             let Some(ty) = ty else {
@@ -911,6 +939,7 @@ impl<'a> Lowerer<'a> {
                         init,
                         external: linkage_is_external(op),
                         section: section.clone(),
+                        used: used.clone(),
                     },
                 );
             }
@@ -929,6 +958,7 @@ impl<'a> Lowerer<'a> {
                         ),
                         external: linkage_is_external(op),
                         section: section.clone(),
+                        used: used.clone(),
                     },
                 );
             } else {
@@ -950,6 +980,7 @@ impl<'a> Lowerer<'a> {
                             ),
                             external: linkage_is_external(op),
                             section: section.clone(),
+                            used: used.clone(),
                         },
                     );
                 }
@@ -967,6 +998,7 @@ impl<'a> Lowerer<'a> {
                             init,
                             external: linkage_is_external(op),
                             section: section.clone(),
+                            used: used.clone(),
                         },
                     );
                 }
@@ -989,6 +1021,7 @@ impl<'a> Lowerer<'a> {
                         },
                         external: linkage_is_external(op),
                         section: section.clone(),
+                        used: used.clone(),
                     },
                 );
             } else if elem == "!s8i" && name.starts_with(".str") {
@@ -1006,6 +1039,7 @@ impl<'a> Lowerer<'a> {
                         ty,
                         external: linkage_is_external(op),
                         section: section.clone(),
+                        used: used.clone(),
                     },
                 );
             } else {
@@ -1031,6 +1065,7 @@ impl<'a> Lowerer<'a> {
                         },
                         external: linkage_is_external(op),
                         section: section.clone(),
+                        used: used.clone(),
                     },
                 );
             }
@@ -1045,6 +1080,7 @@ impl<'a> Lowerer<'a> {
                     init,
                     external,
                     section,
+                    used,
                 },
             );
         }
@@ -1154,6 +1190,7 @@ impl<'a> Lowerer<'a> {
         let attrs = symbol_attrs(
             !is_main && self.project.emit_pub && linkage_is_external(op),
             attr_str(op, "section"),
+            &[],
         );
         let unsafe_ = is_variadic || self.unsafe_functions.contains(name);
         let mut f = FunctionLowerer {
@@ -5587,6 +5624,48 @@ fn region_ops(op: &Op) -> Vec<&Op> {
         .collect()
 }
 
+fn collect_used_symbols(ops: &[&Op]) -> BTreeMap<String, Vec<UsedKind>> {
+    let mut flags = BTreeMap::<String, (bool, bool)>::new();
+    for op in ops {
+        if op.name != "cir.global" {
+            continue;
+        }
+        let Some(kind) = (match attr_str(op, "sym_name") {
+            Some("llvm.compiler.used") => Some(UsedKind::Compiler),
+            Some("llvm.used") => Some(UsedKind::Linker),
+            _ => None,
+        }) else {
+            continue;
+        };
+        let Some(init) = attr_str(op, "initial_value") else {
+            continue;
+        };
+        for symbol in parse_cir_global_view_array(init) {
+            let name = sanitize_ident(symbol).into_string();
+            let entry = flags.entry(name).or_default();
+            match kind {
+                UsedKind::Compiler => entry.0 = true,
+                UsedKind::Linker => entry.1 = true,
+                UsedKind::Plain => {}
+            }
+        }
+    }
+
+    flags
+        .into_iter()
+        .map(|(name, (compiler, linker))| {
+            let mut kinds = Vec::new();
+            if compiler {
+                kinds.push(UsedKind::Plain);
+            }
+            if linker {
+                kinds.push(UsedKind::Linker);
+            }
+            (name, kinds)
+        })
+        .collect()
+}
+
 fn collect_region_ops_recursive<'a>(op: &'a Op, out: &mut Vec<&'a Op>) {
     for child in region_ops(op) {
         out.push(child);
@@ -6898,6 +6977,23 @@ fn parse_cir_global_view(s: &str) -> Option<&str> {
     let s = s.trim_start().strip_prefix("#cir.global_view<@")?;
     let end = s.find('>')?;
     Some(s[..end].trim_matches('"'))
+}
+
+fn parse_cir_global_view_array(s: &str) -> Vec<&str> {
+    let s = s.trim_start();
+    if !s.starts_with("#cir.const_array<[") {
+        return Vec::new();
+    }
+    let Some(open) = s.find('[') else {
+        return Vec::new();
+    };
+    let Some(close) = s.rfind(']') else {
+        return Vec::new();
+    };
+    split_top_level(&s[open + 1..close], ',')
+        .into_iter()
+        .filter_map(parse_cir_global_view)
+        .collect()
 }
 
 fn int_value_expr(n: i128) -> Expr {
