@@ -35,6 +35,16 @@ unsafe { libc::printf(b"%d\n\0".as_ptr() as *const libc::c_char, _v0); }
 
 Correct, compiles, matches C output. Nobody wants to read it. That's fine.
 
+### C Symbol Aliases
+
+Function aliases from `__attribute__((alias("target")))` lower as exported C ABI
+forwarding wrappers. This preserves call behavior, but it is not a true LLVM-style
+symbol alias.
+
+Global/static aliases are diagnosed as unsupported. Rust has no faithful static
+aliasing construct here; emitting a second `static` would duplicate storage and
+break address identity.
+
 ## Rung 1 — `printf`-family → format macros
 
 Recognize `libc::printf(fmt, args)` where `fmt` is a recovered constant C string,

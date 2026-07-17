@@ -78,6 +78,45 @@ fn generated_differential() {
 }
 
 #[test]
+fn function_alias_lowers_to_forwarding_wrapper() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-alias-function");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("alias_function.c");
+    let generated = tmp.join("alias_function.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate alias function fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated alias function rust");
+
+    assert!(rust.contains("fn alias_impl(_0: i32) -> i32"));
+    assert!(
+        rust.contains("return real_impl(_0);"),
+        "alias wrapper should forward to real_impl:\n{rust}"
+    );
+}
+
+#[test]
+fn global_alias_emits_unsupported_diagnostic() {
+    let c_src = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.unsupported")
+        .join("alias_global.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate")
+        .arg(c_src)
+        .output()
+        .expect("run slate translate on global alias");
+
+    assert!(
+        !output.status.success(),
+        "global alias translation should fail until Slate has a faithful representation"
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("global alias") && stderr.contains("alias_global"),
+        "expected global alias diagnostic, got:\n{stderr}"
+    );
+}
+
+#[test]
 fn anonymous_local_structs_use_generated_tuple_structs() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-anon-local-struct");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
