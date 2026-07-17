@@ -153,8 +153,8 @@ fn libc_use_allows(
     active: &BTreeSet<Key>,
 ) -> bool {
     facts.string_libc_uses.iter().any(|usage| {
-        usage.function == function
-            && walk::path_starts_with(&read.0, &usage.path.0)
+        usage.site.function == function
+            && walk::path_starts_with(&read.0, &usage.site.path.0)
             && supported_string_callee(usage.callee)
             && usage.pointer_args.iter().all(|binding| {
                 aliases.contains(binding) || binding_is_liftable_source(facts, *binding, active)
@@ -171,9 +171,9 @@ fn internal_call_allows(
     read: &AstPath,
 ) -> bool {
     facts.callsites.iter().any(|callsite| {
-        callsite.function == function
+        callsite.site.function == function
             && matches!(callsite.callee, CallCallee::Direct { .. })
-            && walk::path_starts_with(&read.0, &callsite.path.0)
+            && walk::path_starts_with(&read.0, &callsite.site.path.0)
             && callsite.args.iter().any(|arg| {
                 walk::paths_overlap(&read.0, &arg.path.0)
                     && direct_callee_function(facts, callsite)
@@ -202,10 +202,10 @@ fn all_callers_prove_arg(
             let Some(arg) = callsite.args.iter().find(|arg| arg.slot == candidate.index) else {
                 return false;
             };
-            let expr = walk::expr_at_path(facts, program, callsite.function, &arg.path);
+            let expr = walk::expr_at_path(facts, program, callsite.site.function, &arg.path);
 
             expr.is_some_and(|expr| {
-                expr_is_liftable_source(expr, callsite.function, &arg.path, facts, active)
+                expr_is_liftable_source(expr, callsite.site.function, &arg.path, facts, active)
             })
         })
 }

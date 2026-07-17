@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AsciiNumericSign, AsciiNumericStringFact, AstPath, BindingId, BindingKind, CallCallee,
-    CallSignatureSource, ConstValue, FixupFacts, FunctionId, NulTermination, PathSegment,
+    CallSignatureSource, ConstValue, FixupFacts, FunctionId, NulTermination, PathSegment, Site,
     StringBufferFact, StringBufferKind, StringBufferProvenance, StringBufferRejection,
     StringCopyRewrite, StringCopyRewriteFact, StringLibcFunction, StringLibcUseFact,
     StringLiftPlanFact, StringPointerViewFact, StringPointerViewKind, StringRecoveryCandidate,
@@ -51,9 +51,8 @@ fn collect_ascii_numeric_strings(buffers: &[StringBufferFact]) -> Vec<AsciiNumer
             let bytes = buffer.bytes.as_deref()?;
             let (sign, digits) = ascii_numeric_token(bytes)?;
             Some(AsciiNumericStringFact {
-                function: buffer.function,
+                site: buffer.site.clone(),
                 binding: buffer.binding,
-                path: buffer.path.clone(),
                 sign,
                 digits,
             })
@@ -331,9 +330,11 @@ fn lift_plan_for_binding(
         };
         if candidate.binding == binding {
             return Some(StringLiftPlanFact {
-                function,
+                site: Site {
+                    function,
+                    path: AstPath(stmt_path),
+                },
                 binding,
-                path: AstPath(stmt_path),
                 recovery,
                 remove_assignment: candidate.remove_assignment,
             });
@@ -401,8 +402,10 @@ fn collect_copy_rewrites(
                 copy_rewrite_for_expr(function, expr, &stmt_path, facts, liftable, consts)
         {
             rewrites.push(StringCopyRewriteFact {
-                function,
-                path: AstPath(stmt_path),
+                site: Site {
+                    function,
+                    path: AstPath(stmt_path),
+                },
                 dst,
                 rewrite,
             });
@@ -514,11 +517,11 @@ fn binding_uses_under(
             .string_pointer_views
             .iter()
             .filter(|view| {
-                view.function == function
+                view.site.function == function
                     && view.source == binding
-                    && path_starts_with(&view.path.0, prefix)
+                    && path_starts_with(&view.site.path.0, prefix)
             })
-            .map(|view| view.path.clone()),
+            .map(|view| view.site.path.clone()),
     );
     uses
 }
@@ -532,16 +535,16 @@ fn use_allowed(
     liftable: &BTreeSet<BindingId>,
 ) -> bool {
     if facts.printf_calls.iter().any(|printf| {
-        printf.function == function
-            && path_starts_with(&use_path.0, &printf.path.0)
+        printf.site.function == function
+            && path_starts_with(&use_path.0, &printf.site.path.0)
             && printf_allows_lift(function, printf, facts, binding, liftable)
     }) {
         return true;
     }
     if recovery == StringRecoveryCandidate::BorrowedCStr {
         return facts.callsites.iter().any(|callsite| {
-            callsite.function == function
-                && path_starts_with(&use_path.0, &callsite.path.0)
+            callsite.site.function == function
+                && path_starts_with(&use_path.0, &callsite.site.path.0)
                 && matches!(
                     &callsite.callee,
                     CallCallee::Direct { name, .. } if name == "__slate_memchr"
@@ -553,8 +556,8 @@ fn use_allowed(
         });
     }
     if facts.callsites.iter().any(|callsite| {
-        callsite.function == function
-            && path_starts_with(&use_path.0, &callsite.path.0)
+        callsite.site.function == function
+            && path_starts_with(&use_path.0, &callsite.site.path.0)
             && callsite.args.iter().any(|arg| {
                 paths_overlap(&use_path.0, &arg.path.0)
                     && direct_callee_function(facts, callsite).is_some_and(|callee| {
@@ -567,8 +570,8 @@ fn use_allowed(
         return true;
     }
     facts.string_libc_uses.iter().any(|libc| {
-        libc.function == function
-            && path_starts_with(&use_path.0, &libc.path.0)
+        libc.site.function == function
+            && path_starts_with(&use_path.0, &libc.site.path.0)
             && matches!(
                 libc.callee,
                 StringLibcFunction::StrLen
@@ -629,7 +632,7 @@ fn all_printf_string_args_allow_lift(
     facts
         .printf_calls
         .iter()
-        .filter(|printf| printf.function == function)
+        .filter(|printf| printf.site.function == function)
         .all(|printf| {
             let Some(conversions) = printf.format.as_deref().and_then(simple_printf_conversions)
             else {
@@ -787,7 +790,7 @@ fn const_usize_temps(function: FunctionId, facts: &FixupFacts) -> BTreeMap<Strin
     facts
         .values
         .iter()
-        .filter(|fact| fact.function == function)
+        .filter(|fact| fact.site.function == function)
         .filter_map(|fact| match (&fact.subject, &fact.value) {
             (ValueSubject::Binding(binding), ConstValue::Usize(value)) => {
                 Some((facts.binding_name(*binding)?.to_owned(), *value))
@@ -1168,9 +1171,11 @@ impl<'a> Collector<'a> {
             && let Some(binding) = self.binding_for_name(source)
         {
             self.pointer_views.push(StringPointerViewFact {
-                function: self.function,
+                site: Site {
+                    function: self.function,
+                    path: AstPath(path.to_vec()),
+                },
                 source: binding,
-                path: AstPath(path.to_vec()),
                 mutable,
                 kind,
             });
@@ -1181,9 +1186,11 @@ impl<'a> Collector<'a> {
                 .filter_map(|source| self.binding_for_name(source))
                 .collect();
             self.libc_uses.push(StringLibcUseFact {
-                function: self.function,
+                site: Site {
+                    function: self.function,
+                    path: AstPath(path.to_vec()),
+                },
                 callee,
-                path: AstPath(path.to_vec()),
                 pointer_args,
             });
         }
@@ -1606,9 +1613,11 @@ impl BufferSummary {
     fn into_fact(self, function: FunctionId) -> StringBufferFact {
         let candidates = self.candidates();
         StringBufferFact {
-            function,
+            site: Site {
+                function,
+                path: self.path,
+            },
             binding: self.binding,
-            path: self.path,
             kind: self.kind,
             provenance: self.provenance,
             bytes: self.bytes,
@@ -2083,7 +2092,7 @@ mod tests {
         assert_eq!(pointer.kind, StringPointerViewKind::Array);
         assert!(pointer.mutable);
         assert_eq!(
-            pointer.path,
+            pointer.site.path,
             AstPath(vec![
                 PathSegment::Stmt(1),
                 PathSegment::UnsafeBody,
@@ -2097,7 +2106,7 @@ mod tests {
             .iter()
             .find(|fact| fact.callee == StringLibcFunction::Printf)
             .unwrap();
-        assert_eq!(libc.path, AstPath(vec![PathSegment::Stmt(1)]));
+        assert_eq!(libc.site.path, AstPath(vec![PathSegment::Stmt(1)]));
         assert_eq!(libc.pointer_args, vec![s]);
     }
 

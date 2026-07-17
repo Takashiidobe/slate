@@ -4,7 +4,7 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, CallArgFact, CallArgPinning, CallCallee, CallParamFact,
     CallSignatureFact, CallSignatureSource, CallsiteFact, FixupFacts, FunctionId, LibcCallSemantic,
-    PathSegment, SignatureId,
+    PathSegment, SignatureId, Site,
 };
 use crate::rust_ast::{
     Block, Expr, ExternDecl, FnParam, IndentStmt, Item, Pattern, Program, Stmt, Type,
@@ -616,8 +616,10 @@ impl<'a> Collector<'a> {
             CallCallee::Indirect => BTreeSet::new(),
         };
         self.callsites.push(CallsiteFact {
-            function: self.function,
-            path: AstPath(path.to_vec()),
+            site: Site {
+                function: self.function,
+                path: AstPath(path.to_vec()),
+            },
             callee,
             args: arg_facts,
             variadic_boundary,
@@ -720,7 +722,7 @@ mod tests {
         facts
             .callsites
             .iter()
-            .find(|callsite| callsite.path == path)
+            .find(|callsite| callsite.site.path == path)
             .unwrap()
     }
 

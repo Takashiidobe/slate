@@ -1102,7 +1102,7 @@ fn expr_has_value(
             binding.function == function
                 && binding.name == name.as_str()
                 && facts.values.iter().any(|value| {
-                    value.function == function
+                    value.site.function == function
                         && value.subject == ValueSubject::Binding(binding.id)
                         && &value.value == expected
                 })

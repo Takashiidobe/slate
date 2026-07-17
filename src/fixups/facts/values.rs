@@ -2,8 +2,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, ConstValue, FixupFacts, FunctionId, PathSegment, ValueFact,
-    ValueSubject,
+    AstPath, BindingId, BindingKind, ConstValue, FixupFacts, FunctionId, PathSegment, Site,
+    ValueFact, ValueSubject,
 };
 use crate::rust_ast::{
     BinOp, Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
@@ -508,9 +508,11 @@ impl<'a> Collector<'a> {
     fn record_expr(&mut self, path: &[PathSegment], values: &BTreeSet<ConstValue>) {
         for value in values {
             self.values.push(ValueFact {
-                function: self.function,
+                site: Site {
+                    function: self.function,
+                    path: AstPath(path.to_vec()),
+                },
                 subject: ValueSubject::Expr,
-                path: AstPath(path.to_vec()),
                 value: value.clone(),
             });
         }
@@ -524,9 +526,11 @@ impl<'a> Collector<'a> {
     ) {
         for value in values {
             self.values.push(ValueFact {
-                function: self.function,
+                site: Site {
+                    function: self.function,
+                    path: AstPath(path.to_vec()),
+                },
                 subject: ValueSubject::Binding(binding),
-                path: AstPath(path.to_vec()),
                 value: value.clone(),
             });
         }
@@ -746,7 +750,7 @@ mod tests {
         facts
             .values
             .iter()
-            .any(|fact| fact.subject == subject && fact.path == path && fact.value == value)
+            .any(|fact| fact.subject == subject && fact.site.path == path && fact.value == value)
     }
 
     fn binding_for(facts: &facts::FixupFacts, name: &str, path: AstPath) -> BindingId {
@@ -884,7 +888,7 @@ mod tests {
             !facts
                 .values
                 .iter()
-                .any(|fact| fact.path == AstPath(vec![PathSegment::Stmt(5)]))
+                .any(|fact| fact.site.path == AstPath(vec![PathSegment::Stmt(5)]))
         );
     }
 
@@ -896,7 +900,7 @@ mod tests {
             !facts
                 .values
                 .iter()
-                .any(|fact| fact.path == AstPath(vec![PathSegment::Stmt(0)]))
+                .any(|fact| fact.site.path == AstPath(vec![PathSegment::Stmt(0)]))
         );
         assert!(has_value(
             &facts,

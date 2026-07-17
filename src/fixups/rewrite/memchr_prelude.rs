@@ -282,8 +282,9 @@ fn binding_values<'a>(
         .filter(move |binding| binding.function == function && binding.name == name.as_str())
         .flat_map(move |binding| {
             facts.values.iter().filter_map(move |value| {
-                (value.function == function && value.subject == ValueSubject::Binding(binding.id))
-                    .then_some(&value.value)
+                (value.site.function == function
+                    && value.subject == ValueSubject::Binding(binding.id))
+                .then_some(&value.value)
             })
         })
 }
