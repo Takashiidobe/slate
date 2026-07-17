@@ -81,6 +81,43 @@ fn assert_binary_sections(binary: &Path, sections: &[&str]) {
     }
 }
 
+fn binary_symbol_table(binary: &Path) -> String {
+    let out = std::process::Command::new("readelf")
+        .args(["-s", "--wide"])
+        .arg(binary)
+        .output()
+        .expect("run readelf");
+    assert!(
+        out.status.success(),
+        "readelf failed for {}:\n{}",
+        binary.display(),
+        String::from_utf8_lossy(&out.stderr)
+    );
+    String::from_utf8_lossy(&out.stdout).into_owned()
+}
+
+fn assert_binary_symbols(binary: &Path, symbols: &[&str]) {
+    let table = binary_symbol_table(binary);
+    for symbol in symbols {
+        assert!(
+            table.contains(symbol),
+            "missing symbol {symbol} in {}:\n{table}",
+            binary.display()
+        );
+    }
+}
+
+fn assert_binary_lacks_symbols(binary: &Path, symbols: &[&str]) {
+    let table = binary_symbol_table(binary);
+    for symbol in symbols {
+        assert!(
+            !table.contains(symbol),
+            "unexpected symbol {symbol} in {}:\n{table}",
+            binary.display()
+        );
+    }
+}
+
 #[test]
 fn library_project_creates_cargo_crate_without_main() {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -271,5 +308,40 @@ fn cross_tu_globals() {
             .join("debug")
             .join("globals"),
         &[".slate_data", ".slate_fn"],
+    );
+}
+
+#[test]
+fn used_and_retain_attrs_preserve_dead_statics() {
+    let rs_dir = build_and_diff("used_retain");
+    let work = cross_tu_work_dir("used_retain");
+    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
+
+    assert!(main_rs.contains("#![feature(used_with_arg)]"));
+    assert!(main_rs.contains("#[used]\nstatic mut used_only"));
+    assert!(main_rs.contains("#[used]\n#[used(linker)]\nstatic mut used_and_retained"));
+    assert!(
+        !main_rs.contains("retain_only"),
+        "retain-only dead static should match C and not be kept alive"
+    );
+
+    let symbols = &["used_only", "used_and_retained"];
+    assert_binary_symbols(&work.join("c_bin"), symbols);
+    assert_binary_lacks_symbols(&work.join("c_bin"), &["retain_only"]);
+    assert_binary_symbols(
+        &work
+            .join("used_retain_proj")
+            .join("target")
+            .join("debug")
+            .join("used_retain"),
+        symbols,
+    );
+    assert_binary_lacks_symbols(
+        &work
+            .join("used_retain_proj")
+            .join("target")
+            .join("debug")
+            .join("used_retain"),
+        &["retain_only"],
     );
 }
