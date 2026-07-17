@@ -47,12 +47,15 @@ fn linkage_is_external(op: &Op) -> bool {
     attr_int(op, "linkage").unwrap_or(0) == 0
 }
 
-fn no_mangle_attrs(enabled: bool) -> Vec<RustAttr> {
-    if enabled {
-        vec![RustAttr::NoMangle]
-    } else {
-        Vec::new()
+fn symbol_attrs(no_mangle: bool, section: Option<&str>) -> Vec<RustAttr> {
+    let mut attrs = Vec::new();
+    if no_mangle {
+        attrs.push(RustAttr::NoMangle);
     }
+    if let Some(section) = section {
+        attrs.push(RustAttr::LinkSection(section.to_string()));
+    }
+    attrs
 }
 
 /// True when a function body provably never falls off the end: its last op
@@ -560,6 +563,7 @@ struct GlobalVar {
     ty: Type,
     init: Expr,
     external: bool,
+    section: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -653,7 +657,7 @@ impl<'a> Lowerer<'a> {
                 Visibility::Private
             };
             items.push(Item::Static {
-                attrs: no_mangle_attrs(global_external_def),
+                attrs: symbol_attrs(global_external_def, global.section.as_deref()),
                 vis: global_vis,
                 mutable: true,
                 name: global.name.clone(),
@@ -886,6 +890,7 @@ impl<'a> Lowerer<'a> {
         };
         let rust_name = sanitize_ident(name).into_string();
         let ty = attr_str(op, "sym_type").map(|ty| self.rust_type(ty));
+        let section = attr_str(op, "section").map(str::to_owned);
         let is_c_global = !name.starts_with("__") && !name.starts_with(".str");
         let Some(raw) = attr_str(op, "initial_value") else {
             let Some(ty) = ty else {
@@ -905,6 +910,7 @@ impl<'a> Lowerer<'a> {
                         ty,
                         init,
                         external: linkage_is_external(op),
+                        section: section.clone(),
                     },
                 );
             }
@@ -922,6 +928,7 @@ impl<'a> Lowerer<'a> {
                             Expr::Value(RustValue::I64(0)),
                         ),
                         external: linkage_is_external(op),
+                        section: section.clone(),
                     },
                 );
             } else {
@@ -942,6 +949,7 @@ impl<'a> Lowerer<'a> {
                                 Expr::Value(RustValue::I64(0)),
                             ),
                             external: linkage_is_external(op),
+                            section: section.clone(),
                         },
                     );
                 }
@@ -958,6 +966,7 @@ impl<'a> Lowerer<'a> {
                             ty,
                             init,
                             external: linkage_is_external(op),
+                            section: section.clone(),
                         },
                     );
                 }
@@ -979,6 +988,7 @@ impl<'a> Lowerer<'a> {
                             len: len as usize,
                         },
                         external: linkage_is_external(op),
+                        section: section.clone(),
                     },
                 );
             } else if elem == "!s8i" && name.starts_with(".str") {
@@ -995,6 +1005,7 @@ impl<'a> Lowerer<'a> {
                         init: self.default_value_expr(&ty),
                         ty,
                         external: linkage_is_external(op),
+                        section: section.clone(),
                     },
                 );
             } else {
@@ -1019,6 +1030,7 @@ impl<'a> Lowerer<'a> {
                             ty,
                         },
                         external: linkage_is_external(op),
+                        section: section.clone(),
                     },
                 );
             }
@@ -1032,6 +1044,7 @@ impl<'a> Lowerer<'a> {
                     ty,
                     init,
                     external,
+                    section,
                 },
             );
         }
@@ -1138,7 +1151,10 @@ impl<'a> Lowerer<'a> {
         }
         let ret = if diverges { Some(Type::Never) } else { ret };
 
-        let attrs = no_mangle_attrs(!is_main && self.project.emit_pub && linkage_is_external(op));
+        let attrs = symbol_attrs(
+            !is_main && self.project.emit_pub && linkage_is_external(op),
+            attr_str(op, "section"),
+        );
         let unsafe_ = is_variadic || self.unsafe_functions.contains(name);
         let mut f = FunctionLowerer {
             parent: self,
