@@ -135,8 +135,6 @@ pub fn apply(program: Program) -> Program {
     }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_copy::fixup(&mut program, &facts);
-    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
-    rewrite::string_copy::prune_unused_externs(&mut program, &facts);
     loop {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
         if !rewrite::string_params::fixup(&mut program, &facts) {
@@ -146,18 +144,13 @@ pub fn apply(program: Program) -> Program {
     remove_mut(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_libc::fixup(&mut program, &facts);
-    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
-    rewrite::string_libc::prune_unused_externs(&mut program, &facts);
     let facts::AnalyzedProgram {
         mut program,
         facts: _,
     } = facts::analyze(program);
     rewrite::sort_search::fixup(&mut program);
-    rewrite::sort_search::prune_unused_externs(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::heap_ownership::fixup(&mut program, &facts);
-    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
-    rewrite::heap_ownership::prune_unused_externs(&mut program, &facts);
     dead_locals_to_fixpoint(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     for (item_index, item) in program.items.iter_mut().enumerate() {
@@ -178,8 +171,6 @@ pub fn apply(program: Program) -> Program {
     remove_mut(&mut program);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::string_libc::fixup(&mut program, &facts);
-    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
-    rewrite::string_libc::prune_unused_externs(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::c_strings::fixup(&mut program, &facts);
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
@@ -230,6 +221,8 @@ pub fn apply(program: Program) -> Program {
     }
     remove_mut(&mut program);
     inline_var_aliases_to_fixpoint(&mut program);
+    let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
+    rewrite::prune_unused_externs::fixup(&mut program, &facts);
     rewrite::unused_items::fixup(&mut program);
     for item in &mut program.items {
         if let Item::Fn(f) = item {

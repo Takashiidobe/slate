@@ -1,8 +1,8 @@
 use crate::fixups::facts::{
-    AstPath, CallCallee, FixupFacts, FunctionId, PathSegment, StringBufferProvenance,
-    StringCopyRewrite, StringRecoveryCandidate,
+    AstPath, FixupFacts, FunctionId, PathSegment, StringBufferProvenance, StringCopyRewrite,
+    StringRecoveryCandidate,
 };
-use crate::rust_ast::{Block, Expr, ExternDecl, IndentStmt, Item, Program, Stmt, Type};
+use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
 use std::collections::BTreeSet;
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
@@ -535,38 +535,6 @@ fn peel_empty_unsafe(expr: &Expr) -> &Expr {
         return tail;
     }
     expr
-}
-
-fn is_copy_func(name: &str) -> bool {
-    matches!(name, "strcpy" | "strncpy" | "strcat" | "strncat")
-}
-
-pub(in crate::fixups) fn prune_unused_externs(program: &mut Program, facts: &FixupFacts) {
-    let used = direct_calls(facts);
-    program.items.retain_mut(|item| match item {
-        Item::ExternBlock { decls, .. } => {
-            decls.retain(|decl| match decl {
-                ExternDecl::Fn(f) if is_copy_func(&f.name) => used.contains(&f.name),
-                _ => true,
-            });
-            !decls.is_empty()
-        }
-        _ => true,
-    });
-}
-
-fn direct_calls(facts: &FixupFacts) -> Vec<String> {
-    let mut calls = facts
-        .callsites
-        .iter()
-        .filter_map(|callsite| match &callsite.callee {
-            CallCallee::Direct { name, .. } => Some(name.clone()),
-            CallCallee::Indirect => None,
-        })
-        .collect::<Vec<_>>();
-    calls.sort();
-    calls.dedup();
-    calls
 }
 
 fn expr_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool {

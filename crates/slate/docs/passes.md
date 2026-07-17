@@ -131,10 +131,10 @@ change; "once" means it runs exactly one time per `apply` call.
 21. `range_loop` - recover `for i in 0..bound` for the remaining counted loops - once; same conditional `late_loop_cleanup` as above.
 22. `va_list` - remove redundant `va_list` clone/alias bookkeeping - once.
 23. `remove_mut` - drop `mut` where facts prove no mutation - once, per function; re-run as a bare pass four more times later in the sequence, after each group of passes that could have made a binding provably immutable (`string_copy`, `heap_ownership`, `printf_format`, `atomic_compare_exchange`).
-24. `string_copy` then `string_copy::prune_unused_externs` - `strcpy`/`strcat`-only buffers to owned `String`, then drop now-dead `extern` decls - once each.
-25. `string_libc` then `string_libc::prune_unused_externs` - `strlen`/`strcmp`-family calls on lifted strings to native Rust - once each; repeated once more later (after `c_strings`) since lifting more C strings exposes more libc calls to rewrite.
-26. `sort_search` then `sort_search::prune_unused_externs` - `qsort`/`bsearch` to `.sort_by()`/`.binary_search_by()` - once each.
-27. `heap_ownership` then `heap_ownership::prune_unused_externs` - `malloc`/`calloc`/`realloc`/`free` to `Box`/`Vec` - once each.
+24. `string_copy` - `strcpy`/`strcat`-only buffers to owned `String` - once.
+25. `string_libc` - `strlen`/`strcmp`-family calls on lifted strings to native Rust - once; repeated once more later (after `c_strings`) since lifting more C strings exposes more libc calls to rewrite.
+26. `sort_search` - `qsort`/`bsearch` to `.sort_by()`/`.binary_search_by()` - once.
+27. `heap_ownership` - `malloc`/`calloc`/`realloc`/`free` to `Box`/`Vec` - once.
 28. `dead_locals` - remove locals with no live, effectful use - to fixpoint (`dead_locals_to_fixpoint`), per function, across the program.
 29. `printf_format` - `printf`-family calls to `println!`/`print!` - once.
 30. `c_strings` - mark/simplify recognized C-string literals - once.
@@ -149,8 +149,9 @@ change; "once" means it runs exactly one time per `apply` call.
 39. `zero_init` (`cross_effects = true`) - same fusion as step 5, now allowed to cross intervening effects - to fixpoint.
 40. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, across the program.
 41. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint (`inline_var_aliases_to_fixpoint`).
-42. `unused_items` - remove dead top-level items - once.
-43. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
+42. `prune_unused_externs` - drop now-dead `extern` decls for the libc functions `string_copy`, `string_libc`, `sort_search`, and `heap_ownership` replace - once, after all four rewrites (and their re-runs) have finished, rather than once per rewrite.
+43. `unused_items` - remove dead top-level items - once.
+44. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
 because later groups can create new opportunities for earlier ones; re-running
