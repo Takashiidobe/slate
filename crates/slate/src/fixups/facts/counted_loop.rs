@@ -3,8 +3,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, CountedLoopBound, CountedLoopFact, CountedLoopIndexUse, CountedLoopStart,
-    CountedLoopStep, CountedSliceLoopFact, FixupFacts, FunctionId, LoopId, LoopKind, PathSegment,
-    SliceLoopAccess,
+    CountedLoopStep, CountedSliceLoopFact, FixupFacts, FunctionId, LoopId, LoopKind, LoopSite,
+    PathSegment, SliceLoopAccess,
 };
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
@@ -194,15 +194,17 @@ impl<'a> Collector<'a> {
         };
 
         Some(CountedLoopFact {
-            function: self.function,
-            loop_id,
+            site: LoopSite {
+                function: self.function,
+                loop_id,
+                loop_path,
+                body_path,
+            },
             index,
             bound,
             start: CountedLoopStart::Zero,
             step: CountedLoopStep::One,
             index_use,
-            loop_path,
-            body_path,
         })
     }
 
@@ -258,8 +260,12 @@ impl<'a> Collector<'a> {
         )?;
 
         Some(CountedSliceLoopFact {
-            function: self.function,
-            loop_id,
+            site: LoopSite {
+                function: self.function,
+                loop_id,
+                loop_path,
+                body_path,
+            },
             index,
             slice: range.slice,
             start: CountedLoopStart::Zero,
@@ -267,8 +273,6 @@ impl<'a> Collector<'a> {
             step: CountedLoopStep::One,
             index_use: CountedLoopIndexUse::SliceIndexOnly,
             access,
-            loop_path,
-            body_path,
         })
     }
 
