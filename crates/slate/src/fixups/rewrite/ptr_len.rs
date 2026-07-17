@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use crate::fixups::facts::{BindingId, BindingKind, FixupFacts, FunctionId, PtrLenSliceFact};
 use crate::fixups::support::walk;
-use crate::rust_ast::{Expr, FnDef, Ident, IndentStmt, Item, Program, Stmt, Type};
+use crate::rust_ast::{Expr, FnDef, Ident, IndentStmt, Item, Program, Type};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
     let plans = plans_from_facts(facts);
@@ -23,30 +23,22 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
 #[derive(Clone)]
 struct Plan {
     ptr_index: usize,
-    len_index: usize,
     ptr_name: String,
-    len_name: String,
     mutable: bool,
     elem: Type,
-    len_ty: Type,
 }
 
-/// A function's `(ptr, len)` pairs are always disjoint parameter slots: each
-/// pair spans an adjacent `(Ptr, integer)` window, and a slot used as one
-/// pair's `len` (an integer) can never simultaneously be another pair's `ptr`
-/// (which must be a pointer). So plans for the same function never contend
-/// for the same parameter index.
 fn plans_from_facts(facts: &FixupFacts) -> BTreeMap<String, Vec<Plan>> {
-    let mut grouped = BTreeMap::<(FunctionId, BindingId, BindingId), Vec<&PtrLenSliceFact>>::new();
+    let mut grouped = BTreeMap::<(FunctionId, BindingId), Vec<&PtrLenSliceFact>>::new();
     for fact in &facts.ptr_len_slices {
         grouped
-            .entry((fact.callee, fact.ptr_param, fact.len_param))
+            .entry((fact.callee, fact.ptr_param))
             .or_default()
             .push(fact);
     }
 
     let mut plans = BTreeMap::<String, Vec<Plan>>::new();
-    for ((function, ptr_param, len_param), calls) in grouped {
+    for ((function, ptr_param), calls) in grouped {
         let Some(function_fact) = facts.functions.iter().find(|fact| fact.id == function) else {
             continue;
         };
@@ -57,17 +49,7 @@ fn plans_from_facts(facts: &FixupFacts) -> BTreeMap<String, Vec<Plan>> {
         else {
             continue;
         };
-        let Some(len_binding) = facts
-            .bindings
-            .iter()
-            .find(|binding| binding.id == len_param)
-        else {
-            continue;
-        };
         let BindingKind::Param { index: ptr_index } = ptr_binding.kind else {
-            continue;
-        };
-        let BindingKind::Param { index: len_index } = len_binding.kind else {
             continue;
         };
         let mutable = calls.iter().any(|call| call.mutable);
@@ -77,22 +59,16 @@ fn plans_from_facts(facts: &FixupFacts) -> BTreeMap<String, Vec<Plan>> {
             .or_default()
             .push(Plan {
                 ptr_index,
-                len_index,
                 ptr_name: ptr_binding.name.clone(),
-                len_name: len_binding.name.clone(),
                 mutable,
                 elem: first.elem_ty.clone(),
-                len_ty: first.len_ty.clone(),
             });
     }
     plans
 }
 
 fn rewrite_function(f: &mut FnDef, plans: &[Plan]) {
-    if plans
-        .iter()
-        .any(|plan| f.params.len() <= plan.ptr_index || f.params.len() <= plan.len_index)
-    {
+    if plans.iter().any(|plan| f.params.len() <= plan.ptr_index) {
         return;
     }
 
@@ -103,33 +79,6 @@ fn rewrite_function(f: &mut FnDef, plans: &[Plan]) {
         };
         rewrite_body_pointer_param(&mut f.body, &plan.ptr_name, plan.mutable);
     }
-
-    let mut len_indices: Vec<usize> = plans.iter().map(|plan| plan.len_index).collect();
-    len_indices.sort_unstable_by(|a, b| b.cmp(a));
-    for len_index in len_indices {
-        f.params.remove(len_index);
-    }
-
-    let lets: Vec<IndentStmt> = plans
-        .iter()
-        .map(|plan| IndentStmt {
-            depth: 1,
-            stmt: Stmt::Let {
-                name: plan.len_name.clone(),
-                mutable: false,
-                ty: Some(plan.len_ty.clone()),
-                init: Some(Expr::Cast {
-                    expr: Box::new(Expr::MethodCall {
-                        recv: Box::new(Expr::Var(plan.ptr_name.clone().into())),
-                        method: "len".into(),
-                        args: Vec::new(),
-                    }),
-                    ty: plan.len_ty.clone(),
-                }),
-            },
-        })
-        .collect();
-    f.body.splice(0..0, lets);
 }
 
 fn rewrite_body_pointer_param(body: &mut [IndentStmt], name: &str, mutable: bool) {
@@ -157,10 +106,7 @@ fn rewrite_calls_in_body(body: &mut [IndentStmt], plans: &BTreeMap<String, Vec<P
         let Some(fn_plans) = plans.get(name.as_str()) else {
             return true;
         };
-        if fn_plans
-            .iter()
-            .any(|plan| args.len() <= plan.ptr_index || args.len() <= plan.len_index)
-        {
+        if fn_plans.iter().any(|plan| args.len() <= plan.ptr_index) {
             return true;
         }
         let Some(array_names) = fn_plans
@@ -184,11 +130,6 @@ fn rewrite_calls_in_body(body: &mut [IndentStmt], plans: &BTreeMap<String, Vec<P
             };
         }
 
-        let mut len_indices: Vec<usize> = fn_plans.iter().map(|plan| plan.len_index).collect();
-        len_indices.sort_unstable_by(|a, b| b.cmp(a));
-        for len_index in len_indices {
-            args.remove(len_index);
-        }
         false
     });
 }
@@ -222,7 +163,7 @@ mod tests {
     use super::*;
     use crate::fixups::facts;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{Item, Program};
+    use crate::rust_ast::{Item, Program, Stmt};
 
     fn analyze_collect_fixup(program: &mut Program) -> FixupFacts {
         let analyzed = facts::analyze(program.clone());
@@ -309,27 +250,12 @@ mod tests {
             ],
         };
 
-        let facts = analyze_collect_fixup(&mut program);
+        analyze_collect_fixup(&mut program);
 
-        assert_eq!(facts.ptr_len_slices.len(), 1);
-        let ptr_binding = facts
-            .bindings
-            .iter()
-            .find(|binding| binding.id == facts.ptr_len_slices[0].ptr_param)
-            .unwrap();
-        let len_binding = facts
-            .bindings
-            .iter()
-            .find(|binding| binding.id == facts.ptr_len_slices[0].len_param)
-            .unwrap();
-        assert_eq!(ptr_binding.name, "items");
-        assert_eq!(len_binding.name, "len");
-        assert!(!facts.ptr_len_slices[0].mutable);
         assert_eq!(
             program.emit(),
             "\
-fn f(items: &[i32]) -> i32 {
-    let len: i32 = items.len() as i32;
+fn f(items: &[i32], len: i32) -> i32 {
     for i in 0..len {
                 unsafe { *items.as_ptr().offset(i) };
     }
@@ -338,7 +264,7 @@ fn f(items: &[i32]) -> i32 {
 
 fn main() {
     let mut values: [i32; 4] = [0; 4];
-    f(values.as_slice());
+    f(values.as_slice(), 4);
 }
 "
         );
@@ -368,12 +294,10 @@ fn main() {
             ],
         };
 
-        let facts = analyze_collect_fixup(&mut program);
+        analyze_collect_fixup(&mut program);
 
-        assert_eq!(facts.ptr_len_slices.len(), 1);
-        assert!(facts.ptr_len_slices[0].mutable);
-        assert!(program.emit().contains("fn f(items: &mut [i32])"));
-        assert!(program.emit().contains("f(values.as_mut_slice());"));
+        assert!(program.emit().contains("fn f(items: &mut [i32], len: i32)"));
+        assert!(program.emit().contains("f(values.as_mut_slice(), 4);"));
     }
 
     #[test]
@@ -391,9 +315,8 @@ fn main() {
             ],
         };
 
-        let facts = analyze_collect_fixup(&mut program);
+        analyze_collect_fixup(&mut program);
 
-        assert!(facts.ptr_len_slices.is_empty());
         assert!(program.emit().contains("fn f(items: *mut i32, len: i32)"));
     }
 
@@ -416,14 +339,14 @@ fn main() {
             ],
         };
 
-        let facts = analyze_collect_fixup(&mut program);
+        analyze_collect_fixup(&mut program);
 
-        assert!(facts.ptr_len_slices.is_empty());
         assert!(
             program
                 .emit()
-                .contains("fn f(items: *mut i32, printable: i32)")
+                .contains("fn f(items: &[i32], printable: i32)")
         );
+        assert!(program.emit().contains("f(values.as_slice(), 5);"));
     }
 
     #[test]
@@ -467,15 +390,14 @@ fn main() {
             ],
         };
 
-        let facts = analyze_collect_fixup(&mut program);
+        analyze_collect_fixup(&mut program);
 
-        assert_eq!(facts.ptr_len_slices.len(), 1);
         assert!(
             program
                 .emit()
-                .contains("fn f(items: &[i32], printable: i32)")
+                .contains("fn f(items: &[i32], printable: i32, length: i32)")
         );
-        assert!(program.emit().contains("f(values.as_slice(), 5);"));
+        assert!(program.emit().contains("f(values.as_slice(), 5, 4);"));
     }
 
     #[test]
@@ -501,9 +423,8 @@ fn main() {
             ],
         };
 
-        let facts = analyze_collect_fixup(&mut program);
+        analyze_collect_fixup(&mut program);
 
-        assert!(facts.ptr_len_slices.is_empty());
         assert!(program.emit().contains("fn f(items: *mut i32, len: i32)"));
     }
 
@@ -534,15 +455,18 @@ fn main() {
             items: vec![Item::Fn(inner), Item::Fn(outer), Item::Fn(main)],
         };
 
-        let facts = analyze_collect_fixup(&mut program);
+        analyze_collect_fixup(&mut program);
 
-        assert_eq!(facts.ptr_len_slices.len(), 2);
         // `q` is conservatively treated as mutated because `outer` forwards it
         // into an opaque call (`inner`) rather than proving `inner` read-only.
-        assert!(program.emit().contains("fn inner(items: &[i32])"));
-        assert!(program.emit().contains("fn outer(q: &mut [i32])"));
-        assert!(program.emit().contains("inner(q.as_slice());"));
-        assert!(program.emit().contains("outer(values.as_mut_slice());"));
+        assert!(program.emit().contains("fn inner(items: &[i32], len: i32)"));
+        assert!(
+            program
+                .emit()
+                .contains("fn outer(q: &mut [i32], qlen: i32)")
+        );
+        assert!(program.emit().contains("inner(q.as_slice(), qlen);"));
+        assert!(program.emit().contains("outer(values.as_mut_slice(), 4);"));
     }
 
     #[test]
@@ -586,10 +510,9 @@ fn main() {
             ],
         };
 
-        let facts = analyze_collect_fixup(&mut program);
+        analyze_collect_fixup(&mut program);
 
-        assert_eq!(facts.ptr_len_slices.len(), 2);
-        assert!(program.emit().contains("fn f(items: &[i32])"));
+        assert!(program.emit().contains("fn f(items: &[i32], count: i32)"));
     }
 
     #[test]
@@ -654,11 +577,18 @@ fn main() {
             ],
         };
 
-        let facts = analyze_collect_fixup(&mut program);
+        analyze_collect_fixup(&mut program);
 
-        assert_eq!(facts.ptr_len_slices.len(), 2);
-        assert!(program.emit().contains("fn f(a: &[i32], b: &[i32])"));
-        assert!(program.emit().contains("f(a.as_slice(), b.as_slice());"));
+        assert!(
+            program
+                .emit()
+                .contains("fn f(a: &[i32], alen: i32, b: &[i32], blen: i32)")
+        );
+        assert!(
+            program
+                .emit()
+                .contains("f(a.as_slice(), 4, b.as_slice(), 3);")
+        );
     }
 
     #[test]
@@ -676,9 +606,8 @@ fn main() {
             ],
         };
 
-        let facts = analyze_collect_fixup(&mut program);
+        analyze_collect_fixup(&mut program);
 
-        assert!(facts.ptr_len_slices.is_empty());
         assert!(program.emit().contains("fn f(items: *mut i32, len: i32)"));
     }
 }

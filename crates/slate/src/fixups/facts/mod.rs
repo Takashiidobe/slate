@@ -736,10 +736,9 @@ pub(super) struct PtrLenSliceFact {
     pub(super) caller: FunctionId,
     pub(super) callee: FunctionId,
     pub(super) ptr_param: BindingId,
-    pub(super) len_param: BindingId,
+    pub(super) len_param: Option<BindingId>,
     pub(super) mutable: bool,
     pub(super) elem_ty: Type,
-    pub(super) len_ty: Type,
 }
 
 #[derive(Debug, Clone)]
