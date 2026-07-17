@@ -8,163 +8,110 @@ the whole game.)
 
 ## Approach in one line
 
-**Transliterate first, idiomatize later.** V0 emits the most faithful Rust it
-can — `unsafe`, `libc`-backed, ugly — and correctness is the only bar. Idiomatic,
-safe Rust is recovered incrementally by a ladder of later passes, each
-independently verified.
+**Transliterate first, idiomatize later.** Baseline lowering emits the most
+faithful Rust it can — `unsafe`, `libc`-backed, temp-heavy — and correctness is
+the only bar, checked by differential testing. Idiomatic, safer Rust is then
+recovered by an independently-verified ladder of fixup passes (see
+[idiomatization.md](idiomatization.md)); each fixup is optional in spirit, so
+disabling any one of them still leaves correct Rust.
 
 ## Current state
 
-The current implementation can translate, compile, and differentially test a
-small C subset. This is the supported fixture-level surface today:
+Correctness is verified by **differential testing**: compile and run both the
+original C and the generated Rust, and require identical stdout and exit code.
+This section is a categorized summary of what baseline lowering and the fixup
+ladder currently cover; it is not exhaustive. For the authoritative, exhaustive
+surface:
 
-- functions with `int` parameters, locals, return values, and `main`.
-- target-lowered CIR integer widths mapped to Rust primitives such as `i32`.
-- `char`, `signed char`, and `unsigned char` locals, params, fields, and return
-  values, mapped to Rust `i8`/`u8`, including `'A'`-style char literals and `%c`
-  printing.
-- `short`, `long`, and `long long` (with their `unsigned` variants) locals,
-  params, and return values, mapped to Rust `i16`/`i64`/`u16`/`u32`/`u64` by CIR
-  width, printed with the width-correct `printf` conversion (`%u`, `%ld`, ...).
-- `_Bool` and `bool` locals, parameters, and return values, mapped to Rust
-  `bool`, including integer-to-bool and comparison-to-bool conversions.
-- `<stdint.h>` fixed-width integer typedefs and `<stddef.h>` `size_t`, resolved
-  through Clang desugared type facts and CIR integer widths.
-- integer overflow left to wrap two's-complement: the generated Rust builds with
-  `overflow-checks = false`, matching clang's `-O0` C, so neither side panics.
-- integer constants, loads/stores, comparisons, increment, unary `-`, logical
-  `!`/`&&`/`||`, bitwise `~`/`&`/`|`/`^`/`<<`/`>>`, compound assignment
-  operators, and the binary arithmetic operators `+`, `-`, `*`, `/`, `%`.
-- `__builtin_assume` preserves C's violated-assumption UB contract by emitting
-  `unsafe { core::hint::assert_unchecked(...) }`.
-- `float`/`double` parameters, locals, return values, and constants, mapped to
-  Rust `f32`/`f64`, with `+`/`-`/`*`/`/`, comparisons, and int/float casts.
-- `long double` parameters, locals, return values, constants, arithmetic, and
-  casts, mapped to a `#[repr(C, align(16))]` `LongDouble(f64)` newtype: ABI-exact
-  size/alignment with baseline `f64`-precision arithmetic (not extended precision).
-- `double`/`float _Complex` parameters, locals, return values, constants,
-  `+`/`-`/`*`/`/`, and `__real__`/`__imag__` extraction, mapped to a `#[repr(C)]`
-  `Complex<T>` newtype. `*`/`/` lower through clang's inline expansion plus the
-  libgcc `__muldc3`/`__divdc3` runtime, which the generated Rust calls via
-  `extern "C"` so results are bit-identical to C.
-- calls, including `printf` lowered through `libc::printf` (`%d` and `%f`).
-- string literals used by `printf`.
-- `for` loops represented as conservative Rust `loop { ... break ... }`.
-- `while` loops represented as conservative Rust `loop { ... break ... }`.
-- `break` and `continue` inside `for`/`while` loops, including nested loops. A
-  `for` loop's `continue` runs the step region via a labeled block so it matches
-  C semantics.
-- `switch` statements with integer cases, default labels, missing defaults,
-  multiple case labels, `break`, and C fallthrough.
-- `goto` and labels (forward, backward, and nested inside `if`/scopes). When a
-  function's CIR carries unstructured jumps (`cir.goto`/`cir.label`/`cir.br`
-  across multiple blocks) it is lowered to a conservative state-machine dispatch
-  loop; functions without such jumps keep the structured lowering.
-- `if`/`else` (including `else if` chains) represented as Rust `if { ... } else { ... }`.
-- C enum constants with implicit values and explicit `= number` values, emitted
-  as Rust integer `const` items.
-- simple C unions with primitive scalar fields, emitted as `#[repr(C)] union` plus
-  unsafe field reads/writes.
-- C structs and unions, including nested aggregates: structs containing structs
-  or arrays, arrays of structs, and struct assignment/copy (via the derived
-  `Copy`). Member and element accesses compose into a single Rust place
-  (`b.data[i]`, `ps[i].x`).
-- aggregate initializers for structs and unions, including nested, partial
-  (trailing fields zero-filled), and designated forms; Clang normalizes these to
-  `#cir.const_record`/`#cir.const_array` constants that lower to a matching Rust
-  struct/array literal on the initializing `cir.copy`.
-- fixed-size local arrays of primitive scalar element types with indexed stores
-  and loads, emitted as Rust arrays. Aggregate initializers (`int a[5]={..}`,
-  `char s[6]="hi"`, `{0}` zero-init) lower the resulting `cir.copy` to a Rust
-  array-literal assignment.
-- C pointers for locals, parameters, address-of, dereference, and basic pointer
-  arithmetic, emitted as raw Rust pointers.
-- C function pointer locals and parameters for direct assignment and indirect
-  calls, emitted as nullable `Option<fn(...) -> ...>` values.
-- `sizeof` expressions that Clang lowers to integer CIR constants.
-- type-qualified primitive scalar locals, parameters, fields, returns, globals,
-  and restrict-qualified pointer parameters. `volatile` operations are emitted
-  through CIR volatile loads/stores with Rust volatile pointer intrinsics;
-  `const`, `restrict`, and `_Atomic` are normalized to the same baseline Rust
-  storage types as their unqualified forms.
-- file-scope primitive and aggregate globals with internal or external linkage,
-  including zero-initialized definitions and `extern` declarations. Definitions
-  are emitted conservatively as `static mut`; cross-translation-unit externs
-  import the Rust module that owns the definition.
-- `typedef` aliases for otherwise supported types, resolved through Clang's
-  desugared type facts.
-- source-level context loaded from Clang's JSON AST.
+- `tests/fixtures/*.c` — one fixture per supported idea, checked by
+  `cargo nextest r --release --test differential`.
+- `tests/stdlib/<header>/*.c` — one probe per libc function, checked by
+  `cargo nextest r --release --test stdlib_coverage`.
+- [cir-op-prioritization.md](cir-op-prioritization.md) — the exhaustive CIR op
+  checklist (what is and isn't lowered).
+- `bd list --status=open` — tracked gaps and in-flight idiomatization work.
 
-Output is intentionally ugly, temp-heavy, `libc`-backed Rust. Correctness is
-verified by **differential testing**: compile and run both the original C and the
-generated Rust, compare stdout + exit code.
+### Scalars, operators, and casts
 
-The current fixtures are:
+`int`/`char`/`short`/`long`/`long long` (signed and unsigned) by CIR width,
+`_Bool`/`bool`, `float`/`double`, `long double` (ABI-exact `#[repr(C, align(16))]`
+newtype, `f64`-precision arithmetic), and `float`/`double _Complex` (`#[repr(C)]`
+newtype, libgcc-backed `*`/`/`). Full arithmetic (`+ - * / %`), bitwise
+(`& | ^ ~ << >>`), logical (`&& || !`), comparisons, compound assignment,
+increment, unary negation, and explicit casts across all of the above. Integer
+overflow wraps two's-complement on both sides (`overflow-checks = false`)
+instead of panicking on the Rust side. `<stdint.h>`/`<stddef.h>` fixed-width
+typedefs and `typedef` aliases generally, resolved through Clang's desugared
+type facts.
 
-- `add.c` — integer functions, locals, calls, and addition.
-- `loop_sum.c` — structured `for` loop lowering.
-- `while_loop.c` — structured `while` loop lowering.
-- `break_for.c` / `break_while.c` — `break` early-exit from `for`/`while`.
-- `continue_for.c` / `continue_while.c` — `continue` skip-to-next-iteration.
-- `loop_break_continue.c` — nested loops mixing `break`, `continue`, and `if`.
-- `switch_default.c` / `switch_no_default.c` / `switch_sparse.c` /
-  `switch_fallthrough.c` / `switch_loop_control.c` — switch lowering with
-  defaults, sparse cases, missing defaults, multiple labels, fallthrough, and
-  loop interaction.
-- `goto_forward.c` / `goto_backward_loop.c` / `goto_if_scope.c` — `goto`
-  lowering: forward jump over dead code, backward jump forming a loop, and
-  gotos nested inside `if`/scopes, all via the dispatch-loop state machine.
-- `enums.c` — enum constants with implicit and explicit values.
-- `unions.c` — basic union declaration, field writes, and field reads.
-- `structs.c` — basic struct declaration, field writes, and field reads.
-- `non_int_fields.c` — `char`/`unsigned char`/`float`/`double` struct and union
-  fields.
-- `arrays.c` — fixed-size local arrays and indexed element access.
-- `array_types.c` — fixed-size local `char` and `double` arrays.
-- `array_init.c` — aggregate array initializers (int list, string, partial, zero).
-- `pointers.c` — pointer locals/params, address-of, dereference, and pointer
-  arithmetic.
-- `function_pointers.c` — function pointer locals, parameters, assignment, and
-  indirect calls.
-- `sizeof.c` — `sizeof` over primitive, array, struct, union, and expression
-  forms.
-- `volatile.c` — volatile local stores and loads.
-- `volatile_qualified_types.c` — volatile-qualified primitive params, fields,
-  returns, and globals.
-- `type_qualifiers.c` — const, restrict, and `_Atomic` primitive and pointer
-  type qualifiers.
-- `static_globals.c` — file-scope static integer global loads and stores.
-- `non_int_globals.c` — file-scope static `char`/`unsigned char`/`float`/`double`
-  globals plus non-int params and returns.
-- `global_vars.c` — non-static, zero-initialized, array, and struct globals with
-  cross-function loads and stores.
-- `typedefs.c` — aliases for primitive types used in params, locals, fields,
-  returns, and `sizeof`.
-- `stdint_types.c` — `<stdint.h>` fixed-width typedefs and `<stddef.h>` `size_t`.
-- `floats.c` — `float`/`double` locals, params, arithmetic, casts, and `%f`
-  printing.
-- `long_double.c` — `long double` locals, params, return values, arithmetic,
-  and casts.
-- `complex.c` — `double _Complex` locals, `+`/`-`/`*`/`/`, and
-  `__real__`/`__imag__` extraction.
-- `chars.c` — `char`/`signed char`/`unsigned char` locals, params, arithmetic,
-  char literals, and `%c`/`%d` printing.
-- `shorts.c` — `short`/`unsigned short` locals, params, arithmetic, and return.
-- `unsigned.c` — `unsigned int` arithmetic with defined wrapping overflow.
-- `longs.c` — `long`/`unsigned long` locals, params, and return values.
-- `longlong.c` — `long long`/`unsigned long long` locals, params, and return.
-- `bool.c` — `_Bool`/`bool` locals, params, returns, integer conversions, and
-  comparison conversions.
-- `sub.c` — signed subtraction and defined unsigned wrapping subtraction.
-- `mul.c` — signed multiplication and defined unsigned wrapping multiplication.
-- `div.c` — signed/unsigned division, truncating toward zero.
-- `modulo.c` — signed/unsigned remainder, taking the sign of the dividend.
-- `bitand.c` / `bitor.c` / `bitxor.c` / `bitnot.c` / `shl.c` / `shr.c` —
-  bitwise integer operations.
-- `logical_ops.c` — logical `&&`/`||` short-circuiting and unary logical not.
-- `unary_negation.c` — integer and floating unary arithmetic negation.
-- `compound_assignments.c` — compound assignment operators beyond `+=`.
-- `casts.c` — explicit casts across supported scalar types.
+### Control flow
+
+`if`/`else`/`else if`, `for`, `while`, `do while`, `switch` (sparse cases,
+fallthrough, missing defaults, multiple labels), `break`/`continue` (including
+nested loops and `for`'s step-region `continue` semantics), and `goto`/labels.
+Structured CIR lowers directly; unstructured jumps (`cir.goto`/`cir.label`/
+`cir.br` across blocks) lower to a conservative dispatch-loop state machine,
+which a later fixup restructures back into ordinary `if`/`loop`/sequence Rust
+when the state graph is reducible enough (see [passes.md](passes.md)).
+
+### Aggregates
+
+Structs and unions, including nested aggregates (structs of structs/arrays,
+arrays of structs), member/element access composed into a single Rust place
+(`b.data[i]`, `ps[i].x`), struct assignment via derived `Copy`, bitfields
+(per-field mask/sign-extend storage), and aggregate initializers (nested,
+partial with zero-filled trailing fields, and designated). Enum constants
+lower to Rust integer `const` items.
+
+### Pointers and arrays
+
+Address-of, dereference, pointer arithmetic, array-to-pointer decay, and
+function pointers (`Option<fn(...) -> ...>`), all raw on the baseline path.
+Fixups recover safer shapes where facts prove it's sound: a pointer+length
+parameter pair becomes a `&[T]`/`&mut [T]` slice parameter, raw index
+arithmetic over a lifted slice becomes `slice[i]`, and a 0-start/step-1 loop
+that only indexes one slice becomes `for x in slice.iter()`/`.iter_mut()`.
+
+### Globals and linkage
+
+File-scope primitive and aggregate globals with internal or external linkage,
+zero-initialized definitions, `extern` declarations (cross-translation-unit
+imports), `static` locals, and C symbol aliases/visibility attributes (see
+[idiomatization.md](idiomatization.md)).
+
+### Strings and libc idiomatization
+
+NUL-terminated char-array/pointer buffers get lifted to `CStr`/`str`/byte-slice
+values where provenance is provable, `strlen`/`strcmp`-family calls on lifted
+strings become native Rust equivalents, `strcpy`/`strcat`-only fixed buffers
+become owned `String`, and a C-string pointer parameter can become `&str`.
+`malloc`/`calloc`/`realloc`/`free` locals become owned `Box<T>`/`Vec<T>`.
+`fopen`/`fputs`/`fclose` sequences become `File`/`OpenOptions` owners.
+`qsort`/`bsearch` become `.sort_by()`/`.binary_search_by()`. `printf`-family
+calls with a constant, fully-supported format string become `println!`/
+`print!`; anything else stays `libc::printf`.
+
+### Atomics and concurrency builtins
+
+`_Atomic` locals proven non-escaping get native `std::sync::atomic::AtomicN`
+storage with safe method calls (int/bool; float/pointer fall back to
+non-atomic RMW); CAS temp-chains fold into a single `compare_exchange` match.
+
+### Varargs, attributes, and builtins
+
+`va_list`/`va_start`/`va_arg`/`va_end`. Constructor/destructor priority
+attributes, `noreturn` (both spellings), inline `asm`, computed goto,
+`__builtin_assume`/`__builtin_expect` and other control-flow builtins, target/
+frame/stack builtins, vector extensions (`cir.vec.*`), and the byte-wise memory
+builtins (`memcpy`/`memmove`/`memset`/`memchr`) — see
+[cir-op-prioritization.md](cir-op-prioritization.md) for the full op-level
+checklist.
+
+### Multi-config translation
+
+`slate translate-cfg` recovers `#if`/`#ifdef`-gated portability that a single
+Clang invocation can't see, mapping predicates to Rust `cfg`s and Cargo
+features. See [cfg-portability.md](cfg-portability.md).
 
 Generated Rust for inspection is written with:
 
@@ -172,27 +119,19 @@ Generated Rust for inspection is written with:
 cargo run -- emit-fixtures
 ```
 
-That command writes ignored files under `tests/fixtures.generated/`. The checked
-fixtures under `tests/fixtures/` are C-only.
+That command writes ignored files under `tests/fixtures.generated/`. The
+checked fixtures under `tests/fixtures/` are C-only.
 
 ## Not handled yet
 
-Important gaps remain:
-
-- target-complete C integer modeling beyond the CIR widths already emitted
-  (e.g. `__int128`).
-- wider arithmetic and casts beyond the currently exercised cases.
-- broader aggregate coverage beyond the currently exercised struct, union, and
-  fixed-array forms.
-- richer global initializers beyond scalar constants, zero values, and aggregate
-  constants that Clang lowers to CIR const arrays/records.
-- `goto`.
-- more arithmetic and assignment combinations over aggregates and pointers.
-- headers beyond what Clang resolves for the fixture.
-- hex float literals and float math beyond `+`/`-`/`*`/`/`.
-- string operations and varargs beyond direct `printf` calls.
-- idiomatic Rust cleanup such as `println!`, temp removal, references, slices,
-  and safe ownership.
+Tracked as beads (`bd list --status=open`), not maintained here, so this list
+doesn't rot. As of this writing, open gaps are mostly about widening the
+idiomatization ladder rather than baseline C coverage — e.g. `__int128` and
+fully target-complete scalar modeling, `setjmp`/`longjmp`, remaining printf
+edge cases (precision/width forms), further libc idiomatization (`fgets`/
+`fread`/`fwrite` on owned `FILE` handles), attribute-driven pointer facts
+(`nonnull`, `alloc_size`), and `enumerate()` recovery for slice loops with a
+live index use.
 
 ## Pipeline
 
@@ -222,9 +161,16 @@ location (`file:line:col`):
   pass: shape, shared helpers, safety rules, and registration.
 - [architecture.md](architecture.md) — sources, IRs, pipeline, shared context.
 - [passes.md](passes.md) — the pass catalog: what runs, in what order, how.
-- [idiomatization.md](idiomatization.md) — the `unsafe`/`libc` → idiomatic ladder.
-- [fuzzing.md](fuzzing.md) — the stateful C-subset generator behind differential
-  fuzzing.
+- [idiomatization.md](idiomatization.md) — the `unsafe`/`libc` → idiomatic
+  ladder and its current implementation status.
+- [fuzzing.md](fuzzing.md) — the stateful C-subset generator behind
+  differential fuzzing.
+- [cfg-portability.md](cfg-portability.md) — single-config vs. multi-config
+  translation and the preprocessor predicate → Rust `cfg` mappings.
+- [cir-op-prioritization.md](cir-op-prioritization.md) — the exhaustive CIR op
+  support checklist.
+- [macro-selection-interface.md](macro-selection-interface.md) — design (not
+  yet implemented) for recovering value-carrying preprocessor predicates.
 
 ## Toolchain
 
