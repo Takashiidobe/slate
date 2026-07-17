@@ -45,6 +45,15 @@ Global/static aliases are diagnosed as unsupported. Rust has no faithful static
 aliasing construct here; emitting a second `static` would duplicate storage and
 break address identity.
 
+### C Symbol Visibility
+
+`__attribute__((visibility("hidden")))` lowers by keeping the generated item
+Rust-private and omitting `#[unsafe(no_mangle)]`. This preserves in-translation
+unit behavior while avoiding an exported symbol.
+
+`__attribute__((visibility("protected")))` has no faithful Rust representation
+today. Slate emits a warning and falls back to default exported visibility.
+
 ## Rung 1 — `printf`-family → format macros
 
 Recognize `libc::printf(fmt, args)` where `fmt` is a recovered constant C string,

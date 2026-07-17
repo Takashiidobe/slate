@@ -437,3 +437,44 @@ fn function_alias_exports_forwarding_wrapper() {
         "alias wrapper should forward to real_impl:\n{main_rs}"
     );
 }
+
+#[test]
+fn visibility_attrs_lower_best_effort() {
+    let rs_dir = build_and_diff("visibility");
+    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
+
+    assert!(main_rs.contains("#[unsafe(no_mangle)]\npub static mut default_global"));
+    assert!(main_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn default_fn"));
+    assert!(main_rs.contains("#[unsafe(no_mangle)]\npub static mut protected_global"));
+    assert!(main_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn protected_fn"));
+    assert!(
+        main_rs.contains("static mut hidden_global")
+            && !main_rs.contains("#[unsafe(no_mangle)]\npub static mut hidden_global")
+            && !main_rs.contains("pub static mut hidden_global"),
+        "hidden global should remain private:\n{main_rs}"
+    );
+    assert!(
+        main_rs.contains("fn hidden_fn")
+            && !main_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn hidden_fn")
+            && !main_rs.contains("pub extern \"C\" fn hidden_fn"),
+        "hidden function should remain private:\n{main_rs}"
+    );
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate-project")
+        .arg(fixture_dir("visibility"))
+        .arg(cross_tu_work_dir("visibility-diagnostics").join("rs"))
+        .output()
+        .expect("run translate-project visibility fixture");
+    assert!(
+        output.status.success(),
+        "visibility fixture should translate"
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("protected")
+            && stderr.contains("protected_fn")
+            && stderr.contains("protected_global"),
+        "expected protected visibility warnings, got:\n{stderr}"
+    );
+}
