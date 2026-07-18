@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::cir::ir::{CirOpKind, Op, Region};
+use crate::cir::ir::{Attr, CirOpKind, Op, Region};
 use crate::rust_ast::AtomicOrdering;
 
 use super::support::*;
@@ -8,6 +8,8 @@ use crate::effects::{
     AllocId, AtomicId, CallSummary, Effect, EffectTrace, FileId, IntWidth, Location, ParamSeed,
     Value, call_summary,
 };
+
+const BLOCK_LABEL_ALLOC: AllocId = AllocId(u32::MAX);
 
 pub fn interpret(ops: &[Op]) -> EffectTrace {
     interpret_with_params(ops, &[])
@@ -30,7 +32,7 @@ pub fn interpret_module_main(module: &crate::cir::ir::Module) -> EffectTrace {
         .get("main")
         .cloned()
         .expect("fixture must define `main`");
-    let _ = interp.run(&main.regions[0].blocks[0].ops);
+    let _ = interp.run_function_region(&main.regions[0]);
     interp.trace
 }
 
@@ -43,6 +45,7 @@ enum Flow {
     Return(Value),
     Break,
     Continue,
+    Jump(usize),
 }
 
 #[derive(Default)]
@@ -68,6 +71,9 @@ struct Interp {
     freed: HashSet<AllocId>,
     call_depth: usize,
     next_file: u32,
+    block_to_index: HashMap<String, usize>,
+    label_to_index: HashMap<String, usize>,
+    pending_block_args: HashMap<usize, Vec<Value>>,
 }
 
 impl Interp {
@@ -94,10 +100,57 @@ impl Interp {
         let Some(name) = attr_str(op, "sym_name") else {
             return;
         };
-        if attr_str(op, "constant") != Some("false") {
-            if let Some(values) = global_const_array_values(op) {
-                self.const_arrays.insert(name.to_string(), values);
+        if let Some(values) = global_const_array_values(op) {
+            if attr_str(op, "constant") != Some("false") {
+                self.const_arrays.insert(name.to_string(), values.clone());
+                if values.iter().all(|value| {
+                    matches!(
+                        value,
+                        Value::Int {
+                            width: IntWidth::W8,
+                            ..
+                        }
+                    )
+                }) {
+                    self.c_strings
+                        .insert(name.to_string(), values_to_bytes(&values));
+                }
+                return;
             }
+            let is_block_label_table = values
+                .iter()
+                .all(|value| matches!(value, Value::BlockLabel(_)));
+            let alloc = if is_block_label_table {
+                BLOCK_LABEL_ALLOC
+            } else {
+                let alloc = AllocId(self.next_alloc);
+                self.next_alloc += 1;
+                alloc
+            };
+            let base = Location {
+                alloc,
+                byte_offset: 0,
+            };
+            self.globals.insert(name.to_string(), base);
+            let size: u64 = values.iter().map(int_byte_size).sum();
+            if !is_block_label_table {
+                self.trace.push(Effect::Alloc { alloc, size });
+            }
+            let mut offset = 0;
+            for value in &values {
+                let loc = Location {
+                    alloc,
+                    byte_offset: offset,
+                };
+                self.heap.insert(loc, *value);
+                if !is_block_label_table {
+                    self.trace.push(Effect::Write { loc, value: *value });
+                }
+                offset += int_byte_size(value);
+            }
+            return;
+        }
+        if attr_str(op, "constant") != Some("false") {
             return;
         }
         let Some(ty) = attr_str(op, "sym_type") else {
@@ -175,6 +228,55 @@ impl Interp {
             }
         }
         Flow::Normal
+    }
+
+    fn run_function_region(&mut self, region: &Region) -> Flow {
+        let saved_blocks = std::mem::take(&mut self.block_to_index);
+        let saved_labels = std::mem::take(&mut self.label_to_index);
+        let saved_pending = std::mem::take(&mut self.pending_block_args);
+        for (index, block) in region.blocks.iter().enumerate() {
+            let key = block.label.clone().unwrap_or_else(|| format!("bb{index}"));
+            self.block_to_index.insert(key, index);
+            for op in &block.ops {
+                if op.kind() == CirOpKind::Label
+                    && let Some(label) = attr_str(op, "label")
+                {
+                    self.label_to_index.insert(label.to_string(), index);
+                }
+            }
+        }
+
+        let mut index = 0usize;
+        let flow = loop {
+            let Some(block) = region.blocks.get(index) else {
+                break Flow::Normal;
+            };
+            if let Some(values) = self.pending_block_args.remove(&index) {
+                if values.len() != block.args.len() {
+                    panic!(
+                        "effects::cir: block expected {} arg(s), got {}",
+                        block.args.len(),
+                        values.len()
+                    );
+                }
+                for ((arg, _), value) in block.args.iter().zip(values) {
+                    self.env.insert(arg.clone(), value);
+                }
+            }
+            match self.run(&block.ops) {
+                Flow::Normal => index += 1,
+                Flow::Jump(next) => index = next,
+                flow @ Flow::Return(_) => break flow,
+                Flow::Break | Flow::Continue => break Flow::Normal,
+            }
+            if index >= region.blocks.len() {
+                break Flow::Normal;
+            }
+        };
+        self.block_to_index = saved_blocks;
+        self.label_to_index = saved_labels;
+        self.pending_block_args = saved_pending;
+        flow
     }
 
     fn step(&mut self, op: &Op) -> Flow {
@@ -293,10 +395,18 @@ impl Interp {
             CirOpKind::If => self.if_(op),
             CirOpKind::For => self.for_(op),
             CirOpKind::While => self.while_(op),
+            CirOpKind::Do => self.do_(op),
+            CirOpKind::Switch => self.switch_(op),
+            CirOpKind::Select => self.select(op),
+            CirOpKind::Ternary => self.ternary(op),
             CirOpKind::Scope => self.run_region(&op.regions[0]),
             CirOpKind::Yield => Flow::Normal,
             CirOpKind::Break => Flow::Break,
             CirOpKind::Continue => Flow::Continue,
+            CirOpKind::Goto => self.goto(op),
+            CirOpKind::Br => self.br(op),
+            CirOpKind::IndirectBr => self.indirect_br(op),
+            CirOpKind::Label => Flow::Normal,
             CirOpKind::Return => {
                 let code = op
                     .operands
@@ -623,20 +733,20 @@ impl Interp {
 
     fn call_user(&mut self, name: &str, args: &[Value]) -> Value {
         let f = self.funcs[name].clone();
-        let block = &f.regions[0].blocks[0];
-        if block.args.len() != args.len() {
+        let entry = &f.regions[0].blocks[0];
+        if entry.args.len() != args.len() {
             panic!(
                 "effects::cir: user function `{name}` expected {} arg(s), got {}",
-                block.args.len(),
+                entry.args.len(),
                 args.len()
             );
         }
         let saved_env = self.env.clone();
-        for ((arg_name, _), value) in block.args.iter().zip(args) {
+        for ((arg_name, _), value) in entry.args.iter().zip(args) {
             self.env.insert(arg_name.clone(), *value);
         }
         self.call_depth += 1;
-        let flow = self.run(&block.ops);
+        let flow = self.run_function_region(&f.regions[0]);
         self.call_depth -= 1;
         self.env = saved_env;
         let Flow::Return(value) = flow else {
@@ -1039,7 +1149,9 @@ impl Interp {
                 .get(&loc)
                 .unwrap_or_else(|| panic!("effects::cir: read from never-written {loc:?}"));
             self.env.insert(result.to_string(), value);
-            self.trace.push(Effect::Read { loc, value });
+            if !matches!(value, Value::BlockLabel(_)) {
+                self.trace.push(Effect::Read { loc, value });
+            }
         }
         Flow::Normal
     }
@@ -1049,7 +1161,9 @@ impl Interp {
             .heap
             .get(&loc)
             .unwrap_or_else(|| panic!("effects::cir: read from never-written {loc:?}"));
-        self.trace.push(Effect::Read { loc, value });
+        if !matches!(value, Value::BlockLabel(_)) {
+            self.trace.push(Effect::Read { loc, value });
+        }
         value
     }
 
@@ -1204,11 +1318,13 @@ impl Interp {
                 Flow::Normal => {}
                 Flow::Break => return Flow::Normal,
                 Flow::Continue => {}
+                flow @ Flow::Jump(_) => return flow,
                 flow @ Flow::Return(_) => return flow,
             }
             match self.run_region(&op.regions[2]) {
                 Flow::Normal | Flow::Continue => {}
                 Flow::Break => return Flow::Normal,
+                flow @ Flow::Jump(_) => return flow,
                 flow @ Flow::Return(_) => return flow,
             }
         }
@@ -1222,9 +1338,143 @@ impl Interp {
             match self.run_region(&op.regions[1]) {
                 Flow::Normal | Flow::Continue => {}
                 Flow::Break => return Flow::Normal,
+                flow @ Flow::Jump(_) => return flow,
                 flow @ Flow::Return(_) => return flow,
             }
         }
+    }
+
+    fn do_(&mut self, op: &Op) -> Flow {
+        loop {
+            match self.run_region(&op.regions[0]) {
+                Flow::Normal | Flow::Continue => {}
+                Flow::Break => return Flow::Normal,
+                flow @ Flow::Return(_) => return flow,
+                flow @ Flow::Jump(_) => return flow,
+            }
+            if !self.eval_condition_region(&op.regions[1]) {
+                return Flow::Normal;
+            }
+        }
+    }
+
+    fn switch_(&mut self, op: &Op) -> Flow {
+        let selector = value_as_i128(self.resolve(&op.operands[0]));
+        let cases: Vec<_> = op
+            .regions
+            .first()
+            .into_iter()
+            .flat_map(|region| region.blocks.iter())
+            .flat_map(|block| block.ops.iter())
+            .filter(|op| op.kind() == CirOpKind::Case)
+            .collect();
+        let Some(mut index) = self.switch_start_case(selector, &cases) else {
+            return Flow::Normal;
+        };
+        while let Some(case) = cases.get(index) {
+            match self.run_region(&case.regions[0]) {
+                Flow::Normal => index += 1,
+                Flow::Break => return Flow::Normal,
+                flow @ (Flow::Continue | Flow::Return(_) | Flow::Jump(_)) => {
+                    return flow;
+                }
+            }
+        }
+        Flow::Normal
+    }
+
+    fn switch_start_case(&self, selector: i128, cases: &[&Op]) -> Option<usize> {
+        let mut default = None;
+        for (index, case) in cases.iter().enumerate() {
+            if attr_int(case, "kind") == Some(0) {
+                default = Some(index);
+                continue;
+            }
+            if self.switch_case_values(case).contains(&selector) {
+                return Some(index);
+            }
+        }
+        default
+    }
+
+    fn switch_case_values(&self, op: &Op) -> Vec<i128> {
+        match op.attrs.get("value") {
+            Some(Attr::Array(values)) => values.iter().filter_map(attr_int_literal).collect(),
+            _ => Vec::new(),
+        }
+    }
+
+    fn select(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let value = if self.resolve_bool(&op.operands[0]) {
+            self.resolve(&op.operands[1])
+        } else {
+            self.resolve(&op.operands[2])
+        };
+        self.env.insert(result.to_string(), value);
+        Flow::Normal
+    }
+
+    fn ternary(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let region = if self.resolve_bool(&op.operands[0]) {
+            &op.regions[0]
+        } else {
+            &op.regions[1]
+        };
+        match self.eval_yield_region(region) {
+            Ok(value) => {
+                self.env.insert(result.to_string(), value);
+                Flow::Normal
+            }
+            Err(flow) => flow,
+        }
+    }
+
+    fn goto(&mut self, op: &Op) -> Flow {
+        let label = attr_str(op, "label").unwrap_or_default();
+        let target = *self
+            .label_to_index
+            .get(label)
+            .unwrap_or_else(|| panic!("effects::cir: unknown goto label `{label}`"));
+        Flow::Jump(target)
+    }
+
+    fn br(&mut self, op: &Op) -> Flow {
+        let target = if let Some(successor) = op.successors.first() {
+            *self
+                .block_to_index
+                .get(successor)
+                .unwrap_or_else(|| panic!("effects::cir: unknown successor block `{successor}`"))
+        } else if let Some(operand) = op.operands.first() {
+            self.block_label_target(self.resolve(operand))
+        } else {
+            panic!("effects::cir: cir.br has no successor")
+        };
+        if !op.operands.is_empty() && !op.successors.is_empty() {
+            let values = op
+                .operands
+                .iter()
+                .map(|operand| self.resolve(operand))
+                .collect();
+            self.pending_block_args.insert(target, values);
+        }
+        Flow::Jump(target)
+    }
+
+    fn indirect_br(&mut self, op: &Op) -> Flow {
+        let target = self.block_label_target(self.resolve(&op.operands[0]));
+        Flow::Jump(target)
+    }
+
+    fn block_label_target(&self, value: Value) -> usize {
+        let Value::BlockLabel(label) = value else {
+            panic!("effects::cir: indirect branch target was {value:?}");
+        };
+        *self
+            .label_to_index
+            .get(label)
+            .unwrap_or_else(|| panic!("effects::cir: unknown indirect branch label `{label}`"))
     }
 
     fn eval_condition_region(&mut self, region: &Region) -> bool {
@@ -1233,10 +1483,33 @@ impl Interp {
                 if matches!(op.kind(), CirOpKind::Condition | CirOpKind::Yield) {
                     return self.resolve_bool(&op.operands[0]);
                 }
-                self.step(op);
+                if let flow @ (Flow::Return(_) | Flow::Break | Flow::Continue | Flow::Jump(_)) =
+                    self.step(op)
+                {
+                    panic!("effects::cir: control flow escaped condition region: {flow:?}");
+                }
             }
         }
         panic!("effects::cir: loop condition region has no cir.condition/cir.yield terminator")
+    }
+
+    fn eval_yield_region(&mut self, region: &Region) -> Result<Value, Flow> {
+        for block in &region.blocks {
+            for op in &block.ops {
+                if op.kind() == CirOpKind::Yield {
+                    let operand = op
+                        .operands
+                        .first()
+                        .unwrap_or_else(|| panic!("effects::cir: value yield has no operand"));
+                    return Ok(self.resolve(operand));
+                }
+                match self.step(op) {
+                    Flow::Normal => {}
+                    flow => return Err(flow),
+                }
+            }
+        }
+        panic!("effects::cir: value region has no cir.yield terminator")
     }
 
     fn resolve(&self, name: &str) -> Value {
@@ -1292,6 +1565,19 @@ impl Interp {
             .copied()
             .take_while(|byte| *byte != 0)
             .collect()
+    }
+}
+
+fn attr_int_literal(attr: &Attr) -> Option<i128> {
+    match attr {
+        Attr::Int(n) => Some(*n as i128),
+        Attr::Raw(raw) => {
+            let start = raw.find("#cir.int<")? + "#cir.int<".len();
+            let rest = &raw[start..];
+            let end = rest.find('>')?;
+            rest[..end].parse().ok()
+        }
+        _ => None,
     }
 }
 

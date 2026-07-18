@@ -176,6 +176,9 @@ pub(super) fn parse_cir_const_string_array(raw: &str) -> Option<Vec<u8>> {
 }
 
 pub(super) fn parse_cir_const_numeric_array(raw: &str, elem_ty: &str) -> Option<Vec<Value>> {
+    if elem_ty.trim().starts_with("!cir.ptr<") {
+        return parse_cir_block_address_array(raw);
+    }
     let start = raw.find("#cir.const_array<[")? + "#cir.const_array<[".len();
     let rest = &raw[start..];
     let end = rest.find("]>")?;
@@ -193,6 +196,21 @@ pub(super) fn parse_cir_const_numeric_array(raw: &str, elem_ty: &str) -> Option<
             })
         })
         .collect::<Option<Vec<_>>>()
+}
+
+fn parse_cir_block_address_array(raw: &str) -> Option<Vec<Value>> {
+    let mut values = Vec::new();
+    let mut rest = raw;
+    while let Some(start) = rest.find("#cir.block_addr_info<") {
+        rest = &rest[start + "#cir.block_addr_info<".len()..];
+        let label_start = rest.find('"')? + 1;
+        let label_rest = &rest[label_start..];
+        let label_end = label_rest.find('"')?;
+        let label = Box::leak(label_rest[..label_end].to_string().into_boxed_str());
+        values.push(Value::BlockLabel(label));
+        rest = &label_rest[label_end + 1..];
+    }
+    (!values.is_empty()).then_some(values)
 }
 
 pub(super) fn decode_cir_string(s: &str) -> Vec<u8> {
@@ -235,6 +253,7 @@ pub(super) fn int_byte_size(value: &Value) -> u64 {
             IntWidth::W64 | IntWidth::PointerSized => 8,
             IntWidth::W128 => 16,
         },
+        Value::BlockLabel(_) | Value::Ref(_) | Value::Null => 8,
         other => panic!("effects::cir: buffer element must be an integer, found {other:?}"),
     }
 }
@@ -265,6 +284,9 @@ pub(super) fn pointee_byte_size(ptr_ty: Option<&str>) -> Option<u64> {
         .trim()
         .strip_prefix("!cir.ptr<")?
         .strip_suffix('>')?;
+    if inner.trim().starts_with("!cir.ptr<") {
+        return Some(8);
+    }
     let (_, bits) = int_type_width_signed(inner)?;
     Some((bits / 8) as u64)
 }

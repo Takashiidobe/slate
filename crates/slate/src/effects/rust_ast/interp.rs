@@ -7,8 +7,8 @@ use crate::effects::{
     ParamSeed, Value, call_summary,
 };
 use crate::rust_ast::{
-    AtomicOrdering, AtomicPlace, AtomicRmwOp, BinOp, Block, Expr, FnDef, IndentStmt, Item, Pattern,
-    Program, Stmt, Type, UnaryOp,
+    AtomicOrdering, AtomicPlace, AtomicRmwOp, BinOp, Block, Expr, FnDef, IndentStmt, Item, Label,
+    Pattern, Program, Stmt, Type, UnaryOp,
 };
 
 pub fn interpret(f: &FnDef) -> EffectTrace {
@@ -39,12 +39,12 @@ pub fn interpret_program_main(program: &Program) -> EffectTrace {
 /// How a statement completed: either it ran through normally, or it hit a
 /// `return`/`std::process::exit` that the enclosing `if`/`for` must
 /// propagate past without running the rest of their body.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 enum Flow {
     Normal,
     Return(Value),
-    Break,
-    Continue,
+    Break(Option<Label>),
+    Continue(Option<Label>),
 }
 
 struct VecBinding {
@@ -235,6 +235,29 @@ impl Interp {
                 }
                 Flow::Normal
             }
+            Stmt::LetIf {
+                name,
+                cond,
+                then_body,
+                then_value,
+                else_body,
+                else_value,
+                ..
+            } => {
+                let (body, value) = if value_as_bool(self.eval(cond)) {
+                    (then_body, then_value)
+                } else {
+                    (else_body, else_value)
+                };
+                match self.run(body) {
+                    Flow::Normal => {
+                        let value = self.eval(value);
+                        self.scalars.insert(name.clone(), value);
+                        Flow::Normal
+                    }
+                    flow => flow,
+                }
+            }
             Stmt::Let {
                 name,
                 ty: None,
@@ -254,6 +277,7 @@ impl Interp {
                 }
                 Flow::Normal
             }
+            Stmt::Let { init: None, .. } => Flow::Normal,
             Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "push" => {
                 self.push(recv, args);
                 Flow::Normal
@@ -293,9 +317,9 @@ impl Interp {
             }
             Stmt::Unsafe { body } => self.run_block(body),
             Stmt::Scope { body } => self.run(body),
-            Stmt::Loop { body, .. } => self.run_loop(body),
-            Stmt::Break(_) => Flow::Break,
-            Stmt::Continue(_) => Flow::Continue,
+            Stmt::Loop { label, body } => self.run_loop(label.as_ref(), body),
+            Stmt::Break(label) => Flow::Break(label.clone()),
+            Stmt::Continue(label) => Flow::Continue(label.clone()),
             Stmt::Assign { target, value } => self.assign(target, value),
             Stmt::CompoundAssign { target, op, value } => self.compound_assign(target, *op, value),
             Stmt::If {
@@ -310,6 +334,13 @@ impl Interp {
                 }
             }
             Stmt::For { pat, iter, body } => self.run_for(pat, iter, body),
+            Stmt::LabeledBlock { label, body } => match self.run(body) {
+                Flow::Break(Some(target)) if target == *label => Flow::Normal,
+                flow => flow,
+            },
+            Stmt::Match { expr, arms } => self.run_match(expr, arms),
+            Stmt::While { cond, body } => self.run_while(cond, body),
+            Stmt::Block(block) => self.run_block(block),
             Stmt::Return(value) => {
                 let code = value
                     .as_ref()
@@ -326,7 +357,6 @@ impl Interp {
                 }
                 Flow::Return(value)
             }
-            other => panic!("effects::rust_ast: unsupported stmt `{other:?}`"),
         }
     }
 
@@ -344,12 +374,16 @@ impl Interp {
         }
     }
 
-    fn run_loop(&mut self, body: &[IndentStmt]) -> Flow {
+    fn run_loop(&mut self, label: Option<&Label>, body: &[IndentStmt]) -> Flow {
         loop {
             match self.run(body) {
-                Flow::Normal | Flow::Continue => {}
-                Flow::Break => return Flow::Normal,
+                Flow::Normal => {}
+                Flow::Continue(None) => {}
+                Flow::Continue(Some(target)) if label == Some(&target) => {}
+                Flow::Break(None) => return Flow::Normal,
+                Flow::Break(Some(target)) if label == Some(&target) => return Flow::Normal,
                 flow @ Flow::Return(_) => return flow,
+                flow @ (Flow::Break(_) | Flow::Continue(_)) => return flow,
             }
         }
     }
@@ -495,13 +529,38 @@ impl Interp {
                 },
             );
             match self.run(body) {
-                Flow::Normal | Flow::Continue => {}
-                Flow::Break => return Flow::Normal,
+                Flow::Normal | Flow::Continue(None) => {}
+                Flow::Break(None) => return Flow::Normal,
                 flow @ Flow::Return(_) => return flow,
+                flow @ (Flow::Break(_) | Flow::Continue(_)) => return flow,
             }
             i += 1;
         }
         Flow::Normal
+    }
+
+    fn run_match(&mut self, expr: &Expr, arms: &[crate::rust_ast::MatchArm]) -> Flow {
+        let value = self.eval(expr);
+        for arm in arms {
+            if pattern_matches(&arm.pattern, value) {
+                return self.run(&arm.body);
+            }
+        }
+        panic!("effects::rust_ast: statement match had no matching arm for {value:?}");
+    }
+
+    fn run_while(&mut self, cond: &Expr, body: &Block) -> Flow {
+        loop {
+            if !value_as_bool(self.eval(cond)) {
+                return Flow::Normal;
+            }
+            match self.run_block(body) {
+                Flow::Normal | Flow::Continue(None) => {}
+                Flow::Break(None) => return Flow::Normal,
+                flow @ Flow::Return(_) => return flow,
+                flow @ (Flow::Break(_) | Flow::Continue(_)) => return flow,
+            }
+        }
     }
 
     fn let_vec(&mut self, name: &str, ty: &Type, init: &Expr) {
@@ -965,6 +1024,10 @@ impl Interp {
             }
             Expr::Binary { op, lhs, rhs } => self.eval_binary(*op, lhs, rhs),
             Expr::Index { base, index } => {
+                if let Expr::ArrayLit(elems) = base.as_ref() {
+                    let idx = value_as_u64(self.eval(index)) as usize;
+                    return self.eval(&elems[idx]);
+                }
                 let name = match base.as_ref() {
                     Expr::Var(ident) => ident.as_str(),
                     other => panic!("effects::rust_ast: unsupported index base `{other:?}`"),
@@ -1062,18 +1125,29 @@ impl Interp {
             }
             Expr::MethodCall { recv, method, args } => self.eval_atomic_method(recv, method, args),
             Expr::Match { expr, arms } => self.eval_match(expr, arms),
+            Expr::If {
+                cond,
+                then_expr,
+                else_expr,
+            } => {
+                if value_as_bool(self.eval(cond)) {
+                    self.eval(then_expr)
+                } else {
+                    self.eval(else_expr)
+                }
+            }
             Expr::Call { func, args } => self.eval_call(func, args),
             Expr::Block(block) => match self.run_block(block) {
                 Flow::Return(value) => value,
                 Flow::Normal => panic!("effects::rust_ast: block expression has no tail value"),
-                Flow::Break | Flow::Continue => {
+                Flow::Break(_) | Flow::Continue(_) => {
                     panic!("effects::rust_ast: loop control escaped block expression")
                 }
             },
             Expr::Unsafe(block) => match self.run_block(block) {
                 Flow::Return(value) => value,
                 Flow::Normal => panic!("effects::rust_ast: unsafe expression has no tail value"),
-                Flow::Break | Flow::Continue => {
+                Flow::Break(_) | Flow::Continue(_) => {
                     panic!("effects::rust_ast: loop control escaped unsafe expression")
                 }
             },
@@ -1214,7 +1288,8 @@ impl Interp {
     }
 
     fn eval_match(&mut self, expr: &Expr, arms: &[crate::rust_ast::ExprMatchArm]) -> Value {
-        match self.eval(expr) {
+        let scrutinee = self.eval(expr);
+        match scrutinee {
             Value::AtomicResult { ok, value } => {
                 let arm_name = if ok { "Ok" } else { "Err" };
                 for arm in arms {
@@ -1241,7 +1316,14 @@ impl Interp {
                 }
                 panic!("effects::rust_ast: no match arm for atomic result `{arm_name}`");
             }
-            other => panic!("effects::rust_ast: unsupported match scrutinee {other:?}"),
+            value => {
+                for arm in arms {
+                    if pattern_matches(&arm.pattern, value) {
+                        return self.eval(&arm.value);
+                    }
+                }
+                panic!("effects::rust_ast: no match arm for {value:?}");
+            }
         }
     }
 
@@ -2148,6 +2230,16 @@ impl Interp {
                 apply_binop(op, a, b)
             }
         }
+    }
+}
+
+fn pattern_matches(pattern: &Pattern, value: Value) -> bool {
+    match (pattern, value) {
+        (Pattern::Wildcard, _) => true,
+        (Pattern::I64(expected), Value::Int { value, .. }) => *expected as i128 == value,
+        (Pattern::I128(expected), Value::Int { value, .. }) => *expected == value,
+        (Pattern::Binding(_), _) => true,
+        _ => false,
     }
 }
 
