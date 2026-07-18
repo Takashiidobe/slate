@@ -19,6 +19,9 @@ fn usage() -> ExitCode {
     eprintln!("usage: slate <command> [file.c]");
     eprintln!("  emit-cir    print ClangIR (generic form)");
     eprintln!("  emit-fixtures  write translated test fixtures to tests/fixtures.generated/");
+    eprintln!(
+        "  emit-lowered-fixtures  write raw lowered test fixtures to tests/fixtures.lowered.generated/"
+    );
     eprintln!("  translate   C -> Rust");
     eprintln!("  translate-cfg   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
@@ -37,6 +40,7 @@ fn main() -> ExitCode {
             None => usage(),
         },
         Some("emit-fixtures") => run(emit_fixtures()),
+        Some("emit-lowered-fixtures") => run(emit_lowered_fixtures()),
         Some("translate") => match args.get(2) {
             Some(path) => run(translate(Path::new(path))),
             None => usage(),
@@ -666,4 +670,55 @@ fn emit_fixtures() -> Result<String, String> {
     }
 
     Ok(report)
+}
+
+fn emit_lowered_fixtures() -> Result<String, String> {
+    let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let src_dir = manifest.join("tests/fixtures");
+    let out_dir = manifest.join("tests/fixtures.lowered.generated");
+    std::fs::create_dir_all(&out_dir).map_err(|e| format!("create {}: {e}", out_dir.display()))?;
+
+    let mut inputs = Vec::new();
+    for entry in
+        std::fs::read_dir(&src_dir).map_err(|e| format!("read {}: {e}", src_dir.display()))?
+    {
+        let path = entry
+            .map_err(|e| format!("read {} entry: {e}", src_dir.display()))?
+            .path();
+        if path.extension().and_then(|e| e.to_str()) == Some("c") {
+            inputs.push(path);
+        }
+    }
+    inputs.sort();
+
+    let mut report = String::new();
+    for input in inputs {
+        let name = input
+            .file_stem()
+            .ok_or_else(|| format!("missing file stem: {}", input.display()))?;
+        let output = out_dir.join(name).with_extension("rs");
+        std::fs::write(&output, lowered_rust(&input)?)
+            .map_err(|e| format!("write {}: {e}", output.display()))?;
+        report.push_str(&format!("wrote {}\n", output.display()));
+    }
+
+    Ok(report)
+}
+
+fn lowered_rust(path: &Path) -> Result<String, String> {
+    let cir_text = cir::emit_generic(path)?;
+    let module = cir::parse_module(&cir_text)?;
+    let unit = c_ast::parse_file(path)?;
+
+    let mut ctx = ctx::Ctx::default();
+    let program = lower::lower(&module, &unit, &mut ctx);
+
+    for d in &ctx.diagnostics.items {
+        eprintln!("{:?}: {}", d.severity, d.message);
+    }
+    if ctx.diagnostics.has_errors() {
+        return Err("lowering failed".into());
+    }
+
+    Ok(program.emit())
 }
