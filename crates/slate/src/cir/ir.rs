@@ -101,6 +101,7 @@ pub enum CirOpKind {
     Asm,
     Assume,
     Atan,
+    Atan2,
     AtomicCmpxchg,
     AtomicFence,
     AtomicFetch,
@@ -142,6 +143,7 @@ pub enum CirOpKind {
     Do,
     EhSetjmp,
     Exp,
+    Exp2,
     Expect,
     ExtractMember,
     Fabs,
@@ -181,6 +183,8 @@ pub enum CirOpKind {
     Llround,
     Load,
     Log,
+    Log10,
+    Log2,
     Lrint,
     Lround,
     Minus,
@@ -248,6 +252,7 @@ impl CirOpKind {
             "cir.asm" => CirOpKind::Asm,
             "cir.assume" => CirOpKind::Assume,
             "cir.atan" => CirOpKind::Atan,
+            "cir.atan2" => CirOpKind::Atan2,
             "cir.atomic.cmpxchg" => CirOpKind::AtomicCmpxchg,
             "cir.atomic.fence" => CirOpKind::AtomicFence,
             "cir.atomic.fetch" => CirOpKind::AtomicFetch,
@@ -289,6 +294,7 @@ impl CirOpKind {
             "cir.do" => CirOpKind::Do,
             "cir.eh.setjmp" => CirOpKind::EhSetjmp,
             "cir.exp" => CirOpKind::Exp,
+            "cir.exp2" => CirOpKind::Exp2,
             "cir.expect" => CirOpKind::Expect,
             "cir.extract_member" => CirOpKind::ExtractMember,
             "cir.fabs" => CirOpKind::Fabs,
@@ -328,6 +334,8 @@ impl CirOpKind {
             "cir.llround" => CirOpKind::Llround,
             "cir.load" => CirOpKind::Load,
             "cir.log" => CirOpKind::Log,
+            "cir.log10" => CirOpKind::Log10,
+            "cir.log2" => CirOpKind::Log2,
             "cir.lrint" => CirOpKind::Lrint,
             "cir.lround" => CirOpKind::Lround,
             "cir.minus" => CirOpKind::Minus,
@@ -395,6 +403,7 @@ impl CirOpKind {
             CirOpKind::Asm => "cir.asm",
             CirOpKind::Assume => "cir.assume",
             CirOpKind::Atan => "cir.atan",
+            CirOpKind::Atan2 => "cir.atan2",
             CirOpKind::AtomicCmpxchg => "cir.atomic.cmpxchg",
             CirOpKind::AtomicFence => "cir.atomic.fence",
             CirOpKind::AtomicFetch => "cir.atomic.fetch",
@@ -436,6 +445,7 @@ impl CirOpKind {
             CirOpKind::Do => "cir.do",
             CirOpKind::EhSetjmp => "cir.eh.setjmp",
             CirOpKind::Exp => "cir.exp",
+            CirOpKind::Exp2 => "cir.exp2",
             CirOpKind::Expect => "cir.expect",
             CirOpKind::ExtractMember => "cir.extract_member",
             CirOpKind::Fabs => "cir.fabs",
@@ -475,6 +485,8 @@ impl CirOpKind {
             CirOpKind::Llround => "cir.llround",
             CirOpKind::Load => "cir.load",
             CirOpKind::Log => "cir.log",
+            CirOpKind::Log10 => "cir.log10",
+            CirOpKind::Log2 => "cir.log2",
             CirOpKind::Lrint => "cir.lrint",
             CirOpKind::Lround => "cir.lround",
             CirOpKind::Minus => "cir.minus",
@@ -541,6 +553,14 @@ mod tests {
         assert_eq!(CirOpKind::parse("cir.add.overflow"), CirOpKind::AddOverflow);
         assert_eq!(CirOpKind::parse("cir.get_bitfield"), CirOpKind::GetBitfield);
         assert_eq!(CirOpKind::parse("cir.eh.setjmp"), CirOpKind::EhSetjmp);
+    }
+
+    #[test]
+    fn parse_recognizes_names_with_digits() {
+        assert_eq!(CirOpKind::parse("cir.atan2"), CirOpKind::Atan2);
+        assert_eq!(CirOpKind::parse("cir.exp2"), CirOpKind::Exp2);
+        assert_eq!(CirOpKind::parse("cir.log10"), CirOpKind::Log10);
+        assert_eq!(CirOpKind::parse("cir.log2"), CirOpKind::Log2);
     }
 
     #[test]
