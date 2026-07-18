@@ -9,6 +9,7 @@
 use super::{Effect, EffectTrace};
 
 /// Where and how two traces first diverge.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Divergence {
     LengthMismatch {
