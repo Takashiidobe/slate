@@ -252,7 +252,7 @@ impl<'a> Collector<'a> {
         body_path.push(PathSegment::LoopBody);
         let body_path = AstPath(body_path);
 
-        let access = analyze_loop_body(
+        let (access, index_use) = analyze_loop_body(
             &loop_body[range.body_start..range.increment_stmt],
             &Ident::new(index_name.as_str()),
             range.slice,
@@ -271,7 +271,7 @@ impl<'a> Collector<'a> {
             start: CountedLoopStart::Zero,
             bound: CountedLoopBound::SliceLen,
             step: CountedLoopStep::One,
-            index_use: CountedLoopIndexUse::SliceIndexOnly,
+            index_use,
             access,
         })
     }
@@ -425,7 +425,7 @@ fn analyze_loop_body(
     index_name: &Ident,
     expected_slice: BindingId,
     slices: &BTreeMap<String, BindingId>,
-) -> Option<SliceLoopAccess> {
+) -> Option<(SliceLoopAccess, CountedLoopIndexUse)> {
     let mut state = BodyAnalysis::new(index_name);
     for indent in body {
         if let Stmt::Let {
@@ -445,25 +445,35 @@ fn analyze_loop_body(
     if state.slices != BTreeSet::from([expected_slice]) {
         return None;
     }
-    Some(if state.mutable {
+    let access = if state.mutable {
         SliceLoopAccess::Mutable
     } else {
         SliceLoopAccess::ReadOnly
-    })
+    };
+    let index_use = if state.index_used_directly {
+        CountedLoopIndexUse::SliceIndexAndValue
+    } else {
+        CountedLoopIndexUse::SliceIndexOnly
+    };
+    Some((access, index_use))
 }
 
 struct BodyAnalysis {
+    primary_index: String,
     index_names: BTreeSet<String>,
     slices: BTreeSet<BindingId>,
     mutable: bool,
+    index_used_directly: bool,
 }
 
 impl BodyAnalysis {
     fn new(index_name: &Ident) -> Self {
         Self {
+            primary_index: index_name.as_str().to_string(),
             index_names: BTreeSet::from([index_name.as_str().to_string()]),
             slices: BTreeSet::new(),
             mutable: false,
+            index_used_directly: false,
         }
     }
 
@@ -565,6 +575,13 @@ fn analyze_expr(
     state: &mut BodyAnalysis,
 ) -> bool {
     match expr {
+        Expr::Var(name) if name.as_str() == state.primary_index => {
+            if matches!(mode, AccessMode::Mutate) {
+                return false;
+            }
+            state.index_used_directly = true;
+            true
+        }
         Expr::Var(name) => !state.index_names.contains(name.as_str()),
         Expr::Index { base, index } if state.is_index_expr(index) => {
             let Expr::Var(base) = &**base else {
@@ -964,6 +981,28 @@ mod tests {
         assert_eq!(
             facts.counted_slice_loops[0].access,
             SliceLoopAccess::Mutable
+        );
+    }
+
+    #[test]
+    fn records_slice_loop_with_direct_index_use() {
+        let facts = analyze_collect(&program(Stmt::Scope {
+            body: vec![
+                IndentStmt {
+                    depth: 4,
+                    stmt: temp("x", "i32", index("items", "i")),
+                },
+                IndentStmt {
+                    depth: 4,
+                    stmt: Stmt::Expr(call("observe", vec![var("i")])),
+                },
+            ],
+        }));
+
+        assert_eq!(facts.counted_slice_loops.len(), 1);
+        assert_eq!(
+            facts.counted_slice_loops[0].index_use,
+            CountedLoopIndexUse::SliceIndexAndValue
         );
     }
 

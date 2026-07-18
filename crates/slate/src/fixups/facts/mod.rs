@@ -932,6 +932,7 @@ pub(super) enum CountedLoopIndexUse {
     Unused,
     Other,
     SliceIndexOnly,
+    SliceIndexAndValue,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
