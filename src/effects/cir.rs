@@ -51,6 +51,7 @@ struct Interp {
     const_arrays: HashMap<String, Vec<Value>>,
     c_strings: HashMap<String, Vec<u8>>,
     funcs: HashMap<String, Op>,
+    function_pointers: HashMap<String, String>,
     atomics: HashMap<String, AtomicId>,
     atomic_values: HashMap<AtomicId, Value>,
     heap: HashMap<Location, Value>,
@@ -189,6 +190,10 @@ impl Interp {
                     self.c_strings
                         .insert(result.to_string(), values_to_bytes(values));
                 }
+                if self.funcs.contains_key(name) {
+                    self.function_pointers
+                        .insert(result.to_string(), name.to_string());
+                }
                 let value = self
                     .globals
                     .get(name)
@@ -253,6 +258,7 @@ impl Interp {
             }
             CirOpKind::Call => self.call(op),
             CirOpKind::PtrStride => self.ptr_stride(op),
+            CirOpKind::GetElement => self.get_element(op),
             CirOpKind::PtrDiff => self.ptr_diff(op),
             CirOpKind::GetMember => self.get_member(op),
             CirOpKind::Copy => self.copy(op),
@@ -518,17 +524,16 @@ impl Interp {
                     );
                 }
             }
+            "qsort" => {
+                self.qsort(op);
+            }
             other if self.funcs.contains_key(other) => {
-                if !op.operands.is_empty() {
-                    panic!("effects::cir: user calls with arguments are unsupported");
-                }
-                let f = self.funcs[other].clone();
-                self.call_depth += 1;
-                let flow = self.run(&f.regions[0].blocks[0].ops);
-                self.call_depth -= 1;
-                let Flow::Return(value) = flow else {
-                    panic!("effects::cir: user function `{other}` did not return");
-                };
+                let args = op
+                    .operands
+                    .iter()
+                    .map(|operand| self.resolve(operand))
+                    .collect::<Vec<_>>();
+                let value = self.call_user(other, &args);
                 let result = first_result(op);
                 if !result.is_empty() {
                     self.env.insert(result.to_string(), value);
@@ -537,6 +542,30 @@ impl Interp {
             other => panic!("effects::cir: unsupported call target `{other}`"),
         }
         Flow::Normal
+    }
+
+    fn call_user(&mut self, name: &str, args: &[Value]) -> Value {
+        let f = self.funcs[name].clone();
+        let block = &f.regions[0].blocks[0];
+        if block.args.len() != args.len() {
+            panic!(
+                "effects::cir: user function `{name}` expected {} arg(s), got {}",
+                block.args.len(),
+                args.len()
+            );
+        }
+        let saved_env = self.env.clone();
+        for ((arg_name, _), value) in block.args.iter().zip(args) {
+            self.env.insert(arg_name.clone(), *value);
+        }
+        self.call_depth += 1;
+        let flow = self.run(&block.ops);
+        self.call_depth -= 1;
+        self.env = saved_env;
+        let Flow::Return(value) = flow else {
+            panic!("effects::cir: user function `{name}` did not return");
+        };
+        value
     }
 
     fn ptr_stride(&mut self, op: &Op) -> Flow {
@@ -552,6 +581,66 @@ impl Interp {
         };
         self.env.insert(result.to_string(), Value::Ref(loc));
         Flow::Normal
+    }
+
+    fn get_element(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let base = self.resolve_ref(&op.operands[0]);
+        let (index, ..) = self.resolve_int(&op.operands[1]);
+        let elem_size = pointee_byte_size(result_type(op)).expect("get_element pointee size");
+        let loc = Location {
+            alloc: base.alloc,
+            byte_offset: base.byte_offset + index as u64 * elem_size,
+        };
+        self.env.insert(result.to_string(), Value::Ref(loc));
+        Flow::Normal
+    }
+
+    fn qsort(&mut self, op: &Op) {
+        let [base, count, size, comparator] = op.operands.as_slice() else {
+            panic!("effects::cir: qsort expects four arguments");
+        };
+        let base = self.resolve_ref(base);
+        let len = value_as_u64(self.resolve(count));
+        let elem_size = value_as_u64(self.resolve(size));
+        let comparator = self
+            .function_pointers
+            .get(comparator)
+            .unwrap_or_else(|| panic!("effects::cir: qsort comparator is unknown"))
+            .clone();
+        self.sort_by_callback(base, len, elem_size, &comparator);
+    }
+
+    fn sort_by_callback(&mut self, base: Location, len: u64, elem_size: u64, comparator: &str) {
+        for i in 1..len {
+            let mut j = i;
+            while j > 0 {
+                let left = Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + (j - 1) * elem_size,
+                };
+                let right = Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + j * elem_size,
+                };
+                let cmp = self.call_user(comparator, &[Value::Ref(left), Value::Ref(right)]);
+                let cmp = value_as_i128(cmp);
+                if cmp <= 0 {
+                    break;
+                }
+                let left_value = *self
+                    .heap
+                    .get(&left)
+                    .unwrap_or_else(|| panic!("effects::cir: read from never-written {left:?}"));
+                let right_value = *self
+                    .heap
+                    .get(&right)
+                    .unwrap_or_else(|| panic!("effects::cir: read from never-written {right:?}"));
+                self.write_loc(left, right_value);
+                self.write_loc(right, left_value);
+                j -= 1;
+            }
+        }
     }
 
     fn ptr_diff(&mut self, op: &Op) -> Flow {
@@ -734,6 +823,23 @@ impl Interp {
             self.trace.push(Effect::Read { loc, value });
         }
         Flow::Normal
+    }
+
+    fn read_loc(&mut self, loc: Location) -> Value {
+        let value = *self
+            .heap
+            .get(&loc)
+            .unwrap_or_else(|| panic!("effects::cir: read from never-written {loc:?}"));
+        self.trace.push(Effect::Read { loc, value });
+        value
+    }
+
+    fn write_loc(&mut self, loc: Location, value: Value) {
+        if self.freed.contains(&loc.alloc) {
+            panic!("effects::cir: write to {loc:?} after free");
+        }
+        self.heap.insert(loc, value);
+        self.trace.push(Effect::Write { loc, value });
     }
 
     fn atomic_fetch(&mut self, op: &Op) -> Flow {
@@ -1199,6 +1305,20 @@ fn int_byte_size(value: &Value) -> u64 {
             IntWidth::W128 => 16,
         },
         other => panic!("effects::cir: buffer element must be an integer, found {other:?}"),
+    }
+}
+
+fn value_as_u64(value: Value) -> u64 {
+    match value {
+        Value::Int { value, .. } => value as u64,
+        other => panic!("effects::cir: expected integer value, found {other:?}"),
+    }
+}
+
+fn value_as_i128(value: Value) -> i128 {
+    match value {
+        Value::Int { value, .. } => value,
+        other => panic!("effects::cir: expected integer value, found {other:?}"),
     }
 }
 
