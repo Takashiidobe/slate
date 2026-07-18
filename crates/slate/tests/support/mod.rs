@@ -21,6 +21,15 @@ fn cargo() -> String {
     std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into())
 }
 
+/// Path to the `alive-tv` binary used for translation-validation regression
+/// tests (compares before/after LLVM IR for a skippable fixup pass).
+pub fn alive_tv() -> String {
+    std::env::var("SLATE_ALIVE_TV").unwrap_or_else(|_| {
+        let home = std::env::var("HOME").expect("HOME not set");
+        format!("{home}/alive2/build/alive-tv")
+    })
+}
+
 pub fn compile_c(src: &Path, out: &Path) -> Result<(), String> {
     let o = Command::new(cc())
         .args(["-O0", "-std=c11", "-o"])
