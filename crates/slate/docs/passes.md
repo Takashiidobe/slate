@@ -127,7 +127,7 @@ change; "once" means it runs exactly one time per `apply` call.
 17. `string_params` - turn a C-string pointer parameter into `&str` - to fixpoint (its own `loop { ... }`); re-run three more times later in the sequence (after `string_copy`, after `string_libc`'s first pass, and after `printf_format`), since each of those can create a new liftable parameter.
 18. `ptr_len` - pair a pointer+length parameter into a slice parameter - once.
 19. `slice_index` - rewrite pointer-offset derefs into `slice[i]` once the param is a slice - once.
-20. `slice_loop` - recover `for x in slice.iter()/.iter_mut()` - once; if it changed anything, `late_loop_cleanup` runs, itself `singleton_scopes` + `dead_locals` to fixpoint.
+20. `slice_loop` - recover `for x in slice.iter()/.iter_mut()`, or `for (i, x) in slice.iter()/.iter_mut().enumerate()` when the body also reads the index directly (re-casting the `usize` enumerate index back to its original type via a shadowing `let`) - once; if it changed anything, `late_loop_cleanup` runs, itself `singleton_scopes` + `dead_locals` to fixpoint.
 21. `slice_reduce` - fold a slice-iterator accumulator loop into `.sum()`/`.product()`/`.fold()` - once; runs right after `slice_loop` (its only producer) since it consumes the `for`-loop shape that pass emits; same conditional `late_loop_cleanup` as above.
 22. `range_loop` - recover `for i in 0..bound` for the remaining counted loops - once; same conditional `late_loop_cleanup` as above.
 23. `va_list` - remove redundant `va_list` clone/alias bookkeeping - once.
