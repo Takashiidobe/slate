@@ -109,6 +109,9 @@ impl Interp {
             } => {
                 match init {
                     Expr::StructLit { fields, .. } => self.let_struct(name, fields),
+                    Expr::Call { func, args } if is_path(func, &["String", "from"]) => {
+                        self.let_string(name, args)
+                    }
                     _ if vec_elem_shape(ty).is_some() => self.let_vec(name, ty, init),
                     _ => {
                         let value = self.eval(init);
@@ -375,6 +378,76 @@ impl Interp {
         self.trace.push(Effect::Write { loc, value });
     }
 
+    fn let_string(&mut self, name: &str, args: &[Expr]) {
+        let s = match &args[0] {
+            Expr::Str(s) => s.clone(),
+            other => panic!(
+                "effects::rust_ast: `String::from` expects a string literal, found {other:?}"
+            ),
+        };
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        let bytes: Vec<u8> = s.bytes().chain(std::iter::once(0)).collect();
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: bytes.len() as u64,
+        });
+        for (index, byte) in bytes.iter().enumerate() {
+            let loc = Location {
+                alloc,
+                byte_offset: index as u64,
+            };
+            let value = Value::Int {
+                width: IntWidth::W8,
+                signed: true,
+                value: *byte as i128,
+            };
+            self.heap.insert(loc, value);
+            self.trace.push(Effect::Write { loc, value });
+        }
+        self.scalars.insert(
+            name.to_string(),
+            Value::Ref(Location {
+                alloc,
+                byte_offset: 0,
+            }),
+        );
+    }
+
+    fn string_len(&mut self, recv: &Expr) -> Value {
+        let name = match recv {
+            Expr::Var(ident) => ident.as_str(),
+            other => panic!("effects::rust_ast: unsupported `.len()` receiver `{other:?}`"),
+        };
+        let base = match self.scalars.get(name) {
+            Some(Value::Ref(loc)) => *loc,
+            other => {
+                panic!("effects::rust_ast: `.len()` on non-string scalar `{name}` ({other:?})")
+            }
+        };
+        let mut len = 0u64;
+        loop {
+            let loc = Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + len,
+            };
+            match self.heap.get(&loc) {
+                Some(Value::Int { value: 0, .. }) => break,
+                Some(_) => len += 1,
+                None => panic!("effects::rust_ast: read from never-written {loc:?}"),
+            }
+        }
+        self.trace.push(Effect::Call {
+            name: "strlen".to_string(),
+            args: vec![],
+        });
+        Value::Int {
+            width: IntWidth::W64,
+            signed: false,
+            value: len as i128,
+        }
+    }
+
     fn eval_field(&mut self, base: &Expr, field: &str) -> Value {
         let name = match base {
             Expr::Var(ident) => ident.as_str(),
@@ -462,6 +535,9 @@ impl Interp {
                 value
             }
             Expr::Field { base, field } => self.eval_field(base, field),
+            Expr::MethodCall { recv, method, args } if method == "len" && args.is_empty() => {
+                self.string_len(recv)
+            }
             other => panic!("effects::rust_ast: unsupported expr `{other:?}`"),
         }
     }
@@ -1352,6 +1428,92 @@ mod tests {
                         byte_offset: 4
                     },
                     value: int32(2),
+                },
+                Effect::Exit(3),
+            ]
+        );
+    }
+
+    /// The idiomatized `String`/`.len()` shape of `string_strlen_fixture` in
+    /// `cir::tests`: `let s = String::from("abc"); return s.len() as i32;`
+    fn string_strlen_fixture() -> FnDef {
+        FnDef {
+            attrs: vec![],
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: "main".to_string(),
+            params: vec![],
+            ret: Some(Type::Prim(Prim::I32)),
+            body: vec![
+                stmt(Stmt::Let {
+                    name: "s".to_string(),
+                    mutable: false,
+                    ty: Some(Type::Custom("String".to_string())),
+                    init: Some(Expr::Call {
+                        func: Box::new(Expr::Path(Path::new([
+                            Ident::new("String"),
+                            Ident::new("from"),
+                        ]))),
+                        args: vec![Expr::Str("abc".to_string())],
+                    }),
+                }),
+                stmt(Stmt::Return(Some(Expr::Cast {
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(Expr::Var(Ident::new("s"))),
+                        method: "len".to_string(),
+                        args: vec![],
+                    }),
+                    ty: Type::Prim(Prim::I32),
+                }))),
+            ],
+        }
+    }
+
+    #[test]
+    fn string_len_scans_a_string_buffer_and_pushes_a_call_effect() {
+        let trace = interpret(&string_strlen_fixture());
+        let alloc = AllocId(0);
+        let byte = |value: i128| Value::Int {
+            width: IntWidth::W8,
+            signed: true,
+            value,
+        };
+        assert_eq!(
+            trace.effects,
+            vec![
+                Effect::Alloc { alloc, size: 4 },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: byte(97),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 1
+                    },
+                    value: byte(98),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 2
+                    },
+                    value: byte(99),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 3
+                    },
+                    value: byte(0),
+                },
+                Effect::Call {
+                    name: "strlen".to_string(),
+                    args: vec![],
                 },
                 Effect::Exit(3),
             ]
