@@ -23,7 +23,7 @@ fn cargo() -> String {
 }
 
 /// Path to the `alive-tv` binary used for translation-validation regression
-/// tests (compares before/after LLVM IR for a skippable fixup pass).
+/// tests (compares C's LLVM IR against the baseline Rust lowering's).
 pub fn alive_tv() -> String {
     std::env::var("SLATE_ALIVE_TV").unwrap_or_else(|_| {
         let home = std::env::var("HOME").expect("HOME not set");
