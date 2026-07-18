@@ -313,7 +313,7 @@ impl Interp {
         let raw = value_as_i128(self.eval(value));
         let binding = self
             .vecs
-            .get(name)
+            .get_mut(name)
             .unwrap_or_else(|| panic!("effects::rust_ast: assign into unknown Vec `{name}`"));
         let value = Value::Int {
             width: binding.elem_width,
@@ -324,6 +324,7 @@ impl Interp {
             alloc: binding.alloc,
             byte_offset: idx * binding.elem_size,
         };
+        binding.len = binding.len.max(idx + 1);
         self.heap.insert(loc, value);
         self.trace.push(Effect::Write { loc, value });
     }
@@ -511,6 +512,7 @@ impl Interp {
                         signed,
                         value: !value,
                     },
+                    (UnaryOp::Deref, value @ Value::Int { .. }) => value,
                     (op, other) => panic!("effects::rust_ast: cannot apply {op:?} to {other:?}"),
                 }
             }
@@ -538,7 +540,101 @@ impl Interp {
             Expr::MethodCall { recv, method, args } if method == "len" && args.is_empty() => {
                 self.string_len(recv)
             }
+            Expr::MethodCall { recv, method, args }
+                if matches!(method.as_str(), "sum" | "product" | "fold") =>
+            {
+                self.eval_iter_reduce(recv, method, args)
+            }
             other => panic!("effects::rust_ast: unsupported expr `{other:?}`"),
+        }
+    }
+
+    fn eval_iter_reduce(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> Value {
+        let Expr::MethodCall {
+            recv: base,
+            method: iter_method,
+            args: iter_args,
+        } = recv
+        else {
+            panic!("effects::rust_ast: `.{method}()` receiver must be `.iter()`, found `{recv:?}`");
+        };
+        if iter_method != "iter" || !iter_args.is_empty() {
+            panic!(
+                "effects::rust_ast: unsupported iterator adapter `.{iter_method}()` before `.{method}()`"
+            );
+        }
+        let Expr::Var(ident) = &**base else {
+            panic!("effects::rust_ast: unsupported `.iter()` receiver `{base:?}`");
+        };
+        let name = ident.as_str().to_string();
+        let binding = self
+            .vecs
+            .get(&name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: `.iter()` over unknown Vec `{name}`"));
+        let (alloc, elem_size, elem_width, elem_signed, len) = (
+            binding.alloc,
+            binding.elem_size,
+            binding.elem_width,
+            binding.elem_signed,
+            binding.len,
+        );
+
+        let read_elem = |this: &mut Self, index: u64| -> Value {
+            let loc = Location {
+                alloc,
+                byte_offset: index * elem_size,
+            };
+            let value = *this
+                .heap
+                .get(&loc)
+                .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"));
+            this.trace.push(Effect::Read { loc, value });
+            value
+        };
+
+        match method {
+            "sum" | "product" => {
+                let op = if method == "sum" {
+                    BinOp::Add
+                } else {
+                    BinOp::Mul
+                };
+                let mut acc = Value::Int {
+                    width: elem_width,
+                    signed: elem_signed,
+                    value: if method == "sum" { 0 } else { 1 },
+                };
+                for i in 0..len {
+                    acc = apply_binop(op, acc, read_elem(self, i));
+                }
+                acc
+            }
+            "fold" => {
+                let [init, closure] = args else {
+                    panic!("effects::rust_ast: `.fold()` requires an init and a closure");
+                };
+                let Expr::Closure { params, body } = closure else {
+                    panic!("effects::rust_ast: `.fold()`'s second argument must be a closure");
+                };
+                let [acc_param, item_param] = params.as_slice() else {
+                    panic!("effects::rust_ast: `.fold()` closure must take exactly two params");
+                };
+                let (acc_param, item_param) = (
+                    acc_param.as_str().to_string(),
+                    item_param.as_str().to_string(),
+                );
+                let mut acc = self.eval(init);
+                for i in 0..len {
+                    let item = read_elem(self, i);
+                    self.scalars.insert(acc_param.clone(), acc);
+                    self.scalars.insert(item_param.clone(), item);
+                    acc = self.eval(body);
+                }
+                self.scalars.remove(&acc_param);
+                self.scalars.remove(&item_param);
+                acc
+            }
+            other => panic!("effects::rust_ast: unsupported iterator reduction `.{other}()`"),
         }
     }
 
@@ -1135,6 +1231,70 @@ mod tests {
         }
     }
 
+    /// `for_loop_fill_and_sum_fixture` with its accumulator loop folded by
+    /// `slice_reduce` into `let sum = p.iter().sum();`.
+    fn slice_reduce_sum_fixture() -> FnDef {
+        FnDef {
+            attrs: vec![],
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: "main".to_string(),
+            params: vec![],
+            ret: Some(Type::Prim(Prim::I32)),
+            body: vec![
+                stmt(Stmt::Let {
+                    name: "p".to_string(),
+                    mutable: true,
+                    ty: Some(Type::Generic {
+                        name: "Vec".to_string(),
+                        args: vec![Type::Prim(Prim::I32)],
+                    }),
+                    init: Some(Expr::Call {
+                        func: Box::new(Expr::Path(Path::new([
+                            Ident::new("Vec"),
+                            Ident::new("with_capacity"),
+                        ]))),
+                        args: vec![Expr::Value(RustValue::I64(3))],
+                    }),
+                }),
+                stmt(Stmt::For {
+                    pat: "i".to_string(),
+                    iter: Expr::Range {
+                        start: Box::new(Expr::Value(RustValue::I64(0))),
+                        end: Box::new(Expr::Value(RustValue::I64(3))),
+                    },
+                    body: vec![stmt(Stmt::Assign {
+                        target: Expr::Index {
+                            base: Box::new(Expr::Var(Ident::new("p"))),
+                            index: Box::new(Expr::Var(Ident::new("i"))),
+                        },
+                        value: Expr::Binary {
+                            op: BinOp::Add,
+                            lhs: Box::new(Expr::Var(Ident::new("i"))),
+                            rhs: Box::new(Expr::Value(RustValue::I64(1))),
+                        },
+                    })],
+                }),
+                stmt(Stmt::Let {
+                    name: "sum".to_string(),
+                    mutable: false,
+                    ty: Some(Type::Prim(Prim::I32)),
+                    init: Some(Expr::MethodCall {
+                        recv: Box::new(Expr::MethodCall {
+                            recv: Box::new(Expr::Var(Ident::new("p"))),
+                            method: "iter".to_string(),
+                            args: vec![],
+                        }),
+                        method: "sum".to_string(),
+                        args: vec![],
+                    }),
+                }),
+                stmt(Stmt::Return(Some(Expr::Var(Ident::new("sum"))))),
+            ],
+        }
+    }
+
     /// Mirrors the idiomatized shape of `bump`'s `&mut [i32]`/`i32` params
     /// (see `src/fixups/rewrite/ptr_len.rs`):
     /// `fn bump(items: &mut [i32], len: i32) -> i32 {
@@ -1391,6 +1551,13 @@ mod tests {
                 Effect::Exit(6),
             ]
         );
+    }
+
+    #[test]
+    fn slice_reduce_folded_sum_matches_the_raw_indexed_loops_trace() {
+        let raw = interpret(&for_loop_fill_and_sum_fixture());
+        let folded = interpret(&slice_reduce_sum_fixture());
+        assert_eq!(folded.effects, raw.effects);
     }
 
     #[test]
