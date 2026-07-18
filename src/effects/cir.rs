@@ -118,6 +118,8 @@ impl Interp {
             CirOpKind::Shift => self.shift(op),
             CirOpKind::Not => self.unary(op, |a| !a),
             CirOpKind::Minus => self.unary(op, i128::wrapping_neg),
+            CirOpKind::Inc => self.unary(op, |a| a.wrapping_add(1)),
+            CirOpKind::Dec => self.unary(op, |a| a.wrapping_sub(1)),
             CirOpKind::Cmp => self.cmp(op),
             CirOpKind::Cast => {
                 let result = first_result(op);
@@ -131,6 +133,8 @@ impl Interp {
             CirOpKind::Load => self.load(op),
             CirOpKind::If => self.if_(op),
             CirOpKind::For => self.for_(op),
+            CirOpKind::Scope => self.run_region(&op.regions[0]),
+            CirOpKind::Yield => Flow::Normal,
             CirOpKind::Return => {
                 let code = op
                     .operands
