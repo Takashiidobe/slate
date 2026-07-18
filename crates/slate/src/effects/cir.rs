@@ -1,13 +1,22 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::cir::ir::{Attr, Op};
+use crate::cir::ir::{Attr, Op, Region};
 
 use super::{AllocId, Effect, EffectTrace, IntWidth, Location, Value};
 
 pub fn interpret(ops: &[Op]) -> EffectTrace {
     let mut interp = Interp::default();
-    interp.run(ops);
+    let _ = interp.run(ops);
     interp.trace
+}
+
+/// How a statement/op completed: either it ran through normally, or it hit a
+/// `cir.return` that the enclosing `cir.if`/`cir.for` must propagate past
+/// without running the rest of their body.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Flow {
+    Normal,
+    Return,
 }
 
 #[derive(Default)]
@@ -20,36 +29,69 @@ struct Interp {
 }
 
 impl Interp {
-    fn run(&mut self, ops: &[Op]) {
+    fn run(&mut self, ops: &[Op]) -> Flow {
         for op in ops {
-            self.step(op);
+            match self.step(op) {
+                Flow::Normal => {}
+                flow => return flow,
+            }
         }
+        Flow::Normal
     }
 
-    fn step(&mut self, op: &Op) {
+    /// Runs every block of a region in sequence, propagating whichever
+    /// `Flow` its last op produces. Structured CIR regions used by
+    /// `cir.if`/`cir.for` are single-block in practice, but this doesn't
+    /// assume that.
+    fn run_region(&mut self, region: &Region) -> Flow {
+        for block in &region.blocks {
+            match self.run(&block.ops) {
+                Flow::Normal => {}
+                flow => return flow,
+            }
+        }
+        Flow::Normal
+    }
+
+    fn step(&mut self, op: &Op) -> Flow {
         match op.name.as_str() {
             "cir.alloca" => {
                 let result = first_result(op);
                 self.locals.insert(result.to_string());
+                Flow::Normal
             }
-            "cir.get_global" => {}
+            "cir.get_global" => Flow::Normal,
             "cir.const" => {
                 let result = first_result(op);
                 let raw = attr_str(op, "value").unwrap_or_default();
                 let value = int_const_value(raw, result_type(op));
                 self.env.insert(result.to_string(), value);
+                Flow::Normal
             }
             "cir.mul" => self.binop(op, i128::wrapping_mul),
             "cir.add" => self.binop(op, i128::wrapping_add),
+            "cir.sub" => self.binop(op, i128::wrapping_sub),
+            "cir.div" => self.binop(op, i128::wrapping_div),
+            "cir.rem" => self.binop(op, i128::wrapping_rem),
+            "cir.and" => self.binop(op, |a, b| a & b),
+            "cir.or" => self.binop(op, |a, b| a | b),
+            "cir.xor" => self.binop(op, |a, b| a ^ b),
+            "cir.shift" => self.shift(op),
+            "cir.not" => self.unary(op, |a| !a),
+            "cir.minus" => self.unary(op, i128::wrapping_neg),
+            "cir.cmp" => self.cmp(op),
             "cir.cast" => {
                 let result = first_result(op);
                 let value = self.resolve(&op.operands[0]);
                 self.env.insert(result.to_string(), value);
+                Flow::Normal
             }
             "cir.call" => self.call(op),
             "cir.ptr_stride" => self.ptr_stride(op),
             "cir.store" => self.store(op),
             "cir.load" => self.load(op),
+            "cir.if" => self.if_(op),
+            "cir.for" => self.for_(op),
             "cir.return" => {
                 let code = op
                     .operands
@@ -63,12 +105,13 @@ impl Interp {
                     })
                     .unwrap_or(0);
                 self.trace.push(Effect::Exit(code));
+                Flow::Return
             }
             other => panic!("effects::cir: unsupported op `{other}`"),
         }
     }
 
-    fn binop(&mut self, op: &Op, f: impl FnOnce(i128, i128) -> i128) {
+    fn binop(&mut self, op: &Op, f: impl FnOnce(i128, i128) -> i128) -> Flow {
         let result = first_result(op);
         let (a, width, signed) = self.resolve_int(&op.operands[0]);
         let (b, _, _) = self.resolve_int(&op.operands[1]);
@@ -78,9 +121,49 @@ impl Interp {
             value: f(a, b),
         };
         self.env.insert(result.to_string(), value);
+        Flow::Normal
     }
 
-    fn call(&mut self, op: &Op) {
+    fn unary(&mut self, op: &Op, f: impl FnOnce(i128) -> i128) -> Flow {
+        let result = first_result(op);
+        let (a, width, signed) = self.resolve_int(&op.operands[0]);
+        let value = Value::Int {
+            width,
+            signed,
+            value: f(a),
+        };
+        self.env.insert(result.to_string(), value);
+        Flow::Normal
+    }
+
+    // `isShiftleft` is a unit (presence-only) MLIR attr, same convention as
+    // `src/lower.rs`'s `attr_bool`.
+    fn shift(&mut self, op: &Op) -> Flow {
+        if op.attrs.contains_key("isShiftleft") {
+            self.binop(op, |a, b| a.wrapping_shl(b as u32))
+        } else {
+            self.binop(op, |a, b| a.wrapping_shr(b as u32))
+        }
+    }
+
+    fn cmp(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let (a, ..) = self.resolve_int(&op.operands[0]);
+        let (b, ..) = self.resolve_int(&op.operands[1]);
+        let value = match attr_int(op, "kind") {
+            Some(0) => a < b,
+            Some(1) => a <= b,
+            Some(2) => a > b,
+            Some(3) => a >= b,
+            Some(4) => a == b,
+            Some(5) => a != b,
+            other => panic!("effects::cir: cir.cmp has unexpected `kind` {other:?}"),
+        };
+        self.env.insert(result.to_string(), Value::Bool(value));
+        Flow::Normal
+    }
+
+    fn call(&mut self, op: &Op) -> Flow {
         let callee = attr_str(op, "callee")
             .map(|s| s.trim_start_matches('@'))
             .unwrap_or_default();
@@ -105,9 +188,10 @@ impl Interp {
             "free" => {}
             other => panic!("effects::cir: unsupported call target `{other}`"),
         }
+        Flow::Normal
     }
 
-    fn ptr_stride(&mut self, op: &Op) {
+    fn ptr_stride(&mut self, op: &Op) -> Flow {
         let result = first_result(op);
         let base = self.resolve_ref(&op.operands[0]);
         let (index, ..) = self.resolve_int(&op.operands[1]);
@@ -119,9 +203,10 @@ impl Interp {
                 .wrapping_add((index * elem_size as i128) as u64),
         };
         self.env.insert(result.to_string(), Value::Ref(loc));
+        Flow::Normal
     }
 
-    fn store(&mut self, op: &Op) {
+    fn store(&mut self, op: &Op) -> Flow {
         let value = self.resolve(&op.operands[0]);
         let place = &op.operands[1];
         if self.locals.contains(place) {
@@ -131,9 +216,10 @@ impl Interp {
             self.heap.insert(loc, value);
             self.trace.push(Effect::Write { loc, value });
         }
+        Flow::Normal
     }
 
-    fn load(&mut self, op: &Op) {
+    fn load(&mut self, op: &Op) -> Flow {
         let result = first_result(op);
         let place = &op.operands[0];
         if self.locals.contains(place) {
@@ -148,6 +234,48 @@ impl Interp {
             self.env.insert(result.to_string(), value);
             self.trace.push(Effect::Read { loc, value });
         }
+        Flow::Normal
+    }
+
+    fn if_(&mut self, op: &Op) -> Flow {
+        let cond = self.resolve_bool(&op.operands[0]);
+        if cond {
+            self.run_region(&op.regions[0])
+        } else if let Some(region) = op.regions.get(1) {
+            self.run_region(region)
+        } else {
+            Flow::Normal
+        }
+    }
+
+    // `cir.for`'s three regions are cond (terminated by `cir.condition`),
+    // body, and step, matching src/lower.rs's `lower_for_loop_body`.
+    fn for_(&mut self, op: &Op) -> Flow {
+        loop {
+            if !self.eval_condition_region(&op.regions[0]) {
+                return Flow::Normal;
+            }
+            match self.run_region(&op.regions[1]) {
+                Flow::Normal => {}
+                Flow::Return => return Flow::Return,
+            }
+            match self.run_region(&op.regions[2]) {
+                Flow::Normal => {}
+                Flow::Return => return Flow::Return,
+            }
+        }
+    }
+
+    fn eval_condition_region(&mut self, region: &Region) -> bool {
+        for block in &region.blocks {
+            for op in &block.ops {
+                if op.name == "cir.condition" || op.name == "cir.yield" {
+                    return self.resolve_bool(&op.operands[0]);
+                }
+                self.step(op);
+            }
+        }
+        panic!("effects::cir: loop condition region has no cir.condition/cir.yield terminator")
     }
 
     fn resolve(&self, name: &str) -> Value {
@@ -171,6 +299,13 @@ impl Interp {
             other => panic!("effects::cir: expected pointer value for {name}, found {other:?}"),
         }
     }
+
+    fn resolve_bool(&self, name: &str) -> bool {
+        match self.env[name] {
+            Value::Bool(value) => value,
+            other => panic!("effects::cir: expected bool value for {name}, found {other:?}"),
+        }
+    }
 }
 
 fn first_result(op: &Op) -> &str {
@@ -179,6 +314,10 @@ fn first_result(op: &Op) -> &str {
 
 fn attr_str<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
     op.attrs.get(key).and_then(Attr::as_str)
+}
+
+fn attr_int(op: &Op, key: &str) -> Option<i64> {
+    op.attrs.get(key).and_then(Attr::as_int)
 }
 
 fn result_type(op: &Op) -> Option<&str> {
@@ -236,6 +375,7 @@ fn pointee_byte_size(ptr_ty: Option<&str>) -> Option<u64> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cir::ir::Block;
     use std::collections::BTreeMap;
 
     fn op(name: &str, results: &[&str], operands: &[&str], ty: &str) -> Op {
@@ -452,5 +592,394 @@ mod tests {
                 assert!(!matches!(value, Value::Ref(_)));
             }
         }
+    }
+
+    fn region(ops: Vec<Op>) -> Region {
+        Region {
+            blocks: vec![Block {
+                label: None,
+                args: Vec::new(),
+                ops,
+            }],
+        }
+    }
+
+    /// Mirrors the CIR shape for:
+    /// `int *p = malloc(sizeof(int));
+    ///  if (5 > 3) { p[0] = 1; } else { p[0] = 2; }
+    ///  return p[0];`
+    fn if_else_fixture() -> Vec<Op> {
+        vec![
+            op("cir.alloca", &["p"], &[], "() -> !cir.ptr<!cir.ptr<!s32i>>"),
+            const_op("c4", 4, "!u64i"),
+            call_malloc("raw", "c4"),
+            op(
+                "cir.cast",
+                &["buf"],
+                &["raw"],
+                "(!cir.ptr<!void>) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.store",
+                &[],
+                &["buf", "p"],
+                "(!cir.ptr<!s32i>, !cir.ptr<!cir.ptr<!s32i>>) -> ()",
+            ),
+            const_op("c5", 5, "!s32i"),
+            const_op("c3", 3, "!s32i"),
+            {
+                let mut cmp = op(
+                    "cir.cmp",
+                    &["cond"],
+                    &["c5", "c3"],
+                    "(!s32i, !s32i) -> !cir.bool",
+                );
+                cmp.attrs.insert("kind".to_string(), Attr::Int(2));
+                cmp
+            },
+            {
+                let mut if_op = op("cir.if", &[], &["cond"], "(!cir.bool) -> ()");
+                if_op.regions = vec![
+                    region(vec![
+                        const_op("v1", 1, "!s32i"),
+                        const_op("i0", 0, "!s64i"),
+                        op(
+                            "cir.load",
+                            &["pld"],
+                            &["p"],
+                            "(!cir.ptr<!cir.ptr<!s32i>>) -> !cir.ptr<!s32i>",
+                        ),
+                        op(
+                            "cir.ptr_stride",
+                            &["loc0"],
+                            &["pld", "i0"],
+                            "(!cir.ptr<!s32i>, !s64i) -> !cir.ptr<!s32i>",
+                        ),
+                        op(
+                            "cir.store",
+                            &[],
+                            &["v1", "loc0"],
+                            "(!s32i, !cir.ptr<!s32i>) -> ()",
+                        ),
+                    ]),
+                    region(vec![
+                        const_op("v2", 2, "!s32i"),
+                        const_op("i0b", 0, "!s64i"),
+                        op(
+                            "cir.load",
+                            &["pldb"],
+                            &["p"],
+                            "(!cir.ptr<!cir.ptr<!s32i>>) -> !cir.ptr<!s32i>",
+                        ),
+                        op(
+                            "cir.ptr_stride",
+                            &["loc0b"],
+                            &["pldb", "i0b"],
+                            "(!cir.ptr<!s32i>, !s64i) -> !cir.ptr<!s32i>",
+                        ),
+                        op(
+                            "cir.store",
+                            &[],
+                            &["v2", "loc0b"],
+                            "(!s32i, !cir.ptr<!s32i>) -> ()",
+                        ),
+                    ]),
+                ];
+                if_op
+            },
+            const_op("i0c", 0, "!s64i"),
+            op(
+                "cir.load",
+                &["pldc"],
+                &["p"],
+                "(!cir.ptr<!cir.ptr<!s32i>>) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.ptr_stride",
+                &["loc0c"],
+                &["pldc", "i0c"],
+                "(!cir.ptr<!s32i>, !s64i) -> !cir.ptr<!s32i>",
+            ),
+            op("cir.load", &["r"], &["loc0c"], "(!cir.ptr<!s32i>) -> !s32i"),
+            op("cir.return", &[], &["r"], "(!s32i) -> ()"),
+        ]
+    }
+
+    #[test]
+    fn if_takes_true_branch_and_skips_false_branch_effects() {
+        let trace = interpret(&if_else_fixture());
+        let alloc = AllocId(0);
+        assert_eq!(
+            trace.effects,
+            vec![
+                Effect::Alloc { alloc, size: 4 },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(1),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(1),
+                },
+                Effect::Exit(1),
+            ]
+        );
+    }
+
+    /// Mirrors the CIR shape for:
+    /// `int *p = malloc(3 * sizeof(int));
+    ///  int i;
+    ///  for (i = 0; i < 3; i = i + 1) { p[i] = i + 1; }
+    ///  int sum = 0;
+    ///  for (i = 0; i < 3; i = i + 1) { sum = sum + p[i]; }
+    ///  return sum;`
+    fn for_loop_fill_and_sum_fixture() -> Vec<Op> {
+        let cond_region = |limit: i64| {
+            region(vec![
+                op("cir.load", &["iv"], &["i"], "(!cir.ptr<!s32i>) -> !s32i"),
+                const_op("limit", limit, "!s32i"),
+                {
+                    let mut cmp = op(
+                        "cir.cmp",
+                        &["cond"],
+                        &["iv", "limit"],
+                        "(!s32i, !s32i) -> !cir.bool",
+                    );
+                    cmp.attrs.insert("kind".to_string(), Attr::Int(0));
+                    cmp
+                },
+                op("cir.condition", &[], &["cond"], "(!cir.bool) -> ()"),
+            ])
+        };
+        let step_region = || {
+            region(vec![
+                op("cir.load", &["ivs"], &["i"], "(!cir.ptr<!s32i>) -> !s32i"),
+                const_op("one_s", 1, "!s32i"),
+                op(
+                    "cir.add",
+                    &["inc"],
+                    &["ivs", "one_s"],
+                    "(!s32i, !s32i) -> !s32i",
+                ),
+                op(
+                    "cir.store",
+                    &[],
+                    &["inc", "i"],
+                    "(!s32i, !cir.ptr<!s32i>) -> ()",
+                ),
+            ])
+        };
+
+        vec![
+            op("cir.alloca", &["p"], &[], "() -> !cir.ptr<!cir.ptr<!s32i>>"),
+            op("cir.alloca", &["i"], &[], "() -> !cir.ptr<!s32i>"),
+            op("cir.alloca", &["sum"], &[], "() -> !cir.ptr<!s32i>"),
+            const_op("c4", 4, "!u64i"),
+            const_op("c3", 3, "!u64i"),
+            op(
+                "cir.mul",
+                &["size"],
+                &["c4", "c3"],
+                "(!u64i, !u64i) -> !u64i",
+            ),
+            call_malloc("raw", "size"),
+            op(
+                "cir.cast",
+                &["buf"],
+                &["raw"],
+                "(!cir.ptr<!void>) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.store",
+                &[],
+                &["buf", "p"],
+                "(!cir.ptr<!s32i>, !cir.ptr<!cir.ptr<!s32i>>) -> ()",
+            ),
+            const_op("zero0", 0, "!s32i"),
+            op(
+                "cir.store",
+                &[],
+                &["zero0", "i"],
+                "(!s32i, !cir.ptr<!s32i>) -> ()",
+            ),
+            {
+                let mut for_op = op("cir.for", &[], &[], "() -> ()");
+                for_op.regions = vec![
+                    cond_region(3),
+                    region(vec![
+                        op("cir.load", &["ivb"], &["i"], "(!cir.ptr<!s32i>) -> !s32i"),
+                        const_op("one_b", 1, "!s32i"),
+                        op(
+                            "cir.add",
+                            &["val"],
+                            &["ivb", "one_b"],
+                            "(!s32i, !s32i) -> !s32i",
+                        ),
+                        op(
+                            "cir.load",
+                            &["idx_s32"],
+                            &["i"],
+                            "(!cir.ptr<!s32i>) -> !s32i",
+                        ),
+                        op("cir.cast", &["idx"], &["idx_s32"], "(!s32i) -> !s64i"),
+                        op(
+                            "cir.load",
+                            &["pld"],
+                            &["p"],
+                            "(!cir.ptr<!cir.ptr<!s32i>>) -> !cir.ptr<!s32i>",
+                        ),
+                        op(
+                            "cir.ptr_stride",
+                            &["loc"],
+                            &["pld", "idx"],
+                            "(!cir.ptr<!s32i>, !s64i) -> !cir.ptr<!s32i>",
+                        ),
+                        op(
+                            "cir.store",
+                            &[],
+                            &["val", "loc"],
+                            "(!s32i, !cir.ptr<!s32i>) -> ()",
+                        ),
+                    ]),
+                    step_region(),
+                ];
+                for_op
+            },
+            const_op("zero1", 0, "!s32i"),
+            op(
+                "cir.store",
+                &[],
+                &["zero1", "i"],
+                "(!s32i, !cir.ptr<!s32i>) -> ()",
+            ),
+            const_op("zero_sum", 0, "!s32i"),
+            op(
+                "cir.store",
+                &[],
+                &["zero_sum", "sum"],
+                "(!s32i, !cir.ptr<!s32i>) -> ()",
+            ),
+            {
+                let mut for_op = op("cir.for", &[], &[], "() -> ()");
+                for_op.regions = vec![
+                    cond_region(3),
+                    region(vec![
+                        op(
+                            "cir.load",
+                            &["idxr_s32"],
+                            &["i"],
+                            "(!cir.ptr<!s32i>) -> !s32i",
+                        ),
+                        op("cir.cast", &["idxr"], &["idxr_s32"], "(!s32i) -> !s64i"),
+                        op(
+                            "cir.load",
+                            &["pldr"],
+                            &["p"],
+                            "(!cir.ptr<!cir.ptr<!s32i>>) -> !cir.ptr<!s32i>",
+                        ),
+                        op(
+                            "cir.ptr_stride",
+                            &["locr"],
+                            &["pldr", "idxr"],
+                            "(!cir.ptr<!s32i>, !s64i) -> !cir.ptr<!s32i>",
+                        ),
+                        op(
+                            "cir.load",
+                            &["elem"],
+                            &["locr"],
+                            "(!cir.ptr<!s32i>) -> !s32i",
+                        ),
+                        op(
+                            "cir.load",
+                            &["sum_old"],
+                            &["sum"],
+                            "(!cir.ptr<!s32i>) -> !s32i",
+                        ),
+                        op(
+                            "cir.add",
+                            &["sum_new"],
+                            &["sum_old", "elem"],
+                            "(!s32i, !s32i) -> !s32i",
+                        ),
+                        op(
+                            "cir.store",
+                            &[],
+                            &["sum_new", "sum"],
+                            "(!s32i, !cir.ptr<!s32i>) -> ()",
+                        ),
+                    ]),
+                    step_region(),
+                ];
+                for_op
+            },
+            op(
+                "cir.load",
+                &["result"],
+                &["sum"],
+                "(!cir.ptr<!s32i>) -> !s32i",
+            ),
+            op("cir.return", &[], &["result"], "(!s32i) -> ()"),
+        ]
+    }
+
+    #[test]
+    fn for_loop_fills_array_then_sums_it() {
+        let trace = interpret(&for_loop_fill_and_sum_fixture());
+        let alloc = AllocId(0);
+        assert_eq!(
+            trace.effects,
+            vec![
+                Effect::Alloc { alloc, size: 12 },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(1),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(2),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 8
+                    },
+                    value: int32(3),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(1),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(2),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 8
+                    },
+                    value: int32(3),
+                },
+                Effect::Exit(6),
+            ]
+        );
     }
 }
