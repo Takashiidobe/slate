@@ -424,7 +424,7 @@ pub enum AtomicType {
     Bool,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AtomicOrdering {
     Relaxed,
     Acquire,
@@ -433,7 +433,7 @@ pub enum AtomicOrdering {
     SeqCst,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AtomicRmwOp {
     Add,
     Sub,

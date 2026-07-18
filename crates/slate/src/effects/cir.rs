@@ -1,8 +1,9 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::cir::ir::{Attr, CirOpKind, Op, Region};
+use crate::rust_ast::{AtomicOrdering, AtomicRmwOp};
 
-use super::{AllocId, Effect, EffectTrace, FileId, IntWidth, Location, ParamSeed, Value};
+use super::{AllocId, AtomicId, Effect, EffectTrace, FileId, IntWidth, Location, ParamSeed, Value};
 
 pub fn interpret(ops: &[Op]) -> EffectTrace {
     interpret_with_params(ops, &[])
@@ -36,6 +37,8 @@ pub fn interpret_module_main(module: &crate::cir::ir::Module) -> EffectTrace {
 enum Flow {
     Normal,
     Return(Value),
+    Break,
+    Continue,
 }
 
 #[derive(Default)]
@@ -48,8 +51,11 @@ struct Interp {
     const_arrays: HashMap<String, Vec<Value>>,
     c_strings: HashMap<String, Vec<u8>>,
     funcs: HashMap<String, Op>,
+    atomics: HashMap<String, AtomicId>,
+    atomic_values: HashMap<AtomicId, Value>,
     heap: HashMap<Location, Value>,
     next_alloc: u32,
+    next_atomic: u32,
     trace: EffectTrace,
     struct_allocs: HashMap<String, AllocId>,
     struct_alloc_slot: HashMap<AllocId, usize>,
@@ -253,10 +259,17 @@ impl Interp {
             CirOpKind::LibcMemchr => self.libc_memchr(op),
             CirOpKind::Store => self.store(op),
             CirOpKind::Load => self.load(op),
+            CirOpKind::AtomicFetch => self.atomic_fetch(op),
+            CirOpKind::AtomicXchg => self.atomic_xchg(op),
+            CirOpKind::AtomicCmpxchg => self.atomic_cmpxchg(op),
+            CirOpKind::AtomicFence => self.atomic_fence(op),
             CirOpKind::If => self.if_(op),
             CirOpKind::For => self.for_(op),
+            CirOpKind::While => self.while_(op),
             CirOpKind::Scope => self.run_region(&op.regions[0]),
             CirOpKind::Yield => Flow::Normal,
+            CirOpKind::Break => Flow::Break,
+            CirOpKind::Continue => Flow::Continue,
             CirOpKind::Return => {
                 let code = op
                     .operands
@@ -614,7 +627,11 @@ impl Interp {
     fn store(&mut self, op: &Op) -> Flow {
         let value = self.resolve(&op.operands[0]);
         let place = &op.operands[1];
-        if self.locals.contains(place) {
+        if self.locals.contains(place)
+            && let Some(ordering) = attr_int(op, "mem_order")
+        {
+            self.atomic_store(place, store_ordering(ordering), value);
+        } else if self.locals.contains(place) {
             self.env.insert(place.clone(), value);
         } else {
             let loc = self.resolve_ref(place);
@@ -696,7 +713,12 @@ impl Interp {
     fn load(&mut self, op: &Op) -> Flow {
         let result = first_result(op);
         let place = &op.operands[0];
-        if self.locals.contains(place) {
+        if self.locals.contains(place)
+            && let Some(ordering) = attr_int(op, "mem_order")
+        {
+            let value = self.atomic_load(place, load_ordering(ordering));
+            self.env.insert(result.to_string(), value);
+        } else if self.locals.contains(place) {
             let value = self.env[place];
             self.env.insert(result.to_string(), value);
         } else {
@@ -712,6 +734,127 @@ impl Interp {
             self.trace.push(Effect::Read { loc, value });
         }
         Flow::Normal
+    }
+
+    fn atomic_fetch(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let place = &op.operands[0];
+        let operand = self.resolve(&op.operands[1]);
+        let atomic = self.atomic_for_name(place);
+        let old = self.atomic_value(atomic);
+        let op_kind = atomic_rmw_op(attr_int(op, "binop").unwrap_or(0));
+        let new = atomic_rmw_value(op_kind, old, operand);
+        self.atomic_values.insert(atomic, new);
+        self.trace.push(Effect::AtomicRmw {
+            atomic,
+            op: op_kind,
+            ordering: rust_ordering(attr_int(op, "mem_order").unwrap_or(5)),
+            operand,
+            old,
+            new,
+        });
+        let value = if attr_str(op, "fetch_first") == Some("false") {
+            new
+        } else {
+            old
+        };
+        self.env.insert(result.to_string(), value);
+        Flow::Normal
+    }
+
+    fn atomic_xchg(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let place = &op.operands[0];
+        let new = self.resolve(&op.operands[1]);
+        let atomic = self.atomic_for_name(place);
+        let old = self.atomic_value(atomic);
+        self.atomic_values.insert(atomic, new);
+        self.trace.push(Effect::AtomicSwap {
+            atomic,
+            ordering: rust_ordering(attr_int(op, "mem_order").unwrap_or(5)),
+            old,
+            new,
+        });
+        self.env.insert(result.to_string(), old);
+        Flow::Normal
+    }
+
+    fn atomic_cmpxchg(&mut self, op: &Op) -> Flow {
+        let place = &op.operands[0];
+        let expected = self.resolve(&op.operands[1]);
+        let desired = self.resolve(&op.operands[2]);
+        let atomic = self.atomic_for_name(place);
+        let old = self.atomic_value(atomic);
+        let exchanged = old == expected;
+        if exchanged {
+            self.atomic_values.insert(atomic, desired);
+        }
+        self.trace.push(Effect::AtomicCompareExchange {
+            atomic,
+            success: rust_ordering(attr_int(op, "succ_order").unwrap_or(5)),
+            failure: load_ordering(attr_int(op, "fail_order").unwrap_or(5)),
+            expected,
+            desired,
+            old,
+            exchanged,
+        });
+        if let Some(result) = op.results.first() {
+            self.env.insert(result.clone(), old);
+        }
+        if let Some(result) = op.results.get(1) {
+            self.env.insert(result.clone(), Value::Bool(exchanged));
+        }
+        Flow::Normal
+    }
+
+    fn atomic_fence(&mut self, op: &Op) -> Flow {
+        let ordering = rust_ordering(attr_int(op, "ordering").unwrap_or(5));
+        self.trace.push(Effect::AtomicFence { ordering });
+        Flow::Normal
+    }
+
+    fn atomic_store(&mut self, name: &str, ordering: AtomicOrdering, value: Value) {
+        let atomic = self.atomic_for_name(name);
+        self.env.insert(name.to_string(), value);
+        self.atomic_values.insert(atomic, value);
+        self.trace.push(Effect::AtomicStore {
+            atomic,
+            ordering,
+            value,
+        });
+    }
+
+    fn atomic_load(&mut self, name: &str, ordering: AtomicOrdering) -> Value {
+        let atomic = self.atomic_for_name(name);
+        let value = self.atomic_value(atomic);
+        self.trace.push(Effect::AtomicLoad {
+            atomic,
+            ordering,
+            value,
+        });
+        value
+    }
+
+    fn atomic_for_name(&mut self, name: &str) -> AtomicId {
+        if let Some(&atomic) = self.atomics.get(name) {
+            return atomic;
+        }
+        let value = *self
+            .env
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::cir: atomic access to unknown `{name}`"));
+        let atomic = AtomicId(self.next_atomic);
+        self.next_atomic += 1;
+        self.atomics.insert(name.to_string(), atomic);
+        self.atomic_values.insert(atomic, value);
+        atomic
+    }
+
+    fn atomic_value(&self, atomic: AtomicId) -> Value {
+        *self
+            .atomic_values
+            .get(&atomic)
+            .unwrap_or_else(|| panic!("effects::cir: read from unknown atomic {atomic:?}"))
     }
 
     fn if_(&mut self, op: &Op) -> Flow {
@@ -734,10 +877,26 @@ impl Interp {
             }
             match self.run_region(&op.regions[1]) {
                 Flow::Normal => {}
+                Flow::Break => return Flow::Normal,
+                Flow::Continue => {}
                 flow @ Flow::Return(_) => return flow,
             }
             match self.run_region(&op.regions[2]) {
-                Flow::Normal => {}
+                Flow::Normal | Flow::Continue => {}
+                Flow::Break => return Flow::Normal,
+                flow @ Flow::Return(_) => return flow,
+            }
+        }
+    }
+
+    fn while_(&mut self, op: &Op) -> Flow {
+        loop {
+            if !self.eval_condition_region(&op.regions[0]) {
+                return Flow::Normal;
+            }
+            match self.run_region(&op.regions[1]) {
+                Flow::Normal | Flow::Continue => {}
+                Flow::Break => return Flow::Normal,
                 flow @ Flow::Return(_) => return flow,
             }
         }
@@ -855,6 +1014,73 @@ fn int_width(bits: u32) -> IntWidth {
         64 => IntWidth::W64,
         128 => IntWidth::W128,
         _ => IntWidth::PointerSized,
+    }
+}
+
+fn rust_ordering(mem_order: i64) -> AtomicOrdering {
+    match mem_order {
+        0 => AtomicOrdering::Relaxed,
+        1 | 2 => AtomicOrdering::Acquire,
+        3 => AtomicOrdering::Release,
+        4 => AtomicOrdering::AcqRel,
+        _ => AtomicOrdering::SeqCst,
+    }
+}
+
+fn load_ordering(mem_order: i64) -> AtomicOrdering {
+    match mem_order {
+        0 => AtomicOrdering::Relaxed,
+        1 | 2 => AtomicOrdering::Acquire,
+        _ => AtomicOrdering::SeqCst,
+    }
+}
+
+fn store_ordering(mem_order: i64) -> AtomicOrdering {
+    match mem_order {
+        0 => AtomicOrdering::Relaxed,
+        3 => AtomicOrdering::Release,
+        _ => AtomicOrdering::SeqCst,
+    }
+}
+
+fn atomic_rmw_op(binop: i64) -> AtomicRmwOp {
+    match binop {
+        0 => AtomicRmwOp::Add,
+        1 => AtomicRmwOp::Sub,
+        2 => AtomicRmwOp::And,
+        3 => AtomicRmwOp::Xor,
+        4 => AtomicRmwOp::Or,
+        5 => AtomicRmwOp::Nand,
+        6 => AtomicRmwOp::Max,
+        _ => AtomicRmwOp::Min,
+    }
+}
+
+fn atomic_rmw_value(op: AtomicRmwOp, old: Value, operand: Value) -> Value {
+    let (width, signed) = match old {
+        Value::Int { width, signed, .. } => (width, signed),
+        other => panic!("effects::cir: expected atomic int value, found {other:?}"),
+    };
+    let Value::Int { value: old, .. } = old else {
+        unreachable!();
+    };
+    let Value::Int { value: operand, .. } = operand else {
+        panic!("effects::cir: expected atomic int operand");
+    };
+    let value = match op {
+        AtomicRmwOp::Add => old.wrapping_add(operand),
+        AtomicRmwOp::Sub => old.wrapping_sub(operand),
+        AtomicRmwOp::And => old & operand,
+        AtomicRmwOp::Xor => old ^ operand,
+        AtomicRmwOp::Or => old | operand,
+        AtomicRmwOp::Nand => !(old & operand),
+        AtomicRmwOp::Max => old.max(operand),
+        AtomicRmwOp::Min => old.min(operand),
+    };
+    Value::Int {
+        width,
+        signed,
+        value,
     }
 }
 
