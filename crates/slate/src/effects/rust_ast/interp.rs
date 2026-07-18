@@ -3,8 +3,8 @@ use std::collections::{HashMap, HashSet};
 
 use super::support::*;
 use crate::effects::{
-    AllocId, AtomicId, Effect, EffectTrace, FileId, IntWidth, Location, OptionValue, ParamSeed,
-    Value,
+    AllocId, AtomicId, CallSummary, Effect, EffectTrace, FileId, IntWidth, Location, OptionValue,
+    ParamSeed, Value, call_summary,
 };
 use crate::rust_ast::{
     AtomicOrdering, AtomicPlace, AtomicRmwOp, BinOp, Block, Expr, FnDef, IndentStmt, Item, Pattern,
@@ -910,6 +910,7 @@ impl Interp {
                 )
             }),
             Expr::Cast { expr, ty } => cast_value_to_type(self.eval(expr), ty),
+            Expr::AddrOf { expr, .. } => Value::Ref(self.addr_of(expr)),
             Expr::Unary { op, expr } => {
                 let value = self.eval(expr);
                 match (op, value) {
@@ -976,6 +977,12 @@ impl Interp {
             Expr::MethodCall { recv, method, args } if method == "sort_by" => {
                 self.sort_by(recv, args);
                 int32(0)
+            }
+            Expr::MethodCall { recv, method, args } if method == "binary_search_by" => {
+                self.binary_search_by(recv, args)
+            }
+            Expr::MethodCall { recv, method, args } if method == "map_or" => {
+                self.map_or(recv, args)
             }
             Expr::MethodCall { recv, method, args } if method == "cmp" => {
                 self.compare_method(recv, args)
@@ -1370,6 +1377,23 @@ impl Interp {
         value
     }
 
+    fn addr_of(&mut self, expr: &Expr) -> Location {
+        match expr {
+            Expr::Index { base, index } => {
+                let name = collection_name(base);
+                let idx = value_as_u64(self.eval(index));
+                let binding = self.vecs.get(name).unwrap_or_else(|| {
+                    panic!("effects::rust_ast: address of index into unknown Vec `{name}`")
+                });
+                Location {
+                    alloc: binding.alloc,
+                    byte_offset: idx * binding.elem_size,
+                }
+            }
+            other => panic!("effects::rust_ast: unsupported address-of expression `{other:?}`"),
+        }
+    }
+
     fn eval_call(&mut self, func: &Expr, args: &[Expr]) -> Value {
         if args.is_empty() && is_path(func, &["std", "ptr", "null_mut"]) {
             return Value::Null;
@@ -1377,77 +1401,187 @@ impl Interp {
         if args.is_empty() && is_path(func, &["std", "mem", "size_of"]) {
             return int32(4);
         }
-        let Expr::Var(ident) = func else {
+        let Some(name) = path_name(func) else {
             panic!("effects::rust_ast: unsupported call target `{func:?}`");
         };
-        let name = ident.as_str();
         if name == "Some" {
             let [arg] = args else {
                 panic!("effects::rust_ast: Some expects one argument");
             };
             return Value::Option(Some(option_value(self.eval(arg))));
         }
-        if name == "fopen" {
-            let [path, mode] = args else {
-                panic!("effects::rust_ast: fopen expects path and mode");
-            };
-            let file = FileId(self.next_file);
-            self.next_file += 1;
-            self.trace.push(Effect::FileOpen {
-                file,
-                path: c_string_expr(path),
-                mode: c_string_expr(mode),
-            });
-            return Value::File(file);
-        }
-        if name == "fputs" {
-            let [bytes, file] = args else {
-                panic!("effects::rust_ast: fputs expects bytes and file");
-            };
-            let file = match self.eval(file) {
-                Value::File(file) => file,
-                other => panic!("effects::rust_ast: fputs expected file handle, found {other:?}"),
-            };
-            self.trace.push(Effect::FileWrite {
-                file,
-                bytes: c_string_expr_bytes(bytes),
-            });
-            return int32(0);
-        }
-        if name == "fclose" {
-            let [file] = args else {
-                panic!("effects::rust_ast: fclose expects file");
-            };
-            let file = match self.eval(file) {
-                Value::File(file) => file,
-                other => panic!("effects::rust_ast: fclose expected file handle, found {other:?}"),
-            };
-            self.trace.push(Effect::FileClose { file });
-            return int32(0);
-        }
-        if name == "printf" {
-            let values = args
-                .iter()
-                .skip(1)
-                .map(|arg| self.eval(arg))
-                .collect::<Vec<_>>();
-            self.trace.push(Effect::Call {
-                name: "printf".to_string(),
-                args: values,
-            });
-            return int32(0);
-        }
-        if name == "qsort" {
-            self.qsort(args);
-            return int32(0);
+        if let Some(summary) = call_summary(&name) {
+            return self.eval_call_summary(summary, args);
         }
         let f = self
             .funcs
-            .get(name)
+            .get(&name)
             .cloned()
             .unwrap_or_else(|| panic!("effects::rust_ast: unsupported call target `{name}`"));
         let values = args.iter().map(|arg| self.eval(arg)).collect::<Vec<_>>();
         self.call_user(&f, &values)
+    }
+
+    fn eval_call_summary(&mut self, summary: CallSummary, args: &[Expr]) -> Value {
+        match summary {
+            CallSummary::Malloc => self.call_malloc(args),
+            CallSummary::Free => self.call_free(args),
+            CallSummary::Strlen => self.call_strlen(args),
+            CallSummary::Fopen => self.call_fopen(args),
+            CallSummary::Fputs => self.call_fputs(args),
+            CallSummary::Fclose => self.call_fclose(args),
+            CallSummary::Printf => self.call_printf(args),
+            CallSummary::Qsort => {
+                self.qsort(args);
+                int32(0)
+            }
+            CallSummary::Bsearch => self.bsearch(args),
+        }
+    }
+
+    fn call_malloc(&mut self, args: &[Expr]) -> Value {
+        let [size] = args else {
+            panic!("effects::rust_ast: malloc expects size");
+        };
+        let size = value_as_u64(self.eval(size));
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.trace.push(Effect::Alloc { alloc, size });
+        Value::Ref(Location {
+            alloc,
+            byte_offset: 0,
+        })
+    }
+
+    fn call_free(&mut self, args: &[Expr]) -> Value {
+        let [base] = args else {
+            panic!("effects::rust_ast: free expects pointer");
+        };
+        let base = match self.eval(base) {
+            Value::Ref(loc) => loc,
+            other => panic!("effects::rust_ast: free expected pointer, found {other:?}"),
+        };
+        if !self.freed.insert(base.alloc) {
+            panic!("effects::rust_ast: double free of {:?}", base.alloc);
+        }
+        self.trace.push(Effect::Dealloc { alloc: base.alloc });
+        int32(0)
+    }
+
+    fn call_strlen(&mut self, args: &[Expr]) -> Value {
+        let [base] = args else {
+            panic!("effects::rust_ast: strlen expects pointer");
+        };
+        let base = match self.eval(base) {
+            Value::Ref(loc) => loc,
+            other => panic!("effects::rust_ast: strlen expected pointer, found {other:?}"),
+        };
+        let mut len = 0u64;
+        loop {
+            let loc = Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + len,
+            };
+            match self.heap.get(&loc) {
+                Some(Value::Int { value: 0, .. }) => break,
+                Some(_) => len += 1,
+                None => panic!("effects::rust_ast: strlen scanned past never-written {loc:?}"),
+            }
+        }
+        self.trace.push(Effect::Call {
+            name: "strlen".to_string(),
+            args: vec![],
+        });
+        Value::Int {
+            width: IntWidth::PointerSized,
+            signed: false,
+            value: len as i128,
+        }
+    }
+
+    fn call_fopen(&mut self, args: &[Expr]) -> Value {
+        let [path, mode] = args else {
+            panic!("effects::rust_ast: fopen expects path and mode");
+        };
+        let file = FileId(self.next_file);
+        self.next_file += 1;
+        self.trace.push(Effect::FileOpen {
+            file,
+            path: c_string_expr(path),
+            mode: c_string_expr(mode),
+        });
+        Value::File(file)
+    }
+
+    fn call_fputs(&mut self, args: &[Expr]) -> Value {
+        let [bytes, file] = args else {
+            panic!("effects::rust_ast: fputs expects bytes and file");
+        };
+        let file = match self.eval(file) {
+            Value::File(file) => file,
+            other => panic!("effects::rust_ast: fputs expected file handle, found {other:?}"),
+        };
+        self.trace.push(Effect::FileWrite {
+            file,
+            bytes: c_string_expr_bytes(bytes),
+        });
+        int32(0)
+    }
+
+    fn call_fclose(&mut self, args: &[Expr]) -> Value {
+        let [file] = args else {
+            panic!("effects::rust_ast: fclose expects file");
+        };
+        let file = match self.eval(file) {
+            Value::File(file) => file,
+            other => panic!("effects::rust_ast: fclose expected file handle, found {other:?}"),
+        };
+        self.trace.push(Effect::FileClose { file });
+        int32(0)
+    }
+
+    fn call_printf(&mut self, args: &[Expr]) -> Value {
+        let values = args
+            .iter()
+            .skip(1)
+            .map(|arg| self.eval(arg))
+            .collect::<Vec<_>>();
+        self.trace.push(Effect::Call {
+            name: "printf".to_string(),
+            args: values,
+        });
+        int32(0)
+    }
+
+    fn bsearch(&mut self, args: &[Expr]) -> Value {
+        let [key, base, count, size, comparator] = args else {
+            panic!("effects::rust_ast: bsearch expects five arguments");
+        };
+        let key = match self.eval(key) {
+            Value::Ref(loc) => loc,
+            other => panic!("effects::rust_ast: bsearch expected key pointer, found {other:?}"),
+        };
+        let base = match self.eval(base) {
+            Value::Ref(loc) => loc,
+            other => panic!("effects::rust_ast: bsearch expected base pointer, found {other:?}"),
+        };
+        let len = value_as_u64(self.eval(count));
+        let elem_size = value_as_u64(self.eval(size));
+        let comparator = comparator_name(comparator);
+        let f = self.funcs.get(comparator).cloned().unwrap_or_else(|| {
+            panic!("effects::rust_ast: unknown bsearch comparator `{comparator}`")
+        });
+        for index in 0..len {
+            let elem = Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + index * elem_size,
+            };
+            let value = self.call_user(&f, &[Value::Ref(key), Value::Ref(elem)]);
+            if value_as_i128(value) == 0 {
+                return Value::Ref(elem);
+            }
+        }
+        Value::Null
     }
 
     fn call_user(&mut self, f: &FnDef, args: &[Value]) -> Value {
@@ -1517,6 +1651,61 @@ impl Interp {
             restore_scalar(&mut this.scalars, &right_param, right_saved);
             value_as_i128(value)
         });
+    }
+
+    fn binary_search_by(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+        let [Expr::Closure { params, body }] = args else {
+            panic!("effects::rust_ast: binary_search_by expects one closure");
+        };
+        let [param] = params.as_slice() else {
+            panic!("effects::rust_ast: binary_search_by closure expects one param");
+        };
+        let name = collection_name(recv).to_string();
+        let binding = self.vecs.get(&name).unwrap_or_else(|| {
+            panic!("effects::rust_ast: binary_search_by on unknown collection `{name}`")
+        });
+        let (alloc, len, elem_size) = (binding.alloc, binding.len, binding.elem_size);
+        let param = param.as_str().to_string();
+        let body = body.as_ref().clone();
+        for index in 0..len {
+            let loc = Location {
+                alloc,
+                byte_offset: index * elem_size,
+            };
+            let saved = self.scalars.insert(param.clone(), Value::Ref(loc));
+            let value = self.eval(&body);
+            restore_scalar(&mut self.scalars, &param, saved);
+            if value_as_i128(value) == 0 {
+                return Value::Option(Some(OptionValue::Int {
+                    width: IntWidth::PointerSized,
+                    signed: false,
+                    value: index as i128,
+                }));
+            }
+        }
+        Value::Option(None)
+    }
+
+    fn map_or(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+        let [default, Expr::Closure { params, body }] = args else {
+            panic!("effects::rust_ast: map_or expects default and closure");
+        };
+        let [param] = params.as_slice() else {
+            panic!("effects::rust_ast: map_or closure expects one param");
+        };
+        match self.eval(recv) {
+            Value::Option(Some(value)) => {
+                let param = param.as_str().to_string();
+                let saved = self
+                    .scalars
+                    .insert(param.clone(), option_value_to_value(value));
+                let result = self.eval(body);
+                restore_scalar(&mut self.scalars, &param, saved);
+                result
+            }
+            Value::Option(None) => self.eval(default),
+            other => panic!("effects::rust_ast: map_or on non-option `{other:?}`"),
+        }
     }
 
     fn sort_array_by(
