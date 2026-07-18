@@ -1,7 +1,7 @@
 use std::cmp::Reverse;
 use std::collections::{HashMap, HashSet};
 
-use super::{AllocId, Effect, EffectTrace, IntWidth, Location, ParamSeed, Value};
+use super::{AllocId, Effect, EffectTrace, IntWidth, Location, OptionValue, ParamSeed, Value};
 use crate::rust_ast::{
     BinOp, Block, Expr, FnDef, IndentStmt, Item, Path, Program, RustValue, Stmt, Type, UnaryOp,
 };
@@ -211,11 +211,23 @@ impl Interp {
                         self.let_string(name, args)
                     }
                     _ if vec_elem_shape(ty).is_some() => self.let_vec(name, ty, init),
+                    _ if array_elem_shape(ty).is_some() => self.let_array(name, ty, init),
+                    Expr::CStr(bytes) if is_cstr_ref_ty(ty) => self.let_cstr(name, bytes),
                     _ => {
                         let value = self.eval(init);
                         self.scalars.insert(name.clone(), value);
                     }
                 }
+                Flow::Normal
+            }
+            Stmt::Let {
+                name,
+                ty: None,
+                init: Some(init),
+                ..
+            } => {
+                let value = self.eval(init);
+                self.scalars.insert(name.clone(), value);
                 Flow::Normal
             }
             Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "push" => {
@@ -408,6 +420,99 @@ impl Interp {
                 len: 0,
                 owned: true,
             },
+        );
+    }
+
+    fn let_array(&mut self, name: &str, ty: &Type, init: &Expr) {
+        let (elem_width, elem_signed, elem_size, len) = array_elem_shape(ty)
+            .unwrap_or_else(|| panic!("effects::rust_ast: expected array local, found {ty:?}"));
+        let values: Vec<Value> = match init {
+            Expr::ArrayLit(elems) => elems
+                .iter()
+                .map(|elem| Value::Int {
+                    width: elem_width,
+                    signed: elem_signed,
+                    value: value_as_i128(self.eval(elem)),
+                })
+                .collect(),
+            Expr::ArrayRepeat { elem, len } => {
+                let value = Value::Int {
+                    width: elem_width,
+                    signed: elem_signed,
+                    value: value_as_i128(self.eval(elem)),
+                };
+                vec![value; *len]
+            }
+            other => panic!("effects::rust_ast: unsupported array initializer `{other:?}`"),
+        };
+        if values.len() as u64 != len {
+            panic!("effects::rust_ast: array initializer length does not match type");
+        }
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: len * elem_size,
+        });
+        for (index, value) in values.iter().enumerate() {
+            let loc = Location {
+                alloc,
+                byte_offset: index as u64 * elem_size,
+            };
+            self.heap.insert(loc, *value);
+            self.trace.push(Effect::Write { loc, value: *value });
+        }
+        self.vecs.insert(
+            name.to_string(),
+            VecBinding {
+                alloc,
+                elem_width,
+                elem_signed,
+                elem_size,
+                len,
+                owned: false,
+            },
+        );
+    }
+
+    fn let_cstr(&mut self, name: &str, bytes: &[u8]) {
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        let bytes: Vec<u8> = bytes.iter().copied().chain(std::iter::once(0)).collect();
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: bytes.len() as u64,
+        });
+        for (index, byte) in bytes.iter().enumerate() {
+            let loc = Location {
+                alloc,
+                byte_offset: index as u64,
+            };
+            let value = Value::Int {
+                width: IntWidth::W8,
+                signed: true,
+                value: *byte as i128,
+            };
+            self.heap.insert(loc, value);
+            self.trace.push(Effect::Write { loc, value });
+        }
+        self.vecs.insert(
+            name.to_string(),
+            VecBinding {
+                alloc,
+                elem_width: IntWidth::W8,
+                elem_signed: true,
+                elem_size: 1,
+                len: bytes.len() as u64,
+                owned: false,
+            },
+        );
+        self.scalars.insert(
+            name.to_string(),
+            Value::Ref(Location {
+                alloc,
+                byte_offset: 0,
+            }),
         );
     }
 
@@ -658,8 +763,7 @@ impl Interp {
                     ident.as_str()
                 )
             }),
-            // ignores the cast's target type, mirroring `cir.cast`'s own pass-through behavior.
-            Expr::Cast { expr, .. } => self.eval(expr),
+            Expr::Cast { expr, ty } => cast_value_to_type(self.eval(expr), ty),
             Expr::Unary { op, expr } => {
                 let value = self.eval(expr);
                 match (op, value) {
@@ -718,6 +822,15 @@ impl Interp {
             Expr::Field { base, field } => self.eval_field(base, field),
             Expr::MethodCall { recv, method, args } if method == "len" && args.is_empty() => {
                 self.string_len(recv)
+            }
+            Expr::MethodCall { recv, method, args } if method == "position" => {
+                self.iter_position(recv, args)
+            }
+            Expr::MethodCall { recv, method, args } if method == "is_none" && args.is_empty() => {
+                option_is_none(self.eval(recv))
+            }
+            Expr::MethodCall { recv, method, args } if method == "unwrap" && args.is_empty() => {
+                option_unwrap(self.eval(recv))
             }
             Expr::MethodCall { recv, method, args } if method == "get_or_init" => {
                 self.once_lock_get_or_init(recv, args)
@@ -800,6 +913,12 @@ impl Interp {
             panic!("effects::rust_ast: unsupported call target `{func:?}`");
         };
         let name = ident.as_str();
+        if name == "Some" {
+            let [arg] = args else {
+                panic!("effects::rust_ast: Some expects one argument");
+            };
+            return Value::Option(Some(option_value(self.eval(arg))));
+        }
         let f = self
             .funcs
             .get(name)
@@ -815,6 +934,52 @@ impl Interp {
             panic!("effects::rust_ast: user function `{name}` did not return");
         };
         value
+    }
+
+    fn iter_position(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+        let [Expr::Closure { params, body }] = args else {
+            panic!("effects::rust_ast: `.position()` requires one closure");
+        };
+        let [param] = params.as_slice() else {
+            panic!("effects::rust_ast: `.position()` closure must take one param");
+        };
+        let (alloc, elem_size, len) = self.iter_source(recv);
+        for index in 0..len {
+            let loc = Location {
+                alloc,
+                byte_offset: index * elem_size,
+            };
+            let value = *self
+                .heap
+                .get(&loc)
+                .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"));
+            self.trace.push(Effect::Read { loc, value });
+            self.scalars.insert(param.as_str().to_string(), value);
+            if value_as_bool(self.eval(body)) {
+                self.scalars.remove(param.as_str());
+                return Value::Option(Some(OptionValue::Int {
+                    width: IntWidth::PointerSized,
+                    signed: false,
+                    value: index as i128,
+                }));
+            }
+        }
+        self.scalars.remove(param.as_str());
+        Value::Option(None)
+    }
+
+    fn iter_source(&self, expr: &Expr) -> (AllocId, u64, u64) {
+        let Expr::MethodCall { recv, method, args } = expr else {
+            panic!("effects::rust_ast: `.position()` receiver must be `.iter()`, found `{expr:?}`");
+        };
+        if method != "iter" || !args.is_empty() {
+            panic!("effects::rust_ast: unsupported iterator source `.{method}()`");
+        }
+        let name = collection_name(recv);
+        let binding = self.vecs.get(name).unwrap_or_else(|| {
+            panic!("effects::rust_ast: iterator over unknown collection `{name}`")
+        });
+        (binding.alloc, binding.elem_size, binding.len)
     }
 
     fn eval_iter_reduce(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> Value {
@@ -952,6 +1117,8 @@ fn rust_value_to_value(rv: &RustValue) -> Value {
         RustValue::I128(v) => int32(*v),
         RustValue::Usize(v) => int32(*v as i128),
         RustValue::Bool(b) => Value::Bool(*b),
+        RustValue::None => Value::Option(None),
+        RustValue::NullPtr => Value::Null,
         other => panic!("effects::rust_ast: unsupported literal `{other:?}`"),
     }
 }
@@ -981,6 +1148,67 @@ fn int_byte_size(value: &Value) -> u64 {
     }
 }
 
+fn option_value(value: Value) -> OptionValue {
+    match value {
+        Value::Int {
+            width,
+            signed,
+            value,
+        } => OptionValue::Int {
+            width,
+            signed,
+            value,
+        },
+        Value::Bool(value) => OptionValue::Bool(value),
+        Value::Ref(loc) => OptionValue::Ref(loc),
+        other => panic!("effects::rust_ast: unsupported Some payload `{other:?}`"),
+    }
+}
+
+fn option_unwrap(value: Value) -> Value {
+    match value {
+        Value::Option(Some(OptionValue::Int {
+            width,
+            signed,
+            value,
+        })) => Value::Int {
+            width,
+            signed,
+            value,
+        },
+        Value::Option(Some(OptionValue::Bool(value))) => Value::Bool(value),
+        Value::Option(Some(OptionValue::Ref(loc))) => Value::Ref(loc),
+        Value::Option(None) => panic!("effects::rust_ast: unwrap on None"),
+        other => panic!("effects::rust_ast: unwrap on non-option `{other:?}`"),
+    }
+}
+
+fn option_is_none(value: Value) -> Value {
+    match value {
+        Value::Option(value) => Value::Bool(value.is_none()),
+        other => panic!("effects::rust_ast: is_none on non-option `{other:?}`"),
+    }
+}
+
+fn cast_value_to_type(value: Value, ty: &Type) -> Value {
+    let Some((width, signed, _)) = scalar_type_shape(ty) else {
+        return value;
+    };
+    match value {
+        Value::Int { value, .. } => Value::Int {
+            width,
+            signed,
+            value,
+        },
+        Value::Bool(value) => Value::Int {
+            width,
+            signed,
+            value: i128::from(value),
+        },
+        other => other,
+    }
+}
+
 fn scalar_type_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
     let Type::Prim(prim) = ty else {
         return None;
@@ -1002,6 +1230,37 @@ fn scalar_type_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
         Prim::Bool => (IntWidth::W8, false, 1),
         Prim::F32 | Prim::F64 => return None,
     })
+}
+
+fn array_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64, u64)> {
+    let Type::Array { elem, len } = ty else {
+        return None;
+    };
+    let (width, signed, size) = scalar_type_shape(elem)?;
+    Some((width, signed, size, *len))
+}
+
+fn is_cstr_ref_ty(ty: &Type) -> bool {
+    matches!(
+        ty,
+        Type::Ref {
+            inner,
+            ..
+        } if matches!(inner.as_ref(), Type::Custom(name) if name == "core::ffi::CStr")
+    )
+}
+
+fn collection_name(expr: &Expr) -> &str {
+    match expr {
+        Expr::Var(ident) => ident.as_str(),
+        Expr::MethodCall { recv, method, args }
+            if args.is_empty()
+                && matches!(method.as_str(), "as_slice" | "as_bytes" | "to_bytes") =>
+        {
+            collection_name(recv)
+        }
+        other => panic!("effects::rust_ast: unsupported collection expression `{other:?}`"),
+    }
 }
 
 fn is_once_lock_ty(ty: &Type) -> bool {
