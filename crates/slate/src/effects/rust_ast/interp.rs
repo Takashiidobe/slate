@@ -58,9 +58,13 @@ struct VecBinding {
 
 const LAZY_ARRAY_ALLOC: AllocId = AllocId(u32::MAX);
 
+#[derive(Clone)]
 struct StructBinding {
     alloc: AllocId,
     field_offsets: HashMap<String, u64>,
+    array_fields: HashMap<String, (u64, u64)>,
+    field_types: HashMap<String, Type>,
+    size: u64,
 }
 
 struct OnceLockBinding {
@@ -75,6 +79,7 @@ struct Interp {
     globals: HashMap<String, Location>,
     once_locks: HashMap<String, OnceLockBinding>,
     funcs: HashMap<String, FnDef>,
+    records: HashMap<String, crate::rust_ast::RecordDef>,
     scalars: HashMap<String, Value>,
     files: HashMap<String, FileId>,
     atomics: HashMap<String, AtomicId>,
@@ -87,6 +92,7 @@ struct Interp {
     trace: EffectTrace,
     freed: HashSet<AllocId>,
     call_depth: usize,
+    next_struct_temp: u32,
 }
 
 impl Interp {
@@ -96,6 +102,9 @@ impl Interp {
                 Item::Static { name, ty, init, .. } => self.seed_static(name, ty, init),
                 Item::Fn(f) => {
                     self.funcs.insert(f.name.clone(), f.clone());
+                }
+                Item::Record(record) => {
+                    self.records.insert(record.name.clone(), record.clone());
                 }
                 _ => {}
             }
@@ -221,13 +230,17 @@ impl Interp {
                 ..
             } => {
                 match init {
-                    Expr::StructLit { fields, .. } => self.let_struct(name, fields),
+                    Expr::StructLit {
+                        name: record_name,
+                        fields,
+                    } => self.let_struct(name, record_name, fields),
                     Expr::Call { func, args } if is_path(func, &["String", "from"]) => {
                         self.let_string(name, args)
                     }
                     _ if vec_elem_shape(ty).is_some() => self.let_vec(name, ty, init),
                     _ if array_elem_shape(ty).is_some() => self.let_array(name, ty, init),
                     Expr::CStr(bytes) if is_cstr_ref_ty(ty) => self.let_cstr(name, bytes),
+                    _ if matches!(ty, Type::Custom(_)) => self.let_struct_value(name, init),
                     _ => {
                         let value = self.eval(init);
                         self.scalars.insert(name.clone(), value);
@@ -342,16 +355,16 @@ impl Interp {
             Stmt::While { cond, body } => self.run_while(cond, body),
             Stmt::Block(block) => self.run_block(block),
             Stmt::Return(value) => {
-                let code = value
+                let value = value
                     .as_ref()
-                    .map(|expr| value_as_i32(self.eval(expr)))
-                    .unwrap_or(0);
-                let value = Value::Int {
-                    width: IntWidth::W32,
-                    signed: true,
-                    value: code as i128,
-                };
+                    .map(|expr| self.eval(expr))
+                    .unwrap_or_else(|| Value::Int {
+                        width: IntWidth::W32,
+                        signed: true,
+                        value: 0,
+                    });
                 if self.call_depth == 0 {
+                    let code = value_as_i32(value);
                     self.drop_live_vecs();
                     self.trace.push(Effect::Exit(code));
                 }
@@ -391,6 +404,14 @@ impl Interp {
     fn assign(&mut self, target: &Expr, value: &Expr) -> Flow {
         match target {
             Expr::Var(ident) => {
+                if self.structs.contains_key(ident.as_str()) {
+                    let v = self.eval(value);
+                    let Value::Ref(src) = v else {
+                        panic!("effects::rust_ast: assigning non-struct value to struct `{ident}`");
+                    };
+                    self.copy_struct_to_existing(ident.as_str(), src);
+                    return Flow::Normal;
+                }
                 if self.vecs.contains_key(ident.as_str())
                     && matches!(value, Expr::ArrayLit(_) | Expr::ArrayRepeat { .. })
                 {
@@ -829,52 +850,301 @@ impl Interp {
         self.trace.push(Effect::Write { loc, value });
     }
 
-    fn let_struct(&mut self, name: &str, fields: &[(String, Expr)]) {
-        let values: Vec<(String, Value)> = fields
-            .iter()
-            .map(|(field, expr)| (field.clone(), self.eval(expr)))
-            .collect();
+    fn let_struct(&mut self, name: &str, record_name: &str, fields: &[(String, Expr)]) {
+        self.bind_struct_fields(name, Some(record_name), fields);
+    }
+
+    fn bind_struct_fields(
+        &mut self,
+        name: &str,
+        record_name: Option<&str>,
+        fields: &[(String, Expr)],
+    ) -> Location {
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
-        let size: u64 = values.iter().map(|(_, v)| int_byte_size(v)).sum();
-        self.trace.push(Effect::Alloc { alloc, size });
         let mut field_offsets = HashMap::new();
-        let mut offset = 0u64;
-        for (field, value) in values {
-            let loc = Location {
-                alloc,
-                byte_offset: offset,
-            };
-            field_offsets.insert(field, offset);
-            self.heap.insert(loc, value);
-            self.trace.push(Effect::Write { loc, value });
-            offset += int_byte_size(&value);
+        let mut array_fields = HashMap::new();
+        let mut field_types = HashMap::new();
+        let alloc_slot = self.trace.effects.len();
+        self.trace.push(Effect::Alloc { alloc, size: 0 });
+        let size = self.write_struct_fields(
+            alloc,
+            0,
+            "",
+            record_name,
+            fields,
+            &mut field_offsets,
+            &mut array_fields,
+            &mut field_types,
+        );
+        if let Effect::Alloc {
+            size: alloc_size, ..
+        } = &mut self.trace.effects[alloc_slot]
+        {
+            *alloc_size = size;
         }
         self.structs.insert(
             name.to_string(),
             StructBinding {
                 alloc,
                 field_offsets,
+                array_fields,
+                field_types,
+                size,
+            },
+        );
+        Location {
+            alloc,
+            byte_offset: 0,
+        }
+    }
+
+    fn eval_struct_lit(&mut self, record_name: &str, fields: &[(String, Expr)]) -> Value {
+        let name = format!("__struct_tmp{}", self.next_struct_temp);
+        self.next_struct_temp += 1;
+        Value::Ref(self.bind_struct_fields(&name, Some(record_name), fields))
+    }
+
+    fn let_struct_value(&mut self, name: &str, init: &Expr) {
+        let value = self.eval(init);
+        let Value::Ref(src) = value else {
+            self.scalars.insert(name.to_string(), value);
+            return;
+        };
+        self.bind_struct_copy(name, src);
+    }
+
+    fn bind_struct_copy(&mut self, name: &str, src: Location) {
+        let source = self
+            .structs
+            .values()
+            .find(|binding| binding.alloc == src.alloc)
+            .cloned()
+            .unwrap_or_else(|| {
+                panic!(
+                    "effects::rust_ast: copy from unknown struct allocation {:?}",
+                    src.alloc
+                )
+            });
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: source.size,
+        });
+        let mut offsets: Vec<u64> = self
+            .heap
+            .keys()
+            .filter(|loc| loc.alloc == src.alloc && loc.byte_offset < src.byte_offset + source.size)
+            .map(|loc| loc.byte_offset - src.byte_offset)
+            .collect();
+        offsets.sort_unstable();
+        for offset in offsets {
+            let src_loc = Location {
+                alloc: src.alloc,
+                byte_offset: src.byte_offset + offset,
+            };
+            let value = self.heap[&src_loc];
+            let loc = Location {
+                alloc,
+                byte_offset: offset,
+            };
+            self.heap.insert(loc, value);
+            self.trace.push(Effect::Write { loc, value });
+        }
+        self.structs.insert(
+            name.to_string(),
+            StructBinding {
+                alloc,
+                field_offsets: source.field_offsets,
+                array_fields: source.array_fields,
+                field_types: source.field_types,
+                size: source.size,
             },
         );
     }
 
+    fn copy_struct_to_existing(&mut self, name: &str, src: Location) {
+        let alloc = self
+            .structs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: copy into unknown struct `{name}`"))
+            .alloc;
+        let source = self
+            .structs
+            .values()
+            .find(|binding| binding.alloc == src.alloc)
+            .cloned()
+            .unwrap_or_else(|| {
+                panic!(
+                    "effects::rust_ast: copy from unknown struct allocation {:?}",
+                    src.alloc
+                )
+            });
+        let mut offsets: Vec<u64> = self
+            .heap
+            .keys()
+            .filter(|loc| loc.alloc == src.alloc && loc.byte_offset < src.byte_offset + source.size)
+            .map(|loc| loc.byte_offset - src.byte_offset)
+            .collect();
+        offsets.sort_unstable();
+        for offset in offsets {
+            let src_loc = Location {
+                alloc: src.alloc,
+                byte_offset: src.byte_offset + offset,
+            };
+            let value = self.heap[&src_loc];
+            let loc = Location {
+                alloc,
+                byte_offset: offset,
+            };
+            self.heap.insert(loc, value);
+            self.trace.push(Effect::Write { loc, value });
+        }
+    }
+
+    fn write_struct_fields(
+        &mut self,
+        alloc: AllocId,
+        base_offset: u64,
+        prefix: &str,
+        record_name: Option<&str>,
+        fields: &[(String, Expr)],
+        field_offsets: &mut HashMap<String, u64>,
+        array_fields: &mut HashMap<String, (u64, u64)>,
+        field_types: &mut HashMap<String, Type>,
+    ) -> u64 {
+        let mut offset = 0u64;
+        for (field, expr) in fields {
+            let path = if prefix.is_empty() {
+                field.clone()
+            } else {
+                format!("{prefix}.{field}")
+            };
+            let field_ty =
+                record_name.and_then(|record_name| self.record_field_type(record_name, field));
+            if let Some(field_ty) = &field_ty {
+                field_types.insert(path.clone(), field_ty.clone());
+            }
+            field_offsets.insert(path.clone(), base_offset + offset);
+            let size = self.write_struct_field_value(
+                alloc,
+                base_offset + offset,
+                &path,
+                field_ty.as_ref(),
+                expr,
+                field_offsets,
+                array_fields,
+                field_types,
+            );
+            offset += size;
+        }
+        offset
+    }
+
+    fn write_struct_field_value(
+        &mut self,
+        alloc: AllocId,
+        offset: u64,
+        path: &str,
+        ty: Option<&Type>,
+        expr: &Expr,
+        field_offsets: &mut HashMap<String, u64>,
+        array_fields: &mut HashMap<String, (u64, u64)>,
+        field_types: &mut HashMap<String, Type>,
+    ) -> u64 {
+        match expr {
+            Expr::StructLit { name, fields } => self.write_struct_fields(
+                alloc,
+                offset,
+                path,
+                Some(name),
+                fields,
+                field_offsets,
+                array_fields,
+                field_types,
+            ),
+            Expr::ArrayLit(elems) => {
+                let elem_ty = match ty {
+                    Some(Type::Array { elem, .. }) => Some(elem.as_ref()),
+                    _ => None,
+                };
+                let (_, _, elem_size) =
+                    elem_ty
+                        .and_then(scalar_type_shape)
+                        .unwrap_or((IntWidth::W32, true, 4));
+                let mut elem_offset = 0u64;
+                for elem in elems {
+                    let value = elem_ty
+                        .map(|ty| cast_value_to_type(self.eval(elem), ty))
+                        .unwrap_or_else(|| self.eval(elem));
+                    let loc = Location {
+                        alloc,
+                        byte_offset: offset + elem_offset,
+                    };
+                    self.heap.insert(loc, value);
+                    self.trace.push(Effect::Write { loc, value });
+                    elem_offset += elem_size;
+                }
+                array_fields.insert(path.to_string(), (offset, elem_size));
+                elem_offset
+            }
+            Expr::ArrayRepeat { elem, len } => {
+                let elem_ty = match ty {
+                    Some(Type::Array { elem, .. }) => Some(elem.as_ref()),
+                    _ => None,
+                };
+                let value = elem_ty
+                    .map(|ty| cast_value_to_type(self.eval(elem), ty))
+                    .unwrap_or_else(|| self.eval(elem));
+                let (_, _, elem_size) = elem_ty.and_then(scalar_type_shape).unwrap_or_else(|| {
+                    let elem_size = int_byte_size(&value);
+                    (IntWidth::W32, true, elem_size)
+                });
+                for index in 0..*len {
+                    let loc = Location {
+                        alloc,
+                        byte_offset: offset + index as u64 * elem_size,
+                    };
+                    self.heap.insert(loc, value);
+                    self.trace.push(Effect::Write { loc, value });
+                }
+                array_fields.insert(path.to_string(), (offset, elem_size));
+                *len as u64 * elem_size
+            }
+            _ => {
+                let value = ty
+                    .map(|ty| cast_value_to_type(self.eval(expr), ty))
+                    .unwrap_or_else(|| self.eval(expr));
+                let loc = Location {
+                    alloc,
+                    byte_offset: offset,
+                };
+                self.heap.insert(loc, value);
+                self.trace.push(Effect::Write { loc, value });
+                int_byte_size(&value)
+            }
+        }
+    }
+
+    fn record_field_type(&self, record_name: &str, field: &str) -> Option<Type> {
+        self.records
+            .get(record_name)?
+            .fields
+            .iter()
+            .find(|candidate| candidate.name.as_str() == field)
+            .map(|field| field.ty.clone())
+    }
+
     fn assign_field(&mut self, base: &Expr, field: &str, value: &Expr) {
-        let name = match base {
-            Expr::Var(ident) => ident.as_str(),
-            other => panic!("effects::rust_ast: unsupported field-assign base `{other:?}`"),
+        let field_ty = self.field_type(base, field);
+        let value = match field_ty.as_ref() {
+            Some(ty) => self
+                .eval_bitfield_projection(value, ty)
+                .unwrap_or_else(|| cast_value_to_type(self.eval(value), ty)),
+            None => self.eval(value),
         };
-        let value = self.eval(value);
-        let binding = self.structs.get(name).unwrap_or_else(|| {
-            panic!("effects::rust_ast: field-assign on unknown struct `{name}`")
-        });
-        let offset = *binding.field_offsets.get(field).unwrap_or_else(|| {
-            panic!("effects::rust_ast: unknown field `{field}` on struct `{name}`")
-        });
-        let loc = Location {
-            alloc: binding.alloc,
-            byte_offset: offset,
-        };
+        let loc = self.field_location(base, field);
         self.heap.insert(loc, value);
         self.trace.push(Effect::Write { loc, value });
     }
@@ -950,21 +1220,7 @@ impl Interp {
     }
 
     fn eval_field(&mut self, base: &Expr, field: &str) -> Value {
-        let name = match base {
-            Expr::Var(ident) => ident.as_str(),
-            other => panic!("effects::rust_ast: unsupported field-read base `{other:?}`"),
-        };
-        let binding = self
-            .structs
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: field-read on unknown struct `{name}`"));
-        let offset = *binding.field_offsets.get(field).unwrap_or_else(|| {
-            panic!("effects::rust_ast: unknown field `{field}` on struct `{name}`")
-        });
-        let loc = Location {
-            alloc: binding.alloc,
-            byte_offset: offset,
-        };
+        let loc = self.field_location(base, field);
         let value = *self
             .heap
             .get(&loc)
@@ -973,12 +1229,120 @@ impl Interp {
         value
     }
 
+    fn field_location(&self, base: &Expr, field: &str) -> Location {
+        let (name, prefix) = self.field_path(base);
+        let path = if prefix.is_empty() {
+            field.to_string()
+        } else {
+            format!("{prefix}.{field}")
+        };
+        let binding = self
+            .structs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: field-read on unknown struct `{name}`"));
+        let offset = *binding.field_offsets.get(&path).unwrap_or_else(|| {
+            panic!("effects::rust_ast: unknown field `{path}` on struct `{name}`")
+        });
+        Location {
+            alloc: binding.alloc,
+            byte_offset: offset,
+        }
+    }
+
+    fn field_type(&self, base: &Expr, field: &str) -> Option<Type> {
+        let (name, prefix) = self.field_path(base);
+        let path = if prefix.is_empty() {
+            field.to_string()
+        } else {
+            format!("{prefix}.{field}")
+        };
+        self.structs.get(name)?.field_types.get(&path).cloned()
+    }
+
+    fn eval_bitfield_projection(&mut self, expr: &Expr, ty: &Type) -> Option<Value> {
+        let Expr::Binary {
+            op: BinOp::Shr,
+            lhs,
+            rhs,
+        } = expr
+        else {
+            return None;
+        };
+        let Expr::Binary {
+            op: BinOp::Shl,
+            lhs: inner,
+            rhs: left_shift,
+        } = lhs.as_ref()
+        else {
+            return None;
+        };
+        let left_shift = value_as_u64(self.eval(left_shift));
+        let right_shift = value_as_u64(self.eval(rhs));
+        if left_shift != right_shift {
+            return None;
+        }
+        let (width, signed, _) = scalar_type_shape(ty)?;
+        let bits = int_width_bits(width)?;
+        let bit_width = bits.checked_sub(left_shift as u32)?;
+        let value = value_as_i128(cast_value_to_type(self.eval(inner), ty));
+        Some(Value::Int {
+            width,
+            signed,
+            value: truncate_to_bits(value, bit_width, signed),
+        })
+    }
+
+    fn field_array_element_location(&mut self, base: &Expr, index: &Expr) -> Location {
+        let (name, path) = self.field_path(base);
+        let idx = value_as_u64(self.eval(index));
+        let binding = self
+            .structs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: index field on unknown struct `{name}`"));
+        let (offset, elem_size) = *binding.array_fields.get(&path).unwrap_or_else(|| {
+            panic!("effects::rust_ast: field `{path}` on struct `{name}` is not an array")
+        });
+        Location {
+            alloc: binding.alloc,
+            byte_offset: offset + idx * elem_size,
+        }
+    }
+
+    fn field_path<'a>(&self, expr: &'a Expr) -> (&'a str, String) {
+        match expr {
+            Expr::Var(ident) => (ident.as_str(), String::new()),
+            Expr::Field { base, field } => {
+                let (name, prefix) = self.field_path(base);
+                let path = if prefix.is_empty() {
+                    field.clone()
+                } else {
+                    format!("{prefix}.{field}")
+                };
+                (name, path)
+            }
+            other => panic!("effects::rust_ast: unsupported field base `{other:?}`"),
+        }
+    }
+
+    fn aggregate_allocs_contains(&self, loc: Location) -> bool {
+        self.structs
+            .values()
+            .any(|binding| binding.alloc == loc.alloc)
+    }
+
     fn eval(&mut self, expr: &Expr) -> Value {
         match expr {
             Expr::Value(rv) => rust_value_to_value(rv),
             Expr::Var(ident) if self.globals.contains_key(ident.as_str()) => {
                 self.read_global(ident.as_str())
             }
+            Expr::Var(ident) if self.scalars.contains_key(ident.as_str()) => {
+                self.scalars[ident.as_str()]
+            }
+            Expr::Var(ident) if self.structs.contains_key(ident.as_str()) => Value::Ref(Location {
+                alloc: self.structs[ident.as_str()].alloc,
+                byte_offset: 0,
+            }),
             Expr::Var(ident) => *self.scalars.get(ident.as_str()).unwrap_or_else(|| {
                 panic!(
                     "effects::rust_ast: read of unknown scalar `{}`",
@@ -986,6 +1350,7 @@ impl Interp {
                 )
             }),
             Expr::Cast { expr, ty } => cast_value_to_type(self.eval(expr), ty),
+            Expr::StructLit { name, fields } => self.eval_struct_lit(name, fields),
             Expr::ByteStr(bytes) | Expr::CStr(bytes) => Value::Ref(self.hidden_c_string(bytes)),
             Expr::ArrayPtr { array, .. } => Value::Ref(self.collection_base(array)),
             Expr::AddrOf { expr, .. } => Value::Ref(self.addr_of(expr)),
@@ -1027,6 +1392,14 @@ impl Interp {
                 if let Expr::ArrayLit(elems) = base.as_ref() {
                     let idx = value_as_u64(self.eval(index)) as usize;
                     return self.eval(&elems[idx]);
+                }
+                if matches!(base.as_ref(), Expr::Field { .. }) {
+                    let loc = self.field_array_element_location(base, index);
+                    let value = *self.heap.get(&loc).unwrap_or_else(|| {
+                        panic!("effects::rust_ast: read from never-written {loc:?}")
+                    });
+                    self.trace.push(Effect::Read { loc, value });
+                    return value;
                 }
                 let name = match base.as_ref() {
                     Expr::Var(ident) => ident.as_str(),
@@ -1893,20 +2266,42 @@ impl Interp {
                 args.len()
             );
         }
-        let saved_scalars = self.scalars.clone();
+        let saved_scalars = std::mem::take(&mut self.scalars);
+        let saved_structs = self.structs.clone();
         for (param, value) in f.params.iter().zip(args) {
-            self.scalars.insert(param.name.to_string(), *value);
+            if let Value::Ref(loc) = value
+                && self.aggregate_allocs_contains(*loc)
+            {
+                self.bind_struct_copy(&param.name, *loc);
+            } else {
+                self.scalars.insert(param.name.to_string(), *value);
+            }
         }
         self.call_depth += 1;
         let flow = self.run(&f.body);
         self.call_depth -= 1;
+        let returned_struct = match &flow {
+            Flow::Return(Value::Ref(loc)) => self
+                .structs
+                .values()
+                .find(|binding| binding.alloc == loc.alloc)
+                .cloned(),
+            _ => None,
+        };
         self.scalars = saved_scalars;
+        self.structs = saved_structs;
         let Flow::Return(value) = flow else {
             panic!(
                 "effects::rust_ast: user function `{}` did not return",
                 f.name
             );
         };
+        if let (Value::Ref(loc), Some(binding)) = (value, returned_struct) {
+            let name = format!("__struct_tmp{}", self.next_struct_temp);
+            self.next_struct_temp += 1;
+            self.structs.insert(name, binding);
+            return Value::Ref(loc);
+        }
         value
     }
 
@@ -2240,6 +2635,30 @@ fn pattern_matches(pattern: &Pattern, value: Value) -> bool {
         (Pattern::I128(expected), Value::Int { value, .. }) => *expected == value,
         (Pattern::Binding(_), _) => true,
         _ => false,
+    }
+}
+
+fn int_width_bits(width: IntWidth) -> Option<u32> {
+    Some(match width {
+        IntWidth::W8 => 8,
+        IntWidth::W16 => 16,
+        IntWidth::W32 => 32,
+        IntWidth::W64 => 64,
+        IntWidth::W128 => 128,
+        IntWidth::PointerSized => 64,
+    })
+}
+
+fn truncate_to_bits(value: i128, bits: u32, signed: bool) -> i128 {
+    if bits == 0 || bits >= 128 {
+        return value;
+    }
+    let mask = (1i128 << bits) - 1;
+    let truncated = value & mask;
+    if signed && (truncated & (1i128 << (bits - 1))) != 0 {
+        truncated - (1i128 << bits)
+    } else {
+        truncated
     }
 }
 
