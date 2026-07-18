@@ -1,7 +1,10 @@
+use std::cmp::Reverse;
 use std::collections::{HashMap, HashSet};
 
 use super::{AllocId, Effect, EffectTrace, IntWidth, Location, ParamSeed, Value};
-use crate::rust_ast::{BinOp, Expr, FnDef, IndentStmt, Path, RustValue, Stmt, Type, UnaryOp};
+use crate::rust_ast::{
+    BinOp, Block, Expr, FnDef, IndentStmt, Item, Path, Program, RustValue, Stmt, Type, UnaryOp,
+};
 
 pub fn interpret(f: &FnDef) -> EffectTrace {
     interpret_with_params(f, &[])
@@ -14,13 +17,27 @@ pub fn interpret_with_params(f: &FnDef, params: &[(&str, ParamSeed)]) -> EffectT
     interp.trace
 }
 
+pub fn interpret_program_main(program: &Program) -> EffectTrace {
+    let mut interp = Interp::default();
+    interp.seed_program(program);
+    let main = interp
+        .funcs
+        .get("main")
+        .cloned()
+        .expect("fixture must define `main`");
+    if interp.run(&main.body) == Flow::Normal {
+        interp.trace.push(Effect::Exit(0));
+    }
+    interp.trace
+}
+
 /// How a statement completed: either it ran through normally, or it hit a
 /// `return`/`std::process::exit` that the enclosing `if`/`for` must
 /// propagate past without running the rest of their body.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 enum Flow {
     Normal,
-    Return,
+    Return(Value),
 }
 
 struct VecBinding {
@@ -37,18 +54,96 @@ struct StructBinding {
     field_offsets: HashMap<String, u64>,
 }
 
+struct OnceLockBinding {
+    guard: Location,
+    payload: Location,
+}
+
 #[derive(Default)]
 struct Interp {
     vecs: HashMap<String, VecBinding>,
     structs: HashMap<String, StructBinding>,
+    globals: HashMap<String, Location>,
+    once_locks: HashMap<String, OnceLockBinding>,
+    funcs: HashMap<String, FnDef>,
     scalars: HashMap<String, Value>,
     heap: HashMap<Location, Value>,
     next_alloc: u32,
     trace: EffectTrace,
     freed: HashSet<AllocId>,
+    call_depth: usize,
 }
 
 impl Interp {
+    fn seed_program(&mut self, program: &Program) {
+        for item in &program.items {
+            match item {
+                Item::Static { name, ty, init, .. } => self.seed_static(name, ty, init),
+                Item::Fn(f) => {
+                    self.funcs.insert(f.name.clone(), f.clone());
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn seed_static(&mut self, name: &str, ty: &Type, init: &Expr) {
+        if is_once_lock_ty(ty) {
+            let zero = Value::Int {
+                width: IntWidth::W32,
+                signed: true,
+                value: 0,
+            };
+            let guard_alloc = AllocId(self.next_alloc);
+            self.next_alloc += 1;
+            let guard = Location {
+                alloc: guard_alloc,
+                byte_offset: 0,
+            };
+            self.heap.insert(guard, zero);
+            self.trace.push(Effect::Alloc {
+                alloc: guard_alloc,
+                size: 4,
+            });
+            self.trace.push(Effect::Write {
+                loc: guard,
+                value: zero,
+            });
+            let payload_alloc = AllocId(self.next_alloc);
+            self.next_alloc += 1;
+            let payload = Location {
+                alloc: payload_alloc,
+                byte_offset: 0,
+            };
+            self.heap.insert(payload, zero);
+            self.trace.push(Effect::Alloc {
+                alloc: payload_alloc,
+                size: 4,
+            });
+            self.trace.push(Effect::Write {
+                loc: payload,
+                value: zero,
+            });
+            self.once_locks
+                .insert(name.to_string(), OnceLockBinding { guard, payload });
+            return;
+        }
+        let Some((_, _, size)) = scalar_type_shape(ty) else {
+            return;
+        };
+        let value = self.eval(init);
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        let loc = Location {
+            alloc,
+            byte_offset: 0,
+        };
+        self.globals.insert(name.to_string(), loc);
+        self.heap.insert(loc, value);
+        self.trace.push(Effect::Alloc { alloc, size });
+        self.trace.push(Effect::Write { loc, value });
+    }
+
     fn seed_params(&mut self, params: &[(&str, ParamSeed)]) {
         for (name, seed) in params {
             match seed {
@@ -131,7 +226,11 @@ impl Interp {
                 let code = value_as_i32(self.eval(&args[0]));
                 self.drop_live_vecs();
                 self.trace.push(Effect::Exit(code));
-                Flow::Return
+                Flow::Return(Value::Int {
+                    width: IntWidth::W32,
+                    signed: true,
+                    value: code as i128,
+                })
             }
             Stmt::Expr(Expr::Call { func, args }) if is_path(func, &["drop"]) => {
                 self.drop_var(&args[0]);
@@ -141,6 +240,7 @@ impl Interp {
                 self.print(args);
                 Flow::Normal
             }
+            Stmt::Unsafe { body } => self.run_block(body),
             Stmt::Assign { target, value } => self.assign(target, value),
             Stmt::CompoundAssign { target, op, value } => self.compound_assign(target, *op, value),
             Stmt::If {
@@ -160,11 +260,32 @@ impl Interp {
                     .as_ref()
                     .map(|expr| value_as_i32(self.eval(expr)))
                     .unwrap_or(0);
-                self.drop_live_vecs();
-                self.trace.push(Effect::Exit(code));
-                Flow::Return
+                let value = Value::Int {
+                    width: IntWidth::W32,
+                    signed: true,
+                    value: code as i128,
+                };
+                if self.call_depth == 0 {
+                    self.drop_live_vecs();
+                    self.trace.push(Effect::Exit(code));
+                }
+                Flow::Return(value)
             }
             other => panic!("effects::rust_ast: unsupported stmt `{other:?}`"),
+        }
+    }
+
+    fn run_block(&mut self, block: &Block) -> Flow {
+        match self.run(&block.stmts) {
+            Flow::Normal => {
+                if let Some(tail) = &block.tail {
+                    let value = self.eval(tail);
+                    Flow::Return(value)
+                } else {
+                    Flow::Normal
+                }
+            }
+            flow => flow,
         }
     }
 
@@ -172,7 +293,12 @@ impl Interp {
         match target {
             Expr::Var(ident) => {
                 let v = self.eval(value);
-                self.scalars.insert(ident.as_str().to_string(), v);
+                if let Some(loc) = self.globals.get(ident.as_str()).copied() {
+                    self.heap.insert(loc, v);
+                    self.trace.push(Effect::Write { loc, value: v });
+                } else {
+                    self.scalars.insert(ident.as_str().to_string(), v);
+                }
             }
             Expr::Index { base, index } => self.assign_index(base, index, value),
             Expr::Field { base, field } => self.assign_field(base, field, value),
@@ -249,7 +375,7 @@ impl Interp {
             );
             match self.run(body) {
                 Flow::Normal => {}
-                Flow::Return => return Flow::Return,
+                flow @ Flow::Return(_) => return flow,
             }
             i += 1;
         }
@@ -316,7 +442,7 @@ impl Interp {
             .filter(|binding| binding.owned)
             .map(|binding| binding.alloc)
             .collect();
-        allocs.sort_by(|a, b| b.0.cmp(&a.0));
+        allocs.sort_by_key(|alloc| Reverse(alloc.0));
         for alloc in allocs {
             if self.freed.insert(alloc) {
                 self.trace.push(Effect::Dealloc { alloc });
@@ -523,6 +649,9 @@ impl Interp {
     fn eval(&mut self, expr: &Expr) -> Value {
         match expr {
             Expr::Value(rv) => rust_value_to_value(rv),
+            Expr::Var(ident) if self.globals.contains_key(ident.as_str()) => {
+                self.read_global(ident.as_str())
+            }
             Expr::Var(ident) => *self.scalars.get(ident.as_str()).unwrap_or_else(|| {
                 panic!(
                     "effects::rust_ast: read of unknown scalar `{}`",
@@ -590,13 +719,102 @@ impl Interp {
             Expr::MethodCall { recv, method, args } if method == "len" && args.is_empty() => {
                 self.string_len(recv)
             }
+            Expr::MethodCall { recv, method, args } if method == "get_or_init" => {
+                self.once_lock_get_or_init(recv, args)
+            }
             Expr::MethodCall { recv, method, args }
                 if matches!(method.as_str(), "sum" | "product" | "fold") =>
             {
                 self.eval_iter_reduce(recv, method, args)
             }
+            Expr::Call { func, args } => self.eval_call(func, args),
+            Expr::Unsafe(block) => match self.run_block(block) {
+                Flow::Return(value) => value,
+                Flow::Normal => panic!("effects::rust_ast: unsafe expression has no tail value"),
+            },
             other => panic!("effects::rust_ast: unsupported expr `{other:?}`"),
         }
+    }
+
+    fn read_global(&mut self, name: &str) -> Value {
+        let loc = *self
+            .globals
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: read of unknown global `{name}`"));
+        let value = *self
+            .heap
+            .get(&loc)
+            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"));
+        self.trace.push(Effect::Read { loc, value });
+        value
+    }
+
+    fn once_lock_get_or_init(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+        let Expr::Var(ident) = recv else {
+            panic!("effects::rust_ast: unsupported OnceLock receiver `{recv:?}`");
+        };
+        let (guard, payload) = self
+            .once_locks
+            .get(ident.as_str())
+            .map(|binding| (binding.guard, binding.payload))
+            .unwrap_or_else(|| panic!("effects::rust_ast: unknown OnceLock `{}`", ident.as_str()));
+        let initialized = self.read_loc(guard);
+        if value_as_i128(initialized) == 0 {
+            let [Expr::Closure { params, body }] = args else {
+                panic!("effects::rust_ast: OnceLock::get_or_init expects one closure");
+            };
+            if !params.is_empty() {
+                panic!("effects::rust_ast: OnceLock initializer closure cannot take params");
+            }
+            let value = self.eval(body);
+            self.heap.insert(payload, value);
+            self.trace.push(Effect::Write {
+                loc: payload,
+                value,
+            });
+            let one = Value::Int {
+                width: IntWidth::W32,
+                signed: true,
+                value: 1,
+            };
+            self.heap.insert(guard, one);
+            self.trace.push(Effect::Write {
+                loc: guard,
+                value: one,
+            });
+        }
+        self.read_loc(payload)
+    }
+
+    fn read_loc(&mut self, loc: Location) -> Value {
+        let value = *self
+            .heap
+            .get(&loc)
+            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"));
+        self.trace.push(Effect::Read { loc, value });
+        value
+    }
+
+    fn eval_call(&mut self, func: &Expr, args: &[Expr]) -> Value {
+        let Expr::Var(ident) = func else {
+            panic!("effects::rust_ast: unsupported call target `{func:?}`");
+        };
+        let name = ident.as_str();
+        let f = self
+            .funcs
+            .get(name)
+            .cloned()
+            .unwrap_or_else(|| panic!("effects::rust_ast: unsupported call target `{name}`"));
+        if !args.is_empty() || !f.params.is_empty() {
+            panic!("effects::rust_ast: user calls with arguments are unsupported");
+        }
+        self.call_depth += 1;
+        let flow = self.run(&f.body);
+        self.call_depth -= 1;
+        let Flow::Return(value) = flow else {
+            panic!("effects::rust_ast: user function `{name}` did not return");
+        };
+        value
     }
 
     fn eval_iter_reduce(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> Value {
@@ -761,6 +979,33 @@ fn int_byte_size(value: &Value) -> u64 {
         },
         other => panic!("effects::rust_ast: buffer element must be an integer, found {other:?}"),
     }
+}
+
+fn scalar_type_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
+    let Type::Prim(prim) = ty else {
+        return None;
+    };
+    use crate::rust_ast::Prim;
+    Some(match prim {
+        Prim::I8 => (IntWidth::W8, true, 1),
+        Prim::U8 => (IntWidth::W8, false, 1),
+        Prim::I16 => (IntWidth::W16, true, 2),
+        Prim::U16 => (IntWidth::W16, false, 2),
+        Prim::I32 => (IntWidth::W32, true, 4),
+        Prim::U32 => (IntWidth::W32, false, 4),
+        Prim::I64 => (IntWidth::W64, true, 8),
+        Prim::U64 => (IntWidth::W64, false, 8),
+        Prim::I128 => (IntWidth::W128, true, 16),
+        Prim::U128 => (IntWidth::W128, false, 16),
+        Prim::Isize => (IntWidth::PointerSized, true, 8),
+        Prim::Usize => (IntWidth::PointerSized, false, 8),
+        Prim::Bool => (IntWidth::W8, false, 1),
+        Prim::F32 | Prim::F64 => return None,
+    })
+}
+
+fn is_once_lock_ty(ty: &Type) -> bool {
+    matches!(ty, Type::Generic { name, .. } if name == "std::sync::OnceLock")
 }
 
 fn value_as_i128(value: Value) -> i128 {
