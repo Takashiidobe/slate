@@ -79,6 +79,7 @@ default to a local build and are overridable via environment variables:
 | `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt` | CIR → MLIR generic form                  |
 | `SLATE_CC`                          | `clang` (from `PATH`)                  | compile the C side of differential tests |
 | `SLATE_CARGO`                       | `cargo`                                | compile the generated Rust               |
+| `SLATE_ALIVE_TV`                    | `~/alive2/build/alive-tv`              | translation-validate a fixup pass's before/after IR |
 | `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                      | shared target triple / extra clang flags |
 
 ## Build & Test
