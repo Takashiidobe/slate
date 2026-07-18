@@ -81,7 +81,9 @@ fn replacement_for_pair(pair: &[IndentStmt], fact: &CountedLoopFact) -> Option<I
     let pat = match fact.index_use {
         CountedLoopIndexUse::Unused => "_".to_string(),
         CountedLoopIndexUse::Other => index_name.clone(),
-        CountedLoopIndexUse::SliceIndexOnly => return None,
+        CountedLoopIndexUse::SliceIndexOnly | CountedLoopIndexUse::SliceIndexAndValue => {
+            return None;
+        }
     };
     let bound = fact.bound.clone();
     let body = flatten_single_scope(loop_body[1..loop_body.len() - 1].to_vec());
