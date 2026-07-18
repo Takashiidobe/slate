@@ -2,10 +2,12 @@ use std::cmp::Reverse;
 use std::collections::{HashMap, HashSet};
 
 use super::{
-    AllocId, Effect, EffectTrace, FileId, IntWidth, Location, OptionValue, ParamSeed, Value,
+    AllocId, AtomicId, Effect, EffectTrace, FileId, IntWidth, Location, OptionValue, ParamSeed,
+    Value,
 };
 use crate::rust_ast::{
-    BinOp, Block, Expr, FnDef, IndentStmt, Item, Path, Program, RustValue, Stmt, Type, UnaryOp,
+    AtomicOrdering, AtomicPlace, AtomicRmwOp, BinOp, Block, Expr, FnDef, IndentStmt, Item, Path,
+    Pattern, Program, RustValue, Stmt, Type, UnaryOp,
 };
 
 pub fn interpret(f: &FnDef) -> EffectTrace {
@@ -40,6 +42,8 @@ pub fn interpret_program_main(program: &Program) -> EffectTrace {
 enum Flow {
     Normal,
     Return(Value),
+    Break,
+    Continue,
 }
 
 struct VecBinding {
@@ -75,9 +79,12 @@ struct Interp {
     funcs: HashMap<String, FnDef>,
     scalars: HashMap<String, Value>,
     files: HashMap<String, FileId>,
+    atomics: HashMap<String, AtomicId>,
+    atomic_values: HashMap<AtomicId, Value>,
     heap: HashMap<Location, Value>,
     next_alloc: u32,
     next_file: u32,
+    next_atomic: u32,
     trace: EffectTrace,
     freed: HashSet<AllocId>,
     call_depth: usize,
@@ -238,6 +245,10 @@ impl Interp {
                 if let Some(file) = self.open_file(init) {
                     self.files.insert(name.clone(), file);
                     self.scalars.insert(name.clone(), Value::File(file));
+                } else if let Expr::AtomicNew { value, .. } = init {
+                    let value = self.eval(value);
+                    let atomic = self.define_atomic(name, value);
+                    self.scalars.insert(name.clone(), Value::Atomic(atomic));
                 } else {
                     let value = self.eval(init);
                     self.scalars.insert(name.clone(), value);
@@ -271,8 +282,15 @@ impl Interp {
                 self.print(args);
                 Flow::Normal
             }
+            Stmt::Expr(expr) => {
+                self.eval(expr);
+                Flow::Normal
+            }
             Stmt::Unsafe { body } => self.run_block(body),
             Stmt::Scope { body } => self.run(body),
+            Stmt::Loop { body, .. } => self.run_loop(body),
+            Stmt::Break(_) => Flow::Break,
+            Stmt::Continue(_) => Flow::Continue,
             Stmt::Assign { target, value } => self.assign(target, value),
             Stmt::CompoundAssign { target, op, value } => self.compound_assign(target, *op, value),
             Stmt::If {
@@ -318,6 +336,16 @@ impl Interp {
                 }
             }
             flow => flow,
+        }
+    }
+
+    fn run_loop(&mut self, body: &[IndentStmt]) -> Flow {
+        loop {
+            match self.run(body) {
+                Flow::Normal | Flow::Continue => {}
+                Flow::Break => return Flow::Normal,
+                flow @ Flow::Return(_) => return flow,
+            }
         }
     }
 
@@ -406,7 +434,8 @@ impl Interp {
                 },
             );
             match self.run(body) {
-                Flow::Normal => {}
+                Flow::Normal | Flow::Continue => {}
+                Flow::Break => return Flow::Normal,
                 flow @ Flow::Return(_) => return flow,
             }
             i += 1;
@@ -892,6 +921,12 @@ impl Interp {
             Expr::MethodCall { recv, method, args } if method == "is_none" && args.is_empty() => {
                 option_is_none(self.eval(recv))
             }
+            Expr::MethodCall { recv, method, args } if method == "is_ok" && args.is_empty() => {
+                match self.eval(recv) {
+                    Value::AtomicResult { ok, .. } => Value::Bool(ok),
+                    other => panic!("effects::rust_ast: `.is_ok()` on unsupported {other:?}"),
+                }
+            }
             Expr::MethodCall { recv, method, args } if method == "unwrap" && args.is_empty() => {
                 option_unwrap(self.eval(recv))
             }
@@ -903,13 +938,315 @@ impl Interp {
             {
                 self.eval_iter_reduce(recv, method, args)
             }
+            Expr::MethodCall { recv, method, args } => self.eval_atomic_method(recv, method, args),
+            Expr::Match { expr, arms } => self.eval_match(expr, arms),
             Expr::Call { func, args } => self.eval_call(func, args),
+            Expr::Block(block) => match self.run_block(block) {
+                Flow::Return(value) => value,
+                Flow::Normal => panic!("effects::rust_ast: block expression has no tail value"),
+                Flow::Break | Flow::Continue => {
+                    panic!("effects::rust_ast: loop control escaped block expression")
+                }
+            },
             Expr::Unsafe(block) => match self.run_block(block) {
                 Flow::Return(value) => value,
                 Flow::Normal => panic!("effects::rust_ast: unsafe expression has no tail value"),
+                Flow::Break | Flow::Continue => {
+                    panic!("effects::rust_ast: loop control escaped unsafe expression")
+                }
             },
+            Expr::AtomicRef { place, .. } => Value::Atomic(self.atomic_place(place)),
+            Expr::AtomicLoad {
+                place, ordering, ..
+            } => self.atomic_load(place, *ordering),
+            Expr::AtomicStore {
+                place,
+                value,
+                ordering,
+                ..
+            } => {
+                let value = self.eval(value);
+                self.atomic_store(place, *ordering, value);
+                value
+            }
+            Expr::AtomicFetch {
+                op,
+                place,
+                value,
+                ordering,
+                ..
+            } => {
+                let value = self.eval(value);
+                self.atomic_rmw(*op, place, *ordering, value)
+            }
+            Expr::AtomicSwap {
+                place,
+                value,
+                ordering,
+                ..
+            } => {
+                let value = self.eval(value);
+                self.atomic_swap(place, *ordering, value)
+            }
+            Expr::AtomicCompareExchange {
+                place,
+                expected,
+                desired,
+                success,
+                failure,
+                ..
+            } => {
+                let expected = self.eval(expected);
+                let desired = self.eval(desired);
+                self.atomic_compare_exchange(place, *success, *failure, expected, desired)
+            }
+            Expr::AtomicNew { value, .. } => {
+                let value = self.eval(value);
+                let atomic = self.allocate_atomic(value);
+                Value::Atomic(atomic)
+            }
+            Expr::AtomicFence { ordering } => {
+                self.trace.push(Effect::AtomicFence {
+                    ordering: *ordering,
+                });
+                int32(0)
+            }
             other => panic!("effects::rust_ast: unsupported expr `{other:?}`"),
         }
+    }
+
+    fn eval_atomic_method(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> Value {
+        match method {
+            "load" => {
+                let [ordering] = args else {
+                    panic!("effects::rust_ast: atomic load expects ordering");
+                };
+                self.atomic_load(
+                    &AtomicPlace::Local(recv_name(recv).into()),
+                    ordering_expr(ordering),
+                )
+            }
+            "store" => {
+                let [value, ordering] = args else {
+                    panic!("effects::rust_ast: atomic store expects value and ordering");
+                };
+                let value = self.eval(value);
+                self.atomic_store(
+                    &AtomicPlace::Local(recv_name(recv).into()),
+                    ordering_expr(ordering),
+                    value,
+                );
+                value
+            }
+            "fetch_add" | "fetch_sub" | "fetch_and" | "fetch_xor" | "fetch_or" | "fetch_nand"
+            | "fetch_max" | "fetch_min" => {
+                let [value, ordering] = args else {
+                    panic!("effects::rust_ast: atomic fetch expects value and ordering");
+                };
+                let op = match method {
+                    "fetch_add" => AtomicRmwOp::Add,
+                    "fetch_sub" => AtomicRmwOp::Sub,
+                    "fetch_and" => AtomicRmwOp::And,
+                    "fetch_xor" => AtomicRmwOp::Xor,
+                    "fetch_or" => AtomicRmwOp::Or,
+                    "fetch_nand" => AtomicRmwOp::Nand,
+                    "fetch_max" => AtomicRmwOp::Max,
+                    "fetch_min" => AtomicRmwOp::Min,
+                    _ => unreachable!(),
+                };
+                let value = self.eval(value);
+                self.atomic_rmw(
+                    op,
+                    &AtomicPlace::Local(recv_name(recv).into()),
+                    ordering_expr(ordering),
+                    value,
+                )
+            }
+            "swap" => {
+                let [value, ordering] = args else {
+                    panic!("effects::rust_ast: atomic swap expects value and ordering");
+                };
+                let value = self.eval(value);
+                self.atomic_swap(
+                    &AtomicPlace::Local(recv_name(recv).into()),
+                    ordering_expr(ordering),
+                    value,
+                )
+            }
+            "compare_exchange" => {
+                let [expected, desired, success, failure] = args else {
+                    panic!("effects::rust_ast: compare_exchange expects four arguments");
+                };
+                let expected = self.eval(expected);
+                let desired = self.eval(desired);
+                self.atomic_compare_exchange(
+                    &AtomicPlace::Local(recv_name(recv).into()),
+                    ordering_expr(success),
+                    ordering_expr(failure),
+                    expected,
+                    desired,
+                )
+            }
+            other => panic!("effects::rust_ast: unsupported method `{other}`"),
+        }
+    }
+
+    fn eval_match(&mut self, expr: &Expr, arms: &[crate::rust_ast::ExprMatchArm]) -> Value {
+        match self.eval(expr) {
+            Value::AtomicResult { ok, value } => {
+                let arm_name = if ok { "Ok" } else { "Err" };
+                for arm in arms {
+                    if let Pattern::TupleStruct { name, fields } = &arm.pattern
+                        && name.as_str() == arm_name
+                    {
+                        if let Some(Pattern::Binding(binding)) = fields.first() {
+                            let previous = self
+                                .scalars
+                                .insert(binding.to_string(), option_value_to_value(value));
+                            let result = self.eval(&arm.value);
+                            match previous {
+                                Some(previous) => {
+                                    self.scalars.insert(binding.to_string(), previous);
+                                }
+                                None => {
+                                    self.scalars.remove(binding.as_str());
+                                }
+                            }
+                            return result;
+                        }
+                        return self.eval(&arm.value);
+                    }
+                }
+                panic!("effects::rust_ast: no match arm for atomic result `{arm_name}`");
+            }
+            other => panic!("effects::rust_ast: unsupported match scrutinee {other:?}"),
+        }
+    }
+
+    fn define_atomic(&mut self, name: &str, value: Value) -> AtomicId {
+        let atomic = self.allocate_atomic(value);
+        self.atomics.insert(name.to_string(), atomic);
+        atomic
+    }
+
+    fn allocate_atomic(&mut self, value: Value) -> AtomicId {
+        let atomic = AtomicId(self.next_atomic);
+        self.next_atomic += 1;
+        self.atomic_values.insert(atomic, value);
+        atomic
+    }
+
+    fn atomic_place(&mut self, place: &AtomicPlace) -> AtomicId {
+        match place {
+            AtomicPlace::Local(name) => self.atomic_for_name(name.as_str()),
+            AtomicPlace::Ptr(expr) => self.atomic_for_name(addr_of_local(expr)),
+        }
+    }
+
+    fn atomic_for_name(&mut self, name: &str) -> AtomicId {
+        if let Some(&atomic) = self.atomics.get(name) {
+            return atomic;
+        }
+        let value = *self
+            .scalars
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: atomic access to unknown `{name}`"));
+        let atomic = self.allocate_atomic(value);
+        self.atomics.insert(name.to_string(), atomic);
+        self.scalars.insert(name.to_string(), Value::Atomic(atomic));
+        atomic
+    }
+
+    fn atomic_load(&mut self, place: &AtomicPlace, ordering: AtomicOrdering) -> Value {
+        let atomic = self.atomic_place(place);
+        let value = self.atomic_value(atomic);
+        self.trace.push(Effect::AtomicLoad {
+            atomic,
+            ordering,
+            value,
+        });
+        value
+    }
+
+    fn atomic_store(&mut self, place: &AtomicPlace, ordering: AtomicOrdering, value: Value) {
+        let atomic = self.atomic_place(place);
+        self.atomic_values.insert(atomic, value);
+        self.trace.push(Effect::AtomicStore {
+            atomic,
+            ordering,
+            value,
+        });
+    }
+
+    fn atomic_rmw(
+        &mut self,
+        op: AtomicRmwOp,
+        place: &AtomicPlace,
+        ordering: AtomicOrdering,
+        operand: Value,
+    ) -> Value {
+        let atomic = self.atomic_place(place);
+        let old = self.atomic_value(atomic);
+        let new = atomic_rmw_value(op, old, operand);
+        self.atomic_values.insert(atomic, new);
+        self.trace.push(Effect::AtomicRmw {
+            atomic,
+            op,
+            ordering,
+            operand,
+            old,
+            new,
+        });
+        old
+    }
+
+    fn atomic_swap(&mut self, place: &AtomicPlace, ordering: AtomicOrdering, new: Value) -> Value {
+        let atomic = self.atomic_place(place);
+        let old = self.atomic_value(atomic);
+        self.atomic_values.insert(atomic, new);
+        self.trace.push(Effect::AtomicSwap {
+            atomic,
+            ordering,
+            old,
+            new,
+        });
+        old
+    }
+
+    fn atomic_compare_exchange(
+        &mut self,
+        place: &AtomicPlace,
+        success: AtomicOrdering,
+        failure: AtomicOrdering,
+        expected: Value,
+        desired: Value,
+    ) -> Value {
+        let atomic = self.atomic_place(place);
+        let old = self.atomic_value(atomic);
+        let exchanged = old == expected;
+        if exchanged {
+            self.atomic_values.insert(atomic, desired);
+        }
+        self.trace.push(Effect::AtomicCompareExchange {
+            atomic,
+            success,
+            failure,
+            expected,
+            desired,
+            old,
+            exchanged,
+        });
+        Value::AtomicResult {
+            ok: exchanged,
+            value: option_value(old),
+        }
+    }
+
+    fn atomic_value(&self, atomic: AtomicId) -> Value {
+        *self
+            .atomic_values
+            .get(&atomic)
+            .unwrap_or_else(|| panic!("effects::rust_ast: read from unknown atomic {atomic:?}"))
     }
 
     fn read_global(&mut self, name: &str) -> Value {
@@ -1018,6 +1355,18 @@ impl Interp {
                 other => panic!("effects::rust_ast: fclose expected file handle, found {other:?}"),
             };
             self.trace.push(Effect::FileClose { file });
+            return int32(0);
+        }
+        if name == "printf" {
+            let values = args
+                .iter()
+                .skip(1)
+                .map(|arg| self.eval(arg))
+                .collect::<Vec<_>>();
+            self.trace.push(Effect::Call {
+                name: "printf".to_string(),
+                args: values,
+            });
             return int32(0);
         }
         let f = self
@@ -1206,6 +1555,45 @@ fn is_path(expr: &Expr, segments: &[&str]) -> bool {
     }
 }
 
+fn recv_name(expr: &Expr) -> &str {
+    match expr {
+        Expr::Var(ident) => ident.as_str(),
+        other => panic!("effects::rust_ast: unsupported atomic receiver `{other:?}`"),
+    }
+}
+
+fn addr_of_local(expr: &Expr) -> &str {
+    match expr {
+        Expr::AddrOf { expr, .. } => recv_name(expr),
+        Expr::Macro { name, args } if name == "std::ptr::addr_of_mut" => {
+            let [arg] = args.as_slice() else {
+                panic!("effects::rust_ast: addr_of_mut! expects one argument");
+            };
+            recv_name(arg)
+        }
+        other => panic!("effects::rust_ast: unsupported atomic pointer place `{other:?}`"),
+    }
+}
+
+fn ordering_expr(expr: &Expr) -> AtomicOrdering {
+    match expr {
+        Expr::Path(path) => ordering_from_name(path.segments.last().map(|s| s.as_str())),
+        Expr::Var(ident) => ordering_from_name(ident.as_str().rsplit("::").next()),
+        other => panic!("effects::rust_ast: unsupported atomic ordering `{other:?}`"),
+    }
+}
+
+fn ordering_from_name(name: Option<&str>) -> AtomicOrdering {
+    match name {
+        Some("Relaxed") => AtomicOrdering::Relaxed,
+        Some("Acquire") => AtomicOrdering::Acquire,
+        Some("Release") => AtomicOrdering::Release,
+        Some("AcqRel") => AtomicOrdering::AcqRel,
+        Some("SeqCst") => AtomicOrdering::SeqCst,
+        other => panic!("effects::rust_ast: unsupported atomic ordering `{other:?}`"),
+    }
+}
+
 fn open_effect(expr: &Expr) -> Option<OpenEffect> {
     match expr {
         Expr::MethodCall { recv, method, args }
@@ -1348,6 +1736,22 @@ fn option_value(value: Value) -> OptionValue {
         Value::Bool(value) => OptionValue::Bool(value),
         Value::Ref(loc) => OptionValue::Ref(loc),
         other => panic!("effects::rust_ast: unsupported Some payload `{other:?}`"),
+    }
+}
+
+fn option_value_to_value(value: OptionValue) -> Value {
+    match value {
+        OptionValue::Int {
+            width,
+            signed,
+            value,
+        } => Value::Int {
+            width,
+            signed,
+            value,
+        },
+        OptionValue::Bool(value) => Value::Bool(value),
+        OptionValue::Ref(loc) => Value::Ref(loc),
     }
 }
 
@@ -1524,6 +1928,38 @@ fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
             }
         }
     }
+}
+
+fn atomic_rmw_value(op: AtomicRmwOp, old: Value, operand: Value) -> Value {
+    let binop = match op {
+        AtomicRmwOp::Add => BinOp::Add,
+        AtomicRmwOp::Sub => BinOp::Sub,
+        AtomicRmwOp::And => BinOp::BitAnd,
+        AtomicRmwOp::Xor => BinOp::BitXor,
+        AtomicRmwOp::Or => BinOp::BitOr,
+        AtomicRmwOp::Nand => {
+            let and = apply_binop(BinOp::BitAnd, old, operand);
+            return match and {
+                Value::Int {
+                    width,
+                    signed,
+                    value,
+                } => Value::Int {
+                    width,
+                    signed,
+                    value: !value,
+                },
+                other => panic!("effects::rust_ast: atomic nand expected int, found {other:?}"),
+            };
+        }
+        AtomicRmwOp::Max => {
+            return int32(value_as_i128(old).max(value_as_i128(operand)));
+        }
+        AtomicRmwOp::Min => {
+            return int32(value_as_i128(old).min(value_as_i128(operand)));
+        }
+    };
+    apply_binop(binop, old, operand)
 }
 
 /// `Vec<T>`'s element width/signedness/byte-size, read off the local's

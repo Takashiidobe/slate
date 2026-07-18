@@ -173,3 +173,45 @@ fn stdio_file_write_fixup_preserves_rust_effects() {
         "tests/fixtures/effects_stdio_file_write.c",
     );
 }
+
+#[test]
+fn idiomatized_atomics_fixture_matches_cir_effects() {
+    assert_fixture_matches("compare-effects-cir-rust", "tests/fixtures/atomics.c");
+}
+
+#[test]
+fn atomics_fixup_preserves_rust_effects() {
+    assert_fixture_matches("compare-effects-rust-rust", "tests/fixtures/atomics.c");
+}
+
+#[test]
+fn idiomatized_atomic_orderings_fixture_matches_cir_effects() {
+    assert_fixture_matches(
+        "compare-effects-cir-rust",
+        "tests/fixtures/atomic_explicit_orderings.c",
+    );
+}
+
+#[test]
+fn atomic_orderings_fixup_preserves_rust_effects() {
+    assert_fixture_matches(
+        "compare-effects-rust-rust",
+        "tests/fixtures/atomic_explicit_orderings.c",
+    );
+}
+
+#[test]
+fn idiomatized_atomic_compare_exchange_fixture_matches_cir_effects() {
+    assert_fixture_matches(
+        "compare-effects-cir-rust",
+        "tests/fixtures/effects_atomic_compare_exchange.c",
+    );
+}
+
+#[test]
+fn atomic_compare_exchange_fixup_preserves_rust_effects() {
+    assert_fixture_matches(
+        "compare-effects-rust-rust",
+        "tests/fixtures/effects_atomic_compare_exchange.c",
+    );
+}
