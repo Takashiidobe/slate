@@ -5,6 +5,7 @@ mod cfg_translate;
 mod cir;
 mod codegen;
 mod ctx;
+mod effects;
 mod fixups;
 mod lower;
 mod preprocess;
