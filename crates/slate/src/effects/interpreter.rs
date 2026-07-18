@@ -1,20 +1,6 @@
 //! Effect-trace comparator: decides whether two [`super::EffectTrace`]s
 //! represent equivalent executions.
 //!
-//! Both producers ([`super::cir`] and [`super::rust_ast`]) only ever push
-//! observable effects (see the `EffectTrace`/`Effect` doc comment on
-//! `super`), so there is no separate "collapse silent steps" pass here:
-//! reconciling two traces is exactly walking them in lockstep and comparing
-//! corresponding effects — the stuttering reduction is already baked into
-//! what each walker chooses to push, not something this comparator has to
-//! redo. What still needs reconciling is representational, not temporal:
-//! [`super::AllocId`] numbers allocations by the order the *producing*
-//! walker saw them get created, so as long as both programs allocate in the
-//! same relative order (the only order a correct fixup could produce),
-//! comparing [`Effect`] values structurally is already comparing the right
-//! locations — no remapping table is needed. See `super::AllocId`/
-//! `super::Location` for the full argument.
-//!
 //! On a mismatch this reports the first diverging effect rather than just
 //! "not equal": which side produced what, and at what index into the trace —
 //! a bare `assert_eq!` on two multi-effect vectors doesn't say which
@@ -25,14 +11,11 @@ use super::{Effect, EffectTrace};
 /// Where and how two traces first diverge.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Divergence {
-    /// One trace ran out of effects before the other did. `at` is the index
-    /// the shorter trace stopped at.
     LengthMismatch {
         at: usize,
         cir_len: usize,
         rust_ast_len: usize,
     },
-    /// Both traces have an effect at `at`, but the effects differ.
     EffectMismatch {
         at: usize,
         cir: Effect,
@@ -59,12 +42,6 @@ impl std::fmt::Display for Divergence {
     }
 }
 
-/// Compares two effect traces for equivalence, returning the first point of
-/// divergence if the traces are not equivalent.
-///
-/// The error is boxed since [`Effect`] carries owned `String`/`Vec` payloads
-/// for the `Call` variant, making a bare `Divergence` too large for the `Ok`
-/// path's stack slot to pay for on every call.
 pub fn compare(cir: &EffectTrace, rust_ast: &EffectTrace) -> Result<(), Box<Divergence>> {
     for (at, (cir_effect, rust_effect)) in
         cir.effects.iter().zip(rust_ast.effects.iter()).enumerate()
@@ -137,7 +114,7 @@ mod tests {
                     },
                     value: int32(2),
                 },
-                Effect::Return(int32(3)),
+                Effect::Exit(3),
             ],
         }
     }
@@ -204,8 +181,8 @@ mod tests {
     fn divergence_display_names_the_index_and_both_sides() {
         let mismatch = Divergence::EffectMismatch {
             at: 2,
-            cir: Effect::Return(int32(3)),
-            rust_ast: Effect::Return(int32(4)),
+            cir: Effect::Exit(3),
+            rust_ast: Effect::Exit(4),
         };
         let message = mismatch.to_string();
         assert!(message.contains("#2"));

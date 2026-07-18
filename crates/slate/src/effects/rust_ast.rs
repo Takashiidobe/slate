@@ -1,35 +1,14 @@
-//! Emitted Rust AST -> [`super::EffectTrace`].
-//!
-//! Scope mirrors [`super::cir`] (slate-0hf.3): a flat function body covering
-//! exactly the idiomatized counterpart of the CIR malloc/array fixture —
-//! `let mut p: Vec<T> = Vec::with_capacity(n);`, `p.push(value)`, indexed
-//! reads through `p[i]`, and a final `return`. No control flow, no general
-//! rust_ast coverage — an unrecognized node panics rather than silently
-//! dropping an effect, for the same reason as the CIR walker: a dropped
-//! effect would be a false "equivalent" verdict later, which is worse than a
-//! loud failure now.
-//!
-//! `Vec::with_capacity(n)` reserves the backing buffer up front (one
-//! [`Effect::Alloc`] of `n * size_of::<T>()` bytes), so a later `.push` never
-//! reallocates within this fixture's scope — it only writes the next slot and
-//! advances the tracked length, exactly mirroring how the CIR side's
-//! `malloc` + indexed store never re-allocates either.
-
 use std::collections::HashMap;
 
+use super::{AllocId, Effect, EffectTrace, IntWidth, Location, Value};
 use crate::rust_ast::{BinOp, Expr, FnDef, Path, RustValue, Stmt, Type};
 
-use super::{AllocId, Effect, EffectTrace, IntWidth, Location, Value};
-
-/// Walks a flat function body and returns the effects it produced.
 pub fn interpret(f: &FnDef) -> EffectTrace {
     let mut interp = Interp::default();
     interp.run(&f.body);
     interp.trace
 }
 
-/// A `Vec<T>` local: the allocation backing it, its element shape, and how
-/// many elements have been `push`ed so far (the next push's byte offset).
 struct VecBinding {
     alloc: AllocId,
     elem_width: IntWidth,
@@ -41,6 +20,7 @@ struct VecBinding {
 #[derive(Default)]
 struct Interp {
     vecs: HashMap<String, VecBinding>,
+    scalars: HashMap<String, Value>,
     heap: HashMap<Location, Value>,
     next_alloc: u32,
     trace: EffectTrace,
@@ -60,16 +40,31 @@ impl Interp {
                 ty: Some(ty),
                 init: Some(init),
                 ..
-            } => self.let_vec(name, ty, init),
+            } => {
+                if vec_elem_shape(ty).is_some() {
+                    self.let_vec(name, ty, init);
+                } else {
+                    let value = self.eval(init);
+                    self.scalars.insert(name.clone(), value);
+                }
+            }
             Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "push" => {
                 self.push(recv, args)
             }
+            Stmt::Expr(Expr::Call { func, args }) if is_path(func, &["std", "process", "exit"]) => {
+                let code = value_as_i32(self.eval(&args[0]));
+                self.trace.push(Effect::Exit(code));
+            }
+            Stmt::Assign { target, value } => match target {
+                Expr::Index { base, index } => self.assign_index(base, index, value),
+                other => panic!("effects::rust_ast: unsupported assign target `{other:?}`"),
+            },
             Stmt::Return(value) => {
-                let value = value
+                let code = value
                     .as_ref()
-                    .map(|expr| self.eval(expr))
-                    .unwrap_or(Value::Null);
-                self.trace.push(Effect::Return(value));
+                    .map(|expr| value_as_i32(self.eval(expr)))
+                    .unwrap_or(0);
+                self.trace.push(Effect::Exit(code));
             }
             other => panic!("effects::rust_ast: unsupported stmt `{other:?}`"),
         }
@@ -82,6 +77,7 @@ impl Interp {
             Expr::Call { func, args } if is_path(func, &["Vec", "with_capacity"]) => {
                 as_i128(&args[0])
             }
+            Expr::VecRepeat { len, .. } => as_i128(len),
             other => panic!("effects::rust_ast: unsupported Vec initializer `{other:?}`"),
         };
         let alloc = AllocId(self.next_alloc);
@@ -126,8 +122,38 @@ impl Interp {
         self.trace.push(Effect::Write { loc, value });
     }
 
+    fn assign_index(&mut self, base: &Expr, index: &Expr, value: &Expr) {
+        let name = match base {
+            Expr::Var(ident) => ident.as_str(),
+            other => panic!("effects::rust_ast: unsupported assign target base `{other:?}`"),
+        };
+        let idx = as_i128(index) as u64;
+        let raw = as_i128(value);
+        let binding = self
+            .vecs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: assign into unknown Vec `{name}`"));
+        let value = Value::Int {
+            width: binding.elem_width,
+            signed: binding.elem_signed,
+            value: raw,
+        };
+        let loc = Location {
+            alloc: binding.alloc,
+            byte_offset: idx * binding.elem_size,
+        };
+        self.heap.insert(loc, value);
+        self.trace.push(Effect::Write { loc, value });
+    }
+
     fn eval(&mut self, expr: &Expr) -> Value {
         match expr {
+            Expr::Var(ident) => *self.scalars.get(ident.as_str()).unwrap_or_else(|| {
+                panic!(
+                    "effects::rust_ast: read of unknown scalar `{}`",
+                    ident.as_str()
+                )
+            }),
             Expr::Binary {
                 op: BinOp::Add,
                 lhs,
@@ -182,6 +208,13 @@ fn is_path(expr: &Expr, segments: &[&str]) -> bool {
                 && actual.iter().zip(segments).all(|(a, b)| a.as_str() == *b)
         }
         _ => false,
+    }
+}
+
+fn value_as_i32(value: Value) -> i32 {
+    match value {
+        Value::Int { value, .. } => value as i32,
+        other => panic!("effects::rust_ast: expected an integer exit code, found {other:?}"),
     }
 }
 
@@ -331,7 +364,7 @@ mod tests {
                     },
                     value: int32(2),
                 },
-                Effect::Return(int32(3)),
+                Effect::Exit(3),
             ]
         );
     }
@@ -376,9 +409,119 @@ mod tests {
                     },
                     value: int32(2),
                 },
-                Effect::Return(int32(3)),
+                Effect::Exit(3),
             ],
         };
         assert_eq!(trace, cir_shaped_trace);
+    }
+
+    /// The real `HeapOwnershipKind::VecBuffer` fixup shape (see
+    /// `src/fixups/rewrite/heap_ownership.rs`) for the same fixture: direct
+    /// indexed assignment instead of `.push()`, a scalar `let`, and
+    /// `main_zero_exit`'s `std::process::exit(code)` rewrite of a non-zero
+    /// `return` instead of a bare `return`.
+    fn vec_repeat_fixture() -> FnDef {
+        FnDef {
+            attrs: vec![],
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: "main".to_string(),
+            params: vec![],
+            ret: None,
+            body: vec![
+                stmt(Stmt::Let {
+                    name: "p".to_string(),
+                    mutable: true,
+                    ty: Some(Type::Generic {
+                        name: "Vec".to_string(),
+                        args: vec![Type::Prim(Prim::I32)],
+                    }),
+                    init: Some(Expr::VecRepeat {
+                        elem: Box::new(Expr::Value(RustValue::I64(0))),
+                        len: Box::new(Expr::Value(RustValue::Usize(2))),
+                    }),
+                }),
+                stmt(Stmt::Assign {
+                    target: Expr::Index {
+                        base: Box::new(Expr::Var(Ident::new("p"))),
+                        index: Box::new(Expr::Value(RustValue::I64(0))),
+                    },
+                    value: Expr::Value(RustValue::I64(1)),
+                }),
+                stmt(Stmt::Assign {
+                    target: Expr::Index {
+                        base: Box::new(Expr::Var(Ident::new("p"))),
+                        index: Box::new(Expr::Value(RustValue::I64(1))),
+                    },
+                    value: Expr::Value(RustValue::I64(2)),
+                }),
+                stmt(Stmt::Let {
+                    name: "sum".to_string(),
+                    mutable: true,
+                    ty: Some(Type::Prim(Prim::I32)),
+                    init: Some(Expr::Binary {
+                        op: BinOp::Add,
+                        lhs: Box::new(Expr::Index {
+                            base: Box::new(Expr::Var(Ident::new("p"))),
+                            index: Box::new(Expr::Value(RustValue::I64(0))),
+                        }),
+                        rhs: Box::new(Expr::Index {
+                            base: Box::new(Expr::Var(Ident::new("p"))),
+                            index: Box::new(Expr::Value(RustValue::I64(1))),
+                        }),
+                    }),
+                }),
+                stmt(Stmt::Expr(Expr::Call {
+                    func: Box::new(Expr::Path(Path::new([
+                        Ident::new("std"),
+                        Ident::new("process"),
+                        Ident::new("exit"),
+                    ]))),
+                    args: vec![Expr::Var(Ident::new("sum"))],
+                })),
+            ],
+        }
+    }
+
+    #[test]
+    fn vec_repeat_indexed_assign_matches_cir_trace_shape() {
+        let trace = interpret(&vec_repeat_fixture());
+        let alloc = AllocId(0);
+        assert_eq!(
+            trace.effects,
+            vec![
+                Effect::Alloc { alloc, size: 8 },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(1),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(2),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(1),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(2),
+                },
+                Effect::Exit(3),
+            ]
+        );
     }
 }
