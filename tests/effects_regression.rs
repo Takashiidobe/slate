@@ -127,6 +127,53 @@ fn idiomatized_for_loop_fixture_matches_cir_effects() {
 }
 
 #[test]
+fn do_while_fixture_matches_cir_effects() {
+    assert_fixture_matches("compare-effects-cir-rust", "tests/fixtures/do_while.c");
+}
+
+#[test]
+fn switch_default_fixture_matches_cir_effects() {
+    assert_fixture_matches(
+        "compare-effects-cir-rust",
+        "tests/fixtures/switch_default.c",
+    );
+}
+
+#[test]
+fn switch_fallthrough_fixture_matches_cir_effects() {
+    assert_fixture_matches(
+        "compare-effects-cir-rust",
+        "tests/fixtures/switch_fallthrough.c",
+    );
+}
+
+#[test]
+fn goto_forward_fixture_matches_cir_effects() {
+    assert_fixture_matches("compare-effects-cir-rust", "tests/fixtures/goto_forward.c");
+}
+
+#[test]
+fn computed_goto_fixture_matches_cir_effects() {
+    assert_fixture_matches(
+        "compare-effects-cir-rust",
+        "tests/fixtures/computed_goto_ops.c",
+    );
+}
+
+#[test]
+fn switch_fixups_preserve_rust_effects() {
+    assert_fixture_matches(
+        "compare-effects-rust-rust",
+        "tests/fixtures/switch_fallthrough.c",
+    );
+}
+
+#[test]
+fn goto_fixups_preserve_rust_effects() {
+    assert_fixture_matches("compare-effects-rust-rust", "tests/fixtures/goto_forward.c");
+}
+
+#[test]
 fn idiomatized_struct_field_fixture_matches_cir_effects() {
     assert_fixture_matches(
         "compare-effects-cir-rust",
