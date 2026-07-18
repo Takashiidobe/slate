@@ -31,6 +31,8 @@
 //!   already-reduced observable-event sequences, not filtering silent steps
 //!   out of a larger one.
 
+use crate::rust_ast::{AtomicOrdering, AtomicRmwOp};
+
 pub mod cir;
 pub mod interpreter;
 pub mod rust_ast;
@@ -40,6 +42,9 @@ pub struct AllocId(pub u32);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FileId(pub u32);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct AtomicId(pub u32);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Location {
@@ -69,6 +74,11 @@ pub enum Value {
     Bool(bool),
     Ref(Location),
     File(FileId),
+    Atomic(AtomicId),
+    AtomicResult {
+        ok: bool,
+        value: OptionValue,
+    },
     Null,
     Option(Option<OptionValue>),
 }
@@ -110,6 +120,42 @@ pub enum Effect {
     },
     FileClose {
         file: FileId,
+    },
+    AtomicLoad {
+        atomic: AtomicId,
+        ordering: AtomicOrdering,
+        value: Value,
+    },
+    AtomicStore {
+        atomic: AtomicId,
+        ordering: AtomicOrdering,
+        value: Value,
+    },
+    AtomicRmw {
+        atomic: AtomicId,
+        op: AtomicRmwOp,
+        ordering: AtomicOrdering,
+        operand: Value,
+        old: Value,
+        new: Value,
+    },
+    AtomicSwap {
+        atomic: AtomicId,
+        ordering: AtomicOrdering,
+        old: Value,
+        new: Value,
+    },
+    AtomicCompareExchange {
+        atomic: AtomicId,
+        success: AtomicOrdering,
+        failure: AtomicOrdering,
+        expected: Value,
+        desired: Value,
+        old: Value,
+        exchanged: bool,
+    },
+    AtomicFence {
+        ordering: AtomicOrdering,
     },
     Write {
         loc: Location,
