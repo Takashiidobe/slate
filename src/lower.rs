@@ -1,7 +1,7 @@
 //! lower: combine the CIR Op-tree with the C AST oracle into Rust output.
 
 use crate::c_ast::{LayoutQuery, RecordKind, Unit};
-use crate::cir::ir::{Attr, Block, Module, Op, Region};
+use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::rust_ast::{
     Abi, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType,
@@ -116,14 +116,14 @@ fn region_ends_in_noreturn_call(region: &Region) -> bool {
         return false;
     };
     let ops: &[Op] = match block.ops.last() {
-        Some(last) if last.name == "cir.return" || last.name == "cir.yield" => {
+        Some(last) if matches!(last.kind(), CirOpKind::Return | CirOpKind::Yield) => {
             &block.ops[..block.ops.len() - 1]
         }
         _ => &block.ops,
     };
     match ops.last() {
-        Some(op) if op.name == "cir.call" => attr_bool(op, "noreturn"),
-        Some(op) if op.name == "cir.scope" => {
+        Some(op) if op.kind() == CirOpKind::Call => attr_bool(op, "noreturn"),
+        Some(op) if op.kind() == CirOpKind::Scope => {
             op.regions.first().is_some_and(region_ends_in_noreturn_call)
         }
         _ => false,
@@ -140,15 +140,15 @@ fn function_requires_unsafe_contract(op: &Op) -> bool {
     collect_region_ops_recursive(op, &mut ops);
     let mut local_ptrs = BTreeSet::new();
     for op in ops {
-        if op.name == "cir.alloca"
-            || (matches!(op.name.as_str(), "cir.get_member" | "cir.get_element")
+        if op.kind() == CirOpKind::Alloca
+            || (matches!(op.kind(), CirOpKind::GetMember | CirOpKind::GetElement)
                 && op
                     .operands
                     .first()
                     .is_some_and(|base| local_ptrs.contains(base)))
         {
             local_ptrs.extend(op.results.iter().cloned());
-        } else if matches!(op.name.as_str(), "cir.load" | "cir.store")
+        } else if matches!(op.kind(), CirOpKind::Load | CirOpKind::Store)
             && op
                 .operands
                 .last()
@@ -167,7 +167,7 @@ pub fn defined_functions(module: &Module) -> Vec<String> {
     region_ops(module_op)
         .iter()
         .filter(|op| {
-            op.name == "cir.func"
+            op.kind() == CirOpKind::Func
                 && externally_exported(op)
                 && (!region_ops(op).is_empty() || attr_symbol_ref(op, "aliasee").is_some())
         })
@@ -182,7 +182,7 @@ pub fn defined_globals(module: &Module) -> Vec<String> {
     region_ops(module_op)
         .iter()
         .filter(|op| {
-            op.name == "cir.global"
+            op.kind() == CirOpKind::Global
                 && attr_str(op, "initial_value").is_some()
                 && externally_exported(op)
         })
@@ -197,13 +197,15 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
     let ops = region_ops(module_op);
     let mut unsafe_functions: BTreeSet<String> = ops
         .iter()
-        .filter(|op| op.name == "cir.func" && !region_ops(op).is_empty() && externally_exported(op))
+        .filter(|op| {
+            op.kind() == CirOpKind::Func && !region_ops(op).is_empty() && externally_exported(op)
+        })
         .filter(|op| function_requires_unsafe_contract(op))
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
         .filter(|name| name != "main")
         .collect();
     for op in ops {
-        if op.name != "cir.func" || !region_ops(op).is_empty() {
+        if op.kind() != CirOpKind::Func || !region_ops(op).is_empty() {
             continue;
         }
         let Some(name) = attr_str(op, "sym_name") else {
@@ -228,12 +230,14 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
         if linkage_is_weak(op) {
             features.insert(Feature::Linkage);
         }
-        if op.name == "cir.func" {
+        if op.kind() == CirOpKind::Func {
             let function_type = attr_str(op, "function_type").unwrap_or("");
             if function_type_is_variadic(function_type) {
                 features.insert(Feature::CVariadic);
             }
-        } else if op.name == "cir.global" && matches!(attr_str(op, "sym_name"), Some("llvm.used")) {
+        } else if op.kind() == CirOpKind::Global
+            && matches!(attr_str(op, "sym_name"), Some("llvm.used"))
+        {
             features.insert(Feature::UsedWithArg);
         }
     }
@@ -737,7 +741,7 @@ impl<'a> Lowerer<'a> {
 
         let ops = region_ops(module_op);
         let has_main = ops.iter().any(|op| {
-            op.name == "cir.func"
+            op.kind() == CirOpKind::Func
                 && attr_str(op, "sym_name") == Some("main")
                 && !region_ops(op).is_empty()
         });
@@ -746,7 +750,7 @@ impl<'a> Lowerer<'a> {
         self.dtor_calls = hooks.dtors;
         self.used_symbols = collect_used_symbols(&ops);
         for op in &ops {
-            if op.name == "cir.global" {
+            if op.kind() == CirOpKind::Global {
                 self.collect_global(op);
             }
         }
@@ -808,7 +812,7 @@ impl<'a> Lowerer<'a> {
             });
         }
         for op in &ops {
-            if op.name != "cir.func" || !region_ops(op).is_empty() {
+            if op.kind() != CirOpKind::Func || !region_ops(op).is_empty() {
                 continue;
             }
             if attr_symbol_ref(op, "aliasee").is_some() {
@@ -923,7 +927,7 @@ impl<'a> Lowerer<'a> {
 
         // collected before lowering so call sites wrap in `unsafe` regardless of order.
         for op in &ops {
-            if op.name == "cir.func"
+            if op.kind() == CirOpKind::Func
                 && !region_ops(op).is_empty()
                 && attr_str(op, "sym_name").is_some_and(|name| name != "main")
                 && function_type_is_variadic(attr_str(op, "function_type").unwrap_or(""))
@@ -936,7 +940,7 @@ impl<'a> Lowerer<'a> {
             .extend(unsafe_defined_functions(module));
 
         for op in &ops {
-            if op.name != "cir.func" {
+            if op.kind() != CirOpKind::Func {
                 continue;
             }
             let item = if region_ops(op).is_empty() {
@@ -1220,7 +1224,7 @@ impl<'a> Lowerer<'a> {
         let name = attr_str(op, "sym_name")?;
         let target = attr_symbol_ref(op, "aliasee")?;
         let target_op = ops.iter().find(|candidate| {
-            candidate.name == "cir.func"
+            candidate.kind() == CirOpKind::Func
                 && attr_str(candidate, "sym_name") == Some(target)
                 && !region_ops(candidate).is_empty()
         });
@@ -2080,155 +2084,156 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_op(&mut self, op: &Op) {
-        match op.name.as_str() {
-            "cir.alloca" => self.lower_alloca(op),
-            "cir.store" => self.lower_store(op),
-            "cir.copy" => self.lower_copy(op),
-            "cir.load" => self.lower_load(op),
-            "cir.const" => self.lower_const(op),
-            "cir.add.overflow" => self.lower_overflow_arith(op, "overflowing_add"),
-            "cir.sub.overflow" => self.lower_overflow_arith(op, "overflowing_sub"),
-            "cir.mul.overflow" => self.lower_overflow_arith(op, "overflowing_mul"),
-            "cir.div.overflow" => self.lower_overflow_arith(op, "overflowing_div"),
-            "cir.rem.overflow" => self.lower_overflow_arith(op, "overflowing_rem"),
-            "cir.add" => self.lower_int_arith(op, BinOp::Add),
-            "cir.sub" => self.lower_int_arith(op, BinOp::Sub),
-            "cir.mul" => self.lower_int_arith(op, BinOp::Mul),
-            "cir.div" => self.lower_int_arith(op, BinOp::Div),
-            "cir.rem" => self.lower_int_arith(op, BinOp::Rem),
-            "cir.and" => self.lower_int_arith(op, BinOp::BitAnd),
-            "cir.asm" => self.lower_asm(op),
-            "cir.or" => self.lower_int_arith(op, BinOp::BitOr),
-            "cir.xor" => self.lower_int_arith(op, BinOp::BitXor),
-            "cir.bitreverse" => self.lower_unary_method(op, "reverse_bits"),
-            "cir.block_address" => self.lower_opaque_pointer(op, true),
-            "cir.byte_swap" => self.lower_unary_method(op, "swap_bytes"),
-            "cir.clrsb" => self.lower_clrsb(op),
-            "cir.clz" => self.lower_unary_method(op, "leading_zeros"),
-            "cir.ctz" => self.lower_unary_method(op, "trailing_zeros"),
-            "cir.ffs" => self.lower_ffs(op),
-            "cir.is_constant" => self.lower_is_constant(op),
-            "cir.objsize" => self.lower_objsize(op),
-            "cir.parity" => self.lower_parity(op),
-            "cir.popcount" => self.lower_unary_method(op, "count_ones"),
-            "cir.rotate" => self.lower_rotate(op),
-            "cir.shift" => self.lower_shift(op),
-            "cir.not" => self.lower_not(op),
-            "cir.minus" | "cir.fneg" => self.lower_neg(op),
-            "cir.abs" => self.lower_abs(op),
-            "cir.acos" => self.lower_unary_method(op, "acos"),
-            "cir.asin" => self.lower_unary_method(op, "asin"),
-            "cir.atan" => self.lower_unary_method(op, "atan"),
-            "cir.atan2" => self.lower_binary_method(op, "atan2"),
-            "cir.assume" => self.lower_assume(op),
-            "cir.ceil" => self.lower_unary_method(op, "ceil"),
-            "cir.clear_cache" => {}
-            "cir.copysign" => self.lower_binary_method(op, "copysign"),
-            "cir.cos" => self.lower_unary_method(op, "cos"),
-            "cir.exp" => self.lower_unary_method(op, "exp"),
-            "cir.exp2" => self.lower_unary_method(op, "exp2"),
-            "cir.expect" => self.lower_expect(op),
-            "cir.fabs" => self.lower_unary_method(op, "abs"),
-            "cir.fmaximum" => self.lower_binary_method(op, "max"),
-            "cir.fminimum" => self.lower_binary_method(op, "min"),
-            "cir.fmod" => self.lower_binary(op, BinOp::Rem),
-            "cir.floor" => self.lower_unary_method(op, "floor"),
-            "cir.fmaxnum" => self.lower_binary_method(op, "max"),
-            "cir.fminnum" => self.lower_binary_method(op, "min"),
-            "cir.is_fp_class" => self.lower_is_fp_class(op),
-            "cir.llrint" => self.lower_unary_cast_method(op, "round_ties_even"),
-            "cir.llround" => self.lower_unary_cast_method(op, "round"),
-            "cir.log" => self.lower_unary_method(op, "ln"),
-            "cir.log10" => self.lower_unary_method(op, "log10"),
-            "cir.log2" => self.lower_unary_method(op, "log2"),
-            "cir.lrint" => self.lower_unary_cast_method(op, "round_ties_even"),
-            "cir.lround" => self.lower_unary_cast_method(op, "round"),
-            "cir.modf" => self.lower_modf(op),
-            "cir.nearbyint" => self.lower_unary_method(op, "round_ties_even"),
-            "cir.pow" => self.lower_binary_method(op, "powf"),
-            "cir.prefetch" => {}
-            "cir.rint" => self.lower_unary_method(op, "round_ties_even"),
-            "cir.round" => self.lower_unary_method(op, "round"),
-            "cir.roundeven" => self.lower_unary_method(op, "round_ties_even"),
-            "cir.signbit" => self.lower_signbit(op),
-            "cir.sin" => self.lower_unary_method(op, "sin"),
-            "cir.sqrt" => self.lower_unary_method(op, "sqrt"),
-            "cir.frame_address" => self.lower_opaque_pointer(op, true),
-            "cir.stacksave" => self.lower_opaque_pointer(op, false),
-            "cir.stackrestore" => {}
-            "cir.tan" => self.lower_unary_method(op, "tan"),
-            "cir.trap" => self.lower_trap(),
-            "cir.trunc" => self.lower_unary_method(op, "trunc"),
-            "cir.unreachable" => self.lower_unreachable(),
-            "cir.fadd" => self.lower_binary(op, BinOp::Add),
-            "cir.fsub" => self.lower_binary(op, BinOp::Sub),
-            "cir.fmul" => self.lower_binary(op, BinOp::Mul),
-            "cir.fdiv" => self.lower_binary(op, BinOp::Div),
-            "cir.complex.add" => self.lower_binary(op, BinOp::Add),
-            "cir.complex.sub" => self.lower_binary(op, BinOp::Sub),
-            "cir.complex.mul" => self.lower_complex_mul(op),
-            "cir.complex.div" => self.lower_complex_div(op),
-            "cir.complex.conj" => self.lower_complex_conj(op),
-            "cir.complex.create" => self.lower_complex_create(op),
-            "cir.complex.real" => self.lower_complex_part(op, "re"),
-            "cir.complex.imag" => self.lower_complex_part(op, "im"),
-            "cir.complex.real_ptr" => self.lower_complex_part_ptr(op, "re"),
-            "cir.complex.imag_ptr" => self.lower_complex_part_ptr(op, "im"),
-            "cir.inc" => self.lower_step(op, BinOp::Add),
-            "cir.dec" => self.lower_step(op, BinOp::Sub),
-            "cir.cmp" => self.lower_cmp(op),
-            "cir.select" => self.lower_select(op),
-            "cir.ternary" => self.lower_ternary(op),
-            "cir.get_global" => self.lower_get_global(op),
-            "cir.get_member" => self.lower_get_member(op),
-            "cir.extract_member" => self.lower_extract_member(op),
-            "cir.insert_member" => self.lower_insert_member(op),
-            "cir.get_bitfield" => self.lower_get_bitfield(op),
-            "cir.set_bitfield" => self.lower_set_bitfield(op),
-            "cir.get_element" => self.lower_get_element(op),
-            "cir.cast" => self.lower_cast(op),
-            "cir.ptr_stride" => self.lower_ptr_stride(op),
-            "cir.ptr_diff" => self.lower_ptr_diff(op),
-            "cir.call" => self.lower_call(op),
-            "cir.libc.memcpy" => self.lower_mem_copy(op, false),
-            "cir.libc.memmove" => self.lower_mem_copy(op, true),
-            "cir.libc.memset" => self.lower_mem_set(op),
-            "cir.libc.memchr" => self.lower_mem_chr(op),
-            "cir.va_start" => self.lower_va_start(op),
-            "cir.va_arg" => self.lower_va_arg(op),
+        match op.kind() {
+            CirOpKind::Alloca => self.lower_alloca(op),
+            CirOpKind::Store => self.lower_store(op),
+            CirOpKind::Copy => self.lower_copy(op),
+            CirOpKind::Load => self.lower_load(op),
+            CirOpKind::Const => self.lower_const(op),
+            CirOpKind::AddOverflow => self.lower_overflow_arith(op, "overflowing_add"),
+            CirOpKind::SubOverflow => self.lower_overflow_arith(op, "overflowing_sub"),
+            CirOpKind::MulOverflow => self.lower_overflow_arith(op, "overflowing_mul"),
+            CirOpKind::DivOverflow => self.lower_overflow_arith(op, "overflowing_div"),
+            CirOpKind::RemOverflow => self.lower_overflow_arith(op, "overflowing_rem"),
+            CirOpKind::Add => self.lower_int_arith(op, BinOp::Add),
+            CirOpKind::Sub => self.lower_int_arith(op, BinOp::Sub),
+            CirOpKind::Mul => self.lower_int_arith(op, BinOp::Mul),
+            CirOpKind::Div => self.lower_int_arith(op, BinOp::Div),
+            CirOpKind::Rem => self.lower_int_arith(op, BinOp::Rem),
+            CirOpKind::And => self.lower_int_arith(op, BinOp::BitAnd),
+            CirOpKind::Asm => self.lower_asm(op),
+            CirOpKind::Or => self.lower_int_arith(op, BinOp::BitOr),
+            CirOpKind::Xor => self.lower_int_arith(op, BinOp::BitXor),
+            CirOpKind::Bitreverse => self.lower_unary_method(op, "reverse_bits"),
+            CirOpKind::BlockAddress => self.lower_opaque_pointer(op, true),
+            CirOpKind::ByteSwap => self.lower_unary_method(op, "swap_bytes"),
+            CirOpKind::Clrsb => self.lower_clrsb(op),
+            CirOpKind::Clz => self.lower_unary_method(op, "leading_zeros"),
+            CirOpKind::Ctz => self.lower_unary_method(op, "trailing_zeros"),
+            CirOpKind::Ffs => self.lower_ffs(op),
+            CirOpKind::IsConstant => self.lower_is_constant(op),
+            CirOpKind::Objsize => self.lower_objsize(op),
+            CirOpKind::Parity => self.lower_parity(op),
+            CirOpKind::Popcount => self.lower_unary_method(op, "count_ones"),
+            CirOpKind::Rotate => self.lower_rotate(op),
+            CirOpKind::Shift => self.lower_shift(op),
+            CirOpKind::Not => self.lower_not(op),
+            CirOpKind::Minus | CirOpKind::Fneg => self.lower_neg(op),
+            CirOpKind::Abs => self.lower_abs(op),
+            CirOpKind::Acos => self.lower_unary_method(op, "acos"),
+            CirOpKind::Asin => self.lower_unary_method(op, "asin"),
+            CirOpKind::Atan => self.lower_unary_method(op, "atan"),
+            CirOpKind::Atan2 => self.lower_binary_method(op, "atan2"),
+            CirOpKind::Assume => self.lower_assume(op),
+            CirOpKind::Ceil => self.lower_unary_method(op, "ceil"),
+            CirOpKind::ClearCache => {}
+            CirOpKind::Copysign => self.lower_binary_method(op, "copysign"),
+            CirOpKind::Cos => self.lower_unary_method(op, "cos"),
+            CirOpKind::Exp => self.lower_unary_method(op, "exp"),
+            CirOpKind::Exp2 => self.lower_unary_method(op, "exp2"),
+            CirOpKind::Expect => self.lower_expect(op),
+            CirOpKind::Fabs => self.lower_unary_method(op, "abs"),
+            CirOpKind::Fmaximum => self.lower_binary_method(op, "max"),
+            CirOpKind::Fminimum => self.lower_binary_method(op, "min"),
+            CirOpKind::Fmod => self.lower_binary(op, BinOp::Rem),
+            CirOpKind::Floor => self.lower_unary_method(op, "floor"),
+            CirOpKind::Fmaxnum => self.lower_binary_method(op, "max"),
+            CirOpKind::Fminnum => self.lower_binary_method(op, "min"),
+            CirOpKind::IsFpClass => self.lower_is_fp_class(op),
+            CirOpKind::Llrint => self.lower_unary_cast_method(op, "round_ties_even"),
+            CirOpKind::Llround => self.lower_unary_cast_method(op, "round"),
+            CirOpKind::Log => self.lower_unary_method(op, "ln"),
+            CirOpKind::Log10 => self.lower_unary_method(op, "log10"),
+            CirOpKind::Log2 => self.lower_unary_method(op, "log2"),
+            CirOpKind::Lrint => self.lower_unary_cast_method(op, "round_ties_even"),
+            CirOpKind::Lround => self.lower_unary_cast_method(op, "round"),
+            CirOpKind::Modf => self.lower_modf(op),
+            CirOpKind::Nearbyint => self.lower_unary_method(op, "round_ties_even"),
+            CirOpKind::Pow => self.lower_binary_method(op, "powf"),
+            CirOpKind::Prefetch => {}
+            CirOpKind::Rint => self.lower_unary_method(op, "round_ties_even"),
+            CirOpKind::Round => self.lower_unary_method(op, "round"),
+            CirOpKind::Roundeven => self.lower_unary_method(op, "round_ties_even"),
+            CirOpKind::Signbit => self.lower_signbit(op),
+            CirOpKind::Sin => self.lower_unary_method(op, "sin"),
+            CirOpKind::Sqrt => self.lower_unary_method(op, "sqrt"),
+            CirOpKind::FrameAddress => self.lower_opaque_pointer(op, true),
+            CirOpKind::Stacksave => self.lower_opaque_pointer(op, false),
+            CirOpKind::Stackrestore => {}
+            CirOpKind::Tan => self.lower_unary_method(op, "tan"),
+            CirOpKind::Trap => self.lower_trap(),
+            CirOpKind::Trunc => self.lower_unary_method(op, "trunc"),
+            CirOpKind::Unreachable => self.lower_unreachable(),
+            CirOpKind::Fadd => self.lower_binary(op, BinOp::Add),
+            CirOpKind::Fsub => self.lower_binary(op, BinOp::Sub),
+            CirOpKind::Fmul => self.lower_binary(op, BinOp::Mul),
+            CirOpKind::Fdiv => self.lower_binary(op, BinOp::Div),
+            CirOpKind::ComplexAdd => self.lower_binary(op, BinOp::Add),
+            CirOpKind::ComplexSub => self.lower_binary(op, BinOp::Sub),
+            CirOpKind::ComplexMul => self.lower_complex_mul(op),
+            CirOpKind::ComplexDiv => self.lower_complex_div(op),
+            CirOpKind::ComplexConj => self.lower_complex_conj(op),
+            CirOpKind::ComplexCreate => self.lower_complex_create(op),
+            CirOpKind::ComplexReal => self.lower_complex_part(op, "re"),
+            CirOpKind::ComplexImag => self.lower_complex_part(op, "im"),
+            CirOpKind::ComplexRealPtr => self.lower_complex_part_ptr(op, "re"),
+            CirOpKind::ComplexImagPtr => self.lower_complex_part_ptr(op, "im"),
+            CirOpKind::Inc => self.lower_step(op, BinOp::Add),
+            CirOpKind::Dec => self.lower_step(op, BinOp::Sub),
+            CirOpKind::Cmp => self.lower_cmp(op),
+            CirOpKind::Select => self.lower_select(op),
+            CirOpKind::Ternary => self.lower_ternary(op),
+            CirOpKind::GetGlobal => self.lower_get_global(op),
+            CirOpKind::GetMember => self.lower_get_member(op),
+            CirOpKind::ExtractMember => self.lower_extract_member(op),
+            CirOpKind::InsertMember => self.lower_insert_member(op),
+            CirOpKind::GetBitfield => self.lower_get_bitfield(op),
+            CirOpKind::SetBitfield => self.lower_set_bitfield(op),
+            CirOpKind::GetElement => self.lower_get_element(op),
+            CirOpKind::Cast => self.lower_cast(op),
+            CirOpKind::PtrStride => self.lower_ptr_stride(op),
+            CirOpKind::PtrDiff => self.lower_ptr_diff(op),
+            CirOpKind::Call => self.lower_call(op),
+            CirOpKind::LibcMemcpy => self.lower_mem_copy(op, false),
+            CirOpKind::LibcMemmove => self.lower_mem_copy(op, true),
+            CirOpKind::LibcMemset => self.lower_mem_set(op),
+            CirOpKind::LibcMemchr => self.lower_mem_chr(op),
+            CirOpKind::VaStart => self.lower_va_start(op),
+            CirOpKind::VaArg => self.lower_va_arg(op),
             // `VaList` drops on scope exit.
-            "cir.va_end" => {}
-            "cir.atomic.fetch" => self.lower_atomic_fetch(op),
-            "cir.atomic.xchg" => self.lower_atomic_xchg(op),
-            "cir.atomic.cmpxchg" => self.lower_atomic_cmpxchg(op),
-            "cir.atomic.fence" => self.lower_atomic_fence(op),
-            "cir.return" => self.lower_return(op),
-            "cir.scope" => self.lower_scope(op),
-            "cir.if" => self.lower_if(op),
-            "cir.switch" => self.lower_switch(op),
-            "cir.for" => self.lower_for(op),
-            "cir.while" => self.lower_while(op),
-            "cir.do" => self.lower_do(op),
-            "cir.break" => self.lower_break(),
-            "cir.continue" => self.lower_continue(),
-            "cir.goto" => self.lower_goto(op),
-            "cir.br" => self.lower_br(op),
-            "cir.indirect_br" => self.lower_indirect_br(op),
-            "cir.vec.extract" => self.lower_vec_extract(op),
-            "cir.vec.insert" => self.lower_vec_insert(op),
-            "cir.vec.shuffle" => self.lower_vec_shuffle(op),
-            "cir.eh.setjmp" => self.lower_eh_setjmp(op),
-            "cir.call_llvm_intrinsic" => {
+            CirOpKind::VaEnd => {}
+            CirOpKind::AtomicFetch => self.lower_atomic_fetch(op),
+            CirOpKind::AtomicXchg => self.lower_atomic_xchg(op),
+            CirOpKind::AtomicCmpxchg => self.lower_atomic_cmpxchg(op),
+            CirOpKind::AtomicFence => self.lower_atomic_fence(op),
+            CirOpKind::Return => self.lower_return(op),
+            CirOpKind::Scope => self.lower_scope(op),
+            CirOpKind::If => self.lower_if(op),
+            CirOpKind::Switch => self.lower_switch(op),
+            CirOpKind::For => self.lower_for(op),
+            CirOpKind::While => self.lower_while(op),
+            CirOpKind::Do => self.lower_do(op),
+            CirOpKind::Break => self.lower_break(),
+            CirOpKind::Continue => self.lower_continue(),
+            CirOpKind::Goto => self.lower_goto(op),
+            CirOpKind::Br => self.lower_br(op),
+            CirOpKind::IndirectBr => self.lower_indirect_br(op),
+            CirOpKind::VecExtract => self.lower_vec_extract(op),
+            CirOpKind::VecInsert => self.lower_vec_insert(op),
+            CirOpKind::VecShuffle => self.lower_vec_shuffle(op),
+            CirOpKind::EhSetjmp => self.lower_eh_setjmp(op),
+            CirOpKind::CallLlvmIntrinsic => {
                 self.lower_unsupported_value(op, "cir.call_llvm_intrinsic")
             }
-            "cir.label" => {}
-            "cir.yield" | "cir.condition" => {}
-            other => {
+            CirOpKind::Label => {}
+            CirOpKind::Yield | CirOpKind::Condition => {}
+            _ => {
+                let name = op.name.as_str();
                 self.parent
                     .ctx
                     .diagnostics
-                    .warn(format!("lower: unsupported CIR op {other}"), op.loc.clone());
-                self.emit_todo(other);
+                    .warn(format!("lower: unsupported CIR op {name}"), op.loc.clone());
+                self.emit_todo(name);
             }
         }
     }
@@ -2976,7 +2981,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let body = self.capture_body(|this| {
             for block in &region.blocks {
                 for op in &block.ops {
-                    if op.name == "cir.yield" {
+                    if op.kind() == CirOpKind::Yield {
                         if let Some(operand) = op.operands.first() {
                             yielded = this.operand_expr(operand);
                         }
@@ -5281,7 +5286,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mut condition = Expr::Value(RustValue::Bool(true));
         for block in &region.blocks {
             for op in &block.ops {
-                if op.name == "cir.condition" {
+                if op.kind() == CirOpKind::Condition {
                     if let Some(operand) = op.operands.first() {
                         condition = self.operand_expr(operand);
                     }
@@ -5389,7 +5394,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .blocks
             .iter()
             .flat_map(|block| &block.ops)
-            .filter(|op| op.name == "cir.case")
+            .filter(|op| op.kind() == CirOpKind::Case)
             .filter_map(switch_case)
             .collect();
         if cases.is_empty() {
@@ -5559,7 +5564,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let key = block.label.clone().unwrap_or_else(|| format!("bb{i}"));
             block_to_state.insert(key, i);
             for op in &block.ops {
-                if op.name == "cir.label"
+                if op.kind() == CirOpKind::Label
                     && let Some(label) = attr_str(op, "label")
                 {
                     label_to_state.insert(label.to_string(), i);
@@ -5575,7 +5580,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
         for block in &body.blocks {
             for op in &block.ops {
-                if op.name == "cir.alloca" {
+                if op.kind() == CirOpKind::Alloca {
                     self.lower_alloca(op);
                     if let Some(result) = op.results.first() {
                         self.hoisted.insert(result.clone());
@@ -5970,7 +5975,7 @@ fn collect_lifecycle_hooks(
     let mut ctors: Vec<(i64, String)> = Vec::new();
     let mut dtors: Vec<(i64, String)> = Vec::new();
     for op in ops {
-        if op.name != "cir.func" || region_ops(op).is_empty() {
+        if op.kind() != CirOpKind::Func || region_ops(op).is_empty() {
             continue;
         }
         let is_ctor = op.attrs.contains_key("global_ctor_priority");
@@ -6051,7 +6056,7 @@ fn region_ops(op: &Op) -> Vec<&Op> {
 fn collect_used_symbols(ops: &[&Op]) -> BTreeMap<String, Vec<UsedKind>> {
     let mut flags = BTreeMap::<String, (bool, bool)>::new();
     for op in ops {
-        if op.name != "cir.global" {
+        if op.kind() != CirOpKind::Global {
             continue;
         }
         let Some(kind) = (match attr_str(op, "sym_name") {
@@ -6183,7 +6188,7 @@ fn forwardable_temp_allocas(body: &Region) -> BTreeSet<String> {
             let block_id = *next_block;
             *next_block += 1;
             for (pos, op) in block.ops.iter().enumerate() {
-                if op.name == "cir.alloca"
+                if op.kind() == CirOpKind::Alloca
                     && let Some(name) = op.attrs.get("name").and_then(Attr::as_str)
                     && name.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_')
                     && let Some(result) = op.results.first()
@@ -6194,12 +6199,12 @@ fn forwardable_temp_allocas(body: &Region) -> BTreeSet<String> {
                     let Some(u) = uses.get_mut(operand) else {
                         continue;
                     };
-                    match op.name.as_str() {
-                        "cir.store" if i == 1 && plain_access(op) => {
+                    match op.kind() {
+                        CirOpKind::Store if i == 1 && plain_access(op) => {
                             u.stores += 1;
                             u.store_at = Some((block_id, pos));
                         }
-                        "cir.load" if i == 0 && plain_access(op) => {
+                        CirOpKind::Load if i == 0 && plain_access(op) => {
                             u.loads += 1;
                             u.load_at = Some((block_id, pos));
                         }
@@ -6363,13 +6368,13 @@ fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
 fn block_diverges(block: &Block) -> bool {
     block.ops.last().is_some_and(|op| {
         matches!(
-            op.name.as_str(),
-            "cir.return"
-                | "cir.br"
-                | "cir.indirect_br"
-                | "cir.goto"
-                | "cir.trap"
-                | "cir.unreachable"
+            op.kind(),
+            CirOpKind::Return
+                | CirOpKind::Br
+                | CirOpKind::IndirectBr
+                | CirOpKind::Goto
+                | CirOpKind::Trap
+                | CirOpKind::Unreachable
         )
     })
 }
@@ -6380,11 +6385,15 @@ fn region_ends_control_flow(region: &Region) -> bool {
         .iter()
         .rev()
         .flat_map(|block| block.ops.iter().rev())
-        .find(|op| op.name != "cir.yield")
+        .find(|op| op.kind() != CirOpKind::Yield)
         .is_some_and(|op| {
             matches!(
-                op.name.as_str(),
-                "cir.break" | "cir.continue" | "cir.return" | "cir.trap" | "cir.unreachable"
+                op.kind(),
+                CirOpKind::Break
+                    | CirOpKind::Continue
+                    | CirOpKind::Return
+                    | CirOpKind::Trap
+                    | CirOpKind::Unreachable
             )
         })
 }
@@ -6837,9 +6846,9 @@ fn region_has_direct_continue(region: &Region) -> bool {
 }
 
 fn ops_have_direct_continue(ops: &[Op]) -> bool {
-    ops.iter().any(|op| match op.name.as_str() {
-        "cir.continue" => true,
-        "cir.for" | "cir.while" | "cir.do" => false,
+    ops.iter().any(|op| match op.kind() {
+        CirOpKind::Continue => true,
+        CirOpKind::For | CirOpKind::While | CirOpKind::Do => false,
         _ => op.regions.iter().any(region_has_direct_continue),
     })
 }
@@ -7094,8 +7103,8 @@ fn collect_anon_record_info(
     field_names: &mut BTreeMap<(String, i64), String>,
 ) {
     for op in ops {
-        match op.name.as_str() {
-            "cir.alloca" => {
+        match op.kind() {
+            CirOpKind::Alloca => {
                 if let Some(key) = op
                     .ty
                     .as_deref()
@@ -7106,7 +7115,7 @@ fn collect_anon_record_info(
                     needed.insert(key);
                 }
             }
-            "cir.get_member" => {
+            CirOpKind::GetMember => {
                 if let (Some(key), Some(index), Some(name)) = (
                     op.ty
                         .as_deref()
