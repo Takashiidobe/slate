@@ -152,7 +152,8 @@ change; "once" means it runs exactly one time per `apply` call.
 42. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint (`inline_var_aliases_to_fixpoint`).
 43. `prune_unused_externs` - drop now-dead `extern` decls for the libc functions `string_copy`, `string_libc`, `sort_search`, and `heap_ownership` replace - once, after all four rewrites (and their re-runs) have finished, rather than once per rewrite.
 44. `unused_items` - remove dead top-level items - once.
-45. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
+45. `unused_params` - drop a function parameter that's never read in its body and rewrite every direct call site to match, once the function's only references are direct-by-name calls whose argument at that slot is pure and whose type can't own a destructor - to fixpoint.
+46. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
 because later groups can create new opportunities for earlier ones; re-running

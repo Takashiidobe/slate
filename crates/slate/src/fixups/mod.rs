@@ -229,6 +229,7 @@ pub fn apply(program: Program) -> Program {
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
     rewrite::prune_unused_externs::fixup(&mut program, &facts);
     rewrite::unused_items::fixup(&mut program);
+    rewrite::unused_params::fixup(&mut program);
     for item in &mut program.items {
         if let Item::Fn(f) = item {
             rewrite::main_zero_exit::fixup(f);
