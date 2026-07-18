@@ -68,6 +68,18 @@ pub enum Value {
     Bool(bool),
     Ref(Location),
     Null,
+    Option(Option<OptionValue>),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum OptionValue {
+    Int {
+        width: IntWidth,
+        signed: bool,
+        value: i128,
+    },
+    Bool(bool),
+    Ref(Location),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -179,5 +191,18 @@ mod tests {
             },
         };
         assert_ne!(as_i32, as_u8);
+    }
+
+    #[test]
+    fn option_values_are_distinct_from_raw_nulls() {
+        let none = Value::Option(None);
+        assert_ne!(none, Value::Null);
+
+        let some_index = Value::Option(Some(OptionValue::Int {
+            width: IntWidth::PointerSized,
+            signed: false,
+            value: 2,
+        }));
+        assert_eq!(some_index, some_index);
     }
 }

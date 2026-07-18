@@ -13,13 +13,13 @@ use super::{Effect, EffectTrace};
 pub enum Divergence {
     LengthMismatch {
         at: usize,
-        cir_len: usize,
-        rust_ast_len: usize,
+        left_len: usize,
+        right_len: usize,
     },
     EffectMismatch {
         at: usize,
-        cir: Effect,
-        rust_ast: Effect,
+        left: Effect,
+        right: Effect,
     },
 }
 
@@ -28,38 +28,38 @@ impl std::fmt::Display for Divergence {
         match self {
             Divergence::LengthMismatch {
                 at,
-                cir_len,
-                rust_ast_len,
+                left_len,
+                right_len,
             } => write!(
                 f,
-                "effect traces diverge at #{at}: CIR trace has {cir_len} effect(s), rust_ast trace has {rust_ast_len}"
+                "effect traces diverge at #{at}: left trace has {left_len} effect(s), right trace has {right_len}"
             ),
-            Divergence::EffectMismatch { at, cir, rust_ast } => write!(
+            Divergence::EffectMismatch { at, left, right } => write!(
                 f,
-                "effect traces diverge at #{at}: CIR produced {cir:?}, rust_ast produced {rust_ast:?}"
+                "effect traces diverge at #{at}: left produced {left:?}, right produced {right:?}"
             ),
         }
     }
 }
 
-pub fn compare(cir: &EffectTrace, rust_ast: &EffectTrace) -> Result<(), Box<Divergence>> {
-    for (at, (cir_effect, rust_effect)) in
-        cir.effects.iter().zip(rust_ast.effects.iter()).enumerate()
+pub fn compare(left: &EffectTrace, right: &EffectTrace) -> Result<(), Box<Divergence>> {
+    for (at, (left_effect, right_effect)) in
+        left.effects.iter().zip(right.effects.iter()).enumerate()
     {
-        if cir_effect != rust_effect {
+        if left_effect != right_effect {
             return Err(Box::new(Divergence::EffectMismatch {
                 at,
-                cir: cir_effect.clone(),
-                rust_ast: rust_effect.clone(),
+                left: left_effect.clone(),
+                right: right_effect.clone(),
             }));
         }
     }
-    let (cir_len, rust_ast_len) = (cir.effects.len(), rust_ast.effects.len());
-    if cir_len != rust_ast_len {
+    let (left_len, right_len) = (left.effects.len(), right.effects.len());
+    if left_len != right_len {
         return Err(Box::new(Divergence::LengthMismatch {
-            at: cir_len.min(rust_ast_len),
-            cir_len,
-            rust_ast_len,
+            at: left_len.min(right_len),
+            left_len,
+            right_len,
         }));
     }
     Ok(())
@@ -68,7 +68,7 @@ pub fn compare(cir: &EffectTrace, rust_ast: &EffectTrace) -> Result<(), Box<Dive
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::effects::{AllocId, IntWidth, Location, Value};
+    use crate::effects::{AllocId, IntWidth, Location, OptionValue, Value};
 
     fn int32(value: i32) -> Value {
         Value::Int {
@@ -143,14 +143,14 @@ mod tests {
             *divergence,
             Divergence::EffectMismatch {
                 at: 2,
-                cir: Effect::Write {
+                left: Effect::Write {
                     loc: Location {
                         alloc: AllocId(0),
                         byte_offset: 4,
                     },
                     value: int32(2),
                 },
-                rust_ast: Effect::Write {
+                right: Effect::Write {
                     loc: Location {
                         alloc: AllocId(0),
                         byte_offset: 4,
@@ -171,8 +171,8 @@ mod tests {
             compare(&cir, &rust_ast),
             Err(Box::new(Divergence::LengthMismatch {
                 at: 5,
-                cir_len: 6,
-                rust_ast_len: 5,
+                left_len: 6,
+                right_len: 5,
             }))
         );
     }
@@ -181,12 +181,28 @@ mod tests {
     fn divergence_display_names_the_index_and_both_sides() {
         let mismatch = Divergence::EffectMismatch {
             at: 2,
-            cir: Effect::Exit(3),
-            rust_ast: Effect::Exit(4),
+            left: Effect::Exit(3),
+            right: Effect::Exit(4),
         };
         let message = mismatch.to_string();
         assert!(message.contains("#2"));
-        assert!(message.contains("CIR produced"));
-        assert!(message.contains("rust_ast produced"));
+        assert!(message.contains("left produced"));
+        assert!(message.contains("right produced"));
+    }
+
+    #[test]
+    fn rust_to_rust_option_traces_compare_with_the_same_generic_comparator() {
+        let left = EffectTrace {
+            effects: vec![Effect::Call {
+                name: "debug".to_string(),
+                args: vec![Value::Option(Some(OptionValue::Int {
+                    width: IntWidth::PointerSized,
+                    signed: false,
+                    value: 2,
+                }))],
+            }],
+        };
+        let right = left.clone();
+        assert_eq!(compare(&left, &right), Ok(()));
     }
 }

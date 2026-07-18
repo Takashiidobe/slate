@@ -66,3 +66,8 @@ fn idiomatized_static_global_fixture_matches_cir_effects() {
 fn idiomatized_lazy_singleton_fixture_matches_cir_effects() {
     assert_cir_and_rust_effects_match("tests/fixtures/lazy_singleton.c");
 }
+
+#[test]
+fn idiomatized_nullable_pointer_fixture_matches_cir_effects() {
+    assert_cir_and_rust_effects_match("tests/fixtures/effects_nullable_pointer.c");
+}
