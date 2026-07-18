@@ -31,9 +31,15 @@ struct VecBinding {
     len: u64,
 }
 
+struct StructBinding {
+    alloc: AllocId,
+    field_offsets: HashMap<String, u64>,
+}
+
 #[derive(Default)]
 struct Interp {
     vecs: HashMap<String, VecBinding>,
+    structs: HashMap<String, StructBinding>,
     scalars: HashMap<String, Value>,
     heap: HashMap<Location, Value>,
     next_alloc: u32,
@@ -101,11 +107,13 @@ impl Interp {
                 init: Some(init),
                 ..
             } => {
-                if vec_elem_shape(ty).is_some() {
-                    self.let_vec(name, ty, init);
-                } else {
-                    let value = self.eval(init);
-                    self.scalars.insert(name.clone(), value);
+                match init {
+                    Expr::StructLit { fields, .. } => self.let_struct(name, fields),
+                    _ if vec_elem_shape(ty).is_some() => self.let_vec(name, ty, init),
+                    _ => {
+                        let value = self.eval(init);
+                        self.scalars.insert(name.clone(), value);
+                    }
                 }
                 Flow::Normal
             }
@@ -155,6 +163,7 @@ impl Interp {
                 self.scalars.insert(ident.as_str().to_string(), v);
             }
             Expr::Index { base, index } => self.assign_index(base, index, value),
+            Expr::Field { base, field } => self.assign_field(base, field, value),
             other => panic!("effects::rust_ast: unsupported assign target `{other:?}`"),
         }
         Flow::Normal
@@ -316,6 +325,80 @@ impl Interp {
         self.trace.push(Effect::Write { loc, value });
     }
 
+    fn let_struct(&mut self, name: &str, fields: &[(String, Expr)]) {
+        let values: Vec<(String, Value)> = fields
+            .iter()
+            .map(|(field, expr)| (field.clone(), self.eval(expr)))
+            .collect();
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        let size: u64 = values.iter().map(|(_, v)| int_byte_size(v)).sum();
+        self.trace.push(Effect::Alloc { alloc, size });
+        let mut field_offsets = HashMap::new();
+        let mut offset = 0u64;
+        for (field, value) in values {
+            let loc = Location {
+                alloc,
+                byte_offset: offset,
+            };
+            field_offsets.insert(field, offset);
+            self.heap.insert(loc, value);
+            self.trace.push(Effect::Write { loc, value });
+            offset += int_byte_size(&value);
+        }
+        self.structs.insert(
+            name.to_string(),
+            StructBinding {
+                alloc,
+                field_offsets,
+            },
+        );
+    }
+
+    fn assign_field(&mut self, base: &Expr, field: &str, value: &Expr) {
+        let name = match base {
+            Expr::Var(ident) => ident.as_str(),
+            other => panic!("effects::rust_ast: unsupported field-assign base `{other:?}`"),
+        };
+        let value = self.eval(value);
+        let binding = self.structs.get(name).unwrap_or_else(|| {
+            panic!("effects::rust_ast: field-assign on unknown struct `{name}`")
+        });
+        let offset = *binding.field_offsets.get(field).unwrap_or_else(|| {
+            panic!("effects::rust_ast: unknown field `{field}` on struct `{name}`")
+        });
+        let loc = Location {
+            alloc: binding.alloc,
+            byte_offset: offset,
+        };
+        self.heap.insert(loc, value);
+        self.trace.push(Effect::Write { loc, value });
+    }
+
+    fn eval_field(&mut self, base: &Expr, field: &str) -> Value {
+        let name = match base {
+            Expr::Var(ident) => ident.as_str(),
+            other => panic!("effects::rust_ast: unsupported field-read base `{other:?}`"),
+        };
+        let binding = self
+            .structs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: field-read on unknown struct `{name}`"));
+        let offset = *binding.field_offsets.get(field).unwrap_or_else(|| {
+            panic!("effects::rust_ast: unknown field `{field}` on struct `{name}`")
+        });
+        let loc = Location {
+            alloc: binding.alloc,
+            byte_offset: offset,
+        };
+        let value = *self
+            .heap
+            .get(&loc)
+            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"));
+        self.trace.push(Effect::Read { loc, value });
+        value
+    }
+
     fn eval(&mut self, expr: &Expr) -> Value {
         match expr {
             Expr::Value(rv) => rust_value_to_value(rv),
@@ -378,6 +461,7 @@ impl Interp {
                 self.trace.push(Effect::Read { loc, value });
                 value
             }
+            Expr::Field { base, field } => self.eval_field(base, field),
             other => panic!("effects::rust_ast: unsupported expr `{other:?}`"),
         }
     }
@@ -1092,6 +1176,86 @@ mod tests {
                         byte_offset: 4
                     },
                     value: int32(3),
+                },
+                Effect::Exit(7),
+            ]
+        );
+    }
+
+    /// The idiomatized field-literal shape of `struct_field_fixture` in
+    /// `cir::tests`: `let p = Point { x: 3, y: 4 }; return p.x + p.y;`
+    fn struct_field_fixture() -> FnDef {
+        FnDef {
+            attrs: vec![],
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: "main".to_string(),
+            params: vec![],
+            ret: Some(Type::Prim(Prim::I32)),
+            body: vec![
+                stmt(Stmt::Let {
+                    name: "p".to_string(),
+                    mutable: false,
+                    ty: Some(Type::Custom("Point".to_string())),
+                    init: Some(Expr::StructLit {
+                        name: "Point".to_string(),
+                        fields: vec![
+                            ("x".to_string(), Expr::Value(RustValue::I64(3))),
+                            ("y".to_string(), Expr::Value(RustValue::I64(4))),
+                        ],
+                    }),
+                }),
+                stmt(Stmt::Return(Some(Expr::Binary {
+                    op: BinOp::Add,
+                    lhs: Box::new(Expr::Field {
+                        base: Box::new(Expr::Var(Ident::new("p"))),
+                        field: "x".to_string(),
+                    }),
+                    rhs: Box::new(Expr::Field {
+                        base: Box::new(Expr::Var(Ident::new("p"))),
+                        field: "y".to_string(),
+                    }),
+                }))),
+            ],
+        }
+    }
+
+    #[test]
+    fn struct_field_literal_matches_cir_trace_shape() {
+        let trace = interpret(&struct_field_fixture());
+        let alloc = AllocId(0);
+        assert_eq!(
+            trace.effects,
+            vec![
+                Effect::Alloc { alloc, size: 8 },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(3),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(4),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(3),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(4),
                 },
                 Effect::Exit(7),
             ]

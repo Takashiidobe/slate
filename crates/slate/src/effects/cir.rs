@@ -129,6 +129,7 @@ impl Interp {
             }
             CirOpKind::Call => self.call(op),
             CirOpKind::PtrStride => self.ptr_stride(op),
+            CirOpKind::GetMember => self.get_member(op),
             CirOpKind::Store => self.store(op),
             CirOpKind::Load => self.load(op),
             CirOpKind::If => self.if_(op),
@@ -264,6 +265,24 @@ impl Interp {
             byte_offset: base
                 .byte_offset
                 .wrapping_add((index * elem_size as i128) as u64),
+        };
+        self.env.insert(result.to_string(), Value::Ref(loc));
+        Flow::Normal
+    }
+
+    // Field byte offset is `index_attr * this field's own size`, correct as
+    // long as every field sharing an allocation has the same size (true of
+    // the fixtures this walker covers so far) — a full record layout (needed
+    // for heterogeneous field sizes) isn't retained past `parse-cir`.
+    fn get_member(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let base = self.resolve_ref(&op.operands[0]);
+        let index = attr_int(op, "index_attr").expect("cir.get_member: missing index_attr") as u64;
+        let field_size =
+            pointee_byte_size(result_type(op)).expect("cir.get_member: field pointee size");
+        let loc = Location {
+            alloc: base.alloc,
+            byte_offset: base.byte_offset + index * field_size,
         };
         self.env.insert(result.to_string(), Value::Ref(loc));
         Flow::Normal
@@ -1231,6 +1250,153 @@ mod tests {
                         byte_offset: 4
                     },
                     value: int32(3),
+                },
+                Effect::Exit(7),
+            ]
+        );
+    }
+
+    /// Mirrors the CIR clang emits for:
+    /// `struct point { int x; int y; };
+    ///  struct point *p = malloc(sizeof(struct point));
+    ///  p->x = 3; p->y = 4;
+    ///  int sum = p->x + p->y;
+    ///  free(p);
+    ///  return sum;`
+    fn struct_field_fixture() -> Vec<Op> {
+        let get_member = |result: &str, base: &str, index: i64, name: &str| {
+            let mut o = op(
+                "cir.get_member",
+                &[result],
+                &[base],
+                "(!cir.ptr<!rec_point>) -> !cir.ptr<!s32i>",
+            );
+            o.attrs.insert("index_attr".to_string(), Attr::Int(index));
+            o.attrs
+                .insert("name".to_string(), Attr::Str(name.to_string()));
+            o
+        };
+        vec![
+            op(
+                "cir.alloca",
+                &["p"],
+                &[],
+                "() -> !cir.ptr<!cir.ptr<!rec_point>>",
+            ),
+            const_op("c8", 8, "!u64i"),
+            call_malloc("raw", "c8"),
+            op(
+                "cir.cast",
+                &["buf"],
+                &["raw"],
+                "(!cir.ptr<!void>) -> !cir.ptr<!rec_point>",
+            ),
+            op(
+                "cir.store",
+                &[],
+                &["buf", "p"],
+                "(!cir.ptr<!rec_point>, !cir.ptr<!cir.ptr<!rec_point>>) -> ()",
+            ),
+            const_op("v3", 3, "!s32i"),
+            op(
+                "cir.load",
+                &["p0"],
+                &["p"],
+                "(!cir.ptr<!cir.ptr<!rec_point>>) -> !cir.ptr<!rec_point>",
+            ),
+            get_member("locx", "p0", 0, "x"),
+            op(
+                "cir.store",
+                &[],
+                &["v3", "locx"],
+                "(!s32i, !cir.ptr<!s32i>) -> ()",
+            ),
+            const_op("v4", 4, "!s32i"),
+            op(
+                "cir.load",
+                &["p1"],
+                &["p"],
+                "(!cir.ptr<!cir.ptr<!rec_point>>) -> !cir.ptr<!rec_point>",
+            ),
+            get_member("locy", "p1", 1, "y"),
+            op(
+                "cir.store",
+                &[],
+                &["v4", "locy"],
+                "(!s32i, !cir.ptr<!s32i>) -> ()",
+            ),
+            op(
+                "cir.load",
+                &["p2"],
+                &["p"],
+                "(!cir.ptr<!cir.ptr<!rec_point>>) -> !cir.ptr<!rec_point>",
+            ),
+            get_member("locxr", "p2", 0, "x"),
+            op(
+                "cir.load",
+                &["rx"],
+                &["locxr"],
+                "(!cir.ptr<!s32i>) -> !s32i",
+            ),
+            op(
+                "cir.load",
+                &["p3"],
+                &["p"],
+                "(!cir.ptr<!cir.ptr<!rec_point>>) -> !cir.ptr<!rec_point>",
+            ),
+            get_member("locyr", "p3", 1, "y"),
+            op(
+                "cir.load",
+                &["ry"],
+                &["locyr"],
+                "(!cir.ptr<!s32i>) -> !s32i",
+            ),
+            op(
+                "cir.add",
+                &["sum"],
+                &["rx", "ry"],
+                "(!s32i, !s32i) -> !s32i",
+            ),
+            call_free("buf"),
+            op("cir.return", &[], &["sum"], "(!s32i) -> ()"),
+        ]
+    }
+
+    #[test]
+    fn struct_field_read_write_produces_expected_effects() {
+        let trace = interpret(&struct_field_fixture());
+        let alloc = AllocId(0);
+        assert_eq!(
+            trace.effects,
+            vec![
+                Effect::Alloc { alloc, size: 8 },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(3),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(4),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(3),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(4),
                 },
                 Effect::Exit(7),
             ]
