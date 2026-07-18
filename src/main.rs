@@ -161,26 +161,48 @@ fn run_effect_compare(check: impl FnOnce() -> Result<(), String>) -> Result<Stri
     result
 }
 
+fn extract_effects<T>(
+    mode: &str,
+    path: &Path,
+    side: &str,
+    extract: impl FnOnce() -> T,
+) -> Result<T, String> {
+    match catch_unwind(AssertUnwindSafe(extract)) {
+        Ok(value) => Ok(value),
+        Err(payload) => Err(format!(
+            "effect extraction failed\nmode: {mode}\nfixture: {}\nside: {side}\nreason: {}",
+            path.display(),
+            panic_payload_message(payload)
+        )),
+    }
+}
+
 fn compare_effects_cir_rust(path: &Path) -> Result<String, String> {
     run_effect_compare(|| {
+        let mode = "compare-effects-cir-rust";
         let (module, program) = lowered_program(path)?;
-        let cir_trace = effects::cir::interpret_module_main(&module);
-        let rust_trace = effects::rust_ast::interpret_program_main(&fixups::apply_with(
-            program,
-            &fixups::SkipSet::none(),
-        ));
+        let cir_trace = extract_effects(mode, path, "cir", || {
+            effects::cir::interpret_module_main(&module)
+        })?;
+        let fixed_program = fixups::apply_with(program, &fixups::SkipSet::none());
+        let rust_trace = extract_effects(mode, path, "fixuped rust_ast", || {
+            effects::rust_ast::interpret_program_main(&fixed_program)
+        })?;
         compare_traces("cir", "rust_ast", &cir_trace, &rust_trace)
     })
 }
 
 fn compare_effects_rust_rust(path: &Path) -> Result<String, String> {
     run_effect_compare(|| {
+        let mode = "compare-effects-rust-rust";
         let (_, program) = lowered_program(path)?;
-        let raw_trace = effects::rust_ast::interpret_program_main(&program);
-        let fixed_trace = effects::rust_ast::interpret_program_main(&fixups::apply_with(
-            program,
-            &fixups::SkipSet::none(),
-        ));
+        let raw_trace = extract_effects(mode, path, "raw rust_ast", || {
+            effects::rust_ast::interpret_program_main(&program)
+        })?;
+        let fixed_program = fixups::apply_with(program, &fixups::SkipSet::none());
+        let fixed_trace = extract_effects(mode, path, "fixuped rust_ast", || {
+            effects::rust_ast::interpret_program_main(&fixed_program)
+        })?;
         compare_traces("raw rust_ast", "fixuped rust_ast", &raw_trace, &fixed_trace)
     })
 }
@@ -783,4 +805,43 @@ fn emit_lowered_fixtures() -> Result<String, String> {
 fn lowered_rust(path: &Path) -> Result<String, String> {
     let (_, program) = lowered_program(path)?;
     Ok(program.emit())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cir_effect_extraction_failure_reports_mode_fixture_side_and_reason() {
+        let err = extract_effects(
+            "compare-effects-cir-rust",
+            Path::new("tests/fixtures/switch.c"),
+            "cir",
+            || panic!("effects::cir: unsupported op `cir.switch`"),
+        )
+        .expect_err("unsupported CIR effect extraction should fail");
+
+        assert!(err.contains("effect extraction failed"));
+        assert!(err.contains("mode: compare-effects-cir-rust"));
+        assert!(err.contains("fixture: tests/fixtures/switch.c"));
+        assert!(err.contains("side: cir"));
+        assert!(err.contains("reason: effects::cir: unsupported op `cir.switch`"));
+    }
+
+    #[test]
+    fn rust_effect_extraction_failure_reports_mode_fixture_side_and_reason() {
+        let err = extract_effects(
+            "compare-effects-rust-rust",
+            Path::new("tests/fixtures/memcpy.c"),
+            "raw rust_ast",
+            || panic!("effects::rust_ast: unsupported call target `memcpy`"),
+        )
+        .expect_err("unsupported Rust effect extraction should fail");
+
+        assert!(err.contains("effect extraction failed"));
+        assert!(err.contains("mode: compare-effects-rust-rust"));
+        assert!(err.contains("fixture: tests/fixtures/memcpy.c"));
+        assert!(err.contains("side: raw rust_ast"));
+        assert!(err.contains("reason: effects::rust_ast: unsupported call target `memcpy`"));
+    }
 }
