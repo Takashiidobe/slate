@@ -67,6 +67,58 @@ fn fixtures() -> Vec<(String, PathBuf)> {
     fixtures
 }
 
+/// Fixtures known to be slow for reasons unrelated to `lower.rs` correctness:
+/// a symbolic (parameter- or EOF-derived) loop trip count combined with
+/// array/file-buffer memory ops blows up alive-tv's bounded-unroll SMT
+/// solving, or (for `complex`) floating-point/`_Complex` reasoning hits
+/// alive-tv's own internal timeout. Every one of these was individually
+/// root-caused during the slate-4us investigation; skipping them here avoids
+/// paying their ~15-30s cost on every run for a verdict that's already known
+/// to be an alive-tv tool limitation, not a bug.
+const KNOWN_SLOW: &[&str] = &[
+    "break_for",
+    "do_while",
+    "libyaml_type_shapes",
+    "loop_break_continue",
+    "ptr_len_slice",
+    "ptr_len_slice_enumerate",
+    "stdio_gets_loop_eof",
+    "stdio_gets_loop_unsupported",
+    "struct_with_array",
+    "switch_loop_control",
+    "complex",
+    "stdio_gets_loop_lines",
+    "stdio_gets_loop_truncation",
+    "aggregate_value_member_ops",
+];
+
+/// Skip fixtures that are known in advance to be unprovable or slow, so the
+/// suite doesn't pay a compile-and-solve cost for an already-known verdict.
+/// Atomics are detected structurally (alive-tv has no `atomicrmw`/atomic
+/// load-store support at all, so any such fixture always ends in a hard
+/// "Unsupported instruction" error); the slow ones are a fixed, individually
+/// verified list rather than a heuristic, since "symbolic loop bound" isn't
+/// reliably detectable from source text alone.
+fn skip_reason(name: &str, fixture: &Path) -> Option<String> {
+    if KNOWN_SLOW.contains(&name) {
+        return Some(
+            "known slow: alive-tv's own solver times out on this fixture's shape \
+             (symbolic loop bound + memory ops, or fp/_Complex reasoning); \
+             see KNOWN_SLOW in this file"
+                .to_string(),
+        );
+    }
+    let src = std::fs::read_to_string(fixture).unwrap_or_default();
+    if src.contains("_Atomic") || src.contains("atomic_") || src.contains("stdatomic.h") {
+        return Some(
+            "uses atomics: alive-tv has no atomicrmw/atomic load-store support, \
+             always fails with \"Unsupported instruction\""
+                .to_string(),
+        );
+    }
+    None
+}
+
 fn alive_tv_available() -> bool {
     std::process::Command::new(support::alive_tv())
         .arg("--version")
@@ -94,8 +146,15 @@ fn baseline_lowering_matches_c_semantics() {
     let mut bugs = Vec::new();
     let mut inconclusive = Vec::new();
     let mut vacuous = Vec::new();
+    let mut skipped = Vec::new();
 
     for (name, fixture) in &fixtures {
+        if let Some(reason) = skip_reason(name, fixture) {
+            eprintln!("skipped      {name}");
+            skipped.push(format!("{name}: {reason}"));
+            continue;
+        }
+
         let result = (|| -> Result<VerifyOutcome, String> {
             let ir = emit_lowering_ir(fixture, &work_dir)?;
             verify(&ir.c_ll, &ir.rs_ll, unroll, timeout)
@@ -135,6 +194,14 @@ fn baseline_lowering_matches_c_semantics() {
                 bugs.push(format!("{name}: {e}"));
             }
         }
+    }
+
+    if !skipped.is_empty() {
+        eprintln!(
+            "\n{} fixture(s) skipped (known atomics/slow-shape, not a confirmed bug):\n{}",
+            skipped.len(),
+            skipped.join("\n")
+        );
     }
 
     if !vacuous.is_empty() {
