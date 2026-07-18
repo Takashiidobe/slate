@@ -31,6 +31,8 @@ struct Interp {
     heap: HashMap<Location, Value>,
     next_alloc: u32,
     trace: EffectTrace,
+    struct_allocs: HashMap<String, AllocId>,
+    struct_alloc_slot: HashMap<AllocId, usize>,
 }
 
 impl Interp {
@@ -270,22 +272,53 @@ impl Interp {
         Flow::Normal
     }
 
-    // Field byte offset is `index_attr * this field's own size`, correct as
-    // long as every field sharing an allocation has the same size (true of
-    // the fixtures this walker covers so far) — a full record layout (needed
-    // for heterogeneous field sizes) isn't retained past `parse-cir`.
+    // field byte offset = index_attr * this field's own size (assumes homogeneous field sizes)
     fn get_member(&mut self, op: &Op) -> Flow {
         let result = first_result(op);
-        let base = self.resolve_ref(&op.operands[0]);
+        let base_name = &op.operands[0];
         let index = attr_int(op, "index_attr").expect("cir.get_member: missing index_attr") as u64;
         let field_size =
             pointee_byte_size(result_type(op)).expect("cir.get_member: field pointee size");
+        let base = if self.locals.contains(base_name) {
+            self.struct_base(base_name, index, field_size)
+        } else {
+            self.resolve_ref(base_name)
+        };
         let loc = Location {
             alloc: base.alloc,
             byte_offset: base.byte_offset + index * field_size,
         };
         self.env.insert(result.to_string(), Value::Ref(loc));
         Flow::Normal
+    }
+
+    fn struct_base(&mut self, name: &str, index: u64, field_size: u64) -> Location {
+        let needed_size = (index + 1) * field_size;
+        let alloc = match self.struct_allocs.get(name) {
+            Some(&alloc) => {
+                let slot = self.struct_alloc_slot[&alloc];
+                if let Effect::Alloc { size, .. } = &mut self.trace.effects[slot] {
+                    *size = (*size).max(needed_size);
+                }
+                alloc
+            }
+            None => {
+                let alloc = AllocId(self.next_alloc);
+                self.next_alloc += 1;
+                self.struct_alloc_slot
+                    .insert(alloc, self.trace.effects.len());
+                self.trace.push(Effect::Alloc {
+                    alloc,
+                    size: needed_size,
+                });
+                self.struct_allocs.insert(name.to_string(), alloc);
+                alloc
+            }
+        };
+        Location {
+            alloc,
+            byte_offset: 0,
+        }
     }
 
     fn store(&mut self, op: &Op) -> Flow {

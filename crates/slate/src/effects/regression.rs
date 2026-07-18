@@ -70,3 +70,8 @@ fn idiomatized_printf_fixture_matches_cir_effects() {
 fn idiomatized_for_loop_fixture_matches_cir_effects() {
     assert_cir_and_rust_effects_match("tests/fixtures/effects_for_loop.c");
 }
+
+#[test]
+fn idiomatized_struct_field_fixture_matches_cir_effects() {
+    assert_cir_and_rust_effects_match("tests/fixtures/effects_struct_field.c");
+}
