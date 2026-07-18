@@ -12,6 +12,7 @@ mod preprocess;
 mod rust_ast;
 
 use std::collections::{BTreeMap, BTreeSet};
+use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
@@ -21,6 +22,12 @@ fn usage() -> ExitCode {
     eprintln!("  emit-fixtures  write translated test fixtures to tests/fixtures.generated/");
     eprintln!(
         "  emit-lowered-fixtures  write raw lowered test fixtures to tests/fixtures.lowered.generated/"
+    );
+    eprintln!(
+        "  compare-effects-cir-rust  <file.c>  compare C/CIR effects to fixuped Rust effects"
+    );
+    eprintln!(
+        "  compare-effects-rust-rust  <file.c>  compare raw lowered Rust effects to fixuped Rust effects"
     );
     eprintln!("  translate   C -> Rust");
     eprintln!("  translate-cfg   experimental multi-config C -> Rust");
@@ -41,6 +48,14 @@ fn main() -> ExitCode {
         },
         Some("emit-fixtures") => run(emit_fixtures()),
         Some("emit-lowered-fixtures") => run(emit_lowered_fixtures()),
+        Some("compare-effects-cir-rust") => match args.get(2) {
+            Some(path) => run(compare_effects_cir_rust(Path::new(path))),
+            None => usage(),
+        },
+        Some("compare-effects-rust-rust") => match args.get(2) {
+            Some(path) => run(compare_effects_rust_rust(Path::new(path))),
+            None => usage(),
+        },
         Some("translate") => match args.get(2) {
             Some(path) => run(translate(Path::new(path))),
             None => usage(),
@@ -89,14 +104,20 @@ fn emit_cir(path: &Path) -> Result<String, String> {
 
 /// The V0 spine: emit-cir -> parse-cir + load Clang AST -> lower -> print.
 fn translate(path: &Path) -> Result<String, String> {
+    let (_, program) = lowered_program(path)?;
+    if std::env::var("SLATE_RAW_LOWER").is_ok() {
+        return Ok(program.emit());
+    }
+    Ok(fixups::apply_with(program, &skip_set_from_env()?).emit())
+}
+
+fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), String> {
     let cir_text = cir::emit_generic(path)?;
     let module = cir::parse_module(&cir_text)?;
-
     let unit = c_ast::parse_file(path)?;
 
     let mut ctx = ctx::Ctx::default();
     let program = lower::lower(&module, &unit, &mut ctx);
-
     for d in &ctx.diagnostics.items {
         eprintln!("{:?}: {}", d.severity, d.message);
     }
@@ -104,10 +125,64 @@ fn translate(path: &Path) -> Result<String, String> {
         return Err("lowering failed".into());
     }
 
-    if std::env::var("SLATE_RAW_LOWER").is_ok() {
-        return Ok(program.emit());
+    Ok((module, program))
+}
+
+fn compare_traces(
+    left_name: &str,
+    right_name: &str,
+    left: &effects::EffectTrace,
+    right: &effects::EffectTrace,
+) -> Result<(), String> {
+    effects::interpreter::compare(left, right).map_err(|divergence| {
+        format!("{divergence}\n{left_name} trace: {left:#?}\n{right_name} trace: {right:#?}")
+    })
+}
+
+fn panic_payload_message(payload: Box<dyn std::any::Any + Send>) -> String {
+    if let Some(message) = payload.downcast_ref::<String>() {
+        return message.clone();
     }
-    Ok(fixups::apply_with(program, &skip_set_from_env()?).emit())
+    if let Some(message) = payload.downcast_ref::<&'static str>() {
+        return message.to_string();
+    }
+    "panic without string payload".to_string()
+}
+
+fn run_effect_compare(check: impl FnOnce() -> Result<(), String>) -> Result<String, String> {
+    let hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(|_| {}));
+    let result = match catch_unwind(AssertUnwindSafe(check)) {
+        Ok(Ok(())) => Ok("ok\n".to_string()),
+        Ok(Err(err)) => Err(err),
+        Err(payload) => Err(panic_payload_message(payload)),
+    };
+    std::panic::set_hook(hook);
+    result
+}
+
+fn compare_effects_cir_rust(path: &Path) -> Result<String, String> {
+    run_effect_compare(|| {
+        let (module, program) = lowered_program(path)?;
+        let cir_trace = effects::cir::interpret_module_main(&module);
+        let rust_trace = effects::rust_ast::interpret_program_main(&fixups::apply_with(
+            program,
+            &fixups::SkipSet::none(),
+        ));
+        compare_traces("cir", "rust_ast", &cir_trace, &rust_trace)
+    })
+}
+
+fn compare_effects_rust_rust(path: &Path) -> Result<String, String> {
+    run_effect_compare(|| {
+        let (_, program) = lowered_program(path)?;
+        let raw_trace = effects::rust_ast::interpret_program_main(&program);
+        let fixed_trace = effects::rust_ast::interpret_program_main(&fixups::apply_with(
+            program,
+            &fixups::SkipSet::none(),
+        ));
+        compare_traces("raw rust_ast", "fixuped rust_ast", &raw_trace, &fixed_trace)
+    })
 }
 
 /// `SLATE_SKIP_PASS=<name>` disables one named fixup pass, for
@@ -706,19 +781,6 @@ fn emit_lowered_fixtures() -> Result<String, String> {
 }
 
 fn lowered_rust(path: &Path) -> Result<String, String> {
-    let cir_text = cir::emit_generic(path)?;
-    let module = cir::parse_module(&cir_text)?;
-    let unit = c_ast::parse_file(path)?;
-
-    let mut ctx = ctx::Ctx::default();
-    let program = lower::lower(&module, &unit, &mut ctx);
-
-    for d in &ctx.diagnostics.items {
-        eprintln!("{:?}: {}", d.severity, d.message);
-    }
-    if ctx.diagnostics.has_errors() {
-        return Err("lowering failed".into());
-    }
-
+    let (_, program) = lowered_program(path)?;
     Ok(program.emit())
 }
