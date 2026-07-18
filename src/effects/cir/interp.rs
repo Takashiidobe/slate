@@ -5,7 +5,8 @@ use crate::rust_ast::AtomicOrdering;
 
 use super::support::*;
 use crate::effects::{
-    AllocId, AtomicId, Effect, EffectTrace, FileId, IntWidth, Location, ParamSeed, Value,
+    AllocId, AtomicId, CallSummary, Effect, EffectTrace, FileId, IntWidth, Location, ParamSeed,
+    Value, call_summary,
 };
 
 pub fn interpret(ops: &[Op]) -> EffectTrace {
@@ -230,10 +231,16 @@ impl Interp {
                 if let Some(bytes) = self.c_strings.get(&op.operands[0]).cloned() {
                     self.c_strings.insert(result.to_string(), bytes);
                 }
-                let value = if result_type(op).is_some_and(|ty| ty.trim() == "!cir.bool") {
+                let value = if self.locals.contains(&op.operands[0])
+                    && result_type(op).is_some_and(|ty| ty.trim().starts_with("!cir.ptr<"))
+                    && !matches!(self.env.get(&op.operands[0]), Some(Value::Ref(_)))
+                {
+                    Value::Ref(self.ensure_local_scalar_address(&op.operands[0], result_type(op)))
+                } else if result_type(op).is_some_and(|ty| ty.trim() == "!cir.bool") {
                     match self.resolve(&op.operands[0]) {
                         Value::Int { value, .. } => Value::Bool(value != 0),
                         Value::Bool(value) => Value::Bool(value),
+                        Value::Ref(_) => Value::Bool(true),
                         Value::File(_) => Value::Bool(true),
                         Value::Null => Value::Bool(false),
                         other => panic!("effects::cir: cannot cast {other:?} to bool"),
@@ -413,138 +420,147 @@ impl Interp {
         let callee = attr_str(op, "callee")
             .map(|s| s.trim_start_matches('@'))
             .unwrap_or_default();
-        match callee {
-            "malloc" => {
-                let (size, ..) = self.resolve_int(&op.operands[0]);
-                let alloc = AllocId(self.next_alloc);
-                self.next_alloc += 1;
-                self.trace.push(Effect::Alloc {
-                    alloc,
-                    size: size as u64,
-                });
-                let result = first_result(op);
-                self.env.insert(
-                    result.to_string(),
-                    Value::Ref(Location {
-                        alloc,
-                        byte_offset: 0,
-                    }),
-                );
-            }
-            "free" => {
-                let base = self.resolve_ref(&op.operands[0]);
-                if !self.freed.insert(base.alloc) {
-                    panic!("effects::cir: double free of {:?}", base.alloc);
-                }
-                self.trace.push(Effect::Dealloc { alloc: base.alloc });
-            }
-            "strlen" => {
-                let base = self.resolve_ref(&op.operands[0]);
-                let mut len = 0u64;
-                loop {
-                    let loc = Location {
-                        alloc: base.alloc,
-                        byte_offset: base.byte_offset + len,
-                    };
-                    match self.heap.get(&loc) {
-                        Some(Value::Int { value: 0, .. }) => break,
-                        Some(_) => len += 1,
-                        None => panic!("effects::cir: strlen scanned past never-written {loc:?}"),
-                    }
-                }
-                self.trace.push(Effect::Call {
-                    name: "strlen".to_string(),
-                    args: vec![],
-                });
-                let result = first_result(op);
-                let (signed, bits) = result_type(op)
-                    .and_then(int_type_width_signed)
-                    .unwrap_or((false, 64));
-                self.env.insert(
-                    result.to_string(),
-                    Value::Int {
-                        width: int_width(bits),
-                        signed,
-                        value: len as i128,
-                    },
-                );
-            }
-            "printf" => {
-                let args = op.operands[1..]
-                    .iter()
-                    .map(|name| self.resolve(name))
-                    .collect();
-                self.trace.push(Effect::Call {
-                    name: "printf".to_string(),
-                    args,
-                });
-                if let Some(result) = op.results.first() {
-                    self.env.insert(
-                        result.clone(),
-                        Value::Int {
-                            width: IntWidth::W32,
-                            signed: true,
-                            value: 0,
-                        },
-                    );
-                }
-            }
-            "fopen" => {
-                let path = self.c_string_operand(&op.operands[0]);
-                let mode = self.c_string_operand(&op.operands[1]);
-                let file = FileId(self.next_file);
-                self.next_file += 1;
-                self.trace.push(Effect::FileOpen { file, path, mode });
-                let result = first_result(op);
-                self.env.insert(result.to_string(), Value::File(file));
-            }
-            "fputs" => {
-                let bytes = self.c_string_operand_bytes(&op.operands[0]);
-                let file = self.resolve_file(&op.operands[1]);
-                self.trace.push(Effect::FileWrite { file, bytes });
-                if let Some(result) = op.results.first() {
-                    self.env.insert(
-                        result.clone(),
-                        Value::Int {
-                            width: IntWidth::W32,
-                            signed: true,
-                            value: 0,
-                        },
-                    );
-                }
-            }
-            "fclose" => {
-                let file = self.resolve_file(&op.operands[0]);
-                self.trace.push(Effect::FileClose { file });
-                if let Some(result) = op.results.first() {
-                    self.env.insert(
-                        result.clone(),
-                        Value::Int {
-                            width: IntWidth::W32,
-                            signed: true,
-                            value: 0,
-                        },
-                    );
-                }
-            }
-            "qsort" => {
-                self.qsort(op);
-            }
-            other if self.funcs.contains_key(other) => {
-                let args = op
-                    .operands
-                    .iter()
-                    .map(|operand| self.resolve(operand))
-                    .collect::<Vec<_>>();
-                let value = self.call_user(other, &args);
-                let result = first_result(op);
-                if !result.is_empty() {
-                    self.env.insert(result.to_string(), value);
-                }
-            }
-            other => panic!("effects::cir: unsupported call target `{other}`"),
+        if let Some(summary) = call_summary(callee) {
+            self.call_summary(op, summary);
+        } else if self.funcs.contains_key(callee) {
+            self.call_user_target(op, callee);
+        } else {
+            panic!("effects::cir: unsupported call target `{callee}`");
         }
         Flow::Normal
+    }
+
+    fn call_summary(&mut self, op: &Op, summary: CallSummary) {
+        match summary {
+            CallSummary::Malloc => self.call_malloc(op),
+            CallSummary::Free => self.call_free(op),
+            CallSummary::Strlen => self.call_strlen(op),
+            CallSummary::Printf => self.call_printf(op),
+            CallSummary::Fopen => self.call_fopen(op),
+            CallSummary::Fputs => self.call_fputs(op),
+            CallSummary::Fclose => self.call_fclose(op),
+            CallSummary::Qsort => self.qsort(op),
+            CallSummary::Bsearch => self.bsearch(op),
+        }
+    }
+
+    fn call_malloc(&mut self, op: &Op) {
+        let (size, ..) = self.resolve_int(&op.operands[0]);
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: size as u64,
+        });
+        let result = first_result(op);
+        self.env.insert(
+            result.to_string(),
+            Value::Ref(Location {
+                alloc,
+                byte_offset: 0,
+            }),
+        );
+    }
+
+    fn call_free(&mut self, op: &Op) {
+        let base = self.resolve_ref(&op.operands[0]);
+        if !self.freed.insert(base.alloc) {
+            panic!("effects::cir: double free of {:?}", base.alloc);
+        }
+        self.trace.push(Effect::Dealloc { alloc: base.alloc });
+    }
+
+    fn call_strlen(&mut self, op: &Op) {
+        let base = self.resolve_ref(&op.operands[0]);
+        let mut len = 0u64;
+        loop {
+            let loc = Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + len,
+            };
+            match self.heap.get(&loc) {
+                Some(Value::Int { value: 0, .. }) => break,
+                Some(_) => len += 1,
+                None => panic!("effects::cir: strlen scanned past never-written {loc:?}"),
+            }
+        }
+        self.trace.push(Effect::Call {
+            name: "strlen".to_string(),
+            args: vec![],
+        });
+        let result = first_result(op);
+        let (signed, bits) = result_type(op)
+            .and_then(int_type_width_signed)
+            .unwrap_or((false, 64));
+        self.env.insert(
+            result.to_string(),
+            Value::Int {
+                width: int_width(bits),
+                signed,
+                value: len as i128,
+            },
+        );
+    }
+
+    fn call_printf(&mut self, op: &Op) {
+        let args = op.operands[1..]
+            .iter()
+            .map(|name| self.resolve(name))
+            .collect();
+        self.trace.push(Effect::Call {
+            name: "printf".to_string(),
+            args,
+        });
+        self.store_i32_result(op, 0);
+    }
+
+    fn call_fopen(&mut self, op: &Op) {
+        let path = self.c_string_operand(&op.operands[0]);
+        let mode = self.c_string_operand(&op.operands[1]);
+        let file = FileId(self.next_file);
+        self.next_file += 1;
+        self.trace.push(Effect::FileOpen { file, path, mode });
+        let result = first_result(op);
+        self.env.insert(result.to_string(), Value::File(file));
+    }
+
+    fn call_fputs(&mut self, op: &Op) {
+        let bytes = self.c_string_operand_bytes(&op.operands[0]);
+        let file = self.resolve_file(&op.operands[1]);
+        self.trace.push(Effect::FileWrite { file, bytes });
+        self.store_i32_result(op, 0);
+    }
+
+    fn call_fclose(&mut self, op: &Op) {
+        let file = self.resolve_file(&op.operands[0]);
+        self.trace.push(Effect::FileClose { file });
+        self.store_i32_result(op, 0);
+    }
+
+    fn store_i32_result(&mut self, op: &Op, value: i32) {
+        if let Some(result) = op.results.first() {
+            self.env.insert(
+                result.clone(),
+                Value::Int {
+                    width: IntWidth::W32,
+                    signed: true,
+                    value: value as i128,
+                },
+            );
+        }
+    }
+
+    fn call_user_target(&mut self, op: &Op, name: &str) {
+        let args = op
+            .operands
+            .iter()
+            .map(|operand| self.resolve(operand))
+            .collect::<Vec<_>>();
+        let value = self.call_user(name, &args);
+        let result = first_result(op);
+        if !result.is_empty() {
+            self.env.insert(result.to_string(), value);
+        }
     }
 
     fn call_user(&mut self, name: &str, args: &[Value]) -> Value {
@@ -612,6 +628,34 @@ impl Interp {
             .unwrap_or_else(|| panic!("effects::cir: qsort comparator is unknown"))
             .clone();
         self.sort_by_callback(base, len, elem_size, &comparator);
+    }
+
+    fn bsearch(&mut self, op: &Op) {
+        let [key, base, count, size, comparator] = op.operands.as_slice() else {
+            panic!("effects::cir: bsearch expects five arguments");
+        };
+        let key = self.resolve_ref(key);
+        let base = self.resolve_ref(base);
+        let len = value_as_u64(self.resolve(count));
+        let elem_size = value_as_u64(self.resolve(size));
+        let comparator = self
+            .function_pointers
+            .get(comparator)
+            .unwrap_or_else(|| panic!("effects::cir: bsearch comparator is unknown"))
+            .clone();
+        let result = first_result(op).to_string();
+        for index in 0..len {
+            let elem = Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + index * elem_size,
+            };
+            let cmp = self.call_user(&comparator, &[Value::Ref(key), Value::Ref(elem)]);
+            if value_as_i128(cmp) == 0 {
+                self.env.insert(result, Value::Ref(elem));
+                return;
+            }
+        }
+        self.env.insert(result, Value::Null);
     }
 
     fn sort_by_callback(&mut self, base: Location, len: u64, elem_size: u64, comparator: &str) {
@@ -800,6 +844,31 @@ impl Interp {
         );
         self.trace.push(Effect::Alloc { alloc, size });
         alloc
+    }
+
+    fn ensure_local_scalar_address(&mut self, name: &str, ty: Option<&str>) -> Location {
+        let value = *self
+            .env
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::cir: address of uninitialized local `{name}`"));
+        let alloc = match self.local_allocs.get(name).copied() {
+            Some(alloc) => alloc,
+            None => {
+                let alloc = AllocId(self.next_alloc);
+                self.next_alloc += 1;
+                let size = pointee_byte_size(ty).unwrap_or_else(|| int_byte_size(&value));
+                self.local_allocs.insert(name.to_string(), alloc);
+                self.trace.push(Effect::Alloc { alloc, size });
+                alloc
+            }
+        };
+        let loc = Location {
+            alloc,
+            byte_offset: 0,
+        };
+        self.heap.insert(loc, value);
+        self.trace.push(Effect::Write { loc, value });
+        loc
     }
 
     fn load(&mut self, op: &Op) -> Flow {

@@ -37,6 +37,34 @@ pub mod cir;
 pub mod interpreter;
 pub mod rust_ast;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum CallSummary {
+    Malloc,
+    Free,
+    Strlen,
+    Printf,
+    Fopen,
+    Fputs,
+    Fclose,
+    Qsort,
+    Bsearch,
+}
+
+pub(crate) fn call_summary(name: &str) -> Option<CallSummary> {
+    match name {
+        "malloc" => Some(CallSummary::Malloc),
+        "free" => Some(CallSummary::Free),
+        "strlen" => Some(CallSummary::Strlen),
+        "printf" => Some(CallSummary::Printf),
+        "fopen" => Some(CallSummary::Fopen),
+        "fputs" => Some(CallSummary::Fputs),
+        "fclose" => Some(CallSummary::Fclose),
+        "qsort" => Some(CallSummary::Qsort),
+        "bsearch" => Some(CallSummary::Bsearch),
+        _ => None,
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct AllocId(pub u32);
 
@@ -278,5 +306,14 @@ mod tests {
             value: 2,
         }));
         assert_eq!(some_index, some_index);
+    }
+
+    #[test]
+    fn external_call_summaries_are_shared_by_frontends() {
+        assert_eq!(call_summary("malloc"), Some(CallSummary::Malloc));
+        assert_eq!(call_summary("printf"), Some(CallSummary::Printf));
+        assert_eq!(call_summary("qsort"), Some(CallSummary::Qsort));
+        assert_eq!(call_summary("bsearch"), Some(CallSummary::Bsearch));
+        assert_eq!(call_summary("user_function"), None);
     }
 }
