@@ -41,8 +41,11 @@ enum Flow {
 #[derive(Default)]
 struct Interp {
     env: HashMap<String, Value>,
+    arrays: HashMap<String, Vec<Value>>,
     locals: HashSet<String>,
+    local_allocs: HashMap<String, AllocId>,
     globals: HashMap<String, Location>,
+    const_arrays: HashMap<String, Vec<Value>>,
     funcs: HashMap<String, Op>,
     heap: HashMap<Location, Value>,
     next_alloc: u32,
@@ -74,12 +77,15 @@ impl Interp {
     }
 
     fn seed_global(&mut self, op: &Op) {
-        if attr_str(op, "constant") != Some("false") {
-            return;
-        }
         let Some(name) = attr_str(op, "sym_name") else {
             return;
         };
+        if attr_str(op, "constant") != Some("false") {
+            if let Some(values) = global_const_array_values(op) {
+                self.const_arrays.insert(name.to_string(), values);
+            }
+            return;
+        }
         let Some(ty) = attr_str(op, "sym_type") else {
             return;
         };
@@ -170,18 +176,20 @@ impl Interp {
                     .unwrap_or_default()
                     .trim_start_matches('@')
                     .trim_matches('"');
+                if let Some(values) = self.const_arrays.get(name) {
+                    self.arrays.insert(result.to_string(), values.clone());
+                }
                 let value = self
                     .globals
                     .get(name)
-                    .map(|loc| Value::Ref(*loc))
-                    .unwrap_or(Value::Null);
+                    .map_or(Value::Null, |loc| Value::Ref(*loc));
                 self.env.insert(result.to_string(), value);
                 Flow::Normal
             }
             CirOpKind::Const => {
                 let result = first_result(op);
                 let raw = attr_str(op, "value").unwrap_or_default();
-                let value = int_const_value(raw, result_type(op));
+                let value = const_value(raw, result_type(op));
                 self.env.insert(result.to_string(), value);
                 Flow::Normal
             }
@@ -207,6 +215,21 @@ impl Interp {
                         Value::Bool(value) => Value::Bool(value),
                         other => panic!("effects::cir: cannot cast {other:?} to bool"),
                     }
+                } else if let Some((signed, bits)) = result_type(op).and_then(int_type_width_signed)
+                {
+                    match self.resolve(&op.operands[0]) {
+                        Value::Bool(value) => Value::Int {
+                            width: int_width(bits),
+                            signed,
+                            value: i128::from(value),
+                        },
+                        Value::Int { value, .. } => Value::Int {
+                            width: int_width(bits),
+                            signed,
+                            value,
+                        },
+                        other => other,
+                    }
                 } else {
                     self.resolve(&op.operands[0])
                 };
@@ -215,7 +238,10 @@ impl Interp {
             }
             CirOpKind::Call => self.call(op),
             CirOpKind::PtrStride => self.ptr_stride(op),
+            CirOpKind::PtrDiff => self.ptr_diff(op),
             CirOpKind::GetMember => self.get_member(op),
+            CirOpKind::Copy => self.copy(op),
+            CirOpKind::LibcMemchr => self.libc_memchr(op),
             CirOpKind::Store => self.store(op),
             CirOpKind::Load => self.load(op),
             CirOpKind::If => self.if_(op),
@@ -304,15 +330,39 @@ impl Interp {
 
     fn cmp(&mut self, op: &Op) -> Flow {
         let result = first_result(op);
-        let (a, ..) = self.resolve_int(&op.operands[0]);
-        let (b, ..) = self.resolve_int(&op.operands[1]);
-        let value = match attr_int(op, "kind") {
-            Some(0) => a < b,
-            Some(1) => a <= b,
-            Some(2) => a > b,
-            Some(3) => a >= b,
-            Some(4) => a == b,
-            Some(5) => a != b,
+        let lhs = self.resolve(&op.operands[0]);
+        let rhs = self.resolve(&op.operands[1]);
+        let value = match (lhs, rhs) {
+            (Value::Int { value: a, .. }, Value::Int { value: b, .. }) => {
+                match attr_int(op, "kind") {
+                    Some(0) => a < b,
+                    Some(1) => a <= b,
+                    Some(2) => a > b,
+                    Some(3) => a >= b,
+                    Some(4) => a == b,
+                    Some(5) => a != b,
+                    other => panic!("effects::cir: cir.cmp has unexpected `kind` {other:?}"),
+                }
+            }
+            (Value::Ref(a), Value::Ref(b)) => match attr_int(op, "kind") {
+                Some(4) => a == b,
+                Some(5) => a != b,
+                other => panic!("effects::cir: pointer cmp has unexpected `kind` {other:?}"),
+            },
+            (Value::Null, Value::Null) => match attr_int(op, "kind") {
+                Some(4) => true,
+                Some(5) => false,
+                other => panic!("effects::cir: null cmp has unexpected `kind` {other:?}"),
+            },
+            (Value::Ref(_), Value::Null) | (Value::Null, Value::Ref(_)) => {
+                match attr_int(op, "kind") {
+                    Some(4) => false,
+                    Some(5) => true,
+                    other => {
+                        panic!("effects::cir: pointer/null cmp has unexpected `kind` {other:?}")
+                    }
+                }
+            }
             other => panic!("effects::cir: cir.cmp has unexpected `kind` {other:?}"),
         };
         self.env.insert(result.to_string(), Value::Bool(value));
@@ -435,6 +485,27 @@ impl Interp {
         Flow::Normal
     }
 
+    fn ptr_diff(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let lhs = self.resolve_ref(&op.operands[0]);
+        let rhs = self.resolve_ref(&op.operands[1]);
+        if lhs.alloc != rhs.alloc {
+            panic!("effects::cir: ptr_diff across different allocations");
+        }
+        let elem_size = pointee_byte_size(result_type_for_operand(op.ty.as_deref(), 0))
+            .expect("ptr_diff pointee size");
+        let value = ((lhs.byte_offset as i128) - (rhs.byte_offset as i128)) / elem_size as i128;
+        self.env.insert(
+            result.to_string(),
+            Value::Int {
+                width: IntWidth::W64,
+                signed: true,
+                value,
+            },
+        );
+        Flow::Normal
+    }
+
     // field byte offset = index_attr * this field's own size (assumes homogeneous field sizes)
     fn get_member(&mut self, op: &Op) -> Flow {
         let result = first_result(op);
@@ -498,6 +569,72 @@ impl Interp {
             self.trace.push(Effect::Write { loc, value });
         }
         Flow::Normal
+    }
+
+    fn copy(&mut self, op: &Op) -> Flow {
+        let dst = &op.operands[0];
+        let src = &op.operands[1];
+        let values = self
+            .arrays
+            .get(src)
+            .cloned()
+            .expect("effects::cir: copy source array is unknown");
+        let alloc = self.ensure_local_array(dst, &values);
+        let mut offset = 0;
+        for value in &values {
+            let loc = Location {
+                alloc,
+                byte_offset: offset,
+            };
+            self.heap.insert(loc, *value);
+            self.trace.push(Effect::Write { loc, value: *value });
+            offset += int_byte_size(value);
+        }
+        self.arrays.insert(dst.to_string(), values);
+        Flow::Normal
+    }
+
+    fn libc_memchr(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let base = self.resolve_ref(&op.operands[0]);
+        let (needle, ..) = self.resolve_int(&op.operands[1]);
+        let (len, ..) = self.resolve_int(&op.operands[2]);
+        for index in 0..len as u64 {
+            let loc = Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + index,
+            };
+            let value = *self
+                .heap
+                .get(&loc)
+                .unwrap_or_else(|| panic!("effects::cir: memchr read from never-written {loc:?}"));
+            self.trace.push(Effect::Read { loc, value });
+            if value_as_u8(value) == needle as u8 {
+                self.env.insert(result.to_string(), Value::Ref(loc));
+                return Flow::Normal;
+            }
+        }
+        self.env.insert(result.to_string(), Value::Null);
+        Flow::Normal
+    }
+
+    fn ensure_local_array(&mut self, name: &str, values: &[Value]) -> AllocId {
+        if let Some(&alloc) = self.local_allocs.get(name) {
+            return alloc;
+        }
+        let size = values.iter().map(int_byte_size).sum();
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.local_allocs.insert(name.to_string(), alloc);
+        self.env.insert(
+            name.to_string(),
+            Value::Ref(Location {
+                alloc,
+                byte_offset: 0,
+            }),
+        );
+        self.trace.push(Effect::Alloc { alloc, size });
+        alloc
     }
 
     fn load(&mut self, op: &Op) -> Flow {
@@ -610,6 +747,12 @@ fn result_type(op: &Op) -> Option<&str> {
     Some(ty[idx + 2..].trim())
 }
 
+fn result_type_for_operand(ty: Option<&str>, operand: usize) -> Option<&str> {
+    let ty = ty?;
+    let params = ty.strip_prefix('(')?.split(") -> ").next()?;
+    split_top_level(params, ',').get(operand).copied()
+}
+
 fn int_type_width_signed(ty: &str) -> Option<(bool, u32)> {
     let rest = ty.trim().strip_prefix('!')?;
     let signed = match rest.as_bytes().first()? {
@@ -632,6 +775,13 @@ fn int_width(bits: u32) -> IntWidth {
     }
 }
 
+fn const_value(raw: &str, ty: Option<&str>) -> Value {
+    if raw.contains("#cir.ptr<null>") {
+        return Value::Null;
+    }
+    int_const_value(raw, ty)
+}
+
 fn int_const_value(raw: &str, ty: Option<&str>) -> Value {
     let start = raw
         .find("#cir.int<")
@@ -647,6 +797,89 @@ fn int_const_value(raw: &str, ty: Option<&str>) -> Value {
     }
 }
 
+fn global_const_array_values(op: &Op) -> Option<Vec<Value>> {
+    let raw = attr_str(op, "initial_value")?;
+    let ty = attr_str(op, "sym_type")?;
+    let (elem_ty, len) = cir_array_ty(ty)?;
+    if let Some(bytes) = parse_cir_const_string_array(raw) {
+        let (signed, bits) = int_type_width_signed(elem_ty)?;
+        return Some(
+            bytes
+                .into_iter()
+                .take(len)
+                .map(|byte| Value::Int {
+                    width: int_width(bits),
+                    signed,
+                    value: byte as i128,
+                })
+                .collect(),
+        );
+    }
+    parse_cir_const_numeric_array(raw, elem_ty)
+}
+
+fn parse_cir_const_string_array(raw: &str) -> Option<Vec<u8>> {
+    let start = raw.find("#cir.const_array<\"")? + "#cir.const_array<\"".len();
+    let rest = &raw[start..];
+    let end = rest.find('"')?;
+    let mut bytes = decode_cir_string(&rest[..end]);
+    if raw.contains("trailing_zeros") {
+        bytes.push(0);
+    }
+    Some(bytes)
+}
+
+fn parse_cir_const_numeric_array(raw: &str, elem_ty: &str) -> Option<Vec<Value>> {
+    let start = raw.find("#cir.const_array<[")? + "#cir.const_array<[".len();
+    let rest = &raw[start..];
+    let end = rest.find("]>")?;
+    let (signed, bits) = int_type_width_signed(elem_ty)?;
+    rest[..end]
+        .split("#cir.int<")
+        .skip(1)
+        .map(|part| {
+            let end = part.find('>')?;
+            let value = part[..end].parse::<i128>().ok()?;
+            Some(Value::Int {
+                width: int_width(bits),
+                signed,
+                value,
+            })
+        })
+        .collect::<Option<Vec<_>>>()
+}
+
+fn decode_cir_string(s: &str) -> Vec<u8> {
+    let mut bytes = Vec::new();
+    let mut chars = s.chars().peekable();
+    while let Some(ch) = chars.next() {
+        if ch == '\\' {
+            let Some(a) = chars.next() else {
+                break;
+            };
+            let Some(b) = chars.next() else {
+                bytes.push(a as u8);
+                break;
+            };
+            if let (Some(hi), Some(lo)) = (a.to_digit(16), b.to_digit(16)) {
+                bytes.push((hi * 16 + lo) as u8);
+            } else {
+                bytes.push(a as u8);
+                bytes.push(b as u8);
+            }
+        } else {
+            bytes.push(ch as u8);
+        }
+    }
+    bytes
+}
+
+fn cir_array_ty(ty: &str) -> Option<(&str, usize)> {
+    let inner = ty.trim().strip_prefix("!cir.array<")?.strip_suffix('>')?;
+    let (elem, len) = inner.rsplit_once(" x ")?;
+    Some((elem.trim(), len.trim().parse().ok()?))
+}
+
 fn int_byte_size(value: &Value) -> u64 {
     match value {
         Value::Int { width, .. } => match width {
@@ -660,6 +893,13 @@ fn int_byte_size(value: &Value) -> u64 {
     }
 }
 
+fn value_as_u8(value: Value) -> u8 {
+    match value {
+        Value::Int { value, .. } => value as u8,
+        other => panic!("effects::cir: expected byte value, found {other:?}"),
+    }
+}
+
 fn pointee_byte_size(ptr_ty: Option<&str>) -> Option<u64> {
     let inner = ptr_ty?
         .trim()
@@ -667,6 +907,25 @@ fn pointee_byte_size(ptr_ty: Option<&str>) -> Option<u64> {
         .strip_suffix('>')?;
     let (_, bits) = int_type_width_signed(inner)?;
     Some((bits / 8) as u64)
+}
+
+fn split_top_level(s: &str, sep: char) -> Vec<&str> {
+    let mut out = Vec::new();
+    let mut start = 0usize;
+    let mut angle = 0usize;
+    for (idx, ch) in s.char_indices() {
+        match ch {
+            '<' => angle += 1,
+            '>' => angle = angle.saturating_sub(1),
+            ch if ch == sep && angle == 0 => {
+                out.push(s[start..idx].trim());
+                start = idx + ch.len_utf8();
+            }
+            _ => {}
+        }
+    }
+    out.push(s[start..].trim());
+    out
 }
 
 #[cfg(test)]
