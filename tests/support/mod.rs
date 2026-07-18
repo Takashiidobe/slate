@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+pub mod alive;
 pub mod cgen;
 
 use std::collections::BTreeMap;
