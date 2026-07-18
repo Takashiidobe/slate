@@ -66,6 +66,12 @@ semantics, or produces different output from the C program.
    cargo run -- emit-fixtures
    ```
 
+10. Also run the alive-tv suite, since this path edits `src/lower.rs`:
+
+    ```bash
+    cargo nextest r --release --test alive_regression -E 'test(baseline_lowering_matches_c_semantics)'
+    ```
+
 The baseline feature is done when the fixture passes differential testing and
 the generated Rust preserves the relevant C semantics.
 
