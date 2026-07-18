@@ -19,6 +19,20 @@ pub(super) fn is_path(expr: &Expr, segments: &[&str]) -> bool {
     }
 }
 
+pub(super) fn path_name(expr: &Expr) -> Option<String> {
+    match expr {
+        Expr::Path(Path { segments }) => Some(
+            segments
+                .iter()
+                .map(|segment| segment.as_str())
+                .collect::<Vec<_>>()
+                .join("::"),
+        ),
+        Expr::Var(ident) => Some(ident.as_str().to_string()),
+        _ => None,
+    }
+}
+
 pub(super) fn recv_name(expr: &Expr) -> &str {
     match expr {
         Expr::Var(ident) => ident.as_str(),
