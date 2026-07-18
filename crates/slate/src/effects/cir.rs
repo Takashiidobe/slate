@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::cir::ir::{Attr, Op, Region};
+use crate::cir::ir::{Attr, CirOpKind, Op, Region};
 
 use super::{AllocId, Effect, EffectTrace, IntWidth, Location, Value};
 
@@ -54,45 +54,45 @@ impl Interp {
     }
 
     fn step(&mut self, op: &Op) -> Flow {
-        match op.name.as_str() {
-            "cir.alloca" => {
+        match op.kind() {
+            CirOpKind::Alloca => {
                 let result = first_result(op);
                 self.locals.insert(result.to_string());
                 Flow::Normal
             }
-            "cir.get_global" => Flow::Normal,
-            "cir.const" => {
+            CirOpKind::GetGlobal => Flow::Normal,
+            CirOpKind::Const => {
                 let result = first_result(op);
                 let raw = attr_str(op, "value").unwrap_or_default();
                 let value = int_const_value(raw, result_type(op));
                 self.env.insert(result.to_string(), value);
                 Flow::Normal
             }
-            "cir.mul" => self.binop(op, i128::wrapping_mul),
-            "cir.add" => self.binop(op, i128::wrapping_add),
-            "cir.sub" => self.binop(op, i128::wrapping_sub),
-            "cir.div" => self.binop(op, i128::wrapping_div),
-            "cir.rem" => self.binop(op, i128::wrapping_rem),
-            "cir.and" => self.binop(op, |a, b| a & b),
-            "cir.or" => self.binop(op, |a, b| a | b),
-            "cir.xor" => self.binop(op, |a, b| a ^ b),
-            "cir.shift" => self.shift(op),
-            "cir.not" => self.unary(op, |a| !a),
-            "cir.minus" => self.unary(op, i128::wrapping_neg),
-            "cir.cmp" => self.cmp(op),
-            "cir.cast" => {
+            CirOpKind::Mul => self.binop(op, i128::wrapping_mul),
+            CirOpKind::Add => self.binop(op, i128::wrapping_add),
+            CirOpKind::Sub => self.binop(op, i128::wrapping_sub),
+            CirOpKind::Div => self.binop(op, i128::wrapping_div),
+            CirOpKind::Rem => self.binop(op, i128::wrapping_rem),
+            CirOpKind::And => self.binop(op, |a, b| a & b),
+            CirOpKind::Or => self.binop(op, |a, b| a | b),
+            CirOpKind::Xor => self.binop(op, |a, b| a ^ b),
+            CirOpKind::Shift => self.shift(op),
+            CirOpKind::Not => self.unary(op, |a| !a),
+            CirOpKind::Minus => self.unary(op, i128::wrapping_neg),
+            CirOpKind::Cmp => self.cmp(op),
+            CirOpKind::Cast => {
                 let result = first_result(op);
                 let value = self.resolve(&op.operands[0]);
                 self.env.insert(result.to_string(), value);
                 Flow::Normal
             }
-            "cir.call" => self.call(op),
-            "cir.ptr_stride" => self.ptr_stride(op),
-            "cir.store" => self.store(op),
-            "cir.load" => self.load(op),
-            "cir.if" => self.if_(op),
-            "cir.for" => self.for_(op),
-            "cir.return" => {
+            CirOpKind::Call => self.call(op),
+            CirOpKind::PtrStride => self.ptr_stride(op),
+            CirOpKind::Store => self.store(op),
+            CirOpKind::Load => self.load(op),
+            CirOpKind::If => self.if_(op),
+            CirOpKind::For => self.for_(op),
+            CirOpKind::Return => {
                 let code = op
                     .operands
                     .first()
@@ -107,7 +107,7 @@ impl Interp {
                 self.trace.push(Effect::Exit(code));
                 Flow::Return
             }
-            other => panic!("effects::cir: unsupported op `{other}`"),
+            _ => panic!("effects::cir: unsupported op `{}`", op.name),
         }
     }
 
@@ -269,7 +269,7 @@ impl Interp {
     fn eval_condition_region(&mut self, region: &Region) -> bool {
         for block in &region.blocks {
             for op in &block.ops {
-                if op.name == "cir.condition" || op.name == "cir.yield" {
+                if matches!(op.kind(), CirOpKind::Condition | CirOpKind::Yield) {
                     return self.resolve_bool(&op.operands[0]);
                 }
                 self.step(op);
