@@ -19,6 +19,21 @@ pub enum Pass {
     RangeLoop,
 }
 
+impl Pass {
+    pub fn name(self) -> &'static str {
+        match self {
+            Pass::RangeLoop => "range_loop",
+        }
+    }
+
+    pub fn parse(name: &str) -> Option<Self> {
+        match name {
+            "range_loop" => Some(Pass::RangeLoop),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct SkipSet(std::collections::HashSet<Pass>);
 
@@ -643,5 +658,11 @@ fn add(a: i32, b: i32) -> i32 {
         let out = apply_with(counted_loop_program(), &SkipSet::skip(Pass::RangeLoop)).emit();
         assert!(!out.contains("for i in 0..n"));
         assert!(out.contains("loop {"));
+    }
+
+    #[test]
+    fn pass_name_round_trips_through_parse() {
+        assert_eq!(Pass::parse(Pass::RangeLoop.name()), Some(Pass::RangeLoop));
+        assert_eq!(Pass::parse("not_a_pass"), None);
     }
 }
