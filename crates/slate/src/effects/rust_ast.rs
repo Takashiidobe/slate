@@ -71,6 +71,10 @@ impl Interp {
                 self.trace.push(Effect::Exit(code));
                 Flow::Return
             }
+            Stmt::Expr(Expr::Macro { name, args }) if name == "println" || name == "print" => {
+                self.print(args);
+                Flow::Normal
+            }
             Stmt::Assign { target, value } => self.assign(target, value),
             Stmt::CompoundAssign { target, op, value } => self.compound_assign(target, *op, value),
             Stmt::If {
@@ -231,6 +235,14 @@ impl Interp {
         binding.len += 1;
         self.heap.insert(loc, value);
         self.trace.push(Effect::Write { loc, value });
+    }
+
+    fn print(&mut self, args: &[Expr]) {
+        let args = args.iter().skip(1).map(|expr| self.eval(expr)).collect();
+        self.trace.push(Effect::Call {
+            name: "printf".to_string(),
+            args,
+        });
     }
 
     fn assign_index(&mut self, base: &Expr, index: &Expr, value: &Expr) {
@@ -547,6 +559,44 @@ mod tests {
                 }))),
             ],
         }
+    }
+
+    #[test]
+    fn println_macro_pushes_a_call_effect_with_only_the_substituted_args() {
+        let body = vec![
+            stmt(Stmt::Let {
+                name: "sum".to_string(),
+                mutable: false,
+                ty: Some(Type::Prim(Prim::I32)),
+                init: Some(Expr::Value(RustValue::I64(5))),
+            }),
+            stmt(Stmt::Expr(Expr::Macro {
+                name: "println".to_string(),
+                args: vec![Expr::Str("{}".to_string()), Expr::Var(Ident::new("sum"))],
+            })),
+            stmt(Stmt::Return(Some(Expr::Var(Ident::new("sum"))))),
+        ];
+        let f = FnDef {
+            attrs: vec![],
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: "main".to_string(),
+            params: vec![],
+            ret: Some(Type::Prim(Prim::I32)),
+            body,
+        };
+        let trace = interpret(&f);
+        assert_eq!(
+            trace.effects,
+            vec![
+                Effect::Call {
+                    name: "printf".to_string(),
+                    args: vec![int32(5)],
+                },
+                Effect::Exit(5),
+            ]
+        );
     }
 
     #[test]

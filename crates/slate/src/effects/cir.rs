@@ -60,7 +60,11 @@ impl Interp {
                 self.locals.insert(result.to_string());
                 Flow::Normal
             }
-            CirOpKind::GetGlobal => Flow::Normal,
+            CirOpKind::GetGlobal => {
+                let result = first_result(op);
+                self.env.insert(result.to_string(), Value::Null);
+                Flow::Normal
+            }
             CirOpKind::Const => {
                 let result = first_result(op);
                 let raw = attr_str(op, "value").unwrap_or_default();
@@ -186,6 +190,26 @@ impl Interp {
                 );
             }
             "free" => {}
+            "printf" => {
+                let args = op.operands[1..]
+                    .iter()
+                    .map(|name| self.resolve(name))
+                    .collect();
+                self.trace.push(Effect::Call {
+                    name: "printf".to_string(),
+                    args,
+                });
+                if let Some(result) = op.results.first() {
+                    self.env.insert(
+                        result.clone(),
+                        Value::Int {
+                            width: IntWidth::W32,
+                            signed: true,
+                            value: 0,
+                        },
+                    );
+                }
+            }
             other => panic!("effects::cir: unsupported call target `{other}`"),
         }
         Flow::Normal
@@ -417,6 +441,41 @@ mod tests {
         o.attrs
             .insert("callee".to_string(), Attr::Raw("@free".to_string()));
         o
+    }
+
+    fn call_printf(result: &str, fmt_operand: &str, arg_operands: &[&str]) -> Op {
+        let mut operands = vec![fmt_operand];
+        operands.extend_from_slice(arg_operands);
+        let mut o = op(
+            "cir.call",
+            &[result],
+            &operands,
+            "(!cir.ptr<!s8i>, ...) -> !s32i",
+        );
+        o.attrs
+            .insert("callee".to_string(), Attr::Raw("@printf".to_string()));
+        o
+    }
+
+    #[test]
+    fn printf_call_pushes_a_call_effect_with_only_the_substituted_args() {
+        let ops = vec![
+            op("cir.get_global", &["fmt"], &[], "() -> !cir.ptr<!s8i>"),
+            const_op("v", 5, "!s32i"),
+            call_printf("r", "fmt", &["v"]),
+            op("cir.return", &[], &[], "() -> ()"),
+        ];
+        let trace = interpret(&ops);
+        assert_eq!(
+            trace.effects,
+            vec![
+                Effect::Call {
+                    name: "printf".to_string(),
+                    args: vec![int32(5)],
+                },
+                Effect::Exit(0),
+            ]
+        );
     }
 
     /// Mirrors (minus printf) the CIR clang actually emits for:
