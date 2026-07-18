@@ -305,7 +305,7 @@ pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> Value {
         Value::Int { value, .. } => Value::Int {
             width,
             signed,
-            value,
+            value: truncate_int(value, width, signed),
         },
         Value::Bool(value) => Value::Int {
             width,
@@ -464,16 +464,36 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
                 BinOp::BitAnd => a & b,
                 BinOp::BitOr => a | b,
                 BinOp::BitXor => a ^ b,
-                BinOp::Shl => a.wrapping_shl(b as u32),
-                BinOp::Shr => a.wrapping_shr(b as u32),
+                BinOp::Shl => truncate_int(a, width, signed).wrapping_shl(b as u32),
+                BinOp::Shr if signed => truncate_int(a, width, signed).wrapping_shr(b as u32),
+                BinOp::Shr => {
+                    (truncate_int(a, width, signed) as u128).wrapping_shr(b as u32) as i128
+                }
                 _ => unreachable!(),
             };
             Value::Int {
                 width,
                 signed,
-                value,
+                value: truncate_int(value, width, signed),
             }
         }
+    }
+}
+
+fn truncate_int(value: i128, width: IntWidth, signed: bool) -> i128 {
+    let bits = match width {
+        IntWidth::W8 => 8,
+        IntWidth::W16 => 16,
+        IntWidth::W32 => 32,
+        IntWidth::W64 | IntWidth::PointerSized => 64,
+        IntWidth::W128 => return value,
+    };
+    let mask = (1i128 << bits) - 1;
+    let value = value & mask;
+    if signed && value & (1i128 << (bits - 1)) != 0 {
+        value | !mask
+    } else {
+        value
     }
 }
 
