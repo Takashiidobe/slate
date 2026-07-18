@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use crate::cir::ir::{Attr, CirOpKind, Op, Region};
 
-use super::{AllocId, Effect, EffectTrace, IntWidth, Location, ParamSeed, Value};
+use super::{AllocId, Effect, EffectTrace, FileId, IntWidth, Location, ParamSeed, Value};
 
 pub fn interpret(ops: &[Op]) -> EffectTrace {
     interpret_with_params(ops, &[])
@@ -46,6 +46,7 @@ struct Interp {
     local_allocs: HashMap<String, AllocId>,
     globals: HashMap<String, Location>,
     const_arrays: HashMap<String, Vec<Value>>,
+    c_strings: HashMap<String, Vec<u8>>,
     funcs: HashMap<String, Op>,
     heap: HashMap<Location, Value>,
     next_alloc: u32,
@@ -54,6 +55,7 @@ struct Interp {
     struct_alloc_slot: HashMap<AllocId, usize>,
     freed: HashSet<AllocId>,
     call_depth: usize,
+    next_file: u32,
 }
 
 impl Interp {
@@ -178,6 +180,8 @@ impl Interp {
                     .trim_matches('"');
                 if let Some(values) = self.const_arrays.get(name) {
                     self.arrays.insert(result.to_string(), values.clone());
+                    self.c_strings
+                        .insert(result.to_string(), values_to_bytes(values));
                 }
                 let value = self
                     .globals
@@ -209,10 +213,15 @@ impl Interp {
             CirOpKind::Cmp => self.cmp(op),
             CirOpKind::Cast => {
                 let result = first_result(op);
+                if let Some(bytes) = self.c_strings.get(&op.operands[0]).cloned() {
+                    self.c_strings.insert(result.to_string(), bytes);
+                }
                 let value = if result_type(op).is_some_and(|ty| ty.trim() == "!cir.bool") {
                     match self.resolve(&op.operands[0]) {
                         Value::Int { value, .. } => Value::Bool(value != 0),
                         Value::Bool(value) => Value::Bool(value),
+                        Value::File(_) => Value::Bool(true),
+                        Value::Null => Value::Bool(false),
                         other => panic!("effects::cir: cannot cast {other:?} to bool"),
                     }
                 } else if let Some((signed, bits)) = result_type(op).and_then(int_type_width_signed)
@@ -363,6 +372,15 @@ impl Interp {
                     }
                 }
             }
+            (Value::File(_), Value::Null) | (Value::Null, Value::File(_)) => {
+                match attr_int(op, "kind") {
+                    Some(4) => false,
+                    Some(5) => true,
+                    other => {
+                        panic!("effects::cir: file/null cmp has unexpected `kind` {other:?}")
+                    }
+                }
+            }
             other => panic!("effects::cir: cir.cmp has unexpected `kind` {other:?}"),
         };
         self.env.insert(result.to_string(), Value::Bool(value));
@@ -438,6 +456,44 @@ impl Interp {
                     name: "printf".to_string(),
                     args,
                 });
+                if let Some(result) = op.results.first() {
+                    self.env.insert(
+                        result.clone(),
+                        Value::Int {
+                            width: IntWidth::W32,
+                            signed: true,
+                            value: 0,
+                        },
+                    );
+                }
+            }
+            "fopen" => {
+                let path = self.c_string_operand(&op.operands[0]);
+                let mode = self.c_string_operand(&op.operands[1]);
+                let file = FileId(self.next_file);
+                self.next_file += 1;
+                self.trace.push(Effect::FileOpen { file, path, mode });
+                let result = first_result(op);
+                self.env.insert(result.to_string(), Value::File(file));
+            }
+            "fputs" => {
+                let bytes = self.c_string_operand_bytes(&op.operands[0]);
+                let file = self.resolve_file(&op.operands[1]);
+                self.trace.push(Effect::FileWrite { file, bytes });
+                if let Some(result) = op.results.first() {
+                    self.env.insert(
+                        result.clone(),
+                        Value::Int {
+                            width: IntWidth::W32,
+                            signed: true,
+                            value: 0,
+                        },
+                    );
+                }
+            }
+            "fclose" => {
+                let file = self.resolve_file(&op.operands[0]);
+                self.trace.push(Effect::FileClose { file });
                 if let Some(result) = op.results.first() {
                     self.env.insert(
                         result.clone(),
@@ -721,12 +777,39 @@ impl Interp {
         }
     }
 
+    fn resolve_file(&self, name: &str) -> FileId {
+        match self.env[name] {
+            Value::File(file) => file,
+            other => panic!("effects::cir: expected file handle for {name}, found {other:?}"),
+        }
+    }
+
     fn resolve_bool(&self, name: &str) -> bool {
         match self.env[name] {
             Value::Bool(value) => value,
             other => panic!("effects::cir: expected bool value for {name}, found {other:?}"),
         }
     }
+
+    fn c_string_operand(&self, name: &str) -> String {
+        String::from_utf8_lossy(&self.c_string_operand_bytes(name)).into_owned()
+    }
+
+    fn c_string_operand_bytes(&self, name: &str) -> Vec<u8> {
+        let bytes = self
+            .c_strings
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::cir: expected `{name}` to be a C string literal"));
+        bytes
+            .iter()
+            .copied()
+            .take_while(|byte| *byte != 0)
+            .collect()
+    }
+}
+
+fn values_to_bytes(values: &[Value]) -> Vec<u8> {
+    values.iter().map(|value| value_as_u8(*value)).collect()
 }
 
 fn first_result(op: &Op) -> &str {
