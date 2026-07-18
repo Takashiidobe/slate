@@ -115,6 +115,7 @@ pub enum Value {
         ok: bool,
         value: OptionValue,
     },
+    BlockLabel(&'static str),
     Null,
     Option(Option<OptionValue>),
 }
