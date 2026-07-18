@@ -2,10 +2,15 @@ use std::collections::{HashMap, HashSet};
 
 use crate::cir::ir::{Attr, CirOpKind, Op, Region};
 
-use super::{AllocId, Effect, EffectTrace, IntWidth, Location, Value};
+use super::{AllocId, Effect, EffectTrace, IntWidth, Location, ParamSeed, Value};
 
 pub fn interpret(ops: &[Op]) -> EffectTrace {
+    interpret_with_params(ops, &[])
+}
+
+pub fn interpret_with_params(ops: &[Op], params: &[(&str, ParamSeed)]) -> EffectTrace {
     let mut interp = Interp::default();
+    interp.seed_params(params);
     let _ = interp.run(ops);
     interp.trace
 }
@@ -29,6 +34,36 @@ struct Interp {
 }
 
 impl Interp {
+    fn seed_params(&mut self, params: &[(&str, ParamSeed)]) {
+        for (name, seed) in params {
+            let value = match seed {
+                ParamSeed::Scalar(v) => *v,
+                ParamSeed::Buffer(elems) => self.seed_buffer(elems),
+            };
+            self.env.insert(name.to_string(), value);
+        }
+    }
+
+    fn seed_buffer(&mut self, elems: &[Value]) -> Value {
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        let mut offset = 0u64;
+        for elem in elems {
+            self.heap.insert(
+                Location {
+                    alloc,
+                    byte_offset: offset,
+                },
+                *elem,
+            );
+            offset += int_byte_size(elem);
+        }
+        Value::Ref(Location {
+            alloc,
+            byte_offset: 0,
+        })
+    }
+
     fn run(&mut self, ops: &[Op]) -> Flow {
         for op in ops {
             match self.step(op) {
@@ -384,6 +419,19 @@ fn int_const_value(raw: &str, ty: Option<&str>) -> Value {
         width: int_width(bits),
         signed,
         value,
+    }
+}
+
+fn int_byte_size(value: &Value) -> u64 {
+    match value {
+        Value::Int { width, .. } => match width {
+            IntWidth::W8 => 1,
+            IntWidth::W16 => 2,
+            IntWidth::W32 => 4,
+            IntWidth::W64 | IntWidth::PointerSized => 8,
+            IntWidth::W128 => 16,
+        },
+        other => panic!("effects::cir: buffer element must be an integer, found {other:?}"),
     }
 }
 
@@ -985,6 +1033,204 @@ mod tests {
             ),
             op("cir.return", &[], &["result"], "(!s32i) -> ()"),
         ]
+    }
+
+    /// Mirrors the CIR clang emits for a pointer+length pair parameter:
+    /// `void bump(int *items, int len) {
+    ///    items[0] += 1; items[1] += 1;
+    ///    return items[0] + items[1] + len;
+    ///  }`
+    fn bump_len_fixture() -> Vec<Op> {
+        vec![
+            op(
+                "cir.alloca",
+                &["items"],
+                &[],
+                "() -> !cir.ptr<!cir.ptr<!s32i>>",
+            ),
+            op("cir.alloca", &["len"], &[], "() -> !cir.ptr<!s32i>"),
+            op(
+                "cir.store",
+                &[],
+                &["arg0", "items"],
+                "(!cir.ptr<!s32i>, !cir.ptr<!cir.ptr<!s32i>>) -> ()",
+            ),
+            op(
+                "cir.store",
+                &[],
+                &["arg1", "len"],
+                "(!s32i, !cir.ptr<!s32i>) -> ()",
+            ),
+            const_op("v0", 1, "!s32i"),
+            const_op("i0", 0, "!s64i"),
+            op(
+                "cir.load",
+                &["p0"],
+                &["items"],
+                "(!cir.ptr<!cir.ptr<!s32i>>) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.ptr_stride",
+                &["loc0"],
+                &["p0", "i0"],
+                "(!cir.ptr<!s32i>, !s64i) -> !cir.ptr<!s32i>",
+            ),
+            op("cir.load", &["r0"], &["loc0"], "(!cir.ptr<!s32i>) -> !s32i"),
+            op(
+                "cir.add",
+                &["r0b"],
+                &["r0", "v0"],
+                "(!s32i, !s32i) -> !s32i",
+            ),
+            op(
+                "cir.store",
+                &[],
+                &["r0b", "loc0"],
+                "(!s32i, !cir.ptr<!s32i>) -> ()",
+            ),
+            const_op("v1", 1, "!s32i"),
+            const_op("i1", 1, "!s64i"),
+            op(
+                "cir.load",
+                &["p1"],
+                &["items"],
+                "(!cir.ptr<!cir.ptr<!s32i>>) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.ptr_stride",
+                &["loc1"],
+                &["p1", "i1"],
+                "(!cir.ptr<!s32i>, !s64i) -> !cir.ptr<!s32i>",
+            ),
+            op("cir.load", &["r1"], &["loc1"], "(!cir.ptr<!s32i>) -> !s32i"),
+            op(
+                "cir.add",
+                &["r1b"],
+                &["r1", "v1"],
+                "(!s32i, !s32i) -> !s32i",
+            ),
+            op(
+                "cir.store",
+                &[],
+                &["r1b", "loc1"],
+                "(!s32i, !cir.ptr<!s32i>) -> ()",
+            ),
+            const_op("i0c", 0, "!s64i"),
+            op(
+                "cir.load",
+                &["p0c"],
+                &["items"],
+                "(!cir.ptr<!cir.ptr<!s32i>>) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.ptr_stride",
+                &["loc0c"],
+                &["p0c", "i0c"],
+                "(!cir.ptr<!s32i>, !s64i) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.load",
+                &["r0c"],
+                &["loc0c"],
+                "(!cir.ptr<!s32i>) -> !s32i",
+            ),
+            const_op("i1c", 1, "!s64i"),
+            op(
+                "cir.load",
+                &["p1c"],
+                &["items"],
+                "(!cir.ptr<!cir.ptr<!s32i>>) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.ptr_stride",
+                &["loc1c"],
+                &["p1c", "i1c"],
+                "(!cir.ptr<!s32i>, !s64i) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.load",
+                &["r1c"],
+                &["loc1c"],
+                "(!cir.ptr<!s32i>) -> !s32i",
+            ),
+            op(
+                "cir.add",
+                &["sum1"],
+                &["r0c", "r1c"],
+                "(!s32i, !s32i) -> !s32i",
+            ),
+            op(
+                "cir.load",
+                &["lenv"],
+                &["len"],
+                "(!cir.ptr<!s32i>) -> !s32i",
+            ),
+            op(
+                "cir.add",
+                &["sum"],
+                &["sum1", "lenv"],
+                "(!s32i, !s32i) -> !s32i",
+            ),
+            op("cir.return", &[], &["sum"], "(!s32i) -> ()"),
+        ]
+    }
+
+    #[test]
+    fn function_parameters_seed_the_trace_as_a_buffer_and_a_scalar() {
+        let params: Vec<(&str, ParamSeed)> = vec![
+            ("arg0", ParamSeed::Buffer(vec![int32(1), int32(2)])),
+            ("arg1", ParamSeed::Scalar(int32(2))),
+        ];
+        let trace = interpret_with_params(&bump_len_fixture(), &params);
+        let alloc = AllocId(0);
+        assert_eq!(
+            trace.effects,
+            vec![
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(1),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(2),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(2),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(3),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(2),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(3),
+                },
+                Effect::Exit(7),
+            ]
+        );
     }
 
     #[test]
