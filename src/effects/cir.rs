@@ -15,28 +15,94 @@ pub fn interpret_with_params(ops: &[Op], params: &[(&str, ParamSeed)]) -> Effect
     interp.trace
 }
 
+pub fn interpret_module_main(module: &crate::cir::ir::Module) -> EffectTrace {
+    let builtin_module = &module.ops[0];
+    let top_level = &builtin_module.regions[0].blocks[0].ops;
+    let mut interp = Interp::default();
+    interp.seed_module(top_level);
+    let main = interp
+        .funcs
+        .get("main")
+        .cloned()
+        .expect("fixture must define `main`");
+    let _ = interp.run(&main.regions[0].blocks[0].ops);
+    interp.trace
+}
+
 /// How a statement/op completed: either it ran through normally, or it hit a
 /// `cir.return` that the enclosing `cir.if`/`cir.for` must propagate past
 /// without running the rest of their body.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 enum Flow {
     Normal,
-    Return,
+    Return(Value),
 }
 
 #[derive(Default)]
 struct Interp {
     env: HashMap<String, Value>,
     locals: HashSet<String>,
+    globals: HashMap<String, Location>,
+    funcs: HashMap<String, Op>,
     heap: HashMap<Location, Value>,
     next_alloc: u32,
     trace: EffectTrace,
     struct_allocs: HashMap<String, AllocId>,
     struct_alloc_slot: HashMap<AllocId, usize>,
     freed: HashSet<AllocId>,
+    call_depth: usize,
 }
 
 impl Interp {
+    fn seed_module(&mut self, ops: &[Op]) {
+        for op in ops {
+            match op.kind() {
+                CirOpKind::Global => self.seed_global(op),
+                CirOpKind::Func => {
+                    if !op
+                        .regions
+                        .first()
+                        .is_none_or(|region| region.blocks.is_empty())
+                        && let Some(name) = attr_str(op, "sym_name")
+                    {
+                        self.funcs.insert(name.to_string(), op.clone());
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn seed_global(&mut self, op: &Op) {
+        if attr_str(op, "constant") != Some("false") {
+            return;
+        }
+        let Some(name) = attr_str(op, "sym_name") else {
+            return;
+        };
+        let Some(ty) = attr_str(op, "sym_type") else {
+            return;
+        };
+        let Some((_, bits)) = int_type_width_signed(ty) else {
+            return;
+        };
+        let raw = attr_str(op, "initial_value").unwrap_or_default();
+        let value = int_const_value(raw, Some(ty));
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        let loc = Location {
+            alloc,
+            byte_offset: 0,
+        };
+        self.globals.insert(name.to_string(), loc);
+        self.heap.insert(loc, value);
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: (bits / 8) as u64,
+        });
+        self.trace.push(Effect::Write { loc, value });
+    }
+
     fn seed_params(&mut self, params: &[(&str, ParamSeed)]) {
         for (name, seed) in params {
             let value = match seed {
@@ -100,7 +166,16 @@ impl Interp {
             }
             CirOpKind::GetGlobal => {
                 let result = first_result(op);
-                self.env.insert(result.to_string(), Value::Null);
+                let name = attr_str(op, "name")
+                    .unwrap_or_default()
+                    .trim_start_matches('@')
+                    .trim_matches('"');
+                let value = self
+                    .globals
+                    .get(name)
+                    .map(|loc| Value::Ref(*loc))
+                    .unwrap_or(Value::Null);
+                self.env.insert(result.to_string(), value);
                 Flow::Normal
             }
             CirOpKind::Const => {
@@ -119,14 +194,22 @@ impl Interp {
             CirOpKind::Or => self.binop(op, |a, b| a | b),
             CirOpKind::Xor => self.binop(op, |a, b| a ^ b),
             CirOpKind::Shift => self.shift(op),
-            CirOpKind::Not => self.unary(op, |a| !a),
+            CirOpKind::Not => self.not(op),
             CirOpKind::Minus => self.unary(op, i128::wrapping_neg),
             CirOpKind::Inc => self.unary(op, |a| a.wrapping_add(1)),
             CirOpKind::Dec => self.unary(op, |a| a.wrapping_sub(1)),
             CirOpKind::Cmp => self.cmp(op),
             CirOpKind::Cast => {
                 let result = first_result(op);
-                let value = self.resolve(&op.operands[0]);
+                let value = if result_type(op).is_some_and(|ty| ty.trim() == "!cir.bool") {
+                    match self.resolve(&op.operands[0]) {
+                        Value::Int { value, .. } => Value::Bool(value != 0),
+                        Value::Bool(value) => Value::Bool(value),
+                        other => panic!("effects::cir: cannot cast {other:?} to bool"),
+                    }
+                } else {
+                    self.resolve(&op.operands[0])
+                };
                 self.env.insert(result.to_string(), value);
                 Flow::Normal
             }
@@ -151,8 +234,15 @@ impl Interp {
                         }
                     })
                     .unwrap_or(0);
-                self.trace.push(Effect::Exit(code));
-                Flow::Return
+                let value = Value::Int {
+                    width: IntWidth::W32,
+                    signed: true,
+                    value: code as i128,
+                };
+                if self.call_depth == 0 {
+                    self.trace.push(Effect::Exit(code));
+                }
+                Flow::Return(value)
             }
             _ => panic!("effects::cir: unsupported op `{}`", op.name),
         }
@@ -178,6 +268,25 @@ impl Interp {
             width,
             signed,
             value: f(a),
+        };
+        self.env.insert(result.to_string(), value);
+        Flow::Normal
+    }
+
+    fn not(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let value = match self.resolve(&op.operands[0]) {
+            Value::Bool(value) => Value::Bool(!value),
+            Value::Int {
+                width,
+                signed,
+                value,
+            } => Value::Int {
+                width,
+                signed,
+                value: !value,
+            },
+            other => panic!("effects::cir: cannot apply not to {other:?}"),
         };
         self.env.insert(result.to_string(), value);
         Flow::Normal
@@ -288,6 +397,22 @@ impl Interp {
                             value: 0,
                         },
                     );
+                }
+            }
+            other if self.funcs.contains_key(other) => {
+                if !op.operands.is_empty() {
+                    panic!("effects::cir: user calls with arguments are unsupported");
+                }
+                let f = self.funcs[other].clone();
+                self.call_depth += 1;
+                let flow = self.run(&f.regions[0].blocks[0].ops);
+                self.call_depth -= 1;
+                let Flow::Return(value) = flow else {
+                    panic!("effects::cir: user function `{other}` did not return");
+                };
+                let result = first_result(op);
+                if !result.is_empty() {
+                    self.env.insert(result.to_string(), value);
                 }
             }
             other => panic!("effects::cir: unsupported call target `{other}`"),
@@ -416,11 +541,11 @@ impl Interp {
             }
             match self.run_region(&op.regions[1]) {
                 Flow::Normal => {}
-                Flow::Return => return Flow::Return,
+                flow @ Flow::Return(_) => return flow,
             }
             match self.run_region(&op.regions[2]) {
                 Flow::Normal => {}
-                Flow::Return => return Flow::Return,
+                flow @ Flow::Return(_) => return flow,
             }
         }
     }
