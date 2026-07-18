@@ -352,6 +352,12 @@ impl Interp {
     fn assign(&mut self, target: &Expr, value: &Expr) -> Flow {
         match target {
             Expr::Var(ident) => {
+                if self.vecs.contains_key(ident.as_str())
+                    && matches!(value, Expr::ArrayLit(_) | Expr::ArrayRepeat { .. })
+                {
+                    self.assign_array(ident.as_str(), value);
+                    return Flow::Normal;
+                }
                 let v = self.eval(value);
                 if let Some(loc) = self.globals.get(ident.as_str()).copied() {
                     self.heap.insert(loc, v);
@@ -365,6 +371,54 @@ impl Interp {
             other => panic!("effects::rust_ast: unsupported assign target `{other:?}`"),
         }
         Flow::Normal
+    }
+
+    fn assign_array(&mut self, name: &str, value: &Expr) {
+        let binding = self
+            .vecs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: assign to unknown array `{name}`"));
+        let (elem_width, elem_signed, elem_size, len, alloc) = (
+            binding.elem_width,
+            binding.elem_signed,
+            binding.elem_size,
+            binding.len,
+            binding.alloc,
+        );
+        let values: Vec<Value> = match value {
+            Expr::ArrayLit(elems) => elems
+                .iter()
+                .map(|elem| Value::Int {
+                    width: elem_width,
+                    signed: elem_signed,
+                    value: value_as_i128(self.eval(elem)),
+                })
+                .collect(),
+            Expr::ArrayRepeat { elem, len } => {
+                let value = Value::Int {
+                    width: elem_width,
+                    signed: elem_signed,
+                    value: value_as_i128(self.eval(elem)),
+                };
+                if value_as_i128(value) == 0 {
+                    Vec::new()
+                } else {
+                    vec![value; *len]
+                }
+            }
+            other => panic!("effects::rust_ast: unsupported array assignment `{other:?}`"),
+        };
+        if !values.is_empty() && values.len() as u64 != len {
+            panic!("effects::rust_ast: array assignment length does not match binding");
+        }
+        for (index, value) in values.into_iter().enumerate() {
+            let loc = Location {
+                alloc,
+                byte_offset: index as u64 * elem_size,
+            };
+            self.heap.insert(loc, value);
+            self.trace.push(Effect::Write { loc, value });
+        }
     }
 
     fn compound_assign(&mut self, target: &Expr, op: BinOp, value: &Expr) -> Flow {
@@ -490,11 +544,15 @@ impl Interp {
                     signed: elem_signed,
                     value: value_as_i128(self.eval(elem)),
                 };
-                vec![value; *len]
+                if value_as_i128(value) == 0 {
+                    Vec::new()
+                } else {
+                    vec![value; *len]
+                }
             }
             other => panic!("effects::rust_ast: unsupported array initializer `{other:?}`"),
         };
-        if values.len() as u64 != len {
+        if !values.is_empty() && values.len() as u64 != len {
             panic!("effects::rust_ast: array initializer length does not match type");
         }
         let alloc = AllocId(self.next_alloc);
@@ -885,6 +943,7 @@ impl Interp {
                         value: !value,
                     },
                     (UnaryOp::Deref, value @ Value::Int { .. }) => value,
+                    (UnaryOp::Deref, Value::Ref(loc)) => self.read_loc(loc),
                     (op, other) => panic!("effects::rust_ast: cannot apply {op:?} to {other:?}"),
                 }
             }
@@ -917,6 +976,13 @@ impl Interp {
             }
             Expr::MethodCall { recv, method, args } if method == "position" => {
                 self.iter_position(recv, args)
+            }
+            Expr::MethodCall { recv, method, args } if method == "sort_by" => {
+                self.sort_by(recv, args);
+                int32(0)
+            }
+            Expr::MethodCall { recv, method, args } if method == "cmp" => {
+                self.compare_method(recv, args)
             }
             Expr::MethodCall { recv, method, args } if method == "is_none" && args.is_empty() => {
                 option_is_none(self.eval(recv))
@@ -1309,6 +1375,12 @@ impl Interp {
     }
 
     fn eval_call(&mut self, func: &Expr, args: &[Expr]) -> Value {
+        if args.is_empty() && is_path(func, &["std", "ptr", "null_mut"]) {
+            return Value::Null;
+        }
+        if args.is_empty() && is_path(func, &["std", "mem", "size_of"]) {
+            return int32(4);
+        }
         let Expr::Var(ident) = func else {
             panic!("effects::rust_ast: unsupported call target `{func:?}`");
         };
@@ -1369,21 +1441,153 @@ impl Interp {
             });
             return int32(0);
         }
+        if name == "qsort" {
+            self.qsort(args);
+            return int32(0);
+        }
         let f = self
             .funcs
             .get(name)
             .cloned()
             .unwrap_or_else(|| panic!("effects::rust_ast: unsupported call target `{name}`"));
-        if !args.is_empty() || !f.params.is_empty() {
-            panic!("effects::rust_ast: user calls with arguments are unsupported");
+        let values = args.iter().map(|arg| self.eval(arg)).collect::<Vec<_>>();
+        self.call_user(&f, &values)
+    }
+
+    fn call_user(&mut self, f: &FnDef, args: &[Value]) -> Value {
+        if f.params.len() != args.len() {
+            panic!(
+                "effects::rust_ast: user function `{}` expected {} arg(s), got {}",
+                f.name,
+                f.params.len(),
+                args.len()
+            );
+        }
+        let saved_scalars = self.scalars.clone();
+        for (param, value) in f.params.iter().zip(args) {
+            self.scalars.insert(param.name.to_string(), *value);
         }
         self.call_depth += 1;
         let flow = self.run(&f.body);
         self.call_depth -= 1;
+        self.scalars = saved_scalars;
         let Flow::Return(value) = flow else {
-            panic!("effects::rust_ast: user function `{name}` did not return");
+            panic!(
+                "effects::rust_ast: user function `{}` did not return",
+                f.name
+            );
         };
         value
+    }
+
+    fn qsort(&mut self, args: &[Expr]) {
+        let [base, count, size, comparator] = args else {
+            panic!("effects::rust_ast: qsort expects four arguments");
+        };
+        let name = array_pointer_name(base);
+        let len = value_as_u64(self.eval(count));
+        let elem_size = value_as_u64(self.eval(size));
+        let comparator = comparator_name(comparator);
+        let f = self.funcs.get(comparator).cloned().unwrap_or_else(|| {
+            panic!("effects::rust_ast: unknown qsort comparator `{comparator}`")
+        });
+        self.sort_array_by(name, len, elem_size, |this, left, right| {
+            let value = this.call_user(&f, &[Value::Ref(left), Value::Ref(right)]);
+            value_as_i128(value)
+        });
+    }
+
+    fn sort_by(&mut self, recv: &Expr, args: &[Expr]) {
+        let [Expr::Closure { params, body }] = args else {
+            panic!("effects::rust_ast: sort_by expects one closure");
+        };
+        let [left_param, right_param] = params.as_slice() else {
+            panic!("effects::rust_ast: sort_by closure expects two params");
+        };
+        let name = collection_name(recv).to_string();
+        let binding = self
+            .vecs
+            .get(&name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: sort_by on unknown collection `{name}`"));
+        let (len, elem_size) = (binding.len, binding.elem_size);
+        let left_param = left_param.as_str().to_string();
+        let right_param = right_param.as_str().to_string();
+        let body = body.as_ref().clone();
+        self.sort_array_by(&name, len, elem_size, |this, left, right| {
+            let left_saved = this.scalars.insert(left_param.clone(), Value::Ref(left));
+            let right_saved = this.scalars.insert(right_param.clone(), Value::Ref(right));
+            let value = this.eval(&body);
+            restore_scalar(&mut this.scalars, &left_param, left_saved);
+            restore_scalar(&mut this.scalars, &right_param, right_saved);
+            value_as_i128(value)
+        });
+    }
+
+    fn sort_array_by(
+        &mut self,
+        name: &str,
+        len: u64,
+        elem_size: u64,
+        mut compare: impl FnMut(&mut Self, Location, Location) -> i128,
+    ) {
+        let alloc = self
+            .vecs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: sort on unknown collection `{name}`"))
+            .alloc;
+        for i in 1..len {
+            let mut j = i;
+            while j > 0 {
+                let left = Location {
+                    alloc,
+                    byte_offset: (j - 1) * elem_size,
+                };
+                let right = Location {
+                    alloc,
+                    byte_offset: j * elem_size,
+                };
+                if compare(self, left, right) <= 0 {
+                    break;
+                }
+                let left_value = *self.heap.get(&left).unwrap_or_else(|| {
+                    panic!("effects::rust_ast: read from never-written {left:?}")
+                });
+                let right_value = *self.heap.get(&right).unwrap_or_else(|| {
+                    panic!("effects::rust_ast: read from never-written {right:?}")
+                });
+                self.heap.insert(left, right_value);
+                self.trace.push(Effect::Write {
+                    loc: left,
+                    value: right_value,
+                });
+                self.heap.insert(right, left_value);
+                self.trace.push(Effect::Write {
+                    loc: right,
+                    value: left_value,
+                });
+                j -= 1;
+            }
+        }
+    }
+
+    fn compare_method(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+        let [arg] = args else {
+            panic!("effects::rust_ast: cmp expects one argument");
+        };
+        let left = self.read_comparable(recv);
+        let right = match arg {
+            Expr::Ref { expr, .. } => self.read_comparable(expr),
+            other => self.read_comparable(other),
+        };
+        int32((value_as_i128(left) - value_as_i128(right)).signum())
+    }
+
+    fn read_comparable(&mut self, expr: &Expr) -> Value {
+        match self.eval(expr) {
+            Value::Ref(loc) => self.read_loc(loc),
+            value @ Value::Int { .. } => value,
+            other => panic!("effects::rust_ast: cmp on unsupported value {other:?}"),
+        }
     }
 
     fn iter_position(&mut self, recv: &Expr, args: &[Expr]) -> Value {
@@ -1678,6 +1882,41 @@ fn c_string_expr_bytes(expr: &Expr) -> Vec<u8> {
     bytes.into_iter().take_while(|byte| *byte != 0).collect()
 }
 
+fn array_pointer_name(expr: &Expr) -> &str {
+    match expr {
+        Expr::Cast { expr, .. } => array_pointer_name(expr),
+        Expr::MethodCall { recv, method, args } if method == "as_mut_ptr" && args.is_empty() => {
+            collection_name(recv)
+        }
+        Expr::ArrayPtr { array, .. } => collection_name(array),
+        other => panic!("effects::rust_ast: unsupported array pointer argument `{other:?}`"),
+    }
+}
+
+fn comparator_name(expr: &Expr) -> &str {
+    match expr {
+        Expr::Call { func, args } if is_path(func, &["Some"]) => {
+            let [arg] = args.as_slice() else {
+                panic!("effects::rust_ast: Some comparator expects one argument");
+            };
+            comparator_name(arg)
+        }
+        Expr::Var(ident) => ident.as_str(),
+        other => panic!("effects::rust_ast: unsupported comparator argument `{other:?}`"),
+    }
+}
+
+fn restore_scalar(scalars: &mut HashMap<String, Value>, name: &str, previous: Option<Value>) {
+    match previous {
+        Some(value) => {
+            scalars.insert(name.to_string(), value);
+        }
+        None => {
+            scalars.remove(name);
+        }
+    }
+}
+
 fn value_as_i32(value: Value) -> i32 {
     match value {
         Value::Int { value, .. } => value as i32,
@@ -1845,7 +2084,10 @@ fn collection_name(expr: &Expr) -> &str {
         Expr::Var(ident) => ident.as_str(),
         Expr::MethodCall { recv, method, args }
             if args.is_empty()
-                && matches!(method.as_str(), "as_slice" | "as_bytes" | "to_bytes") =>
+                && matches!(
+                    method.as_str(),
+                    "as_slice" | "as_mut_slice" | "as_bytes" | "to_bytes"
+                ) =>
         {
             collection_name(recv)
         }

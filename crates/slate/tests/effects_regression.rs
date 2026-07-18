@@ -215,3 +215,19 @@ fn atomic_compare_exchange_fixup_preserves_rust_effects() {
         "tests/fixtures/effects_atomic_compare_exchange.c",
     );
 }
+
+#[test]
+fn idiomatized_qsort_comparator_fixture_matches_cir_effects() {
+    assert_fixture_matches(
+        "compare-effects-cir-rust",
+        "tests/fixtures/effects_qsort_comparator.c",
+    );
+}
+
+#[test]
+fn qsort_comparator_fixup_preserves_rust_effects() {
+    assert_fixture_matches(
+        "compare-effects-rust-rust",
+        "tests/fixtures/effects_qsort_comparator.c",
+    );
+}
