@@ -39,6 +39,9 @@ pub mod rust_ast;
 pub struct AllocId(pub u32);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct FileId(pub u32);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Location {
     pub alloc: AllocId,
     pub byte_offset: u64,
@@ -65,6 +68,7 @@ pub enum Value {
     Float(f64),
     Bool(bool),
     Ref(Location),
+    File(FileId),
     Null,
     Option(Option<OptionValue>),
 }
@@ -88,11 +92,37 @@ pub enum ParamSeed {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Effect {
-    Alloc { alloc: AllocId, size: u64 },
-    Dealloc { alloc: AllocId },
-    Write { loc: Location, value: Value },
-    Read { loc: Location, value: Value },
-    Call { name: String, args: Vec<Value> },
+    Alloc {
+        alloc: AllocId,
+        size: u64,
+    },
+    Dealloc {
+        alloc: AllocId,
+    },
+    FileOpen {
+        file: FileId,
+        path: String,
+        mode: String,
+    },
+    FileWrite {
+        file: FileId,
+        bytes: Vec<u8>,
+    },
+    FileClose {
+        file: FileId,
+    },
+    Write {
+        loc: Location,
+        value: Value,
+    },
+    Read {
+        loc: Location,
+        value: Value,
+    },
+    Call {
+        name: String,
+        args: Vec<Value>,
+    },
     Return(Value),
     Exit(i32),
 }

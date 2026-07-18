@@ -1,7 +1,9 @@
 use std::cmp::Reverse;
 use std::collections::{HashMap, HashSet};
 
-use super::{AllocId, Effect, EffectTrace, IntWidth, Location, OptionValue, ParamSeed, Value};
+use super::{
+    AllocId, Effect, EffectTrace, FileId, IntWidth, Location, OptionValue, ParamSeed, Value,
+};
 use crate::rust_ast::{
     BinOp, Block, Expr, FnDef, IndentStmt, Item, Path, Program, RustValue, Stmt, Type, UnaryOp,
 };
@@ -59,6 +61,11 @@ struct OnceLockBinding {
     payload: Location,
 }
 
+struct OpenEffect {
+    path: String,
+    mode: String,
+}
+
 #[derive(Default)]
 struct Interp {
     vecs: HashMap<String, VecBinding>,
@@ -67,8 +74,10 @@ struct Interp {
     once_locks: HashMap<String, OnceLockBinding>,
     funcs: HashMap<String, FnDef>,
     scalars: HashMap<String, Value>,
+    files: HashMap<String, FileId>,
     heap: HashMap<Location, Value>,
     next_alloc: u32,
+    next_file: u32,
     trace: EffectTrace,
     freed: HashSet<AllocId>,
     call_depth: usize,
@@ -226,8 +235,13 @@ impl Interp {
                 init: Some(init),
                 ..
             } => {
-                let value = self.eval(init);
-                self.scalars.insert(name.clone(), value);
+                if let Some(file) = self.open_file(init) {
+                    self.files.insert(name.clone(), file);
+                    self.scalars.insert(name.clone(), Value::File(file));
+                } else {
+                    let value = self.eval(init);
+                    self.scalars.insert(name.clone(), value);
+                }
                 Flow::Normal
             }
             Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "push" => {
@@ -248,11 +262,17 @@ impl Interp {
                 self.drop_var(&args[0]);
                 Flow::Normal
             }
+            Stmt::Expr(Expr::MethodCall { recv, method, args })
+                if method == "unwrap" && args.is_empty() && self.write_all_call(recv) =>
+            {
+                Flow::Normal
+            }
             Stmt::Expr(Expr::Macro { name, args }) if name == "println" || name == "print" => {
                 self.print(args);
                 Flow::Normal
             }
             Stmt::Unsafe { body } => self.run_block(body),
+            Stmt::Scope { body } => self.run(body),
             Stmt::Assign { target, value } => self.assign(target, value),
             Stmt::CompoundAssign { target, op, value } => self.compound_assign(target, *op, value),
             Stmt::If {
@@ -560,6 +580,11 @@ impl Interp {
             Expr::Var(ident) => ident.as_str(),
             other => panic!("effects::rust_ast: unsupported drop target `{other:?}`"),
         };
+        if let Some(file) = self.files.remove(name) {
+            self.trace.push(Effect::FileClose { file });
+            self.scalars.remove(name);
+            return;
+        }
         let binding = self
             .vecs
             .get(name)
@@ -577,6 +602,44 @@ impl Interp {
             name: "printf".to_string(),
             args,
         });
+    }
+
+    fn open_file(&mut self, expr: &Expr) -> Option<FileId> {
+        let OpenEffect { path, mode } = open_effect(expr)?;
+        let file = FileId(self.next_file);
+        self.next_file += 1;
+        self.trace.push(Effect::FileOpen { file, path, mode });
+        Some(file)
+    }
+
+    fn write_all_call(&mut self, expr: &Expr) -> bool {
+        let Expr::Call { func, args } = expr else {
+            return false;
+        };
+        if !is_path(func, &["std", "io", "Write", "write_all"]) {
+            return false;
+        }
+        let [handle, bytes] = args.as_slice() else {
+            panic!("effects::rust_ast: write_all expects handle and bytes");
+        };
+        let file = self.file_arg(handle);
+        let bytes = match bytes {
+            Expr::ByteStr(bytes) => bytes.clone(),
+            other => panic!("effects::rust_ast: unsupported write_all bytes `{other:?}`"),
+        };
+        self.trace.push(Effect::FileWrite { file, bytes });
+        true
+    }
+
+    fn file_arg(&self, expr: &Expr) -> FileId {
+        match expr {
+            Expr::Ref { expr, .. } => self.file_arg(expr),
+            Expr::Var(ident) => *self
+                .files
+                .get(ident.as_str())
+                .unwrap_or_else(|| panic!("effects::rust_ast: unknown file `{}`", ident.as_str())),
+            other => panic!("effects::rust_ast: unsupported file argument `{other:?}`"),
+        }
     }
 
     fn assign_index(&mut self, base: &Expr, index: &Expr, value: &Expr) {
@@ -919,6 +982,44 @@ impl Interp {
             };
             return Value::Option(Some(option_value(self.eval(arg))));
         }
+        if name == "fopen" {
+            let [path, mode] = args else {
+                panic!("effects::rust_ast: fopen expects path and mode");
+            };
+            let file = FileId(self.next_file);
+            self.next_file += 1;
+            self.trace.push(Effect::FileOpen {
+                file,
+                path: c_string_expr(path),
+                mode: c_string_expr(mode),
+            });
+            return Value::File(file);
+        }
+        if name == "fputs" {
+            let [bytes, file] = args else {
+                panic!("effects::rust_ast: fputs expects bytes and file");
+            };
+            let file = match self.eval(file) {
+                Value::File(file) => file,
+                other => panic!("effects::rust_ast: fputs expected file handle, found {other:?}"),
+            };
+            self.trace.push(Effect::FileWrite {
+                file,
+                bytes: c_string_expr_bytes(bytes),
+            });
+            return int32(0);
+        }
+        if name == "fclose" {
+            let [file] = args else {
+                panic!("effects::rust_ast: fclose expects file");
+            };
+            let file = match self.eval(file) {
+                Value::File(file) => file,
+                other => panic!("effects::rust_ast: fclose expected file handle, found {other:?}"),
+            };
+            self.trace.push(Effect::FileClose { file });
+            return int32(0);
+        }
         let f = self
             .funcs
             .get(name)
@@ -1100,8 +1201,93 @@ fn is_path(expr: &Expr, segments: &[&str]) -> bool {
             actual.len() == segments.len()
                 && actual.iter().zip(segments).all(|(a, b)| a.as_str() == *b)
         }
+        Expr::Var(ident) => ident.as_str() == segments.join("::"),
         _ => false,
     }
+}
+
+fn open_effect(expr: &Expr) -> Option<OpenEffect> {
+    match expr {
+        Expr::MethodCall { recv, method, args }
+            if matches!(method.as_str(), "unwrap" | "unwrap_or_else") =>
+        {
+            open_effect(recv)
+        }
+        Expr::MethodCall { recv, method, args } if method == "open" => {
+            let [Expr::Str(path)] = args.as_slice() else {
+                panic!("effects::rust_ast: OpenOptions::open expects a string literal path");
+            };
+            Some(OpenEffect {
+                path: path.clone(),
+                mode: open_options_mode(recv),
+            })
+        }
+        _ => None,
+    }
+}
+
+fn open_options_mode(expr: &Expr) -> String {
+    let mut read = false;
+    let mut write = false;
+    let mut append = false;
+    let mut create = false;
+    let mut truncate = false;
+    let mut current = expr;
+    loop {
+        match current {
+            Expr::Call { func, args }
+                if args.is_empty() && is_path(func, &["std", "fs", "OpenOptions", "new"]) =>
+            {
+                break;
+            }
+            Expr::MethodCall { recv, method, args } => {
+                let [Expr::Value(RustValue::Bool(value))] = args.as_slice() else {
+                    panic!("effects::rust_ast: OpenOptions::{method} expects a bool literal");
+                };
+                match method.as_str() {
+                    "read" => read = *value,
+                    "write" => write = *value,
+                    "append" => append = *value,
+                    "create" => create = *value,
+                    "truncate" => truncate = *value,
+                    other => panic!("effects::rust_ast: unsupported OpenOptions method `{other}`"),
+                }
+                current = recv;
+            }
+            other => panic!("effects::rust_ast: unsupported OpenOptions chain `{other:?}`"),
+        }
+    }
+    match (read, write, append, create, truncate) {
+        (false, true, false, true, true) => "w",
+        (true, false, false, false, false) => "r",
+        (false, false, true, true, false) => "a",
+        (true, true, false, false, false) => "r+",
+        (true, true, false, true, true) => "w+",
+        (true, false, true, true, false) => "a+",
+        other => panic!("effects::rust_ast: unsupported OpenOptions mode {other:?}"),
+    }
+    .to_string()
+}
+
+fn c_string_expr(expr: &Expr) -> String {
+    String::from_utf8_lossy(&c_string_expr_bytes(expr)).into_owned()
+}
+
+fn c_string_expr_bytes(expr: &Expr) -> Vec<u8> {
+    let bytes = match expr {
+        Expr::Cast { expr, .. } => return c_string_expr_bytes(expr),
+        Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
+            c_string_expr_bytes(recv)
+        }
+        Expr::ByteStr(bytes) => bytes.clone(),
+        Expr::CStr(bytes) => {
+            let mut bytes = bytes.clone();
+            bytes.push(0);
+            bytes
+        }
+        other => panic!("effects::rust_ast: unsupported C string expression `{other:?}`"),
+    };
+    bytes.into_iter().take_while(|byte| *byte != 0).collect()
 }
 
 fn value_as_i32(value: Value) -> i32 {
@@ -1288,14 +1474,24 @@ fn value_as_bool(value: Value) -> bool {
 fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
     match op {
         BinOp::Eq | BinOp::Ne | BinOp::Lt | BinOp::Le | BinOp::Gt | BinOp::Ge => {
-            let (a, b) = (value_as_i128(a), value_as_i128(b));
+            if matches!(
+                (a, b),
+                (Value::File(_), Value::Null) | (Value::Null, Value::File(_))
+            ) {
+                return Value::Bool(match op {
+                    BinOp::Eq => false,
+                    BinOp::Ne => true,
+                    _ => panic!("effects::rust_ast: unsupported file/null comparison `{op:?}`"),
+                });
+            }
+            let (a_int, b_int) = (value_as_i128(a), value_as_i128(b));
             Value::Bool(match op {
-                BinOp::Eq => a == b,
-                BinOp::Ne => a != b,
-                BinOp::Lt => a < b,
-                BinOp::Le => a <= b,
-                BinOp::Gt => a > b,
-                BinOp::Ge => a >= b,
+                BinOp::Eq => a_int == b_int,
+                BinOp::Ne => a_int != b_int,
+                BinOp::Lt => a_int < b_int,
+                BinOp::Le => a_int <= b_int,
+                BinOp::Gt => a_int > b_int,
+                BinOp::Ge => a_int >= b_int,
                 _ => unreachable!(),
             })
         }
