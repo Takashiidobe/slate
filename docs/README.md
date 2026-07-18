@@ -120,7 +120,9 @@ cargo run -- emit-fixtures
 ```
 
 That command writes ignored files under `tests/fixtures.generated/`. The
-checked fixtures under `tests/fixtures/` are C-only.
+checked fixtures under `tests/fixtures/` are C-only. To inspect raw lowered Rust
+before fixups, use `cargo run -- emit-lowered-fixtures`; it writes ignored files
+under `tests/fixtures.lowered.generated/`.
 
 ## Not handled yet
 

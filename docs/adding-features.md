@@ -11,12 +11,20 @@ $EDITOR tests/fixtures/<name>.c
 cargo test --test differential generated_differential -- --nocapture
 ```
 
-The checked fixtures are C-only. Generated Rust for inspection lives under the
-ignored `tests/fixtures.generated/` directory:
+The checked fixtures are C-only. Fixed-up generated Rust for inspection lives
+under the ignored `tests/fixtures.generated/` directory:
 
 ```bash
 cargo run -- emit-fixtures
 sed -n '1,160p' tests/fixtures.generated/<name>.rs
+```
+
+Raw lowered Rust before fixups lives under
+`tests/fixtures.lowered.generated/`:
+
+```bash
+cargo run -- emit-lowered-fixtures
+sed -n '1,160p' tests/fixtures.lowered.generated/<name>.rs
 ```
 
 After adding the fixture, decide what kind of work it is.
