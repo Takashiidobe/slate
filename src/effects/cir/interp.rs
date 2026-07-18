@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use crate::cir::ir::{Attr, CirOpKind, Op, Region};
 use crate::rust_ast::AtomicOrdering;
@@ -26,6 +26,7 @@ pub fn interpret_module_main(module: &crate::cir::ir::Module) -> EffectTrace {
     let builtin_module = &module.ops[0];
     let top_level = &builtin_module.regions[0].blocks[0].ops;
     let mut interp = Interp::default();
+    interp.type_aliases = module.aliases.clone();
     interp.seed_module(top_level);
     let main = interp
         .funcs
@@ -74,6 +75,17 @@ struct Interp {
     block_to_index: HashMap<String, usize>,
     label_to_index: HashMap<String, usize>,
     pending_block_args: HashMap<usize, Vec<Value>>,
+    type_aliases: BTreeMap<String, String>,
+    aggregate_bindings: HashMap<String, AggregateBinding>,
+    aggregate_allocs: HashMap<AllocId, AggregateBinding>,
+    bitfield_offsets: HashMap<(AllocId, String), u64>,
+    bitfield_next_offsets: HashMap<AllocId, u64>,
+}
+
+#[derive(Debug, Clone)]
+struct AggregateBinding {
+    alloc: AllocId,
+    size: u64,
 }
 
 impl Interp {
@@ -147,6 +159,39 @@ impl Interp {
                     self.trace.push(Effect::Write { loc, value: *value });
                 }
                 offset += int_byte_size(value);
+            }
+            return;
+        }
+        if let Some(values) = global_const_aggregate_values(op, &self.type_aliases) {
+            let Some(ty) = attr_str(op, "sym_type") else {
+                return;
+            };
+            let size = cir_type_size(ty, &self.type_aliases).unwrap_or(0);
+            let alloc = if attr_str(op, "constant") == Some("false") {
+                let alloc = AllocId(self.next_alloc);
+                self.next_alloc += 1;
+                alloc
+            } else {
+                AllocId(u32::MAX - self.globals.len() as u32)
+            };
+            let base = Location {
+                alloc,
+                byte_offset: 0,
+            };
+            self.globals.insert(name.to_string(), base);
+            self.aggregate_allocs
+                .insert(alloc, AggregateBinding { alloc, size });
+            for (offset, value) in values {
+                self.heap.insert(
+                    Location {
+                        alloc,
+                        byte_offset: offset,
+                    },
+                    value,
+                );
+            }
+            if attr_str(op, "constant") == Some("false") {
+                self.trace.push(Effect::Alloc { alloc, size });
             }
             return;
         }
@@ -284,6 +329,20 @@ impl Interp {
             CirOpKind::Alloca => {
                 let result = first_result(op);
                 self.locals.insert(result.to_string());
+                let pointee =
+                    result_type(op).and_then(|ty| cir_ptr_pointee(ty, &self.type_aliases));
+                if let Some(ty) = pointee
+                    && cir_is_aggregate_type(ty, &self.type_aliases)
+                    && let Some(size) = cir_type_size(ty, &self.type_aliases)
+                {
+                    self.aggregate_bindings.insert(
+                        result.to_string(),
+                        AggregateBinding {
+                            alloc: AllocId(u32::MAX),
+                            size,
+                        },
+                    );
+                }
                 Flow::Normal
             }
             CirOpKind::GetGlobal => {
@@ -384,6 +443,8 @@ impl Interp {
             CirOpKind::GetElement => self.get_element(op),
             CirOpKind::PtrDiff => self.ptr_diff(op),
             CirOpKind::GetMember => self.get_member(op),
+            CirOpKind::GetBitfield => self.get_bitfield(op),
+            CirOpKind::SetBitfield => self.set_bitfield(op),
             CirOpKind::Copy => self.copy(op),
             CirOpKind::LibcMemchr => self.libc_memchr(op),
             CirOpKind::Store => self.store(op),
@@ -408,23 +469,20 @@ impl Interp {
             CirOpKind::IndirectBr => self.indirect_br(op),
             CirOpKind::Label => Flow::Normal,
             CirOpKind::Return => {
-                let code = op
+                let value = op
                     .operands
                     .first()
                     .map(|name| self.resolve(name))
-                    .map(|value| match value {
-                        Value::Int { value, .. } => value as i32,
-                        other => {
-                            panic!("effects::cir: expected an integer exit code, found {other:?}")
-                        }
-                    })
-                    .unwrap_or(0);
-                let value = Value::Int {
-                    width: IntWidth::W32,
-                    signed: true,
-                    value: code as i128,
-                };
+                    .unwrap_or(Value::Int {
+                        width: IntWidth::W32,
+                        signed: true,
+                        value: 0,
+                    });
                 if self.call_depth == 0 {
+                    let Value::Int { value: code, .. } = value else {
+                        panic!("effects::cir: expected an integer exit code, found {value:?}")
+                    };
+                    let code = code as i32;
                     self.trace.push(Effect::Exit(code));
                 }
                 Flow::Return(value)
@@ -741,7 +799,8 @@ impl Interp {
                 args.len()
             );
         }
-        let saved_env = self.env.clone();
+        let saved_env = std::mem::take(&mut self.env);
+        let saved_aggregate_bindings = self.aggregate_bindings.clone();
         for ((arg_name, _), value) in entry.args.iter().zip(args) {
             self.env.insert(arg_name.clone(), *value);
         }
@@ -749,6 +808,7 @@ impl Interp {
         let flow = self.run_function_region(&f.regions[0]);
         self.call_depth -= 1;
         self.env = saved_env;
+        self.aggregate_bindings = saved_aggregate_bindings;
         let Flow::Return(value) = flow else {
             panic!("effects::cir: user function `{name}` did not return");
         };
@@ -879,53 +939,65 @@ impl Interp {
         Flow::Normal
     }
 
-    // field byte offset = index_attr * this field's own size (assumes homogeneous field sizes)
     fn get_member(&mut self, op: &Op) -> Flow {
         let result = first_result(op);
         let base_name = &op.operands[0];
-        let index = attr_int(op, "index_attr").expect("cir.get_member: missing index_attr") as u64;
-        let field_size =
-            pointee_byte_size(result_type(op)).expect("cir.get_member: field pointee size");
+        let index =
+            attr_int(op, "index_attr").expect("cir.get_member: missing index_attr") as usize;
+        let base_ptr_ty = result_type_for_operand(op.ty.as_deref(), 0);
+        let record_ty = base_ptr_ty
+            .and_then(|ty| cir_ptr_pointee(ty, &self.type_aliases))
+            .expect("cir.get_member: record pointer type");
+        let field_offset = cir_struct_field_offset(record_ty, index, &self.type_aliases)
+            .or_else(|| {
+                result_type(op)
+                    .and_then(|ty| cir_ptr_pointee(ty, &self.type_aliases))
+                    .and_then(|ty| cir_type_size(ty, &self.type_aliases))
+                    .map(|size| size * index as u64)
+            })
+            .unwrap_or(0);
         let base = if self.locals.contains(base_name) {
-            self.struct_base(base_name, index, field_size)
+            self.aggregate_base(base_name)
         } else {
             self.resolve_ref(base_name)
         };
         let loc = Location {
             alloc: base.alloc,
-            byte_offset: base.byte_offset + index * field_size,
+            byte_offset: base.byte_offset + field_offset,
         };
         self.env.insert(result.to_string(), Value::Ref(loc));
         Flow::Normal
     }
 
-    fn struct_base(&mut self, name: &str, index: u64, field_size: u64) -> Location {
-        let needed_size = (index + 1) * field_size;
-        let alloc = match self.struct_allocs.get(name) {
-            Some(&alloc) => {
-                let slot = self.struct_alloc_slot[&alloc];
-                if let Effect::Alloc { size, .. } = &mut self.trace.effects[slot] {
-                    *size = (*size).max(needed_size);
-                }
-                alloc
-            }
-            None => {
-                let alloc = AllocId(self.next_alloc);
-                self.next_alloc += 1;
-                self.struct_alloc_slot
-                    .insert(alloc, self.trace.effects.len());
-                self.trace.push(Effect::Alloc {
-                    alloc,
-                    size: needed_size,
-                });
-                self.struct_allocs.insert(name.to_string(), alloc);
-                alloc
-            }
-        };
-        Location {
+    fn aggregate_base(&mut self, name: &str) -> Location {
+        if let Some(binding) = self.aggregate_bindings.get(name)
+            && binding.alloc != AllocId(u32::MAX)
+        {
+            return Location {
+                alloc: binding.alloc,
+                byte_offset: 0,
+            };
+        }
+        let size = self
+            .aggregate_bindings
+            .get(name)
+            .map(|binding| binding.size)
+            .unwrap_or(0);
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.trace.push(Effect::Alloc { alloc, size });
+        let binding = AggregateBinding { alloc, size };
+        self.aggregate_bindings
+            .insert(name.to_string(), binding.clone());
+        self.aggregate_allocs.insert(alloc, binding);
+        self.struct_alloc_slot
+            .insert(alloc, self.trace.effects.len() - 1);
+        let loc = Location {
             alloc,
             byte_offset: 0,
-        }
+        };
+        self.env.insert(name.to_string(), Value::Ref(loc));
+        loc
     }
 
     fn store(&mut self, op: &Op) -> Flow {
@@ -941,8 +1013,23 @@ impl Interp {
             && let Some(ordering) = attr_int(op, "mem_order")
         {
             self.atomic_store(place, store_ordering(ordering), value);
+        } else if self.aggregate_bindings.contains_key(place) && matches!(value, Value::Ref(_)) {
+            let dst = self.aggregate_base(place);
+            let Value::Ref(src) = value else {
+                unreachable!();
+            };
+            self.copy_aggregate(dst, src);
         } else if self.locals.contains(place) {
             self.env.insert(place.clone(), value);
+        } else if matches!(value, Value::Ref(_)) && {
+            let dst = self.resolve_ref(place);
+            self.aggregate_allocs.contains_key(&dst.alloc)
+        } {
+            let dst = self.resolve_ref(place);
+            let Value::Ref(src) = value else {
+                unreachable!();
+            };
+            self.copy_aggregate(dst, src);
         } else {
             let loc = self.resolve_ref(place);
             if self.freed.contains(&loc.alloc) {
@@ -957,23 +1044,28 @@ impl Interp {
     fn copy(&mut self, op: &Op) -> Flow {
         let dst = &op.operands[0];
         let src = &op.operands[1];
-        let values = self
-            .arrays
-            .get(src)
-            .cloned()
-            .expect("effects::cir: copy source array is unknown");
-        let alloc = self.ensure_local_array(dst, &values);
-        let mut offset = 0;
-        for value in &values {
-            let loc = Location {
-                alloc,
-                byte_offset: offset,
-            };
-            self.heap.insert(loc, *value);
-            self.trace.push(Effect::Write { loc, value: *value });
-            offset += int_byte_size(value);
+        if let Some(values) = self.arrays.get(src).cloned() {
+            let alloc = self.ensure_local_array(dst, &values);
+            let mut offset = 0;
+            for value in &values {
+                let loc = Location {
+                    alloc,
+                    byte_offset: offset,
+                };
+                self.heap.insert(loc, *value);
+                self.trace.push(Effect::Write { loc, value: *value });
+                offset += int_byte_size(value);
+            }
+            self.arrays.insert(dst.to_string(), values);
+            return Flow::Normal;
         }
-        self.arrays.insert(dst.to_string(), values);
+        let src = self.resolve_ref(src);
+        let dst = if self.aggregate_bindings.contains_key(dst) {
+            self.aggregate_base(dst)
+        } else {
+            self.resolve_ref(dst)
+        };
+        self.copy_aggregate(dst, src);
         Flow::Normal
     }
 
@@ -1025,6 +1117,113 @@ impl Interp {
                 },
                 *value,
             );
+        }
+    }
+
+    fn copy_aggregate(&mut self, dst: Location, src: Location) {
+        let size = self
+            .aggregate_allocs
+            .get(&src.alloc)
+            .or_else(|| self.aggregate_allocs.get(&dst.alloc))
+            .map(|binding| binding.size)
+            .unwrap_or(0);
+        let mut offsets: Vec<u64> = self
+            .heap
+            .keys()
+            .filter(|loc| loc.alloc == src.alloc && loc.byte_offset < src.byte_offset + size)
+            .map(|loc| loc.byte_offset - src.byte_offset)
+            .collect();
+        offsets.sort_unstable();
+        for offset in offsets {
+            let src_loc = Location {
+                alloc: src.alloc,
+                byte_offset: src.byte_offset + offset,
+            };
+            let value = self.heap[&src_loc];
+            let dst_loc = Location {
+                alloc: dst.alloc,
+                byte_offset: dst.byte_offset + offset,
+            };
+            self.heap.insert(dst_loc, value);
+            self.trace.push(Effect::Write {
+                loc: dst_loc,
+                value,
+            });
+        }
+    }
+
+    fn get_bitfield(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let loc = self.bitfield_location(op);
+        let info = self.op_bitfield_info(op);
+        let storage = self.heap.get(&loc).copied().unwrap_or(Value::Int {
+            width: IntWidth::W32,
+            signed: false,
+            value: 0,
+        });
+        let raw = value_as_i128(storage);
+        let value = truncate_bitfield(raw, info.size, info.signed, result_type(op));
+        self.env.insert(result.to_string(), value);
+        self.trace.push(Effect::Read { loc, value });
+        Flow::Normal
+    }
+
+    fn set_bitfield(&mut self, op: &Op) -> Flow {
+        let result = first_result(op);
+        let loc = self.bitfield_location(op);
+        let info = self.op_bitfield_info(op);
+        let input = self.resolve(&op.operands[1]);
+        let truncated = truncate_bitfield(
+            value_as_i128(input),
+            info.size,
+            info.signed,
+            result_type(op),
+        );
+        self.heap.insert(loc, truncated);
+        self.env.insert(result.to_string(), truncated);
+        self.trace.push(Effect::Write {
+            loc,
+            value: truncated,
+        });
+        Flow::Normal
+    }
+
+    fn op_bitfield_info(&self, op: &Op) -> BitfieldInfo {
+        let raw = attr_str(op, "bitfield_info").expect("cir bitfield op missing bitfield_info");
+        bitfield_info(raw, &self.type_aliases)
+    }
+
+    fn bitfield_location(&mut self, op: &Op) -> Location {
+        let storage = self.resolve_ref(&op.operands[0]);
+        let info = self.op_bitfield_info(op);
+        let key = (storage.alloc, info.name);
+        let field_size = bitfield_slot_size(op);
+        let byte_offset = match self.bitfield_offsets.get(&key).copied() {
+            Some(offset) => offset,
+            None => {
+                let offset = self
+                    .bitfield_next_offsets
+                    .get(&storage.alloc)
+                    .copied()
+                    .unwrap_or(0);
+                self.bitfield_offsets.insert(key, offset);
+                self.bitfield_next_offsets
+                    .insert(storage.alloc, offset + field_size);
+                offset
+            }
+        };
+        let needed_size = byte_offset + field_size;
+        if let Some(slot) = self.struct_alloc_slot.get(&storage.alloc).copied()
+            && let Effect::Alloc { size, .. } = &mut self.trace.effects[slot]
+        {
+            *size = (*size).max(needed_size);
+        }
+        if let Some(binding) = self.aggregate_allocs.get_mut(&storage.alloc) {
+            binding.size = binding.size.max(needed_size);
+        }
+        Location {
+            alloc: storage.alloc,
+            byte_offset,
         }
     }
 
@@ -1136,9 +1335,21 @@ impl Interp {
         {
             let value = self.atomic_load(place, load_ordering(ordering));
             self.env.insert(result.to_string(), value);
+        } else if self.aggregate_bindings.contains_key(place) {
+            let loc = self.aggregate_base(place);
+            self.env.insert(result.to_string(), Value::Ref(loc));
         } else if self.locals.contains(place) {
-            let value = self.env[place];
+            let value = *self
+                .env
+                .get(place)
+                .unwrap_or_else(|| panic!("effects::cir: load from uninitialized local `{place}`"));
             self.env.insert(result.to_string(), value);
+        } else if self.load_result_is_aggregate(op) && {
+            let loc = self.resolve_ref(place);
+            self.aggregate_allocs.contains_key(&loc.alloc)
+        } {
+            let loc = self.resolve_ref(place);
+            self.env.insert(result.to_string(), Value::Ref(loc));
         } else {
             let loc = self.resolve_ref(place);
             if self.freed.contains(&loc.alloc) {
@@ -1165,6 +1376,13 @@ impl Interp {
             self.trace.push(Effect::Read { loc, value });
         }
         value
+    }
+
+    fn load_result_is_aggregate(&self, op: &Op) -> bool {
+        result_type(op).is_some_and(|ty| {
+            let ty = expand_type_alias(ty, &self.type_aliases).trim();
+            ty.starts_with("!cir.struct<") || ty.starts_with("!cir.array<")
+        })
     }
 
     fn write_loc(&mut self, loc: Location, value: Value) {
@@ -1513,11 +1731,14 @@ impl Interp {
     }
 
     fn resolve(&self, name: &str) -> Value {
-        self.env[name]
+        *self
+            .env
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::cir: use of unknown value `{name}`"))
     }
 
     fn resolve_int(&self, name: &str) -> (i128, IntWidth, bool) {
-        match self.env[name] {
+        match self.resolve(name) {
             Value::Int {
                 width,
                 signed,
@@ -1528,7 +1749,7 @@ impl Interp {
     }
 
     fn resolve_ref(&mut self, name: &str) -> Location {
-        match self.env[name] {
+        match self.resolve(name) {
             Value::Ref(loc) => loc,
             Value::Null => self.hidden_c_string(name).unwrap_or_else(|| {
                 panic!("effects::cir: expected pointer value for {name}, found Null")
@@ -1538,14 +1759,14 @@ impl Interp {
     }
 
     fn resolve_file(&self, name: &str) -> FileId {
-        match self.env[name] {
+        match self.resolve(name) {
             Value::File(file) => file,
             other => panic!("effects::cir: expected file handle for {name}, found {other:?}"),
         }
     }
 
     fn resolve_bool(&self, name: &str) -> bool {
-        match self.env[name] {
+        match self.resolve(name) {
             Value::Bool(value) => value,
             other => panic!("effects::cir: expected bool value for {name}, found {other:?}"),
         }

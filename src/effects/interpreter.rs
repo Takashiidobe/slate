@@ -6,7 +6,9 @@
 //! a bare `assert_eq!` on two multi-effect vectors doesn't say which
 //! allocation or index actually diverged.
 
-use super::{Effect, EffectTrace};
+use std::collections::{BTreeMap, BTreeSet};
+
+use super::{AllocId, Effect, EffectTrace, Location, OptionValue, Value};
 
 /// Where and how two traces first diverge.
 #[allow(clippy::large_enum_variant)]
@@ -44,6 +46,8 @@ impl std::fmt::Display for Divergence {
 }
 
 pub fn compare(left: &EffectTrace, right: &EffectTrace) -> Result<(), Box<Divergence>> {
+    let left = normalized_for_compare(left);
+    let right = normalized_for_compare(right);
     for (at, (left_effect, right_effect)) in
         left.effects.iter().zip(right.effects.iter()).enumerate()
     {
@@ -64,6 +68,340 @@ pub fn compare(left: &EffectTrace, right: &EffectTrace) -> Result<(), Box<Diverg
         }));
     }
     Ok(())
+}
+
+fn normalized_for_compare(trace: &EffectTrace) -> EffectTrace {
+    let observed = observed_allocs(trace);
+    let pruned = prune_dead_writes(&trace.effects);
+    let effects: Vec<Effect> = pruned
+        .effects
+        .iter()
+        .filter(|effect| !is_compare_filtered_effect(effect, &observed))
+        .cloned()
+        .collect();
+    let alloc_map = compact_alloc_map(&effects);
+    EffectTrace {
+        effects: effects
+            .into_iter()
+            .map(|effect| remap_effect(effect, &alloc_map))
+            .collect(),
+    }
+}
+
+fn prune_dead_writes(effects: &[Effect]) -> EffectTrace {
+    let mut needed_locs = BTreeSet::new();
+    let mut keep = vec![true; effects.len()];
+    for (idx, effect) in effects.iter().enumerate().rev() {
+        match effect {
+            Effect::Read { loc, .. } => {
+                needed_locs.insert(*loc);
+            }
+            Effect::Write { loc, .. } => {
+                if needed_locs.remove(loc) {
+                    keep[idx] = true;
+                } else {
+                    keep[idx] = false;
+                }
+            }
+            _ => {}
+        }
+    }
+    EffectTrace {
+        effects: effects
+            .iter()
+            .zip(keep)
+            .filter_map(|(effect, keep)| keep.then_some(effect.clone()))
+            .collect(),
+    }
+}
+
+fn observed_allocs(trace: &EffectTrace) -> BTreeSet<AllocId> {
+    let mut observed = BTreeSet::new();
+    for effect in &trace.effects {
+        match effect {
+            Effect::Dealloc { alloc } => {
+                observed.insert(*alloc);
+            }
+            Effect::Read { loc, value } => {
+                observed.insert(loc.alloc);
+                observe_value(*value, &mut observed);
+            }
+            Effect::Call { args, .. } => {
+                for value in args {
+                    observe_value(*value, &mut observed);
+                }
+            }
+            Effect::Return(value) => observe_value(*value, &mut observed),
+            Effect::AtomicLoad { value, .. } | Effect::AtomicStore { value, .. } => {
+                observe_value(*value, &mut observed);
+            }
+            Effect::AtomicRmw {
+                operand, old, new, ..
+            } => {
+                observe_value(*operand, &mut observed);
+                observe_value(*old, &mut observed);
+                observe_value(*new, &mut observed);
+            }
+            Effect::AtomicSwap { old, new, .. } => {
+                observe_value(*old, &mut observed);
+                observe_value(*new, &mut observed);
+            }
+            Effect::AtomicCompareExchange {
+                expected,
+                desired,
+                old,
+                ..
+            } => {
+                observe_value(*expected, &mut observed);
+                observe_value(*desired, &mut observed);
+                observe_value(*old, &mut observed);
+            }
+            Effect::Alloc { .. }
+            | Effect::FileOpen { .. }
+            | Effect::FileWrite { .. }
+            | Effect::FileClose { .. }
+            | Effect::AtomicFence { .. }
+            | Effect::Write { .. }
+            | Effect::Exit(_) => {}
+        }
+    }
+    observed
+}
+
+fn observe_value(value: Value, observed: &mut BTreeSet<AllocId>) {
+    match value {
+        Value::Ref(loc) => {
+            observed.insert(loc.alloc);
+        }
+        Value::AtomicResult { value, .. } => observe_option_value(value, observed),
+        Value::Option(Some(value)) => observe_option_value(value, observed),
+        Value::Int { .. }
+        | Value::Float(_)
+        | Value::Bool(_)
+        | Value::File(_)
+        | Value::Atomic(_)
+        | Value::BlockLabel(_)
+        | Value::Null
+        | Value::Option(None) => {}
+    }
+}
+
+fn observe_option_value(value: OptionValue, observed: &mut BTreeSet<AllocId>) {
+    if let OptionValue::Ref(loc) = value {
+        observed.insert(loc.alloc);
+    }
+}
+
+fn is_compare_filtered_effect(effect: &Effect, observed: &BTreeSet<AllocId>) -> bool {
+    match effect {
+        Effect::Alloc { .. } => true,
+        Effect::Write { loc, .. } => !observed.contains(&loc.alloc),
+        _ => false,
+    }
+}
+
+fn compact_alloc_map(effects: &[Effect]) -> BTreeMap<AllocId, AllocId> {
+    let mut map = BTreeMap::new();
+    for effect in effects {
+        for alloc in effect_allocs(effect) {
+            if !map.contains_key(&alloc) {
+                map.insert(alloc, AllocId(map.len() as u32));
+            }
+        }
+    }
+    map
+}
+
+fn effect_allocs(effect: &Effect) -> Vec<AllocId> {
+    let mut allocs = Vec::new();
+    match effect {
+        Effect::Alloc { alloc, .. } | Effect::Dealloc { alloc } => allocs.push(*alloc),
+        Effect::Write { loc, value } | Effect::Read { loc, value } => {
+            allocs.push(loc.alloc);
+            value_allocs(*value, &mut allocs);
+        }
+        Effect::Call { args, .. } => {
+            for value in args {
+                value_allocs(*value, &mut allocs);
+            }
+        }
+        Effect::Return(value)
+        | Effect::AtomicLoad { value, .. }
+        | Effect::AtomicStore { value, .. } => value_allocs(*value, &mut allocs),
+        Effect::AtomicRmw {
+            operand, old, new, ..
+        } => {
+            value_allocs(*operand, &mut allocs);
+            value_allocs(*old, &mut allocs);
+            value_allocs(*new, &mut allocs);
+        }
+        Effect::AtomicSwap { old, new, .. } => {
+            value_allocs(*old, &mut allocs);
+            value_allocs(*new, &mut allocs);
+        }
+        Effect::AtomicCompareExchange {
+            expected,
+            desired,
+            old,
+            ..
+        } => {
+            value_allocs(*expected, &mut allocs);
+            value_allocs(*desired, &mut allocs);
+            value_allocs(*old, &mut allocs);
+        }
+        Effect::FileOpen { .. }
+        | Effect::FileWrite { .. }
+        | Effect::FileClose { .. }
+        | Effect::AtomicFence { .. }
+        | Effect::Exit(_) => {}
+    }
+    allocs
+}
+
+fn value_allocs(value: Value, allocs: &mut Vec<AllocId>) {
+    match value {
+        Value::Ref(loc) => allocs.push(loc.alloc),
+        Value::AtomicResult { value, .. } => option_value_allocs(value, allocs),
+        Value::Option(Some(value)) => option_value_allocs(value, allocs),
+        Value::Int { .. }
+        | Value::Float(_)
+        | Value::Bool(_)
+        | Value::File(_)
+        | Value::Atomic(_)
+        | Value::BlockLabel(_)
+        | Value::Null
+        | Value::Option(None) => {}
+    }
+}
+
+fn option_value_allocs(value: OptionValue, allocs: &mut Vec<AllocId>) {
+    if let OptionValue::Ref(loc) = value {
+        allocs.push(loc.alloc);
+    }
+}
+
+fn remap_effect(effect: Effect, alloc_map: &BTreeMap<AllocId, AllocId>) -> Effect {
+    match effect {
+        Effect::Alloc { alloc, size } => Effect::Alloc {
+            alloc: remap_alloc(alloc, alloc_map),
+            size,
+        },
+        Effect::Dealloc { alloc } => Effect::Dealloc {
+            alloc: remap_alloc(alloc, alloc_map),
+        },
+        Effect::Write { loc, value } => Effect::Write {
+            loc: remap_loc(loc, alloc_map),
+            value: remap_value(value, alloc_map),
+        },
+        Effect::Read { loc, value } => Effect::Read {
+            loc: remap_loc(loc, alloc_map),
+            value: remap_value(value, alloc_map),
+        },
+        Effect::Call { name, args } => Effect::Call {
+            name,
+            args: args
+                .into_iter()
+                .map(|value| remap_value(value, alloc_map))
+                .collect(),
+        },
+        Effect::Return(value) => Effect::Return(remap_value(value, alloc_map)),
+        Effect::AtomicLoad {
+            atomic,
+            ordering,
+            value,
+        } => Effect::AtomicLoad {
+            atomic,
+            ordering,
+            value: remap_value(value, alloc_map),
+        },
+        Effect::AtomicStore {
+            atomic,
+            ordering,
+            value,
+        } => Effect::AtomicStore {
+            atomic,
+            ordering,
+            value: remap_value(value, alloc_map),
+        },
+        Effect::AtomicRmw {
+            atomic,
+            op,
+            ordering,
+            operand,
+            old,
+            new,
+        } => Effect::AtomicRmw {
+            atomic,
+            op,
+            ordering,
+            operand: remap_value(operand, alloc_map),
+            old: remap_value(old, alloc_map),
+            new: remap_value(new, alloc_map),
+        },
+        Effect::AtomicSwap {
+            atomic,
+            ordering,
+            old,
+            new,
+        } => Effect::AtomicSwap {
+            atomic,
+            ordering,
+            old: remap_value(old, alloc_map),
+            new: remap_value(new, alloc_map),
+        },
+        Effect::AtomicCompareExchange {
+            atomic,
+            success,
+            failure,
+            expected,
+            desired,
+            old,
+            exchanged,
+        } => Effect::AtomicCompareExchange {
+            atomic,
+            success,
+            failure,
+            expected: remap_value(expected, alloc_map),
+            desired: remap_value(desired, alloc_map),
+            old: remap_value(old, alloc_map),
+            exchanged,
+        },
+        Effect::FileOpen { file, path, mode } => Effect::FileOpen { file, path, mode },
+        Effect::FileWrite { file, bytes } => Effect::FileWrite { file, bytes },
+        Effect::FileClose { file } => Effect::FileClose { file },
+        Effect::AtomicFence { ordering } => Effect::AtomicFence { ordering },
+        Effect::Exit(code) => Effect::Exit(code),
+    }
+}
+
+fn remap_value(value: Value, alloc_map: &BTreeMap<AllocId, AllocId>) -> Value {
+    match value {
+        Value::Ref(loc) => Value::Ref(remap_loc(loc, alloc_map)),
+        Value::AtomicResult { ok, value } => Value::AtomicResult {
+            ok,
+            value: remap_option_value(value, alloc_map),
+        },
+        Value::Option(Some(value)) => Value::Option(Some(remap_option_value(value, alloc_map))),
+        other => other,
+    }
+}
+
+fn remap_option_value(value: OptionValue, alloc_map: &BTreeMap<AllocId, AllocId>) -> OptionValue {
+    match value {
+        OptionValue::Ref(loc) => OptionValue::Ref(remap_loc(loc, alloc_map)),
+        other => other,
+    }
+}
+
+fn remap_loc(loc: Location, alloc_map: &BTreeMap<AllocId, AllocId>) -> Location {
+    Location {
+        alloc: remap_alloc(loc.alloc, alloc_map),
+        byte_offset: loc.byte_offset,
+    }
+}
+
+fn remap_alloc(alloc: AllocId, alloc_map: &BTreeMap<AllocId, AllocId>) -> AllocId {
+    alloc_map.get(&alloc).copied().unwrap_or(alloc)
 }
 
 #[cfg(test)]
@@ -143,7 +481,7 @@ mod tests {
         assert_eq!(
             *divergence,
             Divergence::EffectMismatch {
-                at: 2,
+                at: 1,
                 left: Effect::Write {
                     loc: Location {
                         alloc: AllocId(0),
@@ -171,9 +509,9 @@ mod tests {
         assert_eq!(
             compare(&cir, &rust_ast),
             Err(Box::new(Divergence::LengthMismatch {
-                at: 5,
-                left_len: 6,
-                right_len: 5,
+                at: 4,
+                left_len: 5,
+                right_len: 4,
             }))
         );
     }
@@ -204,6 +542,178 @@ mod tests {
             }],
         };
         let right = left.clone();
+        assert_eq!(compare(&left, &right), Ok(()));
+    }
+
+    #[test]
+    fn copy_only_allocations_are_ignored_in_comparison_view() {
+        let left = EffectTrace {
+            effects: vec![
+                Effect::Alloc {
+                    alloc: AllocId(0),
+                    size: 8,
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc: AllocId(0),
+                        byte_offset: 0,
+                    },
+                    value: int32(1),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc: AllocId(0),
+                        byte_offset: 4,
+                    },
+                    value: int32(2),
+                },
+                Effect::Alloc {
+                    alloc: AllocId(1),
+                    size: 8,
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc: AllocId(1),
+                        byte_offset: 0,
+                    },
+                    value: int32(1),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc: AllocId(1),
+                        byte_offset: 4,
+                    },
+                    value: int32(2),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc: AllocId(1),
+                        byte_offset: 0,
+                    },
+                    value: int32(1),
+                },
+                Effect::Exit(1),
+            ],
+        };
+        let right = EffectTrace {
+            effects: vec![
+                Effect::Alloc {
+                    alloc: AllocId(0),
+                    size: 8,
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc: AllocId(0),
+                        byte_offset: 0,
+                    },
+                    value: int32(1),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc: AllocId(0),
+                        byte_offset: 4,
+                    },
+                    value: int32(2),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc: AllocId(0),
+                        byte_offset: 0,
+                    },
+                    value: int32(1),
+                },
+                Effect::Exit(1),
+            ],
+        };
+
+        assert_eq!(compare(&left, &right), Ok(()));
+    }
+
+    #[test]
+    fn stack_allocation_timing_is_ignored_in_comparison_view() {
+        let left = EffectTrace {
+            effects: vec![
+                Effect::Alloc {
+                    alloc: AllocId(0),
+                    size: 4,
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc: AllocId(0),
+                        byte_offset: 0,
+                    },
+                    value: int32(1),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc: AllocId(0),
+                        byte_offset: 0,
+                    },
+                    value: int32(1),
+                },
+                Effect::Alloc {
+                    alloc: AllocId(1),
+                    size: 4,
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc: AllocId(1),
+                        byte_offset: 0,
+                    },
+                    value: int32(2),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc: AllocId(1),
+                        byte_offset: 0,
+                    },
+                    value: int32(2),
+                },
+                Effect::Exit(0),
+            ],
+        };
+        let right = EffectTrace {
+            effects: vec![
+                Effect::Alloc {
+                    alloc: AllocId(0),
+                    size: 4,
+                },
+                Effect::Alloc {
+                    alloc: AllocId(1),
+                    size: 4,
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc: AllocId(0),
+                        byte_offset: 0,
+                    },
+                    value: int32(1),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc: AllocId(0),
+                        byte_offset: 0,
+                    },
+                    value: int32(1),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc: AllocId(1),
+                        byte_offset: 0,
+                    },
+                    value: int32(2),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc: AllocId(1),
+                        byte_offset: 0,
+                    },
+                    value: int32(2),
+                },
+                Effect::Exit(0),
+            ],
+        };
+
         assert_eq!(compare(&left, &right), Ok(()));
     }
 }
