@@ -99,7 +99,19 @@ fn translate(path: &Path) -> Result<String, String> {
         return Err("lowering failed".into());
     }
 
-    Ok(fixups::apply(program).emit())
+    Ok(fixups::apply_with(program, &skip_set_from_env()?).emit())
+}
+
+/// `SLATE_SKIP_PASS=<name>` disables one named fixup pass, for
+/// translation-validation regression testing (slate-4us epic): comparing a
+/// fixture's translated output with and without a given pass active.
+fn skip_set_from_env() -> Result<fixups::SkipSet, String> {
+    match std::env::var("SLATE_SKIP_PASS") {
+        Ok(name) if !name.trim().is_empty() => fixups::Pass::parse(name.trim())
+            .map(fixups::SkipSet::skip)
+            .ok_or_else(|| format!("unknown SLATE_SKIP_PASS: {name}")),
+        _ => Ok(fixups::SkipSet::none()),
+    }
 }
 
 fn collect_c_modules(dir: &Path) -> Result<Vec<(String, PathBuf)>, String> {
