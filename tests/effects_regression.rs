@@ -157,3 +157,19 @@ fn idiomatized_nullable_pointer_fixture_matches_cir_effects() {
         "tests/fixtures/effects_nullable_pointer.c",
     );
 }
+
+#[test]
+fn idiomatized_stdio_file_write_fixture_matches_cir_effects() {
+    assert_fixture_matches(
+        "compare-effects-cir-rust",
+        "tests/fixtures/effects_stdio_file_write.c",
+    );
+}
+
+#[test]
+fn stdio_file_write_fixup_preserves_rust_effects() {
+    assert_fixture_matches(
+        "compare-effects-rust-rust",
+        "tests/fixtures/effects_stdio_file_write.c",
+    );
+}
