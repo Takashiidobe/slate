@@ -107,6 +107,13 @@ cargo test --test differential generated_differential
 cargo test --test stdlib_coverage
 ```
 
+If the ticket touches `src/lower.rs`, also run the alive-tv suite (skips
+cleanly without `alive-tv` installed):
+
+```bash
+cargo nextest r --release --test alive_regression -E 'test(baseline_lowering_matches_c_semantics)'
+```
+
 Leave no generated, temporary, or unrelated files in the branch. Do not rewrite
 unrelated user changes.
 

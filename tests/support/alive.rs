@@ -152,7 +152,10 @@ fn extract_count(out: &str, label: &str) -> Option<u32> {
 /// Rewrites every top-level fn (including `main`) to a `#[no_mangle] pub
 /// extern "C" fn` matching C's symbol/ABI for alive-tv's by-name pairing;
 /// `main` also gets `-> i32` with `std::process::exit(EXPR)` turned into
-/// `return (EXPR)` to match C's `main` signature.
+/// `return (EXPR)` to match C's `main` signature. Top-level `static mut`s get
+/// the same `#[no_mangle] pub` treatment, since alive-tv also matches globals
+/// by name and otherwise sees Rust's mangled symbol as a new global the
+/// target introduces, refusing to compare any function that touches it.
 fn force_extern_c(src: &str) -> String {
     let mut out = String::with_capacity(src.len());
     for line in src.lines() {
@@ -168,6 +171,9 @@ fn force_extern_c(src: &str) -> String {
             } else {
                 out.push_str(line);
             }
+        } else if let Some(rest) = line.strip_prefix("static mut ") {
+            out.push_str("#[unsafe(no_mangle)]\npub static mut ");
+            out.push_str(rest);
         } else {
             out.push_str(line);
         }
