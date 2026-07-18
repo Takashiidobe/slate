@@ -41,6 +41,10 @@ pub mod rust_ast;
 pub(crate) enum CallSummary {
     Malloc,
     Free,
+    Memcpy,
+    Memmove,
+    Memset,
+    Memchr,
     Strlen,
     Printf,
     Fopen,
@@ -54,6 +58,10 @@ pub(crate) fn call_summary(name: &str) -> Option<CallSummary> {
     match name {
         "malloc" => Some(CallSummary::Malloc),
         "free" => Some(CallSummary::Free),
+        "memcpy" => Some(CallSummary::Memcpy),
+        "memmove" => Some(CallSummary::Memmove),
+        "memset" => Some(CallSummary::Memset),
+        "memchr" => Some(CallSummary::Memchr),
         "strlen" => Some(CallSummary::Strlen),
         "printf" => Some(CallSummary::Printf),
         "fopen" => Some(CallSummary::Fopen),

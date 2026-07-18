@@ -56,6 +56,8 @@ struct VecBinding {
     owned: bool,
 }
 
+const LAZY_ARRAY_ALLOC: AllocId = AllocId(u32::MAX);
+
 struct StructBinding {
     alloc: AllocId,
     field_offsets: HashMap<String, u64>,
@@ -78,6 +80,7 @@ struct Interp {
     atomics: HashMap<String, AtomicId>,
     atomic_values: HashMap<AtomicId, Value>,
     heap: HashMap<Location, Value>,
+    hidden_c_strings: HashMap<Vec<u8>, Location>,
     next_alloc: u32,
     next_file: u32,
     next_atomic: u32,
@@ -269,6 +272,12 @@ impl Interp {
                 self.drop_var(&args[0]);
                 Flow::Normal
             }
+            Stmt::Expr(Expr::Call { func, args })
+                if is_path(func, &["std", "ptr", "write_volatile"]) =>
+            {
+                self.write_volatile(args);
+                Flow::Normal
+            }
             Stmt::Expr(Expr::MethodCall { recv, method, args })
                 if method == "unwrap" && args.is_empty() && self.write_all_call(recv) =>
             {
@@ -370,6 +379,7 @@ impl Interp {
     }
 
     fn assign_array(&mut self, name: &str, value: &Expr) {
+        self.materialize_collection(name);
         let binding = self
             .vecs
             .get(name)
@@ -435,6 +445,7 @@ impl Interp {
                     }
                 };
                 let idx = value_as_u64(self.eval(index));
+                self.materialize_collection(name);
                 let binding = self.vecs.get(name).unwrap_or_else(|| {
                     panic!("effects::rust_ast: compound-assign into unknown Vec `{name}`")
                 });
@@ -551,20 +562,25 @@ impl Interp {
         if !values.is_empty() && values.len() as u64 != len {
             panic!("effects::rust_ast: array initializer length does not match type");
         }
-        let alloc = AllocId(self.next_alloc);
-        self.next_alloc += 1;
-        self.trace.push(Effect::Alloc {
-            alloc,
-            size: len * elem_size,
-        });
-        for (index, value) in values.iter().enumerate() {
-            let loc = Location {
+        let alloc = if values.is_empty() {
+            LAZY_ARRAY_ALLOC
+        } else {
+            let alloc = AllocId(self.next_alloc);
+            self.next_alloc += 1;
+            self.trace.push(Effect::Alloc {
                 alloc,
-                byte_offset: index as u64 * elem_size,
-            };
-            self.heap.insert(loc, *value);
-            self.trace.push(Effect::Write { loc, value: *value });
-        }
+                size: len * elem_size,
+            });
+            for (index, value) in values.iter().enumerate() {
+                let loc = Location {
+                    alloc,
+                    byte_offset: index as u64 * elem_size,
+                };
+                self.heap.insert(loc, *value);
+                self.trace.push(Effect::Write { loc, value: *value });
+            }
+            alloc
+        };
         self.vecs.insert(
             name.to_string(),
             VecBinding {
@@ -732,6 +748,7 @@ impl Interp {
         };
         let idx = value_as_u64(self.eval(index));
         let raw = value_as_i128(self.eval(value));
+        self.materialize_collection(name);
         let binding = self
             .vecs
             .get_mut(name)
@@ -910,6 +927,8 @@ impl Interp {
                 )
             }),
             Expr::Cast { expr, ty } => cast_value_to_type(self.eval(expr), ty),
+            Expr::ByteStr(bytes) | Expr::CStr(bytes) => Value::Ref(self.hidden_c_string(bytes)),
+            Expr::ArrayPtr { array, .. } => Value::Ref(self.collection_base(array)),
             Expr::AddrOf { expr, .. } => Value::Ref(self.addr_of(expr)),
             Expr::Unary { op, expr } => {
                 let value = self.eval(expr);
@@ -951,6 +970,7 @@ impl Interp {
                     other => panic!("effects::rust_ast: unsupported index base `{other:?}`"),
                 };
                 let idx = value_as_u64(self.eval(index));
+                self.materialize_collection(name);
                 let binding = self.vecs.get(name).unwrap_or_else(|| {
                     panic!("effects::rust_ast: index into unknown Vec `{name}`")
                 });
@@ -970,6 +990,39 @@ impl Interp {
             Expr::Field { base, field } => self.eval_field(base, field),
             Expr::MethodCall { recv, method, args } if method == "len" && args.is_empty() => {
                 self.string_len(recv)
+            }
+            Expr::MethodCall { recv, method, args }
+                if method == "as_mut_ptr" && args.is_empty() =>
+            {
+                Value::Ref(self.collection_base(recv))
+            }
+            Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
+                self.eval(recv)
+            }
+            Expr::MethodCall { recv, method, args } if method == "add" => {
+                let [offset] = args.as_slice() else {
+                    panic!("effects::rust_ast: pointer add expects one argument");
+                };
+                let base = self.eval_ref(recv);
+                Value::Ref(Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + value_as_u64(self.eval(offset)),
+                })
+            }
+            Expr::MethodCall { recv, method, args } if method == "offset_from" => {
+                let [other] = args.as_slice() else {
+                    panic!("effects::rust_ast: offset_from expects one argument");
+                };
+                let lhs = self.eval_ref(recv);
+                let rhs = self.eval_ref(other);
+                if lhs.alloc != rhs.alloc {
+                    panic!("effects::rust_ast: offset_from across different allocations");
+                }
+                Value::Int {
+                    width: IntWidth::PointerSized,
+                    signed: true,
+                    value: lhs.byte_offset as i128 - rhs.byte_offset as i128,
+                }
             }
             Expr::MethodCall { recv, method, args } if method == "position" => {
                 self.iter_position(recv, args)
@@ -1382,6 +1435,7 @@ impl Interp {
             Expr::Index { base, index } => {
                 let name = collection_name(base);
                 let idx = value_as_u64(self.eval(index));
+                self.materialize_collection(name);
                 let binding = self.vecs.get(name).unwrap_or_else(|| {
                     panic!("effects::rust_ast: address of index into unknown Vec `{name}`")
                 });
@@ -1400,6 +1454,13 @@ impl Interp {
         }
         if args.is_empty() && is_path(func, &["std", "mem", "size_of"]) {
             return int32(4);
+        }
+        if is_path(func, &["std", "ptr", "read_volatile"]) {
+            return self.read_volatile(args);
+        }
+        if is_path(func, &["std", "ptr", "write_volatile"]) {
+            self.write_volatile(args);
+            return int32(0);
         }
         let Some(name) = path_name(func) else {
             panic!("effects::rust_ast: unsupported call target `{func:?}`");
@@ -1422,10 +1483,119 @@ impl Interp {
         self.call_user(&f, &values)
     }
 
+    fn eval_ref(&mut self, expr: &Expr) -> Location {
+        match self.eval(expr) {
+            Value::Ref(loc) => loc,
+            other => panic!("effects::rust_ast: expected pointer value, found {other:?}"),
+        }
+    }
+
+    fn collection_base(&mut self, expr: &Expr) -> Location {
+        let name = collection_name(expr);
+        self.materialize_collection(name);
+        let binding = self
+            .vecs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: pointer to unknown collection `{name}`"));
+        Location {
+            alloc: binding.alloc,
+            byte_offset: 0,
+        }
+    }
+
+    fn materialize_collection(&mut self, name: &str) {
+        let Some(binding) = self.vecs.get_mut(name) else {
+            return;
+        };
+        if binding.alloc != LAZY_ARRAY_ALLOC {
+            return;
+        }
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: binding.len * binding.elem_size,
+        });
+        binding.alloc = alloc;
+    }
+
+    fn hidden_c_string(&mut self, bytes: &[u8]) -> Location {
+        if let Some(&loc) = self.hidden_c_strings.get(bytes) {
+            return loc;
+        }
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        let base = Location {
+            alloc,
+            byte_offset: 0,
+        };
+        for (index, byte) in bytes.iter().copied().chain(std::iter::once(0)).enumerate() {
+            self.heap.insert(
+                Location {
+                    alloc,
+                    byte_offset: index as u64,
+                },
+                Value::Int {
+                    width: IntWidth::W8,
+                    signed: true,
+                    value: byte as i128,
+                },
+            );
+        }
+        self.hidden_c_strings.insert(bytes.to_vec(), base);
+        base
+    }
+
+    fn read_bytes(&mut self, base: Location, len: u64) -> Vec<Value> {
+        (0..len)
+            .map(|index| {
+                self.read_loc(Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + index,
+                })
+            })
+            .collect()
+    }
+
+    fn write_bytes(&mut self, base: Location, values: &[Value]) {
+        for (index, value) in values.iter().enumerate() {
+            let loc = Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + index as u64,
+            };
+            self.heap.insert(loc, *value);
+            self.trace.push(Effect::Write { loc, value: *value });
+        }
+    }
+
+    fn read_volatile(&mut self, args: &[Expr]) -> Value {
+        let [ptr] = args else {
+            panic!("effects::rust_ast: read_volatile expects one argument");
+        };
+        let name = addr_of_local(ptr);
+        *self
+            .scalars
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: volatile read of unknown `{name}`"))
+    }
+
+    fn write_volatile(&mut self, args: &[Expr]) {
+        let [ptr, value] = args else {
+            panic!("effects::rust_ast: write_volatile expects two arguments");
+        };
+        let name = addr_of_local(ptr).to_string();
+        let value = self.eval(value);
+        self.scalars.insert(name, value);
+    }
+
     fn eval_call_summary(&mut self, summary: CallSummary, args: &[Expr]) -> Value {
         match summary {
             CallSummary::Malloc => self.call_malloc(args),
             CallSummary::Free => self.call_free(args),
+            CallSummary::Memcpy => self.call_memcpy(args),
+            CallSummary::Memmove => self.call_memcpy(args),
+            CallSummary::Memset => self.call_memset(args),
+            CallSummary::Memchr => self.call_memchr(args),
             CallSummary::Strlen => self.call_strlen(args),
             CallSummary::Fopen => self.call_fopen(args),
             CallSummary::Fputs => self.call_fputs(args),
@@ -1466,6 +1636,54 @@ impl Interp {
         }
         self.trace.push(Effect::Dealloc { alloc: base.alloc });
         int32(0)
+    }
+
+    fn call_memcpy(&mut self, args: &[Expr]) -> Value {
+        let [dst, src, len] = args else {
+            panic!("effects::rust_ast: memcpy/memmove expects three arguments");
+        };
+        let dst = self.eval_ref(dst);
+        let src = self.eval_ref(src);
+        let len = value_as_u64(self.eval(len));
+        let values = self.read_bytes(src, len);
+        self.write_bytes(dst, &values);
+        Value::Ref(dst)
+    }
+
+    fn call_memset(&mut self, args: &[Expr]) -> Value {
+        let [dst, byte, len] = args else {
+            panic!("effects::rust_ast: memset expects three arguments");
+        };
+        let dst = self.eval_ref(dst);
+        let byte = value_as_i128(self.eval(byte)) as u8;
+        let len = value_as_u64(self.eval(len));
+        let value = Value::Int {
+            width: IntWidth::W8,
+            signed: true,
+            value: byte as i128,
+        };
+        self.write_bytes(dst, &vec![value; len as usize]);
+        Value::Ref(dst)
+    }
+
+    fn call_memchr(&mut self, args: &[Expr]) -> Value {
+        let [base, needle, len] = args else {
+            panic!("effects::rust_ast: memchr expects three arguments");
+        };
+        let base = self.eval_ref(base);
+        let needle = value_as_i128(self.eval(needle)) as u8;
+        let len = value_as_u64(self.eval(len));
+        for index in 0..len {
+            let loc = Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + index,
+            };
+            let value = self.read_loc(loc);
+            if value_as_i128(value) as u8 == needle {
+                return Value::Ref(loc);
+            }
+        }
+        Value::Null
     }
 
     fn call_strlen(&mut self, args: &[Expr]) -> Value {

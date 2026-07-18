@@ -54,6 +54,7 @@ struct Interp {
     globals: HashMap<String, Location>,
     const_arrays: HashMap<String, Vec<Value>>,
     c_strings: HashMap<String, Vec<u8>>,
+    hidden_c_strings: HashMap<String, Location>,
     funcs: HashMap<String, Op>,
     function_pointers: HashMap<String, String>,
     atomics: HashMap<String, AtomicId>,
@@ -232,6 +233,16 @@ impl Interp {
                     self.c_strings.insert(result.to_string(), bytes);
                 }
                 let value = if self.locals.contains(&op.operands[0])
+                    && result_type_for_operand(op.ty.as_deref(), 0)
+                        .is_some_and(|ty| ty.trim().starts_with("!cir.ptr<!cir.array<"))
+                    && result_type(op).is_some_and(|ty| ty.trim().starts_with("!cir.ptr<"))
+                    && !matches!(self.env.get(&op.operands[0]), Some(Value::Ref(_)))
+                {
+                    Value::Ref(self.ensure_local_array_address(
+                        &op.operands[0],
+                        result_type_for_operand(op.ty.as_deref(), 0),
+                    ))
+                } else if self.locals.contains(&op.operands[0])
                     && result_type(op).is_some_and(|ty| ty.trim().starts_with("!cir.ptr<"))
                     && !matches!(self.env.get(&op.operands[0]), Some(Value::Ref(_)))
                 {
@@ -434,6 +445,9 @@ impl Interp {
         match summary {
             CallSummary::Malloc => self.call_malloc(op),
             CallSummary::Free => self.call_free(op),
+            CallSummary::Memcpy | CallSummary::Memmove => self.call_memcpy(op),
+            CallSummary::Memset => self.call_memset(op),
+            CallSummary::Memchr => self.call_memchr(op),
             CallSummary::Strlen => self.call_strlen(op),
             CallSummary::Printf => self.call_printf(op),
             CallSummary::Fopen => self.call_fopen(op),
@@ -468,6 +482,50 @@ impl Interp {
             panic!("effects::cir: double free of {:?}", base.alloc);
         }
         self.trace.push(Effect::Dealloc { alloc: base.alloc });
+    }
+
+    fn call_memcpy(&mut self, op: &Op) {
+        let [dst, src, len] = op.operands.as_slice() else {
+            panic!("effects::cir: memcpy/memmove expects three arguments");
+        };
+        let dst = self.resolve_ref(dst);
+        let src = self.resolve_ref(src);
+        let len = value_as_u64(self.resolve(len));
+        let values = self.read_bytes(src, len);
+        self.write_bytes(dst, &values);
+        if let Some(result) = op.results.first() {
+            self.env.insert(result.clone(), Value::Ref(dst));
+        }
+    }
+
+    fn call_memset(&mut self, op: &Op) {
+        let [dst, byte, len] = op.operands.as_slice() else {
+            panic!("effects::cir: memset expects three arguments");
+        };
+        let dst = self.resolve_ref(dst);
+        let byte = self.resolve_int(byte).0 as u8;
+        let len = value_as_u64(self.resolve(len));
+        let value = Value::Int {
+            width: IntWidth::W8,
+            signed: true,
+            value: byte as i128,
+        };
+        self.write_bytes(dst, &vec![value; len as usize]);
+        if let Some(result) = op.results.first() {
+            self.env.insert(result.clone(), Value::Ref(dst));
+        }
+    }
+
+    fn call_memchr(&mut self, op: &Op) {
+        let [base, needle, len] = op.operands.as_slice() else {
+            panic!("effects::cir: memchr expects three arguments");
+        };
+        let result = first_result(op);
+        let base = self.resolve_ref(base);
+        let needle = self.resolve_int(needle).0 as u8;
+        let len = value_as_u64(self.resolve(len));
+        let found = self.memchr(base, needle, len);
+        self.env.insert(result.to_string(), found);
     }
 
     fn call_strlen(&mut self, op: &Op) {
@@ -761,7 +819,13 @@ impl Interp {
     }
 
     fn store(&mut self, op: &Op) -> Flow {
-        let value = self.resolve(&op.operands[0]);
+        let value = if matches!(self.env.get(&op.operands[0]), Some(Value::Null))
+            && self.c_strings.contains_key(&op.operands[0])
+        {
+            Value::Ref(self.hidden_c_string(&op.operands[0]).unwrap())
+        } else {
+            self.resolve(&op.operands[0])
+        };
         let place = &op.operands[1];
         if self.locals.contains(place)
             && let Some(ordering) = attr_int(op, "mem_order")
@@ -808,7 +872,13 @@ impl Interp {
         let base = self.resolve_ref(&op.operands[0]);
         let (needle, ..) = self.resolve_int(&op.operands[1]);
         let (len, ..) = self.resolve_int(&op.operands[2]);
-        for index in 0..len as u64 {
+        let found = self.memchr(base, needle as u8, len as u64);
+        self.env.insert(result.to_string(), found);
+        Flow::Normal
+    }
+
+    fn memchr(&mut self, base: Location, needle: u8, len: u64) -> Value {
+        for index in 0..len {
             let loc = Location {
                 alloc: base.alloc,
                 byte_offset: base.byte_offset + index,
@@ -818,13 +888,34 @@ impl Interp {
                 .get(&loc)
                 .unwrap_or_else(|| panic!("effects::cir: memchr read from never-written {loc:?}"));
             self.trace.push(Effect::Read { loc, value });
-            if value_as_u8(value) == needle as u8 {
-                self.env.insert(result.to_string(), Value::Ref(loc));
-                return Flow::Normal;
+            if value_as_u8(value) == needle {
+                return Value::Ref(loc);
             }
         }
-        self.env.insert(result.to_string(), Value::Null);
-        Flow::Normal
+        Value::Null
+    }
+
+    fn read_bytes(&mut self, base: Location, len: u64) -> Vec<Value> {
+        (0..len)
+            .map(|index| {
+                self.read_loc(Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + index,
+                })
+            })
+            .collect()
+    }
+
+    fn write_bytes(&mut self, base: Location, values: &[Value]) {
+        for (index, value) in values.iter().enumerate() {
+            self.write_loc(
+                Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + index as u64,
+                },
+                *value,
+            );
+        }
     }
 
     fn ensure_local_array(&mut self, name: &str, values: &[Value]) -> AllocId {
@@ -869,6 +960,62 @@ impl Interp {
         self.heap.insert(loc, value);
         self.trace.push(Effect::Write { loc, value });
         loc
+    }
+
+    fn ensure_local_array_address(&mut self, name: &str, ty: Option<&str>) -> Location {
+        if let Some(&alloc) = self.local_allocs.get(name) {
+            return Location {
+                alloc,
+                byte_offset: 0,
+            };
+        }
+        let (elem_ty, len) = ty
+            .and_then(|ty| ty.trim().strip_prefix("!cir.ptr<")?.strip_suffix('>'))
+            .and_then(cir_array_ty)
+            .unwrap_or_else(|| panic!("effects::cir: expected array pointer type for `{name}`"));
+        let (_, bits) = int_type_width_signed(elem_ty)
+            .unwrap_or_else(|| panic!("effects::cir: expected integer array element for `{name}`"));
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.local_allocs.insert(name.to_string(), alloc);
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: len as u64 * (bits / 8) as u64,
+        });
+        let loc = Location {
+            alloc,
+            byte_offset: 0,
+        };
+        self.env.insert(name.to_string(), Value::Ref(loc));
+        loc
+    }
+
+    fn hidden_c_string(&mut self, name: &str) -> Option<Location> {
+        if let Some(&loc) = self.hidden_c_strings.get(name) {
+            return Some(loc);
+        }
+        let bytes = self.c_strings.get(name)?;
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        let base = Location {
+            alloc,
+            byte_offset: 0,
+        };
+        for (index, byte) in bytes.iter().enumerate() {
+            self.heap.insert(
+                Location {
+                    alloc,
+                    byte_offset: index as u64,
+                },
+                Value::Int {
+                    width: IntWidth::W8,
+                    signed: true,
+                    value: *byte as i128,
+                },
+            );
+        }
+        self.hidden_c_strings.insert(name.to_string(), base);
+        Some(base)
     }
 
     fn load(&mut self, op: &Op) -> Flow {
@@ -1107,9 +1254,12 @@ impl Interp {
         }
     }
 
-    fn resolve_ref(&self, name: &str) -> Location {
+    fn resolve_ref(&mut self, name: &str) -> Location {
         match self.env[name] {
             Value::Ref(loc) => loc,
+            Value::Null => self.hidden_c_string(name).unwrap_or_else(|| {
+                panic!("effects::cir: expected pointer value for {name}, found Null")
+            }),
             other => panic!("effects::cir: expected pointer value for {name}, found {other:?}"),
         }
     }

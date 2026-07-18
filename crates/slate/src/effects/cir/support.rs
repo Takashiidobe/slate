@@ -147,6 +147,8 @@ pub(super) fn global_const_array_values(op: &Op) -> Option<Vec<Value>> {
     let (elem_ty, len) = cir_array_ty(ty)?;
     if let Some(bytes) = parse_cir_const_string_array(raw) {
         let (signed, bits) = int_type_width_signed(elem_ty)?;
+        let mut bytes = bytes;
+        bytes.resize(len, 0);
         return Some(
             bytes
                 .into_iter()
