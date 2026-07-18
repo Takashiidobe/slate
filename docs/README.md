@@ -161,6 +161,8 @@ location (`file:line:col`):
   pass: shape, shared helpers, safety rules, and registration.
 - [architecture.md](architecture.md) — sources, IRs, pipeline, shared context.
 - [passes.md](passes.md) — the pass catalog: what runs, in what order, how.
+- [facts.md](facts.md) — the `FixupFacts` analysis layer: what each collector
+  proves and which rewrite pass consumes it.
 - [idiomatization.md](idiomatization.md) — the `unsafe`/`libc` → idiomatic
   ladder and its current implementation status.
 - [fuzzing.md](fuzzing.md) — the stateful C-subset generator behind
