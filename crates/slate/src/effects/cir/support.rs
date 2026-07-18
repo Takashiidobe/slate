@@ -1,6 +1,7 @@
 use crate::cir::ir::{Attr, Op};
 use crate::effects::{IntWidth, Value};
 use crate::rust_ast::{AtomicOrdering, AtomicRmwOp};
+use std::collections::BTreeMap;
 
 pub(super) fn values_to_bytes(values: &[Value]) -> Vec<u8> {
     values.iter().map(|value| value_as_u8(*value)).collect()
@@ -164,6 +165,66 @@ pub(super) fn global_const_array_values(op: &Op) -> Option<Vec<Value>> {
     parse_cir_const_numeric_array(raw, elem_ty)
 }
 
+pub(super) fn global_const_aggregate_values(
+    op: &Op,
+    aliases: &BTreeMap<String, String>,
+) -> Option<Vec<(u64, Value)>> {
+    let raw = attr_str(op, "initial_value")?;
+    let ty = attr_str(op, "sym_type")?;
+    let mut values = Vec::new();
+    collect_const_aggregate_values(raw, ty, aliases, 0, &mut values)?;
+    Some(values)
+}
+
+fn collect_const_aggregate_values(
+    raw: &str,
+    ty: &str,
+    aliases: &BTreeMap<String, String>,
+    base: u64,
+    out: &mut Vec<(u64, Value)>,
+) -> Option<()> {
+    if int_type_width_signed(ty).is_some() {
+        out.push((base, int_const_value(raw, Some(ty))));
+        return Some(());
+    }
+    let ty = expand_type_alias(ty, aliases);
+    if let Some((elem_ty, _)) = cir_array_ty(ty) {
+        for (index, elem_raw) in const_aggregate_elements(raw).into_iter().enumerate() {
+            let offset = base + index as u64 * cir_type_size(elem_ty, aliases)?;
+            collect_const_aggregate_values(elem_raw, elem_ty, aliases, offset, out)?;
+        }
+        return Some(());
+    }
+    let fields = cir_struct_fields(ty, aliases)?;
+    for (index, elem_raw) in const_aggregate_elements(raw).into_iter().enumerate() {
+        let field_ty = fields.get(index).copied()?;
+        let offset = base + cir_struct_field_offset(ty, index, aliases)?;
+        collect_const_aggregate_values(elem_raw, field_ty, aliases, offset, out)?;
+    }
+    Some(())
+}
+
+fn const_aggregate_elements(raw: &str) -> Vec<&str> {
+    let Some(start) = raw.find("<{").or_else(|| raw.find("<[")) else {
+        return Vec::new();
+    };
+    let open = raw.as_bytes()[start + 1] as char;
+    let close = if open == '{' { '}' } else { ']' };
+    let inner_start = start + 2;
+    let mut depth = 0usize;
+    for (rel, ch) in raw[inner_start..].char_indices() {
+        match ch {
+            '<' => depth += 1,
+            '>' => depth = depth.saturating_sub(1),
+            _ => {}
+        }
+        if ch == close && depth == 0 {
+            return split_top_level(&raw[inner_start..inner_start + rel], ',');
+        }
+    }
+    Vec::new()
+}
+
 pub(super) fn parse_cir_const_string_array(raw: &str) -> Option<Vec<u8>> {
     let start = raw.find("#cir.const_array<\"")? + "#cir.const_array<\"".len();
     let rest = &raw[start..];
@@ -272,6 +333,37 @@ pub(super) fn value_as_i128(value: Value) -> i128 {
     }
 }
 
+pub(super) fn truncate_bitfield(
+    value: i128,
+    bits: u32,
+    signed: bool,
+    result_ty: Option<&str>,
+) -> Value {
+    let mask = (1i128 << bits) - 1;
+    let mut value = value & mask;
+    if signed {
+        let sign_bit = 1i128 << (bits - 1);
+        if value & sign_bit != 0 {
+            value |= !mask;
+        }
+    }
+    let (result_signed, result_bits) = result_ty
+        .and_then(int_type_width_signed)
+        .unwrap_or((signed, bits));
+    Value::Int {
+        width: int_width(result_bits),
+        signed: result_signed,
+        value,
+    }
+}
+
+pub(super) fn bitfield_slot_size(op: &Op) -> u64 {
+    result_type(op)
+        .and_then(int_type_width_signed)
+        .map(|(_, bits)| (bits / 8) as u64)
+        .unwrap_or(4)
+}
+
 pub(super) fn value_as_u8(value: Value) -> u8 {
     match value {
         Value::Int { value, .. } => value as u8,
@@ -289,6 +381,110 @@ pub(super) fn pointee_byte_size(ptr_ty: Option<&str>) -> Option<u64> {
     }
     let (_, bits) = int_type_width_signed(inner)?;
     Some((bits / 8) as u64)
+}
+
+pub(super) fn expand_type_alias<'a>(ty: &'a str, aliases: &'a BTreeMap<String, String>) -> &'a str {
+    aliases.get(ty.trim()).map_or(ty, String::as_str)
+}
+
+pub(super) fn cir_type_size(ty: &str, aliases: &BTreeMap<String, String>) -> Option<u64> {
+    let ty = ty.trim();
+    if let Some((_, bits)) = int_type_width_signed(ty) {
+        return Some((bits / 8) as u64);
+    }
+    let ty = expand_type_alias(ty, aliases).trim();
+    if ty.starts_with("!cir.ptr<") {
+        return Some(8);
+    }
+    if let Some((elem, len)) = cir_array_ty(ty) {
+        return Some(cir_type_size(elem, aliases)? * len as u64);
+    }
+    let fields = cir_struct_fields(ty, aliases)?;
+    fields
+        .into_iter()
+        .map(|field| cir_type_size(field, aliases))
+        .sum()
+}
+
+pub(super) fn cir_is_aggregate_type(ty: &str, aliases: &BTreeMap<String, String>) -> bool {
+    let ty = expand_type_alias(ty.trim(), aliases).trim();
+    ty.starts_with("!cir.struct<") || ty.starts_with("!cir.array<")
+}
+
+pub(super) fn cir_ptr_pointee<'a>(
+    ty: &'a str,
+    aliases: &'a BTreeMap<String, String>,
+) -> Option<&'a str> {
+    expand_type_alias(ty.trim(), aliases)
+        .trim()
+        .strip_prefix("!cir.ptr<")?
+        .strip_suffix('>')
+}
+
+pub(super) fn cir_struct_field_offset(
+    record_ty: &str,
+    index: usize,
+    aliases: &BTreeMap<String, String>,
+) -> Option<u64> {
+    let fields = cir_struct_fields(record_ty, aliases)?;
+    fields
+        .into_iter()
+        .take(index)
+        .map(|field| cir_type_size(field, aliases))
+        .sum()
+}
+
+pub(super) fn cir_struct_fields<'a>(
+    ty: &'a str,
+    aliases: &'a BTreeMap<String, String>,
+) -> Option<Vec<&'a str>> {
+    let ty = expand_type_alias(ty.trim(), aliases).trim();
+    let start = ty.find('{')?;
+    let end = ty.rfind('}')?;
+    Some(split_top_level(&ty[start + 1..end], ','))
+}
+
+pub(super) fn pointee_type_size(
+    ptr_ty: Option<&str>,
+    aliases: &BTreeMap<String, String>,
+) -> Option<u64> {
+    let pointee = cir_ptr_pointee(ptr_ty?, aliases)?;
+    cir_type_size(pointee, aliases)
+}
+
+pub(super) fn bitfield_info(raw: &str, aliases: &BTreeMap<String, String>) -> BitfieldInfo {
+    let raw = aliases.get(raw.trim()).map_or(raw, String::as_str);
+    let name = parse_named_attr(raw, "name")
+        .unwrap_or_default()
+        .trim_matches('"')
+        .to_string();
+    let size = parse_named_attr(raw, "size")
+        .and_then(|value| value.parse().ok())
+        .expect("cir.bitfield_info: missing size");
+    let offset = parse_named_attr(raw, "offset")
+        .and_then(|value| value.parse().ok())
+        .expect("cir.bitfield_info: missing offset");
+    let signed = parse_named_attr(raw, "is_signed") == Some("true");
+    BitfieldInfo {
+        name,
+        size,
+        offset,
+        signed,
+    }
+}
+
+pub(super) struct BitfieldInfo {
+    pub(super) name: String,
+    pub(super) size: u32,
+    pub(super) offset: u32,
+    pub(super) signed: bool,
+}
+
+fn parse_named_attr<'a>(raw: &'a str, key: &str) -> Option<&'a str> {
+    let start = raw.find(&format!("{key} = "))? + key.len() + 3;
+    let rest = &raw[start..];
+    let end = rest.find(',').unwrap_or(rest.len());
+    Some(rest[..end].trim().trim_end_matches('>'))
 }
 
 pub(super) fn split_top_level(s: &str, sep: char) -> Vec<&str> {

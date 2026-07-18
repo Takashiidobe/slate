@@ -182,6 +182,19 @@ fn idiomatized_struct_field_fixture_matches_cir_effects() {
 }
 
 #[test]
+fn aggregate_value_member_fixture_matches_cir_effects() {
+    assert_fixture_matches(
+        "compare-effects-cir-rust",
+        "tests/fixtures/aggregate_value_member_ops.c",
+    );
+}
+
+#[test]
+fn bitfield_fixture_matches_cir_effects() {
+    assert_fixture_matches("compare-effects-cir-rust", "tests/fixtures/bitfield_ops.c");
+}
+
+#[test]
 fn idiomatized_static_global_fixture_matches_cir_effects() {
     assert_fixture_matches(
         "compare-effects-cir-rust",
