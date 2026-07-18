@@ -231,3 +231,43 @@ fn qsort_comparator_fixup_preserves_rust_effects() {
         "tests/fixtures/effects_qsort_comparator.c",
     );
 }
+
+#[test]
+fn memcpy_fixture_matches_cir_effects() {
+    assert_fixture_matches("compare-effects-cir-rust", "tests/stdlib/string/memcpy.c");
+}
+
+#[test]
+fn memcpy_fixups_preserve_rust_effects() {
+    assert_fixture_matches("compare-effects-rust-rust", "tests/stdlib/string/memcpy.c");
+}
+
+#[test]
+fn memmove_fixture_matches_cir_effects() {
+    assert_fixture_matches("compare-effects-cir-rust", "tests/stdlib/string/memmove.c");
+}
+
+#[test]
+fn memmove_fixups_preserve_rust_effects() {
+    assert_fixture_matches("compare-effects-rust-rust", "tests/stdlib/string/memmove.c");
+}
+
+#[test]
+fn memset_fixture_matches_cir_effects() {
+    assert_fixture_matches("compare-effects-cir-rust", "tests/stdlib/string/memset.c");
+}
+
+#[test]
+fn memset_fixups_preserve_rust_effects() {
+    assert_fixture_matches("compare-effects-rust-rust", "tests/stdlib/string/memset.c");
+}
+
+#[test]
+fn memchr_fixture_matches_cir_effects() {
+    assert_fixture_matches("compare-effects-cir-rust", "tests/stdlib/string/memchr.c");
+}
+
+#[test]
+fn memchr_fixups_preserve_rust_effects() {
+    assert_fixture_matches("compare-effects-rust-rust", "tests/stdlib/string/memchr.c");
+}
