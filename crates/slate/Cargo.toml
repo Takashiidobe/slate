@@ -6,3 +6,8 @@ edition = "2024"
 [dependencies]
 libc = "0.2"
 serde_json = "1"
+
+[[test]]
+name = "alive_regression"
+path = "tests/alive_regression.rs"
+test = false

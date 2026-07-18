@@ -1,129 +1,215 @@
-//! Emit before/after LLVM IR for one skippable fixup pass on a fixture, for
-//! alive-tv translation-validation regression testing (slate-4us epic).
+//! Emit LLVM IR for a fixture's C source and for its baseline Rust lowering,
+//! for alive-tv translation-validation of `src/lower.rs`'s C -> Rust
+//! transformation itself (slate-4us epic).
 //!
-//! Both `slate translate` invocations (pass skipped vs. default) and both
-//! `rustc` invocations pin the same `--crate-name`/`-C metadata`, so a
-//! touched function's mangled symbol is identical across both `.ll` files —
-//! required for alive-tv's two-file mode to pair functions by name.
+//! Baseline here means `SLATE_RAW_LOWER=1` output: `lower::lower`'s AST
+//! printed before any `fixups::apply` rewrite runs. Fixups that change
+//! representation (raw pointers -> Box/Vec/slice/String, ...) are not
+//! candidates for alive-tv comparison since they change a function's memory
+//! layout and ABI, not just its LLVM instructions; the pre-fixup baseline
+//! stays a close transliteration of the C (repr(C), raw pointers, libc), so
+//! its LLVM IR is directly comparable to clang's for the same function.
 
+use std::io::Read;
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Stdio};
+use std::time::{Duration, Instant};
 
-/// Effect of one skippable fixup pass on one fixture.
-pub enum PassEffect {
-    /// The pass did not fire: the translated Rust was identical either way,
-    /// so no `rustc` invocation was needed.
-    Unchanged,
-    /// The pass fired; before/after LLVM IR live at these paths.
-    Changed {
-        before_ll: PathBuf,
-        after_ll: PathBuf,
-    },
+/// LLVM IR for one fixture's C source and its baseline Rust lowering,
+/// sharing a target triple so alive-tv can compare them.
+pub struct LoweringIr {
+    pub c_ll: PathBuf,
+    pub rs_ll: PathBuf,
 }
 
-/// Run `slate translate` on `fixture` with `pass` skipped and with the
-/// default pipeline, then emit LLVM IR for each variant that differs.
-pub fn emit_pass_effect(fixture: &Path, pass: &str, work_dir: &Path) -> Result<PassEffect, String> {
+pub fn emit_lowering_ir(fixture: &Path, work_dir: &Path) -> Result<LoweringIr, String> {
     let stem = fixture
         .file_stem()
         .and_then(|s| s.to_str())
         .ok_or_else(|| format!("bad file stem: {}", fixture.display()))?;
-    let crate_name = rust_crate_name(stem);
-
-    let before_rs = translate_with_skip(fixture, Some(pass))?;
-    let after_rs = translate_with_skip(fixture, None)?;
-    if before_rs == after_rs {
-        return Ok(PassEffect::Unchanged);
-    }
-
     let dir = work_dir.join(format!("alive_{stem}"));
     std::fs::create_dir_all(&dir).map_err(|e| format!("create {}: {e}", dir.display()))?;
-    let before_rs_path = dir.join("before.rs");
-    let after_rs_path = dir.join("after.rs");
-    std::fs::write(&before_rs_path, force_pub_fns(&before_rs))
-        .map_err(|e| format!("write {}: {e}", before_rs_path.display()))?;
-    std::fs::write(&after_rs_path, force_pub_fns(&after_rs))
-        .map_err(|e| format!("write {}: {e}", after_rs_path.display()))?;
 
-    let libc = if before_rs.contains("libc::") || after_rs.contains("libc::") {
+    let target = host_target()?;
+
+    let raw_rs = translate_raw(fixture)?;
+    let rs_src = dir.join("baseline.rs");
+    std::fs::write(&rs_src, force_extern_c(&raw_rs))
+        .map_err(|e| format!("write {}: {e}", rs_src.display()))?;
+
+    let libc = if raw_rs.contains("libc::") {
         Some(ensure_libc_extern(work_dir)?)
     } else {
         None
     };
-    let before_ll = dir.join("before.ll");
-    let after_ll = dir.join("after.ll");
-    emit_llvm_ir(&before_rs_path, &before_ll, &crate_name, libc.as_ref())?;
-    emit_llvm_ir(&after_rs_path, &after_ll, &crate_name, libc.as_ref())?;
 
-    Ok(PassEffect::Changed {
-        before_ll,
-        after_ll,
+    let c_ll = dir.join("c.ll");
+    emit_c_llvm_ir(fixture, &c_ll, &target)?;
+    let rs_ll = dir.join("rs.ll");
+    emit_rs_llvm_ir(&rs_src, &rs_ll, &target, libc.as_ref())?;
+
+    Ok(LoweringIr { c_ll, rs_ll })
+}
+
+/// Result of running `alive-tv` on one pair of LLVM IR files.
+pub struct AliveSummary {
+    pub correct: u32,
+    pub incorrect: u32,
+    pub failed_to_prove: u32,
+    pub output: String,
+}
+
+impl AliveSummary {
+    pub fn ok(&self) -> bool {
+        self.correct > 0 && self.incorrect == 0 && self.failed_to_prove == 0
+    }
+
+    /// True when alive-tv found zero functions in common between the two
+    /// modules — e.g. a fixture whose only logic lives in `main`, which this
+    /// harness deliberately excludes from pairing (its C and Rust signatures
+    /// don't match: `int main(void)` vs. a `fn main()` that calls
+    /// `std::process::exit`). Distinguishing this from a real
+    /// failed-to-prove result matters: it means nothing was checked at all,
+    /// not that alive-tv tried and came up short.
+    pub fn vacuous(&self) -> bool {
+        self.correct == 0 && self.incorrect == 0 && self.failed_to_prove == 0
+    }
+}
+
+/// Outcome of a bounded `alive-tv` run: either it produced a `Summary:`
+/// block, or it was killed for running past `timeout` (large-int fixtures in
+/// particular can make alive-tv's solver take arbitrarily long even at a
+/// modest unroll bound; that's a tool limitation, not evidence of a bug).
+pub enum VerifyOutcome {
+    Completed(AliveSummary),
+    TimedOut,
+}
+
+/// Run `alive-tv` on `c_ll`/`rs_ll`, unrolling loops up to `unroll` times and
+/// killing the process if it runs past `timeout`. alive-tv needs every loop
+/// unrolled to a fixed bound to verify it at all, so a `Completed` result
+/// only proves refinement for inputs whose concrete trip count is within
+/// that bound (bounded translation validation, not an unbounded proof of the
+/// lowering in general).
+pub fn verify(
+    c_ll: &Path,
+    rs_ll: &Path,
+    unroll: u32,
+    timeout: Duration,
+) -> Result<VerifyOutcome, String> {
+    let mut child = Command::new(super::alive_tv())
+        .arg(format!("--src-unroll={unroll}"))
+        .arg(format!("--tgt-unroll={unroll}"))
+        .arg(c_ll)
+        .arg(rs_ll)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .map_err(|e| format!("spawn alive-tv: {e}"))?;
+
+    let deadline = Instant::now() + timeout;
+    let status = loop {
+        if let Some(status) = child
+            .try_wait()
+            .map_err(|e| format!("wait alive-tv: {e}"))?
+        {
+            break status;
+        }
+        if Instant::now() >= deadline {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Ok(VerifyOutcome::TimedOut);
+        }
+        std::thread::sleep(Duration::from_millis(50));
+    };
+
+    let mut stdout = String::new();
+    let mut stderr = String::new();
+    let _ = child.stdout.take().unwrap().read_to_string(&mut stdout);
+    let _ = child.stderr.take().unwrap().read_to_string(&mut stderr);
+    if !status.success() {
+        return Err(format!("alive-tv failed:\n{stdout}\n{stderr}"));
+    }
+    let summary = parse_summary(&stdout)
+        .ok_or_else(|| format!("could not parse alive-tv summary:\n{stdout}"))?;
+    Ok(VerifyOutcome::Completed(summary))
+}
+
+fn parse_summary(out: &str) -> Option<AliveSummary> {
+    Some(AliveSummary {
+        correct: extract_count(out, "correct transformations")?,
+        incorrect: extract_count(out, "incorrect transformations")?,
+        failed_to_prove: extract_count(out, "failed-to-prove transformations")?,
+        output: out.to_string(),
     })
 }
 
-/// Force every top-level fn item public so a `--crate-type=lib` compile
-/// generates code for it even when nothing in the file calls it (rustc only
-/// codegens non-generic private items that are actually reachable, and lib
-/// crates root reachability at the crate's public surface, not at `main`).
-fn force_pub_fns(src: &str) -> String {
+fn extract_count(out: &str, label: &str) -> Option<u32> {
+    out.lines()
+        .find_map(|line| line.trim().strip_suffix(label)?.trim().parse().ok())
+}
+
+/// Rewrites every top-level fn (including `main`) to a `#[no_mangle] pub
+/// extern "C" fn` matching C's symbol/ABI for alive-tv's by-name pairing;
+/// `main` also gets `-> i32` with `std::process::exit(EXPR)` turned into
+/// `return (EXPR)` to match C's `main` signature.
+fn force_extern_c(src: &str) -> String {
     let mut out = String::with_capacity(src.len());
     for line in src.lines() {
-        if !line.starts_with(char::is_whitespace) && is_fn_item_start(line) {
-            out.push_str("pub ");
+        if line == "fn main() {" {
+            out.push_str("#[unsafe(no_mangle)]\npub extern \"C\" fn main() -> i32 {");
+        } else if is_toplevel_fn_start(line) {
+            if let Some(rest) = line.strip_prefix("unsafe fn ") {
+                out.push_str("#[unsafe(no_mangle)]\npub unsafe extern \"C\" fn ");
+                out.push_str(rest);
+            } else if let Some(rest) = line.strip_prefix("fn ") {
+                out.push_str("#[unsafe(no_mangle)]\npub extern \"C\" fn ");
+                out.push_str(rest);
+            } else {
+                out.push_str(line);
+            }
+        } else {
+            out.push_str(line);
         }
-        out.push_str(line);
         out.push('\n');
     }
-    out
+    let out = out
+        .replace("Option<fn(", "Option<extern \"C\" fn(")
+        .replace("std::process::exit(", "return (");
+    inject_main_tail_zero(&out)
 }
 
-fn is_fn_item_start(line: &str) -> bool {
-    let l = line.strip_prefix("pub ").unwrap_or(line);
-    if l != line {
-        return false; // already pub, nothing to add
-    }
-    let l = l.strip_prefix("unsafe ").unwrap_or(l);
-    let l = match l.strip_prefix("extern \"") {
-        Some(rest) => rest.split_once("\" ").map_or(l, |(_, r)| r),
-        None => l,
+/// Once `main`'s body is used as an i32 tail expression, an unreachable
+/// `break 'label;` (no value, from a goto fallback arm) no longer
+/// typechecks against it. Appending a trailing `0` puts the body back in
+/// statement position, matching its original `-> ()` typing.
+fn inject_main_tail_zero(src: &str) -> String {
+    let marker = "pub extern \"C\" fn main() -> i32 {";
+    let Some(marker_pos) = src.find(marker) else {
+        return src.to_string();
     };
-    l.starts_with("fn ")
+    let open_brace = marker_pos + marker.len() - 1;
+    let mut depth = 0i32;
+    let close_brace = src
+        .as_bytes()
+        .iter()
+        .enumerate()
+        .skip(open_brace)
+        .find_map(|(i, &b)| {
+            match b {
+                b'{' => depth += 1,
+                b'}' => depth -= 1,
+                _ => {}
+            }
+            (depth == 0).then_some(i)
+        })
+        .expect("unbalanced braces in main()");
+    format!("{}    0\n{}", &src[..close_brace], &src[close_brace..])
 }
 
-/// A valid `rustc --crate-name` derived from a fixture's file stem (which may
-/// contain hyphens or other characters rustc's crate names disallow).
-fn rust_crate_name(stem: &str) -> String {
-    let mut name: String = stem
-        .chars()
-        .map(|c| if c.is_ascii_alphanumeric() { c } else { '_' })
-        .collect();
-    if name.is_empty() || name.starts_with(|c: char| c.is_ascii_digit()) {
-        name.insert(0, '_');
-    }
-    name
-}
-
-fn translate_with_skip(fixture: &Path, skip_pass: Option<&str>) -> Result<String, String> {
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_slate"));
-    cmd.arg("translate").arg(fixture);
-    match skip_pass {
-        Some(pass) => {
-            cmd.env("SLATE_SKIP_PASS", pass);
-        }
-        None => {
-            cmd.env_remove("SLATE_SKIP_PASS");
-        }
-    }
-    let o = cmd
-        .output()
-        .map_err(|e| format!("spawn slate translate: {e}"))?;
-    if !o.status.success() {
-        return Err(format!(
-            "translate failed:\n{}",
-            String::from_utf8_lossy(&o.stderr)
-        ));
-    }
-    Ok(String::from_utf8_lossy(&o.stdout).into_owned())
+fn is_toplevel_fn_start(line: &str) -> bool {
+    !line.starts_with(char::is_whitespace)
+        && (line.starts_with("fn ") || line.starts_with("unsafe fn "))
 }
 
 fn rustc() -> String {
@@ -131,7 +217,7 @@ fn rustc() -> String {
 }
 
 /// Where to find the `libc` crate for a standalone `rustc` invocation
-/// (fixtures may reference `libc::` directly in baseline lowering).
+/// (baseline lowering may reference `libc::` types directly, e.g. `c_char`).
 struct LibcExtern {
     rlib: PathBuf,
     deps_dir: PathBuf,
@@ -180,19 +266,68 @@ fn ensure_libc_extern(work_dir: &Path) -> Result<LibcExtern, String> {
     Ok(LibcExtern { rlib, deps_dir })
 }
 
-fn emit_llvm_ir(
+fn host_target() -> Result<String, String> {
+    let o = Command::new(rustc())
+        .arg("-vV")
+        .output()
+        .map_err(|e| format!("spawn rustc -vV: {e}"))?;
+    let text = String::from_utf8_lossy(&o.stdout).into_owned();
+    text.lines()
+        .find_map(|l| l.strip_prefix("host: "))
+        .map(str::to_string)
+        .ok_or_else(|| format!("rustc -vV did not report a host triple:\n{text}"))
+}
+
+fn translate_raw(fixture: &Path) -> Result<String, String> {
+    let o = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate")
+        .arg(fixture)
+        .env("SLATE_RAW_LOWER", "1")
+        .output()
+        .map_err(|e| format!("spawn slate translate: {e}"))?;
+    if !o.status.success() {
+        return Err(format!(
+            "translate failed:\n{}",
+            String::from_utf8_lossy(&o.stderr)
+        ));
+    }
+    Ok(String::from_utf8_lossy(&o.stdout).into_owned())
+}
+
+fn emit_c_llvm_ir(src: &Path, out_ll: &Path, target: &str) -> Result<(), String> {
+    let cc = super::cc();
+    let o = Command::new(&cc)
+        .args(["-S", "-emit-llvm", "-O0", "-std=c11", "-target"])
+        .arg(target)
+        .arg("-o")
+        .arg(out_ll)
+        .arg(src)
+        .output()
+        .map_err(|e| format!("spawn {cc}: {e}"))?;
+    if !o.status.success() {
+        return Err(format!(
+            "clang --emit-llvm failed:\n{}",
+            String::from_utf8_lossy(&o.stderr)
+        ));
+    }
+    Ok(())
+}
+
+fn emit_rs_llvm_ir(
     rs_src: &Path,
     out_ll: &Path,
-    crate_name: &str,
+    target: &str,
     libc: Option<&LibcExtern>,
 ) -> Result<(), String> {
     let mut cmd = Command::new(rustc());
     cmd.args(["--edition", "2024", "--crate-type", "lib"])
-        .arg("--crate-name")
-        .arg(crate_name)
-        .arg("-C")
-        .arg(format!("metadata={crate_name}"))
-        .args(["-C", "opt-level=0", "--emit=llvm-ir", "-o"])
+        .args(["-C", "opt-level=0"])
+        .args(["-C", "overflow-checks=off"])
+        .args(["-C", "debug-assertions=off"])
+        .args(["-C", "panic=abort"])
+        .arg("--target")
+        .arg(target)
+        .args(["--emit=llvm-ir", "-o"])
         .arg(out_ll)
         .arg(rs_src);
     if let Some(libc) = libc {

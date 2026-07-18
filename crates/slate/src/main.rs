@@ -99,6 +99,9 @@ fn translate(path: &Path) -> Result<String, String> {
         return Err("lowering failed".into());
     }
 
+    if std::env::var("SLATE_RAW_LOWER").is_ok() {
+        return Ok(program.emit());
+    }
     Ok(fixups::apply_with(program, &skip_set_from_env()?).emit())
 }
 
