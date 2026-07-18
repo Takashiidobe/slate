@@ -398,6 +398,33 @@ pub(super) fn value_as_bool(value: Value) -> bool {
 pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
     match op {
         BinOp::Eq | BinOp::Ne | BinOp::Lt | BinOp::Le | BinOp::Gt | BinOp::Ge => {
+            if matches!((a, b), (Value::Ref(_), Value::Ref(_))) {
+                let (Value::Ref(left), Value::Ref(right)) = (a, b) else {
+                    unreachable!();
+                };
+                return Value::Bool(match op {
+                    BinOp::Eq => left == right,
+                    BinOp::Ne => left != right,
+                    _ => panic!("effects::rust_ast: unsupported pointer comparison `{op:?}`"),
+                });
+            }
+            if matches!(
+                (a, b),
+                (Value::Ref(_), Value::Null) | (Value::Null, Value::Ref(_))
+            ) {
+                return Value::Bool(match op {
+                    BinOp::Eq => false,
+                    BinOp::Ne => true,
+                    _ => panic!("effects::rust_ast: unsupported pointer/null comparison `{op:?}`"),
+                });
+            }
+            if matches!((a, b), (Value::Null, Value::Null)) {
+                return Value::Bool(match op {
+                    BinOp::Eq => true,
+                    BinOp::Ne => false,
+                    _ => panic!("effects::rust_ast: unsupported null comparison `{op:?}`"),
+                });
+            }
             if matches!(
                 (a, b),
                 (Value::File(_), Value::Null) | (Value::Null, Value::File(_))
