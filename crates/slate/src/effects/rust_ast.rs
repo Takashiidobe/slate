@@ -1,10 +1,15 @@
 use std::collections::HashMap;
 
-use super::{AllocId, Effect, EffectTrace, IntWidth, Location, Value};
+use super::{AllocId, Effect, EffectTrace, IntWidth, Location, ParamSeed, Value};
 use crate::rust_ast::{BinOp, Expr, FnDef, IndentStmt, Path, RustValue, Stmt, Type, UnaryOp};
 
 pub fn interpret(f: &FnDef) -> EffectTrace {
+    interpret_with_params(f, &[])
+}
+
+pub fn interpret_with_params(f: &FnDef, params: &[(&str, ParamSeed)]) -> EffectTrace {
     let mut interp = Interp::default();
+    interp.seed_params(params);
     let _ = interp.run(&f.body);
     interp.trace
 }
@@ -36,6 +41,48 @@ struct Interp {
 }
 
 impl Interp {
+    fn seed_params(&mut self, params: &[(&str, ParamSeed)]) {
+        for (name, seed) in params {
+            match seed {
+                ParamSeed::Scalar(v) => {
+                    self.scalars.insert(name.to_string(), *v);
+                }
+                ParamSeed::Buffer(elems) => self.seed_buffer(name, elems),
+            }
+        }
+    }
+
+    fn seed_buffer(&mut self, name: &str, elems: &[Value]) {
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        let (elem_width, elem_signed, elem_size) = elems
+            .first()
+            .map(|elem| match elem {
+                Value::Int { width, signed, .. } => (*width, *signed, int_byte_size(elem)),
+                other => {
+                    panic!("effects::rust_ast: buffer element must be an integer, found {other:?}")
+                }
+            })
+            .unwrap_or((IntWidth::W32, true, 4));
+        for (index, elem) in elems.iter().enumerate() {
+            let loc = Location {
+                alloc,
+                byte_offset: index as u64 * elem_size,
+            };
+            self.heap.insert(loc, *elem);
+        }
+        self.vecs.insert(
+            name.to_string(),
+            VecBinding {
+                alloc,
+                elem_width,
+                elem_signed,
+                elem_size,
+                len: elems.len() as u64,
+            },
+        );
+    }
+
     fn run(&mut self, body: &[IndentStmt]) -> Flow {
         for stmt in body {
             match self.step(&stmt.stmt) {
@@ -397,6 +444,19 @@ fn int32(value: i128) -> Value {
     }
 }
 
+fn int_byte_size(value: &Value) -> u64 {
+    match value {
+        Value::Int { width, .. } => match width {
+            IntWidth::W8 => 1,
+            IntWidth::W16 => 2,
+            IntWidth::W32 => 4,
+            IntWidth::W64 | IntWidth::PointerSized => 8,
+            IntWidth::W128 => 16,
+        },
+        other => panic!("effects::rust_ast: buffer element must be an integer, found {other:?}"),
+    }
+}
+
 fn value_as_i128(value: Value) -> i128 {
     match value {
         Value::Int { value, .. } => value,
@@ -494,7 +554,7 @@ fn vec_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rust_ast::{Ident, IndentStmt, Prim, Visibility};
+    use crate::rust_ast::{FnParam, Ident, IndentStmt, Prim, Visibility};
 
     fn int32(value: i128) -> Value {
         Value::Int {
@@ -913,6 +973,129 @@ mod tests {
                 stmt(Stmt::Return(Some(Expr::Var(Ident::new("sum"))))),
             ],
         }
+    }
+
+    /// Mirrors the idiomatized shape of `bump`'s `&mut [i32]`/`i32` params
+    /// (see `src/fixups/rewrite/ptr_len.rs`):
+    /// `fn bump(items: &mut [i32], len: i32) -> i32 {
+    ///    items[0] += 1; items[1] += 1;
+    ///    return items[0] + items[1] + len;
+    ///  }`
+    fn bump_fixture() -> FnDef {
+        FnDef {
+            attrs: vec![],
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: "bump".to_string(),
+            params: vec![
+                FnParam {
+                    name: "items".to_string(),
+                    mutable: true,
+                    ty: Type::Ref {
+                        mutable: true,
+                        inner: Box::new(Type::Slice(Box::new(Type::Prim(Prim::I32)))),
+                    },
+                },
+                FnParam {
+                    name: "len".to_string(),
+                    mutable: false,
+                    ty: Type::Prim(Prim::I32),
+                },
+            ],
+            ret: Some(Type::Prim(Prim::I32)),
+            body: vec![
+                stmt(Stmt::CompoundAssign {
+                    target: Expr::Index {
+                        base: Box::new(Expr::Var(Ident::new("items"))),
+                        index: Box::new(Expr::Value(RustValue::I64(0))),
+                    },
+                    op: BinOp::Add,
+                    value: Expr::Value(RustValue::I64(1)),
+                }),
+                stmt(Stmt::CompoundAssign {
+                    target: Expr::Index {
+                        base: Box::new(Expr::Var(Ident::new("items"))),
+                        index: Box::new(Expr::Value(RustValue::I64(1))),
+                    },
+                    op: BinOp::Add,
+                    value: Expr::Value(RustValue::I64(1)),
+                }),
+                stmt(Stmt::Return(Some(Expr::Binary {
+                    op: BinOp::Add,
+                    lhs: Box::new(Expr::Binary {
+                        op: BinOp::Add,
+                        lhs: Box::new(Expr::Index {
+                            base: Box::new(Expr::Var(Ident::new("items"))),
+                            index: Box::new(Expr::Value(RustValue::I64(0))),
+                        }),
+                        rhs: Box::new(Expr::Index {
+                            base: Box::new(Expr::Var(Ident::new("items"))),
+                            index: Box::new(Expr::Value(RustValue::I64(1))),
+                        }),
+                    }),
+                    rhs: Box::new(Expr::Var(Ident::new("len"))),
+                }))),
+            ],
+        }
+    }
+
+    #[test]
+    fn function_parameters_seed_the_trace_and_match_cir_trace_shape() {
+        let params: Vec<(&str, ParamSeed)> = vec![
+            ("items", ParamSeed::Buffer(vec![int32(1), int32(2)])),
+            ("len", ParamSeed::Scalar(int32(2))),
+        ];
+        let trace = interpret_with_params(&bump_fixture(), &params);
+        let alloc = AllocId(0);
+        assert_eq!(
+            trace.effects,
+            vec![
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(1),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(2),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(2),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(3),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: int32(2),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 4
+                    },
+                    value: int32(3),
+                },
+                Effect::Exit(7),
+            ]
+        );
     }
 
     #[test]

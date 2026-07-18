@@ -71,6 +71,12 @@ pub enum Value {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub enum ParamSeed {
+    Scalar(Value),
+    Buffer(Vec<Value>),
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum Effect {
     Alloc { alloc: AllocId, size: u64 },
     Write { loc: Location, value: Value },
