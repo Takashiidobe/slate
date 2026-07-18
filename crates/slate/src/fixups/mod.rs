@@ -11,7 +11,38 @@ mod test_support;
 
 use crate::rust_ast::{Block, IndentStmt, Item, Program, Stmt};
 
+/// A fixup pass that can be individually disabled via [`SkipSet`], for
+/// translation-validation regression testing (compare a fixture's output
+/// with and without one pass active).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Pass {
+    RangeLoop,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct SkipSet(std::collections::HashSet<Pass>);
+
+impl SkipSet {
+    pub fn none() -> Self {
+        Self::default()
+    }
+
+    pub fn skip(pass: Pass) -> Self {
+        let mut set = Self::default();
+        set.0.insert(pass);
+        set
+    }
+
+    fn contains(&self, pass: Pass) -> bool {
+        self.0.contains(&pass)
+    }
+}
+
 pub fn apply(program: Program) -> Program {
+    apply_with(program, &SkipSet::none())
+}
+
+pub fn apply_with(program: Program, skip: &SkipSet) -> Program {
     let facts::AnalyzedProgram { program, .. } = facts::analyze(program);
     let mut program = program;
     structure_goto(&mut program);
@@ -125,7 +156,7 @@ pub fn apply(program: Program) -> Program {
         late_loop_cleanup(&mut program);
     }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
-    if rewrite::range_loop::fixup(&mut program, &facts) {
+    if !skip.contains(Pass::RangeLoop) && rewrite::range_loop::fixup(&mut program, &facts) {
         late_loop_cleanup(&mut program);
     }
     let facts::AnalyzedProgram { mut program, facts } = facts::analyze(program);
@@ -465,7 +496,7 @@ fn block_stmt_count(block: &Block) -> usize {
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{BinOp, Expr, Prim, RustValue, Stmt, Type};
+    use crate::rust_ast::{BinOp, Expr, Prim, RustValue, Stmt, Type, UnaryOp};
 
     #[test]
     fn apply_keeps_migrated_functions_structured() {
@@ -530,5 +561,87 @@ fn add(a: i32, b: i32) -> i32 {
 }
 "
         );
+    }
+
+    fn counted_loop_program() -> Program {
+        let counted_loop = Stmt::Scope {
+            body: vec![
+                IndentStmt {
+                    depth: 2,
+                    stmt: let_mut("i", "i32", int(0)),
+                },
+                IndentStmt {
+                    depth: 2,
+                    stmt: Stmt::Loop {
+                        label: None,
+                        body: vec![
+                            IndentStmt {
+                                depth: 3,
+                                stmt: Stmt::If {
+                                    cond: Expr::Unary {
+                                        op: UnaryOp::Not,
+                                        expr: Box::new(bin(BinOp::Lt, var("i"), var("n"))),
+                                    },
+                                    then_body: vec![IndentStmt {
+                                        depth: 4,
+                                        stmt: Stmt::Break(None),
+                                    }],
+                                    else_body: Vec::new(),
+                                },
+                            },
+                            IndentStmt {
+                                depth: 3,
+                                stmt: Stmt::CompoundAssign {
+                                    target: var("total"),
+                                    op: BinOp::Add,
+                                    value: var("i"),
+                                },
+                            },
+                            IndentStmt {
+                                depth: 3,
+                                stmt: Stmt::CompoundAssign {
+                                    target: var("i"),
+                                    op: BinOp::Add,
+                                    value: int(1),
+                                },
+                            },
+                        ],
+                    },
+                },
+            ],
+        };
+        Program {
+            items: vec![Item::Fn(func(
+                vec![param("n", "i32")],
+                Some("i32"),
+                vec![
+                    let_mut("total", "i32", int(0)),
+                    counted_loop,
+                    Stmt::Return(Some(var("total"))),
+                ],
+            ))],
+        }
+    }
+
+    #[test]
+    fn apply_with_none_matches_apply() {
+        assert_eq!(
+            apply(counted_loop_program()).emit(),
+            apply_with(counted_loop_program(), &SkipSet::none()).emit()
+        );
+    }
+
+    #[test]
+    fn apply_rewrites_counted_loop_to_range_for_by_default() {
+        let out = apply(counted_loop_program()).emit();
+        assert!(out.contains("for i in 0..n"));
+        assert!(!out.contains("loop {"));
+    }
+
+    #[test]
+    fn skip_set_disables_range_loop_pass() {
+        let out = apply_with(counted_loop_program(), &SkipSet::skip(Pass::RangeLoop)).emit();
+        assert!(!out.contains("for i in 0..n"));
+        assert!(out.contains("loop {"));
     }
 }
