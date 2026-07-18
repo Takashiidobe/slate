@@ -79,6 +79,7 @@ pub enum ParamSeed {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Effect {
     Alloc { alloc: AllocId, size: u64 },
+    Dealloc { alloc: AllocId },
     Write { loc: Location, value: Value },
     Read { loc: Location, value: Value },
     Call { name: String, args: Vec<Value> },

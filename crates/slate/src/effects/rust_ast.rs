@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use super::{AllocId, Effect, EffectTrace, IntWidth, Location, ParamSeed, Value};
 use crate::rust_ast::{BinOp, Expr, FnDef, IndentStmt, Path, RustValue, Stmt, Type, UnaryOp};
@@ -29,6 +29,7 @@ struct VecBinding {
     elem_signed: bool,
     elem_size: u64,
     len: u64,
+    owned: bool,
 }
 
 struct StructBinding {
@@ -44,6 +45,7 @@ struct Interp {
     heap: HashMap<Location, Value>,
     next_alloc: u32,
     trace: EffectTrace,
+    freed: HashSet<AllocId>,
 }
 
 impl Interp {
@@ -85,6 +87,7 @@ impl Interp {
                 elem_signed,
                 elem_size,
                 len: elems.len() as u64,
+                owned: false,
             },
         );
     }
@@ -126,8 +129,13 @@ impl Interp {
             }
             Stmt::Expr(Expr::Call { func, args }) if is_path(func, &["std", "process", "exit"]) => {
                 let code = value_as_i32(self.eval(&args[0]));
+                self.drop_live_vecs();
                 self.trace.push(Effect::Exit(code));
                 Flow::Return
+            }
+            Stmt::Expr(Expr::Call { func, args }) if is_path(func, &["drop"]) => {
+                self.drop_var(&args[0]);
+                Flow::Normal
             }
             Stmt::Expr(Expr::Macro { name, args }) if name == "println" || name == "print" => {
                 self.print(args);
@@ -152,6 +160,7 @@ impl Interp {
                     .as_ref()
                     .map(|expr| value_as_i32(self.eval(expr)))
                     .unwrap_or(0);
+                self.drop_live_vecs();
                 self.trace.push(Effect::Exit(code));
                 Flow::Return
             }
@@ -193,6 +202,9 @@ impl Interp {
                 let binding = self.vecs.get(name).unwrap_or_else(|| {
                     panic!("effects::rust_ast: compound-assign into unknown Vec `{name}`")
                 });
+                if self.freed.contains(&binding.alloc) {
+                    panic!("effects::rust_ast: compound-assign to {name} after free");
+                }
                 let loc = Location {
                     alloc: binding.alloc,
                     byte_offset: idx * binding.elem_size,
@@ -268,6 +280,7 @@ impl Interp {
                 elem_signed,
                 elem_size,
                 len: 0,
+                owned: true,
             },
         );
     }
@@ -296,6 +309,37 @@ impl Interp {
         self.trace.push(Effect::Write { loc, value });
     }
 
+    fn drop_live_vecs(&mut self) {
+        let mut allocs: Vec<AllocId> = self
+            .vecs
+            .values()
+            .filter(|binding| binding.owned)
+            .map(|binding| binding.alloc)
+            .collect();
+        allocs.sort_by(|a, b| b.0.cmp(&a.0));
+        for alloc in allocs {
+            if self.freed.insert(alloc) {
+                self.trace.push(Effect::Dealloc { alloc });
+            }
+        }
+    }
+
+    fn drop_var(&mut self, expr: &Expr) {
+        let name = match expr {
+            Expr::Var(ident) => ident.as_str(),
+            other => panic!("effects::rust_ast: unsupported drop target `{other:?}`"),
+        };
+        let binding = self
+            .vecs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: drop of unknown Vec `{name}`"));
+        let alloc = binding.alloc;
+        if !self.freed.insert(alloc) {
+            panic!("effects::rust_ast: double free of {alloc:?}");
+        }
+        self.trace.push(Effect::Dealloc { alloc });
+    }
+
     fn print(&mut self, args: &[Expr]) {
         let args = args.iter().skip(1).map(|expr| self.eval(expr)).collect();
         self.trace.push(Effect::Call {
@@ -315,6 +359,9 @@ impl Interp {
             .vecs
             .get_mut(name)
             .unwrap_or_else(|| panic!("effects::rust_ast: assign into unknown Vec `{name}`"));
+        if self.freed.contains(&binding.alloc) {
+            panic!("effects::rust_ast: write to {name} after free");
+        }
         let value = Value::Int {
             width: binding.elem_width,
             signed: binding.elem_signed,
@@ -526,6 +573,9 @@ impl Interp {
                 let binding = self.vecs.get(name).unwrap_or_else(|| {
                     panic!("effects::rust_ast: index into unknown Vec `{name}`")
                 });
+                if self.freed.contains(&binding.alloc) {
+                    panic!("effects::rust_ast: read from {name} after free");
+                }
                 let loc = Location {
                     alloc: binding.alloc,
                     byte_offset: idx * binding.elem_size,
@@ -877,6 +927,63 @@ mod tests {
         }
     }
 
+    fn read_after_drop_fixture() -> FnDef {
+        FnDef {
+            attrs: vec![],
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: "main".to_string(),
+            params: vec![],
+            ret: Some(Type::Prim(Prim::I32)),
+            body: vec![
+                stmt(Stmt::Let {
+                    name: "p".to_string(),
+                    mutable: true,
+                    ty: Some(Type::Generic {
+                        name: "Vec".to_string(),
+                        args: vec![Type::Prim(Prim::I32)],
+                    }),
+                    init: Some(Expr::Call {
+                        func: Box::new(Expr::Path(Path::new([
+                            Ident::new("Vec"),
+                            Ident::new("with_capacity"),
+                        ]))),
+                        args: vec![Expr::Value(RustValue::I64(1))],
+                    }),
+                }),
+                stmt(Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(Ident::new("p"))),
+                    method: "push".to_string(),
+                    args: vec![Expr::Value(RustValue::I64(1))],
+                })),
+                stmt(Stmt::Expr(Expr::Call {
+                    func: Box::new(Expr::Path(Path::new([Ident::new("drop")]))),
+                    args: vec![Expr::Var(Ident::new("p"))],
+                })),
+                stmt(Stmt::Return(Some(Expr::Index {
+                    base: Box::new(Expr::Var(Ident::new("p"))),
+                    index: Box::new(Expr::Value(RustValue::I64(0))),
+                }))),
+            ],
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "after free")]
+    fn reading_after_drop_panics_instead_of_silently_succeeding() {
+        interpret(&read_after_drop_fixture());
+    }
+
+    #[test]
+    #[should_panic(expected = "double free")]
+    fn dropping_twice_panics() {
+        let mut f = read_after_drop_fixture();
+        let drop_stmt = f.body[2].clone();
+        f.body.insert(3, drop_stmt);
+        interpret(&f);
+    }
+
     #[test]
     fn println_macro_pushes_a_call_effect_with_only_the_substituted_args() {
         let body = vec![
@@ -951,6 +1058,7 @@ mod tests {
                     },
                     value: int32(2),
                 },
+                Effect::Dealloc { alloc },
                 Effect::Exit(3),
             ]
         );
@@ -996,6 +1104,7 @@ mod tests {
                     },
                     value: int32(2),
                 },
+                Effect::Dealloc { alloc },
                 Effect::Exit(3),
             ],
         };
@@ -1151,6 +1260,7 @@ mod tests {
                     },
                     value: int32(1),
                 },
+                Effect::Dealloc { alloc },
                 Effect::Exit(1),
             ]
         );
@@ -1548,6 +1658,7 @@ mod tests {
                     },
                     value: int32(3),
                 },
+                Effect::Dealloc { alloc },
                 Effect::Exit(6),
             ]
         );
@@ -1596,6 +1707,7 @@ mod tests {
                     },
                     value: int32(2),
                 },
+                Effect::Dealloc { alloc },
                 Effect::Exit(3),
             ]
         );
