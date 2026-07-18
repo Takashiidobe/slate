@@ -65,3 +65,8 @@ fn idiomatized_malloc_array_fixture_matches_cir_effects() {
 fn idiomatized_printf_fixture_matches_cir_effects() {
     assert_cir_and_rust_effects_match("tests/fixtures/effects_printf.c");
 }
+
+#[test]
+fn idiomatized_for_loop_fixture_matches_cir_effects() {
+    assert_cir_and_rust_effects_match("tests/fixtures/effects_for_loop.c");
+}
