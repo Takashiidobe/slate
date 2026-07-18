@@ -33,6 +33,7 @@ struct Interp {
     trace: EffectTrace,
     struct_allocs: HashMap<String, AllocId>,
     struct_alloc_slot: HashMap<AllocId, usize>,
+    freed: HashSet<AllocId>,
 }
 
 impl Interp {
@@ -231,7 +232,13 @@ impl Interp {
                     }),
                 );
             }
-            "free" => {}
+            "free" => {
+                let base = self.resolve_ref(&op.operands[0]);
+                if !self.freed.insert(base.alloc) {
+                    panic!("effects::cir: double free of {:?}", base.alloc);
+                }
+                self.trace.push(Effect::Dealloc { alloc: base.alloc });
+            }
             "strlen" => {
                 let base = self.resolve_ref(&op.operands[0]);
                 let mut len = 0u64;
@@ -359,6 +366,9 @@ impl Interp {
             self.env.insert(place.clone(), value);
         } else {
             let loc = self.resolve_ref(place);
+            if self.freed.contains(&loc.alloc) {
+                panic!("effects::cir: write to {loc:?} after free");
+            }
             self.heap.insert(loc, value);
             self.trace.push(Effect::Write { loc, value });
         }
@@ -373,6 +383,9 @@ impl Interp {
             self.env.insert(result.to_string(), value);
         } else {
             let loc = self.resolve_ref(place);
+            if self.freed.contains(&loc.alloc) {
+                panic!("effects::cir: read from {loc:?} after free");
+            }
             let value = *self
                 .heap
                 .get(&loc)
@@ -729,6 +742,78 @@ mod tests {
         ]
     }
 
+    fn read_after_free_fixture() -> Vec<Op> {
+        vec![
+            op("cir.alloca", &["p"], &[], "() -> !cir.ptr<!cir.ptr<!s32i>>"),
+            const_op("c4", 4, "!u64i"),
+            call_malloc("raw", "c4"),
+            op(
+                "cir.cast",
+                &["buf"],
+                &["raw"],
+                "(!cir.ptr<!void>) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.store",
+                &[],
+                &["buf", "p"],
+                "(!cir.ptr<!s32i>, !cir.ptr<!cir.ptr<!s32i>>) -> ()",
+            ),
+            call_free("buf"),
+            const_op("i0", 0, "!s64i"),
+            op(
+                "cir.load",
+                &["p0"],
+                &["p"],
+                "(!cir.ptr<!cir.ptr<!s32i>>) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.ptr_stride",
+                &["loc0"],
+                &["p0", "i0"],
+                "(!cir.ptr<!s32i>, !s64i) -> !cir.ptr<!s32i>",
+            ),
+            op("cir.load", &["r0"], &["loc0"], "(!cir.ptr<!s32i>) -> !s32i"),
+            op("cir.return", &[], &["r0"], "(!s32i) -> ()"),
+        ]
+    }
+
+    #[test]
+    #[should_panic(expected = "read from")]
+    fn reading_after_free_panics_instead_of_silently_succeeding() {
+        interpret(&read_after_free_fixture());
+    }
+
+    fn double_free_fixture() -> Vec<Op> {
+        vec![
+            op("cir.alloca", &["p"], &[], "() -> !cir.ptr<!cir.ptr<!s32i>>"),
+            const_op("c4", 4, "!u64i"),
+            call_malloc("raw", "c4"),
+            op(
+                "cir.cast",
+                &["buf"],
+                &["raw"],
+                "(!cir.ptr<!void>) -> !cir.ptr<!s32i>",
+            ),
+            op(
+                "cir.store",
+                &[],
+                &["buf", "p"],
+                "(!cir.ptr<!s32i>, !cir.ptr<!cir.ptr<!s32i>>) -> ()",
+            ),
+            call_free("buf"),
+            call_free("buf"),
+            const_op("z", 0, "!s32i"),
+            op("cir.return", &[], &["z"], "(!s32i) -> ()"),
+        ]
+    }
+
+    #[test]
+    #[should_panic(expected = "double free")]
+    fn freeing_twice_panics() {
+        interpret(&double_free_fixture());
+    }
+
     fn int32(value: i128) -> Value {
         Value::Int {
             width: IntWidth::W32,
@@ -773,6 +858,7 @@ mod tests {
                     },
                     value: int32(2),
                 },
+                Effect::Dealloc { alloc },
                 Effect::Exit(3),
             ]
         );
@@ -1462,6 +1548,7 @@ mod tests {
                     },
                     value: int32(4),
                 },
+                Effect::Dealloc { alloc },
                 Effect::Exit(7),
             ]
         );
@@ -1645,6 +1732,7 @@ mod tests {
                     name: "strlen".to_string(),
                     args: vec![],
                 },
+                Effect::Dealloc { alloc },
                 Effect::Exit(3),
             ]
         );
