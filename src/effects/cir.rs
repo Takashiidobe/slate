@@ -1,21 +1,9 @@
-//! CIR op-tree -> [`super::EffectTrace`].
-//!
-//! Scope is deliberately narrow (slate-0hf.2): a flat, single-block op
-//! sequence covering exactly what a `malloc` + indexed-store + indexed-load
-//! fixture needs — `cir.alloca`, `cir.const`, `cir.mul`/`cir.add`, `cir.call`
-//! (only the `malloc` callee), `cir.cast` (pointer bitcast only), `cir.store`,
-//! `cir.load`, `cir.ptr_stride`, and `cir.return`. No control flow, no general
-//! C stdlib coverage — an unrecognized op or callee panics rather than
-//! silently dropping an effect, since a dropped effect would be a false
-//! "equivalent" verdict later, which is worse than a loud failure now.
-
 use std::collections::{HashMap, HashSet};
 
 use crate::cir::ir::{Attr, Op};
 
 use super::{AllocId, Effect, EffectTrace, IntWidth, Location, Value};
 
-/// Walks a flat function-body op sequence and returns the effects it produced.
 pub fn interpret(ops: &[Op]) -> EffectTrace {
     let mut interp = Interp::default();
     interp.run(ops);
@@ -24,12 +12,7 @@ pub fn interpret(ops: &[Op]) -> EffectTrace {
 
 #[derive(Default)]
 struct Interp {
-    /// Every SSA name's current value, including the pointer/int value
-    /// currently held by an alloca'd local (see `locals`).
     env: HashMap<String, Value>,
-    /// SSA names that denote a stack slot (an alloca result) rather than an
-    /// ordinary value binding — stores/loads through these are local-variable
-    /// bookkeeping, not observable effects.
     locals: HashSet<String>,
     heap: HashMap<Location, Value>,
     next_alloc: u32,
@@ -49,9 +32,6 @@ impl Interp {
                 let result = first_result(op);
                 self.locals.insert(result.to_string());
             }
-            // The get_global preceding a direct `callee = @sym` call is never
-            // consumed by that call (the callee comes from the attribute, not
-            // an operand) — nothing to model.
             "cir.get_global" => {}
             "cir.const" => {
                 let result = first_result(op);
@@ -62,8 +42,6 @@ impl Interp {
             "cir.mul" => self.binop(op, i128::wrapping_mul),
             "cir.add" => self.binop(op, i128::wrapping_add),
             "cir.cast" => {
-                // Only pointer bitcasts appear in this slice (void* <-> T*);
-                // the abstract Location a Ref carries doesn't change shape.
                 let result = first_result(op);
                 let value = self.resolve(&op.operands[0]);
                 self.env.insert(result.to_string(), value);
@@ -73,12 +51,18 @@ impl Interp {
             "cir.store" => self.store(op),
             "cir.load" => self.load(op),
             "cir.return" => {
-                let value = op
+                let code = op
                     .operands
                     .first()
                     .map(|name| self.resolve(name))
-                    .unwrap_or(Value::Null);
-                self.trace.push(Effect::Return(value));
+                    .map(|value| match value {
+                        Value::Int { value, .. } => value as i32,
+                        other => {
+                            panic!("effects::cir: expected an integer exit code, found {other:?}")
+                        }
+                    })
+                    .unwrap_or(0);
+                self.trace.push(Effect::Exit(code));
             }
             other => panic!("effects::cir: unsupported op `{other}`"),
         }
@@ -118,6 +102,7 @@ impl Interp {
                     }),
                 );
             }
+            "free" => {}
             other => panic!("effects::cir: unsupported call target `{other}`"),
         }
     }
@@ -196,18 +181,12 @@ fn attr_str<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
     op.attrs.get(key).and_then(Attr::as_str)
 }
 
-/// `op.ty` is `(params) -> ret`; this slice's types never nest a second
-/// `->`, so a plain rightmost split is enough (unlike lower.rs's general
-/// top-level-aware splitter, which this module intentionally does not
-/// depend on — this interpreter stays self-contained from the real lowerer).
 fn result_type(op: &Op) -> Option<&str> {
     let ty = op.ty.as_deref()?;
     let idx = ty.rfind("->")?;
     Some(ty[idx + 2..].trim())
 }
 
-/// `!s32i` / `!u64i` etc. — CIR's generic printer always spells fixed-width
-/// integers this way, so no alias-table lookup is needed.
 fn int_type_width_signed(ty: &str) -> Option<(bool, u32)> {
     let rest = ty.trim().strip_prefix('!')?;
     let signed = match rest.as_bytes().first()? {
@@ -293,9 +272,16 @@ mod tests {
         o
     }
 
-    /// Mirrors (minus printf/free) the CIR clang actually emits for:
+    fn call_free(ptr_operand: &str) -> Op {
+        let mut o = op("cir.call", &[], &[ptr_operand], "(!cir.ptr<!s32i>) -> ()");
+        o.attrs
+            .insert("callee".to_string(), Attr::Raw("@free".to_string()));
+        o
+    }
+
+    /// Mirrors (minus printf) the CIR clang actually emits for:
     /// `int *p = malloc(2 * sizeof(int)); p[0] = 1; p[1] = 2;
-    ///  return p[0] + p[1];`
+    ///  free(p); return p[0] + p[1];`
     fn malloc_array_fixture() -> Vec<Op> {
         vec![
             op("cir.alloca", &["p"], &[], "() -> !cir.ptr<!cir.ptr<!s32i>>"),
@@ -404,6 +390,7 @@ mod tests {
                 &["r0", "r1"],
                 "(!s32i, !s32i) -> !s32i",
             ),
+            call_free("buf"),
             op("cir.return", &[], &["sum"], "(!s32i) -> ()"),
         ]
     }
@@ -452,7 +439,7 @@ mod tests {
                     },
                     value: int32(2),
                 },
-                Effect::Return(int32(3)),
+                Effect::Exit(3),
             ]
         );
     }
