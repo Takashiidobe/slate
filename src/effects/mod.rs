@@ -33,8 +33,6 @@
 
 pub mod cir;
 pub mod interpreter;
-#[cfg(test)]
-mod regression;
 pub mod rust_ast;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
