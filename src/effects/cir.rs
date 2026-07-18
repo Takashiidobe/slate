@@ -232,6 +232,37 @@ impl Interp {
                 );
             }
             "free" => {}
+            "strlen" => {
+                let base = self.resolve_ref(&op.operands[0]);
+                let mut len = 0u64;
+                loop {
+                    let loc = Location {
+                        alloc: base.alloc,
+                        byte_offset: base.byte_offset + len,
+                    };
+                    match self.heap.get(&loc) {
+                        Some(Value::Int { value: 0, .. }) => break,
+                        Some(_) => len += 1,
+                        None => panic!("effects::cir: strlen scanned past never-written {loc:?}"),
+                    }
+                }
+                self.trace.push(Effect::Call {
+                    name: "strlen".to_string(),
+                    args: vec![],
+                });
+                let result = first_result(op);
+                let (signed, bits) = result_type(op)
+                    .and_then(int_type_width_signed)
+                    .unwrap_or((false, 64));
+                self.env.insert(
+                    result.to_string(),
+                    Value::Int {
+                        width: int_width(bits),
+                        signed,
+                        value: len as i128,
+                    },
+                );
+            }
             "printf" => {
                 let args = op.operands[1..]
                     .iter()
@@ -1487,6 +1518,134 @@ mod tests {
                     value: int32(3),
                 },
                 Effect::Exit(6),
+            ]
+        );
+    }
+
+    fn call_strlen(result: &str, ptr_operand: &str) -> Op {
+        let mut o = op(
+            "cir.call",
+            &[result],
+            &[ptr_operand],
+            "(!cir.ptr<!s8i>) -> !u64i",
+        );
+        o.attrs
+            .insert("callee".to_string(), Attr::Raw("@strlen".to_string()));
+        o
+    }
+
+    /// Mirrors: `char *s = malloc(4); s[0]='a'; s[1]='b'; s[2]='c'; s[3]='\0';
+    /// int len = strlen(s); free(s); return len;`
+    fn string_strlen_fixture() -> Vec<Op> {
+        let store_byte = |value_name: &str, index_name: &str, loc_name: &str, load_name: &str| {
+            vec![
+                op(
+                    "cir.load",
+                    &[load_name],
+                    &["s"],
+                    "(!cir.ptr<!cir.ptr<!s8i>>) -> !cir.ptr<!s8i>",
+                ),
+                op(
+                    "cir.ptr_stride",
+                    &[loc_name],
+                    &[load_name, index_name],
+                    "(!cir.ptr<!s8i>, !s64i) -> !cir.ptr<!s8i>",
+                ),
+                op(
+                    "cir.store",
+                    &[],
+                    &[value_name, loc_name],
+                    "(!s8i, !cir.ptr<!s8i>) -> ()",
+                ),
+            ]
+        };
+        let mut ops = vec![
+            op("cir.alloca", &["s"], &[], "() -> !cir.ptr<!cir.ptr<!s8i>>"),
+            const_op("c4", 4, "!u64i"),
+            call_malloc("raw", "c4"),
+            op(
+                "cir.cast",
+                &["buf"],
+                &["raw"],
+                "(!cir.ptr<!void>) -> !cir.ptr<!s8i>",
+            ),
+            op(
+                "cir.store",
+                &[],
+                &["buf", "s"],
+                "(!cir.ptr<!s8i>, !cir.ptr<!cir.ptr<!s8i>>) -> ()",
+            ),
+            const_op("va", 97, "!s8i"),
+            const_op("i0", 0, "!s64i"),
+        ];
+        ops.extend(store_byte("va", "i0", "loc0", "p0"));
+        ops.push(const_op("vb", 98, "!s8i"));
+        ops.push(const_op("i1", 1, "!s64i"));
+        ops.extend(store_byte("vb", "i1", "loc1", "p1"));
+        ops.push(const_op("vc", 99, "!s8i"));
+        ops.push(const_op("i2", 2, "!s64i"));
+        ops.extend(store_byte("vc", "i2", "loc2", "p2"));
+        ops.push(const_op("vz", 0, "!s8i"));
+        ops.push(const_op("i3", 3, "!s64i"));
+        ops.extend(store_byte("vz", "i3", "loc3", "p3"));
+        ops.push(op(
+            "cir.load",
+            &["p4"],
+            &["s"],
+            "(!cir.ptr<!cir.ptr<!s8i>>) -> !cir.ptr<!s8i>",
+        ));
+        ops.push(call_strlen("len", "p4"));
+        ops.push(call_free("p4"));
+        ops.push(op("cir.return", &[], &["len"], "(!u64i) -> ()"));
+        ops
+    }
+
+    #[test]
+    fn strlen_scans_a_malloced_buffer_and_pushes_a_call_effect() {
+        let trace = interpret(&string_strlen_fixture());
+        let alloc = AllocId(0);
+        let byte = |value: i128| Value::Int {
+            width: IntWidth::W8,
+            signed: true,
+            value,
+        };
+        assert_eq!(
+            trace.effects,
+            vec![
+                Effect::Alloc { alloc, size: 4 },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 0
+                    },
+                    value: byte(97),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 1
+                    },
+                    value: byte(98),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 2
+                    },
+                    value: byte(99),
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc,
+                        byte_offset: 3
+                    },
+                    value: byte(0),
+                },
+                Effect::Call {
+                    name: "strlen".to_string(),
+                    args: vec![],
+                },
+                Effect::Exit(3),
             ]
         );
     }
