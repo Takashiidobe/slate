@@ -1093,3 +1093,29 @@ fn calloc_zeroes_heap_state_without_synthetic_writes() {
         ]
     );
 }
+
+#[test]
+fn overflowing_method_tuple_fields_are_transient_values() {
+    let trace = interpret(&FnDef {
+        attrs: vec![],
+        vis: Visibility::Private,
+        unsafe_: false,
+        abi: None,
+        name: "main".to_string(),
+        params: vec![],
+        ret: Some(Type::Prim(Prim::I32)),
+        body: vec![stmt(Stmt::Return(Some(Expr::Cast {
+            expr: Box::new(Expr::Field {
+                base: Box::new(Expr::MethodCall {
+                    recv: Box::new(Expr::Value(RustValue::I64(i32::MAX as i64))),
+                    method: "overflowing_add".to_string(),
+                    args: vec![Expr::Value(RustValue::I64(1))],
+                }),
+                field: "1".to_string(),
+            }),
+            ty: Type::Prim(Prim::I32),
+        })))],
+    });
+
+    assert_eq!(trace.effects, vec![Effect::Exit(1)]);
+}

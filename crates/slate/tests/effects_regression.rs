@@ -178,3 +178,17 @@ fn libc_resource_shims_preserve_rust_effects() {
     assert_fixture_matches("tests/fixtures/string_param_lift.c");
     assert_fixture_matches("tests/fixtures/stdio_file_close_before_remove.c");
 }
+
+#[test]
+fn scalar_constants_and_intrinsics_preserve_rust_effects() {
+    assert_fixture_matches("tests/fixtures/extern_decl.c");
+    assert_fixture_matches("tests/fixtures/integer_bit_builtin_ops.c");
+    assert_fixture_matches("tests/fixtures/overflow_scalar_ops.c");
+    assert_fixture_matches("tests/fixtures/sizeof.c");
+    assert_fixture_matches("tests/fixtures/aligned_struct.c");
+    assert_fixture_matches("tests/fixtures/packed_struct.c");
+    assert_fixture_matches("tests/fixtures/control_flow_builtin_ops.c");
+    assert_fixture_matches("tests/fixtures/printf_float.c");
+    assert_fixture_matches("tests/fixtures/unary_negation.c");
+    assert_fixture_matches("tests/fixtures/constant_object_query_ops.c");
+}

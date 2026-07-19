@@ -124,27 +124,27 @@ fn observed_allocs(trace: &EffectTrace) -> BTreeSet<AllocId> {
             }
             Effect::Read { loc, value } => {
                 observed.insert(loc.alloc);
-                observe_value(*value, &mut observed);
+                observe_value(value.clone(), &mut observed);
             }
             Effect::Call { args, .. } => {
                 for value in args {
-                    observe_value(*value, &mut observed);
+                    observe_value(value.clone(), &mut observed);
                 }
             }
-            Effect::Return(value) => observe_value(*value, &mut observed),
+            Effect::Return(value) => observe_value(value.clone(), &mut observed),
             Effect::AtomicLoad { value, .. } | Effect::AtomicStore { value, .. } => {
-                observe_value(*value, &mut observed);
+                observe_value(value.clone(), &mut observed);
             }
             Effect::AtomicRmw {
                 operand, old, new, ..
             } => {
-                observe_value(*operand, &mut observed);
-                observe_value(*old, &mut observed);
-                observe_value(*new, &mut observed);
+                observe_value(operand.clone(), &mut observed);
+                observe_value(old.clone(), &mut observed);
+                observe_value(new.clone(), &mut observed);
             }
             Effect::AtomicSwap { old, new, .. } => {
-                observe_value(*old, &mut observed);
-                observe_value(*new, &mut observed);
+                observe_value(old.clone(), &mut observed);
+                observe_value(new.clone(), &mut observed);
             }
             Effect::AtomicCompareExchange {
                 expected,
@@ -152,9 +152,9 @@ fn observed_allocs(trace: &EffectTrace) -> BTreeSet<AllocId> {
                 old,
                 ..
             } => {
-                observe_value(*expected, &mut observed);
-                observe_value(*desired, &mut observed);
-                observe_value(*old, &mut observed);
+                observe_value(expected.clone(), &mut observed);
+                observe_value(desired.clone(), &mut observed);
+                observe_value(old.clone(), &mut observed);
             }
             Effect::Alloc { .. }
             | Effect::FileOpen { .. }
@@ -174,6 +174,11 @@ fn observe_value(value: Value, observed: &mut BTreeSet<AllocId>) {
             observed.insert(loc.alloc);
         }
         Value::AtomicResult { value, .. } => observe_option_value(value, observed),
+        Value::Tuple(values) => {
+            for value in values {
+                observe_value(value, observed);
+            }
+        }
         Value::Option(Some(value)) => observe_option_value(value, observed),
         Value::Int { .. }
         | Value::Float(_)
@@ -218,26 +223,26 @@ fn effect_allocs(effect: &Effect) -> Vec<AllocId> {
         Effect::Alloc { alloc, .. } | Effect::Dealloc { alloc } => allocs.push(*alloc),
         Effect::Write { loc, value } | Effect::Read { loc, value } => {
             allocs.push(loc.alloc);
-            value_allocs(*value, &mut allocs);
+            value_allocs(value.clone(), &mut allocs);
         }
         Effect::Call { args, .. } => {
             for value in args {
-                value_allocs(*value, &mut allocs);
+                value_allocs(value.clone(), &mut allocs);
             }
         }
         Effect::Return(value)
         | Effect::AtomicLoad { value, .. }
-        | Effect::AtomicStore { value, .. } => value_allocs(*value, &mut allocs),
+        | Effect::AtomicStore { value, .. } => value_allocs(value.clone(), &mut allocs),
         Effect::AtomicRmw {
             operand, old, new, ..
         } => {
-            value_allocs(*operand, &mut allocs);
-            value_allocs(*old, &mut allocs);
-            value_allocs(*new, &mut allocs);
+            value_allocs(operand.clone(), &mut allocs);
+            value_allocs(old.clone(), &mut allocs);
+            value_allocs(new.clone(), &mut allocs);
         }
         Effect::AtomicSwap { old, new, .. } => {
-            value_allocs(*old, &mut allocs);
-            value_allocs(*new, &mut allocs);
+            value_allocs(old.clone(), &mut allocs);
+            value_allocs(new.clone(), &mut allocs);
         }
         Effect::AtomicCompareExchange {
             expected,
@@ -245,9 +250,9 @@ fn effect_allocs(effect: &Effect) -> Vec<AllocId> {
             old,
             ..
         } => {
-            value_allocs(*expected, &mut allocs);
-            value_allocs(*desired, &mut allocs);
-            value_allocs(*old, &mut allocs);
+            value_allocs(expected.clone(), &mut allocs);
+            value_allocs(desired.clone(), &mut allocs);
+            value_allocs(old.clone(), &mut allocs);
         }
         Effect::FileOpen { .. }
         | Effect::FileWrite { .. }
@@ -262,6 +267,11 @@ fn value_allocs(value: Value, allocs: &mut Vec<AllocId>) {
     match value {
         Value::Ref(loc) => allocs.push(loc.alloc),
         Value::AtomicResult { value, .. } => option_value_allocs(value, allocs),
+        Value::Tuple(values) => {
+            for value in values {
+                value_allocs(value, allocs);
+            }
+        }
         Value::Option(Some(value)) => option_value_allocs(value, allocs),
         Value::Int { .. }
         | Value::Float(_)
@@ -386,6 +396,12 @@ fn remap_value(value: Value, alloc_map: &BTreeMap<AllocId, AllocId>) -> Value {
             ok,
             value: remap_option_value(value, alloc_map),
         },
+        Value::Tuple(values) => Value::Tuple(
+            values
+                .into_iter()
+                .map(|value| remap_value(value, alloc_map))
+                .collect(),
+        ),
         Value::Option(Some(value)) => Value::Option(Some(remap_option_value(value, alloc_map))),
         other => other,
     }
