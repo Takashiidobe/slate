@@ -8,38 +8,111 @@
 use crate::fixups::facts::PathSegment;
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, named_path_location, path_fact,
+    stmt_snippet, stmts_snippet,
+};
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Item, Program, RustValue, Stmt, UnaryOp};
 
 pub(in crate::fixups) fn fixup(program: &mut Program) -> bool {
-    let mut changed = false;
-    for item in &mut program.items {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        changed |= rewrite_body(&mut f.body, &mut Vec::new());
-    }
-    changed
+    let mut logger = crate::fixups::trace::NoopLogger;
+    SliceReduce::new(&mut logger).fixup(program)
 }
 
-fn rewrite_body(body: &mut Vec<IndentStmt>, path: &mut Vec<PathSegment>) -> bool {
-    let mut changed = false;
-    for (index, indent) in body.iter_mut().enumerate() {
-        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            walk::nested_body_vecs_mut_with_path(&mut indent.stmt, path, &mut |body, path| {
-                changed |= rewrite_body(body, path);
-            });
-        });
+pub(in crate::fixups) struct SliceReduce<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> SliceReduce<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
     }
 
-    for index in (0..body.len().saturating_sub(1)).rev() {
-        let Some(replacement) = replacement_for_pair(&body[index..index + 2], &body[..index])
-        else {
-            continue;
-        };
-        body.splice(index..index + 2, [replacement]);
-        changed = true;
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
+        let mut changed = false;
+        for item in &mut program.items {
+            let Item::Fn(f) = item else {
+                continue;
+            };
+            changed |= self.rewrite_body(&mut f.body, &f.name, &mut Vec::new());
+        }
+        changed
     }
-    changed
+
+    fn rewrite_body(
+        &mut self,
+        body: &mut Vec<IndentStmt>,
+        function_name: &str,
+        path: &mut Vec<PathSegment>,
+    ) -> bool {
+        let mut changed = false;
+        for (index, indent) in body.iter_mut().enumerate() {
+            walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+                walk::nested_body_vecs_mut_with_path(&mut indent.stmt, path, &mut |body, path| {
+                    changed |= self.rewrite_body(body, function_name, path);
+                });
+            });
+        }
+
+        for index in (0..body.len().saturating_sub(1)).rev() {
+            let Some(replacement) = replacement_for_pair(&body[index..index + 2], &body[..index])
+            else {
+                continue;
+            };
+            let mut reduce_path = path.clone();
+            reduce_path.push(PathSegment::Stmt(index + 1));
+            let trace_before = self
+                .logger
+                .is_enabled()
+                .then(|| body[index..index + 2].to_vec());
+            let trace_after = self.logger.is_enabled().then(|| replacement.stmt.clone());
+            let trace_facts = self
+                .logger
+                .is_enabled()
+                .then(|| reduction_event_facts(&body[index..index + 2], &reduce_path));
+            body.splice(index..index + 2, [replacement]);
+            if let Some(before) = trace_before {
+                let after = trace_after.expect("trace after");
+                let mut facts = trace_facts.expect("trace facts");
+                facts.push(path_fact("loop_path", &reduce_path));
+                self.logger.rewrite(RewriteEvent {
+                    pass: TracePass::SliceReduce,
+                    kind: "rewrite_slice_reduction".into(),
+                    location: named_path_location(function_name, &reduce_path),
+                    before: vec![stmts_snippet("accumulator_loop_pair", &before)],
+                    after: vec![stmt_snippet("reduction", &after)],
+                    facts,
+                });
+            }
+            changed = true;
+        }
+        changed
+    }
+}
+
+fn reduction_event_facts(
+    pair: &[IndentStmt],
+    reduce_path: &[PathSegment],
+) -> Vec<crate::fixups::trace::TraceFact> {
+    let mut facts = vec![path_fact("reduce_path", reduce_path)];
+    if let Stmt::Let { name, init, .. } = &pair[0].stmt {
+        facts.push(fact("accumulator", name));
+        if let Some(init) = init {
+            facts.push(fact("init", init.render()));
+        }
+    }
+    if let Stmt::For { iter, body, .. } = &pair[1].stmt {
+        if let Expr::MethodCall { recv, method, .. } = iter {
+            facts.push(fact("iterator_method", method));
+            facts.push(fact("slice", recv.render()));
+        }
+        if let [reduce_stmt] = body.as_slice()
+            && let Stmt::CompoundAssign { op, .. } = reduce_stmt.stmt
+        {
+            facts.push(fact("operator", format!("{op:?}")));
+        }
+    }
+    facts
 }
 
 fn replacement_for_pair(pair: &[IndentStmt], preceding: &[IndentStmt]) -> Option<IndentStmt> {

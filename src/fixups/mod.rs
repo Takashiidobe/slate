@@ -131,7 +131,7 @@ fn apply_with_logger(
     let facts::AnalyzedProgram { program, .. } = facts::analyze(input);
     let mut program = program;
     step!(program, Pass::Goto, {
-        structure_goto(&mut program);
+        structure_goto(&mut program, logger);
     });
     step!(program, Pass::EarlyInlineTemps, {
         inline_temps_to_fixpoint(&mut program, InlinePass::Early, logger);
@@ -156,7 +156,7 @@ fn apply_with_logger(
         struct_field_init_to_fixpoint(&mut program);
     });
     step!(program, Pass::SingletonScopes, {
-        singleton_scopes_to_fixpoint(&mut program);
+        singleton_scopes_to_fixpoint(&mut program, logger);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::CompoundAssign, {
@@ -169,10 +169,10 @@ fn apply_with_logger(
         }
     });
     step!(program, Pass::ForContinue, {
-        cleanup_for_continues(&mut program);
+        cleanup_for_continues(&mut program, logger);
     });
     step!(program, Pass::SingletonScopes, {
-        singleton_scopes_to_fixpoint(&mut program);
+        singleton_scopes_to_fixpoint(&mut program, logger);
     });
     step!(program, Pass::ConstantIndexCasts, {
         for item in &mut program.items {
@@ -277,18 +277,20 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::SliceLoop, {
-        if rewrite::slice_loop::fixup(&mut program, &facts) {
+        if rewrite::slice_loop::SliceLoop::new(logger).fixup(&mut program, &facts) {
             late_loop_cleanup(&mut program);
         }
     });
     step!(program, Pass::SliceReduce, {
-        if rewrite::slice_reduce::fixup(&mut program) {
+        if rewrite::slice_reduce::SliceReduce::new(logger).fixup(&mut program) {
             late_loop_cleanup(&mut program);
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::RangeLoop, {
-        if !skip.contains(Pass::RangeLoop) && rewrite::range_loop::fixup(&mut program, &facts) {
+        if !skip.contains(Pass::RangeLoop)
+            && rewrite::range_loop::RangeLoop::new(logger).fixup(&mut program, &facts)
+        {
             late_loop_cleanup(&mut program);
         }
     });
@@ -471,20 +473,21 @@ fn apply_with_logger(
     program
 }
 
-fn structure_goto(program: &mut Program) {
+fn structure_goto(program: &mut Program, logger: &mut impl TraceLogger) {
     for item in &mut program.items {
         if let Item::Fn(f) = item {
-            while rewrite::goto::fixup(&mut f.body) {}
+            while rewrite::goto::Goto::new(f.name.clone(), logger).fixup(&mut f.body) {}
         }
     }
 }
 
-fn cleanup_for_continues(program: &mut Program) {
+fn cleanup_for_continues(program: &mut Program, logger: &mut impl TraceLogger) {
     loop {
         let mut changed = false;
         for item in &mut program.items {
             if let Item::Fn(f) = item
-                && rewrite::for_continue::fixup(&mut f.body)
+                && rewrite::for_continue::ForContinue::new(f.name.clone(), logger)
+                    .fixup(&mut f.body)
             {
                 changed = true;
             }
@@ -495,12 +498,13 @@ fn cleanup_for_continues(program: &mut Program) {
     }
 }
 
-fn singleton_scopes_to_fixpoint(program: &mut Program) {
+fn singleton_scopes_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
     loop {
         let mut changed = false;
         for item in &mut program.items {
             if let Item::Fn(f) = item
-                && rewrite::singleton_scopes::fixup(&mut f.body)
+                && rewrite::singleton_scopes::SingletonScopes::new(f.name.clone(), logger)
+                    .fixup(&mut f.body)
             {
                 changed = true;
             }

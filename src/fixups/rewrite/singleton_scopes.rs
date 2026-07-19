@@ -1,30 +1,73 @@
 use crate::fixups::facts::PathSegment;
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, named_path_location, path_fact,
+    stmt_snippet,
+};
 use crate::rust_ast::{IndentStmt, Stmt};
 
 pub(in crate::fixups) fn fixup(body: &mut [IndentStmt]) -> bool {
-    fixup_at(body, &mut Vec::new())
+    let mut logger = crate::fixups::trace::NoopLogger;
+    SingletonScopes::new("<unknown>", &mut logger).fixup(body)
 }
 
-fn fixup_at(body: &mut [IndentStmt], path: &mut Vec<PathSegment>) -> bool {
-    for index in 0..body.len() {
-        let mut changed = false;
-        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            walk::nested_body_vecs_mut_with_path(&mut body[index].stmt, path, &mut |body, path| {
-                if !changed {
-                    changed = fixup_at(body, path);
-                }
-            });
-        });
-        if changed {
-            return true;
-        }
+pub(in crate::fixups) struct SingletonScopes<'a> {
+    function_name: String,
+    logger: &'a mut dyn TraceLogger,
+}
 
-        if unwrap_singleton_scope(&mut body[index]) {
-            return true;
+impl<'a> SingletonScopes<'a> {
+    pub(in crate::fixups) fn new(
+        function_name: impl Into<String>,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function_name: function_name.into(),
+            logger,
         }
     }
-    false
+
+    pub(in crate::fixups) fn fixup(&mut self, body: &mut [IndentStmt]) -> bool {
+        self.fixup_at(body, &mut Vec::new())
+    }
+
+    fn fixup_at(&mut self, body: &mut [IndentStmt], path: &mut Vec<PathSegment>) -> bool {
+        for index in 0..body.len() {
+            let mut changed = false;
+            walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+                walk::nested_body_vecs_mut_with_path(
+                    &mut body[index].stmt,
+                    path,
+                    &mut |body, path| {
+                        if !changed {
+                            changed = self.fixup_at(body, path);
+                        }
+                    },
+                );
+            });
+            if changed {
+                return true;
+            }
+
+            let before = self.logger.is_enabled().then(|| body[index].stmt.clone());
+            if unwrap_singleton_scope(&mut body[index]) {
+                if let Some(before) = before {
+                    let mut stmt_path = path.clone();
+                    stmt_path.push(PathSegment::Stmt(index));
+                    self.logger.rewrite(RewriteEvent {
+                        pass: TracePass::SingletonScopes,
+                        kind: "unwrap_singleton_scope".into(),
+                        location: named_path_location(self.function_name.clone(), &stmt_path),
+                        before: vec![stmt_snippet("scope", &before)],
+                        after: vec![stmt_snippet("statement", &body[index].stmt)],
+                        facts: vec![path_fact("stmt_path", &stmt_path), fact("scope_len", "1")],
+                    });
+                }
+                return true;
+            }
+        }
+        false
+    }
 }
 
 fn unwrap_singleton_scope(indent: &mut IndentStmt) -> bool {
