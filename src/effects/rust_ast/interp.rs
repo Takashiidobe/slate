@@ -7,8 +7,8 @@ use crate::effects::{
     ParamSeed, Value, call_summary,
 };
 use crate::rust_ast::{
-    AtomicOrdering, AtomicPlace, AtomicRmwOp, BinOp, Block, Expr, FnDef, IndentStmt, Item, Label,
-    Path, Pattern, Prim, Program, Stmt, Type, UnaryOp,
+    AtomicOrdering, AtomicPlace, AtomicRmwOp, Attr, BinOp, Block, Expr, FnDef, IndentStmt, Item,
+    Label, Path, Pattern, Prim, Program, Repr, Stmt, StructDef, StructFields, Type, UnaryOp,
 };
 
 pub fn interpret(f: &FnDef) -> EffectTrace {
@@ -77,6 +77,7 @@ struct OnceLockBinding {
 #[derive(Default)]
 struct Interp {
     vecs: HashMap<String, VecBinding>,
+    array_elem_types: HashMap<String, Type>,
     structs: HashMap<String, StructBinding>,
     globals: HashMap<String, Location>,
     scalar_locs: HashMap<String, Location>,
@@ -84,6 +85,7 @@ struct Interp {
     once_locks: HashMap<String, OnceLockBinding>,
     funcs: HashMap<String, FnDef>,
     records: HashMap<String, crate::rust_ast::RecordDef>,
+    tuple_structs: HashMap<String, StructDef>,
     scalars: HashMap<String, Value>,
     files: HashMap<String, FileId>,
     file_paths: HashMap<FileId, String>,
@@ -112,6 +114,9 @@ impl Interp {
                 }
                 Item::Record(record) => {
                     self.records.insert(record.name.clone(), record.clone());
+                }
+                Item::Struct(def) => {
+                    self.tuple_structs.insert(def.name.clone(), def.clone());
                 }
                 _ => {}
             }
@@ -159,10 +164,18 @@ impl Interp {
                 .insert(name.to_string(), OnceLockBinding { guard, payload });
             return;
         }
-        let Some((_, _, size)) = scalar_type_shape(ty) else {
+        if let Type::Array { elem, len } = ty {
+            let loc = self.bind_array_storage(name, elem, *len, init, false);
+            self.globals.insert(name.to_string(), loc);
             return;
-        };
-        let value = self.eval(init);
+        }
+        if matches!(ty, Type::Custom(_)) {
+            let loc = self.bind_record_storage(name, ty, init);
+            self.globals.insert(name.to_string(), loc);
+            return;
+        }
+        let size = self.type_layout(ty).0;
+        let value = cast_value_to_type(self.eval(init), ty);
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
         let loc = Location {
@@ -255,7 +268,7 @@ impl Interp {
                     }
                     Expr::Str(s) if is_str_ref_ty(ty) => self.let_string_bytes(name, s.as_bytes()),
                     _ if vec_elem_shape(ty).is_some() => self.let_vec(name, ty, init),
-                    _ if array_elem_shape(ty).is_some() => self.let_array(name, ty, init),
+                    _ if matches!(ty, Type::Array { .. }) => self.let_array(name, ty, init),
                     Expr::CStr(bytes) if is_cstr_ref_ty(ty) => self.let_cstr(name, bytes),
                     _ if matches!(ty, Type::Custom(_)) => self.let_struct_value(name, init),
                     _ => {
@@ -439,6 +452,12 @@ impl Interp {
                     self.replace_string(ident.as_str(), &bytes);
                     return Flow::Normal;
                 }
+                if self.vecs.contains_key(ident.as_str())
+                    && matches!(value, Expr::ArrayLit(_) | Expr::ArrayRepeat { .. })
+                {
+                    self.assign_array(ident.as_str(), value);
+                    return Flow::Normal;
+                }
                 if self.structs.contains_key(ident.as_str())
                     && !self.pointer_elem_sizes.contains_key(ident.as_str())
                 {
@@ -447,12 +466,6 @@ impl Interp {
                         panic!("effects::rust_ast: assigning non-struct value to struct `{ident}`");
                     };
                     self.copy_struct_to_existing(ident.as_str(), src);
-                    return Flow::Normal;
-                }
-                if self.vecs.contains_key(ident.as_str())
-                    && matches!(value, Expr::ArrayLit(_) | Expr::ArrayRepeat { .. })
-                {
-                    self.assign_array(ident.as_str(), value);
                     return Flow::Normal;
                 }
                 let v = self.eval(value);
@@ -480,6 +493,10 @@ impl Interp {
     }
 
     fn assign_array(&mut self, name: &str, value: &Expr) {
+        if let Some(Type::Custom(record_name)) = self.array_elem_types.get(name).cloned() {
+            self.write_record_array_values(name, &Type::Custom(record_name), value);
+            return;
+        }
         self.materialize_collection(name);
         let binding = self
             .vecs
@@ -723,6 +740,12 @@ impl Interp {
     }
 
     fn let_array(&mut self, name: &str, ty: &Type, init: &Expr) {
+        if let Type::Array { elem, len } = ty
+            && matches!(elem.as_ref(), Type::Custom(_))
+        {
+            self.bind_array_storage(name, elem, *len, init, false);
+            return;
+        }
         let (elem_width, elem_signed, elem_size, len) = array_elem_shape(ty)
             .unwrap_or_else(|| panic!("effects::rust_ast: expected array local, found {ty:?}"));
         let values: Vec<Value> = match init {
@@ -784,6 +807,154 @@ impl Interp {
                 owned: false,
             },
         );
+    }
+
+    fn bind_array_storage(
+        &mut self,
+        name: &str,
+        elem_ty: &Type,
+        len: u64,
+        init: &Expr,
+        owned: bool,
+    ) -> Location {
+        let (elem_size, _) = self.type_layout(elem_ty);
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: elem_size * len,
+        });
+        self.vecs.insert(
+            name.to_string(),
+            VecBinding {
+                alloc,
+                elem_width: IntWidth::W32,
+                elem_signed: true,
+                elem_size,
+                len,
+                owned,
+            },
+        );
+        self.array_elem_types
+            .insert(name.to_string(), elem_ty.clone());
+        if matches!(elem_ty, Type::Custom(_)) {
+            self.bind_record_array_metadata(name, elem_ty, alloc, elem_size, len);
+            self.write_record_array_values(name, elem_ty, init);
+        } else {
+            self.write_scalar_array_values(name, elem_ty, init);
+        }
+        Location {
+            alloc,
+            byte_offset: 0,
+        }
+    }
+
+    fn write_scalar_array_values(&mut self, name: &str, elem_ty: &Type, init: &Expr) {
+        let binding = self
+            .vecs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: write to unknown array `{name}`"))
+            .clone();
+        let elems = array_init_elems(init, binding.len);
+        for (index, elem) in elems.into_iter().enumerate() {
+            let value = cast_value_to_type(self.eval(elem), elem_ty);
+            let loc = Location {
+                alloc: binding.alloc,
+                byte_offset: index as u64 * binding.elem_size,
+            };
+            self.heap.insert(loc, value.clone());
+            self.trace.push(Effect::Write { loc, value });
+        }
+    }
+
+    fn bind_record_array_metadata(
+        &mut self,
+        name: &str,
+        elem_ty: &Type,
+        alloc: AllocId,
+        elem_size: u64,
+        len: u64,
+    ) {
+        let Type::Custom(record_name) = elem_ty else {
+            return;
+        };
+        let mut field_offsets = HashMap::new();
+        let mut array_fields = HashMap::new();
+        let mut field_types = HashMap::new();
+        for index in 0..len {
+            let prefix = index.to_string();
+            self.record_field_metadata(
+                &prefix,
+                record_name,
+                index * elem_size,
+                &mut field_offsets,
+                &mut array_fields,
+                &mut field_types,
+            );
+        }
+        self.structs.insert(
+            name.to_string(),
+            StructBinding {
+                alloc,
+                field_offsets,
+                array_fields,
+                field_types,
+                size: elem_size * len,
+            },
+        );
+    }
+
+    fn write_record_array_values(&mut self, name: &str, elem_ty: &Type, init: &Expr) {
+        let binding = self
+            .vecs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: write to unknown array `{name}`"))
+            .clone();
+        let elems = array_init_elems(init, binding.len);
+        for (index, elem) in elems.into_iter().enumerate() {
+            self.write_record_array_elem(name, elem_ty, index as u64, &elem);
+        }
+    }
+
+    fn write_record_array_elem(&mut self, name: &str, elem_ty: &Type, index: u64, expr: &Expr) {
+        let Type::Custom(record_name) = elem_ty else {
+            panic!("effects::rust_ast: expected record array element type, found {elem_ty:?}");
+        };
+        let binding = self
+            .vecs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: write to unknown array `{name}`"))
+            .clone();
+        let base_offset = index * binding.elem_size;
+        let mut field_offsets = HashMap::new();
+        let mut array_fields = HashMap::new();
+        let mut field_types = HashMap::new();
+        match expr {
+            Expr::StructLit { fields, .. } => {
+                self.write_struct_fields(
+                    binding.alloc,
+                    base_offset,
+                    &index.to_string(),
+                    Some(record_name),
+                    fields,
+                    &mut field_offsets,
+                    &mut array_fields,
+                    &mut field_types,
+                );
+            }
+            Expr::TupleStructLit { fields, .. } if fields.len() == 1 => {
+                self.write_record_array_elem(name, elem_ty, index, &fields[0]);
+            }
+            other => {
+                let src = self.eval(other);
+                let Value::Ref(src) = src else {
+                    panic!(
+                        "effects::rust_ast: record array element must be aggregate, found {src:?}"
+                    );
+                };
+                self.copy_struct_bytes(src, binding.alloc, base_offset);
+            }
+        }
     }
 
     fn let_cstr(&mut self, name: &str, bytes: &[u8]) {
@@ -940,17 +1111,23 @@ impl Interp {
     }
 
     fn assign_index(&mut self, base: &Expr, index: &Expr, value: &Expr) {
-        let raw = value_as_i128(self.eval(value));
         if matches!(base, Expr::Field { .. }) {
             let loc = self.field_array_element_location(base, index);
-            let value = Value::Int {
-                width: IntWidth::W32,
-                signed: true,
-                value: raw,
+            let value = match self.field_array_element_type(base) {
+                Some(elem_ty) => cast_value_to_type(self.eval(value), &elem_ty),
+                None => {
+                    let raw = value_as_i128(self.eval(value));
+                    Value::Int {
+                        width: IntWidth::W32,
+                        signed: true,
+                        value: raw,
+                    }
+                }
             };
             self.write_loc(loc, value);
             return;
         }
+        let raw = value_as_i128(self.eval(value));
         let name = match base {
             Expr::Var(ident) => ident.as_str(),
             other => panic!("effects::rust_ast: unsupported assign target base `{other:?}`"),
@@ -992,8 +1169,27 @@ impl Interp {
         let mut field_offsets = HashMap::new();
         let mut array_fields = HashMap::new();
         let mut field_types = HashMap::new();
+        if let Some(record_name) = record_name
+            && self.records.contains_key(record_name)
+        {
+            self.record_field_metadata(
+                "",
+                record_name,
+                0,
+                &mut field_offsets,
+                &mut array_fields,
+                &mut field_types,
+            );
+        }
+        let alloc_size = record_name
+            .filter(|record_name| self.records.contains_key(*record_name))
+            .map(|record_name| self.size_of_named_type(record_name))
+            .unwrap_or(0);
         let alloc_slot = self.trace.effects.len();
-        self.trace.push(Effect::Alloc { alloc, size: 0 });
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: alloc_size,
+        });
         let size = self.write_struct_fields(
             alloc,
             0,
@@ -1004,6 +1200,7 @@ impl Interp {
             &mut array_fields,
             &mut field_types,
         );
+        let size = alloc_size.max(size);
         if let Effect::Alloc {
             size: alloc_size, ..
         } = &mut self.trace.effects[alloc_slot]
@@ -1040,12 +1237,48 @@ impl Interp {
     }
 
     fn let_struct_value(&mut self, name: &str, init: &Expr) {
+        if let Expr::TupleStructLit { fields, .. } = init
+            && fields.len() == 1
+            && matches!(&fields[0], Expr::StructLit { .. })
+        {
+            let value = self.eval(&fields[0]);
+            let Value::Ref(src) = value else {
+                unreachable!();
+            };
+            self.bind_struct_copy(name, src);
+            return;
+        }
         let value = self.eval(init);
         let Value::Ref(src) = value else {
             self.scalars.insert(name.to_string(), value);
             return;
         };
         self.bind_struct_copy(name, src);
+    }
+
+    fn bind_record_storage(&mut self, name: &str, _ty: &Type, init: &Expr) -> Location {
+        match init {
+            Expr::StructLit {
+                name: record_name,
+                fields,
+            } => self.bind_struct_fields(name, Some(record_name), fields),
+            Expr::TupleStructLit { fields, .. } if fields.len() == 1 => {
+                self.bind_record_storage(name, _ty, &fields[0])
+            }
+            other => {
+                let value = self.eval(other);
+                let Value::Ref(src) = value else {
+                    panic!(
+                        "effects::rust_ast: record initializer must be aggregate, found {value:?}"
+                    );
+                };
+                self.bind_struct_copy(name, src);
+                Location {
+                    alloc: self.structs[name].alloc,
+                    byte_offset: 0,
+                }
+            }
+        }
     }
 
     fn bind_struct_copy(&mut self, name: &str, src: Location) {
@@ -1066,26 +1299,7 @@ impl Interp {
             alloc,
             size: source.size,
         });
-        let mut offsets: Vec<u64> = self
-            .heap
-            .keys()
-            .filter(|loc| loc.alloc == src.alloc && loc.byte_offset < src.byte_offset + source.size)
-            .map(|loc| loc.byte_offset - src.byte_offset)
-            .collect();
-        offsets.sort_unstable();
-        for offset in offsets {
-            let src_loc = Location {
-                alloc: src.alloc,
-                byte_offset: src.byte_offset + offset,
-            };
-            let value = self.heap[&src_loc].clone();
-            let loc = Location {
-                alloc,
-                byte_offset: offset,
-            };
-            self.heap.insert(loc, value.clone());
-            self.trace.push(Effect::Write { loc, value });
-        }
+        self.copy_struct_bytes(src, alloc, 0);
         self.structs.insert(
             name.to_string(),
             StructBinding {
@@ -1104,6 +1318,10 @@ impl Interp {
             .get(name)
             .unwrap_or_else(|| panic!("effects::rust_ast: copy into unknown struct `{name}`"))
             .alloc;
+        self.copy_struct_bytes(src, alloc, 0);
+    }
+
+    fn copy_struct_bytes(&mut self, src: Location, dst_alloc: AllocId, dst_base_offset: u64) {
         let source = self
             .structs
             .values()
@@ -1129,8 +1347,8 @@ impl Interp {
             };
             let value = self.heap[&src_loc].clone();
             let loc = Location {
-                alloc,
-                byte_offset: offset,
+                alloc: dst_alloc,
+                byte_offset: dst_base_offset + offset,
             };
             self.heap.insert(loc, value.clone());
             self.trace.push(Effect::Write { loc, value });
@@ -1148,6 +1366,38 @@ impl Interp {
         array_fields: &mut HashMap<String, (u64, u64)>,
         field_types: &mut HashMap<String, Type>,
     ) -> u64 {
+        if let Some(record_name) = record_name
+            && self
+                .records
+                .get(record_name)
+                .is_some_and(|record| record.is_union)
+        {
+            let mut size = 0u64;
+            for (field, expr) in fields {
+                let path = if prefix.is_empty() {
+                    field.clone()
+                } else {
+                    format!("{prefix}.{field}")
+                };
+                let field_ty = self.record_field_type(record_name, field);
+                if let Some(field_ty) = &field_ty {
+                    field_types.insert(path.clone(), field_ty.clone());
+                }
+                field_offsets.insert(path.clone(), base_offset);
+                let field_size = self.write_struct_field_value(
+                    alloc,
+                    base_offset,
+                    &path,
+                    field_ty.as_ref(),
+                    expr,
+                    field_offsets,
+                    array_fields,
+                    field_types,
+                );
+                size = size.max(field_size);
+            }
+            return size;
+        }
         let mut offset = 0u64;
         for (field, expr) in fields {
             let path = if prefix.is_empty() {
@@ -1258,9 +1508,62 @@ impl Interp {
                     byte_offset: offset,
                 };
                 self.heap.insert(loc, value.clone());
-                let size = int_byte_size(&value);
+                let size = ty
+                    .map(|ty| self.type_layout(ty).0)
+                    .unwrap_or_else(|| local_value_size(&value));
                 self.trace.push(Effect::Write { loc, value });
                 size
+            }
+        }
+    }
+
+    fn record_field_metadata(
+        &self,
+        prefix: &str,
+        record_name: &str,
+        base_offset: u64,
+        field_offsets: &mut HashMap<String, u64>,
+        array_fields: &mut HashMap<String, (u64, u64)>,
+        field_types: &mut HashMap<String, Type>,
+    ) {
+        let record = self
+            .records
+            .get(record_name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: unknown record `{record_name}`"));
+        let mut offset = 0u64;
+        for field in &record.fields {
+            let (field_size, field_align) = self.type_layout(&field.ty);
+            if !record.is_union && !record.packed {
+                offset = align_to(offset, field_align);
+            }
+            let field_offset = if record.is_union { 0 } else { offset };
+            let path = if prefix.is_empty() {
+                field.name.as_str().to_string()
+            } else {
+                format!("{prefix}.{}", field.name.as_str())
+            };
+            field_offsets.insert(path.clone(), base_offset + field_offset);
+            field_types.insert(path.clone(), field.ty.clone());
+            if let Type::Array { elem, .. } = &field.ty {
+                array_fields.insert(
+                    path.clone(),
+                    (base_offset + field_offset, self.type_layout(elem).0),
+                );
+            }
+            if let Type::Custom(child_name) = &field.ty
+                && self.records.contains_key(child_name)
+            {
+                self.record_field_metadata(
+                    &path,
+                    child_name,
+                    base_offset + field_offset,
+                    field_offsets,
+                    array_fields,
+                    field_types,
+                );
+            }
+            if !record.is_union {
+                offset += field_size;
             }
         }
     }
@@ -1563,9 +1866,27 @@ impl Interp {
         }
     }
 
+    fn field_array_element_type(&self, base: &Expr) -> Option<Type> {
+        let (name, path) = self.field_path(base);
+        let Type::Array { elem, .. } = self.structs.get(name)?.field_types.get(&path)? else {
+            return None;
+        };
+        Some((**elem).clone())
+    }
+
     fn field_path<'a>(&'a self, expr: &'a Expr) -> (&'a str, String) {
         match expr {
-            Expr::Var(ident) => (ident.as_str(), String::new()),
+            Expr::Var(ident) => {
+                if self.structs.contains_key(ident.as_str()) {
+                    return (ident.as_str(), String::new());
+                }
+                if let Some(Value::Ref(loc)) = self.scalars.get(ident.as_str())
+                    && self.aggregate_allocs_contains(*loc)
+                {
+                    return self.struct_path_for_loc(*loc);
+                }
+                (ident.as_str(), String::new())
+            }
             Expr::Unary {
                 op: UnaryOp::Deref,
                 expr,
@@ -1587,18 +1908,41 @@ impl Interp {
                 };
                 (name, path)
             }
+            Expr::Index { base, index } => {
+                let name = collection_name(base);
+                let index = value_as_u64(self.eval_without_trace(index));
+                (name, index.to_string())
+            }
             other => panic!("effects::rust_ast: unsupported field base `{other:?}`"),
         }
     }
 
     fn eval_ref_without_trace(&self, expr: &Expr) -> Value {
         match expr {
+            Expr::Var(ident) if self.globals.contains_key(ident.as_str()) => self
+                .heap
+                .get(&self.globals[ident.as_str()])
+                .unwrap_or_else(|| {
+                    panic!("effects::rust_ast: read from never-written global `{ident}`")
+                })
+                .clone(),
             Expr::Var(ident) => self
                 .scalars
                 .get(ident.as_str())
                 .unwrap_or_else(|| panic!("effects::rust_ast: read of unknown scalar `{ident}`"))
                 .clone(),
             _ => panic!("effects::rust_ast: unsupported pointer field base `{expr:?}`"),
+        }
+    }
+
+    fn eval_without_trace(&self, expr: &Expr) -> Value {
+        match expr {
+            Expr::Value(rv) => rust_value_to_value(rv),
+            Expr::Cast { expr, ty } => cast_value_to_type(self.eval_without_trace(expr), ty),
+            Expr::Var(ident) if self.scalars.contains_key(ident.as_str()) => {
+                self.scalars[ident.as_str()].clone()
+            }
+            other => panic!("effects::rust_ast: unsupported trace-free eval `{other:?}`"),
         }
     }
 
@@ -1613,6 +1957,33 @@ impl Interp {
                     loc.alloc
                 )
             });
+        if self.array_elem_types.contains_key(name.as_str())
+            && let Some(vec) = self.vecs.get(name)
+        {
+            let index = loc.byte_offset / vec.elem_size;
+            let offset = loc.byte_offset % vec.elem_size;
+            if offset == 0 {
+                return (name.as_str(), index.to_string());
+            }
+            let prefix = index.to_string();
+            let path = binding
+                .field_offsets
+                .iter()
+                .find_map(|(path, field_offset)| {
+                    (*field_offset == loc.byte_offset
+                        && path
+                            .strip_prefix(&prefix)
+                            .is_some_and(|rest| rest.starts_with('.')))
+                    .then(|| path.clone())
+                })
+                .unwrap_or_else(|| {
+                    panic!(
+                        "effects::rust_ast: no aggregate array field starts at offset {}",
+                        loc.byte_offset
+                    )
+                });
+            return (name.as_str(), path);
+        }
         if loc.byte_offset == 0 {
             return (name.as_str(), String::new());
         }
@@ -2707,11 +3078,13 @@ impl Interp {
             });
             return size.min(8).max(1);
         }
-        let record = self
-            .records
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: unknown type `{name}` in align_of"));
-        self.record_align(record)
+        if let Some(record) = self.records.get(name) {
+            return self.record_align(record);
+        }
+        if let Some(def) = self.tuple_structs.get(name) {
+            return self.tuple_struct_align(def);
+        }
+        panic!("effects::rust_ast: unknown type `{name}` in align_of")
     }
 
     fn size_of_named_type(&self, name: &str) -> u64 {
@@ -2720,10 +3093,12 @@ impl Interp {
                 panic!("effects::rust_ast: unsupported primitive size `{name}`")
             });
         }
-        let record = self
-            .records
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: unknown type `{name}` in size_of"));
+        let Some(record) = self.records.get(name) else {
+            if let Some(def) = self.tuple_structs.get(name) {
+                return self.tuple_struct_size(def);
+            }
+            panic!("effects::rust_ast: unknown type `{name}` in size_of");
+        };
         if record.is_union {
             let size = record
                 .fields
@@ -2748,11 +3123,13 @@ impl Interp {
         match ty {
             Type::Custom(name) => {
                 let size = self.size_of_named_type(name);
-                let align = self
-                    .records
-                    .get(name)
-                    .map(|record| self.record_align(record))
-                    .unwrap_or(1);
+                let align = if let Some(record) = self.records.get(name) {
+                    self.record_align(record)
+                } else if let Some(def) = self.tuple_structs.get(name) {
+                    self.tuple_struct_align(def)
+                } else {
+                    1
+                };
                 (size, align)
             }
             Type::Array { elem, len } => {
@@ -2801,6 +3178,48 @@ impl Interp {
                 .max()
                 .unwrap_or(1)
         })
+    }
+
+    fn tuple_struct_size(&self, def: &StructDef) -> u64 {
+        let StructFields::Tuple(fields) = &def.fields else {
+            return 0;
+        };
+        let mut offset = 0u64;
+        for field in fields {
+            let (size, align) = self.type_layout(field);
+            offset = align_to(offset, align);
+            offset += size;
+        }
+        align_to(offset, self.tuple_struct_align(def))
+    }
+
+    fn tuple_struct_align(&self, def: &StructDef) -> u64 {
+        let field_align = match &def.fields {
+            StructFields::Tuple(fields) => fields
+                .iter()
+                .map(|field| self.type_layout(field).1)
+                .max()
+                .unwrap_or(1),
+            StructFields::Named(fields) => fields
+                .iter()
+                .map(|(_, field)| self.type_layout(field).1)
+                .max()
+                .unwrap_or(1),
+        };
+        def.attrs
+            .iter()
+            .filter_map(|attr| match attr {
+                Attr::Repr(reprs) => Some(reprs),
+                _ => None,
+            })
+            .flatten()
+            .filter_map(|repr| match repr {
+                Repr::Align(align) => Some(u64::from(*align)),
+                _ => None,
+            })
+            .max()
+            .unwrap_or(field_align)
+            .max(field_align)
     }
 
     fn eval_call_summary(&mut self, summary: CallSummary, args: &[Expr]) -> Value {
@@ -3785,31 +4204,55 @@ impl Interp {
                 if compare(self, left, right) <= 0 {
                     break;
                 }
-                let left_value = self
-                    .heap
-                    .get(&left)
-                    .unwrap_or_else(|| {
-                        panic!("effects::rust_ast: read from never-written {left:?}")
-                    })
-                    .clone();
-                let right_value = self
-                    .heap
-                    .get(&right)
-                    .unwrap_or_else(|| {
-                        panic!("effects::rust_ast: read from never-written {right:?}")
-                    })
-                    .clone();
-                self.heap.insert(left, right_value.clone());
-                self.trace.push(Effect::Write {
-                    loc: left,
-                    value: right_value,
-                });
-                self.heap.insert(right, left_value.clone());
-                self.trace.push(Effect::Write {
-                    loc: right,
-                    value: left_value,
-                });
+                self.swap_elements(left, right, elem_size);
                 j -= 1;
+            }
+        }
+    }
+
+    fn swap_elements(&mut self, left: Location, right: Location, elem_size: u64) {
+        let mut offsets = self
+            .heap
+            .keys()
+            .filter_map(|loc| {
+                if loc.alloc != left.alloc {
+                    return None;
+                }
+                if (left.byte_offset..left.byte_offset + elem_size).contains(&loc.byte_offset) {
+                    return Some(loc.byte_offset - left.byte_offset);
+                }
+                if (right.byte_offset..right.byte_offset + elem_size).contains(&loc.byte_offset) {
+                    return Some(loc.byte_offset - right.byte_offset);
+                }
+                None
+            })
+            .collect::<Vec<_>>();
+        offsets.sort_unstable();
+        offsets.dedup();
+        for offset in offsets {
+            let left_loc = Location {
+                alloc: left.alloc,
+                byte_offset: left.byte_offset + offset,
+            };
+            let right_loc = Location {
+                alloc: right.alloc,
+                byte_offset: right.byte_offset + offset,
+            };
+            let left_value = self.heap.get(&left_loc).cloned();
+            let right_value = self.heap.get(&right_loc).cloned();
+            if let Some(value) = right_value {
+                self.heap.insert(left_loc, value.clone());
+                self.trace.push(Effect::Write {
+                    loc: left_loc,
+                    value,
+                });
+            }
+            if let Some(value) = left_value {
+                self.heap.insert(right_loc, value.clone());
+                self.trace.push(Effect::Write {
+                    loc: right_loc,
+                    value,
+                });
             }
         }
     }
@@ -4023,6 +4466,27 @@ fn tuple_pat2(pat: &str) -> (&str, &str) {
         panic!("effects::rust_ast: enumerate loop expects two bindings, found `{pat}`");
     }
     (left, right)
+}
+
+fn array_init_elems(init: &Expr, len: u64) -> Vec<&Expr> {
+    match init {
+        Expr::ArrayLit(elems) => {
+            if elems.len() as u64 != len {
+                panic!("effects::rust_ast: array initializer length does not match type");
+            }
+            elems.iter().collect()
+        }
+        Expr::ArrayRepeat {
+            elem,
+            len: repeat_len,
+        } => {
+            if *repeat_len as u64 != len {
+                panic!("effects::rust_ast: array repeat length does not match type");
+            }
+            std::iter::repeat(elem.as_ref()).take(*repeat_len).collect()
+        }
+        other => panic!("effects::rust_ast: unsupported array initializer `{other:?}`"),
+    }
 }
 
 fn local_value_size(value: &Value) -> u64 {
