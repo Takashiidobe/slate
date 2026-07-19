@@ -1039,3 +1039,57 @@ fn string_len_scans_a_string_buffer_and_pushes_a_call_effect() {
         ]
     );
 }
+
+#[test]
+fn calloc_zeroes_heap_state_without_synthetic_writes() {
+    let trace = interpret(&FnDef {
+        attrs: vec![],
+        vis: Visibility::Private,
+        unsafe_: false,
+        abi: None,
+        name: "main".to_string(),
+        params: vec![],
+        ret: Some(Type::Prim(Prim::I32)),
+        body: vec![
+            stmt(Stmt::Let {
+                name: "p".to_string(),
+                mutable: true,
+                ty: Some(Type::Ptr {
+                    mutable: true,
+                    inner: Box::new(Type::Prim(Prim::I32)),
+                }),
+                init: Some(Expr::Call {
+                    func: Box::new(Expr::Var(Ident::new("calloc"))),
+                    args: vec![
+                        Expr::Value(RustValue::I64(1)),
+                        Expr::Value(RustValue::I64(4)),
+                    ],
+                }),
+            }),
+            stmt(Stmt::Return(Some(Expr::Unary {
+                op: UnaryOp::Deref,
+                expr: Box::new(Expr::Var(Ident::new("p"))),
+            }))),
+        ],
+    });
+    let alloc = AllocId(0);
+    let zero = Value::Int {
+        width: IntWidth::W8,
+        signed: true,
+        value: 0,
+    };
+    assert_eq!(
+        trace.effects,
+        vec![
+            Effect::Alloc { alloc, size: 4 },
+            Effect::Read {
+                loc: Location {
+                    alloc,
+                    byte_offset: 0
+                },
+                value: zero,
+            },
+            Effect::Exit(0),
+        ]
+    );
+}

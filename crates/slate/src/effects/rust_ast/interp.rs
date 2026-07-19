@@ -8,7 +8,7 @@ use crate::effects::{
 };
 use crate::rust_ast::{
     AtomicOrdering, AtomicPlace, AtomicRmwOp, BinOp, Block, Expr, FnDef, IndentStmt, Item, Label,
-    Pattern, Program, Stmt, Type, UnaryOp,
+    Pattern, Prim, Program, Stmt, Type, UnaryOp,
 };
 
 pub fn interpret(f: &FnDef) -> EffectTrace {
@@ -31,6 +31,7 @@ pub fn interpret_program_main(program: &Program) -> EffectTrace {
         .cloned()
         .expect("fixture must define `main`");
     if interp.run(&main.body) == Flow::Normal {
+        interp.drop_live_vecs();
         interp.trace.push(Effect::Exit(0));
     }
     interp.trace
@@ -85,6 +86,9 @@ struct Interp {
     records: HashMap<String, crate::rust_ast::RecordDef>,
     scalars: HashMap<String, Value>,
     files: HashMap<String, FileId>,
+    file_paths: HashMap<FileId, String>,
+    file_contents: HashMap<String, Vec<u8>>,
+    file_offsets: HashMap<FileId, usize>,
     atomics: HashMap<String, AtomicId>,
     atomic_values: HashMap<AtomicId, Value>,
     heap: HashMap<Location, Value>,
@@ -241,6 +245,15 @@ impl Interp {
                     Expr::Call { func, args } if is_path(func, &["String", "from"]) => {
                         self.let_string(name, args)
                     }
+                    Expr::MethodCall { recv, method, args }
+                        if matches!(ty, Type::Custom(s) if s == "String")
+                            && method == "to_owned"
+                            && args.is_empty() =>
+                    {
+                        let bytes = self.string_expr_bytes(recv);
+                        self.let_string_bytes(name, &bytes);
+                    }
+                    Expr::Str(s) if is_str_ref_ty(ty) => self.let_string_bytes(name, s.as_bytes()),
                     _ if vec_elem_shape(ty).is_some() => self.let_vec(name, ty, init),
                     _ if array_elem_shape(ty).is_some() => self.let_array(name, ty, init),
                     Expr::CStr(bytes) if is_cstr_ref_ty(ty) => self.let_cstr(name, bytes),
@@ -304,6 +317,10 @@ impl Interp {
                 Flow::Normal
             }
             Stmt::Let { init: None, .. } => Flow::Normal,
+            Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "push_str" => {
+                self.push_str(recv, args);
+                Flow::Normal
+            }
             Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "push" => {
                 self.push(recv, args);
                 Flow::Normal
@@ -417,6 +434,11 @@ impl Interp {
     fn assign(&mut self, target: &Expr, value: &Expr) -> Flow {
         match target {
             Expr::Var(ident) => {
+                if self.scalars.contains_key(ident.as_str()) && self.string_owned_expr(value) {
+                    let bytes = self.string_expr_bytes(value);
+                    self.replace_string(ident.as_str(), &bytes);
+                    return Flow::Normal;
+                }
                 if self.structs.contains_key(ident.as_str())
                     && !self.pointer_elem_sizes.contains_key(ident.as_str())
                 {
@@ -668,10 +690,30 @@ impl Interp {
                 elem_width,
                 elem_signed,
                 elem_size,
-                len: 0,
+                len: if matches!(init, Expr::VecRepeat { .. }) {
+                    capacity
+                } else {
+                    0
+                },
                 owned: true,
             },
         );
+        if let Expr::VecRepeat { elem, .. } = init {
+            let value = Value::Int {
+                width: elem_width,
+                signed: elem_signed,
+                value: value_as_i128(self.eval(elem)),
+            };
+            for index in 0..capacity {
+                self.heap.insert(
+                    Location {
+                        alloc,
+                        byte_offset: index * elem_size,
+                    },
+                    value,
+                );
+            }
+        }
     }
 
     fn let_array(&mut self, name: &str, ty: &Type, init: &Expr) {
@@ -848,6 +890,11 @@ impl Interp {
         let OpenEffect { path, mode } = open_effect(expr)?;
         let file = FileId(self.next_file);
         self.next_file += 1;
+        self.file_paths.insert(file, path.clone());
+        self.file_offsets.insert(file, 0);
+        if mode.contains('w') {
+            self.file_contents.insert(path.clone(), Vec::new());
+        }
         self.trace.push(Effect::FileOpen { file, path, mode });
         Some(file)
     }
@@ -867,6 +914,7 @@ impl Interp {
             Expr::ByteStr(bytes) => bytes.clone(),
             other => panic!("effects::rust_ast: unsupported write_all bytes `{other:?}`"),
         };
+        self.append_file_bytes(file, &bytes);
         self.trace.push(Effect::FileWrite { file, bytes });
         true
     }
@@ -1225,9 +1273,18 @@ impl Interp {
                 "effects::rust_ast: `String::from` expects a string literal, found {other:?}"
             ),
         };
+        self.let_string_bytes(name, s.as_bytes());
+    }
+
+    fn let_string_bytes(&mut self, name: &str, bytes: &[u8]) {
+        let loc = self.alloc_string_bytes(bytes);
+        self.scalars.insert(name.to_string(), Value::Ref(loc));
+    }
+
+    fn alloc_string_bytes(&mut self, bytes: &[u8]) -> Location {
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
-        let bytes: Vec<u8> = s.bytes().chain(std::iter::once(0)).collect();
+        let bytes: Vec<u8> = bytes.iter().copied().chain(std::iter::once(0)).collect();
         self.trace.push(Effect::Alloc {
             alloc,
             size: bytes.len() as u64,
@@ -1245,26 +1302,86 @@ impl Interp {
             self.heap.insert(loc, value);
             self.trace.push(Effect::Write { loc, value });
         }
-        self.scalars.insert(
-            name.to_string(),
-            Value::Ref(Location {
-                alloc,
-                byte_offset: 0,
-            }),
+        Location {
+            alloc,
+            byte_offset: 0,
+        }
+    }
+
+    fn replace_string(&mut self, name: &str, bytes: &[u8]) {
+        let loc = self.alloc_string_bytes(bytes);
+        self.scalars.insert(name.to_string(), Value::Ref(loc));
+    }
+
+    fn string_owned_expr(&self, expr: &Expr) -> bool {
+        matches!(expr, Expr::MethodCall { method, args, .. } if method == "to_owned" && args.is_empty())
+    }
+
+    fn push_str(&mut self, recv: &Expr, args: &[Expr]) {
+        let [arg] = args else {
+            panic!("effects::rust_ast: push_str expects one argument");
+        };
+        let base = match self.eval(recv) {
+            Value::Ref(loc) => loc,
+            other => panic!("effects::rust_ast: push_str on non-string value {other:?}"),
+        };
+        let offset = self.c_string_len(base);
+        let bytes = self.string_expr_bytes(arg);
+        self.write_c_string(
+            Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + offset,
+            },
+            &bytes,
         );
     }
 
-    fn string_len(&mut self, recv: &Expr) -> Value {
-        let name = match recv {
-            Expr::Var(ident) => ident.as_str(),
-            other => panic!("effects::rust_ast: unsupported `.len()` receiver `{other:?}`"),
-        };
-        let base = match self.scalars.get(name) {
-            Some(Value::Ref(loc)) => *loc,
-            other => {
-                panic!("effects::rust_ast: `.len()` on non-string scalar `{name}` ({other:?})")
+    fn string_expr_bytes(&mut self, expr: &Expr) -> Vec<u8> {
+        match expr {
+            Expr::Cast { expr, .. } => self.string_expr_bytes(expr),
+            Expr::MethodCall { recv, method, args } if method == "to_owned" && args.is_empty() => {
+                self.string_expr_bytes(recv)
             }
-        };
+            Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
+                self.string_expr_bytes(recv)
+            }
+            Expr::Str(s) => s.as_bytes().to_vec(),
+            Expr::ByteStr(bytes) | Expr::CStr(bytes) => bytes
+                .iter()
+                .copied()
+                .take_while(|byte| *byte != 0)
+                .collect(),
+            _ => {
+                let loc = self.eval_ref(expr);
+                self.read_c_string(loc)
+            }
+        }
+    }
+
+    fn read_c_string(&mut self, base: Location) -> Vec<u8> {
+        let len = self.c_string_len(base);
+        self.read_bytes(base, len)
+            .into_iter()
+            .map(|value| value_as_i128(value) as u8)
+            .collect()
+    }
+
+    fn c_string_len(&mut self, base: Location) -> u64 {
+        let mut len = 0u64;
+        loop {
+            let loc = Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + len,
+            };
+            let value = self.read_loc(loc);
+            if value_as_i128(value) as u8 == 0 {
+                break len;
+            }
+            len += 1;
+        }
+    }
+
+    fn c_string_len_silent(&self, base: Location) -> u64 {
         let mut len = 0u64;
         loop {
             let loc = Location {
@@ -1272,11 +1389,30 @@ impl Interp {
                 byte_offset: base.byte_offset + len,
             };
             match self.heap.get(&loc) {
-                Some(Value::Int { value: 0, .. }) => break,
+                Some(Value::Int { value, .. }) if *value as u8 == 0 => break len,
                 Some(_) => len += 1,
                 None => panic!("effects::rust_ast: read from never-written {loc:?}"),
             }
         }
+    }
+
+    fn write_c_string(&mut self, dst: Location, bytes: &[u8]) {
+        let values = bytes
+            .iter()
+            .copied()
+            .chain(std::iter::once(0))
+            .map(|byte| Value::Int {
+                width: IntWidth::W8,
+                signed: true,
+                value: byte as i128,
+            })
+            .collect::<Vec<_>>();
+        self.write_bytes(dst, &values);
+    }
+
+    fn string_len(&mut self, recv: &Expr) -> Value {
+        let base = self.eval_ref(recv);
+        let len = self.c_string_len_silent(base);
         self.trace.push(Effect::Call {
             name: "strlen".to_string(),
             args: vec![],
@@ -1473,6 +1609,7 @@ impl Interp {
             }),
             Expr::Cast { expr, ty } => cast_value_to_type(self.eval(expr), ty),
             Expr::StructLit { name, fields } => self.eval_struct_lit(name, fields),
+            Expr::Str(s) => Value::Ref(self.hidden_c_string(s.as_bytes())),
             Expr::ByteStr(bytes) | Expr::CStr(bytes) => Value::Ref(self.hidden_c_string(bytes)),
             Expr::ArrayPtr { array, .. } => Value::Ref(self.collection_base(array)),
             Expr::AddrOf { expr, .. } => Value::Ref(self.addr_of(expr)),
@@ -1556,6 +1693,19 @@ impl Interp {
             Expr::Field { base, field } => self.eval_field(base, field),
             Expr::MethodCall { recv, method, args } if method == "len" && args.is_empty() => {
                 self.string_len(recv)
+            }
+            Expr::MethodCall { recv, method, args } if method == "to_owned" && args.is_empty() => {
+                let bytes = self.string_expr_bytes(recv);
+                Value::Ref(self.alloc_string_bytes(&bytes))
+            }
+            Expr::MethodCallGeneric {
+                recv,
+                method,
+                type_args,
+                args,
+            } if method == "parse" && args.is_empty() => self.parse_string_method(recv, type_args),
+            Expr::MethodCall { recv, method, args } if method == "unwrap_or" => {
+                self.unwrap_or(recv, args)
             }
             Expr::MethodCall { recv, method, args }
                 if method == "as_mut_ptr" && args.is_empty() =>
@@ -2123,6 +2273,13 @@ impl Interp {
         if let Some(summary) = call_summary(&name) {
             return self.eval_call_summary(summary, args);
         }
+        match name.as_str() {
+            "__slate_runtime::parse_i32" => return self.parse_runtime_i32(args),
+            "__slate_runtime::parse_i64" => return self.parse_runtime_i64(args),
+            "__slate_runtime::parse_u64" => return self.parse_runtime_u64(args),
+            "__slate_runtime::parse_f64" => return self.parse_runtime_f64(args),
+            _ => {}
+        }
         let f = self
             .funcs
             .get(&name)
@@ -2287,16 +2444,42 @@ impl Interp {
     fn eval_call_summary(&mut self, summary: CallSummary, args: &[Expr]) -> Value {
         match summary {
             CallSummary::Malloc => self.call_malloc(args),
+            CallSummary::Calloc => self.call_calloc(args),
             CallSummary::Free => self.call_free(args),
             CallSummary::Memcpy => self.call_memcpy(args),
             CallSummary::Memmove => self.call_memcpy(args),
             CallSummary::Memset => self.call_memset(args),
             CallSummary::Memchr => self.call_memchr(args),
             CallSummary::Strlen => self.call_strlen(args),
+            CallSummary::Strcpy => self.call_strcpy(args),
+            CallSummary::Strcat => self.call_strcat(args),
+            CallSummary::Strncpy => self.call_strncpy(args),
+            CallSummary::Strncat => self.call_strncat(args),
+            CallSummary::Strcmp => self.call_strcmp(args, None),
+            CallSummary::Strncmp => self.call_strncmp(args),
+            CallSummary::Memcmp => self.call_memcmp(args),
+            CallSummary::Strchr => self.call_strchr(args),
+            CallSummary::Strrchr => self.call_strrchr(args),
+            CallSummary::Strstr => self.call_strstr(args),
+            CallSummary::Strpbrk => self.call_strpbrk(args),
+            CallSummary::Strspn => self.call_strspn(args),
+            CallSummary::Strcspn => self.call_strcspn(args),
+            CallSummary::Atoi => self.call_atoi(args),
+            CallSummary::Atol => self.call_atol(args),
+            CallSummary::Strtol => self.call_strtol(args),
+            CallSummary::Strtoul => self.call_strtoul(args),
+            CallSummary::Strtod => self.call_strtod(args),
             CallSummary::Fopen => self.call_fopen(args),
             CallSummary::Fputs => self.call_fputs(args),
+            CallSummary::Fgets => self.call_fgets(args),
+            CallSummary::Fread => self.call_fread(args),
+            CallSummary::Fwrite => self.call_fwrite(args),
             CallSummary::Fclose => self.call_fclose(args),
             CallSummary::Printf => self.call_printf(args),
+            CallSummary::Puts => self.call_puts(args),
+            CallSummary::Remove => self.call_remove(args),
+            CallSummary::Toupper => self.call_toupper(args),
+            CallSummary::Tolower => self.call_tolower(args),
             CallSummary::Qsort => {
                 self.qsort(args);
                 int32(0)
@@ -2313,6 +2496,28 @@ impl Interp {
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
         self.trace.push(Effect::Alloc { alloc, size });
+        Value::Ref(Location {
+            alloc,
+            byte_offset: 0,
+        })
+    }
+
+    fn call_calloc(&mut self, args: &[Expr]) -> Value {
+        let [count, elem_size] = args else {
+            panic!("effects::rust_ast: calloc expects count and element size");
+        };
+        let size = value_as_u64(self.eval(count)).wrapping_mul(value_as_u64(self.eval(elem_size)));
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.trace.push(Effect::Alloc { alloc, size });
+        let zero = Value::Int {
+            width: IntWidth::W8,
+            signed: true,
+            value: 0,
+        };
+        for byte_offset in 0..size {
+            self.heap.insert(Location { alloc, byte_offset }, zero);
+        }
         Value::Ref(Location {
             alloc,
             byte_offset: 0,
@@ -2413,17 +2618,312 @@ impl Interp {
         }
     }
 
+    fn call_strcpy(&mut self, args: &[Expr]) -> Value {
+        let [dst, src] = args else {
+            panic!("effects::rust_ast: strcpy expects dst and src");
+        };
+        let dst = self.eval_ref(dst);
+        let bytes = self.string_expr_bytes(src);
+        self.write_c_string(dst, &bytes);
+        Value::Ref(dst)
+    }
+
+    fn call_strcat(&mut self, args: &[Expr]) -> Value {
+        let [dst, src] = args else {
+            panic!("effects::rust_ast: strcat expects dst and src");
+        };
+        let dst = self.eval_ref(dst);
+        let offset = self.c_string_len(dst);
+        let bytes = self.string_expr_bytes(src);
+        self.write_c_string(
+            Location {
+                alloc: dst.alloc,
+                byte_offset: dst.byte_offset + offset,
+            },
+            &bytes,
+        );
+        Value::Ref(dst)
+    }
+
+    fn call_strncpy(&mut self, args: &[Expr]) -> Value {
+        let [dst, src, len] = args else {
+            panic!("effects::rust_ast: strncpy expects dst, src, and len");
+        };
+        let dst = self.eval_ref(dst);
+        let len = value_as_u64(self.eval(len)) as usize;
+        let mut bytes = self.string_expr_bytes(src);
+        bytes.truncate(len);
+        let values = bytes
+            .into_iter()
+            .map(|byte| Value::Int {
+                width: IntWidth::W8,
+                signed: true,
+                value: byte as i128,
+            })
+            .collect::<Vec<_>>();
+        self.write_bytes(dst, &values);
+        Value::Ref(dst)
+    }
+
+    fn call_strncat(&mut self, args: &[Expr]) -> Value {
+        let [dst, src, len] = args else {
+            panic!("effects::rust_ast: strncat expects dst, src, and len");
+        };
+        let dst = self.eval_ref(dst);
+        let offset = self.c_string_len(dst);
+        let len = value_as_u64(self.eval(len)) as usize;
+        let mut bytes = self.string_expr_bytes(src);
+        bytes.truncate(len);
+        self.write_c_string(
+            Location {
+                alloc: dst.alloc,
+                byte_offset: dst.byte_offset + offset,
+            },
+            &bytes,
+        );
+        Value::Ref(dst)
+    }
+
+    fn call_strcmp(&mut self, args: &[Expr], len: Option<usize>) -> Value {
+        let [left, right] = args else {
+            panic!("effects::rust_ast: strcmp expects two arguments");
+        };
+        let mut left = self.string_expr_bytes(left);
+        let mut right = self.string_expr_bytes(right);
+        if let Some(len) = len {
+            left.truncate(len);
+            right.truncate(len);
+        }
+        int32(compare_bytes(&left, &right) as i128)
+    }
+
+    fn call_strncmp(&mut self, args: &[Expr]) -> Value {
+        let [left, right, len] = args else {
+            panic!("effects::rust_ast: strncmp expects three arguments");
+        };
+        let len = value_as_u64(self.eval(len)) as usize;
+        self.call_strcmp(&[left.clone(), right.clone()], Some(len))
+    }
+
+    fn call_memcmp(&mut self, args: &[Expr]) -> Value {
+        let [left, right, len] = args else {
+            panic!("effects::rust_ast: memcmp expects three arguments");
+        };
+        let left = self.eval_ref(left);
+        let right = self.eval_ref(right);
+        let len = value_as_u64(self.eval(len));
+        let left = self
+            .read_bytes(left, len)
+            .into_iter()
+            .map(|value| value_as_i128(value) as u8)
+            .collect::<Vec<_>>();
+        let right = self
+            .read_bytes(right, len)
+            .into_iter()
+            .map(|value| value_as_i128(value) as u8)
+            .collect::<Vec<_>>();
+        int32(compare_bytes(&left, &right) as i128)
+    }
+
+    fn call_strchr(&mut self, args: &[Expr]) -> Value {
+        let [base, needle] = args else {
+            panic!("effects::rust_ast: strchr expects string and needle");
+        };
+        let base = self.eval_ref(base);
+        let needle = value_as_i128(self.eval(needle)) as u8;
+        let bytes = self.read_c_string(base);
+        for (index, byte) in bytes.iter().copied().chain(std::iter::once(0)).enumerate() {
+            if byte == needle {
+                return Value::Ref(Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + index as u64,
+                });
+            }
+        }
+        Value::Null
+    }
+
+    fn call_strrchr(&mut self, args: &[Expr]) -> Value {
+        let [base, needle] = args else {
+            panic!("effects::rust_ast: strrchr expects string and needle");
+        };
+        let base = self.eval_ref(base);
+        let needle = value_as_i128(self.eval(needle)) as u8;
+        let bytes = self.read_c_string(base);
+        let mut found = if needle == 0 { Some(bytes.len()) } else { None };
+        for (index, byte) in bytes.iter().copied().enumerate() {
+            if byte == needle {
+                found = Some(index);
+            }
+        }
+        found
+            .map(|index| {
+                Value::Ref(Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + index as u64,
+                })
+            })
+            .unwrap_or(Value::Null)
+    }
+
+    fn call_strstr(&mut self, args: &[Expr]) -> Value {
+        let [haystack, needle] = args else {
+            panic!("effects::rust_ast: strstr expects haystack and needle");
+        };
+        let base = self.eval_ref(haystack);
+        let haystack = self.read_c_string(base);
+        let needle = self.string_expr_bytes(needle);
+        let found = if needle.is_empty() {
+            Some(0)
+        } else {
+            haystack
+                .windows(needle.len())
+                .position(|window| window == needle.as_slice())
+        };
+        found
+            .map(|index| {
+                Value::Ref(Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + index as u64,
+                })
+            })
+            .unwrap_or(Value::Null)
+    }
+
+    fn call_strpbrk(&mut self, args: &[Expr]) -> Value {
+        let [base, set] = args else {
+            panic!("effects::rust_ast: strpbrk expects string and set");
+        };
+        let base = self.eval_ref(base);
+        let bytes = self.read_c_string(base);
+        let set = self.string_expr_bytes(set);
+        bytes
+            .iter()
+            .position(|byte| set.contains(byte))
+            .map(|index| {
+                Value::Ref(Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + index as u64,
+                })
+            })
+            .unwrap_or(Value::Null)
+    }
+
+    fn call_strspn(&mut self, args: &[Expr]) -> Value {
+        let [base, set] = args else {
+            panic!("effects::rust_ast: strspn expects string and set");
+        };
+        let bytes = self.string_expr_bytes(base);
+        let set = self.string_expr_bytes(set);
+        let len = bytes.iter().take_while(|byte| set.contains(byte)).count();
+        Value::Int {
+            width: IntWidth::PointerSized,
+            signed: false,
+            value: len as i128,
+        }
+    }
+
+    fn call_strcspn(&mut self, args: &[Expr]) -> Value {
+        let [base, reject] = args else {
+            panic!("effects::rust_ast: strcspn expects string and reject set");
+        };
+        let bytes = self.string_expr_bytes(base);
+        let reject = self.string_expr_bytes(reject);
+        let len = bytes
+            .iter()
+            .take_while(|byte| !reject.contains(byte))
+            .count();
+        Value::Int {
+            width: IntWidth::PointerSized,
+            signed: false,
+            value: len as i128,
+        }
+    }
+
+    fn call_atoi(&mut self, args: &[Expr]) -> Value {
+        let [base] = args else {
+            panic!("effects::rust_ast: atoi expects string");
+        };
+        int32(parse_i128_prefix(&self.string_expr_bytes(base)) as i32 as i128)
+    }
+
+    fn call_atol(&mut self, args: &[Expr]) -> Value {
+        let [base] = args else {
+            panic!("effects::rust_ast: atol expects string");
+        };
+        Value::Int {
+            width: IntWidth::W64,
+            signed: true,
+            value: parse_i128_prefix(&self.string_expr_bytes(base)) as i64 as i128,
+        }
+    }
+
+    fn call_strtol(&mut self, args: &[Expr]) -> Value {
+        let [base, end, _base_arg] = args else {
+            panic!("effects::rust_ast: strtol expects string, end pointer, and base");
+        };
+        let loc = self.eval_ref(base);
+        let bytes = self.read_c_string(loc);
+        self.write_end_pointer(end, loc, decimal_prefix_len(&bytes));
+        Value::Int {
+            width: IntWidth::W64,
+            signed: true,
+            value: parse_i128_prefix(&bytes) as i64 as i128,
+        }
+    }
+
+    fn call_strtoul(&mut self, args: &[Expr]) -> Value {
+        let [base, end, _base_arg] = args else {
+            panic!("effects::rust_ast: strtoul expects string, end pointer, and base");
+        };
+        let loc = self.eval_ref(base);
+        let bytes = self.read_c_string(loc);
+        self.write_end_pointer(end, loc, decimal_prefix_len(&bytes));
+        Value::Int {
+            width: IntWidth::W64,
+            signed: false,
+            value: parse_u128_prefix(&bytes) as u64 as i128,
+        }
+    }
+
+    fn call_strtod(&mut self, args: &[Expr]) -> Value {
+        let [base, end] = args else {
+            panic!("effects::rust_ast: strtod expects string and end pointer");
+        };
+        let loc = self.eval_ref(base);
+        let bytes = self.read_c_string(loc);
+        self.write_end_pointer(end, loc, float_prefix_len(&bytes));
+        Value::Float(parse_f64_prefix(&bytes))
+    }
+
+    fn write_end_pointer(&mut self, end: &Expr, base: Location, offset: usize) {
+        match self.eval(end) {
+            Value::Null => {}
+            Value::Ref(loc) => self.write_loc(
+                loc,
+                Value::Ref(Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + offset as u64,
+                }),
+            ),
+            other => panic!("effects::rust_ast: strto* end pointer was {other:?}"),
+        }
+    }
+
     fn call_fopen(&mut self, args: &[Expr]) -> Value {
         let [path, mode] = args else {
             panic!("effects::rust_ast: fopen expects path and mode");
         };
         let file = FileId(self.next_file);
         self.next_file += 1;
-        self.trace.push(Effect::FileOpen {
-            file,
-            path: c_string_expr(path),
-            mode: c_string_expr(mode),
-        });
+        let path = String::from_utf8_lossy(&self.string_expr_bytes(path)).into_owned();
+        let mode = String::from_utf8_lossy(&self.string_expr_bytes(mode)).into_owned();
+        self.file_paths.insert(file, path.clone());
+        self.file_offsets.insert(file, 0);
+        if mode.contains('w') {
+            self.file_contents.insert(path.clone(), Vec::new());
+        }
+        self.trace.push(Effect::FileOpen { file, path, mode });
         Value::File(file)
     }
 
@@ -2435,23 +2935,126 @@ impl Interp {
             Value::File(file) => file,
             other => panic!("effects::rust_ast: fputs expected file handle, found {other:?}"),
         };
-        self.trace.push(Effect::FileWrite {
-            file,
-            bytes: c_string_expr_bytes(bytes),
-        });
+        let bytes = self.string_expr_bytes(bytes);
+        self.append_file_bytes(file, &bytes);
+        self.trace.push(Effect::FileWrite { file, bytes });
         int32(0)
+    }
+
+    fn call_fgets(&mut self, args: &[Expr]) -> Value {
+        let [dst, len, file] = args else {
+            panic!("effects::rust_ast: fgets expects buffer, size, and file");
+        };
+        let dst = self.eval_ref(dst);
+        let len = value_as_u64(self.eval(len)) as usize;
+        let file = self.eval_file(file, "fgets");
+        if len == 0 {
+            return Value::Null;
+        }
+        let bytes = self.read_file_bytes(file, len.saturating_sub(1), true);
+        if bytes.is_empty() {
+            return Value::Null;
+        }
+        self.write_c_string(dst, &bytes);
+        Value::Ref(dst)
+    }
+
+    fn call_fread(&mut self, args: &[Expr]) -> Value {
+        let [dst, size, count, file] = args else {
+            panic!("effects::rust_ast: fread expects buffer, size, count, and file");
+        };
+        let dst = self.eval_ref(dst);
+        let size = value_as_u64(self.eval(size));
+        let count = value_as_u64(self.eval(count));
+        let file = self.eval_file(file, "fread");
+        let max = size.saturating_mul(count);
+        let bytes = self.read_file_bytes(file, max as usize, false);
+        let values = bytes
+            .iter()
+            .copied()
+            .map(|byte| Value::Int {
+                width: IntWidth::W8,
+                signed: true,
+                value: byte as i128,
+            })
+            .collect::<Vec<_>>();
+        self.write_bytes(dst, &values);
+        Value::Int {
+            width: IntWidth::PointerSized,
+            signed: false,
+            value: if size == 0 {
+                0
+            } else {
+                (bytes.len() as u64 / size) as i128
+            },
+        }
+    }
+
+    fn call_fwrite(&mut self, args: &[Expr]) -> Value {
+        let [src, size, count, file] = args else {
+            panic!("effects::rust_ast: fwrite expects buffer, size, count, and file");
+        };
+        let src = self.eval_ref(src);
+        let size = value_as_u64(self.eval(size));
+        let count = value_as_u64(self.eval(count));
+        let file = self.eval_file(file, "fwrite");
+        let len = size.saturating_mul(count);
+        let bytes = self
+            .read_bytes(src, len)
+            .into_iter()
+            .map(|value| value_as_i128(value) as u8)
+            .collect::<Vec<_>>();
+        self.append_file_bytes(file, &bytes);
+        self.trace.push(Effect::FileWrite { file, bytes });
+        Value::Int {
+            width: IntWidth::PointerSized,
+            signed: false,
+            value: count as i128,
+        }
     }
 
     fn call_fclose(&mut self, args: &[Expr]) -> Value {
         let [file] = args else {
             panic!("effects::rust_ast: fclose expects file");
         };
-        let file = match self.eval(file) {
-            Value::File(file) => file,
-            other => panic!("effects::rust_ast: fclose expected file handle, found {other:?}"),
-        };
+        let file = self.eval_file(file, "fclose");
         self.trace.push(Effect::FileClose { file });
         int32(0)
+    }
+
+    fn eval_file(&mut self, expr: &Expr, callee: &str) -> FileId {
+        match self.eval(expr) {
+            Value::File(file) => file,
+            other => panic!("effects::rust_ast: {callee} expected file handle, found {other:?}"),
+        }
+    }
+
+    fn append_file_bytes(&mut self, file: FileId, bytes: &[u8]) {
+        let Some(path) = self.file_paths.get(&file).cloned() else {
+            return;
+        };
+        self.file_contents.entry(path).or_default().extend(bytes);
+    }
+
+    fn read_file_bytes(&mut self, file: FileId, max: usize, stop_at_newline: bool) -> Vec<u8> {
+        let path = self
+            .file_paths
+            .get(&file)
+            .cloned()
+            .unwrap_or_else(|| panic!("effects::rust_ast: unknown file handle {file:?}"));
+        let contents = self.file_contents.entry(path).or_default();
+        let offset = self.file_offsets.entry(file).or_insert(0);
+        let mut end = (*offset + max).min(contents.len());
+        if stop_at_newline
+            && let Some(newline) = contents[*offset..end]
+                .iter()
+                .position(|byte| *byte == b'\n')
+        {
+            end = *offset + newline + 1;
+        }
+        let bytes = contents[*offset..end].to_vec();
+        *offset = end;
+        bytes
     }
 
     fn call_printf(&mut self, args: &[Expr]) -> Value {
@@ -2465,6 +3068,122 @@ impl Interp {
             args: values,
         });
         int32(0)
+    }
+
+    fn call_puts(&mut self, args: &[Expr]) -> Value {
+        let [arg] = args else {
+            panic!("effects::rust_ast: puts expects one argument");
+        };
+        let loc = self.eval_ref(arg);
+        self.trace.push(Effect::Call {
+            name: "puts".to_string(),
+            args: vec![Value::Ref(loc)],
+        });
+        int32(0)
+    }
+
+    fn call_remove(&mut self, args: &[Expr]) -> Value {
+        let [path] = args else {
+            panic!("effects::rust_ast: remove expects path");
+        };
+        let loc = self.eval_ref(path);
+        let path_bytes = self.read_c_string(loc);
+        let path = String::from_utf8_lossy(&path_bytes).into_owned();
+        self.file_contents.remove(&path);
+        self.trace.push(Effect::Call {
+            name: "remove".to_string(),
+            args: vec![Value::Ref(loc)],
+        });
+        int32(0)
+    }
+
+    fn call_toupper(&mut self, args: &[Expr]) -> Value {
+        let [arg] = args else {
+            panic!("effects::rust_ast: toupper expects one argument");
+        };
+        let value = value_as_i128(self.eval(arg)) as u8;
+        int32(value.to_ascii_uppercase() as i128)
+    }
+
+    fn call_tolower(&mut self, args: &[Expr]) -> Value {
+        let [arg] = args else {
+            panic!("effects::rust_ast: tolower expects one argument");
+        };
+        let value = value_as_i128(self.eval(arg)) as u8;
+        int32(value.to_ascii_lowercase() as i128)
+    }
+
+    fn parse_string_method(&mut self, recv: &Expr, type_args: &[Type]) -> Value {
+        let [ty] = type_args else {
+            panic!("effects::rust_ast: parse expects one type argument");
+        };
+        let bytes = self.string_expr_bytes(recv);
+        let value = match ty {
+            Type::Prim(Prim::I32) => OptionValue::Int {
+                width: IntWidth::W32,
+                signed: true,
+                value: parse_i128_prefix(&bytes) as i32 as i128,
+            },
+            Type::Prim(Prim::I64) => OptionValue::Int {
+                width: IntWidth::W64,
+                signed: true,
+                value: parse_i128_prefix(&bytes) as i64 as i128,
+            },
+            Type::Prim(Prim::U64) => OptionValue::Int {
+                width: IntWidth::W64,
+                signed: false,
+                value: parse_u128_prefix(&bytes) as u64 as i128,
+            },
+            other => panic!("effects::rust_ast: unsupported parse type `{other:?}`"),
+        };
+        Value::Option(Some(value))
+    }
+
+    fn unwrap_or(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+        let [default] = args else {
+            panic!("effects::rust_ast: unwrap_or expects one argument");
+        };
+        match self.eval(recv) {
+            Value::Option(Some(value)) => option_value_to_value(value),
+            Value::Option(None) => self.eval(default),
+            other => panic!("effects::rust_ast: unwrap_or on unsupported value {other:?}"),
+        }
+    }
+
+    fn parse_runtime_i32(&mut self, args: &[Expr]) -> Value {
+        let [arg] = args else {
+            panic!("effects::rust_ast: parse_i32 expects one argument");
+        };
+        int32(parse_i128_prefix(&self.string_expr_bytes(arg)) as i32 as i128)
+    }
+
+    fn parse_runtime_i64(&mut self, args: &[Expr]) -> Value {
+        let [arg] = args else {
+            panic!("effects::rust_ast: parse_i64 expects one argument");
+        };
+        Value::Int {
+            width: IntWidth::W64,
+            signed: true,
+            value: parse_i128_prefix(&self.string_expr_bytes(arg)) as i64 as i128,
+        }
+    }
+
+    fn parse_runtime_u64(&mut self, args: &[Expr]) -> Value {
+        let [arg] = args else {
+            panic!("effects::rust_ast: parse_u64 expects one argument");
+        };
+        Value::Int {
+            width: IntWidth::W64,
+            signed: false,
+            value: parse_u128_prefix(&self.string_expr_bytes(arg)) as u64 as i128,
+        }
+    }
+
+    fn parse_runtime_f64(&mut self, args: &[Expr]) -> Value {
+        let [arg] = args else {
+            panic!("effects::rust_ast: parse_f64 expects one argument");
+        };
+        Value::Float(parse_f64_prefix(&self.string_expr_bytes(arg)))
     }
 
     fn bsearch(&mut self, args: &[Expr]) -> Value {
@@ -2937,6 +3656,119 @@ fn local_value_size(value: Value) -> u64 {
             panic!("effects::rust_ast: cannot take address of transient value {value:?}")
         }
     }
+}
+
+fn compare_bytes(left: &[u8], right: &[u8]) -> i8 {
+    for (a, b) in left.iter().copied().zip(right.iter().copied()) {
+        if a != b {
+            return if a < b { -1 } else { 1 };
+        }
+    }
+    match left.len().cmp(&right.len()) {
+        std::cmp::Ordering::Less => -1,
+        std::cmp::Ordering::Equal => 0,
+        std::cmp::Ordering::Greater => 1,
+    }
+}
+
+fn parse_i128_prefix(bytes: &[u8]) -> i128 {
+    let text = std::str::from_utf8(bytes).unwrap_or("");
+    let prefix_len = decimal_prefix_len(bytes);
+    if prefix_len == 0 {
+        0
+    } else {
+        text[..prefix_len].parse::<i128>().unwrap_or_else(|_| {
+            if text[..prefix_len].starts_with('-') {
+                i128::MIN
+            } else {
+                i128::MAX
+            }
+        })
+    }
+}
+
+fn parse_u128_prefix(bytes: &[u8]) -> u128 {
+    let text = std::str::from_utf8(bytes).unwrap_or("");
+    let prefix_len = decimal_prefix_len(bytes);
+    if prefix_len == 0 {
+        return 0;
+    }
+    let prefix = &text[..prefix_len];
+    let (negative, digits) = match prefix.strip_prefix('-') {
+        Some(rest) => (true, rest),
+        None => (false, prefix.strip_prefix('+').unwrap_or(prefix)),
+    };
+    let value = digits.parse::<u128>().unwrap_or(u128::MAX);
+    if negative {
+        value.wrapping_neg()
+    } else {
+        value
+    }
+}
+
+fn parse_f64_prefix(bytes: &[u8]) -> f64 {
+    let text = std::str::from_utf8(bytes).unwrap_or("");
+    let prefix_len = float_prefix_len(bytes);
+    if prefix_len == 0 {
+        0.0
+    } else {
+        text[..prefix_len].parse::<f64>().unwrap_or(0.0)
+    }
+}
+
+fn decimal_prefix_len(bytes: &[u8]) -> usize {
+    let mut index = bytes
+        .iter()
+        .position(|byte| !byte.is_ascii_whitespace())
+        .unwrap_or(bytes.len());
+    if matches!(bytes.get(index), Some(b'+' | b'-')) {
+        index += 1;
+    }
+    let digits_start = index;
+    while bytes.get(index).is_some_and(u8::is_ascii_digit) {
+        index += 1;
+    }
+    if index == digits_start { 0 } else { index }
+}
+
+fn float_prefix_len(bytes: &[u8]) -> usize {
+    let mut index = bytes
+        .iter()
+        .position(|byte| !byte.is_ascii_whitespace())
+        .unwrap_or(bytes.len());
+    if matches!(bytes.get(index), Some(b'+' | b'-')) {
+        index += 1;
+    }
+    let mut digits = 0usize;
+    while bytes.get(index).is_some_and(u8::is_ascii_digit) {
+        index += 1;
+        digits += 1;
+    }
+    if bytes.get(index) == Some(&b'.') {
+        index += 1;
+        while bytes.get(index).is_some_and(u8::is_ascii_digit) {
+            index += 1;
+            digits += 1;
+        }
+    }
+    if digits == 0 {
+        return 0;
+    }
+    if matches!(bytes.get(index), Some(b'e' | b'E')) {
+        let exp = index;
+        index += 1;
+        if matches!(bytes.get(index), Some(b'+' | b'-')) {
+            index += 1;
+        }
+        let exp_digits = index;
+        while bytes.get(index).is_some_and(u8::is_ascii_digit) {
+            index += 1;
+        }
+        if index == exp_digits {
+            index = exp;
+        }
+    }
+    index
 }
 
 fn int_width_bits(width: IntWidth) -> Option<u32> {
