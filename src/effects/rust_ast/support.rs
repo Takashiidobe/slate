@@ -195,9 +195,9 @@ pub(super) fn restore_scalar(
     }
 }
 
-pub(super) fn value_as_i32(value: Value) -> i32 {
-    match value {
-        Value::Int { value, .. } => value as i32,
+pub(super) fn value_as_i32(value: impl std::borrow::Borrow<Value>) -> i32 {
+    match value.borrow() {
+        Value::Int { value, .. } => *value as i32,
         other => panic!("effects::rust_ast: expected an integer exit code, found {other:?}"),
     }
 }
@@ -207,10 +207,10 @@ pub(super) fn rust_value_to_value(rv: &RustValue) -> Value {
         RustValue::I64(v) => int32(*v as i128),
         RustValue::I128(v) => int32(*v),
         RustValue::Usize(v) => int32(*v as i128),
+        RustValue::Float(v) => Value::Float(*v),
         RustValue::Bool(b) => Value::Bool(*b),
         RustValue::None => Value::Option(None),
         RustValue::NullPtr => Value::Null,
-        other => panic!("effects::rust_ast: unsupported literal `{other:?}`"),
     }
 }
 
@@ -297,6 +297,13 @@ pub(super) fn option_is_none(value: Value) -> Value {
     }
 }
 
+pub(super) fn option_is_some(value: Value) -> Value {
+    match value {
+        Value::Option(value) => Value::Bool(value.is_some()),
+        other => panic!("effects::rust_ast: is_some on non-option `{other:?}`"),
+    }
+}
+
 pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> Value {
     let Some((width, signed, _)) = scalar_type_shape(ty) else {
         return value;
@@ -311,6 +318,11 @@ pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> Value {
             width,
             signed,
             value: i128::from(value),
+        },
+        Value::Float(value) => match ty {
+            Type::Prim(crate::rust_ast::Prim::F32) => Value::Float(value as f32 as f64),
+            Type::Prim(crate::rust_ast::Prim::F64) => Value::Float(value),
+            _ => Value::Float(value),
         },
         other => other,
     }
@@ -341,6 +353,8 @@ pub(super) fn scalar_type_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
 
 pub(super) fn type_size(ty: &Type) -> Option<u64> {
     match ty {
+        Type::Prim(crate::rust_ast::Prim::F32) => Some(4),
+        Type::Prim(crate::rust_ast::Prim::F64) => Some(8),
         Type::Prim(_) => scalar_type_shape(ty).map(|(_, _, size)| size),
         Type::Ptr { .. } | Type::FnPtr { .. } | Type::Ref { .. } => Some(8),
         Type::Array { elem, len } => Some(type_size(elem)? * *len),
@@ -409,20 +423,21 @@ pub(super) fn is_once_lock_ty(ty: &Type) -> bool {
     matches!(ty, Type::Generic { name, .. } if name == "std::sync::OnceLock")
 }
 
-pub(super) fn value_as_i128(value: Value) -> i128 {
-    match value {
-        Value::Int { value, .. } => value,
+pub(super) fn value_as_i128(value: impl std::borrow::Borrow<Value>) -> i128 {
+    match value.borrow() {
+        Value::Int { value, .. } => *value,
+        Value::Bool(value) => i128::from(*value),
         other => panic!("effects::rust_ast: expected an integer value, found {other:?}"),
     }
 }
 
-pub(super) fn value_as_u64(value: Value) -> u64 {
+pub(super) fn value_as_u64(value: impl std::borrow::Borrow<Value>) -> u64 {
     value_as_i128(value) as u64
 }
 
-pub(super) fn value_as_bool(value: Value) -> bool {
-    match value {
-        Value::Bool(b) => b,
+pub(super) fn value_as_bool(value: impl std::borrow::Borrow<Value>) -> bool {
+    match value.borrow() {
+        Value::Bool(b) => *b,
         other => panic!("effects::rust_ast: expected a bool value, found {other:?}"),
     }
 }
@@ -430,8 +445,8 @@ pub(super) fn value_as_bool(value: Value) -> bool {
 pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
     match op {
         BinOp::Eq | BinOp::Ne | BinOp::Lt | BinOp::Le | BinOp::Gt | BinOp::Ge => {
-            if matches!((a, b), (Value::Ref(_), Value::Ref(_))) {
-                let (Value::Ref(left), Value::Ref(right)) = (a, b) else {
+            if matches!((&a, &b), (Value::Ref(_), Value::Ref(_))) {
+                let (Value::Ref(left), Value::Ref(right)) = (&a, &b) else {
                     unreachable!();
                 };
                 return Value::Bool(match op {
@@ -441,7 +456,7 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
                 });
             }
             if matches!(
-                (a, b),
+                (&a, &b),
                 (Value::Ref(_), Value::Null) | (Value::Null, Value::Ref(_))
             ) {
                 return Value::Bool(match op {
@@ -450,7 +465,7 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
                     _ => panic!("effects::rust_ast: unsupported pointer/null comparison `{op:?}`"),
                 });
             }
-            if matches!((a, b), (Value::Null, Value::Null)) {
+            if matches!((&a, &b), (Value::Null, Value::Null)) {
                 return Value::Bool(match op {
                     BinOp::Eq => true,
                     BinOp::Ne => false,
@@ -458,13 +473,24 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
                 });
             }
             if matches!(
-                (a, b),
+                (&a, &b),
                 (Value::File(_), Value::Null) | (Value::Null, Value::File(_))
             ) {
                 return Value::Bool(match op {
                     BinOp::Eq => false,
                     BinOp::Ne => true,
                     _ => panic!("effects::rust_ast: unsupported file/null comparison `{op:?}`"),
+                });
+            }
+            if let (Value::Float(a), Value::Float(b)) = (&a, &b) {
+                return Value::Bool(match op {
+                    BinOp::Eq => a == b,
+                    BinOp::Ne => a != b,
+                    BinOp::Lt => a < b,
+                    BinOp::Le => a <= b,
+                    BinOp::Gt => a > b,
+                    BinOp::Ge => a >= b,
+                    _ => unreachable!(),
                 });
             }
             let (a_int, b_int) = (value_as_i128(a), value_as_i128(b));
@@ -482,6 +508,15 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
             panic!("effects::rust_ast: {op:?} must short-circuit, not reach apply_binop")
         }
         _ => {
+            if let (Value::Float(a), Value::Float(b)) = (&a, &b) {
+                return Value::Float(match op {
+                    BinOp::Add => a + b,
+                    BinOp::Sub => a - b,
+                    BinOp::Mul => a * b,
+                    BinOp::Div => a / b,
+                    _ => panic!("effects::rust_ast: unsupported float binop `{op:?}`"),
+                });
+            }
             let (width, signed) = match a {
                 Value::Int { width, signed, .. } => (width, signed),
                 other => panic!("effects::rust_ast: expected int operand, found {other:?}"),
@@ -512,7 +547,7 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
     }
 }
 
-fn truncate_int(value: i128, width: IntWidth, signed: bool) -> i128 {
+pub(super) fn truncate_int(value: i128, width: IntWidth, signed: bool) -> i128 {
     let bits = match width {
         IntWidth::W8 => 8,
         IntWidth::W16 => 16,
