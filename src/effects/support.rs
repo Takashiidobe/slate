@@ -343,6 +343,7 @@ pub(super) fn option_value(value: Value) -> EResult<OptionValue> {
         }),
         Value::Bool(value) => Ok(OptionValue::Bool(value)),
         Value::Ref(loc) => Ok(OptionValue::Ref(loc)),
+        Value::Function(name) => Ok(OptionValue::Function(name)),
         other => Err(EffectError::unsupported(Construct::SomePayload, other)),
     }
 }
@@ -360,6 +361,7 @@ pub(super) fn option_value_to_value(value: OptionValue) -> Value {
         },
         OptionValue::Bool(value) => Value::Bool(value),
         OptionValue::Ref(loc) => Value::Ref(loc),
+        OptionValue::Function(name) => Value::Function(name),
     }
 }
 
@@ -376,6 +378,7 @@ pub(super) fn option_unwrap(value: Value) -> EResult<Value> {
         }),
         Value::Option(Some(OptionValue::Bool(value))) => Ok(Value::Bool(value)),
         Value::Option(Some(OptionValue::Ref(loc))) => Ok(Value::Ref(loc)),
+        Value::Option(Some(OptionValue::Function(name))) => Ok(Value::Function(name)),
         value @ Value::Option(None) => Err(EffectError::type_mismatch(ValueKind::Option, value)),
         other => Err(EffectError::type_mismatch(ValueKind::Option, other)),
     }
@@ -605,6 +608,15 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> EResult<Value> {
                 let (Value::Ref(left), Value::Ref(right)) = (&a, &b) else {
                     unreachable!();
                 };
+                return Ok(Value::Bool(match op {
+                    BinOp::Eq => left == right,
+                    BinOp::Ne => left != right,
+                    _ => {
+                        return Err(EffectError::unsupported(Construct::PointerComparison, op));
+                    }
+                }));
+            }
+            if let (Value::Function(left), Value::Function(right)) = (&a, &b) {
                 return Ok(Value::Bool(match op {
                     BinOp::Eq => left == right,
                     BinOp::Ne => left != right,
