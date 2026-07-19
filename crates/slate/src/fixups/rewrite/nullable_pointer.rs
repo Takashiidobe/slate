@@ -46,6 +46,7 @@ fn fixup_body(
 
 struct Plan {
     producer_index: usize,
+    producer_name: String,
     option_name: String,
     option_expr: Expr,
     base_ptr: Option<Expr>,
@@ -98,9 +99,12 @@ fn plan_for_producer(
         },
         producer.base_ptr.as_ref(),
     )?;
+    let producer_name = option_name.as_str().to_string();
+    let option_name = preferred_option_name(&producer_name, &aliases);
     Some(Plan {
         producer_index,
-        option_name: option_name.clone(),
+        producer_name,
+        option_name,
         option_expr: producer.option_expr,
         base_ptr: producer.base_ptr,
         aliases,
@@ -108,7 +112,8 @@ fn plan_for_producer(
 }
 
 fn apply_plan(body: &mut Vec<IndentStmt>, plan: &Plan) {
-    if let Stmt::Let { ty, init, .. } = &mut body[plan.producer_index].stmt {
+    if let Stmt::Let { name, ty, init, .. } = &mut body[plan.producer_index].stmt {
+        *name = plan.option_name.as_str().into();
         *ty = None;
         *init = Some(plan.option_expr.clone());
     }
@@ -126,6 +131,18 @@ fn apply_plan(body: &mut Vec<IndentStmt>, plan: &Plan) {
             body.remove(index);
         }
     }
+}
+
+fn preferred_option_name(producer_name: &str, aliases: &[AliasPlan]) -> String {
+    aliases
+        .iter()
+        .find(|alias| !is_generated_temp(&alias.name))
+        .map_or_else(|| producer_name.to_string(), |alias| alias.name.clone())
+}
+
+fn is_generated_temp(name: &str) -> bool {
+    name.strip_prefix("_v")
+        .is_some_and(|suffix| !suffix.is_empty() && suffix.chars().all(|c| c.is_ascii_digit()))
 }
 
 struct AliasSource {
@@ -392,6 +409,10 @@ fn rewrite_observations(stmt: &mut Stmt, plan: &Plan) {
 }
 
 fn rewrite_observation_expr(expr: &mut Expr, plan: &Plan) {
+    if let Some(replacement) = observation_replacement(expr, &plan.producer_name, plan) {
+        *expr = replacement;
+        return;
+    }
     if let Some(replacement) = observation_replacement(expr, &plan.option_name, plan) {
         *expr = replacement;
         return;
@@ -679,8 +700,8 @@ mod tests {
             Item::Fn(f) => f,
             _ => unreachable!(),
         });
-        assert!(out.contains("let _v6 = Some(1);"));
-        assert!(out.contains("let is_miss: bool = _v6.is_none();"));
+        assert!(out.contains("let miss = Some(1);"));
+        assert!(out.contains("let is_miss: bool = miss.is_none();"));
         assert!(!out.contains("let mut miss"));
         assert!(!out.contains("map_or"));
     }
@@ -813,8 +834,8 @@ mod tests {
             _ => unreachable!(),
         });
         assert!(out.contains("let _v3: *mut core::ffi::c_void = Some(1).map_or"));
-        assert!(out.contains("let _v6 = Some(1);"));
-        assert!(out.contains("let is_miss: bool = _v6.is_none();"));
+        assert!(out.contains("let miss = Some(1);"));
+        assert!(out.contains("let is_miss: bool = miss.is_none();"));
         assert!(out.contains("let mut hit"));
         assert!(!out.contains("let mut miss"));
     }
@@ -864,8 +885,8 @@ mod tests {
             Item::Fn(f) => f,
             _ => unreachable!(),
         });
-        assert!(out.contains("let _v3 = Some(1);"));
-        assert!(out.contains("let distance: i64 = _v3.unwrap() as i64;"));
+        assert!(out.contains("let hit = Some(1);"));
+        assert!(out.contains("let distance: i64 = hit.unwrap() as i64;"));
         assert!(!out.contains("let mut hit"));
         assert!(!out.contains("let _v10"));
         assert!(!out.contains("map_or"));
