@@ -220,8 +220,8 @@ fn atomic_temp_allocas_forward_instead_of_shadowed_locals() {
         "{rust}"
     );
     assert!(!rust.contains(".is_ok()"));
-    assert!(!rust.contains("enum memory_order"));
-    assert!(!rust.contains("struct atomic_flag"));
+    assert!(rust.contains("enum memory_order"));
+    assert!(rust.contains("struct atomic_flag"));
 }
 
 #[test]
@@ -1356,6 +1356,22 @@ fn preserves_documentation_comments_on_enums() {
     assert!(rust.contains("    /// enable processing\n    MODE_ON = 1,"));
     assert!(rust.contains("/// stores a selected mode\n#[repr(C)]"));
     assert!(rust.contains("    /// current mode value\n    mode: Mode,"));
+}
+
+#[test]
+fn preserves_enum_declaration_when_variants_are_folded() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-enums");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("enums.c");
+    let generated = tmp.join("enums.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate enums fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated enums rust");
+
+    assert!(rust.contains("enum Basic"));
+    assert!(rust.contains("BasicFive = 5"));
+    assert!(rust.contains("BasicNegative = -2"));
+    assert!(rust.contains("println!(\"{}\", 5);"));
 }
 
 #[test]
