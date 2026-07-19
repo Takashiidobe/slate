@@ -496,19 +496,19 @@ pub(super) fn pointer_elem_size_from_type(ty: &Type) -> Option<u64> {
 
 pub(super) fn slice_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
     let elem = match ty {
-        Type::Slice(elem) => elem.as_ref(),
+        Type::Slice(elem) => Some(elem.as_ref()),
         Type::Ref { inner, .. } => match inner.as_ref() {
-            Type::Slice(elem) => elem.as_ref(),
-            Type::Array { elem, .. } => elem.as_ref(),
-            _ => return None,
+            Type::Slice(elem) => Some(elem.as_ref()),
+            Type::Array { elem, .. } => Some(elem.as_ref()),
+            _ => None,
         },
-        _ => return None,
-    };
+        _ => None,
+    }?;
     scalar_type_shape(elem)
 }
 
 pub(super) fn box_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
-    match ty {
+    let elem = match ty {
         Type::Generic { name, args } if name == "Box" => scalar_type_shape(args.first()?),
         Type::Custom(name) => {
             let elem = name
@@ -516,8 +516,9 @@ pub(super) fn box_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
                 .and_then(|rest| rest.strip_suffix('>'))?;
             scalar_type_shape(&Type::parse(elem))
         }
-        _ => return None,
-    }
+        _ => None,
+    }?;
+    Some(elem)
 }
 
 pub(super) fn array_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64, u64)> {
