@@ -168,3 +168,13 @@ fn ptr_len_slice_fixups_preserve_rust_effects() {
     assert_fixture_matches("tests/fixtures/ptr_len_slice_item.c");
     assert_fixture_matches("tests/fixtures/ptr_len_slice_enumerate.c");
 }
+
+#[test]
+fn libc_resource_shims_preserve_rust_effects() {
+    assert_fixture_matches("tests/fixtures/heap_vec_malloc.c");
+    assert_fixture_matches("tests/fixtures/heap_vec_calloc.c");
+    assert_fixture_matches("tests/fixtures/string_copy_fixup.c");
+    assert_fixture_matches("tests/fixtures/numeric_parse_fixup.c");
+    assert_fixture_matches("tests/fixtures/string_param_lift.c");
+    assert_fixture_matches("tests/fixtures/stdio_file_close_before_remove.c");
+}
