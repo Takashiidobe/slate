@@ -174,7 +174,8 @@ If the pass should appear in `fixup-debug`, add a variant to
 `src/fixups/trace.rs`'s `Pass` enum and wire that enum value at the pass boundary
 in `src/fixups/mod.rs`. Use that same enum value for every `RewriteEvent.pass`
 the pass emits. The string returned by `Pass::name()` is also the CLI spelling
-for `fixup-debug --up-to-pass <pass>` and `--only-pass <pass>`.
+for `fixup-debug --up-to-pass <pass>`, `--only-pass <pass>`, and
+`--debug-only-pass <pass>`.
 
 ## Structured debug events
 

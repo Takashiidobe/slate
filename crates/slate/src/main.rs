@@ -27,7 +27,7 @@ fn usage() -> ExitCode {
         "  compare-effects-rust-rust  <file.c>  compare raw lowered Rust effects to fixuped Rust effects"
     );
     eprintln!(
-        "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>]  print fixup pass trace"
+        "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
     );
     eprintln!("  translate   C -> Rust");
     eprintln!("  translate-cfg   experimental multi-config C -> Rust");
@@ -191,6 +191,13 @@ fn parse_fixup_debug_args(args: &[String]) -> Result<(&Path, fixups::DebugOption
                 };
                 options.only_pass = Some(parse_debug_pass("--only-pass", name)?);
             }
+            "--debug-only-pass" => {
+                i += 1;
+                let Some(name) = args.get(i) else {
+                    return Err("--debug-only-pass requires a pass name".into());
+                };
+                options.debug_only_pass = Some(parse_debug_pass("--debug-only-pass", name)?);
+            }
             flag if flag.starts_with('-') => {
                 return Err(format!("unknown fixup-debug option: {flag}"));
             }
@@ -202,8 +209,16 @@ fn parse_fixup_debug_args(args: &[String]) -> Result<(&Path, fixups::DebugOption
         }
         i += 1;
     }
-    if options.up_to_pass.is_some() && options.only_pass.is_some() {
-        return Err("--up-to-pass and --only-pass cannot be combined".into());
+    let selected_mode_count = [
+        options.up_to_pass.is_some(),
+        options.only_pass.is_some(),
+        options.debug_only_pass.is_some(),
+    ]
+    .into_iter()
+    .filter(|selected| *selected)
+    .count();
+    if selected_mode_count > 1 {
+        return Err("--up-to-pass, --only-pass, and --debug-only-pass cannot be combined".into());
     }
     path.map(|path| (path, options))
         .ok_or_else(|| "fixup-debug requires an input file".into())
