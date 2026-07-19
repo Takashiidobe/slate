@@ -8,7 +8,7 @@ use crate::effects::{
 };
 use crate::rust_ast::{
     AtomicOrdering, AtomicPlace, AtomicRmwOp, BinOp, Block, Expr, FnDef, IndentStmt, Item, Label,
-    Pattern, Prim, Program, Stmt, Type, UnaryOp,
+    Path, Pattern, Prim, Program, Stmt, Type, UnaryOp,
 };
 
 pub fn interpret(f: &FnDef) -> EffectTrace {
@@ -131,14 +131,14 @@ impl Interp {
                 alloc: guard_alloc,
                 byte_offset: 0,
             };
-            self.heap.insert(guard, zero);
+            self.heap.insert(guard, zero.clone());
             self.trace.push(Effect::Alloc {
                 alloc: guard_alloc,
                 size: 4,
             });
             self.trace.push(Effect::Write {
                 loc: guard,
-                value: zero,
+                value: zero.clone(),
             });
             let payload_alloc = AllocId(self.next_alloc);
             self.next_alloc += 1;
@@ -146,7 +146,7 @@ impl Interp {
                 alloc: payload_alloc,
                 byte_offset: 0,
             };
-            self.heap.insert(payload, zero);
+            self.heap.insert(payload, zero.clone());
             self.trace.push(Effect::Alloc {
                 alloc: payload_alloc,
                 size: 4,
@@ -170,7 +170,7 @@ impl Interp {
             byte_offset: 0,
         };
         self.globals.insert(name.to_string(), loc);
-        self.heap.insert(loc, value);
+        self.heap.insert(loc, value.clone());
         self.trace.push(Effect::Alloc { alloc, size });
         self.trace.push(Effect::Write { loc, value });
     }
@@ -179,7 +179,7 @@ impl Interp {
         for (name, seed) in params {
             match seed {
                 ParamSeed::Scalar(v) => {
-                    self.scalars.insert(name.to_string(), *v);
+                    self.scalars.insert(name.to_string(), v.clone());
                 }
                 ParamSeed::Buffer(elems) => self.seed_buffer(name, elems),
             }
@@ -203,7 +203,7 @@ impl Interp {
                 alloc,
                 byte_offset: index as u64 * elem_size,
             };
-            self.heap.insert(loc, *elem);
+            self.heap.insert(loc, elem.clone());
         }
         self.vecs.insert(
             name.to_string(),
@@ -394,7 +394,7 @@ impl Interp {
                         value: 0,
                     });
                 if self.call_depth == 0 {
-                    let code = value_as_i32(value);
+                    let code = value_as_i32(&value);
                     self.drop_live_vecs();
                     self.trace.push(Effect::Exit(code));
                 }
@@ -456,9 +456,9 @@ impl Interp {
                     return Flow::Normal;
                 }
                 let v = self.eval(value);
-                if let Some(loc) = self.globals.get(ident.as_str()).copied() {
+                if let Some(loc) = self.globals.get(ident.as_str()).cloned() {
                     self.write_loc(loc, v);
-                } else if let Some(loc) = self.scalar_locs.get(ident.as_str()).copied() {
+                } else if let Some(loc) = self.scalar_locs.get(ident.as_str()).cloned() {
                     self.write_loc(loc, v);
                 } else {
                     self.scalars.insert(ident.as_str().to_string(), v);
@@ -507,7 +507,7 @@ impl Interp {
                     signed: elem_signed,
                     value: value_as_i128(self.eval(elem)),
                 };
-                if value_as_i128(value) == 0 {
+                if value_as_i128(&value) == 0 {
                     Vec::new()
                 } else {
                     vec![value; *len]
@@ -523,7 +523,7 @@ impl Interp {
                 alloc,
                 byte_offset: index as u64 * elem_size,
             };
-            self.heap.insert(loc, value);
+            self.heap.insert(loc, value.clone());
             self.trace.push(Effect::Write { loc, value });
         }
     }
@@ -532,9 +532,13 @@ impl Interp {
         match target {
             Expr::Var(ident) => {
                 let name = ident.as_str().to_string();
-                let current = *self.scalars.get(&name).unwrap_or_else(|| {
-                    panic!("effects::rust_ast: compound-assign to unknown scalar `{name}`")
-                });
+                let current = self
+                    .scalars
+                    .get(&name)
+                    .unwrap_or_else(|| {
+                        panic!("effects::rust_ast: compound-assign to unknown scalar `{name}`")
+                    })
+                    .clone();
                 let rhs = self.eval(value);
                 self.scalars.insert(name, apply_binop(op, current, rhs));
             }
@@ -557,16 +561,18 @@ impl Interp {
                     alloc: binding.alloc,
                     byte_offset: idx * binding.elem_size,
                 };
-                let current = *self.heap.get(&loc).unwrap_or_else(|| {
-                    panic!("effects::rust_ast: read from never-written {loc:?}")
-                });
+                let current = self
+                    .heap
+                    .get(&loc)
+                    .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
+                    .clone();
                 self.trace.push(Effect::Read {
                     loc,
-                    value: current,
+                    value: current.clone(),
                 });
                 let rhs = self.eval(value);
                 let updated = apply_binop(op, current, rhs);
-                self.heap.insert(loc, updated);
+                self.heap.insert(loc, updated.clone());
                 self.trace.push(Effect::Write {
                     loc,
                     value: updated,
@@ -646,7 +652,7 @@ impl Interp {
     fn run_match(&mut self, expr: &Expr, arms: &[crate::rust_ast::MatchArm]) -> Flow {
         let value = self.eval(expr);
         for arm in arms {
-            if pattern_matches(&arm.pattern, value) {
+            if pattern_matches(&arm.pattern, value.clone()) {
                 return self.run(&arm.body);
             }
         }
@@ -710,7 +716,7 @@ impl Interp {
                         alloc,
                         byte_offset: index * elem_size,
                     },
-                    value,
+                    value.clone(),
                 );
             }
         }
@@ -734,7 +740,7 @@ impl Interp {
                     signed: elem_signed,
                     value: value_as_i128(self.eval(elem)),
                 };
-                if value_as_i128(value) == 0 {
+                if value_as_i128(&value) == 0 {
                     Vec::new()
                 } else {
                     vec![value; *len]
@@ -759,8 +765,11 @@ impl Interp {
                     alloc,
                     byte_offset: index as u64 * elem_size,
                 };
-                self.heap.insert(loc, *value);
-                self.trace.push(Effect::Write { loc, value: *value });
+                self.heap.insert(loc, value.clone());
+                self.trace.push(Effect::Write {
+                    loc,
+                    value: value.clone(),
+                });
             }
             alloc
         };
@@ -780,7 +789,7 @@ impl Interp {
     fn let_cstr(&mut self, name: &str, bytes: &[u8]) {
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
-        let bytes: Vec<u8> = bytes.iter().copied().chain(std::iter::once(0)).collect();
+        let bytes: Vec<u8> = bytes.iter().cloned().chain(std::iter::once(0)).collect();
         self.trace.push(Effect::Alloc {
             alloc,
             size: bytes.len() as u64,
@@ -795,7 +804,7 @@ impl Interp {
                 signed: true,
                 value: *byte as i128,
             };
-            self.heap.insert(loc, value);
+            self.heap.insert(loc, value.clone());
             self.trace.push(Effect::Write { loc, value });
         }
         self.vecs.insert(
@@ -838,7 +847,7 @@ impl Interp {
             byte_offset: binding.len * binding.elem_size,
         };
         binding.len += 1;
-        self.heap.insert(loc, value);
+        self.heap.insert(loc, value.clone());
         self.trace.push(Effect::Write { loc, value });
     }
 
@@ -1023,6 +1032,13 @@ impl Interp {
         Value::Ref(self.bind_struct_fields(&name, Some(record_name), fields))
     }
 
+    fn eval_tuple_struct_lit(&mut self, _name: &str, fields: &[Expr]) -> Value {
+        if fields.len() == 1 {
+            return self.eval(&fields[0]);
+        }
+        Value::Tuple(fields.iter().map(|field| self.eval(field)).collect())
+    }
+
     fn let_struct_value(&mut self, name: &str, init: &Expr) {
         let value = self.eval(init);
         let Value::Ref(src) = value else {
@@ -1062,12 +1078,12 @@ impl Interp {
                 alloc: src.alloc,
                 byte_offset: src.byte_offset + offset,
             };
-            let value = self.heap[&src_loc];
+            let value = self.heap[&src_loc].clone();
             let loc = Location {
                 alloc,
                 byte_offset: offset,
             };
-            self.heap.insert(loc, value);
+            self.heap.insert(loc, value.clone());
             self.trace.push(Effect::Write { loc, value });
         }
         self.structs.insert(
@@ -1111,12 +1127,12 @@ impl Interp {
                 alloc: src.alloc,
                 byte_offset: src.byte_offset + offset,
             };
-            let value = self.heap[&src_loc];
+            let value = self.heap[&src_loc].clone();
             let loc = Location {
                 alloc,
                 byte_offset: offset,
             };
-            self.heap.insert(loc, value);
+            self.heap.insert(loc, value.clone());
             self.trace.push(Effect::Write { loc, value });
         }
     }
@@ -1200,7 +1216,7 @@ impl Interp {
                         alloc,
                         byte_offset: offset + elem_offset,
                     };
-                    self.heap.insert(loc, value);
+                    self.heap.insert(loc, value.clone());
                     self.trace.push(Effect::Write { loc, value });
                     elem_offset += elem_size;
                 }
@@ -1224,8 +1240,11 @@ impl Interp {
                         alloc,
                         byte_offset: offset + index as u64 * elem_size,
                     };
-                    self.heap.insert(loc, value);
-                    self.trace.push(Effect::Write { loc, value });
+                    self.heap.insert(loc, value.clone());
+                    self.trace.push(Effect::Write {
+                        loc,
+                        value: value.clone(),
+                    });
                 }
                 array_fields.insert(path.to_string(), (offset, elem_size));
                 *len as u64 * elem_size
@@ -1238,9 +1257,10 @@ impl Interp {
                     alloc,
                     byte_offset: offset,
                 };
-                self.heap.insert(loc, value);
+                self.heap.insert(loc, value.clone());
+                let size = int_byte_size(&value);
                 self.trace.push(Effect::Write { loc, value });
-                int_byte_size(&value)
+                size
             }
         }
     }
@@ -1284,7 +1304,7 @@ impl Interp {
     fn alloc_string_bytes(&mut self, bytes: &[u8]) -> Location {
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
-        let bytes: Vec<u8> = bytes.iter().copied().chain(std::iter::once(0)).collect();
+        let bytes: Vec<u8> = bytes.iter().cloned().chain(std::iter::once(0)).collect();
         self.trace.push(Effect::Alloc {
             alloc,
             size: bytes.len() as u64,
@@ -1299,7 +1319,7 @@ impl Interp {
                 signed: true,
                 value: *byte as i128,
             };
-            self.heap.insert(loc, value);
+            self.heap.insert(loc, value.clone());
             self.trace.push(Effect::Write { loc, value });
         }
         Location {
@@ -1348,7 +1368,7 @@ impl Interp {
             Expr::Str(s) => s.as_bytes().to_vec(),
             Expr::ByteStr(bytes) | Expr::CStr(bytes) => bytes
                 .iter()
-                .copied()
+                .cloned()
                 .take_while(|byte| *byte != 0)
                 .collect(),
             _ => {
@@ -1399,7 +1419,7 @@ impl Interp {
     fn write_c_string(&mut self, dst: Location, bytes: &[u8]) {
         let values = bytes
             .iter()
-            .copied()
+            .cloned()
             .chain(std::iter::once(0))
             .map(|byte| Value::Int {
                 width: IntWidth::W8,
@@ -1426,11 +1446,15 @@ impl Interp {
 
     fn eval_field(&mut self, base: &Expr, field: &str) -> Value {
         let loc = self.field_location(base, field);
-        let value = *self
+        let value = self
             .heap
             .get(&loc)
-            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"));
-        self.trace.push(Effect::Read { loc, value });
+            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
+            .clone();
+        self.trace.push(Effect::Read {
+            loc,
+            value: value.clone(),
+        });
         value
     }
 
@@ -1497,6 +1521,31 @@ impl Interp {
         })
     }
 
+    fn eval_path(&self, path: &Path) -> Value {
+        let segments = path
+            .segments
+            .iter()
+            .map(|segment| segment.as_str())
+            .collect::<Vec<_>>();
+        match segments.as_slice() {
+            ["u64", "MAX"] => Value::Int {
+                width: IntWidth::W64,
+                signed: false,
+                value: u64::MAX as i128,
+            },
+            ["usize", "MAX"] => Value::Int {
+                width: IntWidth::PointerSized,
+                signed: false,
+                value: u64::MAX as i128,
+            },
+            ["std", "cmp", "Ordering", "Less"] => int32(-1),
+            ["std", "cmp", "Ordering", "Equal"] => int32(0),
+            ["std", "cmp", "Ordering", "Greater"] => int32(1),
+            [_, variant] if variant.starts_with("MODE_") => int32(0),
+            _ => panic!("effects::rust_ast: unsupported path `{path:?}`"),
+        }
+    }
+
     fn field_array_element_location(&mut self, base: &Expr, index: &Expr) -> Location {
         let (name, path) = self.field_path(base);
         let name = name.to_string();
@@ -1544,10 +1593,11 @@ impl Interp {
 
     fn eval_ref_without_trace(&self, expr: &Expr) -> Value {
         match expr {
-            Expr::Var(ident) => *self
+            Expr::Var(ident) => self
                 .scalars
                 .get(ident.as_str())
-                .unwrap_or_else(|| panic!("effects::rust_ast: read of unknown scalar `{ident}`")),
+                .unwrap_or_else(|| panic!("effects::rust_ast: read of unknown scalar `{ident}`"))
+                .clone(),
             _ => panic!("effects::rust_ast: unsupported pointer field base `{expr:?}`"),
         }
     }
@@ -1588,6 +1638,7 @@ impl Interp {
     fn eval(&mut self, expr: &Expr) -> Value {
         match expr {
             Expr::Value(rv) => rust_value_to_value(rv),
+            Expr::HexFloat(s) => Value::Float(parse_hex_float(s)),
             Expr::Var(ident) if self.globals.contains_key(ident.as_str()) => {
                 self.read_global(ident.as_str())
             }
@@ -1595,20 +1646,26 @@ impl Interp {
                 self.read_loc(self.scalar_locs[ident.as_str()])
             }
             Expr::Var(ident) if self.scalars.contains_key(ident.as_str()) => {
-                self.scalars[ident.as_str()]
+                self.scalars[ident.as_str()].clone()
             }
             Expr::Var(ident) if self.structs.contains_key(ident.as_str()) => Value::Ref(Location {
                 alloc: self.structs[ident.as_str()].alloc,
                 byte_offset: 0,
             }),
-            Expr::Var(ident) => *self.scalars.get(ident.as_str()).unwrap_or_else(|| {
-                panic!(
-                    "effects::rust_ast: read of unknown scalar `{}`",
-                    ident.as_str()
-                )
-            }),
+            Expr::Var(ident) => self
+                .scalars
+                .get(ident.as_str())
+                .unwrap_or_else(|| {
+                    panic!(
+                        "effects::rust_ast: read of unknown scalar `{}`",
+                        ident.as_str()
+                    )
+                })
+                .clone(),
+            Expr::Path(path) => self.eval_path(path),
             Expr::Cast { expr, ty } => cast_value_to_type(self.eval(expr), ty),
             Expr::StructLit { name, fields } => self.eval_struct_lit(name, fields),
+            Expr::TupleStructLit { name, fields } => self.eval_tuple_struct_lit(name, fields),
             Expr::Str(s) => Value::Ref(self.hidden_c_string(s.as_bytes())),
             Expr::ByteStr(bytes) | Expr::CStr(bytes) => Value::Ref(self.hidden_c_string(bytes)),
             Expr::ArrayPtr { array, .. } => Value::Ref(self.collection_base(array)),
@@ -1621,9 +1678,20 @@ impl Interp {
                 };
                 Value::Ref(self.addr_of(arg))
             }
+            Expr::Macro { name, args } if name == "std::mem::offset_of" => {
+                let [Expr::Var(record), Expr::Var(field)] = args.as_slice() else {
+                    panic!("effects::rust_ast: offset_of! expects type and field");
+                };
+                Value::Int {
+                    width: IntWidth::PointerSized,
+                    signed: false,
+                    value: self.field_offset_named_type(record.as_str(), field.as_str()) as i128,
+                }
+            }
             Expr::Unary { op, expr } => {
                 let value = self.eval(expr);
                 match (op, value) {
+                    (UnaryOp::Neg, Value::Float(value)) => Value::Float(-value),
                     (
                         UnaryOp::Neg,
                         Value::Int {
@@ -1655,6 +1723,7 @@ impl Interp {
                 }
             }
             Expr::Binary { op, lhs, rhs } => self.eval_binary(*op, lhs, rhs),
+            Expr::TupleField { base, index } => self.eval_tuple_field(base, *index),
             Expr::Index { base, index } => {
                 if let Expr::ArrayLit(elems) = base.as_ref() {
                     let idx = value_as_u64(self.eval(index)) as usize;
@@ -1662,10 +1731,17 @@ impl Interp {
                 }
                 if matches!(base.as_ref(), Expr::Field { .. }) {
                     let loc = self.field_array_element_location(base, index);
-                    let value = *self.heap.get(&loc).unwrap_or_else(|| {
-                        panic!("effects::rust_ast: read from never-written {loc:?}")
+                    let value = self
+                        .heap
+                        .get(&loc)
+                        .unwrap_or_else(|| {
+                            panic!("effects::rust_ast: read from never-written {loc:?}")
+                        })
+                        .clone();
+                    self.trace.push(Effect::Read {
+                        loc,
+                        value: value.clone(),
                     });
-                    self.trace.push(Effect::Read { loc, value });
                     return value;
                 }
                 let name = match base.as_ref() {
@@ -1684,11 +1760,22 @@ impl Interp {
                     alloc: binding.alloc,
                     byte_offset: idx * binding.elem_size,
                 };
-                let value = *self.heap.get(&loc).unwrap_or_else(|| {
-                    panic!("effects::rust_ast: read from never-written {loc:?}")
+                let value = self
+                    .heap
+                    .get(&loc)
+                    .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
+                    .clone();
+                self.trace.push(Effect::Read {
+                    loc,
+                    value: value.clone(),
                 });
-                self.trace.push(Effect::Read { loc, value });
                 value
+            }
+            Expr::Field { base, field } if field.bytes().all(|byte| byte.is_ascii_digit()) => {
+                let index = field
+                    .parse::<usize>()
+                    .unwrap_or_else(|_| panic!("effects::rust_ast: invalid tuple field `{field}`"));
+                self.eval_tuple_field(base, index)
             }
             Expr::Field { base, field } => self.eval_field(base, field),
             Expr::MethodCall { recv, method, args } if method == "len" && args.is_empty() => {
@@ -1774,6 +1861,9 @@ impl Interp {
             Expr::MethodCall { recv, method, args } if method == "cmp" => {
                 self.compare_method(recv, args)
             }
+            Expr::MethodCall { recv, method, args } if method == "is_some" && args.is_empty() => {
+                option_is_some(self.eval(recv))
+            }
             Expr::MethodCall { recv, method, args } if method == "is_none" && args.is_empty() => {
                 option_is_none(self.eval(recv))
             }
@@ -1793,6 +1883,9 @@ impl Interp {
                 if matches!(method.as_str(), "sum" | "product" | "fold") =>
             {
                 self.eval_iter_reduce(recv, method, args)
+            }
+            Expr::MethodCall { recv, method, args } if self.is_integer_method(method) => {
+                self.eval_integer_method(recv, method, args)
             }
             Expr::MethodCall { recv, method, args } => self.eval_atomic_method(recv, method, args),
             Expr::Match { expr, arms } => self.eval_match(expr, arms),
@@ -1833,7 +1926,7 @@ impl Interp {
                 ..
             } => {
                 let value = self.eval(value);
-                self.atomic_store(place, *ordering, value);
+                self.atomic_store(place, *ordering, value.clone());
                 value
             }
             Expr::AtomicFetch {
@@ -1901,7 +1994,7 @@ impl Interp {
                 self.atomic_store(
                     &AtomicPlace::Local(recv_name(recv).into()),
                     ordering_expr(ordering),
-                    value,
+                    value.clone(),
                 );
                 value
             }
@@ -1958,6 +2051,114 @@ impl Interp {
         }
     }
 
+    fn is_integer_method(&self, method: &str) -> bool {
+        matches!(
+            method,
+            "wrapping_abs"
+                | "reverse_bits"
+                | "swap_bytes"
+                | "leading_zeros"
+                | "trailing_zeros"
+                | "count_ones"
+                | "rotate_left"
+                | "rotate_right"
+                | "overflowing_add"
+                | "overflowing_sub"
+                | "overflowing_mul"
+                | "overflowing_div"
+                | "overflowing_rem"
+        )
+    }
+
+    fn eval_integer_method(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> Value {
+        let value = self.eval(recv);
+        let Value::Int {
+            width,
+            signed,
+            value,
+        } = value
+        else {
+            panic!("effects::rust_ast: `{method}` expected integer receiver, found {value:?}");
+        };
+        let bits = int_width_bits(width).unwrap_or(64);
+        let unsigned = truncate_to_bits(value, bits, false) as u128;
+        match method {
+            "wrapping_abs" => Value::Int {
+                width,
+                signed,
+                value: truncate_to_bits(value.wrapping_abs(), bits, signed),
+            },
+            "reverse_bits" => Value::Int {
+                width,
+                signed,
+                value: truncate_to_bits(reverse_bits(unsigned, bits), bits, signed),
+            },
+            "swap_bytes" => Value::Int {
+                width,
+                signed,
+                value: truncate_to_bits(swap_bytes(unsigned, bits), bits, signed),
+            },
+            "leading_zeros" => int32(leading_zeros(unsigned, bits) as i128),
+            "trailing_zeros" => int32(trailing_zeros(unsigned, bits) as i128),
+            "count_ones" => int32(count_ones(unsigned, bits) as i128),
+            "rotate_left" | "rotate_right" => {
+                let [amount] = args else {
+                    panic!("effects::rust_ast: `{method}` expects one argument");
+                };
+                let amount = value_as_u64(self.eval(amount)) as u32 % bits;
+                let mask = bit_mask(bits);
+                let rotated = if amount == 0 {
+                    unsigned & mask
+                } else if method == "rotate_left" {
+                    ((unsigned << amount) | (unsigned >> (bits - amount))) & mask
+                } else {
+                    ((unsigned >> amount) | (unsigned << (bits - amount))) & mask
+                };
+                Value::Int {
+                    width,
+                    signed,
+                    value: truncate_to_bits(rotated as i128, bits, signed),
+                }
+            }
+            "overflowing_add" | "overflowing_sub" | "overflowing_mul" | "overflowing_div"
+            | "overflowing_rem" => self.overflowing_method(width, signed, value, method, args),
+            _ => unreachable!(),
+        }
+    }
+
+    fn overflowing_method(
+        &mut self,
+        width: IntWidth,
+        signed: bool,
+        lhs: i128,
+        method: &str,
+        args: &[Expr],
+    ) -> Value {
+        let [rhs] = args else {
+            panic!("effects::rust_ast: `{method}` expects one argument");
+        };
+        let rhs = value_as_i128(self.eval(rhs));
+        let bits = int_width_bits(width).unwrap_or(64);
+        let (value, overflowed) = overflowing_int_op(lhs, rhs, bits, signed, method);
+        Value::Tuple(vec![
+            Value::Int {
+                width,
+                signed,
+                value,
+            },
+            Value::Bool(overflowed),
+        ])
+    }
+
+    fn eval_tuple_field(&mut self, base: &Expr, index: usize) -> Value {
+        match self.eval(base) {
+            Value::Tuple(values) => values.get(index).cloned().unwrap_or_else(|| {
+                panic!("effects::rust_ast: tuple field index {index} out of range")
+            }),
+            other => panic!("effects::rust_ast: tuple field on non-tuple `{other:?}`"),
+        }
+    }
+
     fn eval_match(&mut self, expr: &Expr, arms: &[crate::rust_ast::ExprMatchArm]) -> Value {
         let scrutinee = self.eval(expr);
         match scrutinee {
@@ -1989,7 +2190,7 @@ impl Interp {
             }
             value => {
                 for arm in arms {
-                    if pattern_matches(&arm.pattern, value) {
+                    if pattern_matches(&arm.pattern, value.clone()) {
                         return self.eval(&arm.value);
                     }
                 }
@@ -2022,11 +2223,12 @@ impl Interp {
         if let Some(&atomic) = self.atomics.get(name) {
             return atomic;
         }
-        let value = *self
+        let value = self
             .scalars
             .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: atomic access to unknown `{name}`"));
-        let atomic = self.allocate_atomic(value);
+            .unwrap_or_else(|| panic!("effects::rust_ast: atomic access to unknown `{name}`"))
+            .clone();
+        let atomic = self.allocate_atomic(value.clone());
         self.atomics.insert(name.to_string(), atomic);
         self.scalars.insert(name.to_string(), Value::Atomic(atomic));
         atomic
@@ -2038,14 +2240,14 @@ impl Interp {
         self.trace.push(Effect::AtomicLoad {
             atomic,
             ordering,
-            value,
+            value: value.clone(),
         });
         value
     }
 
     fn atomic_store(&mut self, place: &AtomicPlace, ordering: AtomicOrdering, value: Value) {
         let atomic = self.atomic_place(place);
-        self.atomic_values.insert(atomic, value);
+        self.atomic_values.insert(atomic, value.clone());
         self.trace.push(Effect::AtomicStore {
             atomic,
             ordering,
@@ -2062,14 +2264,14 @@ impl Interp {
     ) -> Value {
         let atomic = self.atomic_place(place);
         let old = self.atomic_value(atomic);
-        let new = atomic_rmw_value(op, old, operand);
-        self.atomic_values.insert(atomic, new);
+        let new = atomic_rmw_value(op, old.clone(), operand.clone());
+        self.atomic_values.insert(atomic, new.clone());
         self.trace.push(Effect::AtomicRmw {
             atomic,
             op,
             ordering,
             operand,
-            old,
+            old: old.clone(),
             new,
         });
         old
@@ -2078,11 +2280,11 @@ impl Interp {
     fn atomic_swap(&mut self, place: &AtomicPlace, ordering: AtomicOrdering, new: Value) -> Value {
         let atomic = self.atomic_place(place);
         let old = self.atomic_value(atomic);
-        self.atomic_values.insert(atomic, new);
+        self.atomic_values.insert(atomic, new.clone());
         self.trace.push(Effect::AtomicSwap {
             atomic,
             ordering,
-            old,
+            old: old.clone(),
             new,
         });
         old
@@ -2100,7 +2302,7 @@ impl Interp {
         let old = self.atomic_value(atomic);
         let exchanged = old == expected;
         if exchanged {
-            self.atomic_values.insert(atomic, desired);
+            self.atomic_values.insert(atomic, desired.clone());
         }
         self.trace.push(Effect::AtomicCompareExchange {
             atomic,
@@ -2108,7 +2310,7 @@ impl Interp {
             failure,
             expected,
             desired,
-            old,
+            old: old.clone(),
             exchanged,
         });
         Value::AtomicResult {
@@ -2118,10 +2320,10 @@ impl Interp {
     }
 
     fn atomic_value(&self, atomic: AtomicId) -> Value {
-        *self
-            .atomic_values
+        self.atomic_values
             .get(&atomic)
             .unwrap_or_else(|| panic!("effects::rust_ast: read from unknown atomic {atomic:?}"))
+            .clone()
     }
 
     fn read_global(&mut self, name: &str) -> Value {
@@ -2129,11 +2331,15 @@ impl Interp {
             .globals
             .get(name)
             .unwrap_or_else(|| panic!("effects::rust_ast: read of unknown global `{name}`"));
-        let value = *self
+        let value = self
             .heap
             .get(&loc)
-            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"));
-        self.trace.push(Effect::Read { loc, value });
+            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
+            .clone();
+        self.trace.push(Effect::Read {
+            loc,
+            value: value.clone(),
+        });
         value
     }
 
@@ -2155,7 +2361,7 @@ impl Interp {
                 panic!("effects::rust_ast: OnceLock initializer closure cannot take params");
             }
             let value = self.eval(body);
-            self.heap.insert(payload, value);
+            self.heap.insert(payload, value.clone());
             self.trace.push(Effect::Write {
                 loc: payload,
                 value,
@@ -2165,7 +2371,7 @@ impl Interp {
                 signed: true,
                 value: 1,
             };
-            self.heap.insert(guard, one);
+            self.heap.insert(guard, one.clone());
             self.trace.push(Effect::Write {
                 loc: guard,
                 value: one,
@@ -2175,19 +2381,23 @@ impl Interp {
     }
 
     fn read_loc(&mut self, loc: Location) -> Value {
-        let value = *self
+        let value = self
             .heap
             .get(&loc)
-            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"));
-        self.trace.push(Effect::Read { loc, value });
+            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
+            .clone();
+        self.trace.push(Effect::Read {
+            loc,
+            value: value.clone(),
+        });
         value
     }
 
     fn write_loc(&mut self, loc: Location, value: Value) {
-        self.heap.insert(loc, value);
+        self.heap.insert(loc, value.clone());
         for (name, scalar_loc) in &self.scalar_locs {
             if *scalar_loc == loc {
-                self.scalars.insert(name.clone(), value);
+                self.scalars.insert(name.clone(), value.clone());
             }
         }
         self.trace.push(Effect::Write { loc, value });
@@ -2224,13 +2434,14 @@ impl Interp {
     }
 
     fn scalar_location(&mut self, name: &str) -> Location {
-        if let Some(loc) = self.scalar_locs.get(name).copied() {
+        if let Some(loc) = self.scalar_locs.get(name).cloned() {
             return loc;
         }
-        let value = *self
+        let value = self
             .scalars
             .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: address of unknown scalar `{name}`"));
+            .unwrap_or_else(|| panic!("effects::rust_ast: address of unknown scalar `{name}`"))
+            .clone();
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
         let loc = Location {
@@ -2238,10 +2449,10 @@ impl Interp {
             byte_offset: 0,
         };
         self.scalar_locs.insert(name.to_string(), loc);
-        self.heap.insert(loc, value);
+        self.heap.insert(loc, value.clone());
         self.trace.push(Effect::Alloc {
             alloc,
-            size: local_value_size(value),
+            size: local_value_size(&value),
         });
         self.trace.push(Effect::Write { loc, value });
         loc
@@ -2251,8 +2462,31 @@ impl Interp {
         if args.is_empty() && is_path(func, &["std", "ptr", "null_mut"]) {
             return Value::Null;
         }
+        if let Some(align) = self.generic_align_of(func, args) {
+            return Value::Int {
+                width: IntWidth::PointerSized,
+                signed: false,
+                value: align as i128,
+            };
+        }
+        if let Some(size) = self.generic_size_of(func, args) {
+            return Value::Int {
+                width: IntWidth::PointerSized,
+                signed: false,
+                value: size as i128,
+            };
+        }
         if args.is_empty() && is_path(func, &["std", "mem", "size_of"]) {
             return int32(4);
+        }
+        if is_path(func, &["core", "hint", "assert_unchecked"]) {
+            let [cond] = args else {
+                panic!("effects::rust_ast: assert_unchecked expects one argument");
+            };
+            if !value_as_bool(self.eval(cond)) {
+                panic!("effects::rust_ast: assert_unchecked(false)");
+            }
+            return int32(0);
         }
         if is_path(func, &["std", "ptr", "read_volatile"]) {
             return self.read_volatile(args);
@@ -2385,7 +2619,7 @@ impl Interp {
             alloc,
             byte_offset: 0,
         };
-        for (index, byte) in bytes.iter().copied().chain(std::iter::once(0)).enumerate() {
+        for (index, byte) in bytes.iter().cloned().chain(std::iter::once(0)).enumerate() {
             self.heap.insert(
                 Location {
                     alloc,
@@ -2419,8 +2653,11 @@ impl Interp {
                 alloc: base.alloc,
                 byte_offset: base.byte_offset + index as u64,
             };
-            self.heap.insert(loc, *value);
-            self.trace.push(Effect::Write { loc, value: *value });
+            self.heap.insert(loc, value.clone());
+            self.trace.push(Effect::Write {
+                loc,
+                value: value.clone(),
+            });
         }
     }
 
@@ -2439,6 +2676,131 @@ impl Interp {
         let loc = self.eval_ref(ptr);
         let value = self.eval(value);
         self.write_loc(loc, value);
+    }
+
+    fn generic_size_of(&self, func: &Expr, args: &[Expr]) -> Option<u64> {
+        if !args.is_empty() {
+            return None;
+        }
+        let name = path_name(func)?;
+        let ty_name = name
+            .strip_prefix("std::mem::size_of::<")?
+            .strip_suffix('>')?;
+        Some(self.size_of_named_type(ty_name))
+    }
+
+    fn generic_align_of(&self, func: &Expr, args: &[Expr]) -> Option<u64> {
+        if !args.is_empty() {
+            return None;
+        }
+        let name = path_name(func)?;
+        let ty_name = name
+            .strip_prefix("std::mem::align_of::<")?
+            .strip_suffix('>')?;
+        Some(self.align_of_named_type(ty_name))
+    }
+
+    fn align_of_named_type(&self, name: &str) -> u64 {
+        if let Some(prim) = Prim::parse(name) {
+            let size = type_size(&Type::Prim(prim)).unwrap_or_else(|| {
+                panic!("effects::rust_ast: unsupported primitive align `{name}`")
+            });
+            return size.min(8).max(1);
+        }
+        let record = self
+            .records
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: unknown type `{name}` in align_of"));
+        self.record_align(record)
+    }
+
+    fn size_of_named_type(&self, name: &str) -> u64 {
+        if let Some(prim) = Prim::parse(name) {
+            return type_size(&Type::Prim(prim)).unwrap_or_else(|| {
+                panic!("effects::rust_ast: unsupported primitive size `{name}`")
+            });
+        }
+        let record = self
+            .records
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: unknown type `{name}` in size_of"));
+        if record.is_union {
+            let size = record
+                .fields
+                .iter()
+                .map(|field| self.type_layout(&field.ty).0)
+                .max()
+                .unwrap_or(0);
+            return align_to(size, self.record_align(record));
+        }
+        let mut offset = 0u64;
+        for field in &record.fields {
+            let (size, align) = self.type_layout(&field.ty);
+            if !record.packed {
+                offset = align_to(offset, align);
+            }
+            offset += size;
+        }
+        align_to(offset, self.record_align(record))
+    }
+
+    fn type_layout(&self, ty: &Type) -> (u64, u64) {
+        match ty {
+            Type::Custom(name) => {
+                let size = self.size_of_named_type(name);
+                let align = self
+                    .records
+                    .get(name)
+                    .map(|record| self.record_align(record))
+                    .unwrap_or(1);
+                (size, align)
+            }
+            Type::Array { elem, len } => {
+                let (size, align) = self.type_layout(elem);
+                (size * *len, align)
+            }
+            _ => {
+                let size = type_size(ty).unwrap_or_else(|| {
+                    panic!("effects::rust_ast: unsupported size_of type `{ty:?}`")
+                });
+                (size, size.min(8).max(1))
+            }
+        }
+    }
+
+    fn field_offset_named_type(&self, record_name: &str, field_name: &str) -> u64 {
+        let record = self.records.get(record_name).unwrap_or_else(|| {
+            panic!("effects::rust_ast: unknown type `{record_name}` in offset_of")
+        });
+        if record.is_union {
+            return 0;
+        }
+        let mut offset = 0u64;
+        for field in &record.fields {
+            let (size, align) = self.type_layout(&field.ty);
+            if !record.packed {
+                offset = align_to(offset, align);
+            }
+            if field.name.as_str() == field_name {
+                return offset;
+            }
+            offset += size;
+        }
+        panic!("effects::rust_ast: unknown field `{field_name}` in offset_of::<{record_name}>")
+    }
+
+    fn record_align(&self, record: &crate::rust_ast::RecordDef) -> u64 {
+        if record.packed {
+            return 1;
+        }
+        record.align.map(u64::from).unwrap_or_else(|| {
+            record
+                .fields
+                .iter()
+                .map(|field| self.type_layout(&field.ty).1)
+                .max()
+                .unwrap_or(1)
+        })
     }
 
     fn eval_call_summary(&mut self, summary: CallSummary, args: &[Expr]) -> Value {
@@ -2516,7 +2878,8 @@ impl Interp {
             value: 0,
         };
         for byte_offset in 0..size {
-            self.heap.insert(Location { alloc, byte_offset }, zero);
+            self.heap
+                .insert(Location { alloc, byte_offset }, zero.clone());
         }
         Value::Ref(Location {
             alloc,
@@ -2732,7 +3095,7 @@ impl Interp {
         let base = self.eval_ref(base);
         let needle = value_as_i128(self.eval(needle)) as u8;
         let bytes = self.read_c_string(base);
-        for (index, byte) in bytes.iter().copied().chain(std::iter::once(0)).enumerate() {
+        for (index, byte) in bytes.iter().cloned().chain(std::iter::once(0)).enumerate() {
             if byte == needle {
                 return Value::Ref(Location {
                     alloc: base.alloc,
@@ -2751,7 +3114,7 @@ impl Interp {
         let needle = value_as_i128(self.eval(needle)) as u8;
         let bytes = self.read_c_string(base);
         let mut found = if needle == 0 { Some(bytes.len()) } else { None };
-        for (index, byte) in bytes.iter().copied().enumerate() {
+        for (index, byte) in bytes.iter().cloned().enumerate() {
             if byte == needle {
                 found = Some(index);
             }
@@ -2971,7 +3334,7 @@ impl Interp {
         let bytes = self.read_file_bytes(file, max as usize, false);
         let values = bytes
             .iter()
-            .copied()
+            .cloned()
             .map(|byte| Value::Int {
                 width: IntWidth::W8,
                 signed: true,
@@ -3239,7 +3602,7 @@ impl Interp {
             {
                 self.bind_struct_copy(&param.name, *loc);
             } else {
-                self.scalars.insert(param.name.to_string(), *value);
+                self.scalars.insert(param.name.to_string(), value.clone());
             }
             if let Value::Ref(loc) = value
                 && let Some((elem_width, elem_signed, elem_size)) = slice_elem_shape(&param.ty)
@@ -3274,7 +3637,7 @@ impl Interp {
         };
         let mut restored_scalars = saved_scalars;
         for (name, loc) in &saved_scalar_locs {
-            if let Some(value) = self.heap.get(loc).copied() {
+            if let Some(value) = self.heap.get(loc).cloned() {
                 restored_scalars.insert(name.clone(), value);
             }
         }
@@ -3289,11 +3652,11 @@ impl Interp {
                 f.name
             );
         };
-        if let (Value::Ref(loc), Some(binding)) = (value, returned_struct) {
+        if let (Value::Ref(loc), Some(binding)) = (&value, returned_struct) {
             let name = format!("__struct_tmp{}", self.next_struct_temp);
             self.next_struct_temp += 1;
             self.structs.insert(name, binding);
-            return Value::Ref(loc);
+            return Value::Ref(*loc);
         }
         value
     }
@@ -3422,18 +3785,26 @@ impl Interp {
                 if compare(self, left, right) <= 0 {
                     break;
                 }
-                let left_value = *self.heap.get(&left).unwrap_or_else(|| {
-                    panic!("effects::rust_ast: read from never-written {left:?}")
-                });
-                let right_value = *self.heap.get(&right).unwrap_or_else(|| {
-                    panic!("effects::rust_ast: read from never-written {right:?}")
-                });
-                self.heap.insert(left, right_value);
+                let left_value = self
+                    .heap
+                    .get(&left)
+                    .unwrap_or_else(|| {
+                        panic!("effects::rust_ast: read from never-written {left:?}")
+                    })
+                    .clone();
+                let right_value = self
+                    .heap
+                    .get(&right)
+                    .unwrap_or_else(|| {
+                        panic!("effects::rust_ast: read from never-written {right:?}")
+                    })
+                    .clone();
+                self.heap.insert(left, right_value.clone());
                 self.trace.push(Effect::Write {
                     loc: left,
                     value: right_value,
                 });
-                self.heap.insert(right, left_value);
+                self.heap.insert(right, left_value.clone());
                 self.trace.push(Effect::Write {
                     loc: right,
                     value: left_value,
@@ -3476,11 +3847,15 @@ impl Interp {
                 alloc,
                 byte_offset: index * elem_size,
             };
-            let value = *self
+            let value = self
                 .heap
                 .get(&loc)
-                .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"));
-            self.trace.push(Effect::Read { loc, value });
+                .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
+                .clone();
+            self.trace.push(Effect::Read {
+                loc,
+                value: value.clone(),
+            });
             self.scalars.insert(param.as_str().to_string(), value);
             if value_as_bool(self.eval(body)) {
                 self.scalars.remove(param.as_str());
@@ -3544,11 +3919,15 @@ impl Interp {
                 alloc,
                 byte_offset: index * elem_size,
             };
-            let value = *this
+            let value = this
                 .heap
                 .get(&loc)
-                .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"));
-            this.trace.push(Effect::Read { loc, value });
+                .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
+                .clone();
+            this.trace.push(Effect::Read {
+                loc,
+                value: value.clone(),
+            });
             value
         };
 
@@ -3646,20 +4025,20 @@ fn tuple_pat2(pat: &str) -> (&str, &str) {
     (left, right)
 }
 
-fn local_value_size(value: Value) -> u64 {
+fn local_value_size(value: &Value) -> u64 {
     match value {
-        Value::Int { .. } => int_byte_size(&value),
+        Value::Int { .. } => int_byte_size(value),
         Value::Bool(_) => 1,
         Value::Float(_) => 8,
         Value::Ref(_) | Value::Null | Value::File(_) | Value::Atomic(_) => 8,
-        Value::AtomicResult { .. } | Value::BlockLabel(_) | Value::Option(_) => {
+        Value::AtomicResult { .. } | Value::Tuple(_) | Value::BlockLabel(_) | Value::Option(_) => {
             panic!("effects::rust_ast: cannot take address of transient value {value:?}")
         }
     }
 }
 
 fn compare_bytes(left: &[u8], right: &[u8]) -> i8 {
-    for (a, b) in left.iter().copied().zip(right.iter().copied()) {
+    for (a, b) in left.iter().cloned().zip(right.iter().cloned()) {
         if a != b {
             return if a < b { -1 } else { 1 };
         }
@@ -3793,6 +4172,121 @@ fn truncate_to_bits(value: i128, bits: u32, signed: bool) -> i128 {
     } else {
         truncated
     }
+}
+
+fn align_to(value: u64, align: u64) -> u64 {
+    if align <= 1 {
+        value
+    } else {
+        value.div_ceil(align) * align
+    }
+}
+
+fn bit_mask(bits: u32) -> u128 {
+    if bits >= 128 {
+        u128::MAX
+    } else {
+        (1u128 << bits) - 1
+    }
+}
+
+fn reverse_bits(value: u128, bits: u32) -> i128 {
+    (value.reverse_bits() >> (128 - bits)) as i128
+}
+
+fn swap_bytes(value: u128, bits: u32) -> i128 {
+    let bytes = bits / 8;
+    let mut out = 0u128;
+    for index in 0..bytes {
+        let byte = (value >> (index * 8)) & 0xff;
+        out |= byte << ((bytes - index - 1) * 8);
+    }
+    out as i128
+}
+
+fn leading_zeros(value: u128, bits: u32) -> u32 {
+    (value & bit_mask(bits)).leading_zeros() - (128 - bits)
+}
+
+fn trailing_zeros(value: u128, bits: u32) -> u32 {
+    let value = value & bit_mask(bits);
+    if value == 0 {
+        bits
+    } else {
+        value.trailing_zeros()
+    }
+}
+
+fn count_ones(value: u128, bits: u32) -> u32 {
+    (value & bit_mask(bits)).count_ones()
+}
+
+fn overflowing_int_op(lhs: i128, rhs: i128, bits: u32, signed: bool, method: &str) -> (i128, bool) {
+    if signed {
+        if matches!(method, "overflowing_div" | "overflowing_rem") && rhs == 0 {
+            return (0, true);
+        }
+        let raw = match method {
+            "overflowing_add" => lhs.wrapping_add(rhs),
+            "overflowing_sub" => lhs.wrapping_sub(rhs),
+            "overflowing_mul" => lhs.wrapping_mul(rhs),
+            "overflowing_div" => lhs.wrapping_div(rhs),
+            "overflowing_rem" => lhs.wrapping_rem(rhs),
+            _ => unreachable!(),
+        };
+        let value = truncate_to_bits(raw, bits, true);
+        let min = -(1i128 << (bits - 1));
+        let max = (1i128 << (bits - 1)) - 1;
+        let overflowed = match method {
+            "overflowing_add" => lhs.checked_add(rhs).is_none_or(|v| v < min || v > max),
+            "overflowing_sub" => lhs.checked_sub(rhs).is_none_or(|v| v < min || v > max),
+            "overflowing_mul" => lhs.checked_mul(rhs).is_none_or(|v| v < min || v > max),
+            "overflowing_div" => rhs == 0 || (lhs == min && rhs == -1),
+            "overflowing_rem" => rhs == 0 || (lhs == min && rhs == -1),
+            _ => unreachable!(),
+        };
+        return (value, overflowed);
+    }
+
+    let mask = bit_mask(bits);
+    let lhs = lhs as u128 & mask;
+    let rhs = rhs as u128 & mask;
+    let (raw, overflowed) = match method {
+        "overflowing_add" => lhs.overflowing_add(rhs),
+        "overflowing_sub" => lhs.overflowing_sub(rhs),
+        "overflowing_mul" => lhs.overflowing_mul(rhs),
+        "overflowing_div" if rhs == 0 => (0, true),
+        "overflowing_div" => (lhs / rhs, false),
+        "overflowing_rem" if rhs == 0 => (0, true),
+        "overflowing_rem" => (lhs % rhs, false),
+        _ => unreachable!(),
+    };
+    (
+        truncate_to_bits((raw & mask) as i128, bits, false),
+        overflowed || raw > mask,
+    )
+}
+
+fn parse_hex_float(text: &str) -> f64 {
+    let Some((mantissa, exponent)) = text
+        .trim()
+        .strip_prefix("0x")
+        .or_else(|| text.trim().strip_prefix("0X"))
+        .and_then(|rest| rest.split_once(['p', 'P']))
+    else {
+        return text.parse::<f64>().unwrap_or(0.0);
+    };
+    let exponent = exponent.parse::<i32>().unwrap_or(0);
+    let (whole, frac) = mantissa.split_once('.').unwrap_or((mantissa, ""));
+    let whole_value =
+        u128::from_str_radix(if whole.is_empty() { "0" } else { whole }, 16).unwrap_or(0) as f64;
+    let frac_value = frac
+        .bytes()
+        .enumerate()
+        .filter_map(|(index, byte)| char::from(byte).to_digit(16).map(|digit| (index, digit)))
+        .map(|(index, digit)| digit as f64 / 16f64.powi(index as i32 + 1))
+        .sum::<f64>();
+    (whole_value + frac_value) * 2f64.powi(exponent)
 }
 
 #[cfg(test)]
