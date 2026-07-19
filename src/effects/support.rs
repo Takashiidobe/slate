@@ -25,6 +25,13 @@ pub(super) fn is_path(expr: &Expr, segments: &[&str]) -> bool {
     }
 }
 
+pub(super) fn is_box_new_call(expr: &Expr) -> bool {
+    match path_name(expr).as_deref() {
+        Some(name) => name.starts_with("Box::<") && name.ends_with(">::new"),
+        None => false,
+    }
+}
+
 pub(super) fn path_name(expr: &Expr) -> Option<String> {
     match expr {
         Expr::Path(Path { segments }) => Some(
@@ -492,11 +499,25 @@ pub(super) fn slice_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
         Type::Slice(elem) => elem.as_ref(),
         Type::Ref { inner, .. } => match inner.as_ref() {
             Type::Slice(elem) => elem.as_ref(),
+            Type::Array { elem, .. } => elem.as_ref(),
             _ => return None,
         },
         _ => return None,
     };
     scalar_type_shape(elem)
+}
+
+pub(super) fn box_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
+    match ty {
+        Type::Generic { name, args } if name == "Box" => scalar_type_shape(args.first()?),
+        Type::Custom(name) => {
+            let elem = name
+                .strip_prefix("Box<")
+                .and_then(|rest| rest.strip_suffix('>'))?;
+            scalar_type_shape(&Type::parse(elem))
+        }
+        _ => return None,
+    }
 }
 
 pub(super) fn array_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64, u64)> {
@@ -567,6 +588,18 @@ pub(super) fn value_as_bool(value: impl Borrow<Value>) -> EResult<bool> {
 pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> EResult<Value> {
     match op {
         BinOp::Eq | BinOp::Ne | BinOp::Lt | BinOp::Le | BinOp::Gt | BinOp::Ge => {
+            if let (Value::Bytes(a), Value::Bytes(b)) = (&a, &b) {
+                let ord = compare_bytes(a, b);
+                return Ok(Value::Bool(match op {
+                    BinOp::Eq => ord == 0,
+                    BinOp::Ne => ord != 0,
+                    BinOp::Lt => ord < 0,
+                    BinOp::Le => ord <= 0,
+                    BinOp::Gt => ord > 0,
+                    BinOp::Ge => ord >= 0,
+                    _ => unreachable!(),
+                }));
+            }
             if matches!((&a, &b), (Value::Ref(_), Value::Ref(_))) {
                 let (Value::Ref(left), Value::Ref(right)) = (&a, &b) else {
                     unreachable!();
@@ -699,6 +732,19 @@ pub(super) fn truncate_int(value: i128, width: IntWidth, signed: bool) -> i128 {
     }
 }
 
+fn compare_bytes(left: &[u8], right: &[u8]) -> i8 {
+    for (a, b) in left.iter().cloned().zip(right.iter().cloned()) {
+        if a != b {
+            return if a < b { -1 } else { 1 };
+        }
+    }
+    match left.len().cmp(&right.len()) {
+        std::cmp::Ordering::Less => -1,
+        std::cmp::Ordering::Equal => 0,
+        std::cmp::Ordering::Greater => 1,
+    }
+}
+
 fn unsigned_shr(value: i128, width: IntWidth, shift: u32) -> i128 {
     match width {
         IntWidth::W8 => ((value as u8) >> shift) as i128,
@@ -812,13 +858,14 @@ pub(super) fn atomic_rmw_value(op: AtomicRmwOp, old: Value, operand: Value) -> E
 }
 
 pub(super) fn vec_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
-    let Type::Generic { name, args } = ty else {
-        return None;
+    let elem = match ty {
+        Type::Generic { name, args } if name == "Vec" => return scalar_type_shape(args.first()?),
+        Type::Custom(name) => name
+            .strip_prefix("Vec<")
+            .and_then(|rest| rest.strip_suffix('>'))?,
+        _ => return None,
     };
-    if name != "Vec" {
-        return None;
-    }
-    let Type::Prim(prim) = args.first()? else {
+    let Type::Prim(prim) = Type::parse(elem) else {
         return None;
     };
     use crate::rust_ast::Prim;
