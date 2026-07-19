@@ -7,7 +7,7 @@ use std::collections::BTreeSet;
 
 use crate::rust_ast::{Expr, ExprMatchArm, IndentStmt, MatchArm, Pattern, RustValue, Stmt};
 
-type LoweredSwitchParts<'a> = (
+pub(super) type LoweredSwitchParts<'a> = (
     &'a str,
     &'a Expr,
     &'a str,
@@ -566,7 +566,10 @@ fn switch_transfer(
     (!arms.is_empty()).then_some((selector_expr.clone(), arms, consumed))
 }
 
-fn lowered_switch_parts(stmts: &[IndentStmt], i: usize) -> Option<LoweredSwitchParts<'_>> {
+pub(super) fn lowered_switch_parts(
+    stmts: &[IndentStmt],
+    i: usize,
+) -> Option<LoweredSwitchParts<'_>> {
     if let Some(parts) = stmts
         .get(i)
         .and_then(|stmt| lowered_switch_scope_parts(&stmt.stmt))
