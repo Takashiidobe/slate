@@ -355,9 +355,13 @@ pub struct PassInvocation {
 
 impl PassInvocation {
     fn summary(&self) -> String {
-        let changed = if self.changed { "changed" } else { "unchanged" };
+        let status = if self.changed {
+            "changed"
+        } else {
+            "skipped: nothing to do"
+        };
         format!(
-            "{changed}; stmts {:+}, temp_lets {:+}, items {:+}",
+            "{status}; stmts {:+}, temp_lets {:+}, items {:+}",
             self.after.stmts as isize - self.before.stmts as isize,
             self.after.temp_lets as isize - self.before.temp_lets as isize,
             self.after.items as isize - self.before.items as isize
@@ -377,7 +381,6 @@ impl TraceLog {
         for pass in &self.passes {
             writeln!(out, "{:<34} {}", pass.pass.name(), pass.summary()).unwrap();
             if pass.events.is_empty() {
-                writeln!(out, "  skipped: nothing to do").unwrap();
                 continue;
             }
             for group in function_groups(&pass.events) {
@@ -825,8 +828,8 @@ mod tests {
         };
 
         let rendered = log.render_human();
-        assert!(rendered.contains("goto"));
-        assert!(rendered.contains("  skipped: nothing to do"));
+        assert!(rendered.contains("goto                               skipped: nothing to do"));
+        assert!(!rendered.contains("\n  skipped: nothing to do\n"));
         assert!(rendered.contains("  function main:"));
         assert!(rendered.contains("      at fn main, ast stmt[1]"));
         assert!(rendered.contains("      before:"));
