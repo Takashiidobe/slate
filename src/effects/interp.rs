@@ -2598,6 +2598,9 @@ impl Interp {
                     byte_offset: 0,
                 }))
             }
+            Expr::Var(ident) if self.funcs.contains_key(ident.as_str()) => {
+                Ok(Value::Function(ident.as_str().to_string()))
+            }
             Expr::Var(ident) => match self.scalars.get(ident.as_str()) {
                 Some(value) => Ok(value.clone()),
                 None => Err(EffectError::unknown(BindingKind::Scalar, ident.as_str())),
@@ -3705,6 +3708,9 @@ impl Interp {
         if is_path(func, &["std", "io", "BufRead", "read_until"]) {
             return self.call_read_until(args);
         }
+        if let Some(value) = self.eval_user_callable(func)? {
+            return self.call_user_named(&value, args);
+        }
         let Some(name) = path_name(func) else {
             return Err(EffectError::unsupported(
                 Construct::CallTarget,
@@ -3731,7 +3737,31 @@ impl Interp {
             "__slate_runtime::parse_f64" => return self.parse_runtime_f64(args),
             _ => {}
         }
-        let f = match self.funcs.get(&name).cloned() {
+        self.call_user_named(&name, args)
+    }
+
+    fn eval_user_callable(&mut self, func: &Expr) -> EResult<Option<String>> {
+        if let Expr::Var(ident) = func
+            && self.funcs.contains_key(ident.as_str())
+        {
+            return Ok(Some(ident.as_str().to_string()));
+        }
+        if matches!(func, Expr::Path(_)) {
+            return Ok(None);
+        }
+        match self.eval(func) {
+            Ok(Value::Function(name)) => Ok(Some(name)),
+            Ok(_) => Ok(None),
+            Err(EffectError::UnknownBinding {
+                kind: BindingKind::Scalar,
+                ..
+            }) => Ok(None),
+            Err(err) => Err(err),
+        }
+    }
+
+    fn call_user_named(&mut self, name: &str, args: &[Expr]) -> EResult<Value> {
+        let f = match self.funcs.get(name).cloned() {
             Some(f) => f,
             None => return Err(EffectError::unknown(BindingKind::Function, name)),
         };
@@ -5240,7 +5270,7 @@ impl Interp {
         }
         let saved_scalars = std::mem::take(&mut self.scalars);
         let saved_structs = self.structs.clone();
-        let saved_scalar_locs = self.scalar_locs.clone();
+        let saved_scalar_locs = std::mem::take(&mut self.scalar_locs);
         let saved_vecs = self.vecs.clone();
         let saved_pointer_elem_sizes = self.pointer_elem_sizes.clone();
         for (index, (param, value)) in f.params.iter().zip(args).enumerate() {
@@ -6318,7 +6348,9 @@ fn local_value_size(value: &Value) -> EResult<u64> {
         Value::Int { .. } => int_byte_size(value),
         Value::Bool(_) => Ok(1),
         Value::Float(_) => Ok(8),
-        Value::Ref(_) | Value::Null | Value::File(_) | Value::Atomic(_) => Ok(8),
+        Value::Ref(_) | Value::Function(_) | Value::Null | Value::File(_) | Value::Atomic(_) => {
+            Ok(8)
+        }
         Value::AtomicResult { .. }
         | Value::Tuple(_)
         | Value::BlockLabel(_)
