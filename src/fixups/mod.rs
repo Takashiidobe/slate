@@ -5,35 +5,15 @@ mod idents;
 mod rewrite;
 mod runtime;
 mod support;
+pub mod trace;
 
 #[cfg(test)]
 mod test_support;
 
-use crate::rust_ast::{Block, IndentStmt, Item, Program, Stmt};
-use std::fmt::Write;
+use crate::fixups::trace::{CollectingLogger, NoopLogger, ProgramSummary, TraceLog, TraceLogger};
+use crate::rust_ast::{Item, Program};
 
-/// A fixup pass that can be individually disabled via [`SkipSet`], for
-/// translation-validation regression testing (compare a fixture's output
-/// with and without one pass active).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Pass {
-    RangeLoop,
-}
-
-impl Pass {
-    pub fn name(self) -> &'static str {
-        match self {
-            Pass::RangeLoop => "range_loop",
-        }
-    }
-
-    pub fn parse(name: &str) -> Option<Self> {
-        match name {
-            "range_loop" => Some(Pass::RangeLoop),
-            _ => None,
-        }
-    }
-}
+pub use trace::Pass;
 
 #[derive(Debug, Clone, Default)]
 pub struct SkipSet(std::collections::HashSet<Pass>);
@@ -59,86 +39,37 @@ pub fn apply(program: Program) -> Program {
 }
 
 pub fn apply_with(program: Program, skip: &SkipSet) -> Program {
-    apply_with_trace(program, skip, None)
+    let mut logger = NoopLogger;
+    apply_with_logger(program, skip, &mut logger)
 }
 
 pub fn debug(program: Program) -> String {
-    let mut trace = Vec::new();
-    let final_program = apply_with_trace(program, &SkipSet::none(), Some(&mut trace));
-    let mut out = String::new();
-    for step in trace {
-        writeln!(out, "{:<34} {}", step.name, step.summary()).unwrap();
-    }
+    let (_, log) = debug_log(program);
+    log.render_human()
+}
+
+pub fn debug_log(program: Program) -> (Program, TraceLog) {
+    let mut logger = CollectingLogger::default();
+    let final_program = apply_with_logger(program, &SkipSet::none(), &mut logger);
     let final_summary = ProgramSummary::from_program(&final_program);
-    writeln!(
-        out,
-        "final: items={}, stmts={}, temp_lets={}",
-        final_summary.items, final_summary.stmts, final_summary.temp_lets
-    )
-    .unwrap();
-    out
+    let log = logger.finish(final_summary);
+    (final_program, log)
 }
 
-#[derive(Clone)]
-struct DebugStep {
-    name: &'static str,
-    before: ProgramSummary,
-    after: ProgramSummary,
-    changed: bool,
-}
-
-impl DebugStep {
-    fn summary(&self) -> String {
-        let changed = if self.changed { "changed" } else { "unchanged" };
-        format!(
-            "{changed}; stmts {:+}, temp_lets {:+}, items {:+}",
-            self.after.stmts as isize - self.before.stmts as isize,
-            self.after.temp_lets as isize - self.before.temp_lets as isize,
-            self.after.items as isize - self.before.items as isize
-        )
-    }
-}
-
-#[derive(Clone)]
-struct ProgramSummary {
-    items: usize,
-    stmts: usize,
-    temp_lets: usize,
-}
-
-impl ProgramSummary {
-    fn from_program(program: &Program) -> Self {
-        Self {
-            items: program.items.len(),
-            stmts: program_stmt_count(program),
-            temp_lets: program_temp_let_count(program),
-        }
-    }
-}
-
-fn apply_with_trace(
-    input: Program,
-    skip: &SkipSet,
-    mut trace: Option<&mut Vec<DebugStep>>,
-) -> Program {
+fn apply_with_logger(input: Program, skip: &SkipSet, logger: &mut impl TraceLogger) -> Program {
     macro_rules! step {
-        ($program:ident, $name:literal, $body:block) => {{
-            let before_summary = trace
-                .as_ref()
-                .map(|_| ProgramSummary::from_program(&$program));
-            let before_emit = trace.as_ref().map(|_| $program.emit());
+        ($program:ident, $pass:expr, $body:block) => {{
+            let tracing = logger.is_enabled();
+            if tracing {
+                logger.begin_pass(
+                    $pass,
+                    ProgramSummary::from_program(&$program),
+                    $program.emit(),
+                );
+            }
             let result = $body;
-            if let Some(trace) = trace.as_mut() {
-                let after_summary = ProgramSummary::from_program(&$program);
-                let changed = before_emit
-                    .as_ref()
-                    .is_some_and(|before| *before != $program.emit());
-                trace.push(DebugStep {
-                    name: $name,
-                    before: before_summary.unwrap(),
-                    after: after_summary,
-                    changed,
-                });
+            if tracing {
+                logger.end_pass(ProgramSummary::from_program(&$program), $program.emit());
             }
             result
         }};
@@ -146,17 +77,17 @@ fn apply_with_trace(
 
     let facts::AnalyzedProgram { program, .. } = facts::analyze(input);
     let mut program = program;
-    step!(program, "goto", {
+    step!(program, Pass::Goto, {
         structure_goto(&mut program);
     });
-    step!(program, "early_inline_temps", {
+    step!(program, Pass::EarlyInlineTemps, {
         inline_temps_to_fixpoint(&mut program, InlinePass::Early);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "anonymous_structs", {
+    step!(program, Pass::AnonymousStructs, {
         rewrite::anonymous_structs::fixup(&mut program, &facts);
     });
-    step!(program, "param_spills", {
+    step!(program, Pass::ParamSpills, {
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
@@ -165,17 +96,17 @@ fn apply_with_trace(
             }
         }
     });
-    step!(program, "zero_init", {
+    step!(program, Pass::ZeroInit, {
         zero_init_to_fixpoint(&mut program, false);
     });
-    step!(program, "struct_field_init", {
+    step!(program, Pass::StructFieldInit, {
         struct_field_init_to_fixpoint(&mut program);
     });
-    step!(program, "singleton_scopes", {
+    step!(program, Pass::SingletonScopes, {
         singleton_scopes_to_fixpoint(&mut program);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "compound_assign", {
+    step!(program, Pass::CompoundAssign, {
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
@@ -184,13 +115,13 @@ fn apply_with_trace(
             }
         }
     });
-    step!(program, "for_continue", {
+    step!(program, Pass::ForContinue, {
         cleanup_for_continues(&mut program);
     });
-    step!(program, "singleton_scopes", {
+    step!(program, Pass::SingletonScopes, {
         singleton_scopes_to_fixpoint(&mut program);
     });
-    step!(program, "constant_index_casts", {
+    step!(program, Pass::ConstantIndexCasts, {
         for item in &mut program.items {
             if let Item::Fn(f) = item {
                 rewrite::constant_index_casts::fixup(&mut f.body);
@@ -198,7 +129,7 @@ fn apply_with_trace(
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "unnecessary_casts", {
+    step!(program, Pass::UnnecessaryCasts, {
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
@@ -207,7 +138,7 @@ fn apply_with_trace(
             }
         }
     });
-    step!(program, "call_args", {
+    step!(program, Pass::CallArgs, {
         loop {
             let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
             let mut changed = false;
@@ -225,7 +156,7 @@ fn apply_with_trace(
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "retval", {
+    step!(program, Pass::Retval, {
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
@@ -234,7 +165,7 @@ fn apply_with_trace(
             }
         }
     });
-    step!(program, "final_return_temps", {
+    step!(program, Pass::FinalReturnTemps, {
         loop {
             let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
             let mut changed = false;
@@ -252,11 +183,11 @@ fn apply_with_trace(
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "lazy_singleton", {
+    step!(program, Pass::LazySingleton, {
         rewrite::lazy_singleton::fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "drop_call_results", {
+    step!(program, Pass::DropCallResults, {
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
@@ -266,7 +197,7 @@ fn apply_with_trace(
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "string_lift", {
+    step!(program, Pass::StringLift, {
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
@@ -275,7 +206,7 @@ fn apply_with_trace(
             }
         }
     });
-    step!(program, "string_params", {
+    step!(program, Pass::StringParams, {
         loop {
             let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
             if !rewrite::string_params::fixup(&mut program, &facts) {
@@ -284,36 +215,36 @@ fn apply_with_trace(
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "ptr_len", {
+    step!(program, Pass::PtrLen, {
         rewrite::ptr_len::fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "slice_index", {
+    step!(program, Pass::SliceIndex, {
         rewrite::slice_index::fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "slice_loop", {
+    step!(program, Pass::SliceLoop, {
         if rewrite::slice_loop::fixup(&mut program, &facts) {
             late_loop_cleanup(&mut program);
         }
     });
-    step!(program, "slice_reduce", {
+    step!(program, Pass::SliceReduce, {
         if rewrite::slice_reduce::fixup(&mut program) {
             late_loop_cleanup(&mut program);
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "range_loop", {
+    step!(program, Pass::RangeLoop, {
         if !skip.contains(Pass::RangeLoop) && rewrite::range_loop::fixup(&mut program, &facts) {
             late_loop_cleanup(&mut program);
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "va_list", {
+    step!(program, Pass::VaList, {
         rewrite::va_list::fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "remove_mut", {
+    step!(program, Pass::RemoveMut, {
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
@@ -323,10 +254,10 @@ fn apply_with_trace(
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "string_copy", {
+    step!(program, Pass::StringCopy, {
         rewrite::string_copy::fixup(&mut program, &facts);
     });
-    step!(program, "string_params", {
+    step!(program, Pass::StringParams, {
         loop {
             let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
             if !rewrite::string_params::fixup(&mut program, &facts) {
@@ -334,25 +265,25 @@ fn apply_with_trace(
             }
         }
     });
-    step!(program, "remove_mut", {
+    step!(program, Pass::RemoveMut, {
         remove_mut(&mut program);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "string_libc", {
+    step!(program, Pass::StringLibc, {
         rewrite::string_libc::fixup(&mut program, &facts);
     });
-    step!(program, "sort_search", {
+    step!(program, Pass::SortSearch, {
         rewrite::sort_search::fixup(&mut program);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "heap_ownership", {
+    step!(program, Pass::HeapOwnership, {
         rewrite::heap_ownership::fixup(&mut program, &facts);
     });
-    step!(program, "dead_locals", {
+    step!(program, Pass::DeadLocals, {
         dead_locals_to_fixpoint(&mut program);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "remove_mut", {
+    step!(program, Pass::RemoveMut, {
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
@@ -362,10 +293,10 @@ fn apply_with_trace(
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "printf_format", {
+    step!(program, Pass::PrintfFormat, {
         rewrite::printf_format::fixup(&mut program, &facts);
     });
-    step!(program, "string_params", {
+    step!(program, Pass::StringParams, {
         loop {
             let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
             if !rewrite::string_params::fixup(&mut program, &facts) {
@@ -373,25 +304,25 @@ fn apply_with_trace(
             }
         }
     });
-    step!(program, "remove_mut", {
+    step!(program, Pass::RemoveMut, {
         remove_mut(&mut program);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "string_libc", {
+    step!(program, Pass::StringLibc, {
         rewrite::string_libc::fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "c_strings", {
+    step!(program, Pass::CStrings, {
         rewrite::c_strings::fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "stdio", {
+    step!(program, Pass::Stdio, {
         rewrite::stdio::fixup(&mut program, &facts);
     });
-    step!(program, "memchr_prelude::fixup_calls", {
+    step!(program, Pass::MemchrPreludeFixupCalls, {
         rewrite::memchr_prelude::fixup_calls(&mut program, &facts);
     });
-    step!(program, "nullable_pointer", {
+    step!(program, Pass::NullablePointer, {
         loop {
             let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
             if !rewrite::nullable_pointer::fixup(&mut program, &facts) {
@@ -400,7 +331,7 @@ fn apply_with_trace(
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "string_lift::fixup_c_strings", {
+    step!(program, Pass::StringLiftFixupCStrings, {
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
@@ -409,41 +340,41 @@ fn apply_with_trace(
             }
         }
     });
-    step!(program, "memchr_prelude", {
+    step!(program, Pass::MemchrPrelude, {
         for item in &mut program.items {
             if let Item::Fn(f) = item {
                 rewrite::memchr_prelude::fixup(f);
             }
         }
     });
-    step!(program, "memchr_prelude::prune_unused_helper", {
+    step!(program, Pass::MemchrPreludePruneUnusedHelper, {
         rewrite::memchr_prelude::prune_unused_helper(&mut program);
     });
-    step!(program, "late_inline_temps", {
+    step!(program, Pass::LateInlineTemps, {
         inline_temps_to_fixpoint(&mut program, InlinePass::Late);
     });
-    step!(program, "dead_locals", {
+    step!(program, Pass::DeadLocals, {
         dead_locals_to_fixpoint(&mut program);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "array_element_pointer_origin", {
+    step!(program, Pass::ArrayElementPointerOrigin, {
         rewrite::array_element_pointer_origin::fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "buffer_cursor", {
+    step!(program, Pass::BufferCursor, {
         rewrite::buffer_cursor::fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "atomic_locals", {
+    step!(program, Pass::AtomicLocals, {
         rewrite::atomic_locals::fixup(&mut program, &facts);
     });
-    step!(program, "late_inline_temps", {
+    step!(program, Pass::LateInlineTemps, {
         inline_temps_to_fixpoint(&mut program, InlinePass::Late);
     });
-    step!(program, "zero_init", {
+    step!(program, Pass::ZeroInit, {
         zero_init_to_fixpoint(&mut program, true);
     });
-    step!(program, "atomic_compare_exchange", {
+    step!(program, Pass::AtomicCompareExchange, {
         loop {
             let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
             let mut changed = false;
@@ -460,23 +391,23 @@ fn apply_with_trace(
             }
         }
     });
-    step!(program, "remove_mut", {
+    step!(program, Pass::RemoveMut, {
         remove_mut(&mut program);
     });
-    step!(program, "var_aliases", {
+    step!(program, Pass::VarAliases, {
         inline_var_aliases_to_fixpoint(&mut program);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-    step!(program, "prune_unused_externs", {
+    step!(program, Pass::PruneUnusedExterns, {
         rewrite::prune_unused_externs::fixup(&mut program, &facts);
     });
-    step!(program, "unused_items", {
+    step!(program, Pass::UnusedItems, {
         rewrite::unused_items::fixup(&mut program);
     });
-    step!(program, "unused_params", {
+    step!(program, Pass::UnusedParams, {
         rewrite::unused_params::fixup(&mut program);
     });
-    step!(program, "main_zero_exit", {
+    step!(program, Pass::MainZeroExit, {
         for item in &mut program.items {
             if let Item::Fn(f) = item {
                 rewrite::main_zero_exit::fixup(f);
@@ -607,7 +538,7 @@ enum InlinePass {
 }
 
 fn inline_temps_to_fixpoint(program: &mut Program, pass: InlinePass) {
-    let inline_round_limit = if program_stmt_count(program) > 2_000 {
+    let inline_round_limit = if ProgramSummary::from_program(program).stmts > 2_000 {
         5
     } else {
         usize::MAX
@@ -665,108 +596,11 @@ fn inline_var_aliases_to_fixpoint(program: &mut Program) {
     }
 }
 
-fn program_stmt_count(program: &Program) -> usize {
-    program
-        .items
-        .iter()
-        .map(|item| match item {
-            Item::Fn(f) => stmt_count(&f.body),
-            _ => 0,
-        })
-        .sum()
-}
-
-fn program_temp_let_count(program: &Program) -> usize {
-    program
-        .items
-        .iter()
-        .map(|item| match item {
-            Item::Fn(f) => temp_let_count(&f.body),
-            _ => 0,
-        })
-        .sum()
-}
-
-fn temp_let_count(stmts: &[IndentStmt]) -> usize {
-    stmts
-        .iter()
-        .map(|stmt| {
-            let here = match &stmt.stmt {
-                Stmt::Let { name, .. } if is_temp_name(name) => 1,
-                _ => 0,
-            };
-            here + match &stmt.stmt {
-                Stmt::LetIf {
-                    then_body,
-                    else_body,
-                    ..
-                }
-                | Stmt::If {
-                    then_body,
-                    else_body,
-                    ..
-                } => temp_let_count(then_body) + temp_let_count(else_body),
-                Stmt::Loop { body, .. }
-                | Stmt::For { body, .. }
-                | Stmt::Scope { body }
-                | Stmt::LabeledBlock { body, .. } => temp_let_count(body),
-                Stmt::Unsafe { body } | Stmt::Block(body) | Stmt::While { body, .. } => {
-                    block_temp_let_count(body)
-                }
-                Stmt::Match { arms, .. } => arms.iter().map(|arm| temp_let_count(&arm.body)).sum(),
-                _ => 0,
-            }
-        })
-        .sum()
-}
-
-fn block_temp_let_count(block: &Block) -> usize {
-    temp_let_count(&block.stmts)
-}
-
-fn is_temp_name(name: &str) -> bool {
-    name.strip_prefix("_v")
-        .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|b| b.is_ascii_digit()))
-}
-
-fn stmt_count(stmts: &[IndentStmt]) -> usize {
-    stmts
-        .iter()
-        .map(|stmt| {
-            1 + match &stmt.stmt {
-                Stmt::LetIf {
-                    then_body,
-                    else_body,
-                    ..
-                }
-                | Stmt::If {
-                    then_body,
-                    else_body,
-                    ..
-                } => stmt_count(then_body) + stmt_count(else_body),
-                Stmt::Loop { body, .. }
-                | Stmt::For { body, .. }
-                | Stmt::Scope { body }
-                | Stmt::LabeledBlock { body, .. } => stmt_count(body),
-                Stmt::Unsafe { body } | Stmt::Block(body) | Stmt::While { body, .. } => {
-                    block_stmt_count(body)
-                }
-                Stmt::Match { arms, .. } => arms.iter().map(|arm| stmt_count(&arm.body)).sum(),
-                _ => 0,
-            }
-        })
-        .sum()
-}
-
-fn block_stmt_count(block: &Block) -> usize {
-    stmt_count(&block.stmts)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{BinOp, Expr, Prim, RustValue, Stmt, Type, UnaryOp};
+    use crate::rust_ast::{BinOp, Expr, IndentStmt, Prim, RustValue, Stmt, Type, UnaryOp};
 
     #[test]
     fn apply_keeps_migrated_functions_structured() {
@@ -919,5 +753,22 @@ fn add(a: i32, b: i32) -> i32 {
     fn pass_name_round_trips_through_parse() {
         assert_eq!(Pass::parse(Pass::RangeLoop.name()), Some(Pass::RangeLoop));
         assert_eq!(Pass::parse("not_a_pass"), None);
+    }
+
+    #[test]
+    fn debug_log_collects_structured_pass_invocations() {
+        let (_program, log) = debug_log(counted_loop_program());
+
+        assert!(
+            log.passes
+                .iter()
+                .any(|invocation| invocation.pass == Pass::RangeLoop && invocation.changed)
+        );
+        assert!(
+            log.passes
+                .iter()
+                .any(|invocation| invocation.pass == Pass::EarlyInlineTemps)
+        );
+        assert!(log.final_summary.stmts > 0);
     }
 }
