@@ -26,7 +26,9 @@ fn usage() -> ExitCode {
     eprintln!(
         "  compare-effects-rust-rust  <file.c>  compare raw lowered Rust effects to fixuped Rust effects"
     );
-    eprintln!("  fixup-debug  <file.c>  print fixup pass trace and AST-size summary");
+    eprintln!(
+        "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>]  print fixup pass trace"
+    );
     eprintln!("  translate   C -> Rust");
     eprintln!("  translate-cfg   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
@@ -50,10 +52,7 @@ fn main() -> ExitCode {
             Some(path) => run(compare_effects_rust_rust(Path::new(path))),
             None => usage(),
         },
-        Some("fixup-debug") => match args.get(2) {
-            Some(path) => run(fixup_debug(Path::new(path))),
-            None => usage(),
-        },
+        Some("fixup-debug") => run(fixup_debug(&args[2..])),
         Some("translate") => match args.get(2) {
             Some(path) => run(translate(Path::new(path))),
             None => usage(),
@@ -166,9 +165,57 @@ fn compare_effects_rust_rust(path: &Path) -> Result<String, String> {
     })
 }
 
-fn fixup_debug(path: &Path) -> Result<String, String> {
+fn fixup_debug(args: &[String]) -> Result<String, String> {
+    let (path, options) = parse_fixup_debug_args(args)?;
     let (_, program) = lowered_program(path)?;
-    Ok(fixups::debug(program))
+    Ok(fixups::debug_with(program, options))
+}
+
+fn parse_fixup_debug_args(args: &[String]) -> Result<(&Path, fixups::DebugOptions), String> {
+    let mut path = None;
+    let mut options = fixups::DebugOptions::default();
+    let mut i = 0;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--up-to-pass" => {
+                i += 1;
+                let Some(name) = args.get(i) else {
+                    return Err("--up-to-pass requires a pass name".into());
+                };
+                options.up_to_pass = Some(parse_debug_pass("--up-to-pass", name)?);
+            }
+            "--only-pass" => {
+                i += 1;
+                let Some(name) = args.get(i) else {
+                    return Err("--only-pass requires a pass name".into());
+                };
+                options.only_pass = Some(parse_debug_pass("--only-pass", name)?);
+            }
+            flag if flag.starts_with('-') => {
+                return Err(format!("unknown fixup-debug option: {flag}"));
+            }
+            file => {
+                if path.replace(Path::new(file)).is_some() {
+                    return Err("fixup-debug accepts exactly one input file".into());
+                }
+            }
+        }
+        i += 1;
+    }
+    if options.up_to_pass.is_some() && options.only_pass.is_some() {
+        return Err("--up-to-pass and --only-pass cannot be combined".into());
+    }
+    path.map(|path| (path, options))
+        .ok_or_else(|| "fixup-debug requires an input file".into())
+}
+
+fn parse_debug_pass(flag: &str, name: &str) -> Result<fixups::Pass, String> {
+    fixups::Pass::parse(name).ok_or_else(|| {
+        format!(
+            "unknown pass for {flag}: {name}\nvalid passes: {}",
+            fixups::valid_pass_names()
+        )
+    })
 }
 
 /// `SLATE_SKIP_PASS=<name>` disables one named fixup pass, for
