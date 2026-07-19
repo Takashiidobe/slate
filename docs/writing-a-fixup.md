@@ -7,6 +7,9 @@ must be optional in spirit: disable it and the generated Rust is still correct.
 This doc is the how. For *whether* your change is a fixup or a baseline feature,
 read [adding-features.md](adding-features.md) first.
 
+If the fixup needs semantic trace coverage or changes the shape that the effects
+interpreter sees, read [effects.md](effects.md) as well.
+
 ## The one rule
 
 **Operate on AST nodes, never on rendered text.** Baseline lowering builds a
