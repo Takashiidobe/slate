@@ -596,6 +596,22 @@ fn redundant_singleton_scopes_are_unwrapped() {
 }
 
 #[test]
+fn do_while_loop_body_scope_is_unwrapped() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-do-while-scope");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_src = fixtures_dir().join("do_while.c");
+    let generated = tmp.join("do_while.generated.rs");
+    support::translate(&c_src, &generated).expect("translate do_while fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated do_while rust");
+
+    assert!(rust.contains("loop {\n        total += i;\n        i += 1;\n        if !(i <= n)"));
+    assert!(rust.contains("loop {\n        i += 1;\n        if i % 2 != 0"));
+    assert!(!rust.contains("loop {\n        {\n            total += i;"));
+    assert!(!rust.contains("loop {\n        {\n            i += 1;"));
+}
+
+#[test]
 fn compound_assignment_temps_are_inlined() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-compound-fixup");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
