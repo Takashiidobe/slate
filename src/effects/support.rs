@@ -90,6 +90,12 @@ pub(super) fn ordering_from_name(name: Option<&str>) -> AtomicOrdering {
 
 pub(super) fn open_effect(expr: &Expr) -> Option<OpenEffect> {
     match expr {
+        Expr::Call { func, args } if is_path(func, &["std", "io", "BufReader", "new"]) => {
+            let [inner] = args.as_slice() else {
+                panic!("effects::rust_ast: BufReader::new expects one argument");
+            };
+            open_effect(inner)
+        }
         Expr::MethodCall { recv, method, args }
             if matches!(method.as_str(), "unwrap" | "unwrap_or_else") =>
         {
@@ -230,10 +236,6 @@ pub(super) fn rust_value_to_value(rv: &RustValue) -> Value {
     }
 }
 
-// Literals never carry an `IntWidth` tag of their own in the emitted AST — see
-// `src/effects/mod.rs` doc comment on why no trace comparison depends on an
-// intermediate scalar's declared width, only on the destination it's written
-// through.
 pub(super) fn int32(value: i128) -> Value {
     Value::Int {
         width: IntWidth::W32,
@@ -439,6 +441,7 @@ pub(super) fn is_str_ref_ty(ty: &Type) -> bool {
 pub(super) fn collection_name(expr: &Expr) -> &str {
     match expr {
         Expr::Var(ident) => ident.as_str(),
+        Expr::Ref { expr, .. } => collection_name(expr),
         Expr::MethodCall { recv, method, args }
             if args.is_empty()
                 && matches!(
@@ -705,9 +708,6 @@ pub(super) fn atomic_rmw_value(op: AtomicRmwOp, old: Value, operand: Value) -> V
     apply_binop(binop, old, operand)
 }
 
-/// `Vec<T>`'s element width/signedness/byte-size, read off the local's
-/// declared type — the emitted AST carries no width on integer literals
-/// themselves, so the element type is the only source of truth for it.
 pub(super) fn vec_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
     let Type::Generic { name, args } = ty else {
         return None;

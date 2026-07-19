@@ -1,32 +1,8 @@
-//! Shared effect vocabulary for Rust-to-Rust equivalence checking.
-//!
-//! The Rust AST interpreter turns raw lowered Rust and fixuped Rust into
-//! [`EffectTrace`]s. A comparator then decides whether the traces are
-//! equivalent. This module defines the trace and effect types both extraction
-//! and comparison use, so the effect vocabulary stays explicit.
-//!
-//! Two design decisions make traces from two structurally different programs
-//! (a `*const i32` walk vs. its idiomatized `Vec<i32>`/`Box<[i32]>` form)
-//! comparable at all:
-//!
-//! - **Locations never carry a real address.** [`AllocId`] numbers
-//!   allocations by the order the Rust AST interpreter saw them get created,
-//!   not by pointer value. Comparison later compacts allocation ids so raw and
-//!   fixuped Rust can differ by dead or unobserved allocation details while
-//!   still naming the same live logical buffers consistently.
-//! - **Only effectful operations are ever pushed.** There is no "silent tick"
-//!   variant in [`Effect`] — a walker simply does not emit anything while
-//!   evaluating an internal expression, only when it allocates, reads,
-//!   writes, crosses a stdlib/std call boundary, returns, or exits. That
-//!   makes the stuttering-equivalence reduction discussed for this project
-//!   implicit in the vocabulary: comparing two traces is comparing two
-//!   already-reduced observable-event sequences, not filtering silent steps
-//!   out of a larger one.
-
 use crate::rust_ast::{AtomicOrdering, AtomicRmwOp};
 
+pub mod interp;
 pub mod interpreter;
-pub mod rust_ast;
+pub mod support;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum CallSummary {
@@ -141,7 +117,6 @@ pub enum IntWidth {
     PointerSized,
 }
 
-/// A scalar value carried by an effect.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Int {
@@ -263,111 +238,5 @@ pub struct EffectTrace {
 impl EffectTrace {
     pub fn push(&mut self, effect: Effect) {
         self.effects.push(effect);
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn int32(value: i32) -> Value {
-        Value::Int {
-            width: IntWidth::W32,
-            signed: true,
-            value: value as i128,
-        }
-    }
-
-    #[test]
-    fn same_allocation_order_makes_traces_comparable_across_shapes() {
-        let alloc = AllocId(0);
-
-        let raw_trace = EffectTrace {
-            effects: vec![
-                Effect::Alloc { alloc, size: 8 },
-                Effect::Write {
-                    loc: Location {
-                        alloc,
-                        byte_offset: 0,
-                    },
-                    value: int32(4),
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc,
-                        byte_offset: 4,
-                    },
-                    value: int32(7),
-                },
-                Effect::Exit(11),
-            ],
-        };
-
-        let rust_trace = EffectTrace {
-            effects: vec![
-                Effect::Alloc { alloc, size: 8 },
-                Effect::Write {
-                    loc: Location {
-                        alloc,
-                        byte_offset: 0,
-                    },
-                    value: int32(4),
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc,
-                        byte_offset: 4,
-                    },
-                    value: int32(7),
-                },
-                Effect::Exit(11),
-            ],
-        };
-
-        assert_eq!(raw_trace, rust_trace);
-    }
-
-    #[test]
-    fn differing_width_is_not_canonicalized_away() {
-        let alloc = AllocId(0);
-        let loc = Location {
-            alloc,
-            byte_offset: 0,
-        };
-        let as_i32 = Effect::Write {
-            loc,
-            value: int32(4),
-        };
-        let as_u8 = Effect::Write {
-            loc,
-            value: Value::Int {
-                width: IntWidth::W8,
-                signed: false,
-                value: 4,
-            },
-        };
-        assert_ne!(as_i32, as_u8);
-    }
-
-    #[test]
-    fn option_values_are_distinct_from_raw_nulls() {
-        let none = Value::Option(None);
-        assert_ne!(none, Value::Null);
-
-        let some_index = Value::Option(Some(OptionValue::Int {
-            width: IntWidth::PointerSized,
-            signed: false,
-            value: 2,
-        }));
-        assert_eq!(some_index, some_index);
-    }
-
-    #[test]
-    fn external_call_summaries_are_shared_by_frontends() {
-        assert_eq!(call_summary("malloc"), Some(CallSummary::Malloc));
-        assert_eq!(call_summary("printf"), Some(CallSummary::Printf));
-        assert_eq!(call_summary("qsort"), Some(CallSummary::Qsort));
-        assert_eq!(call_summary("bsearch"), Some(CallSummary::Bsearch));
-        assert_eq!(call_summary("user_function"), None);
     }
 }

@@ -11,6 +11,7 @@ mod lower;
 mod preprocess;
 mod rust_ast;
 
+use crate::effects::interp::interpret_program_main;
 use std::collections::{BTreeMap, BTreeSet};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::{Path, PathBuf};
@@ -175,11 +176,11 @@ fn compare_effects_rust_rust(path: &Path) -> Result<String, String> {
         let mode = "compare-effects-rust-rust";
         let (_, program) = lowered_program(path)?;
         let raw_trace = extract_effects(mode, path, "raw rust_ast", || {
-            effects::rust_ast::interpret_program_main(&program)
+            interpret_program_main(&program)
         })?;
         let fixed_program = fixups::apply_with(program, &fixups::SkipSet::none());
         let fixed_trace = extract_effects(mode, path, "fixuped rust_ast", || {
-            effects::rust_ast::interpret_program_main(&fixed_program)
+            interpret_program_main(&fixed_program)
         })?;
         compare_traces("raw rust_ast", "fixuped rust_ast", &raw_trace, &fixed_trace)
     })

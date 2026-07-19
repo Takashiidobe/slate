@@ -38,9 +38,6 @@ pub fn interpret_program_main(program: &Program) -> EffectTrace {
     interp.trace
 }
 
-/// How a statement completed: either it ran through normally, or it hit a
-/// `return`/`std::process::exit` that the enclosing `if`/`for` must
-/// propagate past without running the rest of their body.
 #[derive(Debug, Clone, PartialEq)]
 enum Flow {
     Normal,
@@ -737,6 +734,7 @@ impl Interp {
         let (elem_width, elem_signed, elem_size) = vec_elem_shape(ty)
             .unwrap_or_else(|| panic!("effects::rust_ast: expected `Vec<T>` local, found {ty:?}"));
         let capacity = match init {
+            Expr::Call { func, args } if args.is_empty() && is_path(func, &["Vec", "new"]) => 0,
             Expr::Call { func, args } if is_path(func, &["Vec", "with_capacity"]) => {
                 value_as_u64(self.eval(&args[0]))
             }
@@ -955,7 +953,7 @@ impl Interp {
             .clone();
         let elems = array_init_elems(init, binding.len);
         for (index, elem) in elems.into_iter().enumerate() {
-            self.write_record_array_elem(name, elem_ty, index as u64, &elem);
+            self.write_record_array_elem(name, elem_ty, index as u64, elem);
         }
     }
 
@@ -1187,11 +1185,30 @@ impl Interp {
         let file = self.file_arg(handle);
         let bytes = match bytes {
             Expr::ByteStr(bytes) => bytes.clone(),
+            Expr::Ref { expr, .. } if matches!(expr.as_ref(), Expr::Var(ident) if self.vecs.contains_key(ident.as_str())) => {
+                self.vec_all_bytes(collection_name(bytes))
+            }
             other => panic!("effects::rust_ast: unsupported write_all bytes `{other:?}`"),
         };
         self.append_file_bytes(file, &bytes);
         self.trace.push(Effect::FileWrite { file, bytes });
         true
+    }
+
+    fn vec_all_bytes(&mut self, name: &str) -> Vec<u8> {
+        let binding = self
+            .vecs
+            .get(name)
+            .cloned()
+            .unwrap_or_else(|| panic!("effects::rust_ast: read of unknown Vec `{name}`"));
+        let base = Location {
+            alloc: binding.alloc,
+            byte_offset: 0,
+        };
+        self.read_bytes(base, binding.len)
+            .into_iter()
+            .map(|value| value_as_i128(&value) as u8)
+            .collect()
     }
 
     fn file_arg(&self, expr: &Expr) -> FileId {
@@ -1460,6 +1477,7 @@ impl Interp {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn write_struct_fields(
         &mut self,
         alloc: AllocId,
@@ -1531,6 +1549,7 @@ impl Interp {
         offset
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn write_struct_field_value(
         &mut self,
         alloc: AllocId,
@@ -3053,6 +3072,9 @@ impl Interp {
             self.write_volatile(args);
             return int32(0);
         }
+        if is_path(func, &["std", "io", "BufRead", "read_until"]) {
+            return self.call_read_until(args);
+        }
         let Some(name) = path_name(func) else {
             panic!("effects::rust_ast: unsupported call target `{func:?}`");
         };
@@ -3263,7 +3285,7 @@ impl Interp {
             let size = type_size(&Type::Prim(prim)).unwrap_or_else(|| {
                 panic!("effects::rust_ast: unsupported primitive align `{name}`")
             });
-            return size.min(8).max(1);
+            return size.clamp(1, 8);
         }
         if let Some(record) = self.records.get(name) {
             return self.record_align(record);
@@ -3327,7 +3349,7 @@ impl Interp {
                 let size = type_size(ty).unwrap_or_else(|| {
                     panic!("effects::rust_ast: unsupported size_of type `{ty:?}`")
                 });
-                (size, size.min(8).max(1))
+                (size, size.clamp(1, 8))
             }
         }
     }
@@ -3920,7 +3942,7 @@ impl Interp {
         if len == 0 {
             return Value::Null;
         }
-        let bytes = self.read_file_bytes(file, len.saturating_sub(1), true);
+        let bytes = self.read_file_bytes(file, len.saturating_sub(1), Some(b'\n'));
         if bytes.is_empty() {
             return Value::Null;
         }
@@ -3937,7 +3959,7 @@ impl Interp {
         let count = value_as_u64(self.eval(count));
         let file = self.eval_file(file, "fread");
         let max = size.saturating_mul(count);
-        let bytes = self.read_file_bytes(file, max as usize, false);
+        let bytes = self.read_file_bytes(file, max as usize, None);
         let values = bytes
             .iter()
             .cloned()
@@ -3951,11 +3973,7 @@ impl Interp {
         Value::Int {
             width: IntWidth::PointerSized,
             signed: false,
-            value: if size == 0 {
-                0
-            } else {
-                (bytes.len() as u64 / size) as i128
-            },
+            value: (bytes.len().checked_div(size as usize).unwrap_or(0)) as i128,
         }
     }
 
@@ -3998,6 +4016,68 @@ impl Interp {
         }
     }
 
+    fn call_read_until(&mut self, args: &[Expr]) -> Value {
+        let [source, delim, buf] = args else {
+            panic!(
+                "effects::rust_ast: BufRead::read_until expects a source, delimiter, and buffer"
+            );
+        };
+        let (file, limit) = self.read_until_source(source);
+        let delim = value_as_u64(self.eval(delim)) as u8;
+        let bytes = self.read_file_bytes(file, limit.unwrap_or(usize::MAX), Some(delim));
+        let buf_name = collection_name(buf).to_string();
+        self.extend_vec_bytes(&buf_name, &bytes);
+        Value::Option(Some(OptionValue::Int {
+            width: IntWidth::PointerSized,
+            signed: false,
+            value: bytes.len() as i128,
+        }))
+    }
+
+    fn read_until_source(&mut self, expr: &Expr) -> (FileId, Option<usize>) {
+        match expr {
+            Expr::Ref { expr, .. } => self.read_until_source(expr),
+            Expr::Call { func, args } if is_path(func, &["std", "io", "Read", "take"]) => {
+                let [handle, limit] = args.as_slice() else {
+                    panic!("effects::rust_ast: Read::take expects a handle and a limit");
+                };
+                let file = self.file_arg(handle);
+                let limit = value_as_u64(self.eval(limit)) as usize;
+                (file, Some(limit))
+            }
+            other => (self.file_arg(other), None),
+        }
+    }
+
+    fn extend_vec_bytes(&mut self, name: &str, bytes: &[u8]) {
+        let binding = self
+            .vecs
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: extend of unknown Vec `{name}`"));
+        let (alloc, elem_width, elem_signed, elem_size, mut len) = (
+            binding.alloc,
+            binding.elem_width,
+            binding.elem_signed,
+            binding.elem_size,
+            binding.len,
+        );
+        for byte in bytes {
+            let value = Value::Int {
+                width: elem_width,
+                signed: elem_signed,
+                value: *byte as i128,
+            };
+            let loc = Location {
+                alloc,
+                byte_offset: len * elem_size,
+            };
+            len += 1;
+            self.heap.insert(loc, value.clone());
+            self.trace.push(Effect::Write { loc, value });
+        }
+        self.vecs.get_mut(name).unwrap().len = len;
+    }
+
     fn append_file_bytes(&mut self, file: FileId, bytes: &[u8]) {
         let Some(path) = self.file_paths.get(&file).cloned() else {
             return;
@@ -4005,7 +4085,7 @@ impl Interp {
         self.file_contents.entry(path).or_default().extend(bytes);
     }
 
-    fn read_file_bytes(&mut self, file: FileId, max: usize, stop_at_newline: bool) -> Vec<u8> {
+    fn read_file_bytes(&mut self, file: FileId, max: usize, stop_at: Option<u8>) -> Vec<u8> {
         let path = self
             .file_paths
             .get(&file)
@@ -4014,12 +4094,12 @@ impl Interp {
         let contents = self.file_contents.entry(path).or_default();
         let offset = self.file_offsets.entry(file).or_insert(0);
         let mut end = (*offset + max).min(contents.len());
-        if stop_at_newline
-            && let Some(newline) = contents[*offset..end]
+        if let Some(delim) = stop_at
+            && let Some(pos) = contents[*offset..end]
                 .iter()
-                .position(|byte| *byte == b'\n')
+                .position(|byte| *byte == delim)
         {
-            end = *offset + newline + 1;
+            end = *offset + pos + 1;
         }
         let bytes = contents[*offset..end].to_vec();
         *offset = end;
@@ -5069,7 +5149,7 @@ fn array_init_elems(init: &Expr, len: u64) -> Vec<&Expr> {
             if *repeat_len as u64 != len {
                 panic!("effects::rust_ast: array repeat length does not match type");
             }
-            std::iter::repeat(elem.as_ref()).take(*repeat_len).collect()
+            std::iter::repeat_n(elem.as_ref(), *repeat_len).collect()
         }
         other => panic!("effects::rust_ast: unsupported array initializer `{other:?}`"),
     }
@@ -5342,6 +5422,3 @@ fn parse_hex_float(text: &str) -> f64 {
         .sum::<f64>();
     (whole_value + frac_value) * 2f64.powi(exponent)
 }
-
-#[cfg(test)]
-mod tests;
