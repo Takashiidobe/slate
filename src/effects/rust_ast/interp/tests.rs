@@ -204,16 +204,15 @@ fn vec_push_index_produces_expected_effects() {
     );
 }
 
-/// The exact same effect sequence the CIR walker produces for
-/// `int *p = malloc(2 * sizeof(int)); p[0] = 1; p[1] = 2; return p[0] +
-/// p[1];` (see `cir::tests::malloc_write_read_produces_expected_effects`)
-/// — proving the shared `Effect` enum represents a raw-pointer walk and
-/// its idiomatized `Vec` counterpart without a special case.
+/// The expected effect sequence for `int *p = malloc(2 * sizeof(int));
+/// p[0] = 1; p[1] = 2; return p[0] + p[1];`, proving the shared `Effect`
+/// enum represents a raw-pointer walk and its idiomatized `Vec` counterpart
+/// without a special case.
 #[test]
-fn matches_cir_trace_shape() {
+fn matches_raw_pointer_trace_shape() {
     let trace = interpret(&idiomatized_fixture());
     let alloc = AllocId(0);
-    let cir_shaped_trace = EffectTrace {
+    let raw_pointer_trace = EffectTrace {
         effects: vec![
             Effect::Alloc { alloc, size: 8 },
             Effect::Write {
@@ -248,7 +247,7 @@ fn matches_cir_trace_shape() {
             Effect::Exit(3),
         ],
     };
-    assert_eq!(trace, cir_shaped_trace);
+    assert_eq!(trace, raw_pointer_trace);
 }
 
 /// The real `HeapOwnershipKind::VecBuffer` fixup shape (see
@@ -611,7 +610,7 @@ fn bump_fixture() -> FnDef {
 }
 
 #[test]
-fn function_parameters_seed_the_trace_and_match_cir_trace_shape() {
+fn function_parameters_seed_the_trace_and_match_raw_pointer_shape() {
     let params: Vec<(&str, ParamSeed)> = vec![
         ("items", ParamSeed::Buffer(vec![int32(1), int32(2)])),
         ("len", ParamSeed::Scalar(int32(2))),
@@ -708,7 +707,7 @@ fn struct_field_fixture() -> FnDef {
 }
 
 #[test]
-fn struct_field_literal_matches_cir_trace_shape() {
+fn struct_field_literal_matches_raw_aggregate_shape() {
     let trace = interpret(&struct_field_fixture());
     let alloc = AllocId(0);
     assert_eq!(
@@ -812,7 +811,7 @@ fn slice_reduce_folded_sum_matches_the_raw_indexed_loops_trace() {
 }
 
 #[test]
-fn vec_repeat_indexed_assign_matches_cir_trace_shape() {
+fn vec_repeat_indexed_assign_matches_raw_collection_shape() {
     let trace = interpret(&vec_repeat_fixture());
     let alloc = AllocId(0);
     assert_eq!(
