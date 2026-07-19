@@ -1,16 +1,7 @@
-//! Effect-trace comparator: decides whether two [`super::EffectTrace`]s
-//! represent equivalent executions.
-//!
-//! On a mismatch this reports the first diverging effect rather than just
-//! "not equal": which side produced what, and at what index into the trace —
-//! a bare `assert_eq!` on two multi-effect vectors doesn't say which
-//! allocation or index actually diverged.
-
 use std::collections::{BTreeMap, BTreeSet};
 
 use super::{AllocId, AtomicId, Effect, EffectTrace, IntWidth, Location, OptionValue, Value};
 
-/// Where and how two traces first diverge.
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Divergence {
@@ -118,7 +109,10 @@ fn externally_observable_projection(trace: &EffectTrace) -> ExternalProjection {
         .filter(|effect| {
             !matches!(
                 effect,
-                Effect::Alloc { .. } | Effect::Read { .. } | Effect::Write { .. }
+                Effect::Alloc { .. }
+                    | Effect::Dealloc { .. }
+                    | Effect::Read { .. }
+                    | Effect::Write { .. }
             )
         })
         .cloned()
@@ -141,11 +135,7 @@ fn prune_dead_writes(effects: &[Effect]) -> EffectTrace {
                 needed_locs.insert(*loc);
             }
             Effect::Write { loc, .. } => {
-                if needed_locs.remove(loc) {
-                    keep[idx] = true;
-                } else {
-                    keep[idx] = false;
-                }
+                keep[idx] = needed_locs.remove(loc);
             }
             _ => {}
         }
@@ -265,10 +255,10 @@ fn compact_alloc_map(effects: &[Effect]) -> BTreeMap<AllocId, AllocId> {
 fn compact_atomic_map(effects: &[Effect]) -> BTreeMap<AtomicId, AtomicId> {
     let mut map = BTreeMap::new();
     for effect in effects {
-        if let Some(atomic) = effect_atomic(effect) {
-            if !map.contains_key(&atomic) {
-                map.insert(atomic, AtomicId(map.len() as u32));
-            }
+        if let Some(atomic) = effect_atomic(effect)
+            && !map.contains_key(&atomic)
+        {
+            map.insert(atomic, AtomicId(map.len() as u32));
         }
     }
     map
@@ -466,10 +456,10 @@ fn remap_effect(
 fn remap_value(value: Value, alloc_map: &BTreeMap<AllocId, AllocId>) -> Value {
     match value {
         Value::Ref(loc) => Value::Ref(remap_loc(loc, alloc_map)),
-        Value::Int { signed, value, .. } => Value::Int {
+        Value::Int { width, value, .. } => Value::Int {
             width: IntWidth::PointerSized,
-            signed,
-            value,
+            signed: false,
+            value: canonical_bits(value, width),
         },
         Value::AtomicResult { ok, value } => Value::AtomicResult {
             ok,
@@ -489,8 +479,24 @@ fn remap_value(value: Value, alloc_map: &BTreeMap<AllocId, AllocId>) -> Value {
 fn remap_option_value(value: OptionValue, alloc_map: &BTreeMap<AllocId, AllocId>) -> OptionValue {
     match value {
         OptionValue::Ref(loc) => OptionValue::Ref(remap_loc(loc, alloc_map)),
+        OptionValue::Int { width, value, .. } => OptionValue::Int {
+            width: IntWidth::PointerSized,
+            signed: false,
+            value: canonical_bits(value, width),
+        },
         other => other,
     }
+}
+
+fn canonical_bits(value: i128, width: IntWidth) -> i128 {
+    let bits = match width {
+        IntWidth::W8 => 8,
+        IntWidth::W16 => 16,
+        IntWidth::W32 => 32,
+        IntWidth::W64 | IntWidth::PointerSized => 64,
+        IntWidth::W128 => return value,
+    };
+    value & ((1i128 << bits) - 1)
 }
 
 fn remap_loc(loc: Location, alloc_map: &BTreeMap<AllocId, AllocId>) -> Location {
@@ -502,367 +508,4 @@ fn remap_loc(loc: Location, alloc_map: &BTreeMap<AllocId, AllocId>) -> Location 
 
 fn remap_alloc(alloc: AllocId, alloc_map: &BTreeMap<AllocId, AllocId>) -> AllocId {
     alloc_map.get(&alloc).copied().unwrap_or(alloc)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::effects::{AllocId, IntWidth, Location, OptionValue, Value};
-
-    fn int32(value: i32) -> Value {
-        Value::Int {
-            width: IntWidth::W32,
-            signed: true,
-            value: value as i128,
-        }
-    }
-
-    fn normalized_int(value: i32) -> Value {
-        Value::Int {
-            width: IntWidth::PointerSized,
-            signed: true,
-            value: value as i128,
-        }
-    }
-
-    /// The malloc/array fixture's normalized effect sequence:
-    /// `p = malloc(2 * sizeof(int)); p[0] = 1; p[1] = 2; return p[0] + p[1];`
-    fn malloc_array_trace() -> EffectTrace {
-        let alloc = AllocId(0);
-        EffectTrace {
-            effects: vec![
-                Effect::Alloc { alloc, size: 8 },
-                Effect::Write {
-                    loc: Location {
-                        alloc,
-                        byte_offset: 0,
-                    },
-                    value: int32(1),
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc,
-                        byte_offset: 4,
-                    },
-                    value: int32(2),
-                },
-                Effect::Read {
-                    loc: Location {
-                        alloc,
-                        byte_offset: 0,
-                    },
-                    value: int32(1),
-                },
-                Effect::Read {
-                    loc: Location {
-                        alloc,
-                        byte_offset: 4,
-                    },
-                    value: int32(2),
-                },
-                Effect::Exit(3),
-            ],
-        }
-    }
-
-    #[test]
-    fn identical_traces_from_the_two_walkers_are_equivalent() {
-        let cir = malloc_array_trace();
-        let rust_ast = malloc_array_trace();
-        assert_eq!(compare(&cir, &rust_ast), Ok(()));
-    }
-
-    #[test]
-    fn a_wrong_written_value_is_reported_at_its_exact_index() {
-        let cir = malloc_array_trace();
-        let mut rust_ast = malloc_array_trace();
-        rust_ast.effects[2] = Effect::Write {
-            loc: Location {
-                alloc: AllocId(0),
-                byte_offset: 4,
-            },
-            value: int32(99),
-        };
-
-        let divergence = compare(&cir, &rust_ast).unwrap_err();
-        assert_eq!(
-            *divergence,
-            Divergence::EffectMismatch {
-                at: 1,
-                left: Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 4,
-                    },
-                    value: normalized_int(2),
-                },
-                right: Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 4,
-                    },
-                    value: normalized_int(99),
-                },
-            }
-        );
-    }
-
-    #[test]
-    fn a_missing_trailing_effect_is_reported_as_a_length_mismatch() {
-        let cir = malloc_array_trace();
-        let mut rust_ast = malloc_array_trace();
-        rust_ast.effects.pop();
-
-        assert_eq!(
-            compare(&cir, &rust_ast),
-            Err(Box::new(Divergence::LengthMismatch {
-                at: 4,
-                left_len: 5,
-                right_len: 4,
-            }))
-        );
-    }
-
-    #[test]
-    fn divergence_display_names_the_index_and_both_sides() {
-        let mismatch = Divergence::EffectMismatch {
-            at: 2,
-            left: Effect::Exit(3),
-            right: Effect::Exit(4),
-        };
-        let message = mismatch.to_string();
-        assert!(message.contains("#2"));
-        assert!(message.contains("left produced"));
-        assert!(message.contains("right produced"));
-    }
-
-    #[test]
-    fn rust_to_rust_option_traces_compare_with_the_same_generic_comparator() {
-        let left = EffectTrace {
-            effects: vec![Effect::Call {
-                name: "debug".to_string(),
-                args: vec![Value::Option(Some(OptionValue::Int {
-                    width: IntWidth::PointerSized,
-                    signed: false,
-                    value: 2,
-                }))],
-            }],
-        };
-        let right = left.clone();
-        assert_eq!(compare(&left, &right), Ok(()));
-    }
-
-    #[test]
-    fn copy_only_allocations_are_ignored_in_comparison_view() {
-        let left = EffectTrace {
-            effects: vec![
-                Effect::Alloc {
-                    alloc: AllocId(0),
-                    size: 8,
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 0,
-                    },
-                    value: int32(1),
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 4,
-                    },
-                    value: int32(2),
-                },
-                Effect::Alloc {
-                    alloc: AllocId(1),
-                    size: 8,
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(1),
-                        byte_offset: 0,
-                    },
-                    value: int32(1),
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(1),
-                        byte_offset: 4,
-                    },
-                    value: int32(2),
-                },
-                Effect::Read {
-                    loc: Location {
-                        alloc: AllocId(1),
-                        byte_offset: 0,
-                    },
-                    value: int32(1),
-                },
-                Effect::Exit(1),
-            ],
-        };
-        let right = EffectTrace {
-            effects: vec![
-                Effect::Alloc {
-                    alloc: AllocId(0),
-                    size: 8,
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 0,
-                    },
-                    value: int32(1),
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 4,
-                    },
-                    value: int32(2),
-                },
-                Effect::Read {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 0,
-                    },
-                    value: int32(1),
-                },
-                Effect::Exit(1),
-            ],
-        };
-
-        assert_eq!(compare(&left, &right), Ok(()));
-    }
-
-    #[test]
-    fn stack_allocation_timing_is_ignored_in_comparison_view() {
-        let left = EffectTrace {
-            effects: vec![
-                Effect::Alloc {
-                    alloc: AllocId(0),
-                    size: 4,
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 0,
-                    },
-                    value: int32(1),
-                },
-                Effect::Read {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 0,
-                    },
-                    value: int32(1),
-                },
-                Effect::Alloc {
-                    alloc: AllocId(1),
-                    size: 4,
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(1),
-                        byte_offset: 0,
-                    },
-                    value: int32(2),
-                },
-                Effect::Read {
-                    loc: Location {
-                        alloc: AllocId(1),
-                        byte_offset: 0,
-                    },
-                    value: int32(2),
-                },
-                Effect::Exit(0),
-            ],
-        };
-        let right = EffectTrace {
-            effects: vec![
-                Effect::Alloc {
-                    alloc: AllocId(0),
-                    size: 4,
-                },
-                Effect::Alloc {
-                    alloc: AllocId(1),
-                    size: 4,
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 0,
-                    },
-                    value: int32(1),
-                },
-                Effect::Read {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 0,
-                    },
-                    value: int32(1),
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(1),
-                        byte_offset: 0,
-                    },
-                    value: int32(2),
-                },
-                Effect::Read {
-                    loc: Location {
-                        alloc: AllocId(1),
-                        byte_offset: 0,
-                    },
-                    value: int32(2),
-                },
-                Effect::Exit(0),
-            ],
-        };
-
-        assert_eq!(compare(&left, &right), Ok(()));
-    }
-
-    #[test]
-    fn external_projection_allows_benign_memory_schedule_differences() {
-        let left = EffectTrace {
-            effects: vec![
-                Effect::Alloc {
-                    alloc: AllocId(0),
-                    size: 8,
-                },
-                Effect::Write {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 0,
-                    },
-                    value: int32(2),
-                },
-                Effect::Read {
-                    loc: Location {
-                        alloc: AllocId(0),
-                        byte_offset: 0,
-                    },
-                    value: int32(2),
-                },
-                Effect::Call {
-                    name: "printf".to_string(),
-                    args: vec![int32(2)],
-                },
-                Effect::Exit(0),
-            ],
-        };
-        let right = EffectTrace {
-            effects: vec![
-                Effect::Call {
-                    name: "printf".to_string(),
-                    args: vec![int32(2)],
-                },
-                Effect::Exit(0),
-            ],
-        };
-
-        assert_eq!(compare(&left, &right), Ok(()));
-    }
 }

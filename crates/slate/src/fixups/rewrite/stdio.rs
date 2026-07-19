@@ -267,7 +267,10 @@ fn gets_loop_stmt(
             stmt: Stmt::Let {
                 name: buf_name.to_string(),
                 mutable: true,
-                ty: Some(Type::parse("Vec<u8>")),
+                ty: Some(Type::Generic {
+                    name: "Vec".into(),
+                    args: vec![Type::Prim(crate::rust_ast::Prim::U8)],
+                }),
                 init: Some(Expr::Call {
                     func: Box::new(Expr::Var("Vec::new".into())),
                     args: Vec::new(),
