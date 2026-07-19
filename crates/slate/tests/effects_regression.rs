@@ -152,3 +152,19 @@ fn memset_fixups_preserve_rust_effects() {
 fn memchr_fixups_preserve_rust_effects() {
     assert_fixture_matches("tests/stdlib/string/memchr.c");
 }
+
+#[test]
+fn pointer_and_deref_fixups_preserve_rust_effects() {
+    assert_fixture_matches("tests/fixtures/pointers.c");
+    assert_fixture_matches("tests/fixtures/address_of_array_element.c");
+    assert_fixture_matches("tests/fixtures/effects_malloc_array.c");
+    assert_fixture_matches("tests/fixtures/ptr_member_store_unsafe.c");
+    assert_fixture_matches("tests/fixtures/struct_with_array.c");
+}
+
+#[test]
+fn ptr_len_slice_fixups_preserve_rust_effects() {
+    assert_fixture_matches("tests/fixtures/ptr_len_slice.c");
+    assert_fixture_matches("tests/fixtures/ptr_len_slice_item.c");
+    assert_fixture_matches("tests/fixtures/ptr_len_slice_enumerate.c");
+}

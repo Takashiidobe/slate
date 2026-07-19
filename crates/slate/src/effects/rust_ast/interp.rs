@@ -47,6 +47,7 @@ enum Flow {
     Continue(Option<Label>),
 }
 
+#[derive(Clone)]
 struct VecBinding {
     alloc: AllocId,
     elem_width: IntWidth,
@@ -77,6 +78,8 @@ struct Interp {
     vecs: HashMap<String, VecBinding>,
     structs: HashMap<String, StructBinding>,
     globals: HashMap<String, Location>,
+    scalar_locs: HashMap<String, Location>,
+    pointer_elem_sizes: HashMap<String, u64>,
     once_locks: HashMap<String, OnceLockBinding>,
     funcs: HashMap<String, FnDef>,
     records: HashMap<String, crate::rust_ast::RecordDef>,
@@ -229,6 +232,7 @@ impl Interp {
                 init: Some(init),
                 ..
             } => {
+                self.record_decl_type(name, ty);
                 match init {
                     Expr::StructLit {
                         name: record_name,
@@ -288,6 +292,15 @@ impl Interp {
                     let value = self.eval(init);
                     self.scalars.insert(name.clone(), value);
                 }
+                Flow::Normal
+            }
+            Stmt::Let {
+                name,
+                ty: Some(ty),
+                init: None,
+                ..
+            } => {
+                self.record_decl_type(name, ty);
                 Flow::Normal
             }
             Stmt::Let { init: None, .. } => Flow::Normal,
@@ -404,7 +417,9 @@ impl Interp {
     fn assign(&mut self, target: &Expr, value: &Expr) -> Flow {
         match target {
             Expr::Var(ident) => {
-                if self.structs.contains_key(ident.as_str()) {
+                if self.structs.contains_key(ident.as_str())
+                    && !self.pointer_elem_sizes.contains_key(ident.as_str())
+                {
                     let v = self.eval(value);
                     let Value::Ref(src) = v else {
                         panic!("effects::rust_ast: assigning non-struct value to struct `{ident}`");
@@ -420,14 +435,23 @@ impl Interp {
                 }
                 let v = self.eval(value);
                 if let Some(loc) = self.globals.get(ident.as_str()).copied() {
-                    self.heap.insert(loc, v);
-                    self.trace.push(Effect::Write { loc, value: v });
+                    self.write_loc(loc, v);
+                } else if let Some(loc) = self.scalar_locs.get(ident.as_str()).copied() {
+                    self.write_loc(loc, v);
                 } else {
                     self.scalars.insert(ident.as_str().to_string(), v);
                 }
             }
             Expr::Index { base, index } => self.assign_index(base, index, value),
             Expr::Field { base, field } => self.assign_field(base, field, value),
+            Expr::Unary {
+                op: UnaryOp::Deref,
+                expr,
+            } => {
+                let loc = self.eval_ref(expr);
+                let value = self.eval(value);
+                self.write_loc(loc, value);
+            }
             other => panic!("effects::rust_ast: unsupported assign target `{other:?}`"),
         }
         Flow::Normal
@@ -532,6 +556,12 @@ impl Interp {
     }
 
     fn run_for(&mut self, pat: &str, iter: &Expr, body: &[IndentStmt]) -> Flow {
+        if let Expr::MethodCall { recv, method, args } = iter
+            && method == "enumerate"
+            && args.is_empty()
+        {
+            return self.run_for_enumerate(pat, recv, body);
+        }
         let (start, end) = match iter {
             Expr::Range { start, end } => (
                 value_as_i128(self.eval(start)),
@@ -557,6 +587,37 @@ impl Interp {
             }
             i += 1;
         }
+        Flow::Normal
+    }
+
+    fn run_for_enumerate(&mut self, pat: &str, iter: &Expr, body: &[IndentStmt]) -> Flow {
+        let (index_param, item_param) = tuple_pat2(pat);
+        let (alloc, elem_size, len) = self.iter_source(iter);
+        for index in 0..len {
+            self.scalars.insert(
+                index_param.to_string(),
+                Value::Int {
+                    width: IntWidth::PointerSized,
+                    signed: false,
+                    value: index as i128,
+                },
+            );
+            self.scalars.insert(
+                item_param.to_string(),
+                Value::Ref(Location {
+                    alloc,
+                    byte_offset: index * elem_size,
+                }),
+            );
+            match self.run(body) {
+                Flow::Normal | Flow::Continue(None) => {}
+                Flow::Break(None) => return Flow::Normal,
+                flow @ Flow::Return(_) => return flow,
+                flow @ (Flow::Break(_) | Flow::Continue(_)) => return flow,
+            }
+        }
+        self.scalars.remove(index_param);
+        self.scalars.remove(item_param);
         Flow::Normal
     }
 
@@ -822,12 +883,22 @@ impl Interp {
     }
 
     fn assign_index(&mut self, base: &Expr, index: &Expr, value: &Expr) {
+        let raw = value_as_i128(self.eval(value));
+        if matches!(base, Expr::Field { .. }) {
+            let loc = self.field_array_element_location(base, index);
+            let value = Value::Int {
+                width: IntWidth::W32,
+                signed: true,
+                value: raw,
+            };
+            self.write_loc(loc, value);
+            return;
+        }
         let name = match base {
             Expr::Var(ident) => ident.as_str(),
             other => panic!("effects::rust_ast: unsupported assign target base `{other:?}`"),
         };
         let idx = value_as_u64(self.eval(index));
-        let raw = value_as_i128(self.eval(value));
         self.materialize_collection(name);
         let binding = self
             .vecs
@@ -846,8 +917,7 @@ impl Interp {
             byte_offset: idx * binding.elem_size,
         };
         binding.len = binding.len.max(idx + 1);
-        self.heap.insert(loc, value);
-        self.trace.push(Effect::Write { loc, value });
+        self.write_loc(loc, value);
     }
 
     fn let_struct(&mut self, name: &str, record_name: &str, fields: &[(String, Expr)]) {
@@ -1145,8 +1215,7 @@ impl Interp {
             None => self.eval(value),
         };
         let loc = self.field_location(base, field);
-        self.heap.insert(loc, value);
-        self.trace.push(Effect::Write { loc, value });
+        self.write_loc(loc, value);
     }
 
     fn let_string(&mut self, name: &str, args: &[Expr]) {
@@ -1294,10 +1363,11 @@ impl Interp {
 
     fn field_array_element_location(&mut self, base: &Expr, index: &Expr) -> Location {
         let (name, path) = self.field_path(base);
+        let name = name.to_string();
         let idx = value_as_u64(self.eval(index));
         let binding = self
             .structs
-            .get(name)
+            .get(&name)
             .unwrap_or_else(|| panic!("effects::rust_ast: index field on unknown struct `{name}`"));
         let (offset, elem_size) = *binding.array_fields.get(&path).unwrap_or_else(|| {
             panic!("effects::rust_ast: field `{path}` on struct `{name}` is not an array")
@@ -1308,9 +1378,21 @@ impl Interp {
         }
     }
 
-    fn field_path<'a>(&self, expr: &'a Expr) -> (&'a str, String) {
+    fn field_path<'a>(&'a self, expr: &'a Expr) -> (&'a str, String) {
         match expr {
             Expr::Var(ident) => (ident.as_str(), String::new()),
+            Expr::Unary {
+                op: UnaryOp::Deref,
+                expr,
+            } => {
+                let value = self.eval_ref_without_trace(expr);
+                let Value::Ref(loc) = value else {
+                    panic!(
+                        "effects::rust_ast: dereferenced field base is not a pointer: {value:?}"
+                    );
+                };
+                self.struct_path_for_loc(loc)
+            }
             Expr::Field { base, field } => {
                 let (name, prefix) = self.field_path(base);
                 let path = if prefix.is_empty() {
@@ -1324,6 +1406,43 @@ impl Interp {
         }
     }
 
+    fn eval_ref_without_trace(&self, expr: &Expr) -> Value {
+        match expr {
+            Expr::Var(ident) => *self
+                .scalars
+                .get(ident.as_str())
+                .unwrap_or_else(|| panic!("effects::rust_ast: read of unknown scalar `{ident}`")),
+            _ => panic!("effects::rust_ast: unsupported pointer field base `{expr:?}`"),
+        }
+    }
+
+    fn struct_path_for_loc(&self, loc: Location) -> (&str, String) {
+        let (name, binding) = self
+            .structs
+            .iter()
+            .find(|(_, binding)| binding.alloc == loc.alloc)
+            .unwrap_or_else(|| {
+                panic!(
+                    "effects::rust_ast: dereferenced field base points to unknown aggregate {:?}",
+                    loc.alloc
+                )
+            });
+        if loc.byte_offset == 0 {
+            return (name.as_str(), String::new());
+        }
+        let path = binding
+            .field_offsets
+            .iter()
+            .find_map(|(path, offset)| (*offset == loc.byte_offset).then(|| path.clone()))
+            .unwrap_or_else(|| {
+                panic!(
+                    "effects::rust_ast: no aggregate field starts at offset {}",
+                    loc.byte_offset
+                )
+            });
+        (name.as_str(), path)
+    }
+
     fn aggregate_allocs_contains(&self, loc: Location) -> bool {
         self.structs
             .values()
@@ -1335,6 +1454,9 @@ impl Interp {
             Expr::Value(rv) => rust_value_to_value(rv),
             Expr::Var(ident) if self.globals.contains_key(ident.as_str()) => {
                 self.read_global(ident.as_str())
+            }
+            Expr::Var(ident) if self.scalar_locs.contains_key(ident.as_str()) => {
+                self.read_loc(self.scalar_locs[ident.as_str()])
             }
             Expr::Var(ident) if self.scalars.contains_key(ident.as_str()) => {
                 self.scalars[ident.as_str()]
@@ -1354,6 +1476,14 @@ impl Interp {
             Expr::ByteStr(bytes) | Expr::CStr(bytes) => Value::Ref(self.hidden_c_string(bytes)),
             Expr::ArrayPtr { array, .. } => Value::Ref(self.collection_base(array)),
             Expr::AddrOf { expr, .. } => Value::Ref(self.addr_of(expr)),
+            Expr::Macro { name, args }
+                if matches!(name.as_str(), "std::ptr::addr_of_mut" | "std::ptr::addr_of") =>
+            {
+                let [arg] = args.as_slice() else {
+                    panic!("effects::rust_ast: {name}! expects one argument");
+                };
+                Value::Ref(self.addr_of(arg))
+            }
             Expr::Unary { op, expr } => {
                 let value = self.eval(expr);
                 match (op, value) {
@@ -1432,17 +1562,34 @@ impl Interp {
             {
                 Value::Ref(self.collection_base(recv))
             }
-            Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
-                self.eval(recv)
+            Expr::MethodCall { recv, method, args }
+                if matches!(
+                    method.as_str(),
+                    "as_slice" | "as_mut_slice" | "as_bytes" | "to_bytes"
+                ) && args.is_empty() =>
+            {
+                Value::Ref(self.collection_base(recv))
             }
-            Expr::MethodCall { recv, method, args } if method == "add" => {
+            Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
+                match recv.as_ref() {
+                    Expr::Var(ident) if self.vecs.contains_key(ident.as_str()) => {
+                        Value::Ref(self.collection_base(recv))
+                    }
+                    _ => self.eval(recv),
+                }
+            }
+            Expr::MethodCall { recv, method, args }
+                if matches!(method.as_str(), "add" | "offset") =>
+            {
                 let [offset] = args.as_slice() else {
-                    panic!("effects::rust_ast: pointer add expects one argument");
+                    panic!("effects::rust_ast: pointer {method} expects one argument");
                 };
                 let base = self.eval_ref(recv);
+                let elem_size = self.pointer_elem_size(recv, base);
                 Value::Ref(Location {
                     alloc: base.alloc,
-                    byte_offset: base.byte_offset + value_as_u64(self.eval(offset)),
+                    byte_offset: base.byte_offset
+                        + value_as_u64(self.eval(offset)).wrapping_mul(elem_size),
                 })
             }
             Expr::MethodCall { recv, method, args } if method == "offset_from" => {
@@ -1454,10 +1601,11 @@ impl Interp {
                 if lhs.alloc != rhs.alloc {
                     panic!("effects::rust_ast: offset_from across different allocations");
                 }
+                let elem_size = self.pointer_elem_size(recv, lhs);
                 Value::Int {
                     width: IntWidth::PointerSized,
                     signed: true,
-                    value: lhs.byte_offset as i128 - rhs.byte_offset as i128,
+                    value: (lhs.byte_offset as i128 - rhs.byte_offset as i128) / elem_size as i128,
                 }
             }
             Expr::MethodCall { recv, method, args } if method == "position" => {
@@ -1885,9 +2033,30 @@ impl Interp {
         value
     }
 
+    fn write_loc(&mut self, loc: Location, value: Value) {
+        self.heap.insert(loc, value);
+        for (name, scalar_loc) in &self.scalar_locs {
+            if *scalar_loc == loc {
+                self.scalars.insert(name.clone(), value);
+            }
+        }
+        self.trace.push(Effect::Write { loc, value });
+    }
+
     fn addr_of(&mut self, expr: &Expr) -> Location {
         match expr {
+            Expr::Var(ident) if self.globals.contains_key(ident.as_str()) => {
+                self.globals[ident.as_str()]
+            }
+            Expr::Var(ident) if self.structs.contains_key(ident.as_str()) => Location {
+                alloc: self.structs[ident.as_str()].alloc,
+                byte_offset: 0,
+            },
+            Expr::Var(ident) => self.scalar_location(ident.as_str()),
             Expr::Index { base, index } => {
+                if matches!(base.as_ref(), Expr::Field { .. }) {
+                    return self.field_array_element_location(base, index);
+                }
                 let name = collection_name(base);
                 let idx = value_as_u64(self.eval(index));
                 self.materialize_collection(name);
@@ -1899,8 +2068,33 @@ impl Interp {
                     byte_offset: idx * binding.elem_size,
                 }
             }
+            Expr::Field { base, field } => self.field_location(base, field),
             other => panic!("effects::rust_ast: unsupported address-of expression `{other:?}`"),
         }
+    }
+
+    fn scalar_location(&mut self, name: &str) -> Location {
+        if let Some(loc) = self.scalar_locs.get(name).copied() {
+            return loc;
+        }
+        let value = *self
+            .scalars
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: address of unknown scalar `{name}`"));
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        let loc = Location {
+            alloc,
+            byte_offset: 0,
+        };
+        self.scalar_locs.insert(name.to_string(), loc);
+        self.heap.insert(loc, value);
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: local_value_size(value),
+        });
+        self.trace.push(Effect::Write { loc, value });
+        loc
     }
 
     fn eval_call(&mut self, func: &Expr, args: &[Expr]) -> Value {
@@ -1935,7 +2129,7 @@ impl Interp {
             .cloned()
             .unwrap_or_else(|| panic!("effects::rust_ast: unsupported call target `{name}`"));
         let values = args.iter().map(|arg| self.eval(arg)).collect::<Vec<_>>();
-        self.call_user(&f, &values)
+        self.call_user(&f, &values, Some(args))
     }
 
     fn eval_ref(&mut self, expr: &Expr) -> Location {
@@ -1956,6 +2150,56 @@ impl Interp {
             alloc: binding.alloc,
             byte_offset: 0,
         }
+    }
+
+    fn collection_len_from_arg(&self, expr: &Expr) -> Option<u64> {
+        match expr {
+            Expr::MethodCall { recv, method, args }
+                if args.is_empty()
+                    && matches!(
+                        method.as_str(),
+                        "as_slice" | "as_mut_slice" | "as_bytes" | "to_bytes"
+                    ) =>
+            {
+                let name = collection_name(recv);
+                self.vecs.get(name).map(|binding| binding.len)
+            }
+            Expr::Var(ident) => self.vecs.get(ident.as_str()).map(|binding| binding.len),
+            _ => None,
+        }
+    }
+
+    fn record_decl_type(&mut self, name: &str, ty: &Type) {
+        if let Some(size) = pointer_elem_size_from_type(ty) {
+            self.pointer_elem_sizes.insert(name.to_string(), size);
+        }
+    }
+
+    fn pointer_elem_size(&self, expr: &Expr, loc: Location) -> u64 {
+        match expr {
+            Expr::Var(ident) => {
+                if let Some(size) = self.pointer_elem_sizes.get(ident.as_str()) {
+                    return *size;
+                }
+            }
+            Expr::Cast { ty, .. } => {
+                if let Some(size) = pointer_elem_size_from_type(ty) {
+                    return size;
+                }
+            }
+            Expr::Unsafe(block) => {
+                if let Some(tail) = &block.tail {
+                    return self.pointer_elem_size(tail, loc);
+                }
+            }
+            Expr::MethodCall { recv, .. } => return self.pointer_elem_size(recv, loc),
+            _ => {}
+        }
+        self.vecs
+            .values()
+            .find(|binding| binding.alloc == loc.alloc)
+            .map(|binding| binding.elem_size)
+            .unwrap_or(1)
     }
 
     fn materialize_collection(&mut self, name: &str) {
@@ -2027,20 +2271,17 @@ impl Interp {
         let [ptr] = args else {
             panic!("effects::rust_ast: read_volatile expects one argument");
         };
-        let name = addr_of_local(ptr);
-        *self
-            .scalars
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: volatile read of unknown `{name}`"))
+        let loc = self.eval_ref(ptr);
+        self.read_loc(loc)
     }
 
     fn write_volatile(&mut self, args: &[Expr]) {
         let [ptr, value] = args else {
             panic!("effects::rust_ast: write_volatile expects two arguments");
         };
-        let name = addr_of_local(ptr).to_string();
+        let loc = self.eval_ref(ptr);
         let value = self.eval(value);
-        self.scalars.insert(name, value);
+        self.write_loc(loc, value);
     }
 
     fn eval_call_summary(&mut self, summary: CallSummary, args: &[Expr]) -> Value {
@@ -2249,7 +2490,7 @@ impl Interp {
                 alloc: base.alloc,
                 byte_offset: base.byte_offset + index * elem_size,
             };
-            let value = self.call_user(&f, &[Value::Ref(key), Value::Ref(elem)]);
+            let value = self.call_user(&f, &[Value::Ref(key), Value::Ref(elem)], None);
             if value_as_i128(value) == 0 {
                 return Value::Ref(elem);
             }
@@ -2257,7 +2498,7 @@ impl Interp {
         Value::Null
     }
 
-    fn call_user(&mut self, f: &FnDef, args: &[Value]) -> Value {
+    fn call_user(&mut self, f: &FnDef, args: &[Value], arg_exprs: Option<&[Expr]>) -> Value {
         if f.params.len() != args.len() {
             panic!(
                 "effects::rust_ast: user function `{}` expected {} arg(s), got {}",
@@ -2268,13 +2509,37 @@ impl Interp {
         }
         let saved_scalars = std::mem::take(&mut self.scalars);
         let saved_structs = self.structs.clone();
-        for (param, value) in f.params.iter().zip(args) {
+        let saved_scalar_locs = self.scalar_locs.clone();
+        let saved_vecs = self.vecs.clone();
+        let saved_pointer_elem_sizes = self.pointer_elem_sizes.clone();
+        for (index, (param, value)) in f.params.iter().zip(args).enumerate() {
+            self.record_decl_type(&param.name, &param.ty);
             if let Value::Ref(loc) = value
+                && !matches!(param.ty, Type::Ptr { .. } | Type::Ref { .. })
                 && self.aggregate_allocs_contains(*loc)
             {
                 self.bind_struct_copy(&param.name, *loc);
             } else {
                 self.scalars.insert(param.name.to_string(), *value);
+            }
+            if let Value::Ref(loc) = value
+                && let Some((elem_width, elem_signed, elem_size)) = slice_elem_shape(&param.ty)
+            {
+                let len = arg_exprs
+                    .and_then(|exprs| exprs.get(index))
+                    .and_then(|expr| self.collection_len_from_arg(expr))
+                    .unwrap_or(0);
+                self.vecs.insert(
+                    param.name.to_string(),
+                    VecBinding {
+                        alloc: loc.alloc,
+                        elem_width,
+                        elem_signed,
+                        elem_size,
+                        len,
+                        owned: false,
+                    },
+                );
             }
         }
         self.call_depth += 1;
@@ -2288,8 +2553,17 @@ impl Interp {
                 .cloned(),
             _ => None,
         };
-        self.scalars = saved_scalars;
+        let mut restored_scalars = saved_scalars;
+        for (name, loc) in &saved_scalar_locs {
+            if let Some(value) = self.heap.get(loc).copied() {
+                restored_scalars.insert(name.clone(), value);
+            }
+        }
+        self.scalars = restored_scalars;
         self.structs = saved_structs;
+        self.scalar_locs = saved_scalar_locs;
+        self.vecs = saved_vecs;
+        self.pointer_elem_sizes = saved_pointer_elem_sizes;
         let Flow::Return(value) = flow else {
             panic!(
                 "effects::rust_ast: user function `{}` did not return",
@@ -2317,7 +2591,7 @@ impl Interp {
             panic!("effects::rust_ast: unknown qsort comparator `{comparator}`")
         });
         self.sort_array_by(name, len, elem_size, |this, left, right| {
-            let value = this.call_user(&f, &[Value::Ref(left), Value::Ref(right)]);
+            let value = this.call_user(&f, &[Value::Ref(left), Value::Ref(right)], None);
             value_as_i128(value)
         });
     }
@@ -2635,6 +2909,33 @@ fn pattern_matches(pattern: &Pattern, value: Value) -> bool {
         (Pattern::I128(expected), Value::Int { value, .. }) => *expected == value,
         (Pattern::Binding(_), _) => true,
         _ => false,
+    }
+}
+
+fn tuple_pat2(pat: &str) -> (&str, &str) {
+    let Some(inner) = pat.strip_prefix('(').and_then(|pat| pat.strip_suffix(')')) else {
+        panic!("effects::rust_ast: enumerate loop expects tuple pattern, found `{pat}`");
+    };
+    let Some((left, right)) = inner.split_once(',') else {
+        panic!("effects::rust_ast: enumerate loop expects two pattern fields, found `{pat}`");
+    };
+    let left = left.trim();
+    let right = right.trim();
+    if left.is_empty() || right.is_empty() || right.contains(',') {
+        panic!("effects::rust_ast: enumerate loop expects two bindings, found `{pat}`");
+    }
+    (left, right)
+}
+
+fn local_value_size(value: Value) -> u64 {
+    match value {
+        Value::Int { .. } => int_byte_size(&value),
+        Value::Bool(_) => 1,
+        Value::Float(_) => 8,
+        Value::Ref(_) | Value::Null | Value::File(_) | Value::Atomic(_) => 8,
+        Value::AtomicResult { .. } | Value::BlockLabel(_) | Value::Option(_) => {
+            panic!("effects::rust_ast: cannot take address of transient value {value:?}")
+        }
     }
 }
 
