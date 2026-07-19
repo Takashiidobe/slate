@@ -7,8 +7,9 @@ use crate::effects::{
     ParamSeed, Value, call_summary,
 };
 use crate::rust_ast::{
-    AtomicOrdering, AtomicPlace, AtomicRmwOp, Attr, BinOp, Block, Expr, FnDef, IndentStmt, Item,
-    Label, Path, Pattern, Prim, Program, Repr, Stmt, StructDef, StructFields, Type, UnaryOp,
+    AtomicOrdering, AtomicPlace, AtomicRmwOp, Attr, BinOp, Block, Expr, ExternDecl, FnDef,
+    IndentStmt, Item, Label, Path, Pattern, Prim, Program, Repr, Stmt, StructDef, StructFields,
+    Type, UnaryOp,
 };
 
 pub fn interpret(f: &FnDef) -> EffectTrace {
@@ -59,6 +60,12 @@ struct VecBinding {
 }
 
 const LAZY_ARRAY_ALLOC: AllocId = AllocId(u32::MAX);
+
+/// Reserved handles for the well-known libc stdio streams, distinct from the
+/// sequential ids `call_fopen` hands out so raw and fixuped traces agree on
+/// their identity regardless of how many real files were opened first.
+const STDOUT_FILE: FileId = FileId(u32::MAX);
+const STDERR_FILE: FileId = FileId(u32::MAX - 1);
 
 #[derive(Clone)]
 struct StructBinding {
@@ -125,9 +132,29 @@ impl Interp {
                 Item::Struct(def) => {
                     self.tuple_structs.insert(def.name.clone(), def.clone());
                 }
+                Item::ExternBlock { decls, .. } => {
+                    for decl in decls {
+                        if let ExternDecl::Static { name, .. } = decl {
+                            self.seed_stdio_stream(name);
+                        }
+                    }
+                }
                 _ => {}
             }
         }
+    }
+
+    /// `stdout`/`stderr` are extern statics with no initializer to interpret;
+    /// bind them to reserved `FileId`s so raw rust_ast can read them directly,
+    /// without a fixup rewriting the access first.
+    fn seed_stdio_stream(&mut self, name: &str) {
+        let file = match name {
+            "stdout" => STDOUT_FILE,
+            "stderr" => STDERR_FILE,
+            _ => return,
+        };
+        self.scalars.insert(name.to_string(), Value::File(file));
+        self.files.insert(name.to_string(), file);
     }
 
     fn seed_static(&mut self, name: &str, ty: &Type, init: &Expr) {
@@ -1170,6 +1197,16 @@ impl Interp {
     fn file_arg(&self, expr: &Expr) -> FileId {
         match expr {
             Expr::Ref { expr, .. } => self.file_arg(expr),
+            Expr::Call { func, args }
+                if args.is_empty() && is_path(func, &["std", "io", "stdout"]) =>
+            {
+                STDOUT_FILE
+            }
+            Expr::Call { func, args }
+                if args.is_empty() && is_path(func, &["std", "io", "stderr"]) =>
+            {
+                STDERR_FILE
+            }
             Expr::Var(ident) => *self
                 .files
                 .get(ident.as_str())
