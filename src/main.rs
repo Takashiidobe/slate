@@ -13,7 +13,6 @@ mod rust_ast;
 
 use crate::effects::interp::interpret_program_main;
 use std::collections::{BTreeMap, BTreeSet};
-use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
@@ -133,67 +132,31 @@ fn compare_traces(
     })
 }
 
-fn panic_payload_message(payload: Box<dyn std::any::Any + Send>) -> String {
-    if let Some(message) = payload.downcast_ref::<String>() {
-        return message.clone();
-    }
-    if let Some(message) = payload.downcast_ref::<&'static str>() {
-        return message.to_string();
-    }
-    "panic without string payload".to_string()
-}
-
 fn run_effect_compare(check: impl FnOnce() -> Result<(), String>) -> Result<String, String> {
-    let hook = std::panic::take_hook();
-    std::panic::set_hook(Box::new(|_| {}));
-    let result = match catch_unwind(AssertUnwindSafe(check)) {
-        Ok(Ok(())) => Ok("ok\n".to_string()),
-        Ok(Err(err)) => Err(err),
-        Err(payload) => Err(panic_payload_message(payload)),
-    };
-    std::panic::set_hook(hook);
-    result
+    check().map(|()| "ok\n".to_string())
 }
 
-fn extract_effects<T>(
+fn effect_extraction_error(
     mode: &str,
     path: &Path,
     side: &str,
-    extract: impl FnOnce() -> T,
-) -> Result<T, String> {
-    match catch_unwind(AssertUnwindSafe(extract)) {
-        Ok(value) => Ok(value),
-        Err(payload) => Err(format!(
-            "effect extraction failed\nmode: {mode}\nfixture: {}\nside: {side}\nreason: {}",
-            path.display(),
-            panic_payload_message(payload)
-        )),
-    }
+    reason: impl std::fmt::Display,
+) -> String {
+    format!(
+        "effect extraction failed\nmode: {mode}\nfixture: {}\nside: {side}\nreason: {reason}",
+        path.display()
+    )
 }
 
 fn compare_effects_rust_rust(path: &Path) -> Result<String, String> {
     run_effect_compare(|| {
         let mode = "compare-effects-rust-rust";
         let (_, program) = lowered_program(path)?;
-        let raw_trace = extract_effects(mode, path, "raw rust_ast", || {
-            interpret_program_main(&program)
-        })?
-        .map_err(|err| {
-            format!(
-                "effect extraction failed\nmode: {mode}\nfixture: {}\nside: raw rust_ast\nreason: {err}",
-                path.display()
-            )
-        })?;
+        let raw_trace = interpret_program_main(&program)
+            .map_err(|err| effect_extraction_error(mode, path, "raw rust_ast", err))?;
         let fixed_program = fixups::apply_with(program, &fixups::SkipSet::none());
-        let fixed_trace = extract_effects(mode, path, "fixuped rust_ast", || {
-            interpret_program_main(&fixed_program)
-        })?
-        .map_err(|err| {
-            format!(
-                "effect extraction failed\nmode: {mode}\nfixture: {}\nside: fixuped rust_ast\nreason: {err}",
-                path.display()
-            )
-        })?;
+        let fixed_trace = interpret_program_main(&fixed_program)
+            .map_err(|err| effect_extraction_error(mode, path, "fixuped rust_ast", err))?;
         compare_traces("raw rust_ast", "fixuped rust_ast", &raw_trace, &fixed_trace)
     })
 }
@@ -803,19 +766,18 @@ mod tests {
     use super::*;
 
     #[test]
-    fn rust_effect_extraction_failure_reports_mode_fixture_side_and_reason() {
-        let err = extract_effects(
+    fn rust_effect_extraction_error_reports_mode_fixture_side_and_reason() {
+        let err = effect_extraction_error(
             "compare-effects-rust-rust",
             Path::new("tests/fixtures/memcpy.c"),
             "raw rust_ast",
-            || panic!("effects::rust_ast: unsupported call target `memcpy`"),
-        )
-        .expect_err("unsupported Rust effect extraction should fail");
+            "unsupported CallTarget: Str(\"memcpy\")",
+        );
 
         assert!(err.contains("effect extraction failed"));
         assert!(err.contains("mode: compare-effects-rust-rust"));
         assert!(err.contains("fixture: tests/fixtures/memcpy.c"));
         assert!(err.contains("side: raw rust_ast"));
-        assert!(err.contains("reason: effects::rust_ast: unsupported call target `memcpy`"));
+        assert!(err.contains("reason: unsupported CallTarget: Str(\"memcpy\")"));
     }
 }
