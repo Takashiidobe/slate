@@ -75,6 +75,7 @@ fn is_prunable(name: &str) -> bool {
             | "strncat"
             | "qsort"
             | "bsearch"
+            | "exit"
             | "malloc"
             | "calloc"
             | "realloc"

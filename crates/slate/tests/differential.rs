@@ -987,6 +987,22 @@ fn main_retval_boilerplate_is_collapsed() {
 }
 
 #[test]
+fn noreturn_c11_uses_process_exit_and_removes_dead_false_branch() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-noreturn-c11-cleanup");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("noreturn_c11_spelling.c");
+    let generated = tmp.join("noreturn_c11_spelling.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate noreturn_c11_spelling fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated noreturn C11 rust");
+    assert!(rust.contains("std::process::exit(code as i32);"));
+    assert!(!rust.contains("unsafe extern \"C\""));
+    assert!(!rust.contains("fn exit("));
+    assert!(!rust.contains("let _v1: i32 = 0;"));
+    assert!(!rust.contains("die(1);"));
+}
+
+#[test]
 fn unnecessary_mut_bindings_are_removed() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-remove-mut-fixup");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
