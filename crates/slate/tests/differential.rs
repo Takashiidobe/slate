@@ -529,9 +529,9 @@ fn pointer_arithmetic_uses_clearer_safe_offset_forms() {
     support::translate(&bcopy_c, &bcopy_generated).expect("translate mem_bcopy_overlap fixture");
     let bcopy =
         std::fs::read_to_string(&bcopy_generated).expect("read generated mem_bcopy_overlap rust");
-    assert!(bcopy.contains("buf.as_mut_ptr().add(2)"));
-    assert!(!bcopy.contains("buf.as_mut_ptr().offset(2"));
-    assert!(!bcopy.contains("unsafe { buf.as_mut_ptr().add(2) }"));
+    assert!(bcopy.contains("buf.copy_within(0..4, 2);"));
+    assert!(!bcopy.contains("std::ptr::copy"));
+    assert!(!bcopy.contains("buf.as_mut_ptr().add(2)"));
 }
 
 #[test]
