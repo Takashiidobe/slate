@@ -1059,11 +1059,63 @@ impl Interp {
     }
 
     fn print(&mut self, args: &[Expr]) {
-        let args = args.iter().skip(1).map(|expr| self.eval(expr)).collect();
+        let [fmt_expr, rest @ ..] = args else {
+            panic!("effects::rust_ast: println!/print! expects a format string");
+        };
+        let Expr::Str(fmt) = fmt_expr else {
+            panic!("effects::rust_ast: unsupported format string `{fmt_expr:?}`");
+        };
+        let specs: Vec<FormatSpec> = parse_format_string(fmt)
+            .into_iter()
+            .filter_map(|segment| match segment {
+                FormatSegment::Placeholder(spec) => Some(spec),
+                FormatSegment::Literal(_) => None,
+            })
+            .collect();
+        let args = rest
+            .iter()
+            .enumerate()
+            .map(|(index, expr)| {
+                let value = self.eval(expr);
+                match specs.get(index) {
+                    Some(spec) if spec.ty == 'p' => value,
+                    _ => self.resolve_string_arg(value),
+                }
+            })
+            .collect();
         self.trace.push(Effect::Call {
             name: "printf".to_string(),
             args,
         });
+    }
+
+    fn resolve_string_arg(&self, value: Value) -> Value {
+        match value {
+            Value::Ref(loc) => Value::Bytes(self.read_c_string_silent(loc)),
+            other => other,
+        }
+    }
+
+    fn eval_format_macro(&mut self, args: &[Expr]) -> Value {
+        let [fmt_expr, rest @ ..] = args else {
+            panic!("effects::rust_ast: format! expects a format string");
+        };
+        let Expr::Str(fmt) = fmt_expr else {
+            panic!("effects::rust_ast: unsupported format! format string `{fmt_expr:?}`");
+        };
+        let mut out = Vec::new();
+        let mut arg_index = 0;
+        for segment in parse_format_string(fmt) {
+            match segment {
+                FormatSegment::Literal(text) => out.extend_from_slice(text.as_bytes()),
+                FormatSegment::Placeholder(spec) => {
+                    let value = self.eval(&rest[arg_index]);
+                    arg_index += 1;
+                    out.extend(render_format_arg(&value, &spec));
+                }
+            }
+        }
+        Value::Bytes(out)
     }
 
     fn open_file(&mut self, expr: &Expr) -> Option<FileId> {
@@ -1719,6 +1771,22 @@ impl Interp {
         }
     }
 
+    fn read_c_string_silent(&self, base: Location) -> Vec<u8> {
+        let len = self.c_string_len_silent(base);
+        (0..len)
+            .map(|offset| {
+                let loc = Location {
+                    alloc: base.alloc,
+                    byte_offset: base.byte_offset + offset,
+                };
+                match self.heap.get(&loc) {
+                    Some(value) => value_as_i128(value) as u8,
+                    None => panic!("effects::rust_ast: read from never-written {loc:?}"),
+                }
+            })
+            .collect()
+    }
+
     fn write_c_string(&mut self, dst: Location, bytes: &[u8]) {
         let values = bytes
             .iter()
@@ -2049,6 +2117,7 @@ impl Interp {
                 };
                 Value::Ref(self.addr_of(arg))
             }
+            Expr::Macro { name, args } if name == "format" => self.eval_format_macro(args),
             Expr::Macro { name, args } if name == "std::mem::offset_of" => {
                 let [Expr::Var(record), Expr::Var(field)] = args.as_slice() else {
                     panic!("effects::rust_ast: offset_of! expects type and field");
@@ -3840,10 +3909,35 @@ impl Interp {
     }
 
     fn call_printf(&mut self, args: &[Expr]) -> Value {
-        let values = args
+        let [fmt_expr, rest @ ..] = args else {
+            panic!("effects::rust_ast: printf expects a format string");
+        };
+        let specs = c_format_specs(&c_format_bytes(fmt_expr));
+        let values = rest
             .iter()
-            .skip(1)
-            .map(|arg| self.eval(arg))
+            .enumerate()
+            .map(|(index, arg)| {
+                let value = self.eval(arg);
+                match specs.get(index) {
+                    Some(CFormatSpec::Str) => self.resolve_string_arg(value),
+                    Some(CFormatSpec::Char) => resolve_char_arg(value),
+                    Some(CFormatSpec::Num {
+                        conv,
+                        alternate,
+                        zero_pad,
+                        left_align,
+                        width,
+                    }) => Value::Bytes(render_c_num_arg(
+                        &value,
+                        *conv,
+                        *alternate,
+                        *zero_pad,
+                        *left_align,
+                        *width,
+                    )),
+                    _ => value,
+                }
+            })
             .collect::<Vec<_>>();
         self.trace.push(Effect::Call {
             name: "printf".to_string(),
@@ -4468,6 +4562,380 @@ fn tuple_pat2(pat: &str) -> (&str, &str) {
     (left, right)
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum CFormatSpec {
+    Str,
+    Char,
+    Num {
+        conv: u8,
+        alternate: bool,
+        zero_pad: bool,
+        left_align: bool,
+        width: Option<usize>,
+    },
+    Other,
+}
+
+fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
+    let mut specs = Vec::new();
+    let mut i = 0;
+    while i < fmt.len() {
+        if fmt[i] != b'%' {
+            i += 1;
+            continue;
+        }
+        i += 1;
+        if i < fmt.len() && fmt[i] == b'%' {
+            i += 1;
+            continue;
+        }
+        let mut alternate = false;
+        let mut zero_pad = false;
+        let mut left_align = false;
+        while i < fmt.len() && matches!(fmt[i], b'-' | b'+' | b'0' | b' ' | b'#') {
+            match fmt[i] {
+                b'#' => alternate = true,
+                b'0' => zero_pad = true,
+                b'-' => left_align = true,
+                _ => {}
+            }
+            i += 1;
+        }
+        let width_start = i;
+        while i < fmt.len() && fmt[i].is_ascii_digit() {
+            i += 1;
+        }
+        let width = if i > width_start {
+            std::str::from_utf8(&fmt[width_start..i])
+                .ok()
+                .and_then(|digits| digits.parse().ok())
+        } else {
+            None
+        };
+        if i < fmt.len() && fmt[i] == b'.' {
+            i += 1;
+            while i < fmt.len() && fmt[i].is_ascii_digit() {
+                i += 1;
+            }
+        }
+        while i < fmt.len() && matches!(fmt[i], b'h' | b'l' | b'L' | b'q' | b'j' | b'z' | b't') {
+            i += 1;
+        }
+        if i >= fmt.len() {
+            break;
+        }
+        let conv = fmt[i];
+        i += 1;
+        specs.push(match conv {
+            b's' => CFormatSpec::Str,
+            b'c' => CFormatSpec::Char,
+            b'x' | b'X' | b'o' if alternate => CFormatSpec::Num {
+                conv,
+                alternate,
+                zero_pad,
+                left_align,
+                width,
+            },
+            _ => CFormatSpec::Other,
+        });
+    }
+    specs
+}
+
+fn c_format_bytes(expr: &Expr) -> Vec<u8> {
+    match expr {
+        Expr::Str(s) => s.as_bytes().to_vec(),
+        Expr::ByteStr(bytes) | Expr::CStr(bytes) => bytes.clone(),
+        Expr::Cast { expr, .. } => c_format_bytes(expr),
+        Expr::MethodCall { recv, method, .. } if method == "as_ptr" => c_format_bytes(recv),
+        other => panic!("effects::rust_ast: unsupported printf format string `{other:?}`"),
+    }
+}
+
+fn resolve_char_arg(value: Value) -> Value {
+    match value {
+        Value::Int { value, .. } => Value::Bytes(vec![value as u8]),
+        other => other,
+    }
+}
+
+fn render_c_num_arg(
+    value: &Value,
+    conv: u8,
+    alternate: bool,
+    zero_pad: bool,
+    left_align: bool,
+    width: Option<usize>,
+) -> Vec<u8> {
+    let Value::Int {
+        value,
+        width: int_width,
+        ..
+    } = value
+    else {
+        panic!("effects::rust_ast: printf numeric conversion expects an integer, found {value:?}");
+    };
+    let mut core = match conv {
+        b'x' => format_uint_radix(*value, *int_width, 16, false),
+        b'X' => format_uint_radix(*value, *int_width, 16, true),
+        b'o' => format_uint_radix(*value, *int_width, 8, false),
+        _ => panic!(
+            "effects::rust_ast: unsupported printf conversion `{}`",
+            conv as char
+        ),
+    };
+    let is_zero = *value == 0;
+    let prefix = match conv {
+        b'x' if alternate && !is_zero => "0x",
+        b'X' if alternate && !is_zero => "0X",
+        _ => "",
+    };
+    if conv == b'o' && alternate && !is_zero {
+        core = format!("0{core}");
+    }
+    let body = format!("{prefix}{core}");
+    let total_width = width.unwrap_or(0);
+    let pad_len = total_width.saturating_sub(body.chars().count());
+    if pad_len == 0 {
+        return body.into_bytes();
+    }
+    if left_align {
+        let mut out = body;
+        out.extend(std::iter::repeat_n(' ', pad_len));
+        return out.into_bytes();
+    }
+    if zero_pad {
+        let mut out = String::with_capacity(total_width);
+        out.push_str(prefix);
+        out.extend(std::iter::repeat_n('0', pad_len));
+        out.push_str(&core);
+        return out.into_bytes();
+    }
+    let mut out: String = std::iter::repeat_n(' ', pad_len).collect();
+    out.push_str(&body);
+    out.into_bytes()
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Align {
+    Left,
+    Right,
+    Center,
+}
+
+#[derive(Clone, Copy)]
+struct FormatSpec {
+    fill: char,
+    align: Option<Align>,
+    alternate: bool,
+    zero_pad: bool,
+    width: Option<usize>,
+    ty: char,
+}
+
+enum FormatSegment<'a> {
+    Literal(&'a str),
+    Placeholder(FormatSpec),
+}
+
+fn parse_format_string(fmt: &str) -> Vec<FormatSegment<'_>> {
+    let mut segments = Vec::new();
+    let mut literal_start = 0;
+    let mut i = 0;
+    let bytes = fmt.as_bytes();
+    while i < bytes.len() {
+        match bytes[i] {
+            b'{' if bytes.get(i + 1) == Some(&b'{') => {
+                segments.push(FormatSegment::Literal(&fmt[literal_start..=i]));
+                i += 2;
+                literal_start = i;
+            }
+            b'}' if bytes.get(i + 1) == Some(&b'}') => {
+                segments.push(FormatSegment::Literal(&fmt[literal_start..=i]));
+                i += 2;
+                literal_start = i;
+            }
+            b'{' => {
+                if i > literal_start {
+                    segments.push(FormatSegment::Literal(&fmt[literal_start..i]));
+                }
+                let start = i + 1;
+                let Some(end_rel) = fmt[start..].find('}') else {
+                    panic!("effects::rust_ast: unterminated format placeholder in `{fmt}`");
+                };
+                let inner = &fmt[start..start + end_rel];
+                segments.push(FormatSegment::Placeholder(parse_format_spec(
+                    inner.strip_prefix(':').unwrap_or(""),
+                )));
+                i = start + end_rel + 1;
+                literal_start = i;
+            }
+            _ => i += 1,
+        }
+    }
+    if literal_start < fmt.len() {
+        segments.push(FormatSegment::Literal(&fmt[literal_start..]));
+    }
+    segments
+}
+
+fn parse_format_spec(spec: &str) -> FormatSpec {
+    let chars: Vec<char> = spec.chars().collect();
+    let mut i = 0;
+    let mut fill = ' ';
+    let mut align = None;
+    if chars.len() >= 2 && matches!(chars[1], '<' | '>' | '^') {
+        fill = chars[0];
+        align = Some(match chars[1] {
+            '<' => Align::Left,
+            '>' => Align::Right,
+            _ => Align::Center,
+        });
+        i = 2;
+    } else if !chars.is_empty() && matches!(chars[0], '<' | '>' | '^') {
+        align = Some(match chars[0] {
+            '<' => Align::Left,
+            '>' => Align::Right,
+            _ => Align::Center,
+        });
+        i = 1;
+    }
+    let mut alternate = false;
+    if i < chars.len() && chars[i] == '#' {
+        alternate = true;
+        i += 1;
+    }
+    let mut zero_pad = false;
+    if i < chars.len() && chars[i] == '0' {
+        zero_pad = true;
+        i += 1;
+    }
+    let width_start = i;
+    while i < chars.len() && chars[i].is_ascii_digit() {
+        i += 1;
+    }
+    let width = if i > width_start {
+        Some(
+            chars[width_start..i]
+                .iter()
+                .collect::<String>()
+                .parse()
+                .unwrap(),
+        )
+    } else {
+        None
+    };
+    if i < chars.len() && chars[i] == '.' {
+        i += 1;
+        while i < chars.len() && chars[i].is_ascii_digit() {
+            i += 1;
+        }
+    }
+    let ty = chars.get(i).copied().unwrap_or('\0');
+    FormatSpec {
+        fill,
+        align,
+        alternate,
+        zero_pad,
+        width,
+        ty,
+    }
+}
+
+fn format_uint_radix(value: i128, width: IntWidth, base: u32, upper: bool) -> String {
+    let bits: u32 = match width {
+        IntWidth::W8 => 8,
+        IntWidth::W16 => 16,
+        IntWidth::W32 => 32,
+        IntWidth::W64 | IntWidth::PointerSized => 64,
+        IntWidth::W128 => 128,
+    };
+    let mask: u128 = if bits >= 128 {
+        u128::MAX
+    } else {
+        (1u128 << bits) - 1
+    };
+    let bits_value = (value as u128) & mask;
+    match base {
+        16 if upper => format!("{bits_value:X}"),
+        16 => format!("{bits_value:x}"),
+        8 => format!("{bits_value:o}"),
+        2 => format!("{bits_value:b}"),
+        _ => unreachable!("effects::rust_ast: unsupported format! radix {base}"),
+    }
+}
+
+fn render_format_arg(value: &Value, spec: &FormatSpec) -> Vec<u8> {
+    let (core, is_numeric) = match (value, spec.ty) {
+        (Value::Int { value, width, .. }, 'x') => {
+            (format_uint_radix(*value, *width, 16, false), true)
+        }
+        (Value::Int { value, width, .. }, 'X') => {
+            (format_uint_radix(*value, *width, 16, true), true)
+        }
+        (Value::Int { value, width, .. }, 'o') => {
+            (format_uint_radix(*value, *width, 8, false), true)
+        }
+        (Value::Int { value, width, .. }, 'b') => {
+            (format_uint_radix(*value, *width, 2, false), true)
+        }
+        (Value::Int { value, .. }, _) => (value.to_string(), true),
+        (Value::Bytes(bytes), _) => (String::from_utf8_lossy(bytes).into_owned(), false),
+        (Value::Float(value), _) => (value.to_string(), false),
+        (Value::Bool(value), _) => (value.to_string(), false),
+        other => panic!("effects::rust_ast: unsupported format! argument `{other:?}`"),
+    };
+    let prefix = if is_numeric && spec.alternate {
+        match spec.ty {
+            'x' => "0x",
+            'X' => "0X",
+            'o' => "0o",
+            'b' => "0b",
+            _ => "",
+        }
+    } else {
+        ""
+    };
+    let body = format!("{prefix}{core}");
+    let width = spec.width.unwrap_or(0);
+    let pad_len = width.saturating_sub(body.chars().count());
+    if pad_len == 0 {
+        return body.into_bytes();
+    }
+    if is_numeric && spec.zero_pad && spec.align.is_none() {
+        let mut out = String::with_capacity(width);
+        out.push_str(prefix);
+        out.extend(std::iter::repeat_n('0', pad_len));
+        out.push_str(&core);
+        return out.into_bytes();
+    }
+    let align = spec.align.unwrap_or(if is_numeric {
+        Align::Right
+    } else {
+        Align::Left
+    });
+    match align {
+        Align::Left => {
+            let mut out = body;
+            out.extend(std::iter::repeat_n(spec.fill, pad_len));
+            out.into_bytes()
+        }
+        Align::Right => {
+            let mut out: String = std::iter::repeat_n(spec.fill, pad_len).collect();
+            out.push_str(&body);
+            out.into_bytes()
+        }
+        Align::Center => {
+            let left = pad_len / 2;
+            let right = pad_len - left;
+            let mut out: String = std::iter::repeat_n(spec.fill, left).collect();
+            out.push_str(&body);
+            out.extend(std::iter::repeat_n(spec.fill, right));
+            out.into_bytes()
+        }
+    }
+}
+
 fn array_init_elems(init: &Expr, len: u64) -> Vec<&Expr> {
     match init {
         Expr::ArrayLit(elems) => {
@@ -4495,7 +4963,11 @@ fn local_value_size(value: &Value) -> u64 {
         Value::Bool(_) => 1,
         Value::Float(_) => 8,
         Value::Ref(_) | Value::Null | Value::File(_) | Value::Atomic(_) => 8,
-        Value::AtomicResult { .. } | Value::Tuple(_) | Value::BlockLabel(_) | Value::Option(_) => {
+        Value::AtomicResult { .. }
+        | Value::Tuple(_)
+        | Value::BlockLabel(_)
+        | Value::Option(_)
+        | Value::Bytes(_) => {
             panic!("effects::rust_ast: cannot take address of transient value {value:?}")
         }
     }
