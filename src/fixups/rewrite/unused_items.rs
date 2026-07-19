@@ -49,7 +49,7 @@ fn fixup_impl(program: &mut Program) -> bool {
         return false;
     }
 
-    let mut live = BTreeSet::new();
+    let mut live = candidates.keys().copied().collect::<BTreeSet<_>>();
     for (index, item) in program.items.iter().enumerate() {
         if candidates.contains_key(&index) {
             continue;
@@ -594,7 +594,7 @@ mod tests {
     };
 
     #[test]
-    fn prunes_unreferenced_top_level_types() {
+    fn keeps_unreferenced_top_level_types() {
         let mut program = Program {
             items: vec![
                 Item::Enum(enum_def("memory_order", &["memory_order_seq_cst"])),
@@ -609,10 +609,10 @@ mod tests {
             ],
         };
 
-        assert!(fixup(&mut program));
+        assert!(!fixup(&mut program));
         let emitted = program.emit();
-        assert!(!emitted.contains("enum memory_order"));
-        assert!(!emitted.contains("struct atomic_flag"));
+        assert!(emitted.contains("enum memory_order"));
+        assert!(emitted.contains("struct atomic_flag"));
         assert!(emitted.contains("fn f()"));
     }
 
@@ -659,7 +659,7 @@ mod tests {
     }
 
     #[test]
-    fn prunes_unrooted_type_cycles() {
+    fn keeps_unrooted_type_cycles() {
         let mut program = Program {
             items: vec![
                 Item::Record(record_with_field("a", "b")),
@@ -672,10 +672,10 @@ mod tests {
             ],
         };
 
-        assert!(fixup(&mut program));
+        assert!(!fixup(&mut program));
         let emitted = program.emit();
-        assert!(!emitted.contains("struct a"));
-        assert!(!emitted.contains("struct b"));
+        assert!(emitted.contains("struct a"));
+        assert!(emitted.contains("struct b"));
     }
 
     #[test]
