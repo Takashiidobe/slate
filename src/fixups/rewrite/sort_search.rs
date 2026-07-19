@@ -1,11 +1,47 @@
 use std::collections::BTreeMap;
 
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet,
+};
 use crate::rust_ast::{
     BinOp, Expr, FnDef, Ident, IndentStmt, Item, Program, RecordDef, RustValue, Stmt, Type, UnaryOp,
 };
 
 pub(in crate::fixups) fn fixup(program: &mut Program) {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    SortSearch::new(&mut logger).fixup(program);
+}
+
+pub(in crate::fixups) struct SortSearch<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> SortSearch<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) {
+        let before = self.logger.is_enabled().then(|| program.emit());
+        fixup_impl(program);
+        if let Some(before) = before {
+            let after = program.emit();
+            if before != after {
+                self.logger.rewrite(RewriteEvent {
+                    pass: TracePass::SortSearch,
+                    kind: "rewrite_sort_search_calls".into(),
+                    location: TraceLocation::default(),
+                    before: vec![TraceSnippet::new("program", before.trim_end())],
+                    after: vec![TraceSnippet::new("program", after.trim_end())],
+                    facts: Vec::new(),
+                });
+            }
+        }
+    }
+}
+
+fn fixup_impl(program: &mut Program) {
     let records = record_layouts(program);
     let comparators = comparator_plans(program);
     if comparators.is_empty() {

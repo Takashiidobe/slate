@@ -5,9 +5,49 @@ use crate::fixups::facts::{
     AstPath, BindingId, FixupFacts, FunctionId, PathSegment, PlaceAccess, PlaceKind,
 };
 use crate::fixups::idents::expr_ident;
-use crate::rust_ast::{FnDef, Stmt};
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
+};
+use crate::rust_ast::{FnDef, IndentStmt, Stmt};
 
 pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    ParamSpills::new(&mut logger).fixup(f, function, facts);
+}
+
+pub(in crate::fixups) struct ParamSpills<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> ParamSpills<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(
+        &mut self,
+        f: &mut FnDef,
+        function: FunctionId,
+        facts: &FixupFacts,
+    ) {
+        let before = self.logger.is_enabled().then(|| f.body.clone());
+        fixup_impl(f, function, facts);
+        if let Some(before) = before
+            && body_code(&before) != body_code(&f.body)
+        {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::ParamSpills,
+                kind: "fold_param_spills".into(),
+                location: function_path_location(facts, function, &[]),
+                before: vec![stmts_snippet("body", &before)],
+                after: vec![stmts_snippet("body", &f.body)],
+                facts: vec![fact("params", f.params.len().to_string())],
+            });
+        }
+    }
+}
+
+fn fixup_impl(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
     let param_names: Vec<String> = f.params.iter().map(|p| p.name.clone()).collect();
     let mut claimed_locals: Vec<String> = Vec::new();
     let mut removed: Vec<usize> = Vec::new();
@@ -110,6 +150,13 @@ pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &Fixu
     for index in removed.into_iter().rev() {
         f.body.remove(index);
     }
+}
+
+fn body_code(body: &[IndentStmt]) -> String {
+    body.iter()
+        .map(|stmt| stmt.stmt.render())
+        .collect::<Vec<_>>()
+        .join("")
 }
 
 fn store_writes_local(

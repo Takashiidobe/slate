@@ -2,6 +2,9 @@
 
 use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, function_path_location, path_fact, stmt_snippet,
+};
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Prim, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(
@@ -9,7 +12,27 @@ pub(in crate::fixups) fn fixup(
     function: FunctionId,
     facts: &FixupFacts,
 ) -> bool {
-    fixup_at(body, function, facts, &mut Vec::new())
+    let mut logger = crate::fixups::trace::NoopLogger;
+    UnnecessaryCasts::new(&mut logger).fixup(body, function, facts)
+}
+
+pub(in crate::fixups) struct UnnecessaryCasts<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> UnnecessaryCasts<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(
+        &mut self,
+        body: &mut [IndentStmt],
+        function: FunctionId,
+        facts: &FixupFacts,
+    ) -> bool {
+        fixup_at(body, function, facts, &mut Vec::new(), self.logger)
+    }
 }
 
 fn fixup_at(
@@ -17,17 +40,31 @@ fn fixup_at(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    logger: &mut dyn TraceLogger,
 ) -> bool {
     let mut changed = false;
     for (index, indent) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_mut_with_path(&mut indent.stmt, path, &mut |body, path| {
-                changed |= fixup_at(body, function, facts, path);
+                changed |= fixup_at(body, function, facts, path, logger);
             });
+            let before = logger.is_enabled().then(|| indent.stmt.clone());
             if let Stmt::Assign { value, .. } = &mut indent.stmt {
-                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    changed |= simplify_assignment_value(value, function, facts, path);
-                });
+                let mut expr_path = path.to_vec();
+                expr_path.push(PathSegment::Expr(1));
+                if simplify_assignment_value(value, function, facts, &expr_path) {
+                    if let Some(before) = before {
+                        logger.rewrite(RewriteEvent {
+                            pass: TracePass::UnnecessaryCasts,
+                            kind: "strip_unnecessary_assignment_cast".into(),
+                            location: function_path_location(facts, function, &expr_path),
+                            before: vec![stmt_snippet("stmt", &before)],
+                            after: vec![stmt_snippet("stmt", &indent.stmt)],
+                            facts: vec![path_fact("expr_path", &expr_path)],
+                        });
+                    }
+                    changed = true;
+                }
             }
         });
     }

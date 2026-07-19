@@ -7,10 +7,33 @@
 use crate::fixups::facts::{AstPath, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity};
 use crate::fixups::idents::expr_ident;
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, function_path_location, path_fact, stmt_snippet,
+};
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Stmt};
 
 pub(in crate::fixups) fn fixup(body: &mut [IndentStmt], function: FunctionId, facts: &FixupFacts) {
-    fixup_at(body, function, facts, &mut Vec::new());
+    let mut logger = crate::fixups::trace::NoopLogger;
+    CompoundAssign::new(&mut logger).fixup(body, function, facts);
+}
+
+pub(in crate::fixups) struct CompoundAssign<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> CompoundAssign<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(
+        &mut self,
+        body: &mut [IndentStmt],
+        function: FunctionId,
+        facts: &FixupFacts,
+    ) {
+        fixup_at(body, function, facts, &mut Vec::new(), self.logger);
+    }
 }
 
 fn fixup_at(
@@ -18,12 +41,14 @@ fn fixup_at(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    logger: &mut dyn TraceLogger,
 ) {
     for (index, indent) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_mut_with_path(&mut indent.stmt, path, &mut |body, path| {
-                fixup_at(body, function, facts, path);
+                fixup_at(body, function, facts, path, logger);
             });
+            let before = logger.is_enabled().then(|| indent.stmt.clone());
             if let Stmt::Assign { target, value } = &mut indent.stmt
                 && let Some((op, rhs)) = compound_parts(target, value, function, facts, path)
             {
@@ -31,6 +56,16 @@ fn fixup_at(
                     target: target.clone(),
                     op,
                     value: rhs,
+                };
+                if let Some(before) = before {
+                    logger.rewrite(RewriteEvent {
+                        pass: TracePass::CompoundAssign,
+                        kind: "recover_compound_assign".into(),
+                        location: function_path_location(facts, function, path),
+                        before: vec![stmt_snippet("stmt", &before)],
+                        after: vec![stmt_snippet("stmt", &indent.stmt)],
+                        facts: vec![path_fact("stmt_path", path)],
+                    });
                 }
             }
         });

@@ -1,7 +1,43 @@
 use crate::fixups::facts::{CallCallee, FixupFacts};
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+};
 use crate::rust_ast::{ExternDecl, Item, Program};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    PruneUnusedExterns::new(&mut logger).fixup(program, facts);
+}
+
+pub(in crate::fixups) struct PruneUnusedExterns<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> PruneUnusedExterns<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) {
+        let before = self.logger.is_enabled().then(|| program.emit());
+        fixup_impl(program, facts);
+        if let Some(before) = before {
+            let after = program.emit();
+            if before != after {
+                self.logger.rewrite(RewriteEvent {
+                    pass: TracePass::PruneUnusedExterns,
+                    kind: "prune_unused_extern_decls".into(),
+                    location: TraceLocation::default(),
+                    before: vec![TraceSnippet::new("program", before.trim_end())],
+                    after: vec![TraceSnippet::new("program", after.trim_end())],
+                    facts: vec![fact("direct_calls", direct_calls(facts).len().to_string())],
+                });
+            }
+        }
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts) {
     let used = direct_calls(facts);
     program.items.retain_mut(|item| match item {
         Item::ExternBlock { decls, .. } => {

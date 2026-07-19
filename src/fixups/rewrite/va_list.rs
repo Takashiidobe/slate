@@ -1,8 +1,52 @@
 use crate::fixups::facts::{AstPath, BindingKind, FixupFacts, FunctionId, PathSegment};
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, function_path_location, stmts_snippet,
+};
 use crate::rust_ast::{FnDef, IndentStmt, Item, Program};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    VaList::new(&mut logger).fixup(program, facts)
+}
+
+pub(in crate::fixups) struct VaList<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> VaList<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
+        let mut changed = false;
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            let Item::Fn(f) = item else {
+                continue;
+            };
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                continue;
+            };
+            let before = self.logger.is_enabled().then(|| f.body.clone());
+            let function_changed = fixup_fn(f, function, facts);
+            if function_changed && let Some(before) = before {
+                self.logger.rewrite(RewriteEvent {
+                    pass: TracePass::VaList,
+                    kind: "remove_va_list_clone_alias".into(),
+                    location: function_path_location(facts, function, &[]),
+                    before: vec![stmts_snippet("body", &before)],
+                    after: vec![stmts_snippet("body", &f.body)],
+                    facts: Vec::new(),
+                });
+            }
+            changed |= function_changed;
+        }
+        changed
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts) -> bool {
     let mut changed = false;
     for (item_index, item) in program.items.iter_mut().enumerate() {
         let Item::Fn(f) = item else {
