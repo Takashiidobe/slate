@@ -44,6 +44,9 @@ pub(in crate::fixups) fn is_movable_pure_expr(expr: &Expr) -> bool {
         Expr::TupleStructLit { fields, .. } => fields.iter().all(is_movable_pure_expr),
         Expr::ArrayLit(elems) => elems.iter().all(is_movable_pure_expr),
         Expr::ArrayRepeat { elem, .. } => is_movable_pure_expr(elem),
+        Expr::Unsafe(block) if block.stmts.is_empty() => {
+            block.tail.as_deref().is_some_and(is_movable_pure_expr)
+        }
         Expr::If {
             cond,
             then_expr,
@@ -676,6 +679,47 @@ mod tests {
             .effects
             .contains(&EffectKind::MethodCall)
         );
+    }
+
+    #[test]
+    fn classifies_tail_only_unsafe_pure_expr_as_movable() {
+        let facts = analyzed(vec![temp(
+            "_v0",
+            "i32",
+            Expr::Unsafe(Box::new(crate::rust_ast::Block {
+                stmts: vec![],
+                tail: Some(Box::new(var("global"))),
+            })),
+        )]);
+
+        let expr = effect_for(
+            &facts,
+            EffectSubject::Expr,
+            AstPath(vec![PathSegment::Stmt(0)]),
+        );
+        assert_eq!(expr.purity, Purity::MovablePure);
+    }
+
+    #[test]
+    fn keeps_unsafe_expr_with_statements_non_movable() {
+        let facts = analyzed(vec![temp(
+            "_v0",
+            "i32",
+            Expr::Unsafe(Box::new(crate::rust_ast::Block {
+                stmts: vec![crate::rust_ast::IndentStmt {
+                    depth: 2,
+                    stmt: assign("global", int(1)),
+                }],
+                tail: Some(Box::new(var("global"))),
+            })),
+        )]);
+
+        let expr = effect_for(
+            &facts,
+            EffectSubject::Expr,
+            AstPath(vec![PathSegment::Stmt(0)]),
+        );
+        assert_ne!(expr.purity, Purity::MovablePure);
     }
 
     #[test]
