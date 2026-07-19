@@ -55,6 +55,7 @@ pub enum Pass {
     PruneUnusedExterns,
     UnusedItems,
     UnusedParams,
+    FinalReturns,
     MainZeroExit,
 }
 
@@ -111,6 +112,7 @@ impl Pass {
         Pass::PruneUnusedExterns,
         Pass::UnusedItems,
         Pass::UnusedParams,
+        Pass::FinalReturns,
         Pass::MainZeroExit,
     ];
 
@@ -167,6 +169,7 @@ impl Pass {
             Pass::PruneUnusedExterns => "prune_unused_externs",
             Pass::UnusedItems => "unused_items",
             Pass::UnusedParams => "unused_params",
+            Pass::FinalReturns => "final_returns",
             Pass::MainZeroExit => "main_zero_exit",
         }
     }
@@ -224,6 +227,7 @@ impl Pass {
             "prune_unused_externs" => Pass::PruneUnusedExterns,
             "unused_items" => Pass::UnusedItems,
             "unused_params" => Pass::UnusedParams,
+            "final_returns" => Pass::FinalReturns,
             "main_zero_exit" => Pass::MainZeroExit,
             _ => return None,
         })

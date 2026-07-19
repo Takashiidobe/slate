@@ -859,7 +859,7 @@ fn f() {
             out,
             "\
 fn f() {
-    return add_double(total, unsafe { ratio } as f64);
+    return add_double(total, (unsafe { ratio }) as f64);
 }
 "
         );
