@@ -1251,6 +1251,12 @@ pub fn expr_to_string(expr: &Expr) -> String {
     cg.into_inner()
 }
 
+pub fn stmt_to_string(stmt: &Stmt) -> String {
+    let mut cg = Codegen::new(String::new());
+    cg.stmt(stmt, 0).expect("writing to a String never fails");
+    cg.into_inner()
+}
+
 pub fn type_to_string(ty: &Type) -> String {
     let mut cg = Codegen::new(String::new());
     cg.ty(ty).expect("writing to a String never fails");

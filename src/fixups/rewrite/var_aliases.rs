@@ -1,55 +1,142 @@
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, path_fact, path_location, stmt_snippet,
+};
 use crate::rust_ast::{Block, Expr, IndentStmt, Stmt};
 
 pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) -> bool {
-    let mut changed = false;
-    while fixup_once(body) {
-        changed = true;
-    }
-    changed
+    let mut logger = crate::fixups::trace::NoopLogger;
+    VarAliases::new(&mut logger).fixup(body)
 }
 
-fn fixup_once(body: &mut Vec<IndentStmt>) -> bool {
-    if inline_nested_alias(body) {
-        return true;
-    }
-    for def_index in 0..body.len() {
-        let Some((alias, source)) = alias_def(&body[def_index].stmt) else {
-            continue;
-        };
-        let Some(use_index) = single_later_use_stmt(body, def_index, &alias) else {
-            continue;
-        };
-        if source_changes_between(body, def_index, use_index, &source)
-            || stmt_declares_name(&body[use_index].stmt, &source)
-        {
-            continue;
-        }
-        if body[use_index]
-            .stmt
-            .substitute_var(&alias, &Expr::Var(source.into()))
-        {
-            body.remove(def_index);
-            return true;
-        }
-    }
-    false
+pub(in crate::fixups) struct VarAliases<'a> {
+    logger: &'a mut dyn TraceLogger,
 }
 
-fn inline_nested_alias(body: &mut [IndentStmt]) -> bool {
-    for stmt in body {
+impl<'a> VarAliases<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
         let mut changed = false;
-        walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, &mut Vec::new(), &mut |body, _| {
-            if !changed && fixup_once(body) {
-                changed = true;
-            }
-        });
-        if changed {
+        while self.fixup_once(body, &mut Vec::new()) {
+            changed = true;
+        }
+        changed
+    }
+
+    fn fixup_once(&mut self, body: &mut Vec<IndentStmt>, path: &mut Vec<usize>) -> bool {
+        if self.inline_nested_alias(body, path) {
             return true;
         }
+        for def_index in 0..body.len() {
+            let Some((alias, source)) = alias_def(&body[def_index].stmt) else {
+                continue;
+            };
+            let Some(use_index) = single_later_use_stmt(body, def_index, &alias) else {
+                continue;
+            };
+            if source_changes_between(body, def_index, use_index, &source)
+                || stmt_declares_name(&body[use_index].stmt, &source)
+            {
+                continue;
+            }
+            let trace_before = self
+                .logger
+                .is_enabled()
+                .then(|| (body[def_index].stmt.clone(), body[use_index].stmt.clone()));
+            if body[use_index]
+                .stmt
+                .substitute_var(&alias, &Expr::Var(source.clone().into()))
+            {
+                if let Some((before_def, before_use)) = trace_before {
+                    let after_use = body[use_index].stmt.clone();
+                    self.log_alias_event(
+                        &alias,
+                        &source,
+                        path,
+                        def_index,
+                        use_index,
+                        &before_def,
+                        &before_use,
+                        &after_use,
+                    );
+                }
+                body.remove(def_index);
+                return true;
+            }
+        }
+        false
     }
-    false
+
+    fn inline_nested_alias(&mut self, body: &mut [IndentStmt], path: &mut Vec<usize>) -> bool {
+        for (index, stmt) in body.iter_mut().enumerate() {
+            let mut changed = false;
+            path.push(index);
+            walk::nested_body_vecs_mut_with_path(
+                &mut stmt.stmt,
+                &mut Vec::new(),
+                &mut |body, _| {
+                    if !changed && self.fixup_once(body, path) {
+                        changed = true;
+                    }
+                },
+            );
+            path.pop();
+            if changed {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn log_alias_event(
+        &mut self,
+        alias: &str,
+        source: &str,
+        body_path: &[usize],
+        def_index: usize,
+        use_index: usize,
+        before_def: &Stmt,
+        before_use: &Stmt,
+        after_use: &Stmt,
+    ) {
+        if !self.logger.is_enabled() {
+            return;
+        }
+        let def_path = var_alias_path(body_path, def_index);
+        let use_path = var_alias_path(body_path, use_index);
+        self.logger.rewrite(RewriteEvent {
+            pass: TracePass::VarAliases,
+            kind: "inline_var_alias".into(),
+            location: path_location(&use_path),
+            before: vec![
+                stmt_snippet("alias", before_def),
+                stmt_snippet("consumer", before_use),
+            ],
+            after: vec![stmt_snippet("consumer", after_use)],
+            facts: vec![
+                fact("alias", alias),
+                fact("source", source),
+                path_fact("alias_path", &def_path),
+                path_fact("consumer_path", &use_path),
+                fact("source_changes_between", "false"),
+                fact("consumer_declares_source", "false"),
+            ],
+        });
+    }
+}
+
+fn var_alias_path(body_path: &[usize], index: usize) -> Vec<crate::fixups::facts::PathSegment> {
+    let mut out: Vec<_> = body_path
+        .iter()
+        .copied()
+        .map(crate::fixups::facts::PathSegment::Stmt)
+        .collect();
+    out.push(crate::fixups::facts::PathSegment::Stmt(index));
+    out
 }
 
 fn alias_def(stmt: &Stmt) -> Option<(String, String)> {
@@ -213,7 +300,8 @@ fn is_temp_name(name: &str) -> bool {
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
-    use crate::rust_ast::{Expr, RustValue, Stmt, Type};
+    use crate::fixups::trace::{CollectingLogger, Pass, ProgramSummary, TraceLogger};
+    use crate::rust_ast::{Expr, Item, Program, RustValue, Stmt, Type};
 
     fn run(stmts: Vec<Stmt>) -> String {
         after_body(
@@ -265,6 +353,45 @@ fn f() {
     println!(\"{}\", loaded);
 }
 "
+        );
+    }
+
+    #[test]
+    fn logs_var_alias_inline_rewrite() {
+        let mut program = Program {
+            items: vec![Item::Fn(func(
+                vec![],
+                None,
+                vec![
+                    temp("loaded", "i32", int(7)),
+                    temp("_v30", "i32", var("loaded")),
+                    println_arg(var("_v30")),
+                ],
+            ))],
+        };
+        let mut logger = CollectingLogger::default();
+        logger.begin_pass(
+            Pass::VarAliases,
+            ProgramSummary::from_program(&program),
+            program.emit(),
+        );
+        let Item::Fn(f) = &mut program.items[0] else {
+            unreachable!();
+        };
+        assert!(VarAliases::new(&mut logger).fixup(&mut f.body));
+        logger.end_pass(ProgramSummary::from_program(&program), program.emit());
+        let log = logger.finish(ProgramSummary::from_program(&program));
+        let event = &log.passes[0].events[0];
+
+        assert_eq!(event.kind, "inline_var_alias");
+        assert_eq!(event.before[0].code, "let _v30: i32 = loaded;");
+        assert_eq!(event.before[1].code, "println!(\"{}\", _v30);");
+        assert_eq!(event.after[0].code, "println!(\"{}\", loaded);");
+        assert!(
+            event
+                .facts
+                .iter()
+                .any(|fact| fact.key == "source" && fact.value == "loaded")
         );
     }
 
