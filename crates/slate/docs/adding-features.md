@@ -9,7 +9,16 @@ Use one C file per idea under `tests/fixtures/`:
 ```bash
 $EDITOR tests/fixtures/<name>.c
 cargo test --test differential generated_differential -- --nocapture
+cargo nextest r --release --test effects_regression
 ```
+
+The effects regression is required for every new `tests/fixtures/*.c` fixture,
+even when the change looks like baseline lowering rather than a fixup. It
+interprets the raw lowered Rust and the fixuped Rust and catches new observable
+effects that a fixup preserved incorrectly or that the effects interpreter does
+not model yet. If it fails, handle the new effect shape in `src/effects/` or
+leave the fixture out until the behavior is modeled; do not accept an effects
+extraction failure as harmless.
 
 The checked fixtures are C-only. Fixed-up generated Rust for inspection lives
 under the ignored `tests/fixtures.generated/` directory:
@@ -70,7 +79,8 @@ semantics, or produces different output from the C program.
 
    ```bash
    cargo fmt
-   cargo test
+   cargo nextest r --release
+   cargo nextest r --release --test effects_regression
    cargo run -- emit-fixtures
    ```
 
@@ -113,12 +123,15 @@ helpers, safety rules, registration) before writing one.
 
    ```bash
    cargo fmt
-   cargo test
+   cargo nextest r --release
+   cargo nextest r --release --test effects_regression
    cargo run -- emit-fixtures
    ```
 
 The fixup is done when output and exit code are unchanged and the generated Rust
-is clearly better for the supported pattern.
+is clearly better for the supported pattern. The effects regression must also
+pass, because it is the check that the raw Rust and fixuped Rust still have the
+same modeled observable behavior.
 
 ## Choosing The Path
 

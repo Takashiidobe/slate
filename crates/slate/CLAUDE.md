@@ -142,7 +142,8 @@ Read these before making changes — they are the real playbook:
 ## Conventions & Patterns
 
 - **Every feature starts with a C fixture** in `tests/fixtures/` (C-only), driven
-  by `cargo test --test differential generated_differential`.
+  by `cargo test --test differential generated_differential` and
+  `cargo nextest r --release --test effects_regression`.
 - **Transliterate first, idiomatize later.** Baseline Rust may be ugly:
   `#[repr(C)]`, raw pointers, explicit temps, `libc`, and `unsafe` are all
   acceptable. Make it correct first; recover idiom in separate, verified fixups.
@@ -157,7 +158,9 @@ Read these before making changes — they are the real playbook:
   optional in spirit — disabling it still leaves correct Rust.
 - **Effects validation compares Rust to Rust.** `compare-effects-rust-rust`
   interprets raw lowered Rust and fixuped Rust; it is for checking fixup
-  preservation, not C/CIR semantics. See [docs/effects.md](docs/effects.md).
+  preservation, not C/CIR semantics. New fixtures and fixups must keep the
+  effects regression green; if it fails, model the new effect shape rather than
+  treating the failure as harmless. See [docs/effects.md](docs/effects.md).
 - **Use shared fixup walkers.** Fact collectors should use
   `src/fixups/facts/walk.rs`; rewrite passes should use
   `src/fixups/support/walk.rs`. Do not add pass-local recursive `exprs`,
