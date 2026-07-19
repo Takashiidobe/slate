@@ -162,6 +162,7 @@ pub enum Value {
     BlockLabel(&'static str),
     Null,
     Option(Option<OptionValue>),
+    Bytes(Vec<u8>),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

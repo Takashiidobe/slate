@@ -230,6 +230,7 @@ fn observe_value(value: Value, observed: &mut BTreeSet<AllocId>) {
         | Value::Atomic(_)
         | Value::BlockLabel(_)
         | Value::Null
+        | Value::Bytes(_)
         | Value::Option(None) => {}
     }
 }
@@ -323,6 +324,7 @@ fn value_allocs(value: Value, allocs: &mut Vec<AllocId>) {
         | Value::Atomic(_)
         | Value::BlockLabel(_)
         | Value::Null
+        | Value::Bytes(_)
         | Value::Option(None) => {}
     }
 }

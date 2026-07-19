@@ -312,6 +312,16 @@ pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> Value {
             other => other,
         };
     }
+    if matches!(ty, Type::Ptr { .. }) {
+        return match value {
+            Value::Int { value, .. } => Value::Int {
+                width: IntWidth::PointerSized,
+                signed: false,
+                value: truncate_int(value, IntWidth::PointerSized, false),
+            },
+            other => other,
+        };
+    }
     let Some((width, signed, _)) = scalar_type_shape(ty) else {
         return value;
     };
