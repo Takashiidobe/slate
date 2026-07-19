@@ -314,7 +314,9 @@ impl Interp {
                     Expr::Str(s) if is_str_ref_ty(ty) => {
                         self.let_string_bytes(name, s.as_bytes())?
                     }
+                    _ if box_elem_shape(ty).is_some() => self.let_box(name, ty, init)?,
                     _ if vec_elem_shape(ty).is_some() => self.let_vec(name, ty, init)?,
+                    _ if slice_elem_shape(ty).is_some() => self.let_slice(name, ty, init)?,
                     _ if matches!(ty, Type::Array { .. }) => self.let_array(name, ty, init)?,
                     Expr::CStr(bytes) if is_cstr_ref_ty(ty) => self.let_cstr(name, bytes)?,
                     _ if matches!(ty, Type::Custom(_)) => self.let_struct_value(name, init)?,
@@ -776,6 +778,49 @@ impl Interp {
         }
     }
 
+    fn let_box(&mut self, name: &str, ty: &Type, init: &Expr) -> EResult<()> {
+        let (elem_width, elem_signed, elem_size) = box_elem_shape(ty)
+            .ok_or_else(|| EffectError::unsupported(Construct::VecLocalType, ty.clone()))?;
+        let Expr::Call { func, args } = init else {
+            return Err(EffectError::unsupported(
+                Construct::VecInitializer,
+                init.clone(),
+            ));
+        };
+        if !is_box_new_call(func) {
+            return Err(EffectError::unsupported(
+                Construct::VecInitializer,
+                init.clone(),
+            ));
+        }
+        let [arg] = args.as_slice() else {
+            return Err(EffectError::arg_shape(
+                Construct::SomeArg,
+                ArgShapeKind::OneArgument,
+            ));
+        };
+        let raw = value_as_i128(self.eval(arg)?)?;
+        let value = Value::Int {
+            width: elem_width,
+            signed: elem_signed,
+            value: raw,
+        };
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        let loc = Location {
+            alloc,
+            byte_offset: 0,
+        };
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: elem_size,
+        });
+        self.heap.insert(loc, value.clone());
+        self.trace.push(Effect::Write { loc, value });
+        self.scalars.insert(name.to_string(), Value::Ref(loc));
+        Ok(())
+    }
+
     fn let_vec(&mut self, name: &str, ty: &Type, init: &Expr) -> EResult<()> {
         let (elem_width, elem_signed, elem_size) = match vec_elem_shape(ty) {
             Some(shape) => shape,
@@ -841,6 +886,54 @@ impl Interp {
                 );
             }
         }
+        Ok(())
+    }
+
+    fn let_slice(&mut self, name: &str, ty: &Type, init: &Expr) -> EResult<()> {
+        let (elem_width, elem_signed, elem_size) = slice_elem_shape(ty)
+            .ok_or_else(|| EffectError::unsupported(Construct::VecLocalType, ty.clone()))?;
+        let bytes = self.byte_slice_expr_bytes(init)?;
+        let mut storage = bytes.clone();
+        if is_byte_like_literal(init) {
+            storage.push(0);
+        }
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.trace.push(Effect::Alloc {
+            alloc,
+            size: storage.len() as u64 * elem_size,
+        });
+        for (index, byte) in storage.iter().enumerate() {
+            let value = Value::Int {
+                width: elem_width,
+                signed: elem_signed,
+                value: *byte as i128,
+            };
+            let loc = Location {
+                alloc,
+                byte_offset: index as u64 * elem_size,
+            };
+            self.heap.insert(loc, value.clone());
+            self.trace.push(Effect::Write { loc, value });
+        }
+        self.vecs.insert(
+            name.to_string(),
+            VecBinding {
+                alloc,
+                elem_width,
+                elem_signed,
+                elem_size,
+                len: bytes.len() as u64,
+                owned: false,
+            },
+        );
+        self.scalars.insert(
+            name.to_string(),
+            Value::Ref(Location {
+                alloc,
+                byte_offset: 0,
+            }),
+        );
         Ok(())
     }
 
@@ -1323,12 +1416,7 @@ impl Interp {
             Expr::Ref { expr, .. } if matches!(expr.as_ref(), Expr::Var(ident) if self.vecs.contains_key(ident.as_str())) => {
                 self.vec_all_bytes(collection_name(bytes)?)?
             }
-            other => {
-                return Err(EffectError::unsupported(
-                    Construct::WriteAllCall,
-                    other.clone(),
-                ));
-            }
+            other => self.byte_slice_expr_bytes(other)?,
         };
         self.append_file_bytes(file, &bytes);
         self.trace.push(Effect::FileWrite { file, bytes });
@@ -1350,6 +1438,54 @@ impl Interp {
             out.push(value_as_i128(&value)? as u8);
         }
         Ok(out)
+    }
+
+    fn byte_slice_expr_bytes(&mut self, expr: &Expr) -> EResult<Vec<u8>> {
+        match expr {
+            Expr::Ref { expr, .. } | Expr::Cast { expr, .. } => self.byte_slice_expr_bytes(expr),
+            Expr::Unsafe(block) if block.stmts.is_empty() => {
+                let Some(tail) = &block.tail else {
+                    return Err(EffectError::internal("unsafe byte slice has no tail value"));
+                };
+                self.byte_slice_expr_bytes(tail)
+            }
+            Expr::Call { func, args } if is_path(func, &["std", "slice", "from_raw_parts"]) => {
+                let [ptr, len] = args.as_slice() else {
+                    return Err(EffectError::arg_shape(
+                        Construct::WriteAllCall,
+                        ArgShapeKind::TwoArguments,
+                    ));
+                };
+                let base = self.eval_ref(ptr)?;
+                let len = value_as_u64(self.eval(len)?)?;
+                let values = self.read_bytes(base, len)?;
+                let mut out = Vec::with_capacity(values.len());
+                for value in values {
+                    out.push(value_as_i128(value)? as u8);
+                }
+                Ok(out)
+            }
+            Expr::MethodCall { recv, method, args }
+                if args.is_empty()
+                    && matches!(
+                        method.as_str(),
+                        "as_slice" | "as_mut_slice" | "as_bytes" | "to_bytes"
+                    ) =>
+            {
+                self.byte_slice_expr_bytes(recv)
+            }
+            Expr::Var(ident) if self.vecs.contains_key(ident.as_str()) => {
+                self.vec_all_bytes(ident.as_str())
+            }
+            Expr::ByteStr(bytes) => Ok(bytes.clone()),
+            Expr::CStr(bytes) => Ok(bytes
+                .iter()
+                .cloned()
+                .take_while(|byte| *byte != 0)
+                .collect()),
+            Expr::Str(s) => Ok(s.as_bytes().to_vec()),
+            _ => self.string_expr_bytes(expr),
+        }
     }
 
     fn file_arg(&self, expr: &Expr) -> EResult<FileId> {
@@ -2541,7 +2677,28 @@ impl Interp {
             }
             Expr::Field { base, field } => self.eval_field(base, field),
             Expr::MethodCall { recv, method, args } if method == "len" && args.is_empty() => {
-                self.string_len(recv)
+                if collection_name(recv).is_ok_and(|name| self.vecs.contains_key(name)) {
+                    let name = collection_name(recv)?;
+                    Ok(Value::Int {
+                        width: IntWidth::PointerSized,
+                        signed: false,
+                        value: self.vecs[name].len as i128,
+                    })
+                } else {
+                    self.string_len(recv)
+                }
+            }
+            Expr::MethodCall { recv, method, args } if method == "split_at" => {
+                self.split_at(recv, args)
+            }
+            Expr::MethodCall { recv, method, args } if method == "find" => {
+                self.find_in_bytes(recv, args, false)
+            }
+            Expr::MethodCall { recv, method, args } if method == "rfind" => {
+                self.find_in_bytes(recv, args, true)
+            }
+            Expr::MethodCall { recv, method, args } if method == "contains" => {
+                self.contains_bytes(recv, args)
             }
             Expr::MethodCall { recv, method, args } if method == "to_owned" && args.is_empty() => {
                 let bytes = self.string_expr_bytes(recv)?;
@@ -3387,12 +3544,55 @@ impl Interp {
             }
             return Ok(int32(0));
         }
+        if is_path(func, &["std", "cmp", "min"]) || is_path(func, &["std", "cmp", "max"]) {
+            let [left, right] = args else {
+                return Err(EffectError::arg_shape(
+                    Construct::CompareMethodArg,
+                    ArgShapeKind::TwoArguments,
+                ));
+            };
+            let left = self.eval(left)?;
+            let right = self.eval(right)?;
+            let (left_raw, right_raw) = (value_as_i128(&left)?, value_as_i128(&right)?);
+            return if is_path(func, &["std", "cmp", "min"]) {
+                Ok(if left_raw <= right_raw { left } else { right })
+            } else {
+                Ok(if left_raw >= right_raw { left } else { right })
+            };
+        }
+        if is_path(func, &["char", "from"]) {
+            let [arg] = args else {
+                return Err(EffectError::arg_shape(
+                    Construct::SomeArg,
+                    ArgShapeKind::OneArgument,
+                ));
+            };
+            return Ok(Value::Int {
+                width: IntWidth::W32,
+                signed: false,
+                value: value_as_i128(self.eval(arg)?)? as u8 as i128,
+            });
+        }
         if is_path(func, &["std", "ptr", "read_volatile"]) {
             return self.read_volatile(args);
         }
         if is_path(func, &["std", "ptr", "write_volatile"]) {
             self.write_volatile(args)?;
             return Ok(int32(0));
+        }
+        if is_path(func, &["std", "ptr", "copy_nonoverlapping"]) {
+            self.call_copy_nonoverlapping(args)?;
+            return Ok(int32(0));
+        }
+        if is_path(func, &["std", "slice", "from_raw_parts"]) {
+            let bytes = self.byte_slice_expr_bytes(&Expr::Call {
+                func: Box::new(func.clone()),
+                args: args.to_vec(),
+            })?;
+            return Ok(Value::Bytes(bytes));
+        }
+        if is_path(func, &["std", "io", "Read", "read_to_end"]) {
+            return self.call_read_to_end(args);
         }
         if is_path(func, &["std", "io", "BufRead", "read_until"]) {
             return self.call_read_until(args);
@@ -3922,6 +4122,22 @@ impl Interp {
         let values = self.read_bytes(src, len)?;
         self.write_bytes(dst, &values);
         Ok(Value::Ref(dst))
+    }
+
+    fn call_copy_nonoverlapping(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [src, dst, count] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Memcpy),
+                ArgShapeKind::ThreeArguments,
+            ));
+        };
+        let src_loc = self.eval_ref(src)?;
+        let dst_loc = self.eval_ref(dst)?;
+        let elem_size = self.pointer_elem_size(src, src_loc)?;
+        let count = value_as_u64(self.eval(count)?)?;
+        let values = self.read_bytes(src_loc, count * elem_size)?;
+        self.write_bytes(dst_loc, &values);
+        Ok(Value::Ref(dst_loc))
     }
 
     fn call_memset(&mut self, args: &[Expr]) -> EResult<Value> {
@@ -4505,6 +4721,24 @@ impl Interp {
         let (file, limit) = self.read_until_source(source)?;
         let delim = value_as_u64(self.eval(delim)?)? as u8;
         let bytes = self.read_file_bytes(file, limit.unwrap_or(usize::MAX), Some(delim))?;
+        let buf_name = collection_name(buf)?.to_string();
+        self.extend_vec_bytes(&buf_name, &bytes)?;
+        Ok(Value::Option(Some(OptionValue::Int {
+            width: IntWidth::PointerSized,
+            signed: false,
+            value: bytes.len() as i128,
+        })))
+    }
+
+    fn call_read_to_end(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [source, buf] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::ReadUntilArgs,
+                ArgShapeKind::TwoArguments,
+            ));
+        };
+        let (file, limit) = self.read_until_source(source)?;
+        let bytes = self.read_file_bytes(file, limit.unwrap_or(usize::MAX), None)?;
         let buf_name = collection_name(buf)?.to_string();
         self.extend_vec_bytes(&buf_name, &bytes)?;
         Ok(Value::Option(Some(OptionValue::Int {
@@ -5118,6 +5352,13 @@ impl Interp {
                 ArgShapeKind::OneArgument,
             ));
         };
+        if let Ok(left) = self.byte_slice_expr_bytes(recv) {
+            let right = match arg {
+                Expr::Ref { expr, .. } => self.byte_slice_expr_bytes(expr),
+                other => self.byte_slice_expr_bytes(other),
+            }?;
+            return Ok(int32(compare_bytes(&left, &right) as i128));
+        }
         let left = self.read_comparable(recv)?;
         let right = match arg {
             Expr::Ref { expr, .. } => self.read_comparable(expr),
@@ -5134,6 +5375,110 @@ impl Interp {
             value @ Value::Int { .. } => Ok(value),
             other => Err(EffectError::unsupported(Construct::ReadComparable, other)),
         }
+    }
+
+    fn split_at(&mut self, recv: &Expr, args: &[Expr]) -> EResult<Value> {
+        let [mid] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::CompareMethodArg,
+                ArgShapeKind::OneArgument,
+            ));
+        };
+        let bytes = self.byte_slice_expr_bytes(recv)?;
+        let mid = value_as_u64(self.eval(mid)?)? as usize;
+        let mid = mid.min(bytes.len());
+        Ok(Value::Tuple(vec![
+            Value::Bytes(bytes[..mid].to_vec()),
+            Value::Bytes(bytes[mid..].to_vec()),
+        ]))
+    }
+
+    fn find_in_bytes(&mut self, recv: &Expr, args: &[Expr], reverse: bool) -> EResult<Value> {
+        let [needle] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::CompareMethodArg,
+                ArgShapeKind::OneArgument,
+            ));
+        };
+        let hay = self.byte_slice_expr_bytes(recv)?;
+        let found = match needle {
+            Expr::Closure { params, body } => {
+                let [param] = params.as_slice() else {
+                    return Err(EffectError::arg_shape(
+                        Construct::MapOrClosureParams,
+                        ArgShapeKind::OneArgument,
+                    ));
+                };
+                let mut found = None;
+                let iter: Box<dyn Iterator<Item = (usize, u8)>> = if reverse {
+                    Box::new(hay.iter().cloned().enumerate().rev())
+                } else {
+                    Box::new(hay.iter().cloned().enumerate())
+                };
+                for (index, byte) in iter {
+                    let old = self.scalars.insert(
+                        param.as_str().to_string(),
+                        Value::Int {
+                            width: IntWidth::W32,
+                            signed: false,
+                            value: byte as i128,
+                        },
+                    );
+                    let matched = value_as_bool(self.eval(body)?)?;
+                    restore_scalar(&mut self.scalars, param.as_str(), old);
+                    if matched {
+                        found = Some(index);
+                        break;
+                    }
+                }
+                found
+            }
+            _ => {
+                if let Ok(needle) = self.byte_slice_expr_bytes(needle) {
+                    if needle.is_empty() {
+                        Some(if reverse { hay.len() } else { 0 })
+                    } else if reverse {
+                        hay.windows(needle.len())
+                            .rposition(|window| window == needle)
+                    } else {
+                        hay.windows(needle.len())
+                            .position(|window| window == needle)
+                    }
+                } else {
+                    let byte = value_as_i128(self.eval(needle)?)? as u8;
+                    if reverse {
+                        hay.iter().rposition(|candidate| *candidate == byte)
+                    } else {
+                        hay.iter().position(|candidate| *candidate == byte)
+                    }
+                }
+            }
+        };
+        Ok(match found {
+            Some(index) => Value::Option(Some(OptionValue::Int {
+                width: IntWidth::PointerSized,
+                signed: false,
+                value: index as i128,
+            })),
+            None => Value::Option(None),
+        })
+    }
+
+    fn contains_bytes(&mut self, recv: &Expr, args: &[Expr]) -> EResult<Value> {
+        let [needle] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::CompareMethodArg,
+                ArgShapeKind::OneArgument,
+            ));
+        };
+        let hay = self.byte_slice_expr_bytes(recv)?;
+        if let Ok(needle) = self.byte_slice_expr_bytes(needle) {
+            return Ok(Value::Bool(
+                needle.is_empty() || hay.windows(needle.len()).any(|window| window == needle),
+            ));
+        }
+        let byte = value_as_i128(self.eval(needle)?)? as u8;
+        Ok(Value::Bool(hay.contains(&byte)))
     }
 
     fn iter_position(&mut self, recv: &Expr, args: &[Expr]) -> EResult<Value> {
@@ -5178,7 +5523,7 @@ impl Interp {
         Ok(Value::Option(None))
     }
 
-    fn iter_source(&self, expr: &Expr) -> EResult<(AllocId, u64, u64)> {
+    fn iter_source(&mut self, expr: &Expr) -> EResult<(AllocId, u64, u64)> {
         let Expr::MethodCall { recv, method, args } = expr else {
             return Err(EffectError::unsupported(
                 Construct::IterSourceReceiver,
@@ -5192,11 +5537,31 @@ impl Interp {
             ));
         }
         let name = collection_name(recv)?;
-        let binding = self
-            .vecs
-            .get(name)
-            .ok_or_else(|| EffectError::unknown(BindingKind::Collection, name))?;
-        Ok((binding.alloc, binding.elem_size, binding.len))
+        if let Some(binding) = self.vecs.get(name) {
+            return Ok((binding.alloc, binding.elem_size, binding.len));
+        }
+        let len = self.byte_slice_expr_bytes(recv)?.len() as u64;
+        let loc = self.byte_slice_base(recv)?;
+        Ok((loc.alloc, 1, len))
+    }
+
+    fn byte_slice_base(&mut self, expr: &Expr) -> EResult<Location> {
+        match expr {
+            Expr::Ref { expr, .. } | Expr::Cast { expr, .. } => self.byte_slice_base(expr),
+            Expr::MethodCall { recv, method, args }
+                if args.is_empty()
+                    && matches!(
+                        method.as_str(),
+                        "as_slice" | "as_mut_slice" | "as_bytes" | "to_bytes"
+                    ) =>
+            {
+                self.byte_slice_base(recv)
+            }
+            Expr::Var(ident) if self.vecs.contains_key(ident.as_str()) => {
+                self.collection_base(expr)
+            }
+            _ => self.eval_ref(expr),
+        }
     }
 
     fn eval_iter_reduce(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> EResult<Value> {
@@ -5354,6 +5719,14 @@ fn tuple_pat2(pat: &str) -> EResult<(&str, &str)> {
         return Err(EffectError::unsupported(Construct::ForLoopIterator, pat));
     }
     Ok((left, right))
+}
+
+fn is_byte_like_literal(expr: &Expr) -> bool {
+    match expr {
+        Expr::Ref { expr, .. } | Expr::Cast { expr, .. } => is_byte_like_literal(expr),
+        Expr::ByteStr(_) | Expr::CStr(_) | Expr::Str(_) => true,
+        _ => false,
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
