@@ -388,6 +388,10 @@ impl Interp {
                 self.push(recv, args)?;
                 Ok(Flow::Normal)
             }
+            Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "resize" => {
+                self.resize_vec(recv, args)?;
+                Ok(Flow::Normal)
+            }
             Stmt::Expr(Expr::Call { func, args }) if is_path(func, &["std", "process", "exit"]) => {
                 let code = value_as_i32(self.eval(&args[0])?)?;
                 self.drop_live_vecs()?;
@@ -1269,6 +1273,59 @@ impl Interp {
         Ok(())
     }
 
+    fn resize_vec(&mut self, recv: &Expr, args: &[Expr]) -> EResult<()> {
+        let name = match recv {
+            Expr::Var(ident) => ident.as_str().to_string(),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::PushReceiver,
+                    other.clone(),
+                ));
+            }
+        };
+        let [new_len, elem] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::VecResizeArgs,
+                ArgShapeKind::TwoArguments,
+            ));
+        };
+        let new_len = value_as_u64(self.eval(new_len)?)?;
+        let elem = self.eval(elem)?;
+        let binding = self
+            .vecs
+            .get(&name)
+            .ok_or_else(|| EffectError::unknown(BindingKind::Vec, name.clone()))?;
+        let (alloc, elem_width, elem_signed, elem_size, old_len) = (
+            binding.alloc,
+            binding.elem_width,
+            binding.elem_signed,
+            binding.elem_size,
+            binding.len,
+        );
+        if new_len > old_len {
+            let value = Value::Int {
+                width: elem_width,
+                signed: elem_signed,
+                value: value_as_i128(elem)?,
+            };
+            for index in old_len..new_len {
+                let loc = Location {
+                    alloc,
+                    byte_offset: index * elem_size,
+                };
+                self.heap.insert(loc, value.clone());
+                self.trace.push(Effect::Write {
+                    loc,
+                    value: value.clone(),
+                });
+            }
+        }
+        if let Some(binding) = self.vecs.get_mut(&name) {
+            binding.len = new_len;
+        }
+        Ok(())
+    }
+
     fn drop_live_vecs(&mut self) -> EResult<()> {
         let mut allocs: Vec<AllocId> = self
             .vecs
@@ -1313,6 +1370,13 @@ impl Interp {
     }
 
     fn print(&mut self, args: &[Expr]) -> EResult<()> {
+        if args.is_empty() {
+            self.trace.push(Effect::Call {
+                name: "printf".to_string(),
+                args: vec![],
+            });
+            return Ok(());
+        }
         let [fmt_expr, rest @ ..] = args else {
             return Err(EffectError::arg_shape(
                 Construct::PrintMacro,
@@ -2902,6 +2966,50 @@ impl Interp {
                 });
                 Ok(int32(0))
             }
+            Expr::CopyNonoverlapping { src, dst, count } => {
+                let src_loc = self.eval_ref(src)?;
+                let dst_loc = self.eval_ref(dst)?;
+                if self.aggregate_allocs_contains(src_loc)
+                    && self.aggregate_allocs_contains(dst_loc)
+                {
+                    self.copy_struct_bytes(src_loc, dst_loc.alloc, dst_loc.byte_offset)?;
+                    return Ok(Value::Ref(dst_loc));
+                }
+                let elem_size = self.pointer_elem_size(src, src_loc)?;
+                let values = self.read_bytes(src_loc, *count as u64 * elem_size)?;
+                self.write_bytes(dst_loc, &values);
+                Ok(Value::Ref(dst_loc))
+            }
+            Expr::PtrCopy {
+                src, dst, count, ..
+            } => {
+                let src_loc = self.eval_ref(src)?;
+                let dst_loc = self.eval_ref(dst)?;
+                if self.aggregate_allocs_contains(src_loc)
+                    && self.aggregate_allocs_contains(dst_loc)
+                {
+                    self.copy_struct_bytes(src_loc, dst_loc.alloc, dst_loc.byte_offset)?;
+                    return Ok(Value::Ref(dst_loc));
+                }
+                let elem_size = self.pointer_elem_size(src, src_loc)?;
+                let count = value_as_u64(self.eval(count)?)?;
+                let values = self.read_bytes(src_loc, count * elem_size)?;
+                self.write_bytes(dst_loc, &values);
+                Ok(Value::Ref(dst_loc))
+            }
+            Expr::WriteBytes { dst, val, count } => {
+                let dst_loc = self.eval_ref(dst)?;
+                let elem_size = self.pointer_elem_size(dst, dst_loc)?;
+                let byte = value_as_i128(self.eval(val)?)? as u8;
+                let count = value_as_u64(self.eval(count)?)?;
+                let value = Value::Int {
+                    width: IntWidth::W8,
+                    signed: true,
+                    value: byte as i128,
+                };
+                self.write_bytes(dst_loc, &vec![value; (count * elem_size) as usize]);
+                Ok(Value::Ref(dst_loc))
+            }
             other => Err(EffectError::unsupported(
                 Construct::UnsupportedExpr,
                 other.clone(),
@@ -4001,6 +4109,7 @@ impl Interp {
         match summary {
             CallSummary::Malloc => self.call_malloc(args),
             CallSummary::Calloc => self.call_calloc(args),
+            CallSummary::Realloc => self.call_realloc(args),
             CallSummary::Free => self.call_free(args),
             CallSummary::Memcpy => self.call_memcpy(args),
             CallSummary::Memmove => self.call_memcpy(args),
@@ -4084,6 +4193,65 @@ impl Interp {
             self.heap
                 .insert(Location { alloc, byte_offset }, zero.clone());
         }
+        Ok(Value::Ref(Location {
+            alloc,
+            byte_offset: 0,
+        }))
+    }
+
+    fn call_realloc(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [base, size_expr] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Realloc),
+                ArgShapeKind::TwoArguments,
+            ));
+        };
+        let size = value_as_u64(self.eval(size_expr)?)?;
+        if size == 0 {
+            self.call_free(std::slice::from_ref(base))?;
+            return Ok(Value::Null);
+        }
+        let base = match self.eval(base)? {
+            Value::Null => return self.call_malloc(std::slice::from_ref(size_expr)),
+            Value::Ref(loc) => loc,
+            other => return Err(EffectError::type_mismatch(ValueKind::Ref, other)),
+        };
+        let alloc = AllocId(self.next_alloc);
+        self.next_alloc += 1;
+        self.trace.push(Effect::Alloc { alloc, size });
+        let mut copied = self
+            .heap
+            .iter()
+            .filter_map(|(loc, value)| {
+                (loc.alloc == base.alloc
+                    && loc.byte_offset >= base.byte_offset
+                    && loc.byte_offset - base.byte_offset < size)
+                    .then_some((
+                        Location {
+                            alloc,
+                            byte_offset: loc.byte_offset - base.byte_offset,
+                        },
+                        *loc,
+                        value.clone(),
+                    ))
+            })
+            .collect::<Vec<_>>();
+        copied.sort_by_key(|(_, old_loc, _)| old_loc.byte_offset);
+        for (new_loc, old_loc, value) in copied {
+            self.trace.push(Effect::Read {
+                loc: old_loc,
+                value: value.clone(),
+            });
+            self.heap.insert(new_loc, value.clone());
+            self.trace.push(Effect::Write {
+                loc: new_loc,
+                value,
+            });
+        }
+        if !self.freed.insert(base.alloc) {
+            return Err(EffectError::double_free(base.alloc));
+        }
+        self.trace.push(Effect::Dealloc { alloc: base.alloc });
         Ok(Value::Ref(Location {
             alloc,
             byte_offset: 0,
