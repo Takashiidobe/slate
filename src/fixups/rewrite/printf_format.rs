@@ -2,10 +2,46 @@ use crate::fixups::facts::{
     AstPath, FixupFacts, FunctionId, PathSegment, PrintfArgFact, PrintfCallFact,
 };
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+};
 use crate::rust_ast::{BinOp, RustValue};
 use crate::rust_ast::{Block, Expr, ExternDecl, IndentStmt, Item, Program, Stmt};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    PrintfFormat::new(&mut logger).fixup(program, facts);
+}
+
+pub(in crate::fixups) struct PrintfFormat<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> PrintfFormat<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) {
+        let before = self.logger.is_enabled().then(|| program.emit());
+        fixup_impl(program, facts);
+        if let Some(before) = before {
+            let after = program.emit();
+            if before != after {
+                self.logger.rewrite(RewriteEvent {
+                    pass: TracePass::PrintfFormat,
+                    kind: "rewrite_printf_format_calls".into(),
+                    location: TraceLocation::default(),
+                    before: vec![TraceSnippet::new("program", before.trim_end())],
+                    after: vec![TraceSnippet::new("program", after.trim_end())],
+                    facts: vec![fact("printf_calls", facts.printf_calls.len().to_string())],
+                });
+            }
+        }
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts) {
     if has_unsupported_printf(facts) {
         return;
     }

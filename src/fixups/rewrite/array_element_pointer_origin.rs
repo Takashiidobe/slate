@@ -3,9 +3,31 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::{FixupFacts, FunctionId};
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
+};
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, Stmt};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    ArrayElementPointerOrigin::new(&mut logger).fixup(program, facts)
+}
+
+pub(in crate::fixups) struct ArrayElementPointerOrigin<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> ArrayElementPointerOrigin<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
+        fixup_impl(program, facts, self.logger)
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts, logger: &mut dyn TraceLogger) -> bool {
     let mut changed = false;
     for (item_index, item) in program.items.iter_mut().enumerate() {
         let Item::Fn(f) = item else {
@@ -22,13 +44,34 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> boo
         if origins.is_empty() {
             continue;
         }
-        changed |= rewrite_body(&mut f.body, &origins);
+        let before = logger.is_enabled().then(|| f.body.clone());
+        let function_changed = rewrite_body(&mut f.body, &origins);
+        changed |= function_changed;
         if changed {
             let removable = origins.keys().cloned().collect();
             changed |= prune_dead_pointer_stmts(&mut f.body, &removable);
+            if let Some(before) = before {
+                if body_code(&before) != body_code(&f.body) {
+                    logger.rewrite(RewriteEvent {
+                        pass: TracePass::ArrayElementPointerOrigin,
+                        kind: "rewrite_array_element_pointer_origins".into(),
+                        location: function_path_location(facts, function, &[]),
+                        before: vec![stmts_snippet("body", &before)],
+                        after: vec![stmts_snippet("body", &f.body)],
+                        facts: vec![fact("origins", origins.len().to_string())],
+                    });
+                }
+            }
         }
     }
     changed
+}
+
+fn body_code(body: &[IndentStmt]) -> String {
+    body.iter()
+        .map(|stmt| stmt.stmt.render())
+        .collect::<Vec<_>>()
+        .join("")
 }
 
 #[derive(Clone)]

@@ -1,18 +1,37 @@
 use crate::fixups::facts::{AstPath, BindingId, FixupFacts, FunctionId, PathSegment};
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, path_fact,
+    stmts_snippet,
+};
 use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
-    let mut changed = false;
-    for (item_index, item) in program.items.iter_mut().enumerate() {
-        if let Item::Fn(f) = item
-            && let Some(function) = facts.function_by_item_index(item_index)
-        {
-            changed |= fixup_body(&mut f.body, function, facts, &mut Vec::new());
-        }
+    let mut logger = crate::fixups::trace::NoopLogger;
+    NullablePointer::new(&mut logger).fixup(program, facts)
+}
+
+pub(in crate::fixups) struct NullablePointer<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> NullablePointer<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
     }
-    changed
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
+        let mut changed = false;
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            if let Item::Fn(f) = item
+                && let Some(function) = facts.function_by_item_index(item_index)
+            {
+                changed |= fixup_body(&mut f.body, function, facts, &mut Vec::new(), self.logger);
+            }
+        }
+        changed
+    }
 }
 
 fn fixup_body(
@@ -20,12 +39,13 @@ fn fixup_body(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    logger: &mut dyn TraceLogger,
 ) -> bool {
     for index in 0..body.len() {
         let mut changed = false;
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_mut_with_path(&mut body[index].stmt, path, &mut |body, path| {
-                if !changed && fixup_body(body, function, facts, path) {
+                if !changed && fixup_body(body, function, facts, path, logger) {
                     changed = true;
                 }
             });
@@ -38,7 +58,27 @@ fn fixup_body(
         let Some(plan) = plan_for_producer(body, producer_index, function, facts, path) else {
             continue;
         };
+        let before = logger.is_enabled().then(|| body.clone());
+        let producer_path = stmt_path(path, plan.producer_index);
+        let alias_count = plan.aliases.len();
+        let producer_name = plan.producer_name.clone();
+        let option_name = plan.option_name.clone();
         apply_plan(body, &plan);
+        if let Some(before) = before {
+            logger.rewrite(RewriteEvent {
+                pass: TracePass::NullablePointer,
+                kind: "rewrite_nullable_pointer_chain".into(),
+                location: function_path_location(facts, function, &producer_path),
+                before: vec![stmts_snippet("body", &before)],
+                after: vec![stmts_snippet("body", body)],
+                facts: vec![
+                    fact("producer", producer_name),
+                    fact("option", option_name),
+                    fact("aliases", alias_count.to_string()),
+                    path_fact("producer_path", &producer_path),
+                ],
+            });
+        }
         return true;
     }
     false
