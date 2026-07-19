@@ -272,7 +272,7 @@ impl Interp {
                     Expr::CStr(bytes) if is_cstr_ref_ty(ty) => self.let_cstr(name, bytes),
                     _ if matches!(ty, Type::Custom(_)) => self.let_struct_value(name, init),
                     _ => {
-                        let value = self.eval(init);
+                        let value = cast_value_to_type(self.eval(init), ty);
                         self.scalars.insert(name.clone(), value);
                     }
                 }
