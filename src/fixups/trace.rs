@@ -5,6 +5,7 @@ use std::fmt::Write;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Pass {
     Goto,
+    Switch,
     EarlyInlineTemps,
     AnonymousStructs,
     ParamSpills,
@@ -60,6 +61,7 @@ pub enum Pass {
 impl Pass {
     pub const ALL: &'static [Pass] = &[
         Pass::Goto,
+        Pass::Switch,
         Pass::EarlyInlineTemps,
         Pass::AnonymousStructs,
         Pass::ParamSpills,
@@ -115,6 +117,7 @@ impl Pass {
     pub fn name(self) -> &'static str {
         match self {
             Pass::Goto => "goto",
+            Pass::Switch => "switch",
             Pass::EarlyInlineTemps => "early_inline_temps",
             Pass::AnonymousStructs => "anonymous_structs",
             Pass::ParamSpills => "param_spills",
@@ -171,6 +174,7 @@ impl Pass {
     pub fn parse(name: &str) -> Option<Self> {
         Some(match name {
             "goto" => Pass::Goto,
+            "switch" => Pass::Switch,
             "early_inline_temps" => Pass::EarlyInlineTemps,
             "anonymous_structs" => Pass::AnonymousStructs,
             "param_spills" => Pass::ParamSpills,
