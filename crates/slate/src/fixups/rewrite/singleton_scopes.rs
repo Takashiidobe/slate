@@ -4,7 +4,7 @@ use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, fact, named_path_location, path_fact,
     stmt_snippet,
 };
-use crate::rust_ast::{IndentStmt, Stmt};
+use crate::rust_ast::{IndentStmt, Stmt, UnaryOp};
 
 pub(in crate::fixups) fn fixup(body: &mut [IndentStmt]) -> bool {
     let mut logger = crate::fixups::trace::NoopLogger;
@@ -50,6 +50,23 @@ impl<'a> SingletonScopes<'a> {
             }
 
             let before = self.logger.is_enabled().then(|| body[index].stmt.clone());
+            if unwrap_do_while_loop_scope(&mut body[index]) {
+                if let Some(before) = before {
+                    let mut stmt_path = path.clone();
+                    stmt_path.push(PathSegment::Stmt(index));
+                    self.logger.rewrite(RewriteEvent {
+                        pass: TracePass::SingletonScopes,
+                        kind: "unwrap_do_while_loop_scope".into(),
+                        location: named_path_location(self.function_name.clone(), &stmt_path),
+                        before: vec![stmt_snippet("loop", &before)],
+                        after: vec![stmt_snippet("loop", &body[index].stmt)],
+                        facts: vec![path_fact("stmt_path", &stmt_path)],
+                    });
+                }
+                return true;
+            }
+
+            let before = self.logger.is_enabled().then(|| body[index].stmt.clone());
             if unwrap_singleton_scope(&mut body[index]) {
                 if let Some(before) = before {
                     let mut stmt_path = path.clone();
@@ -68,6 +85,44 @@ impl<'a> SingletonScopes<'a> {
         }
         false
     }
+}
+
+fn unwrap_do_while_loop_scope(indent: &mut IndentStmt) -> bool {
+    let Stmt::Loop { body, .. } = &mut indent.stmt else {
+        return false;
+    };
+    if body.len() < 2 || !is_do_while_break_guard(&body[1].stmt) {
+        return false;
+    }
+    if !matches!(body[0].stmt, Stmt::Scope { .. }) {
+        return false;
+    }
+
+    let Stmt::Scope { body: scoped } = body.remove(0).stmt else {
+        unreachable!();
+    };
+    body.splice(0..0, scoped);
+    true
+}
+
+fn is_do_while_break_guard(stmt: &Stmt) -> bool {
+    let Stmt::If {
+        cond,
+        then_body,
+        else_body,
+    } = stmt
+    else {
+        return false;
+    };
+    matches!(
+        cond,
+        crate::rust_ast::Expr::Unary {
+            op: UnaryOp::Not,
+            ..
+        }
+    ) && else_body.is_empty()
+        && then_body.len() == 1
+        && matches!(then_body[0].stmt, Stmt::Break(None))
 }
 
 fn unwrap_singleton_scope(indent: &mut IndentStmt) -> bool {
@@ -207,6 +262,42 @@ mod tests {
 
         assert!(got.contains("    for item in items() {\n        total += *item;\n    }\n"));
         assert!(!got.contains("    for item in items() {\n        {\n"));
+    }
+
+    #[test]
+    fn unwraps_do_while_loop_body_scope() {
+        let got = after(vec![Stmt::Loop {
+            label: None,
+            body: vec![
+                stmt(Stmt::Scope {
+                    body: vec![
+                        stmt(crate::rust_ast::Stmt::CompoundAssign {
+                            target: var("total"),
+                            op: crate::rust_ast::BinOp::Add,
+                            value: var("i"),
+                        }),
+                        stmt(crate::rust_ast::Stmt::CompoundAssign {
+                            target: var("i"),
+                            op: crate::rust_ast::BinOp::Add,
+                            value: int(1),
+                        }),
+                    ],
+                }),
+                stmt(Stmt::If {
+                    cond: crate::rust_ast::Expr::Unary {
+                        op: crate::rust_ast::UnaryOp::Not,
+                        expr: Box::new(bin(crate::rust_ast::BinOp::Le, var("i"), var("n"))),
+                    },
+                    then_body: vec![stmt(Stmt::Break(None))],
+                    else_body: vec![],
+                }),
+            ],
+        }]);
+
+        assert!(got.contains(
+            "    loop {\n        total += i;\n        i += 1;\n        if !(i <= n) {\n            break;\n        }\n    }\n"
+        ));
+        assert!(!got.contains("    loop {\n        {\n"));
     }
 
     #[test]
