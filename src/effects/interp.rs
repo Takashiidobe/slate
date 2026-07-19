@@ -3,8 +3,9 @@ use std::collections::{HashMap, HashSet};
 
 use super::support::*;
 use crate::effects::{
-    AllocId, AtomicId, CallSummary, Effect, EffectTrace, FileId, IntWidth, Location, OptionValue,
-    ParamSeed, Value, call_summary,
+    AllocId, ArgShapeKind, AtomicId, BindingKind, CallSummary, Construct, EResult, Effect,
+    EffectError, EffectTrace, FileId, IntWidth, Location, OptionValue, ParamSeed, Value, ValueKind,
+    call_summary,
 };
 use crate::rust_ast::{
     AtomicOrdering, AtomicPlace, AtomicRmwOp, Attr, BinOp, Block, Expr, ExternDecl, FnDef,
@@ -12,30 +13,30 @@ use crate::rust_ast::{
     Type, UnaryOp,
 };
 
-pub fn interpret(f: &FnDef) -> EffectTrace {
+pub fn interpret(f: &FnDef) -> EResult<EffectTrace> {
     interpret_with_params(f, &[])
 }
 
-pub fn interpret_with_params(f: &FnDef, params: &[(&str, ParamSeed)]) -> EffectTrace {
+pub fn interpret_with_params(f: &FnDef, params: &[(&str, ParamSeed)]) -> EResult<EffectTrace> {
     let mut interp = Interp::default();
-    interp.seed_params(params);
-    let _ = interp.run(&f.body);
-    interp.trace
+    interp.seed_params(params)?;
+    let _ = interp.run(&f.body)?;
+    Ok(interp.trace)
 }
 
-pub fn interpret_program_main(program: &Program) -> EffectTrace {
+pub fn interpret_program_main(program: &Program) -> EResult<EffectTrace> {
     let mut interp = Interp::default();
-    interp.seed_program(program);
+    interp.seed_program(program)?;
     let main = interp
         .funcs
         .get("main")
         .cloned()
-        .expect("fixture must define `main`");
-    if interp.run(&main.body) == Flow::Normal {
-        interp.drop_live_vecs();
+        .ok_or_else(|| EffectError::unknown(BindingKind::Function, "main"))?;
+    if interp.run(&main.body)? == Flow::Normal {
+        interp.drop_live_vecs()?;
         interp.trace.push(Effect::Exit(0));
     }
-    interp.trace
+    Ok(interp.trace)
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -116,10 +117,10 @@ struct Interp {
 }
 
 impl Interp {
-    fn seed_program(&mut self, program: &Program) {
+    fn seed_program(&mut self, program: &Program) -> EResult<()> {
         for item in &program.items {
             match item {
-                Item::Static { name, ty, init, .. } => self.seed_static(name, ty, init),
+                Item::Static { name, ty, init, .. } => self.seed_static(name, ty, init)?,
                 Item::Fn(f) => {
                     self.funcs.insert(f.name.clone(), f.clone());
                 }
@@ -139,6 +140,7 @@ impl Interp {
                 _ => {}
             }
         }
+        Ok(())
     }
 
     /// `stdout`/`stderr` are extern statics with no initializer to interpret;
@@ -154,15 +156,15 @@ impl Interp {
         self.files.insert(name.to_string(), file);
     }
 
-    fn seed_static(&mut self, name: &str, ty: &Type, init: &Expr) {
+    fn seed_static(&mut self, name: &str, ty: &Type, init: &Expr) -> EResult<()> {
         if let Expr::AtomicNew {
             ty: atomic_ty,
             value,
         } = init
         {
-            let value = cast_to_atomic_type(self.eval(value), atomic_ty);
-            self.define_atomic(name, value);
-            return;
+            let value = cast_to_atomic_type(self.eval(value)?, atomic_ty);
+            self.define_atomic(name, value)?;
+            return Ok(());
         }
         if is_once_lock_ty(ty) {
             let zero = Value::Int {
@@ -202,20 +204,20 @@ impl Interp {
             });
             self.once_locks
                 .insert(name.to_string(), OnceLockBinding { guard, payload });
-            return;
+            return Ok(());
         }
         if let Type::Array { elem, len } = ty {
-            let loc = self.bind_array_storage(name, elem, *len, init, false);
+            let loc = self.bind_array_storage(name, elem, *len, init, false)?;
             self.globals.insert(name.to_string(), loc);
-            return;
+            return Ok(());
         }
         if matches!(ty, Type::Custom(_)) {
-            let loc = self.bind_record_storage(name, ty, init);
+            let loc = self.bind_record_storage(name, ty, init)?;
             self.globals.insert(name.to_string(), loc);
-            return;
+            return Ok(());
         }
-        let size = self.type_layout(ty).0;
-        let value = cast_value_to_type(self.eval(init), ty);
+        let size = self.type_layout(ty)?.0;
+        let value = cast_value_to_type(self.eval(init)?, ty)?;
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
         let loc = Location {
@@ -226,31 +228,33 @@ impl Interp {
         self.heap.insert(loc, value.clone());
         self.trace.push(Effect::Alloc { alloc, size });
         self.trace.push(Effect::Write { loc, value });
+        Ok(())
     }
 
-    fn seed_params(&mut self, params: &[(&str, ParamSeed)]) {
+    fn seed_params(&mut self, params: &[(&str, ParamSeed)]) -> EResult<()> {
         for (name, seed) in params {
             match seed {
                 ParamSeed::Scalar(v) => {
                     self.scalars.insert(name.to_string(), v.clone());
                 }
-                ParamSeed::Buffer(elems) => self.seed_buffer(name, elems),
+                ParamSeed::Buffer(elems) => self.seed_buffer(name, elems)?,
             }
         }
+        Ok(())
     }
 
-    fn seed_buffer(&mut self, name: &str, elems: &[Value]) {
+    fn seed_buffer(&mut self, name: &str, elems: &[Value]) -> EResult<()> {
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
-        let (elem_width, elem_signed, elem_size) = elems
-            .first()
-            .map(|elem| match elem {
-                Value::Int { width, signed, .. } => (*width, *signed, int_byte_size(elem)),
-                other => {
-                    panic!("effects::rust_ast: buffer element must be an integer, found {other:?}")
-                }
-            })
-            .unwrap_or((IntWidth::W32, true, 4));
+        let (elem_width, elem_signed, elem_size) = match elems.first() {
+            None => (IntWidth::W32, true, 4),
+            Some(elem @ Value::Int { width, signed, .. }) => {
+                (*width, *signed, int_byte_size(elem)?)
+            }
+            Some(other) => {
+                return Err(EffectError::type_mismatch(ValueKind::Int, other.clone()));
+            }
+        };
         for (index, elem) in elems.iter().enumerate() {
             let loc = Location {
                 alloc,
@@ -269,19 +273,20 @@ impl Interp {
                 owned: false,
             },
         );
+        Ok(())
     }
 
-    fn run(&mut self, body: &[IndentStmt]) -> Flow {
+    fn run(&mut self, body: &[IndentStmt]) -> EResult<Flow> {
         for stmt in body {
-            match self.step(&stmt.stmt) {
+            match self.step(&stmt.stmt)? {
                 Flow::Normal => {}
-                flow => return flow,
+                flow => return Ok(flow),
             }
         }
-        Flow::Normal
+        Ok(Flow::Normal)
     }
 
-    fn step(&mut self, stmt: &Stmt) -> Flow {
+    fn step(&mut self, stmt: &Stmt) -> EResult<Flow> {
         match stmt {
             Stmt::Let {
                 name,
@@ -294,29 +299,31 @@ impl Interp {
                     Expr::StructLit {
                         name: record_name,
                         fields,
-                    } => self.let_struct(name, record_name, fields),
+                    } => self.let_struct(name, record_name, fields)?,
                     Expr::Call { func, args } if is_path(func, &["String", "from"]) => {
-                        self.let_string(name, args)
+                        self.let_string(name, args)?
                     }
                     Expr::MethodCall { recv, method, args }
                         if matches!(ty, Type::Custom(s) if s == "String")
                             && method == "to_owned"
                             && args.is_empty() =>
                     {
-                        let bytes = self.string_expr_bytes(recv);
-                        self.let_string_bytes(name, &bytes);
+                        let bytes = self.string_expr_bytes(recv)?;
+                        self.let_string_bytes(name, &bytes)?;
                     }
-                    Expr::Str(s) if is_str_ref_ty(ty) => self.let_string_bytes(name, s.as_bytes()),
-                    _ if vec_elem_shape(ty).is_some() => self.let_vec(name, ty, init),
-                    _ if matches!(ty, Type::Array { .. }) => self.let_array(name, ty, init),
-                    Expr::CStr(bytes) if is_cstr_ref_ty(ty) => self.let_cstr(name, bytes),
-                    _ if matches!(ty, Type::Custom(_)) => self.let_struct_value(name, init),
+                    Expr::Str(s) if is_str_ref_ty(ty) => {
+                        self.let_string_bytes(name, s.as_bytes())?
+                    }
+                    _ if vec_elem_shape(ty).is_some() => self.let_vec(name, ty, init)?,
+                    _ if matches!(ty, Type::Array { .. }) => self.let_array(name, ty, init)?,
+                    Expr::CStr(bytes) if is_cstr_ref_ty(ty) => self.let_cstr(name, bytes)?,
+                    _ if matches!(ty, Type::Custom(_)) => self.let_struct_value(name, init)?,
                     _ => {
-                        let value = cast_value_to_type(self.eval(init), ty);
+                        let value = cast_value_to_type(self.eval(init)?, ty)?;
                         self.scalars.insert(name.clone(), value);
                     }
                 }
-                Flow::Normal
+                Ok(Flow::Normal)
             }
             Stmt::LetIf {
                 name,
@@ -327,18 +334,19 @@ impl Interp {
                 else_value,
                 ..
             } => {
-                let (body, value) = if value_as_bool(self.eval(cond)) {
+                let cond_value = value_as_bool(self.eval(cond)?)?;
+                let (body, value) = if cond_value {
                     (then_body, then_value)
                 } else {
                     (else_body, else_value)
                 };
-                match self.run(body) {
+                match self.run(body)? {
                     Flow::Normal => {
-                        let value = self.eval(value);
+                        let value = self.eval(value)?;
                         self.scalars.insert(name.clone(), value);
-                        Flow::Normal
+                        Ok(Flow::Normal)
                     }
-                    flow => flow,
+                    flow => Ok(flow),
                 }
             }
             Stmt::Let {
@@ -347,18 +355,18 @@ impl Interp {
                 init: Some(init),
                 ..
             } => {
-                if let Some(file) = self.open_file(init) {
+                if let Some(file) = self.open_file(init)? {
                     self.files.insert(name.clone(), file);
                     self.scalars.insert(name.clone(), Value::File(file));
                 } else if let Expr::AtomicNew { ty, value } = init {
-                    let value = cast_to_atomic_type(self.eval(value), ty);
-                    let atomic = self.define_atomic(name, value);
+                    let value = cast_to_atomic_type(self.eval(value)?, ty);
+                    let atomic = self.define_atomic(name, value)?;
                     self.scalars.insert(name.clone(), Value::Atomic(atomic));
                 } else {
-                    let value = self.eval(init);
+                    let value = self.eval(init)?;
                     self.scalars.insert(name.clone(), value);
                 }
-                Flow::Normal
+                Ok(Flow::Normal)
             }
             Stmt::Let {
                 name,
@@ -367,55 +375,55 @@ impl Interp {
                 ..
             } => {
                 self.record_decl_type(name, ty);
-                Flow::Normal
+                Ok(Flow::Normal)
             }
-            Stmt::Let { init: None, .. } => Flow::Normal,
+            Stmt::Let { init: None, .. } => Ok(Flow::Normal),
             Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "push_str" => {
-                self.push_str(recv, args);
-                Flow::Normal
+                self.push_str(recv, args)?;
+                Ok(Flow::Normal)
             }
             Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "push" => {
-                self.push(recv, args);
-                Flow::Normal
+                self.push(recv, args)?;
+                Ok(Flow::Normal)
             }
             Stmt::Expr(Expr::Call { func, args }) if is_path(func, &["std", "process", "exit"]) => {
-                let code = value_as_i32(self.eval(&args[0]));
-                self.drop_live_vecs();
+                let code = value_as_i32(self.eval(&args[0])?)?;
+                self.drop_live_vecs()?;
                 self.trace.push(Effect::Exit(code));
-                Flow::Return(Value::Int {
+                Ok(Flow::Return(Value::Int {
                     width: IntWidth::W32,
                     signed: true,
                     value: code as i128,
-                })
+                }))
             }
             Stmt::Expr(Expr::Call { func, args }) if is_path(func, &["drop"]) => {
-                self.drop_var(&args[0]);
-                Flow::Normal
+                self.drop_var(&args[0])?;
+                Ok(Flow::Normal)
             }
             Stmt::Expr(Expr::Call { func, args })
                 if is_path(func, &["std", "ptr", "write_volatile"]) =>
             {
-                self.write_volatile(args);
-                Flow::Normal
+                self.write_volatile(args)?;
+                Ok(Flow::Normal)
             }
             Stmt::Expr(Expr::MethodCall { recv, method, args })
-                if method == "unwrap" && args.is_empty() && self.write_all_call(recv) =>
+                if method == "unwrap" && args.is_empty() && self.write_all_call(recv)? =>
             {
-                Flow::Normal
+                Ok(Flow::Normal)
             }
             Stmt::Expr(Expr::Macro { name, args }) if name == "println" || name == "print" => {
-                self.print(args);
-                Flow::Normal
+                self.print(args)?;
+                Ok(Flow::Normal)
             }
             Stmt::Expr(expr) => {
-                self.eval(expr);
-                Flow::Normal
+                self.eval(expr)?;
+                Ok(Flow::Normal)
             }
             Stmt::Unsafe { body } => self.run_block(body),
             Stmt::Scope { body } => self.run(body),
             Stmt::Loop { label, body } => self.run_loop(label.as_ref(), body),
-            Stmt::Break(label) => Flow::Break(label.clone()),
-            Stmt::Continue(label) => Flow::Continue(label.clone()),
+            Stmt::Break(label) => Ok(Flow::Break(label.clone())),
+            Stmt::Continue(label) => Ok(Flow::Continue(label.clone())),
             Stmt::Assign { target, value } => self.assign(target, value),
             Stmt::CompoundAssign { target, op, value } => self.compound_assign(target, *op, value),
             Stmt::If {
@@ -423,92 +431,92 @@ impl Interp {
                 then_body,
                 else_body,
             } => {
-                if value_as_bool(self.eval(cond)) {
+                if value_as_bool(self.eval(cond)?)? {
                     self.run(then_body)
                 } else {
                     self.run(else_body)
                 }
             }
             Stmt::For { pat, iter, body } => self.run_for(pat, iter, body),
-            Stmt::LabeledBlock { label, body } => match self.run(body) {
-                Flow::Break(Some(target)) if target == *label => Flow::Normal,
-                flow => flow,
+            Stmt::LabeledBlock { label, body } => match self.run(body)? {
+                Flow::Break(Some(target)) if target == *label => Ok(Flow::Normal),
+                flow => Ok(flow),
             },
             Stmt::Match { expr, arms } => self.run_match(expr, arms),
             Stmt::While { cond, body } => self.run_while(cond, body),
             Stmt::Block(block) => self.run_block(block),
             Stmt::Return(value) => {
-                let value = value
-                    .as_ref()
-                    .map(|expr| self.eval(expr))
-                    .unwrap_or_else(|| Value::Int {
+                let value = match value.as_ref() {
+                    Some(expr) => self.eval(expr)?,
+                    None => Value::Int {
                         width: IntWidth::W32,
                         signed: true,
                         value: 0,
-                    });
+                    },
+                };
                 if self.call_depth == 0 {
-                    let code = value_as_i32(&value);
-                    self.drop_live_vecs();
+                    let code = value_as_i32(&value)?;
+                    self.drop_live_vecs()?;
                     self.trace.push(Effect::Exit(code));
                 }
-                Flow::Return(value)
+                Ok(Flow::Return(value))
             }
         }
     }
 
-    fn run_block(&mut self, block: &Block) -> Flow {
-        match self.run(&block.stmts) {
+    fn run_block(&mut self, block: &Block) -> EResult<Flow> {
+        match self.run(&block.stmts)? {
             Flow::Normal => {
                 if let Some(tail) = &block.tail {
-                    let value = self.eval(tail);
-                    Flow::Return(value)
+                    let value = self.eval(tail)?;
+                    Ok(Flow::Return(value))
                 } else {
-                    Flow::Normal
+                    Ok(Flow::Normal)
                 }
             }
-            flow => flow,
+            flow => Ok(flow),
         }
     }
 
-    fn run_loop(&mut self, label: Option<&Label>, body: &[IndentStmt]) -> Flow {
+    fn run_loop(&mut self, label: Option<&Label>, body: &[IndentStmt]) -> EResult<Flow> {
         loop {
-            match self.run(body) {
+            match self.run(body)? {
                 Flow::Normal => {}
                 Flow::Continue(None) => {}
                 Flow::Continue(Some(target)) if label == Some(&target) => {}
-                Flow::Break(None) => return Flow::Normal,
-                Flow::Break(Some(target)) if label == Some(&target) => return Flow::Normal,
-                flow @ Flow::Return(_) => return flow,
-                flow @ (Flow::Break(_) | Flow::Continue(_)) => return flow,
+                Flow::Break(None) => return Ok(Flow::Normal),
+                Flow::Break(Some(target)) if label == Some(&target) => return Ok(Flow::Normal),
+                flow @ Flow::Return(_) => return Ok(flow),
+                flow @ (Flow::Break(_) | Flow::Continue(_)) => return Ok(flow),
             }
         }
     }
 
-    fn assign(&mut self, target: &Expr, value: &Expr) -> Flow {
+    fn assign(&mut self, target: &Expr, value: &Expr) -> EResult<Flow> {
         match target {
             Expr::Var(ident) => {
                 if self.scalars.contains_key(ident.as_str()) && self.string_owned_expr(value) {
-                    let bytes = self.string_expr_bytes(value);
-                    self.replace_string(ident.as_str(), &bytes);
-                    return Flow::Normal;
+                    let bytes = self.string_expr_bytes(value)?;
+                    self.replace_string(ident.as_str(), &bytes)?;
+                    return Ok(Flow::Normal);
                 }
                 if self.vecs.contains_key(ident.as_str())
                     && matches!(value, Expr::ArrayLit(_) | Expr::ArrayRepeat { .. })
                 {
-                    self.assign_array(ident.as_str(), value);
-                    return Flow::Normal;
+                    self.assign_array(ident.as_str(), value)?;
+                    return Ok(Flow::Normal);
                 }
                 if self.structs.contains_key(ident.as_str())
                     && !self.pointer_elem_sizes.contains_key(ident.as_str())
                 {
-                    let v = self.eval(value);
+                    let v = self.eval(value)?;
                     let Value::Ref(src) = v else {
-                        panic!("effects::rust_ast: assigning non-struct value to struct `{ident}`");
+                        return Err(EffectError::type_mismatch(ValueKind::Ref, v));
                     };
-                    self.copy_struct_to_existing(ident.as_str(), src);
-                    return Flow::Normal;
+                    self.copy_struct_to_existing(ident.as_str(), src)?;
+                    return Ok(Flow::Normal);
                 }
-                let v = self.eval(value);
+                let v = self.eval(value)?;
                 if let Some(loc) = self.globals.get(ident.as_str()).cloned() {
                     self.write_loc(loc, v);
                 } else if let Some(loc) = self.scalar_locs.get(ident.as_str()).cloned() {
@@ -517,31 +525,36 @@ impl Interp {
                     self.scalars.insert(ident.as_str().to_string(), v);
                 }
             }
-            Expr::Index { base, index } => self.assign_index(base, index, value),
-            Expr::Field { base, field } => self.assign_field(base, field, value),
+            Expr::Index { base, index } => self.assign_index(base, index, value)?,
+            Expr::Field { base, field } => self.assign_field(base, field, value)?,
             Expr::Unary {
                 op: UnaryOp::Deref,
                 expr,
             } => {
-                let loc = self.eval_ref(expr);
-                let value = self.eval(value);
+                let loc = self.eval_ref(expr)?;
+                let value = self.eval(value)?;
                 self.write_loc(loc, value);
             }
-            other => panic!("effects::rust_ast: unsupported assign target `{other:?}`"),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::AssignTarget,
+                    other.clone(),
+                ));
+            }
         }
-        Flow::Normal
+        Ok(Flow::Normal)
     }
 
-    fn assign_array(&mut self, name: &str, value: &Expr) {
+    fn assign_array(&mut self, name: &str, value: &Expr) -> EResult<()> {
         if let Some(Type::Custom(record_name)) = self.array_elem_types.get(name).cloned() {
-            self.write_record_array_values(name, &Type::Custom(record_name), value);
-            return;
+            self.write_record_array_values(name, &Type::Custom(record_name), value)?;
+            return Ok(());
         }
         self.materialize_collection(name);
-        let binding = self
-            .vecs
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: assign to unknown array `{name}`"));
+        let binding = match self.vecs.get(name) {
+            Some(binding) => binding,
+            None => return Err(EffectError::unknown(BindingKind::Vec, name)),
+        };
         let (elem_width, elem_signed, elem_size, len, alloc) = (
             binding.elem_width,
             binding.elem_signed,
@@ -550,30 +563,44 @@ impl Interp {
             binding.alloc,
         );
         let values: Vec<Value> = match value {
-            Expr::ArrayLit(elems) => elems
-                .iter()
-                .map(|elem| Value::Int {
-                    width: elem_width,
-                    signed: elem_signed,
-                    value: value_as_i128(self.eval(elem)),
-                })
-                .collect(),
+            Expr::ArrayLit(elems) => {
+                let mut values = Vec::with_capacity(elems.len());
+                for elem in elems {
+                    let elem_value = self.eval(elem)?;
+                    values.push(Value::Int {
+                        width: elem_width,
+                        signed: elem_signed,
+                        value: value_as_i128(elem_value)?,
+                    });
+                }
+                values
+            }
             Expr::ArrayRepeat { elem, len } => {
+                let elem_value = self.eval(elem)?;
                 let value = Value::Int {
                     width: elem_width,
                     signed: elem_signed,
-                    value: value_as_i128(self.eval(elem)),
+                    value: value_as_i128(elem_value)?,
                 };
-                if value_as_i128(&value) == 0 {
+                if value_as_i128(&value)? == 0 {
                     Vec::new()
                 } else {
                     vec![value; *len]
                 }
             }
-            other => panic!("effects::rust_ast: unsupported array assignment `{other:?}`"),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::ArrayAssignment,
+                    other.clone(),
+                ));
+            }
         };
         if !values.is_empty() && values.len() as u64 != len {
-            panic!("effects::rust_ast: array assignment length does not match binding");
+            return Err(EffectError::length_mismatch(
+                Construct::ArrayAssignment,
+                len as usize,
+                values.len(),
+            ));
         }
         for (index, value) in values.into_iter().enumerate() {
             let loc = Location {
@@ -583,64 +610,76 @@ impl Interp {
             self.heap.insert(loc, value.clone());
             self.trace.push(Effect::Write { loc, value });
         }
+        Ok(())
     }
 
-    fn compound_assign(&mut self, target: &Expr, op: BinOp, value: &Expr) -> Flow {
+    fn compound_assign(&mut self, target: &Expr, op: BinOp, value: &Expr) -> EResult<Flow> {
         match target {
             Expr::Var(ident) => {
                 let name = ident.as_str().to_string();
-                let current = self
-                    .scalars
-                    .get(&name)
-                    .unwrap_or_else(|| {
-                        panic!("effects::rust_ast: compound-assign to unknown scalar `{name}`")
-                    })
-                    .clone();
-                let rhs = self.eval(value);
-                self.scalars.insert(name, apply_binop(op, current, rhs));
+                let current = match self.scalars.get(&name) {
+                    Some(current) => current.clone(),
+                    None => {
+                        return Err(EffectError::unknown(BindingKind::Scalar, name));
+                    }
+                };
+                let rhs = self.eval(value)?;
+                let updated = apply_binop(op, current, rhs)?;
+                self.scalars.insert(name, updated);
             }
             Expr::Index { base, index } => {
                 let name = match base.as_ref() {
                     Expr::Var(ident) => ident.as_str(),
                     other => {
-                        panic!("effects::rust_ast: unsupported compound-assign base `{other:?}`")
+                        return Err(EffectError::unsupported(
+                            Construct::CompoundAssignBase,
+                            other.clone(),
+                        ));
                     }
                 };
-                let idx = value_as_u64(self.eval(index));
+                let index_value = self.eval(index)?;
+                let idx = value_as_u64(index_value)?;
                 self.materialize_collection(name);
-                let binding = self.vecs.get(name).unwrap_or_else(|| {
-                    panic!("effects::rust_ast: compound-assign into unknown Vec `{name}`")
-                });
+                let binding = match self.vecs.get(name) {
+                    Some(binding) => binding,
+                    None => {
+                        return Err(EffectError::unknown(BindingKind::Vec, name));
+                    }
+                };
                 if self.freed.contains(&binding.alloc) {
-                    panic!("effects::rust_ast: compound-assign to {name} after free");
+                    return Err(EffectError::use_after_free(name));
                 }
                 let loc = Location {
                     alloc: binding.alloc,
                     byte_offset: idx * binding.elem_size,
                 };
-                let current = self
-                    .heap
-                    .get(&loc)
-                    .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
-                    .clone();
+                let current = match self.heap.get(&loc) {
+                    Some(current) => current.clone(),
+                    None => return Err(EffectError::uninitialized_read(loc)),
+                };
                 self.trace.push(Effect::Read {
                     loc,
                     value: current.clone(),
                 });
-                let rhs = self.eval(value);
-                let updated = apply_binop(op, current, rhs);
+                let rhs = self.eval(value)?;
+                let updated = apply_binop(op, current, rhs)?;
                 self.heap.insert(loc, updated.clone());
                 self.trace.push(Effect::Write {
                     loc,
                     value: updated,
                 });
             }
-            other => panic!("effects::rust_ast: unsupported compound-assign target `{other:?}`"),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::CompoundAssignTarget,
+                    other.clone(),
+                ));
+            }
         }
-        Flow::Normal
+        Ok(Flow::Normal)
     }
 
-    fn run_for(&mut self, pat: &str, iter: &Expr, body: &[IndentStmt]) -> Flow {
+    fn run_for(&mut self, pat: &str, iter: &Expr, body: &[IndentStmt]) -> EResult<Flow> {
         if let Expr::MethodCall { recv, method, args } = iter
             && method == "enumerate"
             && args.is_empty()
@@ -648,11 +687,17 @@ impl Interp {
             return self.run_for_enumerate(pat, recv, body);
         }
         let (start, end) = match iter {
-            Expr::Range { start, end } => (
-                value_as_i128(self.eval(start)),
-                value_as_i128(self.eval(end)),
-            ),
-            other => panic!("effects::rust_ast: unsupported for-loop iterator `{other:?}`"),
+            Expr::Range { start, end } => {
+                let start = self.eval(start)?;
+                let end = self.eval(end)?;
+                (value_as_i128(start)?, value_as_i128(end)?)
+            }
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::ForLoopIterator,
+                    other.clone(),
+                ));
+            }
         };
         let mut i = start;
         while i < end {
@@ -664,20 +709,20 @@ impl Interp {
                     value: i,
                 },
             );
-            match self.run(body) {
+            match self.run(body)? {
                 Flow::Normal | Flow::Continue(None) => {}
-                Flow::Break(None) => return Flow::Normal,
-                flow @ Flow::Return(_) => return flow,
-                flow @ (Flow::Break(_) | Flow::Continue(_)) => return flow,
+                Flow::Break(None) => return Ok(Flow::Normal),
+                flow @ Flow::Return(_) => return Ok(flow),
+                flow @ (Flow::Break(_) | Flow::Continue(_)) => return Ok(flow),
             }
             i += 1;
         }
-        Flow::Normal
+        Ok(Flow::Normal)
     }
 
-    fn run_for_enumerate(&mut self, pat: &str, iter: &Expr, body: &[IndentStmt]) -> Flow {
+    fn run_for_enumerate(&mut self, pat: &str, iter: &Expr, body: &[IndentStmt]) -> EResult<Flow> {
         let (index_param, item_param) = tuple_pat2(pat);
-        let (alloc, elem_size, len) = self.iter_source(iter);
+        let (alloc, elem_size, len) = self.iter_source(iter)?;
         for index in 0..len {
             self.scalars.insert(
                 index_param.to_string(),
@@ -694,52 +739,69 @@ impl Interp {
                     byte_offset: index * elem_size,
                 }),
             );
-            match self.run(body) {
+            match self.run(body)? {
                 Flow::Normal | Flow::Continue(None) => {}
-                Flow::Break(None) => return Flow::Normal,
-                flow @ Flow::Return(_) => return flow,
-                flow @ (Flow::Break(_) | Flow::Continue(_)) => return flow,
+                Flow::Break(None) => return Ok(Flow::Normal),
+                flow @ Flow::Return(_) => return Ok(flow),
+                flow @ (Flow::Break(_) | Flow::Continue(_)) => return Ok(flow),
             }
         }
         self.scalars.remove(index_param);
         self.scalars.remove(item_param);
-        Flow::Normal
+        Ok(Flow::Normal)
     }
 
-    fn run_match(&mut self, expr: &Expr, arms: &[crate::rust_ast::MatchArm]) -> Flow {
-        let value = self.eval(expr);
+    fn run_match(&mut self, expr: &Expr, arms: &[crate::rust_ast::MatchArm]) -> EResult<Flow> {
+        let value = self.eval(expr)?;
         for arm in arms {
             if pattern_matches(&arm.pattern, value.clone()) {
                 return self.run(&arm.body);
             }
         }
-        panic!("effects::rust_ast: statement match had no matching arm for {value:?}");
+        Err(EffectError::no_match_arm(value))
     }
 
-    fn run_while(&mut self, cond: &Expr, body: &Block) -> Flow {
+    fn run_while(&mut self, cond: &Expr, body: &Block) -> EResult<Flow> {
         loop {
-            if !value_as_bool(self.eval(cond)) {
-                return Flow::Normal;
+            let cond_value = self.eval(cond)?;
+            if !value_as_bool(cond_value)? {
+                return Ok(Flow::Normal);
             }
-            match self.run_block(body) {
+            match self.run_block(body)? {
                 Flow::Normal | Flow::Continue(None) => {}
-                Flow::Break(None) => return Flow::Normal,
-                flow @ Flow::Return(_) => return flow,
-                flow @ (Flow::Break(_) | Flow::Continue(_)) => return flow,
+                Flow::Break(None) => return Ok(Flow::Normal),
+                flow @ Flow::Return(_) => return Ok(flow),
+                flow @ (Flow::Break(_) | Flow::Continue(_)) => return Ok(flow),
             }
         }
     }
 
-    fn let_vec(&mut self, name: &str, ty: &Type, init: &Expr) {
-        let (elem_width, elem_signed, elem_size) = vec_elem_shape(ty)
-            .unwrap_or_else(|| panic!("effects::rust_ast: expected `Vec<T>` local, found {ty:?}"));
+    fn let_vec(&mut self, name: &str, ty: &Type, init: &Expr) -> EResult<()> {
+        let (elem_width, elem_signed, elem_size) = match vec_elem_shape(ty) {
+            Some(shape) => shape,
+            None => {
+                return Err(EffectError::unsupported(
+                    Construct::VecLocalType,
+                    ty.clone(),
+                ));
+            }
+        };
         let capacity = match init {
             Expr::Call { func, args } if args.is_empty() && is_path(func, &["Vec", "new"]) => 0,
             Expr::Call { func, args } if is_path(func, &["Vec", "with_capacity"]) => {
-                value_as_u64(self.eval(&args[0]))
+                let arg = self.eval(&args[0])?;
+                value_as_u64(arg)?
             }
-            Expr::VecRepeat { len, .. } => value_as_u64(self.eval(len)),
-            other => panic!("effects::rust_ast: unsupported Vec initializer `{other:?}`"),
+            Expr::VecRepeat { len, .. } => {
+                let len_value = self.eval(len)?;
+                value_as_u64(len_value)?
+            }
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::VecInitializer,
+                    other.clone(),
+                ));
+            }
         };
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
@@ -763,10 +825,11 @@ impl Interp {
             },
         );
         if let Expr::VecRepeat { elem, .. } = init {
+            let elem_value = self.eval(elem)?;
             let value = Value::Int {
                 width: elem_width,
                 signed: elem_signed,
-                value: value_as_i128(self.eval(elem)),
+                value: value_as_i128(elem_value)?,
             };
             for index in 0..capacity {
                 self.heap.insert(
@@ -778,42 +841,64 @@ impl Interp {
                 );
             }
         }
+        Ok(())
     }
 
-    fn let_array(&mut self, name: &str, ty: &Type, init: &Expr) {
+    fn let_array(&mut self, name: &str, ty: &Type, init: &Expr) -> EResult<()> {
         if let Type::Array { elem, len } = ty
             && matches!(elem.as_ref(), Type::Custom(_))
         {
-            self.bind_array_storage(name, elem, *len, init, false);
-            return;
+            self.bind_array_storage(name, elem, *len, init, false)?;
+            return Ok(());
         }
-        let (elem_width, elem_signed, elem_size, len) = array_elem_shape(ty)
-            .unwrap_or_else(|| panic!("effects::rust_ast: expected array local, found {ty:?}"));
+        let (elem_width, elem_signed, elem_size, len) = match array_elem_shape(ty) {
+            Some(shape) => shape,
+            None => {
+                return Err(EffectError::unsupported(
+                    Construct::ArrayLocalType,
+                    ty.clone(),
+                ));
+            }
+        };
         let values: Vec<Value> = match init {
-            Expr::ArrayLit(elems) => elems
-                .iter()
-                .map(|elem| Value::Int {
-                    width: elem_width,
-                    signed: elem_signed,
-                    value: value_as_i128(self.eval(elem)),
-                })
-                .collect(),
+            Expr::ArrayLit(elems) => {
+                let mut values = Vec::with_capacity(elems.len());
+                for elem in elems {
+                    let elem_value = self.eval(elem)?;
+                    values.push(Value::Int {
+                        width: elem_width,
+                        signed: elem_signed,
+                        value: value_as_i128(elem_value)?,
+                    });
+                }
+                values
+            }
             Expr::ArrayRepeat { elem, len } => {
+                let elem_value = self.eval(elem)?;
                 let value = Value::Int {
                     width: elem_width,
                     signed: elem_signed,
-                    value: value_as_i128(self.eval(elem)),
+                    value: value_as_i128(elem_value)?,
                 };
-                if value_as_i128(&value) == 0 {
+                if value_as_i128(&value)? == 0 {
                     Vec::new()
                 } else {
                     vec![value; *len]
                 }
             }
-            other => panic!("effects::rust_ast: unsupported array initializer `{other:?}`"),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::ArrayInitializer,
+                    other.clone(),
+                ));
+            }
         };
         if !values.is_empty() && values.len() as u64 != len {
-            panic!("effects::rust_ast: array initializer length does not match type");
+            return Err(EffectError::length_mismatch(
+                Construct::ArrayInitializer,
+                len as usize,
+                values.len(),
+            ));
         }
         let alloc = if values.is_empty() {
             LAZY_ARRAY_ALLOC
@@ -848,6 +933,7 @@ impl Interp {
                 owned: false,
             },
         );
+        Ok(())
     }
 
     fn bind_array_storage(
@@ -857,8 +943,8 @@ impl Interp {
         len: u64,
         init: &Expr,
         owned: bool,
-    ) -> Location {
-        let (elem_size, _) = self.type_layout(elem_ty);
+    ) -> EResult<Location> {
+        let (elem_size, _) = self.type_layout(elem_ty)?;
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
         self.trace.push(Effect::Alloc {
@@ -879,26 +965,31 @@ impl Interp {
         self.array_elem_types
             .insert(name.to_string(), elem_ty.clone());
         if matches!(elem_ty, Type::Custom(_)) {
-            self.bind_record_array_metadata(name, elem_ty, alloc, elem_size, len);
-            self.write_record_array_values(name, elem_ty, init);
+            self.bind_record_array_metadata(name, elem_ty, alloc, elem_size, len)?;
+            self.write_record_array_values(name, elem_ty, init)?;
         } else {
-            self.write_scalar_array_values(name, elem_ty, init);
+            self.write_scalar_array_values(name, elem_ty, init)?;
         }
-        Location {
+        Ok(Location {
             alloc,
             byte_offset: 0,
-        }
+        })
     }
 
-    fn write_scalar_array_values(&mut self, name: &str, elem_ty: &Type, init: &Expr) {
-        let binding = self
-            .vecs
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: write to unknown array `{name}`"))
-            .clone();
+    fn write_scalar_array_values(
+        &mut self,
+        name: &str,
+        elem_ty: &Type,
+        init: &Expr,
+    ) -> EResult<()> {
+        let binding = match self.vecs.get(name) {
+            Some(binding) => binding.clone(),
+            None => return Err(EffectError::unknown(BindingKind::Vec, name)),
+        };
         let elems = array_init_elems(init, binding.len);
         for (index, elem) in elems.into_iter().enumerate() {
-            let value = cast_value_to_type(self.eval(elem), elem_ty);
+            let elem_value = self.eval(elem)?;
+            let value = cast_value_to_type(elem_value, elem_ty)?;
             let loc = Location {
                 alloc: binding.alloc,
                 byte_offset: index as u64 * binding.elem_size,
@@ -906,6 +997,7 @@ impl Interp {
             self.heap.insert(loc, value.clone());
             self.trace.push(Effect::Write { loc, value });
         }
+        Ok(())
     }
 
     fn bind_record_array_metadata(
@@ -915,9 +1007,9 @@ impl Interp {
         alloc: AllocId,
         elem_size: u64,
         len: u64,
-    ) {
+    ) -> EResult<()> {
         let Type::Custom(record_name) = elem_ty else {
-            return;
+            return Ok(());
         };
         let mut field_offsets = HashMap::new();
         let mut array_fields = HashMap::new();
@@ -931,7 +1023,7 @@ impl Interp {
                 &mut field_offsets,
                 &mut array_fields,
                 &mut field_types,
-            );
+            )?;
         }
         self.structs.insert(
             name.to_string(),
@@ -943,29 +1035,43 @@ impl Interp {
                 size: elem_size * len,
             },
         );
+        Ok(())
     }
 
-    fn write_record_array_values(&mut self, name: &str, elem_ty: &Type, init: &Expr) {
-        let binding = self
-            .vecs
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: write to unknown array `{name}`"))
-            .clone();
+    fn write_record_array_values(
+        &mut self,
+        name: &str,
+        elem_ty: &Type,
+        init: &Expr,
+    ) -> EResult<()> {
+        let binding = match self.vecs.get(name) {
+            Some(binding) => binding.clone(),
+            None => return Err(EffectError::unknown(BindingKind::Vec, name)),
+        };
         let elems = array_init_elems(init, binding.len);
         for (index, elem) in elems.into_iter().enumerate() {
-            self.write_record_array_elem(name, elem_ty, index as u64, elem);
+            self.write_record_array_elem(name, elem_ty, index as u64, elem)?;
         }
+        Ok(())
     }
 
-    fn write_record_array_elem(&mut self, name: &str, elem_ty: &Type, index: u64, expr: &Expr) {
+    fn write_record_array_elem(
+        &mut self,
+        name: &str,
+        elem_ty: &Type,
+        index: u64,
+        expr: &Expr,
+    ) -> EResult<()> {
         let Type::Custom(record_name) = elem_ty else {
-            panic!("effects::rust_ast: expected record array element type, found {elem_ty:?}");
+            return Err(EffectError::unsupported(
+                Construct::RecordArrayElemType,
+                elem_ty.clone(),
+            ));
         };
-        let binding = self
-            .vecs
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: write to unknown array `{name}`"))
-            .clone();
+        let binding = match self.vecs.get(name) {
+            Some(binding) => binding.clone(),
+            None => return Err(EffectError::unknown(BindingKind::Vec, name)),
+        };
         let base_offset = index * binding.elem_size;
         let mut field_offsets = HashMap::new();
         let mut array_fields = HashMap::new();
@@ -981,24 +1087,23 @@ impl Interp {
                     &mut field_offsets,
                     &mut array_fields,
                     &mut field_types,
-                );
+                )?;
             }
             Expr::TupleStructLit { fields, .. } if fields.len() == 1 => {
-                self.write_record_array_elem(name, elem_ty, index, &fields[0]);
+                self.write_record_array_elem(name, elem_ty, index, &fields[0])?;
             }
             other => {
-                let src = self.eval(other);
+                let src = self.eval(other)?;
                 let Value::Ref(src) = src else {
-                    panic!(
-                        "effects::rust_ast: record array element must be aggregate, found {src:?}"
-                    );
+                    return Err(EffectError::type_mismatch(ValueKind::Ref, src));
                 };
                 self.copy_struct_bytes(src, binding.alloc, base_offset);
             }
         }
+        Ok(())
     }
 
-    fn let_cstr(&mut self, name: &str, bytes: &[u8]) {
+    fn let_cstr(&mut self, name: &str, bytes: &[u8]) -> EResult<()> {
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
         let bytes: Vec<u8> = bytes.iter().cloned().chain(std::iter::once(0)).collect();
@@ -1037,18 +1142,25 @@ impl Interp {
                 byte_offset: 0,
             }),
         );
+        Ok(())
     }
 
-    fn push(&mut self, recv: &Expr, args: &[Expr]) {
+    fn push(&mut self, recv: &Expr, args: &[Expr]) -> EResult<()> {
         let name = match recv {
             Expr::Var(ident) => ident.as_str(),
-            other => panic!("effects::rust_ast: unsupported push receiver `{other:?}`"),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::PushReceiver,
+                    other.clone(),
+                ));
+            }
         };
-        let raw = value_as_i128(self.eval(&args[0]));
-        let binding = self
-            .vecs
-            .get_mut(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: push on unknown Vec `{name}`"));
+        let arg = self.eval(&args[0])?;
+        let raw = value_as_i128(arg)?;
+        let binding = match self.vecs.get_mut(name) {
+            Some(binding) => binding,
+            None => return Err(EffectError::unknown(BindingKind::Vec, name)),
+        };
         let value = Value::Int {
             width: binding.elem_width,
             signed: binding.elem_signed,
@@ -1061,9 +1173,10 @@ impl Interp {
         binding.len += 1;
         self.heap.insert(loc, value.clone());
         self.trace.push(Effect::Write { loc, value });
+        Ok(())
     }
 
-    fn drop_live_vecs(&mut self) {
+    fn drop_live_vecs(&mut self) -> EResult<()> {
         let mut allocs: Vec<AllocId> = self
             .vecs
             .values()
@@ -1076,35 +1189,48 @@ impl Interp {
                 self.trace.push(Effect::Dealloc { alloc });
             }
         }
+        Ok(())
     }
 
-    fn drop_var(&mut self, expr: &Expr) {
+    fn drop_var(&mut self, expr: &Expr) -> EResult<()> {
         let name = match expr {
             Expr::Var(ident) => ident.as_str(),
-            other => panic!("effects::rust_ast: unsupported drop target `{other:?}`"),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::DropTarget,
+                    other.clone(),
+                ));
+            }
         };
         if let Some(file) = self.files.remove(name) {
             self.trace.push(Effect::FileClose { file });
             self.scalars.remove(name);
-            return;
+            return Ok(());
         }
-        let binding = self
-            .vecs
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: drop of unknown Vec `{name}`"));
+        let binding = match self.vecs.get(name) {
+            Some(binding) => binding,
+            None => return Err(EffectError::unknown(BindingKind::Vec, name)),
+        };
         let alloc = binding.alloc;
         if !self.freed.insert(alloc) {
-            panic!("effects::rust_ast: double free of {alloc:?}");
+            return Err(EffectError::double_free(alloc));
         }
         self.trace.push(Effect::Dealloc { alloc });
+        Ok(())
     }
 
-    fn print(&mut self, args: &[Expr]) {
+    fn print(&mut self, args: &[Expr]) -> EResult<()> {
         let [fmt_expr, rest @ ..] = args else {
-            panic!("effects::rust_ast: println!/print! expects a format string");
+            return Err(EffectError::arg_shape(
+                Construct::PrintMacro,
+                ArgShapeKind::FormatString,
+            ));
         };
         let Expr::Str(fmt) = fmt_expr else {
-            panic!("effects::rust_ast: unsupported format string `{fmt_expr:?}`");
+            return Err(EffectError::unsupported(
+                Construct::PrintMacro,
+                fmt_expr.clone(),
+            ));
         };
         let specs: Vec<FormatSpec> = parse_format_string(fmt)
             .into_iter()
@@ -1113,36 +1239,40 @@ impl Interp {
                 FormatSegment::Literal(_) => None,
             })
             .collect();
-        let args = rest
-            .iter()
-            .enumerate()
-            .map(|(index, expr)| {
-                let value = self.eval(expr);
-                match specs.get(index) {
-                    Some(spec) if spec.ty == 'p' => value,
-                    _ => self.resolve_string_arg(value),
-                }
-            })
-            .collect();
+        let mut args = Vec::with_capacity(rest.len());
+        for (index, expr) in rest.iter().enumerate() {
+            let value = self.eval(expr)?;
+            args.push(match specs.get(index) {
+                Some(spec) if spec.ty == 'p' => value,
+                _ => self.resolve_string_arg(value)?,
+            });
+        }
         self.trace.push(Effect::Call {
             name: "printf".to_string(),
             args,
         });
+        Ok(())
     }
 
-    fn resolve_string_arg(&self, value: Value) -> Value {
+    fn resolve_string_arg(&self, value: Value) -> EResult<Value> {
         match value {
-            Value::Ref(loc) => Value::Bytes(self.read_c_string_silent(loc)),
-            other => other,
+            Value::Ref(loc) => Ok(Value::Bytes(self.read_c_string_silent(loc)?)),
+            other => Ok(other),
         }
     }
 
-    fn eval_format_macro(&mut self, args: &[Expr]) -> Value {
+    fn eval_format_macro(&mut self, args: &[Expr]) -> EResult<Value> {
         let [fmt_expr, rest @ ..] = args else {
-            panic!("effects::rust_ast: format! expects a format string");
+            return Err(EffectError::arg_shape(
+                Construct::FormatMacro,
+                ArgShapeKind::FormatString,
+            ));
         };
         let Expr::Str(fmt) = fmt_expr else {
-            panic!("effects::rust_ast: unsupported format! format string `{fmt_expr:?}`");
+            return Err(EffectError::unsupported(
+                Construct::FormatMacro,
+                fmt_expr.clone(),
+            ));
         };
         let mut out = Vec::new();
         let mut arg_index = 0;
@@ -1150,17 +1280,19 @@ impl Interp {
             match segment {
                 FormatSegment::Literal(text) => out.extend_from_slice(text.as_bytes()),
                 FormatSegment::Placeholder(spec) => {
-                    let value = self.eval(&rest[arg_index]);
+                    let value = self.eval(&rest[arg_index])?;
                     arg_index += 1;
                     out.extend(render_format_arg(&value, &spec));
                 }
             }
         }
-        Value::Bytes(out)
+        Ok(Value::Bytes(out))
     }
 
-    fn open_file(&mut self, expr: &Expr) -> Option<FileId> {
-        let OpenEffect { path, mode } = open_effect(expr)?;
+    fn open_file(&mut self, expr: &Expr) -> EResult<Option<FileId>> {
+        let Some(OpenEffect { path, mode }) = open_effect(expr)? else {
+            return Ok(None);
+        };
         let file = FileId(self.next_file);
         self.next_file += 1;
         self.file_paths.insert(file, path.clone());
@@ -1169,76 +1301,92 @@ impl Interp {
             self.file_contents.insert(path.clone(), Vec::new());
         }
         self.trace.push(Effect::FileOpen { file, path, mode });
-        Some(file)
+        Ok(Some(file))
     }
 
-    fn write_all_call(&mut self, expr: &Expr) -> bool {
+    fn write_all_call(&mut self, expr: &Expr) -> EResult<bool> {
         let Expr::Call { func, args } = expr else {
-            return false;
+            return Ok(false);
         };
         if !is_path(func, &["std", "io", "Write", "write_all"]) {
-            return false;
+            return Ok(false);
         }
         let [handle, bytes] = args.as_slice() else {
-            panic!("effects::rust_ast: write_all expects handle and bytes");
+            return Err(EffectError::arg_shape(
+                Construct::WriteAllCall,
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let file = self.file_arg(handle);
+        let file = self.file_arg(handle)?;
         let bytes = match bytes {
             Expr::ByteStr(bytes) => bytes.clone(),
             Expr::Ref { expr, .. } if matches!(expr.as_ref(), Expr::Var(ident) if self.vecs.contains_key(ident.as_str())) => {
-                self.vec_all_bytes(collection_name(bytes))
+                self.vec_all_bytes(collection_name(bytes)?)?
             }
-            other => panic!("effects::rust_ast: unsupported write_all bytes `{other:?}`"),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::WriteAllCall,
+                    other.clone(),
+                ));
+            }
         };
         self.append_file_bytes(file, &bytes);
         self.trace.push(Effect::FileWrite { file, bytes });
-        true
+        Ok(true)
     }
 
-    fn vec_all_bytes(&mut self, name: &str) -> Vec<u8> {
-        let binding = self
-            .vecs
-            .get(name)
-            .cloned()
-            .unwrap_or_else(|| panic!("effects::rust_ast: read of unknown Vec `{name}`"));
+    fn vec_all_bytes(&mut self, name: &str) -> EResult<Vec<u8>> {
+        let binding = match self.vecs.get(name) {
+            Some(binding) => binding.clone(),
+            None => return Err(EffectError::unknown(BindingKind::Vec, name)),
+        };
         let base = Location {
             alloc: binding.alloc,
             byte_offset: 0,
         };
-        self.read_bytes(base, binding.len)
-            .into_iter()
-            .map(|value| value_as_i128(&value) as u8)
-            .collect()
+        let bytes = self.read_bytes(base, binding.len)?;
+        let mut out = Vec::with_capacity(bytes.len());
+        for value in bytes {
+            out.push(value_as_i128(&value)? as u8);
+        }
+        Ok(out)
     }
 
-    fn file_arg(&self, expr: &Expr) -> FileId {
+    fn file_arg(&self, expr: &Expr) -> EResult<FileId> {
         match expr {
             Expr::Ref { expr, .. } => self.file_arg(expr),
             Expr::Call { func, args }
                 if args.is_empty() && is_path(func, &["std", "io", "stdout"]) =>
             {
-                STDOUT_FILE
+                Ok(STDOUT_FILE)
             }
             Expr::Call { func, args }
                 if args.is_empty() && is_path(func, &["std", "io", "stderr"]) =>
             {
-                STDERR_FILE
+                Ok(STDERR_FILE)
             }
-            Expr::Var(ident) => *self
-                .files
-                .get(ident.as_str())
-                .unwrap_or_else(|| panic!("effects::rust_ast: unknown file `{}`", ident.as_str())),
-            other => panic!("effects::rust_ast: unsupported file argument `{other:?}`"),
+            Expr::Var(ident) => match self.files.get(ident.as_str()) {
+                Some(file) => Ok(*file),
+                None => Err(EffectError::unknown(BindingKind::File, ident.as_str())),
+            },
+            other => Err(EffectError::unsupported(
+                Construct::FileArgument,
+                other.clone(),
+            )),
         }
     }
 
-    fn assign_index(&mut self, base: &Expr, index: &Expr, value: &Expr) {
+    fn assign_index(&mut self, base: &Expr, index: &Expr, value: &Expr) -> EResult<()> {
         if matches!(base, Expr::Field { .. }) {
-            let loc = self.field_array_element_location(base, index);
+            let loc = self.field_array_element_location(base, index)?;
             let value = match self.field_array_element_type(base) {
-                Some(elem_ty) => cast_value_to_type(self.eval(value), &elem_ty),
+                Some(elem_ty) => {
+                    let value = self.eval(value)?;
+                    cast_value_to_type(value, &elem_ty)?
+                }
                 None => {
-                    let raw = value_as_i128(self.eval(value));
+                    let value = self.eval(value)?;
+                    let raw = value_as_i128(value)?;
                     Value::Int {
                         width: IntWidth::W32,
                         signed: true,
@@ -1247,21 +1395,28 @@ impl Interp {
                 }
             };
             self.write_loc(loc, value);
-            return;
+            return Ok(());
         }
-        let raw = value_as_i128(self.eval(value));
+        let value = self.eval(value)?;
+        let raw = value_as_i128(value)?;
         let name = match base {
             Expr::Var(ident) => ident.as_str(),
-            other => panic!("effects::rust_ast: unsupported assign target base `{other:?}`"),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::AssignTargetBase,
+                    other.clone(),
+                ));
+            }
         };
-        let idx = value_as_u64(self.eval(index));
+        let index = self.eval(index)?;
+        let idx = value_as_u64(index)?;
         self.materialize_collection(name);
-        let binding = self
-            .vecs
-            .get_mut(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: assign into unknown Vec `{name}`"));
+        let binding = match self.vecs.get_mut(name) {
+            Some(binding) => binding,
+            None => return Err(EffectError::unknown(BindingKind::Vec, name)),
+        };
         if self.freed.contains(&binding.alloc) {
-            panic!("effects::rust_ast: write to {name} after free");
+            return Err(EffectError::use_after_free(name));
         }
         let value = Value::Int {
             width: binding.elem_width,
@@ -1274,10 +1429,17 @@ impl Interp {
         };
         binding.len = binding.len.max(idx + 1);
         self.write_loc(loc, value);
+        Ok(())
     }
 
-    fn let_struct(&mut self, name: &str, record_name: &str, fields: &[(String, Expr)]) {
-        self.bind_struct_fields(name, Some(record_name), fields);
+    fn let_struct(
+        &mut self,
+        name: &str,
+        record_name: &str,
+        fields: &[(String, Expr)],
+    ) -> EResult<()> {
+        self.bind_struct_fields(name, Some(record_name), fields)?;
+        Ok(())
     }
 
     fn bind_struct_fields(
@@ -1285,7 +1447,7 @@ impl Interp {
         name: &str,
         record_name: Option<&str>,
         fields: &[(String, Expr)],
-    ) -> Location {
+    ) -> EResult<Location> {
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
         let mut field_offsets = HashMap::new();
@@ -1301,12 +1463,13 @@ impl Interp {
                 &mut field_offsets,
                 &mut array_fields,
                 &mut field_types,
-            );
+            )?;
         }
-        let alloc_size = record_name
-            .filter(|record_name| self.records.contains_key(*record_name))
-            .map(|record_name| self.size_of_named_type(record_name))
-            .unwrap_or(0);
+        let alloc_size =
+            match record_name.filter(|record_name| self.records.contains_key(*record_name)) {
+                Some(record_name) => self.size_of_named_type(record_name)?,
+                None => 0,
+            };
         let alloc_slot = self.trace.effects.len();
         self.trace.push(Effect::Alloc {
             alloc,
@@ -1321,7 +1484,7 @@ impl Interp {
             &mut field_offsets,
             &mut array_fields,
             &mut field_types,
-        );
+        )?;
         let size = alloc_size.max(size);
         if let Effect::Alloc {
             size: alloc_size, ..
@@ -1339,46 +1502,54 @@ impl Interp {
                 size,
             },
         );
-        Location {
+        Ok(Location {
             alloc,
             byte_offset: 0,
-        }
+        })
     }
 
-    fn eval_struct_lit(&mut self, record_name: &str, fields: &[(String, Expr)]) -> Value {
+    fn eval_struct_lit(&mut self, record_name: &str, fields: &[(String, Expr)]) -> EResult<Value> {
         let name = format!("__struct_tmp{}", self.next_struct_temp);
         self.next_struct_temp += 1;
-        Value::Ref(self.bind_struct_fields(&name, Some(record_name), fields))
+        Ok(Value::Ref(self.bind_struct_fields(
+            &name,
+            Some(record_name),
+            fields,
+        )?))
     }
 
-    fn eval_tuple_struct_lit(&mut self, _name: &str, fields: &[Expr]) -> Value {
+    fn eval_tuple_struct_lit(&mut self, _name: &str, fields: &[Expr]) -> EResult<Value> {
         if fields.len() == 1 {
             return self.eval(&fields[0]);
         }
-        Value::Tuple(fields.iter().map(|field| self.eval(field)).collect())
+        let mut values = Vec::with_capacity(fields.len());
+        for field in fields {
+            values.push(self.eval(field)?);
+        }
+        Ok(Value::Tuple(values))
     }
 
-    fn let_struct_value(&mut self, name: &str, init: &Expr) {
+    fn let_struct_value(&mut self, name: &str, init: &Expr) -> EResult<()> {
         if let Expr::TupleStructLit { fields, .. } = init
             && fields.len() == 1
             && matches!(&fields[0], Expr::StructLit { .. })
         {
-            let value = self.eval(&fields[0]);
+            let value = self.eval(&fields[0])?;
             let Value::Ref(src) = value else {
                 unreachable!();
             };
-            self.bind_struct_copy(name, src);
-            return;
+            self.bind_struct_copy(name, src)?;
+            return Ok(());
         }
-        let value = self.eval(init);
+        let value = self.eval(init)?;
         let Value::Ref(src) = value else {
             self.scalars.insert(name.to_string(), value);
-            return;
+            return Ok(());
         };
-        self.bind_struct_copy(name, src);
+        self.bind_struct_copy(name, src)
     }
 
-    fn bind_record_storage(&mut self, name: &str, _ty: &Type, init: &Expr) -> Location {
+    fn bind_record_storage(&mut self, name: &str, _ty: &Type, init: &Expr) -> EResult<Location> {
         match init {
             Expr::StructLit {
                 name: record_name,
@@ -1388,33 +1559,30 @@ impl Interp {
                 self.bind_record_storage(name, _ty, &fields[0])
             }
             other => {
-                let value = self.eval(other);
+                let value = self.eval(other)?;
                 let Value::Ref(src) = value else {
-                    panic!(
-                        "effects::rust_ast: record initializer must be aggregate, found {value:?}"
-                    );
+                    return Err(EffectError::type_mismatch(ValueKind::Ref, value));
                 };
-                self.bind_struct_copy(name, src);
-                Location {
+                self.bind_struct_copy(name, src)?;
+                Ok(Location {
                     alloc: self.structs[name].alloc,
                     byte_offset: 0,
-                }
+                })
             }
         }
     }
 
-    fn bind_struct_copy(&mut self, name: &str, src: Location) {
-        let source = self
+    fn bind_struct_copy(&mut self, name: &str, src: Location) -> EResult<()> {
+        let source = match self
             .structs
             .values()
             .find(|binding| binding.alloc == src.alloc)
-            .cloned()
-            .unwrap_or_else(|| {
-                panic!(
-                    "effects::rust_ast: copy from unknown struct allocation {:?}",
-                    src.alloc
-                )
-            });
+        {
+            Some(binding) => binding.clone(),
+            None => {
+                return Err(EffectError::unknown_alloc(src.alloc));
+            }
+        };
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
         self.trace.push(Effect::Alloc {
@@ -1432,15 +1600,16 @@ impl Interp {
                 size: source.size,
             },
         );
+        Ok(())
     }
 
-    fn copy_struct_to_existing(&mut self, name: &str, src: Location) {
-        let alloc = self
-            .structs
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: copy into unknown struct `{name}`"))
-            .alloc;
+    fn copy_struct_to_existing(&mut self, name: &str, src: Location) -> EResult<()> {
+        let alloc = match self.structs.get(name) {
+            Some(binding) => binding.alloc,
+            None => return Err(EffectError::unknown(BindingKind::Struct, name)),
+        };
         self.copy_struct_bytes(src, alloc, 0);
+        Ok(())
     }
 
     fn copy_struct_bytes(&mut self, src: Location, dst_alloc: AllocId, dst_base_offset: u64) {
@@ -1488,7 +1657,7 @@ impl Interp {
         field_offsets: &mut HashMap<String, u64>,
         array_fields: &mut HashMap<String, (u64, u64)>,
         field_types: &mut HashMap<String, Type>,
-    ) -> u64 {
+    ) -> EResult<u64> {
         if let Some(record_name) = record_name
             && self
                 .records
@@ -1516,10 +1685,10 @@ impl Interp {
                     field_offsets,
                     array_fields,
                     field_types,
-                );
+                )?;
                 size = size.max(field_size);
             }
-            return size;
+            return Ok(size);
         }
         let mut offset = 0u64;
         for (field, expr) in fields {
@@ -1543,10 +1712,10 @@ impl Interp {
                 field_offsets,
                 array_fields,
                 field_types,
-            );
+            )?;
             offset += size;
         }
-        offset
+        Ok(offset)
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -1560,7 +1729,7 @@ impl Interp {
         field_offsets: &mut HashMap<String, u64>,
         array_fields: &mut HashMap<String, (u64, u64)>,
         field_types: &mut HashMap<String, Type>,
-    ) -> u64 {
+    ) -> EResult<u64> {
         match expr {
             Expr::StructLit { name, fields } => self.write_struct_fields(
                 alloc,
@@ -1583,9 +1752,11 @@ impl Interp {
                         .unwrap_or((IntWidth::W32, true, 4));
                 let mut elem_offset = 0u64;
                 for elem in elems {
-                    let value = elem_ty
-                        .map(|ty| cast_value_to_type(self.eval(elem), ty))
-                        .unwrap_or_else(|| self.eval(elem));
+                    let evaluated = self.eval(elem)?;
+                    let value = match elem_ty {
+                        Some(ty) => cast_value_to_type(evaluated, ty)?,
+                        None => evaluated,
+                    };
                     let loc = Location {
                         alloc,
                         byte_offset: offset + elem_offset,
@@ -1595,20 +1766,25 @@ impl Interp {
                     elem_offset += elem_size;
                 }
                 array_fields.insert(path.to_string(), (offset, elem_size));
-                elem_offset
+                Ok(elem_offset)
             }
             Expr::ArrayRepeat { elem, len } => {
                 let elem_ty = match ty {
                     Some(Type::Array { elem, .. }) => Some(elem.as_ref()),
                     _ => None,
                 };
-                let value = elem_ty
-                    .map(|ty| cast_value_to_type(self.eval(elem), ty))
-                    .unwrap_or_else(|| self.eval(elem));
-                let (_, _, elem_size) = elem_ty.and_then(scalar_type_shape).unwrap_or_else(|| {
-                    let elem_size = int_byte_size(&value);
-                    (IntWidth::W32, true, elem_size)
-                });
+                let evaluated = self.eval(elem)?;
+                let value = match elem_ty {
+                    Some(ty) => cast_value_to_type(evaluated, ty)?,
+                    None => evaluated,
+                };
+                let (_, _, elem_size) = match elem_ty.and_then(scalar_type_shape) {
+                    Some(shape) => shape,
+                    None => {
+                        let elem_size = int_byte_size(&value)?;
+                        (IntWidth::W32, true, elem_size)
+                    }
+                };
                 for index in 0..*len {
                     let loc = Location {
                         alloc,
@@ -1621,22 +1797,25 @@ impl Interp {
                     });
                 }
                 array_fields.insert(path.to_string(), (offset, elem_size));
-                *len as u64 * elem_size
+                Ok(*len as u64 * elem_size)
             }
             _ => {
-                let value = ty
-                    .map(|ty| cast_value_to_type(self.eval(expr), ty))
-                    .unwrap_or_else(|| self.eval(expr));
+                let evaluated = self.eval(expr)?;
+                let value = match ty {
+                    Some(ty) => cast_value_to_type(evaluated, ty)?,
+                    None => evaluated,
+                };
                 let loc = Location {
                     alloc,
                     byte_offset: offset,
                 };
                 self.heap.insert(loc, value.clone());
-                let size = ty
-                    .map(|ty| self.type_layout(ty).0)
-                    .unwrap_or_else(|| local_value_size(&value));
+                let size = match ty {
+                    Some(ty) => self.type_layout(ty)?.0,
+                    None => local_value_size(&value)?,
+                };
                 self.trace.push(Effect::Write { loc, value });
-                size
+                Ok(size)
             }
         }
     }
@@ -1649,14 +1828,14 @@ impl Interp {
         field_offsets: &mut HashMap<String, u64>,
         array_fields: &mut HashMap<String, (u64, u64)>,
         field_types: &mut HashMap<String, Type>,
-    ) {
-        let record = self
-            .records
-            .get(record_name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: unknown record `{record_name}`"));
+    ) -> EResult<()> {
+        let record = match self.records.get(record_name) {
+            Some(record) => record,
+            None => return Err(EffectError::unknown(BindingKind::Record, record_name)),
+        };
         let mut offset = 0u64;
         for field in &record.fields {
-            let (field_size, field_align) = self.type_layout(&field.ty);
+            let (field_size, field_align) = self.type_layout(&field.ty)?;
             if !record.is_union && !record.packed {
                 offset = align_to(offset, field_align);
             }
@@ -1671,7 +1850,7 @@ impl Interp {
             if let Type::Array { elem, .. } = &field.ty {
                 array_fields.insert(
                     path.clone(),
-                    (base_offset + field_offset, self.type_layout(elem).0),
+                    (base_offset + field_offset, self.type_layout(elem)?.0),
                 );
             }
             if let Type::Custom(child_name) = &field.ty
@@ -1684,12 +1863,13 @@ impl Interp {
                     field_offsets,
                     array_fields,
                     field_types,
-                );
+                )?;
             }
             if !record.is_union {
                 offset += field_size;
             }
         }
+        Ok(())
     }
 
     fn record_field_type(&self, record_name: &str, field: &str) -> Option<Type> {
@@ -1701,31 +1881,40 @@ impl Interp {
             .map(|field| field.ty.clone())
     }
 
-    fn assign_field(&mut self, base: &Expr, field: &str, value: &Expr) {
+    fn assign_field(&mut self, base: &Expr, field: &str, value: &Expr) -> EResult<()> {
         let field_ty = self.field_type(base, field);
         let value = match field_ty.as_ref() {
-            Some(ty) => self
-                .eval_bitfield_projection(value, ty)
-                .unwrap_or_else(|| cast_value_to_type(self.eval(value), ty)),
-            None => self.eval(value),
+            Some(ty) => match self.eval_bitfield_projection(value, ty)? {
+                Some(value) => value,
+                None => {
+                    let evaluated = self.eval(value)?;
+                    cast_value_to_type(evaluated, ty)?
+                }
+            },
+            None => self.eval(value)?,
         };
-        let loc = self.field_location(base, field);
+        let loc = self.field_location(base, field)?;
         self.write_loc(loc, value);
+        Ok(())
     }
 
-    fn let_string(&mut self, name: &str, args: &[Expr]) {
+    fn let_string(&mut self, name: &str, args: &[Expr]) -> EResult<()> {
         let s = match &args[0] {
             Expr::Str(s) => s.clone(),
-            other => panic!(
-                "effects::rust_ast: `String::from` expects a string literal, found {other:?}"
-            ),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::StringFromLiteral,
+                    other.clone(),
+                ));
+            }
         };
-        self.let_string_bytes(name, s.as_bytes());
+        self.let_string_bytes(name, s.as_bytes())
     }
 
-    fn let_string_bytes(&mut self, name: &str, bytes: &[u8]) {
+    fn let_string_bytes(&mut self, name: &str, bytes: &[u8]) -> EResult<()> {
         let loc = self.alloc_string_bytes(bytes);
         self.scalars.insert(name.to_string(), Value::Ref(loc));
+        Ok(())
     }
 
     fn alloc_string_bytes(&mut self, bytes: &[u8]) -> Location {
@@ -1755,25 +1944,30 @@ impl Interp {
         }
     }
 
-    fn replace_string(&mut self, name: &str, bytes: &[u8]) {
+    fn replace_string(&mut self, name: &str, bytes: &[u8]) -> EResult<()> {
         let loc = self.alloc_string_bytes(bytes);
         self.scalars.insert(name.to_string(), Value::Ref(loc));
+        Ok(())
     }
 
     fn string_owned_expr(&self, expr: &Expr) -> bool {
         matches!(expr, Expr::MethodCall { method, args, .. } if method == "to_owned" && args.is_empty())
     }
 
-    fn push_str(&mut self, recv: &Expr, args: &[Expr]) {
+    fn push_str(&mut self, recv: &Expr, args: &[Expr]) -> EResult<()> {
         let [arg] = args else {
-            panic!("effects::rust_ast: push_str expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::PushStr,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let base = match self.eval(recv) {
+        let recv_value = self.eval(recv)?;
+        let base = match recv_value {
             Value::Ref(loc) => loc,
-            other => panic!("effects::rust_ast: push_str on non-string value {other:?}"),
+            other => return Err(EffectError::type_mismatch(ValueKind::Ref, other)),
         };
-        let offset = self.c_string_len(base);
-        let bytes = self.string_expr_bytes(arg);
+        let offset = self.c_string_len(base)?;
+        let bytes = self.string_expr_bytes(arg)?;
         self.write_c_string(
             Location {
                 alloc: base.alloc,
@@ -1781,9 +1975,10 @@ impl Interp {
             },
             &bytes,
         );
+        Ok(())
     }
 
-    fn string_expr_bytes(&mut self, expr: &Expr) -> Vec<u8> {
+    fn string_expr_bytes(&mut self, expr: &Expr) -> EResult<Vec<u8>> {
         match expr {
             Expr::Cast { expr, .. } => self.string_expr_bytes(expr),
             Expr::MethodCall { recv, method, args } if method == "to_owned" && args.is_empty() => {
@@ -1792,43 +1987,45 @@ impl Interp {
             Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
                 self.string_expr_bytes(recv)
             }
-            Expr::Str(s) => s.as_bytes().to_vec(),
-            Expr::ByteStr(bytes) | Expr::CStr(bytes) => bytes
+            Expr::Str(s) => Ok(s.as_bytes().to_vec()),
+            Expr::ByteStr(bytes) | Expr::CStr(bytes) => Ok(bytes
                 .iter()
                 .cloned()
                 .take_while(|byte| *byte != 0)
-                .collect(),
+                .collect()),
             _ => {
-                let loc = self.eval_ref(expr);
+                let loc = self.eval_ref(expr)?;
                 self.read_c_string(loc)
             }
         }
     }
 
-    fn read_c_string(&mut self, base: Location) -> Vec<u8> {
-        let len = self.c_string_len(base);
-        self.read_bytes(base, len)
-            .into_iter()
-            .map(|value| value_as_i128(value) as u8)
-            .collect()
+    fn read_c_string(&mut self, base: Location) -> EResult<Vec<u8>> {
+        let len = self.c_string_len(base)?;
+        let values = self.read_bytes(base, len)?;
+        let mut out = Vec::with_capacity(values.len());
+        for value in values {
+            out.push(value_as_i128(value)? as u8);
+        }
+        Ok(out)
     }
 
-    fn c_string_len(&mut self, base: Location) -> u64 {
+    fn c_string_len(&mut self, base: Location) -> EResult<u64> {
         let mut len = 0u64;
         loop {
             let loc = Location {
                 alloc: base.alloc,
                 byte_offset: base.byte_offset + len,
             };
-            let value = self.read_loc(loc);
-            if value_as_i128(value) as u8 == 0 {
-                break len;
+            let value = self.read_loc(loc)?;
+            if value_as_i128(value)? as u8 == 0 {
+                break Ok(len);
             }
             len += 1;
         }
     }
 
-    fn c_string_len_silent(&self, base: Location) -> u64 {
+    fn c_string_len_silent(&self, base: Location) -> EResult<u64> {
         let mut len = 0u64;
         loop {
             let loc = Location {
@@ -1836,27 +2033,28 @@ impl Interp {
                 byte_offset: base.byte_offset + len,
             };
             match self.heap.get(&loc) {
-                Some(Value::Int { value, .. }) if *value as u8 == 0 => break len,
+                Some(Value::Int { value, .. }) if *value as u8 == 0 => break Ok(len),
                 Some(_) => len += 1,
-                None => panic!("effects::rust_ast: read from never-written {loc:?}"),
+                None => return Err(EffectError::uninitialized_read(loc)),
             }
         }
     }
 
-    fn read_c_string_silent(&self, base: Location) -> Vec<u8> {
-        let len = self.c_string_len_silent(base);
-        (0..len)
-            .map(|offset| {
-                let loc = Location {
-                    alloc: base.alloc,
-                    byte_offset: base.byte_offset + offset,
-                };
-                match self.heap.get(&loc) {
-                    Some(value) => value_as_i128(value) as u8,
-                    None => panic!("effects::rust_ast: read from never-written {loc:?}"),
-                }
-            })
-            .collect()
+    fn read_c_string_silent(&self, base: Location) -> EResult<Vec<u8>> {
+        let len = self.c_string_len_silent(base)?;
+        let mut out = Vec::with_capacity(len as usize);
+        for offset in 0..len {
+            let loc = Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + offset,
+            };
+            let value = match self.heap.get(&loc) {
+                Some(value) => value,
+                None => return Err(EffectError::uninitialized_read(loc)),
+            };
+            out.push(value_as_i128(value)? as u8);
+        }
+        Ok(out)
     }
 
     fn write_c_string(&mut self, dst: Location, bytes: &[u8]) {
@@ -1873,56 +2071,58 @@ impl Interp {
         self.write_bytes(dst, &values);
     }
 
-    fn string_len(&mut self, recv: &Expr) -> Value {
-        let base = self.eval_ref(recv);
-        let len = self.c_string_len_silent(base);
+    fn string_len(&mut self, recv: &Expr) -> EResult<Value> {
+        let base = self.eval_ref(recv)?;
+        let len = self.c_string_len_silent(base)?;
         self.trace.push(Effect::Call {
             name: "strlen".to_string(),
             args: vec![],
         });
-        Value::Int {
+        Ok(Value::Int {
             width: IntWidth::W64,
             signed: false,
             value: len as i128,
-        }
+        })
     }
 
-    fn eval_field(&mut self, base: &Expr, field: &str) -> Value {
-        let loc = self.field_location(base, field);
-        let value = self
-            .heap
-            .get(&loc)
-            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
-            .clone();
+    fn eval_field(&mut self, base: &Expr, field: &str) -> EResult<Value> {
+        let loc = self.field_location(base, field)?;
+        let value = match self.heap.get(&loc) {
+            Some(value) => value.clone(),
+            None => return Err(EffectError::uninitialized_read(loc)),
+        };
         self.trace.push(Effect::Read {
             loc,
             value: value.clone(),
         });
-        value
+        Ok(value)
     }
 
-    fn field_location(&self, base: &Expr, field: &str) -> Location {
-        let (name, prefix) = self.field_path(base);
+    fn field_location(&self, base: &Expr, field: &str) -> EResult<Location> {
+        let (name, prefix) = self.field_path(base)?;
         let path = if prefix.is_empty() {
             field.to_string()
         } else {
             format!("{prefix}.{field}")
         };
-        let binding = self
-            .structs
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: field-read on unknown struct `{name}`"));
-        let offset = *binding.field_offsets.get(&path).unwrap_or_else(|| {
-            panic!("effects::rust_ast: unknown field `{path}` on struct `{name}`")
-        });
-        Location {
+        let binding = match self.structs.get(name) {
+            Some(binding) => binding,
+            None => return Err(EffectError::unknown(BindingKind::Struct, name)),
+        };
+        let offset = match binding.field_offsets.get(&path) {
+            Some(offset) => *offset,
+            None => {
+                return Err(EffectError::unknown(BindingKind::Field, path));
+            }
+        };
+        Ok(Location {
             alloc: binding.alloc,
             byte_offset: offset,
-        }
+        })
     }
 
     fn field_type(&self, base: &Expr, field: &str) -> Option<Type> {
-        let (name, prefix) = self.field_path(base);
+        let (name, prefix) = self.field_path(base).ok()?;
         let path = if prefix.is_empty() {
             field.to_string()
         } else {
@@ -1931,14 +2131,14 @@ impl Interp {
         self.structs.get(name)?.field_types.get(&path).cloned()
     }
 
-    fn eval_bitfield_projection(&mut self, expr: &Expr, ty: &Type) -> Option<Value> {
+    fn eval_bitfield_projection(&mut self, expr: &Expr, ty: &Type) -> EResult<Option<Value>> {
         let Expr::Binary {
             op: BinOp::Shr,
             lhs,
             rhs,
         } = expr
         else {
-            return None;
+            return Ok(None);
         };
         let Expr::Binary {
             op: BinOp::Shl,
@@ -1946,167 +2146,194 @@ impl Interp {
             rhs: left_shift,
         } = lhs.as_ref()
         else {
-            return None;
+            return Ok(None);
         };
-        let left_shift = value_as_u64(self.eval(left_shift));
-        let right_shift = value_as_u64(self.eval(rhs));
+        let left_shift_value = self.eval(left_shift)?;
+        let left_shift = value_as_u64(left_shift_value)?;
+        let right_shift_value = self.eval(rhs)?;
+        let right_shift = value_as_u64(right_shift_value)?;
         if left_shift != right_shift {
-            return None;
+            return Ok(None);
         }
-        let (width, signed, _) = scalar_type_shape(ty)?;
-        let bits = int_width_bits(width)?;
-        let bit_width = bits.checked_sub(left_shift as u32)?;
-        let value = value_as_i128(cast_value_to_type(self.eval(inner), ty));
-        Some(Value::Int {
+        let Some((width, signed, _)) = scalar_type_shape(ty) else {
+            return Ok(None);
+        };
+        let Some(bits) = int_width_bits(width) else {
+            return Ok(None);
+        };
+        let Some(bit_width) = bits.checked_sub(left_shift as u32) else {
+            return Ok(None);
+        };
+        let inner_value = self.eval(inner)?;
+        let value = value_as_i128(cast_value_to_type(inner_value, ty)?)?;
+        Ok(Some(Value::Int {
             width,
             signed,
             value: truncate_to_bits(value, bit_width, signed),
-        })
+        }))
     }
 
-    fn eval_path(&self, path: &Path) -> Value {
+    fn eval_path(&self, path: &Path) -> EResult<Value> {
         let segments = path
             .segments
             .iter()
             .map(|segment| segment.as_str())
             .collect::<Vec<_>>();
         match segments.as_slice() {
-            ["u64", "MAX"] => Value::Int {
+            ["u64", "MAX"] => Ok(Value::Int {
                 width: IntWidth::W64,
                 signed: false,
                 value: u64::MAX as i128,
-            },
-            ["usize", "MAX"] => Value::Int {
+            }),
+            ["usize", "MAX"] => Ok(Value::Int {
                 width: IntWidth::PointerSized,
                 signed: false,
                 value: u64::MAX as i128,
-            },
-            ["std", "cmp", "Ordering", "Less"] => int32(-1),
-            ["std", "cmp", "Ordering", "Equal"] => int32(0),
-            ["std", "cmp", "Ordering", "Greater"] => int32(1),
-            [_, variant] if variant.starts_with("MODE_") => int32(0),
-            _ => panic!("effects::rust_ast: unsupported path `{path:?}`"),
+            }),
+            ["std", "cmp", "Ordering", "Less"] => Ok(int32(-1)),
+            ["std", "cmp", "Ordering", "Equal"] => Ok(int32(0)),
+            ["std", "cmp", "Ordering", "Greater"] => Ok(int32(1)),
+            [_, variant] if variant.starts_with("MODE_") => Ok(int32(0)),
+            _ => Err(EffectError::unsupported(Construct::PathExpr, path.clone())),
         }
     }
 
-    fn field_array_element_location(&mut self, base: &Expr, index: &Expr) -> Location {
-        let (name, path) = self.field_path(base);
+    fn field_array_element_location(&mut self, base: &Expr, index: &Expr) -> EResult<Location> {
+        let (name, path) = self.field_path(base)?;
         let name = name.to_string();
-        let idx = value_as_u64(self.eval(index));
-        let binding = self
-            .structs
-            .get(&name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: index field on unknown struct `{name}`"));
-        let (offset, elem_size) = *binding.array_fields.get(&path).unwrap_or_else(|| {
-            panic!("effects::rust_ast: field `{path}` on struct `{name}` is not an array")
-        });
-        Location {
+        let index_value = self.eval(index)?;
+        let idx = value_as_u64(index_value)?;
+        let binding = match self.structs.get(&name) {
+            Some(binding) => binding,
+            None => return Err(EffectError::unknown(BindingKind::Struct, name)),
+        };
+        let (offset, elem_size) = match binding.array_fields.get(&path) {
+            Some(entry) => *entry,
+            None => {
+                return Err(EffectError::unsupported(
+                    Construct::FieldArrayIndex,
+                    path.clone(),
+                ));
+            }
+        };
+        Ok(Location {
             alloc: binding.alloc,
             byte_offset: offset + idx * elem_size,
-        }
+        })
     }
 
     fn field_array_element_type(&self, base: &Expr) -> Option<Type> {
-        let (name, path) = self.field_path(base);
+        let (name, path) = self.field_path(base).ok()?;
         let Type::Array { elem, .. } = self.structs.get(name)?.field_types.get(&path)? else {
             return None;
         };
         Some((**elem).clone())
     }
 
-    fn field_path<'a>(&'a self, expr: &'a Expr) -> (&'a str, String) {
+    fn field_path<'a>(&'a self, expr: &'a Expr) -> EResult<(&'a str, String)> {
         match expr {
             Expr::Var(ident) => {
                 if self.structs.contains_key(ident.as_str()) {
-                    return (ident.as_str(), String::new());
+                    return Ok((ident.as_str(), String::new()));
                 }
                 if let Some(Value::Ref(loc)) = self.scalars.get(ident.as_str())
                     && self.aggregate_allocs_contains(*loc)
                 {
                     return self.struct_path_for_loc(*loc);
                 }
-                (ident.as_str(), String::new())
+                Ok((ident.as_str(), String::new()))
             }
             Expr::Unary {
                 op: UnaryOp::Deref,
                 expr,
             } => {
-                let value = self.eval_ref_without_trace(expr);
+                let value = self.eval_ref_without_trace(expr)?;
                 let Value::Ref(loc) = value else {
-                    panic!(
-                        "effects::rust_ast: dereferenced field base is not a pointer: {value:?}"
-                    );
+                    return Err(EffectError::type_mismatch(ValueKind::Ref, value));
                 };
                 self.struct_path_for_loc(loc)
             }
             Expr::Field { base, field } => {
-                let (name, prefix) = self.field_path(base);
+                let (name, prefix) = self.field_path(base)?;
                 let path = if prefix.is_empty() {
                     field.clone()
                 } else {
                     format!("{prefix}.{field}")
                 };
-                (name, path)
+                Ok((name, path))
             }
             Expr::Index { base, index } => {
-                let name = collection_name(base);
-                let index = value_as_u64(self.eval_without_trace(index));
-                (name, index.to_string())
+                let name = collection_name(base)?;
+                let index_value = self.eval_without_trace(index)?;
+                let index = value_as_u64(index_value)?;
+                Ok((name, index.to_string()))
             }
-            other => panic!("effects::rust_ast: unsupported field base `{other:?}`"),
+            other => Err(EffectError::unsupported(
+                Construct::FieldBase,
+                other.clone(),
+            )),
         }
     }
 
-    fn eval_ref_without_trace(&self, expr: &Expr) -> Value {
+    fn eval_ref_without_trace(&self, expr: &Expr) -> EResult<Value> {
         match expr {
-            Expr::Var(ident) if self.globals.contains_key(ident.as_str()) => self
-                .heap
-                .get(&self.globals[ident.as_str()])
-                .unwrap_or_else(|| {
-                    panic!("effects::rust_ast: read from never-written global `{ident}`")
-                })
-                .clone(),
-            Expr::Var(ident) => self
-                .scalars
-                .get(ident.as_str())
-                .unwrap_or_else(|| panic!("effects::rust_ast: read of unknown scalar `{ident}`"))
-                .clone(),
-            _ => panic!("effects::rust_ast: unsupported pointer field base `{expr:?}`"),
+            Expr::Var(ident) if self.globals.contains_key(ident.as_str()) => {
+                match self.heap.get(&self.globals[ident.as_str()]) {
+                    Some(value) => Ok(value.clone()),
+                    None => Err(EffectError::uninitialized_read(
+                        self.globals[ident.as_str()],
+                    )),
+                }
+            }
+            Expr::Var(ident) => match self.scalars.get(ident.as_str()) {
+                Some(value) => Ok(value.clone()),
+                None => Err(EffectError::unknown(BindingKind::Scalar, ident.as_str())),
+            },
+            other => Err(EffectError::unsupported(
+                Construct::PointerFieldBase,
+                other.clone(),
+            )),
         }
     }
 
-    fn eval_without_trace(&self, expr: &Expr) -> Value {
+    fn eval_without_trace(&self, expr: &Expr) -> EResult<Value> {
         match expr {
-            Expr::Value(rv) => rust_value_to_value(rv),
-            Expr::Cast { expr, ty } => cast_value_to_type(self.eval_without_trace(expr), ty),
+            Expr::Value(rv) => Ok(rust_value_to_value(rv)),
+            Expr::Cast { expr, ty } => {
+                let value = self.eval_without_trace(expr)?;
+                cast_value_to_type(value, ty)
+            }
             Expr::Var(ident) if self.scalars.contains_key(ident.as_str()) => {
-                self.scalars[ident.as_str()].clone()
+                Ok(self.scalars[ident.as_str()].clone())
             }
-            other => panic!("effects::rust_ast: unsupported trace-free eval `{other:?}`"),
+            other => Err(EffectError::unsupported(
+                Construct::TraceFreeEval,
+                other.clone(),
+            )),
         }
     }
 
-    fn struct_path_for_loc(&self, loc: Location) -> (&str, String) {
-        let (name, binding) = self
+    fn struct_path_for_loc(&self, loc: Location) -> EResult<(&str, String)> {
+        let (name, binding) = match self
             .structs
             .iter()
             .find(|(_, binding)| binding.alloc == loc.alloc)
-            .unwrap_or_else(|| {
-                panic!(
-                    "effects::rust_ast: dereferenced field base points to unknown aggregate {:?}",
-                    loc.alloc
-                )
-            });
+        {
+            Some(found) => found,
+            None => {
+                return Err(EffectError::unknown_alloc(loc.alloc));
+            }
+        };
         if self.array_elem_types.contains_key(name.as_str())
             && let Some(vec) = self.vecs.get(name)
         {
             let index = loc.byte_offset / vec.elem_size;
             let offset = loc.byte_offset % vec.elem_size;
             if offset == 0 {
-                return (name.as_str(), index.to_string());
+                return Ok((name.as_str(), index.to_string()));
             }
             let prefix = index.to_string();
-            let path = binding
+            let path = match binding
                 .field_offsets
                 .iter()
                 .find_map(|(path, field_offset)| {
@@ -2115,29 +2342,34 @@ impl Interp {
                             .strip_prefix(&prefix)
                             .is_some_and(|rest| rest.starts_with('.')))
                     .then(|| path.clone())
-                })
-                .unwrap_or_else(|| {
-                    panic!(
-                        "effects::rust_ast: no aggregate array field starts at offset {}",
-                        loc.byte_offset
-                    )
-                });
-            return (name.as_str(), path);
+                }) {
+                Some(path) => path,
+                None => {
+                    return Err(EffectError::unsupported(
+                        Construct::AggregateArrayFieldOffset,
+                        loc.byte_offset,
+                    ));
+                }
+            };
+            return Ok((name.as_str(), path));
         }
         if loc.byte_offset == 0 {
-            return (name.as_str(), String::new());
+            return Ok((name.as_str(), String::new()));
         }
-        let path = binding
+        let path = match binding
             .field_offsets
             .iter()
             .find_map(|(path, offset)| (*offset == loc.byte_offset).then(|| path.clone()))
-            .unwrap_or_else(|| {
-                panic!(
-                    "effects::rust_ast: no aggregate field starts at offset {}",
-                    loc.byte_offset
-                )
-            });
-        (name.as_str(), path)
+        {
+            Some(path) => path,
+            None => {
+                return Err(EffectError::unsupported(
+                    Construct::AggregateFieldOffset,
+                    loc.byte_offset,
+                ));
+            }
+        };
+        Ok((name.as_str(), path))
     }
 
     fn aggregate_allocs_contains(&self, loc: Location) -> bool {
@@ -2146,10 +2378,10 @@ impl Interp {
             .any(|binding| binding.alloc == loc.alloc)
     }
 
-    fn eval(&mut self, expr: &Expr) -> Value {
+    fn eval(&mut self, expr: &Expr) -> EResult<Value> {
         match expr {
-            Expr::Value(rv) => rust_value_to_value(rv),
-            Expr::HexFloat(s) => Value::Float(parse_hex_float(s)),
+            Expr::Value(rv) => Ok(rust_value_to_value(rv)),
+            Expr::HexFloat(s) => Ok(Value::Float(parse_hex_float(s))),
             Expr::Var(ident) if self.globals.contains_key(ident.as_str()) => {
                 self.read_global(ident.as_str())
             }
@@ -2157,53 +2389,60 @@ impl Interp {
                 self.read_loc(self.scalar_locs[ident.as_str()])
             }
             Expr::Var(ident) if self.scalars.contains_key(ident.as_str()) => {
-                self.scalars[ident.as_str()].clone()
+                Ok(self.scalars[ident.as_str()].clone())
             }
-            Expr::Var(ident) if self.structs.contains_key(ident.as_str()) => Value::Ref(Location {
-                alloc: self.structs[ident.as_str()].alloc,
-                byte_offset: 0,
-            }),
-            Expr::Var(ident) => self
-                .scalars
-                .get(ident.as_str())
-                .unwrap_or_else(|| {
-                    panic!(
-                        "effects::rust_ast: read of unknown scalar `{}`",
-                        ident.as_str()
-                    )
-                })
-                .clone(),
+            Expr::Var(ident) if self.structs.contains_key(ident.as_str()) => {
+                Ok(Value::Ref(Location {
+                    alloc: self.structs[ident.as_str()].alloc,
+                    byte_offset: 0,
+                }))
+            }
+            Expr::Var(ident) => match self.scalars.get(ident.as_str()) {
+                Some(value) => Ok(value.clone()),
+                None => Err(EffectError::unknown(BindingKind::Scalar, ident.as_str())),
+            },
             Expr::Path(path) => self.eval_path(path),
-            Expr::Cast { expr, ty } => cast_value_to_type(self.eval(expr), ty),
+            Expr::Cast { expr, ty } => {
+                let value = self.eval(expr)?;
+                cast_value_to_type(value, ty)
+            }
             Expr::StructLit { name, fields } => self.eval_struct_lit(name, fields),
             Expr::TupleStructLit { name, fields } => self.eval_tuple_struct_lit(name, fields),
-            Expr::Str(s) => Value::Ref(self.hidden_c_string(s.as_bytes())),
-            Expr::ByteStr(bytes) | Expr::CStr(bytes) => Value::Ref(self.hidden_c_string(bytes)),
-            Expr::ArrayPtr { array, .. } => Value::Ref(self.collection_base(array)),
-            Expr::AddrOf { expr, .. } => Value::Ref(self.addr_of(expr)),
+            Expr::Str(s) => Ok(Value::Ref(self.hidden_c_string(s.as_bytes())?)),
+            Expr::ByteStr(bytes) | Expr::CStr(bytes) => {
+                Ok(Value::Ref(self.hidden_c_string(bytes)?))
+            }
+            Expr::ArrayPtr { array, .. } => Ok(Value::Ref(self.collection_base(array)?)),
+            Expr::AddrOf { expr, .. } => Ok(Value::Ref(self.addr_of(expr)?)),
             Expr::Macro { name, args }
                 if matches!(name.as_str(), "std::ptr::addr_of_mut" | "std::ptr::addr_of") =>
             {
                 let [arg] = args.as_slice() else {
-                    panic!("effects::rust_ast: {name}! expects one argument");
+                    return Err(EffectError::arg_shape(
+                        Construct::AddrOfMacro,
+                        ArgShapeKind::OneArgument,
+                    ));
                 };
-                Value::Ref(self.addr_of(arg))
+                Ok(Value::Ref(self.addr_of(arg)?))
             }
             Expr::Macro { name, args } if name == "format" => self.eval_format_macro(args),
             Expr::Macro { name, args } if name == "std::mem::offset_of" => {
                 let [Expr::Var(record), Expr::Var(field)] = args.as_slice() else {
-                    panic!("effects::rust_ast: offset_of! expects type and field");
+                    return Err(EffectError::arg_shape(
+                        Construct::OffsetOfMacro,
+                        ArgShapeKind::TwoArguments,
+                    ));
                 };
-                Value::Int {
+                Ok(Value::Int {
                     width: IntWidth::PointerSized,
                     signed: false,
-                    value: self.field_offset_named_type(record.as_str(), field.as_str()) as i128,
-                }
+                    value: self.field_offset_named_type(record.as_str(), field.as_str())? as i128,
+                })
             }
             Expr::Unary { op, expr } => {
-                let value = self.eval(expr);
+                let value = self.eval(expr)?;
                 match (op, value) {
-                    (UnaryOp::Neg, Value::Float(value)) => Value::Float(-value),
+                    (UnaryOp::Neg, Value::Float(value)) => Ok(Value::Float(-value)),
                     (
                         UnaryOp::Neg,
                         Value::Int {
@@ -2211,12 +2450,12 @@ impl Interp {
                             signed,
                             value,
                         },
-                    ) => Value::Int {
+                    ) => Ok(Value::Int {
                         width,
                         signed,
                         value: value.wrapping_neg(),
-                    },
-                    (UnaryOp::Not, Value::Bool(b)) => Value::Bool(!b),
+                    }),
+                    (UnaryOp::Not, Value::Bool(b)) => Ok(Value::Bool(!b)),
                     (
                         UnaryOp::Not,
                         Value::Int {
@@ -2224,69 +2463,79 @@ impl Interp {
                             signed,
                             value,
                         },
-                    ) => Value::Int {
+                    ) => Ok(Value::Int {
                         width,
                         signed,
                         value: !value,
-                    },
-                    (UnaryOp::Deref, value @ Value::Int { .. }) => value,
+                    }),
+                    (UnaryOp::Deref, value @ Value::Int { .. }) => Ok(value),
                     (UnaryOp::Deref, Value::Ref(loc)) => self.read_loc(loc),
-                    (op, other) => panic!("effects::rust_ast: cannot apply {op:?} to {other:?}"),
+                    (op, _other) => Err(EffectError::unsupported(Construct::UnaryOperand, *op)),
                 }
             }
             Expr::Binary { op, lhs, rhs } => self.eval_binary(*op, lhs, rhs),
             Expr::TupleField { base, index } => self.eval_tuple_field(base, *index),
             Expr::Index { base, index } => {
                 if let Expr::ArrayLit(elems) = base.as_ref() {
-                    let idx = value_as_u64(self.eval(index)) as usize;
+                    let index_value = self.eval(index)?;
+                    let idx = value_as_u64(index_value)? as usize;
                     return self.eval(&elems[idx]);
                 }
                 if matches!(base.as_ref(), Expr::Field { .. }) {
-                    let loc = self.field_array_element_location(base, index);
-                    let value = self
-                        .heap
-                        .get(&loc)
-                        .unwrap_or_else(|| {
-                            panic!("effects::rust_ast: read from never-written {loc:?}")
-                        })
-                        .clone();
+                    let loc = self.field_array_element_location(base, index)?;
+                    let value = match self.heap.get(&loc) {
+                        Some(value) => value.clone(),
+                        None => return Err(EffectError::uninitialized_read(loc)),
+                    };
                     self.trace.push(Effect::Read {
                         loc,
                         value: value.clone(),
                     });
-                    return value;
+                    return Ok(value);
                 }
                 let name = match base.as_ref() {
                     Expr::Var(ident) => ident.as_str(),
-                    other => panic!("effects::rust_ast: unsupported index base `{other:?}`"),
+                    other => {
+                        return Err(EffectError::unsupported(
+                            Construct::IndexBase,
+                            other.clone(),
+                        ));
+                    }
                 };
-                let idx = value_as_u64(self.eval(index));
+                let index_value = self.eval(index)?;
+                let idx = value_as_u64(index_value)?;
                 self.materialize_collection(name);
-                let binding = self.vecs.get(name).unwrap_or_else(|| {
-                    panic!("effects::rust_ast: index into unknown Vec `{name}`")
-                });
+                let binding = match self.vecs.get(name) {
+                    Some(binding) => binding,
+                    None => return Err(EffectError::unknown(BindingKind::Vec, name)),
+                };
                 if self.freed.contains(&binding.alloc) {
-                    panic!("effects::rust_ast: read from {name} after free");
+                    return Err(EffectError::use_after_free(name));
                 }
                 let loc = Location {
                     alloc: binding.alloc,
                     byte_offset: idx * binding.elem_size,
                 };
-                let value = self
-                    .heap
-                    .get(&loc)
-                    .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
-                    .clone();
+                let value = match self.heap.get(&loc) {
+                    Some(value) => value.clone(),
+                    None => return Err(EffectError::uninitialized_read(loc)),
+                };
                 self.trace.push(Effect::Read {
                     loc,
                     value: value.clone(),
                 });
-                value
+                Ok(value)
             }
             Expr::Field { base, field } if field.bytes().all(|byte| byte.is_ascii_digit()) => {
-                let index = field
-                    .parse::<usize>()
-                    .unwrap_or_else(|_| panic!("effects::rust_ast: invalid tuple field `{field}`"));
+                let index = match field.parse::<usize>() {
+                    Ok(index) => index,
+                    Err(_) => {
+                        return Err(EffectError::unsupported(
+                            Construct::TupleFieldName,
+                            field.as_str(),
+                        ));
+                    }
+                };
                 self.eval_tuple_field(base, index)
             }
             Expr::Field { base, field } => self.eval_field(base, field),
@@ -2294,8 +2543,8 @@ impl Interp {
                 self.string_len(recv)
             }
             Expr::MethodCall { recv, method, args } if method == "to_owned" && args.is_empty() => {
-                let bytes = self.string_expr_bytes(recv);
-                Value::Ref(self.alloc_string_bytes(&bytes))
+                let bytes = self.string_expr_bytes(recv)?;
+                Ok(Value::Ref(self.alloc_string_bytes(&bytes)))
             }
             Expr::MethodCallGeneric {
                 recv,
@@ -2309,7 +2558,7 @@ impl Interp {
             Expr::MethodCall { recv, method, args }
                 if method == "as_mut_ptr" && args.is_empty() =>
             {
-                Value::Ref(self.collection_base(recv))
+                Ok(Value::Ref(self.collection_base(recv)?))
             }
             Expr::MethodCall { recv, method, args }
                 if matches!(
@@ -2317,12 +2566,12 @@ impl Interp {
                     "as_slice" | "as_mut_slice" | "as_bytes" | "to_bytes"
                 ) && args.is_empty() =>
             {
-                Value::Ref(self.collection_base(recv))
+                Ok(Value::Ref(self.collection_base(recv)?))
             }
             Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
                 match recv.as_ref() {
                     Expr::Var(ident) if self.vecs.contains_key(ident.as_str()) => {
-                        Value::Ref(self.collection_base(recv))
+                        Ok(Value::Ref(self.collection_base(recv)?))
                     }
                     _ => self.eval(recv),
                 }
@@ -2331,38 +2580,45 @@ impl Interp {
                 if matches!(method.as_str(), "add" | "offset") =>
             {
                 let [offset] = args.as_slice() else {
-                    panic!("effects::rust_ast: pointer {method} expects one argument");
+                    return Err(EffectError::arg_shape(
+                        Construct::PointerOffsetMethod,
+                        ArgShapeKind::OneArgument,
+                    ));
                 };
-                let base = self.eval_ref(recv);
-                let elem_size = self.pointer_elem_size(recv, base);
-                Value::Ref(Location {
+                let base = self.eval_ref(recv)?;
+                let elem_size = self.pointer_elem_size(recv, base)?;
+                let offset_value = self.eval(offset)?;
+                let offset = value_as_u64(offset_value)?;
+                Ok(Value::Ref(Location {
                     alloc: base.alloc,
-                    byte_offset: base.byte_offset
-                        + value_as_u64(self.eval(offset)).wrapping_mul(elem_size),
-                })
+                    byte_offset: base.byte_offset + offset.wrapping_mul(elem_size),
+                }))
             }
             Expr::MethodCall { recv, method, args } if method == "offset_from" => {
                 let [other] = args.as_slice() else {
-                    panic!("effects::rust_ast: offset_from expects one argument");
+                    return Err(EffectError::arg_shape(
+                        Construct::OffsetFromMethod,
+                        ArgShapeKind::OneArgument,
+                    ));
                 };
-                let lhs = self.eval_ref(recv);
-                let rhs = self.eval_ref(other);
+                let lhs = self.eval_ref(recv)?;
+                let rhs = self.eval_ref(other)?;
                 if lhs.alloc != rhs.alloc {
-                    panic!("effects::rust_ast: offset_from across different allocations");
+                    return Err(EffectError::cross_allocation_offset(lhs.alloc, rhs.alloc));
                 }
-                let elem_size = self.pointer_elem_size(recv, lhs);
-                Value::Int {
+                let elem_size = self.pointer_elem_size(recv, lhs)?;
+                Ok(Value::Int {
                     width: IntWidth::PointerSized,
                     signed: true,
                     value: (lhs.byte_offset as i128 - rhs.byte_offset as i128) / elem_size as i128,
-                }
+                })
             }
             Expr::MethodCall { recv, method, args } if method == "position" => {
                 self.iter_position(recv, args)
             }
             Expr::MethodCall { recv, method, args } if method == "sort_by" => {
-                self.sort_by(recv, args);
-                int32(0)
+                self.sort_by(recv, args)?;
+                Ok(int32(0))
             }
             Expr::MethodCall { recv, method, args } if method == "binary_search_by" => {
                 self.binary_search_by(recv, args)
@@ -2374,19 +2630,22 @@ impl Interp {
                 self.compare_method(recv, args)
             }
             Expr::MethodCall { recv, method, args } if method == "is_some" && args.is_empty() => {
-                option_is_some(self.eval(recv))
+                let value = self.eval(recv)?;
+                option_is_some(value)
             }
             Expr::MethodCall { recv, method, args } if method == "is_none" && args.is_empty() => {
-                option_is_none(self.eval(recv))
+                let value = self.eval(recv)?;
+                option_is_none(value)
             }
             Expr::MethodCall { recv, method, args } if method == "is_ok" && args.is_empty() => {
-                match self.eval(recv) {
-                    Value::AtomicResult { ok, .. } => Value::Bool(ok),
-                    other => panic!("effects::rust_ast: `.is_ok()` on unsupported {other:?}"),
+                match self.eval(recv)? {
+                    Value::AtomicResult { ok, .. } => Ok(Value::Bool(ok)),
+                    other => Err(EffectError::type_mismatch(ValueKind::AtomicResult, other)),
                 }
             }
             Expr::MethodCall { recv, method, args } if method == "unwrap" && args.is_empty() => {
-                option_unwrap(self.eval(recv))
+                let value = self.eval(recv)?;
+                option_unwrap(value)
             }
             Expr::MethodCall { recv, method, args } if method == "get_or_init" => {
                 self.once_lock_get_or_init(recv, args)
@@ -2406,28 +2665,29 @@ impl Interp {
                 then_expr,
                 else_expr,
             } => {
-                if value_as_bool(self.eval(cond)) {
+                let cond_value = self.eval(cond)?;
+                if value_as_bool(cond_value)? {
                     self.eval(then_expr)
                 } else {
                     self.eval(else_expr)
                 }
             }
             Expr::Call { func, args } => self.eval_call(func, args),
-            Expr::Block(block) => match self.run_block(block) {
-                Flow::Return(value) => value,
-                Flow::Normal => panic!("effects::rust_ast: block expression has no tail value"),
-                Flow::Break(_) | Flow::Continue(_) => {
-                    panic!("effects::rust_ast: loop control escaped block expression")
-                }
+            Expr::Block(block) => match self.run_block(block)? {
+                Flow::Return(value) => Ok(value),
+                Flow::Normal => Err(EffectError::internal("block expression has no tail value")),
+                Flow::Break(_) | Flow::Continue(_) => Err(EffectError::internal(
+                    "loop control escaped block expression",
+                )),
             },
-            Expr::Unsafe(block) => match self.run_block(block) {
-                Flow::Return(value) => value,
-                Flow::Normal => panic!("effects::rust_ast: unsafe expression has no tail value"),
-                Flow::Break(_) | Flow::Continue(_) => {
-                    panic!("effects::rust_ast: loop control escaped unsafe expression")
-                }
+            Expr::Unsafe(block) => match self.run_block(block)? {
+                Flow::Return(value) => Ok(value),
+                Flow::Normal => Err(EffectError::internal("unsafe expression has no tail value")),
+                Flow::Break(_) | Flow::Continue(_) => Err(EffectError::internal(
+                    "loop control escaped unsafe expression",
+                )),
             },
-            Expr::AtomicRef { place, .. } => Value::Atomic(self.atomic_place(place)),
+            Expr::AtomicRef { place, .. } => Ok(Value::Atomic(self.atomic_place(place)?)),
             Expr::AtomicLoad {
                 place, ordering, ..
             } => self.atomic_load(place, *ordering),
@@ -2437,9 +2697,9 @@ impl Interp {
                 ordering,
                 ..
             } => {
-                let value = self.eval(value);
-                self.atomic_store(place, *ordering, value.clone());
-                value
+                let value = self.eval(value)?;
+                self.atomic_store(place, *ordering, value.clone())?;
+                Ok(value)
             }
             Expr::AtomicFetch {
                 op,
@@ -2448,7 +2708,7 @@ impl Interp {
                 ordering,
                 ..
             } => {
-                let value = self.eval(value);
+                let value = self.eval(value)?;
                 self.atomic_rmw(*op, place, *ordering, value)
             }
             Expr::AtomicSwap {
@@ -2457,7 +2717,7 @@ impl Interp {
                 ordering,
                 ..
             } => {
-                let value = self.eval(value);
+                let value = self.eval(value)?;
                 self.atomic_swap(place, *ordering, value)
             }
             Expr::AtomicCompareExchange {
@@ -2468,52 +2728,65 @@ impl Interp {
                 failure,
                 ..
             } => {
-                let expected = self.eval(expected);
-                let desired = self.eval(desired);
+                let expected = self.eval(expected)?;
+                let desired = self.eval(desired)?;
                 self.atomic_compare_exchange(place, *success, *failure, expected, desired)
             }
             Expr::AtomicNew { ty, value } => {
-                let value = cast_to_atomic_type(self.eval(value), ty);
-                let atomic = self.allocate_atomic(value);
-                Value::Atomic(atomic)
+                let value = self.eval(value)?;
+                let value = cast_to_atomic_type(value, ty);
+                let atomic = self.allocate_atomic(value)?;
+                Ok(Value::Atomic(atomic))
             }
             Expr::AtomicFence { ordering } => {
                 self.trace.push(Effect::AtomicFence {
                     ordering: *ordering,
                 });
-                int32(0)
+                Ok(int32(0))
             }
-            other => panic!("effects::rust_ast: unsupported expr `{other:?}`"),
+            other => Err(EffectError::unsupported(
+                Construct::UnsupportedExpr,
+                other.clone(),
+            )),
         }
     }
 
-    fn eval_atomic_method(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> Value {
+    fn eval_atomic_method(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> EResult<Value> {
         match method {
             "load" => {
                 let [ordering] = args else {
-                    panic!("effects::rust_ast: atomic load expects ordering");
+                    return Err(EffectError::arg_shape(
+                        Construct::AtomicMethodArgs,
+                        ArgShapeKind::OneArgument,
+                    ));
                 };
                 self.atomic_load(
-                    &AtomicPlace::Local(recv_name(recv).into()),
-                    ordering_expr(ordering),
+                    &AtomicPlace::Local(recv_name(recv)?.into()),
+                    ordering_expr(ordering)?,
                 )
             }
             "store" => {
                 let [value, ordering] = args else {
-                    panic!("effects::rust_ast: atomic store expects value and ordering");
+                    return Err(EffectError::arg_shape(
+                        Construct::AtomicMethodArgs,
+                        ArgShapeKind::TwoArguments,
+                    ));
                 };
-                let value = self.eval(value);
+                let value = self.eval(value)?;
                 self.atomic_store(
-                    &AtomicPlace::Local(recv_name(recv).into()),
-                    ordering_expr(ordering),
+                    &AtomicPlace::Local(recv_name(recv)?.into()),
+                    ordering_expr(ordering)?,
                     value.clone(),
-                );
-                value
+                )?;
+                Ok(value)
             }
             "fetch_add" | "fetch_sub" | "fetch_and" | "fetch_xor" | "fetch_or" | "fetch_nand"
             | "fetch_max" | "fetch_min" => {
                 let [value, ordering] = args else {
-                    panic!("effects::rust_ast: atomic fetch expects value and ordering");
+                    return Err(EffectError::arg_shape(
+                        Construct::AtomicMethodArgs,
+                        ArgShapeKind::TwoArguments,
+                    ));
                 };
                 let op = match method {
                     "fetch_add" => AtomicRmwOp::Add,
@@ -2526,40 +2799,46 @@ impl Interp {
                     "fetch_min" => AtomicRmwOp::Min,
                     _ => unreachable!(),
                 };
-                let value = self.eval(value);
+                let value = self.eval(value)?;
                 self.atomic_rmw(
                     op,
-                    &AtomicPlace::Local(recv_name(recv).into()),
-                    ordering_expr(ordering),
+                    &AtomicPlace::Local(recv_name(recv)?.into()),
+                    ordering_expr(ordering)?,
                     value,
                 )
             }
             "swap" => {
                 let [value, ordering] = args else {
-                    panic!("effects::rust_ast: atomic swap expects value and ordering");
+                    return Err(EffectError::arg_shape(
+                        Construct::AtomicMethodArgs,
+                        ArgShapeKind::TwoArguments,
+                    ));
                 };
-                let value = self.eval(value);
+                let value = self.eval(value)?;
                 self.atomic_swap(
-                    &AtomicPlace::Local(recv_name(recv).into()),
-                    ordering_expr(ordering),
+                    &AtomicPlace::Local(recv_name(recv)?.into()),
+                    ordering_expr(ordering)?,
                     value,
                 )
             }
             "compare_exchange" => {
                 let [expected, desired, success, failure] = args else {
-                    panic!("effects::rust_ast: compare_exchange expects four arguments");
+                    return Err(EffectError::arg_shape(
+                        Construct::AtomicMethodArgs,
+                        ArgShapeKind::FourArguments,
+                    ));
                 };
-                let expected = self.eval(expected);
-                let desired = self.eval(desired);
+                let expected = self.eval(expected)?;
+                let desired = self.eval(desired)?;
                 self.atomic_compare_exchange(
-                    &AtomicPlace::Local(recv_name(recv).into()),
-                    ordering_expr(success),
-                    ordering_expr(failure),
+                    &AtomicPlace::Local(recv_name(recv)?.into()),
+                    ordering_expr(success)?,
+                    ordering_expr(failure)?,
                     expected,
                     desired,
                 )
             }
-            other => panic!("effects::rust_ast: unsupported method `{other}`"),
+            other => Err(EffectError::unsupported(Construct::AtomicMethod, other)),
         }
     }
 
@@ -2582,42 +2861,46 @@ impl Interp {
         )
     }
 
-    fn eval_integer_method(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> Value {
-        let value = self.eval(recv);
+    fn eval_integer_method(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> EResult<Value> {
+        let receiver = self.eval(recv)?;
         let Value::Int {
             width,
             signed,
             value,
-        } = value
+        } = receiver
         else {
-            panic!("effects::rust_ast: `{method}` expected integer receiver, found {value:?}");
+            return Err(EffectError::type_mismatch(ValueKind::Int, receiver));
         };
         let bits = int_width_bits(width).unwrap_or(64);
         let unsigned = truncate_to_bits(value, bits, false) as u128;
         match method {
-            "wrapping_abs" => Value::Int {
+            "wrapping_abs" => Ok(Value::Int {
                 width,
                 signed,
                 value: truncate_to_bits(value.wrapping_abs(), bits, signed),
-            },
-            "reverse_bits" => Value::Int {
+            }),
+            "reverse_bits" => Ok(Value::Int {
                 width,
                 signed,
                 value: truncate_to_bits(reverse_bits(unsigned, bits), bits, signed),
-            },
-            "swap_bytes" => Value::Int {
+            }),
+            "swap_bytes" => Ok(Value::Int {
                 width,
                 signed,
                 value: truncate_to_bits(swap_bytes(unsigned, bits), bits, signed),
-            },
-            "leading_zeros" => int32(leading_zeros(unsigned, bits) as i128),
-            "trailing_zeros" => int32(trailing_zeros(unsigned, bits) as i128),
-            "count_ones" => int32(count_ones(unsigned, bits) as i128),
+            }),
+            "leading_zeros" => Ok(int32(leading_zeros(unsigned, bits) as i128)),
+            "trailing_zeros" => Ok(int32(trailing_zeros(unsigned, bits) as i128)),
+            "count_ones" => Ok(int32(count_ones(unsigned, bits) as i128)),
             "rotate_left" | "rotate_right" => {
                 let [amount] = args else {
-                    panic!("effects::rust_ast: `{method}` expects one argument");
+                    return Err(EffectError::arg_shape(
+                        Construct::IntegerMethodArg,
+                        ArgShapeKind::OneArgument,
+                    ));
                 };
-                let amount = value_as_u64(self.eval(amount)) as u32 % bits;
+                let amount_value = self.eval(amount)?;
+                let amount = value_as_u64(amount_value)? as u32 % bits;
                 let mask = bit_mask(bits);
                 let rotated = if amount == 0 {
                     unsigned & mask
@@ -2626,11 +2909,11 @@ impl Interp {
                 } else {
                     ((unsigned >> amount) | (unsigned << (bits - amount))) & mask
                 };
-                Value::Int {
+                Ok(Value::Int {
                     width,
                     signed,
                     value: truncate_to_bits(rotated as i128, bits, signed),
-                }
+                })
             }
             "overflowing_add" | "overflowing_sub" | "overflowing_mul" | "overflowing_div"
             | "overflowing_rem" => self.overflowing_method(width, signed, value, method, args),
@@ -2645,34 +2928,43 @@ impl Interp {
         lhs: i128,
         method: &str,
         args: &[Expr],
-    ) -> Value {
+    ) -> EResult<Value> {
         let [rhs] = args else {
-            panic!("effects::rust_ast: `{method}` expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::OverflowingMethodArg,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let rhs = value_as_i128(self.eval(rhs));
+        let rhs_value = self.eval(rhs)?;
+        let rhs = value_as_i128(rhs_value)?;
         let bits = int_width_bits(width).unwrap_or(64);
         let (value, overflowed) = overflowing_int_op(lhs, rhs, bits, signed, method);
-        Value::Tuple(vec![
+        Ok(Value::Tuple(vec![
             Value::Int {
                 width,
                 signed,
                 value,
             },
             Value::Bool(overflowed),
-        ])
+        ]))
     }
 
-    fn eval_tuple_field(&mut self, base: &Expr, index: usize) -> Value {
-        match self.eval(base) {
-            Value::Tuple(values) => values.get(index).cloned().unwrap_or_else(|| {
-                panic!("effects::rust_ast: tuple field index {index} out of range")
-            }),
-            other => panic!("effects::rust_ast: tuple field on non-tuple `{other:?}`"),
+    fn eval_tuple_field(&mut self, base: &Expr, index: usize) -> EResult<Value> {
+        match self.eval(base)? {
+            Value::Tuple(values) => match values.get(index).cloned() {
+                Some(value) => Ok(value),
+                None => Err(EffectError::index_out_of_range(index, values.len())),
+            },
+            other => Err(EffectError::type_mismatch(ValueKind::Tuple, other)),
         }
     }
 
-    fn eval_match(&mut self, expr: &Expr, arms: &[crate::rust_ast::ExprMatchArm]) -> Value {
-        let scrutinee = self.eval(expr);
+    fn eval_match(
+        &mut self,
+        expr: &Expr,
+        arms: &[crate::rust_ast::ExprMatchArm],
+    ) -> EResult<Value> {
+        let scrutinee = self.eval(expr)?;
         match scrutinee {
             Value::AtomicResult { ok, value } => {
                 let arm_name = if ok { "Ok" } else { "Err" };
@@ -2698,7 +2990,7 @@ impl Interp {
                         return self.eval(&arm.value);
                     }
                 }
-                panic!("effects::rust_ast: no match arm for atomic result `{arm_name}`");
+                Err(EffectError::no_match_arm(Value::AtomicResult { ok, value }))
             }
             value => {
                 for arm in arms {
@@ -2706,87 +2998,84 @@ impl Interp {
                         return self.eval(&arm.value);
                     }
                 }
-                panic!("effects::rust_ast: no match arm for {value:?}");
+                Err(EffectError::no_match_arm(value))
             }
         }
     }
 
-    fn define_atomic(&mut self, name: &str, value: Value) -> AtomicId {
-        let atomic = self.allocate_atomic(value);
+    fn define_atomic(&mut self, name: &str, value: Value) -> EResult<AtomicId> {
+        let atomic = self.allocate_atomic(value)?;
         self.atomics.insert(name.to_string(), atomic);
-        atomic
+        Ok(atomic)
     }
 
-    fn allocate_atomic(&mut self, value: Value) -> AtomicId {
+    fn allocate_atomic(&mut self, value: Value) -> EResult<AtomicId> {
         let atomic = AtomicId(self.next_atomic);
         self.next_atomic += 1;
         self.atomic_values.insert(atomic, value);
-        atomic
+        Ok(atomic)
     }
 
-    fn atomic_place(&mut self, place: &AtomicPlace) -> AtomicId {
+    fn atomic_place(&mut self, place: &AtomicPlace) -> EResult<AtomicId> {
         match place {
             AtomicPlace::Local(name) => self.atomic_for_name(name.as_str()),
-            AtomicPlace::Ptr(expr) => match atomic_ptr_target(expr) {
+            AtomicPlace::Ptr(expr) => match atomic_ptr_target(expr)? {
                 AtomicPtrTarget::Local(name) => self.atomic_for_ptr_local(name),
                 AtomicPtrTarget::Field { base, field } => self.atomic_for_field(base, field),
             },
         }
     }
 
-    fn atomic_for_name(&mut self, name: &str) -> AtomicId {
+    fn atomic_for_name(&mut self, name: &str) -> EResult<AtomicId> {
         if let Some(&atomic) = self.atomics.get(name) {
-            return atomic;
+            return Ok(atomic);
         }
-        let value = self
-            .scalars
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: atomic access to unknown `{name}`"))
-            .clone();
-        let atomic = self.allocate_atomic(value.clone());
+        let value = match self.scalars.get(name) {
+            Some(value) => value.clone(),
+            None => return Err(EffectError::unknown(BindingKind::Scalar, name)),
+        };
+        let atomic = self.allocate_atomic(value.clone())?;
         self.atomics.insert(name.to_string(), atomic);
         self.scalars.insert(name.to_string(), Value::Atomic(atomic));
-        atomic
+        Ok(atomic)
     }
 
-    fn atomic_for_ptr_local(&mut self, name: &str) -> AtomicId {
+    fn atomic_for_ptr_local(&mut self, name: &str) -> EResult<AtomicId> {
         if let Some(&loc) = self.globals.get(name) {
             return self.atomic_for_location(loc);
         }
         if let Some(&atomic) = self.atomics.get(name) {
-            return atomic;
+            return Ok(atomic);
         }
-        let value = self
-            .scalars
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: atomic access to unknown `{name}`"))
-            .clone();
-        let atomic = self.allocate_atomic(value);
+        let value = match self.scalars.get(name) {
+            Some(value) => value.clone(),
+            None => return Err(EffectError::unknown(BindingKind::Scalar, name)),
+        };
+        let atomic = self.allocate_atomic(value)?;
         self.atomics.insert(name.to_string(), atomic);
         self.atomic_backing
             .insert(atomic, AtomicBacking::Scalar(name.to_string()));
-        atomic
+        Ok(atomic)
     }
 
-    fn atomic_for_field(&mut self, base: &Expr, field: &str) -> AtomicId {
-        let loc = self.field_location(base, field);
+    fn atomic_for_field(&mut self, base: &Expr, field: &str) -> EResult<AtomicId> {
+        let loc = self.field_location(base, field)?;
         self.atomic_for_location(loc)
     }
 
-    fn atomic_for_location(&mut self, loc: Location) -> AtomicId {
+    fn atomic_for_location(&mut self, loc: Location) -> EResult<AtomicId> {
         if let Some(&atomic) = self.atomic_locs.get(&loc) {
-            return atomic;
+            return Ok(atomic);
         }
-        let value = self
-            .heap
-            .get(&loc)
-            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
-            .clone();
-        let atomic = self.allocate_atomic(value);
+        let value = match self.heap.get(&loc) {
+            Some(value) => value.clone(),
+            None => return Err(EffectError::uninitialized_read(loc)),
+        };
+        let atomic = self.allocate_atomic(value)?;
         self.atomic_locs.insert(loc, atomic);
         self.atomic_backing
             .insert(atomic, AtomicBacking::Field(loc));
-        atomic
+        Ok(atomic)
     }
 
     fn sync_atomic_backing(&mut self, atomic: AtomicId, value: &Value) {
@@ -2801,20 +3090,25 @@ impl Interp {
         }
     }
 
-    fn atomic_load(&mut self, place: &AtomicPlace, ordering: AtomicOrdering) -> Value {
-        let atomic = self.atomic_place(place);
-        let value = self.atomic_value(atomic);
+    fn atomic_load(&mut self, place: &AtomicPlace, ordering: AtomicOrdering) -> EResult<Value> {
+        let atomic = self.atomic_place(place)?;
+        let value = self.atomic_value(atomic)?;
         self.trace.push(Effect::AtomicLoad {
             atomic,
             ordering,
             value: value.clone(),
         });
-        value
+        Ok(value)
     }
 
-    fn atomic_store(&mut self, place: &AtomicPlace, ordering: AtomicOrdering, value: Value) {
-        let atomic = self.atomic_place(place);
-        let old = self.atomic_value(atomic);
+    fn atomic_store(
+        &mut self,
+        place: &AtomicPlace,
+        ordering: AtomicOrdering,
+        value: Value,
+    ) -> EResult<()> {
+        let atomic = self.atomic_place(place)?;
+        let old = self.atomic_value(atomic)?;
         let value = match_atomic_shape(value, &old);
         self.atomic_values.insert(atomic, value.clone());
         self.sync_atomic_backing(atomic, &value);
@@ -2823,6 +3117,7 @@ impl Interp {
             ordering,
             value,
         });
+        Ok(())
     }
 
     fn atomic_rmw(
@@ -2831,11 +3126,11 @@ impl Interp {
         place: &AtomicPlace,
         ordering: AtomicOrdering,
         operand: Value,
-    ) -> Value {
-        let atomic = self.atomic_place(place);
-        let old = self.atomic_value(atomic);
+    ) -> EResult<Value> {
+        let atomic = self.atomic_place(place)?;
+        let old = self.atomic_value(atomic)?;
         let operand = match_atomic_shape(operand, &old);
-        let new = atomic_rmw_value(op, old.clone(), operand.clone());
+        let new = atomic_rmw_value(op, old.clone(), operand.clone())?;
         self.atomic_values.insert(atomic, new.clone());
         self.sync_atomic_backing(atomic, &new);
         self.trace.push(Effect::AtomicRmw {
@@ -2846,12 +3141,17 @@ impl Interp {
             old: old.clone(),
             new,
         });
-        old
+        Ok(old)
     }
 
-    fn atomic_swap(&mut self, place: &AtomicPlace, ordering: AtomicOrdering, new: Value) -> Value {
-        let atomic = self.atomic_place(place);
-        let old = self.atomic_value(atomic);
+    fn atomic_swap(
+        &mut self,
+        place: &AtomicPlace,
+        ordering: AtomicOrdering,
+        new: Value,
+    ) -> EResult<Value> {
+        let atomic = self.atomic_place(place)?;
+        let old = self.atomic_value(atomic)?;
         let new = match_atomic_shape(new, &old);
         self.atomic_values.insert(atomic, new.clone());
         self.sync_atomic_backing(atomic, &new);
@@ -2861,7 +3161,7 @@ impl Interp {
             old: old.clone(),
             new,
         });
-        old
+        Ok(old)
     }
 
     fn atomic_compare_exchange(
@@ -2871,9 +3171,9 @@ impl Interp {
         failure: AtomicOrdering,
         expected: Value,
         desired: Value,
-    ) -> Value {
-        let atomic = self.atomic_place(place);
-        let old = self.atomic_value(atomic);
+    ) -> EResult<Value> {
+        let atomic = self.atomic_place(place)?;
+        let old = self.atomic_value(atomic)?;
         let expected = match_atomic_shape(expected, &old);
         let desired = match_atomic_shape(desired, &old);
         let exchanged = old == expected;
@@ -2890,54 +3190,68 @@ impl Interp {
             old: old.clone(),
             exchanged,
         });
-        Value::AtomicResult {
+        Ok(Value::AtomicResult {
             ok: exchanged,
-            value: option_value(old),
+            value: option_value(old)?,
+        })
+    }
+
+    fn atomic_value(&self, atomic: AtomicId) -> EResult<Value> {
+        match self.atomic_values.get(&atomic) {
+            Some(value) => Ok(value.clone()),
+            None => Err(EffectError::unknown(
+                BindingKind::Atomic,
+                format!("{atomic:?}"),
+            )),
         }
     }
 
-    fn atomic_value(&self, atomic: AtomicId) -> Value {
-        self.atomic_values
-            .get(&atomic)
-            .unwrap_or_else(|| panic!("effects::rust_ast: read from unknown atomic {atomic:?}"))
-            .clone()
-    }
-
-    fn read_global(&mut self, name: &str) -> Value {
-        let loc = *self
-            .globals
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: read of unknown global `{name}`"));
-        let value = self
-            .heap
-            .get(&loc)
-            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
-            .clone();
+    fn read_global(&mut self, name: &str) -> EResult<Value> {
+        let loc = match self.globals.get(name) {
+            Some(loc) => *loc,
+            None => return Err(EffectError::unknown(BindingKind::Global, name)),
+        };
+        let value = match self.heap.get(&loc) {
+            Some(value) => value.clone(),
+            None => return Err(EffectError::uninitialized_read(loc)),
+        };
         self.trace.push(Effect::Read {
             loc,
             value: value.clone(),
         });
-        value
+        Ok(value)
     }
 
-    fn once_lock_get_or_init(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+    fn once_lock_get_or_init(&mut self, recv: &Expr, args: &[Expr]) -> EResult<Value> {
         let Expr::Var(ident) = recv else {
-            panic!("effects::rust_ast: unsupported OnceLock receiver `{recv:?}`");
+            return Err(EffectError::unsupported(
+                Construct::OnceLockReceiver,
+                recv.clone(),
+            ));
         };
-        let (guard, payload) = self
+        let (guard, payload) = match self
             .once_locks
             .get(ident.as_str())
             .map(|binding| (binding.guard, binding.payload))
-            .unwrap_or_else(|| panic!("effects::rust_ast: unknown OnceLock `{}`", ident.as_str()));
-        let initialized = self.read_loc(guard);
-        if value_as_i128(initialized) == 0 {
+        {
+            Some(pair) => pair,
+            None => return Err(EffectError::unknown(BindingKind::OnceLock, ident.as_str())),
+        };
+        let initialized = self.read_loc(guard)?;
+        if value_as_i128(initialized)? == 0 {
             let [Expr::Closure { params, body }] = args else {
-                panic!("effects::rust_ast: OnceLock::get_or_init expects one closure");
+                return Err(EffectError::arg_shape(
+                    Construct::OnceLockInitArgs,
+                    ArgShapeKind::OneArgument,
+                ));
             };
             if !params.is_empty() {
-                panic!("effects::rust_ast: OnceLock initializer closure cannot take params");
+                return Err(EffectError::arg_shape(
+                    Construct::OnceLockInitParams,
+                    ArgShapeKind::NoArguments,
+                ));
             }
-            let value = self.eval(body);
+            let value = self.eval(body)?;
             self.heap.insert(payload, value.clone());
             self.trace.push(Effect::Write {
                 loc: payload,
@@ -2957,17 +3271,16 @@ impl Interp {
         self.read_loc(payload)
     }
 
-    fn read_loc(&mut self, loc: Location) -> Value {
-        let value = self
-            .heap
-            .get(&loc)
-            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
-            .clone();
+    fn read_loc(&mut self, loc: Location) -> EResult<Value> {
+        let value = match self.heap.get(&loc) {
+            Some(value) => value.clone(),
+            None => return Err(EffectError::uninitialized_read(loc)),
+        };
         self.trace.push(Effect::Read {
             loc,
             value: value.clone(),
         });
-        value
+        Ok(value)
     }
 
     fn write_loc(&mut self, loc: Location, value: Value) {
@@ -2980,45 +3293,49 @@ impl Interp {
         self.trace.push(Effect::Write { loc, value });
     }
 
-    fn addr_of(&mut self, expr: &Expr) -> Location {
+    fn addr_of(&mut self, expr: &Expr) -> EResult<Location> {
         match expr {
             Expr::Var(ident) if self.globals.contains_key(ident.as_str()) => {
-                self.globals[ident.as_str()]
+                Ok(self.globals[ident.as_str()])
             }
-            Expr::Var(ident) if self.structs.contains_key(ident.as_str()) => Location {
+            Expr::Var(ident) if self.structs.contains_key(ident.as_str()) => Ok(Location {
                 alloc: self.structs[ident.as_str()].alloc,
                 byte_offset: 0,
-            },
+            }),
             Expr::Var(ident) => self.scalar_location(ident.as_str()),
             Expr::Index { base, index } => {
                 if matches!(base.as_ref(), Expr::Field { .. }) {
                     return self.field_array_element_location(base, index);
                 }
-                let name = collection_name(base);
-                let idx = value_as_u64(self.eval(index));
-                self.materialize_collection(name);
-                let binding = self.vecs.get(name).unwrap_or_else(|| {
-                    panic!("effects::rust_ast: address of index into unknown Vec `{name}`")
-                });
-                Location {
+                let name = collection_name(base)?.to_string();
+                let index_value = self.eval(index)?;
+                let idx = value_as_u64(index_value)?;
+                self.materialize_collection(&name);
+                let binding = match self.vecs.get(&name) {
+                    Some(binding) => binding,
+                    None => return Err(EffectError::unknown(BindingKind::Vec, name)),
+                };
+                Ok(Location {
                     alloc: binding.alloc,
                     byte_offset: idx * binding.elem_size,
-                }
+                })
             }
             Expr::Field { base, field } => self.field_location(base, field),
-            other => panic!("effects::rust_ast: unsupported address-of expression `{other:?}`"),
+            other => Err(EffectError::unsupported(
+                Construct::AddrOfExpr,
+                other.clone(),
+            )),
         }
     }
 
-    fn scalar_location(&mut self, name: &str) -> Location {
+    fn scalar_location(&mut self, name: &str) -> EResult<Location> {
         if let Some(loc) = self.scalar_locs.get(name).cloned() {
-            return loc;
+            return Ok(loc);
         }
-        let value = self
-            .scalars
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: address of unknown scalar `{name}`"))
-            .clone();
+        let value = match self.scalars.get(name) {
+            Some(value) => value.clone(),
+            None => return Err(EffectError::unknown(BindingKind::Scalar, name)),
+        };
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
         let loc = Location {
@@ -3029,60 +3346,71 @@ impl Interp {
         self.heap.insert(loc, value.clone());
         self.trace.push(Effect::Alloc {
             alloc,
-            size: local_value_size(&value),
+            size: local_value_size(&value)?,
         });
         self.trace.push(Effect::Write { loc, value });
-        loc
+        Ok(loc)
     }
 
-    fn eval_call(&mut self, func: &Expr, args: &[Expr]) -> Value {
+    fn eval_call(&mut self, func: &Expr, args: &[Expr]) -> EResult<Value> {
         if args.is_empty() && is_path(func, &["std", "ptr", "null_mut"]) {
-            return Value::Null;
+            return Ok(Value::Null);
         }
-        if let Some(align) = self.generic_align_of(func, args) {
-            return Value::Int {
+        if let Some(align) = self.generic_align_of(func, args)? {
+            return Ok(Value::Int {
                 width: IntWidth::PointerSized,
                 signed: false,
                 value: align as i128,
-            };
+            });
         }
-        if let Some(size) = self.generic_size_of(func, args) {
-            return Value::Int {
+        if let Some(size) = self.generic_size_of(func, args)? {
+            return Ok(Value::Int {
                 width: IntWidth::PointerSized,
                 signed: false,
                 value: size as i128,
-            };
+            });
         }
         if args.is_empty() && is_path(func, &["std", "mem", "size_of"]) {
-            return int32(4);
+            return Ok(int32(4));
         }
         if is_path(func, &["core", "hint", "assert_unchecked"]) {
             let [cond] = args else {
-                panic!("effects::rust_ast: assert_unchecked expects one argument");
+                return Err(EffectError::arg_shape(
+                    Construct::AssertUncheckedArgs,
+                    ArgShapeKind::OneArgument,
+                ));
             };
-            if !value_as_bool(self.eval(cond)) {
-                panic!("effects::rust_ast: assert_unchecked(false)");
+            let cond_value = self.eval(cond)?;
+            if !value_as_bool(cond_value)? {
+                return Err(EffectError::internal("assert_unchecked(false)"));
             }
-            return int32(0);
+            return Ok(int32(0));
         }
         if is_path(func, &["std", "ptr", "read_volatile"]) {
             return self.read_volatile(args);
         }
         if is_path(func, &["std", "ptr", "write_volatile"]) {
-            self.write_volatile(args);
-            return int32(0);
+            self.write_volatile(args)?;
+            return Ok(int32(0));
         }
         if is_path(func, &["std", "io", "BufRead", "read_until"]) {
             return self.call_read_until(args);
         }
         let Some(name) = path_name(func) else {
-            panic!("effects::rust_ast: unsupported call target `{func:?}`");
+            return Err(EffectError::unsupported(
+                Construct::CallTarget,
+                func.clone(),
+            ));
         };
         if name == "Some" {
             let [arg] = args else {
-                panic!("effects::rust_ast: Some expects one argument");
+                return Err(EffectError::arg_shape(
+                    Construct::SomeArg,
+                    ArgShapeKind::OneArgument,
+                ));
             };
-            return Value::Option(Some(option_value(self.eval(arg))));
+            let value = self.eval(arg)?;
+            return Ok(Value::Option(Some(option_value(value)?)));
         }
         if let Some(summary) = call_summary(&name) {
             return self.eval_call_summary(summary, args);
@@ -3094,33 +3422,35 @@ impl Interp {
             "__slate_runtime::parse_f64" => return self.parse_runtime_f64(args),
             _ => {}
         }
-        let f = self
-            .funcs
-            .get(&name)
-            .cloned()
-            .unwrap_or_else(|| panic!("effects::rust_ast: unsupported call target `{name}`"));
-        let values = args.iter().map(|arg| self.eval(arg)).collect::<Vec<_>>();
+        let f = match self.funcs.get(&name).cloned() {
+            Some(f) => f,
+            None => return Err(EffectError::unknown(BindingKind::Function, name)),
+        };
+        let mut values = Vec::with_capacity(args.len());
+        for arg in args {
+            values.push(self.eval(arg)?);
+        }
         self.call_user(&f, &values, Some(args))
     }
 
-    fn eval_ref(&mut self, expr: &Expr) -> Location {
-        match self.eval(expr) {
-            Value::Ref(loc) => loc,
-            other => panic!("effects::rust_ast: expected pointer value, found {other:?}"),
+    fn eval_ref(&mut self, expr: &Expr) -> EResult<Location> {
+        match self.eval(expr)? {
+            Value::Ref(loc) => Ok(loc),
+            other => Err(EffectError::type_mismatch(ValueKind::Ref, other)),
         }
     }
 
-    fn collection_base(&mut self, expr: &Expr) -> Location {
-        let name = collection_name(expr);
-        self.materialize_collection(name);
-        let binding = self
-            .vecs
-            .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: pointer to unknown collection `{name}`"));
-        Location {
+    fn collection_base(&mut self, expr: &Expr) -> EResult<Location> {
+        let name = collection_name(expr)?.to_string();
+        self.materialize_collection(&name);
+        let binding = match self.vecs.get(&name) {
+            Some(binding) => binding,
+            None => return Err(EffectError::unknown(BindingKind::Vec, name)),
+        };
+        Ok(Location {
             alloc: binding.alloc,
             byte_offset: 0,
-        }
+        })
     }
 
     fn collection_len_from_arg(&self, expr: &Expr) -> Option<u64> {
@@ -3132,7 +3462,7 @@ impl Interp {
                         "as_slice" | "as_mut_slice" | "as_bytes" | "to_bytes"
                     ) =>
             {
-                let name = collection_name(recv);
+                let name = collection_name(recv).ok()?;
                 self.vecs.get(name).map(|binding| binding.len)
             }
             Expr::Var(ident) => self.vecs.get(ident.as_str()).map(|binding| binding.len),
@@ -3146,16 +3476,16 @@ impl Interp {
         }
     }
 
-    fn pointer_elem_size(&self, expr: &Expr, loc: Location) -> u64 {
+    fn pointer_elem_size(&self, expr: &Expr, loc: Location) -> EResult<u64> {
         match expr {
             Expr::Var(ident) => {
                 if let Some(size) = self.pointer_elem_sizes.get(ident.as_str()) {
-                    return *size;
+                    return Ok(*size);
                 }
             }
             Expr::Cast { ty, .. } => {
                 if let Some(size) = pointer_elem_size_from_type(ty) {
-                    return size;
+                    return Ok(size);
                 }
             }
             Expr::Unsafe(block) => {
@@ -3166,11 +3496,12 @@ impl Interp {
             Expr::MethodCall { recv, .. } => return self.pointer_elem_size(recv, loc),
             _ => {}
         }
-        self.vecs
+        Ok(self
+            .vecs
             .values()
             .find(|binding| binding.alloc == loc.alloc)
             .map(|binding| binding.elem_size)
-            .unwrap_or(1)
+            .unwrap_or(1))
     }
 
     fn materialize_collection(&mut self, name: &str) {
@@ -3189,9 +3520,9 @@ impl Interp {
         binding.alloc = alloc;
     }
 
-    fn hidden_c_string(&mut self, bytes: &[u8]) -> Location {
+    fn hidden_c_string(&mut self, bytes: &[u8]) -> EResult<Location> {
         if let Some(&loc) = self.hidden_c_strings.get(bytes) {
-            return loc;
+            return Ok(loc);
         }
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
@@ -3213,18 +3544,18 @@ impl Interp {
             );
         }
         self.hidden_c_strings.insert(bytes.to_vec(), base);
-        base
+        Ok(base)
     }
 
-    fn read_bytes(&mut self, base: Location, len: u64) -> Vec<Value> {
-        (0..len)
-            .map(|index| {
-                self.read_loc(Location {
-                    alloc: base.alloc,
-                    byte_offset: base.byte_offset + index,
-                })
-            })
-            .collect()
+    fn read_bytes(&mut self, base: Location, len: u64) -> EResult<Vec<Value>> {
+        let mut values = Vec::with_capacity(len as usize);
+        for index in 0..len {
+            values.push(self.read_loc(Location {
+                alloc: base.alloc,
+                byte_offset: base.byte_offset + index,
+            })?);
+        }
+        Ok(values)
     }
 
     fn write_bytes(&mut self, base: Location, values: &[Value]) {
@@ -3241,51 +3572,74 @@ impl Interp {
         }
     }
 
-    fn read_volatile(&mut self, args: &[Expr]) -> Value {
+    fn read_volatile(&mut self, args: &[Expr]) -> EResult<Value> {
         let [ptr] = args else {
-            panic!("effects::rust_ast: read_volatile expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::ReadVolatileArgs,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let loc = self.eval_ref(ptr);
+        let loc = self.eval_ref(ptr)?;
         self.read_loc(loc)
     }
 
-    fn write_volatile(&mut self, args: &[Expr]) {
+    fn write_volatile(&mut self, args: &[Expr]) -> EResult<()> {
         let [ptr, value] = args else {
-            panic!("effects::rust_ast: write_volatile expects two arguments");
+            return Err(EffectError::arg_shape(
+                Construct::WriteVolatileArgs,
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let loc = self.eval_ref(ptr);
-        let value = self.eval(value);
+        let loc = self.eval_ref(ptr)?;
+        let value = self.eval(value)?;
         self.write_loc(loc, value);
+        Ok(())
     }
 
-    fn generic_size_of(&self, func: &Expr, args: &[Expr]) -> Option<u64> {
+    fn generic_size_of(&self, func: &Expr, args: &[Expr]) -> EResult<Option<u64>> {
         if !args.is_empty() {
-            return None;
+            return Ok(None);
         }
-        let name = path_name(func)?;
-        let ty_name = name
-            .strip_prefix("std::mem::size_of::<")?
-            .strip_suffix('>')?;
-        Some(self.size_of_named_type(ty_name))
+        let Some(name) = path_name(func) else {
+            return Ok(None);
+        };
+        let Some(ty_name) = name
+            .strip_prefix("std::mem::size_of::<")
+            .and_then(|rest| rest.strip_suffix('>'))
+        else {
+            return Ok(None);
+        };
+        Ok(Some(self.size_of_named_type(ty_name)?))
     }
 
-    fn generic_align_of(&self, func: &Expr, args: &[Expr]) -> Option<u64> {
+    fn generic_align_of(&self, func: &Expr, args: &[Expr]) -> EResult<Option<u64>> {
         if !args.is_empty() {
-            return None;
+            return Ok(None);
         }
-        let name = path_name(func)?;
-        let ty_name = name
-            .strip_prefix("std::mem::align_of::<")?
-            .strip_suffix('>')?;
-        Some(self.align_of_named_type(ty_name))
+        let Some(name) = path_name(func) else {
+            return Ok(None);
+        };
+        let Some(ty_name) = name
+            .strip_prefix("std::mem::align_of::<")
+            .and_then(|rest| rest.strip_suffix('>'))
+        else {
+            return Ok(None);
+        };
+        Ok(Some(self.align_of_named_type(ty_name)?))
     }
 
-    fn align_of_named_type(&self, name: &str) -> u64 {
+    fn align_of_named_type(&self, name: &str) -> EResult<u64> {
         if let Some(prim) = Prim::parse(name) {
-            let size = type_size(&Type::Prim(prim)).unwrap_or_else(|| {
-                panic!("effects::rust_ast: unsupported primitive align `{name}`")
-            });
-            return size.clamp(1, 8);
+            let size = match type_size(&Type::Prim(prim)) {
+                Some(size) => size,
+                None => {
+                    return Err(EffectError::unsupported(
+                        Construct::PrimAlignOf,
+                        Type::Prim(prim),
+                    ));
+                }
+            };
+            return Ok(size.clamp(1, 8));
         }
         if let Some(record) = self.records.get(name) {
             return self.record_align(record);
@@ -3293,129 +3647,141 @@ impl Interp {
         if let Some(def) = self.tuple_structs.get(name) {
             return self.tuple_struct_align(def);
         }
-        panic!("effects::rust_ast: unknown type `{name}` in align_of")
+        Err(EffectError::unknown(BindingKind::Struct, name))
     }
 
-    fn size_of_named_type(&self, name: &str) -> u64 {
+    fn size_of_named_type(&self, name: &str) -> EResult<u64> {
         if let Some(prim) = Prim::parse(name) {
-            return type_size(&Type::Prim(prim)).unwrap_or_else(|| {
-                panic!("effects::rust_ast: unsupported primitive size `{name}`")
-            });
+            return match type_size(&Type::Prim(prim)) {
+                Some(size) => Ok(size),
+                None => Err(EffectError::unsupported(
+                    Construct::PrimSizeOf,
+                    Type::Prim(prim),
+                )),
+            };
         }
         let Some(record) = self.records.get(name) else {
             if let Some(def) = self.tuple_structs.get(name) {
                 return self.tuple_struct_size(def);
             }
-            panic!("effects::rust_ast: unknown type `{name}` in size_of");
+            return Err(EffectError::unknown(BindingKind::Struct, name));
         };
         if record.is_union {
-            let size = record
-                .fields
-                .iter()
-                .map(|field| self.type_layout(&field.ty).0)
-                .max()
-                .unwrap_or(0);
-            return align_to(size, self.record_align(record));
+            let mut size = 0u64;
+            for field in &record.fields {
+                size = size.max(self.type_layout(&field.ty)?.0);
+            }
+            return Ok(align_to(size, self.record_align(record)?));
         }
         let mut offset = 0u64;
         for field in &record.fields {
-            let (size, align) = self.type_layout(&field.ty);
+            let (size, align) = self.type_layout(&field.ty)?;
             if !record.packed {
                 offset = align_to(offset, align);
             }
             offset += size;
         }
-        align_to(offset, self.record_align(record))
+        Ok(align_to(offset, self.record_align(record)?))
     }
 
-    fn type_layout(&self, ty: &Type) -> (u64, u64) {
+    fn type_layout(&self, ty: &Type) -> EResult<(u64, u64)> {
         match ty {
             Type::Custom(name) => {
-                let size = self.size_of_named_type(name);
+                let size = self.size_of_named_type(name)?;
                 let align = if let Some(record) = self.records.get(name) {
-                    self.record_align(record)
+                    self.record_align(record)?
                 } else if let Some(def) = self.tuple_structs.get(name) {
-                    self.tuple_struct_align(def)
+                    self.tuple_struct_align(def)?
                 } else {
                     1
                 };
-                (size, align)
+                Ok((size, align))
             }
             Type::Array { elem, len } => {
-                let (size, align) = self.type_layout(elem);
-                (size * *len, align)
+                let (size, align) = self.type_layout(elem)?;
+                Ok((size * *len, align))
             }
             _ => {
-                let size = type_size(ty).unwrap_or_else(|| {
-                    panic!("effects::rust_ast: unsupported size_of type `{ty:?}`")
-                });
-                (size, size.clamp(1, 8))
+                let size = match type_size(ty) {
+                    Some(size) => size,
+                    None => {
+                        return Err(EffectError::unsupported(Construct::PrimSizeOf, ty.clone()));
+                    }
+                };
+                Ok((size, size.clamp(1, 8)))
             }
         }
     }
 
-    fn field_offset_named_type(&self, record_name: &str, field_name: &str) -> u64 {
-        let record = self.records.get(record_name).unwrap_or_else(|| {
-            panic!("effects::rust_ast: unknown type `{record_name}` in offset_of")
-        });
+    fn field_offset_named_type(&self, record_name: &str, field_name: &str) -> EResult<u64> {
+        let record = match self.records.get(record_name) {
+            Some(record) => record,
+            None => {
+                return Err(EffectError::unknown(BindingKind::Struct, record_name));
+            }
+        };
         if record.is_union {
-            return 0;
+            return Ok(0);
         }
         let mut offset = 0u64;
         for field in &record.fields {
-            let (size, align) = self.type_layout(&field.ty);
+            let (size, align) = self.type_layout(&field.ty)?;
             if !record.packed {
                 offset = align_to(offset, align);
             }
             if field.name.as_str() == field_name {
-                return offset;
+                return Ok(offset);
             }
             offset += size;
         }
-        panic!("effects::rust_ast: unknown field `{field_name}` in offset_of::<{record_name}>")
+        Err(EffectError::unknown(BindingKind::Field, field_name))
     }
 
-    fn record_align(&self, record: &crate::rust_ast::RecordDef) -> u64 {
+    fn record_align(&self, record: &crate::rust_ast::RecordDef) -> EResult<u64> {
         if record.packed {
-            return 1;
+            return Ok(1);
         }
-        record.align.map(u64::from).unwrap_or_else(|| {
-            record
-                .fields
-                .iter()
-                .map(|field| self.type_layout(&field.ty).1)
-                .max()
-                .unwrap_or(1)
-        })
+        match record.align.map(u64::from) {
+            Some(align) => Ok(align),
+            None => {
+                let mut max_align = 1u64;
+                for field in &record.fields {
+                    max_align = max_align.max(self.type_layout(&field.ty)?.1);
+                }
+                Ok(max_align)
+            }
+        }
     }
 
-    fn tuple_struct_size(&self, def: &StructDef) -> u64 {
+    fn tuple_struct_size(&self, def: &StructDef) -> EResult<u64> {
         let StructFields::Tuple(fields) = &def.fields else {
-            return 0;
+            return Ok(0);
         };
         let mut offset = 0u64;
         for field in fields {
-            let (size, align) = self.type_layout(field);
+            let (size, align) = self.type_layout(field)?;
             offset = align_to(offset, align);
             offset += size;
         }
-        align_to(offset, self.tuple_struct_align(def))
+        Ok(align_to(offset, self.tuple_struct_align(def)?))
     }
 
-    fn tuple_struct_align(&self, def: &StructDef) -> u64 {
-        let field_align = match &def.fields {
-            StructFields::Tuple(fields) => fields
-                .iter()
-                .map(|field| self.type_layout(field).1)
-                .max()
-                .unwrap_or(1),
-            StructFields::Named(fields) => fields
-                .iter()
-                .map(|(_, field)| self.type_layout(field).1)
-                .max()
-                .unwrap_or(1),
+    fn tuple_struct_align(&self, def: &StructDef) -> EResult<u64> {
+        let mut field_align = 1u64;
+        match &def.fields {
+            StructFields::Tuple(fields) => {
+                for field in fields {
+                    field_align = field_align.max(self.type_layout(field)?.1);
+                }
+            }
+            StructFields::Named(fields) => {
+                for (_, field) in fields {
+                    field_align = field_align.max(self.type_layout(field)?.1);
+                }
+            }
         };
-        def.attrs
+        let repr_align = def
+            .attrs
             .iter()
             .filter_map(|attr| match attr {
                 Attr::Repr(reprs) => Some(reprs),
@@ -3426,12 +3792,11 @@ impl Interp {
                 Repr::Align(align) => Some(u64::from(*align)),
                 _ => None,
             })
-            .max()
-            .unwrap_or(field_align)
-            .max(field_align)
+            .max();
+        Ok(repr_align.unwrap_or(field_align).max(field_align))
     }
 
-    fn eval_call_summary(&mut self, summary: CallSummary, args: &[Expr]) -> Value {
+    fn eval_call_summary(&mut self, summary: CallSummary, args: &[Expr]) -> EResult<Value> {
         match summary {
             CallSummary::Malloc => self.call_malloc(args),
             CallSummary::Calloc => self.call_calloc(args),
@@ -3471,32 +3836,41 @@ impl Interp {
             CallSummary::Toupper => self.call_toupper(args),
             CallSummary::Tolower => self.call_tolower(args),
             CallSummary::Qsort => {
-                self.qsort(args);
-                int32(0)
+                self.qsort(args)?;
+                Ok(int32(0))
             }
             CallSummary::Bsearch => self.bsearch(args),
         }
     }
 
-    fn call_malloc(&mut self, args: &[Expr]) -> Value {
+    fn call_malloc(&mut self, args: &[Expr]) -> EResult<Value> {
         let [size] = args else {
-            panic!("effects::rust_ast: malloc expects size");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Malloc),
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let size = value_as_u64(self.eval(size));
+        let size_value = self.eval(size)?;
+        let size = value_as_u64(size_value)?;
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
         self.trace.push(Effect::Alloc { alloc, size });
-        Value::Ref(Location {
+        Ok(Value::Ref(Location {
             alloc,
             byte_offset: 0,
-        })
+        }))
     }
 
-    fn call_calloc(&mut self, args: &[Expr]) -> Value {
+    fn call_calloc(&mut self, args: &[Expr]) -> EResult<Value> {
         let [count, elem_size] = args else {
-            panic!("effects::rust_ast: calloc expects count and element size");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Calloc),
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let size = value_as_u64(self.eval(count)).wrapping_mul(value_as_u64(self.eval(elem_size)));
+        let count_value = self.eval(count)?;
+        let elem_size_value = self.eval(elem_size)?;
+        let size = value_as_u64(count_value)?.wrapping_mul(value_as_u64(elem_size_value)?);
         let alloc = AllocId(self.next_alloc);
         self.next_alloc += 1;
         self.trace.push(Effect::Alloc { alloc, size });
@@ -3509,82 +3883,102 @@ impl Interp {
             self.heap
                 .insert(Location { alloc, byte_offset }, zero.clone());
         }
-        Value::Ref(Location {
+        Ok(Value::Ref(Location {
             alloc,
             byte_offset: 0,
-        })
+        }))
     }
 
-    fn call_free(&mut self, args: &[Expr]) -> Value {
+    fn call_free(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base] = args else {
-            panic!("effects::rust_ast: free expects pointer");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Free),
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let base = match self.eval(base) {
+        let base = match self.eval(base)? {
             Value::Ref(loc) => loc,
-            other => panic!("effects::rust_ast: free expected pointer, found {other:?}"),
+            other => return Err(EffectError::type_mismatch(ValueKind::Ref, other)),
         };
         if !self.freed.insert(base.alloc) {
-            panic!("effects::rust_ast: double free of {:?}", base.alloc);
+            return Err(EffectError::double_free(base.alloc));
         }
         self.trace.push(Effect::Dealloc { alloc: base.alloc });
-        int32(0)
+        Ok(int32(0))
     }
 
-    fn call_memcpy(&mut self, args: &[Expr]) -> Value {
+    fn call_memcpy(&mut self, args: &[Expr]) -> EResult<Value> {
         let [dst, src, len] = args else {
-            panic!("effects::rust_ast: memcpy/memmove expects three arguments");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Memcpy),
+                ArgShapeKind::ThreeArguments,
+            ));
         };
-        let dst = self.eval_ref(dst);
-        let src = self.eval_ref(src);
-        let len = value_as_u64(self.eval(len));
-        let values = self.read_bytes(src, len);
+        let dst = self.eval_ref(dst)?;
+        let src = self.eval_ref(src)?;
+        let len_value = self.eval(len)?;
+        let len = value_as_u64(len_value)?;
+        let values = self.read_bytes(src, len)?;
         self.write_bytes(dst, &values);
-        Value::Ref(dst)
+        Ok(Value::Ref(dst))
     }
 
-    fn call_memset(&mut self, args: &[Expr]) -> Value {
+    fn call_memset(&mut self, args: &[Expr]) -> EResult<Value> {
         let [dst, byte, len] = args else {
-            panic!("effects::rust_ast: memset expects three arguments");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Memset),
+                ArgShapeKind::ThreeArguments,
+            ));
         };
-        let dst = self.eval_ref(dst);
-        let byte = value_as_i128(self.eval(byte)) as u8;
-        let len = value_as_u64(self.eval(len));
+        let dst = self.eval_ref(dst)?;
+        let byte_value = self.eval(byte)?;
+        let byte = value_as_i128(byte_value)? as u8;
+        let len_value = self.eval(len)?;
+        let len = value_as_u64(len_value)?;
         let value = Value::Int {
             width: IntWidth::W8,
             signed: true,
             value: byte as i128,
         };
         self.write_bytes(dst, &vec![value; len as usize]);
-        Value::Ref(dst)
+        Ok(Value::Ref(dst))
     }
 
-    fn call_memchr(&mut self, args: &[Expr]) -> Value {
+    fn call_memchr(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base, needle, len] = args else {
-            panic!("effects::rust_ast: memchr expects three arguments");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Memchr),
+                ArgShapeKind::ThreeArguments,
+            ));
         };
-        let base = self.eval_ref(base);
-        let needle = value_as_i128(self.eval(needle)) as u8;
-        let len = value_as_u64(self.eval(len));
+        let base = self.eval_ref(base)?;
+        let needle_value = self.eval(needle)?;
+        let needle = value_as_i128(needle_value)? as u8;
+        let len_value = self.eval(len)?;
+        let len = value_as_u64(len_value)?;
         for index in 0..len {
             let loc = Location {
                 alloc: base.alloc,
                 byte_offset: base.byte_offset + index,
             };
-            let value = self.read_loc(loc);
-            if value_as_i128(value) as u8 == needle {
-                return Value::Ref(loc);
+            let value = self.read_loc(loc)?;
+            if value_as_i128(value)? as u8 == needle {
+                return Ok(Value::Ref(loc));
             }
         }
-        Value::Null
+        Ok(Value::Null)
     }
 
-    fn call_strlen(&mut self, args: &[Expr]) -> Value {
+    fn call_strlen(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base] = args else {
-            panic!("effects::rust_ast: strlen expects pointer");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strlen),
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let base = match self.eval(base) {
+        let base = match self.eval(base)? {
             Value::Ref(loc) => loc,
-            other => panic!("effects::rust_ast: strlen expected pointer, found {other:?}"),
+            other => return Err(EffectError::type_mismatch(ValueKind::Ref, other)),
         };
         let mut len = 0u64;
         loop {
@@ -3595,37 +3989,43 @@ impl Interp {
             match self.heap.get(&loc) {
                 Some(Value::Int { value: 0, .. }) => break,
                 Some(_) => len += 1,
-                None => panic!("effects::rust_ast: strlen scanned past never-written {loc:?}"),
+                None => return Err(EffectError::uninitialized_read(loc)),
             }
         }
         self.trace.push(Effect::Call {
             name: "strlen".to_string(),
             args: vec![],
         });
-        Value::Int {
+        Ok(Value::Int {
             width: IntWidth::PointerSized,
             signed: false,
             value: len as i128,
-        }
+        })
     }
 
-    fn call_strcpy(&mut self, args: &[Expr]) -> Value {
+    fn call_strcpy(&mut self, args: &[Expr]) -> EResult<Value> {
         let [dst, src] = args else {
-            panic!("effects::rust_ast: strcpy expects dst and src");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strcpy),
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let dst = self.eval_ref(dst);
-        let bytes = self.string_expr_bytes(src);
+        let dst = self.eval_ref(dst)?;
+        let bytes = self.string_expr_bytes(src)?;
         self.write_c_string(dst, &bytes);
-        Value::Ref(dst)
+        Ok(Value::Ref(dst))
     }
 
-    fn call_strcat(&mut self, args: &[Expr]) -> Value {
+    fn call_strcat(&mut self, args: &[Expr]) -> EResult<Value> {
         let [dst, src] = args else {
-            panic!("effects::rust_ast: strcat expects dst and src");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strcat),
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let dst = self.eval_ref(dst);
-        let offset = self.c_string_len(dst);
-        let bytes = self.string_expr_bytes(src);
+        let dst = self.eval_ref(dst)?;
+        let offset = self.c_string_len(dst)?;
+        let bytes = self.string_expr_bytes(src)?;
         self.write_c_string(
             Location {
                 alloc: dst.alloc,
@@ -3633,16 +4033,20 @@ impl Interp {
             },
             &bytes,
         );
-        Value::Ref(dst)
+        Ok(Value::Ref(dst))
     }
 
-    fn call_strncpy(&mut self, args: &[Expr]) -> Value {
+    fn call_strncpy(&mut self, args: &[Expr]) -> EResult<Value> {
         let [dst, src, len] = args else {
-            panic!("effects::rust_ast: strncpy expects dst, src, and len");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strncpy),
+                ArgShapeKind::ThreeArguments,
+            ));
         };
-        let dst = self.eval_ref(dst);
-        let len = value_as_u64(self.eval(len)) as usize;
-        let mut bytes = self.string_expr_bytes(src);
+        let dst = self.eval_ref(dst)?;
+        let len_value = self.eval(len)?;
+        let len = value_as_u64(len_value)? as usize;
+        let mut bytes = self.string_expr_bytes(src)?;
         bytes.truncate(len);
         let values = bytes
             .into_iter()
@@ -3653,17 +4057,21 @@ impl Interp {
             })
             .collect::<Vec<_>>();
         self.write_bytes(dst, &values);
-        Value::Ref(dst)
+        Ok(Value::Ref(dst))
     }
 
-    fn call_strncat(&mut self, args: &[Expr]) -> Value {
+    fn call_strncat(&mut self, args: &[Expr]) -> EResult<Value> {
         let [dst, src, len] = args else {
-            panic!("effects::rust_ast: strncat expects dst, src, and len");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strncat),
+                ArgShapeKind::ThreeArguments,
+            ));
         };
-        let dst = self.eval_ref(dst);
-        let offset = self.c_string_len(dst);
-        let len = value_as_u64(self.eval(len)) as usize;
-        let mut bytes = self.string_expr_bytes(src);
+        let dst = self.eval_ref(dst)?;
+        let offset = self.c_string_len(dst)?;
+        let len_value = self.eval(len)?;
+        let len = value_as_u64(len_value)? as usize;
+        let mut bytes = self.string_expr_bytes(src)?;
         bytes.truncate(len);
         self.write_c_string(
             Location {
@@ -3672,98 +4080,120 @@ impl Interp {
             },
             &bytes,
         );
-        Value::Ref(dst)
+        Ok(Value::Ref(dst))
     }
 
-    fn call_strcmp(&mut self, args: &[Expr], len: Option<usize>) -> Value {
+    fn call_strcmp(&mut self, args: &[Expr], len: Option<usize>) -> EResult<Value> {
         let [left, right] = args else {
-            panic!("effects::rust_ast: strcmp expects two arguments");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strcmp),
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let mut left = self.string_expr_bytes(left);
-        let mut right = self.string_expr_bytes(right);
+        let mut left = self.string_expr_bytes(left)?;
+        let mut right = self.string_expr_bytes(right)?;
         if let Some(len) = len {
             left.truncate(len);
             right.truncate(len);
         }
-        int32(compare_bytes(&left, &right) as i128)
+        Ok(int32(compare_bytes(&left, &right) as i128))
     }
 
-    fn call_strncmp(&mut self, args: &[Expr]) -> Value {
+    fn call_strncmp(&mut self, args: &[Expr]) -> EResult<Value> {
         let [left, right, len] = args else {
-            panic!("effects::rust_ast: strncmp expects three arguments");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strncmp),
+                ArgShapeKind::ThreeArguments,
+            ));
         };
-        let len = value_as_u64(self.eval(len)) as usize;
+        let len_value = self.eval(len)?;
+        let len = value_as_u64(len_value)? as usize;
         self.call_strcmp(&[left.clone(), right.clone()], Some(len))
     }
 
-    fn call_memcmp(&mut self, args: &[Expr]) -> Value {
+    fn call_memcmp(&mut self, args: &[Expr]) -> EResult<Value> {
         let [left, right, len] = args else {
-            panic!("effects::rust_ast: memcmp expects three arguments");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Memcmp),
+                ArgShapeKind::ThreeArguments,
+            ));
         };
-        let left = self.eval_ref(left);
-        let right = self.eval_ref(right);
-        let len = value_as_u64(self.eval(len));
+        let left = self.eval_ref(left)?;
+        let right = self.eval_ref(right)?;
+        let len_value = self.eval(len)?;
+        let len = value_as_u64(len_value)?;
         let left = self
-            .read_bytes(left, len)
+            .read_bytes(left, len)?
             .into_iter()
-            .map(|value| value_as_i128(value) as u8)
-            .collect::<Vec<_>>();
+            .map(|value| value_as_i128(value).map(|value| value as u8))
+            .collect::<EResult<Vec<_>>>()?;
         let right = self
-            .read_bytes(right, len)
+            .read_bytes(right, len)?
             .into_iter()
-            .map(|value| value_as_i128(value) as u8)
-            .collect::<Vec<_>>();
-        int32(compare_bytes(&left, &right) as i128)
+            .map(|value| value_as_i128(value).map(|value| value as u8))
+            .collect::<EResult<Vec<_>>>()?;
+        Ok(int32(compare_bytes(&left, &right) as i128))
     }
 
-    fn call_strchr(&mut self, args: &[Expr]) -> Value {
+    fn call_strchr(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base, needle] = args else {
-            panic!("effects::rust_ast: strchr expects string and needle");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strchr),
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let base = self.eval_ref(base);
-        let needle = value_as_i128(self.eval(needle)) as u8;
-        let bytes = self.read_c_string(base);
+        let base = self.eval_ref(base)?;
+        let needle_value = self.eval(needle)?;
+        let needle = value_as_i128(needle_value)? as u8;
+        let bytes = self.read_c_string(base)?;
         for (index, byte) in bytes.iter().cloned().chain(std::iter::once(0)).enumerate() {
             if byte == needle {
-                return Value::Ref(Location {
+                return Ok(Value::Ref(Location {
                     alloc: base.alloc,
                     byte_offset: base.byte_offset + index as u64,
-                });
+                }));
             }
         }
-        Value::Null
+        Ok(Value::Null)
     }
 
-    fn call_strrchr(&mut self, args: &[Expr]) -> Value {
+    fn call_strrchr(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base, needle] = args else {
-            panic!("effects::rust_ast: strrchr expects string and needle");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strrchr),
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let base = self.eval_ref(base);
-        let needle = value_as_i128(self.eval(needle)) as u8;
-        let bytes = self.read_c_string(base);
+        let base = self.eval_ref(base)?;
+        let needle_value = self.eval(needle)?;
+        let needle = value_as_i128(needle_value)? as u8;
+        let bytes = self.read_c_string(base)?;
         let mut found = if needle == 0 { Some(bytes.len()) } else { None };
         for (index, byte) in bytes.iter().cloned().enumerate() {
             if byte == needle {
                 found = Some(index);
             }
         }
-        found
+        Ok(found
             .map(|index| {
                 Value::Ref(Location {
                     alloc: base.alloc,
                     byte_offset: base.byte_offset + index as u64,
                 })
             })
-            .unwrap_or(Value::Null)
+            .unwrap_or(Value::Null))
     }
 
-    fn call_strstr(&mut self, args: &[Expr]) -> Value {
+    fn call_strstr(&mut self, args: &[Expr]) -> EResult<Value> {
         let [haystack, needle] = args else {
-            panic!("effects::rust_ast: strstr expects haystack and needle");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strstr),
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let base = self.eval_ref(haystack);
-        let haystack = self.read_c_string(base);
-        let needle = self.string_expr_bytes(needle);
+        let base = self.eval_ref(haystack)?;
+        let haystack = self.read_c_string(base)?;
+        let needle = self.string_expr_bytes(needle)?;
         let found = if needle.is_empty() {
             Some(0)
         } else {
@@ -3771,24 +4201,27 @@ impl Interp {
                 .windows(needle.len())
                 .position(|window| window == needle.as_slice())
         };
-        found
+        Ok(found
             .map(|index| {
                 Value::Ref(Location {
                     alloc: base.alloc,
                     byte_offset: base.byte_offset + index as u64,
                 })
             })
-            .unwrap_or(Value::Null)
+            .unwrap_or(Value::Null))
     }
 
-    fn call_strpbrk(&mut self, args: &[Expr]) -> Value {
+    fn call_strpbrk(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base, set] = args else {
-            panic!("effects::rust_ast: strpbrk expects string and set");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strpbrk),
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let base = self.eval_ref(base);
-        let bytes = self.read_c_string(base);
-        let set = self.string_expr_bytes(set);
-        bytes
+        let base = self.eval_ref(base)?;
+        let bytes = self.read_c_string(base)?;
+        let set = self.string_expr_bytes(set)?;
+        Ok(bytes
             .iter()
             .position(|byte| set.contains(byte))
             .map(|index| {
@@ -3797,169 +4230,207 @@ impl Interp {
                     byte_offset: base.byte_offset + index as u64,
                 })
             })
-            .unwrap_or(Value::Null)
+            .unwrap_or(Value::Null))
     }
 
-    fn call_strspn(&mut self, args: &[Expr]) -> Value {
+    fn call_strspn(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base, set] = args else {
-            panic!("effects::rust_ast: strspn expects string and set");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strspn),
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let bytes = self.string_expr_bytes(base);
-        let set = self.string_expr_bytes(set);
+        let bytes = self.string_expr_bytes(base)?;
+        let set = self.string_expr_bytes(set)?;
         let len = bytes.iter().take_while(|byte| set.contains(byte)).count();
-        Value::Int {
+        Ok(Value::Int {
             width: IntWidth::PointerSized,
             signed: false,
             value: len as i128,
-        }
+        })
     }
 
-    fn call_strcspn(&mut self, args: &[Expr]) -> Value {
+    fn call_strcspn(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base, reject] = args else {
-            panic!("effects::rust_ast: strcspn expects string and reject set");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strcspn),
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let bytes = self.string_expr_bytes(base);
-        let reject = self.string_expr_bytes(reject);
+        let bytes = self.string_expr_bytes(base)?;
+        let reject = self.string_expr_bytes(reject)?;
         let len = bytes
             .iter()
             .take_while(|byte| !reject.contains(byte))
             .count();
-        Value::Int {
+        Ok(Value::Int {
             width: IntWidth::PointerSized,
             signed: false,
             value: len as i128,
-        }
+        })
     }
 
-    fn call_atoi(&mut self, args: &[Expr]) -> Value {
+    fn call_atoi(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base] = args else {
-            panic!("effects::rust_ast: atoi expects string");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Atoi),
+                ArgShapeKind::OneArgument,
+            ));
         };
-        int32(parse_i128_prefix(&self.string_expr_bytes(base)) as i32 as i128)
+        Ok(int32(
+            parse_i128_prefix(&self.string_expr_bytes(base)?) as i32 as i128,
+        ))
     }
 
-    fn call_atol(&mut self, args: &[Expr]) -> Value {
+    fn call_atol(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base] = args else {
-            panic!("effects::rust_ast: atol expects string");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Atol),
+                ArgShapeKind::OneArgument,
+            ));
         };
-        Value::Int {
+        Ok(Value::Int {
             width: IntWidth::W64,
             signed: true,
-            value: parse_i128_prefix(&self.string_expr_bytes(base)) as i64 as i128,
-        }
+            value: parse_i128_prefix(&self.string_expr_bytes(base)?) as i64 as i128,
+        })
     }
 
-    fn call_strtol(&mut self, args: &[Expr]) -> Value {
+    fn call_strtol(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base, end, _base_arg] = args else {
-            panic!("effects::rust_ast: strtol expects string, end pointer, and base");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strtol),
+                ArgShapeKind::ThreeArguments,
+            ));
         };
-        let loc = self.eval_ref(base);
-        let bytes = self.read_c_string(loc);
-        self.write_end_pointer(end, loc, decimal_prefix_len(&bytes));
-        Value::Int {
+        let loc = self.eval_ref(base)?;
+        let bytes = self.read_c_string(loc)?;
+        self.write_end_pointer(end, loc, decimal_prefix_len(&bytes))?;
+        Ok(Value::Int {
             width: IntWidth::W64,
             signed: true,
             value: parse_i128_prefix(&bytes) as i64 as i128,
-        }
+        })
     }
 
-    fn call_strtoul(&mut self, args: &[Expr]) -> Value {
+    fn call_strtoul(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base, end, _base_arg] = args else {
-            panic!("effects::rust_ast: strtoul expects string, end pointer, and base");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strtoul),
+                ArgShapeKind::ThreeArguments,
+            ));
         };
-        let loc = self.eval_ref(base);
-        let bytes = self.read_c_string(loc);
-        self.write_end_pointer(end, loc, decimal_prefix_len(&bytes));
-        Value::Int {
+        let loc = self.eval_ref(base)?;
+        let bytes = self.read_c_string(loc)?;
+        self.write_end_pointer(end, loc, decimal_prefix_len(&bytes))?;
+        Ok(Value::Int {
             width: IntWidth::W64,
             signed: false,
             value: parse_u128_prefix(&bytes) as u64 as i128,
-        }
+        })
     }
 
-    fn call_strtod(&mut self, args: &[Expr]) -> Value {
+    fn call_strtod(&mut self, args: &[Expr]) -> EResult<Value> {
         let [base, end] = args else {
-            panic!("effects::rust_ast: strtod expects string and end pointer");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Strtod),
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let loc = self.eval_ref(base);
-        let bytes = self.read_c_string(loc);
-        self.write_end_pointer(end, loc, float_prefix_len(&bytes));
-        Value::Float(parse_f64_prefix(&bytes))
+        let loc = self.eval_ref(base)?;
+        let bytes = self.read_c_string(loc)?;
+        self.write_end_pointer(end, loc, float_prefix_len(&bytes))?;
+        Ok(Value::Float(parse_f64_prefix(&bytes)))
     }
 
-    fn write_end_pointer(&mut self, end: &Expr, base: Location, offset: usize) {
+    fn write_end_pointer(&mut self, end: &Expr, base: Location, offset: usize) -> EResult<()> {
         match self.eval(end) {
-            Value::Null => {}
-            Value::Ref(loc) => self.write_loc(
+            Ok(Value::Null) => {}
+            Ok(Value::Ref(loc)) => self.write_loc(
                 loc,
                 Value::Ref(Location {
                     alloc: base.alloc,
                     byte_offset: base.byte_offset + offset as u64,
                 }),
             ),
-            other => panic!("effects::rust_ast: strto* end pointer was {other:?}"),
+            Ok(other) => return Err(EffectError::type_mismatch(ValueKind::Ref, other)),
+            Err(err) => return Err(err),
         }
+        Ok(())
     }
 
-    fn call_fopen(&mut self, args: &[Expr]) -> Value {
+    fn call_fopen(&mut self, args: &[Expr]) -> EResult<Value> {
         let [path, mode] = args else {
-            panic!("effects::rust_ast: fopen expects path and mode");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Fopen),
+                ArgShapeKind::TwoArguments,
+            ));
         };
         let file = FileId(self.next_file);
         self.next_file += 1;
-        let path = String::from_utf8_lossy(&self.string_expr_bytes(path)).into_owned();
-        let mode = String::from_utf8_lossy(&self.string_expr_bytes(mode)).into_owned();
+        let path = String::from_utf8_lossy(&self.string_expr_bytes(path)?).into_owned();
+        let mode = String::from_utf8_lossy(&self.string_expr_bytes(mode)?).into_owned();
         self.file_paths.insert(file, path.clone());
         self.file_offsets.insert(file, 0);
         if mode.contains('w') {
             self.file_contents.insert(path.clone(), Vec::new());
         }
         self.trace.push(Effect::FileOpen { file, path, mode });
-        Value::File(file)
+        Ok(Value::File(file))
     }
 
-    fn call_fputs(&mut self, args: &[Expr]) -> Value {
+    fn call_fputs(&mut self, args: &[Expr]) -> EResult<Value> {
         let [bytes, file] = args else {
-            panic!("effects::rust_ast: fputs expects bytes and file");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Fputs),
+                ArgShapeKind::TwoArguments,
+            ));
         };
         let file = match self.eval(file) {
-            Value::File(file) => file,
-            other => panic!("effects::rust_ast: fputs expected file handle, found {other:?}"),
+            Ok(Value::File(file)) => file,
+            Ok(other) => return Err(EffectError::type_mismatch(ValueKind::File, other)),
+            Err(err) => return Err(err),
         };
-        let bytes = self.string_expr_bytes(bytes);
+        let bytes = self.string_expr_bytes(bytes)?;
         self.append_file_bytes(file, &bytes);
         self.trace.push(Effect::FileWrite { file, bytes });
-        int32(0)
+        Ok(int32(0))
     }
 
-    fn call_fgets(&mut self, args: &[Expr]) -> Value {
+    fn call_fgets(&mut self, args: &[Expr]) -> EResult<Value> {
         let [dst, len, file] = args else {
-            panic!("effects::rust_ast: fgets expects buffer, size, and file");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Fgets),
+                ArgShapeKind::ThreeArguments,
+            ));
         };
-        let dst = self.eval_ref(dst);
-        let len = value_as_u64(self.eval(len)) as usize;
-        let file = self.eval_file(file, "fgets");
+        let dst = self.eval_ref(dst)?;
+        let len = value_as_u64(self.eval(len)?)? as usize;
+        let file = self.eval_file(file)?;
         if len == 0 {
-            return Value::Null;
+            return Ok(Value::Null);
         }
-        let bytes = self.read_file_bytes(file, len.saturating_sub(1), Some(b'\n'));
+        let bytes = self.read_file_bytes(file, len.saturating_sub(1), Some(b'\n'))?;
         if bytes.is_empty() {
-            return Value::Null;
+            return Ok(Value::Null);
         }
         self.write_c_string(dst, &bytes);
-        Value::Ref(dst)
+        Ok(Value::Ref(dst))
     }
 
-    fn call_fread(&mut self, args: &[Expr]) -> Value {
+    fn call_fread(&mut self, args: &[Expr]) -> EResult<Value> {
         let [dst, size, count, file] = args else {
-            panic!("effects::rust_ast: fread expects buffer, size, count, and file");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Fread),
+                ArgShapeKind::FourArguments,
+            ));
         };
-        let dst = self.eval_ref(dst);
-        let size = value_as_u64(self.eval(size));
-        let count = value_as_u64(self.eval(count));
-        let file = self.eval_file(file, "fread");
+        let dst = self.eval_ref(dst)?;
+        let size = value_as_u64(self.eval(size)?)?;
+        let count = value_as_u64(self.eval(count)?)?;
+        let file = self.eval_file(file)?;
         let max = size.saturating_mul(count);
-        let bytes = self.read_file_bytes(file, max as usize, None);
+        let bytes = self.read_file_bytes(file, max as usize, None)?;
         let values = bytes
             .iter()
             .cloned()
@@ -3970,90 +4441,101 @@ impl Interp {
             })
             .collect::<Vec<_>>();
         self.write_bytes(dst, &values);
-        Value::Int {
+        Ok(Value::Int {
             width: IntWidth::PointerSized,
             signed: false,
             value: (bytes.len().checked_div(size as usize).unwrap_or(0)) as i128,
-        }
+        })
     }
 
-    fn call_fwrite(&mut self, args: &[Expr]) -> Value {
+    fn call_fwrite(&mut self, args: &[Expr]) -> EResult<Value> {
         let [src, size, count, file] = args else {
-            panic!("effects::rust_ast: fwrite expects buffer, size, count, and file");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Fwrite),
+                ArgShapeKind::FourArguments,
+            ));
         };
-        let src = self.eval_ref(src);
-        let size = value_as_u64(self.eval(size));
-        let count = value_as_u64(self.eval(count));
-        let file = self.eval_file(file, "fwrite");
+        let src = self.eval_ref(src)?;
+        let size = value_as_u64(self.eval(size)?)?;
+        let count = value_as_u64(self.eval(count)?)?;
+        let file = self.eval_file(file)?;
         let len = size.saturating_mul(count);
         let bytes = self
-            .read_bytes(src, len)
+            .read_bytes(src, len)?
             .into_iter()
-            .map(|value| value_as_i128(value) as u8)
-            .collect::<Vec<_>>();
+            .map(|value| value_as_i128(value).map(|value| value as u8))
+            .collect::<EResult<Vec<_>>>()?;
         self.append_file_bytes(file, &bytes);
         self.trace.push(Effect::FileWrite { file, bytes });
-        Value::Int {
+        Ok(Value::Int {
             width: IntWidth::PointerSized,
             signed: false,
             value: count as i128,
-        }
+        })
     }
 
-    fn call_fclose(&mut self, args: &[Expr]) -> Value {
+    fn call_fclose(&mut self, args: &[Expr]) -> EResult<Value> {
         let [file] = args else {
-            panic!("effects::rust_ast: fclose expects file");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Fclose),
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let file = self.eval_file(file, "fclose");
+        let file = self.eval_file(file)?;
         self.trace.push(Effect::FileClose { file });
-        int32(0)
+        Ok(int32(0))
     }
 
-    fn eval_file(&mut self, expr: &Expr, callee: &str) -> FileId {
+    fn eval_file(&mut self, expr: &Expr) -> EResult<FileId> {
         match self.eval(expr) {
-            Value::File(file) => file,
-            other => panic!("effects::rust_ast: {callee} expected file handle, found {other:?}"),
+            Ok(Value::File(file)) => Ok(file),
+            Ok(other) => Err(EffectError::type_mismatch(ValueKind::File, other)),
+            Err(err) => Err(err),
         }
     }
 
-    fn call_read_until(&mut self, args: &[Expr]) -> Value {
+    fn call_read_until(&mut self, args: &[Expr]) -> EResult<Value> {
         let [source, delim, buf] = args else {
-            panic!(
-                "effects::rust_ast: BufRead::read_until expects a source, delimiter, and buffer"
-            );
+            return Err(EffectError::arg_shape(
+                Construct::ReadUntilArgs,
+                ArgShapeKind::ThreeArguments,
+            ));
         };
-        let (file, limit) = self.read_until_source(source);
-        let delim = value_as_u64(self.eval(delim)) as u8;
-        let bytes = self.read_file_bytes(file, limit.unwrap_or(usize::MAX), Some(delim));
-        let buf_name = collection_name(buf).to_string();
-        self.extend_vec_bytes(&buf_name, &bytes);
-        Value::Option(Some(OptionValue::Int {
+        let (file, limit) = self.read_until_source(source)?;
+        let delim = value_as_u64(self.eval(delim)?)? as u8;
+        let bytes = self.read_file_bytes(file, limit.unwrap_or(usize::MAX), Some(delim))?;
+        let buf_name = collection_name(buf)?.to_string();
+        self.extend_vec_bytes(&buf_name, &bytes)?;
+        Ok(Value::Option(Some(OptionValue::Int {
             width: IntWidth::PointerSized,
             signed: false,
             value: bytes.len() as i128,
-        }))
+        })))
     }
 
-    fn read_until_source(&mut self, expr: &Expr) -> (FileId, Option<usize>) {
+    fn read_until_source(&mut self, expr: &Expr) -> EResult<(FileId, Option<usize>)> {
         match expr {
             Expr::Ref { expr, .. } => self.read_until_source(expr),
             Expr::Call { func, args } if is_path(func, &["std", "io", "Read", "take"]) => {
                 let [handle, limit] = args.as_slice() else {
-                    panic!("effects::rust_ast: Read::take expects a handle and a limit");
+                    return Err(EffectError::arg_shape(
+                        Construct::ReadTakeArgs,
+                        ArgShapeKind::TwoArguments,
+                    ));
                 };
-                let file = self.file_arg(handle);
-                let limit = value_as_u64(self.eval(limit)) as usize;
-                (file, Some(limit))
+                let file = self.file_arg(handle)?;
+                let limit = value_as_u64(self.eval(limit)?)? as usize;
+                Ok((file, Some(limit)))
             }
-            other => (self.file_arg(other), None),
+            other => Ok((self.file_arg(other)?, None)),
         }
     }
 
-    fn extend_vec_bytes(&mut self, name: &str, bytes: &[u8]) {
+    fn extend_vec_bytes(&mut self, name: &str, bytes: &[u8]) -> EResult<()> {
         let binding = self
             .vecs
             .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: extend of unknown Vec `{name}`"));
+            .ok_or_else(|| EffectError::unknown(BindingKind::Vec, name))?;
         let (alloc, elem_width, elem_signed, elem_size, mut len) = (
             binding.alloc,
             binding.elem_width,
@@ -4075,7 +4557,10 @@ impl Interp {
             self.heap.insert(loc, value.clone());
             self.trace.push(Effect::Write { loc, value });
         }
-        self.vecs.get_mut(name).unwrap().len = len;
+        if let Some(binding) = self.vecs.get_mut(name) {
+            binding.len = len;
+        }
+        Ok(())
     }
 
     fn append_file_bytes(&mut self, file: FileId, bytes: &[u8]) {
@@ -4085,12 +4570,17 @@ impl Interp {
         self.file_contents.entry(path).or_default().extend(bytes);
     }
 
-    fn read_file_bytes(&mut self, file: FileId, max: usize, stop_at: Option<u8>) -> Vec<u8> {
+    fn read_file_bytes(
+        &mut self,
+        file: FileId,
+        max: usize,
+        stop_at: Option<u8>,
+    ) -> EResult<Vec<u8>> {
         let path = self
             .file_paths
             .get(&file)
             .cloned()
-            .unwrap_or_else(|| panic!("effects::rust_ast: unknown file handle {file:?}"));
+            .ok_or_else(|| EffectError::unknown(BindingKind::File, format!("{file:?}")))?;
         let contents = self.file_contents.entry(path).or_default();
         let offset = self.file_offsets.entry(file).or_insert(0);
         let mut end = (*offset + max).min(contents.len());
@@ -4103,95 +4593,113 @@ impl Interp {
         }
         let bytes = contents[*offset..end].to_vec();
         *offset = end;
-        bytes
+        Ok(bytes)
     }
 
-    fn call_printf(&mut self, args: &[Expr]) -> Value {
+    fn call_printf(&mut self, args: &[Expr]) -> EResult<Value> {
         let [fmt_expr, rest @ ..] = args else {
-            panic!("effects::rust_ast: printf expects a format string");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Printf),
+                ArgShapeKind::FormatString,
+            ));
         };
-        let specs = c_format_specs(&c_format_bytes(fmt_expr));
+        let specs = c_format_specs(&c_format_bytes(fmt_expr)?);
         let values = rest
             .iter()
             .enumerate()
             .map(|(index, arg)| {
-                let value = self.eval(arg);
+                let value = self.eval(arg)?;
                 match specs.get(index) {
                     Some(CFormatSpec::Str) => self.resolve_string_arg(value),
-                    Some(CFormatSpec::Char) => resolve_char_arg(value),
+                    Some(CFormatSpec::Char) => Ok(resolve_char_arg(value)),
                     Some(CFormatSpec::Num {
                         conv,
                         alternate,
                         zero_pad,
                         left_align,
                         width,
-                    }) => Value::Bytes(render_c_num_arg(
+                    }) => Ok(Value::Bytes(render_c_num_arg(
                         &value,
                         *conv,
                         *alternate,
                         *zero_pad,
                         *left_align,
                         *width,
-                    )),
-                    _ => value,
+                    )?)),
+                    _ => Ok(value),
                 }
             })
-            .collect::<Vec<_>>();
+            .collect::<EResult<Vec<_>>>()?;
         self.trace.push(Effect::Call {
             name: "printf".to_string(),
             args: values,
         });
-        int32(0)
+        Ok(int32(0))
     }
 
-    fn call_puts(&mut self, args: &[Expr]) -> Value {
+    fn call_puts(&mut self, args: &[Expr]) -> EResult<Value> {
         let [arg] = args else {
-            panic!("effects::rust_ast: puts expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Puts),
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let loc = self.eval_ref(arg);
+        let loc = self.eval_ref(arg)?;
         self.trace.push(Effect::Call {
             name: "puts".to_string(),
             args: vec![Value::Ref(loc)],
         });
-        int32(0)
+        Ok(int32(0))
     }
 
-    fn call_remove(&mut self, args: &[Expr]) -> Value {
+    fn call_remove(&mut self, args: &[Expr]) -> EResult<Value> {
         let [path] = args else {
-            panic!("effects::rust_ast: remove expects path");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Remove),
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let loc = self.eval_ref(path);
-        let path_bytes = self.read_c_string(loc);
+        let loc = self.eval_ref(path)?;
+        let path_bytes = self.read_c_string(loc)?;
         let path = String::from_utf8_lossy(&path_bytes).into_owned();
         self.file_contents.remove(&path);
         self.trace.push(Effect::Call {
             name: "remove".to_string(),
             args: vec![Value::Ref(loc)],
         });
-        int32(0)
+        Ok(int32(0))
     }
 
-    fn call_toupper(&mut self, args: &[Expr]) -> Value {
+    fn call_toupper(&mut self, args: &[Expr]) -> EResult<Value> {
         let [arg] = args else {
-            panic!("effects::rust_ast: toupper expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Toupper),
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let value = value_as_i128(self.eval(arg)) as u8;
-        int32(value.to_ascii_uppercase() as i128)
+        let value = value_as_i128(self.eval(arg)?)? as u8;
+        Ok(int32(value.to_ascii_uppercase() as i128))
     }
 
-    fn call_tolower(&mut self, args: &[Expr]) -> Value {
+    fn call_tolower(&mut self, args: &[Expr]) -> EResult<Value> {
         let [arg] = args else {
-            panic!("effects::rust_ast: tolower expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Tolower),
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let value = value_as_i128(self.eval(arg)) as u8;
-        int32(value.to_ascii_lowercase() as i128)
+        let value = value_as_i128(self.eval(arg)?)? as u8;
+        Ok(int32(value.to_ascii_lowercase() as i128))
     }
 
-    fn parse_string_method(&mut self, recv: &Expr, type_args: &[Type]) -> Value {
+    fn parse_string_method(&mut self, recv: &Expr, type_args: &[Type]) -> EResult<Value> {
         let [ty] = type_args else {
-            panic!("effects::rust_ast: parse expects one type argument");
+            return Err(EffectError::arg_shape(
+                Construct::ParseStringMethod,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let bytes = self.string_expr_bytes(recv);
+        let bytes = self.string_expr_bytes(recv)?;
         let value = match ty {
             Type::Prim(Prim::I32) => OptionValue::Int {
                 width: IntWidth::W32,
@@ -4208,97 +4716,124 @@ impl Interp {
                 signed: false,
                 value: parse_u128_prefix(&bytes) as u64 as i128,
             },
-            other => panic!("effects::rust_ast: unsupported parse type `{other:?}`"),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::ParseTargetType,
+                    other.clone(),
+                ));
+            }
         };
-        Value::Option(Some(value))
+        Ok(Value::Option(Some(value)))
     }
 
-    fn unwrap_or(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+    fn unwrap_or(&mut self, recv: &Expr, args: &[Expr]) -> EResult<Value> {
         let [default] = args else {
-            panic!("effects::rust_ast: unwrap_or expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::UnwrapOrArg,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        match self.eval(recv) {
-            Value::Option(Some(value)) => option_value_to_value(value),
+        match self.eval(recv)? {
+            Value::Option(Some(value)) => Ok(option_value_to_value(value)),
             Value::Option(None) => self.eval(default),
-            other => panic!("effects::rust_ast: unwrap_or on unsupported value {other:?}"),
+            other => Err(EffectError::type_mismatch(ValueKind::Option, other)),
         }
     }
 
-    fn parse_runtime_i32(&mut self, args: &[Expr]) -> Value {
+    fn parse_runtime_i32(&mut self, args: &[Expr]) -> EResult<Value> {
         let [arg] = args else {
-            panic!("effects::rust_ast: parse_i32 expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::ParseStringMethod,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        int32(parse_i128_prefix(&self.string_expr_bytes(arg)) as i32 as i128)
+        Ok(int32(
+            parse_i128_prefix(&self.string_expr_bytes(arg)?) as i32 as i128,
+        ))
     }
 
-    fn parse_runtime_i64(&mut self, args: &[Expr]) -> Value {
+    fn parse_runtime_i64(&mut self, args: &[Expr]) -> EResult<Value> {
         let [arg] = args else {
-            panic!("effects::rust_ast: parse_i64 expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::ParseStringMethod,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        Value::Int {
+        Ok(Value::Int {
             width: IntWidth::W64,
             signed: true,
-            value: parse_i128_prefix(&self.string_expr_bytes(arg)) as i64 as i128,
-        }
+            value: parse_i128_prefix(&self.string_expr_bytes(arg)?) as i64 as i128,
+        })
     }
 
-    fn parse_runtime_u64(&mut self, args: &[Expr]) -> Value {
+    fn parse_runtime_u64(&mut self, args: &[Expr]) -> EResult<Value> {
         let [arg] = args else {
-            panic!("effects::rust_ast: parse_u64 expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::ParseStringMethod,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        Value::Int {
+        Ok(Value::Int {
             width: IntWidth::W64,
             signed: false,
-            value: parse_u128_prefix(&self.string_expr_bytes(arg)) as u64 as i128,
-        }
+            value: parse_u128_prefix(&self.string_expr_bytes(arg)?) as u64 as i128,
+        })
     }
 
-    fn parse_runtime_f64(&mut self, args: &[Expr]) -> Value {
+    fn parse_runtime_f64(&mut self, args: &[Expr]) -> EResult<Value> {
         let [arg] = args else {
-            panic!("effects::rust_ast: parse_f64 expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::ParseStringMethod,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        Value::Float(parse_f64_prefix(&self.string_expr_bytes(arg)))
+        Ok(Value::Float(parse_f64_prefix(
+            &self.string_expr_bytes(arg)?,
+        )))
     }
 
-    fn bsearch(&mut self, args: &[Expr]) -> Value {
+    fn bsearch(&mut self, args: &[Expr]) -> EResult<Value> {
         let [key, base, count, size, comparator] = args else {
-            panic!("effects::rust_ast: bsearch expects five arguments");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Bsearch),
+                ArgShapeKind::FiveArguments,
+            ));
         };
-        let key = match self.eval(key) {
-            Value::Ref(loc) => loc,
-            other => panic!("effects::rust_ast: bsearch expected key pointer, found {other:?}"),
-        };
-        let base = match self.eval(base) {
-            Value::Ref(loc) => loc,
-            other => panic!("effects::rust_ast: bsearch expected base pointer, found {other:?}"),
-        };
-        let len = value_as_u64(self.eval(count));
-        let elem_size = value_as_u64(self.eval(size));
-        let comparator = comparator_name(comparator);
-        let f = self.funcs.get(comparator).cloned().unwrap_or_else(|| {
-            panic!("effects::rust_ast: unknown bsearch comparator `{comparator}`")
-        });
+        let key = self.eval_ref(key)?;
+        let base = self.eval_ref(base)?;
+        let len = value_as_u64(self.eval(count)?)?;
+        let elem_size = value_as_u64(self.eval(size)?)?;
+        let comparator = comparator_name(comparator)?;
+        let f = self
+            .funcs
+            .get(comparator)
+            .cloned()
+            .ok_or_else(|| EffectError::unknown(BindingKind::Function, comparator))?;
         for index in 0..len {
             let elem = Location {
                 alloc: base.alloc,
                 byte_offset: base.byte_offset + index * elem_size,
             };
-            let value = self.call_user(&f, &[Value::Ref(key), Value::Ref(elem)], None);
-            if value_as_i128(value) == 0 {
-                return Value::Ref(elem);
+            let value = self.call_user(&f, &[Value::Ref(key), Value::Ref(elem)], None)?;
+            if value_as_i128(value)? == 0 {
+                return Ok(Value::Ref(elem));
             }
         }
-        Value::Null
+        Ok(Value::Null)
     }
 
-    fn call_user(&mut self, f: &FnDef, args: &[Value], arg_exprs: Option<&[Expr]>) -> Value {
+    fn call_user(
+        &mut self,
+        f: &FnDef,
+        args: &[Value],
+        arg_exprs: Option<&[Expr]>,
+    ) -> EResult<Value> {
         if f.params.len() != args.len() {
-            panic!(
-                "effects::rust_ast: user function `{}` expected {} arg(s), got {}",
-                f.name,
+            return Err(EffectError::length_mismatch(
+                Construct::CallTarget,
                 f.params.len(),
-                args.len()
-            );
+                args.len(),
+            ));
         }
         let saved_scalars = std::mem::take(&mut self.scalars);
         let saved_structs = self.structs.clone();
@@ -4311,7 +4846,7 @@ impl Interp {
                 && !matches!(param.ty, Type::Ptr { .. } | Type::Ref { .. })
                 && self.aggregate_allocs_contains(*loc)
             {
-                self.bind_struct_copy(&param.name, *loc);
+                self.bind_struct_copy(&param.name, *loc)?;
             } else {
                 self.scalars.insert(param.name.to_string(), value.clone());
             }
@@ -4339,7 +4874,7 @@ impl Interp {
         let flow = self.run(&f.body);
         self.call_depth -= 1;
         let returned_struct = match &flow {
-            Flow::Return(Value::Ref(loc)) => self
+            Ok(Flow::Return(Value::Ref(loc))) => self
                 .structs
                 .values()
                 .find(|binding| binding.alloc == loc.alloc)
@@ -4357,50 +4892,62 @@ impl Interp {
         self.scalar_locs = saved_scalar_locs;
         self.vecs = saved_vecs;
         self.pointer_elem_sizes = saved_pointer_elem_sizes;
+        let flow = flow?;
         let Flow::Return(value) = flow else {
-            panic!(
-                "effects::rust_ast: user function `{}` did not return",
+            return Err(EffectError::internal(format!(
+                "user function `{}` did not return",
                 f.name
-            );
+            )));
         };
         if let (Value::Ref(loc), Some(binding)) = (&value, returned_struct) {
             let name = format!("__struct_tmp{}", self.next_struct_temp);
             self.next_struct_temp += 1;
             self.structs.insert(name, binding);
-            return Value::Ref(*loc);
+            return Ok(Value::Ref(*loc));
         }
-        value
+        Ok(value)
     }
 
-    fn qsort(&mut self, args: &[Expr]) {
+    fn qsort(&mut self, args: &[Expr]) -> EResult<()> {
         let [base, count, size, comparator] = args else {
-            panic!("effects::rust_ast: qsort expects four arguments");
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Qsort),
+                ArgShapeKind::FourArguments,
+            ));
         };
-        let name = array_pointer_name(base);
-        let len = value_as_u64(self.eval(count));
-        let elem_size = value_as_u64(self.eval(size));
-        let comparator = comparator_name(comparator);
-        let f = self.funcs.get(comparator).cloned().unwrap_or_else(|| {
-            panic!("effects::rust_ast: unknown qsort comparator `{comparator}`")
-        });
+        let name = array_pointer_name(base)?;
+        let len = value_as_u64(self.eval(count)?)?;
+        let elem_size = value_as_u64(self.eval(size)?)?;
+        let comparator = comparator_name(comparator)?;
+        let f = self
+            .funcs
+            .get(comparator)
+            .cloned()
+            .ok_or_else(|| EffectError::unknown(BindingKind::Function, comparator))?;
         self.sort_array_by(name, len, elem_size, |this, left, right| {
-            let value = this.call_user(&f, &[Value::Ref(left), Value::Ref(right)], None);
+            let value = this.call_user(&f, &[Value::Ref(left), Value::Ref(right)], None)?;
             value_as_i128(value)
-        });
+        })
     }
 
-    fn sort_by(&mut self, recv: &Expr, args: &[Expr]) {
+    fn sort_by(&mut self, recv: &Expr, args: &[Expr]) -> EResult<()> {
         let [Expr::Closure { params, body }] = args else {
-            panic!("effects::rust_ast: sort_by expects one closure");
+            return Err(EffectError::arg_shape(
+                Construct::SortByArg,
+                ArgShapeKind::OneArgument,
+            ));
         };
         let [left_param, right_param] = params.as_slice() else {
-            panic!("effects::rust_ast: sort_by closure expects two params");
+            return Err(EffectError::arg_shape(
+                Construct::SortByClosureParams,
+                ArgShapeKind::TwoArguments,
+            ));
         };
-        let name = collection_name(recv).to_string();
+        let name = collection_name(recv)?.to_string();
         let binding = self
             .vecs
             .get(&name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: sort_by on unknown collection `{name}`"));
+            .ok_or_else(|| EffectError::unknown(BindingKind::Collection, &name))?;
         let (len, elem_size) = (binding.len, binding.elem_size);
         let left_param = left_param.as_str().to_string();
         let right_param = right_param.as_str().to_string();
@@ -4411,21 +4958,28 @@ impl Interp {
             let value = this.eval(&body);
             restore_scalar(&mut this.scalars, &left_param, left_saved);
             restore_scalar(&mut this.scalars, &right_param, right_saved);
-            value_as_i128(value)
-        });
+            value_as_i128(value?)
+        })
     }
 
-    fn binary_search_by(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+    fn binary_search_by(&mut self, recv: &Expr, args: &[Expr]) -> EResult<Value> {
         let [Expr::Closure { params, body }] = args else {
-            panic!("effects::rust_ast: binary_search_by expects one closure");
+            return Err(EffectError::arg_shape(
+                Construct::BinarySearchByArg,
+                ArgShapeKind::OneArgument,
+            ));
         };
         let [param] = params.as_slice() else {
-            panic!("effects::rust_ast: binary_search_by closure expects one param");
+            return Err(EffectError::arg_shape(
+                Construct::BinarySearchByClosureParams,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let name = collection_name(recv).to_string();
-        let binding = self.vecs.get(&name).unwrap_or_else(|| {
-            panic!("effects::rust_ast: binary_search_by on unknown collection `{name}`")
-        });
+        let name = collection_name(recv)?.to_string();
+        let binding = self
+            .vecs
+            .get(&name)
+            .ok_or_else(|| EffectError::unknown(BindingKind::Collection, &name))?;
         let (alloc, len, elem_size) = (binding.alloc, binding.len, binding.elem_size);
         let param = param.as_str().to_string();
         let body = body.as_ref().clone();
@@ -4437,25 +4991,31 @@ impl Interp {
             let saved = self.scalars.insert(param.clone(), Value::Ref(loc));
             let value = self.eval(&body);
             restore_scalar(&mut self.scalars, &param, saved);
-            if value_as_i128(value) == 0 {
-                return Value::Option(Some(OptionValue::Int {
+            if value_as_i128(value?)? == 0 {
+                return Ok(Value::Option(Some(OptionValue::Int {
                     width: IntWidth::PointerSized,
                     signed: false,
                     value: index as i128,
-                }));
+                })));
             }
         }
-        Value::Option(None)
+        Ok(Value::Option(None))
     }
 
-    fn map_or(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+    fn map_or(&mut self, recv: &Expr, args: &[Expr]) -> EResult<Value> {
         let [default, Expr::Closure { params, body }] = args else {
-            panic!("effects::rust_ast: map_or expects default and closure");
+            return Err(EffectError::arg_shape(
+                Construct::MapOrArgs,
+                ArgShapeKind::TwoArguments,
+            ));
         };
         let [param] = params.as_slice() else {
-            panic!("effects::rust_ast: map_or closure expects one param");
+            return Err(EffectError::arg_shape(
+                Construct::MapOrClosureParams,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        match self.eval(recv) {
+        match self.eval(recv)? {
             Value::Option(Some(value)) => {
                 let param = param.as_str().to_string();
                 let saved = self
@@ -4466,7 +5026,7 @@ impl Interp {
                 result
             }
             Value::Option(None) => self.eval(default),
-            other => panic!("effects::rust_ast: map_or on non-option `{other:?}`"),
+            other => Err(EffectError::type_mismatch(ValueKind::Option, other)),
         }
     }
 
@@ -4475,12 +5035,12 @@ impl Interp {
         name: &str,
         len: u64,
         elem_size: u64,
-        mut compare: impl FnMut(&mut Self, Location, Location) -> i128,
-    ) {
+        mut compare: impl FnMut(&mut Self, Location, Location) -> EResult<i128>,
+    ) -> EResult<()> {
         let alloc = self
             .vecs
             .get(name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: sort on unknown collection `{name}`"))
+            .ok_or_else(|| EffectError::unknown(BindingKind::Collection, name))?
             .alloc;
         for i in 1..len {
             let mut j = i;
@@ -4493,13 +5053,14 @@ impl Interp {
                     alloc,
                     byte_offset: j * elem_size,
                 };
-                if compare(self, left, right) <= 0 {
+                if compare(self, left, right)? <= 0 {
                     break;
                 }
                 self.swap_elements(left, right, elem_size);
                 j -= 1;
             }
         }
+        Ok(())
     }
 
     fn swap_elements(&mut self, left: Location, right: Location, elem_size: u64) {
@@ -4549,34 +5110,45 @@ impl Interp {
         }
     }
 
-    fn compare_method(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+    fn compare_method(&mut self, recv: &Expr, args: &[Expr]) -> EResult<Value> {
         let [arg] = args else {
-            panic!("effects::rust_ast: cmp expects one argument");
+            return Err(EffectError::arg_shape(
+                Construct::CompareMethodArg,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let left = self.read_comparable(recv);
+        let left = self.read_comparable(recv)?;
         let right = match arg {
             Expr::Ref { expr, .. } => self.read_comparable(expr),
             other => self.read_comparable(other),
-        };
-        int32((value_as_i128(left) - value_as_i128(right)).signum())
+        }?;
+        Ok(int32(
+            (value_as_i128(left)? - value_as_i128(right)?).signum(),
+        ))
     }
 
-    fn read_comparable(&mut self, expr: &Expr) -> Value {
-        match self.eval(expr) {
+    fn read_comparable(&mut self, expr: &Expr) -> EResult<Value> {
+        match self.eval(expr)? {
             Value::Ref(loc) => self.read_loc(loc),
-            value @ Value::Int { .. } => value,
-            other => panic!("effects::rust_ast: cmp on unsupported value {other:?}"),
+            value @ Value::Int { .. } => Ok(value),
+            other => Err(EffectError::unsupported(Construct::ReadComparable, other)),
         }
     }
 
-    fn iter_position(&mut self, recv: &Expr, args: &[Expr]) -> Value {
+    fn iter_position(&mut self, recv: &Expr, args: &[Expr]) -> EResult<Value> {
         let [Expr::Closure { params, body }] = args else {
-            panic!("effects::rust_ast: `.position()` requires one closure");
+            return Err(EffectError::arg_shape(
+                Construct::IterPositionArgs,
+                ArgShapeKind::OneArgument,
+            ));
         };
         let [param] = params.as_slice() else {
-            panic!("effects::rust_ast: `.position()` closure must take one param");
+            return Err(EffectError::arg_shape(
+                Construct::IterPositionClosureParams,
+                ArgShapeKind::OneArgument,
+            ));
         };
-        let (alloc, elem_size, len) = self.iter_source(recv);
+        let (alloc, elem_size, len) = self.iter_source(recv)?;
         for index in 0..len {
             let loc = Location {
                 alloc,
@@ -4585,62 +5157,76 @@ impl Interp {
             let value = self
                 .heap
                 .get(&loc)
-                .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
+                .ok_or_else(|| EffectError::uninitialized_read(loc))?
                 .clone();
             self.trace.push(Effect::Read {
                 loc,
                 value: value.clone(),
             });
             self.scalars.insert(param.as_str().to_string(), value);
-            if value_as_bool(self.eval(body)) {
+            if value_as_bool(self.eval(body)?)? {
                 self.scalars.remove(param.as_str());
-                return Value::Option(Some(OptionValue::Int {
+                return Ok(Value::Option(Some(OptionValue::Int {
                     width: IntWidth::PointerSized,
                     signed: false,
                     value: index as i128,
-                }));
+                })));
             }
         }
         self.scalars.remove(param.as_str());
-        Value::Option(None)
+        Ok(Value::Option(None))
     }
 
-    fn iter_source(&self, expr: &Expr) -> (AllocId, u64, u64) {
+    fn iter_source(&self, expr: &Expr) -> EResult<(AllocId, u64, u64)> {
         let Expr::MethodCall { recv, method, args } = expr else {
-            panic!("effects::rust_ast: `.position()` receiver must be `.iter()`, found `{expr:?}`");
+            return Err(EffectError::unsupported(
+                Construct::IterSourceReceiver,
+                expr.clone(),
+            ));
         };
         if method != "iter" || !args.is_empty() {
-            panic!("effects::rust_ast: unsupported iterator source `.{method}()`");
+            return Err(EffectError::unsupported(
+                Construct::IterSourceReceiver,
+                method.as_str(),
+            ));
         }
-        let name = collection_name(recv);
-        let binding = self.vecs.get(name).unwrap_or_else(|| {
-            panic!("effects::rust_ast: iterator over unknown collection `{name}`")
-        });
-        (binding.alloc, binding.elem_size, binding.len)
+        let name = collection_name(recv)?;
+        let binding = self
+            .vecs
+            .get(name)
+            .ok_or_else(|| EffectError::unknown(BindingKind::Collection, name))?;
+        Ok((binding.alloc, binding.elem_size, binding.len))
     }
 
-    fn eval_iter_reduce(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> Value {
+    fn eval_iter_reduce(&mut self, recv: &Expr, method: &str, args: &[Expr]) -> EResult<Value> {
         let Expr::MethodCall {
             recv: base,
             method: iter_method,
             args: iter_args,
         } = recv
         else {
-            panic!("effects::rust_ast: `.{method}()` receiver must be `.iter()`, found `{recv:?}`");
+            return Err(EffectError::unsupported(
+                Construct::IterReduceReceiver,
+                recv.clone(),
+            ));
         };
         if iter_method != "iter" || !iter_args.is_empty() {
-            panic!(
-                "effects::rust_ast: unsupported iterator adapter `.{iter_method}()` before `.{method}()`"
-            );
+            return Err(EffectError::unsupported(
+                Construct::IterReduceAdapter,
+                iter_method.as_str(),
+            ));
         }
         let Expr::Var(ident) = &**base else {
-            panic!("effects::rust_ast: unsupported `.iter()` receiver `{base:?}`");
+            return Err(EffectError::unsupported(
+                Construct::IterReduceIterReceiver,
+                base.as_ref().clone(),
+            ));
         };
         let name = ident.as_str().to_string();
         let binding = self
             .vecs
             .get(&name)
-            .unwrap_or_else(|| panic!("effects::rust_ast: `.iter()` over unknown Vec `{name}`"));
+            .ok_or_else(|| EffectError::unknown(BindingKind::Vec, &name))?;
         let (alloc, elem_size, elem_width, elem_signed, len) = (
             binding.alloc,
             binding.elem_size,
@@ -4649,7 +5235,7 @@ impl Interp {
             binding.len,
         );
 
-        let read_elem = |this: &mut Self, index: u64| -> Value {
+        let read_elem = |this: &mut Self, index: u64| -> EResult<Value> {
             let loc = Location {
                 alloc,
                 byte_offset: index * elem_size,
@@ -4657,13 +5243,13 @@ impl Interp {
             let value = this
                 .heap
                 .get(&loc)
-                .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
+                .ok_or_else(|| EffectError::uninitialized_read(loc))?
                 .clone();
             this.trace.push(Effect::Read {
                 loc,
                 value: value.clone(),
             });
-            value
+            Ok(value)
         };
 
         match method {
@@ -4679,56 +5265,65 @@ impl Interp {
                     value: if method == "sum" { 0 } else { 1 },
                 };
                 for i in 0..len {
-                    acc = apply_binop(op, acc, read_elem(self, i));
+                    acc = apply_binop(op, acc, read_elem(self, i)?)?;
                 }
-                acc
+                Ok(acc)
             }
             "fold" => {
                 let [init, closure] = args else {
-                    panic!("effects::rust_ast: `.fold()` requires an init and a closure");
+                    return Err(EffectError::arg_shape(
+                        Construct::FoldArgs,
+                        ArgShapeKind::TwoArguments,
+                    ));
                 };
                 let Expr::Closure { params, body } = closure else {
-                    panic!("effects::rust_ast: `.fold()`'s second argument must be a closure");
+                    return Err(EffectError::unsupported(
+                        Construct::FoldClosure,
+                        closure.clone(),
+                    ));
                 };
                 let [acc_param, item_param] = params.as_slice() else {
-                    panic!("effects::rust_ast: `.fold()` closure must take exactly two params");
+                    return Err(EffectError::arg_shape(
+                        Construct::FoldClosureParams,
+                        ArgShapeKind::TwoArguments,
+                    ));
                 };
                 let (acc_param, item_param) = (
                     acc_param.as_str().to_string(),
                     item_param.as_str().to_string(),
                 );
-                let mut acc = self.eval(init);
+                let mut acc = self.eval(init)?;
                 for i in 0..len {
-                    let item = read_elem(self, i);
+                    let item = read_elem(self, i)?;
                     self.scalars.insert(acc_param.clone(), acc);
                     self.scalars.insert(item_param.clone(), item);
-                    acc = self.eval(body);
+                    acc = self.eval(body)?;
                 }
                 self.scalars.remove(&acc_param);
                 self.scalars.remove(&item_param);
-                acc
+                Ok(acc)
             }
-            other => panic!("effects::rust_ast: unsupported iterator reduction `.{other}()`"),
+            other => Err(EffectError::unsupported(Construct::IterReduceKind, other)),
         }
     }
 
-    fn eval_binary(&mut self, op: BinOp, lhs: &Expr, rhs: &Expr) -> Value {
+    fn eval_binary(&mut self, op: BinOp, lhs: &Expr, rhs: &Expr) -> EResult<Value> {
         match op {
             BinOp::And => {
-                if !value_as_bool(self.eval(lhs)) {
-                    return Value::Bool(false);
+                if !value_as_bool(self.eval(lhs)?)? {
+                    return Ok(Value::Bool(false));
                 }
-                Value::Bool(value_as_bool(self.eval(rhs)))
+                Ok(Value::Bool(value_as_bool(self.eval(rhs)?)?))
             }
             BinOp::Or => {
-                if value_as_bool(self.eval(lhs)) {
-                    return Value::Bool(true);
+                if value_as_bool(self.eval(lhs)?)? {
+                    return Ok(Value::Bool(true));
                 }
-                Value::Bool(value_as_bool(self.eval(rhs)))
+                Ok(Value::Bool(value_as_bool(self.eval(rhs)?)?))
             }
             _ => {
-                let a = self.eval(lhs);
-                let b = self.eval(rhs);
+                let a = self.eval(lhs)?;
+                let b = self.eval(rhs)?;
                 apply_binop(op, a, b)
             }
         }
@@ -4840,13 +5435,16 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
     specs
 }
 
-fn c_format_bytes(expr: &Expr) -> Vec<u8> {
+fn c_format_bytes(expr: &Expr) -> EResult<Vec<u8>> {
     match expr {
-        Expr::Str(s) => s.as_bytes().to_vec(),
-        Expr::ByteStr(bytes) | Expr::CStr(bytes) => bytes.clone(),
+        Expr::Str(s) => Ok(s.as_bytes().to_vec()),
+        Expr::ByteStr(bytes) | Expr::CStr(bytes) => Ok(bytes.clone()),
         Expr::Cast { expr, .. } => c_format_bytes(expr),
         Expr::MethodCall { recv, method, .. } if method == "as_ptr" => c_format_bytes(recv),
-        other => panic!("effects::rust_ast: unsupported printf format string `{other:?}`"),
+        other => Err(EffectError::unsupported(
+            Construct::LibcCall(CallSummary::Printf),
+            other.clone(),
+        )),
     }
 }
 
@@ -4864,23 +5462,25 @@ fn render_c_num_arg(
     zero_pad: bool,
     left_align: bool,
     width: Option<usize>,
-) -> Vec<u8> {
+) -> EResult<Vec<u8>> {
     let Value::Int {
         value,
         width: int_width,
         ..
     } = value
     else {
-        panic!("effects::rust_ast: printf numeric conversion expects an integer, found {value:?}");
+        return Err(EffectError::type_mismatch(ValueKind::Int, value.clone()));
     };
     let mut core = match conv {
         b'x' => format_uint_radix(*value, *int_width, 16, false),
         b'X' => format_uint_radix(*value, *int_width, 16, true),
         b'o' => format_uint_radix(*value, *int_width, 8, false),
-        _ => panic!(
-            "effects::rust_ast: unsupported printf conversion `{}`",
-            conv as char
-        ),
+        _ => {
+            return Err(EffectError::unsupported(
+                Construct::LibcCall(CallSummary::Printf),
+                conv.to_string(),
+            ));
+        }
     };
     let is_zero = *value == 0;
     let prefix = match conv {
@@ -4895,23 +5495,23 @@ fn render_c_num_arg(
     let total_width = width.unwrap_or(0);
     let pad_len = total_width.saturating_sub(body.chars().count());
     if pad_len == 0 {
-        return body.into_bytes();
+        return Ok(body.into_bytes());
     }
     if left_align {
         let mut out = body;
         out.extend(std::iter::repeat_n(' ', pad_len));
-        return out.into_bytes();
+        return Ok(out.into_bytes());
     }
     if zero_pad {
         let mut out = String::with_capacity(total_width);
         out.push_str(prefix);
         out.extend(std::iter::repeat_n('0', pad_len));
         out.push_str(&core);
-        return out.into_bytes();
+        return Ok(out.into_bytes());
     }
     let mut out: String = std::iter::repeat_n(' ', pad_len).collect();
     out.push_str(&body);
-    out.into_bytes()
+    Ok(out.into_bytes())
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -5155,19 +5755,20 @@ fn array_init_elems(init: &Expr, len: u64) -> Vec<&Expr> {
     }
 }
 
-fn local_value_size(value: &Value) -> u64 {
+fn local_value_size(value: &Value) -> EResult<u64> {
     match value {
         Value::Int { .. } => int_byte_size(value),
-        Value::Bool(_) => 1,
-        Value::Float(_) => 8,
-        Value::Ref(_) | Value::Null | Value::File(_) | Value::Atomic(_) => 8,
+        Value::Bool(_) => Ok(1),
+        Value::Float(_) => Ok(8),
+        Value::Ref(_) | Value::Null | Value::File(_) | Value::Atomic(_) => Ok(8),
         Value::AtomicResult { .. }
         | Value::Tuple(_)
         | Value::BlockLabel(_)
         | Value::Option(_)
-        | Value::Bytes(_) => {
-            panic!("effects::rust_ast: cannot take address of transient value {value:?}")
-        }
+        | Value::Bytes(_) => Err(EffectError::unsupported(
+            Construct::AddrOfExpr,
+            value.clone(),
+        )),
     }
 }
 
