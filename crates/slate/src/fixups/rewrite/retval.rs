@@ -50,7 +50,7 @@ impl<'a> Retval<'a> {
             &mut f.body,
             function,
             facts,
-            &mut Vec::new(),
+            &Vec::new(),
             self.logger,
         );
     }
@@ -220,7 +220,7 @@ fn remove_unused_retval_artifacts_logged(
     body: &mut Vec<IndentStmt>,
     function: FunctionId,
     facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
+    path: &[PathSegment],
     logger: &mut dyn TraceLogger,
 ) {
     let before = logger.is_enabled().then(|| body.clone());

@@ -30,8 +30,7 @@ impl<'a> MainZeroExit<'a> {
                 .then(|| f.body.last().map(|stmt| stmt.stmt.clone()))
                 .flatten()
             {
-                let mut path = Vec::new();
-                path.push(PathSegment::Stmt(f.body.len() - 1));
+                let path = vec![PathSegment::Stmt(f.body.len() - 1)];
                 self.logger.rewrite(RewriteEvent {
                     pass: TracePass::MainZeroExit,
                     kind: "remove_trailing_zero_exit".into(),

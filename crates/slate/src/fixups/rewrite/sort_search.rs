@@ -342,14 +342,8 @@ fn comparator_plan(f: &FnDef) -> Option<ComparatorPlan> {
                 lhs,
                 rhs,
             })) => {
-                let Expr::Var(lhs) = &**lhs else {
-                    return None;
-                };
-                let Expr::Var(rhs) = &**rhs else {
-                    return None;
-                };
-                let left = values.get(lhs.as_str())?;
-                let right = values.get(rhs.as_str())?;
+                let left = returned_compare_source(lhs, &aliases, &values)?;
+                let right = returned_compare_source(rhs, &aliases, &values)?;
                 if left.param != left_param || right.param != right_param {
                     return None;
                 }
@@ -365,6 +359,17 @@ fn comparator_plan(f: &FnDef) -> Option<ComparatorPlan> {
         }
     }
     None
+}
+
+fn returned_compare_source(
+    expr: &Expr,
+    aliases: &BTreeMap<String, PointerSource>,
+    values: &BTreeMap<String, CompareSource>,
+) -> Option<CompareSource> {
+    match expr {
+        Expr::Var(name) => values.get(name.as_str()).cloned(),
+        _ => compare_source(expr, aliases),
+    }
 }
 
 #[derive(Clone)]

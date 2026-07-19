@@ -61,8 +61,7 @@ impl<'a> Goto<'a> {
                 let trace_after = self.logger.is_enabled().then(|| structured.clone());
                 replace_region(body, &dispatch, structured);
                 if let Some(before) = trace_before {
-                    let mut loop_path = Vec::new();
-                    loop_path.push(PathSegment::Stmt(dispatch.loop_index));
+                    let loop_path = vec![PathSegment::Stmt(dispatch.loop_index)];
                     self.logger.rewrite(RewriteEvent {
                         pass: TracePass::Goto,
                         kind: "structure_dispatch_loop".into(),

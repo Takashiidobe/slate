@@ -103,9 +103,7 @@ fn fold_stmt_at(body: &mut Vec<IndentStmt>, index: usize) -> Option<FoldOutcome>
     else {
         return None;
     };
-    let Some(value) = bool_value(cond) else {
-        return None;
-    };
+    let value = bool_value(cond)?;
     let parent_depth = body[index].depth;
     let replacement = if value { then_body } else { else_body };
     if replacement.is_empty() {

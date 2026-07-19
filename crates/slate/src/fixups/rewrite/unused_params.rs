@@ -58,10 +58,10 @@ fn removed_param(program: &Program, name: &str, param_index: usize) -> Option<(S
             return;
         }
         let Item::Fn(f) = item else { return };
-        if f.name == name {
-            if let Some(param) = f.params.get(param_index) {
-                removed = Some((param.name.clone(), param.ty.render()));
-            }
+        if f.name == name
+            && let Some(param) = f.params.get(param_index)
+        {
+            removed = Some((param.name.clone(), param.ty.render()));
         }
     });
     removed

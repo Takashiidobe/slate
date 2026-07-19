@@ -281,14 +281,14 @@ fn first_scalar_box_store(
     remove: &BTreeSet<usize>,
     pointer_name: &str,
 ) -> Option<usize> {
-    for index in start + 1..body.len() {
+    for (index, indent) in body.iter().enumerate().skip(start + 1) {
         if remove.contains(&index) {
             continue;
         }
-        if scalar_box_store_value(&body[index].stmt, pointer_name).is_some() {
+        if scalar_box_store_value(&indent.stmt, pointer_name).is_some() {
             return Some(index);
         }
-        if stmt_blocks_scalar_box_initializer_fold(&body[index].stmt, pointer_name) {
+        if stmt_blocks_scalar_box_initializer_fold(&indent.stmt, pointer_name) {
             return None;
         }
     }
