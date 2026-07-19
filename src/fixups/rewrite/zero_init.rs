@@ -174,6 +174,7 @@ impl<'a> ZeroInit<'a> {
         false
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn log_zero_init_event(
         &mut self,
         function: FunctionId,

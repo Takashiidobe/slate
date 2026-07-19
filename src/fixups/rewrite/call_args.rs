@@ -146,6 +146,7 @@ impl<'a> CallArgs<'a> {
         false
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn log_inline_arg(
         &mut self,
         function: FunctionId,

@@ -410,7 +410,7 @@ fn safe_struct_field_reads_do_not_use_unsafe() {
     assert!(mixed_rust.contains("let _v8: f32 = m.ratio;"));
     assert!(mixed_rust.contains("let _v10: f64 = m.total;"));
     assert!(mixed_rust.contains("return unsafe { s.total };"));
-    assert!(mixed_rust.contains("let _v1: i8 = unsafe { s.tag };"));
+    assert!(mixed_rust.contains("return unsafe { s.tag } as i32;"));
 
     let unions_c = fixtures_dir().join("unions.c");
     let unions_generated = tmp.join("unions.generated.rs");
@@ -424,8 +424,7 @@ fn safe_struct_field_reads_do_not_use_unsafe() {
     support::translate(&globals_c, &globals_generated).expect("translate global_vars fixture");
     let globals_rust =
         std::fs::read_to_string(&globals_generated).expect("read generated global_vars rust");
-    assert!(globals_rust.contains("let _v13: i32 = unsafe { pair.right };"));
-    assert!(globals_rust.contains("let _v15: i32 = unsafe { pair.left };"));
+    assert!(globals_rust.contains("return unsafe { pair.left } + unsafe { pair.right };"));
 }
 
 #[test]
@@ -806,7 +805,7 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(array_init_rust.contains("println!(\"{}\", sum);"));
     assert!(array_init_rust.contains("println!(\"{} {}\", partial[1], partial[3]);"));
     assert!(array_init_rust.contains("println!(\"{}\", s);"));
-    assert!(array_init_rust.contains("println!(\"{} {}\", \"hi\", _v"));
+    assert!(array_init_rust.contains("println!(\"{} {}\", \"hi\", padded[4] as i32);"));
     assert!(array_init_rust.contains("let a: [i32; 5] = [1, 2, 3, 4, 5];"));
     assert!(array_init_rust.contains("let partial: [i32; 4] = [7, 8, 0, 0];"));
     assert!(array_init_rust.contains("let padded: [i8; 8] = [104, 105, 0, 0, 0, 0, 0, 0];"));
@@ -1346,14 +1345,18 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
             "pointers",
             &[
                 "let mut local: i32 = value;",
-                "*slot = _v",
+                "*slot = unsafe { *slot } + amount;",
                 "values[2] = 12;",
             ][..],
         ),
         ("struct_with_array", &["b.data[0] = 10;", "b.len = 3;"][..]),
         (
             "global_vars",
-            &["counter = _v", "numbers[2] =", "pair.right = _v"][..],
+            &[
+                "counter = unsafe { counter } + by;",
+                "numbers[2] =",
+                "pair.right = unsafe { pair.right } + unsafe { numbers[1] };",
+            ][..],
         ),
         (
             "bitfield_ops",
@@ -1489,17 +1492,15 @@ fn memchr_calls_use_iter_position_when_source_is_iterable() {
     let rust = std::fs::read_to_string(&generated).expect("read generated mem_memchr rust");
 
     assert!(rust.contains("buf.as_slice().iter().position("));
-    assert!(rust.contains("(*__slate_byte as u8) == ((40 as i32) as u8)"));
-    assert!(rust.contains("(*__slate_byte as u8) == ((99 as i32) as u8)"));
+    assert!(rust.contains("(*__slate_byte as u8) == ((_v1 as i32) as u8)"));
+    assert!(rust.contains("(*__slate_byte as u8) == ((_v4 as i32) as u8)"));
     assert!(rust.contains("let hit = buf.as_slice().iter().position("));
     assert!(rust.contains("let miss = buf.as_slice().iter().position("));
     assert!(rust.contains("let nul = Some(3);"));
     assert!(rust.contains("let _v11: i64 = hit.unwrap() as i64;"));
     assert!(rust.contains("let _v14: bool = miss.is_none();"));
     assert!(rust.contains("println!(\"{} {} {}\", _v11, _v14 as i32, nul.unwrap() as i64);"));
-    for temp in [
-        "let _v1:", "let _v2:", "let _v4:", "let _v5:", "let _v7:", "let _v8:",
-    ] {
+    for temp in ["let _v2:", "let _v5:", "let _v7:", "let _v8:"] {
         assert!(!rust.contains(temp), "{temp} survived in:\n{rust}");
     }
     assert!(!rust.contains("let _v16: i64 = _v9.unwrap() as i64;"));

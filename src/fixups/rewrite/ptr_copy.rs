@@ -8,7 +8,7 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) -> bool {
+pub(in crate::fixups) fn fixup(body: &mut [IndentStmt]) -> bool {
     let mut logger = crate::fixups::trace::NoopLogger;
     PtrCopy::new("<unknown>", &mut logger).fixup(body)
 }
@@ -29,11 +29,11 @@ impl<'a> PtrCopy<'a> {
         }
     }
 
-    pub(in crate::fixups) fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+    pub(in crate::fixups) fn fixup(&mut self, body: &mut [IndentStmt]) -> bool {
         self.fixup_at(body, &mut Vec::new())
     }
 
-    fn fixup_at(&mut self, body: &mut Vec<IndentStmt>, path: &mut Vec<PathSegment>) -> bool {
+    fn fixup_at(&mut self, body: &mut [IndentStmt], path: &mut Vec<PathSegment>) -> bool {
         let env = CopyEnv::from_body(body);
         for index in 0..body.len() {
             let mut changed = false;
@@ -168,14 +168,14 @@ fn copy_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
         return Some(plan);
     }
     let copy = ptr_copy_stmt(stmt)?;
-    let src = endpoint(&copy.src)?;
-    let dst = endpoint(&copy.dst)?;
+    let src = endpoint(copy.src)?;
+    let dst = endpoint(copy.dst)?;
     let src_info = env.arrays.get(&src.base)?;
     let dst_info = env.arrays.get(&dst.base)?;
     if !dst_info.mutable || src_info.elem_size != dst_info.elem_size {
         return None;
     }
-    let count_bytes = count_value(&copy.count, env)?;
+    let count_bytes = count_value(copy.count, env)?;
     let elem_size = src_info.elem_size;
     if count_bytes % elem_size != 0 {
         return None;

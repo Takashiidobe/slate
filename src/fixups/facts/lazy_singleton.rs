@@ -65,12 +65,18 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 /// guard just initialized.
 fn match_body(body: &[IndentStmt]) -> Option<(String, String, Expr)> {
     let (guard, rest) = split_guard(body)?;
-    let [check, cond, branch] = guard else {
-        return None;
+    let (flag_name, then_body) = match guard {
+        [check, cond, branch] => {
+            let (flag_temp, flag_name) = flag_read(&check.stmt)?;
+            let cond_temp = cond_let_name(&cond.stmt, flag_temp)?;
+            (flag_name, if_on_var(&branch.stmt, cond_temp)?)
+        }
+        [cond, branch] => {
+            let (cond_temp, flag_name) = cond_let_name_with_flag_read(&cond.stmt)?;
+            (flag_name, if_on_var(&branch.stmt, cond_temp)?)
+        }
+        _ => return None,
     };
-    let (flag_temp, flag_name) = flag_read(&check.stmt)?;
-    let cond_temp = cond_let_name(&cond.stmt, flag_temp)?;
-    let then_body = if_on_var(&branch.stmt, cond_temp)?;
     let (payload_name, init_expr) = then_body_shape(then_body, &flag_name)?;
     let [ret] = rest else {
         return None;
@@ -84,7 +90,7 @@ fn match_body(body: &[IndentStmt]) -> Option<(String, String, Expr)> {
 fn split_guard(body: &[IndentStmt]) -> Option<(&[IndentStmt], &[IndentStmt])> {
     if let [first, rest @ ..] = body
         && let Stmt::Scope { body: inner } = &first.stmt
-        && inner.len() == 3
+        && matches!(inner.len(), 2 | 3)
     {
         return Some((inner.as_slice(), rest));
     }
@@ -132,6 +138,57 @@ fn cond_let_name<'a>(stmt: &'a Stmt, flag_temp: &str) -> Option<&'a str> {
         return None;
     };
     zero_test_matches(cond, flag_temp).then_some(temp.as_str())
+}
+
+fn cond_let_name_with_flag_read(stmt: &Stmt) -> Option<(&str, String)> {
+    let Stmt::Let {
+        name: temp,
+        ty: Some(Type::Prim(Prim::Bool)),
+        init: Some(cond),
+        ..
+    } = stmt
+    else {
+        return None;
+    };
+    zero_test_flag_read(cond).map(|flag| (temp.as_str(), flag))
+}
+
+fn zero_test_flag_read(cond: &Expr) -> Option<String> {
+    match cond {
+        Expr::Unary {
+            op: UnaryOp::Not,
+            expr,
+        } => match expr.as_ref() {
+            Expr::Binary {
+                op: BinOp::Ne,
+                lhs,
+                rhs,
+            } => unsafe_static_read(lhs).filter(|_| is_zero(rhs)),
+            _ => None,
+        },
+        Expr::Binary {
+            op: BinOp::Eq,
+            lhs,
+            rhs,
+        } => unsafe_static_read(lhs).filter(|_| is_zero(rhs)),
+        _ => None,
+    }
+}
+
+fn unsafe_static_read(expr: &Expr) -> Option<String> {
+    let Expr::Unsafe(block) = expr else {
+        return None;
+    };
+    if !block.stmts.is_empty() {
+        return None;
+    }
+    let Some(tail) = &block.tail else {
+        return None;
+    };
+    let Expr::Var(name) = tail.as_ref() else {
+        return None;
+    };
+    Some(name.as_str().to_string())
 }
 
 fn zero_test_matches(cond: &Expr, flag_temp: &str) -> bool {

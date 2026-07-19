@@ -92,6 +92,7 @@ impl<'a> VarAliases<'a> {
         false
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn log_alias_event(
         &mut self,
         alias: &str,

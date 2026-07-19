@@ -148,6 +148,7 @@ impl<'a> InlineTemps<'a> {
         false
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn log_inline_event(
         &mut self,
         name: &str,

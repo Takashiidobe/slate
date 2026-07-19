@@ -6,7 +6,7 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Label, Stmt, UnaryOp};
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) -> bool {
+pub(in crate::fixups) fn fixup(body: &mut [IndentStmt]) -> bool {
     let mut logger = crate::fixups::trace::NoopLogger;
     ForContinue::new("<unknown>", &mut logger).fixup(body)
 }
@@ -27,13 +27,13 @@ impl<'a> ForContinue<'a> {
         }
     }
 
-    pub(in crate::fixups) fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
-        self.fixup_at(body, &mut Vec::new())
+    pub(in crate::fixups) fn fixup(&mut self, body: &mut [IndentStmt]) -> bool {
+        self.fixup_at(body, &Vec::new())
     }
 
-    fn fixup_at(&mut self, body: &mut Vec<IndentStmt>, path: &mut Vec<PathSegment>) -> bool {
+    fn fixup_at(&mut self, body: &mut [IndentStmt], path: &[PathSegment]) -> bool {
         for index in 0..body.len() {
-            let mut stmt_path = path.clone();
+            let mut stmt_path = path.to_owned();
             stmt_path.push(PathSegment::Stmt(index));
             let trace_before = self.logger.is_enabled().then(|| body[index].stmt.clone());
             let mut rewrote_continue = false;
@@ -45,7 +45,7 @@ impl<'a> ForContinue<'a> {
                 } => {
                     let mut loop_body_path = stmt_path.clone();
                     loop_body_path.push(PathSegment::LoopBody);
-                    if self.fixup_at(loop_body, &mut loop_body_path) {
+                    if self.fixup_at(loop_body, &loop_body_path) {
                         return true;
                     }
                     let Some(loop_label) = synthetic_label_name(label, "__loop") else {
