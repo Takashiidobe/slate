@@ -355,11 +355,7 @@ pub struct PassInvocation {
 
 impl PassInvocation {
     fn summary(&self) -> String {
-        let status = if self.changed {
-            "changed"
-        } else {
-            "skipped: nothing to do"
-        };
+        let status = if self.changed { "changed" } else { "skipped" };
         format!(
             "{status}; stmts {:+}, temp_lets {:+}, items {:+}",
             self.after.stmts as isize - self.before.stmts as isize,
@@ -828,8 +824,8 @@ mod tests {
         };
 
         let rendered = log.render_human();
-        assert!(rendered.contains("goto                               skipped: nothing to do"));
-        assert!(!rendered.contains("\n  skipped: nothing to do\n"));
+        assert!(rendered.contains("goto                               skipped;"));
+        assert!(!rendered.contains("\n  skipped\n"));
         assert!(rendered.contains("  function main:"));
         assert!(rendered.contains("      at fn main, ast stmt[1]"));
         assert!(rendered.contains("      before:"));
