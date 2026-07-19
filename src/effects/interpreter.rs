@@ -8,7 +8,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use super::{AllocId, Effect, EffectTrace, IntWidth, Location, OptionValue, Value};
+use super::{AllocId, AtomicId, Effect, EffectTrace, IntWidth, Location, OptionValue, Value};
 
 /// Where and how two traces first diverge.
 #[allow(clippy::large_enum_variant)]
@@ -88,10 +88,11 @@ fn normalized_for_compare(trace: &EffectTrace) -> EffectTrace {
         .cloned()
         .collect();
     let alloc_map = compact_alloc_map(&effects);
+    let atomic_map = compact_atomic_map(&effects);
     EffectTrace {
         effects: effects
             .into_iter()
-            .map(|effect| remap_effect(effect, &alloc_map))
+            .map(|effect| remap_effect(effect, &alloc_map, &atomic_map))
             .collect(),
     }
 }
@@ -261,6 +262,35 @@ fn compact_alloc_map(effects: &[Effect]) -> BTreeMap<AllocId, AllocId> {
     map
 }
 
+fn compact_atomic_map(effects: &[Effect]) -> BTreeMap<AtomicId, AtomicId> {
+    let mut map = BTreeMap::new();
+    for effect in effects {
+        if let Some(atomic) = effect_atomic(effect) {
+            if !map.contains_key(&atomic) {
+                map.insert(atomic, AtomicId(map.len() as u32));
+            }
+        }
+    }
+    map
+}
+
+fn effect_atomic(effect: &Effect) -> Option<AtomicId> {
+    match effect {
+        Effect::AtomicLoad { atomic, .. }
+        | Effect::AtomicStore { atomic, .. }
+        | Effect::AtomicRmw { atomic, .. }
+        | Effect::AtomicSwap { atomic, .. }
+        | Effect::AtomicCompareExchange { atomic, .. } => Some(*atomic),
+        _ => None,
+    }
+}
+
+fn remap_atomic(atomic: AtomicId, atomic_map: &BTreeMap<AtomicId, AtomicId>) -> AtomicId {
+    *atomic_map
+        .get(&atomic)
+        .unwrap_or_else(|| panic!("effects::interpreter: unmapped atomic {atomic:?}"))
+}
+
 fn effect_allocs(effect: &Effect) -> Vec<AllocId> {
     let mut allocs = Vec::new();
     match effect {
@@ -335,7 +365,11 @@ fn option_value_allocs(value: OptionValue, allocs: &mut Vec<AllocId>) {
     }
 }
 
-fn remap_effect(effect: Effect, alloc_map: &BTreeMap<AllocId, AllocId>) -> Effect {
+fn remap_effect(
+    effect: Effect,
+    alloc_map: &BTreeMap<AllocId, AllocId>,
+    atomic_map: &BTreeMap<AtomicId, AtomicId>,
+) -> Effect {
     match effect {
         Effect::Alloc { alloc, size } => Effect::Alloc {
             alloc: remap_alloc(alloc, alloc_map),
@@ -365,7 +399,7 @@ fn remap_effect(effect: Effect, alloc_map: &BTreeMap<AllocId, AllocId>) -> Effec
             ordering,
             value,
         } => Effect::AtomicLoad {
-            atomic,
+            atomic: remap_atomic(atomic, atomic_map),
             ordering,
             value: remap_value(value, alloc_map),
         },
@@ -374,7 +408,7 @@ fn remap_effect(effect: Effect, alloc_map: &BTreeMap<AllocId, AllocId>) -> Effec
             ordering,
             value,
         } => Effect::AtomicStore {
-            atomic,
+            atomic: remap_atomic(atomic, atomic_map),
             ordering,
             value: remap_value(value, alloc_map),
         },
@@ -386,7 +420,7 @@ fn remap_effect(effect: Effect, alloc_map: &BTreeMap<AllocId, AllocId>) -> Effec
             old,
             new,
         } => Effect::AtomicRmw {
-            atomic,
+            atomic: remap_atomic(atomic, atomic_map),
             op,
             ordering,
             operand: remap_value(operand, alloc_map),
@@ -399,7 +433,7 @@ fn remap_effect(effect: Effect, alloc_map: &BTreeMap<AllocId, AllocId>) -> Effec
             old,
             new,
         } => Effect::AtomicSwap {
-            atomic,
+            atomic: remap_atomic(atomic, atomic_map),
             ordering,
             old: remap_value(old, alloc_map),
             new: remap_value(new, alloc_map),
@@ -413,7 +447,7 @@ fn remap_effect(effect: Effect, alloc_map: &BTreeMap<AllocId, AllocId>) -> Effec
             old,
             exchanged,
         } => Effect::AtomicCompareExchange {
-            atomic,
+            atomic: remap_atomic(atomic, atomic_map),
             success,
             failure,
             expected: remap_value(expected, alloc_map),
