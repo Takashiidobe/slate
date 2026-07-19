@@ -8,7 +8,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use super::{AllocId, Effect, EffectTrace, Location, OptionValue, Value};
+use super::{AllocId, Effect, EffectTrace, IntWidth, Location, OptionValue, Value};
 
 /// Where and how two traces first diverge.
 #[allow(clippy::large_enum_variant)]
@@ -377,6 +377,11 @@ fn remap_effect(effect: Effect, alloc_map: &BTreeMap<AllocId, AllocId>) -> Effec
 fn remap_value(value: Value, alloc_map: &BTreeMap<AllocId, AllocId>) -> Value {
     match value {
         Value::Ref(loc) => Value::Ref(remap_loc(loc, alloc_map)),
+        Value::Int { signed, value, .. } => Value::Int {
+            width: IntWidth::PointerSized,
+            signed,
+            value,
+        },
         Value::AtomicResult { ok, value } => Value::AtomicResult {
             ok,
             value: remap_option_value(value, alloc_map),
