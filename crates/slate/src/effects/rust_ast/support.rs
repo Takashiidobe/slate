@@ -339,6 +339,34 @@ pub(super) fn scalar_type_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
     })
 }
 
+pub(super) fn type_size(ty: &Type) -> Option<u64> {
+    match ty {
+        Type::Prim(_) => scalar_type_shape(ty).map(|(_, _, size)| size),
+        Type::Ptr { .. } | Type::FnPtr { .. } | Type::Ref { .. } => Some(8),
+        Type::Array { elem, len } => Some(type_size(elem)? * *len),
+        _ => None,
+    }
+}
+
+pub(super) fn pointer_elem_size_from_type(ty: &Type) -> Option<u64> {
+    let Type::Ptr { inner, .. } = ty else {
+        return None;
+    };
+    type_size(inner).or(Some(1))
+}
+
+pub(super) fn slice_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
+    let elem = match ty {
+        Type::Slice(elem) => elem.as_ref(),
+        Type::Ref { inner, .. } => match inner.as_ref() {
+            Type::Slice(elem) => elem.as_ref(),
+            _ => return None,
+        },
+        _ => return None,
+    };
+    scalar_type_shape(elem)
+}
+
 pub(super) fn array_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64, u64)> {
     let Type::Array { elem, len } = ty else {
         return None;

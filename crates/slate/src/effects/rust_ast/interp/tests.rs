@@ -250,6 +250,108 @@ fn matches_raw_pointer_trace_shape() {
     assert_eq!(trace, raw_pointer_trace);
 }
 
+#[test]
+fn pointer_add_uses_pointee_size_for_deref() {
+    let f = FnDef {
+        attrs: vec![],
+        vis: Visibility::Private,
+        unsafe_: false,
+        abi: None,
+        name: "main".to_string(),
+        params: vec![],
+        ret: Some(Type::Prim(Prim::I32)),
+        body: vec![
+            stmt(Stmt::Let {
+                name: "values".to_string(),
+                mutable: true,
+                ty: Some(Type::Array {
+                    elem: Box::new(Type::Prim(Prim::I32)),
+                    len: 2,
+                }),
+                init: Some(Expr::ArrayLit(vec![
+                    Expr::Value(RustValue::I64(10)),
+                    Expr::Value(RustValue::I64(20)),
+                ])),
+            }),
+            stmt(Stmt::Let {
+                name: "p".to_string(),
+                mutable: false,
+                ty: Some(Type::Ptr {
+                    mutable: true,
+                    inner: Box::new(Type::Prim(Prim::I32)),
+                }),
+                init: Some(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(Ident::new("values"))),
+                    method: "as_mut_ptr".to_string(),
+                    args: vec![],
+                }),
+            }),
+            stmt(Stmt::Return(Some(Expr::Unary {
+                op: UnaryOp::Deref,
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(Ident::new("p"))),
+                    method: "add".to_string(),
+                    args: vec![Expr::Value(RustValue::I64(1))],
+                }),
+            }))),
+        ],
+    };
+
+    let trace = interpret(&f);
+    assert!(trace.effects.contains(&Effect::Read {
+        loc: Location {
+            alloc: AllocId(0),
+            byte_offset: 4
+        },
+        value: int32(20),
+    }));
+    assert_eq!(trace.effects.last(), Some(&Effect::Exit(20)));
+}
+
+#[test]
+fn addressed_scalar_reads_back_deref_assignment() {
+    let f = FnDef {
+        attrs: vec![],
+        vis: Visibility::Private,
+        unsafe_: false,
+        abi: None,
+        name: "main".to_string(),
+        params: vec![],
+        ret: Some(Type::Prim(Prim::I32)),
+        body: vec![
+            stmt(Stmt::Let {
+                name: "local".to_string(),
+                mutable: true,
+                ty: Some(Type::Prim(Prim::I32)),
+                init: Some(Expr::Value(RustValue::I64(1))),
+            }),
+            stmt(Stmt::Let {
+                name: "p".to_string(),
+                mutable: false,
+                ty: Some(Type::Ptr {
+                    mutable: true,
+                    inner: Box::new(Type::Prim(Prim::I32)),
+                }),
+                init: Some(Expr::Macro {
+                    name: "std::ptr::addr_of_mut".to_string(),
+                    args: vec![Expr::Var(Ident::new("local"))],
+                }),
+            }),
+            stmt(Stmt::Assign {
+                target: Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(Expr::Var(Ident::new("p"))),
+                },
+                value: Expr::Value(RustValue::I64(9)),
+            }),
+            stmt(Stmt::Return(Some(Expr::Var(Ident::new("local"))))),
+        ],
+    };
+
+    let trace = interpret(&f);
+    assert_eq!(trace.effects.last(), Some(&Effect::Exit(9)));
+}
+
 /// The real `HeapOwnershipKind::VecBuffer` fixup shape (see
 /// `src/fixups/rewrite/heap_ownership.rs`) for the same fixture: direct
 /// indexed assignment instead of `.push()`, a scalar `let`, and
