@@ -74,6 +74,11 @@ struct OnceLockBinding {
     payload: Location,
 }
 
+enum AtomicBacking {
+    Scalar(String),
+    Field(Location),
+}
+
 #[derive(Default)]
 struct Interp {
     vecs: HashMap<String, VecBinding>,
@@ -92,7 +97,9 @@ struct Interp {
     file_contents: HashMap<String, Vec<u8>>,
     file_offsets: HashMap<FileId, usize>,
     atomics: HashMap<String, AtomicId>,
+    atomic_locs: HashMap<Location, AtomicId>,
     atomic_values: HashMap<AtomicId, Value>,
+    atomic_backing: HashMap<AtomicId, AtomicBacking>,
     heap: HashMap<Location, Value>,
     hidden_c_strings: HashMap<Vec<u8>, Location>,
     next_alloc: u32,
@@ -124,6 +131,15 @@ impl Interp {
     }
 
     fn seed_static(&mut self, name: &str, ty: &Type, init: &Expr) {
+        if let Expr::AtomicNew {
+            ty: atomic_ty,
+            value,
+        } = init
+        {
+            let value = cast_to_atomic_type(self.eval(value), atomic_ty);
+            self.define_atomic(name, value);
+            return;
+        }
         if is_once_lock_ty(ty) {
             let zero = Value::Int {
                 width: IntWidth::W32,
@@ -310,8 +326,8 @@ impl Interp {
                 if let Some(file) = self.open_file(init) {
                     self.files.insert(name.clone(), file);
                     self.scalars.insert(name.clone(), Value::File(file));
-                } else if let Expr::AtomicNew { value, .. } = init {
-                    let value = self.eval(value);
+                } else if let Expr::AtomicNew { ty, value } = init {
+                    let value = cast_to_atomic_type(self.eval(value), ty);
                     let atomic = self.define_atomic(name, value);
                     self.scalars.insert(name.clone(), Value::Atomic(atomic));
                 } else {
@@ -2400,8 +2416,8 @@ impl Interp {
                 let desired = self.eval(desired);
                 self.atomic_compare_exchange(place, *success, *failure, expected, desired)
             }
-            Expr::AtomicNew { value, .. } => {
-                let value = self.eval(value);
+            Expr::AtomicNew { ty, value } => {
+                let value = cast_to_atomic_type(self.eval(value), ty);
                 let atomic = self.allocate_atomic(value);
                 Value::Atomic(atomic)
             }
@@ -2655,7 +2671,10 @@ impl Interp {
     fn atomic_place(&mut self, place: &AtomicPlace) -> AtomicId {
         match place {
             AtomicPlace::Local(name) => self.atomic_for_name(name.as_str()),
-            AtomicPlace::Ptr(expr) => self.atomic_for_name(addr_of_local(expr)),
+            AtomicPlace::Ptr(expr) => match atomic_ptr_target(expr) {
+                AtomicPtrTarget::Local(name) => self.atomic_for_ptr_local(name),
+                AtomicPtrTarget::Field { base, field } => self.atomic_for_field(base, field),
+            },
         }
     }
 
@@ -2674,6 +2693,58 @@ impl Interp {
         atomic
     }
 
+    fn atomic_for_ptr_local(&mut self, name: &str) -> AtomicId {
+        if let Some(&loc) = self.globals.get(name) {
+            return self.atomic_for_location(loc);
+        }
+        if let Some(&atomic) = self.atomics.get(name) {
+            return atomic;
+        }
+        let value = self
+            .scalars
+            .get(name)
+            .unwrap_or_else(|| panic!("effects::rust_ast: atomic access to unknown `{name}`"))
+            .clone();
+        let atomic = self.allocate_atomic(value);
+        self.atomics.insert(name.to_string(), atomic);
+        self.atomic_backing
+            .insert(atomic, AtomicBacking::Scalar(name.to_string()));
+        atomic
+    }
+
+    fn atomic_for_field(&mut self, base: &Expr, field: &str) -> AtomicId {
+        let loc = self.field_location(base, field);
+        self.atomic_for_location(loc)
+    }
+
+    fn atomic_for_location(&mut self, loc: Location) -> AtomicId {
+        if let Some(&atomic) = self.atomic_locs.get(&loc) {
+            return atomic;
+        }
+        let value = self
+            .heap
+            .get(&loc)
+            .unwrap_or_else(|| panic!("effects::rust_ast: read from never-written {loc:?}"))
+            .clone();
+        let atomic = self.allocate_atomic(value);
+        self.atomic_locs.insert(loc, atomic);
+        self.atomic_backing
+            .insert(atomic, AtomicBacking::Field(loc));
+        atomic
+    }
+
+    fn sync_atomic_backing(&mut self, atomic: AtomicId, value: &Value) {
+        match self.atomic_backing.get(&atomic) {
+            Some(AtomicBacking::Scalar(name)) => {
+                self.scalars.insert(name.clone(), value.clone());
+            }
+            Some(AtomicBacking::Field(loc)) => {
+                self.heap.insert(*loc, value.clone());
+            }
+            None => {}
+        }
+    }
+
     fn atomic_load(&mut self, place: &AtomicPlace, ordering: AtomicOrdering) -> Value {
         let atomic = self.atomic_place(place);
         let value = self.atomic_value(atomic);
@@ -2687,7 +2758,10 @@ impl Interp {
 
     fn atomic_store(&mut self, place: &AtomicPlace, ordering: AtomicOrdering, value: Value) {
         let atomic = self.atomic_place(place);
+        let old = self.atomic_value(atomic);
+        let value = match_atomic_shape(value, &old);
         self.atomic_values.insert(atomic, value.clone());
+        self.sync_atomic_backing(atomic, &value);
         self.trace.push(Effect::AtomicStore {
             atomic,
             ordering,
@@ -2704,8 +2778,10 @@ impl Interp {
     ) -> Value {
         let atomic = self.atomic_place(place);
         let old = self.atomic_value(atomic);
+        let operand = match_atomic_shape(operand, &old);
         let new = atomic_rmw_value(op, old.clone(), operand.clone());
         self.atomic_values.insert(atomic, new.clone());
+        self.sync_atomic_backing(atomic, &new);
         self.trace.push(Effect::AtomicRmw {
             atomic,
             op,
@@ -2720,7 +2796,9 @@ impl Interp {
     fn atomic_swap(&mut self, place: &AtomicPlace, ordering: AtomicOrdering, new: Value) -> Value {
         let atomic = self.atomic_place(place);
         let old = self.atomic_value(atomic);
+        let new = match_atomic_shape(new, &old);
         self.atomic_values.insert(atomic, new.clone());
+        self.sync_atomic_backing(atomic, &new);
         self.trace.push(Effect::AtomicSwap {
             atomic,
             ordering,
@@ -2740,9 +2818,12 @@ impl Interp {
     ) -> Value {
         let atomic = self.atomic_place(place);
         let old = self.atomic_value(atomic);
+        let expected = match_atomic_shape(expected, &old);
+        let desired = match_atomic_shape(desired, &old);
         let exchanged = old == expected;
         if exchanged {
             self.atomic_values.insert(atomic, desired.clone());
+            self.sync_atomic_backing(atomic, &desired);
         }
         self.trace.push(Effect::AtomicCompareExchange {
             atomic,

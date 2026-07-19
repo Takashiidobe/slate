@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 
-use crate::effects::{IntWidth, OptionValue, Value};
-use crate::rust_ast::{AtomicOrdering, AtomicRmwOp, BinOp, Expr, Path, RustValue, Type};
+use crate::effects::{IntWidth, Location, OptionValue, Value};
+use crate::rust_ast::{
+    AtomicOrdering, AtomicRmwOp, AtomicType, BinOp, Expr, Path, RustValue, Type,
+};
 
 pub(super) struct OpenEffect {
     pub(super) path: String,
@@ -40,15 +42,29 @@ pub(super) fn recv_name(expr: &Expr) -> &str {
     }
 }
 
-pub(super) fn addr_of_local(expr: &Expr) -> &str {
+pub(super) enum AtomicPtrTarget<'a> {
+    Local(&'a str),
+    Field { base: &'a Expr, field: &'a str },
+}
+
+pub(super) fn atomic_ptr_target(expr: &Expr) -> AtomicPtrTarget<'_> {
     match expr {
-        Expr::AddrOf { expr, .. } => recv_name(expr),
+        Expr::Cast { expr, .. } => atomic_ptr_target(expr),
+        Expr::AddrOf { expr, .. } => atomic_ptr_place(expr),
         Expr::Macro { name, args } if name == "std::ptr::addr_of_mut" => {
             let [arg] = args.as_slice() else {
                 panic!("effects::rust_ast: addr_of_mut! expects one argument");
             };
-            recv_name(arg)
+            atomic_ptr_place(arg)
         }
+        other => panic!("effects::rust_ast: unsupported atomic pointer place `{other:?}`"),
+    }
+}
+
+fn atomic_ptr_place(expr: &Expr) -> AtomicPtrTarget<'_> {
+    match expr {
+        Expr::Var(ident) => AtomicPtrTarget::Local(ident.as_str()),
+        Expr::Field { base, field } => AtomicPtrTarget::Field { base, field },
         other => panic!("effects::rust_ast: unsupported atomic pointer place `{other:?}`"),
     }
 }
@@ -589,7 +605,75 @@ fn unsigned_shr(value: i128, width: IntWidth, shift: u32) -> i128 {
     }
 }
 
+fn atomic_type_shape(ty: &AtomicType) -> (IntWidth, bool) {
+    match ty {
+        AtomicType::I8 => (IntWidth::W8, true),
+        AtomicType::U8 => (IntWidth::W8, false),
+        AtomicType::I16 => (IntWidth::W16, true),
+        AtomicType::U16 => (IntWidth::W16, false),
+        AtomicType::I32 => (IntWidth::W32, true),
+        AtomicType::U32 => (IntWidth::W32, false),
+        AtomicType::I64 => (IntWidth::W64, true),
+        AtomicType::U64 => (IntWidth::W64, false),
+        AtomicType::Isize => (IntWidth::PointerSized, true),
+        AtomicType::Usize => (IntWidth::PointerSized, false),
+        AtomicType::Bool => (IntWidth::W8, false),
+    }
+}
+
+pub(super) fn cast_to_atomic_type(value: Value, ty: &AtomicType) -> Value {
+    if matches!(ty, AtomicType::Bool) {
+        return match value {
+            Value::Bool(b) => Value::Bool(b),
+            Value::Int { value, .. } => Value::Bool(value != 0),
+            other => other,
+        };
+    }
+    let (width, signed) = atomic_type_shape(ty);
+    cast_to_int_shape(value, width, signed)
+}
+
+fn cast_to_int_shape(value: Value, width: IntWidth, signed: bool) -> Value {
+    match value {
+        Value::Int { value, .. } => Value::Int {
+            width,
+            signed,
+            value: truncate_int(value, width, signed),
+        },
+        Value::Bool(b) => Value::Int {
+            width,
+            signed,
+            value: i128::from(b),
+        },
+        other => other,
+    }
+}
+
+pub(super) fn match_atomic_shape(value: Value, reference: &Value) -> Value {
+    match reference {
+        Value::Int { width, signed, .. } => cast_to_int_shape(value, *width, *signed),
+        Value::Bool(_) => match value {
+            Value::Bool(b) => Value::Bool(b),
+            Value::Int { value, .. } => Value::Bool(value != 0),
+            other => other,
+        },
+        _ => value,
+    }
+}
+
 pub(super) fn atomic_rmw_value(op: AtomicRmwOp, old: Value, operand: Value) -> Value {
+    if let Value::Ref(loc) = old {
+        let delta = value_as_i128(&operand);
+        let byte_offset = match op {
+            AtomicRmwOp::Add => (loc.byte_offset as i128 + delta) as u64,
+            AtomicRmwOp::Sub => (loc.byte_offset as i128 - delta) as u64,
+            other => panic!("effects::rust_ast: unsupported atomic pointer rmw `{other:?}`"),
+        };
+        return Value::Ref(Location {
+            alloc: loc.alloc,
+            byte_offset,
+        });
+    }
     let binop = match op {
         AtomicRmwOp::Add => BinOp::Add,
         AtomicRmwOp::Sub => BinOp::Sub,
