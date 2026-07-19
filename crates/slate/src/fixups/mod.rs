@@ -873,4 +873,47 @@ fn add(a: i32, b: i32) -> i32 {
         );
         assert!(log.final_summary.stmts > 0);
     }
+
+    #[test]
+    fn disabled_logger_does_not_snapshot_or_receive_events() {
+        struct DisabledPanicLogger;
+
+        impl TraceLogger for DisabledPanicLogger {
+            fn is_enabled(&self) -> bool {
+                false
+            }
+
+            fn begin_pass(&mut self, _pass: Pass, _before: ProgramSummary, _before_emit: String) {
+                panic!("disabled logger must not snapshot pass input");
+            }
+
+            fn end_pass(&mut self, _after: ProgramSummary, _after_emit: String) {
+                panic!("disabled logger must not snapshot pass output");
+            }
+
+            fn rewrite(&mut self, _event: trace::RewriteEvent) {
+                panic!("disabled logger must not receive rewrite events");
+            }
+        }
+
+        let mut logger = DisabledPanicLogger;
+        let out = apply_with_logger(
+            counted_loop_program(),
+            &SkipSet::none(),
+            &mut logger,
+            DebugOptions::default(),
+        );
+
+        assert!(out.emit().contains("for i in 0..n"));
+    }
+
+    #[test]
+    fn debug_final_program_matches_normal_apply_with() {
+        let program = counted_loop_program();
+        let expected = apply_with(program.clone(), &SkipSet::none()).emit();
+        let (debug_program, log) = debug_log(program);
+
+        assert_eq!(debug_program.emit(), expected);
+        assert!(log.passes.iter().any(|pass| pass.changed));
+    }
 }
