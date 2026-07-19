@@ -48,6 +48,13 @@ fn expr_prec(expr: &Expr) -> u8 {
     }
 }
 
+fn starts_with_brace_expr(expr: &Expr) -> bool {
+    matches!(
+        expr,
+        Expr::Block(_) | Expr::Unsafe(_) | Expr::If { .. } | Expr::Match { .. }
+    )
+}
+
 fn atomic_wrapper(ty: AtomicType) -> &'static str {
     match ty {
         AtomicType::I8 => "AtomicI8",
@@ -243,8 +250,17 @@ impl<W: Write> Codegen<W> {
             self.ty(ret)?;
         }
         self.out.write_str(" {\n")?;
-        for IndentStmt { depth, stmt } in &f.body {
-            self.stmt(stmt, *depth)?;
+        for (index, IndentStmt { depth, stmt }) in f.body.iter().enumerate() {
+            if f.ret.is_some()
+                && index + 1 == f.body.len()
+                && let Stmt::Expr(expr) = stmt
+            {
+                self.out.write_str(&INDENT.repeat(*depth))?;
+                self.expr(expr)?;
+                self.out.write_char('\n')?;
+            } else {
+                self.stmt(stmt, *depth)?;
+            }
         }
         self.out.write_str("}\n")
     }
@@ -776,7 +792,11 @@ impl<W: Write> Codegen<W> {
                 } else {
                     (p, p + 1)
                 };
-                self.expr_prec(lhs, lmin)?;
+                if starts_with_brace_expr(lhs) {
+                    self.parenthesized(lhs)?;
+                } else {
+                    self.expr_prec(lhs, lmin)?;
+                }
                 write!(self.out, " {} ", op.spelling())?;
                 self.expr_prec(rhs, rmin)
             }
@@ -924,7 +944,11 @@ impl<W: Write> Codegen<W> {
                 self.expr_block(block)
             }
             Expr::Cast { expr, ty } => {
-                self.expr_prec(expr, PREC_CAST_OPERAND)?;
+                if starts_with_brace_expr(expr) {
+                    self.parenthesized(expr)?;
+                } else {
+                    self.expr_prec(expr, PREC_CAST_OPERAND)?;
+                }
                 self.out.write_str(" as ")?;
                 self.ty(ty)
             }
