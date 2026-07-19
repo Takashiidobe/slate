@@ -13,6 +13,7 @@ pub(crate) type EResult<T> = Result<T, EffectError>;
 pub(crate) enum CallSummary {
     Malloc,
     Calloc,
+    Realloc,
     Free,
     Memcpy,
     Memmove,
@@ -56,6 +57,7 @@ pub(crate) fn call_summary(name: &str) -> Option<CallSummary> {
     match name {
         "malloc" => Some(CallSummary::Malloc),
         "calloc" => Some(CallSummary::Calloc),
+        "realloc" => Some(CallSummary::Realloc),
         "free" => Some(CallSummary::Free),
         "memcpy" => Some(CallSummary::Memcpy),
         "memmove" => Some(CallSummary::Memmove),

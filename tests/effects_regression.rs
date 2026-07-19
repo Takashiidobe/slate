@@ -160,6 +160,13 @@ fn memset_fixups_preserve_rust_effects() {
 }
 
 #[test]
+fn raw_memory_ops_through_void_casts_preserve_rust_effects() {
+    assert_fixture_matches("tests/fixtures/mem_bcopy_overlap.c");
+    assert_fixture_matches("tests/fixtures/mem_bitcast_copy.c");
+    assert_fixture_matches("tests/fixtures/mem_bzero.c");
+}
+
+#[test]
 fn memchr_fixups_preserve_rust_effects() {
     assert_fixture_matches("tests/stdlib/string/memchr.c");
     assert_fixture_matches("tests/fixtures/mem_memchr.c");
@@ -185,6 +192,7 @@ fn ptr_len_slice_fixups_preserve_rust_effects() {
 fn libc_resource_shims_preserve_rust_effects() {
     assert_fixture_matches("tests/fixtures/heap_vec_malloc.c");
     assert_fixture_matches("tests/fixtures/heap_vec_calloc.c");
+    assert_fixture_matches("tests/fixtures/heap_vec_realloc.c");
     assert_fixture_matches("tests/fixtures/string_copy_fixup.c");
     assert_fixture_matches("tests/fixtures/numeric_parse_fixup.c");
     assert_fixture_matches("tests/fixtures/string_param_lift.c");

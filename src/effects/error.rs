@@ -71,6 +71,7 @@ pub enum Construct {
     IterSourceReceiver,
     VecLocalType,
     VecInitializer,
+    VecResizeArgs,
     ArrayLocalType,
     ArrayInitializer,
     RecordArrayElemType,
