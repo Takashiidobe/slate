@@ -69,6 +69,7 @@ pub fn debug_log_with(program: Program, options: DebugOptions) -> (Program, Trac
 pub struct DebugOptions {
     pub up_to_pass: Option<Pass>,
     pub only_pass: Option<Pass>,
+    pub debug_only_pass: Option<Pass>,
 }
 
 impl DebugOptions {
@@ -78,6 +79,9 @@ impl DebugOptions {
 
     fn should_log(self, pass: Pass) -> bool {
         self.only_pass.is_none_or(|only| only == pass)
+            && self
+                .debug_only_pass
+                .is_none_or(|debug_only| debug_only == pass)
     }
 
     fn stops_after(self, pass: Pass) -> bool {

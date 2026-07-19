@@ -177,6 +177,7 @@ normal translation:
 cargo run -- fixup-debug tests/fixtures/mem_memchr.c
 cargo run -- fixup-debug tests/fixtures/mem_memchr.c --up-to-pass memchr_prelude
 cargo run -- fixup-debug tests/fixtures/mem_memchr.c --only-pass late_inline_temps
+cargo run -- fixup-debug tests/fixtures/mem_memchr.c --debug-only-pass late_inline_temps
 ```
 
 Pass names are the strings from `src/fixups/trace.rs`'s `Pass` enum, for
@@ -191,6 +192,10 @@ you need to inspect.
 pass invocations. It still starts from the lowered Rust and still recomputes
 facts at the same sequence points, but skipped passes are not applied. Repeated
 passes with the same enum name run at each matching sequence point.
+
+`--debug-only-pass <pass>` runs the normal ordered pipeline but only logs
+matching pass invocations. Use this when the pass needs earlier rewrites to build
+the AST shape you are debugging.
 
 Human output is grouped by pass invocation and then by function:
 
