@@ -8,14 +8,52 @@ use crate::fixups::facts::{
 };
 use crate::fixups::idents::{expr_ident, expr_ident_count, stmt_ident_count};
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, ast_path_fact, fact, function_path_location,
+    path_fact, stmt_snippet, stmts_snippet,
+};
 use crate::rust_ast::{Expr, FnDef, IndentStmt, Path, Prim, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
-    collapse_return_slots(&mut f.body, function, facts, &mut Vec::new());
-    if f.name == "main" {
-        collapse_main_exit_slots(&mut f.body, function, facts, &mut Vec::new());
+    let mut logger = crate::fixups::trace::NoopLogger;
+    Retval::new(&mut logger).fixup(f, function, facts);
+}
+
+pub(in crate::fixups) struct Retval<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> Retval<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
     }
-    remove_unused_retval_artifacts(&mut f.body);
+
+    pub(in crate::fixups) fn fixup(
+        &mut self,
+        f: &mut FnDef,
+        function: FunctionId,
+        facts: &FixupFacts,
+    ) {
+        collapse_return_slots_logged(&mut f.body, function, facts, &mut Vec::new(), self.logger);
+
+        if f.name == "main" {
+            collapse_main_exit_slots_logged(
+                &mut f.body,
+                function,
+                facts,
+                &mut Vec::new(),
+                self.logger,
+            );
+        }
+
+        remove_unused_retval_artifacts_logged(
+            &mut f.body,
+            function,
+            facts,
+            &mut Vec::new(),
+            self.logger,
+        );
+    }
 }
 
 fn collapse_return_slots(
@@ -24,10 +62,21 @@ fn collapse_return_slots(
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
 ) {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    collapse_return_slots_logged(body, function, facts, path, &mut logger);
+}
+
+fn collapse_return_slots_logged(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+    logger: &mut dyn TraceLogger,
+) {
     for (index, stmt) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |nested, path| {
-                collapse_return_slots(nested, function, facts, path);
+                collapse_return_slots_logged(nested, function, facts, path, logger);
             });
         });
     }
@@ -40,7 +89,7 @@ fn collapse_return_slots(
         .collect();
     collapses.sort_by_key(|(ret_index, _)| *ret_index);
     for (ret_index, fact) in collapses.into_iter().rev() {
-        collapse_return_slot(body, path, ret_index, fact);
+        collapse_return_slot(body, path, ret_index, fact, function, facts, logger);
     }
 }
 
@@ -48,9 +97,12 @@ fn collapse_return_slot(
     body: &mut Vec<IndentStmt>,
     body_path: &[PathSegment],
     ret_index: usize,
-    fact: &crate::fixups::facts::RetvalCollapseFact,
+    collapse_fact: &crate::fixups::facts::RetvalCollapseFact,
+    function: FunctionId,
+    facts: &FixupFacts,
+    logger: &mut dyn TraceLogger,
 ) {
-    let Some(value_index) = direct_stmt_index(body_path, &fact.value_path) else {
+    let Some(value_index) = direct_stmt_index(body_path, &collapse_fact.value_path) else {
         return;
     };
     if ret_index >= body.len() || value_index >= body.len() {
@@ -64,7 +116,7 @@ fn collapse_return_slot(
         _ => return,
     };
     let mut remove = Vec::new();
-    for path in &fact.remove_paths {
+    for path in &collapse_fact.remove_paths {
         let Some(index) = direct_stmt_index(body_path, path) else {
             return;
         };
@@ -79,7 +131,54 @@ fn collapse_return_slot(
     let Stmt::Return(Some(_)) = &body[ret_index].stmt else {
         return;
     };
+    let before = logger.is_enabled().then(|| {
+        let removed = remove
+            .iter()
+            .filter_map(|index| body.get(*index).map(|indent| indent.stmt.clone()))
+            .collect::<Vec<_>>();
+        (
+            body[value_index].stmt.clone(),
+            body[ret_index].stmt.clone(),
+            removed,
+        )
+    });
     body[ret_index].stmt = Stmt::Return(Some(value));
+    if let Some((before_value, before_return, removed)) = before {
+        let return_path = stmt_path(body_path, ret_index);
+        let value_path = stmt_path(body_path, value_index);
+        let mut facts_out = vec![
+            ast_path_fact("return_path", &collapse_fact.return_path),
+            ast_path_fact("value_path", &collapse_fact.value_path),
+            path_fact("resolved_return_path", &return_path),
+            path_fact("resolved_value_path", &value_path),
+            fact("remove_count", remove.len().to_string()),
+        ];
+        facts_out.extend(
+            collapse_fact
+                .remove_paths
+                .iter()
+                .enumerate()
+                .map(|(index, path)| ast_path_fact(format!("remove_path[{index}]"), path)),
+        );
+        let mut before_snippets = vec![
+            stmt_snippet("value", &before_value),
+            stmt_snippet("return", &before_return),
+        ];
+        before_snippets.extend(
+            removed
+                .iter()
+                .enumerate()
+                .map(|(index, stmt)| stmt_snippet(format!("removed[{index}]"), stmt)),
+        );
+        logger.rewrite(RewriteEvent {
+            pass: TracePass::Retval,
+            kind: "collapse_return_slot".into(),
+            location: function_path_location(facts, function, &return_path),
+            before: before_snippets,
+            after: vec![stmt_snippet("return", &body[ret_index].stmt)],
+            facts: facts_out,
+        });
+    }
     for index in remove.into_iter().rev() {
         body.remove(index);
     }
@@ -115,6 +214,38 @@ fn remove_unused_retval_artifacts(body: &mut Vec<IndentStmt>) {
     }
     remove_unused_retval_writes(body);
     remove_unused_retval_decl(body);
+}
+
+fn remove_unused_retval_artifacts_logged(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+    logger: &mut dyn TraceLogger,
+) {
+    let before = logger.is_enabled().then(|| body.clone());
+    remove_unused_retval_artifacts(body);
+    let Some(before) = before else {
+        return;
+    };
+    if stmts_code(&before) == stmts_code(body) {
+        return;
+    }
+    logger.rewrite(RewriteEvent {
+        pass: TracePass::Retval,
+        kind: "remove_unused_retval_artifacts".into(),
+        location: function_path_location(facts, function, path),
+        before: vec![stmts_snippet("body", &before)],
+        after: vec![stmts_snippet("body", body)],
+        facts: vec![path_fact("body_path", path)],
+    });
+}
+
+fn stmts_code(body: &[IndentStmt]) -> String {
+    body.iter()
+        .map(|stmt| stmt.stmt.render())
+        .collect::<Vec<_>>()
+        .join("")
 }
 
 fn retval_read_count(body: &[IndentStmt]) -> usize {
@@ -210,14 +341,25 @@ fn collapse_main_exit_slots(
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
 ) {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    collapse_main_exit_slots_logged(body, function, facts, path, &mut logger);
+}
+
+fn collapse_main_exit_slots_logged(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &mut Vec<PathSegment>,
+    logger: &mut dyn TraceLogger,
+) {
     for (index, stmt) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |nested, path| {
-                collapse_main_exit_slots(nested, function, facts, path);
+                collapse_main_exit_slots_logged(nested, function, facts, path, logger);
             });
         });
     }
-    collapse_main_exit_slot(body, function, facts, path);
+    collapse_main_exit_slot(body, function, facts, path, logger);
 }
 
 fn collapse_main_exit_slot(
@@ -225,6 +367,7 @@ fn collapse_main_exit_slot(
     function: FunctionId,
     facts: &FixupFacts,
     body_path: &[PathSegment],
+    logger: &mut dyn TraceLogger,
 ) {
     let Some((exit_index, temp_name)) =
         body.iter()
@@ -316,12 +459,60 @@ fn collapse_main_exit_slot(
         }
     }
 
+    let before = logger.is_enabled().then(|| {
+        let removed = remove
+            .iter()
+            .filter_map(|index| body.get(*index).map(|indent| indent.stmt.clone()))
+            .collect::<Vec<_>>();
+        (
+            body[store_index].stmt.clone(),
+            body[exit_index].stmt.clone(),
+            removed,
+        )
+    });
     let Stmt::Expr(expr) = &mut body[exit_index].stmt else {
         unreachable!();
     };
     replace_main_exit_arg(expr, value);
     remove.sort_unstable();
     remove.dedup();
+    if let Some((before_store, before_exit, removed)) = before {
+        let exit_path = stmt_path(body_path, exit_index);
+        let store_path = stmt_path(body_path, store_index);
+        let temp_path = stmt_path(body_path, temp_index);
+        let mut event_facts = vec![
+            path_fact("exit_path", &exit_path),
+            path_fact("store_path", &store_path),
+            path_fact("temp_path", &temp_path),
+            fact("temp", temp_name),
+            fact("retval", retval_name),
+            fact("remove_count", remove.len().to_string()),
+        ];
+        event_facts.extend(remove.iter().enumerate().map(|(index, remove_index)| {
+            path_fact(
+                format!("remove_path[{index}]"),
+                &stmt_path(body_path, *remove_index),
+            )
+        }));
+        let mut before_snippets = vec![
+            stmt_snippet("store", &before_store),
+            stmt_snippet("exit", &before_exit),
+        ];
+        before_snippets.extend(
+            removed
+                .iter()
+                .enumerate()
+                .map(|(index, stmt)| stmt_snippet(format!("removed[{index}]"), stmt)),
+        );
+        logger.rewrite(RewriteEvent {
+            pass: TracePass::Retval,
+            kind: "collapse_main_exit_slot".into(),
+            location: function_path_location(facts, function, &exit_path),
+            before: before_snippets,
+            after: vec![stmt_snippet("exit", &body[exit_index].stmt)],
+            facts: event_facts,
+        });
+    }
     for index in remove.into_iter().rev() {
         body.remove(index);
     }

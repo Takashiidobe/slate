@@ -198,7 +198,11 @@ fn apply_with_logger(
             for (item_index, item) in program.items.iter_mut().enumerate() {
                 if let Item::Fn(f) = item
                     && let Some(function) = facts.function_by_item_index(item_index)
-                    && rewrite::call_args::fixup(&mut f.body, function, &facts)
+                    && rewrite::call_args::CallArgs::new(logger).fixup(
+                        &mut f.body,
+                        function,
+                        &facts,
+                    )
                 {
                     changed = true;
                 }
@@ -214,7 +218,7 @@ fn apply_with_logger(
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
             {
-                rewrite::retval::fixup(f, function, &facts);
+                rewrite::retval::Retval::new(logger).fixup(f, function, &facts);
             }
         }
     });
@@ -225,7 +229,11 @@ fn apply_with_logger(
             for (item_index, item) in program.items.iter_mut().enumerate() {
                 if let Item::Fn(f) = item
                     && let Some(function) = facts.function_by_item_index(item_index)
-                    && rewrite::final_return_temps::fixup(&mut f.body, function, &facts)
+                    && rewrite::final_return_temps::FinalReturnTemps::new(logger).fixup(
+                        &mut f.body,
+                        function,
+                        &facts,
+                    )
                 {
                     changed = true;
                 }
@@ -245,7 +253,11 @@ fn apply_with_logger(
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
             {
-                rewrite::drop_call_results::fixup(&mut f.body, function, &facts);
+                rewrite::drop_call_results::DropCallResults::new(logger).fixup(
+                    &mut f.body,
+                    function,
+                    &facts,
+                );
             }
         }
     });
@@ -304,7 +316,7 @@ fn apply_with_logger(
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
             {
-                rewrite::remove_mut::fixup(f, function, &facts);
+                rewrite::remove_mut::RemoveMut::new(logger).fixup(f, function, &facts);
             }
         }
     });
@@ -321,7 +333,7 @@ fn apply_with_logger(
         }
     });
     step!(program, Pass::RemoveMut, {
-        remove_mut(&mut program);
+        remove_mut(&mut program, logger);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::StringLibc, {
@@ -343,7 +355,7 @@ fn apply_with_logger(
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
             {
-                rewrite::remove_mut::fixup(f, function, &facts);
+                rewrite::remove_mut::RemoveMut::new(logger).fixup(f, function, &facts);
             }
         }
     });
@@ -360,7 +372,7 @@ fn apply_with_logger(
         }
     });
     step!(program, Pass::RemoveMut, {
-        remove_mut(&mut program);
+        remove_mut(&mut program, logger);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::StringLibc, {
@@ -447,7 +459,7 @@ fn apply_with_logger(
         }
     });
     step!(program, Pass::RemoveMut, {
-        remove_mut(&mut program);
+        remove_mut(&mut program, logger);
     });
     step!(program, Pass::VarAliases, {
         inline_var_aliases_to_fixpoint(&mut program, logger);
@@ -460,12 +472,12 @@ fn apply_with_logger(
         rewrite::unused_items::fixup(&mut program);
     });
     step!(program, Pass::UnusedParams, {
-        rewrite::unused_params::fixup(&mut program);
+        rewrite::unused_params::UnusedParams::new(logger).fixup(&mut program);
     });
     step!(program, Pass::MainZeroExit, {
         for item in &mut program.items {
             if let Item::Fn(f) = item {
-                rewrite::main_zero_exit::fixup(f);
+                rewrite::main_zero_exit::MainZeroExit::new(logger).fixup(f);
             }
         }
     });
@@ -662,13 +674,13 @@ fn run_inline_temps_pass(
     rewrite::inline_temps::InlineTemps::new(phase, logger).fixup(body, function, facts)
 }
 
-fn remove_mut(program: &mut Program) {
+fn remove_mut(program: &mut Program, logger: &mut impl TraceLogger) {
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
             && let Some(function) = facts.function_by_item_index(item_index)
         {
-            rewrite::remove_mut::fixup(f, function, &facts);
+            rewrite::remove_mut::RemoveMut::new(logger).fixup(f, function, &facts);
         }
     }
 }

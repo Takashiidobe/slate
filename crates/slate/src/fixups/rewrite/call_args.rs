@@ -21,6 +21,10 @@ use crate::fixups::facts::{
     AstPath, CallArgPinning, CallCallee, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
 };
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, binding_facts, fact, function_path_location,
+    path_fact, stmt_snippet,
+};
 use crate::rust_ast::{Expr, IndentStmt, Stmt};
 
 pub(in crate::fixups) fn fixup(
@@ -28,76 +32,162 @@ pub(in crate::fixups) fn fixup(
     function: FunctionId,
     facts: &FixupFacts,
 ) -> bool {
-    fixup_at(body, function, facts, &mut Vec::new())
+    let mut logger = crate::fixups::trace::NoopLogger;
+    CallArgs::new(&mut logger).fixup(body, function, facts)
 }
 
-fn fixup_at(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
-) -> bool {
-    if fixup_nested(body, function, facts, path) {
-        return true;
+pub(in crate::fixups) struct CallArgs<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> CallArgs<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
     }
-    for i in 0..body.len() {
-        let def_path = stmt_path(path, i);
-        let Stmt::Let {
-            name,
-            mutable: false,
-            init: Some(init),
-            ..
-        } = &body[i].stmt
-        else {
-            continue;
-        };
-        if !is_temp_name(name) {
-            continue;
-        }
-        let Some(binding) = facts.binding_by_local_path(function, name, &AstPath(def_path.clone()))
-        else {
-            continue;
-        };
-        let name = name.clone();
-        let init = init.clone();
-        let Some((use_index, arg_use)) = single_arg_use(body, i, binding, function, facts, path)
-        else {
-            continue;
-        };
-        let slot = arg_use.slot();
-        let mut arg_path = stmt_path(path, use_index);
-        arg_path.push(PathSegment::Expr(slot + 1));
-        if !inlinable(function, facts, &def_path, &arg_path, arg_use) {
-            continue;
-        }
-        if body[use_index].stmt.substitute_var(&name, &init) {
-            body.remove(i);
+
+    pub(in crate::fixups) fn fixup(
+        &mut self,
+        body: &mut Vec<IndentStmt>,
+        function: FunctionId,
+        facts: &FixupFacts,
+    ) -> bool {
+        self.fixup_at(body, function, facts, &mut Vec::new())
+    }
+
+    fn fixup_at(
+        &mut self,
+        body: &mut Vec<IndentStmt>,
+        function: FunctionId,
+        facts: &FixupFacts,
+        path: &mut Vec<PathSegment>,
+    ) -> bool {
+        if self.fixup_nested(body, function, facts, path) {
             return true;
         }
-    }
-    false
-}
-
-fn fixup_nested(
-    body: &mut [IndentStmt],
-    function: FunctionId,
-    facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
-) -> bool {
-    for (index, stmt) in body.iter_mut().enumerate() {
-        let mut changed = false;
-        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |body, path| {
-                if !changed && fixup_at(body, function, facts, path) {
-                    changed = true;
+        for i in 0..body.len() {
+            let def_path = stmt_path(path, i);
+            let Stmt::Let {
+                name,
+                mutable: false,
+                init: Some(init),
+                ..
+            } = &body[i].stmt
+            else {
+                continue;
+            };
+            if !is_temp_name(name) {
+                continue;
+            }
+            let Some(binding) =
+                facts.binding_by_local_path(function, name, &AstPath(def_path.clone()))
+            else {
+                continue;
+            };
+            let name = name.clone();
+            let init = init.clone();
+            let Some((use_index, arg_use)) =
+                single_arg_use(body, i, binding, function, facts, path)
+            else {
+                continue;
+            };
+            let slot = arg_use.slot();
+            let mut arg_path = stmt_path(path, use_index);
+            arg_path.push(PathSegment::Expr(slot + 1));
+            if !inlinable(function, facts, &def_path, &arg_path, arg_use) {
+                continue;
+            }
+            let trace_before = self
+                .logger
+                .is_enabled()
+                .then(|| (body[i].stmt.clone(), body[use_index].stmt.clone()));
+            if body[use_index].stmt.substitute_var(&name, &init) {
+                if let Some((before_def, before_use)) = trace_before {
+                    let after_use = body[use_index].stmt.clone();
+                    self.log_inline_arg(
+                        function,
+                        facts,
+                        binding,
+                        &name,
+                        arg_use,
+                        &def_path,
+                        &arg_path,
+                        &before_def,
+                        &before_use,
+                        &after_use,
+                    );
                 }
-            });
-        });
-        if changed {
-            return true;
+                body.remove(i);
+                return true;
+            }
         }
+        false
     }
-    false
+
+    fn fixup_nested(
+        &mut self,
+        body: &mut [IndentStmt],
+        function: FunctionId,
+        facts: &FixupFacts,
+        path: &mut Vec<PathSegment>,
+    ) -> bool {
+        for (index, stmt) in body.iter_mut().enumerate() {
+            let mut changed = false;
+            walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+                walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |body, path| {
+                    if !changed && self.fixup_at(body, function, facts, path) {
+                        changed = true;
+                    }
+                });
+            });
+            if changed {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn log_inline_arg(
+        &mut self,
+        function: FunctionId,
+        facts: &FixupFacts,
+        binding: crate::fixups::facts::BindingId,
+        temp: &str,
+        arg_use: ArgUse,
+        def_path: &[PathSegment],
+        arg_path: &[PathSegment],
+        before_def: &Stmt,
+        before_use: &Stmt,
+        after_use: &Stmt,
+    ) {
+        if !self.logger.is_enabled() {
+            return;
+        }
+        let mut event_facts = binding_facts(facts, binding);
+        event_facts.extend([
+            fact("temp", temp),
+            fact("arg_slot", arg_use.slot().to_string()),
+            fact(
+                "arg_use",
+                match arg_use {
+                    ArgUse::DirectCall { .. } => "direct_call",
+                    ArgUse::FunctionPointerCall { .. } => "function_pointer_call",
+                },
+            ),
+            path_fact("producer_path", def_path),
+            path_fact("arg_path", arg_path),
+        ]);
+        self.logger.rewrite(RewriteEvent {
+            pass: TracePass::CallArgs,
+            kind: "inline_call_arg_temp".into(),
+            location: function_path_location(facts, function, arg_path),
+            before: vec![
+                stmt_snippet("producer", before_def),
+                stmt_snippet("consumer", before_use),
+            ],
+            after: vec![stmt_snippet("consumer", after_use)],
+            facts: event_facts,
+        });
+    }
 }
 
 /// The single use of `name` after `def_index`, as `(use_index, arg_use)`,
