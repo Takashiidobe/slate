@@ -1,9 +1,13 @@
 use std::collections::HashMap;
 
-use crate::effects::{IntWidth, Location, OptionValue, Value};
-use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, BinOp, Expr, Path, RustValue, Type,
+use crate::effects::{
+    ArgShapeKind, Construct, EResult, EffectError, Found, IntWidth, Location, OptionValue, Value,
+    ValueKind,
 };
+use crate::rust_ast::{
+    AtomicOrdering, AtomicRmwOp, AtomicType, BinOp, Expr, Path, Prim, RustValue, Type,
+};
+use std::borrow::Borrow;
 
 pub(super) struct OpenEffect {
     pub(super) path: String,
@@ -35,10 +39,13 @@ pub(super) fn path_name(expr: &Expr) -> Option<String> {
     }
 }
 
-pub(super) fn recv_name(expr: &Expr) -> &str {
+pub(super) fn recv_name(expr: &Expr) -> EResult<&str> {
     match expr {
-        Expr::Var(ident) => ident.as_str(),
-        other => panic!("effects::rust_ast: unsupported atomic receiver `{other:?}`"),
+        Expr::Var(ident) => Ok(ident.as_str()),
+        other => Err(EffectError::unsupported(
+            Construct::AtomicReceiver,
+            other.clone(),
+        )),
     }
 }
 
@@ -47,74 +54,95 @@ pub(super) enum AtomicPtrTarget<'a> {
     Field { base: &'a Expr, field: &'a str },
 }
 
-pub(super) fn atomic_ptr_target(expr: &Expr) -> AtomicPtrTarget<'_> {
+pub(super) fn atomic_ptr_target(expr: &Expr) -> EResult<AtomicPtrTarget<'_>> {
     match expr {
         Expr::Cast { expr, .. } => atomic_ptr_target(expr),
         Expr::AddrOf { expr, .. } => atomic_ptr_place(expr),
         Expr::Macro { name, args } if name == "std::ptr::addr_of_mut" => {
             let [arg] = args.as_slice() else {
-                panic!("effects::rust_ast: addr_of_mut! expects one argument");
+                return Err(EffectError::arg_shape(
+                    Construct::AddrOfMut,
+                    ArgShapeKind::OneArgument,
+                ));
             };
             atomic_ptr_place(arg)
         }
-        other => panic!("effects::rust_ast: unsupported atomic pointer place `{other:?}`"),
+        other => Err(EffectError::unsupported(
+            Construct::AtomicPointerPlace,
+            other.clone(),
+        )),
     }
 }
 
-fn atomic_ptr_place(expr: &Expr) -> AtomicPtrTarget<'_> {
+fn atomic_ptr_place(expr: &Expr) -> EResult<AtomicPtrTarget<'_>> {
     match expr {
-        Expr::Var(ident) => AtomicPtrTarget::Local(ident.as_str()),
-        Expr::Field { base, field } => AtomicPtrTarget::Field { base, field },
-        other => panic!("effects::rust_ast: unsupported atomic pointer place `{other:?}`"),
+        Expr::Var(ident) => Ok(AtomicPtrTarget::Local(ident.as_str())),
+        Expr::Field { base, field } => Ok(AtomicPtrTarget::Field { base, field }),
+        other => Err(EffectError::unsupported(
+            Construct::AtomicPointerPlace,
+            other.clone(),
+        )),
     }
 }
 
-pub(super) fn ordering_expr(expr: &Expr) -> AtomicOrdering {
+pub(super) fn ordering_expr(expr: &Expr) -> EResult<AtomicOrdering> {
     match expr {
         Expr::Path(path) => ordering_from_name(path.segments.last().map(|s| s.as_str())),
         Expr::Var(ident) => ordering_from_name(ident.as_str().rsplit("::").next()),
-        other => panic!("effects::rust_ast: unsupported atomic ordering `{other:?}`"),
+        other => Err(EffectError::unsupported(
+            Construct::AtomicOrdering,
+            other.clone(),
+        )),
     }
 }
 
-pub(super) fn ordering_from_name(name: Option<&str>) -> AtomicOrdering {
+pub(super) fn ordering_from_name(name: Option<&str>) -> EResult<AtomicOrdering> {
     match name {
-        Some("Relaxed") => AtomicOrdering::Relaxed,
-        Some("Acquire") => AtomicOrdering::Acquire,
-        Some("Release") => AtomicOrdering::Release,
-        Some("AcqRel") => AtomicOrdering::AcqRel,
-        Some("SeqCst") => AtomicOrdering::SeqCst,
-        other => panic!("effects::rust_ast: unsupported atomic ordering `{other:?}`"),
+        Some("Relaxed") => Ok(AtomicOrdering::Relaxed),
+        Some("Acquire") => Ok(AtomicOrdering::Acquire),
+        Some("Release") => Ok(AtomicOrdering::Release),
+        Some("AcqRel") => Ok(AtomicOrdering::AcqRel),
+        Some("SeqCst") => Ok(AtomicOrdering::SeqCst),
+        other => Err(EffectError::unsupported(
+            Construct::AtomicOrdering,
+            other.map(str::to_string),
+        )),
     }
 }
 
-pub(super) fn open_effect(expr: &Expr) -> Option<OpenEffect> {
+pub(super) fn open_effect(expr: &Expr) -> EResult<Option<OpenEffect>> {
     match expr {
         Expr::Call { func, args } if is_path(func, &["std", "io", "BufReader", "new"]) => {
             let [inner] = args.as_slice() else {
-                panic!("effects::rust_ast: BufReader::new expects one argument");
+                return Err(EffectError::arg_shape(
+                    Construct::BufReaderNew,
+                    ArgShapeKind::OneArgument,
+                ));
             };
             open_effect(inner)
         }
-        Expr::MethodCall { recv, method, args }
+        Expr::MethodCall { recv, method, .. }
             if matches!(method.as_str(), "unwrap" | "unwrap_or_else") =>
         {
             open_effect(recv)
         }
         Expr::MethodCall { recv, method, args } if method == "open" => {
             let [Expr::Str(path)] = args.as_slice() else {
-                panic!("effects::rust_ast: OpenOptions::open expects a string literal path");
+                return Err(EffectError::arg_shape(
+                    Construct::OpenOptionsOpen,
+                    ArgShapeKind::StringLiteralPath,
+                ));
             };
-            Some(OpenEffect {
+            Ok(Some(OpenEffect {
                 path: path.clone(),
-                mode: open_options_mode(recv),
-            })
+                mode: open_options_mode(recv)?,
+            }))
         }
-        _ => None,
+        _ => Ok(None),
     }
 }
 
-pub(super) fn open_options_mode(expr: &Expr) -> String {
+pub(super) fn open_options_mode(expr: &Expr) -> EResult<String> {
     let mut read = false;
     let mut write = false;
     let mut append = false;
@@ -130,7 +158,10 @@ pub(super) fn open_options_mode(expr: &Expr) -> String {
             }
             Expr::MethodCall { recv, method, args } => {
                 let [Expr::Value(RustValue::Bool(value))] = args.as_slice() else {
-                    panic!("effects::rust_ast: OpenOptions::{method} expects a bool literal");
+                    return Err(EffectError::arg_shape(
+                        Construct::OpenOptionsMethod,
+                        ArgShapeKind::BoolLiteral,
+                    ));
                 };
                 match method.as_str() {
                     "read" => read = *value,
@@ -138,34 +169,55 @@ pub(super) fn open_options_mode(expr: &Expr) -> String {
                     "append" => append = *value,
                     "create" => create = *value,
                     "truncate" => truncate = *value,
-                    other => panic!("effects::rust_ast: unsupported OpenOptions method `{other}`"),
+                    other => {
+                        return Err(EffectError::unsupported(
+                            Construct::OpenOptionsMethod,
+                            other,
+                        ));
+                    }
                 }
                 current = recv;
             }
-            other => panic!("effects::rust_ast: unsupported OpenOptions chain `{other:?}`"),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::OpenOptionsChain,
+                    other.clone(),
+                ));
+            }
         }
     }
-    match (read, write, append, create, truncate) {
+    Ok(match (read, write, append, create, truncate) {
         (false, true, false, true, true) => "w",
         (true, false, false, false, false) => "r",
         (false, false, true, true, false) => "a",
         (true, true, false, false, false) => "r+",
         (true, true, false, true, true) => "w+",
         (true, false, true, true, false) => "a+",
-        other => panic!("effects::rust_ast: unsupported OpenOptions mode {other:?}"),
+        (read, write, append, create, truncate) => {
+            return Err(EffectError::unsupported(
+                Construct::OpenOptionsMode,
+                Found::OpenOptionsFlags {
+                    read,
+                    write,
+                    append,
+                    create,
+                    truncate,
+                },
+            ));
+        }
     }
-    .to_string()
+    .to_string())
 }
 
-pub(super) fn c_string_expr(expr: &Expr) -> String {
-    String::from_utf8_lossy(&c_string_expr_bytes(expr)).into_owned()
+pub(super) fn c_string_expr(expr: &Expr) -> EResult<String> {
+    Ok(String::from_utf8_lossy(&c_string_expr_bytes(expr)?).into_owned())
 }
 
-pub(super) fn c_string_expr_bytes(expr: &Expr) -> Vec<u8> {
+pub(super) fn c_string_expr_bytes(expr: &Expr) -> EResult<Vec<u8>> {
     let bytes = match expr {
         Expr::Cast { expr, .. } => return c_string_expr_bytes(expr),
         Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
-            c_string_expr_bytes(recv)
+            return c_string_expr_bytes(recv);
         }
         Expr::ByteStr(bytes) => bytes.clone(),
         Expr::CStr(bytes) => {
@@ -173,32 +225,46 @@ pub(super) fn c_string_expr_bytes(expr: &Expr) -> Vec<u8> {
             bytes.push(0);
             bytes
         }
-        other => panic!("effects::rust_ast: unsupported C string expression `{other:?}`"),
+        other => {
+            return Err(EffectError::unsupported(
+                Construct::CStringExpr,
+                other.clone(),
+            ));
+        }
     };
-    bytes.into_iter().take_while(|byte| *byte != 0).collect()
+    Ok(bytes.into_iter().take_while(|byte| *byte != 0).collect())
 }
 
-pub(super) fn array_pointer_name(expr: &Expr) -> &str {
+pub(super) fn array_pointer_name(expr: &Expr) -> EResult<&str> {
     match expr {
         Expr::Cast { expr, .. } => array_pointer_name(expr),
         Expr::MethodCall { recv, method, args } if method == "as_mut_ptr" && args.is_empty() => {
             collection_name(recv)
         }
         Expr::ArrayPtr { array, .. } => collection_name(array),
-        other => panic!("effects::rust_ast: unsupported array pointer argument `{other:?}`"),
+        other => Err(EffectError::unsupported(
+            Construct::ArrayPointerArg,
+            other.clone(),
+        )),
     }
 }
 
-pub(super) fn comparator_name(expr: &Expr) -> &str {
+pub(super) fn comparator_name(expr: &Expr) -> EResult<&str> {
     match expr {
         Expr::Call { func, args } if is_path(func, &["Some"]) => {
             let [arg] = args.as_slice() else {
-                panic!("effects::rust_ast: Some comparator expects one argument");
+                return Err(EffectError::arg_shape(
+                    Construct::SomeComparator,
+                    ArgShapeKind::OneArgument,
+                ));
             };
             comparator_name(arg)
         }
-        Expr::Var(ident) => ident.as_str(),
-        other => panic!("effects::rust_ast: unsupported comparator argument `{other:?}`"),
+        Expr::Var(ident) => Ok(ident.as_str()),
+        other => Err(EffectError::unsupported(
+            Construct::ComparatorArg,
+            other.clone(),
+        )),
     }
 }
 
@@ -217,10 +283,10 @@ pub(super) fn restore_scalar(
     }
 }
 
-pub(super) fn value_as_i32(value: impl std::borrow::Borrow<Value>) -> i32 {
+pub(super) fn value_as_i32(value: impl Borrow<Value>) -> EResult<i32> {
     match value.borrow() {
-        Value::Int { value, .. } => *value as i32,
-        other => panic!("effects::rust_ast: expected an integer exit code, found {other:?}"),
+        Value::Int { value, .. } => Ok(*value as i32),
+        other => Err(EffectError::type_mismatch(ValueKind::Int, other.clone())),
     }
 }
 
@@ -244,33 +310,33 @@ pub(super) fn int32(value: i128) -> Value {
     }
 }
 
-pub(super) fn int_byte_size(value: &Value) -> u64 {
+pub(super) fn int_byte_size(value: &Value) -> EResult<u64> {
     match value {
-        Value::Int { width, .. } => match width {
+        Value::Int { width, .. } => Ok(match width {
             IntWidth::W8 => 1,
             IntWidth::W16 => 2,
             IntWidth::W32 => 4,
             IntWidth::W64 | IntWidth::PointerSized => 8,
             IntWidth::W128 => 16,
-        },
-        other => panic!("effects::rust_ast: buffer element must be an integer, found {other:?}"),
+        }),
+        other => Err(EffectError::type_mismatch(ValueKind::Int, other.clone())),
     }
 }
 
-pub(super) fn option_value(value: Value) -> OptionValue {
+pub(super) fn option_value(value: Value) -> EResult<OptionValue> {
     match value {
         Value::Int {
             width,
             signed,
             value,
-        } => OptionValue::Int {
+        } => Ok(OptionValue::Int {
             width,
             signed,
             value,
-        },
-        Value::Bool(value) => OptionValue::Bool(value),
-        Value::Ref(loc) => OptionValue::Ref(loc),
-        other => panic!("effects::rust_ast: unsupported Some payload `{other:?}`"),
+        }),
+        Value::Bool(value) => Ok(OptionValue::Bool(value)),
+        Value::Ref(loc) => Ok(OptionValue::Ref(loc)),
+        other => Err(EffectError::unsupported(Construct::SomePayload, other)),
     }
 }
 
@@ -290,60 +356,77 @@ pub(super) fn option_value_to_value(value: OptionValue) -> Value {
     }
 }
 
-pub(super) fn option_unwrap(value: Value) -> Value {
+pub(super) fn option_unwrap(value: Value) -> EResult<Value> {
     match value {
         Value::Option(Some(OptionValue::Int {
             width,
             signed,
             value,
-        })) => Value::Int {
+        })) => Ok(Value::Int {
             width,
             signed,
             value,
-        },
-        Value::Option(Some(OptionValue::Bool(value))) => Value::Bool(value),
-        Value::Option(Some(OptionValue::Ref(loc))) => Value::Ref(loc),
-        Value::Option(None) => panic!("effects::rust_ast: unwrap on None"),
-        other => panic!("effects::rust_ast: unwrap on non-option `{other:?}`"),
+        }),
+        Value::Option(Some(OptionValue::Bool(value))) => Ok(Value::Bool(value)),
+        Value::Option(Some(OptionValue::Ref(loc))) => Ok(Value::Ref(loc)),
+        value @ Value::Option(None) => Err(EffectError::type_mismatch(ValueKind::Option, value)),
+        other => Err(EffectError::type_mismatch(ValueKind::Option, other)),
     }
 }
 
-pub(super) fn option_is_none(value: Value) -> Value {
+pub(super) fn option_is_none(value: Value) -> EResult<Value> {
     match value {
-        Value::Option(value) => Value::Bool(value.is_none()),
-        other => panic!("effects::rust_ast: is_none on non-option `{other:?}`"),
+        Value::Option(value) => Ok(Value::Bool(value.is_none())),
+        other => Err(EffectError::type_mismatch(ValueKind::Option, other)),
     }
 }
 
-pub(super) fn option_is_some(value: Value) -> Value {
+pub(super) fn option_is_some(value: Value) -> EResult<Value> {
     match value {
-        Value::Option(value) => Value::Bool(value.is_some()),
-        other => panic!("effects::rust_ast: is_some on non-option `{other:?}`"),
+        Value::Option(value) => Ok(Value::Bool(value.is_some())),
+        other => Err(EffectError::type_mismatch(ValueKind::Option, other)),
     }
 }
 
-pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> Value {
-    if matches!(ty, Type::Prim(crate::rust_ast::Prim::Bool)) {
+pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> EResult<Value> {
+    if matches!(ty, Type::Prim(Prim::Bool)) {
         return match value {
-            Value::Bool(value) => Value::Bool(value),
-            Value::Int { value, .. } => Value::Bool(value != 0),
-            other => other,
+            Value::Bool(value) => Ok(Value::Bool(value)),
+            Value::Int { value, .. } => Ok(Value::Bool(value != 0)),
+            other => Ok(other),
         };
     }
     if matches!(ty, Type::Ptr { .. }) {
         return match value {
-            Value::Int { value, .. } => Value::Int {
+            Value::Int { value, .. } => Ok(Value::Int {
                 width: IntWidth::PointerSized,
                 signed: false,
                 value: truncate_int(value, IntWidth::PointerSized, false),
-            },
-            other => other,
+            }),
+            other => Ok(other),
         };
     }
+    if matches!(ty, Type::Prim(Prim::F32)) {
+        return Ok(match value {
+            Value::Float(value) => Value::Float(value as f32 as f64),
+            other => other,
+        });
+    }
+    if matches!(ty, Type::Prim(Prim::F64)) {
+        return Ok(value);
+    }
+    if matches!(ty, Type::Ref { .. } | Type::FnPtr { .. })
+        || matches!(ty, Type::Generic { name, .. } if name == "Result")
+    {
+        return Ok(value);
+    }
     let Some((width, signed, _)) = scalar_type_shape(ty) else {
-        return value;
+        return Err(EffectError::unsupported(
+            Construct::CastTargetType,
+            ty.clone(),
+        ));
     };
-    match value {
+    Ok(match value {
         Value::Int { value, .. } => Value::Int {
             width,
             signed,
@@ -355,12 +438,12 @@ pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> Value {
             value: i128::from(value),
         },
         Value::Float(value) => match ty {
-            Type::Prim(crate::rust_ast::Prim::F32) => Value::Float(value as f32 as f64),
-            Type::Prim(crate::rust_ast::Prim::F64) => Value::Float(value),
+            Type::Prim(Prim::F32) => Value::Float(value as f32 as f64),
+            Type::Prim(Prim::F64) => Value::Float(value),
             _ => Value::Float(value),
         },
         other => other,
-    }
+    })
 }
 
 pub(super) fn scalar_type_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
@@ -388,8 +471,8 @@ pub(super) fn scalar_type_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
 
 pub(super) fn type_size(ty: &Type) -> Option<u64> {
     match ty {
-        Type::Prim(crate::rust_ast::Prim::F32) => Some(4),
-        Type::Prim(crate::rust_ast::Prim::F64) => Some(8),
+        Type::Prim(Prim::F32) => Some(4),
+        Type::Prim(Prim::F64) => Some(8),
         Type::Prim(_) => scalar_type_shape(ty).map(|(_, _, size)| size),
         Type::Ptr { .. } | Type::FnPtr { .. } | Type::Ref { .. } => Some(8),
         Type::Array { elem, len } => Some(type_size(elem)? * *len),
@@ -438,9 +521,9 @@ pub(super) fn is_str_ref_ty(ty: &Type) -> bool {
     matches!(ty, Type::Ref { inner, .. } if matches!(inner.as_ref(), Type::Str))
 }
 
-pub(super) fn collection_name(expr: &Expr) -> &str {
+pub(super) fn collection_name(expr: &Expr) -> EResult<&str> {
     match expr {
-        Expr::Var(ident) => ident.as_str(),
+        Expr::Var(ident) => Ok(ident.as_str()),
         Expr::Ref { expr, .. } => collection_name(expr),
         Expr::MethodCall { recv, method, args }
             if args.is_empty()
@@ -451,7 +534,10 @@ pub(super) fn collection_name(expr: &Expr) -> &str {
         {
             collection_name(recv)
         }
-        other => panic!("effects::rust_ast: unsupported collection expression `{other:?}`"),
+        other => Err(EffectError::unsupported(
+            Construct::CollectionExpr,
+            other.clone(),
+        )),
     }
 }
 
@@ -459,67 +545,78 @@ pub(super) fn is_once_lock_ty(ty: &Type) -> bool {
     matches!(ty, Type::Generic { name, .. } if name == "std::sync::OnceLock")
 }
 
-pub(super) fn value_as_i128(value: impl std::borrow::Borrow<Value>) -> i128 {
+pub(super) fn value_as_i128(value: impl Borrow<Value>) -> EResult<i128> {
     match value.borrow() {
-        Value::Int { value, .. } => *value,
-        Value::Bool(value) => i128::from(*value),
-        other => panic!("effects::rust_ast: expected an integer value, found {other:?}"),
+        Value::Int { value, .. } => Ok(*value),
+        Value::Bool(value) => Ok(i128::from(*value)),
+        other => Err(EffectError::type_mismatch(ValueKind::Int, other.clone())),
     }
 }
 
-pub(super) fn value_as_u64(value: impl std::borrow::Borrow<Value>) -> u64 {
-    value_as_i128(value) as u64
+pub(super) fn value_as_u64(value: impl Borrow<Value>) -> EResult<u64> {
+    Ok(value_as_i128(value)? as u64)
 }
 
-pub(super) fn value_as_bool(value: impl std::borrow::Borrow<Value>) -> bool {
+pub(super) fn value_as_bool(value: impl Borrow<Value>) -> EResult<bool> {
     match value.borrow() {
-        Value::Bool(b) => *b,
-        other => panic!("effects::rust_ast: expected a bool value, found {other:?}"),
+        Value::Bool(b) => Ok(*b),
+        other => Err(EffectError::type_mismatch(ValueKind::Bool, other.clone())),
     }
 }
 
-pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
+pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> EResult<Value> {
     match op {
         BinOp::Eq | BinOp::Ne | BinOp::Lt | BinOp::Le | BinOp::Gt | BinOp::Ge => {
             if matches!((&a, &b), (Value::Ref(_), Value::Ref(_))) {
                 let (Value::Ref(left), Value::Ref(right)) = (&a, &b) else {
                     unreachable!();
                 };
-                return Value::Bool(match op {
+                return Ok(Value::Bool(match op {
                     BinOp::Eq => left == right,
                     BinOp::Ne => left != right,
-                    _ => panic!("effects::rust_ast: unsupported pointer comparison `{op:?}`"),
-                });
+                    _ => {
+                        return Err(EffectError::unsupported(Construct::PointerComparison, op));
+                    }
+                }));
             }
             if matches!(
                 (&a, &b),
                 (Value::Ref(_), Value::Null) | (Value::Null, Value::Ref(_))
             ) {
-                return Value::Bool(match op {
+                return Ok(Value::Bool(match op {
                     BinOp::Eq => false,
                     BinOp::Ne => true,
-                    _ => panic!("effects::rust_ast: unsupported pointer/null comparison `{op:?}`"),
-                });
+                    _ => {
+                        return Err(EffectError::unsupported(
+                            Construct::PointerNullComparison,
+                            op,
+                        ));
+                    }
+                }));
             }
             if matches!((&a, &b), (Value::Null, Value::Null)) {
-                return Value::Bool(match op {
+                return Ok(Value::Bool(match op {
                     BinOp::Eq => true,
                     BinOp::Ne => false,
-                    _ => panic!("effects::rust_ast: unsupported null comparison `{op:?}`"),
-                });
+                    _ => {
+                        return Err(EffectError::unsupported(Construct::NullComparison, op));
+                    }
+                }));
             }
             if matches!(
                 (&a, &b),
                 (Value::File(_), Value::Null) | (Value::Null, Value::File(_))
             ) {
-                return Value::Bool(match op {
+                return Ok(Value::Bool(match op {
                     BinOp::Eq => false,
                     BinOp::Ne => true,
-                    _ => panic!("effects::rust_ast: unsupported file/null comparison `{op:?}`"),
-                });
+                    _ => {
+                        return Err(EffectError::unsupported(Construct::FileNullComparison, op));
+                    }
+                }));
             }
             if let (Value::Float(a), Value::Float(b)) = (&a, &b) {
-                return Value::Bool(match op {
+                return Ok(Value::Bool(match op {
                     BinOp::Eq => a == b,
                     BinOp::Ne => a != b,
                     BinOp::Lt => a < b,
@@ -527,10 +624,10 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
                     BinOp::Gt => a > b,
                     BinOp::Ge => a >= b,
                     _ => unreachable!(),
-                });
+                }));
             }
-            let (a_int, b_int) = (value_as_i128(a), value_as_i128(b));
-            Value::Bool(match op {
+            let (a_int, b_int) = (value_as_i128(a)?, value_as_i128(b)?);
+            Ok(Value::Bool(match op {
                 BinOp::Eq => a_int == b_int,
                 BinOp::Ne => a_int != b_int,
                 BinOp::Lt => a_int < b_int,
@@ -538,26 +635,30 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
                 BinOp::Gt => a_int > b_int,
                 BinOp::Ge => a_int >= b_int,
                 _ => unreachable!(),
-            })
+            }))
         }
-        BinOp::And | BinOp::Or => {
-            panic!("effects::rust_ast: {op:?} must short-circuit, not reach apply_binop")
-        }
+        BinOp::And | BinOp::Or => Err(EffectError::internal(format!(
+            "{op:?} must short-circuit, not reach apply_binop"
+        ))),
         _ => {
             if let (Value::Float(a), Value::Float(b)) = (&a, &b) {
-                return Value::Float(match op {
+                return Ok(Value::Float(match op {
                     BinOp::Add => a + b,
                     BinOp::Sub => a - b,
                     BinOp::Mul => a * b,
                     BinOp::Div => a / b,
-                    _ => panic!("effects::rust_ast: unsupported float binop `{op:?}`"),
-                });
+                    _ => {
+                        return Err(EffectError::unsupported(Construct::FloatBinop, op));
+                    }
+                }));
             }
             let (width, signed) = match a {
                 Value::Int { width, signed, .. } => (width, signed),
-                other => panic!("effects::rust_ast: expected int operand, found {other:?}"),
+                other => {
+                    return Err(EffectError::type_mismatch(ValueKind::Int, other));
+                }
             };
-            let (a, b) = (value_as_i128(a), value_as_i128(b));
+            let (a, b) = (value_as_i128(a)?, value_as_i128(b)?);
             let value = match op {
                 BinOp::Add => a.wrapping_add(b),
                 BinOp::Sub => a.wrapping_sub(b),
@@ -572,11 +673,11 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
                 BinOp::Shr => unsigned_shr(a, width, b as u32),
                 _ => unreachable!(),
             };
-            Value::Int {
+            Ok(Value::Int {
                 width,
                 signed,
                 value: truncate_int(value, width, signed),
-            }
+            })
         }
     }
 }
@@ -664,18 +765,20 @@ pub(super) fn match_atomic_shape(value: Value, reference: &Value) -> Value {
     }
 }
 
-pub(super) fn atomic_rmw_value(op: AtomicRmwOp, old: Value, operand: Value) -> Value {
+pub(super) fn atomic_rmw_value(op: AtomicRmwOp, old: Value, operand: Value) -> EResult<Value> {
     if let Value::Ref(loc) = old {
-        let delta = value_as_i128(&operand);
+        let delta = value_as_i128(&operand)?;
         let byte_offset = match op {
             AtomicRmwOp::Add => (loc.byte_offset as i128 + delta) as u64,
             AtomicRmwOp::Sub => (loc.byte_offset as i128 - delta) as u64,
-            other => panic!("effects::rust_ast: unsupported atomic pointer rmw `{other:?}`"),
+            other => {
+                return Err(EffectError::unsupported(Construct::AtomicPointerRmw, other));
+            }
         };
-        return Value::Ref(Location {
+        return Ok(Value::Ref(Location {
             alloc: loc.alloc,
             byte_offset,
-        });
+        }));
     }
     let binop = match op {
         AtomicRmwOp::Add => BinOp::Add,
@@ -684,25 +787,25 @@ pub(super) fn atomic_rmw_value(op: AtomicRmwOp, old: Value, operand: Value) -> V
         AtomicRmwOp::Xor => BinOp::BitXor,
         AtomicRmwOp::Or => BinOp::BitOr,
         AtomicRmwOp::Nand => {
-            let and = apply_binop(BinOp::BitAnd, old, operand);
+            let and = apply_binop(BinOp::BitAnd, old, operand)?;
             return match and {
                 Value::Int {
                     width,
                     signed,
                     value,
-                } => Value::Int {
+                } => Ok(Value::Int {
                     width,
                     signed,
                     value: !value,
-                },
-                other => panic!("effects::rust_ast: atomic nand expected int, found {other:?}"),
+                }),
+                other => Err(EffectError::type_mismatch(ValueKind::Int, other)),
             };
         }
         AtomicRmwOp::Max => {
-            return int32(value_as_i128(old).max(value_as_i128(operand)));
+            return Ok(int32(value_as_i128(old)?.max(value_as_i128(operand)?)));
         }
         AtomicRmwOp::Min => {
-            return int32(value_as_i128(old).min(value_as_i128(operand)));
+            return Ok(int32(value_as_i128(old)?.min(value_as_i128(operand)?)));
         }
     };
     apply_binop(binop, old, operand)

@@ -1,8 +1,13 @@
 use crate::rust_ast::{AtomicOrdering, AtomicRmwOp};
 
+pub mod error;
 pub mod interp;
 pub mod interpreter;
 pub mod support;
+
+pub use error::{ArgShapeKind, BindingKind, Construct, EffectError, Found, ValueKind};
+
+pub(crate) type EResult<T> = Result<T, EffectError>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum CallSummary {

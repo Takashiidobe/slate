@@ -177,10 +177,22 @@ fn compare_effects_rust_rust(path: &Path) -> Result<String, String> {
         let (_, program) = lowered_program(path)?;
         let raw_trace = extract_effects(mode, path, "raw rust_ast", || {
             interpret_program_main(&program)
+        })?
+        .map_err(|err| {
+            format!(
+                "effect extraction failed\nmode: {mode}\nfixture: {}\nside: raw rust_ast\nreason: {err}",
+                path.display()
+            )
         })?;
         let fixed_program = fixups::apply_with(program, &fixups::SkipSet::none());
         let fixed_trace = extract_effects(mode, path, "fixuped rust_ast", || {
             interpret_program_main(&fixed_program)
+        })?
+        .map_err(|err| {
+            format!(
+                "effect extraction failed\nmode: {mode}\nfixture: {}\nside: fixuped rust_ast\nreason: {err}",
+                path.display()
+            )
         })?;
         compare_traces("raw rust_ast", "fixuped rust_ast", &raw_trace, &fixed_trace)
     })
