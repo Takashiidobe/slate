@@ -92,6 +92,10 @@ The fixups directory is split by concern:
   path-aware walkers in `src/fixups/support/walk.rs`.
 - **`src/fixups/idents.rs`** — ident-occurrence counting, used to prove a
   binding is single-use or dead before folding or dropping it.
+- **`src/fixups/trace.rs`** — structured debug logging for `fixup-debug`.
+  The normal `translate`/`apply` path passes a `NoopLogger`; only
+  `fixup-debug` uses the collecting logger and renders pass summaries,
+  rewrite events, snippets, and facts.
 
 `apply` is a straight-line sequence, not a scheduler: it calls `facts::analyze`
 again whenever an earlier rewrite could have invalidated the facts a later pass
@@ -163,6 +167,55 @@ the whole pipeline to a global fixpoint was judged not worth the compile time,
 so those specific re-runs are placed by hand where they matter. If you add a
 pass that creates a similar opportunity for an earlier pass, place an explicit
 extra call rather than reaching for a global fixpoint loop.
+
+## Debugging the pass sequence
+
+Use `fixup-debug` to inspect what the fixed pass sequence did without changing
+normal translation:
+
+```bash
+cargo run -- fixup-debug tests/fixtures/mem_memchr.c
+cargo run -- fixup-debug tests/fixtures/mem_memchr.c --up-to-pass memchr_prelude
+cargo run -- fixup-debug tests/fixtures/mem_memchr.c --only-pass late_inline_temps
+```
+
+Pass names are the strings from `src/fixups/trace.rs`'s `Pass` enum, for
+example `zero_init`, `late_inline_temps`, `dead_locals`, and
+`memchr_prelude::fixup_calls`. An unknown pass name fails with the valid names.
+
+`--up-to-pass <pass>` runs the normal ordered pipeline and stops after the first
+matching pass invocation. This is useful when a later pass hides the tree shape
+you need to inspect.
+
+`--only-pass <pass>` walks the same sequence but only applies and logs matching
+pass invocations. It still starts from the lowered Rust and still recomputes
+facts at the same sequence points, but skipped passes are not applied. Repeated
+passes with the same enum name run at each matching sequence point.
+
+Human output is grouped by pass invocation and then by function:
+
+```text
+zero_init                          changed; stmts -1, temp_lets +0, items +0
+  function main:
+    fold_zero_init_assignment
+      at fn main, ast stmt[1]
+      before:
+        declaration:
+          let mut x: i32 = 0;
+        assignment:
+          x = 10;
+      after:
+        declaration:
+          let mut x: i32 = 10;
+      facts:
+        binding_name=x
+        binding_is_zero=true
+```
+
+Passes that make no textual change are still listed as `skipped`; a pass can be
+`changed` without rewrite-event details if it has not yet been instrumented.
+Locations use source file and line when available; otherwise they use the
+function name and AST path.
 
 ## Adding a feature
 
