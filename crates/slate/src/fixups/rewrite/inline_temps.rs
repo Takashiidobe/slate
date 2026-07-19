@@ -8,8 +8,8 @@ use crate::fixups::facts::{
 use crate::fixups::idents::expr_ident_count;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
-    Pass as TracePass, RewriteEvent, TraceLogger, ast_path_fact, binding_facts, fact, path_fact,
-    path_location, stmt_snippet,
+    Pass as TracePass, RewriteEvent, TraceLogger, ast_path_fact, binding_facts, fact,
+    function_path_location, path_fact, stmt_snippet,
 };
 use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 
@@ -193,7 +193,7 @@ impl<'a> InlineTemps<'a> {
                 Phase::Late => TracePass::LateInlineTemps,
             },
             kind: "inline_temp".into(),
-            location: path_location(&consumer_path),
+            location: function_path_location(facts, function, &consumer_path),
             before: vec![
                 stmt_snippet("producer", before_def),
                 stmt_snippet("consumer", before_use),

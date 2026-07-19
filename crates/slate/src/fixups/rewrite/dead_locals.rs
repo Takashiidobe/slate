@@ -3,8 +3,8 @@ use crate::fixups::facts::{
 };
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
-    Pass as TracePass, RewriteEvent, TraceLogger, binding_facts, fact, path_fact, path_location,
-    stmt_snippet,
+    Pass as TracePass, RewriteEvent, TraceLogger, binding_facts, fact, function_path_location,
+    path_fact, stmt_snippet,
 };
 use crate::rust_ast::{Expr, IndentStmt, Stmt};
 
@@ -101,7 +101,7 @@ impl<'a> DeadLocals<'a> {
         self.logger.rewrite(RewriteEvent {
             pass: TracePass::DeadLocals,
             kind: "remove_dead_local".into(),
-            location: path_location(path),
+            location: function_path_location(facts, function, path),
             before: vec![stmt_snippet("declaration", stmt)],
             after: Vec::new(),
             facts: event_facts,
