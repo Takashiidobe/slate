@@ -189,6 +189,13 @@ fn ptr_len_slice_fixups_preserve_rust_effects() {
 }
 
 #[test]
+fn function_pointer_values_preserve_rust_effects() {
+    assert_fixture_matches("tests/fixtures/function_pointer_presence.c");
+    assert_fixture_matches("tests/fixtures/function_pointers.c");
+    assert_fixture_matches("tests/fixtures/libyaml_type_shapes.c");
+}
+
+#[test]
 fn libc_resource_shims_preserve_rust_effects() {
     assert_fixture_matches("tests/fixtures/heap_vec_malloc.c");
     assert_fixture_matches("tests/fixtures/heap_vec_calloc.c");
