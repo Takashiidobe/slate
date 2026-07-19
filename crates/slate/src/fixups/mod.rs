@@ -133,6 +133,16 @@ fn apply_with_logger(
     step!(program, Pass::Goto, {
         structure_goto(&mut program, logger);
     });
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
+    step!(program, Pass::Switch, {
+        for (item_index, item) in program.items.iter_mut().enumerate() {
+            if let Item::Fn(f) = item
+                && let Some(function) = facts.function_by_item_index(item_index)
+            {
+                rewrite::switch::Switch::new(logger).fixup(&mut f.body, function, &facts);
+            }
+        }
+    });
     step!(program, Pass::EarlyInlineTemps, {
         inline_temps_to_fixpoint(&mut program, InlinePass::Early, logger);
     });

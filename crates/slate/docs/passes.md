@@ -114,52 +114,53 @@ means the pass re-runs - recomputing facts each round - until a round makes no
 change; "once" means it runs exactly one time per `apply` call.
 
 1. `goto` - restructure the goto dispatch loop into structured control flow - to fixpoint, per function (`structure_goto`).
-2. `early_inline_temps` - inline single-use pure temps, early variant - to fixpoint (`inline_temps_to_fixpoint`), capped at 5 rounds for very large functions (`> 2_000` statements) so pathological cases don't spin.
-3. `anonymous_structs` - hoist repeated anonymous-struct shapes into named structs - once.
-4. `param_spills` - fold a parameter's stack spill into its binding - once, per function.
-5. `zero_init` (`cross_effects = false`) - fuse a zero-init `let` with the assignment that overwrites it - to fixpoint (`zero_init_to_fixpoint`).
-6. `struct_field_init` - fold field assignments into the preceding struct literal - to fixpoint (`struct_field_init_to_fixpoint`).
-7. `singleton_scopes` - unwrap a one-statement `{ }` scope - to fixpoint (`singleton_scopes_to_fixpoint`).
-8. `compound_assign` - recover `a -= 5` - once, per function.
-9. `for_continue` - invert synthetic continue-blocks - to fixpoint (`cleanup_for_continues`), then `singleton_scopes` again to fixpoint.
-10. `constant_index_casts` - drop redundant `as usize` on constant indices - once, per function.
-11. `unnecessary_casts` - drop casts a typed context already makes redundant - once, per function.
-12. `call_args` - inline single-use call-argument temps - to fixpoint, per function, across the whole program.
-13. `retval` - collapse a return-slot store into the final return/exit - once, per function.
-14. `final_return_temps` - collapse a return-value temp into the final `return` - to fixpoint, per function, across the whole program.
-15. `lazy_singleton` - recover the "static flag guards a static payload" lazy-init idiom into `std::sync::OnceLock::get_or_init` - once, program-wide.
-16. `drop_call_results` - turn `let _v = call();` into `call();` when unused - once, per function.
-17. `string_lift` - lift NUL-terminated buffers to `CStr`/`str`/byte slices - once, per function.
-18. `string_params` - turn a C-string pointer parameter into `&str` - to fixpoint (its own `loop { ... }`); re-run three more times later in the sequence (after `string_copy`, after `string_libc`'s first pass, and after `printf_format`), since each of those can create a new liftable parameter.
-19. `ptr_len` - pair a pointer+length parameter into a slice parameter - once.
-20. `slice_index` - rewrite pointer-offset derefs into `slice[i]` once the param is a slice - once.
-21. `slice_loop` - recover `for x in slice.iter()/.iter_mut()`, or `for (i, x) in slice.iter()/.iter_mut().enumerate()` when the body also reads the index directly (re-casting the `usize` enumerate index back to its original type via a shadowing `let`) - once; if it changed anything, `late_loop_cleanup` runs, itself `singleton_scopes` + `dead_locals` to fixpoint.
-22. `slice_reduce` - fold a slice-iterator accumulator loop into `.sum()`/`.product()`/`.fold()` - once; runs right after `slice_loop` (its only producer) since it consumes the `for`-loop shape that pass emits; same conditional `late_loop_cleanup` as above.
-23. `range_loop` - recover `for i in 0..bound` for the remaining counted loops - once; same conditional `late_loop_cleanup` as above.
-24. `va_list` - remove redundant `va_list` clone/alias bookkeeping - once.
-25. `remove_mut` - drop `mut` where facts prove no mutation - once, per function; re-run as a bare pass four more times later in the sequence, after each group of passes that could have made a binding provably immutable (`string_copy`, `heap_ownership`, `printf_format`, `atomic_compare_exchange`).
-26. `string_copy` - `strcpy`/`strcat`-only buffers to owned `String` - once.
-27. `string_libc` - `strlen`/`strcmp`-family calls on lifted strings to native Rust - once; repeated once more later (after `c_strings`) since lifting more C strings exposes more libc calls to rewrite.
-28. `sort_search` - `qsort`/`bsearch` to `.sort_by()`/`.binary_search_by()` - once.
-29. `heap_ownership` - `malloc`/`calloc`/`realloc`/`free` to `Box`/`Vec` - once.
-30. `dead_locals` - remove locals with no live, effectful use - to fixpoint (`dead_locals_to_fixpoint`), per function, across the program.
-31. `printf_format` - `printf`-family calls to `println!`/`print!` - once.
-32. `c_strings` - mark/simplify recognized C-string literals - once.
-33. `stdio` - `fopen`/`fputs`/`fclose` sequences to `File`/`OpenOptions` owners - once.
-34. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls - once.
-35. `nullable_pointer` - recover `Option<*T>` null-check idioms - to fixpoint (its own `loop { ... }`); runs directly after its only producers - the two `string_libc::fixup` runs and `memchr_prelude::fixup_calls` (34), the sole places that emit the `<index>.map_or(null_mut(), |i| ptr.add(i) as *T)` shape it rewrites. Despite the name, it has no relationship to the pointer-provenance cluster (`slice_index`/`slice_loop`/`array_element_pointer_origin`/`buffer_cursor`): those match constant-index pointer arithmetic, this matches dynamic-index `Option`-wrapped search results, and the two never touch the same bindings.
-36. `string_lift::fixup_c_strings` then `memchr_prelude` / `memchr_prelude::prune_unused_helper` - a second, narrower string-lift pass plus memchr-helper cleanup - once each.
-37. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing - once.
-38. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops - once.
-39. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage - once.
-40. `late_inline_temps` - inline single-use pure temps, late variant - to fixpoint (`inline_temps_to_fixpoint`, same round cap as step 2).
-41. `zero_init` (`cross_effects = true`) - same fusion as step 5, now allowed to cross intervening effects - to fixpoint.
-42. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, across the program.
-43. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint (`inline_var_aliases_to_fixpoint`).
-44. `prune_unused_externs` - drop now-dead `extern` decls for the libc functions `string_copy`, `string_libc`, `sort_search`, and `heap_ownership` replace - once, after all four rewrites (and their re-runs) have finished, rather than once per rewrite.
-45. `unused_items` - remove dead top-level items - once.
-46. `unused_params` - drop a function parameter that's never read in its body and rewrite every direct call site to match, once the function's only references are direct-by-name calls whose argument at that slot is pure and whose type can't own a destructor - to fixpoint.
-47. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
+2. `switch` - collapse a fallthrough-free switch dispatch loop into a direct `match` over the selector expression - once, per function.
+3. `early_inline_temps` - inline single-use pure temps, early variant - to fixpoint (`inline_temps_to_fixpoint`), capped at 5 rounds for very large functions (`> 2_000` statements) so pathological cases don't spin.
+4. `anonymous_structs` - hoist repeated anonymous-struct shapes into named structs - once.
+5. `param_spills` - fold a parameter's stack spill into its binding - once, per function.
+6. `zero_init` (`cross_effects = false`) - fuse a zero-init `let` with the assignment that overwrites it - to fixpoint (`zero_init_to_fixpoint`).
+7. `struct_field_init` - fold field assignments into the preceding struct literal - to fixpoint (`struct_field_init_to_fixpoint`).
+8. `singleton_scopes` - unwrap a one-statement `{ }` scope - to fixpoint (`singleton_scopes_to_fixpoint`).
+9. `compound_assign` - recover `a -= 5` - once, per function.
+10. `for_continue` - invert synthetic continue-blocks - to fixpoint (`cleanup_for_continues`), then `singleton_scopes` again to fixpoint.
+11. `constant_index_casts` - drop redundant `as usize` on constant indices - once, per function.
+12. `unnecessary_casts` - drop casts a typed context already makes redundant - once, per function.
+13. `call_args` - inline single-use call-argument temps - to fixpoint, per function, across the whole program.
+14. `retval` - collapse a return-slot store into the final return/exit - once, per function.
+15. `final_return_temps` - collapse a return-value temp into the final `return` - to fixpoint, per function, across the whole program.
+16. `lazy_singleton` - recover the "static flag guards a static payload" lazy-init idiom into `std::sync::OnceLock::get_or_init` - once, program-wide.
+17. `drop_call_results` - turn `let _v = call();` into `call();` when unused - once, per function.
+18. `string_lift` - lift NUL-terminated buffers to `CStr`/`str`/byte slices - once, per function.
+19. `string_params` - turn a C-string pointer parameter into `&str` - to fixpoint (its own `loop { ... }`); re-run three more times later in the sequence (after `string_copy`, after `string_libc`'s first pass, and after `printf_format`), since each of those can create a new liftable parameter.
+20. `ptr_len` - pair a pointer+length parameter into a slice parameter - once.
+21. `slice_index` - rewrite pointer-offset derefs into `slice[i]` once the param is a slice - once.
+22. `slice_loop` - recover `for x in slice.iter()/.iter_mut()`, or `for (i, x) in slice.iter()/.iter_mut().enumerate()` when the body also reads the index directly (re-casting the `usize` enumerate index back to its original type via a shadowing `let`) - once; if it changed anything, `late_loop_cleanup` runs, itself `singleton_scopes` + `dead_locals` to fixpoint.
+23. `slice_reduce` - fold a slice-iterator accumulator loop into `.sum()`/`.product()`/`.fold()` - once; runs right after `slice_loop` (its only producer) since it consumes the `for`-loop shape that pass emits; same conditional `late_loop_cleanup` as above.
+24. `range_loop` - recover `for i in 0..bound` for the remaining counted loops - once; same conditional `late_loop_cleanup` as above.
+25. `va_list` - remove redundant `va_list` clone/alias bookkeeping - once.
+26. `remove_mut` - drop `mut` where facts prove no mutation - once, per function; re-run as a bare pass four more times later in the sequence, after each group of passes that could have made a binding provably immutable (`string_copy`, `heap_ownership`, `printf_format`, `atomic_compare_exchange`).
+27. `string_copy` - `strcpy`/`strcat`-only buffers to owned `String` - once.
+28. `string_libc` - `strlen`/`strcmp`-family calls on lifted strings to native Rust - once; repeated once more later (after `c_strings`) since lifting more C strings exposes more libc calls to rewrite.
+29. `sort_search` - `qsort`/`bsearch` to `.sort_by()`/`.binary_search_by()` - once.
+30. `heap_ownership` - `malloc`/`calloc`/`realloc`/`free` to `Box`/`Vec` - once.
+31. `dead_locals` - remove locals with no live, effectful use - to fixpoint (`dead_locals_to_fixpoint`), per function, across the program.
+32. `printf_format` - `printf`-family calls to `println!`/`print!` - once.
+33. `c_strings` - mark/simplify recognized C-string literals - once.
+34. `stdio` - `fopen`/`fputs`/`fclose` sequences to `File`/`OpenOptions` owners - once.
+35. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls - once.
+36. `nullable_pointer` - recover `Option<*T>` null-check idioms - to fixpoint (its own `loop { ... }`); runs directly after its only producers - the two `string_libc::fixup` runs and `memchr_prelude::fixup_calls` (34), the sole places that emit the `<index>.map_or(null_mut(), |i| ptr.add(i) as *T)` shape it rewrites. Despite the name, it has no relationship to the pointer-provenance cluster (`slice_index`/`slice_loop`/`array_element_pointer_origin`/`buffer_cursor`): those match constant-index pointer arithmetic, this matches dynamic-index `Option`-wrapped search results, and the two never touch the same bindings.
+37. `string_lift::fixup_c_strings` then `memchr_prelude` / `memchr_prelude::prune_unused_helper` - a second, narrower string-lift pass plus memchr-helper cleanup - once each.
+38. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing - once.
+39. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops - once.
+40. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage - once.
+41. `late_inline_temps` - inline single-use pure temps, late variant - to fixpoint (`inline_temps_to_fixpoint`, same round cap as step 2).
+42. `zero_init` (`cross_effects = true`) - same fusion as step 5, now allowed to cross intervening effects - to fixpoint.
+43. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, across the program.
+44. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint (`inline_var_aliases_to_fixpoint`).
+45. `prune_unused_externs` - drop now-dead `extern` decls for the libc functions `string_copy`, `string_libc`, `sort_search`, and `heap_ownership` replace - once, after all four rewrites (and their re-runs) have finished, rather than once per rewrite.
+46. `unused_items` - remove dead top-level items - once.
+47. `unused_params` - drop a function parameter that's never read in its body and rewrite every direct call site to match, once the function's only references are direct-by-name calls whose argument at that slot is pure and whose type can't own a destructor - to fixpoint.
+48. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
 because later groups can create new opportunities for earlier ones; re-running
