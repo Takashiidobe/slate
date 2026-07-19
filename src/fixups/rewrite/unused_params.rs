@@ -1,16 +1,70 @@
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk::{body_expr_any, body_exprs_mut_with, expr_any, exprs_mut_with};
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+};
 use crate::rust_ast::{
     Attr, Block, Expr, FnDef, ImplItem, IndentStmt, Item, Program, Stmt, Type, UnaryOp,
 };
 
 pub(in crate::fixups) fn fixup(program: &mut Program) -> bool {
-    let mut changed = false;
-    while let Some((name, param_index)) = find_removable(program) {
-        remove_param(program, &name, param_index);
-        changed = true;
+    let mut logger = crate::fixups::trace::NoopLogger;
+    UnusedParams::new(&mut logger).fixup(program)
+}
+
+pub(in crate::fixups) struct UnusedParams<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> UnusedParams<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
     }
-    changed
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
+        let mut changed = false;
+        while let Some((name, param_index)) = find_removable(program) {
+            let before = self.logger.is_enabled().then(|| program.emit());
+            let removed = removed_param(program, &name, param_index);
+            remove_param(program, &name, param_index);
+            if let (Some(before), Some((param_name, param_ty))) = (before, removed) {
+                self.logger.rewrite(RewriteEvent {
+                    pass: TracePass::UnusedParams,
+                    kind: "remove_unused_param".into(),
+                    location: TraceLocation {
+                        function: Some(name.clone()),
+                        ..TraceLocation::default()
+                    },
+                    before: vec![TraceSnippet::new("program", before.trim_end())],
+                    after: vec![TraceSnippet::new("program", program.emit().trim_end())],
+                    facts: vec![
+                        fact("function", name),
+                        fact("param", param_name),
+                        fact("param_index", param_index.to_string()),
+                        fact("param_type", param_ty),
+                    ],
+                });
+            }
+            changed = true;
+        }
+        changed
+    }
+}
+
+fn removed_param(program: &Program, name: &str, param_index: usize) -> Option<(String, String)> {
+    let mut removed = None;
+    each_item(&program.items, &mut |item| {
+        if removed.is_some() {
+            return;
+        }
+        let Item::Fn(f) = item else { return };
+        if f.name == name {
+            if let Some(param) = f.params.get(param_index) {
+                removed = Some((param.name.clone(), param.ty.render()));
+            }
+        }
+    });
+    removed
 }
 
 fn find_removable(program: &Program) -> Option<(String, usize)> {
