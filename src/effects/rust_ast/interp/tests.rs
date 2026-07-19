@@ -1095,6 +1095,105 @@ fn calloc_zeroes_heap_state_without_synthetic_writes() {
 }
 
 #[test]
+fn stdout_extern_static_reads_as_reserved_file_handle() {
+    let program = Program {
+        items: vec![
+            Item::ExternBlock {
+                abi: "C".to_string(),
+                decls: vec![ExternDecl::Static {
+                    mutable: true,
+                    name: "stdout".to_string(),
+                    ty: Type::Ptr {
+                        mutable: true,
+                        inner: Box::new(Type::Custom("libc::FILE".to_string())),
+                    },
+                }],
+            },
+            Item::Fn(FnDef {
+                attrs: vec![],
+                vis: Visibility::Private,
+                unsafe_: false,
+                abi: None,
+                name: "main".to_string(),
+                params: vec![],
+                ret: Some(Type::Prim(Prim::I32)),
+                body: vec![
+                    stmt(Stmt::Expr(Expr::Call {
+                        func: Box::new(Expr::Var(Ident::new("fputs"))),
+                        args: vec![
+                            Expr::CStr(b"hi\n".to_vec()),
+                            Expr::Var(Ident::new("stdout")),
+                        ],
+                    })),
+                    stmt(Stmt::Return(Some(Expr::Value(RustValue::I64(0))))),
+                ],
+            }),
+        ],
+    };
+
+    let trace = interpret_program_main(&program);
+
+    assert_eq!(
+        trace.effects,
+        vec![
+            Effect::FileWrite {
+                file: STDOUT_FILE,
+                bytes: b"hi\n".to_vec(),
+            },
+            Effect::Exit(0),
+        ]
+    );
+}
+
+#[test]
+fn write_all_to_std_io_stdout_call_targets_reserved_file_handle() {
+    let program = Program {
+        items: vec![Item::Fn(FnDef {
+            attrs: vec![],
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: "main".to_string(),
+            params: vec![],
+            ret: Some(Type::Prim(Prim::I32)),
+            body: vec![
+                stmt(Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(Expr::Call {
+                        func: Box::new(Expr::Var(Ident::new("std::io::Write::write_all"))),
+                        args: vec![
+                            Expr::Ref {
+                                mutable: true,
+                                expr: Box::new(Expr::Call {
+                                    func: Box::new(Expr::Var(Ident::new("std::io::stdout"))),
+                                    args: vec![],
+                                }),
+                            },
+                            Expr::ByteStr(b"line\n".to_vec()),
+                        ],
+                    }),
+                    method: "unwrap".to_string(),
+                    args: vec![],
+                })),
+                stmt(Stmt::Return(Some(Expr::Value(RustValue::I64(0))))),
+            ],
+        })],
+    };
+
+    let trace = interpret_program_main(&program);
+
+    assert_eq!(
+        trace.effects,
+        vec![
+            Effect::FileWrite {
+                file: STDOUT_FILE,
+                bytes: b"line\n".to_vec(),
+            },
+            Effect::Exit(0),
+        ]
+    );
+}
+
+#[test]
 fn overflowing_method_tuple_fields_are_transient_values() {
     let trace = interpret(&FnDef {
         attrs: vec![],
