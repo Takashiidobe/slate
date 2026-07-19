@@ -134,6 +134,7 @@ pub enum Value {
     Float(f64),
     Bool(bool),
     Ref(Location),
+    Function(String),
     File(FileId),
     Atomic(AtomicId),
     AtomicResult {
@@ -147,7 +148,7 @@ pub enum Value {
     Bytes(Vec<u8>),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum OptionValue {
     Int {
         width: IntWidth,
@@ -156,6 +157,7 @@ pub enum OptionValue {
     },
     Bool(bool),
     Ref(Location),
+    Function(String),
 }
 
 #[derive(Debug, Clone, PartialEq)]
