@@ -305,6 +305,13 @@ pub(super) fn option_is_some(value: Value) -> Value {
 }
 
 pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> Value {
+    if matches!(ty, Type::Prim(crate::rust_ast::Prim::Bool)) {
+        return match value {
+            Value::Bool(value) => Value::Bool(value),
+            Value::Int { value, .. } => Value::Bool(value != 0),
+            other => other,
+        };
+    }
     let Some((width, signed, _)) = scalar_type_shape(ty) else {
         return value;
     };
@@ -533,9 +540,7 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> Value {
                 BinOp::BitXor => a ^ b,
                 BinOp::Shl => truncate_int(a, width, signed).wrapping_shl(b as u32),
                 BinOp::Shr if signed => truncate_int(a, width, signed).wrapping_shr(b as u32),
-                BinOp::Shr => {
-                    (truncate_int(a, width, signed) as u128).wrapping_shr(b as u32) as i128
-                }
+                BinOp::Shr => unsigned_shr(a, width, b as u32),
                 _ => unreachable!(),
             };
             Value::Int {
@@ -561,6 +566,16 @@ pub(super) fn truncate_int(value: i128, width: IntWidth, signed: bool) -> i128 {
         value | !mask
     } else {
         value
+    }
+}
+
+fn unsigned_shr(value: i128, width: IntWidth, shift: u32) -> i128 {
+    match width {
+        IntWidth::W8 => ((value as u8) >> shift) as i128,
+        IntWidth::W16 => ((value as u16) >> shift) as i128,
+        IntWidth::W32 => ((value as u32) >> shift) as i128,
+        IntWidth::W64 | IntWidth::PointerSized => ((value as u64) >> shift) as i128,
+        IntWidth::W128 => ((value as u128) >> shift) as i128,
     }
 }
 

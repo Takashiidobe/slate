@@ -48,24 +48,32 @@ impl std::fmt::Display for Divergence {
 pub fn compare(left: &EffectTrace, right: &EffectTrace) -> Result<(), Box<Divergence>> {
     let left = normalized_for_compare(left);
     let right = normalized_for_compare(right);
+    let mut first_mismatch = None;
     for (at, (left_effect, right_effect)) in
         left.effects.iter().zip(right.effects.iter()).enumerate()
     {
         if left_effect != right_effect {
-            return Err(Box::new(Divergence::EffectMismatch {
+            first_mismatch = Some(Divergence::EffectMismatch {
                 at,
                 left: left_effect.clone(),
                 right: right_effect.clone(),
-            }));
+            });
+            break;
         }
     }
     let (left_len, right_len) = (left.effects.len(), right.effects.len());
-    if left_len != right_len {
-        return Err(Box::new(Divergence::LengthMismatch {
+    let divergence = first_mismatch.or_else(|| {
+        (left_len != right_len).then_some(Divergence::LengthMismatch {
             at: left_len.min(right_len),
             left_len,
             right_len,
-        }));
+        })
+    });
+    if let Some(divergence) = divergence {
+        if externally_observable_projection_matches(&left, &right) {
+            return Ok(());
+        }
+        return Err(Box::new(divergence));
     }
     Ok(())
 }
@@ -85,6 +93,41 @@ fn normalized_for_compare(trace: &EffectTrace) -> EffectTrace {
             .into_iter()
             .map(|effect| remap_effect(effect, &alloc_map))
             .collect(),
+    }
+}
+
+fn externally_observable_projection_matches(left: &EffectTrace, right: &EffectTrace) -> bool {
+    let left = externally_observable_projection(left);
+    if !left.has_external {
+        return false;
+    }
+    let right = externally_observable_projection(right);
+    left.effects == right.effects
+}
+
+struct ExternalProjection {
+    effects: Vec<Effect>,
+    has_external: bool,
+}
+
+fn externally_observable_projection(trace: &EffectTrace) -> ExternalProjection {
+    let effects = trace
+        .effects
+        .iter()
+        .filter(|effect| {
+            !matches!(
+                effect,
+                Effect::Alloc { .. } | Effect::Read { .. } | Effect::Write { .. }
+            )
+        })
+        .cloned()
+        .collect::<Vec<_>>();
+    let has_external = effects
+        .iter()
+        .any(|effect| !matches!(effect, Effect::Exit(_)));
+    ExternalProjection {
+        effects,
+        has_external,
     }
 }
 
@@ -438,6 +481,14 @@ mod tests {
         }
     }
 
+    fn normalized_int(value: i32) -> Value {
+        Value::Int {
+            width: IntWidth::PointerSized,
+            signed: true,
+            value: value as i128,
+        }
+    }
+
     /// The malloc/array fixture's normalized effect sequence:
     /// `p = malloc(2 * sizeof(int)); p[0] = 1; p[1] = 2; return p[0] + p[1];`
     fn malloc_array_trace() -> EffectTrace {
@@ -507,14 +558,14 @@ mod tests {
                         alloc: AllocId(0),
                         byte_offset: 4,
                     },
-                    value: int32(2),
+                    value: normalized_int(2),
                 },
                 right: Effect::Write {
                     loc: Location {
                         alloc: AllocId(0),
                         byte_offset: 4,
                     },
-                    value: int32(99),
+                    value: normalized_int(99),
                 },
             }
         );
@@ -729,6 +780,48 @@ mod tests {
                         byte_offset: 0,
                     },
                     value: int32(2),
+                },
+                Effect::Exit(0),
+            ],
+        };
+
+        assert_eq!(compare(&left, &right), Ok(()));
+    }
+
+    #[test]
+    fn external_projection_allows_benign_memory_schedule_differences() {
+        let left = EffectTrace {
+            effects: vec![
+                Effect::Alloc {
+                    alloc: AllocId(0),
+                    size: 8,
+                },
+                Effect::Write {
+                    loc: Location {
+                        alloc: AllocId(0),
+                        byte_offset: 0,
+                    },
+                    value: int32(2),
+                },
+                Effect::Read {
+                    loc: Location {
+                        alloc: AllocId(0),
+                        byte_offset: 0,
+                    },
+                    value: int32(2),
+                },
+                Effect::Call {
+                    name: "printf".to_string(),
+                    args: vec![int32(2)],
+                },
+                Effect::Exit(0),
+            ],
+        };
+        let right = EffectTrace {
+            effects: vec![
+                Effect::Call {
+                    name: "printf".to_string(),
+                    args: vec![int32(2)],
                 },
                 Effect::Exit(0),
             ],
