@@ -131,6 +131,7 @@ fn atomic_compare_exchange_fixup_preserves_rust_effects() {
 #[test]
 fn qsort_comparator_fixup_preserves_rust_effects() {
     assert_fixture_matches("tests/fixtures/effects_qsort_comparator.c");
+    assert_fixture_matches("tests/fixtures/qsort_bsearch_fixup.c");
 }
 
 #[test]
@@ -151,6 +152,7 @@ fn memset_fixups_preserve_rust_effects() {
 #[test]
 fn memchr_fixups_preserve_rust_effects() {
     assert_fixture_matches("tests/stdlib/string/memchr.c");
+    assert_fixture_matches("tests/fixtures/mem_memchr.c");
 }
 
 #[test]
@@ -191,6 +193,7 @@ fn scalar_constants_and_intrinsics_preserve_rust_effects() {
     assert_fixture_matches("tests/fixtures/printf_float.c");
     assert_fixture_matches("tests/fixtures/unary_negation.c");
     assert_fixture_matches("tests/fixtures/constant_object_query_ops.c");
+    assert_fixture_matches("tests/fixtures/bitfield_ops.c");
 }
 
 #[test]
