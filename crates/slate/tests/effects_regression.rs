@@ -192,3 +192,16 @@ fn scalar_constants_and_intrinsics_preserve_rust_effects() {
     assert_fixture_matches("tests/fixtures/unary_negation.c");
     assert_fixture_matches("tests/fixtures/constant_object_query_ops.c");
 }
+
+#[test]
+fn aggregate_union_and_global_storage_preserve_rust_effects() {
+    assert_fixture_matches("tests/fixtures/array_of_structs.c");
+    assert_fixture_matches("tests/fixtures/packed_aligned_struct.c");
+    assert_fixture_matches("tests/fixtures/unions.c");
+    assert_fixture_matches("tests/fixtures/union_array_member.c");
+    assert_fixture_matches("tests/fixtures/union_init.c");
+    assert_fixture_matches("tests/fixtures/global_vars.c");
+    assert_fixture_matches("tests/fixtures/global_string_pointer.c");
+    assert_fixture_matches("tests/fixtures/non_int_globals.c");
+    assert_fixture_matches("tests/fixtures/struct_with_array.c");
+}
