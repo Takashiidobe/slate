@@ -1395,18 +1395,24 @@ fn memchr_calls_use_iter_position_when_source_is_iterable() {
     let rust = std::fs::read_to_string(&generated).expect("read generated mem_memchr rust");
 
     assert!(rust.contains("buf.as_slice().iter().position("));
-    assert!(rust.contains("(*__slate_byte as u8) == ((_v1 as i32) as u8)"));
+    assert!(rust.contains("(*__slate_byte as u8) == ((40 as i32) as u8)"));
+    assert!(rust.contains("(*__slate_byte as u8) == ((99 as i32) as u8)"));
     assert!(rust.contains("let _v3 = buf.as_slice().iter().position("));
     assert!(rust.contains("let _v6 = buf.as_slice().iter().position("));
-    assert!(rust.contains("let word: &core::ffi::CStr = c\"abc\";"));
     assert!(rust.contains("let _v9 = Some(3);"));
     assert!(rust.contains("let _v11: i64 = _v3.unwrap() as i64;"));
     assert!(rust.contains("let _v14: bool = _v6.is_none();"));
     assert!(rust.contains("println!(\"{} {} {}\", _v11, _v14 as i32, _v9.unwrap() as i64);"));
+    for temp in [
+        "let _v1:", "let _v2:", "let _v4:", "let _v5:", "let _v7:", "let _v8:",
+    ] {
+        assert!(!rust.contains(temp), "{temp} survived in:\n{rust}");
+    }
     assert!(!rust.contains("let _v16: i64 = _v9.unwrap() as i64;"));
     assert!(!rust.contains("let mut hit"));
     assert!(!rust.contains("let mut miss"));
     assert!(!rust.contains("let mut nul"));
+    assert!(!rust.contains("let word: &core::ffi::CStr"));
     assert!(!rust.contains("let mut word: [i8; 4]"));
     assert!(!rust.contains("word = [97, 98, 99, 0];"));
     assert!(!rust.contains("map_or(std::ptr::null_mut()"));
@@ -1419,6 +1425,30 @@ fn memchr_calls_use_iter_position_when_source_is_iterable() {
     assert!(!rust.contains("fn __slate_memchr("));
     assert!(!rust.contains("from_raw_parts"));
     assert!(!rust.contains("while i < n"));
+}
+
+#[test]
+fn fixup_debug_reports_passes_and_change_summary() {
+    let c_src = fixtures_dir().join("mem_memchr.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg(c_src)
+        .output()
+        .expect("run slate fixup-debug on memchr fixture");
+
+    assert!(
+        output.status.success(),
+        "fixup-debug failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
+    assert!(stdout.contains("early_inline_temps"));
+    assert!(stdout.contains("memchr_prelude::fixup_calls"));
+    assert!(stdout.contains("late_inline_temps"));
+    assert!(stdout.contains("dead_locals"));
+    assert!(stdout.contains("changed; stmts"));
+    assert!(stdout.contains("temp_lets"));
+    assert!(stdout.contains("final: items="));
 }
 
 #[test]
