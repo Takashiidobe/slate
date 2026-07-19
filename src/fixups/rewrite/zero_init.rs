@@ -8,8 +8,8 @@ use crate::fixups::facts::{
 use crate::fixups::idents::expr_ident;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
-    Pass as TracePass, RewriteEvent, TraceLogger, binding_facts, fact, path_fact, path_location,
-    stmt_snippet,
+    Pass as TracePass, RewriteEvent, TraceLogger, binding_facts, fact, function_path_location,
+    path_fact, stmt_snippet,
 };
 use crate::rust_ast::{Expr, IndentStmt, Stmt, UnaryOp};
 
@@ -208,7 +208,7 @@ impl<'a> ZeroInit<'a> {
         self.logger.rewrite(RewriteEvent {
             pass: TracePass::ZeroInit,
             kind: "fold_zero_init_assignment".into(),
-            location: path_location(assign_path),
+            location: function_path_location(facts, function, assign_path),
             before: vec![
                 stmt_snippet("declaration", before_decl),
                 stmt_snippet("assignment", before_assign),

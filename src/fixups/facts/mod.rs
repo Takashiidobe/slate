@@ -1101,6 +1101,13 @@ impl FixupFacts {
             .map(|fact| fact.item_index)
     }
 
+    pub(super) fn function_name(&self, function: FunctionId) -> Option<&str> {
+        self.functions
+            .iter()
+            .find(|fact| fact.id == function)
+            .map(|fact| fact.name.as_str())
+    }
+
     pub(super) fn binding_by_param_index(
         &self,
         function: FunctionId,
