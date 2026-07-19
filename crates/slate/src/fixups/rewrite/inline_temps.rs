@@ -7,6 +7,10 @@ use crate::fixups::facts::{
 };
 use crate::fixups::idents::expr_ident_count;
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, ast_path_fact, binding_facts, fact, path_fact,
+    path_location, stmt_snippet,
+};
 use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -21,87 +25,183 @@ pub(in crate::fixups) fn fixup(
     facts: &FixupFacts,
     phase: Phase,
 ) -> bool {
-    fixup_at(body, function, facts, phase, &mut Vec::new())
+    let mut logger = crate::fixups::trace::NoopLogger;
+    InlineTemps::new(phase, &mut logger).fixup(body, function, facts)
 }
 
-fn fixup_at(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
+pub(in crate::fixups) struct InlineTemps<'a> {
     phase: Phase,
-    path: &mut Vec<PathSegment>,
-) -> bool {
-    if inline_nested_temps(body, function, facts, phase, path) {
-        return true;
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> InlineTemps<'a> {
+    pub(in crate::fixups) fn new(phase: Phase, logger: &'a mut dyn TraceLogger) -> Self {
+        Self { phase, logger }
     }
-    for i in 0..body.len() {
-        let mut def_path = path.clone();
-        def_path.push(PathSegment::Stmt(i));
-        let Stmt::Let {
-            name,
-            mutable: false,
-            init: Some(init),
-            ty,
-            ..
-        } = &body[i].stmt
-        else {
-            continue;
-        };
-        if !is_temp_name(name) {
-            continue;
-        }
-        let Some(binding) = facts.binding_by_local_path(function, name, &AstPath(def_path.clone()))
-        else {
-            continue;
-        };
-        let name = name.clone();
-        let init = init.clone();
-        let Some(use_index) = temp_chain_use_index(
-            body,
-            i,
-            TempCandidate {
-                binding,
-                init: &init,
-                ty: ty.as_ref(),
-            },
-            InlineEnv {
-                function,
-                facts,
-                body_path: path,
-                phase,
-            },
-        ) else {
-            continue;
-        };
-        if body[use_index].stmt.substitute_var(&name, &init) {
-            body.remove(i);
+
+    pub(in crate::fixups) fn fixup(
+        &mut self,
+        body: &mut Vec<IndentStmt>,
+        function: FunctionId,
+        facts: &FixupFacts,
+    ) -> bool {
+        self.fixup_at(body, function, facts, &mut Vec::new())
+    }
+
+    fn fixup_at(
+        &mut self,
+        body: &mut Vec<IndentStmt>,
+        function: FunctionId,
+        facts: &FixupFacts,
+        path: &mut Vec<PathSegment>,
+    ) -> bool {
+        if self.inline_nested_temps(body, function, facts, path) {
             return true;
         }
-    }
-    false
-}
-
-fn inline_nested_temps(
-    body: &mut [IndentStmt],
-    function: FunctionId,
-    facts: &FixupFacts,
-    phase: Phase,
-    path: &mut Vec<PathSegment>,
-) -> bool {
-    for (index, stmt) in body.iter_mut().enumerate() {
-        let mut changed = false;
-        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |body, path| {
-                if !changed && fixup_at(body, function, facts, phase, path) {
-                    changed = true;
+        for i in 0..body.len() {
+            let mut def_path = path.clone();
+            def_path.push(PathSegment::Stmt(i));
+            let Stmt::Let {
+                name,
+                mutable: false,
+                init: Some(init),
+                ty,
+                ..
+            } = &body[i].stmt
+            else {
+                continue;
+            };
+            if !is_temp_name(name) {
+                continue;
+            }
+            let Some(binding) =
+                facts.binding_by_local_path(function, name, &AstPath(def_path.clone()))
+            else {
+                continue;
+            };
+            let name = name.clone();
+            let init = init.clone();
+            let Some(use_index) = temp_chain_use_index(
+                body,
+                i,
+                TempCandidate {
+                    binding,
+                    init: &init,
+                    ty: ty.as_ref(),
+                },
+                InlineEnv {
+                    function,
+                    facts,
+                    body_path: path,
+                    phase: self.phase,
+                },
+            ) else {
+                continue;
+            };
+            let trace_before = self
+                .logger
+                .is_enabled()
+                .then(|| (body[i].stmt.clone(), body[use_index].stmt.clone()));
+            if body[use_index].stmt.substitute_var(&name, &init) {
+                if let Some((before_def, before_use)) = trace_before {
+                    let after_use = body[use_index].stmt.clone();
+                    self.log_inline_event(
+                        &name,
+                        binding,
+                        function,
+                        facts,
+                        path,
+                        i,
+                        use_index,
+                        &before_def,
+                        &before_use,
+                        &after_use,
+                    );
                 }
-            });
-        });
-        if changed {
-            return true;
+                body.remove(i);
+                return true;
+            }
         }
+        false
     }
-    false
+
+    fn inline_nested_temps(
+        &mut self,
+        body: &mut [IndentStmt],
+        function: FunctionId,
+        facts: &FixupFacts,
+        path: &mut Vec<PathSegment>,
+    ) -> bool {
+        for (index, stmt) in body.iter_mut().enumerate() {
+            let mut changed = false;
+            walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+                walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |body, path| {
+                    if !changed && self.fixup_at(body, function, facts, path) {
+                        changed = true;
+                    }
+                });
+            });
+            if changed {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn log_inline_event(
+        &mut self,
+        name: &str,
+        binding: crate::fixups::facts::BindingId,
+        function: FunctionId,
+        facts: &FixupFacts,
+        body_path: &[PathSegment],
+        def_index: usize,
+        use_index: usize,
+        before_def: &Stmt,
+        before_use: &Stmt,
+        after_use: &Stmt,
+    ) {
+        if !self.logger.is_enabled() {
+            return;
+        }
+        let producer_path = stmt_path(body_path, def_index);
+        let consumer_path = stmt_path(body_path, use_index);
+        let mut event_facts = binding_facts(facts, binding);
+        event_facts.extend([
+            fact("temp", name),
+            fact(
+                "phase",
+                match self.phase {
+                    Phase::Early => "early",
+                    Phase::Late => "late",
+                },
+            ),
+            path_fact("producer_path", &producer_path),
+            path_fact("consumer_path", &consumer_path),
+        ]);
+        if let Some(chain) = facts.temp_chains.iter().find(|fact| {
+            fact.function == function
+                && fact.binding == binding
+                && fact.producer_path == AstPath(producer_path.clone())
+        }) {
+            event_facts.push(ast_path_fact("fact_consumer_path", &chain.consumer_path));
+            event_facts.push(fact("dependencies", chain.dependencies.len().to_string()));
+        }
+        self.logger.rewrite(RewriteEvent {
+            pass: match self.phase {
+                Phase::Early => TracePass::EarlyInlineTemps,
+                Phase::Late => TracePass::LateInlineTemps,
+            },
+            kind: "inline_temp".into(),
+            location: path_location(&consumer_path),
+            before: vec![
+                stmt_snippet("producer", before_def),
+                stmt_snippet("consumer", before_use),
+            ],
+            after: vec![stmt_snippet("consumer", after_use)],
+            facts: event_facts,
+        });
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -381,6 +481,7 @@ fn binding_name(facts: &FixupFacts, binding: crate::fixups::facts::BindingId) ->
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
+    use crate::fixups::trace::{CollectingLogger, Pass, ProgramSummary, TraceLogger};
     use crate::rust_ast::{
         AtomicOrdering, AtomicPlace, AtomicType, BinOp, Block, Item, MatchArm, Pattern, Program,
         Type,
@@ -432,6 +533,50 @@ fn f() {
     a = a - 5;
 }
 "
+        );
+    }
+
+    #[test]
+    fn logs_temp_inline_rewrite() {
+        let mut program = Program {
+            items: vec![Item::Fn(func(
+                vec![],
+                None,
+                vec![
+                    let_mut("a", "i32", int(0)),
+                    temp("_v0", "i32", int(20)),
+                    assign("a", var("_v0")),
+                ],
+            ))],
+        };
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        let mut logger = CollectingLogger::default();
+        logger.begin_pass(
+            Pass::LateInlineTemps,
+            ProgramSummary::from_program(&program),
+            program.emit(),
+        );
+        let Item::Fn(f) = &mut program.items[0] else {
+            unreachable!();
+        };
+        assert!(InlineTemps::new(Phase::Late, &mut logger).fixup(
+            &mut f.body,
+            FunctionId(0),
+            &analyzed.facts
+        ));
+        logger.end_pass(ProgramSummary::from_program(&program), program.emit());
+        let log = logger.finish(ProgramSummary::from_program(&program));
+        let event = &log.passes[0].events[0];
+
+        assert_eq!(event.kind, "inline_temp");
+        assert_eq!(event.before[0].code, "let _v0: i32 = 20;");
+        assert_eq!(event.before[1].code, "a = _v0;");
+        assert_eq!(event.after[0].code, "a = 20;");
+        assert!(
+            event
+                .facts
+                .iter()
+                .any(|fact| fact.key == "phase" && fact.value == "late")
         );
     }
 

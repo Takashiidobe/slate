@@ -7,6 +7,10 @@ use crate::fixups::facts::{
 };
 use crate::fixups::idents::expr_ident;
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, binding_facts, fact, path_fact, path_location,
+    stmt_snippet,
+};
 use crate::rust_ast::{Expr, IndentStmt, Stmt, UnaryOp};
 
 pub(in crate::fixups) fn fixup(
@@ -15,80 +19,204 @@ pub(in crate::fixups) fn fixup(
     facts: &FixupFacts,
     cross_effects: bool,
 ) -> bool {
-    fixup_at(body, function, facts, cross_effects, &mut Vec::new())
+    let mut logger = crate::fixups::trace::NoopLogger;
+    ZeroInit::new(cross_effects, &mut logger).fixup(body, function, facts)
 }
 
-fn fixup_at(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
+pub(in crate::fixups) struct ZeroInit<'a> {
     cross_effects: bool,
-    path: &mut Vec<PathSegment>,
-) -> bool {
-    if fixup_nested(body, function, facts, cross_effects, path) {
-        return true;
-    }
-    for i in 0..body.len().saturating_sub(1) {
-        let decl_path = stmt_path(path, i);
-        let Stmt::Let {
-            name,
-            mutable: true,
-            ty: Some(ty),
-            init: Some(_),
-        } = &body[i].stmt
-        else {
-            continue;
-        };
-        let name = name.clone();
-        let ty = ty.clone();
-        let Some(binding) =
-            facts.binding_by_local_path(function, &name, &AstPath(decl_path.clone()))
-        else {
-            continue;
-        };
-        if !binding_is_zero(function, facts, binding, &decl_path) {
-            continue;
-        }
-        let mut move_decl_to_assignment = false;
-        let ctx = ZeroInitContext {
-            function,
-            facts,
-            binding,
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> ZeroInit<'a> {
+    pub(in crate::fixups) fn new(cross_effects: bool, logger: &'a mut dyn TraceLogger) -> Self {
+        Self {
             cross_effects,
-            body_path: path,
-        };
-        let mut assign_index = first_overwriting_assignment(body, i, &name, &ctx);
-        if assign_index.is_none() && cross_effects {
-            assign_index =
-                first_deferred_initialization(body, i, &name, function, facts, binding, path);
-            move_decl_to_assignment = assign_index.is_some();
+            logger,
         }
-        let Some(assign_index) = assign_index else {
-            continue;
-        };
-        let Stmt::Assign { value, .. } = &body[assign_index].stmt else {
-            unreachable!();
-        };
-        let value = value.clone();
-        if move_decl_to_assignment {
-            let depth = body[assign_index].depth;
-            body[assign_index] = IndentStmt {
-                depth,
-                stmt: Stmt::Let {
-                    name,
-                    mutable: true,
-                    ty: Some(ty),
-                    init: Some(value),
-                },
-            };
-            body.remove(i);
-        } else if let Stmt::Let { init, .. } = &mut body[i].stmt {
-            *init = Some(value);
-            body.remove(assign_index);
-        }
-        return true;
     }
-    false
+
+    pub(in crate::fixups) fn fixup(
+        &mut self,
+        body: &mut Vec<IndentStmt>,
+        function: FunctionId,
+        facts: &FixupFacts,
+    ) -> bool {
+        self.fixup_at(body, function, facts, &mut Vec::new())
+    }
+
+    fn fixup_at(
+        &mut self,
+        body: &mut Vec<IndentStmt>,
+        function: FunctionId,
+        facts: &FixupFacts,
+        path: &mut Vec<PathSegment>,
+    ) -> bool {
+        if self.fixup_nested(body, function, facts, path) {
+            return true;
+        }
+        for i in 0..body.len().saturating_sub(1) {
+            let decl_path = stmt_path(path, i);
+            let Stmt::Let {
+                name,
+                mutable: true,
+                ty: Some(ty),
+                init: Some(_),
+            } = &body[i].stmt
+            else {
+                continue;
+            };
+            let name = name.clone();
+            let ty = ty.clone();
+            let Some(binding) =
+                facts.binding_by_local_path(function, &name, &AstPath(decl_path.clone()))
+            else {
+                continue;
+            };
+            if !binding_is_zero(function, facts, binding, &decl_path) {
+                continue;
+            }
+            let mut move_decl_to_assignment = false;
+            let ctx = ZeroInitContext {
+                function,
+                facts,
+                binding,
+                cross_effects: self.cross_effects,
+                body_path: path,
+            };
+            let mut assign_index = first_overwriting_assignment(body, i, &name, &ctx);
+            if assign_index.is_none() && self.cross_effects {
+                assign_index =
+                    first_deferred_initialization(body, i, &name, function, facts, binding, path);
+                move_decl_to_assignment = assign_index.is_some();
+            }
+            let Some(assign_index) = assign_index else {
+                continue;
+            };
+            let Stmt::Assign { value, .. } = &body[assign_index].stmt else {
+                unreachable!();
+            };
+            let assign_path = stmt_path(path, assign_index);
+            let trace_before = self
+                .logger
+                .is_enabled()
+                .then(|| (body[i].stmt.clone(), body[assign_index].stmt.clone()));
+            let value = value.clone();
+            if move_decl_to_assignment {
+                let depth = body[assign_index].depth;
+                body[assign_index] = IndentStmt {
+                    depth,
+                    stmt: Stmt::Let {
+                        name,
+                        mutable: true,
+                        ty: Some(ty),
+                        init: Some(value),
+                    },
+                };
+                if let Some((before_decl, before_assign)) = trace_before {
+                    let after_decl = body[assign_index].stmt.clone();
+                    self.log_zero_init_event(
+                        function,
+                        facts,
+                        binding,
+                        &decl_path,
+                        &assign_path,
+                        move_decl_to_assignment,
+                        &before_decl,
+                        &before_assign,
+                        &after_decl,
+                    );
+                }
+                body.remove(i);
+            } else if let Stmt::Let { init, .. } = &mut body[i].stmt {
+                *init = Some(value);
+                if let Some((before_decl, before_assign)) = trace_before {
+                    let after_decl = body[i].stmt.clone();
+                    self.log_zero_init_event(
+                        function,
+                        facts,
+                        binding,
+                        &decl_path,
+                        &assign_path,
+                        move_decl_to_assignment,
+                        &before_decl,
+                        &before_assign,
+                        &after_decl,
+                    );
+                }
+                body.remove(assign_index);
+            }
+            return true;
+        }
+        false
+    }
+
+    fn fixup_nested(
+        &mut self,
+        body: &mut [IndentStmt],
+        function: FunctionId,
+        facts: &FixupFacts,
+        path: &mut Vec<PathSegment>,
+    ) -> bool {
+        for (index, stmt) in body.iter_mut().enumerate() {
+            let mut changed = false;
+            walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+                walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |body, path| {
+                    if !changed && self.fixup_at(body, function, facts, path) {
+                        changed = true;
+                    }
+                });
+            });
+            if changed {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn log_zero_init_event(
+        &mut self,
+        function: FunctionId,
+        facts: &FixupFacts,
+        binding: BindingId,
+        decl_path: &[PathSegment],
+        assign_path: &[PathSegment],
+        moved_decl: bool,
+        before_decl: &Stmt,
+        before_assign: &Stmt,
+        after_decl: &Stmt,
+    ) {
+        if !self.logger.is_enabled() {
+            return;
+        }
+        let mut event_facts = binding_facts(facts, binding);
+        event_facts.extend([
+            path_fact("decl_path", decl_path),
+            path_fact("assign_path", assign_path),
+            fact("binding_is_zero", "true"),
+            fact("cross_effects", self.cross_effects.to_string()),
+            fact("moved_decl_to_assignment", moved_decl.to_string()),
+            fact(
+                "assignment_reads_binding",
+                assignment_reads_binding(facts, binding, assign_path).to_string(),
+            ),
+            fact(
+                "assignment_writes_binding",
+                assignment_writes_binding(function, facts, binding, assign_path).to_string(),
+            ),
+        ]);
+        self.logger.rewrite(RewriteEvent {
+            pass: TracePass::ZeroInit,
+            kind: "fold_zero_init_assignment".into(),
+            location: path_location(assign_path),
+            before: vec![
+                stmt_snippet("declaration", before_decl),
+                stmt_snippet("assignment", before_assign),
+            ],
+            after: vec![stmt_snippet("declaration", after_decl)],
+            facts: event_facts,
+        });
+    }
 }
 
 struct ZeroInitContext<'a> {
@@ -283,29 +411,6 @@ fn can_cross_intervening_stmt(
             .is_some_and(|fact| fact.purity == Purity::MovablePure)
 }
 
-fn fixup_nested(
-    body: &mut [IndentStmt],
-    function: FunctionId,
-    facts: &FixupFacts,
-    cross_effects: bool,
-    path: &mut Vec<PathSegment>,
-) -> bool {
-    for (index, stmt) in body.iter_mut().enumerate() {
-        let mut changed = false;
-        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |body, path| {
-                if !changed && fixup_at(body, function, facts, cross_effects, path) {
-                    changed = true;
-                }
-            });
-        });
-        if changed {
-            return true;
-        }
-    }
-    false
-}
-
 fn binding_is_zero(
     function: FunctionId,
     facts: &FixupFacts,
@@ -365,6 +470,7 @@ fn stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
 mod tests {
     use super::*;
     use crate::fixups::test_support::*;
+    use crate::fixups::trace::{CollectingLogger, Pass, ProgramSummary};
     use crate::rust_ast::{BinOp, Block, Expr, Item, MatchArm, Pattern, Program};
 
     fn fixed(params: Vec<crate::rust_ast::FnParam>, ret: Option<&str>, stmts: Vec<Stmt>) -> String {
@@ -420,6 +526,46 @@ fn f() -> i32 {
     return c;
 }
 "
+        );
+    }
+
+    #[test]
+    fn logs_zero_init_assignment_fold() {
+        let mut program = Program {
+            items: vec![Item::Fn(func(
+                vec![],
+                None,
+                vec![let_mut("x", "i32", int(0)), assign("x", int(10))],
+            ))],
+        };
+        let analyzed = crate::fixups::facts::analyze(program.clone());
+        let mut logger = CollectingLogger::default();
+        logger.begin_pass(
+            Pass::ZeroInit,
+            ProgramSummary::from_program(&program),
+            program.emit(),
+        );
+        let Item::Fn(f) = &mut program.items[0] else {
+            unreachable!();
+        };
+        assert!(ZeroInit::new(false, &mut logger).fixup(
+            &mut f.body,
+            FunctionId(0),
+            &analyzed.facts
+        ));
+        logger.end_pass(ProgramSummary::from_program(&program), program.emit());
+        let log = logger.finish(ProgramSummary::from_program(&program));
+        let event = &log.passes[0].events[0];
+
+        assert_eq!(event.kind, "fold_zero_init_assignment");
+        assert_eq!(event.before[0].code, "let mut x: i32 = 0;");
+        assert_eq!(event.before[1].code, "x = 10;");
+        assert_eq!(event.after[0].code, "let mut x: i32 = 10;");
+        assert!(
+            event
+                .facts
+                .iter()
+                .any(|fact| fact.key == "binding_is_zero" && fact.value == "true")
         );
     }
 

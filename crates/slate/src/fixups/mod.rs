@@ -81,7 +81,7 @@ fn apply_with_logger(input: Program, skip: &SkipSet, logger: &mut impl TraceLogg
         structure_goto(&mut program);
     });
     step!(program, Pass::EarlyInlineTemps, {
-        inline_temps_to_fixpoint(&mut program, InlinePass::Early);
+        inline_temps_to_fixpoint(&mut program, InlinePass::Early, logger);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::AnonymousStructs, {
@@ -97,7 +97,7 @@ fn apply_with_logger(input: Program, skip: &SkipSet, logger: &mut impl TraceLogg
         }
     });
     step!(program, Pass::ZeroInit, {
-        zero_init_to_fixpoint(&mut program, false);
+        zero_init_to_fixpoint(&mut program, false, logger);
     });
     step!(program, Pass::StructFieldInit, {
         struct_field_init_to_fixpoint(&mut program);
@@ -280,7 +280,7 @@ fn apply_with_logger(input: Program, skip: &SkipSet, logger: &mut impl TraceLogg
         rewrite::heap_ownership::fixup(&mut program, &facts);
     });
     step!(program, Pass::DeadLocals, {
-        dead_locals_to_fixpoint(&mut program);
+        dead_locals_to_fixpoint(&mut program, logger);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::RemoveMut, {
@@ -351,10 +351,10 @@ fn apply_with_logger(input: Program, skip: &SkipSet, logger: &mut impl TraceLogg
         rewrite::memchr_prelude::prune_unused_helper(&mut program);
     });
     step!(program, Pass::LateInlineTemps, {
-        inline_temps_to_fixpoint(&mut program, InlinePass::Late);
+        inline_temps_to_fixpoint(&mut program, InlinePass::Late, logger);
     });
     step!(program, Pass::DeadLocals, {
-        dead_locals_to_fixpoint(&mut program);
+        dead_locals_to_fixpoint(&mut program, logger);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::ArrayElementPointerOrigin, {
@@ -369,10 +369,10 @@ fn apply_with_logger(input: Program, skip: &SkipSet, logger: &mut impl TraceLogg
         rewrite::atomic_locals::fixup(&mut program, &facts);
     });
     step!(program, Pass::LateInlineTemps, {
-        inline_temps_to_fixpoint(&mut program, InlinePass::Late);
+        inline_temps_to_fixpoint(&mut program, InlinePass::Late, logger);
     });
     step!(program, Pass::ZeroInit, {
-        zero_init_to_fixpoint(&mut program, true);
+        zero_init_to_fixpoint(&mut program, true, logger);
     });
     step!(program, Pass::AtomicCompareExchange, {
         loop {
@@ -395,7 +395,7 @@ fn apply_with_logger(input: Program, skip: &SkipSet, logger: &mut impl TraceLogg
         remove_mut(&mut program);
     });
     step!(program, Pass::VarAliases, {
-        inline_var_aliases_to_fixpoint(&mut program);
+        inline_var_aliases_to_fixpoint(&mut program, logger);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::PruneUnusedExterns, {
@@ -457,14 +457,18 @@ fn singleton_scopes_to_fixpoint(program: &mut Program) {
     }
 }
 
-fn zero_init_to_fixpoint(program: &mut Program, cross_effects: bool) {
+fn zero_init_to_fixpoint(
+    program: &mut Program,
+    cross_effects: bool,
+    logger: &mut impl TraceLogger,
+) {
     loop {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
         let mut changed = false;
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
-                && rewrite::zero_init::fixup(&mut f.body, function, &facts, cross_effects)
+                && run_zero_init_pass(&mut f.body, function, &facts, cross_effects, logger)
             {
                 changed = true;
             }
@@ -513,14 +517,14 @@ fn late_loop_cleanup(program: &mut Program) {
     }
 }
 
-fn dead_locals_to_fixpoint(program: &mut Program) {
+fn dead_locals_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
     loop {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
         let mut changed = false;
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
-                && rewrite::dead_locals::fixup(&mut f.body, function, &facts)
+                && run_dead_locals_pass(&mut f.body, function, &facts, logger)
             {
                 changed = true;
             }
@@ -531,13 +535,26 @@ fn dead_locals_to_fixpoint(program: &mut Program) {
     }
 }
 
+fn run_dead_locals_pass(
+    body: &mut Vec<crate::rust_ast::IndentStmt>,
+    function: facts::FunctionId,
+    facts: &facts::FixupFacts,
+    logger: &mut impl TraceLogger,
+) -> bool {
+    rewrite::dead_locals::DeadLocals::new(logger).fixup(body, function, facts)
+}
+
 #[derive(Clone, Copy)]
 enum InlinePass {
     Early,
     Late,
 }
 
-fn inline_temps_to_fixpoint(program: &mut Program, pass: InlinePass) {
+fn inline_temps_to_fixpoint(
+    program: &mut Program,
+    pass: InlinePass,
+    logger: &mut impl TraceLogger,
+) {
     let inline_round_limit = if ProgramSummary::from_program(program).stmts > 2_000 {
         5
     } else {
@@ -552,12 +569,20 @@ fn inline_temps_to_fixpoint(program: &mut Program, pass: InlinePass) {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
                 && match pass {
-                    InlinePass::Early => {
-                        rewrite::early_inline_temps::fixup(&mut f.body, function, &facts)
-                    }
-                    InlinePass::Late => {
-                        rewrite::late_inline_temps::fixup(&mut f.body, function, &facts)
-                    }
+                    InlinePass::Early => run_inline_temps_pass(
+                        &mut f.body,
+                        function,
+                        &facts,
+                        rewrite::inline_temps::Phase::Early,
+                        logger,
+                    ),
+                    InlinePass::Late => run_inline_temps_pass(
+                        &mut f.body,
+                        function,
+                        &facts,
+                        rewrite::inline_temps::Phase::Late,
+                        logger,
+                    ),
                 }
             {
                 changed = true;
@@ -567,6 +592,16 @@ fn inline_temps_to_fixpoint(program: &mut Program, pass: InlinePass) {
             break;
         }
     }
+}
+
+fn run_inline_temps_pass(
+    body: &mut Vec<crate::rust_ast::IndentStmt>,
+    function: facts::FunctionId,
+    facts: &facts::FixupFacts,
+    phase: rewrite::inline_temps::Phase,
+    logger: &mut impl TraceLogger,
+) -> bool {
+    rewrite::inline_temps::InlineTemps::new(phase, logger).fixup(body, function, facts)
 }
 
 fn remove_mut(program: &mut Program) {
@@ -580,12 +615,22 @@ fn remove_mut(program: &mut Program) {
     }
 }
 
-fn inline_var_aliases_to_fixpoint(program: &mut Program) {
+fn run_zero_init_pass(
+    body: &mut Vec<crate::rust_ast::IndentStmt>,
+    function: facts::FunctionId,
+    facts: &facts::FixupFacts,
+    cross_effects: bool,
+    logger: &mut impl TraceLogger,
+) -> bool {
+    rewrite::zero_init::ZeroInit::new(cross_effects, logger).fixup(body, function, facts)
+}
+
+fn inline_var_aliases_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
     loop {
         let mut changed = false;
         for item in &mut program.items {
             if let Item::Fn(f) = item
-                && rewrite::var_aliases::fixup(&mut f.body)
+                && run_var_aliases_pass(&mut f.body, logger)
             {
                 changed = true;
             }
@@ -594,6 +639,13 @@ fn inline_var_aliases_to_fixpoint(program: &mut Program) {
             break;
         }
     }
+}
+
+fn run_var_aliases_pass(
+    body: &mut Vec<crate::rust_ast::IndentStmt>,
+    logger: &mut impl TraceLogger,
+) -> bool {
+    rewrite::var_aliases::VarAliases::new(logger).fixup(body)
 }
 
 #[cfg(test)]

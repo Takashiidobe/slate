@@ -2,6 +2,10 @@ use crate::fixups::facts::{
     AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment,
 };
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, binding_facts, fact, path_fact, path_location,
+    stmt_snippet,
+};
 use crate::rust_ast::{Expr, IndentStmt, Stmt};
 
 pub(in crate::fixups) fn fixup(
@@ -9,37 +13,100 @@ pub(in crate::fixups) fn fixup(
     function: FunctionId,
     facts: &FixupFacts,
 ) -> bool {
-    fixup_at(body, function, facts, &mut Vec::new())
+    let mut logger = crate::fixups::trace::NoopLogger;
+    DeadLocals::new(&mut logger).fixup(body, function, facts)
 }
 
-fn fixup_at(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
-) -> bool {
-    for index in 0..body.len() {
-        let mut changed = false;
-        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            walk::nested_body_vecs_mut_with_path(&mut body[index].stmt, path, &mut |body, path| {
-                if !changed {
-                    changed = fixup_at(body, function, facts, path);
-                }
-            });
-        });
-        if changed {
-            return true;
-        }
+pub(in crate::fixups) struct DeadLocals<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> DeadLocals<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
     }
 
-    for index in 0..body.len() {
-        let stmt_path = stmt_path(path, index);
-        if removable_dead_local(&body[index].stmt, function, facts, &stmt_path) {
-            body.remove(index);
-            return true;
-        }
+    pub(in crate::fixups) fn fixup(
+        &mut self,
+        body: &mut Vec<IndentStmt>,
+        function: FunctionId,
+        facts: &FixupFacts,
+    ) -> bool {
+        self.fixup_at(body, function, facts, &mut Vec::new())
     }
-    false
+
+    fn fixup_at(
+        &mut self,
+        body: &mut Vec<IndentStmt>,
+        function: FunctionId,
+        facts: &FixupFacts,
+        path: &mut Vec<PathSegment>,
+    ) -> bool {
+        for index in 0..body.len() {
+            let mut changed = false;
+            walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+                walk::nested_body_vecs_mut_with_path(
+                    &mut body[index].stmt,
+                    path,
+                    &mut |body, path| {
+                        if !changed {
+                            changed = self.fixup_at(body, function, facts, path);
+                        }
+                    },
+                );
+            });
+            if changed {
+                return true;
+            }
+        }
+
+        for index in 0..body.len() {
+            let stmt_path = stmt_path(path, index);
+            if removable_dead_local(&body[index].stmt, function, facts, &stmt_path) {
+                self.log_dead_local_event(&body[index].stmt, function, facts, &stmt_path);
+                body.remove(index);
+                return true;
+            }
+        }
+        false
+    }
+
+    fn log_dead_local_event(
+        &mut self,
+        stmt: &Stmt,
+        function: FunctionId,
+        facts: &FixupFacts,
+        path: &[PathSegment],
+    ) {
+        if !self.logger.is_enabled() {
+            return;
+        }
+        let Stmt::Let { name, .. } = stmt else {
+            return;
+        };
+        let Some(binding) = facts.binding_by_local_path(function, name, &AstPath(path.to_vec()))
+        else {
+            return;
+        };
+        let mut event_facts = binding_facts(facts, binding);
+        event_facts.extend([
+            fact("local", name),
+            path_fact("decl_path", path),
+            fact("discardable_init", "true"),
+        ]);
+        if let Some(effect) = facts.effect(function, EffectSubject::Expr, &AstPath(path.to_vec())) {
+            event_facts.push(fact("purity", format!("{:?}", effect.purity)));
+            event_facts.push(fact("effects", format!("{:?}", effect.effects)));
+        }
+        self.logger.rewrite(RewriteEvent {
+            pass: TracePass::DeadLocals,
+            kind: "remove_dead_local".into(),
+            location: path_location(path),
+            before: vec![stmt_snippet("declaration", stmt)],
+            after: Vec::new(),
+            facts: event_facts,
+        });
+    }
 }
 
 fn removable_dead_local(
@@ -129,6 +196,7 @@ mod tests {
     use super::*;
     use crate::fixups::facts;
     use crate::fixups::test_support::*;
+    use crate::fixups::trace::{CollectingLogger, Pass, ProgramSummary, TraceLogger};
     use crate::rust_ast::{BinOp, Item, Program, Type};
 
     fn after(stmts: Vec<Stmt>) -> String {
@@ -169,6 +237,41 @@ mod tests {
         assert!(!out.contains("len"));
         assert!(out.contains("let mut total: i32 = 0;"));
         assert!(out.contains("return total;"));
+    }
+
+    #[test]
+    fn logs_dead_local_removal() {
+        let mut program = Program {
+            items: vec![Item::Fn(func(
+                vec![param("items", "&[i32]")],
+                None,
+                vec![let_mut("unused", "i32", int(0))],
+            ))],
+        };
+        let analyzed = facts::analyze(program.clone());
+        let mut logger = CollectingLogger::default();
+        logger.begin_pass(
+            Pass::DeadLocals,
+            ProgramSummary::from_program(&program),
+            program.emit(),
+        );
+        let Item::Fn(f) = &mut program.items[0] else {
+            unreachable!();
+        };
+        assert!(DeadLocals::new(&mut logger).fixup(&mut f.body, FunctionId(0), &analyzed.facts));
+        logger.end_pass(ProgramSummary::from_program(&program), program.emit());
+        let log = logger.finish(ProgramSummary::from_program(&program));
+        let event = &log.passes[0].events[0];
+
+        assert_eq!(event.kind, "remove_dead_local");
+        assert_eq!(event.before[0].code, "let mut unused: i32 = 0;");
+        assert!(event.after.is_empty());
+        assert!(
+            event
+                .facts
+                .iter()
+                .any(|fact| fact.key == "discardable_init" && fact.value == "true")
+        );
     }
 
     #[test]

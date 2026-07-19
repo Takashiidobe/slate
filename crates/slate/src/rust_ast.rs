@@ -965,6 +965,10 @@ impl Program {
 }
 
 impl Stmt {
+    pub fn render(&self) -> String {
+        crate::codegen::stmt_to_string(self)
+    }
+
     pub fn substitute_var(&mut self, name: &str, replacement: &Expr) -> bool {
         stmt_substitute_var(self, name, replacement)
     }
