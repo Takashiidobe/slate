@@ -1452,6 +1452,68 @@ fn fixup_debug_reports_passes_and_change_summary() {
 }
 
 #[test]
+fn fixup_debug_can_stop_after_selected_pass() {
+    let c_src = fixtures_dir().join("mem_memchr.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg("--up-to-pass")
+        .arg("memchr_prelude")
+        .arg(c_src)
+        .output()
+        .expect("run slate fixup-debug up to memchr_prelude");
+
+    assert!(
+        output.status.success(),
+        "fixup-debug failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
+    assert!(stdout.contains("memchr_prelude"));
+    assert!(!stdout.contains("array_element_pointer_origin"));
+    assert!(!stdout.contains("late_inline_temps"));
+}
+
+#[test]
+fn fixup_debug_can_run_only_selected_pass() {
+    let c_src = fixtures_dir().join("mem_memchr.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg(c_src)
+        .arg("--only-pass")
+        .arg("late_inline_temps")
+        .output()
+        .expect("run slate fixup-debug only late_inline_temps");
+
+    assert!(
+        output.status.success(),
+        "fixup-debug failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
+    assert!(stdout.contains("late_inline_temps"));
+    assert!(!stdout.contains("early_inline_temps"));
+    assert!(!stdout.contains("memchr_prelude"));
+}
+
+#[test]
+fn fixup_debug_reports_valid_passes_for_unknown_pass() {
+    let c_src = fixtures_dir().join("mem_memchr.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg(c_src)
+        .arg("--only-pass")
+        .arg("not_a_pass")
+        .output()
+        .expect("run slate fixup-debug with bad pass");
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8(output.stderr).expect("debug error is utf8");
+    assert!(stderr.contains("unknown pass for --only-pass: not_a_pass"));
+    assert!(stderr.contains("valid passes:"));
+    assert!(stderr.contains("late_inline_temps"));
+}
+
+#[test]
 fn internal_char_pointer_params_lift_to_str() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-string-param-lift");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

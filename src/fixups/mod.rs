@@ -40,36 +40,85 @@ pub fn apply(program: Program) -> Program {
 
 pub fn apply_with(program: Program, skip: &SkipSet) -> Program {
     let mut logger = NoopLogger;
-    apply_with_logger(program, skip, &mut logger)
+    apply_with_logger(program, skip, &mut logger, DebugOptions::default())
 }
 
 pub fn debug(program: Program) -> String {
-    let (_, log) = debug_log(program);
+    let (_, log) = debug_log_with(program, DebugOptions::default());
     log.render_human()
 }
 
 pub fn debug_log(program: Program) -> (Program, TraceLog) {
+    debug_log_with(program, DebugOptions::default())
+}
+
+pub fn debug_with(program: Program, options: DebugOptions) -> String {
+    let (_, log) = debug_log_with(program, options);
+    log.render_human()
+}
+
+pub fn debug_log_with(program: Program, options: DebugOptions) -> (Program, TraceLog) {
     let mut logger = CollectingLogger::default();
-    let final_program = apply_with_logger(program, &SkipSet::none(), &mut logger);
+    let final_program = apply_with_logger(program, &SkipSet::none(), &mut logger, options);
     let final_summary = ProgramSummary::from_program(&final_program);
     let log = logger.finish(final_summary);
     (final_program, log)
 }
 
-fn apply_with_logger(input: Program, skip: &SkipSet, logger: &mut impl TraceLogger) -> Program {
+#[derive(Debug, Clone, Copy, Default)]
+pub struct DebugOptions {
+    pub up_to_pass: Option<Pass>,
+    pub only_pass: Option<Pass>,
+}
+
+impl DebugOptions {
+    fn should_run(self, pass: Pass) -> bool {
+        self.only_pass.is_none_or(|only| only == pass)
+    }
+
+    fn should_log(self, pass: Pass) -> bool {
+        self.only_pass.is_none_or(|only| only == pass)
+    }
+
+    fn stops_after(self, pass: Pass) -> bool {
+        self.up_to_pass == Some(pass)
+    }
+}
+
+pub fn valid_pass_names() -> String {
+    Pass::ALL
+        .iter()
+        .map(|pass| pass.name())
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
+fn apply_with_logger(
+    input: Program,
+    skip: &SkipSet,
+    logger: &mut impl TraceLogger,
+    debug_options: DebugOptions,
+) -> Program {
+    let mut debug_done = false;
+
     macro_rules! step {
         ($program:ident, $pass:expr, $body:block) => {{
-            let tracing = logger.is_enabled();
+            let pass = $pass;
+            let run = !debug_done && debug_options.should_run(pass);
+            let tracing = !debug_done && logger.is_enabled() && debug_options.should_log(pass);
             if tracing {
                 logger.begin_pass(
-                    $pass,
+                    pass,
                     ProgramSummary::from_program(&$program),
                     $program.emit(),
                 );
             }
-            let result = $body;
+            let result = if run { Some($body) } else { None };
             if tracing {
                 logger.end_pass(ProgramSummary::from_program(&$program), $program.emit());
+            }
+            if !debug_done && debug_options.stops_after(pass) {
+                debug_done = true;
             }
             result
         }};
@@ -414,6 +463,7 @@ fn apply_with_logger(input: Program, skip: &SkipSet, logger: &mut impl TraceLogg
             }
         }
     });
+    let _ = debug_done;
     program
 }
 
