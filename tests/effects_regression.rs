@@ -114,6 +114,16 @@ fn stdio_file_write_fixup_preserves_rust_effects() {
 }
 
 #[test]
+fn std_idiom_fixups_preserve_rust_effects() {
+    assert_fixture_matches("tests/fixtures/heap_box_fixup.c");
+    assert_fixture_matches("tests/fixtures/stdio_fread_multi_byte.c");
+    assert_fixture_matches("tests/fixtures/stdio_fread_short_read.c");
+    assert_fixture_matches("tests/fixtures/stdio_fread_size_one.c");
+    assert_fixture_matches("tests/fixtures/stdio_fwrite_return.c");
+    assert_fixture_matches("tests/fixtures/string_libc_fixup.c");
+}
+
+#[test]
 fn atomics_fixup_preserve_rust_effects() {
     assert_fixture_matches("tests/fixtures/atomics.c");
 }
