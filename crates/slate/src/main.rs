@@ -26,6 +26,7 @@ fn usage() -> ExitCode {
     eprintln!(
         "  compare-effects-rust-rust  <file.c>  compare raw lowered Rust effects to fixuped Rust effects"
     );
+    eprintln!("  fixup-debug  <file.c>  print fixup pass trace and AST-size summary");
     eprintln!("  translate   C -> Rust");
     eprintln!("  translate-cfg   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
@@ -47,6 +48,10 @@ fn main() -> ExitCode {
         Some("emit-lowered-fixtures") => run(emit_lowered_fixtures()),
         Some("compare-effects-rust-rust") => match args.get(2) {
             Some(path) => run(compare_effects_rust_rust(Path::new(path))),
+            None => usage(),
+        },
+        Some("fixup-debug") => match args.get(2) {
+            Some(path) => run(fixup_debug(Path::new(path))),
             None => usage(),
         },
         Some("translate") => match args.get(2) {
@@ -159,6 +164,11 @@ fn compare_effects_rust_rust(path: &Path) -> Result<String, String> {
             .map_err(|err| effect_extraction_error(mode, path, "fixuped rust_ast", err))?;
         compare_traces("raw rust_ast", "fixuped rust_ast", &raw_trace, &fixed_trace)
     })
+}
+
+fn fixup_debug(path: &Path) -> Result<String, String> {
+    let (_, program) = lowered_program(path)?;
+    Ok(fixups::debug(program))
 }
 
 /// `SLATE_SKIP_PASS=<name>` disables one named fixup pass, for

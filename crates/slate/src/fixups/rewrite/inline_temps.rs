@@ -5,6 +5,7 @@
 use crate::fixups::facts::{
     AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment,
 };
+use crate::fixups::idents::expr_ident_count;
 use crate::fixups::support::walk;
 use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 
@@ -298,6 +299,9 @@ fn call_or_macro_arg_use_expr(expr: &Expr, name: &str) -> bool {
         Expr::Call { args, .. } | Expr::Macro { args, .. } => args
             .iter()
             .any(|arg| matches!(arg, Expr::Var(var) if var.as_str() == name)),
+        Expr::MethodCall { args, .. } | Expr::MethodCallGeneric { args, .. } => {
+            args.iter().any(|arg| expr_ident_count(arg, name) > 0)
+        }
         Expr::Block(block) | Expr::Unsafe(block) => block
             .tail
             .as_deref()
