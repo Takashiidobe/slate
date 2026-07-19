@@ -196,6 +196,13 @@ fn function_pointer_values_preserve_rust_effects() {
 }
 
 #[test]
+fn external_call_summaries_preserve_rust_effects() {
+    assert_fixture_matches("tests/fixtures/math_builtin_ops.c");
+    assert_fixture_matches("tests/fixtures/mt-atomics.c");
+    assert_fixture_matches("tests/fixtures/noreturn_prototype.c");
+}
+
+#[test]
 fn libc_resource_shims_preserve_rust_effects() {
     assert_fixture_matches("tests/fixtures/heap_vec_malloc.c");
     assert_fixture_matches("tests/fixtures/heap_vec_calloc.c");
