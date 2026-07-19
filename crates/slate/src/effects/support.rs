@@ -419,13 +419,24 @@ pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> EResult<Value> {
     if matches!(ty, Type::Prim(Prim::F32)) {
         return Ok(match value {
             Value::Float(value) => Value::Float(value as f32 as f64),
+            Value::Int { value, .. } => Value::Float(value as f32 as f64),
+            Value::Bool(value) => Value::Float(i32::from(value) as f32 as f64),
             other => other,
         });
     }
     if matches!(ty, Type::Prim(Prim::F64)) {
+        return Ok(match value {
+            Value::Float(value) => Value::Float(value),
+            Value::Int { value, .. } => Value::Float(value as f64),
+            Value::Bool(value) => Value::Float(i32::from(value) as f64),
+            other => other,
+        });
+    }
+    if matches!(ty, Type::LongDouble | Type::Complex(_)) {
         return Ok(value);
     }
     if matches!(ty, Type::Ref { .. } | Type::FnPtr { .. })
+        || matches!(ty, Type::Custom(_))
         || matches!(ty, Type::Generic { name, .. } if name == "Result")
     {
         return Ok(value);
@@ -484,6 +495,8 @@ pub(super) fn type_size(ty: &Type) -> Option<u64> {
         Type::Prim(Prim::F32) => Some(4),
         Type::Prim(Prim::F64) => Some(8),
         Type::Prim(_) => scalar_type_shape(ty).map(|(_, _, size)| size),
+        Type::LongDouble => Some(16),
+        Type::Complex(inner) => Some(type_size(inner)? * 2),
         Type::Ptr { .. } | Type::FnPtr { .. } | Type::Ref { .. } => Some(8),
         Type::Array { elem, len } => Some(type_size(elem)? * *len),
         _ => None,
@@ -528,8 +541,14 @@ pub(super) fn array_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64, u64)> 
     let Type::Array { elem, len } = ty else {
         return None;
     };
-    let (width, signed, size) = scalar_type_shape(elem)?;
-    Some((width, signed, size, *len))
+    match elem.as_ref() {
+        Type::Prim(Prim::F32) => Some((IntWidth::W32, false, 4, *len)),
+        Type::Prim(Prim::F64) => Some((IntWidth::W64, false, 8, *len)),
+        _ => {
+            let (width, signed, size) = scalar_type_shape(elem)?;
+            Some((width, signed, size, *len))
+        }
+    }
 }
 
 pub(super) fn is_cstr_ref_ty(ty: &Type) -> bool {
@@ -632,6 +651,26 @@ pub(super) fn apply_binop(op: BinOp, a: Value, b: Value) -> EResult<Value> {
                 return Ok(Value::Bool(match op {
                     BinOp::Eq => false,
                     BinOp::Ne => true,
+                    _ => {
+                        return Err(EffectError::unsupported(
+                            Construct::PointerNullComparison,
+                            op,
+                        ));
+                    }
+                }));
+            }
+            if matches!(
+                (&a, &b),
+                (Value::Int { .. }, Value::Null) | (Value::Null, Value::Int { .. })
+            ) {
+                let is_null = match (&a, &b) {
+                    (Value::Int { value, .. }, Value::Null)
+                    | (Value::Null, Value::Int { value, .. }) => *value == 0,
+                    _ => unreachable!(),
+                };
+                return Ok(Value::Bool(match op {
+                    BinOp::Eq => is_null,
+                    BinOp::Ne => !is_null,
                     _ => {
                         return Err(EffectError::unsupported(
                             Construct::PointerNullComparison,
