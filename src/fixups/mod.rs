@@ -444,6 +444,9 @@ fn apply_with_logger(
     step!(program, Pass::LateInlineTemps, {
         inline_temps_to_fixpoint(&mut program, InlinePass::Late, logger);
     });
+    step!(program, Pass::PtrCopy, {
+        ptr_copy_to_fixpoint(&mut program, logger);
+    });
     step!(program, Pass::DeadLocals, {
         dead_locals_to_fixpoint(&mut program, logger);
     });
@@ -535,6 +538,22 @@ fn constant_conditions_to_fixpoint(program: &mut Program, logger: &mut impl Trac
             if let Item::Fn(f) = item
                 && rewrite::constant_conditions::ConstantConditions::new(&f.name, logger)
                     .fixup(&mut f.body)
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+}
+
+fn ptr_copy_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
+    loop {
+        let mut changed = false;
+        for item in &mut program.items {
+            if let Item::Fn(f) = item
+                && rewrite::ptr_copy::PtrCopy::new(&f.name, logger).fixup(&mut f.body)
             {
                 changed = true;
             }
