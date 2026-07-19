@@ -612,6 +612,45 @@ fn do_while_loop_body_scope_is_unwrapped() {
 }
 
 #[test]
+fn while_loop_body_scope_is_unwrapped() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-while-scope");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_src = fixtures_dir().join("while_loop.c");
+    let generated = tmp.join("while_loop.generated.rs");
+    support::translate(&c_src, &generated).expect("translate while_loop fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated while_loop rust");
+
+    assert!(rust.contains(
+        "loop {\n        if !(i <= n) {\n            break;\n        }\n        total += i;\n        i += 1;"
+    ));
+    assert!(!rust.contains(
+        "loop {\n        if !(i <= n) {\n            break;\n        }\n        {\n            total += i;"
+    ));
+}
+
+#[test]
+fn decrement_temp_updates_use_compound_assignment() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-decrement");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_src = fixtures_dir().join("decrement.c");
+    let generated = tmp.join("decrement.generated.rs");
+    support::translate(&c_src, &generated).expect("translate decrement fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated decrement rust");
+
+    assert!(rust.contains("let _v2: i32 = a;\n    a -= 1;\n    let post: i32 = _v2;"));
+    assert!(rust.contains("a -= 1;\n    let mut pre: i32 = a;"));
+    assert!(rust.contains("let _v6: i32 = a;\n    a -= 1;"));
+    assert!(rust.contains("pre -= 1;\n    let sum: i32 = _v6 + pre;"));
+    assert!(!rust.contains("a = _v2 - 1;"));
+    assert!(!rust.contains("let _v5: i32 = a - 1;"));
+    assert!(!rust.contains("a = _v5;"));
+    assert!(!rust.contains("let _v9: i32 = pre - 1;"));
+    assert!(!rust.contains("pre = _v9;"));
+}
+
+#[test]
 fn compound_assignment_temps_are_inlined() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-compound-fixup");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
