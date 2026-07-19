@@ -1713,14 +1713,32 @@ fn scalar_heap_owner_uses_box_drop() {
     support::translate(&c_src, &generated).expect("translate heap_box_fixup fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated heap_box_fixup rust");
 
-    assert!(rust.contains("let mut p: Box<i32> = Box::<i32>::new(0);"));
-    assert!(rust.contains("*p = 41;"));
+    assert!(rust.contains("let mut p: Box<i32> = Box::<i32>::new(41);"));
+    assert!(!rust.contains("*p = 41;"));
     assert!(rust.contains("*p = *p + 1;"));
+    assert!(rust.contains("println!(\"{}\", *p);"));
+    assert!(!rust.contains("let _v11: i32 = *p;"));
     assert!(!rust.contains("*p = _v"));
     assert!(!rust.contains("fn malloc("));
     assert!(!rust.contains("fn free("));
     assert!(!rust.contains("unsafe { malloc("));
     assert!(!rust.contains("unsafe { free("));
+}
+
+#[test]
+fn scalar_heap_owner_folds_first_store_after_non_reading_statements() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-heap-box-delayed");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("heap_box_delayed_store.c");
+    let generated = tmp.join("heap_box_delayed_store.generated.rs");
+    support::translate(&c_src, &generated).expect("translate heap_box_delayed_store fixture");
+    let rust =
+        std::fs::read_to_string(&generated).expect("read generated heap_box_delayed_store rust");
+
+    assert!(rust.contains("let p: Box<i32> = Box::<i32>::new(41);"));
+    assert!(rust.contains("let mut marker: i32 = 7;"));
+    assert!(rust.contains("marker += 1;"));
+    assert!(!rust.contains("*p = 41;"));
 }
 
 #[test]
