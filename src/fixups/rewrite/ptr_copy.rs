@@ -87,6 +87,7 @@ impl<'a> PtrCopy<'a> {
                     match kind {
                         CopyRewriteKind::CopyWithin => "copy_within",
                         CopyRewriteKind::CopyFromSlice => "copy_from_slice",
+                        CopyRewriteKind::FillZero => "fill_zero",
                     },
                 ),
             ],
@@ -117,6 +118,7 @@ struct CopyPlan {
 enum CopyRewriteKind {
     CopyWithin,
     CopyFromSlice,
+    FillZero,
 }
 
 #[derive(Clone)]
@@ -162,6 +164,9 @@ impl CopyEnv {
 }
 
 fn copy_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
+    if let Some(plan) = write_bytes_plan(stmt, env) {
+        return Some(plan);
+    }
     let copy = ptr_copy_stmt(stmt)?;
     let src = endpoint(&copy.src)?;
     let dst = endpoint(&copy.dst)?;
@@ -194,6 +199,30 @@ fn copy_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
     })
 }
 
+fn write_bytes_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
+    let write = write_bytes_stmt(stmt)?;
+    if count_value(write.val, env)? != 0 {
+        return None;
+    }
+    let dst = endpoint(write.dst)?;
+    let dst_info = env.arrays.get(&dst.base)?;
+    if !dst_info.mutable || !zero_fill_type(dst_info.elem_size) {
+        return None;
+    }
+    let count_bytes = count_value(write.count, env)?;
+    if count_bytes % dst_info.elem_size != 0 {
+        return None;
+    }
+    let len = count_bytes / dst_info.elem_size;
+    if len == 0 || dst.start.checked_add(len)? > dst_info.len {
+        return None;
+    }
+    Some(CopyPlan {
+        expr: fill_zero(&dst.base, dst.start, len, dst_info.len),
+        kind: CopyRewriteKind::FillZero,
+    })
+}
+
 struct PtrCopyExpr<'a> {
     src: &'a Expr,
     dst: &'a Expr,
@@ -217,6 +246,28 @@ fn ptr_copy_stmt(stmt: &Stmt) -> Option<PtrCopyExpr<'_>> {
         Expr::PtrCopy {
             src, dst, count, ..
         } => Some(PtrCopyExpr { src, dst, count }),
+        _ => None,
+    }
+}
+
+struct WriteBytesExpr<'a> {
+    dst: &'a Expr,
+    val: &'a Expr,
+    count: &'a Expr,
+}
+
+fn write_bytes_stmt(stmt: &Stmt) -> Option<WriteBytesExpr<'_>> {
+    let Stmt::Expr(expr) = stmt else {
+        return None;
+    };
+    match expr {
+        Expr::Unsafe(block) if block.stmts.is_empty() => {
+            let Expr::WriteBytes { dst, val, count } = block.tail.as_deref()? else {
+                return None;
+            };
+            Some(WriteBytesExpr { dst, val, count })
+        }
+        Expr::WriteBytes { dst, val, count } => Some(WriteBytesExpr { dst, val, count }),
         _ => None,
     }
 }
@@ -294,6 +345,19 @@ fn copy_from_slice(dst: &str, dst_start: u64, len: u64, src: &str, src_start: u6
     }
 }
 
+fn fill_zero(base: &str, start: u64, len: u64, array_len: u64) -> Expr {
+    let recv = if start == 0 && len == array_len {
+        Expr::Var(base.into())
+    } else {
+        slice_index(base, start, start + len)
+    };
+    Expr::MethodCall {
+        recv: Box::new(recv),
+        method: "fill".into(),
+        args: vec![int_zero()],
+    }
+}
+
 fn slice_index(base: &str, start: u64, end: u64) -> Expr {
     Expr::Index {
         base: Box::new(Expr::Var(base.into())),
@@ -310,6 +374,10 @@ fn range(start: u64, end: u64) -> Expr {
 
 fn uint(value: u64) -> Expr {
     Expr::Value(RustValue::I64(value as i64))
+}
+
+fn int_zero() -> Expr {
+    Expr::Value(RustValue::I64(0))
 }
 
 fn int_value(expr: &Expr) -> Option<i128> {
@@ -345,6 +413,10 @@ fn type_size(ty: &Type) -> Option<u64> {
         Type::Prim(Prim::I128 | Prim::U128) => Some(16),
         _ => None,
     }
+}
+
+fn zero_fill_type(elem_size: u64) -> bool {
+    matches!(elem_size, 1 | 2 | 4 | 8 | 16)
 }
 
 #[cfg(test)]
@@ -384,6 +456,17 @@ mod tests {
                 dst: Box::new(dst),
                 count: Box::new(count),
                 overlapping: true,
+            })),
+        })))
+    }
+
+    fn write_bytes(dst: Expr, val: Expr, count: Expr) -> Stmt {
+        Stmt::Expr(Expr::Unsafe(Box::new(Block {
+            stmts: vec![],
+            tail: Some(Box::new(Expr::WriteBytes {
+                dst: Box::new(dst),
+                val: Box::new(val),
+                count: Box::new(count),
             })),
         })))
     }
@@ -441,5 +524,38 @@ mod tests {
 
         assert!(out.contains("std::ptr::copy"), "{out}");
         assert!(!out.contains("copy_from_slice"), "{out}");
+    }
+
+    #[test]
+    fn rewrites_whole_array_zero_write_bytes_to_fill() {
+        let out = after(vec![
+            array("a", "[i32; 5]", 5),
+            write_bytes(as_mut_ptr("a"), int(0), int(20)),
+        ]);
+
+        assert!(out.contains("a.fill(0);"), "{out}");
+        assert!(!out.contains("std::ptr::write_bytes"), "{out}");
+    }
+
+    #[test]
+    fn rewrites_partial_aligned_zero_write_bytes_to_range_fill() {
+        let out = after(vec![
+            array("a", "[i32; 5]", 5),
+            write_bytes(add(as_mut_ptr("a"), 1), int(0), int(8)),
+        ]);
+
+        assert!(out.contains("a[(1..3)].fill(0);"), "{out}");
+        assert!(!out.contains("std::ptr::write_bytes"), "{out}");
+    }
+
+    #[test]
+    fn keeps_nonzero_write_bytes_raw() {
+        let out = after(vec![
+            array("a", "[i32; 5]", 5),
+            write_bytes(as_mut_ptr("a"), int(255), int(20)),
+        ]);
+
+        assert!(out.contains("std::ptr::write_bytes"), "{out}");
+        assert!(!out.contains(".fill("), "{out}");
     }
 }
