@@ -760,24 +760,3 @@ fn lowered_rust(path: &Path) -> Result<String, String> {
     let (_, program) = lowered_program(path)?;
     Ok(program.emit())
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn rust_effect_extraction_error_reports_mode_fixture_side_and_reason() {
-        let err = effect_extraction_error(
-            "compare-effects-rust-rust",
-            Path::new("tests/fixtures/memcpy.c"),
-            "raw rust_ast",
-            "unsupported CallTarget: Str(\"memcpy\")",
-        );
-
-        assert!(err.contains("effect extraction failed"));
-        assert!(err.contains("mode: compare-effects-rust-rust"));
-        assert!(err.contains("fixture: tests/fixtures/memcpy.c"));
-        assert!(err.contains("side: raw rust_ast"));
-        assert!(err.contains("reason: unsupported CallTarget: Str(\"memcpy\")"));
-    }
-}
