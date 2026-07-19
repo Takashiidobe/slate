@@ -1,27 +1,19 @@
-//! Shared effect vocabulary for cross-interpretation equivalence checking.
+//! Shared effect vocabulary for Rust-to-Rust equivalence checking.
 //!
-//! Two independent walkers each turn a program into an [`EffectTrace`]: one
-//! over the CIR op-tree ([`cir`]), one over the emitted Rust AST
-//! ([`rust_ast`]). A third piece ([`interpreter`]) takes two traces and
-//! decides whether they are equivalent. This module defines the trace and
-//! effect types both walkers emit and the comparator consumes, so none of the
-//! three has to agree on vocabulary with the others by convention alone.
+//! The Rust AST interpreter turns raw lowered Rust and fixuped Rust into
+//! [`EffectTrace`]s. A comparator then decides whether the traces are
+//! equivalent. This module defines the trace and effect types both extraction
+//! and comparison use, so the effect vocabulary stays explicit.
 //!
 //! Two design decisions make traces from two structurally different programs
 //! (a `*const i32` walk vs. its idiomatized `Vec<i32>`/`Box<[i32]>` form)
 //! comparable at all:
 //!
 //! - **Locations never carry a real address.** [`AllocId`] numbers
-//!   allocations by the order the *producing* walker saw them get created,
-//!   not by pointer value — a CIR walker and a rust_ast walker each start
-//!   counting from zero independently. As long as both programs allocate in
-//!   the same relative order (true for a fixup that preserves allocation
-//!   order, which is the only kind of fixup that could be correct), the same
-//!   `AllocId` on both sides denotes the same logical buffer with no
-//!   remapping table required. [`Location`] then addresses into that
-//!   allocation by byte offset, which is representation-independent: a
-//!   `*const i32` walk offsets by `i * 4`, a `Vec<i32>` index does the same
-//!   arithmetic internally.
+//!   allocations by the order the Rust AST interpreter saw them get created,
+//!   not by pointer value. Comparison later compacts allocation ids so raw and
+//!   fixuped Rust can differ by dead or unobserved allocation details while
+//!   still naming the same live logical buffers consistently.
 //! - **Only effectful operations are ever pushed.** There is no "silent tick"
 //!   variant in [`Effect`] — a walker simply does not emit anything while
 //!   evaluating an internal expression, only when it allocates, reads,
@@ -33,7 +25,6 @@
 
 use crate::rust_ast::{AtomicOrdering, AtomicRmwOp};
 
-pub mod cir;
 pub mod interpreter;
 pub mod rust_ast;
 
@@ -237,7 +228,7 @@ mod tests {
     fn same_allocation_order_makes_traces_comparable_across_shapes() {
         let alloc = AllocId(0);
 
-        let cir_trace = EffectTrace {
+        let raw_trace = EffectTrace {
             effects: vec![
                 Effect::Alloc { alloc, size: 8 },
                 Effect::Write {
@@ -279,7 +270,7 @@ mod tests {
             ],
         };
 
-        assert_eq!(cir_trace, rust_trace);
+        assert_eq!(raw_trace, rust_trace);
     }
 
     #[test]
