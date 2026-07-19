@@ -66,10 +66,35 @@ pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
 }
 ```
 
-Recursing into nested bodies is boilerplate repeated per pass (see
-`zero_init::for_nested_body`, `inline_temps::inline_nested_temps`). Match the
-existing set of nested-body arms exactly so a pass reaches statements inside
+Recursing into nested bodies is boilerplate repeated per pass. Prefer the
+path-aware helpers in `src/fixups/support/walk.rs`; if a traversal shape is
+missing, extend the shared helper instead of adding a private walker. Match the
+existing nested-body coverage so a pass reaches statements inside
 `if`/loops/scopes/`unsafe`.
+
+Passes that emit structured debug events should use a small stateful pass struct
+instead of threading a logger through every helper:
+
+```rust
+pub(in crate::fixups) fn fixup(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+) -> bool {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    MyPass::new(&mut logger).fixup(body, function, facts)
+}
+
+pub(in crate::fixups) struct MyPass<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+```
+
+`src/fixups/mod.rs` constructs the same pass struct with the active logger when
+running the shared pass sequence. Normal translation passes a `NoopLogger`;
+`fixup-debug` passes a collecting logger. Keep event-only work behind
+`self.logger.is_enabled()` so the normal path does not clone AST nodes or render
+snippets.
 
 ## Reuse the shared helpers
 
@@ -123,7 +148,9 @@ target+value pair, the sites are:
 - `src/rust_ast.rs` — the `enum` definition and `stmt_substitute_var`.
 - `src/codegen.rs` — how it renders.
 - `src/fixups/idents.rs` — `stmt_ident_count`.
-- `src/fixups/inline_temps.rs` — `walk_stmt_exprs`.
+- `src/fixups/rewrite/inline_temps.rs` and `src/fixups/support/walk.rs` — the
+  expression/body traversal sites that need to know how the new node contains
+  children.
 
 Treat the new node like its closest existing sibling in the walkers (a
 `CompoundAssign` counts/substitutes/walks exactly like `Assign`).
@@ -142,6 +169,81 @@ zero_init::fixup(&mut f.body);
 compound_assign::fixup(&mut f.body);   // new
 retval::fixup(&mut f.body);
 ```
+
+If the pass should appear in `fixup-debug`, add a variant to
+`src/fixups/trace.rs`'s `Pass` enum and wire that enum value at the pass boundary
+in `src/fixups/mod.rs`. Use that same enum value for every `RewriteEvent.pass`
+the pass emits. The string returned by `Pass::name()` is also the CLI spelling
+for `fixup-debug --up-to-pass <pass>` and `--only-pass <pass>`.
+
+## Structured debug events
+
+Instrument a pass when the event explains a real rewrite decision better than a
+whole-program before/after diff. Emit events only around concrete rewrite points
+or deliberate candidate skips worth debugging. Each event should include:
+
+- `pass`: the `Pass` enum variant for the active pass.
+- `kind`: a stable, pass-local action name such as `inline_temp`,
+  `fold_zero_init_assignment`, or `remove_dead_local`.
+- `location`: source file/function/line when available, otherwise function name
+  plus AST path. Use `function_path_location(facts, function, path)` for
+  facts-backed per-function passes, or `path_location(path)` when there is no
+  function fact.
+- `before`: cloned AST nodes from immediately before the rewrite.
+- `after`: cloned AST nodes from immediately after the rewrite, or empty when a
+  node is removed.
+- `facts`: stable key/value strings for the facts and guard decisions that made
+  the rewrite legal.
+
+For example, `zero_init` folding:
+
+```text
+before:
+  declaration:
+    let mut x: i32 = 0;
+  assignment:
+    x = 10;
+after:
+  declaration:
+    let mut x: i32 = 10;
+facts:
+  binding_name=x
+  binding_is_zero=true
+  assignment_reads_binding=false
+  assignment_writes_binding=true
+```
+
+For `late_inline_temps`, include both the producer temp and the consumer
+statement. This is especially useful for method-argument or closure-shaped
+consumers, where a temp may be folded into a call argument while preserving the
+surrounding receiver/call shape:
+
+```text
+before:
+  producer:
+    let _v3 = buf.as_slice().iter().position(|__slate_byte| *__slate_byte == needle);
+  consumer:
+    let _v11: i64 = _v3.unwrap() as i64;
+after:
+  consumer:
+    let _v11: i64 = buf.as_slice().iter().position(|__slate_byte| *__slate_byte == needle).unwrap() as i64;
+facts:
+  temp=_v3
+  phase=late
+  reads=1
+  producer_path=stmt[2]
+  consumer_path=stmt[3]
+```
+
+Rendered snippets are for logs only. Do not match on rendered snippets, parse
+them, or use them to drive a rewrite. The rewrite must still use structured
+`Stmt`/`Expr` nodes plus `FixupFacts`; rendering belongs only in the trace
+payload after the AST nodes have already been selected.
+
+Good fact keys are stable and domain-specific: binding id/name, read/write
+counts, producer/consumer paths, purity/effect summaries, and guard results such
+as `source_changes_between=false`. Avoid dumping arbitrary debug text when a
+small set of facts explains the decision.
 
 ## Test it
 
