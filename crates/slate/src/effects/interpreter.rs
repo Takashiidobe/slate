@@ -5,6 +5,7 @@ use super::{AllocId, AtomicId, Effect, EffectTrace, IntWidth, Location, OptionVa
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Divergence {
+    Internal(String),
     LengthMismatch {
         at: usize,
         left_len: usize,
@@ -20,6 +21,7 @@ pub enum Divergence {
 impl std::fmt::Display for Divergence {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Divergence::Internal(message) => write!(f, "effect comparison failed: {message}"),
             Divergence::LengthMismatch {
                 at,
                 left_len,
@@ -37,8 +39,8 @@ impl std::fmt::Display for Divergence {
 }
 
 pub fn compare(left: &EffectTrace, right: &EffectTrace) -> Result<(), Box<Divergence>> {
-    let left = normalized_for_compare(left);
-    let right = normalized_for_compare(right);
+    let left = normalized_for_compare(left)?;
+    let right = normalized_for_compare(right)?;
     let mut first_mismatch = None;
     for (at, (left_effect, right_effect)) in
         left.effects.iter().zip(right.effects.iter()).enumerate()
@@ -69,7 +71,7 @@ pub fn compare(left: &EffectTrace, right: &EffectTrace) -> Result<(), Box<Diverg
     Ok(())
 }
 
-fn normalized_for_compare(trace: &EffectTrace) -> EffectTrace {
+fn normalized_for_compare(trace: &EffectTrace) -> Result<EffectTrace, Box<Divergence>> {
     let observed = observed_allocs(trace);
     let pruned = prune_dead_writes(&trace.effects);
     let effects: Vec<Effect> = pruned
@@ -80,12 +82,12 @@ fn normalized_for_compare(trace: &EffectTrace) -> EffectTrace {
         .collect();
     let alloc_map = compact_alloc_map(&effects);
     let atomic_map = compact_atomic_map(&effects);
-    EffectTrace {
+    Ok(EffectTrace {
         effects: effects
             .into_iter()
             .map(|effect| remap_effect(effect, &alloc_map, &atomic_map))
-            .collect(),
-    }
+            .collect::<Result<Vec<_>, _>>()?,
+    })
 }
 
 fn externally_observable_projection_matches(left: &EffectTrace, right: &EffectTrace) -> bool {
@@ -275,10 +277,14 @@ fn effect_atomic(effect: &Effect) -> Option<AtomicId> {
     }
 }
 
-fn remap_atomic(atomic: AtomicId, atomic_map: &BTreeMap<AtomicId, AtomicId>) -> AtomicId {
-    *atomic_map
+fn remap_atomic(
+    atomic: AtomicId,
+    atomic_map: &BTreeMap<AtomicId, AtomicId>,
+) -> Result<AtomicId, Box<Divergence>> {
+    atomic_map
         .get(&atomic)
-        .unwrap_or_else(|| panic!("effects::interpreter: unmapped atomic {atomic:?}"))
+        .copied()
+        .ok_or_else(|| Box::new(Divergence::Internal(format!("unmapped atomic {atomic:?}"))))
 }
 
 fn effect_allocs(effect: &Effect) -> Vec<AllocId> {
@@ -359,49 +365,49 @@ fn remap_effect(
     effect: Effect,
     alloc_map: &BTreeMap<AllocId, AllocId>,
     atomic_map: &BTreeMap<AtomicId, AtomicId>,
-) -> Effect {
+) -> Result<Effect, Box<Divergence>> {
     match effect {
-        Effect::Alloc { alloc, size } => Effect::Alloc {
+        Effect::Alloc { alloc, size } => Ok(Effect::Alloc {
             alloc: remap_alloc(alloc, alloc_map),
             size,
-        },
-        Effect::Dealloc { alloc } => Effect::Dealloc {
+        }),
+        Effect::Dealloc { alloc } => Ok(Effect::Dealloc {
             alloc: remap_alloc(alloc, alloc_map),
-        },
-        Effect::Write { loc, value } => Effect::Write {
+        }),
+        Effect::Write { loc, value } => Ok(Effect::Write {
             loc: remap_loc(loc, alloc_map),
             value: remap_value(value, alloc_map),
-        },
-        Effect::Read { loc, value } => Effect::Read {
+        }),
+        Effect::Read { loc, value } => Ok(Effect::Read {
             loc: remap_loc(loc, alloc_map),
             value: remap_value(value, alloc_map),
-        },
-        Effect::Call { name, args } => Effect::Call {
+        }),
+        Effect::Call { name, args } => Ok(Effect::Call {
             name,
             args: args
                 .into_iter()
                 .map(|value| remap_value(value, alloc_map))
                 .collect(),
-        },
-        Effect::Return(value) => Effect::Return(remap_value(value, alloc_map)),
+        }),
+        Effect::Return(value) => Ok(Effect::Return(remap_value(value, alloc_map))),
         Effect::AtomicLoad {
             atomic,
             ordering,
             value,
-        } => Effect::AtomicLoad {
-            atomic: remap_atomic(atomic, atomic_map),
+        } => Ok(Effect::AtomicLoad {
+            atomic: remap_atomic(atomic, atomic_map)?,
             ordering,
             value: remap_value(value, alloc_map),
-        },
+        }),
         Effect::AtomicStore {
             atomic,
             ordering,
             value,
-        } => Effect::AtomicStore {
-            atomic: remap_atomic(atomic, atomic_map),
+        } => Ok(Effect::AtomicStore {
+            atomic: remap_atomic(atomic, atomic_map)?,
             ordering,
             value: remap_value(value, alloc_map),
-        },
+        }),
         Effect::AtomicRmw {
             atomic,
             op,
@@ -409,25 +415,25 @@ fn remap_effect(
             operand,
             old,
             new,
-        } => Effect::AtomicRmw {
-            atomic: remap_atomic(atomic, atomic_map),
+        } => Ok(Effect::AtomicRmw {
+            atomic: remap_atomic(atomic, atomic_map)?,
             op,
             ordering,
             operand: remap_value(operand, alloc_map),
             old: remap_value(old, alloc_map),
             new: remap_value(new, alloc_map),
-        },
+        }),
         Effect::AtomicSwap {
             atomic,
             ordering,
             old,
             new,
-        } => Effect::AtomicSwap {
-            atomic: remap_atomic(atomic, atomic_map),
+        } => Ok(Effect::AtomicSwap {
+            atomic: remap_atomic(atomic, atomic_map)?,
             ordering,
             old: remap_value(old, alloc_map),
             new: remap_value(new, alloc_map),
-        },
+        }),
         Effect::AtomicCompareExchange {
             atomic,
             success,
@@ -436,20 +442,20 @@ fn remap_effect(
             desired,
             old,
             exchanged,
-        } => Effect::AtomicCompareExchange {
-            atomic: remap_atomic(atomic, atomic_map),
+        } => Ok(Effect::AtomicCompareExchange {
+            atomic: remap_atomic(atomic, atomic_map)?,
             success,
             failure,
             expected: remap_value(expected, alloc_map),
             desired: remap_value(desired, alloc_map),
             old: remap_value(old, alloc_map),
             exchanged,
-        },
-        Effect::FileOpen { file, path, mode } => Effect::FileOpen { file, path, mode },
-        Effect::FileWrite { file, bytes } => Effect::FileWrite { file, bytes },
-        Effect::FileClose { file } => Effect::FileClose { file },
-        Effect::AtomicFence { ordering } => Effect::AtomicFence { ordering },
-        Effect::Exit(code) => Effect::Exit(code),
+        }),
+        Effect::FileOpen { file, path, mode } => Ok(Effect::FileOpen { file, path, mode }),
+        Effect::FileWrite { file, bytes } => Ok(Effect::FileWrite { file, bytes }),
+        Effect::FileClose { file } => Ok(Effect::FileClose { file }),
+        Effect::AtomicFence { ordering } => Ok(Effect::AtomicFence { ordering }),
+        Effect::Exit(code) => Ok(Effect::Exit(code)),
     }
 }
 

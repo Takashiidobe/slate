@@ -721,7 +721,7 @@ impl Interp {
     }
 
     fn run_for_enumerate(&mut self, pat: &str, iter: &Expr, body: &[IndentStmt]) -> EResult<Flow> {
-        let (index_param, item_param) = tuple_pat2(pat);
+        let (index_param, item_param) = tuple_pat2(pat)?;
         let (alloc, elem_size, len) = self.iter_source(iter)?;
         for index in 0..len {
             self.scalars.insert(
@@ -986,7 +986,7 @@ impl Interp {
             Some(binding) => binding.clone(),
             None => return Err(EffectError::unknown(BindingKind::Vec, name)),
         };
-        let elems = array_init_elems(init, binding.len);
+        let elems = array_init_elems(init, binding.len)?;
         for (index, elem) in elems.into_iter().enumerate() {
             let elem_value = self.eval(elem)?;
             let value = cast_value_to_type(elem_value, elem_ty)?;
@@ -1048,7 +1048,7 @@ impl Interp {
             Some(binding) => binding.clone(),
             None => return Err(EffectError::unknown(BindingKind::Vec, name)),
         };
-        let elems = array_init_elems(init, binding.len);
+        let elems = array_init_elems(init, binding.len)?;
         for (index, elem) in elems.into_iter().enumerate() {
             self.write_record_array_elem(name, elem_ty, index as u64, elem)?;
         }
@@ -1097,7 +1097,7 @@ impl Interp {
                 let Value::Ref(src) = src else {
                     return Err(EffectError::type_mismatch(ValueKind::Ref, src));
                 };
-                self.copy_struct_bytes(src, binding.alloc, base_offset);
+                self.copy_struct_bytes(src, binding.alloc, base_offset)?;
             }
         }
         Ok(())
@@ -1232,7 +1232,7 @@ impl Interp {
                 fmt_expr.clone(),
             ));
         };
-        let specs: Vec<FormatSpec> = parse_format_string(fmt)
+        let specs: Vec<FormatSpec> = parse_format_string(fmt)?
             .into_iter()
             .filter_map(|segment| match segment {
                 FormatSegment::Placeholder(spec) => Some(spec),
@@ -1276,13 +1276,13 @@ impl Interp {
         };
         let mut out = Vec::new();
         let mut arg_index = 0;
-        for segment in parse_format_string(fmt) {
+        for segment in parse_format_string(fmt)? {
             match segment {
                 FormatSegment::Literal(text) => out.extend_from_slice(text.as_bytes()),
                 FormatSegment::Placeholder(spec) => {
                     let value = self.eval(&rest[arg_index])?;
                     arg_index += 1;
-                    out.extend(render_format_arg(&value, &spec));
+                    out.extend(render_format_arg(&value, &spec)?);
                 }
             }
         }
@@ -1589,7 +1589,7 @@ impl Interp {
             alloc,
             size: source.size,
         });
-        self.copy_struct_bytes(src, alloc, 0);
+        self.copy_struct_bytes(src, alloc, 0)?;
         self.structs.insert(
             name.to_string(),
             StructBinding {
@@ -1608,22 +1608,22 @@ impl Interp {
             Some(binding) => binding.alloc,
             None => return Err(EffectError::unknown(BindingKind::Struct, name)),
         };
-        self.copy_struct_bytes(src, alloc, 0);
+        self.copy_struct_bytes(src, alloc, 0)?;
         Ok(())
     }
 
-    fn copy_struct_bytes(&mut self, src: Location, dst_alloc: AllocId, dst_base_offset: u64) {
+    fn copy_struct_bytes(
+        &mut self,
+        src: Location,
+        dst_alloc: AllocId,
+        dst_base_offset: u64,
+    ) -> EResult<()> {
         let source = self
             .structs
             .values()
             .find(|binding| binding.alloc == src.alloc)
             .cloned()
-            .unwrap_or_else(|| {
-                panic!(
-                    "effects::rust_ast: copy from unknown struct allocation {:?}",
-                    src.alloc
-                )
-            });
+            .ok_or_else(|| EffectError::unknown_alloc(src.alloc))?;
         let mut offsets: Vec<u64> = self
             .heap
             .keys()
@@ -1644,6 +1644,7 @@ impl Interp {
             self.heap.insert(loc, value.clone());
             self.trace.push(Effect::Write { loc, value });
         }
+        Ok(())
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -5340,19 +5341,19 @@ fn pattern_matches(pattern: &Pattern, value: Value) -> bool {
     }
 }
 
-fn tuple_pat2(pat: &str) -> (&str, &str) {
+fn tuple_pat2(pat: &str) -> EResult<(&str, &str)> {
     let Some(inner) = pat.strip_prefix('(').and_then(|pat| pat.strip_suffix(')')) else {
-        panic!("effects::rust_ast: enumerate loop expects tuple pattern, found `{pat}`");
+        return Err(EffectError::unsupported(Construct::ForLoopIterator, pat));
     };
     let Some((left, right)) = inner.split_once(',') else {
-        panic!("effects::rust_ast: enumerate loop expects two pattern fields, found `{pat}`");
+        return Err(EffectError::unsupported(Construct::ForLoopIterator, pat));
     };
     let left = left.trim();
     let right = right.trim();
     if left.is_empty() || right.is_empty() || right.contains(',') {
-        panic!("effects::rust_ast: enumerate loop expects two bindings, found `{pat}`");
+        return Err(EffectError::unsupported(Construct::ForLoopIterator, pat));
     }
-    (left, right)
+    Ok((left, right))
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -5536,7 +5537,7 @@ enum FormatSegment<'a> {
     Placeholder(FormatSpec),
 }
 
-fn parse_format_string(fmt: &str) -> Vec<FormatSegment<'_>> {
+fn parse_format_string(fmt: &str) -> EResult<Vec<FormatSegment<'_>>> {
     let mut segments = Vec::new();
     let mut literal_start = 0;
     let mut i = 0;
@@ -5559,7 +5560,7 @@ fn parse_format_string(fmt: &str) -> Vec<FormatSegment<'_>> {
                 }
                 let start = i + 1;
                 let Some(end_rel) = fmt[start..].find('}') else {
-                    panic!("effects::rust_ast: unterminated format placeholder in `{fmt}`");
+                    return Err(EffectError::unsupported(Construct::FormatMacro, fmt));
                 };
                 let inner = &fmt[start..start + end_rel];
                 segments.push(FormatSegment::Placeholder(parse_format_spec(
@@ -5574,7 +5575,7 @@ fn parse_format_string(fmt: &str) -> Vec<FormatSegment<'_>> {
     if literal_start < fmt.len() {
         segments.push(FormatSegment::Literal(&fmt[literal_start..]));
     }
-    segments
+    Ok(segments)
 }
 
 fn parse_format_spec(spec: &str) -> FormatSpec {
@@ -5663,7 +5664,7 @@ fn format_uint_radix(value: i128, width: IntWidth, base: u32, upper: bool) -> St
     }
 }
 
-fn render_format_arg(value: &Value, spec: &FormatSpec) -> Vec<u8> {
+fn render_format_arg(value: &Value, spec: &FormatSpec) -> EResult<Vec<u8>> {
     let (core, is_numeric) = match (value, spec.ty) {
         (Value::Int { value, width, .. }, 'x') => {
             (format_uint_radix(*value, *width, 16, false), true)
@@ -5681,7 +5682,12 @@ fn render_format_arg(value: &Value, spec: &FormatSpec) -> Vec<u8> {
         (Value::Bytes(bytes), _) => (String::from_utf8_lossy(bytes).into_owned(), false),
         (Value::Float(value), _) => (value.to_string(), false),
         (Value::Bool(value), _) => (value.to_string(), false),
-        other => panic!("effects::rust_ast: unsupported format! argument `{other:?}`"),
+        (other, _) => {
+            return Err(EffectError::unsupported(
+                Construct::FormatMacro,
+                other.clone(),
+            ));
+        }
     };
     let prefix = if is_numeric && spec.alternate {
         match spec.ty {
@@ -5698,14 +5704,14 @@ fn render_format_arg(value: &Value, spec: &FormatSpec) -> Vec<u8> {
     let width = spec.width.unwrap_or(0);
     let pad_len = width.saturating_sub(body.chars().count());
     if pad_len == 0 {
-        return body.into_bytes();
+        return Ok(body.into_bytes());
     }
     if is_numeric && spec.zero_pad && spec.align.is_none() {
         let mut out = String::with_capacity(width);
         out.push_str(prefix);
         out.extend(std::iter::repeat_n('0', pad_len));
         out.push_str(&core);
-        return out.into_bytes();
+        return Ok(out.into_bytes());
     }
     let align = spec.align.unwrap_or(if is_numeric {
         Align::Right
@@ -5716,12 +5722,12 @@ fn render_format_arg(value: &Value, spec: &FormatSpec) -> Vec<u8> {
         Align::Left => {
             let mut out = body;
             out.extend(std::iter::repeat_n(spec.fill, pad_len));
-            out.into_bytes()
+            Ok(out.into_bytes())
         }
         Align::Right => {
             let mut out: String = std::iter::repeat_n(spec.fill, pad_len).collect();
             out.push_str(&body);
-            out.into_bytes()
+            Ok(out.into_bytes())
         }
         Align::Center => {
             let left = pad_len / 2;
@@ -5729,29 +5735,40 @@ fn render_format_arg(value: &Value, spec: &FormatSpec) -> Vec<u8> {
             let mut out: String = std::iter::repeat_n(spec.fill, left).collect();
             out.push_str(&body);
             out.extend(std::iter::repeat_n(spec.fill, right));
-            out.into_bytes()
+            Ok(out.into_bytes())
         }
     }
 }
 
-fn array_init_elems(init: &Expr, len: u64) -> Vec<&Expr> {
+fn array_init_elems(init: &Expr, len: u64) -> EResult<Vec<&Expr>> {
     match init {
         Expr::ArrayLit(elems) => {
             if elems.len() as u64 != len {
-                panic!("effects::rust_ast: array initializer length does not match type");
+                return Err(EffectError::length_mismatch(
+                    Construct::ArrayInitializer,
+                    len as usize,
+                    elems.len(),
+                ));
             }
-            elems.iter().collect()
+            Ok(elems.iter().collect())
         }
         Expr::ArrayRepeat {
             elem,
             len: repeat_len,
         } => {
             if *repeat_len as u64 != len {
-                panic!("effects::rust_ast: array repeat length does not match type");
+                return Err(EffectError::length_mismatch(
+                    Construct::ArrayInitializer,
+                    len as usize,
+                    *repeat_len,
+                ));
             }
-            std::iter::repeat_n(elem.as_ref(), *repeat_len).collect()
+            Ok(std::iter::repeat_n(elem.as_ref(), *repeat_len).collect())
         }
-        other => panic!("effects::rust_ast: unsupported array initializer `{other:?}`"),
+        other => Err(EffectError::unsupported(
+            Construct::ArrayInitializer,
+            other.clone(),
+        )),
     }
 }
 
