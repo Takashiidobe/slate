@@ -50,17 +50,17 @@ fn fixup_impl(program: &mut Program, facts: &FixupFacts, logger: &mut dyn TraceL
         if changed {
             let removable = origins.keys().cloned().collect();
             changed |= prune_dead_pointer_stmts(&mut f.body, &removable);
-            if let Some(before) = before {
-                if body_code(&before) != body_code(&f.body) {
-                    logger.rewrite(RewriteEvent {
-                        pass: TracePass::ArrayElementPointerOrigin,
-                        kind: "rewrite_array_element_pointer_origins".into(),
-                        location: function_path_location(facts, function, &[]),
-                        before: vec![stmts_snippet("body", &before)],
-                        after: vec![stmts_snippet("body", &f.body)],
-                        facts: vec![fact("origins", origins.len().to_string())],
-                    });
-                }
+            if let Some(before) = before
+                && body_code(&before) != body_code(&f.body)
+            {
+                logger.rewrite(RewriteEvent {
+                    pass: TracePass::ArrayElementPointerOrigin,
+                    kind: "rewrite_array_element_pointer_origins".into(),
+                    location: function_path_location(facts, function, &[]),
+                    before: vec![stmts_snippet("body", &before)],
+                    after: vec![stmts_snippet("body", &f.body)],
+                    facts: vec![fact("origins", origins.len().to_string())],
+                });
             }
         }
     }
