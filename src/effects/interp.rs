@@ -8,7 +8,7 @@ use crate::effects::{
     call_summary,
 };
 use crate::rust_ast::{
-    AtomicOrdering, AtomicPlace, AtomicRmwOp, Attr, BinOp, Block, Expr, ExternDecl, FnDef,
+    AtomicOrdering, AtomicPlace, AtomicRmwOp, Attr, BinOp, Block, EnumDef, Expr, ExternDecl, FnDef,
     IndentStmt, Item, Label, Path, Pattern, Prim, Program, Repr, Stmt, StructDef, StructFields,
     Type, UnaryOp,
 };
@@ -96,6 +96,7 @@ struct Interp {
     funcs: HashMap<String, FnDef>,
     records: HashMap<String, crate::rust_ast::RecordDef>,
     tuple_structs: HashMap<String, StructDef>,
+    enums: HashMap<String, EnumDef>,
     scalars: HashMap<String, Value>,
     files: HashMap<String, FileId>,
     file_paths: HashMap<FileId, String>,
@@ -130,6 +131,9 @@ impl Interp {
                 }
                 Item::Struct(def) => {
                     self.tuple_structs.insert(def.name.clone(), def.clone());
+                }
+                Item::Enum(def) => {
+                    self.enums.insert(def.name.clone(), def.clone());
                 }
                 Item::ExternBlock { decls, .. } => {
                     for decl in decls {
@@ -316,6 +320,7 @@ impl Interp {
                         self.let_string_bytes(name, s.as_bytes())?
                     }
                     _ if box_elem_shape(ty).is_some() => self.let_box(name, ty, init)?,
+                    _ if self.let_collected_vec(name, init)? => {}
                     _ if vec_elem_shape(ty).is_some() => self.let_vec(name, ty, init)?,
                     _ if slice_elem_shape(ty).is_some() => self.let_slice(name, ty, init)?,
                     _ if matches!(ty, Type::Array { .. }) => self.let_array(name, ty, init)?,
@@ -361,6 +366,7 @@ impl Interp {
                 if let Some(file) = self.open_file(init)? {
                     self.files.insert(name.clone(), file);
                     self.scalars.insert(name.clone(), Value::File(file));
+                } else if self.let_collected_vec(name, init)? {
                 } else if let Expr::AtomicNew { ty, value } = init {
                     let value = cast_to_atomic_type(self.eval(value)?, ty);
                     let atomic = self.define_atomic(name, value)?;
@@ -514,7 +520,8 @@ impl Interp {
                     return Ok(Flow::Normal);
                 }
                 if self.vecs.contains_key(ident.as_str())
-                    && matches!(value, Expr::ArrayLit(_) | Expr::ArrayRepeat { .. })
+                    && (matches!(value, Expr::ArrayLit(_) | Expr::ArrayRepeat { .. })
+                        || matches!(value, Expr::Var(source) if self.vecs.contains_key(source.as_str())))
                 {
                     self.assign_array(ident.as_str(), value)?;
                     return Ok(Flow::Normal);
@@ -523,11 +530,31 @@ impl Interp {
                     && !self.pointer_elem_sizes.contains_key(ident.as_str())
                 {
                     let v = self.eval(value)?;
-                    let Value::Ref(src) = v else {
-                        return Err(EffectError::type_mismatch(ValueKind::Ref, v));
-                    };
-                    self.copy_struct_to_existing(ident.as_str(), src)?;
-                    return Ok(Flow::Normal);
+                    match v {
+                        Value::Tuple(values) if values.len() == 2 => {
+                            let alloc = self.structs[ident.as_str()].alloc;
+                            self.write_loc(
+                                Location {
+                                    alloc,
+                                    byte_offset: 0,
+                                },
+                                values[0].clone(),
+                            );
+                            self.write_loc(
+                                Location {
+                                    alloc,
+                                    byte_offset: 8,
+                                },
+                                values[1].clone(),
+                            );
+                            return Ok(Flow::Normal);
+                        }
+                        Value::Ref(src) => {
+                            self.copy_struct_to_existing(ident.as_str(), src)?;
+                            return Ok(Flow::Normal);
+                        }
+                        other => return Err(EffectError::type_mismatch(ValueKind::Ref, other)),
+                    }
                 }
                 let v = self.eval(value)?;
                 if let Some(loc) = self.globals.get(ident.as_str()).cloned() {
@@ -568,34 +595,21 @@ impl Interp {
             Some(binding) => binding,
             None => return Err(EffectError::unknown(BindingKind::Vec, name)),
         };
-        let (elem_width, elem_signed, elem_size, len, alloc) = (
-            binding.elem_width,
-            binding.elem_signed,
-            binding.elem_size,
-            binding.len,
-            binding.alloc,
-        );
+        let (elem_size, len, alloc) = (binding.elem_size, binding.len, binding.alloc);
         let values: Vec<Value> = match value {
             Expr::ArrayLit(elems) => {
                 let mut values = Vec::with_capacity(elems.len());
                 for elem in elems {
-                    let elem_value = self.eval(elem)?;
-                    values.push(Value::Int {
-                        width: elem_width,
-                        signed: elem_signed,
-                        value: value_as_i128(elem_value)?,
-                    });
+                    values.push(self.eval(elem)?);
                 }
                 values
             }
+            Expr::Var(source) if self.vecs.contains_key(source.as_str()) => {
+                self.collection_values(source.as_str())?
+            }
             Expr::ArrayRepeat { elem, len } => {
-                let elem_value = self.eval(elem)?;
-                let value = Value::Int {
-                    width: elem_width,
-                    signed: elem_signed,
-                    value: value_as_i128(elem_value)?,
-                };
-                if value_as_i128(&value)? == 0 {
+                let value = self.eval(elem)?;
+                if value_is_zero(&value) {
                     Vec::new()
                 } else {
                     vec![value; *len]
@@ -968,23 +982,16 @@ impl Interp {
             Expr::ArrayLit(elems) => {
                 let mut values = Vec::with_capacity(elems.len());
                 for elem in elems {
-                    let elem_value = self.eval(elem)?;
-                    values.push(Value::Int {
-                        width: elem_width,
-                        signed: elem_signed,
-                        value: value_as_i128(elem_value)?,
-                    });
+                    values.push(self.eval(elem)?);
                 }
                 values
             }
+            Expr::Var(source) if self.vecs.contains_key(source.as_str()) => {
+                self.collection_values(source.as_str())?
+            }
             Expr::ArrayRepeat { elem, len } => {
-                let elem_value = self.eval(elem)?;
-                let value = Value::Int {
-                    width: elem_width,
-                    signed: elem_signed,
-                    value: value_as_i128(elem_value)?,
-                };
-                if value_as_i128(&value)? == 0 {
+                let value = self.eval(elem)?;
+                if value_is_zero(&value) {
                     Vec::new()
                 } else {
                     vec![value; *len]
@@ -1260,15 +1267,23 @@ impl Interp {
             }
         };
         let arg = self.eval(&args[0])?;
-        let raw = value_as_i128(arg)?;
+        self.materialize_collection(name);
         let binding = match self.vecs.get_mut(name) {
             Some(binding) => binding,
             None => return Err(EffectError::unknown(BindingKind::Vec, name)),
         };
-        let value = Value::Int {
-            width: binding.elem_width,
-            signed: binding.elem_signed,
-            value: raw,
+        let value = match arg {
+            Value::Int { value, .. } => Value::Int {
+                width: binding.elem_width,
+                signed: binding.elem_signed,
+                value,
+            },
+            Value::Bool(value) => Value::Int {
+                width: binding.elem_width,
+                signed: binding.elem_signed,
+                value: i128::from(value),
+            },
+            other => other,
         };
         let loc = Location {
             alloc: binding.alloc,
@@ -1605,7 +1620,6 @@ impl Interp {
             return Ok(());
         }
         let value = self.eval(value)?;
-        let raw = value_as_i128(value)?;
         let name = match base {
             Expr::Var(ident) => ident.as_str(),
             other => {
@@ -1625,10 +1639,18 @@ impl Interp {
         if self.freed.contains(&binding.alloc) {
             return Err(EffectError::use_after_free(name));
         }
-        let value = Value::Int {
-            width: binding.elem_width,
-            signed: binding.elem_signed,
-            value: raw,
+        let value = match value {
+            Value::Int { value, .. } => Value::Int {
+                width: binding.elem_width,
+                signed: binding.elem_signed,
+                value,
+            },
+            Value::Bool(value) => Value::Int {
+                width: binding.elem_width,
+                signed: binding.elem_signed,
+                value: i128::from(value),
+            },
+            other => other,
         };
         let loc = Location {
             alloc: binding.alloc,
@@ -1734,6 +1756,52 @@ impl Interp {
             values.push(self.eval(field)?);
         }
         Ok(Value::Tuple(values))
+    }
+
+    fn let_collected_vec(&mut self, name: &str, init: &Expr) -> EResult<bool> {
+        let Expr::MethodCall { recv, method, args } = init else {
+            return Ok(false);
+        };
+        if method != "collect" || !args.is_empty() {
+            return Ok(false);
+        }
+        let len = self.collect_source_len(recv)?;
+        self.vecs.insert(
+            name.to_string(),
+            VecBinding {
+                alloc: LAZY_ARRAY_ALLOC,
+                elem_width: IntWidth::PointerSized,
+                elem_signed: false,
+                elem_size: 8,
+                len,
+                owned: true,
+            },
+        );
+        Ok(true)
+    }
+
+    fn collect_source_len(&self, expr: &Expr) -> EResult<u64> {
+        match expr {
+            Expr::Call { func, args }
+                if args.is_empty() && is_path(func, &["std", "env", "args"]) =>
+            {
+                Ok(1)
+            }
+            Expr::MethodCall { recv, method, args } if method == "map" && args.len() == 1 => {
+                self.collect_source_len(recv)
+            }
+            Expr::MethodCall { recv, method, args } if method == "iter" && args.is_empty() => {
+                let name = collection_name(recv)?;
+                self.vecs
+                    .get(name)
+                    .map(|binding| binding.len)
+                    .ok_or_else(|| EffectError::unknown(BindingKind::Vec, name))
+            }
+            other => Err(EffectError::unsupported(
+                Construct::UnsupportedExpr,
+                other.clone(),
+            )),
+        }
     }
 
     fn let_struct_value(&mut self, name: &str, init: &Expr) -> EResult<()> {
@@ -2106,6 +2174,24 @@ impl Interp {
         Ok(())
     }
 
+    fn eval_complex_field(&mut self, base: &Expr, field: &str) -> EResult<Option<Value>> {
+        let index = match field {
+            "re" => 0,
+            "im" => 1,
+            _ => return Ok(None),
+        };
+        match self.eval(base) {
+            Ok(Value::Tuple(values)) if values.len() == 2 => Ok(Some(values[index].clone())),
+            Ok(Value::Ref(_)) => Ok(None),
+            Ok(other) => Err(EffectError::type_mismatch(ValueKind::Tuple, other)),
+            Err(EffectError::UnknownBinding {
+                kind: BindingKind::Struct,
+                ..
+            }) => Ok(None),
+            Err(err) => Err(err),
+        }
+    }
+
     fn let_string(&mut self, name: &str, args: &[Expr]) -> EResult<()> {
         let s = match &args[0] {
             Expr::Str(s) => s.clone(),
@@ -2294,6 +2380,9 @@ impl Interp {
     }
 
     fn eval_field(&mut self, base: &Expr, field: &str) -> EResult<Value> {
+        if let Some(value) = self.eval_complex_field(base, field)? {
+            return Ok(value);
+        }
         let loc = self.field_location(base, field)?;
         let value = match self.heap.get(&loc) {
             Some(value) => value.clone(),
@@ -2401,7 +2490,16 @@ impl Interp {
             ["std", "cmp", "Ordering", "Less"] => Ok(int32(-1)),
             ["std", "cmp", "Ordering", "Equal"] => Ok(int32(0)),
             ["std", "cmp", "Ordering", "Greater"] => Ok(int32(1)),
-            [_, variant] if variant.starts_with("MODE_") => Ok(int32(0)),
+            [enum_name, variant] if self.enums.contains_key(*enum_name) => {
+                let def = &self.enums[*enum_name];
+                let value = def
+                    .variants
+                    .iter()
+                    .find(|item| item.name == *variant)
+                    .ok_or_else(|| EffectError::unknown(BindingKind::Scalar, *variant))?
+                    .value;
+                Ok(int32(value as i128))
+            }
             _ => Err(EffectError::unsupported(Construct::PathExpr, path.clone())),
         }
     }
@@ -2615,6 +2713,9 @@ impl Interp {
             Expr::Path(path) => self.eval_path(path),
             Expr::Cast { expr, ty } => {
                 let value = self.eval(expr)?;
+                if matches!(ty, Type::Custom(name) if self.enums.contains_key(name)) {
+                    return Ok(value);
+                }
                 cast_value_to_type(value, ty)
             }
             Expr::StructLit { name, fields } => self.eval_struct_lit(name, fields),
@@ -2778,12 +2879,21 @@ impl Interp {
                 let bytes = self.string_expr_bytes(recv)?;
                 Ok(Value::Ref(self.alloc_string_bytes(&bytes)))
             }
+            Expr::MethodCall { recv, method, args } if method == "clone" && args.is_empty() => {
+                self.eval(recv)
+            }
             Expr::MethodCallGeneric {
                 recv,
                 method,
                 type_args,
                 args,
             } if method == "parse" && args.is_empty() => self.parse_string_method(recv, type_args),
+            Expr::MethodCallGeneric {
+                recv,
+                method,
+                type_args,
+                args,
+            } if method == "next_arg" && args.is_empty() => self.next_vararg(recv, type_args),
             Expr::MethodCall { recv, method, args } if method == "unwrap_or" => {
                 self.unwrap_or(recv, args)
             }
@@ -3227,6 +3337,7 @@ impl Interp {
 
     fn eval_tuple_field(&mut self, base: &Expr, index: usize) -> EResult<Value> {
         match self.eval(base)? {
+            Value::Float(value) if index == 0 => Ok(Value::Float(value)),
             Value::Tuple(values) => match values.get(index).cloned() {
                 Some(value) => Ok(value),
                 None => Err(EffectError::index_out_of_range(index, values.len())),
@@ -3691,6 +3802,9 @@ impl Interp {
                 value: value_as_i128(self.eval(arg)?)? as u8 as i128,
             });
         }
+        if let Some(value) = self.eval_transparent_constructor(func, args)? {
+            return Ok(value);
+        }
         if is_path(func, &["std", "ptr", "read_volatile"]) {
             return self.read_volatile(args);
         }
@@ -3745,6 +3859,26 @@ impl Interp {
             _ => {}
         }
         self.call_user_named(&name, args)
+    }
+
+    fn eval_transparent_constructor(
+        &mut self,
+        func: &Expr,
+        args: &[Expr],
+    ) -> EResult<Option<Value>> {
+        let Some(name) = path_name(func) else {
+            return Ok(None);
+        };
+        if name != "LongDouble" {
+            return Ok(None);
+        }
+        let [arg] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::CallTarget,
+                ArgShapeKind::OneArgument,
+            ));
+        };
+        Ok(Some(Value::Float(value_as_f64(self.eval(arg)?)?)))
     }
 
     fn eval_user_callable(&mut self, func: &Expr) -> EResult<Option<String>> {
@@ -3805,6 +3939,33 @@ impl Interp {
             alloc: binding.alloc,
             byte_offset: 0,
         })
+    }
+
+    fn collection_values(&mut self, name: &str) -> EResult<Vec<Value>> {
+        self.materialize_collection(name);
+        let binding = self
+            .vecs
+            .get(name)
+            .cloned()
+            .ok_or_else(|| EffectError::unknown(BindingKind::Vec, name))?;
+        let mut values = Vec::with_capacity(binding.len as usize);
+        for index in 0..binding.len {
+            let loc = Location {
+                alloc: binding.alloc,
+                byte_offset: index * binding.elem_size,
+            };
+            let value = self
+                .heap
+                .get(&loc)
+                .ok_or_else(|| EffectError::uninitialized_read(loc))?
+                .clone();
+            self.trace.push(Effect::Read {
+                loc,
+                value: value.clone(),
+            });
+            values.push(value);
+        }
+        Ok(values)
     }
 
     fn collection_len_from_arg(&self, expr: &Expr) -> Option<u64> {
@@ -3995,6 +4156,9 @@ impl Interp {
             };
             return Ok(size.clamp(1, 8));
         }
+        if self.enums.contains_key(name) {
+            return Ok(4);
+        }
         if let Some(record) = self.records.get(name) {
             return self.record_align(record);
         }
@@ -4041,6 +4205,9 @@ impl Interp {
     fn type_layout(&self, ty: &Type) -> EResult<(u64, u64)> {
         match ty {
             Type::Custom(name) => {
+                if self.enums.contains_key(name) {
+                    return Ok((4, 4));
+                }
                 let size = self.size_of_named_type(name)?;
                 let align = if let Some(record) = self.records.get(name) {
                     self.record_align(record)?
@@ -4203,6 +4370,8 @@ impl Interp {
             CallSummary::Exp2 => self.call_math_unary(args, f64::exp2),
             CallSummary::Fmod => self.call_math_binary(args, |left, right| left % right),
             CallSummary::Lround | CallSummary::Llround => self.call_lround(args),
+            CallSummary::MulDc3 => self.call_complex_binary(args, complex_mul),
+            CallSummary::DivDc3 => self.call_complex_binary(args, complex_div),
             CallSummary::PthreadCreate => self.call_pthread_create(args),
             CallSummary::PthreadJoin => self.call_pthread_join(args),
             CallSummary::Qsort => {
@@ -5195,6 +5364,25 @@ impl Interp {
         })
     }
 
+    fn call_complex_binary(
+        &mut self,
+        args: &[Expr],
+        f: impl FnOnce(f64, f64, f64, f64) -> (f64, f64),
+    ) -> EResult<Value> {
+        let [a, b, c, d] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::DivDc3),
+                ArgShapeKind::FourArguments,
+            ));
+        };
+        let a = value_as_f64(self.eval(a)?)?;
+        let b = value_as_f64(self.eval(b)?)?;
+        let c = value_as_f64(self.eval(c)?)?;
+        let d = value_as_f64(self.eval(d)?)?;
+        let (re, im) = f(a, b, c, d);
+        Ok(Value::Tuple(vec![Value::Float(re), Value::Float(im)]))
+    }
+
     fn call_exit(&mut self, args: &[Expr]) -> EResult<Value> {
         let [code] = args else {
             return Err(EffectError::arg_shape(
@@ -5287,6 +5475,32 @@ impl Interp {
             }
         };
         Ok(Value::Option(Some(value)))
+    }
+
+    fn next_vararg(&mut self, recv: &Expr, type_args: &[Type]) -> EResult<Value> {
+        let [ty] = type_args else {
+            return Err(EffectError::arg_shape(
+                Construct::AtomicMethodArgs,
+                ArgShapeKind::OneArgument,
+            ));
+        };
+        let Expr::Var(name) = recv else {
+            return Err(EffectError::unsupported(
+                Construct::AtomicMethod,
+                recv.clone(),
+            ));
+        };
+        let value = self
+            .scalars
+            .get_mut(name.as_str())
+            .ok_or_else(|| EffectError::unknown(BindingKind::Scalar, name.as_str()))?;
+        let Value::Tuple(values) = value else {
+            return Err(EffectError::type_mismatch(ValueKind::Tuple, value.clone()));
+        };
+        if values.is_empty() {
+            return Err(EffectError::index_out_of_range(0, 0));
+        }
+        cast_value_to_type(values.remove(0), ty)
     }
 
     fn unwrap_or(&mut self, recv: &Expr, args: &[Expr]) -> EResult<Value> {
@@ -5392,18 +5606,30 @@ impl Interp {
         arg_exprs: Option<&[Expr]>,
     ) -> EResult<Value> {
         if f.params.len() != args.len() {
-            return Err(EffectError::length_mismatch(
-                Construct::CallTarget,
-                f.params.len(),
-                args.len(),
-            ));
+            let variadic = f
+                .params
+                .last()
+                .is_some_and(|param| matches!(param.ty, Type::Variadic));
+            if !variadic || args.len() + 1 < f.params.len() {
+                return Err(EffectError::length_mismatch(
+                    Construct::CallTarget,
+                    f.params.len(),
+                    args.len(),
+                ));
+            }
         }
         let saved_scalars = std::mem::take(&mut self.scalars);
         let saved_structs = self.structs.clone();
         let saved_scalar_locs = std::mem::take(&mut self.scalar_locs);
         let saved_vecs = self.vecs.clone();
         let saved_pointer_elem_sizes = self.pointer_elem_sizes.clone();
-        for (index, (param, value)) in f.params.iter().zip(args).enumerate() {
+        for (index, param) in f.params.iter().enumerate() {
+            if matches!(param.ty, Type::Variadic) {
+                self.scalars
+                    .insert(param.name.to_string(), Value::Tuple(args[index..].to_vec()));
+                continue;
+            }
+            let value = &args[index];
             self.record_decl_type(&param.name, &param.ty);
             if let Value::Ref(loc) = value
                 && !matches!(param.ty, Type::Ptr { .. } | Type::Ref { .. })
@@ -6018,8 +6244,52 @@ impl Interp {
             _ => {
                 let a = self.eval(lhs)?;
                 let b = self.eval(rhs)?;
+                if matches!(op, BinOp::Add | BinOp::Sub)
+                    && let Some(value) = self.apply_complex_binop(op, &a, &b)?
+                {
+                    return Ok(value);
+                }
                 apply_binop(op, a, b)
             }
+        }
+    }
+
+    fn apply_complex_binop(&self, op: BinOp, a: &Value, b: &Value) -> EResult<Option<Value>> {
+        let Some((ar, ai)) = self.complex_parts(a)? else {
+            return Ok(None);
+        };
+        let Some((br, bi)) = self.complex_parts(b)? else {
+            return Ok(None);
+        };
+        let (re, im) = match op {
+            BinOp::Add => (ar + br, ai + bi),
+            BinOp::Sub => (ar - br, ai - bi),
+            _ => unreachable!(),
+        };
+        Ok(Some(Value::Tuple(vec![Value::Float(re), Value::Float(im)])))
+    }
+
+    fn complex_parts(&self, value: &Value) -> EResult<Option<(f64, f64)>> {
+        match value {
+            Value::Tuple(values) if values.len() == 2 => {
+                let re = value_as_f64(values[0].clone())?;
+                let im = value_as_f64(values[1].clone())?;
+                Ok(Some((re, im)))
+            }
+            Value::Ref(loc) => {
+                let Some(re) = self.heap.get(loc) else {
+                    return Ok(None);
+                };
+                let im_loc = Location {
+                    alloc: loc.alloc,
+                    byte_offset: loc.byte_offset + 8,
+                };
+                let Some(im) = self.heap.get(&im_loc) else {
+                    return Ok(None);
+                };
+                Ok(Some((value_as_f64(re.clone())?, value_as_f64(im.clone())?)))
+            }
+            _ => Ok(None),
         }
     }
 }
@@ -6498,6 +6768,24 @@ fn value_as_f64(value: Value) -> EResult<f64> {
         Value::Int { value, .. } => Ok(value as f64),
         other => Err(EffectError::type_mismatch(ValueKind::Float, other)),
     }
+}
+
+fn value_is_zero(value: &Value) -> bool {
+    match value {
+        Value::Int { value, .. } => *value == 0,
+        Value::Float(value) => *value == 0.0,
+        Value::Bool(value) => !*value,
+        _ => false,
+    }
+}
+
+fn complex_mul(a: f64, b: f64, c: f64, d: f64) -> (f64, f64) {
+    (a * c - b * d, a * d + b * c)
+}
+
+fn complex_div(a: f64, b: f64, c: f64, d: f64) -> (f64, f64) {
+    let denom = c * c + d * d;
+    ((a * c + b * d) / denom, (b * c - a * d) / denom)
 }
 
 fn compare_bytes(left: &[u8], right: &[u8]) -> i8 {
