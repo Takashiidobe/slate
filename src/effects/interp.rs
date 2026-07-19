@@ -114,6 +114,7 @@ struct Interp {
     freed: HashSet<AllocId>,
     call_depth: usize,
     next_struct_temp: u32,
+    exited: Option<Value>,
 }
 
 impl Interp {
@@ -422,7 +423,10 @@ impl Interp {
                 Ok(Flow::Normal)
             }
             Stmt::Expr(expr) => {
-                self.eval(expr)?;
+                let value = self.eval(expr)?;
+                if self.exited.is_some() {
+                    return Ok(Flow::Return(value));
+                }
                 Ok(Flow::Normal)
             }
             Stmt::Unsafe { body } => self.run_block(body),
@@ -475,6 +479,9 @@ impl Interp {
             Flow::Normal => {
                 if let Some(tail) = &block.tail {
                     let value = self.eval(tail)?;
+                    if self.exited.is_some() {
+                        return Ok(Flow::Return(value));
+                    }
                     Ok(Flow::Return(value))
                 } else {
                     Ok(Flow::Normal)
@@ -3772,6 +3779,14 @@ impl Interp {
         self.call_user(&f, &values, Some(args))
     }
 
+    fn call_user_named_values(&mut self, name: &str, args: &[Value]) -> EResult<Value> {
+        let f = match self.funcs.get(name).cloned() {
+            Some(f) => f,
+            None => return Err(EffectError::unknown(BindingKind::Function, name)),
+        };
+        self.call_user(&f, args, None)
+    }
+
     fn eval_ref(&mut self, expr: &Expr) -> EResult<Location> {
         match self.eval(expr)? {
             Value::Ref(loc) => Ok(loc),
@@ -4171,10 +4186,25 @@ impl Interp {
             CallSummary::Fwrite => self.call_fwrite(args),
             CallSummary::Fclose => self.call_fclose(args),
             CallSummary::Printf => self.call_printf(args),
+            CallSummary::Exit => self.call_exit(args),
             CallSummary::Puts => self.call_puts(args),
             CallSummary::Remove => self.call_remove(args),
             CallSummary::Toupper => self.call_toupper(args),
             CallSummary::Tolower => self.call_tolower(args),
+            CallSummary::Sin => self.call_math_unary(args, f64::sin),
+            CallSummary::Cos => self.call_math_unary(args, f64::cos),
+            CallSummary::Tan => self.call_math_unary(args, f64::tan),
+            CallSummary::Log => self.call_math_unary(args, f64::ln),
+            CallSummary::Log10 => self.call_math_unary(args, f64::log10),
+            CallSummary::Log2 => self.call_math_unary(args, f64::log2),
+            CallSummary::Pow => self.call_math_binary(args, f64::powf),
+            CallSummary::Sqrt => self.call_math_unary(args, f64::sqrt),
+            CallSummary::Exp => self.call_math_unary(args, f64::exp),
+            CallSummary::Exp2 => self.call_math_unary(args, f64::exp2),
+            CallSummary::Fmod => self.call_math_binary(args, |left, right| left % right),
+            CallSummary::Lround | CallSummary::Llround => self.call_lround(args),
+            CallSummary::PthreadCreate => self.call_pthread_create(args),
+            CallSummary::PthreadJoin => self.call_pthread_join(args),
             CallSummary::Qsort => {
                 self.qsort(args)?;
                 Ok(int32(0))
@@ -5123,6 +5153,106 @@ impl Interp {
         };
         let value = value_as_i128(self.eval(arg)?)? as u8;
         Ok(int32(value.to_ascii_lowercase() as i128))
+    }
+
+    fn call_math_unary(&mut self, args: &[Expr], f: impl FnOnce(f64) -> f64) -> EResult<Value> {
+        let [arg] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Sin),
+                ArgShapeKind::OneArgument,
+            ));
+        };
+        Ok(Value::Float(f(value_as_f64(self.eval(arg)?)?)))
+    }
+
+    fn call_math_binary(
+        &mut self,
+        args: &[Expr],
+        f: impl FnOnce(f64, f64) -> f64,
+    ) -> EResult<Value> {
+        let [left, right] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Pow),
+                ArgShapeKind::TwoArguments,
+            ));
+        };
+        let left = value_as_f64(self.eval(left)?)?;
+        let right = value_as_f64(self.eval(right)?)?;
+        Ok(Value::Float(f(left, right)))
+    }
+
+    fn call_lround(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [arg] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Lround),
+                ArgShapeKind::OneArgument,
+            ));
+        };
+        Ok(Value::Int {
+            width: IntWidth::W64,
+            signed: true,
+            value: value_as_f64(self.eval(arg)?)?.round() as i64 as i128,
+        })
+    }
+
+    fn call_exit(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [code] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Exit),
+                ArgShapeKind::OneArgument,
+            ));
+        };
+        let code = value_as_i32(self.eval(code)?)?;
+        self.drop_live_vecs()?;
+        self.trace.push(Effect::Exit(code));
+        let value = Value::Int {
+            width: IntWidth::W32,
+            signed: true,
+            value: code as i128,
+        };
+        self.exited = Some(value.clone());
+        Ok(value)
+    }
+
+    fn call_pthread_create(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [thread, _attr, start, arg] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::PthreadCreate),
+                ArgShapeKind::FourArguments,
+            ));
+        };
+        let thread = self.eval_ref(thread)?;
+        self.write_loc(
+            thread,
+            Value::Int {
+                width: IntWidth::W64,
+                signed: false,
+                value: 1,
+            },
+        );
+        let start = option_unwrap(self.eval(start)?)?;
+        let Value::Function(name) = start else {
+            return Err(EffectError::type_mismatch(ValueKind::Function, start));
+        };
+        let arg = self.eval(arg)?;
+        self.call_user_named_values(&name, &[arg])?;
+        Ok(int32(0))
+    }
+
+    fn call_pthread_join(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [thread, retval] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::PthreadJoin),
+                ArgShapeKind::TwoArguments,
+            ));
+        };
+        self.eval(thread)?;
+        match self.eval(retval)? {
+            Value::Null => {}
+            Value::Ref(loc) => self.write_loc(loc, Value::Null),
+            other => return Err(EffectError::type_mismatch(ValueKind::Ref, other)),
+        }
+        Ok(int32(0))
     }
 
     fn parse_string_method(&mut self, recv: &Expr, type_args: &[Type]) -> EResult<Value> {
@@ -6359,6 +6489,14 @@ fn local_value_size(value: &Value) -> EResult<u64> {
             Construct::AddrOfExpr,
             value.clone(),
         )),
+    }
+}
+
+fn value_as_f64(value: Value) -> EResult<f64> {
+    match value {
+        Value::Float(value) => Ok(value),
+        Value::Int { value, .. } => Ok(value as f64),
+        other => Err(EffectError::type_mismatch(ValueKind::Float, other)),
     }
 }
 
