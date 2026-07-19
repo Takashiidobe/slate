@@ -267,25 +267,34 @@ fn apply_with_logger(
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
             {
-                rewrite::string_lift::fixup(&mut f.body, function, &facts);
+                rewrite::string_lift::StringLift::new(Pass::StringLift, logger)
+                    .fixup_with_recoveries(
+                        &mut f.body,
+                        function,
+                        &facts,
+                        &[
+                            facts::StringRecoveryCandidate::BorrowedStr,
+                            facts::StringRecoveryCandidate::BorrowedBytes,
+                        ],
+                    );
             }
         }
     });
     step!(program, Pass::StringParams, {
         loop {
             let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-            if !rewrite::string_params::fixup(&mut program, &facts) {
+            if !rewrite::string_params::StringParams::new(logger).fixup(&mut program, &facts) {
                 break;
             }
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::PtrLen, {
-        rewrite::ptr_len::fixup(&mut program, &facts);
+        rewrite::ptr_len::PtrLen::new(logger).fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::SliceIndex, {
-        rewrite::slice_index::fixup(&mut program, &facts);
+        rewrite::slice_index::SliceIndex::new(logger).fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::SliceLoop, {
@@ -322,12 +331,12 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::StringCopy, {
-        rewrite::string_copy::fixup(&mut program, &facts);
+        rewrite::string_copy::StringCopy::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::StringParams, {
         loop {
             let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-            if !rewrite::string_params::fixup(&mut program, &facts) {
+            if !rewrite::string_params::StringParams::new(logger).fixup(&mut program, &facts) {
                 break;
             }
         }
@@ -337,7 +346,7 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::StringLibc, {
-        rewrite::string_libc::fixup(&mut program, &facts);
+        rewrite::string_libc::StringLibc::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::SortSearch, {
         rewrite::sort_search::fixup(&mut program);
@@ -361,12 +370,12 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::PrintfFormat, {
-        rewrite::printf_format::fixup(&mut program, &facts);
+        rewrite::printf_format::PrintfFormat::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::StringParams, {
         loop {
             let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-            if !rewrite::string_params::fixup(&mut program, &facts) {
+            if !rewrite::string_params::StringParams::new(logger).fixup(&mut program, &facts) {
                 break;
             }
         }
@@ -376,23 +385,24 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::StringLibc, {
-        rewrite::string_libc::fixup(&mut program, &facts);
+        rewrite::string_libc::StringLibc::new(logger).fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::CStrings, {
-        rewrite::c_strings::fixup(&mut program, &facts);
+        rewrite::c_strings::CStrings::new(logger).fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::Stdio, {
-        rewrite::stdio::fixup(&mut program, &facts);
+        rewrite::stdio::Stdio::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::MemchrPreludeFixupCalls, {
-        rewrite::memchr_prelude::fixup_calls(&mut program, &facts);
+        rewrite::memchr_prelude::MemchrPrelude::new(logger).fixup_calls(&mut program, &facts);
     });
     step!(program, Pass::NullablePointer, {
         loop {
             let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
-            if !rewrite::nullable_pointer::fixup(&mut program, &facts) {
+            if !rewrite::nullable_pointer::NullablePointer::new(logger).fixup(&mut program, &facts)
+            {
                 break;
             }
         }
@@ -403,19 +413,25 @@ fn apply_with_logger(
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
             {
-                rewrite::string_lift::fixup_c_strings(&mut f.body, function, &facts);
+                rewrite::string_lift::StringLift::new(Pass::StringLiftFixupCStrings, logger)
+                    .fixup_with_recoveries(
+                        &mut f.body,
+                        function,
+                        &facts,
+                        &[facts::StringRecoveryCandidate::BorrowedCStr],
+                    );
             }
         }
     });
     step!(program, Pass::MemchrPrelude, {
         for item in &mut program.items {
             if let Item::Fn(f) = item {
-                rewrite::memchr_prelude::fixup(f);
+                rewrite::memchr_prelude::MemchrPrelude::new(logger).fixup(f);
             }
         }
     });
     step!(program, Pass::MemchrPreludePruneUnusedHelper, {
-        rewrite::memchr_prelude::prune_unused_helper(&mut program);
+        rewrite::memchr_prelude::MemchrPrelude::new(logger).prune_unused_helper(&mut program);
     });
     step!(program, Pass::LateInlineTemps, {
         inline_temps_to_fixpoint(&mut program, InlinePass::Late, logger);
@@ -425,11 +441,12 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::ArrayElementPointerOrigin, {
-        rewrite::array_element_pointer_origin::fixup(&mut program, &facts);
+        rewrite::array_element_pointer_origin::ArrayElementPointerOrigin::new(logger)
+            .fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::BufferCursor, {
-        rewrite::buffer_cursor::fixup(&mut program, &facts);
+        rewrite::buffer_cursor::BufferCursor::new(logger).fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::AtomicLocals, {

@@ -3,9 +3,46 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment, PointerOffsetUnit};
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+};
 use crate::rust_ast::{Expr, Ident, IndentStmt, Item, Prim, Program, Stmt, Type, UnaryOp};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    SliceIndex::new(&mut logger).fixup(program, facts)
+}
+
+pub(in crate::fixups) struct SliceIndex<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> SliceIndex<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
+        let before = self.logger.is_enabled().then(|| program.emit());
+        let changed = fixup_impl(program, facts);
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::SliceIndex,
+                kind: "rewrite_slice_pointer_indexes".into(),
+                location: TraceLocation::default(),
+                before: vec![TraceSnippet::new("program", before.trim_end())],
+                after: vec![TraceSnippet::new("program", program.emit().trim_end())],
+                facts: vec![fact(
+                    "planned_indexes",
+                    facts.slice_pointer_indexes.len().to_string(),
+                )],
+            });
+        }
+        changed
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts) -> bool {
     let plans = plans_by_function(facts);
     if plans.is_empty() {
         return false;

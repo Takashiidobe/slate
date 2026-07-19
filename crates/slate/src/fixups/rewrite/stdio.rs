@@ -4,11 +4,33 @@ use crate::fixups::facts::file_ownership::{buf_ptr_var, match_gets_loop};
 use crate::fixups::facts::{
     AstPath, FileOpenMode, FileOwnershipFact, FileUseKind, FixupFacts, FunctionId, PathSegment,
 };
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
+};
 use crate::rust_ast::{
     BinOp, Block, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type,
 };
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    Stdio::new(&mut logger).fixup(program, facts)
+}
+
+pub(in crate::fixups) struct Stdio<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> Stdio<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
+        fixup_impl(program, facts, self.logger)
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts, logger: &mut dyn TraceLogger) -> bool {
     let mut changed = false;
     for (item_index, item) in program.items.iter_mut().enumerate() {
         let Item::Fn(f) = item else {
@@ -17,7 +39,25 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> boo
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        changed |= fixup_body(&mut f.body, function, facts);
+        let before = logger.is_enabled().then(|| f.body.clone());
+        let function_changed = fixup_body(&mut f.body, function, facts);
+        if function_changed && let Some(before) = before {
+            let uses = facts
+                .file_ownership
+                .iter()
+                .filter(|fact| fact.function == function)
+                .map(|fact| fact.uses.len())
+                .sum::<usize>();
+            logger.rewrite(RewriteEvent {
+                pass: TracePass::Stdio,
+                kind: "rewrite_stdio_file_ownership".into(),
+                location: function_path_location(facts, function, &[]),
+                before: vec![stmts_snippet("body", &before)],
+                after: vec![stmts_snippet("body", &f.body)],
+                facts: vec![fact("file_uses", uses.to_string())],
+            });
+        }
+        changed |= function_changed;
     }
     changed
 }

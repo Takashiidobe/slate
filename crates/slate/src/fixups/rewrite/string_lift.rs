@@ -2,6 +2,9 @@ use crate::fixups::facts::{
     AstPath, FixupFacts, FunctionId, PathSegment, StringBufferProvenance, StringRecoveryCandidate,
 };
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
+};
 use crate::rust_ast::{Expr, IndentStmt, Prim, Stmt, Type};
 use std::collections::BTreeSet;
 
@@ -10,7 +13,8 @@ pub(in crate::fixups) fn fixup(
     function: FunctionId,
     facts: &FixupFacts,
 ) {
-    fixup_with_recoveries(
+    let mut logger = crate::fixups::trace::NoopLogger;
+    StringLift::new(TracePass::StringLift, &mut logger).fixup_with_recoveries(
         body,
         function,
         facts,
@@ -26,7 +30,8 @@ pub(in crate::fixups) fn fixup_c_strings(
     function: FunctionId,
     facts: &FixupFacts,
 ) {
-    fixup_with_recoveries(
+    let mut logger = crate::fixups::trace::NoopLogger;
+    StringLift::new(TracePass::StringLiftFixupCStrings, &mut logger).fixup_with_recoveries(
         body,
         function,
         facts,
@@ -34,14 +39,52 @@ pub(in crate::fixups) fn fixup_c_strings(
     );
 }
 
-fn fixup_with_recoveries(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-    recoveries: &[StringRecoveryCandidate],
-) {
-    fixup_nested(body, function, facts, &mut Vec::new(), recoveries);
-    fixup_body(body, function, facts, &Vec::new(), recoveries);
+pub(in crate::fixups) struct StringLift<'a> {
+    pass: TracePass,
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> StringLift<'a> {
+    pub(in crate::fixups) fn new(pass: TracePass, logger: &'a mut dyn TraceLogger) -> Self {
+        Self { pass, logger }
+    }
+
+    pub(in crate::fixups) fn fixup_with_recoveries(
+        &mut self,
+        body: &mut Vec<IndentStmt>,
+        function: FunctionId,
+        facts: &FixupFacts,
+        recoveries: &[StringRecoveryCandidate],
+    ) {
+        let before = self.logger.is_enabled().then(|| body.clone());
+        fixup_nested(body, function, facts, &mut Vec::new(), recoveries);
+        fixup_body(body, function, facts, &Vec::new(), recoveries);
+        if let Some(before) = before
+            && body_code(&before) != body_code(body)
+        {
+            self.logger.rewrite(RewriteEvent {
+                pass: self.pass,
+                kind: "lift_string_buffer".into(),
+                location: function_path_location(facts, function, &[]),
+                before: vec![stmts_snippet("body", &before)],
+                after: vec![stmts_snippet("body", body)],
+                facts: vec![
+                    fact("recoveries", recoveries.len().to_string()),
+                    fact(
+                        "string_lift_plans",
+                        facts.string_lift_plans.len().to_string(),
+                    ),
+                ],
+            });
+        }
+    }
+}
+
+fn body_code(body: &[IndentStmt]) -> String {
+    body.iter()
+        .map(|stmt| stmt.stmt.render())
+        .collect::<Vec<_>>()
+        .join("")
 }
 
 fn fixup_body(

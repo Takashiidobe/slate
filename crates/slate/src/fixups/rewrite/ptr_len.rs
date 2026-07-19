@@ -2,9 +2,48 @@ use std::collections::BTreeMap;
 
 use crate::fixups::facts::{BindingId, BindingKind, FixupFacts, FunctionId, PtrLenSliceFact};
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+};
 use crate::rust_ast::{Expr, FnDef, Ident, IndentStmt, Item, Program, Type};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    PtrLen::new(&mut logger).fixup(program, facts);
+}
+
+pub(in crate::fixups) struct PtrLen<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> PtrLen<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) {
+        let before = self.logger.is_enabled().then(|| program.emit());
+        fixup_impl(program, facts);
+        if let Some(before) = before {
+            let after = program.emit();
+            if before != after {
+                self.logger.rewrite(RewriteEvent {
+                    pass: TracePass::PtrLen,
+                    kind: "rewrite_ptr_len_slice_params".into(),
+                    location: TraceLocation::default(),
+                    before: vec![TraceSnippet::new("program", before.trim_end())],
+                    after: vec![TraceSnippet::new("program", after.trim_end())],
+                    facts: vec![fact(
+                        "planned_pairs",
+                        facts.ptr_len_slices.len().to_string(),
+                    )],
+                });
+            }
+        }
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts) {
     let plans = plans_from_facts(facts);
     if plans.is_empty() {
         return;

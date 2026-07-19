@@ -3,9 +3,31 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::{FixupFacts, FunctionId};
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
+};
 use crate::rust_ast::{BinOp, Block, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    BufferCursor::new(&mut logger).fixup(program, facts)
+}
+
+pub(in crate::fixups) struct BufferCursor<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> BufferCursor<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
+        fixup_impl(program, facts, self.logger)
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts, logger: &mut dyn TraceLogger) -> bool {
     let mut changed = false;
     for (item_index, item) in program.items.iter_mut().enumerate() {
         let Item::Fn(f) = item else {
@@ -18,12 +40,26 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> boo
         if context.arrays.is_empty() || context.buffers.is_empty() {
             continue;
         }
+        let before = logger.is_enabled().then(|| f.body.clone());
         let mut rewritten = f.body.clone();
         let mut rewriter = Rewriter::new(context.clone());
         if rewriter.body(&mut rewritten)
             && !contains_unresolved_pointer_uses(&rewritten, &context, &rewriter.aliases)
         {
             f.body = rewritten;
+            if let Some(before) = before {
+                logger.rewrite(RewriteEvent {
+                    pass: TracePass::BufferCursor,
+                    kind: "rewrite_buffer_cursor".into(),
+                    location: function_path_location(facts, function, &[]),
+                    before: vec![stmts_snippet("body", &before)],
+                    after: vec![stmts_snippet("body", &f.body)],
+                    facts: vec![
+                        fact("arrays", context.arrays.len().to_string()),
+                        fact("buffers", context.buffers.len().to_string()),
+                    ],
+                });
+            }
             changed = true;
         }
     }

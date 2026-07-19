@@ -2,10 +2,49 @@ use crate::fixups::facts::{
     AstPath, FixupFacts, FunctionId, PathSegment, StringBufferProvenance, StringCopyRewrite,
     StringRecoveryCandidate,
 };
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+};
 use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
 use std::collections::BTreeSet;
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    StringCopy::new(&mut logger).fixup(program, facts);
+}
+
+pub(in crate::fixups) struct StringCopy<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> StringCopy<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) {
+        let before = self.logger.is_enabled().then(|| program.emit());
+        fixup_impl(program, facts);
+        if let Some(before) = before {
+            let after = program.emit();
+            if before != after {
+                self.logger.rewrite(RewriteEvent {
+                    pass: TracePass::StringCopy,
+                    kind: "rewrite_string_copy_idioms".into(),
+                    location: TraceLocation::default(),
+                    before: vec![TraceSnippet::new("program", before.trim_end())],
+                    after: vec![TraceSnippet::new("program", after.trim_end())],
+                    facts: vec![fact(
+                        "string_copy_rewrites",
+                        facts.string_copy_rewrites.len().to_string(),
+                    )],
+                });
+            }
+        }
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts) {
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
             && let Some(function) = facts.function_by_item_index(item_index)
