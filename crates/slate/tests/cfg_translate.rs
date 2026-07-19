@@ -45,6 +45,10 @@ fn write_generated(name: &str, rust: &str) -> PathBuf {
     out
 }
 
+fn assert_tail_value(rust: &str, value: &str) {
+    assert!(rust.contains(&format!("\n    {value}\n}}")));
+}
+
 #[test]
 fn translates_os_macro_variants_to_cfg_items() {
     let rust = translate_cfg("os_targets.c");
@@ -57,12 +61,12 @@ fn translates_os_macro_variants_to_cfg_items() {
     assert!(rust.contains(
         "#[cfg(not(any(windows, target_os = \"android\", target_os = \"linux\", target_vendor = \"apple\", target_os = \"freebsd\")))]\nfn os_code() -> i32"
     ));
-    assert!(rust.contains("return 10;"));
-    assert!(rust.contains("return 25;"));
-    assert!(rust.contains("return 20;"));
-    assert!(rust.contains("return 30;"));
-    assert!(rust.contains("return 35;"));
-    assert!(rust.contains("return 40;"));
+    assert_tail_value(&rust, "10");
+    assert_tail_value(&rust, "25");
+    assert_tail_value(&rust, "20");
+    assert_tail_value(&rust, "30");
+    assert_tail_value(&rust, "35");
+    assert_tail_value(&rust, "40");
     assert_eq!(rust.matches("fn main()").count(), 1);
 }
 
@@ -78,8 +82,8 @@ fn translates_win64_macro_to_composed_cfg_item() {
     assert!(rust.contains(
         "#[cfg(not(all(windows, target_pointer_width = \"64\")))]\nfn win64_code() -> i32"
     ));
-    assert!(rust.contains("return 64;"));
-    assert!(rust.contains("return 0;"));
+    assert_tail_value(&rust, "64");
+    assert_tail_value(&rust, "0");
     assert_eq!(rust.matches("fn main()").count(), 1);
 }
 
@@ -89,8 +93,8 @@ fn translates_unix_macro_to_cfg_item() {
 
     assert!(rust.contains("#[cfg(unix)]\nfn unix_code() -> i32"));
     assert!(rust.contains("#[cfg(not(unix))]\nfn unix_code() -> i32"));
-    assert!(rust.contains("return 1;"));
-    assert!(rust.contains("return 0;"));
+    assert_tail_value(&rust, "1");
+    assert_tail_value(&rust, "0");
     assert_eq!(rust.matches("fn main()").count(), 1);
 }
 
@@ -111,17 +115,17 @@ fn translates_arch_macro_variants_to_cfg_items() {
     assert!(rust.contains(
         "#[cfg(not(any(target_arch = \"x86_64\", target_arch = \"x86\", target_arch = \"aarch64\", target_arch = \"arm\", target_arch = \"powerpc64\", target_arch = \"powerpc\", target_arch = \"wasm64\", target_arch = \"wasm32\", target_arch = \"riscv64\", target_arch = \"riscv32\")))]\nfn arch_code() -> i32"
     ));
-    assert!(rust.contains("return 64;"));
-    assert!(rust.contains("return 86;"));
-    assert!(rust.contains("return 128;"));
-    assert!(rust.contains("return 32;"));
-    assert!(rust.contains("return 640;"));
-    assert!(rust.contains("return 320;"));
-    assert!(rust.contains("return 6400;"));
-    assert!(rust.contains("return 3200;"));
-    assert!(rust.contains("return 645;"));
-    assert!(rust.contains("return 325;"));
-    assert!(rust.contains("return 0;"));
+    assert_tail_value(&rust, "64");
+    assert_tail_value(&rust, "86");
+    assert_tail_value(&rust, "128");
+    assert_tail_value(&rust, "32");
+    assert_tail_value(&rust, "640");
+    assert_tail_value(&rust, "320");
+    assert_tail_value(&rust, "6400");
+    assert_tail_value(&rust, "3200");
+    assert_tail_value(&rust, "645");
+    assert_tail_value(&rust, "325");
+    assert_tail_value(&rust, "0");
     assert_eq!(rust.matches("fn main()").count(), 1);
 }
 
@@ -134,9 +138,9 @@ fn translates_pointer_width_macro_variants_to_cfg_items() {
     assert!(rust.contains(
         "#[cfg(not(any(target_pointer_width = \"64\", target_pointer_width = \"32\")))]\nfn pointer_width_code() -> i32"
     ));
-    assert!(rust.contains("return 64;"));
-    assert!(rust.contains("return 32;"));
-    assert!(rust.contains("return 0;"));
+    assert_tail_value(&rust, "64");
+    assert_tail_value(&rust, "32");
+    assert_tail_value(&rust, "0");
     assert_eq!(rust.matches("fn main()").count(), 1);
 }
 
@@ -153,9 +157,9 @@ fn translates_arm_endian_macro_variants_to_cfg_items() {
     assert!(rust.contains(
         "#[cfg(not(any(any(all(target_arch = \"arm\", target_endian = \"big\"), all(target_arch = \"aarch64\", target_endian = \"big\")), any(all(target_arch = \"arm\", target_endian = \"little\"), all(target_arch = \"aarch64\", target_endian = \"little\")))))]\nfn arm_endian_code() -> i32"
     ));
-    assert!(rust.contains("return 100;"));
-    assert!(rust.contains("return 200;"));
-    assert!(rust.contains("return 0;"));
+    assert_tail_value(&rust, "100");
+    assert_tail_value(&rust, "200");
+    assert_tail_value(&rust, "0");
     assert_eq!(rust.matches("fn main()").count(), 1);
 }
 
@@ -165,8 +169,8 @@ fn translates_ndebug_variants_to_debug_assertion_cfg_items() {
 
     assert!(rust.contains("#[cfg(not(debug_assertions))]\nfn debug_code() -> i32"));
     assert!(rust.contains("#[cfg(debug_assertions)]\nfn debug_code() -> i32"));
-    assert!(rust.contains("return 0;"));
-    assert!(rust.contains("return 1;"));
+    assert_tail_value(&rust, "0");
+    assert_tail_value(&rust, "1");
     assert_eq!(rust.matches("fn main()").count(), 1);
 }
 
@@ -176,8 +180,8 @@ fn translates_single_custom_macro_to_feature_cfg_items() {
 
     assert!(rust.contains("#[cfg(feature = \"my_feature\")]\nfn feature_code() -> i32"));
     assert!(rust.contains("#[cfg(not(feature = \"my_feature\"))]\nfn feature_code() -> i32"));
-    assert!(rust.contains("return 10;"));
-    assert!(rust.contains("return 20;"));
+    assert_tail_value(&rust, "10");
+    assert_tail_value(&rust, "20");
     assert_eq!(rust.matches("fn main()").count(), 1);
 }
 

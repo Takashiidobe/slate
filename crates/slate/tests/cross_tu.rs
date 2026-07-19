@@ -433,7 +433,7 @@ fn function_alias_exports_forwarding_wrapper() {
 
     assert!(main_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn alias_impl"));
     assert!(
-        main_rs.contains("return real_impl(_0);"),
+        main_rs.contains("real_impl(_0)\n}"),
         "alias wrapper should forward to real_impl:\n{main_rs}"
     );
 }

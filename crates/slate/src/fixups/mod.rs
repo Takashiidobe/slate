@@ -522,6 +522,13 @@ fn apply_with_logger(
     step!(program, Pass::UnusedParams, {
         rewrite::unused_params::UnusedParams::new(logger).fixup(&mut program);
     });
+    step!(program, Pass::FinalReturns, {
+        for item in &mut program.items {
+            if let Item::Fn(f) = item {
+                rewrite::final_returns::FinalReturns::new(logger).fixup(f);
+            }
+        }
+    });
     step!(program, Pass::MainZeroExit, {
         for item in &mut program.items {
             if let Item::Fn(f) = item {
@@ -864,7 +871,7 @@ mod tests {
             "\
 fn add(a: i32, b: i32) -> i32 {
     let c: i32 = a + b;
-    return c;
+    c
 }
 "
         );

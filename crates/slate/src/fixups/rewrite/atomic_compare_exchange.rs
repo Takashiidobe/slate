@@ -476,7 +476,7 @@ mod tests {
     fn rewrites_compare_exchange_temp_chain_to_match() {
         let out = after(chain(vec![]));
 
-        assert!(out.contains("let ok: i32 = match a.compare_exchange(expected, 42, std::sync::atomic::Ordering::SeqCst, std::sync::atomic::Ordering::SeqCst)"));
+        assert!(out.contains("let ok: i32 = (match a.compare_exchange(expected, 42, std::sync::atomic::Ordering::SeqCst, std::sync::atomic::Ordering::SeqCst)"));
         assert!(out.contains("Ok(_) => true"));
         assert!(out.contains("Err(v) =>"));
         assert!(out.contains("expected = v;"));

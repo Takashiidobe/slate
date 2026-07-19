@@ -184,7 +184,7 @@ unsafe extern \"C\" {
 }
 
 fn f(code: i32) -> ! {
-    std::process::exit(code);
+    std::process::exit(code)
 }
 "
         );

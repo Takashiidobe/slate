@@ -89,7 +89,7 @@ fn function_alias_lowers_to_forwarding_wrapper() {
 
     assert!(rust.contains("fn alias_impl(_0: i32) -> i32"));
     assert!(
-        rust.contains("return real_impl(_0);"),
+        rust.contains("real_impl(_0)\n}"),
         "alias wrapper should forward to real_impl:\n{rust}"
     );
 }
@@ -190,10 +190,10 @@ fn atomic_temp_allocas_forward_instead_of_shadowed_locals() {
     assert!(rust.contains(".fetch_sub(10, std::sync::atomic::Ordering::SeqCst)"));
     assert!(rust.contains(".swap(7, std::sync::atomic::Ordering::SeqCst)"));
     assert!(rust.contains(
-        "let ok: i32 = match a.compare_exchange(expected, 42, std::sync::atomic::Ordering::SeqCst, std::sync::atomic::Ordering::SeqCst)"
+        "let ok: i32 = (match a.compare_exchange(expected, 42, std::sync::atomic::Ordering::SeqCst, std::sync::atomic::Ordering::SeqCst)"
     ));
     assert!(rust.contains(
-        "let bad: i32 = match a.compare_exchange(expected2, 0, std::sync::atomic::Ordering::SeqCst, std::sync::atomic::Ordering::SeqCst)"
+        "let bad: i32 = (match a.compare_exchange(expected2, 0, std::sync::atomic::Ordering::SeqCst, std::sync::atomic::Ordering::SeqCst)"
     ));
     assert!(rust.contains("Ok(_) => true"));
     assert!(rust.contains("expected = v;"));
@@ -394,9 +394,9 @@ fn safe_struct_field_reads_do_not_use_unsafe() {
     support::translate(&structs_c, &structs_generated).expect("translate structs fixture");
     let structs_rust =
         std::fs::read_to_string(&structs_generated).expect("read generated structs rust");
-    assert!(structs_rust.contains("return p.left + p.right;"));
+    assert!(structs_rust.contains("p.left + p.right\n}"));
     assert!(structs_rust.contains("p.left = p.right + 2;"));
-    assert!(structs_rust.contains("return p.left;"));
+    assert!(structs_rust.contains("p.left\n}"));
     assert!(!structs_rust.contains("unsafe { p.left }"));
     assert!(!structs_rust.contains("unsafe { p.right }"));
 
@@ -409,22 +409,22 @@ fn safe_struct_field_reads_do_not_use_unsafe() {
     assert!(mixed_rust.contains("let _v6: u8 = m.code;"));
     assert!(mixed_rust.contains("let _v8: f32 = m.ratio;"));
     assert!(mixed_rust.contains("let _v10: f64 = m.total;"));
-    assert!(mixed_rust.contains("return unsafe { s.total };"));
-    assert!(mixed_rust.contains("return unsafe { s.tag } as i32;"));
+    assert!(mixed_rust.contains("unsafe { s.total }\n}"));
+    assert!(mixed_rust.contains("(unsafe { s.tag }) as i32\n}"));
 
     let unions_c = fixtures_dir().join("unions.c");
     let unions_generated = tmp.join("unions.generated.rs");
     support::translate(&unions_c, &unions_generated).expect("translate unions fixture");
     let unions_rust =
         std::fs::read_to_string(&unions_generated).expect("read generated unions rust");
-    assert!(unions_rust.contains("return unsafe { p.left };"));
+    assert!(unions_rust.contains("unsafe { p.left }\n}"));
 
     let globals_c = fixtures_dir().join("global_vars.c");
     let globals_generated = tmp.join("global_vars.generated.rs");
     support::translate(&globals_c, &globals_generated).expect("translate global_vars fixture");
     let globals_rust =
         std::fs::read_to_string(&globals_generated).expect("read generated global_vars rust");
-    assert!(globals_rust.contains("return unsafe { pair.left } + unsafe { pair.right };"));
+    assert!(globals_rust.contains("(unsafe { pair.left }) + unsafe { pair.right }\n}"));
 }
 
 #[test]
@@ -475,8 +475,8 @@ fn final_return_temps_are_collapsed() {
 
     let arrays = std::fs::read_to_string(tmp.join("arrays.generated.rs"))
         .expect("read generated arrays rust");
-    assert!(arrays.contains("return values[2];"));
-    assert!(arrays.contains("return values[((index as i64) as usize)];"));
+    assert!(arrays.contains("values[2]\n}"));
+    assert!(arrays.contains("values[((index as i64) as usize)]\n}"));
     assert!(
         !arrays.contains("(0 as usize)")
             && !arrays.contains("(1 as usize)")
@@ -498,11 +498,11 @@ fn final_return_temps_are_collapsed() {
     );
     assert!(array_types_rust.contains("values[2] = values[0] + values[1];"));
     assert!(!array_types_rust.contains("((values[0] as i32) + (values[1] as i32)) as i8"));
-    assert!(array_types_rust.contains("return values[((index as i64) as usize)];"));
+    assert!(array_types_rust.contains("values[((index as i64) as usize)]\n}"));
 
     let pointers = std::fs::read_to_string(tmp.join("pointers.generated.rs"))
         .expect("read generated pointers rust");
-    assert!(pointers.contains("return unsafe { *slot };"));
+    assert!(pointers.contains("unsafe { *slot }\n}"));
 
     let volatile = std::fs::read_to_string(tmp.join("volatile.generated.rs"))
         .expect("read generated volatile rust");
@@ -519,7 +519,7 @@ fn pointer_arithmetic_uses_clearer_safe_offset_forms() {
     support::translate(&pointers_c, &pointers_generated).expect("translate pointers fixture");
     let pointers =
         std::fs::read_to_string(&pointers_generated).expect("read generated pointers rust");
-    assert!(pointers.contains("return unsafe { *ptr.offset(index as isize) };"));
+    assert!(pointers.contains("unsafe { *ptr.offset(index as isize) }\n}"));
     assert!(!pointers.contains("unsafe { *unsafe {"));
     assert!(!pointers.contains(".add(_v9"));
 
@@ -964,7 +964,7 @@ fn control_flow_conditions_drop_redundant_parens() {
     }
     // precedence-required parens across bitwise/shift must survive.
     assert!(rust.contains("(a & b) + (a << 1)"));
-    assert!(rust.contains("return r + t + m;"));
+    assert!(rust.contains("r + t + m\n}"));
 }
 
 #[test]
@@ -1056,7 +1056,7 @@ fn noreturn_c11_uses_process_exit_and_removes_dead_false_branch() {
 
     support::translate(&c_src, &generated).expect("translate noreturn_c11_spelling fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated noreturn C11 rust");
-    assert!(rust.contains("std::process::exit(code as i32);"));
+    assert!(rust.contains("std::process::exit(code as i32)\n}"));
     assert!(!rust.contains("unsafe extern \"C\""));
     assert!(!rust.contains("fn exit("));
     assert!(!rust.contains("let _v1: i32 = 0;"));
@@ -1107,8 +1107,8 @@ fn call_lowering_preserves_function_pointer_and_extern_shapes() {
         std::fs::read_to_string(&fp_generated).expect("read generated function pointer rust");
     assert!(fp_rust.contains("Some(add_pair)"));
     assert!(fp_rust.contains(".unwrap()("));
-    assert!(fp_rust.contains("return lhs + rhs;"));
-    assert!(fp_rust.contains("return lhs * rhs;"));
+    assert!(fp_rust.contains("lhs + rhs\n}"));
+    assert!(fp_rust.contains("lhs * rhs\n}"));
     assert!(!fp_rust.contains("let mut __retval: i32 = lhs + rhs;"));
     assert!(!fp_rust.contains("let mut __retval: i32 = lhs * rhs;"));
 
@@ -1139,7 +1139,7 @@ fn function_pointer_presence_checks_use_option_methods() {
     assert!(!rust.contains("== None"));
     assert!(!rust.contains("std::ptr::null_mut()"));
     assert!(rust.contains("return op.unwrap()(value);"));
-    assert!(rust.contains("return value;"));
+    assert!(rust.contains("value\n}"));
     assert!(!rust.contains("let _v0: Option<fn(i32) -> i32> = op;"));
     assert!(!rust.contains("let _v1: Option<fn(i32) -> i32> = op;"));
     assert!(!rust.contains("let _v2: i32 = value;"));
@@ -1182,7 +1182,7 @@ fn switch_and_dispatch_use_block_match_arms() {
     assert!(!goto_return_rust.contains("__dispatch0"));
     assert!(goto_return_rust.contains("if n < 0 {\n        return -1;\n    }"));
     assert!(goto_return_rust.contains("if n == 0 {\n        return 0;\n    }"));
-    assert!(goto_return_rust.contains("return 1;"));
+    assert!(goto_return_rust.contains("1\n}"));
 
     let goto_forward_c = fixtures_dir().join("goto_forward.c");
     let goto_forward_generated = tmp.join("goto_forward.generated.rs");
@@ -1315,21 +1315,21 @@ fn aggregate_value_member_ops_inline_member_access_temps() {
     assert!(rust.contains(
         "\
 fn take_pair(p: Pair) -> i32 {
-    return p.left * 10 + p.right;
+    p.left * 10 + p.right
 }
 "
     ));
     assert!(rust.contains(
         "\
 fn nested_total(n: Nested) -> i32 {
-    return n.inner.left + n.inner.right + n.tag;
+    n.inner.left + n.inner.right + n.tag
 }
 "
     ));
     assert!(rust.contains(
         "\
 fn array_value(w: WithArray) -> i32 {
-    return w.data[1] + w.marker;
+    w.data[1] + w.marker
 }
 "
     ));
@@ -1345,7 +1345,7 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
             "pointers",
             &[
                 "let mut local: i32 = value;",
-                "*slot = unsafe { *slot } + amount;",
+                "*slot = (unsafe { *slot }) + amount;",
                 "values[2] = 12;",
             ][..],
         ),
@@ -1353,9 +1353,9 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
         (
             "global_vars",
             &[
-                "counter = unsafe { counter } + by;",
+                "counter = (unsafe { counter }) + by;",
                 "numbers[2] =",
-                "pair.right = unsafe { pair.right } + unsafe { numbers[1] };",
+                "pair.right = (unsafe { pair.right }) + unsafe { numbers[1] };",
             ][..],
         ),
         (
@@ -1624,8 +1624,8 @@ fn internal_char_pointer_params_lift_to_str() {
     assert!(rust.contains("fn parse_num(s: &str) -> i32"));
     assert!(rust.contains("fn forward_num(s: &str) -> i32"));
     assert!(rust.contains("fn text_len(s: &str) -> i32"));
-    assert!(rust.contains("return __slate_runtime::parse_i32(s);"));
-    assert!(rust.contains("return parse_num(s);"));
+    assert!(rust.contains("__slate_runtime::parse_i32(s)\n}"));
+    assert!(rust.contains("parse_num(s)\n}"));
     assert!(rust.contains("let _v1: usize = s.len();"));
     assert!(rust.contains("forward_num(digits)"));
     assert!(rust.contains("text_len(word)"));
