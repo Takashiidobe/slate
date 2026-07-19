@@ -19,8 +19,7 @@ effect traces should diverge.
 - `src/effects/rust_ast/interp.rs` executes Slate's Rust AST and emits an
   `EffectTrace`.
 - `src/effects/interpreter.rs` normalizes and compares traces.
-- `tests/effects_regression.rs` holds the Rust-vs-Rust fixture tests and the
-  ignored all-fixture ratchet.
+- `tests/effects_regression.rs` holds the Rust-vs-Rust all-fixture corpus test.
 - `slate compare-effects-rust-rust <file.c>` lowers a C fixture, interprets raw
   lowered Rust, applies all fixups, interprets fixed Rust, and compares traces.
 
@@ -63,9 +62,14 @@ cargo run -- compare-effects-rust-rust tests/fixtures/<name>.c
 For all-fixture triage:
 
 ```bash
-cargo test --test effects_regression -- --ignored --nocapture
-SLATE_EFFECT_FIXTURE=<name> cargo test --test effects_regression -- --ignored --nocapture
+cargo nextest r --release --test effects_regression --no-capture
+SLATE_EFFECT_FIXTURE=<name> cargo nextest r --release --test effects_regression --no-capture
 ```
+
+Run the effects regression whenever adding a `tests/fixtures/*.c` fixture. A new
+fixture can introduce raw Rust or fixuped Rust shapes that compile and pass
+differential testing while still being unknown to the effects interpreter. Treat
+an extraction failure as missing effects support, not as an ignorable test gap.
 
 When adding a new semantic case:
 
@@ -76,9 +80,7 @@ When adding a new semantic case:
 3. Keep unsupported shapes explicit with a precise panic message. Do not guess.
 4. Add or update an in-file unit test under `src/effects/rust_ast/interp/tests.rs`
    for the new semantic shape.
-5. Add or keep a fixture-level regression in `tests/effects_regression.rs` when
-   the shape corresponds to a known fixup family.
-6. Run the focused fixture command and the effects regression test.
+5. Run the focused fixture command and the effects regression test.
 
 ## Where To Implement
 
@@ -172,11 +174,17 @@ cargo fmt
 cargo nextest r --release
 ```
 
-Run the ignored all-fixture ratchet when the work is intended to reduce corpus
-failures:
+Run the all-fixture corpus test whenever adding fixture coverage or changing a
+fixup:
 
 ```bash
-cargo test --test effects_regression -- --ignored --nocapture
+cargo nextest r --release --test effects_regression --no-capture
 ```
+
+There is no general compiler error that proves every new fixup effect shape is
+modeled. Adding a new `CallSummary` variant is exhaustively checked by the
+summary dispatch, but most Rust AST interpretation and fixup effect-fact
+collection uses explicit unsupported/runtime paths for unknown shapes. The
+all-fixture effects test is the required guard for those cases.
 
 Record the before/after pass and failure counts on the bead.
