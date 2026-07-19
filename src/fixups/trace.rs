@@ -1,4 +1,4 @@
-use crate::fixups::facts::{AstPath, BindingId, DefUseFact, FixupFacts, PathSegment};
+use crate::fixups::facts::{AstPath, BindingId, DefUseFact, FixupFacts, FunctionId, PathSegment};
 use crate::rust_ast::{Block, IndentStmt, Item, Program, Stmt};
 use std::fmt::Write;
 
@@ -259,6 +259,18 @@ pub(in crate::fixups) fn path_location(path: &[PathSegment]) -> TraceLocation {
     }
 }
 
+pub(in crate::fixups) fn function_path_location(
+    facts: &FixupFacts,
+    function: FunctionId,
+    path: &[PathSegment],
+) -> TraceLocation {
+    TraceLocation {
+        function: facts.function_name(function).map(str::to_owned),
+        ast_path: Some(path_to_string(path)),
+        ..TraceLocation::default()
+    }
+}
+
 pub(in crate::fixups) fn stmt_snippet(label: impl Into<String>, stmt: &Stmt) -> TraceSnippet {
     TraceSnippet::new(label, stmt.render().trim_end())
 }
@@ -364,17 +376,27 @@ impl TraceLog {
         let mut out = String::new();
         for pass in &self.passes {
             writeln!(out, "{:<34} {}", pass.pass.name(), pass.summary()).unwrap();
-            for event in &pass.events {
-                writeln!(out, "  {}", event.kind).unwrap();
-                if let Some(location) = render_location(&event.location) {
-                    writeln!(out, "    at {location}").unwrap();
-                }
-                render_snippets(&mut out, "before", &event.before);
-                render_snippets(&mut out, "after", &event.after);
-                if !event.facts.is_empty() {
-                    writeln!(out, "    facts:").unwrap();
-                    for fact in &event.facts {
-                        writeln!(out, "      {}={}", fact.key, fact.value).unwrap();
+            if pass.events.is_empty() {
+                writeln!(out, "  skipped: nothing to do").unwrap();
+                continue;
+            }
+            for group in function_groups(&pass.events) {
+                writeln!(out, "  function {}:", group.label).unwrap();
+                for event in group.events {
+                    writeln!(out, "    {}", event.kind).unwrap();
+                    writeln!(
+                        out,
+                        "      at {}",
+                        render_location(&event.location).unwrap_or_else(|| "<unknown>".into())
+                    )
+                    .unwrap();
+                    render_snippets(&mut out, "before", &event.before);
+                    render_snippets(&mut out, "after", &event.after);
+                    if !event.facts.is_empty() {
+                        writeln!(out, "      facts:").unwrap();
+                        for fact in &event.facts {
+                            writeln!(out, "        {}={}", fact.key, fact.value).unwrap();
+                        }
                     }
                 }
             }
@@ -387,6 +409,31 @@ impl TraceLog {
         .unwrap();
         out
     }
+}
+
+struct FunctionGroup<'a> {
+    label: String,
+    events: Vec<&'a RewriteEvent>,
+}
+
+fn function_groups(events: &[RewriteEvent]) -> Vec<FunctionGroup<'_>> {
+    let mut groups: Vec<FunctionGroup<'_>> = Vec::new();
+    for event in events {
+        let label = event
+            .location
+            .function
+            .clone()
+            .unwrap_or_else(|| "<unknown>".into());
+        if let Some(group) = groups.iter_mut().find(|group| group.label == label) {
+            group.events.push(event);
+        } else {
+            groups.push(FunctionGroup {
+                label,
+                events: vec![event],
+            });
+        }
+    }
+    groups
 }
 
 fn render_location(location: &TraceLocation) -> Option<String> {
@@ -416,11 +463,11 @@ fn render_snippets(out: &mut String, title: &str, snippets: &[TraceSnippet]) {
     if snippets.is_empty() {
         return;
     }
-    writeln!(out, "    {title}:").unwrap();
+    writeln!(out, "      {title}:").unwrap();
     for snippet in snippets {
-        writeln!(out, "      {}:", snippet.label).unwrap();
+        writeln!(out, "        {}:", snippet.label).unwrap();
         for line in snippet.code.lines() {
-            writeln!(out, "        {line}").unwrap();
+            writeln!(out, "          {line}").unwrap();
         }
     }
 }
@@ -715,8 +762,108 @@ mod tests {
         assert_eq!(log.passes[0].events[0].facts[0].key, "reads");
         let rendered = log.render_human();
         assert!(rendered.contains("late_inline_temps"));
+        assert!(rendered.contains("function main:"));
         assert!(rendered.contains("inlined temp"));
         assert!(rendered.contains("tests/fixtures/mem_memchr.c:4"));
         assert!(rendered.contains("reads=1"));
+    }
+
+    #[test]
+    fn human_renderer_groups_events_by_function_and_marks_empty_passes() {
+        let summary = ProgramSummary {
+            items: 1,
+            stmts: 2,
+            temp_lets: 0,
+        };
+        let log = TraceLog {
+            passes: vec![
+                PassInvocation {
+                    pass: Pass::Goto,
+                    before: summary.clone(),
+                    after: summary.clone(),
+                    changed: false,
+                    events: Vec::new(),
+                },
+                PassInvocation {
+                    pass: Pass::ZeroInit,
+                    before: summary.clone(),
+                    after: ProgramSummary {
+                        items: 1,
+                        stmts: 1,
+                        temp_lets: 0,
+                    },
+                    changed: true,
+                    events: vec![
+                        RewriteEvent {
+                            pass: Pass::ZeroInit,
+                            kind: "fold_zero_init_assignment".into(),
+                            location: TraceLocation {
+                                function: Some("main".into()),
+                                ast_path: Some("stmt[1]".into()),
+                                ..TraceLocation::default()
+                            },
+                            before: vec![TraceSnippet::new("assignment", "x = 10;")],
+                            after: vec![TraceSnippet::new("declaration", "let mut x: i32 = 10;")],
+                            facts: vec![TraceFact::new("binding_is_zero", "true")],
+                        },
+                        RewriteEvent {
+                            pass: Pass::ZeroInit,
+                            kind: "fold_zero_init_assignment".into(),
+                            location: TraceLocation {
+                                function: Some("helper".into()),
+                                ast_path: Some("stmt[2]".into()),
+                                ..TraceLocation::default()
+                            },
+                            before: Vec::new(),
+                            after: Vec::new(),
+                            facts: Vec::new(),
+                        },
+                    ],
+                },
+            ],
+            final_summary: summary,
+        };
+
+        let rendered = log.render_human();
+        assert!(rendered.contains("goto"));
+        assert!(rendered.contains("  skipped: nothing to do"));
+        assert!(rendered.contains("  function main:"));
+        assert!(rendered.contains("      at fn main, ast stmt[1]"));
+        assert!(rendered.contains("      before:"));
+        assert!(rendered.contains("        assignment:"));
+        assert!(rendered.contains("          x = 10;"));
+        assert!(rendered.contains("        binding_is_zero=true"));
+        assert!(rendered.contains("  function helper:"));
+        assert!(rendered.contains("      at fn helper, ast stmt[2]"));
+    }
+
+    #[test]
+    fn human_renderer_prints_unknown_location_when_no_location_is_available() {
+        let summary = ProgramSummary {
+            items: 0,
+            stmts: 0,
+            temp_lets: 0,
+        };
+        let log = TraceLog {
+            passes: vec![PassInvocation {
+                pass: Pass::VarAliases,
+                before: summary.clone(),
+                after: summary.clone(),
+                changed: true,
+                events: vec![RewriteEvent {
+                    pass: Pass::VarAliases,
+                    kind: "inline_var_alias".into(),
+                    location: TraceLocation::default(),
+                    before: Vec::new(),
+                    after: Vec::new(),
+                    facts: Vec::new(),
+                }],
+            }],
+            final_summary: summary,
+        };
+
+        let rendered = log.render_human();
+        assert!(rendered.contains("  function <unknown>:"));
+        assert!(rendered.contains("      at <unknown>"));
     }
 }
