@@ -493,6 +493,12 @@ fn apply_with_logger(
     step!(program, Pass::VarAliases, {
         inline_var_aliases_to_fixpoint(&mut program, logger);
     });
+    step!(program, Pass::ConstantConditions, {
+        constant_conditions_to_fixpoint(&mut program, logger);
+    });
+    step!(program, Pass::LibcExit, {
+        rewrite::libc_exit::LibcExit::new(logger).fixup(&mut program);
+    });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::PruneUnusedExterns, {
         rewrite::prune_unused_externs::PruneUnusedExterns::new(logger).fixup(&mut program, &facts);
@@ -518,6 +524,23 @@ fn structure_goto(program: &mut Program, logger: &mut impl TraceLogger) {
     for item in &mut program.items {
         if let Item::Fn(f) = item {
             while rewrite::goto::Goto::new(f.name.clone(), logger).fixup(&mut f.body) {}
+        }
+    }
+}
+
+fn constant_conditions_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
+    loop {
+        let mut changed = false;
+        for item in &mut program.items {
+            if let Item::Fn(f) = item
+                && rewrite::constant_conditions::ConstantConditions::new(&f.name, logger)
+                    .fixup(&mut f.body)
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
         }
     }
 }
