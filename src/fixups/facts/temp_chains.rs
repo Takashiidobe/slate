@@ -164,6 +164,11 @@ fn immediate_effectful_consumer(stmt: &Stmt, name: &str) -> bool {
             expr_ident(target).is_some() && expr_ident(value) == Some(name)
         }
         Stmt::Return(Some(expr)) => expr_ident(expr) == Some(name),
+        Stmt::Unsafe { body } => {
+            body.tail.is_none()
+                && body.stmts.len() == 1
+                && immediate_effectful_consumer(&body.stmts[0].stmt, name)
+        }
         Stmt::Expr(expr) => simple_macro_arg_use(expr, name),
         _ => false,
     }
@@ -252,8 +257,8 @@ mod tests {
     use crate::fixups::facts::{self, AstPath, BindingId, FunctionId, PathSegment, TempChainFact};
     use crate::fixups::test_support::*;
     use crate::rust_ast::{
-        AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, BinOp, Expr, Item, Program, Stmt,
-        UnaryOp,
+        AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, BinOp, Expr, IndentStmt, Item,
+        Program, Stmt, UnaryOp,
     };
 
     fn analyzed(stmts: Vec<Stmt>) -> facts::FixupFacts {
@@ -471,6 +476,33 @@ mod tests {
         let v1 = chain_for(&facts, "_v1");
         assert_eq!(v1.producer_path, AstPath(vec![PathSegment::Stmt(0)]));
         assert_eq!(v1.consumer_path, AstPath(vec![PathSegment::Stmt(1)]));
+    }
+
+    #[test]
+    fn records_immediate_effectful_temp_into_unsafe_assignment() {
+        let facts = analyzed(vec![
+            temp("_v1", "i32", call("op", vec![var("value")])),
+            Stmt::Unsafe {
+                body: crate::rust_ast::Block {
+                    stmts: vec![IndentStmt {
+                        depth: 2,
+                        stmt: assign("global", var("_v1")),
+                    }],
+                    tail: None,
+                },
+            },
+        ]);
+
+        let v1 = chain_for(&facts, "_v1");
+        assert_eq!(v1.producer_path, AstPath(vec![PathSegment::Stmt(0)]));
+        assert_eq!(
+            v1.consumer_path,
+            AstPath(vec![
+                PathSegment::Stmt(1),
+                PathSegment::UnsafeBody,
+                PathSegment::Stmt(0)
+            ])
+        );
     }
 
     #[test]

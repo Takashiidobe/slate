@@ -335,6 +335,9 @@ fn is_allowed_argument_use(arg: ArgumentUse<'_>) -> bool {
     if is_effectful_expr(arg.env.function, arg.env.facts, arg.producer_path) {
         return arg.adjacent && simple_macro_arg_use(arg.stmt, arg.name);
     }
+    if method_arg_use(arg.stmt, arg.name) && contains_integer_literal(arg.init) {
+        return false;
+    }
     type_stable_arg_init(arg.init, arg.ty) && call_or_macro_arg_use(arg.stmt, arg.name)
 }
 
@@ -363,6 +366,10 @@ fn type_stable_arg_init(init: &Expr, ty: Option<&Type>) -> bool {
         Expr::Var(_) | Expr::Cast { .. } => true,
         Expr::Binary { .. } => ty.is_some() && !contains_integer_literal(init),
         Expr::Index { .. } => ty.is_some(),
+        Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| type_stable_arg_init(tail, ty)),
         Expr::Value(RustValue::I64(_)) => matches!(ty, Some(Type::Prim(Prim::I32))),
         Expr::Value(RustValue::Bool(_)) => true,
         _ => false,
@@ -394,11 +401,38 @@ fn call_or_macro_arg_use(stmt: &Stmt, name: &str) -> bool {
     }
 }
 
+fn method_arg_use(stmt: &Stmt, name: &str) -> bool {
+    match stmt {
+        Stmt::Let { init, .. } => init
+            .as_ref()
+            .is_some_and(|expr| method_arg_use_expr(expr, name)),
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            method_arg_use_expr(target, name) || method_arg_use_expr(value, name)
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => method_arg_use_expr(expr, name),
+        _ => false,
+    }
+}
+
+fn method_arg_use_expr(expr: &Expr, name: &str) -> bool {
+    match expr {
+        Expr::MethodCall { args, .. } | Expr::MethodCallGeneric { args, .. } => {
+            args.iter().any(|arg| expr_ident_count(arg, name) > 0)
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| method_arg_use_expr(tail, name)),
+        Expr::Cast { expr, .. } => method_arg_use_expr(expr, name),
+        _ => false,
+    }
+}
+
 fn call_or_macro_arg_use_expr(expr: &Expr, name: &str) -> bool {
     match expr {
-        Expr::Call { args, .. } | Expr::Macro { args, .. } => args
-            .iter()
-            .any(|arg| matches!(arg, Expr::Var(var) if var.as_str() == name)),
+        Expr::Call { args, .. } | Expr::Macro { args, .. } => {
+            args.iter().any(|arg| call_arg_uses_name(arg, name))
+        }
         Expr::MethodCall { args, .. } | Expr::MethodCallGeneric { args, .. } => {
             args.iter().any(|arg| expr_ident_count(arg, name) > 0)
         }
@@ -407,6 +441,18 @@ fn call_or_macro_arg_use_expr(expr: &Expr, name: &str) -> bool {
             .as_deref()
             .is_some_and(|tail| call_or_macro_arg_use_expr(tail, name)),
         Expr::Cast { expr, .. } => call_or_macro_arg_use_expr(expr, name),
+        _ => false,
+    }
+}
+
+fn call_arg_uses_name(expr: &Expr, name: &str) -> bool {
+    match expr {
+        Expr::Var(var) => var.as_str() == name,
+        Expr::Cast { expr, .. } => call_arg_uses_name(expr, name),
+        Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| call_arg_uses_name(tail, name)),
         _ => false,
     }
 }
@@ -731,6 +777,79 @@ fn f() {
 fn f() {
     let mut first: i32 = 0;
     first = next_arg();
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_tail_only_unsafe_global_read_into_call_argument_and_store() {
+        let out = inlined(vec![
+            temp(
+                "_v1",
+                "i8",
+                Expr::Unsafe(Box::new(Block {
+                    stmts: vec![],
+                    tail: Some(Box::new(var("small"))),
+                })),
+            ),
+            temp("_v3", "i8", call("add_char", vec![var("_v1"), int(3)])),
+            Stmt::Unsafe {
+                body: Block {
+                    stmts: vec![IndentStmt {
+                        depth: 0,
+                        stmt: assign("small", var("_v3")),
+                    }],
+                    tail: None,
+                },
+            },
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    unsafe {
+        small = add_char(unsafe { small }, 3);
+    }
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_tail_only_unsafe_global_read_into_casted_call_argument() {
+        let out = inlined(vec![
+            temp(
+                "_v1",
+                "f32",
+                Expr::Unsafe(Box::new(Block {
+                    stmts: vec![],
+                    tail: Some(Box::new(var("ratio"))),
+                })),
+            ),
+            temp(
+                "_v2",
+                "f64",
+                call(
+                    "add_double",
+                    vec![
+                        var("total"),
+                        Expr::Cast {
+                            expr: Box::new(var("_v1")),
+                            ty: Type::parse("f64"),
+                        },
+                    ],
+                ),
+            ),
+            Stmt::Return(Some(var("_v2"))),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    return add_double(total, unsafe { ratio } as f64);
 }
 "
         );
