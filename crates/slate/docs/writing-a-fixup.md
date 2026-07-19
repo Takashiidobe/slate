@@ -245,6 +245,12 @@ counts, producer/consumer paths, purity/effect summaries, and guard results such
 as `source_changes_between=false`. Avoid dumping arbitrary debug text when a
 small set of facts explains the decision.
 
+If a changed pass emits no events, `CollectingLogger` adds a generic
+`pass_changed` event with whole-program before/after snippets and summary facts.
+That keeps `fixup-debug` complete across the pipeline, but it is not the desired
+end state for a pass with meaningful rewrite decisions. Replace the generic
+event by emitting at least one pass-local event when you instrument that pass.
+
 ## Test it
 
 1. **Unit tests, in-file.** Build input with the `test_support.rs` helpers

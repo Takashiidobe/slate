@@ -212,10 +212,13 @@ zero_init                          changed; stmts -1, temp_lets +0, items +0
         binding_is_zero=true
 ```
 
-Passes that make no textual change are still listed as `skipped`; a pass can be
-`changed` without rewrite-event details if it has not yet been instrumented.
-Locations use source file and line when available; otherwise they use the
-function name and AST path.
+Passes that make no textual change are still listed as `skipped`. If a changed
+pass has not yet been instrumented with pass-local rewrite events, debug output
+emits one generic `pass_changed` event with whole-program before/after snippets
+and summary facts. Treat that as a migration bridge: pass-local events should
+replace it when there is a useful domain-specific explanation. Locations use
+source file and line when available; otherwise they use the function name and AST
+path.
 
 ## Adding a feature
 

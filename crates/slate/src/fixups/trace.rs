@@ -542,12 +542,23 @@ impl TraceLogger for CollectingLogger {
 
     fn end_pass(&mut self, after: ProgramSummary, after_emit: String) {
         let active = self.current.take().expect("trace pass must be active");
+        let changed = active.before_emit != after_emit;
+        let mut events = active.events;
+        if changed && events.is_empty() {
+            events.push(generic_pass_changed_event(
+                active.pass,
+                &active.before,
+                &after,
+                &active.before_emit,
+                &after_emit,
+            ));
+        }
         self.completed.push(PassInvocation {
             pass: active.pass,
             before: active.before,
             after,
-            changed: active.before_emit != after_emit,
-            events: active.events,
+            changed,
+            events,
         });
     }
 
@@ -555,6 +566,35 @@ impl TraceLogger for CollectingLogger {
         if let Some(active) = &mut self.current {
             active.events.push(event);
         }
+    }
+}
+
+fn generic_pass_changed_event(
+    pass: Pass,
+    before: &ProgramSummary,
+    after: &ProgramSummary,
+    before_emit: &str,
+    after_emit: &str,
+) -> RewriteEvent {
+    RewriteEvent {
+        pass,
+        kind: "pass_changed".into(),
+        location: TraceLocation {
+            function: Some("program".into()),
+            ast_path: Some("program".into()),
+            ..TraceLocation::default()
+        },
+        before: vec![TraceSnippet::new("program", before_emit.trim_end())],
+        after: vec![TraceSnippet::new("program", after_emit.trim_end())],
+        facts: vec![
+            TraceFact::new("instrumentation", "generic_pass_delta"),
+            TraceFact::new("before_items", before.items.to_string()),
+            TraceFact::new("after_items", after.items.to_string()),
+            TraceFact::new("before_stmts", before.stmts.to_string()),
+            TraceFact::new("after_stmts", after.stmts.to_string()),
+            TraceFact::new("before_temp_lets", before.temp_lets.to_string()),
+            TraceFact::new("after_temp_lets", after.temp_lets.to_string()),
+        ],
     }
 }
 
