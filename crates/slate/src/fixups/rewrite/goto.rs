@@ -16,20 +16,76 @@
 
 use std::collections::BTreeSet;
 
+use crate::fixups::facts::PathSegment;
 use crate::fixups::facts::goto::{
     self, ArmFlow, CfgEdge, CfgNode, DispatchLoop, NaturalLoop, Transfer, cycle_entry_targets,
     cyclic_sccs, dominators, natural_loop,
 };
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, named_path_location, path_fact,
+    stmts_snippet,
+};
 use crate::rust_ast::{Expr, IndentStmt, MatchArm, Prim, RustValue, Stmt, Type, UnaryOp};
 
 pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) -> bool {
-    for dispatch in goto::recognize_dispatch_loops(body) {
-        if let Some(structured) = structure(&dispatch) {
-            replace_region(body, &dispatch, structured);
-            return true;
+    let mut logger = crate::fixups::trace::NoopLogger;
+    Goto::new("<unknown>", &mut logger).fixup(body)
+}
+
+pub(in crate::fixups) struct Goto<'a> {
+    function_name: String,
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> Goto<'a> {
+    pub(in crate::fixups) fn new(
+        function_name: impl Into<String>,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function_name: function_name.into(),
+            logger,
         }
     }
-    false
+
+    pub(in crate::fixups) fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        for dispatch in goto::recognize_dispatch_loops(body) {
+            if let Some(structured) = structure(&dispatch) {
+                let trace_before = self.logger.is_enabled().then(|| {
+                    vec![
+                        body[dispatch.let_index].clone(),
+                        body[dispatch.loop_index].clone(),
+                    ]
+                });
+                let structured_len = structured.len();
+                let trace_after = self.logger.is_enabled().then(|| structured.clone());
+                replace_region(body, &dispatch, structured);
+                if let Some(before) = trace_before {
+                    let mut loop_path = Vec::new();
+                    loop_path.push(PathSegment::Stmt(dispatch.loop_index));
+                    self.logger.rewrite(RewriteEvent {
+                        pass: TracePass::Goto,
+                        kind: "structure_dispatch_loop".into(),
+                        location: named_path_location(self.function_name.clone(), &loop_path),
+                        before: vec![stmts_snippet("dispatch_region", &before)],
+                        after: vec![stmts_snippet(
+                            "structured_region",
+                            &trace_after.expect("trace after"),
+                        )],
+                        facts: vec![
+                            path_fact("loop_path", &loop_path),
+                            fact("state_var", dispatch.state_var.clone()),
+                            fact("state_count", dispatch.states.len().to_string()),
+                            fact("structured_stmt_count", structured_len.to_string()),
+                            fact("dynamic_dispatch", dispatch.dynamic.to_string()),
+                        ],
+                    });
+                }
+                return true;
+            }
+        }
+        false
+    }
 }
 
 fn structure(dispatch: &DispatchLoop) -> Option<Vec<IndentStmt>> {

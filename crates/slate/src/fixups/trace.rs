@@ -259,6 +259,17 @@ pub(in crate::fixups) fn path_location(path: &[PathSegment]) -> TraceLocation {
     }
 }
 
+pub(in crate::fixups) fn named_path_location(
+    function: impl Into<String>,
+    path: &[PathSegment],
+) -> TraceLocation {
+    TraceLocation {
+        function: Some(function.into()),
+        ast_path: Some(path_to_string(path)),
+        ..TraceLocation::default()
+    }
+}
+
 pub(in crate::fixups) fn function_path_location(
     facts: &FixupFacts,
     function: FunctionId,
@@ -273,6 +284,21 @@ pub(in crate::fixups) fn function_path_location(
 
 pub(in crate::fixups) fn stmt_snippet(label: impl Into<String>, stmt: &Stmt) -> TraceSnippet {
     TraceSnippet::new(label, stmt.render().trim_end())
+}
+
+pub(in crate::fixups) fn stmts_snippet(
+    label: impl Into<String>,
+    stmts: &[IndentStmt],
+) -> TraceSnippet {
+    TraceSnippet::new(
+        label,
+        stmts
+            .iter()
+            .map(|stmt| stmt.stmt.render())
+            .collect::<Vec<_>>()
+            .join("")
+            .trim_end(),
+    )
 }
 
 pub(in crate::fixups) fn fact(key: impl Into<String>, value: impl Into<String>) -> TraceFact {
