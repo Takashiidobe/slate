@@ -532,6 +532,13 @@ fn pointer_arithmetic_uses_clearer_safe_offset_forms() {
     assert!(bcopy.contains("buf.copy_within(0..4, 2);"));
     assert!(!bcopy.contains("std::ptr::copy"));
     assert!(!bcopy.contains("buf.as_mut_ptr().add(2)"));
+
+    let bzero_c = fixtures_dir().join("mem_bzero.c");
+    let bzero_generated = tmp.join("mem_bzero.generated.rs");
+    support::translate(&bzero_c, &bzero_generated).expect("translate mem_bzero fixture");
+    let bzero = std::fs::read_to_string(&bzero_generated).expect("read generated mem_bzero rust");
+    assert!(bzero.contains("a.fill(0);"));
+    assert!(!bzero.contains("std::ptr::write_bytes"));
 }
 
 #[test]
