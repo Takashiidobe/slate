@@ -2,10 +2,40 @@ use std::collections::BTreeSet;
 
 use crate::fixups::idents::expr_ident_count;
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, stmts_snippet,
+};
 use crate::rust_ast::{Expr, IndentStmt, Stmt, UnaryOp};
 
 pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) -> bool {
-    fixup_at(body)
+    let mut logger = crate::fixups::trace::NoopLogger;
+    StructFieldInit::new(&mut logger).fixup(body)
+}
+
+pub(in crate::fixups) struct StructFieldInit<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> StructFieldInit<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        let before = self.logger.is_enabled().then(|| body.clone());
+        let changed = fixup_at(body);
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::StructFieldInit,
+                kind: "fold_struct_field_initializers".into(),
+                location: TraceLocation::default(),
+                before: vec![stmts_snippet("body", &before)],
+                after: vec![stmts_snippet("body", body)],
+                facts: Vec::new(),
+            });
+        }
+        changed
+    }
 }
 
 fn fixup_at(body: &mut Vec<IndentStmt>) -> bool {

@@ -1,3 +1,6 @@
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+};
 use crate::rust_ast::{
     Attr, Block, Expr, ExternDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem, IndentStmt,
     Item, MatchArm, Method, Pattern, Program, RecordDef, Stmt, StructDef, StructFields, TraitBound,
@@ -6,6 +9,41 @@ use crate::rust_ast::{
 use std::collections::{BTreeMap, BTreeSet};
 
 pub(in crate::fixups) fn fixup(program: &mut Program) -> bool {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    UnusedItems::new(&mut logger).fixup(program)
+}
+
+pub(in crate::fixups) struct UnusedItems<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> UnusedItems<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
+        let before = self.logger.is_enabled().then(|| program.emit());
+        let before_items = program.items.len();
+        let changed = fixup_impl(program);
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::UnusedItems,
+                kind: "prune_unused_items".into(),
+                location: TraceLocation::default(),
+                before: vec![TraceSnippet::new("program", before.trim_end())],
+                after: vec![TraceSnippet::new("program", program.emit().trim_end())],
+                facts: vec![fact(
+                    "removed_items",
+                    before_items.saturating_sub(program.items.len()).to_string(),
+                )],
+            });
+        }
+        changed
+    }
+}
+
+fn fixup_impl(program: &mut Program) -> bool {
     let candidates = candidates(program);
     if candidates.is_empty() {
         return false;

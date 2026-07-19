@@ -1,5 +1,8 @@
 use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, function_path_location, path_fact, stmt_snippet,
+};
 use crate::rust_ast::{
     Block, Expr, ExprMatchArm, IndentStmt, Pattern, Prim, RustValue, Stmt, Type, UnaryOp,
 };
@@ -9,7 +12,27 @@ pub(in crate::fixups) fn fixup(
     function: FunctionId,
     facts: &FixupFacts,
 ) -> bool {
-    fixup_at(body, function, facts, &mut Vec::new())
+    let mut logger = crate::fixups::trace::NoopLogger;
+    AtomicCompareExchange::new(&mut logger).fixup(body, function, facts)
+}
+
+pub(in crate::fixups) struct AtomicCompareExchange<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> AtomicCompareExchange<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(
+        &mut self,
+        body: &mut Vec<IndentStmt>,
+        function: FunctionId,
+        facts: &FixupFacts,
+    ) -> bool {
+        fixup_at(body, function, facts, &mut Vec::new(), self.logger)
+    }
 }
 
 fn fixup_at(
@@ -17,13 +40,14 @@ fn fixup_at(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    logger: &mut dyn TraceLogger,
 ) -> bool {
     for index in 0..body.len() {
         let mut changed = false;
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_mut_with_path(&mut body[index].stmt, path, &mut |body, path| {
                 if !changed {
-                    changed = fixup_at(body, function, facts, path);
+                    changed = fixup_at(body, function, facts, path, logger);
                 }
             });
         });
@@ -36,8 +60,29 @@ fn fixup_at(
         let Some(rewrite) = compare_exchange_chain(body, index, function, facts, path) else {
             continue;
         };
+        let before = logger.is_enabled().then(|| {
+            body[index..index + 6]
+                .iter()
+                .map(|indent| indent.stmt.clone())
+                .collect::<Vec<_>>()
+        });
         body[index + 5].stmt = rewrite;
         body.drain(index..index + 5);
+        if let Some(before) = before {
+            let stmt_path = stmt_path(path, index);
+            logger.rewrite(RewriteEvent {
+                pass: TracePass::AtomicCompareExchange,
+                kind: "collapse_compare_exchange_chain".into(),
+                location: function_path_location(facts, function, &stmt_path),
+                before: before
+                    .iter()
+                    .enumerate()
+                    .map(|(i, stmt)| stmt_snippet(format!("stmt[{i}]"), stmt))
+                    .collect(),
+                after: vec![stmt_snippet("stmt", &body[index].stmt)],
+                facts: vec![path_fact("stmt_path", &stmt_path)],
+            });
+        }
         return true;
     }
     false

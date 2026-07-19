@@ -5,11 +5,33 @@ use crate::fixups::facts::{
     HeapReadSafety, HeapResizeKind, PathSegment,
 };
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
+};
 use crate::rust_ast::{
     Block, Expr, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    HeapOwnership::new(&mut logger).fixup(program, facts);
+}
+
+pub(in crate::fixups) struct HeapOwnership<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> HeapOwnership<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) {
+        fixup_impl(program, facts, self.logger);
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts, logger: &mut dyn TraceLogger) {
     let plans = plans_by_function(facts);
     if plans.is_empty() {
         return;
@@ -24,7 +46,18 @@ pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
         let Some(function_plans) = plans.get(&function) else {
             continue;
         };
+        let before = logger.is_enabled().then(|| f.body.clone());
         rewrite_body(&mut f.body, function_plans);
+        if let Some(before) = before {
+            logger.rewrite(RewriteEvent {
+                pass: TracePass::HeapOwnership,
+                kind: "rewrite_heap_ownership".into(),
+                location: function_path_location(facts, function, &[]),
+                before: vec![stmts_snippet("body", &before)],
+                after: vec![stmts_snippet("body", &f.body)],
+                facts: vec![fact("plans", function_plans.len().to_string())],
+            });
+        }
     }
 }
 
