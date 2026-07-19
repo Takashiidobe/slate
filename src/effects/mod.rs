@@ -142,7 +142,7 @@ pub enum IntWidth {
 }
 
 /// A scalar value carried by an effect.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Int {
         width: IntWidth,
@@ -158,6 +158,7 @@ pub enum Value {
         ok: bool,
         value: OptionValue,
     },
+    Tuple(Vec<Value>),
     BlockLabel(&'static str),
     Null,
     Option(Option<OptionValue>),
