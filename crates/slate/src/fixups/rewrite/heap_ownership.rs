@@ -4,6 +4,7 @@ use crate::fixups::facts::{
     AstPath, FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind,
     HeapReadSafety, HeapResizeKind, PathSegment,
 };
+use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
@@ -235,11 +236,109 @@ fn rewrite_body(body: &mut Vec<IndentStmt>, plans: &[Plan]) {
         }
         rewrite_owned_stmt(&mut indent.stmt, &owned);
     }
+    fuse_scalar_box_initializers(body, plans, &mut remove);
     for index in remove.into_iter().rev() {
         if index < body.len() {
             body.remove(index);
         }
     }
+}
+
+fn fuse_scalar_box_initializers(
+    body: &mut [IndentStmt],
+    plans: &[Plan],
+    remove: &mut BTreeSet<usize>,
+) {
+    for plan in plans {
+        if plan.kind != HeapOwnershipKind::ScalarBox {
+            continue;
+        }
+        let Some(pointer_stmt) = plan.pointer_stmt else {
+            continue;
+        };
+        let Some(store_index) =
+            first_scalar_box_store(pointer_stmt, body, remove, &plan.pointer_name)
+        else {
+            continue;
+        };
+        let Some(value) = scalar_box_store_value(&body[store_index].stmt, &plan.pointer_name)
+        else {
+            continue;
+        };
+        if expr_ident_count(value, &plan.pointer_name) != 0 {
+            continue;
+        }
+        let value = value.clone();
+        if set_box_new_arg(&mut body[pointer_stmt].stmt, value) {
+            remove.insert(store_index);
+        }
+    }
+}
+
+fn first_scalar_box_store(
+    start: usize,
+    body: &[IndentStmt],
+    remove: &BTreeSet<usize>,
+    pointer_name: &str,
+) -> Option<usize> {
+    for index in start + 1..body.len() {
+        if remove.contains(&index) {
+            continue;
+        }
+        if scalar_box_store_value(&body[index].stmt, pointer_name).is_some() {
+            return Some(index);
+        }
+        if stmt_blocks_scalar_box_initializer_fold(&body[index].stmt, pointer_name) {
+            return None;
+        }
+    }
+    None
+}
+
+fn stmt_blocks_scalar_box_initializer_fold(stmt: &Stmt, pointer_name: &str) -> bool {
+    match stmt {
+        Stmt::Let { name, init, .. } => {
+            name == pointer_name
+                || init
+                    .as_ref()
+                    .is_some_and(|init| expr_ident_count(init, pointer_name) != 0)
+        }
+        Stmt::Assign { .. }
+        | Stmt::CompoundAssign { .. }
+        | Stmt::Expr(_)
+        | Stmt::Return(Some(_))
+        | Stmt::Return(None) => stmt_ident_count(stmt, pointer_name) != 0,
+        _ => true,
+    }
+}
+
+fn scalar_box_store_value<'a>(stmt: &'a Stmt, pointer_name: &str) -> Option<&'a Expr> {
+    let Stmt::Assign { target, value } = stmt else {
+        return None;
+    };
+    let Expr::Unary {
+        op: UnaryOp::Deref,
+        expr,
+    } = target
+    else {
+        return None;
+    };
+    matches!(&**expr, Expr::Var(name) if name.as_str() == pointer_name).then_some(value)
+}
+
+fn set_box_new_arg(stmt: &mut Stmt, value: Expr) -> bool {
+    let Stmt::Let {
+        init: Some(Expr::Call { args, .. }),
+        ..
+    } = stmt
+    else {
+        return false;
+    };
+    if args.len() != 1 {
+        return false;
+    }
+    args[0] = value;
+    true
 }
 
 fn rewrite_pointer_decl(stmt: &mut Stmt, plan: &Plan) {

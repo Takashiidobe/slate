@@ -364,6 +364,7 @@ fn is_effectful_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegme
 fn type_stable_arg_init(init: &Expr, ty: Option<&Type>) -> bool {
     match init {
         Expr::Var(_) | Expr::Cast { .. } => true,
+        Expr::Unary { .. } => ty.is_some(),
         Expr::Binary { .. } => ty.is_some() && !contains_integer_literal(init),
         Expr::Index { .. } => ty.is_some(),
         Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => block
@@ -467,17 +468,25 @@ fn simple_macro_arg_use(stmt: &Stmt, name: &str) -> bool {
 fn simple_macro_arg_use_expr(expr: &Expr, name: &str) -> bool {
     match expr {
         Expr::Macro { args, .. } => {
-            args.iter()
-                .any(|arg| matches!(arg, Expr::Var(var) if var.as_str() == name))
-                && args.iter().all(|arg| {
-                    matches!(arg, Expr::Var(var) if var.as_str() == name)
-                        || is_obviously_pure_expr(arg)
-                })
+            args.iter().any(|arg| simple_macro_arg_uses_name(arg, name))
+                && args
+                    .iter()
+                    .all(|arg| simple_macro_arg_uses_name(arg, name) || is_obviously_pure_expr(arg))
         }
         Expr::Block(block) | Expr::Unsafe(block) => block
             .tail
             .as_deref()
             .is_some_and(|tail| simple_macro_arg_use_expr(tail, name)),
+        _ => false,
+    }
+}
+
+fn simple_macro_arg_uses_name(expr: &Expr, name: &str) -> bool {
+    match expr {
+        Expr::Var(var) => var.as_str() == name,
+        Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => {
+            simple_macro_arg_uses_name(expr, name)
+        }
         _ => false,
     }
 }
@@ -530,7 +539,7 @@ mod tests {
     use crate::fixups::trace::{CollectingLogger, Pass, ProgramSummary, TraceLogger};
     use crate::rust_ast::{
         AtomicOrdering, AtomicPlace, AtomicType, BinOp, Block, Item, MatchArm, Pattern, Program,
-        Type,
+        Type, UnaryOp,
     };
 
     fn inlined(stmts: Vec<Stmt>) -> String {
@@ -1031,6 +1040,33 @@ fn f() {
             "\
 fn f() {
     println!(\"{}\", sum());
+}
+"
+        );
+    }
+
+    #[test]
+    fn inlines_movable_deref_temp_into_simple_macro_argument() {
+        let out = inlined(vec![
+            temp(
+                "_v0",
+                "i32",
+                Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(var("p")),
+                },
+            ),
+            Stmt::Expr(Expr::Macro {
+                name: "println".into(),
+                args: vec![Expr::Str("{}".into()), var("_v0")],
+            }),
+        ]);
+
+        assert_eq!(
+            out,
+            "\
+fn f() {
+    println!(\"{}\", *p);
 }
 "
         );
