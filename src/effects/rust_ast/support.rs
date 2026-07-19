@@ -385,6 +385,10 @@ pub(super) fn is_cstr_ref_ty(ty: &Type) -> bool {
     )
 }
 
+pub(super) fn is_str_ref_ty(ty: &Type) -> bool {
+    matches!(ty, Type::Ref { inner, .. } if matches!(inner.as_ref(), Type::Str))
+}
+
 pub(super) fn collection_name(expr: &Expr) -> &str {
     match expr {
         Expr::Var(ident) => ident.as_str(),
