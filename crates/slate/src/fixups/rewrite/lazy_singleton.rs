@@ -6,10 +6,47 @@
 //! unused types, not statics).
 
 use crate::fixups::facts::FixupFacts;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+};
 use crate::rust_ast::{Expr, IndentStmt, Item, Program, Stmt, Type, UnaryOp};
 use std::collections::BTreeSet;
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    LazySingleton::new(&mut logger).fixup(program, facts)
+}
+
+pub(in crate::fixups) struct LazySingleton<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> LazySingleton<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
+        let before = self.logger.is_enabled().then(|| program.emit());
+        let changed = fixup_impl(program, facts);
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::LazySingleton,
+                kind: "rewrite_lazy_singletons".into(),
+                location: TraceLocation::default(),
+                before: vec![TraceSnippet::new("program", before.trim_end())],
+                after: vec![TraceSnippet::new("program", program.emit().trim_end())],
+                facts: vec![fact(
+                    "lazy_singletons",
+                    facts.lazy_init_singletons.len().to_string(),
+                )],
+            });
+        }
+        changed
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts) -> bool {
     let mut changed = false;
     let flag_names: BTreeSet<&str> = facts
         .lazy_init_singletons

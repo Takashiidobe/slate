@@ -138,14 +138,14 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::AnonymousStructs, {
-        rewrite::anonymous_structs::fixup(&mut program, &facts);
+        rewrite::anonymous_structs::AnonymousStructs::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::ParamSpills, {
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
             {
-                rewrite::param_spills::fixup(f, function, &facts);
+                rewrite::param_spills::ParamSpills::new(logger).fixup(f, function, &facts);
             }
         }
     });
@@ -153,7 +153,7 @@ fn apply_with_logger(
         zero_init_to_fixpoint(&mut program, false, logger);
     });
     step!(program, Pass::StructFieldInit, {
-        struct_field_init_to_fixpoint(&mut program);
+        struct_field_init_to_fixpoint(&mut program, logger);
     });
     step!(program, Pass::SingletonScopes, {
         singleton_scopes_to_fixpoint(&mut program, logger);
@@ -164,7 +164,11 @@ fn apply_with_logger(
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
             {
-                rewrite::compound_assign::fixup(&mut f.body, function, &facts);
+                rewrite::compound_assign::CompoundAssign::new(logger).fixup(
+                    &mut f.body,
+                    function,
+                    &facts,
+                );
             }
         }
     });
@@ -177,7 +181,7 @@ fn apply_with_logger(
     step!(program, Pass::ConstantIndexCasts, {
         for item in &mut program.items {
             if let Item::Fn(f) = item {
-                rewrite::constant_index_casts::fixup(&mut f.body);
+                rewrite::constant_index_casts::ConstantIndexCasts::new(logger).fixup(&mut f.body);
             }
         }
     });
@@ -187,7 +191,11 @@ fn apply_with_logger(
             if let Item::Fn(f) = item
                 && let Some(function) = facts.function_by_item_index(item_index)
             {
-                rewrite::unnecessary_casts::fixup(&mut f.body, function, &facts);
+                rewrite::unnecessary_casts::UnnecessaryCasts::new(logger).fixup(
+                    &mut f.body,
+                    function,
+                    &facts,
+                );
             }
         }
     });
@@ -245,7 +253,7 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::LazySingleton, {
-        rewrite::lazy_singleton::fixup(&mut program, &facts);
+        rewrite::lazy_singleton::LazySingleton::new(logger).fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::DropCallResults, {
@@ -317,7 +325,7 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::VaList, {
-        rewrite::va_list::fixup(&mut program, &facts);
+        rewrite::va_list::VaList::new(logger).fixup(&mut program, &facts);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::RemoveMut, {
@@ -349,11 +357,11 @@ fn apply_with_logger(
         rewrite::string_libc::StringLibc::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::SortSearch, {
-        rewrite::sort_search::fixup(&mut program);
+        rewrite::sort_search::SortSearch::new(logger).fixup(&mut program);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::HeapOwnership, {
-        rewrite::heap_ownership::fixup(&mut program, &facts);
+        rewrite::heap_ownership::HeapOwnership::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::DeadLocals, {
         dead_locals_to_fixpoint(&mut program, logger);
@@ -450,7 +458,7 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::AtomicLocals, {
-        rewrite::atomic_locals::fixup(&mut program, &facts);
+        rewrite::atomic_locals::AtomicLocals::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::LateInlineTemps, {
         inline_temps_to_fixpoint(&mut program, InlinePass::Late, logger);
@@ -465,7 +473,11 @@ fn apply_with_logger(
             for (item_index, item) in program.items.iter_mut().enumerate() {
                 if let Item::Fn(f) = item
                     && let Some(function) = facts.function_by_item_index(item_index)
-                    && rewrite::atomic_compare_exchange::fixup(&mut f.body, function, &facts)
+                    && rewrite::atomic_compare_exchange::AtomicCompareExchange::new(logger).fixup(
+                        &mut f.body,
+                        function,
+                        &facts,
+                    )
                 {
                     changed = true;
                 }
@@ -483,10 +495,10 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::PruneUnusedExterns, {
-        rewrite::prune_unused_externs::fixup(&mut program, &facts);
+        rewrite::prune_unused_externs::PruneUnusedExterns::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::UnusedItems, {
-        rewrite::unused_items::fixup(&mut program);
+        rewrite::unused_items::UnusedItems::new(logger).fixup(&mut program);
     });
     step!(program, Pass::UnusedParams, {
         rewrite::unused_params::UnusedParams::new(logger).fixup(&mut program);
@@ -566,12 +578,12 @@ fn zero_init_to_fixpoint(
     }
 }
 
-fn struct_field_init_to_fixpoint(program: &mut Program) {
+fn struct_field_init_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
     loop {
         let mut changed = false;
         for item in &mut program.items {
             if let Item::Fn(f) = item
-                && rewrite::struct_field_init::fixup(&mut f.body)
+                && rewrite::struct_field_init::StructFieldInit::new(logger).fixup(&mut f.body)
             {
                 changed = true;
             }

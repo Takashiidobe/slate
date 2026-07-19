@@ -2,12 +2,49 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::{FixupFacts, FunctionId};
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+};
 use crate::rust_ast::{
     Attr, Derive, Expr, FnDef, ImplItem, IndentStmt, Item, Program, Repr, Stmt, StructDef,
     StructFields, Type,
 };
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    AnonymousStructs::new(&mut logger).fixup(program, facts)
+}
+
+pub(in crate::fixups) struct AnonymousStructs<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> AnonymousStructs<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
+        let before = self.logger.is_enabled().then(|| program.emit());
+        let changed = fixup_impl(program, facts);
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::AnonymousStructs,
+                kind: "rewrite_anonymous_structs".into(),
+                location: TraceLocation::default(),
+                before: vec![TraceSnippet::new("program", before.trim_end())],
+                after: vec![TraceSnippet::new("program", program.emit().trim_end())],
+                facts: vec![fact(
+                    "anonymous_structs",
+                    facts.anonymous_structs.len().to_string(),
+                )],
+            });
+        }
+        changed
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts) -> bool {
     let plans = plans(facts);
     if plans.is_empty() {
         return false;

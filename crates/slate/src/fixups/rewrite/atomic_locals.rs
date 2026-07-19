@@ -7,9 +7,46 @@ use std::collections::BTreeMap;
 
 use crate::fixups::facts::{FixupFacts, atomic_locals};
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+};
 use crate::rust_ast::{AtomicPlace, AtomicType, Expr, IndentStmt, Item, Program, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
+    let mut logger = crate::fixups::trace::NoopLogger;
+    AtomicLocals::new(&mut logger).fixup(program, facts)
+}
+
+pub(in crate::fixups) struct AtomicLocals<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> AtomicLocals<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
+        let before = self.logger.is_enabled().then(|| program.emit());
+        let changed = fixup_impl(program, facts);
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::AtomicLocals,
+                kind: "promote_atomic_locals".into(),
+                location: TraceLocation::default(),
+                before: vec![TraceSnippet::new("program", before.trim_end())],
+                after: vec![TraceSnippet::new("program", program.emit().trim_end())],
+                facts: vec![
+                    fact("atomic_locals", facts.atomic_locals.len().to_string()),
+                    fact("atomic_globals", facts.atomic_globals.len().to_string()),
+                ],
+            });
+        }
+        changed
+    }
+}
+
+fn fixup_impl(program: &mut Program, facts: &FixupFacts) -> bool {
     let mut changed = false;
     let promoted_globals: BTreeMap<String, AtomicType> = facts
         .atomic_globals
