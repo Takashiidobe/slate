@@ -1397,18 +1397,21 @@ fn memchr_calls_use_iter_position_when_source_is_iterable() {
     assert!(rust.contains("buf.as_slice().iter().position("));
     assert!(rust.contains("(*__slate_byte as u8) == ((40 as i32) as u8)"));
     assert!(rust.contains("(*__slate_byte as u8) == ((99 as i32) as u8)"));
-    assert!(rust.contains("let _v3 = buf.as_slice().iter().position("));
-    assert!(rust.contains("let _v6 = buf.as_slice().iter().position("));
-    assert!(rust.contains("let _v9 = Some(3);"));
-    assert!(rust.contains("let _v11: i64 = _v3.unwrap() as i64;"));
-    assert!(rust.contains("let _v14: bool = _v6.is_none();"));
-    assert!(rust.contains("println!(\"{} {} {}\", _v11, _v14 as i32, _v9.unwrap() as i64);"));
+    assert!(rust.contains("let hit = buf.as_slice().iter().position("));
+    assert!(rust.contains("let miss = buf.as_slice().iter().position("));
+    assert!(rust.contains("let nul = Some(3);"));
+    assert!(rust.contains("let _v11: i64 = hit.unwrap() as i64;"));
+    assert!(rust.contains("let _v14: bool = miss.is_none();"));
+    assert!(rust.contains("println!(\"{} {} {}\", _v11, _v14 as i32, nul.unwrap() as i64);"));
     for temp in [
         "let _v1:", "let _v2:", "let _v4:", "let _v5:", "let _v7:", "let _v8:",
     ] {
         assert!(!rust.contains(temp), "{temp} survived in:\n{rust}");
     }
     assert!(!rust.contains("let _v16: i64 = _v9.unwrap() as i64;"));
+    assert!(!rust.contains("let _v3 = buf.as_slice().iter().position("));
+    assert!(!rust.contains("let _v6 = buf.as_slice().iter().position("));
+    assert!(!rust.contains("let _v9 = Some(3);"));
     assert!(!rust.contains("let mut hit"));
     assert!(!rust.contains("let mut miss"));
     assert!(!rust.contains("let mut nul"));
