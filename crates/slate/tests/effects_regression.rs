@@ -1,6 +1,8 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+const RUST_EFFECTS_COMMAND: &str = "compare-effects-rust-rust";
+
 fn slate() -> &'static str {
     env!("CARGO_BIN_EXE_slate")
 }
@@ -45,12 +47,12 @@ fn selected_fixture_paths() -> Vec<(String, PathBuf)> {
     selected
 }
 
-fn run_fixture(command: &str, fixture: &Path) -> Result<(), String> {
+fn run_fixture(fixture: &Path) -> Result<(), String> {
     let output = Command::new(slate())
-        .arg(command)
+        .arg(RUST_EFFECTS_COMMAND)
         .arg(fixture)
         .output()
-        .map_err(|e| format!("spawn slate {command}: {e}"))?;
+        .map_err(|e| format!("spawn slate {RUST_EFFECTS_COMMAND}: {e}"))?;
     if output.status.success() {
         return Ok(());
     }
@@ -58,21 +60,21 @@ fn run_fixture(command: &str, fixture: &Path) -> Result<(), String> {
     let stdout = String::from_utf8_lossy(&output.stdout);
     let stderr = String::from_utf8_lossy(&output.stderr);
     Err(format!(
-        "slate {command} {} failed with status {}\nstdout:\n{stdout}\nstderr:\n{stderr}",
+        "slate {RUST_EFFECTS_COMMAND} {} failed with status {}\nstdout:\n{stdout}\nstderr:\n{stderr}",
         fixture.display(),
         output.status
     ))
 }
 
-fn assert_fixture_matches(command: &str, fixture: &str) {
-    run_fixture(command, Path::new(fixture)).expect("effects match");
+fn assert_fixture_matches(fixture: &str) {
+    run_fixture(Path::new(fixture)).expect("effects match");
 }
 
-fn assert_all_selected_fixtures_match(command: &str) {
+fn assert_all_selected_fixtures_match() {
     let mut failures = Vec::new();
     let mut passed = 0usize;
     for (name, path) in selected_fixture_paths() {
-        match run_fixture(command, &path) {
+        match run_fixture(&path) {
             Ok(()) => passed += 1,
             Err(err) => failures.push(format!("[{name}] {err}")),
         }
@@ -91,243 +93,62 @@ fn assert_all_selected_fixtures_match(command: &str) {
 }
 
 #[test]
-#[ignore = "diagnostic ratchet: run explicitly while expanding effects interpreter coverage"]
-fn all_fixtures_match_cir_effects() {
-    assert_all_selected_fixtures_match("compare-effects-cir-rust");
-}
-
-#[test]
 #[ignore = "diagnostic ratchet: run explicitly while expanding raw-to-fixuped Rust effects coverage"]
 fn all_fixtures_preserve_rust_effects_through_fixups() {
-    assert_all_selected_fixtures_match("compare-effects-rust-rust");
-}
-
-#[test]
-fn idiomatized_malloc_array_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/effects_malloc_array.c",
-    );
-}
-
-#[test]
-fn idiomatized_printf_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/effects_printf.c",
-    );
-}
-
-#[test]
-fn idiomatized_for_loop_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/effects_for_loop.c",
-    );
-}
-
-#[test]
-fn do_while_fixture_matches_cir_effects() {
-    assert_fixture_matches("compare-effects-cir-rust", "tests/fixtures/do_while.c");
-}
-
-#[test]
-fn switch_default_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/switch_default.c",
-    );
-}
-
-#[test]
-fn switch_fallthrough_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/switch_fallthrough.c",
-    );
-}
-
-#[test]
-fn goto_forward_fixture_matches_cir_effects() {
-    assert_fixture_matches("compare-effects-cir-rust", "tests/fixtures/goto_forward.c");
-}
-
-#[test]
-fn computed_goto_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/computed_goto_ops.c",
-    );
+    assert_all_selected_fixtures_match();
 }
 
 #[test]
 fn switch_fixups_preserve_rust_effects() {
-    assert_fixture_matches(
-        "compare-effects-rust-rust",
-        "tests/fixtures/switch_fallthrough.c",
-    );
+    assert_fixture_matches("tests/fixtures/switch_fallthrough.c");
 }
 
 #[test]
 fn goto_fixups_preserve_rust_effects() {
-    assert_fixture_matches("compare-effects-rust-rust", "tests/fixtures/goto_forward.c");
-}
-
-#[test]
-fn idiomatized_struct_field_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/effects_struct_field.c",
-    );
-}
-
-#[test]
-fn aggregate_value_member_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/aggregate_value_member_ops.c",
-    );
-}
-
-#[test]
-fn bitfield_fixture_matches_cir_effects() {
-    assert_fixture_matches("compare-effects-cir-rust", "tests/fixtures/bitfield_ops.c");
-}
-
-#[test]
-fn idiomatized_static_global_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/effects_static_globals.c",
-    );
-}
-
-#[test]
-fn idiomatized_lazy_singleton_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/lazy_singleton.c",
-    );
-}
-
-#[test]
-fn idiomatized_nullable_pointer_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/effects_nullable_pointer.c",
-    );
-}
-
-#[test]
-fn idiomatized_stdio_file_write_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/effects_stdio_file_write.c",
-    );
+    assert_fixture_matches("tests/fixtures/goto_forward.c");
 }
 
 #[test]
 fn stdio_file_write_fixup_preserves_rust_effects() {
-    assert_fixture_matches(
-        "compare-effects-rust-rust",
-        "tests/fixtures/effects_stdio_file_write.c",
-    );
+    assert_fixture_matches("tests/fixtures/effects_stdio_file_write.c");
 }
 
 #[test]
-fn idiomatized_atomics_fixture_matches_cir_effects() {
-    assert_fixture_matches("compare-effects-cir-rust", "tests/fixtures/atomics.c");
-}
-
-#[test]
-fn atomics_fixup_preserves_rust_effects() {
-    assert_fixture_matches("compare-effects-rust-rust", "tests/fixtures/atomics.c");
-}
-
-#[test]
-fn idiomatized_atomic_orderings_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/atomic_explicit_orderings.c",
-    );
+fn atomics_fixup_preserve_rust_effects() {
+    assert_fixture_matches("tests/fixtures/atomics.c");
 }
 
 #[test]
 fn atomic_orderings_fixup_preserves_rust_effects() {
-    assert_fixture_matches(
-        "compare-effects-rust-rust",
-        "tests/fixtures/atomic_explicit_orderings.c",
-    );
-}
-
-#[test]
-fn idiomatized_atomic_compare_exchange_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/effects_atomic_compare_exchange.c",
-    );
+    assert_fixture_matches("tests/fixtures/atomic_explicit_orderings.c");
 }
 
 #[test]
 fn atomic_compare_exchange_fixup_preserves_rust_effects() {
-    assert_fixture_matches(
-        "compare-effects-rust-rust",
-        "tests/fixtures/effects_atomic_compare_exchange.c",
-    );
-}
-
-#[test]
-fn idiomatized_qsort_comparator_fixture_matches_cir_effects() {
-    assert_fixture_matches(
-        "compare-effects-cir-rust",
-        "tests/fixtures/effects_qsort_comparator.c",
-    );
+    assert_fixture_matches("tests/fixtures/effects_atomic_compare_exchange.c");
 }
 
 #[test]
 fn qsort_comparator_fixup_preserves_rust_effects() {
-    assert_fixture_matches(
-        "compare-effects-rust-rust",
-        "tests/fixtures/effects_qsort_comparator.c",
-    );
-}
-
-#[test]
-fn memcpy_fixture_matches_cir_effects() {
-    assert_fixture_matches("compare-effects-cir-rust", "tests/stdlib/string/memcpy.c");
+    assert_fixture_matches("tests/fixtures/effects_qsort_comparator.c");
 }
 
 #[test]
 fn memcpy_fixups_preserve_rust_effects() {
-    assert_fixture_matches("compare-effects-rust-rust", "tests/stdlib/string/memcpy.c");
-}
-
-#[test]
-fn memmove_fixture_matches_cir_effects() {
-    assert_fixture_matches("compare-effects-cir-rust", "tests/stdlib/string/memmove.c");
+    assert_fixture_matches("tests/stdlib/string/memcpy.c");
 }
 
 #[test]
 fn memmove_fixups_preserve_rust_effects() {
-    assert_fixture_matches("compare-effects-rust-rust", "tests/stdlib/string/memmove.c");
-}
-
-#[test]
-fn memset_fixture_matches_cir_effects() {
-    assert_fixture_matches("compare-effects-cir-rust", "tests/stdlib/string/memset.c");
+    assert_fixture_matches("tests/stdlib/string/memmove.c");
 }
 
 #[test]
 fn memset_fixups_preserve_rust_effects() {
-    assert_fixture_matches("compare-effects-rust-rust", "tests/stdlib/string/memset.c");
-}
-
-#[test]
-fn memchr_fixture_matches_cir_effects() {
-    assert_fixture_matches("compare-effects-cir-rust", "tests/stdlib/string/memchr.c");
+    assert_fixture_matches("tests/stdlib/string/memset.c");
 }
 
 #[test]
 fn memchr_fixups_preserve_rust_effects() {
-    assert_fixture_matches("compare-effects-rust-rust", "tests/stdlib/string/memchr.c");
+    assert_fixture_matches("tests/stdlib/string/memchr.c");
 }

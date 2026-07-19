@@ -24,9 +24,6 @@ fn usage() -> ExitCode {
         "  emit-lowered-fixtures  write raw lowered test fixtures to tests/fixtures.lowered.generated/"
     );
     eprintln!(
-        "  compare-effects-cir-rust  <file.c>  compare C/CIR effects to fixuped Rust effects"
-    );
-    eprintln!(
         "  compare-effects-rust-rust  <file.c>  compare raw lowered Rust effects to fixuped Rust effects"
     );
     eprintln!("  translate   C -> Rust");
@@ -48,10 +45,6 @@ fn main() -> ExitCode {
         },
         Some("emit-fixtures") => run(emit_fixtures()),
         Some("emit-lowered-fixtures") => run(emit_lowered_fixtures()),
-        Some("compare-effects-cir-rust") => match args.get(2) {
-            Some(path) => run(compare_effects_cir_rust(Path::new(path))),
-            None => usage(),
-        },
         Some("compare-effects-rust-rust") => match args.get(2) {
             Some(path) => run(compare_effects_rust_rust(Path::new(path))),
             None => usage(),
@@ -175,21 +168,6 @@ fn extract_effects<T>(
             panic_payload_message(payload)
         )),
     }
-}
-
-fn compare_effects_cir_rust(path: &Path) -> Result<String, String> {
-    run_effect_compare(|| {
-        let mode = "compare-effects-cir-rust";
-        let (module, program) = lowered_program(path)?;
-        let cir_trace = extract_effects(mode, path, "cir", || {
-            effects::cir::interpret_module_main(&module)
-        })?;
-        let fixed_program = fixups::apply_with(program, &fixups::SkipSet::none());
-        let rust_trace = extract_effects(mode, path, "fixuped rust_ast", || {
-            effects::rust_ast::interpret_program_main(&fixed_program)
-        })?;
-        compare_traces("cir", "rust_ast", &cir_trace, &rust_trace)
-    })
 }
 
 fn compare_effects_rust_rust(path: &Path) -> Result<String, String> {
@@ -810,23 +788,6 @@ fn lowered_rust(path: &Path) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn cir_effect_extraction_failure_reports_mode_fixture_side_and_reason() {
-        let err = extract_effects(
-            "compare-effects-cir-rust",
-            Path::new("tests/fixtures/switch.c"),
-            "cir",
-            || panic!("effects::cir: unsupported op `cir.switch`"),
-        )
-        .expect_err("unsupported CIR effect extraction should fail");
-
-        assert!(err.contains("effect extraction failed"));
-        assert!(err.contains("mode: compare-effects-cir-rust"));
-        assert!(err.contains("fixture: tests/fixtures/switch.c"));
-        assert!(err.contains("side: cir"));
-        assert!(err.contains("reason: effects::cir: unsupported op `cir.switch`"));
-    }
 
     #[test]
     fn rust_effect_extraction_failure_reports_mode_fixture_side_and_reason() {

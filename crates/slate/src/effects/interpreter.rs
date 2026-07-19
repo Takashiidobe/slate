@@ -417,8 +417,7 @@ mod tests {
         }
     }
 
-    /// The malloc/array fixture's effect sequence, shared by the CIR walker
-    /// (slate-0hf.2) and the idiomatized Vec walker (slate-0hf.3):
+    /// The malloc/array fixture's normalized effect sequence:
     /// `p = malloc(2 * sizeof(int)); p[0] = 1; p[1] = 2; return p[0] + p[1];`
     fn malloc_array_trace() -> EffectTrace {
         let alloc = AllocId(0);
