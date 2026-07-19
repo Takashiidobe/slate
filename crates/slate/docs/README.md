@@ -161,6 +161,8 @@ location (`file:line:col`):
   fixup.
 - [writing-a-fixup.md](writing-a-fixup.md) — the AST-to-AST recipe for a fixup
   pass: shape, shared helpers, safety rules, and registration.
+- [effects.md](effects.md) — how to extend the Rust-to-Rust effects interpreter
+  used to validate that fixups preserve semantic behavior.
 - [architecture.md](architecture.md) — sources, IRs, pipeline, shared context.
 - [passes.md](passes.md) — the pass catalog: what runs, in what order, how.
 - [facts.md](facts.md) — the `FixupFacts` analysis layer: what each collector

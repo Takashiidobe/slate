@@ -12,7 +12,9 @@ differential testing. **Build/test commands, the required CIR toolchain and its
 [CLAUDE.md](CLAUDE.md).** The deeper playbook is in [docs/](docs/README.md) — in
 particular [docs/adding-features.md](docs/adding-features.md) before adding any
 feature, and [docs/writing-a-fixup.md](docs/writing-a-fixup.md) before writing or
-modifying any fixup under `src/fixups/` (fixups are AST-to-AST only). Do not
+modifying any fixup under `src/fixups/` (fixups are AST-to-AST only). For
+raw-Rust-vs-fixuped-Rust semantic trace work, read
+[docs/effects.md](docs/effects.md) before changing `src/effects/`. Do not
 duplicate that content here; update CLAUDE.md/docs instead.
 
 For parallel agent work, branch selection, and git worktree rules, follow

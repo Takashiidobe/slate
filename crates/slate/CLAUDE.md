@@ -124,6 +124,9 @@ Read these before making changes — they are the real playbook:
 - **[docs/writing-a-fixup.md](docs/writing-a-fixup.md)** — the AST-to-AST recipe
   for a fixup pass (fixups are AST-to-AST only, never string rewrites). Read this
   before writing or modifying anything under `src/fixups/`.
+- **[docs/effects.md](docs/effects.md)** — the Rust-to-Rust effects interpreter
+  workflow for validating that raw lowered Rust and fixuped Rust preserve the
+  same semantic effects. Read this before changing anything under `src/effects/`.
 - [docs/architecture.md](docs/architecture.md) — sources, the two IRs, the
   pipeline, and why CIR over LLVM IR.
 - [docs/passes.md](docs/passes.md) — the pass catalog: what runs, in what order.
@@ -152,6 +155,9 @@ Read these before making changes — they are the real playbook:
   for fixups — see [docs/writing-a-fixup.md](docs/writing-a-fixup.md).
 - **Correctness lives in baseline lowering, never in a fixup.** A fixup must be
   optional in spirit — disabling it still leaves correct Rust.
+- **Effects validation compares Rust to Rust.** `compare-effects-rust-rust`
+  interprets raw lowered Rust and fixuped Rust; it is for checking fixup
+  preservation, not C/CIR semantics. See [docs/effects.md](docs/effects.md).
 - **Use shared fixup walkers.** Fact collectors should use
   `src/fixups/facts/walk.rs`; rewrite passes should use
   `src/fixups/support/walk.rs`. Do not add pass-local recursive `exprs`,
