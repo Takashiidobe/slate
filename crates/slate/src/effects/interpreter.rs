@@ -115,7 +115,7 @@ fn externally_observable_projection(trace: &EffectTrace) -> ExternalProjection {
                     | Effect::Dealloc { .. }
                     | Effect::Read { .. }
                     | Effect::Write { .. }
-            )
+            ) && !matches!(effect, Effect::Call { name, .. } if is_internal_model_call(name))
         })
         .cloned()
         .collect::<Vec<_>>();
@@ -126,6 +126,28 @@ fn externally_observable_projection(trace: &EffectTrace) -> ExternalProjection {
         effects,
         has_external,
     }
+}
+
+fn is_internal_model_call(name: &str) -> bool {
+    matches!(
+        name,
+        "strlen"
+            | "strcmp"
+            | "strncmp"
+            | "memcmp"
+            | "strchr"
+            | "strrchr"
+            | "strstr"
+            | "strpbrk"
+            | "strspn"
+            | "strcspn"
+            | "memchr"
+            | "atoi"
+            | "atol"
+            | "strtol"
+            | "strtoul"
+            | "strtod"
+    )
 }
 
 fn prune_dead_writes(effects: &[Effect]) -> EffectTrace {
