@@ -4,21 +4,69 @@ use crate::fixups::facts::{
     AstPath, BindingId, BorrowAliasReason, CallArgPinning, FixupFacts, FunctionId, PathSegment,
 };
 use crate::fixups::support::walk;
+use crate::fixups::trace::{
+    Pass as TracePass, RewriteEvent, TraceLogger, TraceSnippet, binding_facts, fact,
+    function_path_location, path_fact, stmt_snippet,
+};
 use crate::rust_ast::{FnDef, IndentStmt, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
-    for (index, param) in f.params.iter_mut().enumerate() {
-        if matches!(param.ty, Type::Variadic | Type::VaList) {
-            continue;
-        }
-        if facts
-            .binding_by_param_index(function, index)
-            .is_some_and(|binding| param_can_drop_mut(binding, facts))
-        {
-            param.mutable = false;
-        }
+    let mut logger = crate::fixups::trace::NoopLogger;
+    RemoveMut::new(&mut logger).fixup(f, function, facts);
+}
+
+pub(in crate::fixups) struct RemoveMut<'a> {
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl<'a> RemoveMut<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
     }
-    remove_unneeded_mut(&mut f.body, function, facts, &mut Vec::new());
+
+    pub(in crate::fixups) fn fixup(
+        &mut self,
+        f: &mut FnDef,
+        function: FunctionId,
+        facts: &FixupFacts,
+    ) {
+        for (index, param) in f.params.iter_mut().enumerate() {
+            if matches!(param.ty, Type::Variadic | Type::VaList) {
+                continue;
+            }
+            let Some(binding) = facts.binding_by_param_index(function, index) else {
+                continue;
+            };
+            if param_can_drop_mut(binding, facts) {
+                let before = self
+                    .logger
+                    .is_enabled()
+                    .then(|| format!("mut {}: {}", param.name, param.ty.render()));
+                let param_name = param.name.clone();
+                let param_ty = param.ty.render();
+                param.mutable = false;
+                if let Some(before) = before {
+                    let mut event_facts = binding_facts(facts, binding);
+                    event_facts.extend([
+                        fact("param", param_name.clone()),
+                        fact("param_index", index.to_string()),
+                    ]);
+                    self.logger.rewrite(RewriteEvent {
+                        pass: TracePass::RemoveMut,
+                        kind: "remove_param_mut".into(),
+                        location: function_path_location(facts, function, &[]),
+                        before: vec![TraceSnippet::new("param", before)],
+                        after: vec![TraceSnippet::new(
+                            "param",
+                            format!("{param_name}: {param_ty}"),
+                        )],
+                        facts: event_facts,
+                    });
+                }
+            }
+        }
+        self.remove_unneeded_mut(&mut f.body, function, facts, &mut Vec::new());
+    }
 }
 
 fn param_can_drop_mut(binding: BindingId, facts: &FixupFacts) -> bool {
@@ -59,36 +107,61 @@ fn param_can_drop_mut(binding: BindingId, facts: &FixupFacts) -> bool {
     })
 }
 
-fn remove_unneeded_mut(
-    body: &mut [IndentStmt],
-    function: FunctionId,
-    facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
-) {
-    for (index, indent) in body.iter_mut().enumerate() {
-        path.push(PathSegment::Stmt(index));
-        remove_stmt_unneeded_mut(&mut indent.stmt, function, facts, path);
-        path.pop();
-    }
-}
-
-fn remove_stmt_unneeded_mut(
-    stmt: &mut Stmt,
-    function: FunctionId,
-    facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
-) {
-    match stmt {
-        Stmt::Let { name, mutable, .. } | Stmt::LetIf { name, mutable, .. }
-            if local_can_drop_mut(function, facts, name, path) =>
-        {
-            *mutable = false;
+impl<'a> RemoveMut<'a> {
+    fn remove_unneeded_mut(
+        &mut self,
+        body: &mut [IndentStmt],
+        function: FunctionId,
+        facts: &FixupFacts,
+        path: &mut Vec<PathSegment>,
+    ) {
+        for (index, indent) in body.iter_mut().enumerate() {
+            path.push(PathSegment::Stmt(index));
+            self.remove_stmt_unneeded_mut(&mut indent.stmt, function, facts, path);
+            path.pop();
         }
-        _ => {}
     }
-    walk::nested_bodies_mut_with_path(stmt, path, &mut |body, path| {
-        remove_unneeded_mut(body, function, facts, path);
-    });
+
+    fn remove_stmt_unneeded_mut(
+        &mut self,
+        stmt: &mut Stmt,
+        function: FunctionId,
+        facts: &FixupFacts,
+        path: &mut Vec<PathSegment>,
+    ) {
+        let before = self.logger.is_enabled().then(|| stmt.clone());
+        let mut removed_name = None;
+        match stmt {
+            Stmt::Let { name, mutable, .. } | Stmt::LetIf { name, mutable, .. }
+                if local_can_drop_mut(function, facts, name, path) =>
+            {
+                removed_name = Some(name.clone());
+                *mutable = false;
+            }
+            _ => {}
+        }
+        if let (Some(before), Some(name)) = (before, removed_name) {
+            let mut event_facts = if let Some(binding) =
+                facts.binding_by_local_path(function, &name, &AstPath(path.to_vec()))
+            {
+                binding_facts(facts, binding)
+            } else {
+                vec![fact("binding_name", name)]
+            };
+            event_facts.push(path_fact("stmt_path", path));
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::RemoveMut,
+                kind: "remove_local_mut".into(),
+                location: function_path_location(facts, function, path),
+                before: vec![stmt_snippet("binding", &before)],
+                after: vec![stmt_snippet("binding", stmt)],
+                facts: event_facts,
+            });
+        }
+        walk::nested_bodies_mut_with_path(stmt, path, &mut |body, path| {
+            self.remove_unneeded_mut(body, function, facts, path);
+        });
+    }
 }
 
 fn local_can_drop_mut(
