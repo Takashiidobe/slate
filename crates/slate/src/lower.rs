@@ -6882,9 +6882,17 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
         Type::Prim(Prim::I64)
     } else if ty == "!u64i" || ty == "!cir.int<u, 64>" {
         Type::Prim(Prim::U64)
-    } else if ty == "!s128i" || ty == "!cir.int<s, 128>" {
+    } else if ty == "!s128i"
+        || ty == "!cir.int<s, 128>"
+        || ty == "!s128i_bitint"
+        || ty == "!cir.int<s, 128, bitint>"
+    {
         Type::Prim(Prim::I128)
-    } else if ty == "!u128i" || ty == "!cir.int<u, 128>" {
+    } else if ty == "!u128i"
+        || ty == "!cir.int<u, 128>"
+        || ty == "!u128i_bitint"
+        || ty == "!cir.int<u, 128, bitint>"
+    {
         Type::Prim(Prim::U128)
     } else if ty == "!cir.float" {
         Type::Prim(Prim::F32)
@@ -7062,7 +7070,21 @@ fn anon_alias_key(ty: &str, aliases: &BTreeMap<String, String>) -> Option<String
 }
 
 fn parse_cir_int_type(ty: &str) -> Option<(bool, u32)> {
-    let rest = ty.trim().strip_prefix('!')?;
+    let ty = ty.trim();
+    if let Some(rest) = ty
+        .strip_prefix("!cir.int<")
+        .and_then(|s| s.strip_suffix('>'))
+    {
+        let mut parts = rest.split(',').map(str::trim);
+        let signed = match parts.next()? {
+            "s" => true,
+            "u" => false,
+            _ => return None,
+        };
+        return Some((signed, parts.next()?.parse().ok()?));
+    }
+    let rest = ty.strip_prefix('!')?;
+    let rest = rest.strip_suffix("_bitint").unwrap_or(rest);
     let signed = match rest.as_bytes().first()? {
         b's' => true,
         b'u' => false,
