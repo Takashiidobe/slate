@@ -1151,6 +1151,7 @@ impl<W: Write> Codegen<W> {
             RustValue::I64(n) => write!(self.out, "{n}"),
             RustValue::Usize(n) => write!(self.out, "{n}usize"),
             RustValue::I128(n) => write!(self.out, "{n}"),
+            RustValue::U128(n) => write!(self.out, "{n}"),
             RustValue::Float(n) => {
                 if n.fract() == 0.0 {
                     write!(self.out, "{n:.1}")
@@ -1170,6 +1171,7 @@ impl<W: Write> Codegen<W> {
             crate::rust_ast::Pattern::Binding(name) => self.out.write_str(name.as_str()),
             crate::rust_ast::Pattern::I64(n) => write!(self.out, "{n}"),
             crate::rust_ast::Pattern::I128(n) => write!(self.out, "{n}"),
+            crate::rust_ast::Pattern::U128(n) => write!(self.out, "{n}"),
             crate::rust_ast::Pattern::TupleStruct { name, fields } => {
                 self.out.write_str(name.as_str())?;
                 self.out.write_char('(')?;

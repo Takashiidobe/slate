@@ -100,7 +100,7 @@ pub(super) fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
 
 fn pattern_ident_count(pattern: &Pattern, name: &str) -> usize {
     match pattern {
-        Pattern::Wildcard | Pattern::I64(_) | Pattern::I128(_) => 0,
+        Pattern::Wildcard | Pattern::I64(_) | Pattern::I128(_) | Pattern::U128(_) => 0,
         Pattern::Binding(binding) => usize::from(binding.as_str() == name),
         Pattern::TupleStruct { name: ctor, fields } => {
             usize::from(ctor.as_str() == name)

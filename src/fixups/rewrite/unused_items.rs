@@ -372,7 +372,11 @@ fn collect_pattern_refs(pattern: &Pattern, refs: &mut BTreeSet<String>) {
                 collect_pattern_refs(field, refs);
             }
         }
-        Pattern::Wildcard | Pattern::Binding(_) | Pattern::I64(_) | Pattern::I128(_) => {}
+        Pattern::Wildcard
+        | Pattern::Binding(_)
+        | Pattern::I64(_)
+        | Pattern::I128(_)
+        | Pattern::U128(_) => {}
     }
 }
 
