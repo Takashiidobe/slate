@@ -241,6 +241,7 @@ mod tests {
             name: name.into(),
             mutable: false,
             ty: Type::parse("&[i32]"),
+            nonnull: false,
         }
     }
 

@@ -274,6 +274,7 @@ fn forward_num(s: &str) -> i32 {
             name: "ap".into(),
             mutable: true,
             ty: Type::Variadic,
+            nonnull: false,
         });
 
         let out = run_fn(f);
@@ -531,6 +532,7 @@ fn f(a: i32) -> i32 {
                     else_body: vec![],
                 },
             }],
+            returns_nonnull: false,
         };
 
         assert_eq!(

@@ -52,6 +52,7 @@ fn collect_signatures(program: &Program, facts: &FixupFacts) -> Vec<CallSignatur
                     params_from_fn_params(&f.params),
                     false,
                     f.ret.clone(),
+                    f.returns_nonnull,
                 );
             }
             Item::ExternBlock { decls, .. } => {
@@ -69,6 +70,7 @@ fn collect_signatures(program: &Program, facts: &FixupFacts) -> Vec<CallSignatur
                         params_from_fn_params(&f.params),
                         f.variadic,
                         f.ret.clone(),
+                        f.returns_nonnull,
                     );
                 }
             }
@@ -97,6 +99,7 @@ fn collect_cfg_signature(
                     params_from_fn_params(&f.params),
                     false,
                     f.ret.clone(),
+                    f.returns_nonnull,
                 );
             }
         }
@@ -115,6 +118,7 @@ fn collect_cfg_signature(
                     params_from_fn_params(&f.params),
                     f.variadic,
                     f.ret.clone(),
+                    f.returns_nonnull,
                 );
             }
         }
@@ -130,6 +134,7 @@ fn push_signature(
     params: Vec<CallParamFact>,
     variadic: bool,
     ret: Option<Type>,
+    returns_nonnull: bool,
 ) {
     let id = SignatureId(signatures.len());
     signatures.push(CallSignatureFact {
@@ -140,6 +145,7 @@ fn push_signature(
         params,
         variadic,
         ret,
+        returns_nonnull,
     });
 }
 
@@ -151,6 +157,7 @@ fn params_from_fn_params(params: &[FnParam]) -> Vec<CallParamFact> {
             index,
             name: param.name.clone(),
             ty: param.ty.clone(),
+            nonnull: param.nonnull,
         })
         .collect()
 }
@@ -702,10 +709,12 @@ mod tests {
                         name: name.into(),
                         mutable: false,
                         ty: Type::parse(ty),
+                        nonnull: false,
                     })
                     .collect(),
                 variadic,
                 ret: ret.map(Type::parse),
+                returns_nonnull: false,
             })],
         }
     }
@@ -767,6 +776,7 @@ mod tests {
                     params: vec![param("a", "i32"), param("b", "i32")],
                     ret: Some(Type::parse("i32")),
                     body: vec![],
+                    returns_nonnull: false,
                 }),
                 Item::Fn(func(
                     vec![],

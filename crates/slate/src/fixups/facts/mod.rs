@@ -320,6 +320,7 @@ pub(super) struct CallSignatureFact {
     pub(super) params: Vec<CallParamFact>,
     pub(super) variadic: bool,
     pub(super) ret: Option<Type>,
+    pub(super) returns_nonnull: bool,
     pub(super) semantics: BTreeSet<LibcCallSemantic>,
 }
 
@@ -337,6 +338,7 @@ pub(super) struct CallParamFact {
     pub(super) index: usize,
     pub(super) name: String,
     pub(super) ty: Type,
+    pub(super) nonnull: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -1852,6 +1854,7 @@ mod tests {
                         }],
                     },
                 }],
+                returns_nonnull: false,
             })],
         };
 

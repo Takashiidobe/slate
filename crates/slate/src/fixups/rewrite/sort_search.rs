@@ -720,6 +720,7 @@ mod tests {
                 params: Vec::new(),
                 variadic: false,
                 ret: None,
+                returns_nonnull: false,
             })],
         }
     }
@@ -776,6 +777,7 @@ mod tests {
                     stmt: Stmt::Return(Some(bin(BinOp::Sub, var("lhs"), var("rhs")))),
                 },
             ],
+            returns_nonnull: false,
         })
     }
 

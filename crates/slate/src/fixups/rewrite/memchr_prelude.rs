@@ -662,6 +662,7 @@ mod tests {
             ],
             ret: Some(void_ptr(true)),
             body: vec![indent(Stmt::Return(Some(null_mut())))],
+            returns_nonnull: false,
         };
 
         assert!(fixup(&mut f));

@@ -522,10 +522,12 @@ mod tests {
                             name: format!("arg{index}"),
                             mutable: false,
                             ty,
+                            nonnull: false,
                         })
                         .collect(),
                     variadic: sig.variadic,
                     ret: Some(Type::parse("i32")),
+                    returns_nonnull: false,
                 })],
             })
             .collect();

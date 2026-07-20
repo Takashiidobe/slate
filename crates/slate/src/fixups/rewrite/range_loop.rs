@@ -203,6 +203,7 @@ mod tests {
                     name: "n".into(),
                     mutable: false,
                     ty: Type::parse("i32"),
+                    nonnull: false,
                 }],
                 Some("i32"),
                 vec![

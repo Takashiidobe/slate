@@ -105,7 +105,8 @@ attributes, `noreturn` (both spellings), inline `asm`, computed goto,
 frame/stack builtins, vector extensions (`cir.vec.*`), and the byte-wise memory
 builtins (`memcpy`/`memmove`/`memset`/`memchr`) — see
 [cir-op-prioritization.md](cir-op-prioritization.md) for the full op-level
-checklist.
+checklist. `nonnull`/`returns_nonnull` (including `T name[static N]`
+parameters) are recovered as facts too.
 
 ### Multi-config translation
 
@@ -131,9 +132,8 @@ doesn't rot. As of this writing, open gaps are mostly about widening the
 idiomatization ladder rather than baseline C coverage — e.g. fully
 target-complete scalar modeling, `setjmp`/`longjmp`, remaining printf
 edge cases (precision/width forms), further libc idiomatization (`fgets`/
-`fread`/`fwrite` on owned `FILE` handles), attribute-driven pointer facts
-(`nonnull`, `alloc_size`), and `enumerate()` recovery for slice loops with a
-live index use.
+`fread`/`fwrite` on owned `FILE` handles), `alloc_size`-driven pointer facts,
+and `enumerate()` recovery for slice loops with a live index use.
 
 ## Pipeline
 
