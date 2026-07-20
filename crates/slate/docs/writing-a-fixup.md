@@ -4,7 +4,7 @@ A fixup is a **Rust-AST → Rust-AST** transformation that makes already-correct
 baseline Rust cleaner. It runs after lowering, inside `src/fixups::apply`, and
 must be optional in spirit: disable it and the generated Rust is still correct.
 
-This doc is the how. For *whether* your change is a fixup or a baseline feature,
+This doc is the how. For _whether_ your change is a fixup or a baseline feature,
 read [adding-features.md](adding-features.md) first.
 
 If the fixup needs semantic trace coverage or changes the shape that the effects
