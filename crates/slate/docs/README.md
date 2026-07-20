@@ -128,8 +128,8 @@ under `tests/fixtures.lowered.generated/`.
 
 Tracked as beads (`bd list --status=open`), not maintained here, so this list
 doesn't rot. As of this writing, open gaps are mostly about widening the
-idiomatization ladder rather than baseline C coverage — e.g. `__int128` and
-fully target-complete scalar modeling, `setjmp`/`longjmp`, remaining printf
+idiomatization ladder rather than baseline C coverage — e.g. fully
+target-complete scalar modeling, `setjmp`/`longjmp`, remaining printf
 edge cases (precision/width forms), further libc idiomatization (`fgets`/
 `fread`/`fwrite` on owned `FILE` handles), attribute-driven pointer facts
 (`nonnull`, `alloc_size`), and `enumerate()` recovery for slice loops with a

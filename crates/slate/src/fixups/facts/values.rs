@@ -487,7 +487,7 @@ impl<'a> Collector<'a> {
                     self.shadow_pattern(field);
                 }
             }
-            Pattern::Wildcard | Pattern::I64(_) | Pattern::I128(_) => {}
+            Pattern::Wildcard | Pattern::I64(_) | Pattern::I128(_) | Pattern::U128(_) => {}
         }
     }
 
@@ -562,6 +562,17 @@ fn values_for_rust_value(value: &RustValue) -> BTreeSet<ConstValue> {
             values.insert(ConstValue::Integer(*n));
             if let Ok(n) = usize::try_from(*n) {
                 values.insert(ConstValue::Usize(n));
+            }
+            if *n == 0 {
+                values.insert(ConstValue::Zero);
+            }
+        }
+        RustValue::U128(n) => {
+            if let Ok(n) = i128::try_from(*n) {
+                values.insert(ConstValue::Integer(n));
+                if let Ok(n) = usize::try_from(n) {
+                    values.insert(ConstValue::Usize(n));
+                }
             }
             if *n == 0 {
                 values.insert(ConstValue::Zero);

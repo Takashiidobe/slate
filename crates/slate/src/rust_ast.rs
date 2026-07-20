@@ -374,6 +374,7 @@ pub enum Pattern {
     Binding(Ident),
     I64(i64),
     I128(i128),
+    U128(u128),
     TupleStruct { name: Ident, fields: Vec<Pattern> },
 }
 
@@ -523,6 +524,7 @@ pub enum RustValue {
     I64(i64),
     Usize(usize),
     I128(i128),
+    U128(u128),
     Float(f64),
     Bool(bool),
     None,
