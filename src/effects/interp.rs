@@ -32,7 +32,7 @@ pub fn interpret_program_main(program: &Program) -> EResult<EffectTrace> {
         .get("main")
         .cloned()
         .ok_or_else(|| EffectError::unknown(BindingKind::Function, "main"))?;
-    if interp.run(&main.body)? == Flow::Normal {
+    if interp.run_fn_body(&main.body, main.ret.is_some())? == Flow::Normal {
         interp.drop_live_vecs()?;
         interp.trace.push(Effect::Exit(0));
     }
@@ -291,6 +291,31 @@ impl Interp {
         Ok(Flow::Normal)
     }
 
+    /// Mirrors codegen's function-body rendering: a trailing bare `Stmt::Expr`
+    /// in a function with a return type is an implicit return, not a discarded
+    /// expression statement.
+    fn run_fn_body(&mut self, body: &[IndentStmt], has_ret: bool) -> EResult<Flow> {
+        let Some((last, rest)) = body.split_last() else {
+            return Ok(Flow::Normal);
+        };
+        if has_ret && let Stmt::Expr(expr) = &last.stmt {
+            match self.run(rest)? {
+                Flow::Normal => {
+                    let value = self.eval(expr)?;
+                    if self.call_depth == 0 {
+                        let code = value_as_i32(&value)?;
+                        self.drop_live_vecs()?;
+                        self.trace.push(Effect::Exit(code));
+                    }
+                    Ok(Flow::Return(value))
+                }
+                flow => Ok(flow),
+            }
+        } else {
+            self.run(body)
+        }
+    }
+
     fn step(&mut self, stmt: &Stmt) -> EResult<Flow> {
         match stmt {
             Stmt::Let {
@@ -397,6 +422,14 @@ impl Interp {
             }
             Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "resize" => {
                 self.resize_vec(recv, args)?;
+                Ok(Flow::Normal)
+            }
+            Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "fill" => {
+                self.fill(recv, args)?;
+                Ok(Flow::Normal)
+            }
+            Stmt::Expr(Expr::MethodCall { recv, method, args }) if method == "copy_within" => {
+                self.copy_within(recv, args)?;
                 Ok(Flow::Normal)
             }
             Stmt::Expr(Expr::Call { func, args }) if is_path(func, &["std", "process", "exit"]) => {
@@ -1344,6 +1377,103 @@ impl Interp {
         }
         if let Some(binding) = self.vecs.get_mut(&name) {
             binding.len = new_len;
+        }
+        Ok(())
+    }
+
+    fn fill(&mut self, recv: &Expr, args: &[Expr]) -> EResult<()> {
+        let name = match recv {
+            Expr::Var(ident) => ident.as_str().to_string(),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::PushReceiver,
+                    other.clone(),
+                ));
+            }
+        };
+        let [value] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::FillMethodArgs,
+                ArgShapeKind::OneArgument,
+            ));
+        };
+        let value = self.eval(value)?;
+        self.materialize_collection(&name);
+        let binding = self
+            .vecs
+            .get(&name)
+            .cloned()
+            .ok_or_else(|| EffectError::unknown(BindingKind::Vec, name.clone()))?;
+        let elem = Value::Int {
+            width: binding.elem_width,
+            signed: binding.elem_signed,
+            value: value_as_i128(&value)?,
+        };
+        for index in 0..binding.len {
+            let loc = Location {
+                alloc: binding.alloc,
+                byte_offset: index * binding.elem_size,
+            };
+            self.heap.insert(loc, elem.clone());
+            self.trace.push(Effect::Write {
+                loc,
+                value: elem.clone(),
+            });
+        }
+        Ok(())
+    }
+
+    fn copy_within(&mut self, recv: &Expr, args: &[Expr]) -> EResult<()> {
+        let name = match recv {
+            Expr::Var(ident) => ident.as_str().to_string(),
+            other => {
+                return Err(EffectError::unsupported(
+                    Construct::PushReceiver,
+                    other.clone(),
+                ));
+            }
+        };
+        let [range, dest] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::CopyWithinMethodArgs,
+                ArgShapeKind::TwoArguments,
+            ));
+        };
+        let Expr::Range { start, end } = range else {
+            return Err(EffectError::unsupported(
+                Construct::CopyWithinRange,
+                range.clone(),
+            ));
+        };
+        let start = value_as_u64(self.eval(start)?)?;
+        let end = value_as_u64(self.eval(end)?)?;
+        let dest = value_as_u64(self.eval(dest)?)?;
+        self.materialize_collection(&name);
+        let binding = self
+            .vecs
+            .get(&name)
+            .cloned()
+            .ok_or_else(|| EffectError::unknown(BindingKind::Vec, name.clone()))?;
+        let mut values = Vec::with_capacity((end - start) as usize);
+        for index in start..end {
+            let loc = Location {
+                alloc: binding.alloc,
+                byte_offset: index * binding.elem_size,
+            };
+            let value = self
+                .heap
+                .get(&loc)
+                .ok_or_else(|| EffectError::uninitialized_read(loc))?
+                .clone();
+            values.push(value);
+        }
+        for (offset, value) in values.into_iter().enumerate() {
+            let loc = Location {
+                alloc: binding.alloc,
+                byte_offset: (dest + offset as u64) * binding.elem_size,
+            };
+            self.heap.insert(loc, value.clone());
+            self.trace.push(Effect::Write { loc, value });
         }
         Ok(())
     }
@@ -3740,6 +3870,9 @@ impl Interp {
     }
 
     fn eval_call(&mut self, func: &Expr, args: &[Expr]) -> EResult<Value> {
+        if is_path(func, &["std", "process", "exit"]) {
+            return self.call_exit(args);
+        }
         if args.is_empty() && is_path(func, &["std", "ptr", "null_mut"]) {
             return Ok(Value::Null);
         }
@@ -5660,7 +5793,7 @@ impl Interp {
             }
         }
         self.call_depth += 1;
-        let flow = self.run(&f.body);
+        let flow = self.run_fn_body(&f.body, f.ret.is_some());
         self.call_depth -= 1;
         let returned_struct = match &flow {
             Ok(Flow::Return(Value::Ref(loc))) => self

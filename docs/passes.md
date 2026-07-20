@@ -1,21 +1,11 @@
 # Passes
 
-The translator is a small fixed pipeline. Keep it that way until there is a real
-need for pass scheduling or configuration.
-
-## V0 principle: transliterate, don't optimize
-
-Baseline lowering emits the most mechanical, faithful Rust it can, leaning on
-`libc` and `unsafe` wherever C semantics do not map directly to safe Rust. Every
-CIR value is materialized into its own `let` temp. This is ugly, but it freezes
-each value at its CIR definition and avoids load-after-mutation hazards.
-
 Readability is recovered later by Rust fixups, not during baseline lowering.
 
 ## Current pipeline
 
 | Stage              | In -> Out                               | How                                                                    |
-| ------------------- | --------------------------------------- | ------------------------------------------------------------------------ |
+| ------------------ | --------------------------------------- | ---------------------------------------------------------------------- |
 | **emit-cir**       | C -> CIR text                           | `clang -fclangir -emit-cir` piped to `cir-opt --mlir-print-op-generic` |
 | **parse-cir**      | CIR text -> generic Op-tree + locs      | recursive-descent parser over MLIR generic form                        |
 | **load-ast**       | C -> compact source context + raw JSON  | `clang -Xclang -ast-dump=json -fsyntax-only`                           |
@@ -31,12 +21,6 @@ emit-cir -> parse-cir -> load-ast -> lower(libc/unsafe) -> fixups -> generated-d
 
 For what the baseline lowerer and fixup ladder currently cover, see
 [README.md](README.md) (categorized summary) and
-[cir-op-prioritization.md](cir-op-prioritization.md) (exhaustive CIR op
-checklist). Unknown CIR ops emit a `todo!("cir.xyz")` expression and a
-diagnostic — failing loudly is intentional; it is better than silently
-dropping semantics.
-
-## Stage notes
 
 ### parse-cir
 
@@ -161,6 +145,7 @@ change; "once" means it runs exactly one time per `apply` call.
 46. `unused_items` - remove dead top-level items - once.
 47. `unused_params` - drop a function parameter that's never read in its body and rewrite every direct call site to match, once the function's only references are direct-by-name calls whose argument at that slot is pure and whose type can't own a destructor - to fixpoint.
 48. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
+49. `rewrite_final_return` - turn `return <expr>;` into plain `<expr>` at the end of a function.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
 because later groups can create new opportunities for earlier ones; re-running
