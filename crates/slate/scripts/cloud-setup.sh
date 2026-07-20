@@ -11,6 +11,11 @@
 #   SLATE_ALIVE_TV=/opt/slate-toolchain/bin/alive-tv
 set -euo pipefail
 
+# The base image ships deadsnakes/ondrej PPAs for its pre-installed Python/PHP
+# versions; when Launchpad 403s one of them, apt-get update fails outright
+# even though we don't need either PPA for what this script installs.
+rm -f /etc/apt/sources.list.d/*deadsnakes* /etc/apt/sources.list.d/*ondrej*
+
 apt-get update -qq
 DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ca-certificates gh >/dev/null
 
