@@ -1,6 +1,4 @@
-# Project Instructions for AI Agents
-
-This file provides instructions and context for AI coding agents working on this project.
+# Instructions for AI Agents
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 
@@ -11,10 +9,10 @@ This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full 
 ### Quick Reference
 
 ```bash
-bd ready              # Find available work
-bd show <id>          # View issue details
+bd ready                # Find available work
+bd show <id>            # View issue details
 bd update <id> --claim  # Claim work
-bd close <id>         # Complete work
+bd close <id>           # Complete work
 ```
 
 ### Rules
@@ -27,9 +25,7 @@ bd close <id>         # Complete work
 
 ## Session Completion
 
-**This project has no git remote** — beads data and code both live locally.
-"Done" means the branch is merged into `main` in the coordination checkout, not
-pushed anywhere. Do NOT run `git push` / `git pull --rebase`.
+**NEVER skip this.** Work is not done until pushed.
 
 **When ending a work session**, complete ALL steps below. Work is NOT complete
 until the branch is merged into `main`.
@@ -52,7 +48,6 @@ until the branch is merged into `main`.
 
 - Work is NOT complete until the branch is merged into `main`
 - NEVER leave work stranded on an unmerged worktree branch
-- There is no remote: do NOT `git push` or `git pull --rebase`
 - Resolve merge conflicts in the coordination checkout and rerun tests
 <!-- END BEADS INTEGRATION -->
 
@@ -73,14 +68,14 @@ that subset.
 Nothing works without a **CIR-enabled Clang** (`CLANG_ENABLE_CIR=ON`). Tool paths
 default to a local build and are overridable via environment variables:
 
-| Var                                 | Default                                | Role                                     |
-| ----------------------------------- | -------------------------------------- | ---------------------------------------- |
-| `SLATE_CLANG`                       | `~/llvm-project/build-cir/bin/clang`   | emit CIR + Clang AST JSON                |
-| `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt` | CIR → MLIR generic form                  |
-| `SLATE_CC`                          | `clang` (from `PATH`)                  | compile the C side of differential tests |
-| `SLATE_CARGO`                       | `cargo`                                | compile the generated Rust               |
+| Var                                 | Default                                | Role                                                |
+| ----------------------------------- | -------------------------------------- | --------------------------------------------------- |
+| `SLATE_CLANG`                       | `~/llvm-project/build-cir/bin/clang`   | emit CIR + Clang AST JSON                           |
+| `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt` | CIR → MLIR generic form                             |
+| `SLATE_CC`                          | `clang` (from `PATH`)                  | compile the C side of differential tests            |
+| `SLATE_CARGO`                       | `cargo`                                | compile the generated Rust                          |
 | `SLATE_ALIVE_TV`                    | `~/alive2/build/alive-tv`              | translation-validate a fixup pass's before/after IR |
-| `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                      | shared target triple / extra clang flags |
+| `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                      | shared target triple / extra clang flags            |
 
 ## Build & Test
 
@@ -102,8 +97,8 @@ cargo nextest r --release --test bnf_fuzz generator_differential --nocapture
 
 ```
 C ──emit──► CIR ──parse──► Op-tree ──lower──► Rust source
-│  clang|cir-opt                    ▲
-└──ast-dump=json──────► Clang AST ──┘
+│  clang|cir-opt                      ▲
+└──ast-dump=json──────► Clang AST ────┘
 verified:  run(C).{stdout,exit} == run(Rust).{stdout,exit}
 ```
 
@@ -144,11 +139,14 @@ Read these before making changes — they are the real playbook:
 - **Every feature starts with a C fixture** in `tests/fixtures/` (C-only), driven
   by `cargo test --test differential generated_differential` and
   `cargo nextest r --release --test effects_regression`.
+- **Testing**: Testing is done with e2e tests, not unit tests. There is
+  differential testing, fuzzing, effect testing, etc. All of this is
+  stronger than unit testing.
 - **Transliterate first, idiomatize later.** Baseline Rust may be ugly:
   `#[repr(C)]`, raw pointers, explicit temps, `libc`, and `unsafe` are all
   acceptable. Make it correct first; recover idiom in separate, verified fixups.
 - **The lowerer emits structured AST, never rendered strings.** Everything in
-  `src/lower.rs` builds `src/rust_ast.rs` nodes (`Item`/`Stmt`/`Expr`); `format!`
+  `src/lower.rs` builds `src/rust_ast.rs` nodes (`Item`/`Stmt`/`Expr`);
   into Rust source text is not allowed. Keep it as strongly typed as possible —
   favor a new enum variant over a `String` bridge, so the compiler enforces
   exhaustiveness and fixups can pattern-match the shape. If the AST cannot express
@@ -157,8 +155,8 @@ Read these before making changes — they are the real playbook:
 - **Correctness lives in baseline lowering, never in a fixup.** A fixup must be
   optional in spirit — disabling it still leaves correct Rust.
 - **Effects validation compares Rust to Rust.** `compare-effects-rust-rust`
-  interprets raw lowered Rust and fixuped Rust; it is for checking fixup
-  preservation, not C/CIR semantics. New fixtures and fixups must keep the
+  interprets raw lowered Rust and fixuped Rust; it is for checking
+  fixups are valid. New fixtures and fixups must keep the
   effects regression green; if it fails, model the new effect shape rather than
   treating the failure as harmless. See [docs/effects.md](docs/effects.md).
 - **Use shared fixup walkers.** Fact collectors should use
@@ -169,10 +167,5 @@ Read these before making changes — they are the real playbook:
 - **The generator only emits what Slate can translate.** When you extend the
   supported subset, extend `tests/support/cgen.rs` (and `c.bnf`) to match; keep
   every generated program well-defined (no UB) so C and Rust agree.
-- **Comments explain why, not what.** One line at most. Only justify why the
-  code is the way it is (a non-obvious constraint, a magic constant); never
-  narrate what the code already says. If a name already makes the intent clear,
-  don't comment. When in doubt, no comment.
-- Run `cargo fmt` and `cargo test` before finishing.
-
-See [AGENTS.md](AGENTS.md) for shell/tooling notes.
+- **Never comment.**
+- Run `cargo fmt`, `cargo clippy` and `cargo nextest r` before finishing.
