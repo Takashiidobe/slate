@@ -2,7 +2,7 @@
 
 use serde_json::Value;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -69,6 +69,7 @@ pub struct Function {
     /// Raw Clang JSON node for demand-driven facts the small AST has not modeled.
     pub raw: Option<Value>,
     pub layout_queries: Vec<LayoutQuery>,
+    pub nonnull_static_params: BTreeSet<usize>,
 }
 
 #[derive(Debug, Clone)]
@@ -527,15 +528,28 @@ fn extract_function(node: &Value, source_text: Option<&str>) -> Option<Function>
     let name = node.get("name")?.as_str()?.to_string();
     let fn_qual_type = qual_type(node).unwrap_or("int ()");
     let (ret, _) = parse_function_decl_qual_type(fn_qual_type);
-    let params = children(node)
+    let param_nodes: Vec<_> = children(node)
         .iter()
         .filter(|child| kind(child) == Some("ParmVarDecl"))
+        .copied()
+        .collect();
+    let params = param_nodes
+        .iter()
         .filter_map(|child| {
             Some(Decl {
                 name: child.get("name")?.as_str()?.to_string(),
                 comments: attached_comment(child),
                 ty: parse_c_type(qual_type(child).unwrap_or("int")),
             })
+        })
+        .collect();
+    let nonnull_static_params = param_nodes
+        .iter()
+        .enumerate()
+        .filter_map(|(i, child)| {
+            let source = source_text?;
+            let offset = expansion_offset(child)?;
+            param_is_static_array(source, offset).then_some(i)
         })
         .collect();
     let body = children(node)
@@ -551,7 +565,28 @@ fn extract_function(node: &Value, source_text: Option<&str>) -> Option<Function>
         loc: loc(node),
         raw: Some(node.clone()),
         layout_queries: collect_layout_queries(node, source_text),
+        nonnull_static_params,
     })
+}
+
+fn param_is_static_array(source: &str, offset: usize) -> bool {
+    let Some(rest) = source.get(offset..) else {
+        return false;
+    };
+    let mut paren_depth = 0i32;
+    for (i, ch) in rest.char_indices() {
+        match ch {
+            '(' => paren_depth += 1,
+            ')' if paren_depth == 0 => return false,
+            ')' => paren_depth -= 1,
+            ',' if paren_depth == 0 => return false,
+            '[' if paren_depth == 0 => {
+                return rest[i + 1..].trim_start().starts_with("static");
+            }
+            _ => {}
+        }
+    }
+    false
 }
 
 fn collect_layout_queries(node: &Value, source_text: Option<&str>) -> Vec<LayoutQuery> {

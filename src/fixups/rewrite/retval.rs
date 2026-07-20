@@ -817,6 +817,7 @@ fn f() -> i32 {
             .into_iter()
             .map(|stmt| IndentStmt { depth: 1, stmt })
             .collect(),
+            returns_nonnull: false,
         });
 
         assert_eq!(
@@ -868,6 +869,7 @@ fn main() {
             .into_iter()
             .map(|stmt| IndentStmt { depth: 1, stmt })
             .collect(),
+            returns_nonnull: false,
         });
 
         assert_eq!(
@@ -908,6 +910,7 @@ fn main() {
             .into_iter()
             .map(|stmt| IndentStmt { depth: 1, stmt })
             .collect(),
+            returns_nonnull: false,
         });
 
         assert_eq!(
@@ -945,6 +948,7 @@ fn main() {
             .into_iter()
             .map(|stmt| IndentStmt { depth: 1, stmt })
             .collect(),
+            returns_nonnull: false,
         };
         let expected = emit(f.clone());
 

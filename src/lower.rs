@@ -300,6 +300,16 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .iter()
             .map(|function| (function.name.clone(), function.layout_queries.clone()))
             .collect(),
+        nonnull_static_params: c
+            .functions
+            .iter()
+            .map(|function| {
+                (
+                    function.name.clone(),
+                    function.nonnull_static_params.clone(),
+                )
+            })
+            .collect(),
     };
     lowerer.lower_module(cir, c)
 }
@@ -574,6 +584,7 @@ struct Lowerer<'a> {
     /// every `main` return/exit site.
     dtor_calls: Vec<String>,
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
+    nonnull_static_params: BTreeMap<String, BTreeSet<usize>>,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -843,7 +854,7 @@ impl<'a> Lowerer<'a> {
                 continue;
             }
             let function_type = attr_str(op, "function_type").unwrap_or("");
-            let (mut decl, params, ret) = self.extern_fn_signature(name, function_type);
+            let (mut decl, params, ret) = self.extern_fn_signature(name, function_type, op);
             if attr_bool(op, "noreturn") {
                 decl.ret = Some(Type::Never);
             }
@@ -860,6 +871,7 @@ impl<'a> Lowerer<'a> {
                                 mutable: true,
                                 inner: Box::new(Type::Prim(Prim::I8)),
                             },
+                            nonnull: false,
                         },
                         FnParam {
                             name: "_1".into(),
@@ -871,6 +883,7 @@ impl<'a> Lowerer<'a> {
                                     inner: Box::new(Type::Prim(Prim::I8)),
                                 }),
                             },
+                            nonnull: false,
                         },
                         FnParam {
                             name: "_2".into(),
@@ -879,10 +892,12 @@ impl<'a> Lowerer<'a> {
                                 mutable: true,
                                 inner: Box::new(Type::LongDouble),
                             },
+                            nonnull: false,
                         },
                     ],
                     variadic: false,
                     ret: None,
+                    returns_nonnull: false,
                 }));
             } else {
                 extern_decls.push(ExternDecl::Fn(decl));
@@ -898,6 +913,7 @@ impl<'a> Lowerer<'a> {
                                 mutable: true,
                                 inner: Box::new(Type::Prim(Prim::I8)),
                             },
+                            nonnull: false,
                         },
                         FnParam {
                             name: "_1".into(),
@@ -906,15 +922,18 @@ impl<'a> Lowerer<'a> {
                                 mutable: false,
                                 inner: Box::new(Type::LongDouble),
                             },
+                            nonnull: false,
                         },
                         FnParam {
                             name: "_2".into(),
                             mutable: false,
                             ty: Type::Prim(Prim::I32),
+                            nonnull: false,
                         },
                     ],
                     variadic: false,
                     ret: Some(Type::Prim(Prim::I32)),
+                    returns_nonnull: false,
                 }));
             }
         }
@@ -1237,7 +1256,7 @@ impl<'a> Lowerer<'a> {
         }
 
         let function_type = attr_str(op, "function_type").unwrap_or("");
-        let (decl, _, _) = self.extern_fn_signature(name, function_type);
+        let (decl, _, _) = self.extern_fn_signature(name, function_type, op);
         if decl.variadic {
             self.ctx.diagnostics.error(
                 format!("lower: unsupported variadic function alias `{name}` to `{target}`"),
@@ -1290,6 +1309,7 @@ impl<'a> Lowerer<'a> {
             params: decl.params,
             ret: decl.ret,
             body: vec![IndentStmt { depth: 1, stmt }],
+            returns_nonnull: decl.returns_nonnull,
         }))
     }
 
@@ -1337,6 +1357,12 @@ impl<'a> Lowerer<'a> {
         let is_main = name == "main";
         let is_variadic = !is_main && function_type_is_variadic(function_type);
 
+        let arg_nonnull = arg_attrs_nonnull(op);
+        let source_nonnull = self
+            .nonnull_static_params
+            .get(name)
+            .cloned()
+            .unwrap_or_default();
         let mut params = entry
             .args
             .iter()
@@ -1347,6 +1373,7 @@ impl<'a> Lowerer<'a> {
                     name: arg.clone(),
                     mutable: false,
                     ty: self.rust_type(ty),
+                    nonnull: arg_nonnull.contains(&i) || source_nonnull.contains(&i),
                 }
             })
             .collect::<Vec<_>>();
@@ -1357,6 +1384,7 @@ impl<'a> Lowerer<'a> {
                 name: param.clone(),
                 mutable: true,
                 ty: Type::Variadic,
+                nonnull: false,
             });
             Some(param)
         } else {
@@ -1476,6 +1504,7 @@ impl<'a> Lowerer<'a> {
             params,
             ret,
             body: f.body,
+            returns_nonnull: op_returns_nonnull(op),
         }))
     }
 
@@ -1586,6 +1615,7 @@ impl<'a> Lowerer<'a> {
         &self,
         name: &str,
         function_type: &str,
+        op: &Op,
     ) -> (ExternFnDecl, Vec<Type>, Option<String>) {
         let inner = function_type
             .strip_prefix("!cir.func<")
@@ -1597,6 +1627,7 @@ impl<'a> Lowerer<'a> {
         };
         let params_str = params_str.trim_start_matches('(').trim_end_matches(')');
 
+        let arg_nonnull = arg_attrs_nonnull(op);
         let mut params = Vec::new();
         let mut param_types = Vec::new();
         let mut variadic = false;
@@ -1614,6 +1645,7 @@ impl<'a> Lowerer<'a> {
                     name: format!("_{i}"),
                     mutable: false,
                     ty: ty.clone(),
+                    nonnull: arg_nonnull.contains(&i),
                 });
                 param_types.push(ty);
             }
@@ -1628,6 +1660,7 @@ impl<'a> Lowerer<'a> {
             params,
             variadic,
             ret: ret_ast,
+            returns_nonnull: op_returns_nonnull(op),
         };
         (decl, param_types, ret_ty)
     }
@@ -6168,6 +6201,28 @@ fn attr_bool(op: &Op, key: &str) -> bool {
     op.attrs.contains_key(key)
 }
 
+fn attr_dict_array_nonnull_indices(op: &Op, key: &str) -> BTreeSet<usize> {
+    let Some(Attr::Array(entries)) = op.attrs.get(key) else {
+        return BTreeSet::new();
+    };
+    entries
+        .iter()
+        .enumerate()
+        .filter_map(|(i, entry)| match entry {
+            Attr::Dict(dict) if dict.contains_key("llvm.nonnull") => Some(i),
+            _ => None,
+        })
+        .collect()
+}
+
+fn arg_attrs_nonnull(op: &Op) -> BTreeSet<usize> {
+    attr_dict_array_nonnull_indices(op, "arg_attrs")
+}
+
+fn op_returns_nonnull(op: &Op) -> bool {
+    !attr_dict_array_nonnull_indices(op, "res_attrs").is_empty()
+}
+
 /// Alloca results for clang-generated temps (`.atomictmp`, `atomic-temp`,
 /// `cmpxchg.bool` — names no C identifier can spell) whose only uses are one
 /// plain store followed by one plain load in the same block. Such a slot
@@ -6551,6 +6606,7 @@ fn long_double_binary(trait_: StdTrait, op: BinOp) -> Item {
         name: "o".into(),
         mutable: false,
         ty: long_double_ty(),
+        nonnull: false,
     };
     long_double_op_impl(trait_, vec![o], arg)
 }
@@ -6624,6 +6680,7 @@ fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
             name: "o".into(),
             mutable: false,
             ty: complex_ty(Type::TyVar("T".into())),
+            nonnull: false,
         }],
         ret: Some(complex_ty(Type::TyVar("T".into()))),
         body: Expr::StructLit {
@@ -6656,12 +6713,14 @@ fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
         name: n.into(),
         mutable: false,
         ty: Type::Prim(prim),
+        nonnull: false,
     };
     ExternDecl::Fn(ExternFnDecl {
         name: name.into(),
         params: vec![param("a"), param("b"), param("c"), param("d")],
         variadic: false,
         ret: Some(complex_ty(Type::Prim(prim))),
+        returns_nonnull: false,
     })
 }
 
@@ -6816,20 +6875,24 @@ fn memchr_prelude() -> Item {
                 name: "s".into(),
                 mutable: false,
                 ty: void_ptr(false),
+                nonnull: false,
             },
             FnParam {
                 name: "c".into(),
                 mutable: false,
                 ty: Type::Prim(Prim::I32),
+                nonnull: false,
             },
             FnParam {
                 name: "n".into(),
                 mutable: false,
                 ty: Type::Prim(Prim::Usize),
+                nonnull: false,
             },
         ],
         ret: Some(void_ptr(true)),
         body,
+        returns_nonnull: false,
     })
 }
 

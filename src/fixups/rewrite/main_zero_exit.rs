@@ -123,6 +123,7 @@ mod tests {
                     ty: Type::Prim(Prim::I32),
                 })),
             }],
+            returns_nonnull: false,
         });
 
         assert_eq!(
@@ -148,6 +149,7 @@ fn main() {
                 depth: 1,
                 stmt: Stmt::Expr(std_process_exit(int(1))),
             }],
+            returns_nonnull: false,
         };
         let expected = Program {
             items: vec![Item::Fn(f.clone())],
@@ -171,6 +173,7 @@ fn main() {
                 depth: 1,
                 stmt: Stmt::Expr(std_process_exit(var("status"))),
             }],
+            returns_nonnull: false,
         };
         let expected = Program {
             items: vec![Item::Fn(f.clone())],
@@ -194,6 +197,7 @@ fn main() {
                 depth: 1,
                 stmt: Stmt::Expr(std_process_exit(int(0))),
             }],
+            returns_nonnull: false,
         };
         let expected = Program {
             items: vec![Item::Fn(f.clone())],
@@ -223,6 +227,7 @@ fn main() {
                     stmt: Stmt::Return(None),
                 },
             ],
+            returns_nonnull: false,
         };
         let expected = Program {
             items: vec![Item::Fn(f.clone())],
@@ -255,6 +260,7 @@ fn main() {
                     }],
                 },
             }],
+            returns_nonnull: false,
         };
         let expected = Program {
             items: vec![Item::Fn(f.clone())],

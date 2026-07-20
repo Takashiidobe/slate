@@ -699,6 +699,7 @@ mod tests {
             name: name.into(),
             mutable: true,
             ty: Type::parse("&mut [i32]"),
+            nonnull: false,
         }
     }
 
