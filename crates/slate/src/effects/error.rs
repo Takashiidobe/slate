@@ -142,6 +142,9 @@ pub enum Construct {
     SomeArg,
     ReadVolatileArgs,
     WriteVolatileArgs,
+    FillMethodArgs,
+    CopyWithinMethodArgs,
+    CopyWithinRange,
     PrimAlignOf,
     PrimSizeOf,
 }

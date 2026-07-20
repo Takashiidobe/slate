@@ -1,24 +1,10 @@
-# CIR Op Prioritization Draft
-
-Planning draft for C-relevant CIR support. C++-only ops are omitted.
-
-## Priorities
-
-- P0: core C that blocks ordinary C.
-- P1: high-leverage C features that unlock broad source coverage.
-- P2: builtins, math, memory helpers, and stdlib probe coverage.
-- P3: extensions or target hooks; support only with an explicit fixture.
+# Supported CIR ops
 
 ## Checklist of ops to implement
 
-| Priority | Notes | Ops |
-| --- | --- | --- |
-| P3 | setjmp/longjmp non-local control flow | source currently emits a `returns_twice` `_setjmp` call, not `cir.eh.setjmp` |
-
-## Excluded 
-
-- **Flatten-CFG variants.** `cir.brcond`/`cir.switch.flat` come only from
-  `--cir-flatten-cfg`, which Slate never runs. (`slate-2pq.2` closed.)
+| Priority | Notes                                 | Ops                                                                          |
+| -------- | ------------------------------------- | ---------------------------------------------------------------------------- |
+| P3       | setjmp/longjmp non-local control flow | source currently emits a `returns_twice` `_setjmp` call, not `cir.eh.setjmp` |
 
 ## Supported Checklist
 
