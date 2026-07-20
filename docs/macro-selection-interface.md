@@ -8,7 +8,7 @@ value-carrying preprocessor predicates as portable Rust.
 
 `translate-cfg` recovers `#if`/`#ifdef` regions by mapping their predicates to
 Rust `#[cfg(...)]` (see [cfg-portability.md](cfg-portability.md)). That works
-because the predicate reduces to a *boolean presence* check — a macro is defined
+because the predicate reduces to a _boolean presence_ check — a macro is defined
 or it is not. But Cargo features and Rust `cfg` carry **no value**, so a
 predicate that compares a macro to a number —
 
@@ -23,7 +23,7 @@ The only faithful, non-guessing way to recover these is for the user to declare
 the values a macro actually takes across the builds they care about. Slate then
 turns the value axis into a small set of **mutually-exclusive Cargo features**
 and lowers each comparison to a boolean `cfg` over them. The user declares
-*values*, never features — Slate derives the feature set itself.
+_values_, never features — Slate derives the feature set itself.
 
 Scope note: this covers **integer-valued object-like macros** compared against
 constants (character constants like `'A'` count as integers, so they are in
@@ -82,15 +82,15 @@ out-of-range value up front rather than pinning a `-D` Clang would truncate or
 reinterpret — declaring `type = "char"` and listing `256` is denied, since a
 `char` cannot hold it.
 
-| `type`                         | range (target-dependent widths shown for LP64) |
-| ------------------------------ | ---------------------------------------------- |
-| `signed char`                  | −128 … 127                                     |
-| `unsigned char`                | 0 … 255                                        |
-| `char`                         | signedness follows the target's convention     |
-| `short` / `unsigned short`     | −32768 … 32767 / 0 … 65535                     |
-| `int` / `unsigned int`         | −2³¹ … 2³¹−1 / 0 … 2³²−1                        |
-| `long` / `unsigned long`       | −2⁶³ … 2⁶³−1 / 0 … 2⁶⁴−1                        |
-| `long long` / `unsigned …`     | −2⁶³ … 2⁶³−1 / 0 … 2⁶⁴−1                        |
+| `type`                     | range (target-dependent widths shown for LP64) |
+| -------------------------- | ---------------------------------------------- |
+| `signed char`              | −128 … 127                                     |
+| `unsigned char`            | 0 … 255                                        |
+| `char`                     | signedness follows the target's convention     |
+| `short` / `unsigned short` | −32768 … 32767 / 0 … 65535                     |
+| `int` / `unsigned int`     | −2³¹ … 2³¹−1 / 0 … 2³²−1                       |
+| `long` / `unsigned long`   | −2⁶³ … 2⁶³−1 / 0 … 2⁶⁴−1                       |
+| `long long` / `unsigned …` | −2⁶³ … 2⁶³−1 / 0 … 2⁶⁴−1                       |
 
 Widths and `char` signedness resolve against the active target (`SLATE_TARGET`),
 so validation matches what Clang would actually see. A value outside the range,
@@ -109,21 +109,21 @@ ever tests `LOG >= 3`. Two composing reductions bound the feature count by the
 Collect every distinct constant any comparison uses on the macro. Sorted, these
 breakpoints cut the value line into **equivalence classes** — each exact
 constant, plus the open intervals between consecutive constants (clamped to the
-declared set). Within a class *every* predicate has a constant truth value, so
+declared set). Within a class _every_ predicate has a constant truth value, so
 one feature per class suffices.
 
 Worked example — the source uses `LOG == 1`, `LOG >= 3`, `LOG < 5`:
 
-| value  | (`==1`, `>=3`, `<5`) | class |
-| ------ | -------------------- | ----- |
-| 1      | T, F, T              | A     |
-| 2      | F, F, T              | B     |
-| 3, 4   | F, T, T              | C     |
-| 5 …    | F, T, F              | D     |
+| value | (`==1`, `>=3`, `<5`) | class |
+| ----- | -------------------- | ----- |
+| 1     | T, F, T              | A     |
+| 2     | F, F, T              | B     |
+| 3, 4  | F, T, T              | C     |
+| 5 …   | F, T, F              | D     |
 
 Four classes, regardless of how wide the domain is.
 
-**Soundness rule:** derive breakpoints from *every* constant, including `==` and
+**Soundness rule:** derive breakpoints from _every_ constant, including `==` and
 `!=` targets. Then two values collapse into one class only when no predicate can
 tell them apart, and merging them is provably output-identical.
 
@@ -231,14 +231,14 @@ Where each piece lands in the current pipeline:
   context (unlike the current context-free mapping).
 - **Crate emission** (`--out`): render `Cargo.toml` (`[features]` + `default`),
   the merged `src/`, and the `compile_error!` mutual-exclusion guard.
-- **Diagnostics**: a comparison on a macro *not* declared in the TOML stays an
+- **Diagnostics**: a comparison on a macro _not_ declared in the TOML stays an
   `opaque-predicate` diagnostic that names the macro, so the user knows which
   macro to add to the file.
 
 ## Out of scope
 
 - **Cross-macro operands** — a single comparison mixing two macros
-  (`#if LOG > METRIC`, `#if LOG + METRIC > 5`). Truth depends on the *pair*, so
+  (`#if LOG > METRIC`, `#if LOG + METRIC > 5`). Truth depends on the _pair_, so
   it needs the cartesian product of both class sets, re-expanding the
   cardinality the reduction removes. Refused via `opaque-predicate`. There are
   no cross-macro declarations; one set per macro only.
