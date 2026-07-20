@@ -805,6 +805,9 @@ fn parse_c_type(s: &str) -> CType {
         return parse_c_type(inner);
     }
     let s = strip_trailing_type_qualifiers(s);
+    if let Some(ty) = parse_bitint_type(s) {
+        return ty;
+    }
     if let Some((ret, params)) = parse_function_pointer_qual_type(s) {
         return CType::FuncPtr {
             ret: Box::new(ret),
@@ -986,6 +989,19 @@ fn int_bits(s: &str) -> u32 {
 fn bitint_width(s: &str) -> Option<u32> {
     let rest = s.split_once("_BitInt(")?.1;
     rest.split_once(')')?.0.parse().ok()
+}
+
+fn parse_bitint_type(s: &str) -> Option<CType> {
+    let (signed, rest) = match s.strip_prefix("unsigned ") {
+        Some(rest) => (false, rest),
+        None => (true, s),
+    };
+    let bits = rest
+        .strip_prefix("_BitInt(")?
+        .strip_suffix(')')?
+        .parse()
+        .ok()?;
+    Some(CType::Int { signed, bits })
 }
 
 fn has_body(node: &Value) -> bool {
