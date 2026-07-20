@@ -882,9 +882,11 @@ mod tests {
                     mutable: true,
                     inner: Box::new(Type::Prim(Prim::I8)),
                 },
+                nonnull: false,
             }],
             variadic: true,
             ret: Some(Type::Prim(Prim::I32)),
+            returns_nonnull: false,
         })
     }
 
@@ -944,6 +946,7 @@ mod tests {
                         .into_iter()
                         .map(|stmt| IndentStmt { depth: 1, stmt })
                         .collect(),
+                    returns_nonnull: false,
                 }),
             ],
         }

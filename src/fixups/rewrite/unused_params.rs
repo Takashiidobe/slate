@@ -426,6 +426,7 @@ mod tests {
                     name: name.into(),
                     mutable: false,
                     ty,
+                    nonnull: false,
                 })
                 .collect(),
             ret: None,
@@ -433,6 +434,7 @@ mod tests {
                 .into_iter()
                 .map(|stmt| IndentStmt { depth: 1, stmt })
                 .collect(),
+            returns_nonnull: false,
         }
     }
 

@@ -557,6 +557,7 @@ mod tests {
                     crate::rust_ast::RustValue::I64(ret),
                 ))),
             }],
+            returns_nonnull: false,
         })
     }
 

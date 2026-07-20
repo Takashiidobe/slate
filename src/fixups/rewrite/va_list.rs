@@ -145,6 +145,7 @@ mod tests {
             name: "__slate_va_args".into(),
             mutable: true,
             ty: Type::Variadic,
+            nonnull: false,
         }
     }
 

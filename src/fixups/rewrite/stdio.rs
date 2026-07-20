@@ -771,10 +771,12 @@ mod tests {
                         name: name.into(),
                         mutable: false,
                         ty: Type::parse(ty),
+                        nonnull: false,
                     })
                     .collect(),
                 variadic: false,
                 ret: ret.map(Type::parse),
+                returns_nonnull: false,
             })],
         }
     }
