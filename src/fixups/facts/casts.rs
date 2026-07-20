@@ -574,7 +574,7 @@ impl<'a> Collector<'a> {
                     self.shadow_pattern(field);
                 }
             }
-            Pattern::Wildcard | Pattern::I64(_) | Pattern::I128(_) => {}
+            Pattern::Wildcard | Pattern::I64(_) | Pattern::I128(_) | Pattern::U128(_) => {}
         }
     }
 }
@@ -657,6 +657,7 @@ fn literal_type(value: &RustValue) -> Option<Type> {
         RustValue::I64(_) => Some(Type::Prim(Prim::I64)),
         RustValue::Usize(_) => Some(Type::Prim(Prim::Usize)),
         RustValue::I128(_) => Some(Type::Prim(Prim::I128)),
+        RustValue::U128(_) => Some(Type::Prim(Prim::U128)),
         RustValue::Bool(_) => Some(Type::Prim(Prim::Bool)),
         RustValue::Float(_) => Some(Type::Prim(Prim::F64)),
         RustValue::NullPtr | RustValue::None => None,
@@ -667,7 +668,11 @@ fn is_numeric_literal(expr: &Expr) -> bool {
     matches!(
         expr,
         Expr::Value(
-            RustValue::I64(_) | RustValue::Usize(_) | RustValue::I128(_) | RustValue::Float(_),
+            RustValue::I64(_)
+                | RustValue::Usize(_)
+                | RustValue::I128(_)
+                | RustValue::U128(_)
+                | RustValue::Float(_),
         )
     )
 }

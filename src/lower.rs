@@ -1896,6 +1896,8 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
             (false, 32) => Prim::U32,
             (true, 64) => Prim::I64,
             (false, 64) => Prim::U64,
+            (true, 128) => Prim::I128,
+            (false, 128) => Prim::U128,
             _ => Prim::I32,
         }),
         CType::Float { bits: 32 } => Type::Prim(Prim::F32),
@@ -6880,6 +6882,10 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
         Type::Prim(Prim::I64)
     } else if ty == "!u64i" || ty == "!cir.int<u, 64>" {
         Type::Prim(Prim::U64)
+    } else if ty == "!s128i" || ty == "!cir.int<s, 128>" {
+        Type::Prim(Prim::I128)
+    } else if ty == "!u128i" || ty == "!cir.int<u, 128>" {
+        Type::Prim(Prim::U128)
     } else if ty == "!cir.float" {
         Type::Prim(Prim::F32)
     } else if ty == "!cir.double" {
@@ -7388,6 +7394,7 @@ fn vector_index_expr(base: Expr, index: u64) -> Expr {
 fn parse_cir_scalar_expr(s: &str) -> Option<Expr> {
     parse_cir_int(s)
         .map(int_value_expr)
+        .or_else(|| parse_cir_uint128(s).map(|n| Expr::Value(RustValue::U128(n))))
         .or_else(|| parse_cir_fp_expr(s))
         .or_else(|| parse_cir_bool(s).map(|b| Expr::Value(RustValue::Bool(b))))
         .or_else(|| {
@@ -7459,14 +7466,25 @@ fn fp_literal_expr(fp: String) -> Expr {
         .unwrap_or_else(|_| Expr::HexFloat(fp))
 }
 
+fn cir_int_digits(s: &str) -> Option<&str> {
+    let start = s.find("#cir.int<")? + "#cir.int<".len();
+    let rest = &s[start..];
+    let end = rest.find('>')?;
+    Some(&rest[..end])
+}
+
 // i128 so a full-range `!u64i` value (e.g. SIG_ERR = (void(*)(int))-1, which CIR
 // prints as the unsigned bit pattern 18446744073709551615) survives as a valid
 // unsigned literal rather than overflowing i64 and collapsing to 0.
 fn parse_cir_int(s: &str) -> Option<i128> {
-    let start = s.find("#cir.int<")? + "#cir.int<".len();
-    let rest = &s[start..];
-    let end = rest.find('>')?;
-    rest[..end].parse().ok()
+    cir_int_digits(s)?.parse().ok()
+}
+
+// separate from parse_cir_int: a u128 constant above i128::MAX (e.g. near
+// UINT128_MAX) doesn't fit in i128, so this is the fallback for scalar-expr
+// construction, not for callers that need a plain i128 (offsets, lengths, ...).
+fn parse_cir_uint128(s: &str) -> Option<u128> {
+    cir_int_digits(s)?.parse().ok()
 }
 
 fn parse_cir_bool(s: &str) -> Option<bool> {
