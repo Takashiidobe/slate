@@ -968,15 +968,24 @@ fn split_top_level(s: &str, delimiter: char) -> Vec<&str> {
 }
 
 fn int_bits(s: &str) -> u32 {
-    if s.contains("char") {
+    if let Some(bits) = bitint_width(s) {
+        bits
+    } else if s.contains("char") {
         8
     } else if s.contains("short") {
         16
+    } else if s.contains("__int128") {
+        128
     } else if s.contains("long") {
         64
     } else {
         32
     }
+}
+
+fn bitint_width(s: &str) -> Option<u32> {
+    let rest = s.split_once("_BitInt(")?.1;
+    rest.split_once(')')?.0.parse().ok()
 }
 
 fn has_body(node: &Value) -> bool {
