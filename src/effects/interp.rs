@@ -2441,10 +2441,11 @@ impl Interp {
                 .cloned()
                 .take_while(|byte| *byte != 0)
                 .collect()),
-            _ => {
-                let loc = self.eval_ref(expr)?;
-                self.read_c_string(loc)
-            }
+            _ => match self.eval(expr)? {
+                Value::Bytes(bytes) => Ok(bytes),
+                Value::Ref(loc) => self.read_c_string(loc),
+                other => Err(EffectError::type_mismatch(ValueKind::Ref, other)),
+            },
         }
     }
 
@@ -5477,6 +5478,20 @@ impl Interp {
                     Some(CFormatSpec::NarrowInt { signed, width }) => {
                         Ok(narrow_int_arg(value, *signed, *width))
                     }
+                    Some(CFormatSpec::Exponent {
+                        upper,
+                        plus,
+                        left_align,
+                        width,
+                        precision,
+                    }) => Ok(Value::Bytes(render_c_exponent_arg(
+                        &value,
+                        *upper,
+                        *plus,
+                        *left_align,
+                        *width,
+                        *precision,
+                    )?)),
                     _ => Ok(value),
                 }
             })
@@ -6577,6 +6592,13 @@ enum CFormatSpec {
         signed: bool,
         width: NarrowWidth,
     },
+    Exponent {
+        upper: bool,
+        plus: bool,
+        left_align: bool,
+        width: Option<usize>,
+        precision: usize,
+    },
     Other,
 }
 
@@ -6697,6 +6719,13 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
                     precision: precision.unwrap(),
                 }
             }
+            b'e' | b'E' if !alternate && !zero_pad => CFormatSpec::Exponent {
+                upper: conv == b'E',
+                plus,
+                left_align,
+                width,
+                precision: precision.unwrap_or(6),
+            },
             _ => CFormatSpec::Other,
         });
     }
@@ -6861,6 +6890,56 @@ fn render_c_precision_arg(
     Ok(out.into_bytes())
 }
 
+fn render_c_exponent_arg(
+    value: &Value,
+    upper: bool,
+    plus: bool,
+    left_align: bool,
+    width: Option<usize>,
+    precision: usize,
+) -> EResult<Vec<u8>> {
+    let Value::Float(raw) = value else {
+        return Err(EffectError::type_mismatch(ValueKind::Float, value.clone()));
+    };
+    let marker = if upper { 'E' } else { 'e' };
+    let formatted = if upper {
+        format!("{raw:.precision$E}")
+    } else {
+        format!("{raw:.precision$e}")
+    };
+    let idx = formatted
+        .find(marker)
+        .expect("exponential float formatting always contains the exponent marker");
+    let (mantissa, rest) = formatted.split_at(idx);
+    let exp: i32 = rest[marker.len_utf8()..]
+        .parse()
+        .expect("exponential float formatting always has a parseable exponent");
+    let exp_rendered = if exp < 0 {
+        format!("-{:02}", exp.unsigned_abs())
+    } else {
+        format!("+{exp:02}")
+    };
+    let signed_mantissa = if plus && *raw >= 0.0 {
+        format!("+{mantissa}")
+    } else {
+        mantissa.to_string()
+    };
+    let body = format!("{signed_mantissa}{marker}{exp_rendered}");
+    let total_width = width.unwrap_or(0);
+    let pad_len = total_width.saturating_sub(body.chars().count());
+    if pad_len == 0 {
+        return Ok(body.into_bytes());
+    }
+    if left_align {
+        let mut out = body;
+        out.extend(std::iter::repeat_n(' ', pad_len));
+        return Ok(out.into_bytes());
+    }
+    let mut out: String = std::iter::repeat_n(' ', pad_len).collect();
+    out.push_str(&body);
+    Ok(out.into_bytes())
+}
+
 fn render_c_sized_str(
     mut bytes: Vec<u8>,
     left_align: bool,
@@ -6900,6 +6979,7 @@ struct FormatSpec {
     alternate: bool,
     zero_pad: bool,
     width: Option<usize>,
+    precision: Option<usize>,
     ty: char,
 }
 
@@ -6995,11 +7075,20 @@ fn parse_format_spec(spec: &str) -> FormatSpec {
     } else {
         None
     };
+    let mut precision = None;
     if i < chars.len() && chars[i] == '.' {
         i += 1;
+        let precision_start = i;
         while i < chars.len() && chars[i].is_ascii_digit() {
             i += 1;
         }
+        precision = Some(
+            chars[precision_start..i]
+                .iter()
+                .collect::<String>()
+                .parse()
+                .unwrap_or(0),
+        );
     }
     let ty = chars.get(i).copied().unwrap_or('\0');
     FormatSpec {
@@ -7008,6 +7097,7 @@ fn parse_format_spec(spec: &str) -> FormatSpec {
         alternate,
         zero_pad,
         width,
+        precision,
         ty,
     }
 }
@@ -7035,6 +7125,20 @@ fn format_uint_radix(value: i128, width: IntWidth, base: u32, upper: bool) -> St
     }
 }
 
+fn format_lower_exp(value: f64, precision: Option<usize>) -> String {
+    match precision {
+        Some(precision) => format!("{value:.precision$e}"),
+        None => format!("{value:e}"),
+    }
+}
+
+fn format_upper_exp(value: f64, precision: Option<usize>) -> String {
+    match precision {
+        Some(precision) => format!("{value:.precision$E}"),
+        None => format!("{value:E}"),
+    }
+}
+
 fn render_format_arg(value: &Value, spec: &FormatSpec) -> EResult<Vec<u8>> {
     let (core, is_numeric) = match (value, spec.ty) {
         (Value::Int { value, width, .. }, 'x') => {
@@ -7051,6 +7155,8 @@ fn render_format_arg(value: &Value, spec: &FormatSpec) -> EResult<Vec<u8>> {
         }
         (Value::Int { value, .. }, _) => (value.to_string(), true),
         (Value::Bytes(bytes), _) => (String::from_utf8_lossy(bytes).into_owned(), false),
+        (Value::Float(value), 'e') => (format_lower_exp(*value, spec.precision), false),
+        (Value::Float(value), 'E') => (format_upper_exp(*value, spec.precision), false),
         (Value::Float(value), _) => (value.to_string(), false),
         (Value::Bool(value), _) => (value.to_string(), false),
         (other, _) => {
