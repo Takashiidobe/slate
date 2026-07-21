@@ -1,5 +1,5 @@
 use crate::fixups::facts::{
-    AstPath, FixupFacts, FunctionId, PathSegment, PrintfArgFact, PrintfCallFact,
+    AstPath, FixupFacts, FunctionId, NarrowSource, PathSegment, PrintfArgFact, PrintfCallFact,
 };
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
@@ -343,6 +343,13 @@ enum IntegerArg {
     Value,
     Alternate(AlternateIntegerFormat),
     Precision(PrecisionIntegerFormat),
+    Narrow { signed: bool, width: NarrowWidth },
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum NarrowWidth {
+    Byte,
+    Half,
 }
 
 #[derive(Clone, Copy)]
@@ -497,15 +504,31 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
         return None;
     }
 
-    match bytes.get(i).copied()? {
+    let narrow_width = match bytes.get(i).copied()? {
         b'l' => {
             i += 1;
             if bytes.get(i).copied() == Some(b'l') {
                 i += 1;
             }
+            None
         }
-        b'z' => i += 1,
-        _ => {}
+        b'z' | b'j' | b't' => {
+            i += 1;
+            None
+        }
+        b'h' => {
+            i += 1;
+            if bytes.get(i).copied() == Some(b'h') {
+                i += 1;
+                Some(NarrowWidth::Byte)
+            } else {
+                Some(NarrowWidth::Half)
+            }
+        }
+        _ => None,
+    };
+    if narrow_width.is_some() && (alternate || precision.is_some()) {
+        return None;
     }
     let conv = bytes.get(i).copied()?;
     if !matches!(conv, b'd' | b'i' | b'u' | b'x' | b'X' | b'o') {
@@ -548,6 +571,11 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
             width,
             radix: format_kind?,
         }))
+    } else if let Some(width) = narrow_width {
+        ConversionKind::Integer(IntegerArg::Narrow {
+            signed: matches!(conv, b'd' | b'i'),
+            width,
+        })
     } else {
         ConversionKind::Integer(IntegerArg::Value)
     };
@@ -832,6 +860,9 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> O
         ConversionKind::Integer(IntegerArg::Precision(format)) => {
             Some(precision_integer_arg(arg, format))
         }
+        ConversionKind::Integer(IntegerArg::Narrow { signed, width }) => {
+            narrow_integer_arg(arg, fact, signed, width)
+        }
         ConversionKind::String(StringArg::Value) => printf_string_arg(arg, fact),
         ConversionKind::String(StringArg::Sized(format)) => sized_printf_string_arg(fact, format),
         ConversionKind::Char(CharArg::Value) => fact.const_char.clone().map(Expr::Str),
@@ -839,6 +870,21 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> O
         ConversionKind::Float => Some(arg.clone()),
         ConversionKind::Pointer if fact.pointer => Some(arg.clone()),
         ConversionKind::Pointer => None,
+    }
+}
+
+fn narrow_integer_arg(
+    arg: &Expr,
+    fact: &PrintfArgFact,
+    signed: bool,
+    width: NarrowWidth,
+) -> Option<Expr> {
+    match (fact.narrow_source?, width, signed) {
+        (NarrowSource::I8, NarrowWidth::Byte, true)
+        | (NarrowSource::U8, NarrowWidth::Byte, false)
+        | (NarrowSource::I16, NarrowWidth::Half, true)
+        | (NarrowSource::U16, NarrowWidth::Half, false) => Some(arg.clone()),
+        _ => None,
     }
 }
 
@@ -1623,6 +1669,77 @@ fn main() {
 }
 "
         );
+    }
+
+    #[test]
+    fn rewrites_narrow_length_modifiers_with_matching_declared_types() {
+        fn promoted(name: &str) -> Expr {
+            Expr::Cast {
+                expr: Box::new(var(name)),
+                ty: Type::parse("i32"),
+            }
+        }
+
+        let mut program = program_with_body(vec![
+            temp("s", "i16", int(300)),
+            temp("us", "u16", int(60000)),
+            temp("c", "i8", int(-5)),
+            temp("uc", "u8", int(200)),
+            printf_stmt_args(
+                b"%hd %hu %hhd %hhu %jd %ju %td\n\0",
+                vec![
+                    promoted("s"),
+                    promoted("us"),
+                    promoted("c"),
+                    promoted("uc"),
+                    var("j"),
+                    var("ju"),
+                    var("t"),
+                ],
+            ),
+        ]);
+        run_fixup(&mut program);
+        let out = program.emit();
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    let s: i16 = 300;
+    let us: u16 = 60000;
+    let c: i8 = -5;
+    let uc: u8 = 200;
+    println!(\"{} {} {} {} {} {} {}\", s as i32, us as i32, c as i32, uc as i32, j, ju, t);
+}
+"
+        );
+    }
+
+    #[test]
+    fn leaves_narrow_length_modifiers_unsupported_without_narrowing_evidence() {
+        let out = run(printf_stmt(b"%hhd\n\0", var("x")));
+        assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+        assert!(out.contains("unsafe { printf("));
+        assert!(!out.contains("println!"));
+    }
+
+    #[test]
+    fn leaves_narrow_length_modifiers_unsupported_on_signedness_mismatch() {
+        let mut program = program_with_body(vec![
+            temp("uc", "u8", int(200)),
+            printf_stmt_args(
+                b"%hhd\n\0",
+                vec![Expr::Cast {
+                    expr: Box::new(var("uc")),
+                    ty: Type::parse("i32"),
+                }],
+            ),
+        ]);
+        run_fixup(&mut program);
+        let out = program.emit();
+        assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+        assert!(out.contains("unsafe { printf("));
+        assert!(!out.contains("println!"));
     }
 
     #[test]

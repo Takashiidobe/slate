@@ -1,9 +1,11 @@
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, FixupFacts, FunctionId, NulTermination, PathSegment, PrintfArgFact,
-    PrintfCallFact, Site, StringBufferProvenance, StringLibcFunction,
+    AstPath, BindingId, FixupFacts, FunctionId, NarrowSource, NulTermination, PathSegment,
+    PrintfArgFact, PrintfCallFact, Site, StringBufferProvenance, StringLibcFunction,
 };
-use crate::rust_ast::{Block, Expr, FnParam, IndentStmt, Item, Program, RustValue, Stmt, Type};
+use crate::rust_ast::{
+    Block, Expr, FnParam, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type,
+};
 use std::collections::BTreeMap;
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -202,6 +204,7 @@ fn visit_expr(
                     const_char: const_c_char_arg(arg, env),
                     rust_string: is_rust_string_arg(arg, env),
                     pointer: is_printf_pointer_arg(arg, env),
+                    narrow_source: narrow_source_arg(arg, env),
                 }
             })
             .collect();
@@ -589,6 +592,25 @@ fn is_null_pointer_source(expr: &Expr) -> bool {
         Expr::Value(RustValue::I64(0) | RustValue::I128(0) | RustValue::NullPtr) => true,
         Expr::Cast { expr, .. } => is_null_pointer_source(expr),
         _ => false,
+    }
+}
+
+fn narrow_source_arg(arg: &Expr, env: &PrintfEnv) -> Option<NarrowSource> {
+    let Expr::Cast { expr, ty } = arg else {
+        return None;
+    };
+    if !matches!(ty, Type::Prim(Prim::I32)) {
+        return None;
+    }
+    let Expr::Var(name) = expr.as_ref() else {
+        return None;
+    };
+    match env.types.get(name.as_str())? {
+        Type::Prim(Prim::I8) => Some(NarrowSource::I8),
+        Type::Prim(Prim::U8) => Some(NarrowSource::U8),
+        Type::Prim(Prim::I16) => Some(NarrowSource::I16),
+        Type::Prim(Prim::U16) => Some(NarrowSource::U16),
+        _ => None,
     }
 }
 

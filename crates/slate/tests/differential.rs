@@ -975,6 +975,29 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(!literal_escaping_rust.contains("fn printf("));
     assert!(!literal_escaping_rust.contains("unsafe { printf("));
 
+    let narrow_c = fixtures_dir().join("printf_narrow_length_modifiers.c");
+    let narrow_generated = tmp.join("printf_narrow_length_modifiers.generated.rs");
+    support::translate(&narrow_c, &narrow_generated)
+        .expect("translate printf narrow length modifiers fixture");
+    let narrow_rust = std::fs::read_to_string(&narrow_generated)
+        .expect("read generated printf narrow length modifiers rust");
+    assert!(narrow_rust.contains(
+        "println!(\"{} {} {} {} {} {} {}\", s as i32, us as i32, c as i32, uc as i32, j, ju, t);"
+    ));
+    assert!(!narrow_rust.contains("fn printf("));
+    assert!(!narrow_rust.contains("unsafe { printf("));
+
+    let narrow_rejected_c = fixtures_dir().join("printf_narrow_length_modifiers_rejected.c");
+    let narrow_rejected_generated =
+        tmp.join("printf_narrow_length_modifiers_rejected.generated.rs");
+    support::translate(&narrow_rejected_c, &narrow_rejected_generated)
+        .expect("translate rejected printf narrow length modifiers fixture");
+    let narrow_rejected_rust = std::fs::read_to_string(&narrow_rejected_generated)
+        .expect("read generated rejected printf narrow length modifiers rust");
+    assert!(narrow_rejected_rust.contains("fn printf("));
+    assert!(narrow_rejected_rust.contains("unsafe { printf("));
+    assert!(!narrow_rejected_rust.contains("println!("));
+
     let pointer_c = fixtures_dir().join("printf_pointer.c");
     let pointer_generated = tmp.join("printf_pointer.generated.rs");
     support::translate(&pointer_c, &pointer_generated).expect("translate printf pointer fixture");
