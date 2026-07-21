@@ -1915,13 +1915,33 @@ fn main() {
     #[test]
     fn leaves_ambiguous_float_formats_unsupported() {
         for fmt in [
-            &b"%e\n\0"[..],
-            &b"%g\n\0"[..],
             &b"%.*f\n\0"[..],
             &b"%Lf\n\0"[..],
             &b"%-08.2f\n\0"[..],
             &b"% 8.2f\n\0"[..],
             &b"%#.2f\n\0"[..],
+        ] {
+            let out = run(printf_stmt(fmt, var("x")));
+            assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+            assert!(out.contains("unsafe { printf("));
+            assert!(!out.contains("println!"));
+        }
+    }
+
+    #[test]
+    fn leaves_scientific_and_general_float_conversions_unsupported() {
+        for fmt in [
+            &b"%e\n\0"[..],
+            &b"%.2e\n\0"[..],
+            &b"%10.2e\n\0"[..],
+            &b"%+e\n\0"[..],
+            &b"%E\n\0"[..],
+            &b"%.2E\n\0"[..],
+            &b"%g\n\0"[..],
+            &b"%.3g\n\0"[..],
+            &b"%-10.3g\n\0"[..],
+            &b"%G\n\0"[..],
+            &b"%.3G\n\0"[..],
         ] {
             let out = run(printf_stmt(fmt, var("x")));
             assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));

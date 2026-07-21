@@ -943,6 +943,21 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(float_width_rejected_rust.contains("unsafe { printf("));
     assert!(!float_width_rejected_rust.contains("println!("));
 
+    let scientific_general_rejected_c = fixtures_dir().join("printf_scientific_general_rejected.c");
+    let scientific_general_rejected_generated =
+        tmp.join("printf_scientific_general_rejected.generated.rs");
+    support::translate(
+        &scientific_general_rejected_c,
+        &scientific_general_rejected_generated,
+    )
+    .expect("translate rejected printf scientific/general float fixture");
+    let scientific_general_rejected_rust =
+        std::fs::read_to_string(&scientific_general_rejected_generated)
+            .expect("read generated rejected printf scientific/general float rust");
+    assert!(scientific_general_rejected_rust.contains("fn printf("));
+    assert!(scientific_general_rejected_rust.contains("unsafe { printf("));
+    assert!(!scientific_general_rejected_rust.contains("println!("));
+
     let pointer_c = fixtures_dir().join("printf_pointer.c");
     let pointer_generated = tmp.join("printf_pointer.generated.rs");
     support::translate(&pointer_c, &pointer_generated).expect("translate printf pointer fixture");
