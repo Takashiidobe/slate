@@ -689,15 +689,6 @@ pub(super) struct PrintfArgFact {
     pub(super) const_char: Option<String>,
     pub(super) rust_string: bool,
     pub(super) pointer: bool,
-    pub(super) narrow_source: Option<NarrowSource>,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum NarrowSource {
-    I8,
-    U8,
-    I16,
-    U16,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,5 +1,5 @@
 use crate::fixups::facts::{
-    AstPath, FixupFacts, FunctionId, NarrowSource, PathSegment, PrintfArgFact, PrintfCallFact,
+    AstPath, FixupFacts, FunctionId, PathSegment, PrintfArgFact, PrintfCallFact,
 };
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
@@ -7,7 +7,7 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{BinOp, RustValue};
 use crate::rust_ast::{
-    Block, Expr, ExternDecl, ExternFnDecl, FnParam, IndentStmt, Item, Program, Stmt, Type,
+    Block, Expr, ExternDecl, ExternFnDecl, FnParam, IndentStmt, Item, Prim, Program, Stmt, Type,
 };
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
@@ -861,7 +861,7 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> O
             Some(precision_integer_arg(arg, format))
         }
         ConversionKind::Integer(IntegerArg::Narrow { signed, width }) => {
-            narrow_integer_arg(arg, fact, signed, width)
+            Some(narrow_integer_arg(arg, signed, width))
         }
         ConversionKind::String(StringArg::Value) => printf_string_arg(arg, fact),
         ConversionKind::String(StringArg::Sized(format)) => sized_printf_string_arg(fact, format),
@@ -873,18 +873,25 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> O
     }
 }
 
-fn narrow_integer_arg(
-    arg: &Expr,
-    fact: &PrintfArgFact,
-    signed: bool,
-    width: NarrowWidth,
-) -> Option<Expr> {
-    match (fact.narrow_source?, width, signed) {
-        (NarrowSource::I8, NarrowWidth::Byte, true)
-        | (NarrowSource::U8, NarrowWidth::Byte, false)
-        | (NarrowSource::I16, NarrowWidth::Half, true)
-        | (NarrowSource::U16, NarrowWidth::Half, false) => Some(arg.clone()),
-        _ => None,
+fn narrow_integer_arg(arg: &Expr, signed: bool, width: NarrowWidth) -> Expr {
+    let unsigned_ty = match width {
+        NarrowWidth::Byte => Type::Prim(Prim::U8),
+        NarrowWidth::Half => Type::Prim(Prim::U16),
+    };
+    let truncated = Expr::Cast {
+        expr: Box::new(arg.clone()),
+        ty: unsigned_ty,
+    };
+    if !signed {
+        return truncated;
+    }
+    let signed_ty = match width {
+        NarrowWidth::Byte => Type::Prim(Prim::I8),
+        NarrowWidth::Half => Type::Prim(Prim::I16),
+    };
+    Expr::Cast {
+        expr: Box::new(truncated),
+        ty: signed_ty,
     }
 }
 
@@ -1672,74 +1679,38 @@ fn main() {
     }
 
     #[test]
-    fn rewrites_narrow_length_modifiers_with_matching_declared_types() {
-        fn promoted(name: &str) -> Expr {
-            Expr::Cast {
-                expr: Box::new(var(name)),
-                ty: Type::parse("i32"),
-            }
-        }
-
-        let mut program = program_with_body(vec![
-            temp("s", "i16", int(300)),
-            temp("us", "u16", int(60000)),
-            temp("c", "i8", int(-5)),
-            temp("uc", "u8", int(200)),
-            printf_stmt_args(
-                b"%hd %hu %hhd %hhu %jd %ju %td\n\0",
-                vec![
-                    promoted("s"),
-                    promoted("us"),
-                    promoted("c"),
-                    promoted("uc"),
-                    var("j"),
-                    var("ju"),
-                    var("t"),
-                ],
-            ),
-        ]);
-        run_fixup(&mut program);
-        let out = program.emit();
+    fn rewrites_narrow_length_modifiers_with_truncating_casts() {
+        let out = run(printf_stmt_args(
+            b"%hd %hu %hhd %hhu %jd %ju %td\n\0",
+            vec![
+                var("s"),
+                var("us"),
+                var("c"),
+                var("uc"),
+                var("j"),
+                var("ju"),
+                var("t"),
+            ],
+        ));
 
         assert_eq!(
             out,
             "\
 fn main() {
-    let s: i16 = 300;
-    let us: u16 = 60000;
-    let c: i8 = -5;
-    let uc: u8 = 200;
-    println!(\"{} {} {} {} {} {} {}\", s as i32, us as i32, c as i32, uc as i32, j, ju, t);
+    println!(\"{} {} {} {} {} {} {}\", (s as u16) as i16, us as u16, (c as u8) as i8, uc as u8, j, ju, t);
 }
 "
         );
     }
 
     #[test]
-    fn leaves_narrow_length_modifiers_unsupported_without_narrowing_evidence() {
-        let out = run(printf_stmt(b"%hhd\n\0", var("x")));
-        assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
-        assert!(out.contains("unsafe { printf("));
-        assert!(!out.contains("println!"));
-    }
-
-    #[test]
-    fn leaves_narrow_length_modifiers_unsupported_on_signedness_mismatch() {
-        let mut program = program_with_body(vec![
-            temp("uc", "u8", int(200)),
-            printf_stmt_args(
-                b"%hhd\n\0",
-                vec![Expr::Cast {
-                    expr: Box::new(var("uc")),
-                    ty: Type::parse("i32"),
-                }],
-            ),
-        ]);
-        run_fixup(&mut program);
-        let out = program.emit();
-        assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
-        assert!(out.contains("unsafe { printf("));
-        assert!(!out.contains("println!"));
+    fn leaves_narrow_length_modifiers_with_precision_or_alternate_unsupported() {
+        for fmt in [&b"%.2hhd\n\0"[..], &b"%#hhx\n\0"[..]] {
+            let out = run(printf_stmt(fmt, var("x")));
+            assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+            assert!(out.contains("unsafe { printf("));
+            assert!(!out.contains("println!"));
+        }
     }
 
     #[test]

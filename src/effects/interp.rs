@@ -5474,6 +5474,9 @@ impl Interp {
                         *width,
                         *precision,
                     )?)),
+                    Some(CFormatSpec::NarrowInt { signed, width }) => {
+                        Ok(narrow_int_arg(value, *signed, *width))
+                    }
                     _ => Ok(value),
                 }
             })
@@ -6570,7 +6573,17 @@ enum CFormatSpec {
         width: Option<usize>,
         precision: Option<usize>,
     },
+    NarrowInt {
+        signed: bool,
+        width: NarrowWidth,
+    },
     Other,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum NarrowWidth {
+    Byte,
+    Half,
 }
 
 fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
@@ -6628,6 +6641,17 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
                     }
                 });
         }
+        let narrow_width = if i < fmt.len() && fmt[i] == b'h' {
+            i += 1;
+            if i < fmt.len() && fmt[i] == b'h' {
+                i += 1;
+                Some(NarrowWidth::Byte)
+            } else {
+                Some(NarrowWidth::Half)
+            }
+        } else {
+            None
+        };
         while i < fmt.len() && matches!(fmt[i], b'h' | b'l' | b'L' | b'q' | b'j' | b'z' | b't') {
             i += 1;
         }
@@ -6652,6 +6676,16 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
                 left_align,
                 width,
             },
+            b'd' | b'i' | b'u' | b'x' | b'X' | b'o'
+                if let Some(narrow) = narrow_width
+                    && !alternate
+                    && precision.is_none() =>
+            {
+                CFormatSpec::NarrowInt {
+                    signed: matches!(conv, b'd' | b'i'),
+                    width: narrow,
+                }
+            }
             b'd' | b'i' | b'u' | b'x' | b'X' | b'o'
                 if !alternate && matches!(precision, Some(precision) if precision > 0) =>
             {
@@ -6686,6 +6720,21 @@ fn resolve_char_arg(value: Value) -> Value {
     match value {
         Value::Int { value, .. } => Value::Bytes(vec![value as u8]),
         other => other,
+    }
+}
+
+fn narrow_int_arg(value: Value, signed: bool, width: NarrowWidth) -> Value {
+    let Value::Int { value, .. } = value else {
+        return value;
+    };
+    let narrow_width = match width {
+        NarrowWidth::Byte => IntWidth::W8,
+        NarrowWidth::Half => IntWidth::W16,
+    };
+    Value::Int {
+        width: narrow_width,
+        signed,
+        value: truncate_int(value, narrow_width, signed),
     }
 }
 
