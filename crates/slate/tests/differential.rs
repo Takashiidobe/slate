@@ -819,6 +819,26 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(!string_width_rust.contains("fn printf("));
     assert!(!string_width_rust.contains("unsafe { printf("));
 
+    let char_width_c = fixtures_dir().join("printf_char_width.c");
+    let char_width_generated = tmp.join("printf_char_width.generated.rs");
+    support::translate(&char_width_c, &char_width_generated)
+        .expect("translate printf char width fixture");
+    let char_width_rust = std::fs::read_to_string(&char_width_generated)
+        .expect("read generated printf char width rust");
+    assert!(char_width_rust.contains("println!(\"{}|{}|{}\", \"  a\", \"b  \", \"c\");"));
+    assert!(!char_width_rust.contains("fn printf("));
+    assert!(!char_width_rust.contains("unsafe { printf("));
+
+    let char_width_rejected_c = fixtures_dir().join("printf_char_width_rejected.c");
+    let char_width_rejected_generated = tmp.join("printf_char_width_rejected.generated.rs");
+    support::translate(&char_width_rejected_c, &char_width_rejected_generated)
+        .expect("translate rejected printf char width fixture");
+    let char_width_rejected_rust = std::fs::read_to_string(&char_width_rejected_generated)
+        .expect("read generated rejected printf char width rust");
+    assert!(char_width_rejected_rust.contains("fn printf("));
+    assert!(char_width_rejected_rust.contains("unsafe { printf("));
+    assert!(!char_width_rejected_rust.contains("println!("));
+
     let string_char_c = fixtures_dir().join("printf_string_char.c");
     let string_char_generated = tmp.join("printf_string_char.generated.rs");
     support::translate(&string_char_c, &string_char_generated)

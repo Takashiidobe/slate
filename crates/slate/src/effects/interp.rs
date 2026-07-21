@@ -5434,6 +5434,18 @@ impl Interp {
                         )))
                     }
                     Some(CFormatSpec::Char) => Ok(resolve_char_arg(value)),
+                    Some(CFormatSpec::SizedChar { left_align, width }) => {
+                        let resolved = resolve_char_arg(value);
+                        let Value::Bytes(bytes) = resolved else {
+                            return Err(EffectError::type_mismatch(ValueKind::Bytes, resolved));
+                        };
+                        Ok(Value::Bytes(render_c_sized_str(
+                            bytes,
+                            *left_align,
+                            Some(*width),
+                            None,
+                        )))
+                    }
                     Some(CFormatSpec::Num {
                         conv,
                         alternate,
@@ -6535,6 +6547,10 @@ fn is_byte_like_literal(expr: &Expr) -> bool {
 enum CFormatSpec {
     Str,
     Char,
+    SizedChar {
+        left_align: bool,
+        width: usize,
+    },
     Num {
         conv: u8,
         alternate: bool,
@@ -6627,6 +6643,7 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
                 precision,
             },
             b's' => CFormatSpec::Str,
+            b'c' if let Some(width) = width => CFormatSpec::SizedChar { left_align, width },
             b'c' => CFormatSpec::Char,
             b'x' | b'X' | b'o' if alternate => CFormatSpec::Num {
                 conv,
