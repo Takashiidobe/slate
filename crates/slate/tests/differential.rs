@@ -920,6 +920,29 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(float_rejected_rust.contains("unsafe { printf("));
     assert!(!float_rejected_rust.contains("println!(\"{:."));
 
+    let float_width_c = fixtures_dir().join("printf_float_width.c");
+    let float_width_generated = tmp.join("printf_float_width.generated.rs");
+    support::translate(&float_width_c, &float_width_generated)
+        .expect("translate printf float width fixture");
+    let float_width_rust = std::fs::read_to_string(&float_width_generated)
+        .expect("read generated printf float width rust");
+    assert!(
+        float_width_rust
+            .contains("println!(\"{:8.2}|{:+8.2}|{:08.2}|{:<8.2}|{:+.2}\", a, a, b, a, b);")
+    );
+    assert!(!float_width_rust.contains("fn printf("));
+    assert!(!float_width_rust.contains("unsafe { printf("));
+
+    let float_width_rejected_c = fixtures_dir().join("printf_float_width_rejected.c");
+    let float_width_rejected_generated = tmp.join("printf_float_width_rejected.generated.rs");
+    support::translate(&float_width_rejected_c, &float_width_rejected_generated)
+        .expect("translate rejected printf float width fixture");
+    let float_width_rejected_rust = std::fs::read_to_string(&float_width_rejected_generated)
+        .expect("read generated rejected printf float width rust");
+    assert!(float_width_rejected_rust.contains("fn printf("));
+    assert!(float_width_rejected_rust.contains("unsafe { printf("));
+    assert!(!float_width_rejected_rust.contains("println!("));
+
     let pointer_c = fixtures_dir().join("printf_pointer.c");
     let pointer_generated = tmp.join("printf_pointer.generated.rs");
     support::translate(&pointer_c, &pointer_generated).expect("translate printf pointer fixture");
