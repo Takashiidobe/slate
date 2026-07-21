@@ -76,7 +76,10 @@ fn has_unsupported_printf(facts: &FixupFacts) -> bool {
 fn arg_supports_conversion(arg: &PrintfArgFact, kind: ConversionKind) -> bool {
     match kind {
         ConversionKind::Integer(_) | ConversionKind::Float => true,
-        ConversionKind::String => arg.const_string.is_some() || arg.rust_string,
+        ConversionKind::String(StringArg::Value) => arg.const_string.is_some() || arg.rust_string,
+        ConversionKind::String(StringArg::Sized(_)) => {
+            arg.const_string.as_deref().is_some_and(|s| s.is_ascii())
+        }
         ConversionKind::Char => arg.const_char.is_some(),
         ConversionKind::Pointer => arg.pointer,
     }
@@ -316,10 +319,23 @@ struct Conversion {
 #[derive(Clone, Copy)]
 enum ConversionKind {
     Integer(IntegerArg),
-    String,
+    String(StringArg),
     Char,
     Float,
     Pointer,
+}
+
+#[derive(Clone, Copy)]
+enum StringArg {
+    Value,
+    Sized(StringSizeFormat),
+}
+
+#[derive(Clone, Copy)]
+struct StringSizeFormat {
+    left: bool,
+    width: Option<usize>,
+    precision: Option<usize>,
 }
 
 #[derive(Clone, Copy)]
@@ -549,13 +565,90 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
 }
 
 fn parse_string_char_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conversion, String)> {
-    let conv = bytes.get(i).copied()?;
-    let kind = match conv {
-        b's' => ConversionKind::String,
-        b'c' => ConversionKind::Char,
-        _ => return None,
+    match bytes.get(i).copied()? {
+        b'c' => {
+            return Some((
+                i + 1,
+                Conversion {
+                    kind: ConversionKind::Char,
+                },
+                "{}".into(),
+            ));
+        }
+        b's' => {
+            return Some((
+                i + 1,
+                Conversion {
+                    kind: ConversionKind::String(StringArg::Value),
+                },
+                "{}".into(),
+            ));
+        }
+        _ => {}
+    }
+    parse_sized_string_conversion(bytes, i)
+}
+
+fn parse_sized_string_conversion(
+    bytes: &[u8],
+    mut i: usize,
+) -> Option<(usize, Conversion, String)> {
+    let left = bytes.get(i).copied() == Some(b'-');
+    if left {
+        i += 1;
+    }
+    let width_start = i;
+    while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+        i += 1;
+    }
+    let width = if i > width_start {
+        Some(
+            std::str::from_utf8(&bytes[width_start..i])
+                .ok()?
+                .parse()
+                .ok()?,
+        )
+    } else {
+        None
     };
-    Some((i + 1, Conversion { kind }, "{}".into()))
+    let precision = if bytes.get(i).copied() == Some(b'.') {
+        i += 1;
+        if bytes.get(i).copied() == Some(b'*') {
+            return None;
+        }
+        let precision_start = i;
+        while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+            i += 1;
+        }
+        let text = std::str::from_utf8(&bytes[precision_start..i]).ok()?;
+        Some(if text.is_empty() {
+            0
+        } else {
+            text.parse().ok()?
+        })
+    } else {
+        None
+    };
+    if width.is_none() && precision.is_none() {
+        return None;
+    }
+    if left && width.is_none() {
+        return None;
+    }
+    if bytes.get(i).copied()? != b's' {
+        return None;
+    }
+    Some((
+        i + 1,
+        Conversion {
+            kind: ConversionKind::String(StringArg::Sized(StringSizeFormat {
+                left,
+                width,
+                precision,
+            })),
+        },
+        "{}".into(),
+    ))
 }
 
 fn parse_float_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversion, String)> {
@@ -647,7 +740,8 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> O
         ConversionKind::Integer(IntegerArg::Precision(format)) => {
             Some(precision_integer_arg(arg, format))
         }
-        ConversionKind::String => printf_string_arg(arg, fact),
+        ConversionKind::String(StringArg::Value) => printf_string_arg(arg, fact),
+        ConversionKind::String(StringArg::Sized(format)) => sized_printf_string_arg(fact, format),
         ConversionKind::Char => fact.const_char.clone().map(Expr::Str),
         ConversionKind::Float => Some(arg.clone()),
         ConversionKind::Pointer if fact.pointer => Some(arg.clone()),
@@ -664,6 +758,34 @@ fn printf_string_arg(arg: &Expr, fact: &PrintfArgFact) -> Option<Expr> {
         return Some(Expr::Str(value.clone()));
     }
     None
+}
+
+fn sized_printf_string_arg(fact: &PrintfArgFact, format: StringSizeFormat) -> Option<Expr> {
+    let value = fact.const_string.as_ref()?;
+    if !value.is_ascii() {
+        return None;
+    }
+    Some(Expr::Str(apply_string_size_format(value, format)))
+}
+
+fn apply_string_size_format(value: &str, format: StringSizeFormat) -> String {
+    let truncated = match format.precision {
+        Some(precision) => value.chars().take(precision).collect::<String>(),
+        None => value.to_string(),
+    };
+    let Some(width) = format.width else {
+        return truncated;
+    };
+    let pad = width.saturating_sub(truncated.chars().count());
+    if pad == 0 {
+        return truncated;
+    }
+    let fill = " ".repeat(pad);
+    if format.left {
+        format!("{truncated}{fill}")
+    } else {
+        format!("{fill}{truncated}")
+    }
 }
 
 fn strip_pointer_view(expr: &Expr) -> &Expr {
@@ -1356,6 +1478,56 @@ fn main() {
             printf_stmt_args(b"%s\n\0", vec![var("ptr")]),
             printf_stmt_args(b"%c\n\0", vec![int(128)]),
             printf_stmt_args(b"%s\n\0", vec![fmt_arg(b"a\0b\0")]),
+        ] {
+            let out = run(stmt);
+            assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+            assert!(out.contains("unsafe { printf("));
+            assert!(!out.contains("println!"));
+        }
+    }
+
+    #[test]
+    fn rewrites_ascii_constant_string_width_and_precision_forms() {
+        let out = run(printf_stmt_args(
+            b"%5s|%-5s|%.1s|%6.1s\n\0",
+            vec![
+                fmt_arg(b"hi\0"),
+                fmt_arg(b"hi\0"),
+                fmt_arg(b"hi\0"),
+                fmt_arg(b"hi\0"),
+            ],
+        ));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{}|{}|{}|{}\", \"   hi\", \"hi   \", \"h\", \"     h\");
+}
+"
+        );
+    }
+
+    #[test]
+    fn leaves_dynamic_and_non_ascii_string_width_precision_unsupported() {
+        let mut program = program_with_body(vec![
+            Stmt::Let {
+                name: "s".into(),
+                mutable: false,
+                ty: Some(Type::parse("String")),
+                init: None,
+            },
+            printf_stmt_args(b"%5s\n\0", vec![var("s")]),
+        ]);
+        run_fixup(&mut program);
+        let out = program.emit();
+        assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+        assert!(out.contains("unsafe { printf("));
+        assert!(!out.contains("println!"));
+
+        for stmt in [
+            printf_stmt(b"%5s\n\0", fmt_arg(b"caf\xc3\xa9\0")),
+            printf_stmt(b"%.*s\n\0", fmt_arg(b"hi\0")),
         ] {
             let out = run(stmt);
             assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));

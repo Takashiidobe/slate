@@ -5382,6 +5382,22 @@ impl Interp {
                 let value = self.eval(arg)?;
                 match specs.get(index) {
                     Some(CFormatSpec::Str) => self.resolve_string_arg(value),
+                    Some(CFormatSpec::SizedStr {
+                        left_align,
+                        width,
+                        precision,
+                    }) => {
+                        let resolved = self.resolve_string_arg(value)?;
+                        let Value::Bytes(bytes) = resolved else {
+                            return Err(EffectError::type_mismatch(ValueKind::Bytes, resolved));
+                        };
+                        Ok(Value::Bytes(render_c_sized_str(
+                            bytes,
+                            *left_align,
+                            *width,
+                            *precision,
+                        )))
+                    }
                     Some(CFormatSpec::Char) => Ok(resolve_char_arg(value)),
                     Some(CFormatSpec::Num {
                         conv,
@@ -6498,6 +6514,11 @@ enum CFormatSpec {
         width: Option<usize>,
         precision: usize,
     },
+    SizedStr {
+        left_align: bool,
+        width: Option<usize>,
+        precision: Option<usize>,
+    },
     Other,
 }
 
@@ -6565,6 +6586,11 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
         let conv = fmt[i];
         i += 1;
         specs.push(match conv {
+            b's' if width.is_some() || precision.is_some() => CFormatSpec::SizedStr {
+                left_align,
+                width,
+                precision,
+            },
             b's' => CFormatSpec::Str,
             b'c' => CFormatSpec::Char,
             b'x' | b'X' | b'o' if alternate => CFormatSpec::Num {
@@ -6732,6 +6758,31 @@ fn render_c_precision_arg(
     let mut out: String = std::iter::repeat_n(' ', pad_len).collect();
     out.push_str(&body);
     Ok(out.into_bytes())
+}
+
+fn render_c_sized_str(
+    mut bytes: Vec<u8>,
+    left_align: bool,
+    width: Option<usize>,
+    precision: Option<usize>,
+) -> Vec<u8> {
+    if let Some(precision) = precision {
+        bytes.truncate(precision);
+    }
+    let Some(width) = width else {
+        return bytes;
+    };
+    let pad_len = width.saturating_sub(bytes.len());
+    if pad_len == 0 {
+        return bytes;
+    }
+    if left_align {
+        bytes.extend(std::iter::repeat_n(b' ', pad_len));
+        return bytes;
+    }
+    let mut out: Vec<u8> = std::iter::repeat_n(b' ', pad_len).collect();
+    out.extend(bytes);
+    out
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]

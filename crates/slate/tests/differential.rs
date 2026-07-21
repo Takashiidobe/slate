@@ -806,6 +806,19 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(!precision_rust.contains("fn printf("));
     assert!(!precision_rust.contains("unsafe { printf("));
 
+    let string_width_c = fixtures_dir().join("printf_string_width_precision.c");
+    let string_width_generated = tmp.join("printf_string_width_precision.generated.rs");
+    support::translate(&string_width_c, &string_width_generated)
+        .expect("translate printf string width/precision fixture");
+    let string_width_rust = std::fs::read_to_string(&string_width_generated)
+        .expect("read generated printf string width/precision rust");
+    assert!(
+        string_width_rust
+            .contains("println!(\"{}|{}|{}|{}\", \"   hi\", \"hi   \", \"h\", \"     h\");")
+    );
+    assert!(!string_width_rust.contains("fn printf("));
+    assert!(!string_width_rust.contains("unsafe { printf("));
+
     let string_char_c = fixtures_dir().join("printf_string_char.c");
     let string_char_generated = tmp.join("printf_string_char.generated.rs");
     support::translate(&string_char_c, &string_char_generated)
