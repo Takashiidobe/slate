@@ -2,7 +2,8 @@
 
 int main(void) {
     int x = 300;
-    printf("%.2hhd\n", x);
-    printf("%#hhx\n", x);
+    int prec = 2;
+    printf("%.*hhd\n", prec, x);
+    printf("%.*hd\n", prec, x);
     return 0;
 }

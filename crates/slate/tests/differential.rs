@@ -995,6 +995,29 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(!narrow_rust.contains("fn printf("));
     assert!(!narrow_rust.contains("unsafe { printf("));
 
+    let narrow_precision_alternate_c =
+        fixtures_dir().join("printf_narrow_length_modifiers_precision_alternate.c");
+    let narrow_precision_alternate_generated =
+        tmp.join("printf_narrow_length_modifiers_precision_alternate.generated.rs");
+    support::translate(
+        &narrow_precision_alternate_c,
+        &narrow_precision_alternate_generated,
+    )
+    .expect("translate printf narrow length modifiers precision/alternate fixture");
+    let narrow_precision_alternate_rust =
+        std::fs::read_to_string(&narrow_precision_alternate_generated)
+            .expect("read generated printf narrow length modifiers precision/alternate rust");
+    assert!(narrow_precision_alternate_rust.contains("let __slate_printf_arg = (a as u8) as i8;"));
+    assert!(
+        narrow_precision_alternate_rust.contains("let __slate_printf_arg = (b as u16) as i16;")
+    );
+    assert!(narrow_precision_alternate_rust.contains("let __slate_printf_arg = a as u8;"));
+    assert!(narrow_precision_alternate_rust.contains("format!(\"{:04o}\", a as u8)"));
+    assert!(narrow_precision_alternate_rust.contains("format!(\"{:02x}\", a as u8)"));
+    assert!(narrow_precision_alternate_rust.contains("let __slate_printf_arg = c as u16;"));
+    assert!(!narrow_precision_alternate_rust.contains("fn printf("));
+    assert!(!narrow_precision_alternate_rust.contains("unsafe { printf("));
+
     let narrow_rejected_c = fixtures_dir().join("printf_narrow_length_modifiers_rejected.c");
     let narrow_rejected_generated =
         tmp.join("printf_narrow_length_modifiers_rejected.generated.rs");

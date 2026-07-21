@@ -380,6 +380,7 @@ struct AlternateIntegerFormat {
     zero: bool,
     width: Option<usize>,
     radix: char,
+    narrow: Option<NarrowWidth>,
 }
 
 #[derive(Clone, Copy)]
@@ -389,6 +390,7 @@ struct PrecisionIntegerFormat {
     width: Option<usize>,
     precision: usize,
     kind: PrecisionKind,
+    narrow: Option<NarrowWidth>,
 }
 
 #[derive(Clone, Copy)]
@@ -551,9 +553,6 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
         }
         _ => None,
     };
-    if narrow_width.is_some() && (alternate || precision.is_some()) {
-        return None;
-    }
     let conv = bytes.get(i).copied()?;
     if !matches!(conv, b'd' | b'i' | b'u' | b'x' | b'X' | b'o') {
         return None;
@@ -586,6 +585,7 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
             width,
             precision,
             kind,
+            narrow: narrow_width,
         }))
     } else if alternate {
         let width = width.map(str::parse).transpose().ok()?;
@@ -594,6 +594,7 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
             zero,
             width,
             radix: format_kind?,
+            narrow: narrow_width,
         }))
     } else if let Some(width) = narrow_width {
         ConversionKind::Integer(IntegerArg::Narrow {
@@ -1149,6 +1150,10 @@ fn strip_pointer_view(expr: &Expr) -> &Expr {
 }
 
 fn alternate_integer_arg(arg: &Expr, format: AlternateIntegerFormat) -> Expr {
+    let arg = match format.narrow {
+        Some(width) => narrow_integer_arg(arg, false, width),
+        None => arg.clone(),
+    };
     let tmp = "__slate_printf_arg";
     let tmp_expr = Expr::Var(tmp.into());
     let zero_cond = Expr::Binary {
@@ -1163,7 +1168,7 @@ fn alternate_integer_arg(arg: &Expr, format: AlternateIntegerFormat) -> Expr {
                 name: tmp.into(),
                 mutable: false,
                 ty: None,
-                init: Some(arg.clone()),
+                init: Some(arg),
             },
         }],
         tail: Some(Box::new(Expr::If {
@@ -1245,20 +1250,24 @@ fn prefixed_nonzero_integer_format(
 }
 
 fn precision_integer_arg(arg: &Expr, format: PrecisionIntegerFormat) -> Expr {
+    let arg = match format.narrow {
+        Some(width) => narrow_integer_arg(
+            arg,
+            matches!(format.kind, PrecisionKind::SignedDecimal),
+            width,
+        ),
+        None => arg.clone(),
+    };
     let inner = match format.kind {
-        PrecisionKind::SignedDecimal => signed_precision_expr(arg, format.precision, format.plus),
+        PrecisionKind::SignedDecimal => signed_precision_expr(&arg, format.precision, format.plus),
         PrecisionKind::UnsignedDecimal => {
-            precision_format_call(format!("{{:0{}}}", format.precision), arg.clone())
+            precision_format_call(format!("{{:0{}}}", format.precision), arg)
         }
-        PrecisionKind::Hex => {
-            precision_format_call(format!("{{:0{}x}}", format.precision), arg.clone())
-        }
+        PrecisionKind::Hex => precision_format_call(format!("{{:0{}x}}", format.precision), arg),
         PrecisionKind::HexUpper => {
-            precision_format_call(format!("{{:0{}X}}", format.precision), arg.clone())
+            precision_format_call(format!("{{:0{}X}}", format.precision), arg)
         }
-        PrecisionKind::Octal => {
-            precision_format_call(format!("{{:0{}o}}", format.precision), arg.clone())
-        }
+        PrecisionKind::Octal => precision_format_call(format!("{{:0{}o}}", format.precision), arg),
     };
     match format.width {
         Some(width) => {
@@ -2190,13 +2199,60 @@ fn main() {
     }
 
     #[test]
-    fn leaves_narrow_length_modifiers_with_precision_or_alternate_unsupported() {
-        for fmt in [&b"%.2hhd\n\0"[..], &b"%#hhx\n\0"[..]] {
-            let out = run(printf_stmt(fmt, var("x")));
+    fn leaves_dynamic_precision_narrow_length_modifiers_unsupported() {
+        for fmt in [&b"%.*hhd\n\0"[..], &b"%.*hd\n\0"[..]] {
+            let out = run(printf_stmt_args(fmt, vec![var("prec"), var("x")]));
             assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
             assert!(out.contains("unsafe { printf("));
             assert!(!out.contains("println!"));
         }
+    }
+
+    #[test]
+    fn rewrites_narrow_length_modifiers_with_precision_to_truncate_then_format() {
+        let out = run(printf_stmt(b"%.2hhd\n\0", var("x")));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{}\", {
+    let __slate_printf_arg = (x as u8) as i8;
+    if __slate_printf_arg < 0 { format!(\"-{:02}\", __slate_printf_arg.unsigned_abs()) } else { format!(\"{:02}\", __slate_printf_arg) }
+});
+}
+"
+        );
+    }
+
+    #[test]
+    fn rewrites_narrow_length_modifiers_with_alternate_flag_to_truncate_then_format() {
+        let out = run(printf_stmt(b"%#hhx\n\0", var("x")));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{}\", {
+    let __slate_printf_arg = x as u8;
+    if __slate_printf_arg == 0 { format!(\"{:x}\", __slate_printf_arg) } else { format!(\"{:#x}\", __slate_printf_arg) }
+});
+}
+"
+        );
+    }
+
+    #[test]
+    fn rewrites_narrow_length_modifiers_with_width_precision_and_alternate_combinations() {
+        let out = run(printf_stmt_args(
+            b"%.3hd|%#hhx|%.4hho\n\0",
+            vec![var("a"), var("b"), var("c")],
+        ));
+
+        assert!(out.contains("let __slate_printf_arg = (a as u16) as i16;"));
+        assert!(out.contains("format!(\"{:03}\", __slate_printf_arg)"));
+        assert!(out.contains("let __slate_printf_arg = b as u8;"));
+        assert!(out.contains("format!(\"{:04o}\", c as u8)"));
     }
 
     #[test]
