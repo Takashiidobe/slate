@@ -674,7 +674,7 @@ pub(super) enum HeapResizeKind {
     SameOrUnknown,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub(super) struct PrintfCallFact {
     pub(super) site: Site,
     pub(super) format: Option<Vec<u8>>,
@@ -682,11 +682,12 @@ pub(super) struct PrintfCallFact {
     pub(super) arg_facts: Vec<PrintfArgFact>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub(super) struct PrintfArgFact {
     pub(super) path: AstPath,
     pub(super) const_string: Option<String>,
     pub(super) const_char: Option<String>,
+    pub(super) const_float: Option<f64>,
     pub(super) rust_string: bool,
     pub(super) pointer: bool,
 }
