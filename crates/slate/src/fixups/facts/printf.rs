@@ -200,6 +200,7 @@ fn visit_expr(
                         proven_local_c_string_arg(function, facts, &arg_path)
                     }),
                     const_char: const_c_char_arg(arg, env),
+                    const_float: const_float_arg(arg, env),
                     rust_string: is_rust_string_arg(arg, env),
                     pointer: is_printf_pointer_arg(arg, env),
                 }
@@ -530,8 +531,20 @@ fn const_integer(expr: &Expr) -> Option<i64> {
     }
 }
 
+fn const_float_arg(arg: &Expr, env: &PrintfEnv) -> Option<f64> {
+    const_float(env.resolve_const(arg))
+}
+
+fn const_float(expr: &Expr) -> Option<f64> {
+    match expr {
+        Expr::Value(RustValue::Float(n)) => Some(*n),
+        Expr::Cast { expr, .. } => const_float(expr),
+        _ => None,
+    }
+}
+
 fn is_printf_const(expr: &Expr) -> bool {
-    const_integer(expr).is_some() || const_c_string(expr).is_some()
+    const_integer(expr).is_some() || const_c_string(expr).is_some() || const_float(expr).is_some()
 }
 
 fn is_rust_string_arg(arg: &Expr, env: &PrintfEnv) -> bool {

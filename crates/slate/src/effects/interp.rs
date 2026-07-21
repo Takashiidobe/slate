@@ -5492,6 +5492,26 @@ impl Interp {
                         *width,
                         *precision,
                     )?)),
+                    Some(CFormatSpec::General {
+                        upper,
+                        plus,
+                        alternate,
+                        zero_pad,
+                        left_align,
+                        width,
+                        precision,
+                    }) => Ok(Value::Bytes(render_c_general_arg(
+                        &value,
+                        &GeneralRenderSpec {
+                            upper: *upper,
+                            plus: *plus,
+                            alternate: *alternate,
+                            zero_pad: *zero_pad,
+                            left_align: *left_align,
+                            width: *width,
+                            precision: *precision,
+                        },
+                    )?)),
                     _ => Ok(value),
                 }
             })
@@ -6599,6 +6619,15 @@ enum CFormatSpec {
         width: Option<usize>,
         precision: usize,
     },
+    General {
+        upper: bool,
+        plus: bool,
+        alternate: bool,
+        zero_pad: bool,
+        left_align: bool,
+        width: Option<usize>,
+        precision: usize,
+    },
     Other,
 }
 
@@ -6722,6 +6751,15 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
             b'e' | b'E' if !alternate && !zero_pad => CFormatSpec::Exponent {
                 upper: conv == b'E',
                 plus,
+                left_align,
+                width,
+                precision: precision.unwrap_or(6),
+            },
+            b'g' | b'G' => CFormatSpec::General {
+                upper: conv == b'G',
+                plus,
+                alternate,
+                zero_pad,
                 left_align,
                 width,
                 precision: precision.unwrap_or(6),
@@ -6938,6 +6976,116 @@ fn render_c_exponent_arg(
     let mut out: String = std::iter::repeat_n(' ', pad_len).collect();
     out.push_str(&body);
     Ok(out.into_bytes())
+}
+
+struct GeneralRenderSpec {
+    upper: bool,
+    plus: bool,
+    alternate: bool,
+    zero_pad: bool,
+    left_align: bool,
+    width: Option<usize>,
+    precision: usize,
+}
+
+fn render_c_general_arg(value: &Value, spec: &GeneralRenderSpec) -> EResult<Vec<u8>> {
+    let &GeneralRenderSpec {
+        upper,
+        plus,
+        alternate,
+        zero_pad,
+        left_align,
+        width,
+        precision,
+    } = spec;
+    let Value::Float(raw) = value else {
+        return Err(EffectError::type_mismatch(ValueKind::Float, value.clone()));
+    };
+    let precision = if precision == 0 { 1 } else { precision };
+    let sci = format!("{raw:.*e}", precision - 1);
+    let exp_marker = sci
+        .find('e')
+        .expect("exponential formatting always contains the exponent marker");
+    let exp: i32 = sci[exp_marker + 1..]
+        .parse()
+        .expect("exponential formatting always has a parseable exponent");
+    let body = if exp >= -4 && exp < precision as i32 {
+        let frac_digits = (precision as i32 - 1 - exp).max(0) as usize;
+        if plus {
+            format!("{raw:+.frac_digits$}")
+        } else {
+            format!("{raw:.frac_digits$}")
+        }
+    } else {
+        let frac_digits = precision - 1;
+        let marker = if upper { 'E' } else { 'e' };
+        let sci = match (upper, plus) {
+            (true, true) => format!("{raw:+.frac_digits$E}"),
+            (true, false) => format!("{raw:.frac_digits$E}"),
+            (false, true) => format!("{raw:+.frac_digits$e}"),
+            (false, false) => format!("{raw:.frac_digits$e}"),
+        };
+        let idx = sci
+            .find(marker)
+            .expect("exponential formatting always contains the exponent marker");
+        let (mantissa, rest) = sci.split_at(idx);
+        let exp: i32 = rest[1..]
+            .parse()
+            .expect("exponential formatting always has a parseable exponent");
+        let exp_rendered = if exp < 0 {
+            format!("-{:02}", exp.unsigned_abs())
+        } else {
+            format!("+{exp:02}")
+        };
+        format!("{mantissa}{marker}{exp_rendered}")
+    };
+    let body = if alternate {
+        body
+    } else {
+        trim_c_general_trailing_zeros(&body)
+    };
+    let total_width = width.unwrap_or(0);
+    let pad_len = total_width.saturating_sub(body.chars().count());
+    if pad_len == 0 {
+        return Ok(body.into_bytes());
+    }
+    if left_align {
+        let mut out = body;
+        out.extend(std::iter::repeat_n(' ', pad_len));
+        return Ok(out.into_bytes());
+    }
+    if zero_pad {
+        if let Some(rest) = body.strip_prefix('-') {
+            let mut out = String::from("-");
+            out.extend(std::iter::repeat_n('0', pad_len));
+            out.push_str(rest);
+            return Ok(out.into_bytes());
+        }
+        if let Some(rest) = body.strip_prefix('+') {
+            let mut out = String::from("+");
+            out.extend(std::iter::repeat_n('0', pad_len));
+            out.push_str(rest);
+            return Ok(out.into_bytes());
+        }
+        let mut out: String = std::iter::repeat_n('0', pad_len).collect();
+        out.push_str(&body);
+        return Ok(out.into_bytes());
+    }
+    let mut out: String = std::iter::repeat_n(' ', pad_len).collect();
+    out.push_str(&body);
+    Ok(out.into_bytes())
+}
+
+fn trim_c_general_trailing_zeros(body: &str) -> String {
+    let (mantissa, suffix) = match body.find(['e', 'E']) {
+        Some(idx) => (&body[..idx], &body[idx..]),
+        None => (body, ""),
+    };
+    if !mantissa.contains('.') {
+        return body.to_string();
+    }
+    let trimmed = mantissa.trim_end_matches('0').trim_end_matches('.');
+    format!("{trimmed}{suffix}")
 }
 
 fn render_c_sized_str(

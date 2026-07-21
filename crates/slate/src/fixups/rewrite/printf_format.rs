@@ -311,6 +311,7 @@ enum ConversionKind {
     Char(CharArg),
     Float,
     Exponent(ExponentFormat),
+    General(GeneralFormat),
     Pointer,
 }
 
@@ -318,6 +319,17 @@ enum ConversionKind {
 struct ExponentFormat {
     left: bool,
     plus: bool,
+    upper: bool,
+    width: Option<usize>,
+    precision: usize,
+}
+
+#[derive(Clone, Copy)]
+struct GeneralFormat {
+    left: bool,
+    plus: bool,
+    alternate: bool,
+    zero: bool,
     upper: bool,
     width: Option<usize>,
     precision: usize,
@@ -442,6 +454,7 @@ fn parse_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conversion, String
         .or_else(|| parse_string_char_conversion(bytes, i))
         .or_else(|| parse_float_conversion(bytes, i))
         .or_else(|| parse_exponent_conversion(bytes, i))
+        .or_else(|| parse_general_conversion(bytes, i))
         .or_else(|| parse_pointer_conversion(bytes, i))
 }
 
@@ -882,6 +895,95 @@ fn parse_exponent_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conve
     ))
 }
 
+fn parse_general_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversion, String)> {
+    let mut left = false;
+    let mut plus = false;
+    let mut alternate = false;
+    let mut zero = false;
+    loop {
+        match bytes.get(i).copied()? {
+            b'-' if !left => {
+                left = true;
+                i += 1;
+            }
+            b'+' if !plus => {
+                plus = true;
+                i += 1;
+            }
+            b'#' if !alternate => {
+                alternate = true;
+                i += 1;
+            }
+            b'0' if !zero => {
+                zero = true;
+                i += 1;
+            }
+            b'-' | b'+' | b'0' | b' ' | b'#' => return None,
+            _ => break,
+        }
+    }
+    if left && zero {
+        return None;
+    }
+
+    let width_start = i;
+    while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+        i += 1;
+    }
+    let width = if i > width_start {
+        Some(
+            std::str::from_utf8(&bytes[width_start..i])
+                .ok()?
+                .parse::<usize>()
+                .ok()?,
+        )
+    } else {
+        None
+    };
+    if (left || zero) && width.is_none() {
+        return None;
+    }
+
+    let precision = if bytes.get(i).copied() == Some(b'.') {
+        i += 1;
+        if bytes.get(i).copied() == Some(b'*') {
+            return None;
+        }
+        let precision_start = i;
+        while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+            i += 1;
+        }
+        let text = std::str::from_utf8(&bytes[precision_start..i]).ok()?;
+        if text.is_empty() {
+            0
+        } else {
+            text.parse().ok()?
+        }
+    } else {
+        6
+    };
+
+    let conv = bytes.get(i).copied()?;
+    if !matches!(conv, b'g' | b'G') {
+        return None;
+    }
+    Some((
+        i + 1,
+        Conversion {
+            kind: ConversionKind::General(GeneralFormat {
+                left,
+                plus,
+                alternate,
+                zero,
+                upper: conv == b'G',
+                width,
+                precision,
+            }),
+        },
+        "{}".into(),
+    ))
+}
+
 fn parse_pointer_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conversion, String)> {
     if bytes.get(i).copied()? != b'p' {
         return None;
@@ -954,6 +1056,7 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> O
         ConversionKind::Char(CharArg::Sized(format)) => sized_printf_char_arg(fact, format),
         ConversionKind::Float => Some(arg.clone()),
         ConversionKind::Exponent(format) => Some(exponent_arg(arg, format)),
+        ConversionKind::General(format) => general_arg(format, fact),
         ConversionKind::Pointer if fact.pointer => Some(arg.clone()),
         ConversionKind::Pointer => None,
     }
@@ -1405,6 +1508,105 @@ fn exponent_arg(arg: &Expr, format: ExponentFormat) -> Expr {
         }
         None => inner,
     }
+}
+
+fn general_arg(format: GeneralFormat, fact: &PrintfArgFact) -> Option<Expr> {
+    let value = fact.const_float?;
+    let body = render_general_body(
+        value,
+        format.precision,
+        format.upper,
+        format.plus,
+        format.alternate,
+    );
+    let padded = match format.width {
+        Some(width) => pad_general_body(body, width, format.left, format.zero),
+        None => body,
+    };
+    Some(Expr::Str(padded))
+}
+
+fn render_general_body(
+    value: f64,
+    precision: usize,
+    upper: bool,
+    plus: bool,
+    alternate: bool,
+) -> String {
+    let precision = if precision == 0 { 1 } else { precision };
+    let sci = format!("{:.*e}", precision - 1, value);
+    let exp_marker = sci.find('e').expect("exponential formatting has a marker");
+    let exp: i32 = sci[exp_marker + 1..]
+        .parse()
+        .expect("exponential formatting has a parseable exponent");
+    let body = if exp >= -4 && exp < precision as i32 {
+        let frac_digits = (precision as i32 - 1 - exp).max(0) as usize;
+        if plus {
+            format!("{value:+.frac_digits$}")
+        } else {
+            format!("{value:.frac_digits$}")
+        }
+    } else {
+        let frac_digits = precision - 1;
+        let marker = if upper { 'E' } else { 'e' };
+        let sci = match (upper, plus) {
+            (true, true) => format!("{value:+.frac_digits$E}"),
+            (true, false) => format!("{value:.frac_digits$E}"),
+            (false, true) => format!("{value:+.frac_digits$e}"),
+            (false, false) => format!("{value:.frac_digits$e}"),
+        };
+        let idx = sci
+            .find(marker)
+            .expect("exponential formatting has a marker");
+        let (mantissa, rest) = sci.split_at(idx);
+        let exp: i32 = rest[1..]
+            .parse()
+            .expect("exponential formatting has a parseable exponent");
+        let exp_rendered = if exp < 0 {
+            format!("-{:02}", exp.unsigned_abs())
+        } else {
+            format!("+{exp:02}")
+        };
+        format!("{mantissa}{marker}{exp_rendered}")
+    };
+    if alternate {
+        body
+    } else {
+        trim_general_trailing_zeros(&body)
+    }
+}
+
+fn trim_general_trailing_zeros(body: &str) -> String {
+    let (mantissa, suffix) = match body.find(['e', 'E']) {
+        Some(idx) => (&body[..idx], &body[idx..]),
+        None => (body, ""),
+    };
+    if !mantissa.contains('.') {
+        return body.to_string();
+    }
+    let trimmed = mantissa.trim_end_matches('0').trim_end_matches('.');
+    format!("{trimmed}{suffix}")
+}
+
+fn pad_general_body(body: String, width: usize, left: bool, zero: bool) -> String {
+    let len = body.chars().count();
+    if len >= width {
+        return body;
+    }
+    let pad_len = width - len;
+    if left {
+        return format!("{body}{}", " ".repeat(pad_len));
+    }
+    if zero {
+        if let Some(rest) = body.strip_prefix('-') {
+            return format!("-{}{rest}", "0".repeat(pad_len));
+        }
+        if let Some(rest) = body.strip_prefix('+') {
+            return format!("+{}{rest}", "0".repeat(pad_len));
+        }
+        return format!("{}{body}", "0".repeat(pad_len));
+    }
+    format!("{}{body}", " ".repeat(pad_len))
 }
 
 fn ensure_stdout_and_fflush_externs(program: &mut Program) {
@@ -2335,7 +2537,7 @@ fn main() {
     }
 
     #[test]
-    fn leaves_general_float_conversions_unsupported() {
+    fn leaves_non_constant_general_conversions_unsupported() {
         for fmt in [
             &b"%g\n\0"[..],
             &b"%.3g\n\0"[..],
@@ -2348,6 +2550,88 @@ fn main() {
             assert!(out.contains("unsafe { printf("));
             assert!(!out.contains("println!"));
         }
+    }
+
+    #[test]
+    fn leaves_unsupported_general_flag_combinations() {
+        let out = run(printf_stmt(b"% g\n\0", var("x")));
+        assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+        assert!(out.contains("unsafe { printf("));
+        assert!(!out.contains("println!"));
+
+        let out = run(printf_stmt_args(b"%.*g\n\0", vec![var("prec"), var("x")]));
+        assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+        assert!(out.contains("unsafe { printf("));
+        assert!(!out.contains("println!"));
+    }
+
+    fn float(n: f64) -> Expr {
+        Expr::Value(RustValue::Float(n))
+    }
+
+    #[test]
+    fn rewrites_general_conversions_for_constant_arguments_selecting_fixed_or_scientific() {
+        let out = run(printf_stmt_args(
+            b"%g %.3g %-10.3g|\n\0",
+            vec![float(1234.5678), float(1234.5678), float(1234.5678)],
+        ));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{} {} {}|\", \"1234.57\", \"1.23e+03\", \"1.23e+03  \");
+}
+"
+        );
+    }
+
+    #[test]
+    fn rewrites_general_conversions_trim_trailing_zeros_unless_alternate() {
+        let out = run(printf_stmt_args(
+            b"%g|%#g\n\0",
+            vec![float(100.0), float(100.0)],
+        ));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{}|{}\", \"100\", \"100.000\");
+}
+"
+        );
+    }
+
+    #[test]
+    fn rewrites_general_conversions_with_width_zero_and_sign_flags() {
+        let out = run(printf_stmt_args(
+            b"%15.3g|%015.3g|%+.3g\n\0",
+            vec![float(1234.5678), float(-1234.5678), float(1234.5678)],
+        ));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{}|{}|{}\", \"       1.23e+03\", \"-0000001.23e+03\", \"+1.23e+03\");
+}
+"
+        );
+    }
+
+    #[test]
+    fn rewrites_upper_general_conversion_for_constant_argument() {
+        let out = run(printf_stmt(b"%G\n\0", float(1234.5678)));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{}\", \"1234.57\");
+}
+"
+        );
     }
 
     #[test]

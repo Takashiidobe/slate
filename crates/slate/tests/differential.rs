@@ -943,20 +943,25 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(float_width_rejected_rust.contains("unsafe { printf("));
     assert!(!float_width_rejected_rust.contains("println!("));
 
-    let scientific_general_rejected_c = fixtures_dir().join("printf_scientific_general_rejected.c");
-    let scientific_general_rejected_generated =
-        tmp.join("printf_scientific_general_rejected.generated.rs");
-    support::translate(
-        &scientific_general_rejected_c,
-        &scientific_general_rejected_generated,
-    )
-    .expect("translate rejected printf scientific/general float fixture");
-    let scientific_general_rejected_rust =
-        std::fs::read_to_string(&scientific_general_rejected_generated)
-            .expect("read generated rejected printf scientific/general float rust");
-    assert!(scientific_general_rejected_rust.contains("fn printf("));
-    assert!(scientific_general_rejected_rust.contains("unsafe { printf("));
-    assert!(!scientific_general_rejected_rust.contains("println!("));
+    let general_rejected_c = fixtures_dir().join("printf_general_rejected.c");
+    let general_rejected_generated = tmp.join("printf_general_rejected.generated.rs");
+    support::translate(&general_rejected_c, &general_rejected_generated)
+        .expect("translate rejected printf general float fixture");
+    let general_rejected_rust = std::fs::read_to_string(&general_rejected_generated)
+        .expect("read generated rejected printf general float rust");
+    assert!(general_rejected_rust.contains("fn printf("));
+    assert!(general_rejected_rust.contains("unsafe { printf("));
+    assert!(!general_rejected_rust.contains("println!("));
+
+    let general_c = fixtures_dir().join("printf_general.c");
+    let general_generated = tmp.join("printf_general.generated.rs");
+    support::translate(&general_c, &general_generated)
+        .expect("translate printf general float fixture");
+    let general_rust = std::fs::read_to_string(&general_generated)
+        .expect("read generated printf general float rust");
+    assert!(general_rust.contains("println!(\"{} {} {}|\", \"1234.57\", \"1.23e+03\","));
+    assert!(!general_rust.contains("fn printf("));
+    assert!(!general_rust.contains("unsafe { printf("));
 
     let literal_escaping_c = fixtures_dir().join("printf_literal_escaping.c");
     let literal_escaping_generated = tmp.join("printf_literal_escaping.generated.rs");
