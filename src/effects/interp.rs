@@ -3362,6 +3362,7 @@ impl Interp {
         matches!(
             method,
             "wrapping_abs"
+                | "unsigned_abs"
                 | "reverse_bits"
                 | "swap_bytes"
                 | "leading_zeros"
@@ -3394,6 +3395,11 @@ impl Interp {
                 width,
                 signed,
                 value: truncate_to_bits(value.wrapping_abs(), bits, signed),
+            }),
+            "unsigned_abs" => Ok(Value::Int {
+                width,
+                signed: false,
+                value: truncate_to_bits(value.wrapping_abs(), bits, false),
             }),
             "reverse_bits" => Ok(Value::Int {
                 width,
@@ -5391,6 +5397,20 @@ impl Interp {
                         *left_align,
                         *width,
                     )?)),
+                    Some(CFormatSpec::Precision {
+                        conv,
+                        plus,
+                        left_align,
+                        width,
+                        precision,
+                    }) => Ok(Value::Bytes(render_c_precision_arg(
+                        &value,
+                        *conv,
+                        *plus,
+                        *left_align,
+                        *width,
+                        *precision,
+                    )?)),
                     _ => Ok(value),
                 }
             })
@@ -6471,6 +6491,13 @@ enum CFormatSpec {
         left_align: bool,
         width: Option<usize>,
     },
+    Precision {
+        conv: u8,
+        plus: bool,
+        left_align: bool,
+        width: Option<usize>,
+        precision: usize,
+    },
     Other,
 }
 
@@ -6490,11 +6517,13 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
         let mut alternate = false;
         let mut zero_pad = false;
         let mut left_align = false;
+        let mut plus = false;
         while i < fmt.len() && matches!(fmt[i], b'-' | b'+' | b'0' | b' ' | b'#') {
             match fmt[i] {
                 b'#' => alternate = true,
                 b'0' => zero_pad = true,
                 b'-' => left_align = true,
+                b'+' => plus = true,
                 _ => {}
             }
             i += 1;
@@ -6510,11 +6539,22 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
         } else {
             None
         };
+        let mut precision = None;
         if i < fmt.len() && fmt[i] == b'.' {
             i += 1;
+            let precision_start = i;
             while i < fmt.len() && fmt[i].is_ascii_digit() {
                 i += 1;
             }
+            precision = std::str::from_utf8(&fmt[precision_start..i])
+                .ok()
+                .and_then(|digits| {
+                    if digits.is_empty() {
+                        Some(0)
+                    } else {
+                        digits.parse().ok()
+                    }
+                });
         }
         while i < fmt.len() && matches!(fmt[i], b'h' | b'l' | b'L' | b'q' | b'j' | b'z' | b't') {
             i += 1;
@@ -6534,6 +6574,17 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
                 left_align,
                 width,
             },
+            b'd' | b'i' | b'u' | b'x' | b'X' | b'o'
+                if !alternate && matches!(precision, Some(precision) if precision > 0) =>
+            {
+                CFormatSpec::Precision {
+                    conv,
+                    plus,
+                    left_align,
+                    width,
+                    precision: precision.unwrap(),
+                }
+            }
             _ => CFormatSpec::Other,
         });
     }
@@ -6612,6 +6663,70 @@ fn render_c_num_arg(
         out.push_str(prefix);
         out.extend(std::iter::repeat_n('0', pad_len));
         out.push_str(&core);
+        return Ok(out.into_bytes());
+    }
+    let mut out: String = std::iter::repeat_n(' ', pad_len).collect();
+    out.push_str(&body);
+    Ok(out.into_bytes())
+}
+
+fn zero_pad_digits(core: String, precision: usize) -> String {
+    let len = core.chars().count();
+    if len >= precision {
+        return core;
+    }
+    let mut out = String::with_capacity(precision);
+    out.extend(std::iter::repeat_n('0', precision - len));
+    out.push_str(&core);
+    out
+}
+
+fn render_c_precision_arg(
+    value: &Value,
+    conv: u8,
+    plus: bool,
+    left_align: bool,
+    width: Option<usize>,
+    precision: usize,
+) -> EResult<Vec<u8>> {
+    let Value::Int {
+        value: raw,
+        width: int_width,
+        ..
+    } = value
+    else {
+        return Err(EffectError::type_mismatch(ValueKind::Int, value.clone()));
+    };
+    let body = match conv {
+        b'd' | b'i' if *raw < 0 => {
+            format!(
+                "-{}",
+                zero_pad_digits(raw.unsigned_abs().to_string(), precision)
+            )
+        }
+        b'd' | b'i' => {
+            let sign = if plus { "+" } else { "" };
+            format!("{sign}{}", zero_pad_digits(raw.to_string(), precision))
+        }
+        b'u' => zero_pad_digits(raw.to_string(), precision),
+        b'x' => zero_pad_digits(format_uint_radix(*raw, *int_width, 16, false), precision),
+        b'X' => zero_pad_digits(format_uint_radix(*raw, *int_width, 16, true), precision),
+        b'o' => zero_pad_digits(format_uint_radix(*raw, *int_width, 8, false), precision),
+        _ => {
+            return Err(EffectError::unsupported(
+                Construct::LibcCall(CallSummary::Printf),
+                conv.to_string(),
+            ));
+        }
+    };
+    let total_width = width.unwrap_or(0);
+    let pad_len = total_width.saturating_sub(body.chars().count());
+    if pad_len == 0 {
+        return Ok(body.into_bytes());
+    }
+    if left_align {
+        let mut out = body;
+        out.extend(std::iter::repeat_n(' ', pad_len));
         return Ok(out.into_bytes());
     }
     let mut out: String = std::iter::repeat_n(' ', pad_len).collect();

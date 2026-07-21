@@ -785,6 +785,27 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(!alternate_rust.contains("fn printf("));
     assert!(!alternate_rust.contains("unsafe { printf("));
 
+    let precision_c = fixtures_dir().join("printf_integer_precision.c");
+    let precision_generated = tmp.join("printf_integer_precision.generated.rs");
+    support::translate(&precision_c, &precision_generated)
+        .expect("translate printf integer precision fixture");
+    let precision_rust = std::fs::read_to_string(&precision_generated)
+        .expect("read generated printf integer precision rust");
+    assert!(precision_rust.contains("println!(\"{} {}\","));
+    assert!(precision_rust.contains("println!(\"{}|{}|{}\","));
+    assert!(precision_rust.contains("println!(\"{}\","));
+    assert!(precision_rust.contains("println!(\"{} {} {} {}\","));
+    assert!(precision_rust.contains("format!(\"-{:03}\", __slate_printf_arg.unsigned_abs())"));
+    assert!(precision_rust.contains("format!(\"{:03}\", __slate_printf_arg)"));
+    assert!(precision_rust.contains("format!(\"{:>8}\","));
+    assert!(precision_rust.contains("format!(\"{:<8}\","));
+    assert!(precision_rust.contains("format!(\"+{:03}\", __slate_printf_arg)"));
+    assert!(precision_rust.contains("format!(\"{:04x}\", hex)"));
+    assert!(precision_rust.contains("format!(\"{:04X}\", hex)"));
+    assert!(precision_rust.contains("format!(\"{:04o}\", hex)"));
+    assert!(!precision_rust.contains("fn printf("));
+    assert!(!precision_rust.contains("unsafe { printf("));
+
     let string_char_c = fixtures_dir().join("printf_string_char.c");
     let string_char_generated = tmp.join("printf_string_char.generated.rs");
     support::translate(&string_char_c, &string_char_generated)

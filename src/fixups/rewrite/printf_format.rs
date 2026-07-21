@@ -326,6 +326,7 @@ enum ConversionKind {
 enum IntegerArg {
     Value,
     Alternate(AlternateIntegerFormat),
+    Precision(PrecisionIntegerFormat),
 }
 
 #[derive(Clone, Copy)]
@@ -334,6 +335,24 @@ struct AlternateIntegerFormat {
     zero: bool,
     width: Option<usize>,
     radix: char,
+}
+
+#[derive(Clone, Copy)]
+struct PrecisionIntegerFormat {
+    left: bool,
+    plus: bool,
+    width: Option<usize>,
+    precision: usize,
+    kind: PrecisionKind,
+}
+
+#[derive(Clone, Copy)]
+enum PrecisionKind {
+    SignedDecimal,
+    UnsignedDecimal,
+    Hex,
+    HexUpper,
+    Octal,
 }
 
 fn parse_printf_format(bytes: &[u8]) -> Option<ParsedFormat> {
@@ -436,6 +455,32 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
         return None;
     }
 
+    let precision = if bytes.get(i).copied() == Some(b'.') {
+        i += 1;
+        if bytes.get(i).copied() == Some(b'*') {
+            return None;
+        }
+        let precision_start = i;
+        while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+            i += 1;
+        }
+        let text = std::str::from_utf8(&bytes[precision_start..i]).ok()?;
+        let value: usize = if text.is_empty() {
+            0
+        } else {
+            text.parse().ok()?
+        };
+        if value == 0 {
+            return None;
+        }
+        Some(value)
+    } else {
+        None
+    };
+    if alternate && precision.is_some() {
+        return None;
+    }
+
     match bytes.get(i).copied()? {
         b'l' => {
             i += 1;
@@ -462,7 +507,24 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
         b'o' => Some('o'),
         _ => None,
     };
-    let conversion_kind = if alternate {
+    let conversion_kind = if let Some(precision) = precision {
+        let width = width.map(str::parse).transpose().ok()?;
+        let kind = match conv {
+            b'd' | b'i' => PrecisionKind::SignedDecimal,
+            b'u' => PrecisionKind::UnsignedDecimal,
+            b'x' => PrecisionKind::Hex,
+            b'X' => PrecisionKind::HexUpper,
+            b'o' => PrecisionKind::Octal,
+            _ => unreachable!(),
+        };
+        ConversionKind::Integer(IntegerArg::Precision(PrecisionIntegerFormat {
+            left,
+            plus,
+            width,
+            precision,
+            kind,
+        }))
+    } else if alternate {
         let width = width.map(str::parse).transpose().ok()?;
         ConversionKind::Integer(IntegerArg::Alternate(AlternateIntegerFormat {
             left,
@@ -478,7 +540,7 @@ fn parse_integer_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conver
         Conversion {
             kind: conversion_kind,
         },
-        if alternate {
+        if alternate || precision.is_some() {
             "{}".into()
         } else {
             integer_placeholder(left, plus, false, zero, width, format_kind)
@@ -581,6 +643,9 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> O
         ConversionKind::Integer(IntegerArg::Value) => Some(arg.clone()),
         ConversionKind::Integer(IntegerArg::Alternate(format)) => {
             Some(alternate_integer_arg(arg, format))
+        }
+        ConversionKind::Integer(IntegerArg::Precision(format)) => {
+            Some(precision_integer_arg(arg, format))
         }
         ConversionKind::String => printf_string_arg(arg, fact),
         ConversionKind::Char => fact.const_char.clone().map(Expr::Str),
@@ -708,6 +773,74 @@ fn prefixed_nonzero_integer_format(
         }
         _ => base,
     }
+}
+
+fn precision_integer_arg(arg: &Expr, format: PrecisionIntegerFormat) -> Expr {
+    let inner = match format.kind {
+        PrecisionKind::SignedDecimal => signed_precision_expr(arg, format.precision, format.plus),
+        PrecisionKind::UnsignedDecimal => {
+            precision_format_call(format!("{{:0{}}}", format.precision), arg.clone())
+        }
+        PrecisionKind::Hex => {
+            precision_format_call(format!("{{:0{}x}}", format.precision), arg.clone())
+        }
+        PrecisionKind::HexUpper => {
+            precision_format_call(format!("{{:0{}X}}", format.precision), arg.clone())
+        }
+        PrecisionKind::Octal => {
+            precision_format_call(format!("{{:0{}o}}", format.precision), arg.clone())
+        }
+    };
+    match format.width {
+        Some(width) => {
+            let placeholder = if format.left {
+                format!("{{:<{width}}}")
+            } else {
+                format!("{{:>{width}}}")
+            };
+            precision_format_call(placeholder, inner)
+        }
+        None => inner,
+    }
+}
+
+fn signed_precision_expr(arg: &Expr, precision: usize, plus: bool) -> Expr {
+    let tmp = "__slate_printf_arg";
+    let tmp_expr = Expr::Var(tmp.into());
+    let neg_cond = Expr::Binary {
+        op: BinOp::Lt,
+        lhs: Box::new(tmp_expr.clone()),
+        rhs: Box::new(Expr::Value(RustValue::I64(0))),
+    };
+    let abs_expr = Expr::MethodCall {
+        recv: Box::new(tmp_expr.clone()),
+        method: "unsigned_abs".into(),
+        args: vec![],
+    };
+    let neg_branch = precision_format_call(format!("-{{:0{precision}}}"), abs_expr);
+    let sign_prefix = if plus { "+" } else { "" };
+    let pos_branch =
+        precision_format_call(format!("{sign_prefix}{{:0{precision}}}"), tmp_expr.clone());
+    Expr::Block(Box::new(Block {
+        stmts: vec![IndentStmt {
+            depth: 0,
+            stmt: Stmt::Let {
+                name: tmp.into(),
+                mutable: false,
+                ty: None,
+                init: Some(arg.clone()),
+            },
+        }],
+        tail: Some(Box::new(Expr::If {
+            cond: Box::new(neg_cond),
+            then_expr: Box::new(neg_branch),
+            else_expr: Box::new(pos_branch),
+        })),
+    }))
+}
+
+fn precision_format_call(placeholder: String, arg: Expr) -> Expr {
+    format_macro("format", vec![Expr::Str(placeholder), arg])
 }
 
 fn prune_printf_extern(program: &mut Program) {
@@ -1350,7 +1483,9 @@ fn main() {
     fn leaves_dynamic_width_precision_and_unsupported_flags() {
         for fmt in [
             &b"%*d\n\0"[..],
-            &b"%.3d\n\0"[..],
+            &b"%.*d\n\0"[..],
+            &b"%.0d\n\0"[..],
+            &b"%#.3d\n\0"[..],
             &b"%#d\n\0"[..],
             &b"% d\n\0"[..],
             &b"%-05d\n\0"[..],
@@ -1362,6 +1497,41 @@ fn main() {
             assert!(out.contains("unsafe { printf("));
             assert!(!out.contains("println!"));
         }
+    }
+
+    #[test]
+    fn rewrites_static_integer_precision_forms() {
+        let out = run(printf_stmt_args(
+            b"%.3d %.3u %.4x %.4X %.4o\n\0",
+            vec![var("a"), var("b"), var("c"), var("d"), var("e")],
+        ));
+
+        assert!(out.contains("println!(\"{} {} {} {} {}\","));
+        assert!(out.contains("let __slate_printf_arg = a;"));
+        assert!(out.contains("format!(\"-{:03}\", __slate_printf_arg.unsigned_abs())"));
+        assert!(out.contains("format!(\"{:03}\", __slate_printf_arg)"));
+        assert!(out.contains("format!(\"{:03}\", b)"));
+        assert!(out.contains("format!(\"{:04x}\", c)"));
+        assert!(out.contains("format!(\"{:04X}\", d)"));
+        assert!(out.contains("format!(\"{:04o}\", e)"));
+    }
+
+    #[test]
+    fn rewrites_integer_precision_with_width_and_sign_interactions() {
+        let out = run(printf_stmt_args(
+            b"%8.3d %-8.3d %+.3d %08.3d\n\0",
+            vec![var("a"), var("b"), var("c"), var("d")],
+        ));
+
+        assert!(out.contains("println!(\"{} {} {} {}\","));
+        assert!(out.contains("format!(\"{:>8}\", {\n"));
+        assert!(out.contains("format!(\"{:<8}\", {\n"));
+        assert!(out.contains("format!(\"-{:03}\", __slate_printf_arg.unsigned_abs())"));
+        assert!(out.contains("format!(\"+{:03}\", __slate_printf_arg)"));
+        assert!(out.matches("let __slate_printf_arg = a;").count() == 1);
+        assert!(out.matches("let __slate_printf_arg = b;").count() == 1);
+        assert!(out.matches("let __slate_printf_arg = c;").count() == 1);
+        assert!(out.matches("let __slate_printf_arg = d;").count() == 1);
     }
 
     #[test]
