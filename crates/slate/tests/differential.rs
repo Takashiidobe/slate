@@ -1425,7 +1425,9 @@ fn string_lift_recovers_safe_local_string_buffers() {
     support::translate(&c_src, &generated).expect("translate string_lift fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated string_lift rust");
 
-    assert!(rust.contains("let greeting: &str = \"h\\u{e9}\";"));
+    assert!(rust.contains("let mut greeting: [i8; 4] = [104, -61, -87, 0];"));
+    assert!(rust.contains("greeting.as_mut_ptr()"));
+    assert!(!rust.contains("greeting: &str"));
     assert!(rust.contains("let mut mutate: [i8; 4] = [97, 98, 99, 0];"));
     assert!(rust.contains("mutate.as_mut_ptr()"));
 }

@@ -646,6 +646,7 @@ fn all_printf_string_args_allow_lift(
                         b's' => {
                             printf_string_arg_allows_lift(function, facts, binding, liftable, arg)
                         }
+                        b'c' => arg.const_char.is_some(),
                         _ => true,
                     })
         })
