@@ -310,7 +310,17 @@ enum ConversionKind {
     String(StringArg),
     Char(CharArg),
     Float,
+    Exponent(ExponentFormat),
     Pointer,
+}
+
+#[derive(Clone, Copy)]
+struct ExponentFormat {
+    left: bool,
+    plus: bool,
+    upper: bool,
+    width: Option<usize>,
+    precision: usize,
 }
 
 #[derive(Clone, Copy)]
@@ -431,6 +441,7 @@ fn parse_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conversion, String
     parse_integer_conversion(bytes, i)
         .or_else(|| parse_string_char_conversion(bytes, i))
         .or_else(|| parse_float_conversion(bytes, i))
+        .or_else(|| parse_exponent_conversion(bytes, i))
         .or_else(|| parse_pointer_conversion(bytes, i))
 }
 
@@ -797,6 +808,80 @@ fn float_placeholder(
     out
 }
 
+fn parse_exponent_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversion, String)> {
+    let mut left = false;
+    let mut plus = false;
+    loop {
+        match bytes.get(i).copied()? {
+            b'-' if !left => {
+                left = true;
+                i += 1;
+            }
+            b'+' if !plus => {
+                plus = true;
+                i += 1;
+            }
+            b'-' | b'+' | b'0' | b' ' | b'#' => return None,
+            _ => break,
+        }
+    }
+
+    let width_start = i;
+    while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+        i += 1;
+    }
+    let width = if i > width_start {
+        Some(
+            std::str::from_utf8(&bytes[width_start..i])
+                .ok()?
+                .parse::<usize>()
+                .ok()?,
+        )
+    } else {
+        None
+    };
+    if left && width.is_none() {
+        return None;
+    }
+
+    let precision = if bytes.get(i).copied() == Some(b'.') {
+        i += 1;
+        if bytes.get(i).copied() == Some(b'*') {
+            return None;
+        }
+        let precision_start = i;
+        while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+            i += 1;
+        }
+        let text = std::str::from_utf8(&bytes[precision_start..i]).ok()?;
+        if text.is_empty() {
+            0
+        } else {
+            text.parse().ok()?
+        }
+    } else {
+        6
+    };
+
+    let conv = bytes.get(i).copied()?;
+    if !matches!(conv, b'e' | b'E') {
+        return None;
+    }
+    Some((
+        i + 1,
+        Conversion {
+            kind: ConversionKind::Exponent(ExponentFormat {
+                left,
+                plus,
+                upper: conv == b'E',
+                width,
+                precision,
+            }),
+        },
+        "{}".into(),
+    ))
+}
+
 fn parse_pointer_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conversion, String)> {
     if bytes.get(i).copied()? != b'p' {
         return None;
@@ -868,6 +953,7 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> O
         ConversionKind::Char(CharArg::Value) => fact.const_char.clone().map(Expr::Str),
         ConversionKind::Char(CharArg::Sized(format)) => sized_printf_char_arg(fact, format),
         ConversionKind::Float => Some(arg.clone()),
+        ConversionKind::Exponent(format) => Some(exponent_arg(arg, format)),
         ConversionKind::Pointer if fact.pointer => Some(arg.clone()),
         ConversionKind::Pointer => None,
     }
@@ -1121,6 +1207,204 @@ fn signed_precision_expr(arg: &Expr, precision: usize, plus: bool) -> Expr {
 
 fn precision_format_call(placeholder: String, arg: Expr) -> Expr {
     format_macro("format", vec![Expr::Str(placeholder), arg])
+}
+
+fn exponent_arg(arg: &Expr, format: ExponentFormat) -> Expr {
+    let marker = if format.upper { 'E' } else { 'e' };
+
+    let tmp = "__slate_printf_arg";
+    let tmp_expr = Expr::Var(tmp.into());
+    let tmp_stmt = IndentStmt {
+        depth: 0,
+        stmt: Stmt::Let {
+            name: tmp.into(),
+            mutable: false,
+            ty: None,
+            init: Some(arg.clone()),
+        },
+    };
+
+    let formatted = "__slate_printf_e_formatted";
+    let formatted_expr = Expr::Var(formatted.into());
+    let formatted_stmt = IndentStmt {
+        depth: 0,
+        stmt: Stmt::Let {
+            name: formatted.into(),
+            mutable: false,
+            ty: None,
+            init: Some(format_macro(
+                "format",
+                vec![
+                    Expr::Str(format!("{{:.{}{marker}}}", format.precision)),
+                    tmp_expr.clone(),
+                ],
+            )),
+        },
+    };
+
+    let idx = "__slate_printf_e_idx";
+    let idx_expr = Expr::Var(idx.into());
+    let idx_stmt = IndentStmt {
+        depth: 0,
+        stmt: Stmt::Let {
+            name: idx.into(),
+            mutable: false,
+            ty: None,
+            init: Some(Expr::MethodCall {
+                recv: Box::new(Expr::MethodCall {
+                    recv: Box::new(formatted_expr.clone()),
+                    method: "find".into(),
+                    args: vec![Expr::Str(marker.to_string())],
+                }),
+                method: "unwrap".into(),
+                args: vec![],
+            }),
+        },
+    };
+
+    let parts = "__slate_printf_e_parts";
+    let parts_expr = Expr::Var(parts.into());
+    let parts_stmt = IndentStmt {
+        depth: 0,
+        stmt: Stmt::Let {
+            name: parts.into(),
+            mutable: false,
+            ty: None,
+            init: Some(Expr::MethodCall {
+                recv: Box::new(formatted_expr),
+                method: "split_at".into(),
+                args: vec![idx_expr],
+            }),
+        },
+    };
+
+    let exp = "__slate_printf_e_exp";
+    let exp_expr = Expr::Var(exp.into());
+    let exp_stmt = IndentStmt {
+        depth: 0,
+        stmt: Stmt::Let {
+            name: exp.into(),
+            mutable: false,
+            ty: None,
+            init: Some(Expr::MethodCall {
+                recv: Box::new(Expr::MethodCallGeneric {
+                    recv: Box::new(Expr::TupleField {
+                        base: Box::new(Expr::MethodCall {
+                            recv: Box::new(Expr::TupleField {
+                                base: Box::new(parts_expr.clone()),
+                                index: 1,
+                            }),
+                            method: "split_at".into(),
+                            args: vec![Expr::Value(RustValue::Usize(1))],
+                        }),
+                        index: 1,
+                    }),
+                    method: "parse".into(),
+                    type_args: vec![Type::Prim(Prim::I32)],
+                    args: vec![],
+                }),
+                method: "unwrap".into(),
+                args: vec![],
+            }),
+        },
+    };
+
+    let exp_rendered = "__slate_printf_e_exp_str";
+    let exp_rendered_expr = Expr::Var(exp_rendered.into());
+    let exp_rendered_stmt = IndentStmt {
+        depth: 0,
+        stmt: Stmt::Let {
+            name: exp_rendered.into(),
+            mutable: false,
+            ty: None,
+            init: Some(Expr::If {
+                cond: Box::new(Expr::Binary {
+                    op: BinOp::Lt,
+                    lhs: Box::new(exp_expr.clone()),
+                    rhs: Box::new(Expr::Value(RustValue::I64(0))),
+                }),
+                then_expr: Box::new(format_macro(
+                    "format",
+                    vec![
+                        Expr::Str("-{:02}".into()),
+                        Expr::MethodCall {
+                            recv: Box::new(exp_expr.clone()),
+                            method: "unsigned_abs".into(),
+                            args: vec![],
+                        },
+                    ],
+                )),
+                else_expr: Box::new(format_macro(
+                    "format",
+                    vec![Expr::Str("+{:02}".into()), exp_expr],
+                )),
+            }),
+        },
+    };
+
+    let corrected = "__slate_printf_e_corrected";
+    let corrected_expr = Expr::Var(corrected.into());
+    let corrected_stmt = IndentStmt {
+        depth: 0,
+        stmt: Stmt::Let {
+            name: corrected.into(),
+            mutable: false,
+            ty: None,
+            init: Some(format_macro(
+                "format",
+                vec![
+                    Expr::Str(format!("{{}}{marker}{{}}")),
+                    Expr::TupleField {
+                        base: Box::new(parts_expr),
+                        index: 0,
+                    },
+                    exp_rendered_expr,
+                ],
+            )),
+        },
+    };
+
+    let tail = if format.plus {
+        Expr::If {
+            cond: Box::new(Expr::Binary {
+                op: BinOp::Lt,
+                lhs: Box::new(tmp_expr),
+                rhs: Box::new(Expr::Value(RustValue::Float(0.0))),
+            }),
+            then_expr: Box::new(corrected_expr.clone()),
+            else_expr: Box::new(format_macro(
+                "format",
+                vec![Expr::Str("+{}".into()), corrected_expr],
+            )),
+        }
+    } else {
+        corrected_expr
+    };
+
+    let inner = Expr::Block(Box::new(Block {
+        stmts: vec![
+            tmp_stmt,
+            formatted_stmt,
+            idx_stmt,
+            parts_stmt,
+            exp_stmt,
+            exp_rendered_stmt,
+            corrected_stmt,
+        ],
+        tail: Some(Box::new(tail)),
+    }));
+
+    match format.width {
+        Some(width) => {
+            let placeholder = if format.left {
+                format!("{{:<{width}}}")
+            } else {
+                format!("{{:>{width}}}")
+            };
+            precision_format_call(placeholder, inner)
+        }
+        None => inner,
+    }
 }
 
 fn ensure_stdout_and_fflush_externs(program: &mut Program) {
@@ -1964,7 +2248,7 @@ fn main() {
 
     #[test]
     fn leaves_unsupported_formats_and_extern_declaration() {
-        let out = run(printf_stmt(b"%e\n\0", var("x")));
+        let out = run(printf_stmt(b"%g\n\0", var("x")));
 
         assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
         assert!(out.contains("unsafe { printf("));
@@ -2051,14 +2335,8 @@ fn main() {
     }
 
     #[test]
-    fn leaves_scientific_and_general_float_conversions_unsupported() {
+    fn leaves_general_float_conversions_unsupported() {
         for fmt in [
-            &b"%e\n\0"[..],
-            &b"%.2e\n\0"[..],
-            &b"%10.2e\n\0"[..],
-            &b"%+e\n\0"[..],
-            &b"%E\n\0"[..],
-            &b"%.2E\n\0"[..],
             &b"%g\n\0"[..],
             &b"%.3g\n\0"[..],
             &b"%-10.3g\n\0"[..],
@@ -2070,6 +2348,60 @@ fn main() {
             assert!(out.contains("unsafe { printf("));
             assert!(!out.contains("println!"));
         }
+    }
+
+    #[test]
+    fn leaves_unsupported_exponent_flag_combinations() {
+        for fmt in [&b"%015.2e\n\0"[..], &b"% e\n\0"[..], &b"%#e\n\0"[..]] {
+            let out = run(printf_stmt(fmt, var("x")));
+            assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+            assert!(out.contains("unsafe { printf("));
+            assert!(!out.contains("println!"));
+        }
+
+        let out = run(printf_stmt_args(b"%.*e\n\0", vec![var("prec"), var("x")]));
+        assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+        assert!(out.contains("unsafe { printf("));
+        assert!(!out.contains("println!"));
+    }
+
+    #[test]
+    fn rewrites_exponent_conversions() {
+        let out = run(printf_stmt(b"%e\n\0", var("x")));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{}\", {
+    let __slate_printf_arg = x;
+    let __slate_printf_e_formatted = format!(\"{:.6e}\", __slate_printf_arg);
+    let __slate_printf_e_idx = __slate_printf_e_formatted.find(\"e\").unwrap();
+    let __slate_printf_e_parts = __slate_printf_e_formatted.split_at(__slate_printf_e_idx);
+    let __slate_printf_e_exp = __slate_printf_e_parts.1.split_at(1usize).1.parse::<i32>().unwrap();
+    let __slate_printf_e_exp_str = if __slate_printf_e_exp < 0 { format!(\"-{:02}\", __slate_printf_e_exp.unsigned_abs()) } else { format!(\"+{:02}\", __slate_printf_e_exp) };
+    let __slate_printf_e_corrected = format!(\"{}e{}\", __slate_printf_e_parts.0, __slate_printf_e_exp_str);
+    __slate_printf_e_corrected
+});
+}
+"
+        );
+    }
+
+    #[test]
+    fn rewrites_exponent_width_precision_and_flag_forms() {
+        let out = run(printf_stmt_args(
+            b"%.2e|%10.2e|%+e|%-10.2e|%E\n\0",
+            vec![var("a"), var("b"), var("c"), var("d"), var("e")],
+        ));
+
+        assert!(out.contains("println!(\"{}|{}|{}|{}|{}\","));
+        assert!(out.contains("format!(\"{:.2e}\", __slate_printf_arg)"));
+        assert!(out.contains("format!(\"{:>10}\","));
+        assert!(out.contains("if __slate_printf_arg < 0.0 { __slate_printf_e_corrected } else { format!(\"+{}\", __slate_printf_e_corrected) }"));
+        assert!(out.contains("format!(\"{:<10}\","));
+        assert!(out.contains("format!(\"{:.6E}\", __slate_printf_arg)"));
+        assert!(out.contains(".find(\"E\").unwrap()"));
     }
 
     #[test]
@@ -2140,7 +2472,7 @@ fn main() {
     fn converts_supported_calls_and_wraps_remaining_raw_calls_in_flush_barriers() {
         let mut program = program_with_body(vec![
             printf_stmt(b"%d\n\0", var("x")),
-            printf_stmt(b"%e\n\0", var("y")),
+            printf_stmt(b"%g\n\0", var("y")),
         ]);
         run_fixup(&mut program);
         let out = program.emit();
@@ -2161,7 +2493,7 @@ fn main() {
 
     #[test]
     fn leaves_fully_unsupported_program_without_flush_barriers() {
-        let out = run(printf_stmt(b"%e\n\0", var("x")));
+        let out = run(printf_stmt(b"%g\n\0", var("x")));
 
         assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
         assert!(out.contains("unsafe { printf("));
