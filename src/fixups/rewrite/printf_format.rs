@@ -680,7 +680,45 @@ fn parse_sized_string_conversion(
 }
 
 fn parse_float_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversion, String)> {
-    let precision = if bytes.get(i).copied()? == b'.' {
+    let mut left = false;
+    let mut plus = false;
+    let mut zero = false;
+    loop {
+        match bytes.get(i).copied()? {
+            b'-' if !left => {
+                left = true;
+                i += 1;
+            }
+            b'+' if !plus => {
+                plus = true;
+                i += 1;
+            }
+            b'0' if !zero => {
+                zero = true;
+                i += 1;
+            }
+            b'-' | b'+' | b'0' | b' ' | b'#' => return None,
+            _ => break,
+        }
+    }
+    if left && zero {
+        return None;
+    }
+
+    let width_start = i;
+    while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+        i += 1;
+    }
+    let width = if i > width_start {
+        Some(std::str::from_utf8(&bytes[width_start..i]).ok()?)
+    } else {
+        None
+    };
+    if (left || zero) && width.is_none() {
+        return None;
+    }
+
+    let precision = if bytes.get(i).copied() == Some(b'.') {
         i += 1;
         let precision_start = i;
         while bytes.get(i).is_some_and(u8::is_ascii_digit) {
@@ -701,8 +739,34 @@ fn parse_float_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversi
         Conversion {
             kind: ConversionKind::Float,
         },
-        format!("{{:.{precision}}}"),
+        float_placeholder(left, plus, zero, width, precision),
     ))
+}
+
+fn float_placeholder(
+    left: bool,
+    plus: bool,
+    zero: bool,
+    width: Option<&str>,
+    precision: &str,
+) -> String {
+    let mut out = String::from("{:");
+    if left {
+        out.push('<');
+    }
+    if plus {
+        out.push('+');
+    }
+    if zero {
+        out.push('0');
+    }
+    if let Some(width) = width {
+        out.push_str(width);
+    }
+    out.push('.');
+    out.push_str(precision);
+    out.push('}');
+    out
 }
 
 fn parse_pointer_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conversion, String)> {
@@ -1803,6 +1867,23 @@ fn main() {
     }
 
     #[test]
+    fn rewrites_fixed_float_width_and_flag_forms() {
+        let out = run(printf_stmt_args(
+            b"%8.2f|%+8.2f|%08.2f|%-8.2f|%+.2f\n\0",
+            vec![var("a"), var("b"), var("c"), var("d"), var("e")],
+        ));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{:8.2}|{:+8.2}|{:08.2}|{:<8.2}|{:+.2}\", a, b, c, d, e);
+}
+"
+        );
+    }
+
+    #[test]
     fn rewrites_pointer_conversions_for_pointer_typed_arguments() {
         let pointer_ty = Type::Ptr {
             mutable: true,
@@ -1836,10 +1917,11 @@ fn main() {
         for fmt in [
             &b"%e\n\0"[..],
             &b"%g\n\0"[..],
-            &b"%8.2f\n\0"[..],
-            &b"%+.2f\n\0"[..],
             &b"%.*f\n\0"[..],
             &b"%Lf\n\0"[..],
+            &b"%-08.2f\n\0"[..],
+            &b"% 8.2f\n\0"[..],
+            &b"%#.2f\n\0"[..],
         ] {
             let out = run(printf_stmt(fmt, var("x")));
             assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
