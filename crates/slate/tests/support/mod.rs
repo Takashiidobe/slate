@@ -332,6 +332,81 @@ overflow-checks = false
     }
 }
 
+pub struct MultiBinCase {
+    pub name: String,
+    pub main_rs: PathBuf,
+    pub common_rs: PathBuf,
+}
+
+pub fn multi_bin_batch_path(project: &Path, name: &str) -> PathBuf {
+    project.join("target/debug").join(bin_name(name))
+}
+
+pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<String, String> {
+    let bin_dir = project.join("src/bin");
+    std::fs::create_dir_all(&bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
+    write_if_changed(
+        project.join("Cargo.toml"),
+        r#"[package]
+name = "slate_multi_batch"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+libc = "0.2"
+
+[build-dependencies]
+cc = "1"
+
+[profile.dev]
+overflow-checks = false
+"#
+        .as_bytes(),
+    )
+    .map_err(|e| format!("write Cargo.toml: {e}"))?;
+    write_long_double_shim(project)?;
+
+    let mut expected = BTreeMap::new();
+    for case in cases {
+        let case_dir = bin_dir.join(bin_name(&case.name));
+        std::fs::create_dir_all(&case_dir)
+            .map_err(|e| format!("create {}: {e}", case_dir.display()))?;
+        for (src, file) in [(&case.main_rs, "main.rs"), (&case.common_rs, "common.rs")] {
+            let dest = case_dir.join(file);
+            expected.insert(dest.clone(), ());
+            let contents = std::fs::read(src)
+                .map_err(|e| format!("read {} for batch crate: {e}", src.display()))?;
+            write_if_changed(&dest, &contents)
+                .map_err(|e| format!("write {} to batch crate: {e}", dest.display()))?;
+        }
+    }
+
+    let expected_dirs: std::collections::BTreeSet<PathBuf> = expected
+        .keys()
+        .filter_map(|dest| dest.parent().map(Path::to_path_buf))
+        .collect();
+    for entry in
+        std::fs::read_dir(&bin_dir).map_err(|e| format!("read {}: {e}", bin_dir.display()))?
+    {
+        let path = entry
+            .map_err(|e| format!("read {} entry: {e}", bin_dir.display()))?
+            .path();
+        if path.is_dir() && !expected_dirs.contains(&path) {
+            std::fs::remove_dir_all(&path)
+                .map_err(|e| format!("remove stale {}: {e}", path.display()))?;
+        }
+    }
+
+    let o = Command::new(cargo())
+        .args(["build", "--quiet", "--keep-going", "--manifest-path"])
+        .arg(project.join("Cargo.toml"))
+        .arg("--target-dir")
+        .arg(project.join("target"))
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", cargo()))?;
+    Ok(String::from_utf8_lossy(&o.stderr).into_owned())
+}
+
 pub fn compare_runs(c: &Run, r: &Run, compare_stderr: bool) -> Result<(), String> {
     if c.exit != r.exit {
         return Err(format!(
