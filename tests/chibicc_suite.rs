@@ -139,6 +139,17 @@ fn chibicc_supported_tests_match_c() {
 }
 
 #[test]
+#[ignore]
+fn chibicc_unsupported_triage_report() {
+    let results = run_bucket("unsupported");
+    for (name, result) in results {
+        if let Err(e) = result {
+            println!("=== {name} ===\n{e}\n");
+        }
+    }
+}
+
+#[test]
 fn chibicc_unsupported_tests_still_fail() {
     let results = run_bucket("unsupported");
     let unexpected_passes: Vec<String> = results
