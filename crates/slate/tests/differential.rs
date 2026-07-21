@@ -863,6 +863,23 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(!rejected_rust.contains("fn printf("));
     assert!(!rejected_rust.contains("unsafe { printf("));
 
+    let partial_c = fixtures_dir().join("printf_partial_conversion.c");
+    let partial_generated = tmp.join("printf_partial_conversion.generated.rs");
+    support::translate(&partial_c, &partial_generated)
+        .expect("translate printf partial conversion fixture");
+    let partial_rust = std::fs::read_to_string(&partial_generated)
+        .expect("read generated printf partial conversion rust");
+    assert!(partial_rust.contains("println!(\"first {}\", 1);"));
+    assert!(partial_rust.contains("println!(\"last {}\", 3);"));
+    assert!(partial_rust.contains("std::io::Write::flush(&mut std::io::stdout()).unwrap();"));
+    assert!(partial_rust.contains("unsafe { printf("));
+    assert!(partial_rust.contains("unsafe { fflush((unsafe { stdout }) as *mut libc::FILE) };"));
+    let flush_before = partial_rust.find("std::io::Write::flush").unwrap();
+    let raw_printf = partial_rust.find("unsafe { printf(").unwrap();
+    let fflush_after = partial_rust.find("unsafe { fflush(").unwrap();
+    let last_println = partial_rust.rfind("println!(\"last {}\", 3);").unwrap();
+    assert!(flush_before < raw_printf && raw_printf < fflush_after && fflush_after < last_println);
+
     let float_c = fixtures_dir().join("printf_float.c");
     let float_generated = tmp.join("printf_float.generated.rs");
     support::translate(&float_c, &float_generated).expect("translate printf float fixture");
@@ -1459,11 +1476,12 @@ fn string_lift_recovers_safe_local_string_buffers() {
     support::translate(&c_src, &generated).expect("translate string_lift fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated string_lift rust");
 
-    assert!(rust.contains("let mut greeting: [i8; 4] = [104, -61, -87, 0];"));
-    assert!(rust.contains("greeting.as_mut_ptr()"));
-    assert!(!rust.contains("greeting: &str"));
+    // greeting's printf converts on its own now, embedding the known constant, so the unused declaration is eliminated
+    assert!(!rust.contains("greeting"));
+    assert!(rust.contains("println!(\"{}\", \"h\\u{e9}\");"));
     assert!(rust.contains("let mut mutate: [i8; 4] = [97, 98, 99, 0];"));
     assert!(rust.contains("mutate.as_mut_ptr()"));
+    assert!(!rust.contains("mutate: &str"));
 }
 
 #[test]
