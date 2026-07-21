@@ -7683,6 +7683,11 @@ fn decode_cir_string(s: &str) -> Vec<u8> {
             bytes.push(c as u8);
             continue;
         }
+        if chars.peek() == Some(&'\\') {
+            chars.next();
+            bytes.push(b'\\');
+            continue;
+        }
         let mut hex = String::new();
         while hex.len() < 2 && chars.peek().is_some_and(|c| c.is_ascii_hexdigit()) {
             hex.push(chars.next().unwrap());

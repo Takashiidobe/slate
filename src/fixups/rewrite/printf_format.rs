@@ -1841,6 +1841,40 @@ fn main() {
     }
 
     #[test]
+    fn rewrites_percent_runs_quotes_and_backslashes_around_conversions() {
+        let mut fmt = br#"{%d} %% "quoted" back\slash %s|%c|%x
+"#
+        .to_vec();
+        fmt.push(0);
+        let out = run(printf_stmt_args(
+            &fmt,
+            vec![var("d"), fmt_arg(b"hi\0"), int(88), var("h")],
+        ));
+
+        assert_eq!(
+            out,
+            r#"fn main() {
+    println!("{{{}}} % \"quoted\" back\\slash {}|{}|{:x}", d, "hi", "X", h);
+}
+"#
+        );
+    }
+
+    #[test]
+    fn rewrites_doubled_adjacent_braces_and_percent_runs() {
+        let out = run(printf_stmt_args(b"}}%%{{%d}}\n\0", vec![var("d")]));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"}}}}%{{{{{}}}}}\", d);
+}
+"
+        );
+    }
+
+    #[test]
     fn leaves_unsupported_formats_and_extern_declaration() {
         let out = run(printf_stmt(b"%e\n\0", var("x")));
 

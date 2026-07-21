@@ -958,6 +958,23 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(scientific_general_rejected_rust.contains("unsafe { printf("));
     assert!(!scientific_general_rejected_rust.contains("println!("));
 
+    let literal_escaping_c = fixtures_dir().join("printf_literal_escaping.c");
+    let literal_escaping_generated = tmp.join("printf_literal_escaping.generated.rs");
+    support::translate(&literal_escaping_c, &literal_escaping_generated)
+        .expect("translate printf literal escaping fixture");
+    let literal_escaping_rust = std::fs::read_to_string(&literal_escaping_generated)
+        .expect("read generated printf literal escaping rust");
+    assert!(
+        literal_escaping_rust.contains(
+            r#"println!("{{{}}} % \"quoted\" back\\slash {}|{}|{:x}", d, "hi", "X", h);"#
+        )
+    );
+    assert!(literal_escaping_rust.contains(r#"println!("}}}}%{{{{{}}}}}", d);"#));
+    assert!(literal_escaping_rust.contains(r#"println!("%%{}%%", d);"#));
+    assert!(literal_escaping_rust.contains(r#"println!("{{{{}}}}{}{{{{}}}}", "mid");"#));
+    assert!(!literal_escaping_rust.contains("fn printf("));
+    assert!(!literal_escaping_rust.contains("unsafe { printf("));
+
     let pointer_c = fixtures_dir().join("printf_pointer.c");
     let pointer_generated = tmp.join("printf_pointer.generated.rs");
     support::translate(&pointer_c, &pointer_generated).expect("translate printf pointer fixture");
