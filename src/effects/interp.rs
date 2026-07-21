@@ -5453,28 +5453,44 @@ impl Interp {
                         zero_pad,
                         left_align,
                         width,
-                    }) => Ok(Value::Bytes(render_c_num_arg(
-                        &value,
-                        *conv,
-                        *alternate,
-                        *zero_pad,
-                        *left_align,
-                        *width,
-                    )?)),
+                        narrow,
+                    }) => {
+                        let value = match narrow {
+                            Some(narrow) => narrow_int_arg(value, false, *narrow),
+                            None => value,
+                        };
+                        Ok(Value::Bytes(render_c_num_arg(
+                            &value,
+                            *conv,
+                            *alternate,
+                            *zero_pad,
+                            *left_align,
+                            *width,
+                        )?))
+                    }
                     Some(CFormatSpec::Precision {
                         conv,
                         plus,
                         left_align,
                         width,
                         precision,
-                    }) => Ok(Value::Bytes(render_c_precision_arg(
-                        &value,
-                        *conv,
-                        *plus,
-                        *left_align,
-                        *width,
-                        *precision,
-                    )?)),
+                        narrow,
+                    }) => {
+                        let value = match narrow {
+                            Some(narrow) => {
+                                narrow_int_arg(value, matches!(conv, b'd' | b'i'), *narrow)
+                            }
+                            None => value,
+                        };
+                        Ok(Value::Bytes(render_c_precision_arg(
+                            &value,
+                            *conv,
+                            *plus,
+                            *left_align,
+                            *width,
+                            *precision,
+                        )?))
+                    }
                     Some(CFormatSpec::NarrowInt { signed, width }) => {
                         Ok(narrow_int_arg(value, *signed, *width))
                     }
@@ -6595,6 +6611,7 @@ enum CFormatSpec {
         zero_pad: bool,
         left_align: bool,
         width: Option<usize>,
+        narrow: Option<NarrowWidth>,
     },
     Precision {
         conv: u8,
@@ -6602,6 +6619,7 @@ enum CFormatSpec {
         left_align: bool,
         width: Option<usize>,
         precision: usize,
+        narrow: Option<NarrowWidth>,
     },
     SizedStr {
         left_align: bool,
@@ -6726,6 +6744,7 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
                 zero_pad,
                 left_align,
                 width,
+                narrow: narrow_width,
             },
             b'd' | b'i' | b'u' | b'x' | b'X' | b'o'
                 if let Some(narrow) = narrow_width
@@ -6746,6 +6765,7 @@ fn c_format_specs(fmt: &[u8]) -> Vec<CFormatSpec> {
                     left_align,
                     width,
                     precision: precision.unwrap(),
+                    narrow: narrow_width,
                 }
             }
             b'e' | b'E' if !alternate && !zero_pad => CFormatSpec::Exponent {
