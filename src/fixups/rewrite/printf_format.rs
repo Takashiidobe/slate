@@ -308,9 +308,21 @@ struct Conversion {
 enum ConversionKind {
     Integer(IntegerArg),
     String(StringArg),
-    Char,
+    Char(CharArg),
     Float,
     Pointer,
+}
+
+#[derive(Clone, Copy)]
+enum CharArg {
+    Value,
+    Sized(CharSizeFormat),
+}
+
+#[derive(Clone, Copy)]
+struct CharSizeFormat {
+    left: bool,
+    width: usize,
 }
 
 #[derive(Clone, Copy)]
@@ -558,7 +570,7 @@ fn parse_string_char_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conver
             return Some((
                 i + 1,
                 Conversion {
-                    kind: ConversionKind::Char,
+                    kind: ConversionKind::Char(CharArg::Value),
                 },
                 "{}".into(),
             ));
@@ -574,7 +586,35 @@ fn parse_string_char_conversion(bytes: &[u8], i: usize) -> Option<(usize, Conver
         }
         _ => {}
     }
-    parse_sized_string_conversion(bytes, i)
+    parse_sized_char_conversion(bytes, i).or_else(|| parse_sized_string_conversion(bytes, i))
+}
+
+fn parse_sized_char_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, Conversion, String)> {
+    let left = bytes.get(i).copied() == Some(b'-');
+    if left {
+        i += 1;
+    }
+    let width_start = i;
+    while bytes.get(i).is_some_and(u8::is_ascii_digit) {
+        i += 1;
+    }
+    if i == width_start {
+        return None;
+    }
+    let width: usize = std::str::from_utf8(&bytes[width_start..i])
+        .ok()?
+        .parse()
+        .ok()?;
+    if bytes.get(i).copied()? != b'c' {
+        return None;
+    }
+    Some((
+        i + 1,
+        Conversion {
+            kind: ConversionKind::Char(CharArg::Sized(CharSizeFormat { left, width })),
+        },
+        "{}".into(),
+    ))
 }
 
 fn parse_sized_string_conversion(
@@ -730,7 +770,8 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> O
         }
         ConversionKind::String(StringArg::Value) => printf_string_arg(arg, fact),
         ConversionKind::String(StringArg::Sized(format)) => sized_printf_string_arg(fact, format),
-        ConversionKind::Char => fact.const_char.clone().map(Expr::Str),
+        ConversionKind::Char(CharArg::Value) => fact.const_char.clone().map(Expr::Str),
+        ConversionKind::Char(CharArg::Sized(format)) => sized_printf_char_arg(fact, format),
         ConversionKind::Float => Some(arg.clone()),
         ConversionKind::Pointer if fact.pointer => Some(arg.clone()),
         ConversionKind::Pointer => None,
@@ -754,6 +795,18 @@ fn sized_printf_string_arg(fact: &PrintfArgFact, format: StringSizeFormat) -> Op
         return None;
     }
     Some(Expr::Str(apply_string_size_format(value, format)))
+}
+
+fn sized_printf_char_arg(fact: &PrintfArgFact, format: CharSizeFormat) -> Option<Expr> {
+    let value = fact.const_char.as_ref()?;
+    Some(Expr::Str(apply_string_size_format(
+        value,
+        StringSizeFormat {
+            left: format.left,
+            width: Some(format.width),
+            precision: None,
+        },
+    )))
 }
 
 fn apply_string_size_format(value: &str, format: StringSizeFormat) -> String {
@@ -1629,6 +1682,36 @@ fn main() {
 }
 "
         );
+    }
+
+    #[test]
+    fn rewrites_static_width_and_left_aligned_character_forms() {
+        let out = run(printf_stmt_args(
+            b"%3c|%-3c|%c\n\0",
+            vec![int('a' as i64), int('b' as i64), int('c' as i64)],
+        ));
+
+        assert_eq!(
+            out,
+            "\
+fn main() {
+    println!(\"{}|{}|{}\", \"  a\", \"b  \", \"c\");
+}
+"
+        );
+    }
+
+    #[test]
+    fn leaves_dynamic_width_and_non_ascii_character_forms_unsupported() {
+        for stmt in [
+            printf_stmt(b"%*c\n\0", int('a' as i64)),
+            printf_stmt(b"%3c\n\0", int(128)),
+        ] {
+            let out = run(stmt);
+            assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
+            assert!(out.contains("unsafe { printf("));
+            assert!(!out.contains("println!"));
+        }
     }
 
     #[test]
