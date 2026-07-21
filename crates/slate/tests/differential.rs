@@ -982,7 +982,10 @@ fn simple_printfs_are_recovered_as_format_macros() {
     let narrow_rust = std::fs::read_to_string(&narrow_generated)
         .expect("read generated printf narrow length modifiers rust");
     assert!(narrow_rust.contains(
-        "println!(\"{} {} {} {} {} {} {}\", s as i32, us as i32, c as i32, uc as i32, j, ju, t);"
+        "println!(\"{} {} {} {} {} {} {}\", ((s as i32) as u16) as i16, (us as i32) as u16, ((c as i32) as u8) as i8, (uc as i32) as u8, j, ju, t);"
+    ));
+    assert!(narrow_rust.contains(
+        "println!(\"{} {} {} {} {}\", (full_int as u8) as i8, ((uc as i32) as u8) as i8, negative as u8, (wide as u16) as i16, wide as u16);"
     ));
     assert!(!narrow_rust.contains("fn printf("));
     assert!(!narrow_rust.contains("unsafe { printf("));
