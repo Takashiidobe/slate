@@ -457,6 +457,11 @@ impl Interp {
             {
                 Ok(Flow::Normal)
             }
+            Stmt::Expr(Expr::MethodCall { recv, method, args })
+                if method == "unwrap" && args.is_empty() && self.stdout_flush_call(recv) =>
+            {
+                Ok(Flow::Normal)
+            }
             Stmt::Expr(Expr::Macro { name, args }) if name == "println" || name == "print" => {
                 self.print(args)?;
                 Ok(Flow::Normal)
@@ -1637,6 +1642,25 @@ impl Interp {
         self.append_file_bytes(file, &bytes);
         self.trace.push(Effect::FileWrite { file, bytes });
         Ok(true)
+    }
+
+    fn stdout_flush_call(&self, expr: &Expr) -> bool {
+        let Expr::Call { func, args } = expr else {
+            return false;
+        };
+        if !is_path(func, &["std", "io", "Write", "flush"]) {
+            return false;
+        }
+        let [
+            Expr::Ref {
+                mutable: true,
+                expr: recv,
+            },
+        ] = args.as_slice()
+        else {
+            return false;
+        };
+        matches!(recv.as_ref(), Expr::Call { func, args } if args.is_empty() && is_path(func, &["std", "io", "stdout"]))
     }
 
     fn vec_all_bytes(&mut self, name: &str) -> EResult<Vec<u8>> {
@@ -4491,6 +4515,7 @@ impl Interp {
             CallSummary::Fread => self.call_fread(args),
             CallSummary::Fwrite => self.call_fwrite(args),
             CallSummary::Fclose => self.call_fclose(args),
+            CallSummary::Fflush => self.call_fflush(args),
             CallSummary::Printf => self.call_printf(args),
             CallSummary::Exit => self.call_exit(args),
             CallSummary::Puts => self.call_puts(args),
@@ -5236,6 +5261,16 @@ impl Interp {
         };
         let file = self.eval_file(file)?;
         self.trace.push(Effect::FileClose { file });
+        Ok(int32(0))
+    }
+
+    fn call_fflush(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [_file] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Fflush),
+                ArgShapeKind::OneArgument,
+            ));
+        };
         Ok(int32(0))
     }
 
