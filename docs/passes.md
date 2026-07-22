@@ -132,20 +132,26 @@ change; "once" means it runs exactly one time per `apply` call.
 33. `c_strings` - mark/simplify recognized C-string literals - once.
 34. `stdio` - `fopen`/`fputs`/`fclose` sequences to `File`/`OpenOptions` owners - once.
 35. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls - once.
-36. `nullable_pointer` - recover `Option<*T>` null-check idioms - to fixpoint (its own `loop { ... }`); runs directly after its only producers - the two `string_libc::fixup` runs and `memchr_prelude::fixup_calls` (34), the sole places that emit the `<index>.map_or(null_mut(), |i| ptr.add(i) as *T)` shape it rewrites. Despite the name, it has no relationship to the pointer-provenance cluster (`slice_index`/`slice_loop`/`array_element_pointer_origin`/`buffer_cursor`): those match constant-index pointer arithmetic, this matches dynamic-index `Option`-wrapped search results, and the two never touch the same bindings.
+36. `nullable_pointer` - recover `Option<*T>` null-check idioms - to fixpoint (its own `loop { ... }`); runs directly after its only producers - the two `string_libc::fixup` runs and `memchr_prelude::fixup_calls`, the sole places that emit the `<index>.map_or(null_mut(), |i| ptr.add(i) as *T)` shape it rewrites. Despite the name, it has no relationship to the pointer-provenance cluster (`slice_index`/`slice_loop`/`array_element_pointer_origin`/`buffer_cursor`): those match constant-index pointer arithmetic, this matches dynamic-index `Option`-wrapped search results, and the two never touch the same bindings.
 37. `string_lift::fixup_c_strings` then `memchr_prelude` / `memchr_prelude::prune_unused_helper` - a second, narrower string-lift pass plus memchr-helper cleanup - once each.
-38. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing - once.
-39. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops - once.
-40. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage - once.
-41. `late_inline_temps` - inline single-use pure temps, late variant - to fixpoint (`inline_temps_to_fixpoint`, same round cap as step 2).
-42. `zero_init` (`cross_effects = true`) - same fusion as step 5, now allowed to cross intervening effects - to fixpoint.
-43. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, across the program.
-44. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint (`inline_var_aliases_to_fixpoint`).
-45. `prune_unused_externs` - drop now-dead `extern` decls for the libc functions `string_copy`, `string_libc`, `sort_search`, and `heap_ownership` replace - once, after all four rewrites (and their re-runs) have finished, rather than once per rewrite.
-46. `unused_items` - remove dead top-level items - once.
-47. `unused_params` - drop a function parameter that's never read in its body and rewrite every direct call site to match, once the function's only references are direct-by-name calls whose argument at that slot is pure and whose type can't own a destructor - to fixpoint.
-48. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
-49. `rewrite_final_return` - turn `return <expr>;` into plain `<expr>` at the end of a function.
+38. `late_inline_temps` - inline single-use pure temps, late variant - to fixpoint (`inline_temps_to_fixpoint`, same round cap as step 3).
+39. `ptr_copy` - collapse indexed pointer-copy loops into `std::ptr::copy` or `std::ptr::copy_nonoverlapping` - to fixpoint, per function.
+40. `dead_locals` - remove locals made dead by pointer-copy recovery - to fixpoint, per function, across the program.
+41. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing - once.
+42. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops - once.
+43. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage - once.
+44. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites - to fixpoint.
+45. `zero_init` (`cross_effects = true`) - same fusion as step 6, now allowed to cross intervening effects - to fixpoint.
+46. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, across the program.
+47. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery - once, per function.
+48. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint (`inline_var_aliases_to_fixpoint`).
+49. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches - to fixpoint, per function.
+50. `libc_exit` - rewrite direct `libc::exit` calls as `std::process::exit` - once.
+51. `prune_unused_externs` - drop now-dead `extern` decls for the libc functions `string_copy`, `string_libc`, `sort_search`, and `heap_ownership` replace - once, after all four rewrites (and their re-runs) have finished, rather than once per rewrite.
+52. `unused_items` - remove dead top-level items - once.
+53. `unused_params` - drop a function parameter that's never read in its body and rewrite every direct call site to match, once the function's only references are direct-by-name calls whose argument at that slot is pure and whose type can't own a destructor - to fixpoint.
+54. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function - once, per function.
+55. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
 because later groups can create new opportunities for earlier ones; re-running

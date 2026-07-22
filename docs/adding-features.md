@@ -147,8 +147,8 @@ fixups are optional improvements.
 ## Adding A Stdlib Coverage Probe
 
 The `slate-nk3.*` epic maps which libc functions Slate can translate, one small
-program per function. These tickets are the cleanest parallel work (see
-[WORKFLOW.md](../WORKFLOW.md)) because they only add isolated fixtures.
+program per function. These tickets are clean parallel work because they only
+add isolated fixtures.
 
 Probes are **auto-discovered**: drop a `.c` file under
 `tests/stdlib/<header>/<name>.c` and `cargo test --test stdlib_coverage` picks it

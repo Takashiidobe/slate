@@ -610,6 +610,10 @@ impl TraceLogger for CollectingLogger {
 
     fn rewrite(&mut self, event: RewriteEvent) {
         if let Some(active) = &mut self.current {
+            assert_eq!(
+                event.pass, active.pass,
+                "rewrite event pass does not match active trace pass"
+            );
             active.events.push(event);
         }
     }
