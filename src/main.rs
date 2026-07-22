@@ -20,7 +20,7 @@ use std::process::{Command, ExitCode};
 fn usage() -> ExitCode {
     eprintln!("usage: slate <command> [file.c]");
     eprintln!("  emit-cir    print ClangIR (generic form)");
-    eprintln!("  emit-fixtures  write translated test fixtures to tests/fixtures.generated/");
+    eprintln!("  emit-fixtures  write every supported test fixture to sibling .generated dirs");
     eprintln!(
         "  emit-lowered-fixtures  write raw lowered test fixtures to tests/fixtures.lowered.generated/"
     );
@@ -727,90 +727,125 @@ fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
 
 fn emit_fixtures() -> Result<String, String> {
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let src_dir = manifest.join("tests/fixtures");
-    let out_dir = manifest.join("tests/fixtures.generated");
-    std::fs::create_dir_all(&out_dir).map_err(|e| format!("create {}: {e}", out_dir.display()))?;
-
-    let mut inputs = Vec::new();
-    for entry in
-        std::fs::read_dir(&src_dir).map_err(|e| format!("read {}: {e}", src_dir.display()))?
-    {
-        let path = entry
-            .map_err(|e| format!("read {} entry: {e}", src_dir.display()))?
-            .path();
-        if path.extension().and_then(|e| e.to_str()) == Some("c") {
-            inputs.push(path);
-        }
-    }
-    inputs.sort();
-
     let mut report = String::new();
-    for input in inputs {
-        let name = input
-            .file_stem()
-            .ok_or_else(|| format!("missing file stem: {}", input.display()))?;
-        let output = out_dir.join(name).with_extension("rs");
-        std::fs::write(&output, translate(&input)?)
+
+    report.push_str(&emit_c_fixture_tree(
+        &manifest.join("tests/fixtures"),
+        &manifest.join("tests/fixtures.generated"),
+        false,
+        |_| true,
+        translate,
+    )?);
+    report.push_str(&emit_c_fixture_tree(
+        &manifest.join("tests/fixtures.cfg"),
+        &manifest.join("tests/fixtures.cfg.generated"),
+        false,
+        |_| true,
+        directive_translate::translate_directives,
+    )?);
+    report.push_str(&emit_project_fixture_tree(
+        &manifest.join("tests/fixtures.multi"),
+        &manifest.join("tests/fixtures.multi.generated"),
+        translate_project,
+    )?);
+    report.push_str(&emit_project_fixture_tree(
+        &manifest.join("tests/fixtures.chibicc/supported"),
+        &manifest.join("tests/fixtures.chibicc.generated/supported"),
+        translate_project,
+    )?);
+    report.push_str(&emit_project_fixture_tree(
+        &manifest.join("tests/fixtures.library"),
+        &manifest.join("tests/fixtures.library.generated"),
+        translate_project_lib_crate,
+    )?);
+    report.push_str(&emit_c_fixture_tree(
+        &manifest.join("tests/stdlib"),
+        &manifest.join("tests/stdlib.generated"),
+        true,
+        |relative| relative != Path::new("setjmp/setjmp.c"),
+        translate,
+    )?);
+
+    Ok(report)
+}
+
+fn emit_c_fixture_tree(
+    source_root: &Path,
+    output_root: &Path,
+    recursive: bool,
+    include: impl Fn(&Path) -> bool,
+    translator: impl Fn(&Path) -> Result<String, String>,
+) -> Result<String, String> {
+    if !source_root.is_dir() {
+        return Ok(String::new());
+    }
+    let mut report = String::new();
+    for input in collect_c_files(source_root, recursive)? {
+        let relative = input
+            .strip_prefix(source_root)
+            .map_err(|e| format!("relativize {}: {e}", input.display()))?;
+        if !include(relative) {
+            continue;
+        }
+        let output = output_root.join(relative).with_extension("rs");
+        let parent = output
+            .parent()
+            .ok_or_else(|| format!("missing parent: {}", output.display()))?;
+        std::fs::create_dir_all(parent).map_err(|e| format!("create {}: {e}", parent.display()))?;
+        std::fs::write(&output, translator(&input)?)
             .map_err(|e| format!("write {}: {e}", output.display()))?;
         report.push_str(&format!("wrote {}\n", output.display()));
     }
+    Ok(report)
+}
 
-    // multi-TU projects: each subdirectory of tests/fixtures.multi becomes a
-    // directory of translated Rust modules, mirroring the single-file flow.
-    let multi_src = manifest.join("tests/fixtures.multi");
-    let multi_out = manifest.join("tests/fixtures.multi.generated");
-    if multi_src.is_dir() {
-        let mut projects = Vec::new();
-        for entry in std::fs::read_dir(&multi_src)
-            .map_err(|e| format!("read {}: {e}", multi_src.display()))?
-        {
+fn collect_c_files(root: &Path, recursive: bool) -> Result<Vec<PathBuf>, String> {
+    let mut files = Vec::new();
+    let mut dirs = vec![root.to_path_buf()];
+    while let Some(dir) = dirs.pop() {
+        for entry in std::fs::read_dir(&dir).map_err(|e| format!("read {}: {e}", dir.display()))? {
             let path = entry
-                .map_err(|e| format!("read {} entry: {e}", multi_src.display()))?
+                .map_err(|e| format!("read {} entry: {e}", dir.display()))?
                 .path();
-            if path.is_dir() {
-                projects.push(path);
+            if recursive && path.is_dir() {
+                dirs.push(path);
+            } else if path.extension().and_then(|ext| ext.to_str()) == Some("c") {
+                files.push(path);
             }
         }
-        projects.sort();
-        for project in projects {
-            let name = project
-                .file_name()
-                .ok_or_else(|| format!("missing dir name: {}", project.display()))?;
-            report.push_str(&translate_project(&project, &multi_out.join(name))?);
+    }
+    files.sort();
+    Ok(files)
+}
+
+fn emit_project_fixture_tree(
+    source_root: &Path,
+    output_root: &Path,
+    translator: impl Fn(&Path, &Path) -> Result<String, String>,
+) -> Result<String, String> {
+    if !source_root.is_dir() {
+        return Ok(String::new());
+    }
+    let mut projects = Vec::new();
+    for entry in std::fs::read_dir(source_root)
+        .map_err(|e| format!("read {}: {e}", source_root.display()))?
+    {
+        let path = entry
+            .map_err(|e| format!("read {} entry: {e}", source_root.display()))?
+            .path();
+        if path.is_dir() {
+            projects.push(path);
         }
     }
+    projects.sort();
 
-    // multi-config cfg fixtures: render the portable #[cfg(...)] merge so the C
-    // and generated Rust can be compared side by side. The `reject/` subdir holds
-    // sources that translate-directives is meant to refuse, so it is skipped.
-    let cfg_src = manifest.join("tests/fixtures.cfg");
-    let cfg_out = manifest.join("tests/fixtures.cfg.generated");
-    if cfg_src.is_dir() {
-        std::fs::create_dir_all(&cfg_out)
-            .map_err(|e| format!("create {}: {e}", cfg_out.display()))?;
-        let mut cfg_inputs = Vec::new();
-        for entry in
-            std::fs::read_dir(&cfg_src).map_err(|e| format!("read {}: {e}", cfg_src.display()))?
-        {
-            let path = entry
-                .map_err(|e| format!("read {} entry: {e}", cfg_src.display()))?
-                .path();
-            if path.extension().and_then(|e| e.to_str()) == Some("c") {
-                cfg_inputs.push(path);
-            }
-        }
-        cfg_inputs.sort();
-        for input in cfg_inputs {
-            let name = input
-                .file_stem()
-                .ok_or_else(|| format!("missing file stem: {}", input.display()))?;
-            let output = cfg_out.join(name).with_extension("rs");
-            std::fs::write(&output, directive_translate::translate_directives(&input)?)
-                .map_err(|e| format!("write {}: {e}", output.display()))?;
-            report.push_str(&format!("wrote {}\n", output.display()));
-        }
+    let mut report = String::new();
+    for project in projects {
+        let name = project
+            .file_name()
+            .ok_or_else(|| format!("missing dir name: {}", project.display()))?;
+        report.push_str(&translator(&project, &output_root.join(name))?);
     }
-
     Ok(report)
 }
 

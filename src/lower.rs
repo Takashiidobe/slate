@@ -955,12 +955,8 @@ impl<'a> Lowerer<'a> {
             } else {
                 self.lower_func(op)
             };
-            match item {
-                Some(item) => items.push(item),
-                None => self.ctx.diagnostics.warn(
-                    format!("lower: skipped function {:?}", attr_str(op, "sym_name")),
-                    op.loc.clone(),
-                ),
+            if let Some(item) = item {
+                items.push(item);
             }
         }
 
