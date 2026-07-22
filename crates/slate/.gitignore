@@ -4,6 +4,8 @@
 /tests/fixtures.multi.generated/
 /tests/fixtures.cfg.generated/
 
+/tools/macro-dump-plugin/build/
+
 # Beads / Dolt files (added by bd init)
 .dolt/
 *.db
