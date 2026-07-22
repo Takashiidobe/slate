@@ -1,7 +1,7 @@
 use crate::preprocess::{
     self, Branch, DirectiveDisposition, DirectiveKind, DirectiveName, PredExpr, Preprocessing,
 };
-use crate::rust_ast::{Cfg, Expr, Item, Program};
+use crate::rust_ast::{Attr, Cfg, Expr, Item, Program, Type};
 use crate::{c_ast, cir, ctx, fixups, lower};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -62,53 +62,111 @@ pub fn translate_directives(path: &Path) -> Result<String, String> {
 }
 
 fn directive_items(pp: &Preprocessing) -> Result<Vec<Item>, String> {
-    pp.directives
-        .iter()
-        .filter(|directive| {
-            directive.name == DirectiveName::Error
-                || directive.name.disposition() == DirectiveDisposition::UnsupportedSemantic
-        })
-        .map(|directive| {
-            if directive.name.disposition() == DirectiveDisposition::UnsupportedSemantic
-                && directive.condition.is_none()
-            {
-                return Err(format!(
-                    "translate-directives: {}",
-                    directive.unsupported_message()
-                ));
-            }
-            let message = if directive.name == DirectiveName::Error {
-                directive.raw_payload.clone()
-            } else {
+    let mut items = Vec::new();
+    let mut warning_index = 0;
+    for directive in pp.directives.iter().filter(|directive| {
+        matches!(
+            directive.name,
+            DirectiveName::Error | DirectiveName::Warning
+        ) || directive.disposition() == DirectiveDisposition::UnsupportedSemantic
+    }) {
+        if directive.disposition() == DirectiveDisposition::UnsupportedSemantic
+            && directive.condition.is_none()
+        {
+            return Err(format!(
+                "translate-directives: {}",
                 directive.unsupported_message()
-            };
-            let item = Item::Macro {
-                name: "compile_error".into(),
-                args: vec![Expr::Str(message)],
-            };
-            let Some(condition) = &directive.condition else {
-                return Ok(item);
-            };
-            let cfg = preprocess::pred_to_cfg(condition).ok_or_else(|| {
-                format!(
-                    "translate-directives: {} is guarded by predicate `{}` which does not map to a known Rust cfg",
-                    if directive.name == DirectiveName::Error {
-                        format!("#error at line {}", directive.line_start)
-                    } else {
-                        directive.unsupported_message()
-                    },
-                    preprocess::predicate_text(condition)
-                )
-            })?;
-            Ok(Item::Cfg {
-                cfg,
-                item: Box::new(item),
+            ));
+        }
+        let cfg = directive
+            .condition
+            .as_ref()
+            .map(|condition| {
+                preprocess::pred_to_cfg(condition).ok_or_else(|| {
+                    format!(
+                        "translate-directives: {} is guarded by predicate `{}` which does not map to a known Rust cfg",
+                        match directive.name {
+                            DirectiveName::Error => format!("#error at line {}", directive.line_start),
+                            DirectiveName::Warning => format!("#warning at line {}", directive.line_start),
+                            _ => directive.unsupported_message(),
+                        },
+                        preprocess::predicate_text(condition)
+                    )
+                })
             })
-        })
-        .collect()
+            .transpose()?;
+        if directive.name == DirectiveName::Warning {
+            items.extend(warning_items(
+                &directive.raw_payload,
+                warning_index,
+                cfg,
+                WarningBackend::Standalone,
+            ));
+            warning_index += 1;
+            continue;
+        }
+        let message = if directive.name == DirectiveName::Error {
+            directive.raw_payload.clone()
+        } else {
+            directive.unsupported_message()
+        };
+        let item = Item::Macro {
+            name: "compile_error".into(),
+            args: vec![Expr::Str(message)],
+        };
+        items.push(cfg.map_or(item.clone(), |cfg| Item::Cfg {
+            cfg,
+            item: Box::new(item),
+        }));
+    }
+    Ok(items)
 }
 
-fn insert_directive_items(program: &mut Program, items: Vec<Item>) {
+#[derive(Debug, Clone, Copy)]
+pub enum WarningBackend {
+    Standalone,
+    SupportMacro,
+}
+
+pub fn warning_items(
+    message: &str,
+    index: usize,
+    cfg: Option<Cfg>,
+    backend: WarningBackend,
+) -> Vec<Item> {
+    let items = match backend {
+        WarningBackend::Standalone => vec![
+            Item::Const {
+                attrs: vec![Attr::Deprecated(message.into())],
+                name: format!("__SLATE_WARNING_{index}"),
+                ty: Type::Unit,
+                init: Expr::Block(Box::default()),
+            },
+            Item::Const {
+                attrs: Vec::new(),
+                name: "_".into(),
+                ty: Type::Unit,
+                init: Expr::Var(format!("__SLATE_WARNING_{index}").into()),
+            },
+        ],
+        WarningBackend::SupportMacro => vec![Item::Macro {
+            name: "slate_support::warning".into(),
+            args: vec![Expr::Str(message.into())],
+        }],
+    };
+    match cfg {
+        Some(cfg) => items
+            .into_iter()
+            .map(|item| Item::Cfg {
+                cfg: cfg.clone(),
+                item: Box::new(item),
+            })
+            .collect(),
+        None => items,
+    }
+}
+
+pub fn insert_directive_items(program: &mut Program, items: Vec<Item>) {
     let index = program
         .items
         .iter()
@@ -421,8 +479,10 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, Stri
         .directives
         .iter()
         .filter(|directive| {
-            directive.name == DirectiveName::Error
-                || directive.name.disposition() == DirectiveDisposition::UnsupportedSemantic
+            matches!(
+                directive.name,
+                DirectiveName::Error | DirectiveName::Warning
+            ) || directive.disposition() == DirectiveDisposition::UnsupportedSemantic
         })
         .collect();
     let input = preprocess::clang_input(path, &source, &sanitized)?;
@@ -597,6 +657,7 @@ fn item_key(item: &Item) -> String {
         Item::ExternBlock { .. } => "extern".into(),
         Item::Fn(f) => format!("fn:{}", f.name),
         Item::Static { name, .. } => format!("static:{name}"),
+        Item::Const { name, .. } => format!("const:{name}"),
         Item::Mod { name } => format!("mod:{name}"),
         Item::Use { path } => format!(
             "use:{}",
