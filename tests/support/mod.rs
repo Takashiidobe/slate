@@ -115,7 +115,6 @@ overflow-checks = false
         ),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
-    write_long_double_shim(&project)?;
 
     for entry in std::fs::read_dir(rs_dir).map_err(|e| format!("read {}: {e}", rs_dir.display()))? {
         let path = entry
@@ -127,6 +126,7 @@ overflow-checks = false
                 .map_err(|e| format!("copy {} to project: {e}", path.display()))?;
         }
     }
+    write_long_double_shim(&project)?;
 
     let target_dir = project.join("target");
     let o = Command::new(cargo())
@@ -173,9 +173,9 @@ overflow-checks = false
         ),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
-    write_long_double_shim(&project)?;
     std::fs::copy(src, project.join("src/main.rs"))
         .map_err(|e| format!("copy {} to cargo project: {e}", src.display()))?;
+    write_long_double_shim(&project)?;
 
     let target_dir = project.join("target");
     let o = Command::new(cargo())
@@ -293,7 +293,6 @@ overflow-checks = false
         .as_bytes(),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
-    write_long_double_shim(project)?;
 
     let mut expected = BTreeMap::new();
     for case in cases {
@@ -317,6 +316,7 @@ overflow-checks = false
                 .map_err(|e| format!("remove stale {}: {e}", path.display()))?;
         }
     }
+    write_long_double_shim(project)?;
 
     let o = Command::new(cargo())
         .args(["build", "--quiet", "--manifest-path"])
@@ -364,7 +364,6 @@ overflow-checks = false
         .as_bytes(),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
-    write_long_double_shim(project)?;
 
     let mut expected = BTreeMap::new();
     for case in cases {
@@ -396,6 +395,7 @@ overflow-checks = false
                 .map_err(|e| format!("remove stale {}: {e}", path.display()))?;
         }
     }
+    write_long_double_shim(project)?;
 
     let o = Command::new(cargo())
         .args(["build", "--quiet", "--keep-going", "--manifest-path"])
@@ -435,6 +435,7 @@ fn write_long_double_shim(project: &Path) -> Result<(), String> {
     write_if_changed(
         project.join("build.rs"),
         r#"fn main() {
+    println!("cargo:rerun-if-changed=src/slate_long_double.c");
     cc::Build::new()
         .file("src/slate_long_double.c")
         .compile("slate_long_double");
@@ -443,23 +444,119 @@ fn write_long_double_shim(project: &Path) -> Result<(), String> {
         .as_bytes(),
     )
     .map_err(|e| format!("write build.rs: {e}"))?;
-    write_if_changed(
-        project.join("src/slate_long_double.c"),
+
+    let mut source = String::from(
         r#"#include <stdio.h>
 #include <stdlib.h>
 
-void __slate_strtold(char *nptr, char **endptr, long double *out) {
-    *out = strtold(nptr, endptr);
+void __slate_strtold(char *nptr, char **endptr, double *out) {
+    *out = (double)strtold(nptr, endptr);
+}
+"#,
+    );
+    for name in collect_long_double_shim_names(&project.join("src"))? {
+        if let Some(trampoline) = render_long_double_shim_trampoline(&name) {
+            source.push('\n');
+            source.push_str(&trampoline);
+        }
+    }
+    write_if_changed(project.join("src/slate_long_double.c"), source.as_bytes())
+        .map(|_| ())
+        .map_err(|e| format!("write slate_long_double.c: {e}"))
 }
 
-int __slate_printf_ld_i32(char *fmt, const long double *value, int arg) {
-    return printf(fmt, *value, arg);
+fn collect_long_double_shim_names(
+    dir: &Path,
+) -> Result<std::collections::BTreeSet<String>, String> {
+    let mut names = std::collections::BTreeSet::new();
+    if !dir.exists() {
+        return Ok(names);
+    }
+    for entry in std::fs::read_dir(dir).map_err(|e| format!("read {}: {e}", dir.display()))? {
+        let path = entry
+            .map_err(|e| format!("read {} entry: {e}", dir.display()))?
+            .path();
+        if path.is_dir() {
+            names.extend(collect_long_double_shim_names(&path)?);
+        } else if path.extension().and_then(|e| e.to_str()) == Some("rs") {
+            let text = std::fs::read_to_string(&path)
+                .map_err(|e| format!("read {}: {e}", path.display()))?;
+            extract_long_double_shim_names(&text, &mut names);
+        }
+    }
+    Ok(names)
 }
-"#
-        .as_bytes(),
-    )
-    .map(|_| ())
-    .map_err(|e| format!("write slate_long_double.c: {e}"))
+
+fn extract_long_double_shim_names(text: &str, names: &mut std::collections::BTreeSet<String>) {
+    const PREFIX: &str = "__slate_";
+    let mut rest = text;
+    while let Some(start) = rest.find(PREFIX) {
+        let token_start = &rest[start..];
+        let end = token_start
+            .find(|c: char| !(c.is_ascii_alphanumeric() || c == '_'))
+            .unwrap_or(token_start.len());
+        let token = &token_start[..end];
+        if token[PREFIX.len()..].contains("__") {
+            names.insert(token.to_string());
+        }
+        rest = &token_start[end.max(1)..];
+    }
+}
+
+fn shim_tag_c_type(tag: &str) -> String {
+    if let Some(inner) = tag.strip_prefix('p') {
+        return match inner {
+            "i8" | "u8" => "char *".to_string(),
+            "x" => "void *".to_string(),
+            other => format!("{} *", shim_tag_c_type(other)),
+        };
+    }
+    match tag {
+        "i8" => "signed char",
+        "u8" => "unsigned char",
+        "i16" => "short",
+        "u16" => "unsigned short",
+        "i32" => "int",
+        "u32" => "unsigned int",
+        "i64" => "long long",
+        "u64" => "unsigned long long",
+        "isize" => "long",
+        "usize" => "unsigned long",
+        "f32" => "float",
+        "f64" => "double",
+        "bool" => "_Bool",
+        "ld" => "double",
+        _ => "void *",
+    }
+    .to_string()
+}
+
+fn render_long_double_shim_trampoline(name: &str) -> Option<String> {
+    let rest = name.strip_prefix("__slate_")?;
+    let sep = rest.find("__")?;
+    let callee = &rest[..sep];
+    let tags: Vec<&str> = rest[sep + 2..].split('_').collect();
+    let params = tags
+        .iter()
+        .enumerate()
+        .map(|(i, tag)| format!("{} _{i}", shim_tag_c_type(tag)))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let args = tags
+        .iter()
+        .enumerate()
+        .map(|(i, tag)| {
+            if *tag == "ld" {
+                format!("(long double)_{i}")
+            } else {
+                format!("_{i}")
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(", ");
+    Some(format!(
+        "int {name}({params}) {{\n    return {callee}({args});\n}}\n"
+    ))
 }
 
 fn write_if_changed(path: impl AsRef<Path>, contents: &[u8]) -> std::io::Result<bool> {
