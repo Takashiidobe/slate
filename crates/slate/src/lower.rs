@@ -283,6 +283,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         used_symbols: BTreeMap::new(),
         externs: BTreeMap::new(),
         extern_returns: BTreeMap::new(),
+        long_double_shims: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
         uses_c_variadic: std::cell::Cell::new(false),
@@ -571,6 +572,7 @@ struct Lowerer<'a> {
     /// call site uses this to `as`-cast args and wrap the call in `unsafe`.
     externs: BTreeMap<String, Vec<Type>>,
     extern_returns: BTreeMap<String, Option<String>>,
+    long_double_shims: BTreeMap<String, ExternFnDecl>,
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
     uses_c_variadic: std::cell::Cell<bool>,
@@ -806,7 +808,6 @@ impl<'a> Lowerer<'a> {
             });
         }
 
-        let module_uses_long_double = ops.iter().any(|op| op_mentions_long_double(op));
         let mut extern_decls = Vec::new();
         for (name, ty) in &self.extern_globals {
             // an extern global defined in a sibling TU becomes a module import.
@@ -899,7 +900,7 @@ impl<'a> Lowerer<'a> {
                             mutable: false,
                             ty: Type::Ptr {
                                 mutable: true,
-                                inner: Box::new(Type::LongDouble),
+                                inner: Box::new(Type::Prim(Prim::F64)),
                             },
                             nonnull: false,
                         },
@@ -910,40 +911,6 @@ impl<'a> Lowerer<'a> {
                 }));
             } else {
                 extern_decls.push(ExternDecl::Fn(decl));
-            }
-            if name == "printf" && module_uses_long_double {
-                extern_decls.push(ExternDecl::Fn(ExternFnDecl {
-                    name: "__slate_printf_ld_i32".into(),
-                    params: vec![
-                        FnParam {
-                            name: "_0".into(),
-                            mutable: false,
-                            ty: Type::Ptr {
-                                mutable: true,
-                                inner: Box::new(Type::Prim(Prim::I8)),
-                            },
-                            nonnull: false,
-                        },
-                        FnParam {
-                            name: "_1".into(),
-                            mutable: false,
-                            ty: Type::Ptr {
-                                mutable: false,
-                                inner: Box::new(Type::LongDouble),
-                            },
-                            nonnull: false,
-                        },
-                        FnParam {
-                            name: "_2".into(),
-                            mutable: false,
-                            ty: Type::Prim(Prim::I32),
-                            nonnull: false,
-                        },
-                    ],
-                    variadic: false,
-                    ret: Some(Type::Prim(Prim::I32)),
-                    returns_nonnull: false,
-                }));
             }
         }
         if !extern_decls.is_empty() {
@@ -985,6 +952,17 @@ impl<'a> Lowerer<'a> {
             }
         }
 
+        if !self.long_double_shims.is_empty() {
+            items.push(Item::ExternBlock {
+                abi: "C".into(),
+                decls: self
+                    .long_double_shims
+                    .values()
+                    .cloned()
+                    .map(ExternDecl::Fn)
+                    .collect(),
+            });
+        }
         if self.uses_long_double.get() {
             items.splice(1..1, long_double_prelude());
         }
@@ -4894,8 +4872,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.push_stmt(Stmt::Let {
                     name: name.clone(),
                     mutable: true,
-                    ty: Some(Type::LongDouble),
-                    init: Some(self.default_value_expr(&Type::LongDouble)),
+                    ty: Some(Type::Prim(Prim::F64)),
+                    init: Some(Expr::Value(RustValue::Float(0.0))),
                 });
                 let i8_ptr = Type::Ptr {
                     mutable: true,
@@ -4923,50 +4901,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ],
                 };
                 self.push_stmt(Self::unsafe_stmt(Stmt::Expr(call)));
-                self.values
-                    .insert(result.to_string(), Val::Expr(Expr::Var(name.into())));
+                self.values.insert(
+                    result.to_string(),
+                    Val::Expr(Expr::Call {
+                        func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                        args: vec![Expr::Var(name.into())],
+                    }),
+                );
             }
             return;
         }
-        if callee_name == "printf"
-            && arg_types.iter().any(|ty| is_long_double(ty))
-            && args.len() == 3
-            && arg_types.get(1).is_some_and(|ty| is_long_double(ty))
-            && arg_types.get(2).is_some_and(|ty| *ty == "!s32i")
-        {
-            let i8_ptr = Type::Ptr {
-                mutable: true,
-                inner: Box::new(Type::Prim(Prim::I8)),
-            };
-            let long_double_ptr = Type::Ptr {
-                mutable: false,
-                inner: Box::new(Type::LongDouble),
-            };
-            let expr = Self::unsafe_expr(Expr::Call {
-                func: Box::new(Expr::Var("__slate_printf_ld_i32".into())),
-                args: vec![
-                    Expr::Cast {
-                        expr: Box::new(args[0].clone()),
-                        ty: i8_ptr,
-                    },
-                    Expr::Cast {
-                        expr: Box::new(Expr::AddrOf {
-                            mutable: false,
-                            expr: Box::new(args[1].clone()),
-                        }),
-                        ty: long_double_ptr,
-                    },
-                    Expr::Cast {
-                        expr: Box::new(args[2].clone()),
-                        ty: Type::Prim(Prim::I32),
-                    },
-                ],
-            });
-            if let Some(result) = op.results.first() {
-                self.materialize_expr(result, expr, op_result_type(op));
-            } else {
-                self.push_stmt(Stmt::Expr(expr));
-            }
+        if self.try_format_call_shims(op, &callee_name, &args, arg_types) {
             return;
         }
         let call = Expr::Call {
@@ -5010,6 +4955,110 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             self.push_stmt(Stmt::Expr(expr));
         }
+    }
+
+    fn try_format_call_shims(
+        &mut self,
+        op: &Op,
+        callee_name: &str,
+        args: &[Expr],
+        arg_types: &[&str],
+    ) -> bool {
+        let Some(fmt_index) = self.format_string_arg_index(callee_name, arg_types) else {
+            return false;
+        };
+        self.try_long_double_variadic_shim(op, callee_name, args, arg_types, fmt_index + 1)
+    }
+
+    fn format_string_arg_index(&self, callee_name: &str, arg_types: &[&str]) -> Option<usize> {
+        let fixed = self.parent.externs.get(callee_name)?;
+        if arg_types.len() <= fixed.len() {
+            return None;
+        }
+        let fmt_index = fixed.len().checked_sub(1)?;
+        is_format_string_arg(arg_types.get(fmt_index)?).then_some(fmt_index)
+    }
+
+    fn try_long_double_variadic_shim(
+        &mut self,
+        op: &Op,
+        callee_name: &str,
+        args: &[Expr],
+        arg_types: &[&str],
+        prefix: usize,
+    ) -> bool {
+        if !arg_types[prefix..].iter().any(|ty| is_long_double(ty)) {
+            return false;
+        }
+        let param_types: Vec<Type> = arg_types
+            .iter()
+            .map(|ty| {
+                if is_long_double(ty) {
+                    Type::Prim(Prim::F64)
+                } else {
+                    self.parent.rust_type(ty)
+                }
+            })
+            .collect();
+        let tags: Vec<String> = arg_types
+            .iter()
+            .zip(param_types.iter())
+            .map(|(ty, param_ty)| {
+                if is_long_double(ty) {
+                    "ld".to_string()
+                } else {
+                    long_double_shim_type_tag(param_ty)
+                }
+            })
+            .collect();
+        let shim_name = format!("__slate_{callee_name}__{}", tags.join("_"));
+        self.parent
+            .long_double_shims
+            .entry(shim_name.clone())
+            .or_insert_with(|| ExternFnDecl {
+                name: shim_name.clone(),
+                params: param_types
+                    .iter()
+                    .enumerate()
+                    .map(|(i, ty)| FnParam {
+                        name: format!("_{i}"),
+                        mutable: false,
+                        ty: ty.clone(),
+                        nonnull: false,
+                    })
+                    .collect(),
+                variadic: false,
+                ret: Some(Type::Prim(Prim::I32)),
+                returns_nonnull: false,
+            });
+        let call_args = args
+            .iter()
+            .zip(arg_types.iter())
+            .enumerate()
+            .map(|(i, (arg, ty))| {
+                if is_long_double(ty) {
+                    Expr::Field {
+                        base: Box::new(arg.clone()),
+                        field: "0".into(),
+                    }
+                } else {
+                    Expr::Cast {
+                        expr: Box::new(arg.clone()),
+                        ty: param_types[i].clone(),
+                    }
+                }
+            })
+            .collect();
+        let expr = Self::unsafe_expr(Expr::Call {
+            func: Box::new(Expr::Var(shim_name.into())),
+            args: call_args,
+        });
+        if let Some(result) = op.results.first() {
+            self.materialize_expr(result, expr, op_result_type(op));
+        } else {
+            self.push_stmt(Stmt::Expr(expr));
+        }
+        true
     }
 
     fn byte_ptr_operand(&self, operand: &str, mutable: bool) -> Expr {
@@ -6361,26 +6410,6 @@ fn collect_region_ops_recursive<'a>(op: &'a Op, out: &mut Vec<&'a Op>) {
     }
 }
 
-fn op_mentions_long_double(op: &Op) -> bool {
-    op.ty
-        .as_deref()
-        .is_some_and(|ty| ty.contains("!cir.long_double"))
-        || op
-            .attrs
-            .values()
-            .filter_map(Attr::as_str)
-            .any(|value| value.contains("!cir.long_double"))
-        || op.regions.iter().any(|region| {
-            region.blocks.iter().any(|block| {
-                block
-                    .args
-                    .iter()
-                    .any(|(_, ty)| ty.contains("!cir.long_double"))
-                    || block.ops.iter().any(op_mentions_long_double)
-            })
-        })
-}
-
 fn attr_str<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
     op.attrs.get(key).and_then(Attr::as_str)
 }
@@ -6846,7 +6875,7 @@ fn long_double_prelude() -> Vec<Item> {
         Item::Struct(StructDef {
             attrs: vec![
                 RustAttr::Repr(vec![Repr::C, Repr::Align(16)]),
-                RustAttr::Derive(vec![Derive::Clone, Derive::Copy]),
+                RustAttr::Derive(vec![Derive::Clone, Derive::Copy, Derive::PartialEq]),
             ],
             vis: Visibility::Private,
             generics: vec![],
@@ -6863,6 +6892,32 @@ fn long_double_prelude() -> Vec<Item> {
 
 fn is_long_double(ty: &str) -> bool {
     ty.starts_with("!cir.long_double")
+}
+
+fn is_format_string_arg(ty: &str) -> bool {
+    matches!(ty, "!cir.ptr<!s8i>" | "!cir.ptr<!u8i>")
+}
+
+fn long_double_shim_type_tag(ty: &Type) -> String {
+    match ty {
+        Type::Prim(Prim::I8) => "i8".into(),
+        Type::Prim(Prim::U8) => "u8".into(),
+        Type::Prim(Prim::I16) => "i16".into(),
+        Type::Prim(Prim::U16) => "u16".into(),
+        Type::Prim(Prim::I32) => "i32".into(),
+        Type::Prim(Prim::U32) => "u32".into(),
+        Type::Prim(Prim::I64) => "i64".into(),
+        Type::Prim(Prim::U64) => "u64".into(),
+        Type::Prim(Prim::I128) => "i128".into(),
+        Type::Prim(Prim::U128) => "u128".into(),
+        Type::Prim(Prim::Isize) => "isize".into(),
+        Type::Prim(Prim::Usize) => "usize".into(),
+        Type::Prim(Prim::F32) => "f32".into(),
+        Type::Prim(Prim::F64) => "f64".into(),
+        Type::Prim(Prim::Bool) => "bool".into(),
+        Type::Ptr { inner, .. } => format!("p{}", long_double_shim_type_tag(inner)),
+        _ => "x".into(),
+    }
 }
 
 const COMPLEX_TY: &str = "Complex<";
