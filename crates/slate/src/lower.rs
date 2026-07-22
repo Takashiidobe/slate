@@ -615,6 +615,7 @@ struct FunctionLowerer<'a, 'b> {
     dispatch: Option<DispatchCtx>,
     /// Alloca results hoisted above the dispatch loop so locals outlive block arms.
     hoisted: BTreeSet<String>,
+    declared_local_names: BTreeSet<String>,
     /// Compiler-temp allocas (see `forwardable_temp_allocas`) lowered as forwarded
     /// SSA values instead of named locals.
     forward_allocas: BTreeSet<String>,
@@ -1483,6 +1484,7 @@ impl<'a> Lowerer<'a> {
             label_counter: 0,
             dispatch: None,
             hoisted: BTreeSet::new(),
+            declared_local_names: BTreeSet::new(),
             forward_allocas: forwardable_temp_allocas(op.regions.first()?),
             forward_values: BTreeMap::new(),
             immutable_temps: BTreeSet::new(),
@@ -2290,6 +2292,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    fn unique_local_name(&mut self, base: String) -> String {
+        if self.declared_local_names.insert(base.clone()) {
+            return base;
+        }
+        let mut n = 2;
+        loop {
+            let candidate = format!("{base}{n}");
+            if self.declared_local_names.insert(candidate.clone()) {
+                return candidate;
+            }
+            n += 1;
+        }
+    }
+
     fn lower_alloca(&mut self, op: &Op) {
         let Some(result) = op.results.first() else {
             return;
@@ -2306,7 +2322,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if self.hoisted.contains(result) && self.dispatch.is_some() {
             return;
         }
-        let name = sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string();
+        let name = self.unique_local_name(
+            sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string(),
+        );
         // a `va_list` local becomes a Rust `VaList`, assigned by `va_start`.
         if op
             .ty
