@@ -7613,6 +7613,23 @@ fn anon_alias_key(ty: &str, aliases: &BTreeMap<String, String>) -> Option<String
     name.starts_with("anon.").then(|| ty.to_string())
 }
 
+fn collect_anon_alias_keys(
+    ty: &str,
+    aliases: &BTreeMap<String, String>,
+    out: &mut BTreeSet<String>,
+) {
+    let ty = ty.trim();
+    if let Some(key) = anon_alias_key(ty, aliases) {
+        out.insert(key);
+        return;
+    }
+    if let Some(inner) = cir_ptr_pointee(ty) {
+        collect_anon_alias_keys(inner, aliases, out);
+    } else if let Some((elem, _)) = parse_cir_array_type(ty) {
+        collect_anon_alias_keys(&elem, aliases, out);
+    }
+}
+
 fn parse_cir_int_type(ty: &str) -> Option<(bool, u32)> {
     let ty = ty.trim();
     if let Some(rest) = ty
@@ -7680,14 +7697,13 @@ fn collect_anon_record_info(
     for op in ops {
         match op.kind() {
             CirOpKind::Alloca => {
-                if let Some(key) = op
+                if let Some(ty) = op
                     .ty
                     .as_deref()
                     .and_then(op_type_return)
                     .and_then(cir_ptr_pointee)
-                    .and_then(|pointee| anon_alias_key(pointee, aliases))
                 {
-                    needed.insert(key);
+                    collect_anon_alias_keys(ty, aliases, needed);
                 }
             }
             CirOpKind::GetMember => {
@@ -7706,10 +7722,8 @@ fn collect_anon_record_info(
                 }
             }
             CirOpKind::Global => {
-                if let Some(key) =
-                    attr_str(op, "sym_type").and_then(|ty| anon_alias_key(ty, aliases))
-                {
-                    needed.insert(key);
+                if let Some(ty) = attr_str(op, "sym_type") {
+                    collect_anon_alias_keys(ty, aliases, needed);
                 }
             }
             _ => {}
@@ -7740,10 +7754,12 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
             continue;
         };
         for field_ty in split_top_level(&expanded[open + 1..close], ',') {
-            if let Some(field_key) = anon_alias_key(field_ty.trim(), &module.aliases)
-                && needed.insert(field_key.clone())
-            {
-                frontier.push(field_key);
+            let mut field_keys = BTreeSet::new();
+            collect_anon_alias_keys(field_ty.trim(), &module.aliases, &mut field_keys);
+            for field_key in field_keys {
+                if needed.insert(field_key.clone()) {
+                    frontier.push(field_key);
+                }
             }
         }
     }
