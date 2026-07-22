@@ -666,6 +666,7 @@ fn default_value(ty: &Type) -> Expr {
     match ty {
         Type::Prim(Prim::Bool) => Expr::Value(RustValue::Bool(false)),
         Type::Prim(Prim::F32 | Prim::F64) => Expr::Value(RustValue::Float(0.0)),
+        Type::Prim(Prim::F128) => Expr::HexFloat("0.0f128".into()),
         Type::Ptr { .. } => Expr::Value(RustValue::NullPtr),
         _ => Expr::Value(RustValue::I64(0)),
     }

@@ -959,6 +959,8 @@ fn parse_c_type(s: &str) -> CType {
         CType::Float { bits: 64 }
     } else if s == "long double" {
         CType::Float { bits: 80 }
+    } else if matches!(s, "_Float128" | "__float128") {
+        CType::Float { bits: 128 }
     } else if let Some(underlying) = lookup_typedef(s) {
         parse_c_type(&underlying)
     } else if let Some(name) = s.strip_prefix("enum ") {

@@ -7693,10 +7693,10 @@ fn overflowing_int_op(lhs: i128, rhs: i128, bits: u32, signed: bool, method: &st
 }
 
 fn parse_hex_float(text: &str) -> f64 {
+    let text = text.trim().strip_suffix("f128").unwrap_or(text.trim());
     let Some((mantissa, exponent)) = text
-        .trim()
         .strip_prefix("0x")
-        .or_else(|| text.trim().strip_prefix("0X"))
+        .or_else(|| text.strip_prefix("0X"))
         .and_then(|rest| rest.split_once(['p', 'P']))
     else {
         return text.parse::<f64>().unwrap_or(0.0);

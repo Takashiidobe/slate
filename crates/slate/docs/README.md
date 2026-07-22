@@ -35,8 +35,11 @@ surface:
 
 `int`/`char`/`short`/`long`/`long long` (signed and unsigned) by CIR width,
 `_Bool`/`bool`, `float`/`double`, `long double` (ABI-exact `#[repr(C, align(16))]`
-newtype, `f64`-precision arithmetic), and `float`/`double _Complex` (`#[repr(C)]`
-newtype, libgcc-backed `*`/`/`). Full arithmetic (`+ - * / %`), bitwise
+newtype, `f64`-precision arithmetic), IEEE binary128 via Clang's `__float128`
+spelling (native nightly Rust `f128`), and `float`/`double _Complex` (`#[repr(C)]`
+newtype, libgcc-backed `*`/`/`). The standard C23 `_Float128` spelling follows
+the same path when the configured CIR-enabled Clang accepts it. Full arithmetic
+(`+ - * / %`), bitwise
 (`& | ^ ~ << >>`), logical (`&& || !`), comparisons, compound assignment,
 increment, unary negation, and explicit casts across all of the above. Integer
 overflow wraps two's-complement on both sides (`overflow-checks = false`)

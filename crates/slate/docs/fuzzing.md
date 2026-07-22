@@ -44,6 +44,7 @@ From that state it emits multi-function programs with:
 - helper functions taking and returning `int`, plus fixed `char` and `double`
   helpers that exercise non-int signatures;
 - optional `long double` helpers/locals (arithmetic and casts) and
+  `__float128` helpers/locals (native binary128 arithmetic and casts), plus
   `double _Complex` helpers/locals (`+`/`-`/`*`/`/` with `__real__`/`__imag__`
   extraction), each gated on a per-program coin flip;
 - scoped locals, reused across statements, plus loop-scoped induction variables;

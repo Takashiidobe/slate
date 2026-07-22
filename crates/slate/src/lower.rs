@@ -227,6 +227,15 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
         return features;
     };
     for op in region_ops(module_op) {
+        if op.ty.as_deref().is_some_and(|ty| ty.contains("!cir.f128"))
+            || op
+                .attrs
+                .values()
+                .filter_map(Attr::as_str)
+                .any(|value| value.contains("!cir.f128"))
+        {
+            features.insert(Feature::F128);
+        }
         if linkage_is_weak(op) {
             features.insert(Feature::Linkage);
         }
@@ -286,6 +295,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         long_double_shims: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
+        uses_f128: std::cell::Cell::new(false),
         uses_c_variadic: std::cell::Cell::new(false),
         uses_linkage: std::cell::Cell::new(false),
         uses_used_with_arg: std::cell::Cell::new(false),
@@ -575,6 +585,7 @@ struct Lowerer<'a> {
     long_double_shims: BTreeMap<String, ExternFnDecl>,
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
+    uses_f128: std::cell::Cell<bool>,
     uses_c_variadic: std::cell::Cell<bool>,
     uses_linkage: std::cell::Cell<bool>,
     uses_used_with_arg: std::cell::Cell<bool>,
@@ -1012,6 +1023,9 @@ impl<'a> Lowerer<'a> {
         // grouped with the crate-level `#![allow(..)]` so both stay at the top.
         if self.uses_c_variadic.get() {
             insert_crate_feature(&mut items, Feature::CVariadic);
+        }
+        if self.uses_f128.get() {
+            insert_crate_feature(&mut items, Feature::F128);
         }
         if self.uses_linkage.get() {
             insert_crate_feature(&mut items, Feature::Linkage);
@@ -1702,6 +1716,9 @@ impl<'a> Lowerer<'a> {
         if type_mentions_complex(&ty) {
             self.uses_complex.set(true);
         }
+        if type_mentions_f128(&ty) {
+            self.uses_f128.set(true);
+        }
         ty
     }
 
@@ -2021,6 +2038,7 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
         }),
         CType::Float { bits: 32 } => Type::Prim(Prim::F32),
         CType::Float { bits: 80 } => Type::LongDouble,
+        CType::Float { bits: 128 } => Type::Prim(Prim::F128),
         CType::Float { .. } => Type::Prim(Prim::F64),
         CType::Ptr(inner) if matches!(&**inner, CType::Void) => Type::Ptr {
             mutable: true,
@@ -2751,7 +2769,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, value, result_ty);
             return;
         }
-        let value = if result_ty.is_some_and(is_long_double) {
+        let value = if result_ty == Some("!cir.f128") {
+            parse_cir_f128_expr(raw).unwrap_or_else(|| Expr::HexFloat("0.0f128".into()))
+        } else if result_ty.is_some_and(is_long_double) {
             let value = parse_cir_fp_expr(raw)
                 .or_else(|| parse_cir_int(raw).map(int_value_expr))
                 .unwrap_or(Expr::Value(RustValue::Float(0.0)));
@@ -7405,6 +7425,8 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
         Type::Prim(Prim::F32)
     } else if ty == "!cir.double" {
         Type::Prim(Prim::F64)
+    } else if ty == "!cir.f128" {
+        Type::Prim(Prim::F128)
     } else if is_long_double(ty) {
         Type::LongDouble
     } else if let Some(inner) = ty
@@ -7511,6 +7533,21 @@ fn type_mentions_complex(ty: &Type) -> bool {
         | Type::Unit
         | Type::Variadic
         | Type::Never => false,
+    }
+}
+
+fn type_mentions_f128(ty: &Type) -> bool {
+    match ty {
+        Type::Prim(Prim::F128) => true,
+        Type::Complex(inner) | Type::Ref { inner, .. } | Type::Slice(inner) => {
+            type_mentions_f128(inner)
+        }
+        Type::Ptr { inner, .. } | Type::Array { elem: inner, .. } => type_mentions_f128(inner),
+        Type::FnPtr { params, ret } => {
+            params.iter().any(type_mentions_f128) || type_mentions_f128(ret)
+        }
+        Type::Generic { args, .. } => args.iter().any(type_mentions_f128),
+        _ => false,
     }
 }
 
@@ -7921,6 +7958,7 @@ fn default_value_for_type(ty: &Type) -> Expr {
     match ty {
         Type::Prim(Prim::Bool) => Expr::Value(RustValue::Bool(false)),
         Type::Prim(Prim::F32 | Prim::F64) => Expr::Value(RustValue::Float(0.0)),
+        Type::Prim(Prim::F128) => Expr::HexFloat("0.0f128".into()),
         Type::Ptr { .. } => Expr::Value(RustValue::NullPtr),
         Type::FnPtr { .. } => Expr::Value(RustValue::None),
         _ => Expr::Value(RustValue::I64(0)),
@@ -8033,6 +8071,16 @@ fn parse_cir_fp_expr(s: &str) -> Option<Expr> {
     parse_cir_fp(s).map(fp_literal_expr)
 }
 
+fn parse_cir_f128_expr(s: &str) -> Option<Expr> {
+    let fp = cir_fp_text(s)?;
+    if let Some(hex) = fp.strip_prefix("0x").or_else(|| fp.strip_prefix("0X")) {
+        let bits = u128::from_str_radix(hex, 16).ok()?;
+        Some(Expr::HexFloat(format!("f128::from_bits(0x{bits:032x})")))
+    } else {
+        Some(Expr::HexFloat(format!("{fp}f128")))
+    }
+}
+
 fn fp_literal_expr(fp: String) -> Expr {
     fp.parse::<f64>()
         .map(|n| Expr::Value(RustValue::Float(n)))
@@ -8072,10 +8120,7 @@ fn parse_cir_bool(s: &str) -> Option<bool> {
 }
 
 fn parse_cir_fp(s: &str) -> Option<String> {
-    let start = s.find("#cir.fp<")? + "#cir.fp<".len();
-    let rest = &s[start..];
-    let end = rest.find('>')?;
-    let text = rest[..end].trim();
+    let text = cir_fp_text(s)?;
     if text.starts_with("0x") || text.starts_with("0X") {
         let bits = u64::from_str_radix(&text[2..], 16).ok()?;
         return match text.len() - 2 {
@@ -8085,6 +8130,13 @@ fn parse_cir_fp(s: &str) -> Option<String> {
         };
     }
     Some(text.to_string())
+}
+
+fn cir_fp_text(s: &str) -> Option<&str> {
+    let start = s.find("#cir.fp<")? + "#cir.fp<".len();
+    let rest = &s[start..];
+    let end = rest.find('>')?;
+    Some(rest[..end].trim())
 }
 
 // `#cir.const_complex<#cir.fp<re> : ty, #cir.fp<im> : ty>` -> (re, im) literals.
