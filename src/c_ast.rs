@@ -164,10 +164,18 @@ fn clang() -> String {
 
 fn macro_dump_plugin() -> String {
     std::env::var("SLATE_MACRO_DUMP_PLUGIN").unwrap_or_else(|_| {
-        format!(
-            "{}/tools/macro-dump-plugin/build/MacroDump.so",
-            env!("CARGO_MANIFEST_DIR")
-        )
+        let clang = PathBuf::from(clang());
+        clang
+            .parent()
+            .and_then(Path::parent)
+            .filter(|path| !path.as_os_str().is_empty())
+            .map(|path| path.join("lib/SlateMacroDump.so"))
+            .unwrap_or_else(|| {
+                PathBuf::from(std::env::var("HOME").expect("HOME not set"))
+                    .join("llvm-project/build-cir/lib/SlateMacroDump.so")
+            })
+            .to_string_lossy()
+            .into_owned()
     })
 }
 

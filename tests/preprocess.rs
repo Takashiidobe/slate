@@ -44,6 +44,31 @@ fn recorded_cfgs(doc: &Value) -> Vec<String> {
         .collect()
 }
 
+#[test]
+fn record_cfg_exposes_the_directive_ledger() {
+    let doc = record_cfg("feature_nested.c", &[]);
+    let directives = doc["directives"].as_array().expect("directives array");
+
+    assert_eq!(directives.len(), 6);
+    assert_eq!(directives[0]["name"], "ifdef");
+    assert_eq!(directives[0]["raw_payload"], "OUTER_FEATURE");
+    assert_eq!(directives[0]["line_start"], 3);
+    assert_eq!(directives[0]["line_end"], 3);
+    assert_eq!(directives[0]["depth"], 0);
+    assert_eq!(directives[0]["condition"], "defined(OUTER_FEATURE)");
+    assert_eq!(directives[0]["active"], false);
+
+    assert_eq!(directives[1]["name"], "ifdef");
+    assert_eq!(directives[1]["depth"], 1);
+    assert_eq!(
+        directives[1]["condition"],
+        "(defined(OUTER_FEATURE)) && (defined(INNER_FEATURE))"
+    );
+    assert!(
+        directives[1]["byte_end"].as_u64().unwrap() > directives[1]["byte_start"].as_u64().unwrap()
+    );
+}
+
 /// Every predicate mapping in `expected_cfgs.json` (variants and fallback) must
 /// appear among the recorded branch cfgs for its source.
 #[test]
