@@ -109,7 +109,7 @@
 
 <type> ::= <base_type> | <pointer_type> | <function_pointer_type> ;
 <base_type> ::= <unqualified_base_type> | <type_qualifier> <unqualified_base_type> ;
-<unqualified_base_type> ::= <int_type> | "float" | "double" | "long double" | <complex_type> | <char_type> | <bool_type> | <ident> ;
+<unqualified_base_type> ::= <int_type> | "float" | "double" | "long double" | "__float128" | <complex_type> | <char_type> | <bool_type> | <ident> ;
 <pointer_type> ::= <base_type> "*" | <base_type> "*" "restrict" ;
 <function_pointer_type> ::= <ret_type> "(" "*" ")" "(" <function_pointer_param_types> ")" ;
 <function_pointer_param_types> ::= "void" | <function_pointer_params> ;

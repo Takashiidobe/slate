@@ -115,6 +115,7 @@ struct Gen {
     has_qualified_types: bool,
     has_function_pointer: bool,
     has_long_double: bool,
+    has_float128: bool,
     has_complex: bool,
     has_atomics: bool,
 }
@@ -141,6 +142,7 @@ pub fn generate(seed: u64) -> String {
         has_qualified_types: false,
         has_function_pointer: false,
         has_long_double: false,
+        has_float128: false,
         has_complex: false,
         has_atomics: false,
     };
@@ -163,6 +165,7 @@ impl Gen {
         self.has_qualified_types = self.rng.chance(70);
         self.has_function_pointer = self.rng.chance(70);
         self.has_long_double = self.rng.chance(70);
+        self.has_float128 = self.rng.chance(70);
         self.has_complex = self.rng.chance(70);
         self.has_atomics = self.rng.chance(70);
 
@@ -216,6 +219,9 @@ impl Gen {
         }
         if self.has_long_double {
             self.emit_long_double_fn();
+        }
+        if self.has_float128 {
+            self.emit_float128_fn();
         }
         if self.has_complex {
             self.emit_complex_fn();
@@ -399,6 +405,14 @@ impl Gen {
         self.line("static int fuzz_long_double_mix(long double a, long double b) {");
         self.line("    long double c = (a + b) / 2.0L;");
         self.line("    return (int)(c * 3.0L);");
+        self.line("}");
+        self.blank();
+    }
+
+    fn emit_float128_fn(&mut self) {
+        self.line("static int fuzz_float128_mix(__float128 a, __float128 b) {");
+        self.line("    __float128 c = (a + b) / 2.0Q;");
+        self.line("    return (int)(c * 3.0Q);");
         self.line("}");
         self.blank();
     }
@@ -879,6 +893,9 @@ impl Gen {
         if self.has_long_double {
             self.emit_long_double_use();
         }
+        if self.has_float128 {
+            self.emit_float128_use();
+        }
         if self.has_complex {
             self.emit_complex_use();
         }
@@ -1015,6 +1032,13 @@ impl Gen {
         self.line("long double ldb = 5.0L;");
         self.printf("fuzz_long_double_mix(lda, ldb)");
         self.printf("(int)((long double)7 / 2.0L)");
+    }
+
+    fn emit_float128_use(&mut self) {
+        self.line("__float128 f128a = 3.0Q;");
+        self.line("__float128 f128b = 5.0Q;");
+        self.printf("fuzz_float128_mix(f128a, f128b)");
+        self.printf("(int)((__float128)7 / 2.0Q)");
     }
 
     fn emit_complex_use(&mut self) {
@@ -1360,6 +1384,7 @@ mod tests {
                 has_qualified_types: false,
                 has_function_pointer: false,
                 has_long_double: false,
+                has_float128: false,
                 has_complex: false,
                 has_atomics: false,
             };
@@ -1499,6 +1524,16 @@ mod tests {
         assert!(corpus.contains("long double lda = 3.0L;"));
         assert!(corpus.contains("fuzz_long_double_mix(lda, ldb)"));
         assert!(corpus.contains("(int)((long double)7 / 2.0L)"));
+    }
+
+    #[test]
+    fn emits_float128_uses() {
+        let corpus = (0..512u64).map(generate).collect::<Vec<_>>().join("\n");
+        assert!(corpus.contains("static int fuzz_float128_mix(__float128 a, __float128 b)"));
+        assert!(corpus.contains("__float128 c = (a + b) / 2.0Q;"));
+        assert!(corpus.contains("__float128 f128a = 3.0Q;"));
+        assert!(corpus.contains("fuzz_float128_mix(f128a, f128b)"));
+        assert!(corpus.contains("(int)((__float128)7 / 2.0Q)"));
     }
 
     #[test]

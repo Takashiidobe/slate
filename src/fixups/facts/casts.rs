@@ -712,7 +712,7 @@ fn is_integer_prim(prim: Prim) -> bool {
 }
 
 fn is_float_prim(prim: Prim) -> bool {
-    matches!(prim, Prim::F32 | Prim::F64)
+    matches!(prim, Prim::F32 | Prim::F64 | Prim::F128)
 }
 
 fn prim_signed(prim: Prim) -> Option<bool> {
@@ -729,7 +729,7 @@ fn prim_bits(prim: Prim) -> Option<u16> {
         Prim::I16 | Prim::U16 => 16,
         Prim::I32 | Prim::U32 | Prim::F32 => 32,
         Prim::I64 | Prim::U64 | Prim::F64 => 64,
-        Prim::I128 | Prim::U128 => 128,
+        Prim::I128 | Prim::U128 | Prim::F128 => 128,
         Prim::Isize | Prim::Usize => usize::BITS as u16,
         _ => return None,
     })
