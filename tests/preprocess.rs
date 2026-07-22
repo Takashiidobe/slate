@@ -57,6 +57,7 @@ fn record_cfg_exposes_the_directive_ledger() {
     assert_eq!(directives[0]["depth"], 0);
     assert_eq!(directives[0]["condition"], "defined(OUTER_FEATURE)");
     assert_eq!(directives[0]["active"], false);
+    assert_eq!(directives[0]["disposition"], "represented-in-rust");
 
     assert_eq!(directives[1]["name"], "ifdef");
     assert_eq!(directives[1]["depth"], 1);
@@ -66,6 +67,35 @@ fn record_cfg_exposes_the_directive_ledger() {
     );
     assert!(
         directives[1]["byte_end"].as_u64().unwrap() > directives[1]["byte_start"].as_u64().unwrap()
+    );
+}
+
+#[test]
+fn directive_ledger_exposes_every_disposition() {
+    let doc = record_cfg("reject/directive_dispositions.c", &[]);
+    let directives = doc["directives"].as_array().expect("directives array");
+    let recorded: Vec<_> = directives
+        .iter()
+        .map(|directive| {
+            (
+                directive["name"].as_str().unwrap(),
+                directive["disposition"].as_str().unwrap(),
+            )
+        })
+        .collect();
+
+    assert_eq!(
+        recorded,
+        vec![
+            ("define", "consumed-by-clang"),
+            ("if", "represented-in-rust"),
+            ("error", "represented-in-rust"),
+            ("endif", "represented-in-rust"),
+            ("warning", "diagnostic-only"),
+            ("", "no-output"),
+            ("pragma", "unsupported-semantic"),
+            ("slate_unknown", "unsupported-semantic"),
+        ]
     );
 }
 
