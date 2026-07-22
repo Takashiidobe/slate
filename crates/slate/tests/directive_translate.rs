@@ -99,6 +99,27 @@ fn compile_with_cfgs(name: &str, rust: &str, cfgs: &[&str]) -> std::process::Out
         .expect("compile generated directive Rust")
 }
 
+fn compile_and_run(name: &str, rust: &str) -> std::process::Output {
+    compile_and_run_with_cfgs(name, rust, &[])
+}
+
+fn compile_and_run_with_cfgs(name: &str, rust: &str, cfgs: &[&str]) -> std::process::Output {
+    let compile = compile_with_cfgs(name, rust, cfgs);
+    assert!(
+        compile.status.success(),
+        "generated Rust failed to compile:\n{}",
+        String::from_utf8_lossy(&compile.stderr)
+    );
+    Command::new(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("target/directive-translate-generated")
+            .join(name)
+            .with_extension("bin"),
+    )
+    .output()
+    .expect("run generated directive binary")
+}
+
 fn write_generated(name: &str, rust: &str) -> PathBuf {
     let out_dir =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("target/directive-translate-generated");
@@ -396,6 +417,56 @@ fn unsupported_directive_with_unmappable_condition_stops_translation() {
 }
 
 #[test]
+fn clang_consumed_directives_preserve_generated_behavior() {
+    let rust = translate("common_directives.c");
+
+    assert!(!rust.contains("DIRECTIVE_VALUE"));
+    assert!(compile_and_run("common_directives", &rust).status.success());
+}
+
+#[test]
+fn include_next_uses_the_clang_header_search_order() {
+    let rust = translate("include_next.c");
+
+    assert!(compile_and_run("include_next", &rust).status.success());
+}
+
+#[test]
+fn line_directive_preserves_cfg_item_joins_and_presumed_values() {
+    let rust = translate_directives("line_directive.c");
+
+    assert!(rust.contains("#[cfg(feature = \"line_feature\")]\nfn line_value() -> i32"));
+    assert!(rust.contains("#[cfg(not(feature = \"line_feature\"))]\nfn line_value() -> i32"));
+    assert!(rust.contains("701"));
+    assert!(rust.contains("704"));
+    assert!(
+        compile_and_run("line_directive_default", &rust)
+            .status
+            .success()
+    );
+    assert!(
+        compile_and_run_with_cfgs("line_directive_feature", &rust, &["line_feature"])
+            .status
+            .success()
+    );
+}
+
+#[test]
+fn embed_bytes_are_consumed_by_clang_and_lowered() {
+    let rust = translate_directives("embed_basic.c");
+
+    assert!(compile_and_run("embed_basic", &rust).status.success());
+}
+
+#[test]
+fn unsupported_embed_input_fails_explicitly() {
+    let err = translate_directives_err("reject/embed_missing.c");
+
+    assert!(err.contains("missing-embed-data.bin"));
+    assert!(err.contains("file not found"));
+}
+
+#[test]
 fn directive_translated_fixtures_compile_for_current_host() {
     let work_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/directive-translate-compile");
     for name in [
@@ -409,6 +480,10 @@ fn directive_translated_fixtures_compile_for_current_host() {
         "feature_single.c",
         "feature_multiple.c",
         "feature_nested.c",
+        "common_directives.c",
+        "embed_basic.c",
+        "include_next.c",
+        "line_directive.c",
         "unsupported_conditional.c",
     ] {
         let rust = translate_directives(name);
