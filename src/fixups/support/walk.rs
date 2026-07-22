@@ -272,7 +272,7 @@ pub(in crate::fixups) fn expr_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> b
             base: lhs,
             index: rhs,
         } => expr_any(lhs, pred) || expr_any(rhs, pred),
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             expr_any(func, pred) || args.iter().any(|arg| expr_any(arg, pred))
         }
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
@@ -441,7 +441,7 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
             exprs_mut_with(start, f);
             exprs_mut_with(end, f);
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             exprs_mut_with(func, f);
             for arg in args {
                 exprs_mut_with(arg, f);
@@ -729,7 +729,7 @@ pub(in crate::fixups) fn exprs_mut_with_path(
                 exprs_mut_with_path(end, path, f);
             });
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             with_path_segment(path, PathSegment::Expr(0), |path| {
                 exprs_mut_with_path(func, path, f);
             });

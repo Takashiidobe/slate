@@ -186,7 +186,7 @@ fn rewrite_printf_expr(
 ) -> Option<Expr> {
     let fact = printf_fact(function, facts, path)?;
     let call = peel_empty_unsafe(expr);
-    let Expr::Call { func, args } = call else {
+    let Expr::Call { func, args, .. } = call else {
         return None;
     };
     if !matches!(&**func, Expr::Var(name) if name.as_str() == "printf") {
@@ -1710,10 +1710,12 @@ fn is_raw_printf_call_stmt(stmt: &Stmt) -> bool {
 fn flush_before_stmt() -> Stmt {
     Stmt::Expr(Expr::MethodCall {
         recv: Box::new(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("std::io::Write::flush".into())),
             args: vec![Expr::Ref {
                 mutable: true,
                 expr: Box::new(Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("std::io::stdout".into())),
                     args: Vec::new(),
                 }),
@@ -1728,6 +1730,7 @@ fn fflush_after_stmt() -> Stmt {
     Stmt::Expr(Expr::Unsafe(Box::new(Block {
         stmts: Vec::new(),
         tail: Some(Box::new(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("fflush".into())),
             args: vec![Expr::Cast {
                 expr: Box::new(Expr::Unsafe(Box::new(Block {
@@ -1812,7 +1815,7 @@ fn stmt_has_printf_call(stmt: &Stmt) -> bool {
 
 fn expr_has_printf_call(expr: &Expr) -> bool {
     match expr {
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             matches!(&**func, Expr::Var(name) if name.as_str() == "printf")
                 || expr_has_printf_call(func)
                 || args.iter().any(expr_has_printf_call)

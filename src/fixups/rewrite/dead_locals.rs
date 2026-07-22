@@ -312,6 +312,7 @@ mod tests {
                 "read",
                 "i32",
                 Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Path(crate::rust_ast::Path::new([
                         "std".into(),
                         "ptr".into(),

@@ -49,7 +49,7 @@ fn final_main_exit_is_zero(body: &[IndentStmt]) -> bool {
     let Some(stmt) = body.last().map(|indent| &indent.stmt) else {
         return false;
     };
-    let Stmt::Expr(Expr::Call { func, args }) = stmt else {
+    let Stmt::Expr(Expr::Call { func, args, .. }) = stmt else {
         return false;
     };
     if !is_std_process_exit(func) || args.len() != 1 {
@@ -89,6 +89,7 @@ mod tests {
 
     fn std_process_exit(expr: Expr) -> Expr {
         Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Path(path(["std", "process", "exit"]))),
             args: vec![expr],
         }

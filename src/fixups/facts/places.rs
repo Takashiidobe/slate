@@ -171,7 +171,7 @@ impl Collector {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(start, path));
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(end, path));
             }
-            Expr::Call { func, args } => {
+            Expr::Call { func, args, .. } => {
                 if let Some(access) = volatile_access(expr) {
                     self.record_volatile(access, path);
                 }
@@ -688,6 +688,7 @@ mod tests {
     #[test]
     fn unsupported_complex_places_stay_non_assignable() {
         let expr = Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(var("get_ptr")),
             args: vec![],
         };

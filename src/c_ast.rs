@@ -6,6 +6,8 @@ use std::collections::{BTreeSet, HashMap};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+use crate::function_identity::{CallBinding, FunctionIdentity, Provenance, classify_function};
+
 thread_local! {
     // Clang omits desugaredQualType for pointer/array-to-typedef, so parse_c_type
     // resolves the base name here to recover the true signedness and width.
@@ -14,6 +16,7 @@ thread_local! {
     // negative; CIR follows suit, so parse_c_type resolves enum signedness here.
     static ENUM_SIGNED: RefCell<HashMap<String, bool>> = RefCell::new(HashMap::new());
     static ENUM_TYPEDEFS: RefCell<HashMap<String, String>> = RefCell::new(HashMap::new());
+    static CALL_FACTS: RefCell<HashMap<usize, CallFact>> = RefCell::new(HashMap::new());
 }
 
 /// A parsed C translation unit.
@@ -140,6 +143,8 @@ pub enum Expr {
     Call {
         name: String,
         args: Vec<Expr>,
+        binding: CallBinding,
+        loc: Option<Loc>,
     },
     Assign {
         target: Box<Expr>,
@@ -147,10 +152,105 @@ pub enum Expr {
     },
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Loc {
     pub line: u32,
     pub col: u32,
+}
+
+impl Unit {
+    pub fn call_bindings(&self) -> HashMap<Loc, CallBinding> {
+        let mut bindings = HashMap::new();
+        for body in self
+            .functions
+            .iter()
+            .filter_map(|function| function.body.as_deref())
+        {
+            collect_call_bindings_in_stmts(body, &mut bindings);
+        }
+        bindings
+    }
+}
+
+fn collect_call_bindings_in_stmts(stmts: &[Stmt], out: &mut HashMap<Loc, CallBinding>) {
+    for stmt in stmts {
+        match stmt {
+            Stmt::Decl(_, init) => init
+                .iter()
+                .for_each(|expr| collect_call_bindings_in_expr(expr, out)),
+            Stmt::Expr(expr) => collect_call_bindings_in_expr(expr, out),
+            Stmt::Return(expr) => expr
+                .iter()
+                .for_each(|expr| collect_call_bindings_in_expr(expr, out)),
+            Stmt::For {
+                init,
+                cond,
+                step,
+                body,
+            } => {
+                init.as_ref().as_ref().iter().for_each(|stmt| {
+                    collect_call_bindings_in_stmts(std::slice::from_ref(stmt), out)
+                });
+                cond.iter()
+                    .for_each(|expr| collect_call_bindings_in_expr(expr, out));
+                step.iter()
+                    .for_each(|expr| collect_call_bindings_in_expr(expr, out));
+                collect_call_bindings_in_stmts(body, out);
+            }
+            Stmt::While { cond, body } => {
+                collect_call_bindings_in_expr(cond, out);
+                collect_call_bindings_in_stmts(body, out);
+            }
+            Stmt::If {
+                cond,
+                then,
+                otherwise,
+            } => {
+                collect_call_bindings_in_expr(cond, out);
+                collect_call_bindings_in_stmts(then, out);
+                if let Some(body) = otherwise {
+                    collect_call_bindings_in_stmts(body, out);
+                }
+            }
+        }
+    }
+}
+
+fn collect_call_bindings_in_expr(expr: &Expr, out: &mut HashMap<Loc, CallBinding>) {
+    match expr {
+        Expr::Call {
+            args, binding, loc, ..
+        } => {
+            if let Some(loc) = loc {
+                out.insert(*loc, binding.clone());
+            }
+            args.iter()
+                .for_each(|arg| collect_call_bindings_in_expr(arg, out));
+        }
+        Expr::Unary { expr, .. } => collect_call_bindings_in_expr(expr, out),
+        Expr::Binary { lhs, rhs, .. } => {
+            collect_call_bindings_in_expr(lhs, out);
+            collect_call_bindings_in_expr(rhs, out);
+        }
+        Expr::Assign { target, value } => {
+            collect_call_bindings_in_expr(target, out);
+            collect_call_bindings_in_expr(value, out);
+        }
+        Expr::Int(_) | Expr::Str(_) | Expr::Ident(_) => {}
+    }
+}
+
+#[derive(Debug, Clone)]
+struct CallFact {
+    name: String,
+    binding: CallBinding,
+    loc: Option<Loc>,
+}
+
+#[derive(Debug, Default)]
+struct PluginEvents {
+    macros: HashMap<usize, String>,
+    calls: HashMap<usize, CallFact>,
 }
 
 fn clang() -> String {
@@ -179,10 +279,14 @@ fn macro_dump_plugin() -> String {
     })
 }
 
-fn parse_macro_events(stderr: &str) -> HashMap<usize, String> {
-    let mut out = HashMap::new();
+fn parse_plugin_events(stderr: &str) -> PluginEvents {
+    let mut out = PluginEvents::default();
     for line in stderr.lines() {
-        let Some(json) = line.strip_prefix("MACRO_EXPANSION ") else {
+        let (kind, json) = if let Some(json) = line.strip_prefix("MACRO_EXPANSION ") {
+            ("macro", json)
+        } else if let Some(json) = line.strip_prefix("FUNCTION_PROVENANCE ") {
+            ("function", json)
+        } else {
             continue;
         };
         let Ok(event) = serde_json::from_str::<Value>(json) else {
@@ -194,15 +298,50 @@ fn parse_macro_events(stderr: &str) -> HashMap<usize, String> {
         ) else {
             continue;
         };
-        out.insert(offset as usize, name.to_string());
+        if kind == "macro" {
+            out.macros.insert(offset as usize, name.to_string());
+            continue;
+        }
+        let canonical_type = event
+            .get("canonical_type")
+            .and_then(Value::as_str)
+            .map(str::to_string);
+        let binding = if event.get("direct").and_then(Value::as_bool) == Some(false) {
+            CallBinding::Indirect
+        } else {
+            let provenance = match event.get("provenance").and_then(Value::as_str) {
+                Some("trusted_header") => Provenance::TrustedHeader,
+                _ => Provenance::Unknown,
+            };
+            let headers = event
+                .get("headers")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten()
+                .filter_map(Value::as_str);
+            let identity = canonical_type
+                .as_deref()
+                .map_or(FunctionIdentity::Unknown, |ty| {
+                    classify_function(name, headers, ty, provenance)
+                });
+            CallBinding::Direct {
+                identity,
+                canonical_type,
+            }
+        };
+        out.calls.insert(
+            offset as usize,
+            CallFact {
+                name: name.to_string(),
+                binding,
+                loc: None,
+            },
+        );
     }
     out
 }
 
-fn run_clang_ast_dump(
-    src: &Path,
-    extra_args: &[String],
-) -> Result<(String, HashMap<usize, String>), String> {
+fn run_clang_ast_dump(src: &Path, extra_args: &[String]) -> Result<(String, PluginEvents), String> {
     let out = Command::new(clang())
         .args([
             "-Xclang",
@@ -222,10 +361,10 @@ fn run_clang_ast_dump(
             String::from_utf8_lossy(&out.stderr)
         ));
     }
-    let macro_events = parse_macro_events(&String::from_utf8_lossy(&out.stderr));
+    let plugin_events = parse_plugin_events(&String::from_utf8_lossy(&out.stderr));
     Ok((
         String::from_utf8_lossy(&out.stdout).into_owned(),
-        macro_events,
+        plugin_events,
     ))
 }
 
@@ -235,20 +374,20 @@ pub fn parse_file(src: &Path) -> Result<Unit, String> {
 }
 
 pub fn parse_file_with_args(src: &Path, extra_args: &[String]) -> Result<Unit, String> {
-    let (json, macro_events) = run_clang_ast_dump(src, extra_args)?;
-    parse_json_with_record_roots(&json, &src.to_string_lossy(), &[], &macro_events)
+    let (json, plugin_events) = run_clang_ast_dump(src, extra_args)?;
+    parse_json_with_record_roots(&json, &src.to_string_lossy(), &[], plugin_events)
 }
 
 pub fn parse_file_with_project_records(src: &Path, project_root: &Path) -> Result<Unit, String> {
     let project_root = project_root
         .canonicalize()
         .map_err(|e| format!("canonicalize {}: {e}", project_root.display()))?;
-    let (json, macro_events) = run_clang_ast_dump(src, &[])?;
+    let (json, plugin_events) = run_clang_ast_dump(src, &[])?;
     parse_json_with_record_roots(
         &json,
         &src.to_string_lossy(),
         &[project_root],
-        &macro_events,
+        plugin_events,
     )
 }
 
@@ -258,14 +397,14 @@ pub fn parse(src: &str) -> Result<Unit, String> {
 }
 
 pub fn parse_json(json: &str, source_file: &str) -> Result<Unit, String> {
-    parse_json_with_record_roots(json, source_file, &[], &HashMap::new())
+    parse_json_with_record_roots(json, source_file, &[], PluginEvents::default())
 }
 
 fn parse_json_with_record_roots(
     json: &str,
     source_file: &str,
     record_roots: &[PathBuf],
-    macro_events: &HashMap<usize, String>,
+    mut plugin_events: PluginEvents,
 ) -> Result<Unit, String> {
     let root: Value =
         serde_json::from_str(json).map_err(|e| format!("parse clang AST JSON: {e}"))?;
@@ -286,11 +425,17 @@ fn parse_json_with_record_roots(
     let source_text = (!source_file.is_empty())
         .then(|| std::fs::read_to_string(source_file).ok())
         .flatten();
+    if let Some(source) = source_text.as_deref() {
+        for (offset, fact) in &mut plugin_events.calls {
+            fact.loc = loc_from_offset(source, *offset);
+        }
+    }
+    CALL_FACTS.with(|facts| *facts.borrow_mut() = plugin_events.calls);
     collect_functions(
         &root,
         source_file,
         source_text.as_deref(),
-        macro_events,
+        &plugin_events.macros,
         &mut functions,
     );
     Ok(Unit {
@@ -689,6 +834,17 @@ fn expansion_offset(node: &Value) -> Option<usize> {
         .map(|offset| offset as usize)
 }
 
+fn loc_from_offset(source: &str, offset: usize) -> Option<Loc> {
+    let prefix = source.get(..offset)?;
+    Some(Loc {
+        line: prefix.bytes().filter(|byte| *byte == b'\n').count() as u32 + 1,
+        col: prefix
+            .rsplit_once('\n')
+            .map_or(prefix.len(), |(_, line)| line.len()) as u32
+            + 1,
+    })
+}
+
 fn expansion_end_offset(node: &Value) -> Option<usize> {
     let end = node.get("range")?.get("end")?;
     end.get("expansionLoc")
@@ -900,7 +1056,20 @@ fn parse_expr(node: &Value) -> Option<Expr> {
                 .skip(1)
                 .filter_map(|child| parse_expr(child))
                 .collect();
-            Some(Expr::Call { name, args })
+            let fact = expansion_offset(node)
+                .and_then(|offset| CALL_FACTS.with(|facts| facts.borrow().get(&offset).cloned()))
+                .filter(|fact| matches!(fact.binding, CallBinding::Indirect) || fact.name == name);
+            let binding = fact
+                .as_ref()
+                .map(|fact| fact.binding.clone())
+                .unwrap_or_else(|| CallBinding::direct_unknown(None));
+            let loc = fact.and_then(|fact| fact.loc).or_else(|| loc(node));
+            Some(Expr::Call {
+                name,
+                args,
+                binding,
+                loc,
+            })
         }
         _ => children(node).first().and_then(|child| parse_expr(child)),
     }

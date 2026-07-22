@@ -411,7 +411,7 @@ fn calloc_count_stmt(body: &[IndentStmt], allocation_stmt: Option<usize>) -> Opt
     else {
         return None;
     };
-    let Some(Expr::Call { func, args }) = block.tail.as_deref() else {
+    let Some(Expr::Call { func, args, .. }) = block.tail.as_deref() else {
         return None;
     };
     if !matches!(&**func, Expr::Var(name) if name.as_str() == "calloc") || args.len() != 2 {
@@ -657,6 +657,7 @@ fn usize_expr(expr: Expr) -> Expr {
 
 fn box_new(ty: &Type) -> Expr {
     Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var(format!("Box::<{}>::new", ty.render()).into())),
         args: vec![default_value(ty)],
     }

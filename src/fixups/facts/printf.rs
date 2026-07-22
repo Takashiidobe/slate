@@ -182,7 +182,7 @@ fn visit_expr(
     calls: &mut Vec<PrintfCallFact>,
     facts: &FixupFacts,
 ) {
-    if let Expr::Call { func, args } = expr
+    if let Expr::Call { func, args, .. } = expr
         && matches!(&**func, Expr::Var(name) if name.as_str() == "printf")
     {
         let arg_facts = args
@@ -258,7 +258,7 @@ fn visit_expr(
                 visit_expr(function, end, env, path, calls, facts)
             });
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
                 visit_expr(function, func, env, path, calls, facts)
             });

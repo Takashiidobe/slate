@@ -430,6 +430,7 @@ mod tests {
             name,
             "*mut i32",
             Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
                     ["std", "ptr", "null_mut"].map(Ident::from),
                 ))),
