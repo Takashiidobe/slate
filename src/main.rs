@@ -727,6 +727,17 @@ fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
 
 fn emit_fixtures() -> Result<String, String> {
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let generated_roots = [
+        manifest.join("tests/fixtures.generated"),
+        manifest.join("tests/fixtures.cfg.generated"),
+        manifest.join("tests/fixtures.multi.generated"),
+        manifest.join("tests/fixtures.chibicc.generated"),
+        manifest.join("tests/fixtures.library.generated"),
+        manifest.join("tests/stdlib.generated"),
+    ];
+    for root in &generated_roots {
+        clear_generated_dir(root)?;
+    }
     let mut report = String::new();
 
     report.push_str(&emit_c_fixture_tree(
@@ -767,6 +778,20 @@ fn emit_fixtures() -> Result<String, String> {
     )?);
 
     Ok(report)
+}
+
+fn clear_generated_dir(path: &Path) -> Result<(), String> {
+    match std::fs::symlink_metadata(path) {
+        Ok(metadata) if metadata.is_dir() && !metadata.file_type().is_symlink() => {
+            std::fs::remove_dir_all(path).map_err(|e| format!("remove {}: {e}", path.display()))
+        }
+        Ok(_) => Err(format!(
+            "refusing to replace non-directory generated path {}",
+            path.display()
+        )),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(format!("inspect {}: {error}", path.display())),
+    }
 }
 
 fn emit_c_fixture_tree(
