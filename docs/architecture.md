@@ -48,6 +48,30 @@ function's raw Clang JSON node. The compact AST is the common path; the raw node
 is the escape hatch when a new feature needs more source facts before the compact
 model has grown.
 
+### Plugin provenance events
+
+The Clang plugin emits three line-oriented JSON event types on stderr:
+
+- `MACRO_EXPANSION` records macro names at main-file source offsets.
+- `INCLUDE_PROVENANCE` records the written include name, angle-versus-quote
+  form, physical resolved file, includer location, and Clang system-header
+  characteristic.
+- `FUNCTION_PROVENANCE` records each main-file call site, its direct Clang
+  declaration binding when one exists, canonical type, redeclaration evidence,
+  trusted system-header ancestry, and conservative rejection reasons.
+
+`trusted_header` means that the declaration chain reaches a physical header
+resolved by an angled include from a Clang system search path and has no
+untrusted definition or symbol-changing declaration. It does not by itself mean
+that the function is a particular libc API. Consumers must additionally match a
+known function identity, required header, and canonical signature. `unknown` is
+the default for indirect calls, project-only declarations, project definitions,
+and aliases, asm labels, weak declarations, or ifunc declarations.
+
+Header provenance describes source-level declaration binding under the exact
+Clang invocation. It does not prove which implementation a static or dynamic
+linker selects, and it does not rule out runtime symbol interposition.
+
 ## Two IRs
 
 The pipeline currently flows through two main internal representations:
