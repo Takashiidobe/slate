@@ -166,6 +166,9 @@ fn library_project_creates_cargo_crate_without_main() {
     assert!(lib_rs.contains("pub mod state;"));
 
     let math_rs = std::fs::read_to_string(crate_dir.join("src/math.rs")).expect("read math.rs");
+    assert!(
+        math_rs.contains("slate_support::warning!(\"PROJECT_WARNING_TOKEN remains unexpanded\");")
+    );
     assert!(math_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn square"));
     assert!(math_rs.contains("use crate::types::shared_mode_t;"));
     assert!(math_rs.contains("value.mode = shared_mode_t::SHARED_READY;"));
@@ -182,6 +185,7 @@ fn library_project_creates_cargo_crate_without_main() {
     assert!(!smoke_rs.contains("fn bump"));
     assert!(!smoke_rs.contains("enum shared_mode_t"));
     let manifest = std::fs::read_to_string(crate_dir.join("Cargo.toml")).expect("read manifest");
+    assert!(manifest.contains("slate-support = { path = \"slate-support\" }"));
     assert!(manifest.contains("[[test]]"));
     assert!(manifest.contains("name = \"run_smoke\""));
     assert!(manifest.contains("harness = false"));
@@ -196,6 +200,9 @@ fn library_project_creates_cargo_crate_without_main() {
         "generated lib crate should type-check:\n{}",
         String::from_utf8_lossy(&check.stderr)
     );
+    let check_stderr = String::from_utf8_lossy(&check.stderr);
+    assert!(check_stderr.contains("PROJECT_WARNING_TOKEN remains unexpanded"));
+    assert!(!check_stderr.contains("--> src/math.rs"));
     let check_tests = std::process::Command::new("cargo")
         .args(["check", "--quiet", "--tests", "--manifest-path"])
         .arg(crate_dir.join("Cargo.toml"))
