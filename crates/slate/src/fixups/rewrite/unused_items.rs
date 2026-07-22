@@ -190,6 +190,7 @@ fn collect_item_refs(item: &Item, refs: &mut BTreeSet<String>) {
             }
         }
         Item::Enum(_)
+        | Item::Macro { .. }
         | Item::Comment(_)
         | Item::CrateAttrs(_)
         | Item::Mod { .. }

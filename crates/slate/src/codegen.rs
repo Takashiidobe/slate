@@ -171,6 +171,11 @@ impl<W: Write> Codegen<W> {
             Item::Record(r) => self.record(r)?,
             Item::Struct(s) => self.struct_def(s)?,
             Item::Impl(im) => self.impl_block(im)?,
+            Item::Macro { name, args } => {
+                write!(self.out, "{name}!(")?;
+                self.args(args)?;
+                self.out.write_str(");\n")?;
+            }
             Item::Cfg { cfg, item } => {
                 self.out.write_str("#[cfg(")?;
                 self.cfg(cfg)?;
