@@ -169,7 +169,7 @@ fn rewrite_calls_in_body(
 ) -> bool {
     let mut changed = false;
     walk::body_exprs_mut_with(body, &mut |expr| {
-        let Expr::Call { func, args } = expr else {
+        let Expr::Call { func, args, .. } = expr else {
             return true;
         };
         let Expr::Var(name) = &**func else {

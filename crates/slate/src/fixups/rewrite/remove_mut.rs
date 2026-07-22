@@ -385,6 +385,7 @@ fn f(a: i32) -> i32 {
                 "p",
                 "Box<i32>",
                 Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("Box::<i32>::new".into())),
                     args: vec![int(0)],
                 },
@@ -418,6 +419,7 @@ fn f(a: i32) -> i32 {
                 "items",
                 "Vec<i32>",
                 Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("Vec::new".into())),
                     args: vec![],
                 },

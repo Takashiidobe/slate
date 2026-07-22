@@ -133,7 +133,7 @@ fn fopen_temp(stmt: &Stmt) -> Option<FOpenTemp> {
         return None;
     };
     let call = unsafe_tail(init)?;
-    let Expr::Call { func, args } = call else {
+    let Expr::Call { func, args, .. } = call else {
         return None;
     };
     if !matches!(&**func, Expr::Var(callee) if callee.as_str() == "fopen") || args.len() != 2 {
@@ -354,7 +354,7 @@ fn file_use(stmt: &Stmt, aliases: &BTreeSet<String>) -> Option<FileUseKind> {
         } => expr,
         _ => return None,
     };
-    let Expr::Call { func, args } = unsafe_tail(expr)? else {
+    let Expr::Call { func, args, .. } = unsafe_tail(expr)? else {
         return None;
     };
     let Expr::Var(callee) = &**func else {
@@ -639,7 +639,7 @@ fn scope_echoes_buf_to_stdout(body: &[IndentStmt], buf_name: &str) -> bool {
     let Stmt::Expr(expr) = &second.stmt else {
         return false;
     };
-    let Expr::Call { func, args } = unsafe_tail(expr).unwrap_or(expr) else {
+    let Expr::Call { func, args, .. } = unsafe_tail(expr).unwrap_or(expr) else {
         return false;
     };
     if !matches!(&**func, Expr::Var(callee) if callee.as_str() == "fputs") || args.len() != 2 {
@@ -764,6 +764,7 @@ mod tests {
 
     fn exit_call() -> Expr {
         Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Path(Path::new(
                 ["std", "process", "exit"].into_iter().map(Ident::new),
             ))),

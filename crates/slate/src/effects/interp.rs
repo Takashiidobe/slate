@@ -330,7 +330,7 @@ impl Interp {
                         name: record_name,
                         fields,
                     } => self.let_struct(name, record_name, fields)?,
-                    Expr::Call { func, args } if is_path(func, &["String", "from"]) => {
+                    Expr::Call { func, args, .. } if is_path(func, &["String", "from"]) => {
                         self.let_string(name, args)?
                     }
                     Expr::MethodCall { recv, method, args }
@@ -432,7 +432,9 @@ impl Interp {
                 self.copy_within(recv, args)?;
                 Ok(Flow::Normal)
             }
-            Stmt::Expr(Expr::Call { func, args }) if is_path(func, &["std", "process", "exit"]) => {
+            Stmt::Expr(Expr::Call { func, args, .. })
+                if is_path(func, &["std", "process", "exit"]) =>
+            {
                 let code = value_as_i32(self.eval(&args[0])?)?;
                 self.drop_live_vecs()?;
                 self.trace.push(Effect::Exit(code));
@@ -442,11 +444,11 @@ impl Interp {
                     value: code as i128,
                 }))
             }
-            Stmt::Expr(Expr::Call { func, args }) if is_path(func, &["drop"]) => {
+            Stmt::Expr(Expr::Call { func, args, .. }) if is_path(func, &["drop"]) => {
                 self.drop_var(&args[0])?;
                 Ok(Flow::Normal)
             }
-            Stmt::Expr(Expr::Call { func, args })
+            Stmt::Expr(Expr::Call { func, args, .. })
                 if is_path(func, &["std", "ptr", "write_volatile"]) =>
             {
                 self.write_volatile(args)?;
@@ -844,7 +846,7 @@ impl Interp {
     fn let_box(&mut self, name: &str, ty: &Type, init: &Expr) -> EResult<()> {
         let (elem_width, elem_signed, elem_size) = box_elem_shape(ty)
             .ok_or_else(|| EffectError::unsupported(Construct::VecLocalType, ty.clone()))?;
-        let Expr::Call { func, args } = init else {
+        let Expr::Call { func, args, .. } = init else {
             return Err(EffectError::unsupported(
                 Construct::VecInitializer,
                 init.clone(),
@@ -895,8 +897,8 @@ impl Interp {
             }
         };
         let capacity = match init {
-            Expr::Call { func, args } if args.is_empty() && is_path(func, &["Vec", "new"]) => 0,
-            Expr::Call { func, args } if is_path(func, &["Vec", "with_capacity"]) => {
+            Expr::Call { func, args, .. } if args.is_empty() && is_path(func, &["Vec", "new"]) => 0,
+            Expr::Call { func, args, .. } if is_path(func, &["Vec", "with_capacity"]) => {
                 let arg = self.eval(&args[0])?;
                 value_as_u64(arg)?
             }
@@ -1655,7 +1657,7 @@ impl Interp {
     }
 
     fn write_all_call(&mut self, expr: &Expr) -> EResult<bool> {
-        let Expr::Call { func, args } = expr else {
+        let Expr::Call { func, args, .. } = expr else {
             return Ok(false);
         };
         if !is_path(func, &["std", "io", "Write", "write_all"]) {
@@ -1681,7 +1683,7 @@ impl Interp {
     }
 
     fn stdout_flush_call(&self, expr: &Expr) -> bool {
-        let Expr::Call { func, args } = expr else {
+        let Expr::Call { func, args, .. } = expr else {
             return false;
         };
         if !is_path(func, &["std", "io", "Write", "flush"]) {
@@ -1696,7 +1698,7 @@ impl Interp {
         else {
             return false;
         };
-        matches!(recv.as_ref(), Expr::Call { func, args } if args.is_empty() && is_path(func, &["std", "io", "stdout"]))
+        matches!(recv.as_ref(), Expr::Call { func, args, .. } if args.is_empty() && is_path(func, &["std", "io", "stdout"]))
     }
 
     fn vec_all_bytes(&mut self, name: &str) -> EResult<Vec<u8>> {
@@ -1725,7 +1727,7 @@ impl Interp {
                 };
                 self.byte_slice_expr_bytes(tail)
             }
-            Expr::Call { func, args } if is_path(func, &["std", "slice", "from_raw_parts"]) => {
+            Expr::Call { func, args, .. } if is_path(func, &["std", "slice", "from_raw_parts"]) => {
                 let [ptr, len] = args.as_slice() else {
                     return Err(EffectError::arg_shape(
                         Construct::WriteAllCall,
@@ -1767,12 +1769,12 @@ impl Interp {
     fn file_arg(&self, expr: &Expr) -> EResult<FileId> {
         match expr {
             Expr::Ref { expr, .. } => self.file_arg(expr),
-            Expr::Call { func, args }
+            Expr::Call { func, args, .. }
                 if args.is_empty() && is_path(func, &["std", "io", "stdout"]) =>
             {
                 Ok(STDOUT_FILE)
             }
-            Expr::Call { func, args }
+            Expr::Call { func, args, .. }
                 if args.is_empty() && is_path(func, &["std", "io", "stderr"]) =>
             {
                 Ok(STDERR_FILE)
@@ -1972,7 +1974,7 @@ impl Interp {
 
     fn collect_source_len(&self, expr: &Expr) -> EResult<u64> {
         match expr {
-            Expr::Call { func, args }
+            Expr::Call { func, args, .. }
                 if args.is_empty() && is_path(func, &["std", "env", "args"]) =>
             {
                 Ok(1)
@@ -3232,7 +3234,7 @@ impl Interp {
                     self.eval(else_expr)
                 }
             }
-            Expr::Call { func, args } => self.eval_call(func, args),
+            Expr::Call { func, args, .. } => self.eval_call(func, args),
             Expr::Block(block) => match self.run_block(block)? {
                 Flow::Return(value) => Ok(value),
                 Flow::Normal => Err(EffectError::internal("block expression has no tail value")),
@@ -4049,6 +4051,7 @@ impl Interp {
         }
         if is_path(func, &["std", "slice", "from_raw_parts"]) {
             let bytes = self.byte_slice_expr_bytes(&Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(func.clone()),
                 args: args.to_vec(),
             })?;
@@ -5390,7 +5393,7 @@ impl Interp {
     fn read_until_source(&mut self, expr: &Expr) -> EResult<(FileId, Option<usize>)> {
         match expr {
             Expr::Ref { expr, .. } => self.read_until_source(expr),
-            Expr::Call { func, args } if is_path(func, &["std", "io", "Read", "take"]) => {
+            Expr::Call { func, args, .. } if is_path(func, &["std", "io", "Read", "take"]) => {
                 let [handle, limit] = args.as_slice() else {
                     return Err(EffectError::arg_shape(
                         Construct::ReadTakeArgs,

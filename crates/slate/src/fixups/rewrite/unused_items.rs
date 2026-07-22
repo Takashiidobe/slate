@@ -448,7 +448,7 @@ fn collect_expr_refs(expr: &Expr, refs: &mut BTreeSet<String>) {
             collect_expr_refs(lhs, refs);
             collect_expr_refs(rhs, refs);
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             collect_expr_refs(func, refs);
             for arg in args {
                 collect_expr_refs(arg, refs);

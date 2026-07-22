@@ -519,7 +519,7 @@ fn collapse_main_exit_slot(
 }
 
 fn main_exit_arg_temp(expr: &Expr) -> Option<&str> {
-    let Expr::Call { func, args } = expr else {
+    let Expr::Call { func, args, .. } = expr else {
         return None;
     };
     if !is_std_process_exit(func) || args.len() != 1 {
@@ -650,6 +650,7 @@ mod tests {
 
     fn std_process_exit(expr: Expr) -> Expr {
         Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Path(Path::new(
                 ["std", "process", "exit"].map(Ident::from),
             ))),

@@ -265,7 +265,7 @@ impl<'a> Collector<'a> {
                 }
                 BTreeSet::new()
             }
-            Expr::Call { func, args } => {
+            Expr::Call { func, args, .. } => {
                 self.child_expr(func, path, 0);
                 for (index, arg) in args.iter().enumerate() {
                     self.child_expr(arg, path, index + 1);

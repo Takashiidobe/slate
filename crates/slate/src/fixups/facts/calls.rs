@@ -346,7 +346,7 @@ impl<'a> Collector<'a> {
         result_binding: Option<BindingId>,
     ) {
         match expr {
-            Expr::Call { func, args } => {
+            Expr::Call { func, args, .. } => {
                 self.record_call(expr, args, path, result_binding);
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| {
                     self.expr(func, path, None)
@@ -843,6 +843,7 @@ mod tests {
             vec![
                 Stmt::Expr(call("mystery", vec![int(1)])),
                 Stmt::Expr(Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(var("fp")),
                     args: vec![int(2)],
                 }),

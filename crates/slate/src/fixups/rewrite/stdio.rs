@@ -227,6 +227,7 @@ fn open_file_expr(
     };
     if buffered {
         Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("std::io::BufReader::new".into())),
             args: vec![open_expr],
         }
@@ -237,6 +238,7 @@ fn open_file_expr(
 
 fn open_options(mode: FileOpenMode) -> Expr {
     let mut expr = Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var("std::fs::OpenOptions::new".into())),
         args: Vec::new(),
     };
@@ -269,6 +271,7 @@ fn mode_options(mode: FileOpenMode) -> &'static [(&'static str, bool)] {
 fn write_all_stmt(handle: &str, bytes: Vec<u8>) -> Stmt {
     Stmt::Expr(Expr::MethodCall {
         recv: Box::new(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("std::io::Write::write_all".into())),
             args: vec![
                 Expr::Ref {
@@ -285,6 +288,7 @@ fn write_all_stmt(handle: &str, bytes: Vec<u8>) -> Stmt {
 
 fn drop_stmt(handle: &str) -> Stmt {
     Stmt::Expr(Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var("drop".into())),
         args: vec![Expr::Var(handle.into())],
     })
@@ -312,6 +316,7 @@ fn gets_loop_stmt(
                     args: vec![Type::Prim(crate::rust_ast::Prim::U8)],
                 }),
                 init: Some(Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("Vec::new".into())),
                     args: Vec::new(),
                 }),
@@ -346,6 +351,7 @@ fn gets_loop_stmt(
 
 fn read_until_call(handle: &str, buf_name: &str, buf_len: i64) -> Expr {
     let take_expr = Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var("std::io::Read::take".into())),
         args: vec![
             Expr::Ref {
@@ -360,6 +366,7 @@ fn read_until_call(handle: &str, buf_name: &str, buf_len: i64) -> Expr {
     };
     Expr::MethodCall {
         recv: Box::new(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("std::io::BufRead::read_until".into())),
             args: vec![
                 Expr::Ref {
@@ -388,11 +395,13 @@ fn newline_byte() -> Expr {
 fn write_stdout_stmt(buf_name: &str) -> Stmt {
     Stmt::Expr(Expr::MethodCall {
         recv: Box::new(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("std::io::Write::write_all".into())),
             args: vec![
                 Expr::Ref {
                     mutable: true,
                     expr: Box::new(Expr::Call {
+                        binding: crate::function_identity::CallBinding::Generated,
                         func: Box::new(Expr::Var("std::io::stdout".into())),
                         args: Vec::new(),
                     }),
@@ -427,7 +436,7 @@ fn read_write_call<'a>(stmt: &'a Stmt, callee: &str) -> Option<(ReadWriteResult,
 }
 
 fn call_args<'a>(expr: &'a Expr, callee: &str) -> Option<&'a [Expr]> {
-    let Expr::Call { func, args } = unsafe_tail(expr)? else {
+    let Expr::Call { func, args, .. } = unsafe_tail(expr)? else {
         return None;
     };
     if !matches!(&**func, Expr::Var(name) if name.as_str() == callee) || args.len() != 4 {
@@ -468,6 +477,7 @@ fn byte_slice_expr(buf_name: &str, cap: Expr) -> Expr {
     Expr::Unsafe(Box::new(Block {
         stmts: Vec::new(),
         tail: Some(Box::new(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("std::slice::from_raw_parts".into())),
             args: vec![
                 Expr::Cast {
@@ -489,6 +499,7 @@ fn fwrite_expr(handle: &str, buf_name: &str, size: &Expr, nmemb: &Expr) -> Expr 
     let slice = byte_slice_expr(buf_name, cap);
     let write_call = Stmt::Expr(Expr::MethodCall {
         recv: Box::new(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("std::io::Write::write_all".into())),
             args: vec![
                 Expr::Ref {
@@ -523,11 +534,13 @@ fn fread_expr(handle: &str, buf_name: &str, size: &Expr, nmemb: &Expr) -> Expr {
         mutable: true,
         ty: Some(Type::parse("Vec<u8>")),
         init: Some(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("Vec::new".into())),
             args: Vec::new(),
         }),
     };
     let take_expr = Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var("std::io::Read::take".into())),
         args: vec![
             Expr::Ref {
@@ -542,6 +555,7 @@ fn fread_expr(handle: &str, buf_name: &str, size: &Expr, nmemb: &Expr) -> Expr {
     };
     let read_to_end_call = Expr::MethodCall {
         recv: Box::new(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("std::io::Read::read_to_end".into())),
             args: vec![
                 Expr::Ref {
@@ -566,6 +580,7 @@ fn fread_expr(handle: &str, buf_name: &str, size: &Expr, nmemb: &Expr) -> Expr {
     let copy_stmt = Stmt::Expr(Expr::Unsafe(Box::new(Block {
         stmts: Vec::new(),
         tail: Some(Box::new(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("std::ptr::copy_nonoverlapping".into())),
             args: vec![
                 Expr::MethodCall {
@@ -644,7 +659,7 @@ fn fopen_path_literal(stmt: &Stmt) -> Option<String> {
     else {
         return None;
     };
-    let Expr::Call { func, args } = unsafe_tail(init)? else {
+    let Expr::Call { func, args, .. } = unsafe_tail(init)? else {
         return None;
     };
     if !matches!(&**func, Expr::Var(name) if name.as_str() == "fopen") || args.len() != 2 {
@@ -662,7 +677,7 @@ fn fputs_literal(stmt: &Stmt) -> Option<Vec<u8>> {
         } => expr,
         _ => return None,
     };
-    let Expr::Call { func, args } = unsafe_tail(expr)? else {
+    let Expr::Call { func, args, .. } = unsafe_tail(expr)? else {
         return None;
     };
     if !matches!(&**func, Expr::Var(name) if name.as_str() == "fputs") || args.len() != 2 {
@@ -811,6 +826,7 @@ mod tests {
                 then_body: vec![IndentStmt {
                     depth: 2,
                     stmt: Stmt::Expr(Expr::Call {
+                        binding: crate::function_identity::CallBinding::Generated,
                         func: Box::new(Expr::Path(crate::rust_ast::Path::new(
                             ["std", "process", "exit"].into_iter().map(Ident::new),
                         ))),
@@ -949,6 +965,7 @@ mod tests {
                 then_body: vec![IndentStmt {
                     depth: 2,
                     stmt: Stmt::Expr(Expr::Call {
+                        binding: crate::function_identity::CallBinding::Generated,
                         func: Box::new(Expr::Path(crate::rust_ast::Path::new(
                             ["std", "process", "exit"].into_iter().map(Ident::new),
                         ))),
@@ -1006,6 +1023,7 @@ mod tests {
                 then_body: vec![IndentStmt {
                     depth: 2,
                     stmt: Stmt::Expr(Expr::Call {
+                        binding: crate::function_identity::CallBinding::Generated,
                         func: Box::new(Expr::Path(crate::rust_ast::Path::new(
                             ["std", "process", "exit"].into_iter().map(Ident::new),
                         ))),
@@ -1154,6 +1172,7 @@ mod tests {
                 then_body: vec![IndentStmt {
                     depth: 2,
                     stmt: Stmt::Expr(Expr::Call {
+                        binding: crate::function_identity::CallBinding::Generated,
                         func: Box::new(Expr::Path(crate::rust_ast::Path::new(
                             ["std", "process", "exit"].into_iter().map(Ident::new),
                         ))),

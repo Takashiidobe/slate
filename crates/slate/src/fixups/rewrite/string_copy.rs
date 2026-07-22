@@ -368,7 +368,7 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>) {
             rewrite_expr_pointer_views(start, liftable);
             rewrite_expr_pointer_views(end, liftable);
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             rewrite_expr_pointer_views(func, liftable);
             for arg in args {
                 rewrite_expr_pointer_views(arg, liftable);
@@ -601,7 +601,7 @@ fn expr_children_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> bool) -> bool 
             base: lhs,
             index: rhs,
         } => pred(lhs) || pred(rhs),
-        Expr::Call { func, args } => pred(func) || args.iter().any(pred),
+        Expr::Call { func, args, .. } => pred(func) || args.iter().any(pred),
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
             pred(recv) || args.iter().any(pred)
         }

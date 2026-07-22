@@ -7,6 +7,7 @@ mod ctx;
 mod directive_translate;
 mod effects;
 mod fixups;
+mod function_identity;
 mod limits_macros;
 mod lower;
 mod preprocess;

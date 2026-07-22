@@ -176,7 +176,7 @@ fn memchr_call_replacement(
     facts: &FixupFacts,
     path: &[PathSegment],
 ) -> Option<Expr> {
-    let Expr::Call { func, args } = expr else {
+    let Expr::Call { func, args, .. } = expr else {
         return None;
     };
     let Expr::Var(name) = &**func else {
@@ -599,6 +599,7 @@ fn path<const N: usize>(parts: [&str; N]) -> Expr {
 
 fn call(func: Expr, args: Vec<Expr>) -> Expr {
     Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(func),
         args,
     }

@@ -619,7 +619,7 @@ fn analyze_expr(
             analyze_expr(start, AccessMode::Read, slices, state)
                 && analyze_expr(end, AccessMode::Read, slices, state)
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             analyze_expr(func, AccessMode::Read, slices, state)
                 && args
                     .iter()
