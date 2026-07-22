@@ -21,4 +21,4 @@ can define `NDEBUG` independently of compiler optimization level.
 
 Run `slate emit-fixtures` to render each `*.c` here to
 `tests/fixtures.cfg.generated/*.rs` (git-ignored) for side-by-side comparison.
-The `reject/` sources are meant to be refused by `translate-cfg` and are skipped.
+The `reject/` sources are meant to be refused by `translate-directives` and are skipped.
