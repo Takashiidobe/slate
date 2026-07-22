@@ -59,6 +59,25 @@ fn cross_tu_work_dir(name: &str) -> PathBuf {
         .join(name)
 }
 
+#[test]
+fn project_translation_rejects_active_unsupported_directives() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.multi.reject")
+        .join("unsupported_directive");
+    let out_dir = cross_tu_work_dir("unsupported-directive-policy").join("rs");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate-project")
+        .arg(&dir)
+        .arg(&out_dir)
+        .output()
+        .expect("run translate-project");
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("unsupported semantic directive #pragma at line 1"));
+    assert!(stderr.contains("pack(push, 1)"));
+}
+
 fn assert_binary_sections(binary: &Path, sections: &[&str]) {
     let out = std::process::Command::new("readelf")
         .args(["-S", "--wide"])

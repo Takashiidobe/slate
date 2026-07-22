@@ -125,8 +125,128 @@ pub struct CondChain {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DirectiveName {
+    Null,
+    If,
+    Ifdef,
+    Ifndef,
+    Elif,
+    Else,
+    Endif,
+    Define,
+    Undef,
+    Include,
+    IncludeNext,
+    Import,
+    Line,
+    Error,
+    Warning,
+    Pragma,
+    Embed,
+    Ident,
+    Sccs,
+    Unknown(String),
+}
+
+impl DirectiveName {
+    fn parse(name: String) -> Self {
+        match name.as_str() {
+            "" => Self::Null,
+            "if" => Self::If,
+            "ifdef" => Self::Ifdef,
+            "ifndef" => Self::Ifndef,
+            "elif" => Self::Elif,
+            "else" => Self::Else,
+            "endif" => Self::Endif,
+            "define" => Self::Define,
+            "undef" => Self::Undef,
+            "include" => Self::Include,
+            "include_next" => Self::IncludeNext,
+            "import" => Self::Import,
+            "line" => Self::Line,
+            "error" => Self::Error,
+            "warning" => Self::Warning,
+            "pragma" => Self::Pragma,
+            "embed" => Self::Embed,
+            "ident" => Self::Ident,
+            "sccs" => Self::Sccs,
+            _ => Self::Unknown(name),
+        }
+    }
+
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Null => "",
+            Self::If => "if",
+            Self::Ifdef => "ifdef",
+            Self::Ifndef => "ifndef",
+            Self::Elif => "elif",
+            Self::Else => "else",
+            Self::Endif => "endif",
+            Self::Define => "define",
+            Self::Undef => "undef",
+            Self::Include => "include",
+            Self::IncludeNext => "include_next",
+            Self::Import => "import",
+            Self::Line => "line",
+            Self::Error => "error",
+            Self::Warning => "warning",
+            Self::Pragma => "pragma",
+            Self::Embed => "embed",
+            Self::Ident => "ident",
+            Self::Sccs => "sccs",
+            Self::Unknown(name) => name,
+        }
+    }
+
+    pub fn disposition(&self) -> DirectiveDisposition {
+        match self {
+            Self::If
+            | Self::Ifdef
+            | Self::Ifndef
+            | Self::Elif
+            | Self::Else
+            | Self::Endif
+            | Self::Error => DirectiveDisposition::RepresentedInRust,
+            Self::Define
+            | Self::Undef
+            | Self::Include
+            | Self::IncludeNext
+            | Self::Import
+            | Self::Line => DirectiveDisposition::ConsumedByClang,
+            Self::Warning => DirectiveDisposition::DiagnosticOnly,
+            Self::Null | Self::Ident | Self::Sccs => DirectiveDisposition::NoOutput,
+            Self::Pragma | Self::Embed | Self::Unknown(_) => {
+                DirectiveDisposition::UnsupportedSemantic
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DirectiveDisposition {
+    RepresentedInRust,
+    ConsumedByClang,
+    DiagnosticOnly,
+    NoOutput,
+    UnsupportedSemantic,
+}
+
+impl DirectiveDisposition {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::RepresentedInRust => "represented-in-rust",
+            Self::ConsumedByClang => "consumed-by-clang",
+            Self::DiagnosticOnly => "diagnostic-only",
+            Self::NoOutput => "no-output",
+            Self::UnsupportedSemantic => "unsupported-semantic",
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DirectiveRecord {
-    pub name: String,
+    pub name: DirectiveName,
     pub raw_payload: String,
     pub byte_start: usize,
     pub byte_end: usize,
@@ -135,6 +255,21 @@ pub struct DirectiveRecord {
     pub depth: usize,
     pub condition: Option<PredExpr>,
     pub active: Option<bool>,
+}
+
+impl DirectiveRecord {
+    pub fn unsupported_message(&self) -> String {
+        let mut message = format!(
+            "unsupported semantic directive #{} at line {}",
+            self.name.as_str(),
+            self.line_start
+        );
+        if !self.raw_payload.is_empty() {
+            message.push_str(": ");
+            message.push_str(&self.raw_payload);
+        }
+        message
+    }
 }
 
 /// Recorded preprocessing metadata for a translation unit.
@@ -393,7 +528,7 @@ fn scan(source: &str) -> Preprocessing {
         let parsed = conditional_directive(&source_directive.name, &source_directive.payload);
         let (condition, depth) = directive_context(&stack, parsed.as_ref());
         directives.push(DirectiveRecord {
-            name: source_directive.name.clone(),
+            name: DirectiveName::parse(source_directive.name.clone()),
             raw_payload: source_directive.raw_payload.clone(),
             byte_start: source_directive.byte_start,
             byte_end: line.byte_end,
@@ -1102,7 +1237,7 @@ mod tests {
 
         assert_eq!(pp.directives.len(), 4);
         let define = &pp.directives[0];
-        assert_eq!(define.name, "define");
+        assert_eq!(define.name, DirectiveName::Define);
         assert_eq!(define.raw_payload, "TOP 1");
         assert_eq!(define.byte_start, 2);
         assert_eq!(define.byte_end, 15);
@@ -1112,7 +1247,7 @@ mod tests {
         assert_eq!(define.active, Some(true));
 
         let error = &pp.directives[2];
-        assert_eq!(error.name, "error");
+        assert_eq!(error.name, DirectiveName::Error);
         assert_eq!(error.raw_payload, "disabled");
         assert_eq!(error.depth, 1);
         assert_eq!(error.condition, Some(PredExpr::Defined("ENABLED".into())));
@@ -1125,7 +1260,7 @@ mod tests {
         let pp = record(src, &macros(&["B"]));
 
         let opening = &pp.directives[0];
-        assert_eq!(opening.name, "if");
+        assert_eq!(opening.name, DirectiveName::If);
         assert_eq!(opening.raw_payload, "defined(A)  || defined(B)");
         assert_eq!((opening.line_start, opening.line_end), (1, 2));
         assert_eq!(opening.byte_start, 0);
@@ -1209,7 +1344,7 @@ mod tests {
         let pp = record(src, &macros(&[]));
 
         assert_eq!(pp.directives.len(), 1);
-        assert_eq!(pp.directives[0].name, "define");
+        assert_eq!(pp.directives[0].name, DirectiveName::Define);
         assert_eq!(
             (pp.directives[0].line_start, pp.directives[0].line_end),
             (2, 2)
@@ -1221,7 +1356,7 @@ mod tests {
         let pp = record("#endif\n", &macros(&[]));
 
         assert_eq!(pp.directives.len(), 1);
-        assert_eq!(pp.directives[0].name, "endif");
+        assert_eq!(pp.directives[0].name, DirectiveName::Endif);
         assert_eq!(pp.directives[0].depth, 0);
         assert_eq!(pp.directives[0].active, Some(true));
         assert_eq!(pp.diagnostics[0].kind, DiagnosticKind::StrayDirective);
