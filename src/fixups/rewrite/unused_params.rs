@@ -163,7 +163,7 @@ fn is_named_callee(expr: &Expr, name: &str) -> bool {
 fn expr_has_unsafe_ref(expr: &Expr, name: &str) -> bool {
     match expr {
         Expr::Var(_) | Expr::Path(_) => is_named_callee(expr, name),
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             let func_bad = if is_named_callee(func, name) {
                 false
             } else {
@@ -341,7 +341,7 @@ fn any_undroppable_call(
 }
 
 fn is_undroppable_call(expr: &Expr, name: &str, param_index: usize, expected_len: usize) -> bool {
-    matches!(expr, Expr::Call { func, args }
+    matches!(expr, Expr::Call { func, args, .. }
         if is_named_callee(func, name)
             && (args.len() != expected_len || !is_pure_expr(&args[param_index])))
 }
@@ -360,7 +360,7 @@ fn remove_param(program: &mut Program, name: &str, param_index: usize) {
 fn remove_arg_everywhere(program: &mut Program, name: &str, param_index: usize) {
     each_item_mut(&mut program.items, &mut |item| {
         let visit = &mut |e: &mut Expr| {
-            if let Expr::Call { func, args } = e
+            if let Expr::Call { func, args, .. } = e
                 && is_named_callee(func, name)
                 && param_index < args.len()
             {

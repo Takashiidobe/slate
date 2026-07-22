@@ -472,7 +472,7 @@ fn rewrite_observation_expr(expr: &mut Expr, plan: &Plan) {
         | Expr::Unary { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. } => rewrite_observation_expr(expr, plan),
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             rewrite_observation_expr(func, plan);
             for arg in args {
                 rewrite_observation_expr(arg, plan);
@@ -615,7 +615,7 @@ fn is_null_expr(expr: &Expr) -> bool {
     matches!(expr, Expr::Value(RustValue::NullPtr))
         || matches!(
             expr,
-            Expr::Call { func, args } if args.is_empty() && is_null_path(func)
+            Expr::Call { func, args, .. } if args.is_empty() && is_null_path(func)
         )
 }
 
@@ -688,6 +688,7 @@ mod tests {
                         }),
                         init: Some(Expr::MethodCall {
                             recv: Box::new(Expr::Call {
+                                binding: crate::function_identity::CallBinding::Generated,
                                 func: Box::new(Expr::Var("Some".into())),
                                 args: vec![Expr::Value(RustValue::I64(1))],
                             }),
@@ -972,6 +973,7 @@ mod tests {
 
     fn null_mut() -> Expr {
         Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Path(crate::rust_ast::Path::new([
                 Ident::from("std"),
                 Ident::from("ptr"),
@@ -1000,6 +1002,7 @@ mod tests {
             }),
             init: Some(Expr::MethodCall {
                 recv: Box::new(Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("Some".into())),
                     args: vec![Expr::Value(RustValue::I64(1))],
                 }),
@@ -1034,6 +1037,7 @@ mod tests {
             }),
             init: Some(Expr::MethodCall {
                 recv: Box::new(Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("Some".into())),
                     args: vec![Expr::Value(RustValue::I64(1))],
                 }),

@@ -205,7 +205,7 @@ impl<'a> Collector<'a> {
                 );
                 self.expr(array, path);
             }
-            Expr::Call { func, args } => {
+            Expr::Call { func, args, .. } => {
                 self.expr(func, path);
                 for arg in args {
                     self.record_expr_vars(

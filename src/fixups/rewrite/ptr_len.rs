@@ -136,7 +136,7 @@ fn rewrite_body_pointer_param(body: &mut [IndentStmt], name: &str, mutable: bool
 
 fn rewrite_calls_in_body(body: &mut [IndentStmt], plans: &BTreeMap<String, Vec<Plan>>) {
     walk::body_exprs_mut_with(body, &mut |expr| {
-        let Expr::Call { func, args } = expr else {
+        let Expr::Call { func, args, .. } = expr else {
             return true;
         };
         let Expr::Var(name) = &**func else {

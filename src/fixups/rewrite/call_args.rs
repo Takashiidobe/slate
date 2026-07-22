@@ -287,7 +287,7 @@ fn find_arg_use_body(body: &[IndentStmt], name: &str) -> Option<ArgUse> {
 }
 
 fn find_arg_use_expr(expr: &Expr, name: &str) -> Option<ArgUse> {
-    if let Expr::Call { func, args } = expr
+    if let Expr::Call { func, args, .. } = expr
         && let Some(slot) = args
             .iter()
             .position(|arg| matches!(arg, Expr::Var(v) if v.as_str() == name))
@@ -319,7 +319,7 @@ fn find_arg_use_expr(expr: &Expr, name: &str) -> Option<ArgUse> {
             base: lhs,
             index: rhs,
         } => find_arg_use_expr(lhs, name).or_else(|| find_arg_use_expr(rhs, name)),
-        Expr::Call { func, args } => find_arg_use_expr(func, name)
+        Expr::Call { func, args, .. } => find_arg_use_expr(func, name)
             .or_else(|| args.iter().find_map(|arg| find_arg_use_expr(arg, name))),
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
             find_arg_use_expr(recv, name)
@@ -624,6 +624,7 @@ fn f() {
             vec![
                 temp("_v0", "i32", var("value")),
                 Stmt::Return(Some(Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::MethodCall {
                         recv: Box::new(var("op")),
                         method: "unwrap".into(),

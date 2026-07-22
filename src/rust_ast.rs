@@ -644,6 +644,7 @@ pub enum Expr {
     Call {
         func: Box<Expr>,
         args: Vec<Expr>,
+        binding: crate::function_identity::CallBinding,
     },
     MethodCall {
         recv: Box<Expr>,
@@ -1084,7 +1085,7 @@ impl Expr {
                 let e = end.substitute_var(name, replacement);
                 s || e
             }
-            Expr::Call { func, args } => {
+            Expr::Call { func, args, .. } => {
                 let mut changed = func.substitute_var(name, replacement);
                 for arg in args {
                     changed |= arg.substitute_var(name, replacement);

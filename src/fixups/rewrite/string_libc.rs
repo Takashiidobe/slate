@@ -243,7 +243,7 @@ fn fixup_expr(
                 fixup_expr(end, function, facts, temps, path)
             });
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
                 fixup_expr(func, function, facts, temps, path)
             });
@@ -512,7 +512,7 @@ fn supported_pointer_search_call(
     facts: &FixupFacts,
     path: &[PathSegment],
 ) -> Option<Expr> {
-    let Expr::Call { func, args } = peel_empty_unsafe(expr) else {
+    let Expr::Call { func, args, .. } = peel_empty_unsafe(expr) else {
         return None;
     };
     let Expr::Var(name) = &**func else {
@@ -584,7 +584,7 @@ fn supported_span_call(
     facts: &FixupFacts,
     path: &[PathSegment],
 ) -> Option<Expr> {
-    let Expr::Call { func, args } = peel_empty_unsafe(expr) else {
+    let Expr::Call { func, args, .. } = peel_empty_unsafe(expr) else {
         return None;
     };
     let Expr::Var(name) = &**func else {
@@ -616,7 +616,7 @@ fn supported_numeric_parse_call(
     facts: &FixupFacts,
     path: &[PathSegment],
 ) -> Option<Expr> {
-    let Expr::Call { func, args } = peel_empty_unsafe(expr) else {
+    let Expr::Call { func, args, .. } = peel_empty_unsafe(expr) else {
         return None;
     };
     let Expr::Var(name) = &**func else {
@@ -662,6 +662,7 @@ fn supported_numeric_parse_call(
         return Some(replacement);
     }
     Some(Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(runtime::numeric_parse_path(helper)),
         args: vec![Expr::Var(source.name.into())],
     })
@@ -741,7 +742,7 @@ fn supported_compare_call(
     facts: &FixupFacts,
     path: &[PathSegment],
 ) -> Option<Compare> {
-    let Expr::Call { func, args } = peel_empty_unsafe(expr) else {
+    let Expr::Call { func, args, .. } = peel_empty_unsafe(expr) else {
         return None;
     };
     let Expr::Var(name) = &**func else {
@@ -988,6 +989,7 @@ fn index_to_ptr(name: &str) -> Expr {
 
 fn some(expr: Expr) -> Expr {
     Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var("Some".into())),
         args: vec![expr],
     }
@@ -995,6 +997,7 @@ fn some(expr: Expr) -> Expr {
 
 fn null_mut() -> Expr {
     Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(path_expr(["std", "ptr", "null_mut"])),
         args: Vec::new(),
     }
@@ -1002,6 +1005,7 @@ fn null_mut() -> Expr {
 
 fn char_expr(expr: Expr) -> Expr {
     Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(path_expr(["char", "from"])),
         args: vec![byte_expr(expr)],
     }
@@ -1048,7 +1052,7 @@ fn is_null_at(expr: &Expr, function: FunctionId, facts: &FixupFacts, path: &[Pat
         || expr_has_value(expr, function, facts, &ConstValue::Zero)
         || matches!(
             peel_empty_unsafe(expr),
-            Expr::Call { func, args }
+            Expr::Call { func, args, .. }
                 if args.is_empty()
                     && matches_null_path(func)
         )
@@ -1144,6 +1148,7 @@ fn prefix(source: Source, count: Expr) -> Expr {
         args: Vec::new(),
     };
     let n = Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(path_expr(["std", "cmp", "min"])),
         args: vec![
             Expr::Cast {
@@ -1329,7 +1334,7 @@ fn expr_temp_uses_are_zero_comparisons(expr: &Expr, name: &str) -> bool {
             expr_temp_uses_are_zero_comparisons(start, name)
                 && expr_temp_uses_are_zero_comparisons(end, name)
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             expr_temp_uses_are_zero_comparisons(func, name)
                 && args
                     .iter()
