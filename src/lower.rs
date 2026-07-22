@@ -4613,16 +4613,37 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: ptr_ty,
                 })
             }
+            Some(Val::Global(_)) if !result_ty.starts_with("!cir.ptr<") => {
+                let Some(rust_name) = self.global_name(src) else {
+                    self.emit_todo("cir.cast (global ptrtoint)");
+                    return;
+                };
+                Val::Expr(Expr::Cast {
+                    expr: Box::new(Expr::AddrOf {
+                        mutable: false,
+                        expr: Box::new(Expr::Var(rust_name.into())),
+                    }),
+                    ty: self.parent.rust_type(result_ty),
+                })
+            }
             Some(Val::Global(name)) => Val::Global(name),
             _ if self
                 .slot_types
                 .get(src)
                 .is_some_and(|ty| matches!(ty, Type::Array { .. })) =>
             {
-                Val::Expr(Expr::ArrayPtr {
+                let array_ptr = Expr::ArrayPtr {
                     array: Box::new(self.operand_expr(src)),
                     mutable: true,
-                })
+                };
+                if result_ty.starts_with("!cir.ptr<") {
+                    Val::Expr(array_ptr)
+                } else {
+                    Val::Expr(Expr::Cast {
+                        expr: Box::new(array_ptr),
+                        ty: self.parent.rust_type(result_ty),
+                    })
+                }
             }
             _ if is_long_double(result_ty) && !is_long_double(operand_ty) => {
                 Val::Expr(Expr::Call {
@@ -4699,8 +4720,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+        let lhs = self.pointer_operand_expr(&op.operands[0]);
+        let rhs = self.pointer_operand_expr(&op.operands[1]);
         let ty = op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I64));
@@ -4725,7 +4746,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let base = self.operand_expr(&op.operands[0]);
+        let base = self.pointer_operand_expr(&op.operands[0]);
         let index = self.operand_expr(&op.operands[1]);
         let (method, args) = self.ptr_stride_method_and_args(op, index);
         self.values.insert(
