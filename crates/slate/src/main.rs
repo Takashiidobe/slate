@@ -110,18 +110,51 @@ fn translate(path: &Path) -> Result<String, String> {
 }
 
 fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), String> {
-    let cir_text = cir::emit_generic(path)?;
+    let source =
+        std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+    let pp = preprocess::record_file(&source, &[])?;
+    let errors: Vec<_> = pp
+        .directives
+        .iter()
+        .filter(|directive| directive.name == "error")
+        .collect();
+    for directive in &errors {
+        if let (Some(condition), None) = (&directive.condition, directive.active) {
+            return Err(format!(
+                "translate: cannot determine whether #error at line {} is active because predicate `{}` cannot be evaluated",
+                directive.line_start,
+                preprocess::predicate_text(condition)
+            ));
+        }
+    }
+    let input = preprocess::clang_input(path, &source, &errors)?;
+    let cir_text = cir::emit::emit_generic_with_args(path, input.extra_args())?;
     let module = cir::parse_module(&cir_text)?;
-    let unit = c_ast::parse_file(path)?;
+    let unit = c_ast::parse_file_with_args(path, input.extra_args())?;
 
     let mut ctx = ctx::Ctx::default();
-    let program = lower::lower(&module, &unit, &mut ctx);
+    let mut program = lower::lower(&module, &unit, &mut ctx);
     for d in &ctx.diagnostics.items {
         eprintln!("{:?}: {}", d.severity, d.message);
     }
     if ctx.diagnostics.has_errors() {
         return Err("lowering failed".into());
     }
+    let index = program
+        .items
+        .iter()
+        .take_while(|item| matches!(item, rust_ast::Item::CrateAttrs(_)))
+        .count();
+    program.items.splice(
+        index..index,
+        errors
+            .into_iter()
+            .filter(|directive| directive.active == Some(true))
+            .map(|directive| rust_ast::Item::Macro {
+                name: "compile_error".into(),
+                args: vec![rust_ast::Expr::Str(directive.raw_payload.clone())],
+            }),
+    );
 
     Ok((module, program))
 }

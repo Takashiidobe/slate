@@ -37,6 +37,47 @@ fn translate_directives_err(name: &str) -> String {
     String::from_utf8(out.stderr).expect("diagnostics are utf8")
 }
 
+fn translate(name: &str) -> String {
+    translate_with_clang_args(name, None)
+}
+
+fn translate_with_clang_args(name: &str, clang_args: Option<&str>) -> String {
+    let src = cfg_fixtures_dir().join(name);
+    let mut command = Command::new(env!("CARGO_BIN_EXE_slate"));
+    command.arg("translate").arg(&src);
+    match clang_args {
+        Some(args) => {
+            command.env("SLATE_CLANG_ARGS", args);
+        }
+        None => {
+            command.env_remove("SLATE_CLANG_ARGS");
+        }
+    }
+    let out = command.output().expect("run slate translate");
+    assert!(
+        out.status.success(),
+        "translate failed for {name}:\n{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    String::from_utf8(out.stdout).expect("generated Rust is utf8")
+}
+
+fn compile_with_cfgs(name: &str, rust: &str, cfgs: &[&str]) -> std::process::Output {
+    let source = write_generated(name, rust);
+    let binary = source.with_extension("bin");
+    let mut command = Command::new(std::env::var("RUSTC").unwrap_or_else(|_| "rustc".into()));
+    command.args(["--edition=2024"]);
+    for cfg in cfgs {
+        command.arg("--cfg").arg(format!("feature=\"{cfg}\""));
+    }
+    command
+        .arg(&source)
+        .arg("-o")
+        .arg(binary)
+        .output()
+        .expect("compile generated directive Rust")
+}
+
 fn write_generated(name: &str, rust: &str) -> PathBuf {
     let out_dir =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("target/directive-translate-generated");
@@ -224,6 +265,67 @@ fn sanitizes_fatal_directives_without_changing_frontend_source_identity() {
     assert!(rust.contains("i32::MAX"));
     assert_tail_value(&rust, "37");
     assert!(rust.contains("tests/fixtures.cfg/sanitized_input.c"));
+}
+
+#[test]
+fn unconditional_error_is_typed_preserved_and_fails_rust_compilation() {
+    let rust = translate("error_unconditional.c");
+
+    assert!(rust.contains("compile_error!(\"unexpanded ERROR_TOKEN \\\"quoted\\\" C:\\\\tmp\");"));
+    let output = compile_with_cfgs("error_unconditional", &rust, &[]);
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("unexpanded ERROR_TOKEN"));
+}
+
+#[test]
+fn conditional_error_fails_only_when_its_cfg_is_selected() {
+    let single = translate("error_conditional.c");
+    assert!(!single.contains("compile_error!"));
+    let active_single = translate_with_clang_args("error_conditional.c", Some("-DFAIL_BUILD"));
+    assert!(active_single.contains("compile_error!(\"selected failure\");"));
+    assert!(!active_single.contains("#[cfg("));
+
+    let rust = translate_directives("error_conditional.c");
+    assert!(
+        rust.contains("#[cfg(feature = \"fail_build\")]\ncompile_error!(\"selected failure\");")
+    );
+    assert!(
+        compile_with_cfgs("error_conditional_inactive", &rust, &[])
+            .status
+            .success()
+    );
+    let active = compile_with_cfgs("error_conditional_active", &rust, &["fail_build"]);
+    assert!(!active.status.success());
+    assert!(String::from_utf8_lossy(&active.stderr).contains("selected failure"));
+}
+
+#[test]
+fn nested_error_uses_the_effective_cfg_condition() {
+    let rust = translate_directives("error_nested.c");
+
+    assert!(rust.contains(
+        "#[cfg(all(feature = \"outer_failure\", feature = \"inner_failure\"))]\ncompile_error!(\"nested failure\");"
+    ));
+    assert!(
+        compile_with_cfgs("error_nested_outer_only", &rust, &["outer_failure"])
+            .status
+            .success()
+    );
+    let active = compile_with_cfgs(
+        "error_nested_active",
+        &rust,
+        &["outer_failure", "inner_failure"],
+    );
+    assert!(!active.status.success());
+    assert!(String::from_utf8_lossy(&active.stderr).contains("nested failure"));
+}
+
+#[test]
+fn conditional_error_with_unmappable_predicate_is_refused() {
+    let err = translate_directives_err("reject/error_unmapped.c");
+
+    assert!(err.contains("does not map to a known Rust cfg"));
+    assert!(err.contains("FAILURE_LEVEL == 2"));
 }
 
 #[test]
