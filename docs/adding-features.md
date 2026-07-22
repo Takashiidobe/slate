@@ -20,8 +20,9 @@ not model yet. If it fails, handle the new effect shape in `src/effects/` or
 leave the fixture out until the behavior is modeled; do not accept an effects
 extraction failure as harmless.
 
-The checked fixtures are C-only. Fixed-up generated Rust for inspection lives
-under the ignored `tests/fixtures.generated/` directory:
+The checked fixtures are C-only. `emit-fixtures` populates ignored sibling
+`*.generated/` trees for every supported fixture suite. Fixed-up Rust for the
+primary fixtures lives under `tests/fixtures.generated/`:
 
 ```bash
 cargo run -- emit-fixtures

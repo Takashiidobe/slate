@@ -123,10 +123,13 @@ Generated Rust for inspection is written with:
 cargo run -- emit-fixtures
 ```
 
-That command writes ignored files under `tests/fixtures.generated/`. The
-checked fixtures under `tests/fixtures/` are C-only. To inspect raw lowered Rust
-before fixups, use `cargo run -- emit-lowered-fixtures`; it writes ignored files
-under `tests/fixtures.lowered.generated/`.
+That command translates every currently supported fixture suite into an ignored
+sibling `*.generated/` tree while preserving its relative layout. This includes
+the primary, cfg, multi-TU, supported chibicc, library, and stdlib fixtures;
+explicit reject/unsupported cases are skipped. The checked fixture trees remain
+C-only. To inspect raw lowered Rust before fixups, use
+`cargo run -- emit-lowered-fixtures`; it writes ignored files under
+`tests/fixtures.lowered.generated/`.
 
 ## Not handled yet
 
