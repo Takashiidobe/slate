@@ -1541,9 +1541,10 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
         (
             "bitfield_ops",
             &[
-                "s.a = 5 << 29 >> 29;",
-                "s.b = -3 << 27 >> 27;",
-                "w.x = 1099511627775 << 24 >> 24;",
+                "__bitfield_0: u32,",
+                "s.__bitfield_0 = s.__bitfield_0 & !7",
+                "s.__bitfield_0 = s.__bitfield_0 & !248",
+                "w.__bitfield_0 = w.__bitfield_0 & !1099511627775",
             ][..],
         ),
     ] {
