@@ -7397,6 +7397,9 @@ fn cir_type_to_ctype(ty: &str, aliases: &BTreeMap<String, String>) -> crate::c_a
     if let Some((signed, bits)) = parse_cir_int_type(ty) {
         return CType::Int { signed, bits };
     }
+    if let Some((elem, len)) = parse_cir_array_type(ty) {
+        return CType::Array(Box::new(cir_type_to_ctype(&elem, aliases)), Some(len));
+    }
     // resolve records through the alias table so anon fields keep their dotted name.
     if let Some(name) = aliases
         .get(ty)
@@ -7445,6 +7448,13 @@ fn collect_anon_record_info(
                     field_names.insert((key, index), name.to_string());
                 }
             }
+            CirOpKind::Global => {
+                if let Some(key) =
+                    attr_str(op, "sym_type").and_then(|ty| anon_alias_key(ty, aliases))
+                {
+                    needed.insert(key);
+                }
+            }
             _ => {}
         }
         for region in &op.regions {
@@ -7463,6 +7473,23 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
     let mut needed = BTreeSet::new();
     let mut field_names = BTreeMap::new();
     collect_anon_record_info(&module.ops, &module.aliases, &mut needed, &mut field_names);
+
+    let mut frontier: Vec<String> = needed.iter().cloned().collect();
+    while let Some(key) = frontier.pop() {
+        let Some(expanded) = module.aliases.get(&key) else {
+            continue;
+        };
+        let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}')) else {
+            continue;
+        };
+        for field_ty in split_top_level(&expanded[open + 1..close], ',') {
+            if let Some(field_key) = anon_alias_key(field_ty.trim(), &module.aliases)
+                && needed.insert(field_key.clone())
+            {
+                frontier.push(field_key);
+            }
+        }
+    }
 
     let mut records = Vec::new();
     for key in &needed {
