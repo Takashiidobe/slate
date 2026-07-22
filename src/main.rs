@@ -114,21 +114,27 @@ fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), 
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
     let pp = preprocess::record_file(&source, &[])?;
     reject_active_unsupported(&pp, "translate")?;
-    let errors: Vec<_> = pp
+    let diagnostics: Vec<_> = pp
         .directives
         .iter()
-        .filter(|directive| directive.name == preprocess::DirectiveName::Error)
+        .filter(|directive| {
+            matches!(
+                directive.name,
+                preprocess::DirectiveName::Error | preprocess::DirectiveName::Warning
+            )
+        })
         .collect();
-    for directive in &errors {
+    for directive in &diagnostics {
         if let (Some(condition), None) = (&directive.condition, directive.active) {
             return Err(format!(
-                "translate: cannot determine whether #error at line {} is active because predicate `{}` cannot be evaluated",
+                "translate: cannot determine whether #{} at line {} is active because predicate `{}` cannot be evaluated",
+                directive.name.as_str(),
                 directive.line_start,
                 preprocess::predicate_text(condition)
             ));
         }
     }
-    let input = preprocess::clang_input(path, &source, &errors)?;
+    let input = preprocess::clang_input(path, &source, &diagnostics)?;
     let cir_text = cir::emit::emit_generic_with_args(path, input.extra_args())?;
     let module = cir::parse_module(&cir_text)?;
     let unit = c_ast::parse_file_with_args(path, input.extra_args())?;
@@ -148,12 +154,24 @@ fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), 
         .count();
     program.items.splice(
         index..index,
-        errors
+        diagnostics
             .into_iter()
             .filter(|directive| directive.active == Some(true))
-            .map(|directive| rust_ast::Item::Macro {
-                name: "compile_error".into(),
-                args: vec![rust_ast::Expr::Str(directive.raw_payload.clone())],
+            .enumerate()
+            .flat_map(|(index, directive)| {
+                if directive.name == preprocess::DirectiveName::Error {
+                    vec![rust_ast::Item::Macro {
+                        name: "compile_error".into(),
+                        args: vec![rust_ast::Expr::Str(directive.raw_payload.clone())],
+                    }]
+                } else {
+                    directive_translate::warning_items(
+                        &directive.raw_payload,
+                        index,
+                        None,
+                        directive_translate::WarningBackend::Standalone,
+                    )
+                }
             }),
     );
 
@@ -162,7 +180,7 @@ fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), 
 
 fn reject_active_unsupported(pp: &preprocess::Preprocessing, context: &str) -> Result<(), String> {
     for directive in pp.directives.iter().filter(|directive| {
-        directive.name.disposition() == preprocess::DirectiveDisposition::UnsupportedSemantic
+        directive.disposition() == preprocess::DirectiveDisposition::UnsupportedSemantic
     }) {
         match directive.active {
             Some(false) => {}
@@ -393,7 +411,7 @@ fn package_name(crate_dir: &Path) -> String {
     }
 }
 
-fn lib_crate_manifest(package: &str, tests: &[String]) -> String {
+fn lib_crate_manifest(package: &str, tests: &[String], slate_support: bool) -> String {
     let test_targets: String = tests
         .iter()
         .map(|test| {
@@ -407,6 +425,11 @@ harness = false
             )
         })
         .collect();
+    let support_dependency = if slate_support {
+        "slate-support = { path = \"slate-support\" }\n"
+    } else {
+        ""
+    };
     format!(
         r#"[package]
 name = "{package}"
@@ -415,6 +438,7 @@ edition = "2024"
 
 [dependencies]
 libc = "0.2"
+{support_dependency}
 
 [profile.dev]
 overflow-checks = false
@@ -426,10 +450,11 @@ fn write_lib_crate_manifest(
     crate_dir: &Path,
     package: &str,
     tests: &[String],
+    slate_support: bool,
 ) -> Result<(), String> {
     std::fs::write(
         crate_dir.join("Cargo.toml"),
-        lib_crate_manifest(package, tests),
+        lib_crate_manifest(package, tests, slate_support),
     )
     .map_err(|e| format!("write {}: {e}", crate_dir.join("Cargo.toml").display()))
 }
@@ -453,12 +478,91 @@ fn init_lib_crate(crate_dir: &Path) -> Result<(), String> {
         }
     }
 
-    write_lib_crate_manifest(crate_dir, &package, &[])?;
+    write_lib_crate_manifest(crate_dir, &package, &[], false)?;
     let main_rs = crate_dir.join("src/main.rs");
     if main_rs.exists() {
         std::fs::remove_file(&main_rs).map_err(|e| format!("remove {}: {e}", main_rs.display()))?;
     }
     Ok(())
+}
+
+fn write_slate_support(crate_dir: &Path) -> Result<(), String> {
+    let support_dir = crate_dir.join("slate-support");
+    let src_dir = support_dir.join("src");
+    std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
+    std::fs::write(
+        support_dir.join("Cargo.toml"),
+        r#"[package]
+name = "slate-support"
+version = "0.0.0"
+edition = "2024"
+
+[lib]
+proc-macro = true
+"#,
+    )
+    .map_err(|e| format!("write {}: {e}", support_dir.join("Cargo.toml").display()))?;
+    std::fs::write(
+        src_dir.join("lib.rs"),
+        r#"#![feature(proc_macro_diagnostic, proc_macro_value)]
+
+extern crate proc_macro;
+
+use proc_macro::{Diagnostic, Level, TokenStream, TokenTree};
+
+#[proc_macro]
+pub fn warning(input: TokenStream) -> TokenStream {
+    let mut tokens = input.into_iter();
+    let Some(TokenTree::Literal(message)) = tokens.next() else {
+        panic!("slate_support::warning! expects one string literal");
+    };
+    if tokens.next().is_some() {
+        panic!("slate_support::warning! expects one string literal");
+    }
+    let message = message
+        .str_value()
+        .expect("slate_support::warning! expects one string literal");
+    Diagnostic::new(Level::Warning, message).emit();
+    TokenStream::new()
+}
+"#,
+    )
+    .map_err(|e| format!("write {}: {e}", src_dir.join("lib.rs").display()))
+}
+
+fn project_warning_items(
+    pp: &preprocess::Preprocessing,
+    context: &str,
+    backend: directive_translate::WarningBackend,
+) -> Result<Vec<rust_ast::Item>, String> {
+    let mut items = Vec::new();
+    for (index, directive) in pp
+        .directives
+        .iter()
+        .filter(|directive| directive.name == preprocess::DirectiveName::Warning)
+        .enumerate()
+    {
+        let cfg = directive
+            .condition
+            .as_ref()
+            .map(|condition| {
+                preprocess::pred_to_cfg(condition).ok_or_else(|| {
+                    format!(
+                        "{context}: #warning at line {} is guarded by predicate `{}` which does not map to a known Rust cfg",
+                        directive.line_start,
+                        preprocess::predicate_text(condition)
+                    )
+                })
+            })
+            .transpose()?;
+        items.extend(directive_translate::warning_items(
+            &directive.raw_payload,
+            index,
+            cfg,
+            backend,
+        ));
+    }
+    Ok(items)
 }
 
 fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<String, String> {
@@ -489,8 +593,18 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     let mut shared_records = BTreeMap::new();
     let mut shared_enums = BTreeMap::new();
     let mut referenced_record_types = BTreeSet::new();
+    let mut uses_slate_support = false;
     for (stem, path) in &modules {
-        reject_active_unsupported_file(path, "translate-project --lib")?;
+        let source =
+            std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+        let pp = preprocess::record_file(&source, &[])?;
+        reject_active_unsupported(&pp, "translate-project --lib")?;
+        let warning_items = project_warning_items(
+            &pp,
+            "translate-project --lib",
+            directive_translate::WarningBackend::SupportMacro,
+        )?;
+        uses_slate_support |= !warning_items.is_empty();
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
         for sym in lower::defined_functions(&module) {
             defined.insert(sym, stem.clone());
@@ -512,7 +626,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
                 .entry(rust_ident(&record.name))
                 .or_insert_with(|| record.clone());
         }
-        loaded_modules.push((stem.clone(), path.clone(), module, unit));
+        loaded_modules.push((stem.clone(), path.clone(), module, unit, warning_items));
     }
     for name in referenced_record_types {
         shared_records.entry(name.clone()).or_insert(c_ast::Record {
@@ -542,15 +656,16 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     };
 
     let mut written = Vec::new();
-    for (stem, path, module, unit) in loaded_modules {
+    for (stem, path, module, unit, warning_items) in loaded_modules {
         let mut ctx = ctx::Ctx::default();
-        let program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
+        let mut program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
         for d in &ctx.diagnostics.items {
             eprintln!("{:?}: {}", d.severity, d.message);
         }
         if ctx.diagnostics.has_errors() {
             return Err(format!("lowering failed for {}", path.display()));
         }
+        directive_translate::insert_directive_items(&mut program, warning_items);
         let output = crate_src.join(stem).with_extension("rs");
         std::fs::write(&output, fixups::apply(program).emit())
             .map_err(|e| format!("write {}: {e}", output.display()))?;
@@ -592,7 +707,16 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             .map_err(|e| format!("create {}: {e}", crate_tests.display()))?;
         let package = package_name(crate_dir);
         for (stem, path) in collect_c_modules(&tests_dir)? {
-            reject_active_unsupported_file(&path, "translate-project --lib")?;
+            let source = std::fs::read_to_string(&path)
+                .map_err(|e| format!("read {}: {e}", path.display()))?;
+            let pp = preprocess::record_file(&source, &[])?;
+            reject_active_unsupported(&pp, "translate-project --lib")?;
+            let warning_items = project_warning_items(
+                &pp,
+                "translate-project --lib",
+                directive_translate::WarningBackend::SupportMacro,
+            )?;
+            uses_slate_support |= !warning_items.is_empty();
             let module = cir::parse_module(&cir::emit_generic(&path)?)?;
             let unit = c_ast::parse_file_with_project_records(&path, project_dir)?;
             let test_project = lower::ProjectInfo {
@@ -609,13 +733,14 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
                 ..lower::ProjectInfo::default()
             };
             let mut ctx = ctx::Ctx::default();
-            let program = lower::lower_with_project(&module, &unit, &mut ctx, &test_project);
+            let mut program = lower::lower_with_project(&module, &unit, &mut ctx, &test_project);
             for d in &ctx.diagnostics.items {
                 eprintln!("{:?}: {}", d.severity, d.message);
             }
             if ctx.diagnostics.has_errors() {
                 return Err(format!("lowering failed for {}", path.display()));
             }
+            directive_translate::insert_directive_items(&mut program, warning_items);
             let output = crate_tests.join(&stem).with_extension("rs");
             std::fs::write(&output, fixups::apply(program).emit())
                 .map_err(|e| format!("write {}: {e}", output.display()))?;
@@ -623,7 +748,15 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             test_modules.push(stem);
         }
     }
-    write_lib_crate_manifest(crate_dir, &package_name(crate_dir), &test_modules)?;
+    if uses_slate_support {
+        write_slate_support(crate_dir)?;
+    }
+    write_lib_crate_manifest(
+        crate_dir,
+        &package_name(crate_dir),
+        &test_modules,
+        uses_slate_support,
+    )?;
 
     Ok(written
         .into_iter()
@@ -697,13 +830,22 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
         let unit = c_ast::parse_file(path)?;
         let mut ctx = ctx::Ctx::default();
-        let program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
+        let mut program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
         for d in &ctx.diagnostics.items {
             eprintln!("{:?}: {}", d.severity, d.message);
         }
         if ctx.diagnostics.has_errors() {
             return Err(format!("lowering failed for {}", path.display()));
         }
+        let source =
+            std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+        let pp = preprocess::record_file(&source, &[])?;
+        let warning_items = project_warning_items(
+            &pp,
+            "translate-project",
+            directive_translate::WarningBackend::Standalone,
+        )?;
+        directive_translate::insert_directive_items(&mut program, warning_items);
         let file = if is_root {
             "main".to_string()
         } else {
@@ -733,7 +875,7 @@ fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
         .map(|directive| {
             serde_json::json!({
                 "name": directive.name.as_str(),
-                "disposition": directive.name.disposition().as_str(),
+                "disposition": directive.disposition().as_str(),
                 "raw_payload": directive.raw_payload,
                 "byte_start": directive.byte_start,
                 "byte_end": directive.byte_end,

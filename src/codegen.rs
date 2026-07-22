@@ -159,6 +159,19 @@ impl<W: Write> Codegen<W> {
                 self.expr(init)?;
                 self.out.write_str(";\n")?;
             }
+            Item::Const {
+                attrs,
+                name,
+                ty,
+                init,
+            } => {
+                self.attrs(attrs)?;
+                write!(self.out, "const {name}: ")?;
+                self.ty(ty)?;
+                self.out.write_str(" = ")?;
+                self.expr(init)?;
+                self.out.write_str(";\n")?;
+            }
             Item::ExternBlock { abi, decls } => {
                 writeln!(self.out, "unsafe extern \"{abi}\" {{")?;
                 for decl in decls {
@@ -438,6 +451,9 @@ impl<W: Write> Codegen<W> {
                 crate::rust_ast::UsedKind::Compiler => self.out.write_str("used(compiler)"),
                 crate::rust_ast::UsedKind::Linker => self.out.write_str("used(linker)"),
             },
+            Attr::Deprecated(note) => {
+                write!(self.out, "deprecated(note = {})", string_literal(note))
+            }
         }
     }
 

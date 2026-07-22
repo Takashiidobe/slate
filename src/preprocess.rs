@@ -257,6 +257,14 @@ pub struct DirectiveRecord {
 }
 
 impl DirectiveRecord {
+    pub fn disposition(&self) -> DirectiveDisposition {
+        if self.name == DirectiveName::Pragma && is_diagnostic_pragma(&self.raw_payload) {
+            DirectiveDisposition::DiagnosticOnly
+        } else {
+            self.name.disposition()
+        }
+    }
+
     pub fn unsupported_message(&self) -> String {
         let mut message = format!(
             "unsupported semantic directive #{} at line {}",
@@ -269,6 +277,13 @@ impl DirectiveRecord {
         }
         message
     }
+}
+
+fn is_diagnostic_pragma(payload: &str) -> bool {
+    let payload = payload.trim_start();
+    payload.starts_with("GCC diagnostic ")
+        || payload.starts_with("clang diagnostic ")
+        || payload.starts_with("warning(")
 }
 
 /// Recorded preprocessing metadata for a translation unit.

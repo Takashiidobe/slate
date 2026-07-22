@@ -33,6 +33,12 @@ pub enum Item {
         ty: Type,
         init: Expr,
     },
+    Const {
+        attrs: Vec<Attr>,
+        name: String,
+        ty: Type,
+        init: Expr,
+    },
     ExternBlock {
         abi: String,
         decls: Vec<ExternDecl>,
@@ -160,6 +166,7 @@ pub enum Attr {
     WeakLinkage,
     LinkSection(String),
     Used(UsedKind),
+    Deprecated(String),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

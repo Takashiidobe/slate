@@ -169,6 +169,9 @@ fn rewrite_item(
         Item::Static { ty, init, .. } => {
             rewrite_type(ty, plans) | rewrite_expr(init, global_types, plans, record_fields)
         }
+        Item::Const { ty, init, .. } => {
+            rewrite_type(ty, plans) | rewrite_expr(init, global_types, plans, record_fields)
+        }
         Item::Struct(s) => rewrite_struct_def(s, plans),
         Item::Impl(im) => {
             let mut changed = rewrite_type(&mut im.self_ty, plans);
