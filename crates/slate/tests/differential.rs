@@ -139,6 +139,24 @@ fn anonymous_local_structs_use_generated_tuple_structs() {
 }
 
 #[test]
+fn anonymous_struct_arrays_use_generated_tuple_structs() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-anon-struct-array");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("anon_struct_array.c");
+    let generated = tmp.join("anon_struct_array.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate anonymous struct array fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read anonymous struct array rust");
+
+    assert!(rust.contains("struct __slate_anonymous_struct_0(i32, *mut i8, f64);"));
+    assert!(rust.contains("error_log: [__slate_anonymous_struct_0; 3]"));
+    assert!(rust.contains("__slate_anonymous_struct_0(404,"));
+    assert!(rust.contains("error_log[0].0"));
+    assert!(!rust.contains("anon_0"));
+    assert!(!rust.contains("error_log[0].code"));
+}
+
+#[test]
 fn buffer_pointer_cursor_uses_safe_array_indexes() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-buffer-cursor");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

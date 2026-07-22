@@ -76,16 +76,12 @@ fn record_field_types(program: &Program) -> BTreeMap<String, BTreeMap<String, Ty
         .collect()
 }
 
-fn global_types(program: &Program) -> BTreeMap<String, String> {
+fn global_types(program: &Program) -> BTreeMap<String, Type> {
     program
         .items
         .iter()
         .filter_map(|item| match item {
-            Item::Static {
-                name,
-                ty: Type::Custom(original),
-                ..
-            } => Some((name.clone(), original.clone())),
+            Item::Static { name, ty, .. } => Some((name.clone(), ty.clone())),
             _ => None,
         })
         .collect()
@@ -130,7 +126,7 @@ fn rewrite_item(
     item: &mut Item,
     plans: &BTreeMap<String, Plan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
-    global_types: &BTreeMap<String, String>,
+    global_types: &BTreeMap<String, Type>,
     facts: &FixupFacts,
 ) -> bool {
     match item {
@@ -227,7 +223,7 @@ fn rewrite_fn(
     function: Option<FunctionId>,
     plans: &BTreeMap<String, Plan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
-    global_types: &BTreeMap<String, String>,
+    global_types: &BTreeMap<String, Type>,
     facts: &FixupFacts,
 ) -> bool {
     let mut local_types = global_types.clone();
@@ -245,21 +241,21 @@ fn rewrite_fn(
     changed
 }
 
-fn local_anonymous_types(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, String> {
+fn local_anonymous_types(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, Type> {
     facts
         .bindings
         .iter()
         .filter(|binding| binding.function == function)
         .filter_map(|binding| {
             let rendered = facts.binding_type(binding.id)?;
-            Some((binding.name.clone(), rendered.to_string()))
+            Some((binding.name.clone(), Type::parse(rendered)))
         })
         .collect()
 }
 
 fn rewrite_body(
     body: &mut Vec<IndentStmt>,
-    local_types: &BTreeMap<String, String>,
+    local_types: &BTreeMap<String, Type>,
     plans: &BTreeMap<String, Plan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> bool {
@@ -275,7 +271,7 @@ fn rewrite_body(
 
 fn rewrite_stmt(
     stmt: &mut Stmt,
-    local_types: &BTreeMap<String, String>,
+    local_types: &BTreeMap<String, Type>,
     plans: &BTreeMap<String, Plan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> bool {
@@ -297,7 +293,7 @@ fn rewrite_stmt(
 
 fn rewrite_expr(
     expr: &mut Expr,
-    local_types: &BTreeMap<String, String>,
+    local_types: &BTreeMap<String, Type>,
     plans: &BTreeMap<String, Plan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> bool {
@@ -319,7 +315,7 @@ fn rewrite_expr(
             let Some(original) = base_original_type(base, local_types, plans, record_fields) else {
                 return false;
             };
-            let Some(plan) = plans.get(original) else {
+            let Some(plan) = plans.get(&original) else {
                 return false;
             };
             let Some(index) = plan
@@ -364,27 +360,37 @@ fn positional_fields(fields: &[(String, Expr)], plan: &Plan) -> Option<Vec<Expr>
         .collect()
 }
 
-fn base_original_type<'a>(
+fn base_original_type(
     expr: &Expr,
-    local_types: &'a BTreeMap<String, String>,
-    plans: &'a BTreeMap<String, Plan>,
-    record_fields: &'a BTreeMap<String, BTreeMap<String, Type>>,
-) -> Option<&'a str> {
+    local_types: &BTreeMap<String, Type>,
+    plans: &BTreeMap<String, Plan>,
+    record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
+) -> Option<String> {
+    let Type::Custom(name) = expr_type(expr, local_types, plans, record_fields)? else {
+        return None;
+    };
+    Some(name)
+}
+
+fn expr_type(
+    expr: &Expr,
+    local_types: &BTreeMap<String, Type>,
+    plans: &BTreeMap<String, Plan>,
+    record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
+) -> Option<Type> {
     match expr {
-        Expr::Var(name) => local_types.get(name.as_str()).map(String::as_str),
+        Expr::Var(name) => local_types.get(name.as_str()).cloned(),
+        Expr::Index { base, .. } => match expr_type(base, local_types, plans, record_fields)? {
+            Type::Array { elem, .. } | Type::Slice(elem) => Some(*elem),
+            _ => None,
+        },
         Expr::Field { base, field } => {
             let base_ty = base_original_type(base, local_types, plans, record_fields)?;
-            match record_fields.get(base_ty)?.get(field)? {
-                Type::Custom(name) => Some(name.as_str()),
-                _ => None,
-            }
+            record_fields.get(&base_ty)?.get(field).cloned()
         }
         Expr::TupleField { base, index } => {
             let base_ty = base_original_type(base, local_types, plans, record_fields)?;
-            match &plans.get(base_ty)?.fields.get(*index)?.ty {
-                Type::Custom(name) => Some(name.as_str()),
-                _ => None,
-            }
+            Some(plans.get(&base_ty)?.fields.get(*index)?.ty.clone())
         }
         _ => None,
     }
