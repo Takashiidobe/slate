@@ -18,12 +18,17 @@ pub(in crate::fixups) fn fixup(
 }
 
 pub(in crate::fixups) struct DeadLocals<'a> {
+    pass: TracePass,
     logger: &'a mut dyn TraceLogger,
 }
 
 impl<'a> DeadLocals<'a> {
     pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+        Self::with_pass(TracePass::DeadLocals, logger)
+    }
+
+    pub(in crate::fixups) fn with_pass(pass: TracePass, logger: &'a mut dyn TraceLogger) -> Self {
+        Self { pass, logger }
     }
 
     pub(in crate::fixups) fn fixup(
@@ -99,7 +104,7 @@ impl<'a> DeadLocals<'a> {
             event_facts.push(fact("effects", format!("{:?}", effect.effects)));
         }
         self.logger.rewrite(RewriteEvent {
-            pass: TracePass::DeadLocals,
+            pass: self.pass,
             kind: "remove_dead_local".into(),
             location: function_path_location(facts, function, path),
             before: vec![stmt_snippet("declaration", stmt)],

@@ -122,9 +122,6 @@ feature needs it.
 
 Read these before making changes — they are the real playbook:
 
-- **[WORKFLOW.md](WORKFLOW.md)** — multi-agent ticket selection, linked-bead
-  checks, branch/worktree setup, and integration rules. Start here before
-  claiming work when other agents may be active.
 - **[docs/adding-features.md](docs/adding-features.md)** — the workflow for
   adding coverage (baseline language feature vs. Rust fixup). Start here when
   adding a feature.
