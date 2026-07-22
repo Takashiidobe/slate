@@ -357,6 +357,7 @@ pub(super) enum CallCallee {
     Direct {
         name: String,
         signature: Option<SignatureId>,
+        identity: crate::function_identity::FunctionIdentity,
     },
     Indirect,
 }

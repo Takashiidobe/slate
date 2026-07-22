@@ -2,6 +2,7 @@ use crate::fixups::facts::{CallCallee, FixupFacts};
 use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
 };
+use crate::function_identity::known_declaration;
 use crate::rust_ast::{ExternDecl, Item, Program};
 
 pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
@@ -42,45 +43,15 @@ fn fixup_impl(program: &mut Program, facts: &FixupFacts) {
     program.items.retain_mut(|item| match item {
         Item::ExternBlock { decls, .. } => {
             decls.retain(|decl| match decl {
-                ExternDecl::Fn(f) if is_prunable(&f.name) => used.contains(&f.name),
+                ExternDecl::Fn(f) if known_declaration(f.identity, &f.name).is_some() => {
+                    used.contains(&f.name)
+                }
                 _ => true,
             });
             !decls.is_empty()
         }
         _ => true,
     });
-}
-
-fn is_prunable(name: &str) -> bool {
-    matches!(
-        name,
-        "strlen"
-            | "strcmp"
-            | "strncmp"
-            | "memcmp"
-            | "strchr"
-            | "strrchr"
-            | "strstr"
-            | "strpbrk"
-            | "strspn"
-            | "strcspn"
-            | "atoi"
-            | "atol"
-            | "strtol"
-            | "strtoul"
-            | "strtod"
-            | "strcpy"
-            | "strncpy"
-            | "strcat"
-            | "strncat"
-            | "qsort"
-            | "bsearch"
-            | "exit"
-            | "malloc"
-            | "calloc"
-            | "realloc"
-            | "free"
-    )
 }
 
 fn direct_calls(facts: &FixupFacts) -> Vec<String> {

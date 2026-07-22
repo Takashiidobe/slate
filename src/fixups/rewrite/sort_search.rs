@@ -4,6 +4,7 @@ use crate::fixups::support::walk;
 use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet,
 };
+use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
     BinOp, Expr, FnDef, Ident, IndentStmt, Item, Program, RecordDef, RustValue, Stmt, Type, UnaryOp,
 };
@@ -157,8 +158,10 @@ fn qsort_replacement(
     comparators: &BTreeMap<String, ComparatorPlan>,
 ) -> Option<Expr> {
     let call = unsafe_call(expr)?;
-    let (name, args) = direct_call(call)?;
-    if name != "qsort" || args.len() != 4 {
+    let Expr::Call { args, .. } = call else {
+        return None;
+    };
+    if known_call(call) != Some(Known::Qsort) || args.len() != 4 {
         return None;
     }
     let array_name = array_pointer_arg(&args[0], true)?;
@@ -195,8 +198,10 @@ fn bsearch_replacement(
     comparators: &BTreeMap<String, ComparatorPlan>,
 ) -> Option<Expr> {
     let call = unsafe_call(expr)?;
-    let (name, args) = direct_call(call)?;
-    if name != "bsearch" || args.len() != 5 {
+    let Expr::Call { args, .. } = call else {
+        return None;
+    };
+    if known_call(call) != Some(Known::Bsearch) || args.len() != 5 {
         return None;
     }
     let key_name = key_pointer_arg(&args[0])?;
@@ -718,6 +723,7 @@ mod tests {
         Item::ExternBlock {
             abi: "C".into(),
             decls: vec![ExternDecl::Fn(ExternFnDecl {
+                identity: crate::function_identity::FunctionIdentity::Unknown,
                 name: "qsort".into(),
                 params: Vec::new(),
                 variadic: false,

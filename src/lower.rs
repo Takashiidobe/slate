@@ -3,7 +3,7 @@
 use crate::c_ast::{LayoutQuery, Loc, RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
-use crate::function_identity::CallBinding;
+use crate::function_identity::{CallBinding, FunctionIdentity};
 use crate::rust_ast::{
     Abi, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType,
     CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
@@ -281,6 +281,12 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         ctx,
         aliases: cir.aliases.clone(),
         call_bindings: c.call_bindings(),
+        known_functions: c
+            .call_bindings()
+            .values()
+            .filter_map(|binding| binding.known())
+            .map(|known| (known.symbol().to_string(), FunctionIdentity::Known(known)))
+            .collect(),
         records,
         enums,
         anon_records,
@@ -562,6 +568,7 @@ struct Lowerer<'a> {
     ctx: &'a mut Ctx,
     aliases: BTreeMap<String, String>,
     call_bindings: HashMap<Loc, CallBinding>,
+    known_functions: BTreeMap<String, FunctionIdentity>,
     records: BTreeMap<String, crate::c_ast::Record>,
     enums: BTreeMap<String, crate::c_ast::Enum>,
     /// Function-local anonymous record types recovered from the CIR (libyaml's
@@ -916,6 +923,7 @@ impl<'a> Lowerer<'a> {
             self.extern_returns.insert(name.to_string(), ret.clone());
             if name == "strtold" && ret.as_deref() == Some(LONG_DOUBLE_TY) {
                 extern_decls.push(ExternDecl::Fn(ExternFnDecl {
+                    identity: crate::function_identity::FunctionIdentity::Unknown,
                     name: "__slate_strtold".into(),
                     params: vec![
                         FnParam {
@@ -1730,6 +1738,11 @@ impl<'a> Lowerer<'a> {
         let ret_ty = ret_ast.as_ref().map(Type::render);
         let decl = ExternFnDecl {
             name: name.into(),
+            identity: self
+                .known_functions
+                .get(name)
+                .copied()
+                .unwrap_or(FunctionIdentity::Unknown),
             params,
             variadic,
             ret: ret_ast,
@@ -2299,40 +2312,70 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Ceil => self.lower_unary_method(op, "ceil"),
             CirOpKind::ClearCache => {}
             CirOpKind::Copysign => self.lower_binary_method(op, "copysign"),
-            CirOpKind::Cos => self.lower_unary_method(op, "cos"),
-            CirOpKind::Exp => self.lower_unary_method(op, "exp"),
-            CirOpKind::Exp2 => self.lower_unary_method(op, "exp2"),
+            CirOpKind::Cos => {
+                self.lower_known_unary_method(op, crate::function_identity::Known::Cos, "cos")
+            }
+            CirOpKind::Exp => {
+                self.lower_known_unary_method(op, crate::function_identity::Known::Exp, "exp")
+            }
+            CirOpKind::Exp2 => {
+                self.lower_known_unary_method(op, crate::function_identity::Known::Exp2, "exp2")
+            }
             CirOpKind::Expect => self.lower_expect(op),
             CirOpKind::Fabs => self.lower_unary_method(op, "abs"),
             CirOpKind::Fma => self.lower_ternary_method(op, "mul_add"),
             CirOpKind::Fmaximum => self.lower_binary_method(op, "max"),
             CirOpKind::Fminimum => self.lower_binary_method(op, "min"),
-            CirOpKind::Fmod => self.lower_binary(op, BinOp::Rem),
+            CirOpKind::Fmod => {
+                self.lower_known_binary(op, crate::function_identity::Known::Fmod, BinOp::Rem)
+            }
             CirOpKind::Floor => self.lower_unary_method(op, "floor"),
             CirOpKind::Fmaxnum => self.lower_binary_method(op, "max"),
             CirOpKind::Fminnum => self.lower_binary_method(op, "min"),
             CirOpKind::IsFpClass => self.lower_is_fp_class(op),
             CirOpKind::Llrint => self.lower_unary_cast_method(op, "round_ties_even"),
-            CirOpKind::Llround => self.lower_unary_cast_method(op, "round"),
-            CirOpKind::Log => self.lower_unary_method(op, "ln"),
-            CirOpKind::Log10 => self.lower_unary_method(op, "log10"),
-            CirOpKind::Log2 => self.lower_unary_method(op, "log2"),
+            CirOpKind::Llround => self.lower_known_unary_cast_method(
+                op,
+                crate::function_identity::Known::Llround,
+                "round",
+            ),
+            CirOpKind::Log => {
+                self.lower_known_unary_method(op, crate::function_identity::Known::Log, "ln")
+            }
+            CirOpKind::Log10 => {
+                self.lower_known_unary_method(op, crate::function_identity::Known::Log10, "log10")
+            }
+            CirOpKind::Log2 => {
+                self.lower_known_unary_method(op, crate::function_identity::Known::Log2, "log2")
+            }
             CirOpKind::Lrint => self.lower_unary_cast_method(op, "round_ties_even"),
-            CirOpKind::Lround => self.lower_unary_cast_method(op, "round"),
+            CirOpKind::Lround => self.lower_known_unary_cast_method(
+                op,
+                crate::function_identity::Known::Lround,
+                "round",
+            ),
             CirOpKind::Modf => self.lower_modf(op),
             CirOpKind::Nearbyint => self.lower_unary_method(op, "round_ties_even"),
-            CirOpKind::Pow => self.lower_binary_method(op, "powf"),
+            CirOpKind::Pow => {
+                self.lower_known_binary_method(op, crate::function_identity::Known::Pow, "powf")
+            }
             CirOpKind::Prefetch => {}
             CirOpKind::Rint => self.lower_unary_method(op, "round_ties_even"),
             CirOpKind::Round => self.lower_unary_method(op, "round"),
             CirOpKind::Roundeven => self.lower_unary_method(op, "round_ties_even"),
             CirOpKind::Signbit => self.lower_signbit(op),
-            CirOpKind::Sin => self.lower_unary_method(op, "sin"),
-            CirOpKind::Sqrt => self.lower_unary_method(op, "sqrt"),
+            CirOpKind::Sin => {
+                self.lower_known_unary_method(op, crate::function_identity::Known::Sin, "sin")
+            }
+            CirOpKind::Sqrt => {
+                self.lower_known_unary_method(op, crate::function_identity::Known::Sqrt, "sqrt")
+            }
             CirOpKind::FrameAddress => self.lower_opaque_pointer(op, true),
             CirOpKind::Stacksave => self.lower_opaque_pointer(op, false),
             CirOpKind::Stackrestore => {}
-            CirOpKind::Tan => self.lower_unary_method(op, "tan"),
+            CirOpKind::Tan => {
+                self.lower_known_unary_method(op, crate::function_identity::Known::Tan, "tan")
+            }
             CirOpKind::Trap => self.lower_trap(),
             CirOpKind::Trunc => self.lower_unary_method(op, "trunc"),
             CirOpKind::Unreachable => self.lower_unreachable(),
@@ -3236,6 +3279,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
+    fn lower_known_binary(
+        &mut self,
+        op: &Op,
+        known: crate::function_identity::Known,
+        rust_op: BinOp,
+    ) {
+        if self.lower_known_libc_op(op, known) {
+            self.lower_binary(op, rust_op);
+        }
+    }
+
     // The batch crate builds with `overflow-checks = false`, so plain `+`/`-`/`*`
     // wrap two's-complement just like clang's `-O0` C — no `wrapping_*` needed.
     // `/` and `%` still trap on div-by-zero and INT_MIN/-1 on both sides, so the
@@ -3511,6 +3565,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
+    fn lower_known_unary_method(
+        &mut self,
+        op: &Op,
+        known: crate::function_identity::Known,
+        method: &str,
+    ) {
+        if self.lower_known_libc_op(op, known) {
+            self.lower_unary_method(op, method);
+        }
+    }
+
     fn lower_unary_cast_method(&mut self, op: &Op, method: &str) {
         let Some(result) = op.results.first() else {
             return;
@@ -3531,6 +3596,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ty,
         };
         self.materialize_expr(result, expr, result_ty);
+    }
+
+    fn lower_known_unary_cast_method(
+        &mut self,
+        op: &Op,
+        known: crate::function_identity::Known,
+        method: &str,
+    ) {
+        if self.lower_known_libc_op(op, known) {
+            self.lower_unary_cast_method(op, method);
+        }
     }
 
     fn lower_parity(&mut self, op: &Op) {
@@ -3959,6 +4035,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         };
         self.materialize_expr(result, expr, result_ty);
+    }
+
+    fn lower_known_binary_method(
+        &mut self,
+        op: &Op,
+        known: crate::function_identity::Known,
+        method: &str,
+    ) {
+        if self.lower_known_libc_op(op, known) {
+            self.lower_binary_method(op, method);
+        }
     }
 
     fn lower_ternary_method(&mut self, op: &Op, method: &str) {
@@ -5052,7 +5139,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
         let direct_callee =
             attr_str(op, "callee").map(|callee| callee.trim_start_matches('@').to_string());
-        let binding = self.parent.call_binding(op, direct_callee.is_some());
+        let mut binding = self.parent.call_binding(op, direct_callee.is_some());
+        if binding.known().is_none()
+            && let Some(callee) = direct_callee.as_deref()
+            && let Some(identity @ FunctionIdentity::Known(_)) =
+                self.parent.known_functions.get(callee)
+        {
+            binding = crate::function_identity::CallBinding::Direct {
+                identity: *identity,
+                canonical_type: match binding {
+                    crate::function_identity::CallBinding::Direct { canonical_type, .. } => {
+                        canonical_type
+                    }
+                    crate::function_identity::CallBinding::Indirect
+                    | crate::function_identity::CallBinding::Generated => None,
+                },
+            };
+        }
         let (callee_name, callee_expr, arg_operands, arg_types) =
             if let Some(callee) = direct_callee {
                 (
@@ -5250,6 +5353,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .long_double_shims
             .entry(shim_name.clone())
             .or_insert_with(|| ExternFnDecl {
+                identity: crate::function_identity::FunctionIdentity::Unknown,
                 name: shim_name.clone(),
                 params: param_types
                     .iter()
@@ -5316,6 +5420,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // cir.libc.memcpy/memmove: (dst, src, len). memmove keeps overlapping copy
     // semantics; both operate byte-wise via *u8 pointers.
     fn lower_mem_copy(&mut self, op: &Op, overlapping: bool) {
+        let known = if overlapping {
+            crate::function_identity::Known::MemMove
+        } else {
+            crate::function_identity::Known::MemCpy
+        };
+        if !self.lower_known_libc_op(op, known) {
+            return;
+        }
         if op.operands.len() < 3 {
             return;
         }
@@ -5333,6 +5445,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // cir.libc.memset: (dst, val:u8, len); the alignment attr carries no runtime
     // meaning here.
     fn lower_mem_set(&mut self, op: &Op) {
+        if !self.lower_known_libc_op(op, crate::function_identity::Known::MemSet) {
+            return;
+        }
         if op.operands.len() < 3 {
             return;
         }
@@ -5352,6 +5467,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // cir.libc.memchr: (src, pattern:i32, len:u64) -> void*. Backed by a prelude
     // helper so the byte scan stays a single structured call site.
     fn lower_mem_chr(&mut self, op: &Op) {
+        if !self.lower_known_libc_op(op, crate::function_identity::Known::MemChr) {
+            return;
+        }
         let Some(result) = op.results.first() else {
             return;
         };
@@ -5371,6 +5489,44 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             args: vec![src, pattern, len],
         };
         self.materialize_expr(result, call, op_result_type(op));
+    }
+
+    fn lower_known_libc_op(&mut self, op: &Op, known: crate::function_identity::Known) -> bool {
+        let binding = self.parent.call_binding(op, true);
+        if binding.known() == Some(known)
+            || matches!(
+                binding,
+                crate::function_identity::CallBinding::Direct {
+                    identity: FunctionIdentity::Unknown,
+                    canonical_type: None,
+                }
+            )
+            || self.parent.known_functions.get(known.symbol())
+                == Some(&FunctionIdentity::Known(known))
+        {
+            return true;
+        }
+        let args = op
+            .operands
+            .iter()
+            .map(|operand| self.operand_expr(operand))
+            .collect();
+        let call = Expr::Call {
+            binding,
+            func: Box::new(Expr::Var(known.symbol().into())),
+            args,
+        };
+        let expr = if self.parent.externs.contains_key(known.symbol()) {
+            Self::unsafe_expr(call)
+        } else {
+            call
+        };
+        if let Some(result) = op.results.first() {
+            self.materialize_expr(result, expr, op_result_type(op));
+        } else {
+            self.push_stmt(Stmt::Expr(expr));
+        }
+        false
     }
 
     // Atomic ops lower to real `std::sync::atomic` operations viewed through
@@ -7235,6 +7391,7 @@ fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
         nonnull: false,
     };
     ExternDecl::Fn(ExternFnDecl {
+        identity: crate::function_identity::FunctionIdentity::Unknown,
         name: name.into(),
         params: vec![param("a"), param("b"), param("c"), param("d")],
         variadic: false,

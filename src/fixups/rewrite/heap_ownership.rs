@@ -9,6 +9,7 @@ use crate::fixups::support::walk;
 use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
 };
+use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
     Block, Expr, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
@@ -411,10 +412,10 @@ fn calloc_count_stmt(body: &[IndentStmt], allocation_stmt: Option<usize>) -> Opt
     else {
         return None;
     };
-    let Some(Expr::Call { func, args, .. }) = block.tail.as_deref() else {
+    let Some(call @ Expr::Call { args, .. }) = block.tail.as_deref() else {
         return None;
     };
-    if !matches!(&**func, Expr::Var(name) if name.as_str() == "calloc") || args.len() != 2 {
+    if known_call(call) != Some(Known::Calloc) || args.len() != 2 {
         return None;
     }
     (size_arg_name(&args[0]) == Some(count_name.as_str())).then_some(count_stmt)
