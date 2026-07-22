@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use crate::fixups::facts::{FixupFacts, FunctionId};
 use crate::fixups::support::walk;
@@ -49,11 +49,46 @@ fn fixup_impl(program: &mut Program, facts: &FixupFacts) -> bool {
     if plans.is_empty() {
         return false;
     }
+    let record_fields = record_field_types(program);
+    let global_types = global_types(program);
     let mut changed = false;
     for item in &mut program.items {
-        changed |= rewrite_item(item, &plans, facts);
+        changed |= rewrite_item(item, &plans, &record_fields, &global_types, facts);
     }
     changed
+}
+
+fn record_field_types(program: &Program) -> BTreeMap<String, BTreeMap<String, Type>> {
+    program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            Item::Record(record) => Some((
+                record.name.clone(),
+                record
+                    .fields
+                    .iter()
+                    .map(|field| (field.name.to_string(), field.ty.clone()))
+                    .collect(),
+            )),
+            _ => None,
+        })
+        .collect()
+}
+
+fn global_types(program: &Program) -> BTreeMap<String, String> {
+    program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            Item::Static {
+                name,
+                ty: Type::Custom(original),
+                ..
+            } => Some((name.clone(), original.clone())),
+            _ => None,
+        })
+        .collect()
 }
 
 #[derive(Clone)]
@@ -91,12 +126,25 @@ fn plans(facts: &FixupFacts) -> BTreeMap<String, Plan> {
         .collect()
 }
 
-fn rewrite_item(item: &mut Item, plans: &BTreeMap<String, Plan>, facts: &FixupFacts) -> bool {
+fn rewrite_item(
+    item: &mut Item,
+    plans: &BTreeMap<String, Plan>,
+    record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
+    global_types: &BTreeMap<String, String>,
+    facts: &FixupFacts,
+) -> bool {
     match item {
         Item::Record(record) => {
-            let Some(plan) = plans.get(&record.name).cloned() else {
-                return false;
+            let mut changed = false;
+            for field in &mut record.fields {
+                changed |= rewrite_type(&mut field.ty, plans);
+            }
+            let Some(mut plan) = plans.get(&record.name).cloned() else {
+                return changed;
             };
+            for field in &mut plan.fields {
+                rewrite_type(&mut field.ty, plans);
+            }
             *item = Item::Struct(StructDef {
                 attrs: vec![
                     Attr::Repr(vec![Repr::C]),
@@ -118,12 +166,12 @@ fn rewrite_item(item: &mut Item, plans: &BTreeMap<String, Plan>, facts: &FixupFa
                 .find(|function| function.name == f.name)
                 .map(|function| function.id)
             else {
-                return rewrite_fn(f, None, plans, facts);
+                return rewrite_fn(f, None, plans, record_fields, global_types, facts);
             };
-            rewrite_fn(f, Some(function), plans, facts)
+            rewrite_fn(f, Some(function), plans, record_fields, global_types, facts)
         }
         Item::Static { ty, init, .. } => {
-            rewrite_type(ty, plans) | rewrite_expr(init, &BTreeMap::new(), plans)
+            rewrite_type(ty, plans) | rewrite_expr(init, global_types, plans, record_fields)
         }
         Item::Struct(s) => rewrite_struct_def(s, plans),
         Item::Impl(im) => {
@@ -138,13 +186,14 @@ fn rewrite_item(item: &mut Item, plans: &BTreeMap<String, Plan>, facts: &FixupFa
                         if let Some(ret) = &mut method.ret {
                             changed |= rewrite_type(ret, plans);
                         }
-                        changed |= rewrite_expr(&mut method.body, &BTreeMap::new(), plans);
+                        changed |=
+                            rewrite_expr(&mut method.body, global_types, plans, record_fields);
                     }
                 }
             }
             changed
         }
-        Item::Cfg { item, .. } => rewrite_item(item, plans, facts),
+        Item::Cfg { item, .. } => rewrite_item(item, plans, record_fields, global_types, facts),
         Item::ExternBlock { decls, .. } => {
             let mut changed = false;
             for decl in decls {
@@ -177,11 +226,14 @@ fn rewrite_fn(
     f: &mut FnDef,
     function: Option<FunctionId>,
     plans: &BTreeMap<String, Plan>,
+    record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
+    global_types: &BTreeMap<String, String>,
     facts: &FixupFacts,
 ) -> bool {
-    let local_types = function.map_or_else(BTreeMap::new, |function| {
-        local_anonymous_types(function, facts, plans)
-    });
+    let mut local_types = global_types.clone();
+    if let Some(function) = function {
+        local_types.extend(local_anonymous_types(function, facts));
+    }
     let mut changed = false;
     for param in &mut f.params {
         changed |= rewrite_type(&mut param.ty, plans);
@@ -189,25 +241,18 @@ fn rewrite_fn(
     if let Some(ret) = &mut f.ret {
         changed |= rewrite_type(ret, plans);
     }
-    changed |= rewrite_body(&mut f.body, &local_types, plans);
+    changed |= rewrite_body(&mut f.body, &local_types, plans, record_fields);
     changed
 }
 
-fn local_anonymous_types(
-    function: FunctionId,
-    facts: &FixupFacts,
-    plans: &BTreeMap<String, Plan>,
-) -> BTreeMap<String, String> {
-    let original_names: BTreeSet<_> = plans.keys().map(String::as_str).collect();
+fn local_anonymous_types(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, String> {
     facts
         .bindings
         .iter()
         .filter(|binding| binding.function == function)
         .filter_map(|binding| {
             let rendered = facts.binding_type(binding.id)?;
-            original_names
-                .contains(rendered)
-                .then(|| (binding.name.clone(), rendered.to_string()))
+            Some((binding.name.clone(), rendered.to_string()))
         })
         .collect()
 }
@@ -216,12 +261,13 @@ fn rewrite_body(
     body: &mut Vec<IndentStmt>,
     local_types: &BTreeMap<String, String>,
     plans: &BTreeMap<String, Plan>,
+    record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> bool {
     let mut changed = false;
     for indent in body {
-        changed |= rewrite_stmt(&mut indent.stmt, local_types, plans);
+        changed |= rewrite_stmt(&mut indent.stmt, local_types, plans, record_fields);
         walk::nested_body_vecs_mut_with_path(&mut indent.stmt, &mut Vec::new(), &mut |body, _| {
-            changed |= rewrite_body(body, local_types, plans);
+            changed |= rewrite_body(body, local_types, plans, record_fields);
         });
     }
     changed
@@ -231,6 +277,7 @@ fn rewrite_stmt(
     stmt: &mut Stmt,
     local_types: &BTreeMap<String, String>,
     plans: &BTreeMap<String, Plan>,
+    record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> bool {
     let mut changed = false;
     match stmt {
@@ -242,7 +289,7 @@ fn rewrite_stmt(
         _ => {}
     }
     walk::stmt_exprs_mut_with(stmt, &mut |expr| {
-        changed |= rewrite_expr(expr, local_types, plans);
+        changed |= rewrite_expr(expr, local_types, plans, record_fields);
         true
     });
     changed
@@ -252,6 +299,7 @@ fn rewrite_expr(
     expr: &mut Expr,
     local_types: &BTreeMap<String, String>,
     plans: &BTreeMap<String, Plan>,
+    record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> bool {
     match expr {
         Expr::StructLit { name, fields } => {
@@ -268,7 +316,7 @@ fn rewrite_expr(
             true
         }
         Expr::Field { base, field } => {
-            let Some(original) = base_local_type(base, local_types) else {
+            let Some(original) = base_original_type(base, local_types, plans, record_fields) else {
                 return false;
             };
             let Some(plan) = plans.get(original) else {
@@ -316,11 +364,30 @@ fn positional_fields(fields: &[(String, Expr)], plan: &Plan) -> Option<Vec<Expr>
         .collect()
 }
 
-fn base_local_type<'a>(expr: &Expr, local_types: &'a BTreeMap<String, String>) -> Option<&'a str> {
-    let Expr::Var(name) = expr else {
-        return None;
-    };
-    local_types.get(name.as_str()).map(String::as_str)
+fn base_original_type<'a>(
+    expr: &Expr,
+    local_types: &'a BTreeMap<String, String>,
+    plans: &'a BTreeMap<String, Plan>,
+    record_fields: &'a BTreeMap<String, BTreeMap<String, Type>>,
+) -> Option<&'a str> {
+    match expr {
+        Expr::Var(name) => local_types.get(name.as_str()).map(String::as_str),
+        Expr::Field { base, field } => {
+            let base_ty = base_original_type(base, local_types, plans, record_fields)?;
+            match record_fields.get(base_ty)?.get(field)? {
+                Type::Custom(name) => Some(name.as_str()),
+                _ => None,
+            }
+        }
+        Expr::TupleField { base, index } => {
+            let base_ty = base_original_type(base, local_types, plans, record_fields)?;
+            match &plans.get(base_ty)?.fields.get(*index)?.ty {
+                Type::Custom(name) => Some(name.as_str()),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
 }
 
 fn rewrite_struct_def(s: &mut StructDef, plans: &BTreeMap<String, Plan>) -> bool {
