@@ -431,6 +431,47 @@ fn common_diagnostic_pragmas_are_diagnostic_only() {
 }
 
 #[test]
+fn pragma_once_is_no_output_and_does_not_block_translation() {
+    let src = cfg_fixtures_dir().join("pragma_once.c");
+    let output = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("record-cfg")
+        .arg(&src)
+        .output()
+        .expect("record pragma once");
+    assert!(output.status.success());
+    let json: serde_json::Value = serde_json::from_slice(&output.stdout).expect("parse record-cfg");
+    assert_eq!(json["directives"][0]["name"], "pragma");
+    assert_eq!(json["directives"][0]["raw_payload"], "once");
+    assert_eq!(json["directives"][0]["disposition"], "no-output");
+
+    let rust = translate("pragma_once.c");
+    assert!(compile_and_run("pragma_once", &rust).status.success());
+}
+
+#[test]
+fn semantic_and_unknown_pragmas_remain_explicitly_unsupported() {
+    let src = cfg_fixtures_dir().join("reject/pragma_inventory.c");
+    let output = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("record-cfg")
+        .arg(&src)
+        .output()
+        .expect("record pragma inventory");
+    assert!(output.status.success());
+    let json: serde_json::Value = serde_json::from_slice(&output.stdout).expect("parse record-cfg");
+    let pragmas = json["directives"].as_array().expect("directive array");
+    assert_eq!(pragmas.len(), 7);
+    assert!(
+        pragmas
+            .iter()
+            .all(|directive| directive["disposition"] == "unsupported-semantic")
+    );
+
+    let error = translate_err_with_clang_args("reject/pragma_inventory.c", None);
+    assert!(error.contains("unsupported semantic directive #pragma at line 1"));
+    assert!(error.contains("STDC FENV_ACCESS ON"));
+}
+
+#[test]
 fn active_unsupported_directives_stop_single_config_translation() {
     let pragma = translate_err_with_clang_args("reject/unsupported_pragma.c", None);
     assert!(pragma.contains("unsupported semantic directive #pragma at line 1"));
@@ -544,6 +585,7 @@ fn directive_translated_fixtures_compile_for_current_host() {
         "embed_basic.c",
         "include_next.c",
         "line_directive.c",
+        "pragma_once.c",
         "warning_directives.c",
         "diagnostic_pragmas.c",
         "unsupported_conditional.c",
