@@ -2184,6 +2184,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Exp2 => self.lower_unary_method(op, "exp2"),
             CirOpKind::Expect => self.lower_expect(op),
             CirOpKind::Fabs => self.lower_unary_method(op, "abs"),
+            CirOpKind::Fma => self.lower_ternary_method(op, "mul_add"),
             CirOpKind::Fmaximum => self.lower_binary_method(op, "max"),
             CirOpKind::Fminimum => self.lower_binary_method(op, "min"),
             CirOpKind::Fmod => self.lower_binary(op, BinOp::Rem),
@@ -3802,6 +3803,51 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 recv: Box::new(lhs),
                 method: method.into(),
                 args: vec![rhs],
+            }
+        };
+        self.materialize_expr(result, expr, result_ty);
+    }
+
+    fn lower_ternary_method(&mut self, op: &Op, method: &str) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 3 {
+            return;
+        }
+        let a = self.operand_expr(&op.operands[0]);
+        let b = self.operand_expr(&op.operands[1]);
+        let c = self.operand_expr(&op.operands[2]);
+        let result_ty = op_result_type(op);
+        let rust_ty = result_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or(Type::Prim(Prim::F64));
+        let expr = if type_mentions_long_double(&rust_ty) {
+            Expr::Call {
+                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                args: vec![Expr::MethodCall {
+                    recv: Box::new(Expr::Field {
+                        base: Box::new(a),
+                        field: "0".into(),
+                    }),
+                    method: method.into(),
+                    args: vec![
+                        Expr::Field {
+                            base: Box::new(b),
+                            field: "0".into(),
+                        },
+                        Expr::Field {
+                            base: Box::new(c),
+                            field: "0".into(),
+                        },
+                    ],
+                }],
+            }
+        } else {
+            Expr::MethodCall {
+                recv: Box::new(a),
+                method: method.into(),
+                args: vec![b, c],
             }
         };
         self.materialize_expr(result, expr, result_ty);
