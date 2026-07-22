@@ -1208,21 +1208,14 @@ impl<'a> Lowerer<'a> {
         } else if let Some(target) = parse_cir_global_view(raw) {
             if is_c_global
                 && let Some(ty) = ty
-                && let Some(bytes) = self.strings.get(target)
+                && let Some(init) = self.global_view_init_expr(target, &ty)
             {
                 self.globals.insert(
                     rust_name.clone(),
                     GlobalVar {
                         name: rust_name,
-                        ty: ty.clone(),
-                        init: Expr::Cast {
-                            expr: Box::new(Expr::MethodCall {
-                                recv: Box::new(Expr::ByteStr(bytes.clone())),
-                                method: "as_ptr".into(),
-                                args: Vec::new(),
-                            }),
-                            ty,
-                        },
+                        ty,
+                        init,
                         external: externally_exported(op),
                         weak,
                         section: section.clone(),
@@ -1924,9 +1917,34 @@ impl<'a> Lowerer<'a> {
                 Ident::from(name.as_str()),
                 Ident::from(sanitize_ident(&variant.name).as_str()),
             ])))
+        } else if let Some(target) = parse_cir_global_view(raw) {
+            self.global_view_init_expr(target, ty)
         } else {
             parse_cir_scalar_expr(raw)
         }
+    }
+
+    fn global_view_init_expr(&self, target: &str, ty: &Type) -> Option<Expr> {
+        if let Some(bytes) = self.strings.get(target) {
+            return Some(Expr::Cast {
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(Expr::ByteStr(bytes.clone())),
+                    method: "as_ptr".into(),
+                    args: Vec::new(),
+                }),
+                ty: ty.clone(),
+            });
+        }
+        let Type::Ptr { mutable, .. } = ty else {
+            return None;
+        };
+        Some(Expr::Cast {
+            expr: Box::new(Expr::AddrOf {
+                mutable: *mutable,
+                expr: Box::new(Expr::Var(sanitize_ident(target).into_string().into())),
+            }),
+            ty: ty.clone(),
+        })
     }
 }
 
@@ -2293,13 +2311,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn unique_local_name(&mut self, base: String) -> String {
-        if self.declared_local_names.insert(base.clone()) {
+        if !self.parent.globals.contains_key(&base)
+            && self.declared_local_names.insert(base.clone())
+        {
             return base;
         }
         let mut n = 2;
         loop {
             let candidate = format!("{base}{n}");
-            if self.declared_local_names.insert(candidate.clone()) {
+            if !self.parent.globals.contains_key(&candidate)
+                && self.declared_local_names.insert(candidate.clone())
+            {
                 return candidate;
             }
             n += 1;
