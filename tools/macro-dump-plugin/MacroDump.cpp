@@ -24,8 +24,7 @@ public:
     llvm::json::Object Event{
         {"name", MacroNameTok.getIdentifierInfo()->getName().str()},
         {"file", SM.getFilename(Loc).str()},
-        {"line", SM.getSpellingLineNumber(Loc)},
-        {"col", SM.getSpellingColumnNumber(Loc)},
+        {"offset", static_cast<int64_t>(SM.getFileOffset(Loc))},
     };
     llvm::errs() << "MACRO_EXPANSION " << llvm::json::Value(std::move(Event))
                  << "\n";

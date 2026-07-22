@@ -26,6 +26,11 @@ const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[
         probe: "setjmp/setjmp",
         bead: "slate-nk3.19",
     },
+    // cir.fma unhandled after clang toolchain refresh.
+    UnsupportedProbe {
+        probe: "math/fma",
+        bead: "slate-nk3.23",
+    },
 ];
 
 fn stdlib_dir() -> PathBuf {

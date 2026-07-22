@@ -70,6 +70,7 @@ pub struct Function {
     pub raw: Option<Value>,
     pub layout_queries: Vec<LayoutQuery>,
     pub nonnull_static_params: BTreeSet<usize>,
+    pub macro_consts: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -160,12 +161,39 @@ fn clang() -> String {
     })
 }
 
-/// Load Clang's JSON AST for `src` and extract a compact source-level oracle.
-pub fn parse_file(src: &Path) -> Result<Unit, String> {
-    parse_file_with_args(src, &[])
+fn macro_dump_plugin() -> String {
+    std::env::var("SLATE_MACRO_DUMP_PLUGIN").unwrap_or_else(|_| {
+        format!(
+            "{}/tools/macro-dump-plugin/build/MacroDump.so",
+            env!("CARGO_MANIFEST_DIR")
+        )
+    })
 }
 
-pub fn parse_file_with_args(src: &Path, extra_args: &[String]) -> Result<Unit, String> {
+fn parse_macro_events(stderr: &str) -> HashMap<usize, String> {
+    let mut out = HashMap::new();
+    for line in stderr.lines() {
+        let Some(json) = line.strip_prefix("MACRO_EXPANSION ") else {
+            continue;
+        };
+        let Ok(event) = serde_json::from_str::<Value>(json) else {
+            continue;
+        };
+        let (Some(name), Some(offset)) = (
+            event.get("name").and_then(Value::as_str),
+            event.get("offset").and_then(Value::as_u64),
+        ) else {
+            continue;
+        };
+        out.insert(offset as usize, name.to_string());
+    }
+    out
+}
+
+fn run_clang_ast_dump(
+    src: &Path,
+    extra_args: &[String],
+) -> Result<(String, HashMap<usize, String>), String> {
     let out = Command::new(clang())
         .args([
             "-Xclang",
@@ -173,6 +201,7 @@ pub fn parse_file_with_args(src: &Path, extra_args: &[String]) -> Result<Unit, S
             "-fsyntax-only",
             "-fparse-all-comments",
         ])
+        .arg(format!("-fplugin={}", macro_dump_plugin()))
         .args(crate::cir::emit::target_args())
         .args(extra_args)
         .arg(src)
@@ -184,37 +213,33 @@ pub fn parse_file_with_args(src: &Path, extra_args: &[String]) -> Result<Unit, S
             String::from_utf8_lossy(&out.stderr)
         ));
     }
-    parse_json(
-        &String::from_utf8_lossy(&out.stdout),
-        &src.to_string_lossy(),
-    )
+    let macro_events = parse_macro_events(&String::from_utf8_lossy(&out.stderr));
+    Ok((
+        String::from_utf8_lossy(&out.stdout).into_owned(),
+        macro_events,
+    ))
+}
+
+/// Load Clang's JSON AST for `src` and extract a compact source-level oracle.
+pub fn parse_file(src: &Path) -> Result<Unit, String> {
+    parse_file_with_args(src, &[])
+}
+
+pub fn parse_file_with_args(src: &Path, extra_args: &[String]) -> Result<Unit, String> {
+    let (json, macro_events) = run_clang_ast_dump(src, extra_args)?;
+    parse_json_with_record_roots(&json, &src.to_string_lossy(), &[], &macro_events)
 }
 
 pub fn parse_file_with_project_records(src: &Path, project_root: &Path) -> Result<Unit, String> {
     let project_root = project_root
         .canonicalize()
         .map_err(|e| format!("canonicalize {}: {e}", project_root.display()))?;
-    let out = Command::new(clang())
-        .args([
-            "-Xclang",
-            "-ast-dump=json",
-            "-fsyntax-only",
-            "-fparse-all-comments",
-        ])
-        .args(crate::cir::emit::target_args())
-        .arg(src)
-        .output()
-        .map_err(|e| format!("spawn {}: {e}", clang()))?;
-    if !out.status.success() {
-        return Err(format!(
-            "clang -ast-dump=json failed:\n{}",
-            String::from_utf8_lossy(&out.stderr)
-        ));
-    }
+    let (json, macro_events) = run_clang_ast_dump(src, &[])?;
     parse_json_with_record_roots(
-        &String::from_utf8_lossy(&out.stdout),
+        &json,
         &src.to_string_lossy(),
         &[project_root],
+        &macro_events,
     )
 }
 
@@ -224,13 +249,14 @@ pub fn parse(src: &str) -> Result<Unit, String> {
 }
 
 pub fn parse_json(json: &str, source_file: &str) -> Result<Unit, String> {
-    parse_json_with_record_roots(json, source_file, &[])
+    parse_json_with_record_roots(json, source_file, &[], &HashMap::new())
 }
 
 fn parse_json_with_record_roots(
     json: &str,
     source_file: &str,
     record_roots: &[PathBuf],
+    macro_events: &HashMap<usize, String>,
 ) -> Result<Unit, String> {
     let root: Value =
         serde_json::from_str(json).map_err(|e| format!("parse clang AST JSON: {e}"))?;
@@ -251,7 +277,13 @@ fn parse_json_with_record_roots(
     let source_text = (!source_file.is_empty())
         .then(|| std::fs::read_to_string(source_file).ok())
         .flatten();
-    collect_functions(&root, source_file, source_text.as_deref(), &mut functions);
+    collect_functions(
+        &root,
+        source_file,
+        source_text.as_deref(),
+        macro_events,
+        &mut functions,
+    );
     Ok(Unit {
         enums,
         records,
@@ -325,16 +357,17 @@ fn collect_functions(
     node: &Value,
     source_file: &str,
     source_text: Option<&str>,
+    macro_events: &HashMap<usize, String>,
     out: &mut Vec<Function>,
 ) {
     if kind(node) == Some("FunctionDecl") && is_source_node(node, source_file) && has_body(node) {
-        if let Some(function) = extract_function(node, source_text) {
+        if let Some(function) = extract_function(node, source_text, macro_events) {
             out.push(function);
         }
         return;
     }
     for child in children(node) {
-        collect_functions(child, source_file, source_text, out);
+        collect_functions(child, source_file, source_text, macro_events, out);
     }
 }
 
@@ -524,7 +557,11 @@ fn enum_constant_value(node: &Value) -> Option<i64> {
         .and_then(|value| value.parse().ok())
 }
 
-fn extract_function(node: &Value, source_text: Option<&str>) -> Option<Function> {
+fn extract_function(
+    node: &Value,
+    source_text: Option<&str>,
+    macro_events: &HashMap<usize, String>,
+) -> Option<Function> {
     let name = node.get("name")?.as_str()?.to_string();
     let fn_qual_type = qual_type(node).unwrap_or("int ()");
     let (ret, _) = parse_function_decl_qual_type(fn_qual_type);
@@ -566,6 +603,7 @@ fn extract_function(node: &Value, source_text: Option<&str>) -> Option<Function>
         raw: Some(node.clone()),
         layout_queries: collect_layout_queries(node, source_text),
         nonnull_static_params,
+        macro_consts: collect_macro_consts(node, macro_events),
     })
 }
 
@@ -633,6 +671,39 @@ fn expansion_offset(node: &Value) -> Option<usize> {
         .get("offset")?
         .as_u64()
         .map(|offset| offset as usize)
+}
+
+fn expansion_end_offset(node: &Value) -> Option<usize> {
+    let end = node.get("range")?.get("end")?;
+    end.get("expansionLoc")
+        .unwrap_or(end)
+        .get("offset")?
+        .as_u64()
+        .map(|offset| offset as usize)
+}
+
+fn collect_macro_consts(node: &Value, macro_events: &HashMap<usize, String>) -> Vec<String> {
+    let mut out = Vec::new();
+    collect_macro_consts_at(node, macro_events, &mut out);
+    out
+}
+
+fn collect_macro_consts_at(
+    node: &Value,
+    macro_events: &HashMap<usize, String>,
+    out: &mut Vec<String>,
+) {
+    if let (Some(begin), Some(end)) = (expansion_offset(node), expansion_end_offset(node))
+        && begin == end
+        && let Some(name) = macro_events.get(&begin)
+        && crate::limits_macros::lookup(name).is_some()
+    {
+        out.push(name.clone());
+        return;
+    }
+    for child in children(node) {
+        collect_macro_consts_at(child, macro_events, out);
+    }
 }
 
 fn parse_offsetof(source: &str, offset: usize) -> Option<LayoutQuery> {

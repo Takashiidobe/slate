@@ -76,6 +76,18 @@ default to a local build and are overridable via environment variables:
 | `SLATE_CARGO`                       | `cargo`                                | compile the generated Rust                          |
 | `SLATE_ALIVE_TV`                    | `~/alive2/build/alive-tv`              | translation-validate a fixup pass's before/after IR |
 | `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                      | shared target triple / extra clang flags            |
+| `SLATE_MACRO_DUMP_PLUGIN`           | `tools/macro-dump-plugin/build/MacroDump.so` | macro-invocation names, joined into `c_ast.rs` facts by source offset |
+
+`c_ast.rs` always loads `SLATE_CLANG` with `-fplugin=$SLATE_MACRO_DUMP_PLUGIN`, so
+that plugin must be built against the same clang tree `SLATE_CLANG` points at
+before anything that parses C will run:
+
+```bash
+SLATE_CLANG=~/llvm-project/build-cir/bin/clang ./tools/macro-dump-plugin/build.sh
+```
+
+Rerun this after rebuilding `SLATE_CLANG` from source — the plugin links
+against that tree's headers and must be rebuilt in lockstep.
 
 ## Build & Test
 
