@@ -41,6 +41,10 @@ pub enum Item {
     Record(RecordDef),
     Struct(StructDef),
     Impl(ImplBlock),
+    Macro {
+        name: String,
+        args: Vec<Expr>,
+    },
     Cfg {
         cfg: Cfg,
         item: Box<Item>,

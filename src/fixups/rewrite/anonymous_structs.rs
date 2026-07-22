@@ -210,6 +210,7 @@ fn rewrite_item(
             changed
         }
         Item::Comment(_)
+        | Item::Macro { .. }
         | Item::CrateAttrs(_)
         | Item::Mod { .. }
         | Item::Use { .. }

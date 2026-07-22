@@ -1,5 +1,5 @@
 use crate::preprocess::{self, Branch, DirectiveKind, PredExpr, Preprocessing};
-use crate::rust_ast::{Cfg, Item, Program};
+use crate::rust_ast::{Cfg, Expr, Item, Program};
 use crate::{c_ast, cir, ctx, fixups, lower};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -33,9 +33,14 @@ struct CfgPlan {
 pub fn translate_directives(path: &Path) -> Result<String, String> {
     let source =
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+    let directive_pp = preprocess::record(&source, &BTreeMap::new());
+    let error_items = compile_error_items(&directive_pp)?;
     let plan = match plan_configs(&source)? {
-        // No conditional compilation: fall back to plain single-config lowering.
-        None => return Ok(translate_one(path, &[])?.program.emit()),
+        None => {
+            let mut program = translate_one(path, &[])?.program;
+            insert_directive_items(&mut program, error_items);
+            return Ok(program.emit());
+        }
         Some(plan) => plan,
     };
 
@@ -49,7 +54,45 @@ pub fn translate_directives(path: &Path) -> Result<String, String> {
             item_lines: translation.item_lines,
         });
     }
-    Ok(merge_variants(&baseline, &variants, &plan.pp).emit())
+    let mut program = merge_variants(&baseline, &variants, &plan.pp);
+    insert_directive_items(&mut program, error_items);
+    Ok(program.emit())
+}
+
+fn compile_error_items(pp: &Preprocessing) -> Result<Vec<Item>, String> {
+    pp.directives
+        .iter()
+        .filter(|directive| directive.name == "error")
+        .map(|directive| {
+            let item = Item::Macro {
+                name: "compile_error".into(),
+                args: vec![Expr::Str(directive.raw_payload.clone())],
+            };
+            let Some(condition) = &directive.condition else {
+                return Ok(item);
+            };
+            let cfg = preprocess::pred_to_cfg(condition).ok_or_else(|| {
+                format!(
+                    "translate-directives: #error at line {} is guarded by predicate `{}` which does not map to a known Rust cfg",
+                    directive.line_start,
+                    preprocess::predicate_text(condition)
+                )
+            })?;
+            Ok(Item::Cfg {
+                cfg,
+                item: Box::new(item),
+            })
+        })
+        .collect()
+}
+
+fn insert_directive_items(program: &mut Program, items: Vec<Item>) {
+    let index = program
+        .items
+        .iter()
+        .take_while(|item| matches!(item, Item::CrateAttrs(_)))
+        .count();
+    program.items.splice(index..index, items);
 }
 
 /// Derive the whole-item cfg matrix from the recorded conditional regions
@@ -542,6 +585,10 @@ fn item_key(item: &Item) -> String {
         Item::Record(r) => format!("record:{}", r.name),
         Item::Struct(s) => format!("struct:{}", s.name),
         Item::Impl(im) => format!("impl:{}", im.self_ty.render()),
+        Item::Macro { name, args } => format!(
+            "macro:{name}:{}",
+            args.iter().map(Expr::render).collect::<Vec<_>>().join(",")
+        ),
         Item::Cfg { item, .. } => item_key(item),
         Item::Raw(s) => s.lines().next().unwrap_or_default().trim().to_string(),
     }
