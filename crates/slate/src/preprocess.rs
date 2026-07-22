@@ -14,6 +14,10 @@
 
 use crate::rust_ast::Cfg;
 use std::collections::BTreeMap;
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicU64, Ordering};
+
+static NEXT_SANITIZED_INPUT: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DirectiveKind {
@@ -139,6 +143,107 @@ pub struct Preprocessing {
     pub chains: Vec<CondChain>,
     pub directives: Vec<DirectiveRecord>,
     pub diagnostics: Vec<Diagnostic>,
+}
+
+pub struct ClangInput {
+    extra_args: Vec<String>,
+    temp_dir: Option<PathBuf>,
+}
+
+impl ClangInput {
+    pub fn extra_args(&self) -> &[String] {
+        &self.extra_args
+    }
+}
+
+impl Drop for ClangInput {
+    fn drop(&mut self) {
+        if let Some(path) = &self.temp_dir {
+            let _ = std::fs::remove_dir_all(path);
+        }
+    }
+}
+
+pub fn clang_input(
+    path: &Path,
+    source: &str,
+    directives: &[&DirectiveRecord],
+) -> Result<ClangInput, String> {
+    if directives.is_empty() {
+        return Ok(ClangInput {
+            extra_args: Vec::new(),
+            temp_dir: None,
+        });
+    }
+
+    let mut bytes = source.as_bytes().to_vec();
+    let source_len = bytes.len();
+    for directive in directives {
+        for byte in bytes
+            .get_mut(directive.byte_start..directive.byte_end)
+            .ok_or_else(|| {
+                format!(
+                    "directive span {}..{} is outside {} bytes of source",
+                    directive.byte_start, directive.byte_end, source_len
+                )
+            })?
+        {
+            if *byte != b'\n' && *byte != b'\r' {
+                *byte = b' ';
+            }
+        }
+    }
+
+    let temp_dir = create_sanitized_temp_dir()?;
+    let mut input = ClangInput {
+        extra_args: Vec::new(),
+        temp_dir: Some(temp_dir.clone()),
+    };
+    let sanitized_path = temp_dir.join("source.c");
+    let overlay_path = temp_dir.join("overlay.json");
+    std::fs::write(&sanitized_path, bytes)
+        .map_err(|e| format!("write {}: {e}", sanitized_path.display()))?;
+    let virtual_path = if path.is_absolute() {
+        path.to_path_buf()
+    } else {
+        std::env::current_dir()
+            .map_err(|e| format!("get current directory: {e}"))?
+            .join(path)
+    };
+    let overlay = serde_json::json!({
+        "version": 0,
+        "use-external-names": false,
+        "roots": [{
+            "type": "file",
+            "name": virtual_path,
+            "external-contents": sanitized_path,
+        }],
+    });
+    std::fs::write(
+        &overlay_path,
+        serde_json::to_vec(&overlay).map_err(|e| format!("encode VFS overlay: {e}"))?,
+    )
+    .map_err(|e| format!("write {}: {e}", overlay_path.display()))?;
+
+    input.extra_args = vec![
+        "-ivfsoverlay".to_string(),
+        overlay_path.to_string_lossy().into_owned(),
+    ];
+    Ok(input)
+}
+
+fn create_sanitized_temp_dir() -> Result<PathBuf, String> {
+    for _ in 0..100 {
+        let id = NEXT_SANITIZED_INPUT.fetch_add(1, Ordering::Relaxed);
+        let path =
+            std::env::temp_dir().join(format!("slate-sanitized-{}-{id}", std::process::id()));
+        match std::fs::create_dir(&path) {
+            Ok(()) => return Ok(path),
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+            Err(error) => return Err(format!("create {}: {error}", path.display())),
+        }
+    }
+    Err("could not allocate a temporary directory for sanitized Clang input".into())
 }
 
 /// Scan `source` for conditional regions and resolve active branches against
