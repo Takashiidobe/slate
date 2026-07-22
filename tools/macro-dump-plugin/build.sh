@@ -36,6 +36,7 @@ CLANG_SRC="$LLVM_SRC/../clang/include"
 OUT_DIR="$SCRIPT_DIR/build"
 mkdir -p "$OUT_DIR"
 OUT="$OUT_DIR/MacroDump.so"
+INSTALLED="$BUILD_DIR/lib/SlateMacroDump.so"
 
 "$CXX" \
   -D_GLIBCXX_USE_CXX11_ABI=1 -D_GNU_SOURCE \
@@ -47,5 +48,8 @@ OUT="$OUT_DIR/MacroDump.so"
   -fPIC -std=c++17 -fno-exceptions -fno-rtti -O2 -shared \
   -o "$OUT" "$SCRIPT_DIR/MacroDump.cpp"
 
+install -Dm755 "$OUT" "$INSTALLED"
+
 echo "built $OUT"
-echo "run with: $CLANG_BIN -fplugin=$OUT -fsyntax-only <file.c>"
+echo "installed $INSTALLED"
+echo "run with: $CLANG_BIN -fplugin=$INSTALLED -fsyntax-only <file.c>"
