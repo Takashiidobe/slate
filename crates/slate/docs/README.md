@@ -113,7 +113,7 @@ parameters) are recovered as facts too.
 
 ### Multi-config translation
 
-`slate translate-cfg` recovers `#if`/`#ifdef`-gated portability that a single
+`slate translate-directives` recovers `#if`/`#ifdef`-gated portability that a single
 Clang invocation can't see, mapping predicates to Rust `cfg`s and Cargo
 features. See [cfg-portability.md](cfg-portability.md).
 

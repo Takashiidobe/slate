@@ -7,38 +7,39 @@ fn cfg_fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.cfg")
 }
 
-fn translate_cfg(name: &str) -> String {
+fn translate_directives(name: &str) -> String {
     let src = cfg_fixtures_dir().join(name);
     let out = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate-cfg")
+        .arg("translate-directives")
         .arg(&src)
         .output()
-        .expect("run slate translate-cfg");
+        .expect("run slate translate-directives");
     assert!(
         out.status.success(),
-        "translate-cfg failed for {name}:\n{}",
+        "translate-directives failed for {name}:\n{}",
         String::from_utf8_lossy(&out.stderr)
     );
     String::from_utf8(out.stdout).expect("generated Rust is utf8")
 }
 
-fn translate_cfg_err(name: &str) -> String {
+fn translate_directives_err(name: &str) -> String {
     let src = cfg_fixtures_dir().join(name);
     let out = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate-cfg")
+        .arg("translate-directives")
         .arg(&src)
         .output()
-        .expect("run slate translate-cfg");
+        .expect("run slate translate-directives");
     assert!(
         !out.status.success(),
-        "translate-cfg unexpectedly succeeded for {name}:\n{}",
+        "translate-directives unexpectedly succeeded for {name}:\n{}",
         String::from_utf8_lossy(&out.stdout)
     );
     String::from_utf8(out.stderr).expect("diagnostics are utf8")
 }
 
 fn write_generated(name: &str, rust: &str) -> PathBuf {
-    let out_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/cfg-translate-generated");
+    let out_dir =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("target/directive-translate-generated");
     std::fs::create_dir_all(&out_dir).expect("create cfg translate output dir");
     let out = out_dir.join(name).with_extension("rs");
     std::fs::write(&out, rust).expect("write generated cfg Rust");
@@ -51,7 +52,7 @@ fn assert_tail_value(rust: &str, value: &str) {
 
 #[test]
 fn translates_os_macro_variants_to_cfg_items() {
-    let rust = translate_cfg("os_targets.c");
+    let rust = translate_directives("os_targets.c");
 
     assert!(rust.contains("#[cfg(windows)]\nfn os_code() -> i32"));
     assert!(rust.contains("#[cfg(target_os = \"android\")]\nfn os_code() -> i32"));
@@ -72,7 +73,7 @@ fn translates_os_macro_variants_to_cfg_items() {
 
 #[test]
 fn translates_win64_macro_to_composed_cfg_item() {
-    let rust = translate_cfg("win64_target.c");
+    let rust = translate_directives("win64_target.c");
 
     assert!(
         rust.contains(
@@ -89,7 +90,7 @@ fn translates_win64_macro_to_composed_cfg_item() {
 
 #[test]
 fn translates_unix_macro_to_cfg_item() {
-    let rust = translate_cfg("unix_target.c");
+    let rust = translate_directives("unix_target.c");
 
     assert!(rust.contains("#[cfg(unix)]\nfn unix_code() -> i32"));
     assert!(rust.contains("#[cfg(not(unix))]\nfn unix_code() -> i32"));
@@ -100,7 +101,7 @@ fn translates_unix_macro_to_cfg_item() {
 
 #[test]
 fn translates_arch_macro_variants_to_cfg_items() {
-    let rust = translate_cfg("arch_targets.c");
+    let rust = translate_directives("arch_targets.c");
 
     assert!(rust.contains("#[cfg(target_arch = \"x86_64\")]\nfn arch_code() -> i32"));
     assert!(rust.contains("#[cfg(target_arch = \"x86\")]\nfn arch_code() -> i32"));
@@ -131,7 +132,7 @@ fn translates_arch_macro_variants_to_cfg_items() {
 
 #[test]
 fn translates_pointer_width_macro_variants_to_cfg_items() {
-    let rust = translate_cfg("pointer_width_targets.c");
+    let rust = translate_directives("pointer_width_targets.c");
 
     assert!(rust.contains("#[cfg(target_pointer_width = \"64\")]\nfn pointer_width_code() -> i32"));
     assert!(rust.contains("#[cfg(target_pointer_width = \"32\")]\nfn pointer_width_code() -> i32"));
@@ -146,7 +147,7 @@ fn translates_pointer_width_macro_variants_to_cfg_items() {
 
 #[test]
 fn translates_arm_endian_macro_variants_to_cfg_items() {
-    let rust = translate_cfg("arm_endian_targets.c");
+    let rust = translate_directives("arm_endian_targets.c");
 
     assert!(rust.contains(
         "#[cfg(any(all(target_arch = \"arm\", target_endian = \"big\"), all(target_arch = \"aarch64\", target_endian = \"big\")))]\nfn arm_endian_code() -> i32"
@@ -165,7 +166,7 @@ fn translates_arm_endian_macro_variants_to_cfg_items() {
 
 #[test]
 fn translates_ndebug_variants_to_debug_assertion_cfg_items() {
-    let rust = translate_cfg("ndebug.c");
+    let rust = translate_directives("ndebug.c");
 
     assert!(rust.contains("#[cfg(not(debug_assertions))]\nfn debug_code() -> i32"));
     assert!(rust.contains("#[cfg(debug_assertions)]\nfn debug_code() -> i32"));
@@ -176,7 +177,7 @@ fn translates_ndebug_variants_to_debug_assertion_cfg_items() {
 
 #[test]
 fn translates_single_custom_macro_to_feature_cfg_items() {
-    let rust = translate_cfg("feature_single.c");
+    let rust = translate_directives("feature_single.c");
 
     assert!(rust.contains("#[cfg(feature = \"my_feature\")]\nfn feature_code() -> i32"));
     assert!(rust.contains("#[cfg(not(feature = \"my_feature\"))]\nfn feature_code() -> i32"));
@@ -187,7 +188,7 @@ fn translates_single_custom_macro_to_feature_cfg_items() {
 
 #[test]
 fn translates_independent_custom_macro_chains_without_cross_product() {
-    let rust = translate_cfg("feature_multiple.c");
+    let rust = translate_directives("feature_multiple.c");
 
     assert!(rust.contains("#[cfg(feature = \"first_feature\")]\nfn first_code() -> i32"));
     assert!(rust.contains("#[cfg(not(feature = \"first_feature\"))]\nfn first_code() -> i32"));
@@ -201,7 +202,7 @@ fn translates_independent_custom_macro_chains_without_cross_product() {
 
 #[test]
 fn translates_nested_custom_macro_chains_with_parent_cfg() {
-    let rust = translate_cfg("feature_nested.c");
+    let rust = translate_directives("feature_nested.c");
 
     assert!(rust.contains(
         "#[cfg(all(feature = \"outer_feature\", feature = \"inner_feature\"))]\nfn nested_code() -> i32"
@@ -215,8 +216,8 @@ fn translates_nested_custom_macro_chains_with_parent_cfg() {
 }
 
 #[test]
-fn cfg_translated_fixtures_compile_for_current_host() {
-    let work_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/cfg-translate-compile");
+fn directive_translated_fixtures_compile_for_current_host() {
+    let work_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/directive-translate-compile");
     for name in [
         "os_targets.c",
         "win64_target.c",
@@ -229,7 +230,7 @@ fn cfg_translated_fixtures_compile_for_current_host() {
         "feature_multiple.c",
         "feature_nested.c",
     ] {
-        let rust = translate_cfg(name);
+        let rust = translate_directives(name);
         let rs = write_generated(name, &rust);
         let package = format!("cfg_{}", name.trim_end_matches(".c"));
         support::compile_rs_cargo(&rs, &work_dir, &package)
@@ -239,7 +240,7 @@ fn cfg_translated_fixtures_compile_for_current_host() {
 
 #[test]
 fn refuses_conditional_inside_a_function_body() {
-    let err = translate_cfg_err("reject/fragment_stmt.c");
+    let err = translate_directives_err("reject/fragment_stmt.c");
     assert!(
         err.contains("inside a function or record body"),
         "expected fragment-cut diagnostic, got:\n{err}"
@@ -248,7 +249,7 @@ fn refuses_conditional_inside_a_function_body() {
 
 #[test]
 fn refuses_predicate_without_a_known_cfg_mapping() {
-    let err = translate_cfg_err("reject/system_macro_feature.c");
+    let err = translate_directives_err("reject/system_macro_feature.c");
     assert!(
         err.contains("does not map to a known Rust cfg"),
         "expected unmapped-predicate diagnostic, got:\n{err}"
@@ -257,7 +258,7 @@ fn refuses_predicate_without_a_known_cfg_mapping() {
 
 #[test]
 fn refuses_cfg_plans_above_the_variant_cap() {
-    let err = translate_cfg_err("reject/too_many_feature_chains.c");
+    let err = translate_directives_err("reject/too_many_feature_chains.c");
     assert!(
         err.contains("configuration variant cap"),
         "expected variant-cap diagnostic, got:\n{err}"
@@ -268,13 +269,13 @@ fn refuses_cfg_plans_above_the_variant_cap() {
 fn passes_through_sources_without_conditional_regions() {
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/add.c");
     let out = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate-cfg")
+        .arg("translate-directives")
         .arg(&src)
         .output()
-        .expect("run slate translate-cfg");
+        .expect("run slate translate-directives");
     assert!(
         out.status.success(),
-        "translate-cfg failed on a plain source:\n{}",
+        "translate-directives failed on a plain source:\n{}",
         String::from_utf8_lossy(&out.stderr)
     );
     let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");

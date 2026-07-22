@@ -15,9 +15,9 @@ code behind `#if defined(_WIN32)` and you translate on Linux, the Windows branch
 is simply absent from the output — not wrong, just not present. This is the
 right mode when you have one target in mind.
 
-## Multi-config (`translate-cfg`)
+## Multi-config (`translate-directives`)
 
-`slate translate-cfg file.c` recovers portability. It:
+`slate translate-directives file.c` recovers portability. It:
 
 1. records the preprocessor conditional regions of the source (the oracle in
    `src/preprocess.rs`; see [passes.md](passes.md));
@@ -34,7 +34,7 @@ Recovering the untaken branches genuinely requires the extra Clang/CIR
 invocations — there is no way to see them from a single preprocessed view.
 
 A source with no conditional regions passes straight through to single-config
-lowering, so `translate-cfg` is a safe superset of `translate` for such files.
+lowering, so `translate-directives` is a safe superset of `translate` for such files.
 
 ## Supported predicate → `cfg` mappings
 
@@ -92,13 +92,13 @@ decouples the two will need to override this mapping.
 
 ## Project feature configurations
 
-Slate deliberately keeps project macro handling boolean. `translate-cfg` can
+Slate deliberately keeps project macro handling boolean. `translate-directives` can
 recover whole-item branches gated by `#ifdef MY_FEATURE`,
 `#if defined(MY_FEATURE)`, and boolean combinations of such predicates. Multiple
 independent top-level regions are handled per region rather than as a cross
 product, and nested regions are supported while the generated branch count stays
 within the built-in cap of 16 variants. If a source exceeds that cap,
-`translate-cfg` refuses with a diagnostic pointing at the region instead of
+`translate-directives` refuses with a diagnostic pointing at the region instead of
 exploding into an unbounded matrix.
 
 Run `slate record-cfg file.c [clang args...]` to see the recorded conditional
@@ -130,7 +130,7 @@ way.
 
 ## What is refused
 
-`translate-cfg` emits a diagnostic and refuses (rather than guessing) when a
+`translate-directives` emits a diagnostic and refuses (rather than guessing) when a
 conditional region cannot be stitched as whole Rust items. These split into
 _unsupported-but-recorded predicates_ and _code shapes that cannot be merged
 cleanly_:

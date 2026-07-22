@@ -1,10 +1,10 @@
 #![allow(dead_code)]
 
 mod c_ast;
-mod cfg_translate;
 mod cir;
 mod codegen;
 mod ctx;
+mod directive_translate;
 mod effects;
 mod fixups;
 mod limits_macros;
@@ -31,7 +31,7 @@ fn usage() -> ExitCode {
         "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
     );
     eprintln!("  translate   C -> Rust");
-    eprintln!("  translate-cfg   experimental multi-config C -> Rust");
+    eprintln!("  translate-directives   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
     eprintln!("  translate-project  <dir> <out_dir>  cross-TU C dir -> Rust modules");
     eprintln!(
@@ -58,8 +58,8 @@ fn main() -> ExitCode {
             Some(path) => run(translate(Path::new(path))),
             None => usage(),
         },
-        Some("translate-cfg") => match args.get(2) {
-            Some(path) => run(cfg_translate::translate_cfg(Path::new(path))),
+        Some("translate-directives") => match args.get(2) {
+            Some(path) => run(directive_translate::translate_directives(Path::new(path))),
             None => usage(),
         },
         Some("record-cfg") => match args.get(2) {
@@ -782,7 +782,7 @@ fn emit_fixtures() -> Result<String, String> {
 
     // multi-config cfg fixtures: render the portable #[cfg(...)] merge so the C
     // and generated Rust can be compared side by side. The `reject/` subdir holds
-    // sources that translate-cfg is meant to refuse, so it is skipped.
+    // sources that translate-directives is meant to refuse, so it is skipped.
     let cfg_src = manifest.join("tests/fixtures.cfg");
     let cfg_out = manifest.join("tests/fixtures.cfg.generated");
     if cfg_src.is_dir() {
@@ -805,7 +805,7 @@ fn emit_fixtures() -> Result<String, String> {
                 .file_stem()
                 .ok_or_else(|| format!("missing file stem: {}", input.display()))?;
             let output = cfg_out.join(name).with_extension("rs");
-            std::fs::write(&output, cfg_translate::translate_cfg(&input)?)
+            std::fs::write(&output, directive_translate::translate_directives(&input)?)
                 .map_err(|e| format!("write {}: {e}", output.display()))?;
             report.push_str(&format!("wrote {}\n", output.display()));
         }

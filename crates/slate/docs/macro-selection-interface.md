@@ -6,7 +6,7 @@ value-carrying preprocessor predicates as portable Rust.
 
 ## Why this exists
 
-`translate-cfg` recovers `#if`/`#ifdef` regions by mapping their predicates to
+`translate-directives` recovers `#if`/`#ifdef` regions by mapping their predicates to
 Rust `#[cfg(...)]` (see [cfg-portability.md](cfg-portability.md)). That works
 because the predicate reduces to a _boolean presence_ check — a macro is defined
 or it is not. But Cargo features and Rust `cfg` carry **no value**, so a
@@ -182,14 +182,14 @@ log_1000000 = []
 
 ## CLI: generating a crate
 
-`translate-cfg` gains a `--macros` flag and an `--out` directory:
+`translate-directives` gains a `--macros` flag and an `--out` directory:
 
 ```sh
 # emit merged Rust to stdout, using the declared value classes
-slate translate-cfg file.c --macros slate-macros.toml
+slate translate-directives file.c --macros slate-macros.toml
 
 # write a buildable crate (Cargo.toml with generated [features] + src/)
-slate translate-cfg file.c --macros slate-macros.toml --out out/mycrate
+slate translate-directives file.c --macros slate-macros.toml --out out/mycrate
 ```
 
 Selecting a configuration is then ordinary Cargo:
@@ -222,7 +222,7 @@ Where each piece lands in the current pipeline:
 - **Class computation**: a new module derives the breakpoints per declared
   macro, builds the class partition, intersects with the declared build set, and
   assigns feature names. Pure and unit-testable, no Clang needed.
-- **Config planning** (`src/cfg_translate.rs`): extend `plan_configs` /
+- **Config planning** (`src/directive_translate.rs`): extend `plan_configs` /
   `pin_args` to add `-D<NAME>=<repr-value>` for each surviving class of each
   declared macro. Reuse `merge_variants` unchanged — items identical across
   classes collapse; differing items gate behind the class feature.
