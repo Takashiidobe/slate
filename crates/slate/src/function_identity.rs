@@ -1,11 +1,210 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum KnownLibc {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Known {
+    Malloc,
+    Calloc,
+    Realloc,
+    Free,
+    MemCpy,
+    MemMove,
+    MemSet,
+    MemChr,
     StrLen,
+    StrCpy,
+    StrCat,
+    StrNCpy,
+    StrNCat,
+    StrCmp,
+    StrNCmp,
+    MemCmp,
+    StrChr,
+    StrRChr,
+    StrStr,
+    StrPBrk,
+    StrSpn,
+    StrCSpn,
+    Atoi,
+    Atol,
+    StrTol,
+    StrToul,
+    StrTod,
+    Printf,
+    Exit,
+    Puts,
+    FOpen,
+    FPuts,
+    FGets,
+    FRead,
+    FWrite,
+    FClose,
+    FFlush,
+    Remove,
+    ToUpper,
+    ToLower,
+    Sin,
+    Cos,
+    Tan,
+    Log,
+    Log10,
+    Log2,
+    Pow,
+    Sqrt,
+    Exp,
+    Exp2,
+    Fmod,
+    Lround,
+    Llround,
+    PthreadCreate,
+    PthreadJoin,
+    Qsort,
+    Bsearch,
+}
+
+impl Known {
+    pub fn symbol(self) -> &'static str {
+        match self {
+            Self::Malloc => "malloc",
+            Self::Calloc => "calloc",
+            Self::Realloc => "realloc",
+            Self::Free => "free",
+            Self::MemCpy => "memcpy",
+            Self::MemMove => "memmove",
+            Self::MemSet => "memset",
+            Self::MemChr => "memchr",
+            Self::StrLen => "strlen",
+            Self::StrCpy => "strcpy",
+            Self::StrCat => "strcat",
+            Self::StrNCpy => "strncpy",
+            Self::StrNCat => "strncat",
+            Self::StrCmp => "strcmp",
+            Self::StrNCmp => "strncmp",
+            Self::MemCmp => "memcmp",
+            Self::StrChr => "strchr",
+            Self::StrRChr => "strrchr",
+            Self::StrStr => "strstr",
+            Self::StrPBrk => "strpbrk",
+            Self::StrSpn => "strspn",
+            Self::StrCSpn => "strcspn",
+            Self::Atoi => "atoi",
+            Self::Atol => "atol",
+            Self::StrTol => "strtol",
+            Self::StrToul => "strtoul",
+            Self::StrTod => "strtod",
+            Self::Printf => "printf",
+            Self::Exit => "exit",
+            Self::Puts => "puts",
+            Self::FOpen => "fopen",
+            Self::FPuts => "fputs",
+            Self::FGets => "fgets",
+            Self::FRead => "fread",
+            Self::FWrite => "fwrite",
+            Self::FClose => "fclose",
+            Self::FFlush => "fflush",
+            Self::Remove => "remove",
+            Self::ToUpper => "toupper",
+            Self::ToLower => "tolower",
+            Self::Sin => "sin",
+            Self::Cos => "cos",
+            Self::Tan => "tan",
+            Self::Log => "log",
+            Self::Log10 => "log10",
+            Self::Log2 => "log2",
+            Self::Pow => "pow",
+            Self::Sqrt => "sqrt",
+            Self::Exp => "exp",
+            Self::Exp2 => "exp2",
+            Self::Fmod => "fmod",
+            Self::Lround => "lround",
+            Self::Llround => "llround",
+            Self::PthreadCreate => "pthread_create",
+            Self::PthreadJoin => "pthread_join",
+            Self::Qsort => "qsort",
+            Self::Bsearch => "bsearch",
+        }
+    }
+
+    fn classify(name: &str, headers: &[&str]) -> Option<Self> {
+        let (known, header) = match name {
+            "malloc" => (Self::Malloc, "stdlib.h"),
+            "calloc" => (Self::Calloc, "stdlib.h"),
+            "realloc" => (Self::Realloc, "stdlib.h"),
+            "free" => (Self::Free, "stdlib.h"),
+            "memcpy" => (Self::MemCpy, "string.h"),
+            "memmove" => (Self::MemMove, "string.h"),
+            "memset" => (Self::MemSet, "string.h"),
+            "memchr" => (Self::MemChr, "string.h"),
+            "strlen" => (Self::StrLen, "string.h"),
+            "strcpy" => (Self::StrCpy, "string.h"),
+            "strcat" => (Self::StrCat, "string.h"),
+            "strncpy" => (Self::StrNCpy, "string.h"),
+            "strncat" => (Self::StrNCat, "string.h"),
+            "strcmp" => (Self::StrCmp, "string.h"),
+            "strncmp" => (Self::StrNCmp, "string.h"),
+            "memcmp" => (Self::MemCmp, "string.h"),
+            "strchr" => (Self::StrChr, "string.h"),
+            "strrchr" => (Self::StrRChr, "string.h"),
+            "strstr" => (Self::StrStr, "string.h"),
+            "strpbrk" => (Self::StrPBrk, "string.h"),
+            "strspn" => (Self::StrSpn, "string.h"),
+            "strcspn" => (Self::StrCSpn, "string.h"),
+            "atoi" => (Self::Atoi, "stdlib.h"),
+            "atol" => (Self::Atol, "stdlib.h"),
+            "strtol" => (Self::StrTol, "stdlib.h"),
+            "strtoul" => (Self::StrToul, "stdlib.h"),
+            "strtod" => (Self::StrTod, "stdlib.h"),
+            "printf" => (Self::Printf, "stdio.h"),
+            "exit" => (Self::Exit, "stdlib.h"),
+            "puts" => (Self::Puts, "stdio.h"),
+            "fopen" => (Self::FOpen, "stdio.h"),
+            "fputs" => (Self::FPuts, "stdio.h"),
+            "fgets" => (Self::FGets, "stdio.h"),
+            "fread" => (Self::FRead, "stdio.h"),
+            "fwrite" => (Self::FWrite, "stdio.h"),
+            "fclose" => (Self::FClose, "stdio.h"),
+            "fflush" => (Self::FFlush, "stdio.h"),
+            "remove" => (Self::Remove, "stdio.h"),
+            "toupper" => (Self::ToUpper, "ctype.h"),
+            "tolower" => (Self::ToLower, "ctype.h"),
+            "sin" => (Self::Sin, "math.h"),
+            "cos" => (Self::Cos, "math.h"),
+            "tan" => (Self::Tan, "math.h"),
+            "log" => (Self::Log, "math.h"),
+            "log10" => (Self::Log10, "math.h"),
+            "log2" => (Self::Log2, "math.h"),
+            "pow" => (Self::Pow, "math.h"),
+            "sqrt" => (Self::Sqrt, "math.h"),
+            "exp" => (Self::Exp, "math.h"),
+            "exp2" => (Self::Exp2, "math.h"),
+            "fmod" => (Self::Fmod, "math.h"),
+            "lround" => (Self::Lround, "math.h"),
+            "llround" => (Self::Llround, "math.h"),
+            "pthread_create" => (Self::PthreadCreate, "pthread.h"),
+            "pthread_join" => (Self::PthreadJoin, "pthread.h"),
+            "qsort" => (Self::Qsort, "stdlib.h"),
+            "bsearch" => (Self::Bsearch, "stdlib.h"),
+            _ => return None,
+        };
+        headers.contains(&header).then_some(known)
+    }
+
+    #[cfg(test)]
+    pub fn for_test_symbol(name: &str) -> Option<Self> {
+        Self::classify(
+            name,
+            &[
+                "stdlib.h",
+                "string.h",
+                "stdio.h",
+                "ctype.h",
+                "math.h",
+                "pthread.h",
+            ],
+        )
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FunctionIdentity {
-    KnownLibc(KnownLibc),
+    Known(Known),
     Unknown,
 }
 
@@ -33,6 +232,16 @@ impl CallBinding {
             canonical_type,
         }
     }
+
+    pub fn known(&self) -> Option<Known> {
+        match self {
+            Self::Direct {
+                identity: FunctionIdentity::Known(known),
+                ..
+            } => Some(*known),
+            Self::Direct { .. } | Self::Indirect | Self::Generated => None,
+        }
+    }
 }
 
 pub fn classify_function<'a>(
@@ -41,31 +250,63 @@ pub fn classify_function<'a>(
     canonical_type: &str,
     provenance: Provenance,
 ) -> FunctionIdentity {
+    if !valid_function_type(canonical_type) {
+        return FunctionIdentity::Unknown;
+    }
+    let builtin = match name {
+        "__builtin_memcpy" | "__builtin_bit_cast" => Some(Known::MemCpy),
+        "__builtin_memmove" | "__builtin_bcopy" => Some(Known::MemMove),
+        "__builtin_memset" | "__builtin_bzero" => Some(Known::MemSet),
+        "__builtin_memchr" => Some(Known::MemChr),
+        _ => None,
+    };
+    if let Some(known) = builtin {
+        return FunctionIdentity::Known(known);
+    }
     if provenance != Provenance::TrustedHeader {
         return FunctionIdentity::Unknown;
     }
     let headers = headers.into_iter().collect::<Vec<_>>();
-    match name {
-        "strlen" if headers.contains(&"string.h") && is_strlen_signature(canonical_type) => {
-            FunctionIdentity::KnownLibc(KnownLibc::StrLen)
-        }
-        _ => FunctionIdentity::Unknown,
-    }
+    Known::classify(name, &headers)
+        .map(FunctionIdentity::Known)
+        .unwrap_or(FunctionIdentity::Unknown)
 }
 
-fn is_strlen_signature(canonical_type: &str) -> bool {
-    let Some((ret, params)) = canonical_type.split_once('(') else {
-        return false;
+fn valid_function_type(canonical_type: &str) -> bool {
+    canonical_type
+        .split_once('(')
+        .is_some_and(|(ret, params)| !ret.trim().is_empty() && params.trim_end().ends_with(')'))
+}
+
+pub fn known_call(expr: &crate::rust_ast::Expr) -> Option<Known> {
+    let crate::rust_ast::Expr::Call { func, binding, .. } = expr else {
+        return None;
     };
-    let ret = ret.trim();
-    let params = params.strip_suffix(')').unwrap_or(params).trim();
-    matches!(
-        ret,
-        "size_t"
-            | "__size_t"
-            | "unsigned int"
-            | "unsigned long"
-            | "unsigned long long"
-            | "unsigned __int64"
-    ) && params == "const char *"
+    let known = match binding.known() {
+        Some(known) => known,
+        None => {
+            #[cfg(test)]
+            {
+                let crate::rust_ast::Expr::Var(name) = &**func else {
+                    return None;
+                };
+                Known::for_test_symbol(name.as_str())?
+            }
+            #[cfg(not(test))]
+            {
+                return None;
+            }
+        }
+    };
+    matches!(&**func, crate::rust_ast::Expr::Var(name) if name.as_str() == known.symbol())
+        .then_some(known)
+}
+
+pub fn known_declaration(identity: FunctionIdentity, name: &str) -> Option<Known> {
+    match identity {
+        FunctionIdentity::Known(known) if known.symbol() == name => Some(known),
+        #[cfg(test)]
+        FunctionIdentity::Unknown => Known::for_test_symbol(name),
+        _ => None,
+    }
 }

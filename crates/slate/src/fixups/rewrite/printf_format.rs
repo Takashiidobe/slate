@@ -5,6 +5,7 @@ use crate::fixups::support::walk;
 use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
 };
+use crate::function_identity::{Known, known_call, known_declaration};
 use crate::rust_ast::{BinOp, RustValue};
 use crate::rust_ast::{
     Block, Expr, ExternDecl, ExternFnDecl, FnParam, IndentStmt, Item, Prim, Program, Stmt, Type,
@@ -186,10 +187,10 @@ fn rewrite_printf_expr(
 ) -> Option<Expr> {
     let fact = printf_fact(function, facts, path)?;
     let call = peel_empty_unsafe(expr);
-    let Expr::Call { func, args, .. } = call else {
+    let Expr::Call { args, .. } = call else {
         return None;
     };
-    if !matches!(&**func, Expr::Var(name) if name.as_str() == "printf") {
+    if known_call(call) != Some(Known::Printf) {
         return None;
     }
     let rest = args.get(1..)?;
@@ -1649,6 +1650,7 @@ fn stdout_static_decl() -> ExternDecl {
 
 fn fflush_fn_decl() -> ExternDecl {
     ExternDecl::Fn(ExternFnDecl {
+        identity: crate::function_identity::FunctionIdentity::Unknown,
         name: "fflush".into(),
         params: vec![FnParam {
             name: "_0".into(),
@@ -1704,7 +1706,7 @@ fn is_raw_printf_call_stmt(stmt: &Stmt) -> bool {
     let Stmt::Expr(expr) = stmt else {
         return false;
     };
-    matches!(peel_empty_unsafe(expr), Expr::Call { func, .. } if matches!(&**func, Expr::Var(name) if name.as_str() == "printf"))
+    known_call(peel_empty_unsafe(expr)) == Some(Known::Printf)
 }
 
 fn flush_before_stmt() -> Stmt {
@@ -1746,7 +1748,9 @@ fn fflush_after_stmt() -> Stmt {
 fn prune_printf_extern(program: &mut Program) {
     program.items.retain_mut(|item| match item {
         Item::ExternBlock { decls, .. } => {
-            decls.retain(|decl| !matches!(decl, ExternDecl::Fn(f) if f.name == "printf"));
+            decls.retain(|decl| {
+                !matches!(decl, ExternDecl::Fn(f) if known_declaration(f.identity, &f.name) == Some(Known::Printf))
+            });
             !decls.is_empty()
         }
         _ => true,
@@ -1816,7 +1820,7 @@ fn stmt_has_printf_call(stmt: &Stmt) -> bool {
 fn expr_has_printf_call(expr: &Expr) -> bool {
     match expr {
         Expr::Call { func, args, .. } => {
-            matches!(&**func, Expr::Var(name) if name.as_str() == "printf")
+            known_call(expr) == Some(Known::Printf)
                 || expr_has_printf_call(func)
                 || args.iter().any(expr_has_printf_call)
         }
@@ -1907,6 +1911,7 @@ mod tests {
 
     fn printf_decl() -> ExternDecl {
         ExternDecl::Fn(ExternFnDecl {
+            identity: crate::function_identity::FunctionIdentity::Unknown,
             name: "printf".into(),
             params: vec![FnParam {
                 name: "_0".into(),

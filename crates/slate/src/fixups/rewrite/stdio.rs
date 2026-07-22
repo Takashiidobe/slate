@@ -7,6 +7,7 @@ use crate::fixups::facts::{
 use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
 };
+use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
     BinOp, Block, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type,
 };
@@ -176,7 +177,7 @@ fn plan_for_fact(
                 replacements.insert(use_index, gets_loop_stmt(handle, &gets));
             }
             FileUseKind::Read => {
-                let (result, args) = read_write_call(&body.get(use_index)?.stmt, "fread")?;
+                let (result, args) = read_write_call(&body.get(use_index)?.stmt, Known::FRead)?;
                 let buf_name = buf_ptr_var(&args[0])?;
                 let expr = fread_expr(handle, &buf_name, &args[1], &args[2]);
                 replacements.insert(use_index, bind_result(result, expr));
@@ -185,7 +186,7 @@ fn plan_for_fact(
                 }
             }
             FileUseKind::Write => {
-                let (result, args) = read_write_call(&body.get(use_index)?.stmt, "fwrite")?;
+                let (result, args) = read_write_call(&body.get(use_index)?.stmt, Known::FWrite)?;
                 let buf_name = buf_ptr_var(&args[0])?;
                 let expr = fwrite_expr(handle, &buf_name, &args[1], &args[2]);
                 replacements.insert(use_index, bind_result(result, expr));
@@ -419,7 +420,7 @@ fn write_stdout_stmt(buf_name: &str) -> Stmt {
 
 type ReadWriteResult = Option<(String, bool, Option<Type>)>;
 
-fn read_write_call<'a>(stmt: &'a Stmt, callee: &str) -> Option<(ReadWriteResult, &'a [Expr])> {
+fn read_write_call(stmt: &Stmt, callee: Known) -> Option<(ReadWriteResult, &[Expr])> {
     match stmt {
         Stmt::Expr(expr) => Some((None, call_args(expr, callee)?)),
         Stmt::Let {
@@ -435,11 +436,12 @@ fn read_write_call<'a>(stmt: &'a Stmt, callee: &str) -> Option<(ReadWriteResult,
     }
 }
 
-fn call_args<'a>(expr: &'a Expr, callee: &str) -> Option<&'a [Expr]> {
-    let Expr::Call { func, args, .. } = unsafe_tail(expr)? else {
+fn call_args(expr: &Expr, callee: Known) -> Option<&[Expr]> {
+    let call = unsafe_tail(expr)?;
+    let Expr::Call { args, .. } = call else {
         return None;
     };
-    if !matches!(&**func, Expr::Var(name) if name.as_str() == callee) || args.len() != 4 {
+    if known_call(call) != Some(callee) || args.len() != 4 {
         return None;
     }
     Some(args)
@@ -659,10 +661,11 @@ fn fopen_path_literal(stmt: &Stmt) -> Option<String> {
     else {
         return None;
     };
-    let Expr::Call { func, args, .. } = unsafe_tail(init)? else {
+    let call = unsafe_tail(init)?;
+    let Expr::Call { args, .. } = call else {
         return None;
     };
-    if !matches!(&**func, Expr::Var(name) if name.as_str() == "fopen") || args.len() != 2 {
+    if known_call(call) != Some(Known::FOpen) || args.len() != 2 {
         return None;
     }
     let bytes = c_string_arg(&args[0])?;
@@ -677,10 +680,11 @@ fn fputs_literal(stmt: &Stmt) -> Option<Vec<u8>> {
         } => expr,
         _ => return None,
     };
-    let Expr::Call { func, args, .. } = unsafe_tail(expr)? else {
+    let call = unsafe_tail(expr)?;
+    let Expr::Call { args, .. } = call else {
         return None;
     };
-    if !matches!(&**func, Expr::Var(name) if name.as_str() == "fputs") || args.len() != 2 {
+    if known_call(call) != Some(Known::FPuts) || args.len() != 2 {
         return None;
     }
     c_string_arg(&args[0])
@@ -779,6 +783,7 @@ mod tests {
         Item::ExternBlock {
             abi: "C".into(),
             decls: vec![ExternDecl::Fn(ExternFnDecl {
+                identity: crate::function_identity::FunctionIdentity::Unknown,
                 name: name.into(),
                 params: params
                     .into_iter()

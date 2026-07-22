@@ -513,6 +513,7 @@ mod tests {
             .map(|(name, sig)| Item::ExternBlock {
                 abi: "C".into(),
                 decls: vec![ExternDecl::Fn(ExternFnDecl {
+                    identity: crate::function_identity::FunctionIdentity::Unknown,
                     name: name.into(),
                     params: sig
                         .params

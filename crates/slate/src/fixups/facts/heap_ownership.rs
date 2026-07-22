@@ -4,6 +4,7 @@ use crate::fixups::facts::{
     HeapOwnershipFact, HeapOwnershipKind, HeapReadSafety, HeapReallocFact, HeapResizeKind,
     HeapUseFact, HeapUseKind, PathSegment,
 };
+use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
     BinOp, Block, Expr, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
@@ -192,11 +193,11 @@ fn allocation_temp(
         return None;
     };
     let call = block.tail.as_deref()?;
-    let Expr::Call { func, args, .. } = call else {
+    let Expr::Call { args, .. } = call else {
         return None;
     };
-    match &**func {
-        Expr::Var(callee) if callee.as_str() == "malloc" && args.len() == 1 => {
+    match known_call(call) {
+        Some(Known::Malloc) if args.len() == 1 => {
             let size_name = size_arg_name(&args[0]).map(str::to_owned);
             let size_expr = size_name
                 .as_deref()
@@ -211,7 +212,7 @@ fn allocation_temp(
                 init: HeapInitKind::Uninitialized,
             })
         }
-        Expr::Var(callee) if callee.as_str() == "calloc" && args.len() == 2 => {
+        Some(Known::Calloc) if args.len() == 2 => {
             let count_name = size_arg_name(&args[0]).map(str::to_owned);
             let count = count_name
                 .as_deref()
@@ -413,10 +414,11 @@ fn free_call_on_any(stmt: &Stmt, names: &BTreeSet<String>) -> bool {
 }
 
 fn block_tail_free_arg(block: &Block) -> Option<&Expr> {
-    let Expr::Call { func, args, .. } = block.tail.as_deref()? else {
+    let call = block.tail.as_deref()?;
+    let Expr::Call { args, .. } = call else {
         return None;
     };
-    if matches!(&**func, Expr::Var(name) if name.as_str() == "free") && args.len() == 1 {
+    if known_call(call) == Some(Known::Free) && args.len() == 1 {
         args.first()
     } else {
         None
@@ -647,10 +649,10 @@ fn realloc_call_on_source(expr: &Expr, source_name: &str, size_name: &str) -> bo
     let Expr::Unsafe(block) = expr else {
         return false;
     };
-    let Some(Expr::Call { func, args, .. }) = block.tail.as_deref() else {
+    let Some(call @ Expr::Call { args, .. }) = block.tail.as_deref() else {
         return false;
     };
-    matches!(&**func, Expr::Var(name) if name.as_str() == "realloc")
+    known_call(call) == Some(Known::Realloc)
         && args.len() == 2
         && cast_source_var(&args[0]) == Some(source_name)
         && size_arg_name(&args[1]) == Some(size_name)
@@ -742,8 +744,8 @@ fn stmt_mentions_any_pointer(stmt: &Stmt, names: &BTreeSet<String>) -> bool {
             return;
         }
         match expr {
-            Expr::Call { func, args, .. } => {
-                if matches!(&**func, Expr::Var(name) if name.as_str() == "free") {
+            Expr::Call { args, .. } => {
+                if known_call(expr) == Some(Known::Free) {
                     return;
                 }
                 if args.iter().any(|arg| expr_mentions_any(arg, names)) {

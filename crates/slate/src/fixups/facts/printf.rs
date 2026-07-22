@@ -3,6 +3,7 @@ use crate::fixups::facts::{
     AstPath, BindingId, FixupFacts, FunctionId, NulTermination, PathSegment, PrintfArgFact,
     PrintfCallFact, Site, StringBufferProvenance, StringLibcFunction,
 };
+use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{Block, Expr, FnParam, IndentStmt, Item, Program, RustValue, Stmt, Type};
 use std::collections::BTreeMap;
 
@@ -182,8 +183,8 @@ fn visit_expr(
     calls: &mut Vec<PrintfCallFact>,
     facts: &FixupFacts,
 ) {
-    if let Expr::Call { func, args, .. } = expr
-        && matches!(&**func, Expr::Var(name) if name.as_str() == "printf")
+    if let Expr::Call { args, .. } = expr
+        && known_call(expr) == Some(Known::Printf)
     {
         let arg_facts = args
             .iter()

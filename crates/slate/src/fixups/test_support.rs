@@ -38,8 +38,15 @@ pub(super) fn int(n: i64) -> Expr {
 }
 
 pub(super) fn call(func: &str, args: Vec<Expr>) -> Expr {
+    let binding = crate::function_identity::Known::for_test_symbol(func).map_or(
+        crate::function_identity::CallBinding::Generated,
+        |known| crate::function_identity::CallBinding::Direct {
+            identity: crate::function_identity::FunctionIdentity::Known(known),
+            canonical_type: None,
+        },
+    );
     Expr::Call {
-        binding: crate::function_identity::CallBinding::Generated,
+        binding,
         func: Box::new(Expr::Var(func.into())),
         args,
     }

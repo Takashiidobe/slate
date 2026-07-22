@@ -9,7 +9,7 @@ use crate::fixups::facts::{
     StringLiftPlanFact, StringPointerViewFact, StringPointerViewKind, StringRecoveryCandidate,
     ValueSubject,
 };
-use crate::function_identity::{CallBinding, FunctionIdentity, KnownLibc};
+use crate::function_identity::Known;
 use crate::rust_ast::{
     Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
@@ -1787,38 +1787,31 @@ fn libc_function(expr: &Expr) -> Option<StringLibcFunction> {
     let Expr::Var(name) = &**func else {
         return None;
     };
-    if name.as_str() == "strlen"
-        && !matches!(
-            binding,
-            CallBinding::Direct {
-                identity: FunctionIdentity::KnownLibc(KnownLibc::StrLen),
-                ..
-            } | CallBinding::Generated
-        )
-    {
+    let known = binding.known()?;
+    if name.as_str() != known.symbol() {
         return None;
     }
-    Some(match name.as_str() {
-        "strlen" => StringLibcFunction::StrLen,
-        "strcmp" => StringLibcFunction::StrCmp,
-        "strncmp" => StringLibcFunction::StrNCmp,
-        "memcmp" => StringLibcFunction::MemCmp,
-        "strchr" => StringLibcFunction::StrChr,
-        "strrchr" => StringLibcFunction::StrRChr,
-        "strstr" => StringLibcFunction::StrStr,
-        "strpbrk" => StringLibcFunction::StrPBrk,
-        "strspn" => StringLibcFunction::StrSpn,
-        "strcspn" => StringLibcFunction::StrCSpn,
-        "strcpy" => StringLibcFunction::StrCpy,
-        "strncpy" => StringLibcFunction::StrNCpy,
-        "strcat" => StringLibcFunction::StrCat,
-        "strncat" => StringLibcFunction::StrNCat,
-        "atoi" => StringLibcFunction::Atoi,
-        "atol" => StringLibcFunction::Atol,
-        "strtol" => StringLibcFunction::StrTol,
-        "strtoul" => StringLibcFunction::StrToul,
-        "strtod" => StringLibcFunction::StrTod,
-        "printf" => StringLibcFunction::Printf,
+    Some(match known {
+        Known::StrLen => StringLibcFunction::StrLen,
+        Known::StrCmp => StringLibcFunction::StrCmp,
+        Known::StrNCmp => StringLibcFunction::StrNCmp,
+        Known::MemCmp => StringLibcFunction::MemCmp,
+        Known::StrChr => StringLibcFunction::StrChr,
+        Known::StrRChr => StringLibcFunction::StrRChr,
+        Known::StrStr => StringLibcFunction::StrStr,
+        Known::StrPBrk => StringLibcFunction::StrPBrk,
+        Known::StrSpn => StringLibcFunction::StrSpn,
+        Known::StrCSpn => StringLibcFunction::StrCSpn,
+        Known::StrCpy => StringLibcFunction::StrCpy,
+        Known::StrNCpy => StringLibcFunction::StrNCpy,
+        Known::StrCat => StringLibcFunction::StrCat,
+        Known::StrNCat => StringLibcFunction::StrNCat,
+        Known::Atoi => StringLibcFunction::Atoi,
+        Known::Atol => StringLibcFunction::Atol,
+        Known::StrTol => StringLibcFunction::StrTol,
+        Known::StrToul => StringLibcFunction::StrToul,
+        Known::StrTod => StringLibcFunction::StrTod,
+        Known::Printf => StringLibcFunction::Printf,
         _ => return None,
     })
 }

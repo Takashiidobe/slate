@@ -5,6 +5,7 @@ use crate::fixups::facts::{
     AstPath, BindingId, FileOpenMode, FileOwnershipFact, FileUseFact, FileUseKind, FixupFacts,
     FunctionId, PathSegment,
 };
+use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
     BinOp, Expr, IndentStmt, Item, Path, Program, RustValue, Stmt, Type, UnaryOp,
 };
@@ -133,10 +134,10 @@ fn fopen_temp(stmt: &Stmt) -> Option<FOpenTemp> {
         return None;
     };
     let call = unsafe_tail(init)?;
-    let Expr::Call { func, args, .. } = call else {
+    let Expr::Call { args, .. } = call else {
         return None;
     };
-    if !matches!(&**func, Expr::Var(callee) if callee.as_str() == "fopen") || args.len() != 2 {
+    if known_call(call) != Some(Known::FOpen) || args.len() != 2 {
         return None;
     }
     Some(FOpenTemp {
@@ -354,18 +355,26 @@ fn file_use(stmt: &Stmt, aliases: &BTreeSet<String>) -> Option<FileUseKind> {
         } => expr,
         _ => return None,
     };
-    let Expr::Call { func, args, .. } = unsafe_tail(expr)? else {
+    let call = unsafe_tail(expr)?;
+    let Expr::Call { args, .. } = call else {
         return None;
     };
-    let Expr::Var(callee) = &**func else {
-        return None;
-    };
-    match callee.as_str() {
-        "fread" if args.len() == 4 && arg_is_handle(&args[3], aliases) => Some(FileUseKind::Read),
-        "fwrite" if args.len() == 4 && arg_is_handle(&args[3], aliases) => Some(FileUseKind::Write),
-        "fgets" if args.len() == 3 && arg_is_handle(&args[2], aliases) => Some(FileUseKind::Gets),
-        "fputs" if args.len() == 2 && arg_is_handle(&args[1], aliases) => Some(FileUseKind::Puts),
-        "fclose" if args.len() == 1 && arg_is_handle(&args[0], aliases) => Some(FileUseKind::Close),
+    match known_call(call) {
+        Some(Known::FRead) if args.len() == 4 && arg_is_handle(&args[3], aliases) => {
+            Some(FileUseKind::Read)
+        }
+        Some(Known::FWrite) if args.len() == 4 && arg_is_handle(&args[3], aliases) => {
+            Some(FileUseKind::Write)
+        }
+        Some(Known::FGets) if args.len() == 3 && arg_is_handle(&args[2], aliases) => {
+            Some(FileUseKind::Gets)
+        }
+        Some(Known::FPuts) if args.len() == 2 && arg_is_handle(&args[1], aliases) => {
+            Some(FileUseKind::Puts)
+        }
+        Some(Known::FClose) if args.len() == 1 && arg_is_handle(&args[0], aliases) => {
+            Some(FileUseKind::Close)
+        }
         _ => None,
     }
 }
@@ -639,10 +648,11 @@ fn scope_echoes_buf_to_stdout(body: &[IndentStmt], buf_name: &str) -> bool {
     let Stmt::Expr(expr) = &second.stmt else {
         return false;
     };
-    let Expr::Call { func, args, .. } = unsafe_tail(expr).unwrap_or(expr) else {
+    let call = unsafe_tail(expr).unwrap_or(expr);
+    let Expr::Call { args, .. } = call else {
         return false;
     };
-    if !matches!(&**func, Expr::Var(callee) if callee.as_str() == "fputs") || args.len() != 2 {
+    if known_call(call) != Some(Known::FPuts) || args.len() != 2 {
         return false;
     }
     buf_ptr_var(&args[0]).as_deref() == Some(buf_name)
@@ -738,6 +748,7 @@ mod tests {
         Item::ExternBlock {
             abi: "C".into(),
             decls: vec![ExternDecl::Fn(ExternFnDecl {
+                identity: crate::function_identity::FunctionIdentity::Unknown,
                 name: name.into(),
                 params: params
                     .into_iter()

@@ -5,6 +5,7 @@ use crate::fixups::facts::{
     AstPath, EffectFact, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
     Site,
 };
+use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, UnaryOp};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -282,7 +283,7 @@ impl Collector {
                 effects.extend(self.child_expr(end, path, 1));
             }
             Expr::Call { func, args, .. } => {
-                let call_effect = call_effect(func);
+                let call_effect = call_effect(expr);
                 effects.insert(call_effect);
                 if call_effect == EffectKind::UnknownCall {
                     effects.insert(EffectKind::UnknownSideEffect);
@@ -439,12 +440,20 @@ impl Collector {
     }
 }
 
-fn call_effect(func: &Expr) -> EffectKind {
-    let Expr::Var(name) = func else {
+fn call_effect(expr: &Expr) -> EffectKind {
+    if matches!(
+        known_call(expr),
+        Some(Known::StrLen | Known::StrCmp | Known::StrNCmp | Known::MemCmp)
+    ) {
+        return EffectKind::ReadOnlyCall;
+    }
+    let Expr::Call { func, .. } = expr else {
+        return EffectKind::UnknownCall;
+    };
+    let Expr::Var(name) = &**func else {
         return EffectKind::UnknownCall;
     };
     match name.as_str() {
-        "strlen" | "strcmp" | "strncmp" | "memcmp" => EffectKind::ReadOnlyCall,
         "std::ptr::read_volatile" | "core::ptr::read_volatile" => EffectKind::VolatileRead,
         "std::ptr::write_volatile" | "core::ptr::write_volatile" => EffectKind::VolatileWrite,
         _ => EffectKind::UnknownCall,
