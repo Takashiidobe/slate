@@ -216,6 +216,17 @@ fn translates_nested_custom_macro_chains_with_parent_cfg() {
 }
 
 #[test]
+fn sanitizes_fatal_directives_without_changing_frontend_source_identity() {
+    let rust = translate_directives("sanitized_input.c");
+
+    assert!(rust.contains("#[cfg(feature = \"sanitized_left\")]\nfn selected() -> i32"));
+    assert!(rust.contains("#[cfg(not(feature = \"sanitized_left\"))]\nfn selected() -> i32"));
+    assert!(rust.contains("i32::MAX"));
+    assert_tail_value(&rust, "37");
+    assert!(rust.contains("tests/fixtures.cfg/sanitized_input.c"));
+}
+
+#[test]
 fn directive_translated_fixtures_compile_for_current_host() {
     let work_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/directive-translate-compile");
     for name in [
