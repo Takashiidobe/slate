@@ -19,6 +19,24 @@ Each rung:
 Cleanup passes live under `src/fixups/` and are wired through a fixed post-lower
 entry point. Baseline lowering owns correctness; fixups own readability.
 
+Standard-library semantics require a `Known` function identity. Slate derives
+that identity from the Clang declaration reached by the call, its canonical
+function type, and plugin evidence that the declaration came through the
+corresponding trusted system header. A matching spelling alone is never enough.
+Project declarations, shadowing definitions, indirect calls, and declarations
+from similarly named project headers remain ordinary calls throughout lowering,
+fixups, and effects interpretation.
+
+Clang's reserved `__builtin_*` memory operations are also `Known`: their
+semantics come from the compiler rather than a C header. CIR operations created
+directly for language intrinsics, such as `__builtin_bit_cast`, carry the same
+compiler-defined identity without pretending to be libc declarations.
+
+Runtime symbol interposition such as `LD_PRELOAD` or link-time replacement of a
+proven standard-library symbol is outside Slate's supported semantics. Those
+mechanisms intentionally change the program after translation and cannot be
+reconciled with source-level idiomatization.
+
 The ladder is ordered by value-for-effort, not dependency; most rungs are
 independent.
 

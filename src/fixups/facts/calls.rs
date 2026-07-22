@@ -6,6 +6,7 @@ use crate::fixups::facts::{
     CallSignatureFact, CallSignatureSource, CallsiteFact, FixupFacts, FunctionId, LibcCallSemantic,
     PathSegment, SignatureId, Site,
 };
+use crate::function_identity::{FunctionIdentity, Known};
 use crate::rust_ast::{
     Block, Expr, ExternDecl, FnParam, IndentStmt, Item, Pattern, Program, Stmt, Type,
 };
@@ -139,7 +140,7 @@ fn push_signature(
     let id = SignatureId(signatures.len());
     signatures.push(CallSignatureFact {
         id,
-        semantics: libc_semantics(&name),
+        semantics: BTreeSet::new(),
         name,
         source,
         params,
@@ -570,13 +571,21 @@ impl<'a> Collector<'a> {
         result_binding: Option<BindingId>,
     ) {
         let (callee, signature) = match expr {
-            Expr::Call { func, .. } => match &**func {
+            Expr::Call { func, binding, .. } => match &**func {
                 Expr::Var(name) => {
                     let signature = self.by_name.get(name.as_str()).copied();
+                    let identity = match binding {
+                        crate::function_identity::CallBinding::Direct { identity, .. } => *identity,
+                        crate::function_identity::CallBinding::Indirect
+                        | crate::function_identity::CallBinding::Generated => {
+                            FunctionIdentity::Unknown
+                        }
+                    };
                     (
                         CallCallee::Direct {
                             name: name.as_str().to_string(),
                             signature,
+                            identity,
                         },
                         signature.and_then(|id| self.signatures.get(id.0)),
                     )
@@ -619,7 +628,7 @@ impl<'a> Collector<'a> {
             })
             .collect();
         let semantics = match &callee {
-            CallCallee::Direct { name, .. } => libc_semantics(name),
+            CallCallee::Direct { identity, .. } => libc_semantics(*identity),
             CallCallee::Indirect => BTreeSet::new(),
         };
         self.callsites.push(CallsiteFact {
@@ -664,25 +673,25 @@ impl<'a> Collector<'a> {
     }
 }
 
-fn libc_semantics(name: &str) -> BTreeSet<LibcCallSemantic> {
-    match name {
-        "printf" => BTreeSet::from([LibcCallSemantic::Printf]),
-        "strlen" => BTreeSet::from([LibcCallSemantic::StrLen]),
-        "strcmp" => BTreeSet::from([LibcCallSemantic::StrCmp]),
-        "strncmp" => BTreeSet::from([LibcCallSemantic::StrNCmp]),
-        "memcmp" => BTreeSet::from([LibcCallSemantic::MemCmp]),
-        "strcpy" => BTreeSet::from([LibcCallSemantic::StrCpy]),
-        "strncpy" => BTreeSet::from([LibcCallSemantic::StrNCpy]),
-        "strcat" => BTreeSet::from([LibcCallSemantic::StrCat]),
-        "strncat" => BTreeSet::from([LibcCallSemantic::StrNCat]),
-        "memcpy" => BTreeSet::from([LibcCallSemantic::MemCpy]),
-        "memset" => BTreeSet::from([LibcCallSemantic::MemSet]),
-        "fopen" => BTreeSet::from([LibcCallSemantic::FOpen]),
-        "fread" => BTreeSet::from([LibcCallSemantic::FRead]),
-        "fwrite" => BTreeSet::from([LibcCallSemantic::FWrite]),
-        "fgets" => BTreeSet::from([LibcCallSemantic::FGets]),
-        "fputs" => BTreeSet::from([LibcCallSemantic::FPuts]),
-        "fclose" => BTreeSet::from([LibcCallSemantic::FClose]),
+fn libc_semantics(identity: FunctionIdentity) -> BTreeSet<LibcCallSemantic> {
+    match identity {
+        FunctionIdentity::Known(Known::Printf) => BTreeSet::from([LibcCallSemantic::Printf]),
+        FunctionIdentity::Known(Known::StrLen) => BTreeSet::from([LibcCallSemantic::StrLen]),
+        FunctionIdentity::Known(Known::StrCmp) => BTreeSet::from([LibcCallSemantic::StrCmp]),
+        FunctionIdentity::Known(Known::StrNCmp) => BTreeSet::from([LibcCallSemantic::StrNCmp]),
+        FunctionIdentity::Known(Known::MemCmp) => BTreeSet::from([LibcCallSemantic::MemCmp]),
+        FunctionIdentity::Known(Known::StrCpy) => BTreeSet::from([LibcCallSemantic::StrCpy]),
+        FunctionIdentity::Known(Known::StrNCpy) => BTreeSet::from([LibcCallSemantic::StrNCpy]),
+        FunctionIdentity::Known(Known::StrCat) => BTreeSet::from([LibcCallSemantic::StrCat]),
+        FunctionIdentity::Known(Known::StrNCat) => BTreeSet::from([LibcCallSemantic::StrNCat]),
+        FunctionIdentity::Known(Known::MemCpy) => BTreeSet::from([LibcCallSemantic::MemCpy]),
+        FunctionIdentity::Known(Known::MemSet) => BTreeSet::from([LibcCallSemantic::MemSet]),
+        FunctionIdentity::Known(Known::FOpen) => BTreeSet::from([LibcCallSemantic::FOpen]),
+        FunctionIdentity::Known(Known::FRead) => BTreeSet::from([LibcCallSemantic::FRead]),
+        FunctionIdentity::Known(Known::FWrite) => BTreeSet::from([LibcCallSemantic::FWrite]),
+        FunctionIdentity::Known(Known::FGets) => BTreeSet::from([LibcCallSemantic::FGets]),
+        FunctionIdentity::Known(Known::FPuts) => BTreeSet::from([LibcCallSemantic::FPuts]),
+        FunctionIdentity::Known(Known::FClose) => BTreeSet::from([LibcCallSemantic::FClose]),
         _ => BTreeSet::new(),
     }
 }
@@ -702,6 +711,10 @@ mod tests {
         Item::ExternBlock {
             abi: "C".into(),
             decls: vec![ExternDecl::Fn(ExternFnDecl {
+                identity: crate::function_identity::Known::for_test_symbol(name).map_or(
+                    crate::function_identity::FunctionIdentity::Unknown,
+                    crate::function_identity::FunctionIdentity::Known,
+                ),
                 name: name.into(),
                 params: params
                     .into_iter()
@@ -760,7 +773,7 @@ mod tests {
             }
         ));
         assert!(printf.variadic);
-        assert!(printf.semantics.contains(&LibcCallSemantic::Printf));
+        assert!(printf.semantics.is_empty());
     }
 
     #[test]
@@ -798,7 +811,8 @@ mod tests {
             callsite.callee,
             CallCallee::Direct {
                 ref name,
-                signature: Some(_)
+                signature: Some(_),
+                ..
             } if name == "add"
         ));
         assert_eq!(callsite.ret.as_ref().unwrap().render(), "i32");
@@ -855,7 +869,8 @@ mod tests {
             mystery.callee,
             CallCallee::Direct {
                 ref name,
-                signature: None
+                signature: None,
+                ..
             } if name == "mystery"
         ));
         assert_eq!(mystery.args[0].pinning, CallArgPinning::UnknownCallee);
@@ -865,7 +880,8 @@ mod tests {
             fp.callee,
             CallCallee::Direct {
                 ref name,
-                signature: None
+                signature: None,
+                ..
             } if name == "fp"
         ));
     }
