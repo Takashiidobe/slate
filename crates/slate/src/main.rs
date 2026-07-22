@@ -7,6 +7,7 @@ mod codegen;
 mod ctx;
 mod effects;
 mod fixups;
+mod limits_macros;
 mod lower;
 mod preprocess;
 mod rust_ast;

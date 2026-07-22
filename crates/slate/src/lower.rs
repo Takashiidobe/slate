@@ -300,6 +300,11 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .iter()
             .map(|function| (function.name.clone(), function.layout_queries.clone()))
             .collect(),
+        macro_consts: c
+            .functions
+            .iter()
+            .map(|function| (function.name.clone(), function.macro_consts.clone()))
+            .collect(),
         nonnull_static_params: c
             .functions
             .iter()
@@ -585,6 +590,7 @@ struct Lowerer<'a> {
     dtor_calls: Vec<String>,
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     nonnull_static_params: BTreeMap<String, BTreeSet<usize>>,
+    macro_consts: BTreeMap<String, Vec<String>>,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -620,6 +626,8 @@ struct FunctionLowerer<'a, 'b> {
     va_places: BTreeMap<String, String>,
     va_args_param: Option<String>,
     layout_queries: VecDeque<LayoutQuery>,
+    macro_consts: VecDeque<String>,
+    macro_arith_values: BTreeMap<String, i128>,
 }
 
 /// Maps CIR jump targets to dispatch-loop states for a `goto`-bearing function.
@@ -1450,6 +1458,12 @@ impl<'a> Lowerer<'a> {
             .cloned()
             .unwrap_or_default()
             .into();
+        let macro_consts: VecDeque<_> = self
+            .macro_consts
+            .get(name)
+            .cloned()
+            .unwrap_or_default()
+            .into();
         let mut f = FunctionLowerer {
             parent: self,
             values: BTreeMap::new(),
@@ -1475,6 +1489,8 @@ impl<'a> Lowerer<'a> {
             va_places: BTreeMap::new(),
             va_args_param,
             layout_queries,
+            macro_consts,
+            macro_arith_values: BTreeMap::new(),
         };
 
         for stmt in prelude {
@@ -2606,6 +2622,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, expr, result_ty);
             return;
         }
+        if let Some(value) = parse_cir_int(raw)
+            && let Some(expr) = self.next_macro_const_expr(value, result_ty)
+        {
+            self.materialize_expr(result, expr, result_ty);
+            return;
+        }
         if let Some(value) = parse_cir_const_vector(raw) {
             self.materialize_expr(result, value, result_ty);
             return;
@@ -2661,6 +2683,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let expr = self.parent.layout_query_expr(query);
         self.layout_queries.pop_front();
         let mut expr = expr?;
+        if let Some(result_ty) = result_ty {
+            expr = Expr::Cast {
+                expr: Box::new(expr),
+                ty: self.parent.rust_type(result_ty),
+            };
+        }
+        Some(expr)
+    }
+
+    fn next_macro_const_expr(&mut self, value: i128, result_ty: Option<&str>) -> Option<Expr> {
+        let name = self.macro_consts.front()?;
+        let known = crate::limits_macros::lookup(name)?;
+        if known.value != value {
+            return None;
+        }
+        self.macro_consts.pop_front();
+        let mut expr = Expr::Var(known.rust_path.into());
         if let Some(result_ty) = result_ty {
             expr = Expr::Cast {
                 expr: Box::new(expr),
@@ -3068,9 +3107,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             );
             return;
         }
+        let ty = op_result_type(op);
+        if let Some(folded) = self.fold_int_arith(&op.operands[0], &op.operands[1], rust_op) {
+            self.macro_arith_values.insert(result.clone(), folded);
+            if let Some(expr) = self.next_macro_const_expr(folded, ty) {
+                self.materialize_expr(result, expr, ty);
+                return;
+            }
+        }
         let lhs = self.operand_expr(&op.operands[0]);
         let rhs = self.operand_expr(&op.operands[1]);
-        let ty = op_result_type(op);
         self.materialize_expr(
             result,
             Expr::Binary {
@@ -3080,6 +3126,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             },
             ty,
         );
+    }
+
+    fn known_arith_value(&self, operand: &str) -> Option<i128> {
+        self.const_int_values
+            .get(operand)
+            .copied()
+            .or_else(|| self.macro_arith_values.get(operand).copied())
+    }
+
+    fn fold_int_arith(&self, lhs: &str, rhs: &str, op: BinOp) -> Option<i128> {
+        let l = self.known_arith_value(lhs)?;
+        let r = self.known_arith_value(rhs)?;
+        match op {
+            BinOp::Add => Some(l + r),
+            BinOp::Sub => Some(l - r),
+            BinOp::Mul => Some(l * r),
+            _ => None,
+        }
     }
 
     fn lower_overflow_arith(&mut self, op: &Op, rust_method: &str) {
