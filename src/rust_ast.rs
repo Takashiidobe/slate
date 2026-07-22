@@ -131,6 +131,7 @@ impl Lint {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Feature {
     CVariadic,
+    F128,
     Linkage,
     UsedWithArg,
 }
@@ -139,6 +140,7 @@ impl Feature {
     pub fn spelling(self) -> &'static str {
         match self {
             Feature::CVariadic => "c_variadic",
+            Feature::F128 => "f128",
             Feature::Linkage => "linkage",
             Feature::UsedWithArg => "used_with_arg",
         }
@@ -835,6 +837,7 @@ pub enum Prim {
     Usize,
     F32,
     F64,
+    F128,
 }
 
 impl Prim {
@@ -855,6 +858,7 @@ impl Prim {
             Prim::Usize => "usize",
             Prim::F32 => "f32",
             Prim::F64 => "f64",
+            Prim::F128 => "f128",
         }
     }
 
@@ -875,6 +879,7 @@ impl Prim {
             "usize" => Prim::Usize,
             "f32" => Prim::F32,
             "f64" => Prim::F64,
+            "f128" => Prim::F128,
             _ => return None,
         })
     }
