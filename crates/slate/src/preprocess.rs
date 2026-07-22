@@ -258,11 +258,15 @@ pub struct DirectiveRecord {
 
 impl DirectiveRecord {
     pub fn disposition(&self) -> DirectiveDisposition {
-        if self.name == DirectiveName::Pragma && is_diagnostic_pragma(&self.raw_payload) {
-            DirectiveDisposition::DiagnosticOnly
-        } else {
-            self.name.disposition()
+        if self.name == DirectiveName::Pragma {
+            if self.raw_payload.trim() == "once" {
+                return DirectiveDisposition::NoOutput;
+            }
+            if is_diagnostic_pragma(&self.raw_payload) {
+                return DirectiveDisposition::DiagnosticOnly;
+            }
         }
+        self.name.disposition()
     }
 
     pub fn unsupported_message(&self) -> String {
