@@ -48,6 +48,7 @@ whether no output is required, or whether translation must stop.
 | `#include`, `#include_next`, `#import` | consumed by Clang | Header declarations, types, constants, and expansions reach lowering through Clang. The directive itself is not reproduced in Rust. |
 | `#line` | consumed by Clang | Presumed filenames and line values affect Clang constants such as `__LINE__`. Physical source lines and offsets remain the keys for Slate's AST/CIR/directive joins. |
 | `#embed` | consumed by Clang | Forms accepted by the configured Clang, including standard `limit`, `prefix`, `suffix`, and `if_empty` parameters, lower from CIR. Missing files and unsupported parameters are Clang translation errors. |
+| `#pragma once` | no output | Include-once behavior is consumed while Clang preprocesses headers. No Rust syntax is required. |
 | `#ident`, `#sccs` | no output | Compiler/object metadata has no generated Rust source form and does not affect program execution. |
 | null directive (`#`) | no output | The directive has no effect. |
 
@@ -56,6 +57,30 @@ do not disappear silently. An active instance stops single-config translation.
 Under `translate-directives`, a conditional instance becomes a cfg-gated
 `compile_error!` when its effective predicate maps to Rust; otherwise
 translation stops.
+
+### Pragma inventory
+
+Compilers may ignore pragmas they do not recognize, but Slate cannot infer that
+a pragma was unknown to the compiler and build configuration for which the C
+source was written. A recognized pragma can affect ABI or evaluation even when
+the configured Clang ignores the same spelling. Slate therefore uses an
+allowlist: exact `#pragma once` is no-output, diagnostic controls retain the
+diagnostic-only disposition, and every other pragma remains unsupported until
+its effect is recovered.
+
+| Family | Examples | Current disposition | Follow-up |
+| --- | --- | --- | --- |
+| Include guard | `once` | no output | supported |
+| Diagnostic controls | `GCC diagnostic`, `clang diagnostic`, MSVC `warning(...)` | diagnostic only | warning handling is covered by `slate-9msj.7` |
+| Standard floating point | `STDC FENV_ACCESS`, `STDC FP_CONTRACT`, `STDC CX_LIMITED_RANGE` | unsupported semantic | `slate-9msj.10` |
+| Record packing | `pack(push, n)`, `pack(pop)`, `pack(n)` | unsupported semantic | `slate-9msj.11` |
+| Vendor symbol and code generation controls | GCC/Clang visibility, section, optimize, and target pragmas; MSVC segment and optimization controls | unsupported semantic | `slate-9msj.12` |
+| Unknown vendor pragmas | any other pragma outside the allowlist | unsupported semantic | add a focused ticket before extending the allowlist |
+
+The repository fixture inventory currently contains diagnostic pragmas and
+`#pragma pack`; no supported fixture relies on another semantic pragma. The
+inventory fixture also locks in explicit rejection for the three standard
+floating-point controls and representative GCC and unknown-vendor forms.
 
 ## Supported predicate → `cfg` mappings
 
