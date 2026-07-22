@@ -1,8 +1,5 @@
 /target
-/tests/fixtures.generated/
-/tests/fixtures.lowered.generated/
-/tests/fixtures.multi.generated/
-/tests/fixtures.cfg.generated/
+/tests/*.generated/
 
 /tools/macro-dump-plugin/build/
 
