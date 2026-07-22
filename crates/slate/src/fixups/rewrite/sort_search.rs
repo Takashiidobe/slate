@@ -451,7 +451,7 @@ fn unsafe_tail(expr: &Expr) -> Option<&Expr> {
 }
 
 fn direct_call(expr: &Expr) -> Option<(&str, &[Expr])> {
-    let Expr::Call { func, args } = expr else {
+    let Expr::Call { func, args, .. } = expr else {
         return None;
     };
     let Expr::Var(name) = &**func else {
@@ -500,7 +500,7 @@ fn key_pointer_arg(expr: &Expr) -> Option<String> {
 }
 
 fn comparator_arg(expr: &Expr) -> Option<&str> {
-    let Expr::Call { func, args } = strip_casts(expr) else {
+    let Expr::Call { func, args, .. } = strip_casts(expr) else {
         return None;
     };
     let Expr::Var(some) = &**func else {

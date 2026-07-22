@@ -106,6 +106,7 @@ pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<Strin
     // if it lands.
     let mut child = Command::new(cir_opt())
         .arg("--mlir-print-op-generic")
+        .arg("--mlir-print-debuginfo")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())

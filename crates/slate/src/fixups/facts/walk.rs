@@ -97,7 +97,7 @@ pub(in crate::fixups) fn exprs(expr: &Expr, f: &mut impl FnMut(&Expr)) {
             exprs(start, f);
             exprs(end, f);
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             exprs(func, f);
             for arg in args {
                 exprs(arg, f);
@@ -381,7 +381,7 @@ pub(in crate::fixups) fn exprs_with_path(
                 exprs_with_path(end, path, f);
             });
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             with_path_segment(path, PathSegment::Expr(0), |path| {
                 exprs_with_path(func, path, f);
             });
@@ -659,7 +659,7 @@ pub(in crate::fixups) fn exprs_any(expr: &Expr, pred: &mut impl FnMut(&Expr) -> 
         | Expr::Transmute { expr, .. } => exprs_any(expr, pred),
         Expr::Binary { lhs, rhs, .. } => exprs_any(lhs, pred) || exprs_any(rhs, pred),
         Expr::Range { start, end } => exprs_any(start, pred) || exprs_any(end, pred),
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             exprs_any(func, pred) || args.iter().any(|arg| exprs_any(arg, pred))
         }
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
@@ -858,7 +858,7 @@ fn exprs_all_with_hooks(
             exprs_all_with_hooks(start, stmt_hook, expr_hook)
                 && exprs_all_with_hooks(end, stmt_hook, expr_hook)
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             exprs_all_with_hooks(func, stmt_hook, expr_hook)
                 && args
                     .iter()
@@ -1063,7 +1063,7 @@ pub(in crate::fixups) fn exprs_mut_with(expr: &mut Expr, f: &mut impl FnMut(&mut
             exprs_mut_with(start, f);
             exprs_mut_with(end, f);
         }
-        Expr::Call { func, args } => {
+        Expr::Call { func, args, .. } => {
             exprs_mut_with(func, f);
             for arg in args {
                 exprs_mut_with(arg, f);

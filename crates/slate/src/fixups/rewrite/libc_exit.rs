@@ -125,7 +125,7 @@ fn rewrite_exit_expr(expr: &mut Expr) -> bool {
 }
 
 fn libc_exit_args(expr: &Expr) -> Option<Vec<Expr>> {
-    let Expr::Call { func, args } = expr else {
+    let Expr::Call { func, args, .. } = expr else {
         return None;
     };
     matches!(&**func, Expr::Var(name) if name.as_str() == "exit").then(|| args.clone())
@@ -133,6 +133,7 @@ fn libc_exit_args(expr: &Expr) -> Option<Vec<Expr>> {
 
 fn std_process_exit(args: Vec<Expr>) -> Expr {
     Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Path(Path::new(
             ["std", "process", "exit"].map(Ident::from),
         ))),

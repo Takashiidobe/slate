@@ -192,7 +192,7 @@ fn allocation_temp(
         return None;
     };
     let call = block.tail.as_deref()?;
-    let Expr::Call { func, args } = call else {
+    let Expr::Call { func, args, .. } = call else {
         return None;
     };
     match &**func {
@@ -413,7 +413,7 @@ fn free_call_on_any(stmt: &Stmt, names: &BTreeSet<String>) -> bool {
 }
 
 fn block_tail_free_arg(block: &Block) -> Option<&Expr> {
-    let Expr::Call { func, args } = block.tail.as_deref()? else {
+    let Expr::Call { func, args, .. } = block.tail.as_deref()? else {
         return None;
     };
     if matches!(&**func, Expr::Var(name) if name.as_str() == "free") && args.len() == 1 {
@@ -647,7 +647,7 @@ fn realloc_call_on_source(expr: &Expr, source_name: &str, size_name: &str) -> bo
     let Expr::Unsafe(block) = expr else {
         return false;
     };
-    let Some(Expr::Call { func, args }) = block.tail.as_deref() else {
+    let Some(Expr::Call { func, args, .. }) = block.tail.as_deref() else {
         return false;
     };
     matches!(&**func, Expr::Var(name) if name.as_str() == "realloc")
@@ -742,7 +742,7 @@ fn stmt_mentions_any_pointer(stmt: &Stmt, names: &BTreeSet<String>) -> bool {
             return;
         }
         match expr {
-            Expr::Call { func, args } => {
+            Expr::Call { func, args, .. } => {
                 if matches!(&**func, Expr::Var(name) if name.as_str() == "free") {
                     return;
                 }
@@ -816,6 +816,7 @@ mod tests {
         Expr::Unsafe(Box::new(Block {
             stmts: Vec::new(),
             tail: Some(Box::new(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(var("malloc")),
                 args: vec![Expr::Cast {
                     expr: Box::new(var(size)),
@@ -829,6 +830,7 @@ mod tests {
         Expr::Unsafe(Box::new(Block {
             stmts: Vec::new(),
             tail: Some(Box::new(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(var("calloc")),
                 args: vec![
                     Expr::Cast {
@@ -848,6 +850,7 @@ mod tests {
         Expr::Unsafe(Box::new(Block {
             stmts: Vec::new(),
             tail: Some(Box::new(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(var("realloc")),
                 args: vec![
                     Expr::Cast {
@@ -904,6 +907,7 @@ mod tests {
         Stmt::Expr(Expr::Unsafe(Box::new(Block {
             stmts: Vec::new(),
             tail: Some(Box::new(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(var("free")),
                 args: vec![Expr::Cast {
                     expr: Box::new(var(ptr)),
@@ -963,6 +967,7 @@ mod tests {
             assign(
                 "p",
                 Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("p.offset".into())),
                     args: vec![int(1)],
                 },

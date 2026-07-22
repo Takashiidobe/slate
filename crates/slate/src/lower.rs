@@ -1,8 +1,9 @@
 //! lower: combine the CIR Op-tree with the C AST oracle into Rust output.
 
-use crate::c_ast::{LayoutQuery, RecordKind, Unit};
+use crate::c_ast::{LayoutQuery, Loc, RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
+use crate::function_identity::CallBinding;
 use crate::rust_ast::{
     Abi, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType,
     CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
@@ -11,7 +12,7 @@ use crate::rust_ast::{
     SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, UsedKind,
     Visibility,
 };
-use std::collections::{BTreeMap, BTreeSet, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
 /// How a translation unit fits into a multi-file project: which symbols other
 /// units define, which sibling modules the crate root must declare, and whether
@@ -279,6 +280,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
     let mut lowerer = Lowerer {
         ctx,
         aliases: cir.aliases.clone(),
+        call_bindings: c.call_bindings(),
         records,
         enums,
         anon_records,
@@ -559,6 +561,7 @@ fn comments(lines: &[String]) -> Vec<crate::rust_ast::Comment> {
 struct Lowerer<'a> {
     ctx: &'a mut Ctx,
     aliases: BTreeMap<String, String>,
+    call_bindings: HashMap<Loc, CallBinding>,
     records: BTreeMap<String, crate::c_ast::Record>,
     enums: BTreeMap<String, crate::c_ast::Enum>,
     /// Function-local anonymous record types recovered from the CIR (libyaml's
@@ -731,6 +734,35 @@ impl Val {
 }
 
 impl<'a> Lowerer<'a> {
+    fn call_binding(&self, op: &Op, direct: bool) -> CallBinding {
+        if !direct {
+            return CallBinding::Indirect;
+        }
+        op.loc
+            .as_deref()
+            .and_then(|raw| self.resolve_loc(raw))
+            .and_then(|loc| self.call_bindings.get(&loc).cloned())
+            .unwrap_or_else(|| CallBinding::direct_unknown(None))
+    }
+
+    fn resolve_loc(&self, raw: &str) -> Option<Loc> {
+        let mut raw = raw.trim();
+        for _ in 0..4 {
+            let inner = raw.strip_prefix("loc(")?.strip_suffix(')')?.trim();
+            if inner.starts_with('#') {
+                raw = self.aliases.get(inner)?.as_str();
+                continue;
+            }
+            let (_, line_col) = inner.rsplit_once("\":")?;
+            let (line, col) = line_col.split_once(':')?;
+            return Some(Loc {
+                line: line.parse().ok()?,
+                col: col.parse().ok()?,
+            });
+        }
+        None
+    }
+
     fn lower_module(&mut self, module: &Module, c: &Unit) -> Program {
         let mut items = vec![Item::CrateAttrs(vec![CrateAttr::Allow(vec![
             Lint::DeadCode,
@@ -1273,6 +1305,7 @@ impl<'a> Lowerer<'a> {
             .map(|param| Expr::Var(param.name.clone().into()))
             .collect();
         let mut call = Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var(target.into())),
             args,
         };
@@ -1553,6 +1586,7 @@ impl<'a> Lowerer<'a> {
         }
 
         let call = |path: &str, args: Vec<Expr>| Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var(path.into())),
             args,
         };
@@ -1812,6 +1846,7 @@ impl<'a> Lowerer<'a> {
                 standard_record_default_expr(name).unwrap_or_else(|| default_value_for_type(ty))
             }
             Type::LongDouble => Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::Value(RustValue::Float(0.0))],
             },
@@ -2066,6 +2101,7 @@ struct CLayout {
 
 fn layout_call(name: &str, ty: &Type) -> Expr {
     Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var(
             format!("std::mem::{name}::<{}>", ty.render()).into(),
         )),
@@ -2467,6 +2503,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if attr_bool(op, "is_volatile") {
             self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
                     ["std", "ptr", "write_volatile"].map(Ident::from),
                 ))),
@@ -2586,6 +2623,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let mut value = if attr_bool(op, "is_volatile") {
             Self::unsafe_expr(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
                     ["std", "ptr", "read_volatile"].map(Ident::from),
                 ))),
@@ -2772,6 +2810,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .or_else(|| parse_cir_int(raw).map(int_value_expr))
                 .unwrap_or(Expr::Value(RustValue::Float(0.0)));
             Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![value],
             }
@@ -3088,6 +3127,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         self.parent.uses_complex.set(true);
         Some(Self::unsafe_expr(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var(name.into())),
             args: vec![
                 part(lhs.clone(), "re"),
@@ -3361,6 +3401,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(
                 result,
                 Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                     args: vec![Expr::Unary {
                         op: UnaryOp::Neg,
@@ -3414,6 +3455,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         } else if type_mentions_long_double(&rust_ty) {
             Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::MethodCall {
                     recv: Box::new(Expr::Field {
@@ -3448,6 +3490,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .unwrap_or(Type::Prim(Prim::F64));
         let expr = if type_mentions_long_double(&rust_ty) {
             Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::MethodCall {
                     recv: Box::new(Expr::Field {
@@ -3544,6 +3587,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Path(Path::new(
                 ["core", "hint", "assert_unchecked"].map(Ident::from),
             ))),
@@ -3704,6 +3748,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn lower_trap(&mut self) {
         self.push_stmt(Stmt::Expr(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Path(Path::new(
                 ["std", "process", "abort"].map(Ident::from),
             ))),
@@ -3892,6 +3937,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .unwrap_or(Type::Prim(Prim::F64));
         let expr = if type_mentions_long_double(&rust_ty) {
             Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::MethodCall {
                     recv: Box::new(Expr::Field {
@@ -3931,6 +3977,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .unwrap_or(Type::Prim(Prim::F64));
         let expr = if type_mentions_long_double(&rust_ty) {
             Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                 args: vec![Expr::MethodCall {
                     recv: Box::new(Expr::Field {
@@ -4440,6 +4487,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 ]));
             }
             return Self::unsafe_expr(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
                     ["std", "mem", "transmute"].map(Ident::from),
                 ))),
@@ -4846,6 +4894,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             _ if is_long_double(result_ty) && !is_long_double(operand_ty) => {
                 Val::Expr(Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                     args: vec![Expr::Cast {
                         expr: Box::new(self.operand_expr(src)),
@@ -5003,6 +5052,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
         let direct_callee =
             attr_str(op, "callee").map(|callee| callee.trim_start_matches('@').to_string());
+        let binding = self.parent.call_binding(op, direct_callee.is_some());
         let (callee_name, callee_expr, arg_operands, arg_types) =
             if let Some(callee) = direct_callee {
                 (
@@ -5065,6 +5115,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     inner: Box::new(i8_ptr.clone()),
                 };
                 let call = Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("__slate_strtold".into())),
                     args: vec![
                         Expr::Cast {
@@ -5085,6 +5136,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.values.insert(
                     result.to_string(),
                     Val::Expr(Expr::Call {
+                        binding: crate::function_identity::CallBinding::Generated,
                         func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                         args: vec![Expr::Var(name.into())],
                     }),
@@ -5096,6 +5148,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let call = Expr::Call {
+            binding,
             func: Box::new(callee_expr),
             args: if let Some(param_types) = self.parent.externs.get(&callee_name).cloned() {
                 args.into_iter()
@@ -5231,6 +5284,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             })
             .collect();
         let expr = Self::unsafe_expr(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var(shim_name.into())),
             args: call_args,
         });
@@ -5312,6 +5366,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let len = self.usize_operand(&op.operands[2]);
         let call = Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var("__slate_memchr".into())),
             args: vec![src, pattern, len],
         };
@@ -5680,6 +5735,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.push_stmt(stmt);
             }
             self.push_stmt(Stmt::Expr(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
                     ["std", "process", "exit"].map(Ident::from),
                 ))),
@@ -6297,6 +6353,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         match self.values.get(operand) {
             Some(Val::Global(name)) if !self.parent.strings.contains_key(name) => Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var("Some".into())),
                 args: vec![Expr::Var(sanitize_ident(name))],
             },
@@ -6520,6 +6577,7 @@ fn collect_lifecycle_hooks(
 /// callee requires it (mirrors the wrapping `lower_call` applies at call sites).
 fn hook_call_stmt(name: &str, unsafe_functions: &BTreeSet<String>) -> Stmt {
     let call = Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var(name.to_string().into())),
         args: Vec::new(),
     };
@@ -7012,6 +7070,7 @@ fn long_double_op_impl(trait_: StdTrait, params: Vec<FnParam>, arg: Expr) -> Ite
         params,
         ret: Some(long_double_ty()),
         body: Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
             func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
             args: vec![arg],
         },

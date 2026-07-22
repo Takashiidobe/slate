@@ -265,8 +265,9 @@ impl<'a> Parser<'a> {
                     let name = self.parse_ssa_name()?;
                     self.skip_ws();
                     self.expect_char(':')?;
-                    let ty = self.take_until_top_level(&[',', ')']).trim().to_string();
-                    args.push((name, ty));
+                    let raw = self.take_until_top_level(&[',', ')']);
+                    let (ty, _) = split_type_and_loc(raw.trim());
+                    args.push((name, ty.to_string()));
                 }
                 Some(',') => {
                     self.bump();

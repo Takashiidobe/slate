@@ -119,7 +119,7 @@ pub(super) fn ordering_from_name(name: Option<&str>) -> EResult<AtomicOrdering> 
 
 pub(super) fn open_effect(expr: &Expr) -> EResult<Option<OpenEffect>> {
     match expr {
-        Expr::Call { func, args } if is_path(func, &["std", "io", "BufReader", "new"]) => {
+        Expr::Call { func, args, .. } if is_path(func, &["std", "io", "BufReader", "new"]) => {
             let [inner] = args.as_slice() else {
                 return Err(EffectError::arg_shape(
                     Construct::BufReaderNew,
@@ -158,7 +158,7 @@ pub(super) fn open_options_mode(expr: &Expr) -> EResult<String> {
     let mut current = expr;
     loop {
         match current {
-            Expr::Call { func, args }
+            Expr::Call { func, args, .. }
                 if args.is_empty() && is_path(func, &["std", "fs", "OpenOptions", "new"]) =>
             {
                 break;
@@ -258,7 +258,7 @@ pub(super) fn array_pointer_name(expr: &Expr) -> EResult<&str> {
 
 pub(super) fn comparator_name(expr: &Expr) -> EResult<&str> {
     match expr {
-        Expr::Call { func, args } if is_path(func, &["Some"]) => {
+        Expr::Call { func, args, .. } if is_path(func, &["Some"]) => {
             let [arg] = args.as_slice() else {
                 return Err(EffectError::arg_shape(
                     Construct::SomeComparator,

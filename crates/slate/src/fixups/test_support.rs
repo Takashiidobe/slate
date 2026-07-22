@@ -39,6 +39,7 @@ pub(super) fn int(n: i64) -> Expr {
 
 pub(super) fn call(func: &str, args: Vec<Expr>) -> Expr {
     Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var(func.into())),
         args,
     }

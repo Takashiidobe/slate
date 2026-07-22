@@ -304,7 +304,7 @@ impl<'a> Collector<'a> {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(base, path));
                 None
             }
-            Expr::Call { func, args } => {
+            Expr::Call { func, args, .. } => {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(func, path));
                 for (index, arg) in args.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {

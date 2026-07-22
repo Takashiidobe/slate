@@ -826,7 +826,7 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str("..")?;
                 self.range_endpoint(end)
             }
-            Expr::Call { func, args } => {
+            Expr::Call { func, args, .. } => {
                 self.expr_prec(func, PREC_CALL)?;
                 self.out.write_char('(')?;
                 self.args(args)?;

@@ -103,6 +103,7 @@ fn once_lock_type(payload_ty: Type) -> Type {
 
 fn once_lock_new() -> Expr {
     Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var("std::sync::OnceLock::new".into())),
         args: Vec::new(),
     }

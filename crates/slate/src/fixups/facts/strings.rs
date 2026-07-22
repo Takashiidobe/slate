@@ -9,6 +9,7 @@ use crate::fixups::facts::{
     StringLiftPlanFact, StringPointerViewFact, StringPointerViewKind, StringRecoveryCandidate,
     ValueSubject,
 };
+use crate::function_identity::{CallBinding, FunctionIdentity, KnownLibc};
 use crate::rust_ast::{
     Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
@@ -1225,7 +1226,7 @@ impl<'a> Collector<'a> {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(start, path));
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(end, path));
             }
-            Expr::Call { func, args } => {
+            Expr::Call { func, args, .. } => {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(func, path));
                 for (index, arg) in args.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
@@ -1780,12 +1781,23 @@ fn var_name(expr: &Expr) -> Option<&str> {
 }
 
 fn libc_function(expr: &Expr) -> Option<StringLibcFunction> {
-    let Expr::Call { func, .. } = peel_empty_unsafe(expr) else {
+    let Expr::Call { func, binding, .. } = peel_empty_unsafe(expr) else {
         return None;
     };
     let Expr::Var(name) = &**func else {
         return None;
     };
+    if name.as_str() == "strlen"
+        && !matches!(
+            binding,
+            CallBinding::Direct {
+                identity: FunctionIdentity::KnownLibc(KnownLibc::StrLen),
+                ..
+            } | CallBinding::Generated
+        )
+    {
+        return None;
+    }
     Some(match name.as_str() {
         "strlen" => StringLibcFunction::StrLen,
         "strcmp" => StringLibcFunction::StrCmp,

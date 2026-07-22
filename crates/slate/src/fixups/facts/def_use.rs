@@ -240,7 +240,7 @@ impl<'a> Collector<'a> {
                 self.expr(start, path);
                 self.expr(end, path);
             }
-            Expr::Call { func, args } => {
+            Expr::Call { func, args, .. } => {
                 self.expr(func, path);
                 for arg in args {
                     self.expr(arg, path);
