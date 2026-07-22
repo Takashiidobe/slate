@@ -1165,14 +1165,24 @@ impl Interp {
         let mut field_types = HashMap::new();
         for index in 0..len {
             let prefix = index.to_string();
-            self.record_field_metadata(
-                &prefix,
-                record_name,
-                index * elem_size,
-                &mut field_offsets,
-                &mut array_fields,
-                &mut field_types,
-            )?;
+            if self.records.contains_key(record_name) {
+                self.record_field_metadata(
+                    &prefix,
+                    record_name,
+                    index * elem_size,
+                    &mut field_offsets,
+                    &mut array_fields,
+                    &mut field_types,
+                )?;
+            } else {
+                self.tuple_struct_field_metadata(
+                    &prefix,
+                    record_name,
+                    index * elem_size,
+                    &mut field_offsets,
+                    &mut field_types,
+                )?;
+            }
         }
         self.structs.insert(
             name.to_string(),
@@ -1237,6 +1247,32 @@ impl Interp {
                     &mut array_fields,
                     &mut field_types,
                 )?;
+            }
+            Expr::TupleStructLit { name, fields }
+                if name.starts_with("__slate_anonymous_struct_") =>
+            {
+                let field_types = match self.tuple_structs.get(record_name) {
+                    Some(StructDef {
+                        fields: StructFields::Tuple(types),
+                        ..
+                    }) => types.clone(),
+                    _ => {
+                        return Err(EffectError::unknown(BindingKind::Struct, record_name));
+                    }
+                };
+                let mut offset = 0u64;
+                for (field_ty, field) in field_types.iter().zip(fields) {
+                    let (size, align) = self.type_layout(field_ty)?;
+                    offset = align_to(offset, align);
+                    let value = cast_value_to_type(self.eval(field)?, field_ty)?;
+                    let loc = Location {
+                        alloc: binding.alloc,
+                        byte_offset: base_offset + offset,
+                    };
+                    self.heap.insert(loc, value.clone());
+                    self.trace.push(Effect::Write { loc, value });
+                    offset += size;
+                }
             }
             Expr::TupleStructLit { fields, .. } if fields.len() == 1 => {
                 self.write_record_array_elem(name, elem_ty, index, &fields[0])?;
@@ -2298,6 +2334,33 @@ impl Interp {
             if !record.is_union {
                 offset += field_size;
             }
+        }
+        Ok(())
+    }
+
+    fn tuple_struct_field_metadata(
+        &self,
+        prefix: &str,
+        record_name: &str,
+        base_offset: u64,
+        field_offsets: &mut HashMap<String, u64>,
+        field_types: &mut HashMap<String, Type>,
+    ) -> EResult<()> {
+        let fields = match self.tuple_structs.get(record_name) {
+            Some(StructDef {
+                fields: StructFields::Tuple(fields),
+                ..
+            }) => fields,
+            _ => return Err(EffectError::unknown(BindingKind::Struct, record_name)),
+        };
+        let mut offset = 0u64;
+        for (index, field) in fields.iter().enumerate() {
+            let (size, align) = self.type_layout(field)?;
+            offset = align_to(offset, align);
+            let path = format!("{prefix}.{index}");
+            field_offsets.insert(path.clone(), base_offset + offset);
+            field_types.insert(path, field.clone());
+            offset += size;
         }
         Ok(())
     }
@@ -3497,6 +3560,10 @@ impl Interp {
     }
 
     fn eval_tuple_field(&mut self, base: &Expr, index: usize) -> EResult<Value> {
+        let field = index.to_string();
+        if self.field_location(base, &field).is_ok() {
+            return self.eval_field(base, &field);
+        }
         match self.eval(base)? {
             Value::Float(value) if index == 0 => Ok(Value::Float(value)),
             Value::Tuple(values) => match values.get(index).cloned() {
