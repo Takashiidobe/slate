@@ -99,7 +99,7 @@ cargo fmt                                   # required before finishing
 
 cargo run -- translate tests/fixtures/add.c # C -> Rust on stdout
 cargo run -- emit-cir   tests/fixtures/add.c # inspect the CIR the lowerer sees
-cargo run -- emit-fixtures                   # regenerate tests/fixtures.generated/ (git-ignored)
+cargo run -- emit-fixtures                   # regenerate supported suites in tests/*.generated/
 
 # fuzzer: random seeds each run; SLATE_FUZZ_SEED=<n> to replay, SLATE_FUZZ_CASES=<n> for count
 cargo nextest r --release --test bnf_fuzz generator_differential --nocapture
