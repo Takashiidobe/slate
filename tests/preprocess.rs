@@ -99,6 +99,38 @@ fn directive_ledger_exposes_every_disposition() {
     );
 }
 
+#[test]
+fn common_nonconditional_directives_have_explicit_dispositions() {
+    let doc = record_cfg("reject/common_directive_dispositions.c", &[]);
+    let recorded: Vec<_> = doc["directives"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|directive| {
+            (
+                directive["name"].as_str().unwrap(),
+                directive["disposition"].as_str().unwrap(),
+            )
+        })
+        .collect();
+
+    assert_eq!(
+        recorded,
+        vec![
+            ("define", "consumed-by-clang"),
+            ("undef", "consumed-by-clang"),
+            ("include", "consumed-by-clang"),
+            ("include_next", "consumed-by-clang"),
+            ("import", "consumed-by-clang"),
+            ("line", "consumed-by-clang"),
+            ("ident", "no-output"),
+            ("sccs", "no-output"),
+            ("embed", "consumed-by-clang"),
+            ("", "no-output"),
+        ]
+    );
+}
+
 /// Every predicate mapping in `expected_cfgs.json` (variants and fallback) must
 /// appear among the recorded branch cfgs for its source.
 #[test]

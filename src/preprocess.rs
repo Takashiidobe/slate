@@ -213,12 +213,11 @@ impl DirectiveName {
             | Self::Include
             | Self::IncludeNext
             | Self::Import
-            | Self::Line => DirectiveDisposition::ConsumedByClang,
+            | Self::Line
+            | Self::Embed => DirectiveDisposition::ConsumedByClang,
             Self::Warning => DirectiveDisposition::DiagnosticOnly,
             Self::Null | Self::Ident | Self::Sccs => DirectiveDisposition::NoOutput,
-            Self::Pragma | Self::Embed | Self::Unknown(_) => {
-                DirectiveDisposition::UnsupportedSemantic
-            }
+            Self::Pragma | Self::Unknown(_) => DirectiveDisposition::UnsupportedSemantic,
         }
     }
 }
