@@ -120,10 +120,24 @@ pub struct CondChain {
     pub branches: Vec<Branch>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DirectiveRecord {
+    pub name: String,
+    pub raw_payload: String,
+    pub byte_start: usize,
+    pub byte_end: usize,
+    pub line_start: usize,
+    pub line_end: usize,
+    pub depth: usize,
+    pub condition: Option<PredExpr>,
+    pub active: Option<bool>,
+}
+
 /// Recorded preprocessing metadata for a translation unit.
 #[derive(Debug, Clone, Default)]
 pub struct Preprocessing {
     pub chains: Vec<CondChain>,
+    pub directives: Vec<DirectiveRecord>,
     pub diagnostics: Vec<Diagnostic>,
 }
 
@@ -133,6 +147,12 @@ pub fn record(source: &str, macros: &BTreeMap<String, String>) -> Preprocessing 
     let mut pp = scan(source);
     for chain in &mut pp.chains {
         resolve_active(chain, macros);
+    }
+    for directive in &mut pp.directives {
+        directive.active = match &directive.condition {
+            Some(condition) => eval(condition, macros),
+            None => Some(true),
+        };
     }
     for chain in &pp.chains {
         for branch in &chain.branches {
@@ -238,14 +258,47 @@ struct ChainBuilder {
     branches: Vec<Branch>,
 }
 
+struct LogicalLine {
+    text: String,
+    offsets: Vec<usize>,
+    byte_end: usize,
+    line_start: usize,
+    line_end: usize,
+}
+
+struct SourceDirective {
+    name: String,
+    raw_payload: String,
+    payload: String,
+    byte_start: usize,
+}
+
 fn scan(source: &str) -> Preprocessing {
     let mut stack: Vec<ChainBuilder> = Vec::new();
     let mut chains: Vec<CondChain> = Vec::new();
+    let mut directives = Vec::new();
     let mut diagnostics: Vec<Diagnostic> = Vec::new();
+    let mut in_block_comment = false;
 
-    for (idx, line) in source.lines().enumerate() {
-        let lineno = idx + 1;
-        let Some((kind, arg)) = directive(line) else {
+    for line in logical_lines(source) {
+        let scrubbed = scrub_comments(&line.text, &mut in_block_comment);
+        let Some(source_directive) = source_directive(&line, &scrubbed) else {
+            continue;
+        };
+        let parsed = conditional_directive(&source_directive.name, &source_directive.payload);
+        let (condition, depth) = directive_context(&stack, parsed.as_ref());
+        directives.push(DirectiveRecord {
+            name: source_directive.name.clone(),
+            raw_payload: source_directive.raw_payload.clone(),
+            byte_start: source_directive.byte_start,
+            byte_end: line.byte_end,
+            line_start: line.line_start,
+            line_end: line.line_end,
+            depth,
+            condition,
+            active: None,
+        });
+        let Some((kind, arg)) = parsed else {
             continue;
         };
         match kind {
@@ -256,14 +309,14 @@ fn scan(source: &str) -> Preprocessing {
                     raw_predicate: arg.map(str::to_string),
                     rust_cfg: pred_to_cfg(&predicate),
                     predicate,
-                    directive_line: lineno,
-                    body_start: lineno + 1,
-                    body_end: lineno,
+                    directive_line: line.line_start,
+                    body_start: line.line_end + 1,
+                    body_end: line.line_end,
                     active: None,
                 };
                 stack.push(ChainBuilder {
                     depth: stack.len(),
-                    open_line: lineno,
+                    open_line: line.line_start,
                     branches: vec![branch],
                 });
             }
@@ -271,12 +324,16 @@ fn scan(source: &str) -> Preprocessing {
                 let Some(top) = stack.last_mut() else {
                     diagnostics.push(Diagnostic {
                         kind: DiagnosticKind::StrayDirective,
-                        line: lineno,
-                        message: format!("line {lineno}: #{} without #if", kind.as_str()),
+                        line: line.line_start,
+                        message: format!(
+                            "line {}: #{} without #if",
+                            line.line_start,
+                            kind.as_str()
+                        ),
                     });
                     continue;
                 };
-                close_body(top, lineno);
+                close_body(top, line.line_start);
                 let predicate = match kind {
                     DirectiveKind::Else => Box::new(PredExpr::Not(Box::new(or_of_priors(top)))),
                     _ => Box::new(open_predicate(kind, arg)),
@@ -287,9 +344,9 @@ fn scan(source: &str) -> Preprocessing {
                     raw_predicate: arg.map(str::to_string),
                     rust_cfg: pred_to_cfg(&predicate),
                     predicate,
-                    directive_line: lineno,
-                    body_start: lineno + 1,
-                    body_end: lineno,
+                    directive_line: line.line_start,
+                    body_start: line.line_end + 1,
+                    body_end: line.line_end,
                     active: None,
                 });
             }
@@ -297,16 +354,16 @@ fn scan(source: &str) -> Preprocessing {
                 let Some(mut top) = stack.pop() else {
                     diagnostics.push(Diagnostic {
                         kind: DiagnosticKind::StrayDirective,
-                        line: lineno,
-                        message: format!("line {lineno}: #endif without #if"),
+                        line: line.line_start,
+                        message: format!("line {}: #endif without #if", line.line_start),
                     });
                     continue;
                 };
-                close_body(&mut top, lineno);
+                close_body(&mut top, line.line_start);
                 chains.push(CondChain {
                     depth: top.depth,
                     open_line: top.open_line,
-                    endif_line: lineno,
+                    endif_line: line.line_end,
                     branches: top.branches,
                 });
             }
@@ -326,7 +383,210 @@ fn scan(source: &str) -> Preprocessing {
     chains.sort_by_key(|c| c.open_line);
     Preprocessing {
         chains,
+        directives,
         diagnostics,
+    }
+}
+
+fn logical_lines(source: &str) -> Vec<LogicalLine> {
+    let bytes = source.as_bytes();
+    let mut lines = Vec::new();
+    let mut offset = 0;
+    let mut line_number = 1;
+
+    while offset < bytes.len() {
+        let line_start = line_number;
+        let mut text = Vec::new();
+        let mut offsets = Vec::new();
+
+        let (byte_end, line_end) = loop {
+            let physical_start = offset;
+            let newline = bytes[offset..]
+                .iter()
+                .position(|byte| *byte == b'\n')
+                .map(|index| offset + index);
+            let physical_end = newline.unwrap_or(bytes.len());
+            let content_end = if physical_end > physical_start && bytes[physical_end - 1] == b'\r' {
+                physical_end - 1
+            } else {
+                physical_end
+            };
+            let continued = newline.is_some()
+                && content_end > physical_start
+                && bytes[content_end - 1] == b'\\';
+            let append_end = if continued {
+                content_end - 1
+            } else {
+                content_end
+            };
+            text.extend_from_slice(&bytes[physical_start..append_end]);
+            offsets.extend(physical_start..append_end);
+            offset = newline.map_or(bytes.len(), |index| index + 1);
+            if newline.is_some() {
+                line_number += 1;
+            }
+            if !continued || offset == bytes.len() {
+                break (content_end, line_number - usize::from(newline.is_some()));
+            }
+        };
+
+        lines.push(LogicalLine {
+            text: String::from_utf8(text).expect("logical line came from UTF-8 source"),
+            offsets,
+            byte_end,
+            line_start,
+            line_end,
+        });
+    }
+    lines
+}
+
+fn scrub_comments(line: &str, in_block: &mut bool) -> String {
+    let mut bytes = line.as_bytes().to_vec();
+    let mut quote = None;
+    let mut index = 0;
+    while index < bytes.len() {
+        if *in_block {
+            if bytes[index] == b'*' && bytes.get(index + 1) == Some(&b'/') {
+                bytes[index] = b' ';
+                bytes[index + 1] = b' ';
+                *in_block = false;
+                index += 2;
+            } else {
+                bytes[index] = b' ';
+                index += 1;
+            }
+            continue;
+        }
+        if let Some(delimiter) = quote {
+            if bytes[index] == b'\\' {
+                index += 2;
+            } else {
+                if bytes[index] == delimiter {
+                    quote = None;
+                }
+                index += 1;
+            }
+            continue;
+        }
+        match bytes[index] {
+            b'\'' | b'"' => {
+                quote = Some(bytes[index]);
+                index += 1;
+            }
+            b'/' if bytes.get(index + 1) == Some(&b'/') => {
+                bytes[index..].fill(b' ');
+                break;
+            }
+            b'/' if bytes.get(index + 1) == Some(&b'*') => {
+                bytes[index] = b' ';
+                bytes[index + 1] = b' ';
+                *in_block = true;
+                index += 2;
+            }
+            _ => index += 1,
+        }
+    }
+    String::from_utf8(bytes).expect("comment scrubbing preserves UTF-8")
+}
+
+fn source_directive(line: &LogicalLine, scrubbed: &str) -> Option<SourceDirective> {
+    let bytes = scrubbed.as_bytes();
+    let mut index = 0;
+    while bytes.get(index).is_some_and(u8::is_ascii_whitespace) {
+        index += 1;
+    }
+    if bytes.get(index) != Some(&b'#') {
+        return None;
+    }
+    let hash_index = index;
+    index += 1;
+    while bytes.get(index).is_some_and(u8::is_ascii_whitespace) {
+        index += 1;
+    }
+    let name_start = index;
+    while bytes
+        .get(index)
+        .is_some_and(|byte| byte.is_ascii_alphanumeric() || *byte == b'_')
+    {
+        index += 1;
+    }
+    let name = scrubbed[name_start..index].to_string();
+    let raw_payload = line.text[index..].trim().to_string();
+    let payload = scrubbed[index..].trim().to_string();
+    Some(SourceDirective {
+        name,
+        raw_payload,
+        payload,
+        byte_start: line.offsets[hash_index],
+    })
+}
+
+fn directive_context(
+    stack: &[ChainBuilder],
+    directive: Option<&(Directive, Option<&str>)>,
+) -> (Option<PredExpr>, usize) {
+    let (count, branch) = match directive {
+        Some((Directive::Open(kind), arg)) => (stack.len(), Some(open_predicate(*kind, *arg))),
+        Some((Directive::Cont(kind), arg)) => (
+            stack.len().saturating_sub(1),
+            stack
+                .last()
+                .map(|chain| continuation_condition(chain, *kind, *arg)),
+        ),
+        Some((Directive::Endif, _)) => (stack.len().saturating_sub(1), None),
+        None => (stack.len(), None),
+    };
+    let mut conditions: Vec<_> = stack[..count]
+        .iter()
+        .map(selected_branch_condition)
+        .collect();
+    if let Some(branch) = branch {
+        conditions.push(branch);
+    }
+    (and_condition(conditions), count)
+}
+
+fn continuation_condition(
+    chain: &ChainBuilder,
+    kind: DirectiveKind,
+    arg: Option<&str>,
+) -> PredExpr {
+    let prior = or_of_priors(chain);
+    let no_prior = PredExpr::Not(Box::new(prior));
+    if kind == DirectiveKind::Else {
+        no_prior
+    } else {
+        PredExpr::And(vec![no_prior, open_predicate(kind, arg)])
+    }
+}
+
+fn selected_branch_condition(chain: &ChainBuilder) -> PredExpr {
+    let current = chain.branches.last().expect("chain has a branch");
+    if chain.branches.len() == 1 {
+        return current.predicate.clone();
+    }
+    let prior = chain.branches[..chain.branches.len() - 1]
+        .iter()
+        .map(|branch| branch.predicate.clone())
+        .collect::<Vec<_>>();
+    let prior = match prior.len() {
+        1 => prior.into_iter().next().unwrap(),
+        _ => PredExpr::Or(prior),
+    };
+    let no_prior = PredExpr::Not(Box::new(prior));
+    if current.kind == DirectiveKind::Else {
+        no_prior
+    } else {
+        PredExpr::And(vec![no_prior, current.predicate.clone()])
+    }
+}
+
+fn and_condition(mut conditions: Vec<PredExpr>) -> Option<PredExpr> {
+    match conditions.len() {
+        0 => None,
+        1 => conditions.pop(),
+        _ => Some(PredExpr::And(conditions)),
     }
 }
 
@@ -348,23 +608,20 @@ fn or_of_priors(builder: &ChainBuilder) -> PredExpr {
     }
 }
 
+#[derive(Debug)]
 enum Directive {
     Open(DirectiveKind),
     Cont(DirectiveKind),
     Endif,
 }
 
-/// If `line` is a conditional preprocessor directive, return its kind and the
-/// trimmed argument text (comment-stripped; `None` when there is none).
-fn directive(line: &str) -> Option<(Directive, Option<&str>)> {
-    let rest = line.trim_start().strip_prefix('#')?;
-    let rest = rest.trim_start();
-    let (word, arg) = match rest.split_once(char::is_whitespace) {
-        Some((w, a)) => (w, strip_comment(a).trim()),
-        None => (rest, ""),
+fn conditional_directive<'a>(name: &str, payload: &'a str) -> Option<(Directive, Option<&'a str>)> {
+    let arg = if payload.is_empty() {
+        None
+    } else {
+        Some(payload)
     };
-    let arg = if arg.is_empty() { None } else { Some(arg) };
-    let dir = match word {
+    let dir = match name {
         "if" => Directive::Open(DirectiveKind::If),
         "ifdef" => Directive::Open(DirectiveKind::Ifdef),
         "ifndef" => Directive::Open(DirectiveKind::Ifndef),
@@ -374,11 +631,6 @@ fn directive(line: &str) -> Option<(Directive, Option<&str>)> {
         _ => return None,
     };
     Some((dir, arg))
-}
-
-fn strip_comment(s: &str) -> &str {
-    let end = s.find("//").or_else(|| s.find("/*")).unwrap_or(s.len());
-    &s[..end]
 }
 
 fn open_predicate(kind: DirectiveKind, arg: Option<&str>) -> PredExpr {
@@ -415,18 +667,26 @@ fn eval(expr: &PredExpr, macros: &BTreeMap<String, String>) -> Option<bool> {
         PredExpr::Defined(name) => Some(macros.contains_key(name)),
         PredExpr::Not(inner) => eval(inner, macros).map(|b| !b),
         PredExpr::And(items) => {
-            let mut all = true;
+            let mut unknown = false;
             for item in items {
-                all &= eval(item, macros)?;
+                match eval(item, macros) {
+                    Some(false) => return Some(false),
+                    Some(true) => {}
+                    None => unknown = true,
+                }
             }
-            Some(all)
+            (!unknown).then_some(true)
         }
         PredExpr::Or(items) => {
-            let mut any = false;
+            let mut unknown = false;
             for item in items {
-                any |= eval(item, macros)?;
+                match eval(item, macros) {
+                    Some(true) => return Some(true),
+                    Some(false) => {}
+                    None => unknown = true,
+                }
             }
-            Some(any)
+            (!unknown).then_some(false)
         }
         PredExpr::Opaque(_) => None,
     }
@@ -697,6 +957,24 @@ fn parse_predicate(raw: &str) -> PredExpr {
     }
 }
 
+pub fn predicate_text(expr: &PredExpr) -> String {
+    match expr {
+        PredExpr::Defined(name) => format!("defined({name})"),
+        PredExpr::Not(inner) => format!("!({})", predicate_text(inner)),
+        PredExpr::And(items) => items
+            .iter()
+            .map(|item| format!("({})", predicate_text(item)))
+            .collect::<Vec<_>>()
+            .join(" && "),
+        PredExpr::Or(items) => items
+            .iter()
+            .map(|item| format!("({})", predicate_text(item)))
+            .collect::<Vec<_>>()
+            .join(" || "),
+        PredExpr::Opaque(raw) => raw.clone(),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -710,6 +988,154 @@ mod tests {
 
     fn cfg_str(cfg: &Option<Cfg>) -> Option<String> {
         cfg.as_ref().map(Cfg::render)
+    }
+
+    #[test]
+    fn records_directives_with_payload_spans_depth_and_activity() {
+        let src = "  #define TOP 1\n#ifdef ENABLED\n#error disabled\n#endif\n";
+        let pp = record(src, &macros(&[]));
+
+        assert_eq!(pp.directives.len(), 4);
+        let define = &pp.directives[0];
+        assert_eq!(define.name, "define");
+        assert_eq!(define.raw_payload, "TOP 1");
+        assert_eq!(define.byte_start, 2);
+        assert_eq!(define.byte_end, 15);
+        assert_eq!((define.line_start, define.line_end), (1, 1));
+        assert_eq!(define.depth, 0);
+        assert_eq!(define.condition, None);
+        assert_eq!(define.active, Some(true));
+
+        let error = &pp.directives[2];
+        assert_eq!(error.name, "error");
+        assert_eq!(error.raw_payload, "disabled");
+        assert_eq!(error.depth, 1);
+        assert_eq!(error.condition, Some(PredExpr::Defined("ENABLED".into())));
+        assert_eq!(error.active, Some(false));
+    }
+
+    #[test]
+    fn splices_logical_directive_lines_and_preserves_physical_ranges() {
+        let src = "#if defined(A) \\\n || defined(B)\n#error nope\n#endif\n";
+        let pp = record(src, &macros(&["B"]));
+
+        let opening = &pp.directives[0];
+        assert_eq!(opening.name, "if");
+        assert_eq!(opening.raw_payload, "defined(A)  || defined(B)");
+        assert_eq!((opening.line_start, opening.line_end), (1, 2));
+        assert_eq!(opening.byte_start, 0);
+        assert_eq!(opening.byte_end, 31);
+        assert_eq!(pp.chains[0].branches[0].body_start, 3);
+        assert_eq!(pp.chains[0].branches[0].active, Some(true));
+
+        let error = &pp.directives[1];
+        assert_eq!(
+            error.condition,
+            Some(parse_predicate("defined(A) || defined(B)"))
+        );
+        assert_eq!(error.active, Some(true));
+    }
+
+    #[test]
+    fn recognizes_directives_after_comments_without_matching_strings() {
+        let src = "const char *s = \"#error not a directive\";\n/* lead */ #ifdef A // tail\n#error actual\n#endif\n";
+        let pp = record(src, &macros(&["A"]));
+
+        assert_eq!(
+            pp.directives
+                .iter()
+                .map(|directive| directive.name.as_str())
+                .collect::<Vec<_>>(),
+            vec!["ifdef", "error", "endif"]
+        );
+        assert_eq!(pp.directives[0].raw_payload, "A // tail");
+        assert_eq!(pp.chains[0].branches[0].raw_predicate.as_deref(), Some("A"));
+    }
+
+    #[test]
+    fn records_nested_effective_conditions() {
+        let src = "#ifdef A\n#define X 1\n#ifdef B\n#error nested\n#endif\n#endif\n";
+        let pp = record(src, &macros(&["A"]));
+        let error = &pp.directives[3];
+
+        assert_eq!(
+            error.condition,
+            Some(PredExpr::And(vec![
+                PredExpr::Defined("A".into()),
+                PredExpr::Defined("B".into()),
+            ]))
+        );
+        assert_eq!(error.depth, 2);
+        assert_eq!(error.active, Some(false));
+    }
+
+    #[test]
+    fn records_else_body_as_effective_negated_condition() {
+        let src = "#ifdef A\n#else\n#error fallback\n#endif\n";
+        let pp = record(src, &macros(&[]));
+        let error = &pp.directives[2];
+
+        assert_eq!(
+            error.condition,
+            Some(PredExpr::Not(Box::new(PredExpr::Defined("A".into()))))
+        );
+        assert_eq!(error.active, Some(true));
+    }
+
+    #[test]
+    fn elif_activity_includes_prior_branch_negation() {
+        let src = "#if defined(A)\n#error first\n#elif defined(B)\n#error second\n#endif\n";
+        let pp = record(src, &macros(&["A", "B"]));
+        let second = &pp.directives[3];
+
+        assert_eq!(
+            second.condition,
+            Some(PredExpr::And(vec![
+                PredExpr::Not(Box::new(PredExpr::Defined("A".into()))),
+                PredExpr::Defined("B".into()),
+            ]))
+        );
+        assert_eq!(second.active, Some(false));
+    }
+
+    #[test]
+    fn block_comments_can_span_physical_lines_before_a_directive() {
+        let src = "/* hidden\ncontinued */ #define V 1\n";
+        let pp = record(src, &macros(&[]));
+
+        assert_eq!(pp.directives.len(), 1);
+        assert_eq!(pp.directives[0].name, "define");
+        assert_eq!(
+            (pp.directives[0].line_start, pp.directives[0].line_end),
+            (2, 2)
+        );
+    }
+
+    #[test]
+    fn records_stray_directives_as_well_as_diagnosing_them() {
+        let pp = record("#endif\n", &macros(&[]));
+
+        assert_eq!(pp.directives.len(), 1);
+        assert_eq!(pp.directives[0].name, "endif");
+        assert_eq!(pp.directives[0].depth, 0);
+        assert_eq!(pp.directives[0].active, Some(true));
+        assert_eq!(pp.diagnostics[0].kind, DiagnosticKind::StrayDirective);
+    }
+
+    #[test]
+    fn inactive_parent_short_circuits_an_unknown_nested_condition() {
+        let src = "#ifdef A\n#if VERSION > 3\n#error unreachable\n#endif\n#endif\n";
+        let pp = record(src, &macros(&[]));
+
+        assert_eq!(pp.directives[2].active, Some(false));
+    }
+
+    #[test]
+    fn trailing_backslash_without_newline_is_not_spliced() {
+        let pp = record("#error trailing\\", &macros(&[]));
+
+        assert_eq!(pp.directives[0].raw_payload, "trailing\\");
+        assert_eq!(pp.directives[0].byte_end, 16);
     }
 
     #[test]
