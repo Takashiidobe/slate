@@ -101,7 +101,7 @@ pub const LIMITS_MACROS: &[LimitsMacro] = &[
     },
     LimitsMacro {
         name: "CHAR_BIT",
-        value: 8,
+        value: u8::BITS as i128,
         rust_path: "u8::BITS",
     },
 ];

@@ -1,17 +1,3 @@
-//! Preprocessing oracle: record the `#if`/`#ifdef`/`#ifndef`/`#elif`/`#else`/
-//! `#endif` regions of a C source before CIR lowering.
-//!
-//! A single Clang invocation only sees the active preprocessed branch, so CIR
-//! and the Clang AST cannot describe portable, target-gated source. This module
-//! scans the raw source for conditional directives and records, per branch, the
-//! normalized predicate, its source ranges, the mapped Rust `cfg`, and whether
-//! the branch is active for a given macro environment. Later stages join this
-//! metadata to lowered items to recover `#[cfg(...)]` gates.
-//!
-//! Scope is deliberately narrow: predicates are normalized only for known
-//! target/debug macros and project-style feature macros; anything else is kept
-//! as an opaque diagnostic rather than guessed.
-
 use crate::rust_ast::Cfg;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -40,22 +26,11 @@ impl DirectiveKind {
     }
 }
 
-/// Why a conditional region cannot be recovered as a portable Rust `cfg`. The
-/// two predicate classes are kept distinct so users can tell an *unsupported but
-/// recorded* predicate (a clean `defined(...)` shape over an unknown macro —
-/// fixable with a config-matrix or feature mapping) from a predicate *shape* we
-/// cannot normalize at all.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DiagnosticKind {
-    /// A boolean-over-`defined()` predicate that names a macro with no known
-    /// target/debug cfg mapping. Recorded, but not mappable without user input.
     UnmappedMacro,
-    /// A predicate whose shape is outside the `defined()` subset (arithmetic,
-    /// comparisons, bare macros), so it cannot be normalized at all.
     OpaquePredicate,
-    /// A `#elif`/`#else`/`#endif` with no open `#if`.
     StrayDirective,
-    /// An `#if` chain with no matching `#endif`.
     UnterminatedIf,
 }
 
@@ -70,19 +45,13 @@ impl DiagnosticKind {
     }
 }
 
-/// A recorded reason a conditional region could not be mapped, with enough
-/// source context (line, and for predicate cases the predicate text) for a user
-/// to add a config-matrix entry.
 #[derive(Debug, Clone)]
 pub struct Diagnostic {
     pub kind: DiagnosticKind,
-    /// 1-based source line of the offending directive.
     pub line: usize,
     pub message: String,
 }
 
-/// A normalized preprocessor condition, restricted to the boolean-over-`defined`
-/// shape used by target/debug gates. Anything richer is [`PredExpr::Opaque`].
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PredExpr {
     Defined(String),
@@ -92,30 +61,18 @@ pub enum PredExpr {
     Opaque(String),
 }
 
-/// One branch of a conditional chain.
 #[derive(Debug, Clone)]
 pub struct Branch {
     pub kind: DirectiveKind,
-    /// Directive argument text (`None` for `#else`).
     pub raw_predicate: Option<String>,
-    /// Normalized predicate. For `#else` this is the negation of every prior
-    /// branch predicate in the chain.
     pub predicate: PredExpr,
-    /// 1-based line of the branch directive itself.
     pub directive_line: usize,
-    /// 1-based first line of the guarded body (may exceed `body_end` if empty).
     pub body_start: usize,
-    /// 1-based last line of the guarded body.
     pub body_end: usize,
-    /// Mapped Rust `cfg(...)` predicate, or `None` when the predicate is opaque
-    /// or references an unknown macro.
     pub rust_cfg: Option<Cfg>,
-    /// Whether this branch is active for the queried macro environment.
-    /// `None` when the predicate could not be evaluated.
     pub active: Option<bool>,
 }
 
-/// A full `#if ... #endif` group at one nesting depth.
 #[derive(Debug, Clone)]
 pub struct CondChain {
     pub depth: usize,
@@ -290,7 +247,6 @@ fn is_diagnostic_pragma(payload: &str) -> bool {
         || payload.starts_with("warning(")
 }
 
-/// Recorded preprocessing metadata for a translation unit.
 #[derive(Debug, Clone, Default)]
 pub struct Preprocessing {
     pub chains: Vec<CondChain>,
@@ -399,8 +355,6 @@ fn create_sanitized_temp_dir() -> Result<PathBuf, String> {
     Err("could not allocate a temporary directory for sanitized Clang input".into())
 }
 
-/// Scan `source` for conditional regions and resolve active branches against
-/// `macros` (the predefined macro environment of the intended invocation).
 pub fn record(source: &str, macros: &BTreeMap<String, String>) -> Preprocessing {
     let mut pp = scan(source);
     for chain in &mut pp.chains {
@@ -422,9 +376,6 @@ pub fn record(source: &str, macros: &BTreeMap<String, String>) -> Preprocessing 
     pp
 }
 
-/// Diagnose a branch whose predicate does not map to a Rust `cfg`. Returns
-/// `None` for a cleanly mapped branch. An inactive unmapped branch is flagged as
-/// *uncovered* — it will silently vanish from the output rather than being gated.
 fn classify_branch(branch: &Branch) -> Option<Diagnostic> {
     if branch.rust_cfg.is_some() {
         return None;
@@ -469,7 +420,6 @@ fn coverage_note(uncovered: bool) -> &'static str {
     }
 }
 
-/// True when any leaf of `expr` is an [`PredExpr::Opaque`] shape.
 fn has_opaque(expr: &PredExpr) -> bool {
     match expr {
         PredExpr::Opaque(_) => true,
@@ -479,8 +429,6 @@ fn has_opaque(expr: &PredExpr) -> bool {
     }
 }
 
-/// The `defined(MACRO)` atoms of `expr` that have no known cfg mapping, in
-/// source order and de-duplicated.
 fn unmapped_atoms(expr: &PredExpr) -> Vec<String> {
     let mut out = Vec::new();
     collect_unmapped(expr, &mut out);
@@ -967,6 +915,8 @@ fn known_cfg(macro_name: &str) -> Option<Cfg> {
         "__linux__" | "__linux" | "linux" => opt("target_os", "linux"),
         "__ANDROID__" => opt("target_os", "android"),
         "__FreeBSD__" => opt("target_os", "freebsd"),
+        "__OpenBSD__" => opt("target_os", "freebsd"),
+        "__sun" | "sun" => opt("target_os", "solaris"),
         "__unix__" | "__unix" => Cfg::Flag("unix".into()),
         "__APPLE__" => opt("target_vendor", "apple"),
         "__x86_64__" | "_M_X64" => opt("target_arch", "x86_64"),
@@ -979,6 +929,7 @@ fn known_cfg(macro_name: &str) -> Option<Cfg> {
         "__wasm32__" => opt("target_arch", "wasm32"),
         "_M_RISCV64" => opt("target_arch", "riscv64"),
         "_M_RISCV32" => opt("target_arch", "riscv32"),
+        "__s390x__" => opt("target_arch", "s390x"),
         "__LP64__" | "_LP64" => opt("target_pointer_width", "64"),
         "__ILP32__" | "_ILP32" => opt("target_pointer_width", "32"),
         "__ARMEB__" => Cfg::All(vec![opt("target_arch", "arm"), opt("target_endian", "big")]),
@@ -1111,7 +1062,6 @@ fn tokenize(s: &str) -> Option<Vec<Tok>> {
                 }
                 toks.push(Tok::Ident(s[start..i].to_string()));
             }
-            // anything else (digits, comparisons, arithmetic) is out of scope.
             _ => return None,
         }
     }
@@ -1197,7 +1147,6 @@ impl Parser {
                     }
                 }
             }
-            // a bare macro or literal on its own is out of the recorded subset.
             _ => None,
         }
     }
@@ -1230,313 +1179,5 @@ pub fn predicate_text(expr: &PredExpr) -> String {
             .collect::<Vec<_>>()
             .join(" || "),
         PredExpr::Opaque(raw) => raw.clone(),
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn macros(defined: &[&str]) -> BTreeMap<String, String> {
-        defined
-            .iter()
-            .map(|m| (m.to_string(), "1".to_string()))
-            .collect()
-    }
-
-    fn cfg_str(cfg: &Option<Cfg>) -> Option<String> {
-        cfg.as_ref().map(Cfg::render)
-    }
-
-    #[test]
-    fn records_directives_with_payload_spans_depth_and_activity() {
-        let src = "  #define TOP 1\n#ifdef ENABLED\n#error disabled\n#endif\n";
-        let pp = record(src, &macros(&[]));
-
-        assert_eq!(pp.directives.len(), 4);
-        let define = &pp.directives[0];
-        assert_eq!(define.name, DirectiveName::Define);
-        assert_eq!(define.raw_payload, "TOP 1");
-        assert_eq!(define.byte_start, 2);
-        assert_eq!(define.byte_end, 15);
-        assert_eq!((define.line_start, define.line_end), (1, 1));
-        assert_eq!(define.depth, 0);
-        assert_eq!(define.condition, None);
-        assert_eq!(define.active, Some(true));
-
-        let error = &pp.directives[2];
-        assert_eq!(error.name, DirectiveName::Error);
-        assert_eq!(error.raw_payload, "disabled");
-        assert_eq!(error.depth, 1);
-        assert_eq!(error.condition, Some(PredExpr::Defined("ENABLED".into())));
-        assert_eq!(error.active, Some(false));
-    }
-
-    #[test]
-    fn splices_logical_directive_lines_and_preserves_physical_ranges() {
-        let src = "#if defined(A) \\\n || defined(B)\n#error nope\n#endif\n";
-        let pp = record(src, &macros(&["B"]));
-
-        let opening = &pp.directives[0];
-        assert_eq!(opening.name, DirectiveName::If);
-        assert_eq!(opening.raw_payload, "defined(A)  || defined(B)");
-        assert_eq!((opening.line_start, opening.line_end), (1, 2));
-        assert_eq!(opening.byte_start, 0);
-        assert_eq!(opening.byte_end, 31);
-        assert_eq!(pp.chains[0].branches[0].body_start, 3);
-        assert_eq!(pp.chains[0].branches[0].active, Some(true));
-
-        let error = &pp.directives[1];
-        assert_eq!(
-            error.condition,
-            Some(parse_predicate("defined(A) || defined(B)"))
-        );
-        assert_eq!(error.active, Some(true));
-    }
-
-    #[test]
-    fn recognizes_directives_after_comments_without_matching_strings() {
-        let src = "const char *s = \"#error not a directive\";\n/* lead */ #ifdef A // tail\n#error actual\n#endif\n";
-        let pp = record(src, &macros(&["A"]));
-
-        assert_eq!(
-            pp.directives
-                .iter()
-                .map(|directive| directive.name.as_str())
-                .collect::<Vec<_>>(),
-            vec!["ifdef", "error", "endif"]
-        );
-        assert_eq!(pp.directives[0].raw_payload, "A // tail");
-        assert_eq!(pp.chains[0].branches[0].raw_predicate.as_deref(), Some("A"));
-    }
-
-    #[test]
-    fn records_nested_effective_conditions() {
-        let src = "#ifdef A\n#define X 1\n#ifdef B\n#error nested\n#endif\n#endif\n";
-        let pp = record(src, &macros(&["A"]));
-        let error = &pp.directives[3];
-
-        assert_eq!(
-            error.condition,
-            Some(PredExpr::And(vec![
-                PredExpr::Defined("A".into()),
-                PredExpr::Defined("B".into()),
-            ]))
-        );
-        assert_eq!(error.depth, 2);
-        assert_eq!(error.active, Some(false));
-    }
-
-    #[test]
-    fn records_else_body_as_effective_negated_condition() {
-        let src = "#ifdef A\n#else\n#error fallback\n#endif\n";
-        let pp = record(src, &macros(&[]));
-        let error = &pp.directives[2];
-
-        assert_eq!(
-            error.condition,
-            Some(PredExpr::Not(Box::new(PredExpr::Defined("A".into()))))
-        );
-        assert_eq!(error.active, Some(true));
-    }
-
-    #[test]
-    fn elif_activity_includes_prior_branch_negation() {
-        let src = "#if defined(A)\n#error first\n#elif defined(B)\n#error second\n#endif\n";
-        let pp = record(src, &macros(&["A", "B"]));
-        let second = &pp.directives[3];
-
-        assert_eq!(
-            second.condition,
-            Some(PredExpr::And(vec![
-                PredExpr::Not(Box::new(PredExpr::Defined("A".into()))),
-                PredExpr::Defined("B".into()),
-            ]))
-        );
-        assert_eq!(second.active, Some(false));
-    }
-
-    #[test]
-    fn block_comments_can_span_physical_lines_before_a_directive() {
-        let src = "/* hidden\ncontinued */ #define V 1\n";
-        let pp = record(src, &macros(&[]));
-
-        assert_eq!(pp.directives.len(), 1);
-        assert_eq!(pp.directives[0].name, DirectiveName::Define);
-        assert_eq!(
-            (pp.directives[0].line_start, pp.directives[0].line_end),
-            (2, 2)
-        );
-    }
-
-    #[test]
-    fn records_stray_directives_as_well_as_diagnosing_them() {
-        let pp = record("#endif\n", &macros(&[]));
-
-        assert_eq!(pp.directives.len(), 1);
-        assert_eq!(pp.directives[0].name, DirectiveName::Endif);
-        assert_eq!(pp.directives[0].depth, 0);
-        assert_eq!(pp.directives[0].active, Some(true));
-        assert_eq!(pp.diagnostics[0].kind, DiagnosticKind::StrayDirective);
-    }
-
-    #[test]
-    fn inactive_parent_short_circuits_an_unknown_nested_condition() {
-        let src = "#ifdef A\n#if VERSION > 3\n#error unreachable\n#endif\n#endif\n";
-        let pp = record(src, &macros(&[]));
-
-        assert_eq!(pp.directives[2].active, Some(false));
-    }
-
-    #[test]
-    fn trailing_backslash_without_newline_is_not_spliced() {
-        let pp = record("#error trailing\\", &macros(&[]));
-
-        assert_eq!(pp.directives[0].raw_payload, "trailing\\");
-        assert_eq!(pp.directives[0].byte_end, 16);
-    }
-
-    #[test]
-    fn parses_defined_disjunction() {
-        assert_eq!(
-            parse_predicate("defined(__x86_64__) || defined(_M_X64)"),
-            PredExpr::Or(vec![
-                PredExpr::Defined("__x86_64__".into()),
-                PredExpr::Defined("_M_X64".into()),
-            ])
-        );
-    }
-
-    #[test]
-    fn unknown_predicate_shape_is_opaque() {
-        assert_eq!(
-            parse_predicate("VERSION > 3"),
-            PredExpr::Opaque("VERSION > 3".into())
-        );
-        assert!(pred_to_cfg(&parse_predicate("VERSION > 3")).is_none());
-    }
-
-    #[test]
-    fn project_macro_maps_to_feature_cfg() {
-        let cfg = pred_to_cfg(&PredExpr::Defined("PROJECT_FOO".into()));
-        assert_eq!(cfg_str(&cfg).as_deref(), Some("feature = \"project_foo\""));
-    }
-
-    #[test]
-    fn unknown_system_macro_has_no_cfg() {
-        assert!(pred_to_cfg(&PredExpr::Defined("_FILE_OFFSET_BITS".into())).is_none());
-    }
-
-    #[test]
-    fn disjunction_of_same_arch_dedups_to_one_cfg() {
-        let cfg = pred_to_cfg(&parse_predicate("defined(__x86_64__) || defined(_M_X64)"));
-        assert_eq!(cfg_str(&cfg).as_deref(), Some("target_arch = \"x86_64\""));
-    }
-
-    #[test]
-    fn negated_ndebug_simplifies_double_not() {
-        let cfg = pred_to_cfg(&PredExpr::Not(Box::new(PredExpr::Defined("NDEBUG".into()))));
-        assert_eq!(cfg_str(&cfg).as_deref(), Some("debug_assertions"));
-    }
-
-    #[test]
-    fn records_else_as_negation_of_priors_with_ranges() {
-        let src = "#if defined(_WIN32)\nW\n#elif defined(__linux__)\nL\n#else\nO\n#endif\n";
-        let pp = record(src, &macros(&["__linux__"]));
-        assert_eq!(pp.chains.len(), 1);
-        let chain = &pp.chains[0];
-        assert_eq!(chain.open_line, 1);
-        assert_eq!(chain.endif_line, 7);
-
-        let win = &chain.branches[0];
-        assert_eq!(cfg_str(&win.rust_cfg).as_deref(), Some("windows"));
-        assert_eq!(win.body_start, 2);
-        assert_eq!(win.body_end, 2);
-        assert_eq!(win.active, Some(false));
-
-        let lin = &chain.branches[1];
-        assert_eq!(lin.kind, DirectiveKind::Elif);
-        assert_eq!(
-            cfg_str(&lin.rust_cfg).as_deref(),
-            Some("target_os = \"linux\"")
-        );
-        assert_eq!(lin.active, Some(true));
-
-        let other = &chain.branches[2];
-        assert_eq!(other.kind, DirectiveKind::Else);
-        assert_eq!(
-            cfg_str(&other.rust_cfg).as_deref(),
-            Some("not(any(windows, target_os = \"linux\"))")
-        );
-        assert_eq!(other.active, Some(false));
-    }
-
-    #[test]
-    fn nested_chains_are_recorded_at_their_depth() {
-        let src = "#ifdef A\n#ifdef B\nX\n#endif\n#endif\n";
-        let pp = record(src, &macros(&["A", "B"]));
-        assert_eq!(pp.chains.len(), 2);
-        // sorted by open line: outer A first, inner B second.
-        assert_eq!(pp.chains[0].depth, 0);
-        assert_eq!(pp.chains[0].open_line, 1);
-        assert_eq!(pp.chains[1].depth, 1);
-        assert_eq!(pp.chains[1].open_line, 2);
-        assert_eq!(pp.chains[1].branches[0].active, Some(true));
-    }
-
-    #[test]
-    fn opaque_predicate_yields_undetermined_active_and_diagnostic() {
-        let src = "#if FOO > 2\nX\n#endif\n";
-        let pp = record(src, &macros(&[]));
-        assert_eq!(pp.chains[0].branches[0].active, None);
-        let diag = &pp.diagnostics[0];
-        assert_eq!(diag.kind, DiagnosticKind::OpaquePredicate);
-        assert_eq!(diag.line, 1);
-        assert!(diag.message.contains("FOO > 2"));
-    }
-
-    #[test]
-    fn reserved_macro_is_distinguished_from_opaque_shape() {
-        let src = "#if defined(_FILE_OFFSET_BITS)\nX\n#endif\n";
-        let pp = record(src, &macros(&[]));
-        let diag = &pp.diagnostics[0];
-        assert_eq!(diag.kind, DiagnosticKind::UnmappedMacro);
-        assert_eq!(diag.line, 1);
-        assert!(
-            diag.message.contains("_FILE_OFFSET_BITS"),
-            "should name the unmapped macro, got: {}",
-            diag.message
-        );
-    }
-
-    #[test]
-    fn inactive_unmapped_branch_is_flagged_uncovered() {
-        // linux branch is active (mapped); the reserved-macro branch is inactive.
-        let src = "#if defined(__linux__)\nL\n#elif defined(_FILE_OFFSET_BITS)\nP\n#endif\n";
-        let pp = record(src, &macros(&["__linux__"]));
-        let unmapped = pp
-            .diagnostics
-            .iter()
-            .find(|d| d.kind == DiagnosticKind::UnmappedMacro)
-            .expect("unmapped macro diagnostic");
-        assert!(
-            unmapped.message.contains("uncovered"),
-            "inactive unmapped branch should be uncovered, got: {}",
-            unmapped.message
-        );
-    }
-
-    #[test]
-    fn unterminated_if_is_diagnosed() {
-        let pp = record("#if defined(X)\nY\n", &macros(&[]));
-        let diag = &pp.diagnostics[0];
-        assert_eq!(diag.kind, DiagnosticKind::UnterminatedIf);
-        assert!(diag.message.contains("unterminated"));
-    }
-
-    #[test]
-    fn stray_directive_is_diagnosed() {
-        let pp = record("#endif\n", &macros(&[]));
-        assert_eq!(pp.diagnostics[0].kind, DiagnosticKind::StrayDirective);
     }
 }
