@@ -666,6 +666,7 @@ struct MemberPtr {
     field: String,
     field_ty: Option<Type>,
     unsafe_access: bool,
+    bitfield_storage: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -1309,7 +1310,46 @@ impl<'a> Lowerer<'a> {
     }
 
     fn lower_record(&mut self, record: &crate::c_ast::Record) -> Vec<Item> {
+        let storage_record;
+        let record = if let Some(fields) = self.bitfield_storage_fields(record) {
+            storage_record = crate::c_ast::Record {
+                fields,
+                ..record.clone()
+            };
+            &storage_record
+        } else {
+            record
+        };
         lower_record_def(record, Visibility::Private, Visibility::Private, false)
+    }
+
+    fn bitfield_storage_fields(
+        &self,
+        record: &crate::c_ast::Record,
+    ) -> Option<Vec<crate::c_ast::Decl>> {
+        if record.fields.is_empty() || record.fields.iter().any(|field| field.bit_width.is_none()) {
+            return None;
+        }
+        let expanded = self
+            .aliases
+            .values()
+            .find(|ty| cir_record_name(ty) == Some(record.name.as_str()))?;
+        let open = expanded.find('{')?;
+        let close = expanded.rfind('}')?;
+        Some(
+            split_top_level(&expanded[open + 1..close], ',')
+                .into_iter()
+                .map(str::trim)
+                .filter(|ty| !ty.is_empty())
+                .enumerate()
+                .map(|(index, ty)| crate::c_ast::Decl {
+                    name: format!("__bitfield_{index}"),
+                    comments: Vec::new(),
+                    ty: cir_type_to_ctype(ty, &self.aliases),
+                    bit_width: None,
+                })
+                .collect(),
+        )
     }
 
     fn standard_record_defs(&self) -> Vec<Item> {
@@ -1706,6 +1746,20 @@ impl<'a> Lowerer<'a> {
                     ]));
                 }
                 if let Some(record) = self.records.get(name) {
+                    if let Some(fields) = self.bitfield_storage_fields(record) {
+                        return Expr::StructLit {
+                            name: record_lit_name(record),
+                            fields: fields
+                                .iter()
+                                .map(|field| {
+                                    (
+                                        field.name.clone(),
+                                        self.default_value_expr(&c_type_to_type(&field.ty)),
+                                    )
+                                })
+                                .collect(),
+                        };
+                    }
                     match record.kind {
                         RecordKind::Struct => {
                             let fields = record
@@ -1825,6 +1879,24 @@ impl<'a> Lowerer<'a> {
             let elems = split_top_level(&raw[open + 1..close], ',');
             match record.kind {
                 RecordKind::Struct => {
+                    if let Some(storage_fields) = self.bitfield_storage_fields(record) {
+                        let fields = storage_fields
+                            .iter()
+                            .enumerate()
+                            .map(|(i, field)| {
+                                let field_ty = c_type_to_type(&field.ty);
+                                let value = elems
+                                    .get(i)
+                                    .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
+                                    .unwrap_or_else(|| self.default_value_expr(&field_ty));
+                                (field.name.clone(), value)
+                            })
+                            .collect();
+                        return Some(Expr::StructLit {
+                            name: record_lit_name(record),
+                            fields,
+                        });
+                    }
                     let fields = record
                         .fields
                         .iter()
@@ -2784,6 +2856,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .and_then(cir_ptr_pointee)
                     .map(|ty| self.parent.rust_type(ty)),
                 unsafe_access,
+                bitfield_storage: false,
             },
         );
     }
@@ -4173,10 +4246,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let base = self.place_or_deref_expr(base_ptr);
-        let field = sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string();
-        let field_ty = self
-            .member_field_type(base_ptr, &field)
-            .or_else(|| self.member_field_type_from_op(op, &field));
+        let logical_field = sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string();
+        let storage = self.bitfield_storage_member(op);
+        let field = storage
+            .as_ref()
+            .map(|(field, _)| field.clone())
+            .unwrap_or_else(|| logical_field.clone());
+        let field_ty = storage.as_ref().map(|(_, ty)| ty.clone()).or_else(|| {
+            self.member_field_type(base_ptr, &logical_field)
+                .or_else(|| self.member_field_type_from_op(op, &logical_field))
+        });
         let unsafe_access = self.place_expr(base_ptr).is_none()
             || self.ptr_requires_unsafe(base_ptr)
             || self.op_base_is_union(op);
@@ -4187,8 +4266,30 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 field,
                 field_ty,
                 unsafe_access,
+                bitfield_storage: storage.is_some(),
             },
         );
+    }
+
+    fn bitfield_storage_member(&self, op: &Op) -> Option<(String, Type)> {
+        let record_name = op
+            .ty
+            .as_deref()
+            .and_then(split_top_level_arrow)
+            .and_then(|(inputs, _)| inputs.trim().strip_prefix('(')?.strip_suffix(')'))
+            .and_then(|inputs| split_top_level(inputs, ',').first().copied())
+            .and_then(cir_ptr_pointee)
+            .and_then(cir_record_name)?;
+        let record = self
+            .parent
+            .records
+            .get(&sanitize_ident(record_name).into_string())?;
+        self.parent.bitfield_storage_fields(record)?;
+        let index = aggregate_member_index(op)?;
+        let ty = op_result_type(op)
+            .and_then(cir_ptr_pointee)
+            .map(|ty| self.parent.rust_type(ty))?;
+        Some((format!("__bitfield_{index}"), ty))
     }
 
     fn lower_extract_member(&mut self, op: &Op) {
@@ -4386,12 +4487,51 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let value = self.operand_expr(&op.operands[1]);
         let ty = op_result_type(op);
+        let value = self.operand_expr(&op.operands[1]);
+        let value = ty.map_or(value.clone(), |ty| Expr::Cast {
+            expr: Box::new(value),
+            ty: self.parent.rust_type(ty),
+        });
         let trunc = self.truncate_bitfield_expr(op, value, ty);
         self.materialize_expr(result, trunc, ty);
         let stored = self.operand_expr(result);
         let (place, needs_unsafe) = self.bitfield_place(&op.operands[0]);
+        let stored = if let Some(member) = self.member_ptrs.get(&op.operands[0])
+            && member.bitfield_storage
+            && let Some(field_ty) = &member.field_ty
+            && let Some((size, offset)) = self.bitfield_size_offset(op)
+        {
+            let mask = bitfield_mask(size);
+            let shifted_mask = mask << offset;
+            let retained = Expr::Binary {
+                op: BinOp::BitAnd,
+                lhs: Box::new(place.clone()),
+                rhs: Box::new(Expr::Unary {
+                    op: UnaryOp::Not,
+                    expr: Box::new(Expr::Value(RustValue::U128(shifted_mask))),
+                }),
+            };
+            let inserted = Expr::Binary {
+                op: BinOp::Shl,
+                lhs: Box::new(Expr::Binary {
+                    op: BinOp::BitAnd,
+                    lhs: Box::new(Expr::Cast {
+                        expr: Box::new(stored),
+                        ty: field_ty.clone(),
+                    }),
+                    rhs: Box::new(Expr::Value(RustValue::U128(mask))),
+                }),
+                rhs: Box::new(int_value_expr(i128::from(offset))),
+            };
+            Expr::Binary {
+                op: BinOp::BitOr,
+                lhs: Box::new(retained),
+                rhs: Box::new(inserted),
+            }
+        } else {
+            stored
+        };
         if needs_unsafe {
             self.push_unsafe_assign(place, stored);
         } else {
@@ -4408,11 +4548,33 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let ty = op_result_type(op);
         let (place, needs_unsafe) = self.bitfield_place(ptr);
-        let read = if needs_unsafe {
+        let mut read = if needs_unsafe {
             Self::unsafe_expr(place)
         } else {
             place
         };
+        if self
+            .member_ptrs
+            .get(ptr)
+            .is_some_and(|member| member.bitfield_storage)
+            && let Some((size, offset)) = self.bitfield_size_offset(op)
+        {
+            read = Expr::Binary {
+                op: BinOp::BitAnd,
+                lhs: Box::new(Expr::Binary {
+                    op: BinOp::Shr,
+                    lhs: Box::new(read),
+                    rhs: Box::new(int_value_expr(i128::from(offset))),
+                }),
+                rhs: Box::new(Expr::Value(RustValue::U128(bitfield_mask(size)))),
+            };
+            if let Some(ty) = ty {
+                read = Expr::Cast {
+                    expr: Box::new(read),
+                    ty: self.parent.rust_type(ty),
+                };
+            }
+        }
         let expr = self.truncate_bitfield_expr(op, read, ty);
         self.materialize_expr(result, expr, ty);
     }
@@ -4453,13 +4615,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn bitfield_size(&self, op: &Op) -> Option<u32> {
+        self.bitfield_size_offset(op).map(|(size, _)| size)
+    }
+
+    fn bitfield_size_offset(&self, op: &Op) -> Option<(u32, u32)> {
         let raw = attr_str(op, "bitfield_info")?;
         let resolved = self.parent.aliases.get(raw).map_or(raw, String::as_str);
-        let rest = resolved.split("size = ").nth(1)?;
-        let end = rest
-            .find(|c: char| !c.is_ascii_digit())
-            .unwrap_or(rest.len());
-        rest[..end].parse().ok()
+        Some((
+            bitfield_info_number(resolved, "size = ")?,
+            bitfield_info_number(resolved, "offset = ")?,
+        ))
     }
 
     fn lower_get_element(&mut self, op: &Op) {
@@ -7570,6 +7735,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
                     .unwrap_or_else(|| format!("f{i}")),
                 comments: Vec::new(),
                 ty: cir_type_to_ctype(field_ty, &module.aliases),
+                bit_width: None,
             })
             .collect();
         records.push(crate::c_ast::Record {
@@ -7766,6 +7932,22 @@ fn expr_int_value(expr: &Expr) -> Option<i128> {
         Expr::Value(RustValue::I64(value)) => Some(i128::from(*value)),
         Expr::Value(RustValue::I128(value)) => Some(*value),
         _ => None,
+    }
+}
+
+fn bitfield_info_number(info: &str, key: &str) -> Option<u32> {
+    let rest = info.split(key).nth(1)?;
+    let end = rest
+        .find(|c: char| !c.is_ascii_digit())
+        .unwrap_or(rest.len());
+    rest[..end].parse().ok()
+}
+
+fn bitfield_mask(size: u32) -> u128 {
+    if size == 0 {
+        0
+    } else {
+        u128::MAX >> (128 - size.min(128))
     }
 }
 

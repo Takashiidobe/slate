@@ -78,6 +78,7 @@ pub struct Decl {
     pub name: String,
     pub comments: Vec<String>,
     pub ty: CType,
+    pub bit_width: Option<u32>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -428,6 +429,12 @@ fn extract_record(node: &Value, name_override: Option<String>) -> Option<Record>
                 name: child.get("name")?.as_str()?.to_string(),
                 comments: attached_comment(child),
                 ty: parse_c_type(qual_type(child).unwrap_or("int")),
+                bit_width: child
+                    .get("isBitfield")
+                    .and_then(Value::as_bool)
+                    .unwrap_or(false)
+                    .then(|| constant_expr_value(child))
+                    .flatten(),
             })
         })
         .collect();
@@ -577,6 +584,7 @@ fn extract_function(
                 name: child.get("name")?.as_str()?.to_string(),
                 comments: attached_comment(child),
                 ty: parse_c_type(qual_type(child).unwrap_or("int")),
+                bit_width: None,
             })
         })
         .collect();
@@ -779,6 +787,7 @@ fn parse_decl_stmt(node: &Value) -> Option<Stmt> {
             name,
             comments: attached_comment(decl),
             ty,
+            bit_width: None,
         },
         init,
     ))
