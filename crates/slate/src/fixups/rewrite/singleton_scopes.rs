@@ -12,6 +12,7 @@ pub(in crate::fixups) fn fixup(body: &mut [IndentStmt]) -> bool {
 }
 
 pub(in crate::fixups) struct SingletonScopes<'a> {
+    pass: TracePass,
     function_name: String,
     logger: &'a mut dyn TraceLogger,
 }
@@ -21,7 +22,16 @@ impl<'a> SingletonScopes<'a> {
         function_name: impl Into<String>,
         logger: &'a mut dyn TraceLogger,
     ) -> Self {
+        Self::with_pass(TracePass::SingletonScopes, function_name, logger)
+    }
+
+    pub(in crate::fixups) fn with_pass(
+        pass: TracePass,
+        function_name: impl Into<String>,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
         Self {
+            pass,
             function_name: function_name.into(),
             logger,
         }
@@ -55,7 +65,7 @@ impl<'a> SingletonScopes<'a> {
                     let mut stmt_path = path.clone();
                     stmt_path.push(PathSegment::Stmt(index));
                     self.logger.rewrite(RewriteEvent {
-                        pass: TracePass::SingletonScopes,
+                        pass: self.pass,
                         kind: "unwrap_while_loop_scope".into(),
                         location: named_path_location(self.function_name.clone(), &stmt_path),
                         before: vec![stmt_snippet("loop", &before)],
@@ -72,7 +82,7 @@ impl<'a> SingletonScopes<'a> {
                     let mut stmt_path = path.clone();
                     stmt_path.push(PathSegment::Stmt(index));
                     self.logger.rewrite(RewriteEvent {
-                        pass: TracePass::SingletonScopes,
+                        pass: self.pass,
                         kind: "unwrap_do_while_loop_scope".into(),
                         location: named_path_location(self.function_name.clone(), &stmt_path),
                         before: vec![stmt_snippet("loop", &before)],
@@ -89,7 +99,7 @@ impl<'a> SingletonScopes<'a> {
                     let mut stmt_path = path.clone();
                     stmt_path.push(PathSegment::Stmt(index));
                     self.logger.rewrite(RewriteEvent {
-                        pass: TracePass::SingletonScopes,
+                        pass: self.pass,
                         kind: "unwrap_singleton_scope".into(),
                         location: named_path_location(self.function_name.clone(), &stmt_path),
                         before: vec![stmt_snippet("scope", &before)],

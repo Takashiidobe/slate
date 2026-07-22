@@ -317,12 +317,12 @@ fn apply_with_logger(
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
     step!(program, Pass::SliceLoop, {
         if rewrite::slice_loop::SliceLoop::new(logger).fixup(&mut program, &facts) {
-            late_loop_cleanup(&mut program);
+            late_loop_cleanup(&mut program, Pass::SliceLoop, logger);
         }
     });
     step!(program, Pass::SliceReduce, {
         if rewrite::slice_reduce::SliceReduce::new(logger).fixup(&mut program) {
-            late_loop_cleanup(&mut program);
+            late_loop_cleanup(&mut program, Pass::SliceReduce, logger);
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
@@ -330,7 +330,7 @@ fn apply_with_logger(
         if !skip.contains(Pass::RangeLoop)
             && rewrite::range_loop::RangeLoop::new(logger).fixup(&mut program, &facts)
         {
-            late_loop_cleanup(&mut program);
+            late_loop_cleanup(&mut program, Pass::RangeLoop, logger);
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
@@ -653,17 +653,27 @@ fn struct_field_init_to_fixpoint(program: &mut Program, logger: &mut impl TraceL
     }
 }
 
-fn late_loop_cleanup(program: &mut Program) {
+fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceLogger) {
     loop {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program.clone());
         let mut changed = false;
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item {
-                if rewrite::singleton_scopes::fixup(&mut f.body) {
+                if rewrite::singleton_scopes::SingletonScopes::with_pass(
+                    pass,
+                    f.name.clone(),
+                    logger,
+                )
+                .fixup(&mut f.body)
+                {
                     changed = true;
                 }
                 if let Some(function) = facts.function_by_item_index(item_index)
-                    && rewrite::dead_locals::fixup(&mut f.body, function, &facts)
+                    && rewrite::dead_locals::DeadLocals::with_pass(pass, logger).fixup(
+                        &mut f.body,
+                        function,
+                        &facts,
+                    )
                 {
                     changed = true;
                 }
