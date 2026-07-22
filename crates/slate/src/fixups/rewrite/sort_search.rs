@@ -685,7 +685,9 @@ fn prim_layout(p: crate::rust_ast::Prim) -> Option<Layout> {
         crate::rust_ast::Prim::I16 | crate::rust_ast::Prim::U16 => 2,
         crate::rust_ast::Prim::I32 | crate::rust_ast::Prim::U32 | crate::rust_ast::Prim::F32 => 4,
         crate::rust_ast::Prim::I64 | crate::rust_ast::Prim::U64 | crate::rust_ast::Prim::F64 => 8,
-        crate::rust_ast::Prim::I128 | crate::rust_ast::Prim::U128 => 16,
+        crate::rust_ast::Prim::I128 | crate::rust_ast::Prim::U128 | crate::rust_ast::Prim::F128 => {
+            16
+        }
         crate::rust_ast::Prim::Isize | crate::rust_ast::Prim::Usize => return None,
     };
     Some(Layout { size, align: size })

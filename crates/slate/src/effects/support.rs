@@ -425,7 +425,7 @@ pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> EResult<Value> {
             other => other,
         });
     }
-    if matches!(ty, Type::Prim(Prim::F64)) {
+    if matches!(ty, Type::Prim(Prim::F64 | Prim::F128)) {
         return Ok(match value {
             Value::Float(value) => Value::Float(value),
             Value::Int { value, .. } => Value::Float(value as f64),
@@ -461,7 +461,7 @@ pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> EResult<Value> {
         },
         Value::Float(value) => match ty {
             Type::Prim(Prim::F32) => Value::Float(value as f32 as f64),
-            Type::Prim(Prim::F64) => Value::Float(value),
+            Type::Prim(Prim::F64 | Prim::F128) => Value::Float(value),
             _ => Value::Float(value),
         },
         other => other,
@@ -487,7 +487,7 @@ pub(super) fn scalar_type_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
         Prim::Isize => (IntWidth::PointerSized, true, 8),
         Prim::Usize => (IntWidth::PointerSized, false, 8),
         Prim::Bool => (IntWidth::W8, false, 1),
-        Prim::F32 | Prim::F64 => return None,
+        Prim::F32 | Prim::F64 | Prim::F128 => return None,
     })
 }
 
@@ -495,6 +495,7 @@ pub(super) fn type_size(ty: &Type) -> Option<u64> {
     match ty {
         Type::Prim(Prim::F32) => Some(4),
         Type::Prim(Prim::F64) => Some(8),
+        Type::Prim(Prim::F128) => Some(16),
         Type::Prim(_) => scalar_type_shape(ty).map(|(_, _, size)| size),
         Type::LongDouble => Some(16),
         Type::Complex(inner) => Some(type_size(inner)? * 2),
@@ -545,6 +546,7 @@ pub(super) fn array_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64, u64)> 
     match elem.as_ref() {
         Type::Prim(Prim::F32) => Some((IntWidth::W32, false, 4, *len)),
         Type::Prim(Prim::F64) => Some((IntWidth::W64, false, 8, *len)),
+        Type::Prim(Prim::F128) => Some((IntWidth::W128, false, 16, *len)),
         _ => {
             let (width, signed, size) = scalar_type_shape(elem)?;
             Some((width, signed, size, *len))
@@ -935,6 +937,6 @@ pub(super) fn vec_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
         Prim::U128 => (IntWidth::W128, false, 16),
         Prim::Isize => (IntWidth::PointerSized, true, 8),
         Prim::Usize => (IntWidth::PointerSized, false, 8),
-        Prim::Bool | Prim::F32 | Prim::F64 => return None,
+        Prim::Bool | Prim::F32 | Prim::F64 | Prim::F128 => return None,
     })
 }
