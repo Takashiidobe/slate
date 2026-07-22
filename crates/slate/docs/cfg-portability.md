@@ -36,6 +36,27 @@ invocations — there is no way to see them from a single preprocessed view.
 A source with no conditional regions passes straight through to single-config
 lowering, so `translate-directives` is a safe superset of `translate` for such files.
 
+## Non-conditional directive dispositions
+
+Slate records non-conditional directives even when they do not become Rust
+syntax. Their disposition determines whether Clang supplies the semantics,
+whether no output is required, or whether translation must stop.
+
+| Directive | Disposition | Behavior |
+| --- | --- | --- |
+| `#define`, `#undef` | consumed by Clang | The selected macro environment is reflected in the Clang AST and CIR. Macro invocation recovery remains on the macro-dump plugin path; Slate does not create Rust externs for macros. |
+| `#include`, `#include_next`, `#import` | consumed by Clang | Header declarations, types, constants, and expansions reach lowering through Clang. The directive itself is not reproduced in Rust. |
+| `#line` | consumed by Clang | Presumed filenames and line values affect Clang constants such as `__LINE__`. Physical source lines and offsets remain the keys for Slate's AST/CIR/directive joins. |
+| `#embed` | consumed by Clang | Forms accepted by the configured Clang, including standard `limit`, `prefix`, `suffix`, and `if_empty` parameters, lower from CIR. Missing files and unsupported parameters are Clang translation errors. |
+| `#ident`, `#sccs` | no output | Compiler/object metadata has no generated Rust source form and does not affect program execution. |
+| null directive (`#`) | no output | The directive has no effect. |
+
+Unknown directives and directives classified as unsupported semantic operations
+do not disappear silently. An active instance stops single-config translation.
+Under `translate-directives`, a conditional instance becomes a cfg-gated
+`compile_error!` when its effective predicate maps to Rust; otherwise
+translation stops.
+
 ## Supported predicate → `cfg` mappings
 
 These `defined(MACRO)` predicates (and boolean combinations of them with `!`,
