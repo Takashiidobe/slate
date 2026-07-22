@@ -165,6 +165,10 @@ fn collect_item_refs(item: &Item, refs: &mut BTreeSet<String>) {
             collect_type_refs(ty, refs);
             collect_expr_refs(init, refs);
         }
+        Item::Const { ty, init, .. } => {
+            collect_type_refs(ty, refs);
+            collect_expr_refs(init, refs);
+        }
         Item::ExternBlock { decls, .. } => {
             for decl in decls {
                 match decl {

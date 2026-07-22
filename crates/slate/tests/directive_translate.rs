@@ -371,6 +371,66 @@ fn conditional_error_with_unmappable_predicate_is_refused() {
 }
 
 #[test]
+fn warning_uses_a_self_contained_compile_time_fallback() {
+    let rust = translate("warning_directives.c");
+
+    assert!(rust.contains(
+        "#[deprecated(note = \"WARNING_TOKEN \\\"quoted\\\" C:\\\\tmp\")]\nconst __SLATE_WARNING_0: () = {  };\n\nconst _: () = __SLATE_WARNING_0;"
+    ));
+    assert!(!rust.contains("selected warning"));
+    let output = compile_with_cfgs("warning_standalone", &rust, &[]);
+    assert!(output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("WARNING_TOKEN \"quoted\" C:\\tmp"));
+}
+
+#[test]
+fn warning_follows_its_recovered_cfg_without_becoming_an_error() {
+    let rust = translate_directives("warning_directives.c");
+
+    assert!(rust.contains("WARNING_TOKEN \\\"quoted\\\" C:\\\\tmp"));
+    assert!(rust.contains(
+        "#[cfg(feature = \"slate_warning_feature\")]\n#[deprecated(note = \"selected warning\")]"
+    ));
+    let inactive = compile_with_cfgs("warning_cfg_inactive", &rust, &[]);
+    assert!(inactive.status.success());
+    assert!(!String::from_utf8_lossy(&inactive.stderr).contains("selected warning"));
+    let active = compile_with_cfgs("warning_cfg_active", &rust, &["slate_warning_feature"]);
+    assert!(active.status.success());
+    assert!(String::from_utf8_lossy(&active.stderr).contains("selected warning"));
+}
+
+#[test]
+fn common_diagnostic_pragmas_are_diagnostic_only() {
+    let src = cfg_fixtures_dir().join("diagnostic_pragmas.c");
+    let output = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("record-cfg")
+        .arg(&src)
+        .output()
+        .expect("record diagnostic pragmas");
+    assert!(output.status.success());
+    let json: serde_json::Value = serde_json::from_slice(&output.stdout).expect("parse record-cfg");
+    let directives = json["directives"].as_array().expect("directive array");
+    let pragmas: Vec<_> = directives
+        .iter()
+        .filter(|directive| directive["name"] == "pragma")
+        .collect();
+    assert_eq!(pragmas.len(), 6);
+    assert!(
+        pragmas
+            .iter()
+            .all(|directive| directive["disposition"] == "diagnostic-only")
+    );
+
+    let rust = translate("diagnostic_pragmas.c");
+    assert!(
+        compile_and_run("diagnostic_pragmas", &rust)
+            .status
+            .success()
+    );
+}
+
+#[test]
 fn active_unsupported_directives_stop_single_config_translation() {
     let pragma = translate_err_with_clang_args("reject/unsupported_pragma.c", None);
     assert!(pragma.contains("unsupported semantic directive #pragma at line 1"));
@@ -484,6 +544,8 @@ fn directive_translated_fixtures_compile_for_current_host() {
         "embed_basic.c",
         "include_next.c",
         "line_directive.c",
+        "warning_directives.c",
+        "diagnostic_pragmas.c",
         "unsupported_conditional.c",
     ] {
         let rust = translate_directives(name);
