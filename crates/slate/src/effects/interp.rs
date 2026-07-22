@@ -3234,7 +3234,11 @@ impl Interp {
                     self.eval(else_expr)
                 }
             }
-            Expr::Call { func, args, .. } => self.eval_call(func, args),
+            Expr::Call {
+                func,
+                args,
+                binding,
+            } => self.eval_call(func, args, binding),
             Expr::Block(block) => match self.run_block(block)? {
                 Flow::Return(value) => Ok(value),
                 Flow::Normal => Err(EffectError::internal("block expression has no tail value")),
@@ -3969,7 +3973,12 @@ impl Interp {
         Ok(loc)
     }
 
-    fn eval_call(&mut self, func: &Expr, args: &[Expr]) -> EResult<Value> {
+    fn eval_call(
+        &mut self,
+        func: &Expr,
+        args: &[Expr],
+        binding: &crate::function_identity::CallBinding,
+    ) -> EResult<Value> {
         if is_path(func, &["std", "process", "exit"]) {
             return self.call_exit(args);
         }
@@ -4082,8 +4091,15 @@ impl Interp {
             let value = self.eval(arg)?;
             return Ok(Value::Option(Some(option_value(value)?)));
         }
-        if let Some(summary) = call_summary(&name) {
-            return self.eval_call_summary(summary, args);
+        if let Some(known) = binding.known() {
+            return self.eval_call_summary(call_summary(known), args);
+        }
+        if matches!(binding, crate::function_identity::CallBinding::Generated) {
+            match name.as_str() {
+                "__muldc3" => return self.eval_call_summary(CallSummary::MulDc3, args),
+                "__divdc3" => return self.eval_call_summary(CallSummary::DivDc3, args),
+                _ => {}
+            }
         }
         match name.as_str() {
             "__slate_runtime::parse_i32" => return self.parse_runtime_i32(args),

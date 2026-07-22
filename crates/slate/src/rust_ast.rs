@@ -339,6 +339,7 @@ pub enum ExternDecl {
 #[derive(Debug, Clone)]
 pub struct ExternFnDecl {
     pub name: String,
+    pub identity: crate::function_identity::FunctionIdentity,
     pub params: Vec<FnParam>,
     pub variadic: bool,
     pub ret: Option<Type>,

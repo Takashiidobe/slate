@@ -841,6 +841,7 @@ mod tests {
                 Item::ExternBlock {
                     abi: "C".into(),
                     decls: vec![ExternDecl::Fn(ExternFnDecl {
+                        identity: crate::function_identity::FunctionIdentity::Unknown,
                         name: "takes_i32".into(),
                         params: vec![FnParam {
                             name: "v".into(),
@@ -925,6 +926,7 @@ mod tests {
                 Item::ExternBlock {
                     abi: "C".into(),
                     decls: vec![ExternDecl::Fn(ExternFnDecl {
+                        identity: crate::function_identity::FunctionIdentity::Unknown,
                         name: "sink".into(),
                         params: vec![FnParam {
                             name: "fmt".into(),

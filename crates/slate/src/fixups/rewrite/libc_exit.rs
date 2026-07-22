@@ -3,6 +3,7 @@ use crate::fixups::support::walk;
 use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, named_path_location, path_fact, stmt_snippet,
 };
+use crate::function_identity::{Known, known_call, known_declaration};
 use crate::rust_ast::{Expr, Ident, IndentStmt, Item, Path, Program, Stmt, Type};
 
 pub(in crate::fixups) fn fixup(program: &mut Program) {
@@ -72,7 +73,9 @@ fn has_libc_exit_extern(program: &Program) -> bool {
         };
         decls.iter().any(|decl| match decl {
             crate::rust_ast::ExternDecl::Fn(f) => {
-                f.name == "exit" && f.params.len() == 1 && matches!(f.ret, Some(Type::Never))
+                known_declaration(f.identity, &f.name) == Some(Known::Exit)
+                    && f.params.len() == 1
+                    && matches!(f.ret, Some(Type::Never))
             }
             crate::rust_ast::ExternDecl::Static { .. } => false,
         })
@@ -125,10 +128,10 @@ fn rewrite_exit_expr(expr: &mut Expr) -> bool {
 }
 
 fn libc_exit_args(expr: &Expr) -> Option<Vec<Expr>> {
-    let Expr::Call { func, args, .. } = expr else {
+    let Expr::Call { args, .. } = expr else {
         return None;
     };
-    matches!(&**func, Expr::Var(name) if name.as_str() == "exit").then(|| args.clone())
+    (known_call(expr) == Some(Known::Exit)).then(|| args.clone())
 }
 
 fn std_process_exit(args: Vec<Expr>) -> Expr {
@@ -153,6 +156,7 @@ mod tests {
                 Item::ExternBlock {
                     abi: "C".into(),
                     decls: vec![ExternDecl::Fn(ExternFnDecl {
+                        identity: crate::function_identity::FunctionIdentity::Unknown,
                         name: "exit".into(),
                         params: vec![FnParam {
                             name: "_0".into(),
