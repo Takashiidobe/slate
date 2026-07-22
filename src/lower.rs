@@ -4342,19 +4342,39 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let base_ptr = &op.operands[0];
-        let base = self.place_or_deref_expr(base_ptr);
         let index = self.operand_expr(&op.operands[1]);
-        if let Some(Val::Global(name)) = self.values.get(base_ptr)
-            && let Some(labels) = self.parent.block_addr_globals.get(name)
-        {
-            self.block_addr_element_ptrs.insert(
-                result.clone(),
-                BlockAddrElementPtr {
-                    labels: labels.clone(),
-                    index: index.clone(),
-                },
-            );
+        if let Some(Val::Global(name)) = self.values.get(base_ptr).cloned() {
+            if let Some(labels) = self.parent.block_addr_globals.get(&name) {
+                self.block_addr_element_ptrs.insert(
+                    result.clone(),
+                    BlockAddrElementPtr {
+                        labels: labels.clone(),
+                        index: index.clone(),
+                    },
+                );
+            }
+            let elem_ty = op_result_type(op)
+                .and_then(cir_ptr_inner)
+                .map(|ty| self.parent.rust_type(ty));
+            let declared_len = op_operand_types(op.ty.as_deref().unwrap_or(""))
+                .into_iter()
+                .next()
+                .and_then(cir_ptr_inner)
+                .and_then(parse_cir_array_type)
+                .map(|(_, len)| len as usize);
+            if let Some(base) = self.global_array_literal_expr(&name, elem_ty, declared_len) {
+                self.element_ptrs.insert(
+                    result.clone(),
+                    ElementPtr {
+                        base,
+                        index,
+                        unsafe_access: false,
+                    },
+                );
+                return;
+            }
         }
+        let base = self.place_or_deref_expr(base_ptr);
         let unsafe_access =
             self.place_expr(base_ptr).is_none() || self.ptr_requires_unsafe(base_ptr);
         self.element_ptrs.insert(
@@ -4365,6 +4385,39 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 unsafe_access,
             },
         );
+    }
+
+    fn global_array_literal_expr(
+        &self,
+        name: &str,
+        elem_ty: Option<Type>,
+        declared_len: Option<usize>,
+    ) -> Option<Expr> {
+        if let Some(bytes) = self.parent.strings.get(name) {
+            let elem_ty = elem_ty.unwrap_or(Type::Prim(Prim::I8));
+            let len = declared_len.unwrap_or(bytes.len());
+            let elems = byte_array_elems(
+                bytes,
+                &Type::Array {
+                    elem: Box::new(elem_ty),
+                    len: len as u64,
+                },
+            );
+            Some(render_array_literal_expr(
+                &elems,
+                len,
+                Expr::Value(RustValue::I64(0)),
+            ))
+        } else if let Some(elems) = self.parent.const_arrays.get(name) {
+            let len = declared_len.unwrap_or(elems.len());
+            Some(render_array_literal_expr(
+                elems,
+                len,
+                Expr::Value(RustValue::I64(0)),
+            ))
+        } else {
+            None
+        }
     }
 
     fn ptr_requires_unsafe(&self, ptr: &str) -> bool {

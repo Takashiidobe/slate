@@ -44,31 +44,24 @@ impl<'a> PrintfFormat<'a> {
 }
 
 fn fixup_impl(program: &mut Program, facts: &FixupFacts) {
-    let mut converted_any = false;
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
             && let Some(function) = facts.function_by_item_index(item_index)
         {
-            fixup_body(&mut f.body, function, facts, &mut converted_any);
+            fixup_body(&mut f.body, function, facts);
         }
     }
     let has_remaining_raw_calls = program_has_printf_call(program);
-    if converted_any && has_remaining_raw_calls {
+    if has_remaining_raw_calls {
         ensure_stdout_and_fflush_externs(program);
         wrap_remaining_raw_printf_calls(program);
-    }
-    if !has_remaining_raw_calls {
+    } else {
         prune_printf_extern(program);
     }
 }
 
-fn fixup_body(
-    body: &mut [IndentStmt],
-    function: FunctionId,
-    facts: &FixupFacts,
-    converted: &mut bool,
-) {
-    fixup_body_with_env(body, function, facts, &mut Vec::new(), converted);
+fn fixup_body(body: &mut [IndentStmt], function: FunctionId, facts: &FixupFacts) {
+    fixup_body_with_env(body, function, facts, &mut Vec::new());
 }
 
 fn fixup_body_with_env(
@@ -76,11 +69,10 @@ fn fixup_body_with_env(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
-    converted: &mut bool,
 ) {
     for (index, indent) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            fixup_stmt(&mut indent.stmt, function, facts, path, converted);
+            fixup_stmt(&mut indent.stmt, function, facts, path);
         });
     }
 }
@@ -90,13 +82,11 @@ fn fixup_stmt(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
-    converted: &mut bool,
 ) {
     match stmt {
         Stmt::Expr(expr) => {
             if let Some(replacement) = rewrite_printf_expr(expr, function, facts, path) {
                 *expr = replacement;
-                *converted = true;
             }
         }
         Stmt::Let {
@@ -107,7 +97,6 @@ fn fixup_stmt(
         } if unused_local(function, facts, name, path) => {
             if let Some(replacement) = rewrite_printf_expr(init, function, facts, path) {
                 *stmt = Stmt::Expr(replacement);
-                *converted = true;
             }
         }
         Stmt::If {
@@ -121,51 +110,51 @@ fn fixup_stmt(
             ..
         } => {
             walk::with_path_segment(path, PathSegment::Then, |path| {
-                fixup_body_with_env(then_body, function, facts, path, converted);
+                fixup_body_with_env(then_body, function, facts, path);
             });
             walk::with_path_segment(path, PathSegment::Else, |path| {
-                fixup_body_with_env(else_body, function, facts, path, converted);
+                fixup_body_with_env(else_body, function, facts, path);
             });
         }
         Stmt::Loop { body, .. } => {
             walk::with_path_segment(path, PathSegment::LoopBody, |path| {
-                fixup_body_with_env(body, function, facts, path, converted);
+                fixup_body_with_env(body, function, facts, path);
             });
         }
         Stmt::For { body, .. } => {
             walk::with_path_segment(path, PathSegment::ForBody, |path| {
-                fixup_body_with_env(body, function, facts, path, converted);
+                fixup_body_with_env(body, function, facts, path);
             });
         }
         Stmt::Scope { body } => {
             walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
-                fixup_body_with_env(body, function, facts, path, converted);
+                fixup_body_with_env(body, function, facts, path);
             });
         }
         Stmt::LabeledBlock { body, .. } => {
             walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
-                fixup_body_with_env(body, function, facts, path, converted);
+                fixup_body_with_env(body, function, facts, path);
             });
         }
         Stmt::Unsafe { body } => {
             walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
-                fixup_block(body, function, facts, path, converted);
+                fixup_block(body, function, facts, path);
             });
         }
         Stmt::While { body, .. } => {
             walk::with_path_segment(path, PathSegment::WhileBody, |path| {
-                fixup_block(body, function, facts, path, converted);
+                fixup_block(body, function, facts, path);
             });
         }
         Stmt::Block(body) => {
             walk::with_path_segment(path, PathSegment::BlockBody, |path| {
-                fixup_block(body, function, facts, path, converted);
+                fixup_block(body, function, facts, path);
             });
         }
         Stmt::Match { arms, .. } => {
             for (index, arm) in arms.iter_mut().enumerate() {
                 walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
-                    fixup_body_with_env(&mut arm.body, function, facts, path, converted);
+                    fixup_body_with_env(&mut arm.body, function, facts, path);
                 });
             }
         }
@@ -178,16 +167,14 @@ fn fixup_block(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
-    converted: &mut bool,
 ) {
-    fixup_body_with_env(&mut block.stmts, function, facts, path, converted);
+    fixup_body_with_env(&mut block.stmts, function, facts, path);
     if let Some(tail) = &mut block.tail
         && let Some(replacement) = walk::with_path_segment(path, PathSegment::BlockTail, |path| {
             rewrite_printf_expr(tail, function, facts, path)
         })
     {
         **tail = replacement;
-        *converted = true;
     }
 }
 
@@ -2832,13 +2819,15 @@ fn main() {
     }
 
     #[test]
-    fn leaves_fully_unsupported_program_without_flush_barriers() {
+    fn wraps_raw_printf_calls_even_when_nothing_in_this_file_converts() {
         let out = run(printf_stmt(b"%g\n\0", var("x")));
 
         assert!(out.contains("fn printf(_0: *mut i8, ...) -> i32;"));
         assert!(out.contains("unsafe { printf("));
         assert!(!out.contains("println!"));
-        assert!(!out.contains("stdout"));
-        assert!(!out.contains("fflush"));
+        assert!(out.contains("static mut stdout: *mut libc::FILE;"));
+        assert!(out.contains("fn fflush(_0: *mut libc::FILE) -> i32;"));
+        assert!(out.contains("std::io::Write::flush(&mut std::io::stdout()).unwrap();"));
+        assert!(out.contains("unsafe { fflush((unsafe { stdout }) as *mut libc::FILE) };"));
     }
 }
