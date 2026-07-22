@@ -658,6 +658,23 @@ fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
     let source =
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
     let pp = preprocess::record_file(&source, clang_args)?;
+    let directives: Vec<serde_json::Value> = pp
+        .directives
+        .iter()
+        .map(|directive| {
+            serde_json::json!({
+                "name": directive.name,
+                "raw_payload": directive.raw_payload,
+                "byte_start": directive.byte_start,
+                "byte_end": directive.byte_end,
+                "line_start": directive.line_start,
+                "line_end": directive.line_end,
+                "depth": directive.depth,
+                "condition": directive.condition.as_ref().map(preprocess::predicate_text),
+                "active": directive.active,
+            })
+        })
+        .collect();
     let chains: Vec<serde_json::Value> = pp
         .chains
         .iter()
@@ -698,6 +715,7 @@ fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
         .collect();
     let doc = serde_json::json!({
         "file": path.to_string_lossy(),
+        "directives": directives,
         "chains": chains,
         "diagnostics": diagnostics,
     });
