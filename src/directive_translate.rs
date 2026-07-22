@@ -30,7 +30,7 @@ struct CfgPlan {
     configs: Vec<CfgConfig>,
 }
 
-pub fn translate_cfg(path: &Path) -> Result<String, String> {
+pub fn translate_directives(path: &Path) -> Result<String, String> {
     let source =
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
     let plan = match plan_configs(&source)? {
@@ -70,7 +70,7 @@ fn plan_configs(source: &str) -> Result<Option<CfgPlan>, String> {
         for branch in &chain.branches {
             if depth_at(branch.directive_line) > 0 {
                 return Err(format!(
-                    "translate-cfg: conditional directive at line {} is inside a function or record \
+                    "translate-directives: conditional directive at line {} is inside a function or record \
                      body; only whole-item (top-level) #if regions can be merged as Rust cfg items",
                     branch.directive_line
                 ));
@@ -78,7 +78,7 @@ fn plan_configs(source: &str) -> Result<Option<CfgPlan>, String> {
         }
         if depth_at(chain.endif_line) > 0 {
             return Err(format!(
-                "translate-cfg: #endif at line {} is inside a function or record body; only \
+                "translate-directives: #endif at line {} is inside a function or record body; only \
                  whole-item (top-level) #if regions can be merged as Rust cfg items",
                 chain.endif_line
             ));
@@ -88,7 +88,7 @@ fn plan_configs(source: &str) -> Result<Option<CfgPlan>, String> {
     let variant_count: usize = pp.chains.iter().map(|chain| chain.branches.len()).sum();
     if variant_count > MAX_CFG_VARIANTS {
         return Err(format!(
-            "translate-cfg: configuration variant cap exceeded: {variant_count} branch variants \
+            "translate-directives: configuration variant cap exceeded: {variant_count} branch variants \
              across {} conditional region(s), cap is {MAX_CFG_VARIANTS}; region at line {} would \
              make cfg recovery too expensive",
             pp.chains.len(),
@@ -104,7 +104,7 @@ fn plan_configs(source: &str) -> Result<Option<CfgPlan>, String> {
         for branch in &chain.branches {
             if branch.rust_cfg.is_none() {
                 return Err(format!(
-                    "translate-cfg: predicate `{}` at line {} does not map to a known Rust cfg; \
+                    "translate-directives: predicate `{}` at line {} does not map to a known Rust cfg; \
                      cannot emit a whole-item cfg attribute",
                     branch.raw_predicate.as_deref().unwrap_or("(else)"),
                     branch.directive_line
@@ -128,7 +128,7 @@ fn plan_configs(source: &str) -> Result<Option<CfgPlan>, String> {
             let clang_args = pin_args(&atoms, &defines);
             if !selects_only(source, &selected, &defines) {
                 return Err(format!(
-                    "translate-cfg: could not construct a configuration selecting the branch at \
+                    "translate-directives: could not construct a configuration selecting the branch at \
                      line {} (predicate `{}`); negated or interdependent predicates are not yet \
                      supported",
                     branch.directive_line,
