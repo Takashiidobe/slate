@@ -113,10 +113,11 @@ fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), 
     let source =
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
     let pp = preprocess::record_file(&source, &[])?;
+    reject_active_unsupported(&pp, "translate")?;
     let errors: Vec<_> = pp
         .directives
         .iter()
-        .filter(|directive| directive.name == "error")
+        .filter(|directive| directive.name == preprocess::DirectiveName::Error)
         .collect();
     for directive in &errors {
         if let (Some(condition), None) = (&directive.condition, directive.active) {
@@ -157,6 +158,38 @@ fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), 
     );
 
     Ok((module, program))
+}
+
+fn reject_active_unsupported(pp: &preprocess::Preprocessing, context: &str) -> Result<(), String> {
+    for directive in pp.directives.iter().filter(|directive| {
+        directive.name.disposition() == preprocess::DirectiveDisposition::UnsupportedSemantic
+    }) {
+        match directive.active {
+            Some(false) => {}
+            Some(true) => return Err(format!("{context}: {}", directive.unsupported_message())),
+            None => {
+                let condition = directive.condition.as_ref().ok_or_else(|| {
+                    format!(
+                        "{context}: cannot determine whether {} is active",
+                        directive.unsupported_message()
+                    )
+                })?;
+                return Err(format!(
+                    "{context}: cannot determine whether {} is active because predicate `{}` cannot be evaluated",
+                    directive.unsupported_message(),
+                    preprocess::predicate_text(condition)
+                ));
+            }
+        }
+    }
+    Ok(())
+}
+
+fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), String> {
+    let source =
+        std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+    let pp = preprocess::record_file(&source, &[])?;
+    reject_active_unsupported(&pp, context)
 }
 
 fn compare_traces(
@@ -457,6 +490,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     let mut shared_enums = BTreeMap::new();
     let mut referenced_record_types = BTreeSet::new();
     for (stem, path) in &modules {
+        reject_active_unsupported_file(path, "translate-project --lib")?;
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
         for sym in lower::defined_functions(&module) {
             defined.insert(sym, stem.clone());
@@ -558,6 +592,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             .map_err(|e| format!("create {}: {e}", crate_tests.display()))?;
         let package = package_name(crate_dir);
         for (stem, path) in collect_c_modules(&tests_dir)? {
+            reject_active_unsupported_file(&path, "translate-project --lib")?;
             let module = cir::parse_module(&cir::emit_generic(&path)?)?;
             let unit = c_ast::parse_file_with_project_records(&path, project_dir)?;
             let test_project = lower::ProjectInfo {
@@ -610,6 +645,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
     let mut crate_features = BTreeSet::new();
     let mut root: Option<String> = None;
     for (stem, path) in &modules {
+        reject_active_unsupported_file(path, "translate-project")?;
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
         for sym in lower::defined_functions(&module) {
             if sym == "main" {
@@ -696,7 +732,8 @@ fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
         .iter()
         .map(|directive| {
             serde_json::json!({
-                "name": directive.name,
+                "name": directive.name.as_str(),
+                "disposition": directive.name.disposition().as_str(),
                 "raw_payload": directive.raw_payload,
                 "byte_start": directive.byte_start,
                 "byte_end": directive.byte_end,

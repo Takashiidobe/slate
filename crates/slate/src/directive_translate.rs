@@ -1,4 +1,6 @@
-use crate::preprocess::{self, Branch, DirectiveKind, PredExpr, Preprocessing};
+use crate::preprocess::{
+    self, Branch, DirectiveDisposition, DirectiveKind, DirectiveName, PredExpr, Preprocessing,
+};
 use crate::rust_ast::{Cfg, Expr, Item, Program};
 use crate::{c_ast, cir, ctx, fixups, lower};
 use std::collections::{BTreeMap, BTreeSet};
@@ -34,11 +36,11 @@ pub fn translate_directives(path: &Path) -> Result<String, String> {
     let source =
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
     let directive_pp = preprocess::record(&source, &BTreeMap::new());
-    let error_items = compile_error_items(&directive_pp)?;
+    let directive_items = directive_items(&directive_pp)?;
     let plan = match plan_configs(&source)? {
         None => {
             let mut program = translate_one(path, &[])?.program;
-            insert_directive_items(&mut program, error_items);
+            insert_directive_items(&mut program, directive_items);
             return Ok(program.emit());
         }
         Some(plan) => plan,
@@ -55,26 +57,46 @@ pub fn translate_directives(path: &Path) -> Result<String, String> {
         });
     }
     let mut program = merge_variants(&baseline, &variants, &plan.pp);
-    insert_directive_items(&mut program, error_items);
+    insert_directive_items(&mut program, directive_items);
     Ok(program.emit())
 }
 
-fn compile_error_items(pp: &Preprocessing) -> Result<Vec<Item>, String> {
+fn directive_items(pp: &Preprocessing) -> Result<Vec<Item>, String> {
     pp.directives
         .iter()
-        .filter(|directive| directive.name == "error")
+        .filter(|directive| {
+            directive.name == DirectiveName::Error
+                || directive.name.disposition() == DirectiveDisposition::UnsupportedSemantic
+        })
         .map(|directive| {
+            if directive.name.disposition() == DirectiveDisposition::UnsupportedSemantic
+                && directive.condition.is_none()
+            {
+                return Err(format!(
+                    "translate-directives: {}",
+                    directive.unsupported_message()
+                ));
+            }
+            let message = if directive.name == DirectiveName::Error {
+                directive.raw_payload.clone()
+            } else {
+                directive.unsupported_message()
+            };
             let item = Item::Macro {
                 name: "compile_error".into(),
-                args: vec![Expr::Str(directive.raw_payload.clone())],
+                args: vec![Expr::Str(message)],
             };
             let Some(condition) = &directive.condition else {
                 return Ok(item);
             };
             let cfg = preprocess::pred_to_cfg(condition).ok_or_else(|| {
                 format!(
-                    "translate-directives: #error at line {} is guarded by predicate `{}` which does not map to a known Rust cfg",
-                    directive.line_start,
+                    "translate-directives: {} is guarded by predicate `{}` which does not map to a known Rust cfg",
+                    if directive.name == DirectiveName::Error {
+                        format!("#error at line {}", directive.line_start)
+                    } else {
+                        directive.unsupported_message()
+                    },
                     preprocess::predicate_text(condition)
                 )
             })?;
@@ -398,7 +420,10 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, Stri
     let sanitized: Vec<_> = pp
         .directives
         .iter()
-        .filter(|directive| directive.name == "error")
+        .filter(|directive| {
+            directive.name == DirectiveName::Error
+                || directive.name.disposition() == DirectiveDisposition::UnsupportedSemantic
+        })
         .collect();
     let input = preprocess::clang_input(path, &source, &sanitized)?;
     let mut frontend_args = clang_args.to_vec();

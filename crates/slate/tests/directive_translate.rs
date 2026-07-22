@@ -62,6 +62,27 @@ fn translate_with_clang_args(name: &str, clang_args: Option<&str>) -> String {
     String::from_utf8(out.stdout).expect("generated Rust is utf8")
 }
 
+fn translate_err_with_clang_args(name: &str, clang_args: Option<&str>) -> String {
+    let src = cfg_fixtures_dir().join(name);
+    let mut command = Command::new(env!("CARGO_BIN_EXE_slate"));
+    command.arg("translate").arg(&src);
+    match clang_args {
+        Some(args) => {
+            command.env("SLATE_CLANG_ARGS", args);
+        }
+        None => {
+            command.env_remove("SLATE_CLANG_ARGS");
+        }
+    }
+    let out = command.output().expect("run slate translate");
+    assert!(
+        !out.status.success(),
+        "translate unexpectedly succeeded for {name}:\n{}",
+        String::from_utf8_lossy(&out.stdout)
+    );
+    String::from_utf8(out.stderr).expect("diagnostics are utf8")
+}
+
 fn compile_with_cfgs(name: &str, rust: &str, cfgs: &[&str]) -> std::process::Output {
     let source = write_generated(name, rust);
     let binary = source.with_extension("bin");
@@ -329,6 +350,52 @@ fn conditional_error_with_unmappable_predicate_is_refused() {
 }
 
 #[test]
+fn active_unsupported_directives_stop_single_config_translation() {
+    let pragma = translate_err_with_clang_args("reject/unsupported_pragma.c", None);
+    assert!(pragma.contains("unsupported semantic directive #pragma at line 1"));
+    assert!(pragma.contains("pack(push, 1)"));
+
+    let unknown = translate_err_with_clang_args("reject/unsupported_unknown.c", None);
+    assert!(unknown.contains("unsupported semantic directive #slate_unknown at line 1"));
+    assert!(unknown.contains("preserve this payload"));
+}
+
+#[test]
+fn conditional_unsupported_directive_fails_only_in_selected_configurations() {
+    let single = translate("unsupported_conditional.c");
+    assert!(!single.contains("compile_error!"));
+
+    let active_single =
+        translate_err_with_clang_args("unsupported_conditional.c", Some("-DPACKED_LAYOUT"));
+    assert!(active_single.contains("unsupported semantic directive #pragma at line 2"));
+
+    let rust = translate_directives("unsupported_conditional.c");
+    assert!(rust.contains(
+        "#[cfg(feature = \"packed_layout\")]\ncompile_error!(\"unsupported semantic directive #pragma at line 2: pack(push, 1)\");"
+    ));
+    assert!(
+        compile_with_cfgs("unsupported_conditional_inactive", &rust, &[])
+            .status
+            .success()
+    );
+    let active = compile_with_cfgs("unsupported_conditional_active", &rust, &["packed_layout"]);
+    assert!(!active.status.success());
+    assert!(
+        String::from_utf8_lossy(&active.stderr)
+            .contains("unsupported semantic directive #pragma at line 2")
+    );
+}
+
+#[test]
+fn unsupported_directive_with_unmappable_condition_stops_translation() {
+    let err = translate_directives_err("reject/unsupported_unmapped.c");
+
+    assert!(err.contains("unsupported semantic directive #pragma at line 2"));
+    assert!(err.contains("PACK_LEVEL == 1"));
+    assert!(err.contains("does not map to a known Rust cfg"));
+}
+
+#[test]
 fn directive_translated_fixtures_compile_for_current_host() {
     let work_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/directive-translate-compile");
     for name in [
@@ -342,6 +409,7 @@ fn directive_translated_fixtures_compile_for_current_host() {
         "feature_single.c",
         "feature_multiple.c",
         "feature_nested.c",
+        "unsupported_conditional.c",
     ] {
         let rust = translate_directives(name);
         let rs = write_generated(name, &rust);
