@@ -314,6 +314,8 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         cross_uses: Vec::new(),
         ctor_calls: Vec::new(),
         dtor_calls: Vec::new(),
+        aligned_wrappers: BTreeSet::new(),
+        generated_alloca_frames: Vec::new(),
         layout_queries: c
             .functions
             .iter()
@@ -396,6 +398,54 @@ fn enum_attrs() -> Vec<RustAttr> {
             Derive::Hash,
         ]),
     ]
+}
+
+fn aligned_wrapper_name(alignment: u32) -> String {
+    format!("__SlateAlign{alignment}")
+}
+
+fn aligned_type(ty: Type, alignment: u32) -> Type {
+    Type::Generic {
+        name: aligned_wrapper_name(alignment),
+        args: vec![ty],
+    }
+}
+
+fn aligned_value(value: Expr, alignment: u32) -> Expr {
+    Expr::TupleStructLit {
+        name: aligned_wrapper_name(alignment),
+        fields: vec![value],
+    }
+}
+
+fn aligned_wrapper_def(alignment: u32) -> Item {
+    Item::Struct(StructDef {
+        attrs: vec![RustAttr::Repr(vec![Repr::C, Repr::Align(alignment)])],
+        vis: Visibility::Private,
+        generics: vec![GenericParam {
+            name: "T".into(),
+            bounds: Vec::new(),
+        }],
+        name: aligned_wrapper_name(alignment),
+        fields: StructFields::Tuple(vec![Type::TyVar("T".into())]),
+    })
+}
+
+fn type_alignment(ty: &Type) -> u32 {
+    match ty {
+        Type::Prim(Prim::Bool | Prim::I8 | Prim::U8) => 1,
+        Type::Prim(Prim::I16 | Prim::U16) => 2,
+        Type::Prim(Prim::I32 | Prim::U32 | Prim::F32) => 4,
+        Type::Prim(Prim::I64 | Prim::U64 | Prim::Isize | Prim::Usize | Prim::F64)
+        | Type::Ptr { .. }
+        | Type::FnPtr { .. }
+        | Type::Ref { .. }
+        | Type::VaList => 8,
+        Type::Prim(Prim::I128 | Prim::U128 | Prim::F128) | Type::LongDouble => 16,
+        Type::Array { elem, .. } => type_alignment(elem),
+        Type::Complex(inner) => type_alignment(inner),
+        _ => 1,
+    }
 }
 
 fn lower_record_def(
@@ -611,6 +661,8 @@ struct Lowerer<'a> {
     /// `__attribute__((destructor))` functions, in call order, spliced before
     /// every `main` return/exit site.
     dtor_calls: Vec<String>,
+    aligned_wrappers: BTreeSet<u32>,
+    generated_alloca_frames: Vec<StructDef>,
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     nonnull_static_params: BTreeMap<String, BTreeSet<usize>>,
     macro_consts: BTreeMap<String, Vec<String>>,
@@ -622,6 +674,7 @@ struct FunctionLowerer<'a, 'b> {
     const_int_values: BTreeMap<String, i128>,
     function_pointer_null_values: BTreeSet<String>,
     slots: BTreeMap<String, String>,
+    slot_places: BTreeMap<String, Expr>,
     slot_types: BTreeMap<String, Type>,
     member_ptrs: BTreeMap<String, MemberPtr>,
     element_ptrs: BTreeMap<String, ElementPtr>,
@@ -708,6 +761,7 @@ struct GlobalVar {
     name: String,
     ty: Type,
     init: Expr,
+    alignment: Option<u32>,
     external: bool,
     weak: bool,
     section: Option<String>,
@@ -854,8 +908,14 @@ impl<'a> Lowerer<'a> {
                 vis: global_vis,
                 mutable: true,
                 name: global.name.clone(),
-                ty: global.ty.clone(),
-                init: global.init.clone(),
+                ty: global
+                    .alignment
+                    .map(|alignment| aligned_type(global.ty.clone(), alignment))
+                    .unwrap_or_else(|| global.ty.clone()),
+                init: global
+                    .alignment
+                    .map(|alignment| aligned_value(global.init.clone(), alignment))
+                    .unwrap_or_else(|| global.init.clone()),
             });
         }
 
@@ -1000,6 +1060,20 @@ impl<'a> Lowerer<'a> {
             }
         }
 
+        let mut storage_items: Vec<Item> = self
+            .aligned_wrappers
+            .iter()
+            .copied()
+            .map(aligned_wrapper_def)
+            .collect();
+        storage_items.extend(
+            self.generated_alloca_frames
+                .iter()
+                .cloned()
+                .map(Item::Struct),
+        );
+        items.splice(1..1, storage_items);
+
         if !self.long_double_shims.is_empty() {
             items.push(Item::ExternBlock {
                 abi: "C".into(),
@@ -1094,6 +1168,16 @@ impl<'a> Lowerer<'a> {
         }
         let rust_name = sanitize_ident(name).into_string();
         let ty = attr_str(op, "sym_type").map(|ty| self.rust_type(ty));
+        let alignment = ty.as_ref().and_then(|ty| {
+            attr_int(op, "alignment")
+                .and_then(|alignment| u32::try_from(alignment).ok())
+                .filter(|alignment| {
+                    *alignment > type_alignment(ty) && !matches!(ty, Type::Custom(_))
+                })
+        });
+        if let Some(alignment) = alignment {
+            self.aligned_wrappers.insert(alignment);
+        }
         let weak = linkage_is_weak(op);
         self.warn_protected_visibility(op, name);
         let section = attr_str(op, "section").map(str::to_owned);
@@ -1120,6 +1204,7 @@ impl<'a> Lowerer<'a> {
                         name: rust_name,
                         ty,
                         init,
+                        alignment,
                         external: externally_exported(op),
                         weak,
                         section: section.clone(),
@@ -1140,6 +1225,7 @@ impl<'a> Lowerer<'a> {
                             bytes.len(),
                             Expr::Value(RustValue::I64(0)),
                         ),
+                        alignment,
                         external: externally_exported(op),
                         weak,
                         section: section.clone(),
@@ -1163,6 +1249,7 @@ impl<'a> Lowerer<'a> {
                                 len as usize,
                                 Expr::Value(RustValue::I64(0)),
                             ),
+                            alignment,
                             external: externally_exported(op),
                             weak,
                             section: section.clone(),
@@ -1182,6 +1269,7 @@ impl<'a> Lowerer<'a> {
                             name: rust_name,
                             ty,
                             init,
+                            alignment,
                             external: externally_exported(op),
                             weak,
                             section: section.clone(),
@@ -1206,6 +1294,7 @@ impl<'a> Lowerer<'a> {
                             elem: Box::new(self.default_value_expr(&self.rust_type(&elem))),
                             len: len as usize,
                         },
+                        alignment,
                         external: externally_exported(op),
                         weak,
                         section: section.clone(),
@@ -1225,6 +1314,7 @@ impl<'a> Lowerer<'a> {
                         name: rust_name,
                         init: self.default_value_expr(&ty),
                         ty,
+                        alignment,
                         external: externally_exported(op),
                         weak,
                         section: section.clone(),
@@ -1245,6 +1335,7 @@ impl<'a> Lowerer<'a> {
                         name: rust_name,
                         ty,
                         init,
+                        alignment,
                         external: externally_exported(op),
                         weak,
                         section: section.clone(),
@@ -1261,6 +1352,7 @@ impl<'a> Lowerer<'a> {
                     name: rust_name,
                     ty,
                     init,
+                    alignment,
                     external,
                     weak,
                     section,
@@ -1533,6 +1625,7 @@ impl<'a> Lowerer<'a> {
             const_int_values: BTreeMap::new(),
             function_pointer_null_values: BTreeSet::new(),
             slots: BTreeMap::new(),
+            slot_places: BTreeMap::new(),
             slot_types: BTreeMap::new(),
             member_ptrs: BTreeMap::new(),
             element_ptrs: BTreeMap::new(),
@@ -2256,8 +2349,25 @@ fn ctype_uses_long_double(ty: &crate::c_ast::CType) -> bool {
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn lower_block(&mut self, block: &Block) {
-        for op in &block.ops {
+        let mut index = 0;
+        while index < block.ops.len() {
+            let op = &block.ops[index];
+            if op.kind() == CirOpKind::Alloca {
+                let end = block.ops[index..]
+                    .iter()
+                    .take_while(|candidate| {
+                        candidate.kind() == CirOpKind::Alloca && candidate.loc == op.loc
+                    })
+                    .count()
+                    + index;
+                if end - index > 1 && self.alloca_group_is_lowerable(&block.ops[index..end]) {
+                    self.lower_alloca_group(&block.ops[index..end]);
+                    index = end;
+                    continue;
+                }
+            }
             self.lower_op(op);
+            index += 1;
         }
     }
 
@@ -2471,6 +2581,84 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    fn alloca_group_is_lowerable(&self, ops: &[Op]) -> bool {
+        ops.iter().all(|op| {
+            op.results
+                .first()
+                .is_some_and(|result| !self.forward_allocas.contains(result))
+                && !op
+                    .ty
+                    .as_deref()
+                    .is_some_and(|ty| ty.contains("__va_list_tag"))
+                && !matches!(
+                    self.pointee_type(op.ty.as_deref().unwrap_or("")),
+                    Some(Type::Custom(_))
+                )
+        })
+    }
+
+    fn lower_alloca_group(&mut self, ops: &[Op]) {
+        let frame_index = self.parent.generated_alloca_frames.len();
+        let frame_name = format!("__SlateAllocaFrame{frame_index}");
+        let frame_var = self.unique_local_name(format!("__slate_alloca_frame{frame_index}"));
+        let mut fields = Vec::with_capacity(ops.len());
+        let mut init = Vec::with_capacity(ops.len());
+        let mut places = Vec::with_capacity(ops.len());
+
+        for (field_index, op) in ops.iter().rev().enumerate() {
+            let Some(result) = op.results.first() else {
+                return;
+            };
+            let ty = self
+                .pointee_type(op.ty.as_deref().unwrap_or(""))
+                .unwrap_or(Type::Prim(Prim::I32));
+            let alignment = attr_int(op, "alignment")
+                .and_then(|alignment| u32::try_from(alignment).ok())
+                .unwrap_or_else(|| type_alignment(&ty));
+            self.parent.aligned_wrappers.insert(alignment);
+            fields.push(aligned_type(ty.clone(), alignment));
+            init.push(aligned_value(self.default_value_expr(&ty), alignment));
+            places.push((
+                result.clone(),
+                ty,
+                Expr::TupleField {
+                    base: Box::new(Expr::TupleField {
+                        base: Box::new(Expr::Var(frame_var.clone().into())),
+                        index: field_index,
+                    }),
+                    index: 0,
+                },
+            ));
+        }
+
+        self.parent.generated_alloca_frames.push(StructDef {
+            attrs: vec![RustAttr::Repr(vec![Repr::C])],
+            vis: Visibility::Private,
+            generics: Vec::new(),
+            name: frame_name.clone(),
+            fields: StructFields::Tuple(fields),
+        });
+        self.push_stmt(Stmt::Let {
+            name: frame_var,
+            mutable: true,
+            ty: Some(Type::Custom(frame_name)),
+            init: Some(Expr::TupleStructLit {
+                name: self
+                    .parent
+                    .generated_alloca_frames
+                    .last()
+                    .expect("generated alloca frame")
+                    .name
+                    .clone(),
+                fields: init,
+            }),
+        });
+        for (result, ty, place) in places {
+            self.slot_types.insert(result.clone(), ty);
+            self.slot_places.insert(result, place);
+        }
+    }
+
     fn lower_alloca(&mut self, op: &Op) {
         let Some(result) = op.results.first() else {
             return;
@@ -2509,9 +2697,29 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let ty = self
             .pointee_type(op.ty.as_deref().unwrap_or(""))
             .unwrap_or(Type::Prim(Prim::I32));
+        let alignment = attr_int(op, "alignment")
+            .and_then(|alignment| u32::try_from(alignment).ok())
+            .filter(|alignment| *alignment > type_alignment(&ty) && !matches!(ty, Type::Custom(_)));
         self.slots.insert(result.clone(), name.clone());
         self.slot_types.insert(result.clone(), ty.clone());
         let init = self.default_value_expr(&ty);
+        if let Some(alignment) = alignment {
+            self.parent.aligned_wrappers.insert(alignment);
+            self.slot_places.insert(
+                result.clone(),
+                Expr::TupleField {
+                    base: Box::new(Expr::Var(name.clone().into())),
+                    index: 0,
+                },
+            );
+            self.push_stmt(Stmt::Let {
+                name,
+                mutable: true,
+                ty: Some(aligned_type(ty, alignment)),
+                init: Some(aligned_value(init, alignment)),
+            });
+            return;
+        }
         self.push_stmt(Stmt::Let {
             name,
             mutable: true,
@@ -2640,7 +2848,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     None
                 }
             }
-            _ => self.slots.contains_key(src).then(|| self.operand_expr(src)),
+            _ => self.slot_place(src),
         }
     }
 
@@ -2674,8 +2882,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             })
         } else if let Some(atomic) = self.atomic_load_expr(op, ptr) {
             atomic
-        } else if let Some(global) = self.global_name(ptr) {
-            Self::unsafe_expr(Expr::Var(global.into()))
+        } else if let Some(global) = self.global_place(ptr) {
+            Self::unsafe_expr(global)
         } else if let Some(member) = self.member_ptrs.get(ptr) {
             let place = Expr::Field {
                 base: Box::new(member.base.clone()),
@@ -2693,8 +2901,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             } else {
                 place
             }
-        } else if let Some(slot) = self.slots.get(ptr) {
-            Expr::Var(slot.clone().into())
+        } else if let Some(slot) = self.slot_place(ptr) {
+            slot
         } else {
             Self::unsafe_deref_expr(self.operand_expr(ptr))
         };
@@ -2767,10 +2975,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             } else {
                 place
             }
-        } else if let Some(slot) = self.slots.get(ptr) {
-            addr_of(Expr::Var(slot.clone().into()))
-        } else if let Some(global) = self.global_name(ptr) {
-            addr_of(Expr::Var(global.into()))
+        } else if let Some(slot) = self.slot_place(ptr) {
+            addr_of(slot)
+        } else if let Some(global) = self.global_place(ptr) {
+            addr_of(global)
         } else {
             self.operand_expr(ptr)
         }
@@ -2783,6 +2991,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let name = sanitize_ident(name).into_string();
         (self.parent.globals.contains_key(&name) || self.parent.extern_globals.contains_key(&name))
             .then_some(name)
+    }
+
+    fn global_place(&self, ptr: &str) -> Option<Expr> {
+        let name = self.global_name(ptr)?;
+        let base = Expr::Var(name.clone().into());
+        self.parent
+            .globals
+            .get(&name)
+            .and_then(|global| global.alignment)
+            .map(|_| Expr::TupleField {
+                base: Box::new(base.clone()),
+                index: 0,
+            })
+            .or(Some(base))
     }
 
     fn lower_const(&mut self, op: &Op) {
@@ -4374,10 +4596,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             })
         } else if let Some(element) = self.element_ptrs.get(ptr) {
             Some(self.element_place_expr(element))
-        } else if let Some(slot) = self.slots.get(ptr) {
-            Some(Expr::Var(slot.clone().into()))
+        } else if let Some(slot) = self.slot_place(ptr) {
+            Some(slot)
         } else {
-            self.global_name(ptr).map(|name| Expr::Var(name.into()))
+            self.global_place(ptr)
         }
     }
 
@@ -4948,14 +5170,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 })
             }
             Some(Val::Global(_)) if !result_ty.starts_with("!cir.ptr<") => {
-                let Some(rust_name) = self.global_name(src) else {
+                let Some(name) = self.global_name(src) else {
                     self.emit_todo("cir.cast (global ptrtoint)");
                     return;
                 };
                 Val::Expr(Expr::Cast {
                     expr: Box::new(Expr::AddrOf {
                         mutable: false,
-                        expr: Box::new(Expr::Var(rust_name.into())),
+                        expr: Box::new(Expr::Var(name.into())),
                     }),
                     ty: self.parent.rust_type(result_ty),
                 })
@@ -6459,10 +6681,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if let Some(val) = self.values.get(operand) {
             return val.to_expr(&self.parent.strings);
         }
-        if let Some(slot) = self.slots.get(operand) {
-            return Expr::Var(slot.clone().into());
+        if let Some(slot) = self.slot_place(operand) {
+            return slot;
         }
         Expr::Var(sanitize_ident(operand))
+    }
+
+    fn slot_place(&self, operand: &str) -> Option<Expr> {
+        self.slot_places.get(operand).cloned().or_else(|| {
+            self.slots
+                .get(operand)
+                .map(|slot| Expr::Var(slot.clone().into()))
+        })
     }
 
     fn element_place_expr(&self, element: &ElementPtr) -> Expr {
@@ -6482,21 +6712,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if let Some(value) = self.values.get(operand) {
             return value.to_expr(&self.parent.strings);
         }
-        if let Some(slot) = self.slots.get(operand) {
+        if let Some(slot) = self.slot_place(operand) {
             return if self
                 .slot_types
                 .get(operand)
                 .is_some_and(|ty| matches!(ty, Type::Array { .. }))
             {
                 Expr::MethodCall {
-                    recv: Box::new(Expr::Var(slot.clone().into())),
+                    recv: Box::new(slot),
                     method: "as_mut_ptr".into(),
                     args: vec![],
                 }
             } else {
                 Expr::AddrOf {
                     mutable: true,
-                    expr: Box::new(Expr::Var(slot.clone().into())),
+                    expr: Box::new(slot),
                 }
             };
         }

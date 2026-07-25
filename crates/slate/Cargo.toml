@@ -17,3 +17,7 @@ test = false
 name = "effects_regression"
 path = "tests/effects_regression.rs"
 test = false
+
+[profile.dev]
+opt-level = 3
+overflow-checks = false
