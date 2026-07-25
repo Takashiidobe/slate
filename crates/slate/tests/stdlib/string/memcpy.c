@@ -1,5 +1,5 @@
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 int main(void) {
   char d[8] = "xxxx";
   void *r = memcpy(d, "abcd", 5);

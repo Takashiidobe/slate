@@ -6,19 +6,13 @@ int mul(int, int);
 void *memcpy(void *, const void *, unsigned long);
 
 // Function definitions (parameter names are required)
-int add(int x, int y) {
-  return x + y;
-}
+int add(int x, int y) { return x + y; }
 
-int mul(int a, int b) {
-  return a * b;
-}
+int mul(int a, int b) { return a * b; }
 
 // Forward declaration with omitted names, definition with names
 int sub(int, int);
-int sub(int x, int y) {
-  return x - y;
-}
+int sub(int x, int y) { return x - y; }
 
 int main() {
   ASSERT(5, add(2, 3));

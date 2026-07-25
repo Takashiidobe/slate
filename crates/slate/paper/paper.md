@@ -212,8 +212,8 @@ pub fn main() {
 
 However, note slate's version, which lowers to this: because of slate's
 fact finding and fixup passes, it operates on the semantics of the
-program, and figures out that we really want a sum function, and so it
-replaces the loop sum with a call to `iter().sum()`
+program, and figures out that we really want a sum function, and
+replaces it with a sum function that calls iter.sum();
 
 ```rust
 fn sum_items(items: &[i32]) -> i32 {
@@ -226,6 +226,56 @@ fn main() {
     println!("{}", sum_items(values.as_slice()));
 }
 ```
+
+Note this code is almost idiomatic rust. Slate is able to do this in its
+fact finding analysis phases, and then transform the code to more
+idiomatic rust iteratively. First, note that the sum_items function only
+has one caller; and that its one caller passes the pointer and the
+correct length. Due to this, we can transform the function to accept a
+slice, and the caller's arguments from a pointer + length pair to a
+slice. Then, slate knows that the pointer and length have no more users;
+thus, they can both be transformed into a slice. Afterwards, slate does
+pattern matching on the `sum_items` function in order to turn the for
+loop into a call to iter().sum(). Note that these transformations are
+only legal because we know these are the only callers. As soon as we
+remove the caller:
+
+```c
+int sum_items(int *items, int len) {
+  int total = 0;
+  for (int i = 0; i < len; i++) {
+    int item = items[i];
+    total += item;
+  }
+  return total;
+}
+```
+
+Slate no longer has enough information to apply the same transformation
+of the code, and drops back to a translation of the C code to Rust.
+
+```rust
+unsafe fn sum_items(items: *mut i32, len: i32) -> i32 {
+    let mut total: i32 = 0;
+    for i in 0..len {
+        let item: i32 = unsafe { *items.offset((i as i64) as isize) };
+        total += item;
+    }
+    total
+}
+```
+
+## Pass Architecture
+
+Slate has a multipass architecture, similar to that of LLVM. After
+lowering to unsafe Rust, the Slate transpiler first tags the AST with
+facts. In the previous example, the pointer that points to the items to
+sum is tagged with the type of items it holds (ints) as well as its
+length. This is consumed by fixup passes, which can take the AST and a
+set of facts and transform the program's AST. After such a rewrite,
+transformations can invalidate given facts of the program. As such,
+analyses are re-run on the new program so that new facts can be
+uncovered and then rewritten successively.
 
 ## Feature Handling
 
@@ -303,6 +353,10 @@ fn main() {
     println!("{}", arch_code());
 }
 ```
+
+## Preprocessor Directives
+
+Another feature that Slate supports is preprocessor directives.
 
 # Discussion
 

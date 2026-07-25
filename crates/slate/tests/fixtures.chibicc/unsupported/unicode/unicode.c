@@ -17,13 +17,13 @@ int main() {
   ASSERT(0, strcmp("日本語", "\U000065E5\U0000672C\U00008A9E"));
   ASSERT(0, strcmp("🌮", "\U0001F32E"));
 
-  ASSERT(-1, L'\xffffffff'>>31);
+  ASSERT(-1, L'\xffffffff' >> 31);
   ASSERT(946, L'β');
   ASSERT(12354, L'あ');
   ASSERT(127843, L'🍣');
 
   ASSERT(2, sizeof(u'\0'));
-  ASSERT(1, u'\xffff'>>15);
+  ASSERT(1, u'\xffff' >> 15);
   ASSERT(97, u'a');
   ASSERT(946, u'β');
   ASSERT(12354, u'あ');
@@ -32,7 +32,7 @@ int main() {
   ASSERT(0, strcmp(STR(u'a'), "u'a'"));
 
   ASSERT(4, sizeof(U'\0'));
-  ASSERT(1, U'\xffffffff'>>31);
+  ASSERT(1, U'\xffffffff' >> 31);
   ASSERT(97, U'a');
   ASSERT(946, U'β');
   ASSERT(12354, U'あ');
@@ -83,21 +83,54 @@ int main() {
 
   ASSERT(0, strcmp(STR(L"a"), "L\"a\""));
 
-  ASSERT(u'α', ({ char16_t x[] = u"αβ"; x[0]; }));
-  ASSERT(u'β', ({ char16_t x[] = u"αβ"; x[1]; }));
-  ASSERT(6, ({ char16_t x[] = u"αβ"; sizeof(x); }));
+  ASSERT(u'α', ({
+           char16_t x[] = u"αβ";
+           x[0];
+         }));
+  ASSERT(u'β', ({
+           char16_t x[] = u"αβ";
+           x[1];
+         }));
+  ASSERT(6, ({
+           char16_t x[] = u"αβ";
+           sizeof(x);
+         }));
 
-  ASSERT(U'🤔', ({ char32_t x[] = U"🤔x"; x[0]; }));
-  ASSERT(U'x', ({ char32_t x[] = U"🤔x"; x[1]; }));
-  ASSERT(12, ({ char32_t x[] = U"🤔x"; sizeof(x); }));
+  ASSERT(U'🤔', ({
+           char32_t x[] = U"🤔x";
+           x[0];
+         }));
+  ASSERT(U'x', ({
+           char32_t x[] = U"🤔x";
+           x[1];
+         }));
+  ASSERT(12, ({
+           char32_t x[] = U"🤔x";
+           sizeof(x);
+         }));
 
-  ASSERT(L'🤔', ({ wchar_t x[] = L"🤔x"; x[0]; }));
-  ASSERT(L'x', ({ wchar_t x[] = L"🤔x"; x[1]; }));
-  ASSERT(12, ({ wchar_t x[] = L"🤔x"; sizeof(x); }));
+  ASSERT(L'🤔', ({
+           wchar_t x[] = L"🤔x";
+           x[0];
+         }));
+  ASSERT(L'x', ({
+           wchar_t x[] = L"🤔x";
+           x[1];
+         }));
+  ASSERT(12, ({
+           wchar_t x[] = L"🤔x";
+           sizeof(x);
+         }));
 
   ASSERT(3, π);
-  ASSERT(3, ({ int あβ0¾=3; あβ0¾; }));
-  ASSERT(5, ({ int $$$=5; $$$; }));
+  ASSERT(3, ({
+           int あβ0¾ = 3;
+           あβ0¾;
+         }));
+  ASSERT(5, ({
+           int $$$ = 5;
+           $$$;
+         }));
 
   printf("OK\n");
   return 0;

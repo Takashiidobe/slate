@@ -1,5 +1,5 @@
-#include "test.h"
 #include "file_line_include.h"
+#include "test.h"
 
 char *main_filename1 = __FILE__;
 int main_line1 = __LINE__;

@@ -1,5 +1,5 @@
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 int main(void) {
   char b[8] = "abcdef";
   char c[8] = "abcdef";

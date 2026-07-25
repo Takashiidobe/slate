@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 int main(void) {
   wchar_t wbuf[16];
   size_t n = mbstowcs(wbuf, "hello", 16);

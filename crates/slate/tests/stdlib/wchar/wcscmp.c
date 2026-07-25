@@ -1,5 +1,5 @@
-#include <wchar.h>
 #include <stdio.h>
+#include <wchar.h>
 int main(void) {
   wchar_t a[] = L"abc";
   wchar_t b[] = L"abd";

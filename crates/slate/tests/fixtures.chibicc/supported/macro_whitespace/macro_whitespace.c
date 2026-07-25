@@ -6,7 +6,7 @@ int main() {
 #define M13(x) M12(foo.x)
   ASSERT(0, strcmp(M13(bar), "foo.bar"));
 
-#define M13(x) M12(foo. x)
+#define M13(x) M12(foo.x)
   ASSERT(0, strcmp(M13(bar), "foo. bar"));
 
 #define M12 foo
@@ -14,7 +14,7 @@ int main() {
 #define M14(x) M13(x.M12)
   ASSERT(0, strcmp(M14(bar), "bar.foo"));
 
-#define M14(x) M13(x. M12)
+#define M14(x) M13(x.M12)
   ASSERT(0, strcmp(M14(bar), "bar. foo"));
 
   printf("OK\n");

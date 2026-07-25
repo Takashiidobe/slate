@@ -6,21 +6,20 @@ typedef struct Tree {
   struct Tree *rhs;
 } Tree;
 
-Tree *tree = &(Tree){
-  1,
-  &(Tree){
-    2,
-    &(Tree){ 3, 0, 0 },
-    &(Tree){ 4, 0, 0 }
-  },
-  0
-};
+Tree *tree = &(Tree){1, &(Tree){2, &(Tree){3, 0, 0}, &(Tree){4, 0, 0}}, 0};
 
 int main() {
   ASSERT(1, (int){1});
-  ASSERT(2, ((int[]){0,1,2})[2]);
-  ASSERT('a', ((struct {char a; int b;}){'a', 3}).a);
-  ASSERT(3, ({ int x=3; (int){x}; }));
+  ASSERT(2, ((int[]){0, 1, 2})[2]);
+  ASSERT('a', ((struct {
+                char a;
+                int b;
+              }){'a', 3})
+                  .a);
+  ASSERT(3, ({
+           int x = 3;
+           (int){x};
+         }));
   (int){3} = 5;
 
   ASSERT(1, tree->val);

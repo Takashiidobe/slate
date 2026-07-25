@@ -1,12 +1,12 @@
-#include "test.h"
 #include "include1.h"
+#include "test.h"
 
 #
 
 /* */ #
 
 int ret3(void) { return 3; }
-int dbl(int x) { return x*x; }
+int dbl(int x) { return x * x; }
 int add2(int x, int y) { return x + y; }
 int add6(int a, int b, int c, int d, int e, int f) {
   return a + b + c + d + e + f;
@@ -31,29 +31,29 @@ int main() {
   ASSERT(5, m);
 
 #if 1
-# if 0
-#  if 1
+#if 0
+#if 1
     foo bar
-#  endif
-# endif
-      m = 3;
 #endif
-    ASSERT(3, m);
+#endif
+  m = 3;
+#endif
+  ASSERT(3, m);
 
-#if 1-1
-# if 1
-# endif
-# if 1
-# else
-# endif
-# if 0
-# else
-# endif
+#if 1 - 1
+#if 1
+#endif
+#if 1
+#else
+#endif
+#if 0
+#else
+#endif
   m = 2;
 #else
-# if 1
+#if 1
   m = 3;
-# endif
+#endif
 #endif
   ASSERT(3, m);
 
@@ -75,14 +75,14 @@ int main() {
   m = 1;
 #elif 0
   m = 2;
-#elif 3+5
+#elif 3 + 5
   m = 3;
-#elif 1*5
+#elif 1 * 5
   m = 4;
 #endif
   ASSERT(3, m);
 
-#if 1+5
+#if 1 + 5
   m = 1;
 #elif 1
   m = 2;
@@ -94,11 +94,11 @@ int main() {
 #if 0
   m = 1;
 #elif 1
-# if 1
+#if 1
   m = 2;
-# else
+#else
   m = 3;
-# endif
+#endif
 #else
   m = 5;
 #endif
@@ -111,11 +111,11 @@ int main() {
 #define M1 4
   ASSERT(4, M1);
 
-#define M1 3+4+
+#define M1 3 + 4 +
   ASSERT(12, M1 5);
 
-#define M1 3+4
-  ASSERT(23, M1*5);
+#define M1 3 + 4
+  ASSERT(23, M1 * 5);
 
 #define ASSERT_ assert(
 #define if 5
@@ -128,7 +128,8 @@ int main() {
 #undef five
 #undef END
 
-  if (0);
+  if (0)
+    ;
 
 #define M 5
 #if M
@@ -139,7 +140,7 @@ int main() {
   ASSERT(5, m);
 
 #define M 5
-#if M-5
+#if M - 5
   m = 6;
 #elif M
   m = 5;
@@ -204,62 +205,71 @@ int main() {
 #define M7 ()
   ASSERT(3, ret3 M7);
 
-#define M8(x,y) x+y
+#define M8(x, y) x + y
   ASSERT(7, M8(3, 4));
 
-#define M8(x,y) x*y
-  ASSERT(24, M8(3+4, 4+5));
+#define M8(x, y) x *y
+  ASSERT(24, M8(3 + 4, 4 + 5));
 
-#define M8(x,y) (x)*(y)
-  ASSERT(63, M8(3+4, 4+5));
+#define M8(x, y) (x) * (y)
+  ASSERT(63, M8(3 + 4, 4 + 5));
 
-#define M8(x,y) x y
-  ASSERT(9, M8(, 4+5));
+#define M8(x, y) x y
+  ASSERT(9, M8(, 4 + 5));
 
-#define M8(x,y) x*y
-  ASSERT(20, M8((2+3), 4));
+#define M8(x, y) x *y
+  ASSERT(20, M8((2 + 3), 4));
 
-#define M8(x,y) x*y
-  ASSERT(12, M8((2,3), 4));
+#define M8(x, y) x *y
+  ASSERT(12, M8((2, 3), 4));
 
 #define dbl(x) M10(x) * x
 #define M10(x) dbl(x) + 3
   ASSERT(10, dbl(2));
 
 #define M11(x) #x
-  ASSERT('a', M11( a!b  `""c)[0]);
-  ASSERT('!', M11( a!b  `""c)[1]);
-  ASSERT('b', M11( a!b  `""c)[2]);
-  ASSERT(' ', M11( a!b  `""c)[3]);
-  ASSERT('`', M11( a!b  `""c)[4]);
-  ASSERT('"', M11( a!b  `""c)[5]);
-  ASSERT('"', M11( a!b  `""c)[6]);
-  ASSERT('c', M11( a!b  `""c)[7]);
-  ASSERT(0, M11( a!b  `""c)[8]);
+  ASSERT('a', M11(a !b  `"" c)[0]);
+  ASSERT('!', M11(a !b  `"" c)[1]);
+  ASSERT('b', M11(a !b  `"" c)[2]);
+  ASSERT(' ', M11(a !b  `"" c)[3]);
+  ASSERT('`', M11(a !b  `"" c)[4]);
+  ASSERT('"', M11(a !b  `"" c)[5]);
+  ASSERT('"', M11(a !b  `"" c)[6]);
+  ASSERT('c', M11(a !b  `"" c)[7]);
+  ASSERT(0, M11(a !b  `"" c)[8]);
 
-#define paste(x,y) x##y
-  ASSERT(15, paste(1,5));
-  ASSERT(255, paste(0,xff));
-  ASSERT(3, ({ int foobar=3; paste(foo,bar); }));
-  ASSERT(5, paste(5,));
-  ASSERT(5, paste(,5));
+#define paste(x, y) x##y
+  ASSERT(15, paste(1, 5));
+  ASSERT(255, paste(0, xff));
+  ASSERT(3, ({
+           int foobar = 3;
+           paste(foo, bar);
+         }));
+  ASSERT(5, paste(5, ));
+  ASSERT(5, paste(, 5));
 
 #define i 5
-  ASSERT(101, ({ int i3=100; paste(1+i,3); }));
+  ASSERT(101, ({
+           int i3 = 100;
+           paste(1 + i, 3);
+         }));
 #undef i
 
 #define paste2(x) x##5
-  ASSERT(26, paste2(1+2));
+  ASSERT(26, paste2(1 + 2));
 
 #define paste3(x) 2##x
-  ASSERT(23, paste3(1+2));
+  ASSERT(23, paste3(1 + 2));
 
 #define paste4(x, y, z) x##y##z
-  ASSERT(123, paste4(1,2,3));
+  ASSERT(123, paste4(1, 2, 3));
 
-#define CONCAT(x,y) x##y
-  ASSERT(5, ({ int f0zz=5; CONCAT(f,0zz); }));
-  ASSERT(5, ({ CONCAT(4,.57) + 0.5; }));
+#define CONCAT(x, y) x##y
+  ASSERT(5, ({
+           int f0zz = 5;
+           CONCAT(f, 0zz);
+         }));
+  ASSERT(5, ({ CONCAT(4, .57) + 0.5; }));
 
   ASSERT(11, strlen(__DATE__));
   ASSERT(8, strlen(__TIME__));
@@ -282,24 +292,48 @@ int main() {
 #define M14(args...) add2(args)
   ASSERT(8, M14(2, 6));
 
-#define M14(args...) add6(1,2,args,6)
-  ASSERT(21, M14(3,4,5));
+#define M14(args...) add6(1, 2, args, 6)
+  ASSERT(21, M14(3, 4, 5));
 
-#define M14(x, args...) add6(1,2,x,args,6)
-  ASSERT(21, M14(3,4,5));
+#define M14(x, args...) add6(1, 2, x, args, 6)
+  ASSERT(21, M14(3, 4, 5));
 
 #define M14(x, args...) x
   ASSERT(5, M14(5));
 
-#define M30(buf, fmt, ...) sprintf(buf, fmt __VA_OPT__(,) __VA_ARGS__)
-  ASSERT(0, ({ char buf[100]; M30(buf, "foo"); strcmp(buf, "foo"); }));
-  ASSERT(0, ({ char buf[100]; M30(buf, "foo%d", 3); strcmp(buf, "foo3"); }));
-  ASSERT(0, ({ char buf[100]; M30(buf, "foo%d%d", 3, 5); strcmp(buf, "foo35"); }));
+#define M30(buf, fmt, ...) sprintf(buf, fmt __VA_OPT__(, ) __VA_ARGS__)
+  ASSERT(0, ({
+           char buf[100];
+           M30(buf, "foo");
+           strcmp(buf, "foo");
+         }));
+  ASSERT(0, ({
+           char buf[100];
+           M30(buf, "foo%d", 3);
+           strcmp(buf, "foo3");
+         }));
+  ASSERT(0, ({
+           char buf[100];
+           M30(buf, "foo%d%d", 3, 5);
+           strcmp(buf, "foo35");
+         }));
 
-#define M31(buf, fmt, ...) sprintf(buf, fmt, ## __VA_ARGS__)
-  ASSERT(0, ({ char buf[100]; M31(buf, "foo"); strcmp(buf, "foo"); }));
-  ASSERT(0, ({ char buf[100]; M31(buf, "foo%d", 3); strcmp(buf, "foo3"); }));
-  ASSERT(0, ({ char buf[100]; M31(buf, "foo%d%d", 3, 5); strcmp(buf, "foo35"); }));
+#define M31(buf, fmt, ...) sprintf(buf, fmt, ##__VA_ARGS__)
+  ASSERT(0, ({
+           char buf[100];
+           M31(buf, "foo");
+           strcmp(buf, "foo");
+         }));
+  ASSERT(0, ({
+           char buf[100];
+           M31(buf, "foo%d", 3);
+           strcmp(buf, "foo3");
+         }));
+  ASSERT(0, ({
+           char buf[100];
+           M31(buf, "foo%d%d", 3, 5);
+           strcmp(buf, "foo35");
+         }));
 
 #define M31(x, y) (1, ##x y)
   ASSERT(3, M31(, 3));

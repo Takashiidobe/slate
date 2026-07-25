@@ -1,24 +1,24 @@
 #include <stdio.h>
 
 int main(void) {
-    remove("slate_stdio_fread_multi_byte.tmp");
-    FILE *f = fopen("slate_stdio_fread_multi_byte.tmp", "w");
-    if (!f) {
-        puts("open-fail");
-        return 0;
-    }
-    fputs("abcdefghijkl", f);
-    fclose(f);
-
-    FILE *g = fopen("slate_stdio_fread_multi_byte.tmp", "r");
-    if (!g) {
-        puts("reopen-fail");
-        return 0;
-    }
-    char buf[16] = {0};
-    size_t n = fread(buf, 4, 3, g);
-    printf("%zu %s\n", n, buf);
-    fclose(g);
-    remove("slate_stdio_fread_multi_byte.tmp");
+  remove("slate_stdio_fread_multi_byte.tmp");
+  FILE *f = fopen("slate_stdio_fread_multi_byte.tmp", "w");
+  if (!f) {
+    puts("open-fail");
     return 0;
+  }
+  fputs("abcdefghijkl", f);
+  fclose(f);
+
+  FILE *g = fopen("slate_stdio_fread_multi_byte.tmp", "r");
+  if (!g) {
+    puts("reopen-fail");
+    return 0;
+  }
+  char buf[16] = {0};
+  size_t n = fread(buf, 4, 3, g);
+  printf("%zu %s\n", n, buf);
+  fclose(g);
+  remove("slate_stdio_fread_multi_byte.tmp");
+  return 0;
 }
