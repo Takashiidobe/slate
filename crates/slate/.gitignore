@@ -8,3 +8,6 @@
 *.db
 .beads-credential-key
 /libyaml-crate/
+
+# Beads / Dolt files (added by bd init)
+.beads/proxieddb/
