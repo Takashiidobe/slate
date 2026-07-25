@@ -1,11 +1,10 @@
 #include <stdio.h>
 
-__attribute__((destructor))
-static void farewell(void) {
-    printf("destructor ran\n");
+__attribute__((destructor)) static void farewell(void) {
+  printf("destructor ran\n");
 }
 
 int main(void) {
-    printf("main ran\n");
-    return 0;
+  printf("main ran\n");
+  return 0;
 }

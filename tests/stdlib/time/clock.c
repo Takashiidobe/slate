@@ -1,5 +1,5 @@
-#include <time.h>
 #include <stdio.h>
+#include <time.h>
 int main(void) {
   clock_t start = clock();
   volatile long acc = 0;

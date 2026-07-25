@@ -1,6 +1,6 @@
 #include "test.h"
-#include <stdatomic.h>
 #include <pthread.h>
+#include <stdatomic.h>
 
 static int incr(_Atomic int *p) {
   int oldval = *p;
@@ -13,21 +13,21 @@ static int incr(_Atomic int *p) {
 
 static int add1(void *arg) {
   _Atomic int *x = arg;
-  for (int i = 0; i < 1000*1000; i++)
+  for (int i = 0; i < 1000 * 1000; i++)
     incr(x);
   return 0;
 }
 
 static int add2(void *arg) {
   _Atomic int *x = arg;
-  for (int i = 0; i < 1000*1000; i++)
+  for (int i = 0; i < 1000 * 1000; i++)
     (*x)++;
   return 0;
 }
 
 static int add3(void *arg) {
   _Atomic int *x = arg;
-  for (int i = 0; i < 1000*1000; i++)
+  for (int i = 0; i < 1000 * 1000; i++)
     *x += 5;
   return 0;
 }
@@ -43,7 +43,7 @@ static int add_millions(void) {
   pthread_create(&thr2, NULL, add2, &x);
   pthread_create(&thr3, NULL, add3, &x);
 
-  for (int i = 0; i < 1000*1000; i++)
+  for (int i = 0; i < 1000 * 1000; i++)
     x--;
 
   pthread_join(thr1, NULL);
@@ -53,10 +53,17 @@ static int add_millions(void) {
 }
 
 int main() {
-  ASSERT(6*1000*1000, add_millions());
+  ASSERT(6 * 1000 * 1000, add_millions());
 
-  ASSERT(3, ({ int x=3; atomic_exchange(&x, 5); }));
-  ASSERT(5, ({ int x=3; atomic_exchange(&x, 5); x; }));
+  ASSERT(3, ({
+           int x = 3;
+           atomic_exchange(&x, 5);
+         }));
+  ASSERT(5, ({
+           int x = 3;
+           atomic_exchange(&x, 5);
+           x;
+         }));
 
   printf("OK\n");
   return 0;

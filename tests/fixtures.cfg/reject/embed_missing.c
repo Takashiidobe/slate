@@ -1,6 +1,6 @@
 int main(void) {
-    unsigned char data[] = {
+  unsigned char data[] = {
 #embed "missing-embed-data.bin"
-    };
-    return data[0];
+  };
+  return data[0];
 }

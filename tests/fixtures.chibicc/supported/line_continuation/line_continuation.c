@@ -2,7 +2,7 @@
 
 int main() {
   assert(1, size\
-of(char), \
+of(char),
          "sizeof(char)");
 
   printf("OK\n");

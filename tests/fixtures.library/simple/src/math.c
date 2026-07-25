@@ -4,6 +4,6 @@
 #warning PROJECT_WARNING_TOKEN remains unexpanded
 
 int square(int x) {
-    struct shared_value value = { x, SHARED_READY };
-    return value.value * value.value;
+  struct shared_value value = {x, SHARED_READY};
+  return value.value * value.value;
 }

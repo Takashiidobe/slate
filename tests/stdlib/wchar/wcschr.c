@@ -1,5 +1,5 @@
-#include <wchar.h>
 #include <stdio.h>
+#include <wchar.h>
 int main(void) {
   wchar_t s[] = L"abcdef";
   wchar_t *p = wcschr(s, L'd');

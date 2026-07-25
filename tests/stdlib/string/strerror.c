@@ -1,6 +1,6 @@
 #include <errno.h>
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 int main(void) {
   char *a = strerror(ENOENT);
   char *b = strerror(0);

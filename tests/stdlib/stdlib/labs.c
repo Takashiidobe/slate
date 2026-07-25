@@ -1,3 +1,6 @@
-#include <stdlib.h>
 #include <stdio.h>
-int main(void) { printf("%ld\n", labs(-123456789L)); return 0; }
+#include <stdlib.h>
+int main(void) {
+  printf("%ld\n", labs(-123456789L));
+  return 0;
+}

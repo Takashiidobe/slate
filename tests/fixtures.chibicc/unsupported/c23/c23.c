@@ -1,6 +1,9 @@
 #include "test.h"
 
-[[noreturn]] void die(void) { for (;;) {} }
+[[noreturn]] void die(void) {
+  for (;;) {
+  }
+}
 [[deprecated("use new_func")]] int old_func(void) { return 9; }
 [[deprecated]] int old_func2(void) { return 10; }
 int add_unnamed(int, int) { return 5; }
@@ -32,14 +35,14 @@ int main(void) {
   ASSERT(10, old_func2());
   int fall = 0;
   switch (base) {
-    case 7:
-      fall = 1;
-      [[fallthrough]];
-    case 8:
-      fall += 2;
-      break;
-    default:
-      fall = -1;
+  case 7:
+    fall = 1;
+    [[fallthrough]];
+  case 8:
+    fall += 2;
+    break;
+  default:
+    fall = -1;
   }
   ASSERT(3, fall);
   int label_check = 0;
@@ -50,7 +53,7 @@ int main(void) {
   }
   ASSERT(0, label_check);
   unsigned char embed_data[] = {
-    #embed "embed.bin"
+#embed "embed.bin"
   };
   ASSERT(3, (int)sizeof(embed_data));
   ASSERT(1, embed_data[0]);
@@ -117,7 +120,7 @@ int main(void) {
   unsigned _BitInt(8) ub8 = 200;
   ASSERT(200, (int)ub8);
   unsigned _BitInt(32) ub32 = 3000000000u;
-  ASSERT(-1294967296, (int)ub32);  // Wraps when cast to signed int
+  ASSERT(-1294967296, (int)ub32); // Wraps when cast to signed int
 
   // Arithmetic
   _BitInt(32) a = 100;

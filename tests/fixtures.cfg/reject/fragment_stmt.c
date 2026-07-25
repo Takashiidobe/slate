@@ -1,12 +1,12 @@
 #include <stdio.h>
 
 int main(void) {
-    int x;
+  int x;
 #if defined(__linux__)
-    x = 1;
+  x = 1;
 #else
-    x = 2;
+  x = 2;
 #endif
-    printf("%d\n", x);
-    return 0;
+  printf("%d\n", x);
+  return 0;
 }

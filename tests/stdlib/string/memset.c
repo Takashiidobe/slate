@@ -1,5 +1,5 @@
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 int main(void) {
   char b[6];
   void *r = memset(b, 'x', 5);

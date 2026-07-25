@@ -5,13 +5,13 @@
  * guard), so it must fall back to a conservative, non-`!` return type
  * instead of emitting Rust that rustc would reject. */
 __attribute__((noreturn)) static void spin(void) {
-    for (;;) {
-    }
+  for (;;) {
+  }
 }
 
 void (*unused_spin)(void) = spin;
 
 int main(void) {
-    printf("main\n");
-    return 0;
+  printf("main\n");
+  return 0;
 }

@@ -27,9 +27,7 @@ void copy_array(int n, int dst[restrict n], int src[restrict n]) {
 }
 
 // VLA with static qualifier (indicates array has at least n elements)
-int first_elem(int n, int arr[static n]) {
-  return arr[0];
-}
+int first_elem(int n, int arr[static n]) { return arr[0]; }
 
 // Multiple VLA parameters with compound bounds
 int dot_product(int n, int a[n], int b[n]) {

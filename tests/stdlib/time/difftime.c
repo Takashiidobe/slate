@@ -1,5 +1,5 @@
-#include <time.h>
 #include <stdio.h>
+#include <time.h>
 int main(void) {
   time_t a = 2000;
   time_t b = 500;

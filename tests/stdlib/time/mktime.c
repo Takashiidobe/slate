@@ -1,5 +1,5 @@
-#include <time.h>
 #include <stdio.h>
+#include <time.h>
 int main(void) {
   struct tm tm = {0};
   tm.tm_year = 100;
