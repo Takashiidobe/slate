@@ -26,19 +26,19 @@ int main() {
 
   ASSERT(1, ({
            _Alignas(char) char x, y;
-           &y - &x;
+           &x - &y;
          }));
   ASSERT(8, ({
            _Alignas(long) char x, y;
-           &y - &x;
+           &x - &y;
          }));
   ASSERT(32, ({
            _Alignas(32) char x, y;
-           &y - &x;
+           &x - &y;
          }));
   ASSERT(32, ({
            _Alignas(32) int *x, *y;
-           ((char *)&y) - ((char *)&x);
+           ((char *)&x) - ((char *)&y);
          }));
   ASSERT(16, ({
            struct {

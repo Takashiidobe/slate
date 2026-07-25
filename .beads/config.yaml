@@ -57,3 +57,4 @@
 sync.remote: "git+https://github.com/Takashiidobe/slate"
 export:
     auto: true
+    git-add: true
