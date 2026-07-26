@@ -5,7 +5,9 @@
 
 use std::collections::BTreeSet;
 
-use crate::rust_ast::{Expr, ExprMatchArm, IndentStmt, MatchArm, Pattern, RustValue, Stmt};
+use crate::rust_ast::{
+    AsmOperand, Expr, ExprMatchArm, IndentStmt, MatchArm, Pattern, RustValue, Stmt,
+};
 
 pub(super) type LoweredSwitchParts<'a> = (
     &'a str,
@@ -477,6 +479,9 @@ fn parse_flow(
                 transfer: Transfer::Switch { expr, arms },
             });
         }
+        if has_asm_label_transfer(&stmts[i].stmt, state_var, loop_label) {
+            *dynamic = true;
+        }
         match &stmts[i].stmt {
             Stmt::If {
                 cond,
@@ -523,6 +528,29 @@ fn parse_flow(
         }
     }
     None
+}
+
+fn has_asm_label_transfer(stmt: &Stmt, state_var: &str, loop_label: &str) -> bool {
+    match stmt {
+        Stmt::InlineAsm(asm) => asm.operands.iter().any(|operand| {
+            matches!(
+                operand,
+                AsmOperand::Label {
+                    state: Expr::Var(state),
+                    destination,
+                    ..
+                } if state.as_str() == state_var && destination.as_str() == loop_label
+            )
+        }),
+        Stmt::Unsafe { body } | Stmt::Block(body) => body
+            .stmts
+            .iter()
+            .any(|stmt| has_asm_label_transfer(&stmt.stmt, state_var, loop_label)),
+        Stmt::Scope { body } => body
+            .iter()
+            .any(|stmt| has_asm_label_transfer(&stmt.stmt, state_var, loop_label)),
+        _ => false,
+    }
 }
 
 fn switch_transfer(

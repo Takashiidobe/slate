@@ -5,7 +5,7 @@ use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, DefUseFact, FixupFacts, FunctionId, PathSegment,
 };
 use crate::rust_ast::{
-    AtomicPlace, Block, Expr, Ident, IndentStmt, Item, Pattern, Program, Stmt, UnaryOp,
+    AsmOperand, AtomicPlace, Block, Expr, Ident, IndentStmt, Item, Pattern, Program, Stmt, UnaryOp,
 };
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -158,7 +158,22 @@ impl<'a> Collector<'a> {
             }
             Stmt::InlineAsm(asm) => {
                 for operand in &asm.operands {
-                    operand.visit_exprs(&mut |expr| self.expr(expr, path));
+                    match operand {
+                        AsmOperand::In { value, .. } | AsmOperand::Const(value) => {
+                            self.expr(value, path);
+                        }
+                        AsmOperand::Out { value, .. } => {
+                            self.place(value, PlaceAccess::Write, path);
+                        }
+                        AsmOperand::InOut { input, output, .. } => {
+                            self.expr(input, path);
+                            self.place(output, PlaceAccess::Write, path);
+                        }
+                        AsmOperand::Label { state, value, .. } => {
+                            self.place(state, PlaceAccess::Write, path);
+                            self.expr(value, path);
+                        }
+                    }
                 }
             }
             Stmt::Expr(expr) | Stmt::Return(Some(expr)) => self.expr(expr, path),

@@ -599,6 +599,7 @@ impl Interp {
                             };
                             self.scalars.insert(name.to_string(), value);
                         }
+                        AsmOperand::Label { .. } => {}
                     }
                 }
                 self.trace.push(Effect::Call {
