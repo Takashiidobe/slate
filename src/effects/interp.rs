@@ -94,6 +94,7 @@ struct Interp {
     pointer_elem_sizes: HashMap<String, u64>,
     once_locks: HashMap<String, OnceLockBinding>,
     funcs: HashMap<String, FnDef>,
+    asm_functions: HashMap<String, Option<Type>>,
     records: HashMap<String, crate::rust_ast::RecordDef>,
     tuple_structs: HashMap<String, StructDef>,
     enums: HashMap<String, EnumDef>,
@@ -118,8 +119,90 @@ struct Interp {
     exited: Option<Value>,
 }
 
+fn collect_global_asm_templates<'a>(item: &'a Item, templates: &mut Vec<&'a str>) {
+    match item {
+        Item::Macro { name, args } if name == "core::arch::global_asm" => {
+            if let Some(Expr::Str(template)) = args.first() {
+                templates.push(template);
+            }
+        }
+        Item::Cfg { item, .. } => collect_global_asm_templates(item, templates),
+        _ => {}
+    }
+}
+
+fn collect_extern_functions(item: &Item, functions: &mut HashMap<String, Option<Type>>) {
+    match item {
+        Item::ExternBlock { decls, .. } => {
+            for decl in decls {
+                if let ExternDecl::Fn(function) = decl {
+                    functions.insert(function.name.clone(), function.ret.clone());
+                }
+            }
+        }
+        Item::Cfg { item, .. } => collect_extern_functions(item, functions),
+        _ => {}
+    }
+}
+
+fn asm_defines_symbol(template: &str, symbol: &str) -> bool {
+    template.lines().any(|line| {
+        line.trim_start()
+            .strip_prefix(symbol)
+            .is_some_and(|rest| rest.trim_start().starts_with(':'))
+    })
+}
+
+fn opaque_asm_return_value(ty: Option<&Type>) -> EResult<Value> {
+    let Some(ty) = ty else {
+        return Ok(int32(0));
+    };
+    let value = match ty {
+        Type::Prim(Prim::Bool) => Value::Bool(false),
+        Type::Prim(Prim::F32 | Prim::F64 | Prim::F128) => Value::Float(0.0),
+        Type::Prim(prim) => {
+            let width = match prim {
+                Prim::I8 | Prim::U8 => IntWidth::W8,
+                Prim::I16 | Prim::U16 => IntWidth::W16,
+                Prim::I32 | Prim::U32 => IntWidth::W32,
+                Prim::I64 | Prim::U64 => IntWidth::W64,
+                Prim::I128 | Prim::U128 => IntWidth::W128,
+                Prim::Isize | Prim::Usize => IntWidth::PointerSized,
+                Prim::Bool | Prim::F32 | Prim::F64 | Prim::F128 => unreachable!(),
+            };
+            Value::Int {
+                width,
+                signed: matches!(
+                    prim,
+                    Prim::I8 | Prim::I16 | Prim::I32 | Prim::I64 | Prim::I128 | Prim::Isize
+                ),
+                value: 0,
+            }
+        }
+        Type::Ptr { .. } => Value::Null,
+        _ => {
+            return Err(EffectError::unsupported(Construct::CallTarget, ty.clone()));
+        }
+    };
+    Ok(value)
+}
+
 impl Interp {
     fn seed_program(&mut self, program: &Program) -> EResult<()> {
+        let mut asm_templates = Vec::new();
+        let mut extern_functions = HashMap::new();
+        for item in &program.items {
+            collect_global_asm_templates(item, &mut asm_templates);
+            collect_extern_functions(item, &mut extern_functions);
+        }
+        self.asm_functions = extern_functions
+            .into_iter()
+            .filter(|(name, _)| {
+                asm_templates
+                    .iter()
+                    .any(|template| asm_defines_symbol(template, name))
+            })
+            .collect();
         for item in &program.items {
             match item {
                 Item::Static { name, ty, init, .. } => self.seed_static(name, ty, init)?,
@@ -470,6 +553,22 @@ impl Interp {
             }
             Stmt::Expr(Expr::Macro { name, args }) if name == "println" || name == "print" => {
                 self.print(args)?;
+                Ok(Flow::Normal)
+            }
+            Stmt::Expr(Expr::Macro { name, args }) if name == "core::arch::asm" => {
+                let Some(Expr::Str(template)) = args.first() else {
+                    return Err(EffectError::unsupported(
+                        Construct::CallTarget,
+                        Expr::Macro {
+                            name: name.clone(),
+                            args: args.clone(),
+                        },
+                    ));
+                };
+                self.trace.push(Effect::Call {
+                    name: format!("core::arch::asm:{template}"),
+                    args: Vec::new(),
+                });
                 Ok(Flow::Normal)
             }
             Stmt::Expr(expr) => {
@@ -4236,7 +4335,20 @@ impl Interp {
     fn call_user_named(&mut self, name: &str, args: &[Expr]) -> EResult<Value> {
         let f = match self.funcs.get(name).cloned() {
             Some(f) => f,
-            None => return Err(EffectError::unknown(BindingKind::Function, name)),
+            None => {
+                let Some(ret) = self.asm_functions.get(name).cloned() else {
+                    return Err(EffectError::unknown(BindingKind::Function, name));
+                };
+                let mut values = Vec::with_capacity(args.len());
+                for arg in args {
+                    values.push(self.eval(arg)?);
+                }
+                self.trace.push(Effect::Call {
+                    name: name.to_string(),
+                    args: values,
+                });
+                return opaque_asm_return_value(ret.as_ref());
+            }
         };
         let mut values = Vec::with_capacity(args.len());
         for arg in args {

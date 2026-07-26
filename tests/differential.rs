@@ -120,6 +120,23 @@ fn global_alias_emits_unsupported_diagnostic() {
 }
 
 #[test]
+fn gnu_basic_asm_preserves_target_scope_and_symbols() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-gnu-basic-asm");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("gnu_basic_asm.c");
+    let generated = tmp.join("gnu_basic_asm.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate gnu_basic_asm fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated gnu_basic_asm rust");
+
+    assert!(rust.contains("#[cfg(target_arch = \"x86_64\")]\ncore::arch::global_asm!("));
+    assert!(rust.contains("#[unsafe(no_mangle)]\nstatic mut gnu_basic_asm_value: i32"));
+    assert!(rust.contains(
+        "core::arch::asm!(\"movl $23, gnu_basic_asm_value(%rip)\", options(att_syntax, raw))"
+    ));
+}
+
+#[test]
 fn anonymous_local_structs_use_generated_tuple_structs() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-anon-local-struct");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
