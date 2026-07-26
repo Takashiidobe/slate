@@ -1662,6 +1662,7 @@ impl Collector {
             }
             Stmt::Assign { .. }
             | Stmt::CompoundAssign { .. }
+            | Stmt::InlineAsm(_)
             | Stmt::Expr(_)
             | Stmt::Return(_)
             | Stmt::Break(_)

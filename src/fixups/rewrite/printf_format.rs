@@ -1813,7 +1813,7 @@ fn stmt_has_printf_call(stmt: &Stmt) -> bool {
         Stmt::Match { expr, arms } => {
             expr_has_printf_call(expr) || arms.iter().any(|arm| body_has_printf_call(&arm.body))
         }
-        Stmt::Break(_) | Stmt::Continue(_) => false,
+        Stmt::InlineAsm(_) | Stmt::Break(_) | Stmt::Continue(_) => false,
     }
 }
 

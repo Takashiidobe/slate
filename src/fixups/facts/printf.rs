@@ -101,6 +101,7 @@ fn stmt(
             visit_expr(function, target, env, path, calls, facts);
             visit_expr(function, value, env, path, calls, facts);
         }
+        Stmt::InlineAsm(_) => {}
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
             visit_expr(function, expr, env, path, calls, facts)
         }

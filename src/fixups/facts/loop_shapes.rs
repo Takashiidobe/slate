@@ -86,6 +86,7 @@ impl<'a> Collector<'a> {
             | Stmt::LetIf { .. }
             | Stmt::Assign { .. }
             | Stmt::CompoundAssign { .. }
+            | Stmt::InlineAsm(_)
             | Stmt::Expr(_)
             | Stmt::Return(_)
             | Stmt::Unsafe { .. }

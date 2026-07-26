@@ -361,6 +361,7 @@ fn collect_stmt_refs(stmt: &Stmt, refs: &mut BTreeSet<String>) {
                 collect_match_arm_refs(arm, refs);
             }
         }
+        Stmt::InlineAsm(_) => {}
     }
 }
 

@@ -188,7 +188,7 @@ fn fixup_stmt(
                 });
             }
         }
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+        Stmt::InlineAsm(_) | Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
     }
 }
 
@@ -1304,6 +1304,7 @@ fn stmt_temp_uses_are_zero_comparisons(stmt: &Stmt, name: &str) -> bool {
                     .all(|arm| temp_uses_are_zero_comparisons(&arm.body, name))
         }
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => true,
+        Stmt::InlineAsm(_) => false,
     }
 }
 

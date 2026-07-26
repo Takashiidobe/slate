@@ -483,6 +483,7 @@ fn stmt_accesses_pointer_index(stmt: &Stmt, aliases: &mut PointerIndexAliases) -
                     body_accesses_pointer_index_with_aliases(&arm.body, &mut aliases.clone())
                 })
         }
+        Stmt::InlineAsm(_) => true,
     }
 }
 
@@ -1117,6 +1118,7 @@ fn stmt_mutates_pointer_alias(stmt: &Stmt, aliases: &mut BTreeSet<String>) -> bo
                     .iter()
                     .any(|arm| body_mutates_pointer_alias(&arm.body, &mut aliases.clone()))
         }
+        Stmt::InlineAsm(_) => true,
     }
 }
 

@@ -210,6 +210,7 @@ impl<'a> Collector<'a> {
                     });
                 }
             }
+            Stmt::InlineAsm(_) => {}
         }
     }
 

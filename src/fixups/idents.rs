@@ -95,6 +95,15 @@ pub(super) fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
         }
         Stmt::While { cond, body } => expr_ident_count(cond, name) + block_ident_count(body, name),
         Stmt::Block(body) => block_ident_count(body, name),
+        Stmt::InlineAsm(asm) => asm
+            .operands
+            .iter()
+            .map(|operand| {
+                let mut count = 0;
+                operand.visit_exprs(&mut |expr| count += expr_ident_count(expr, name));
+                count
+            })
+            .sum(),
     }
 }
 

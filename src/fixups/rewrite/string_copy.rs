@@ -330,7 +330,7 @@ fn rewrite_stmt(
                 );
             }
         }
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+        Stmt::InlineAsm(_) | Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
     }
 }
 
@@ -714,7 +714,7 @@ fn stmt_expr_any(stmt: &Stmt, pred: &mut impl FnMut(&Expr) -> bool) -> bool {
                         .any(|indent| stmt_expr_any(&indent.stmt, pred))
                 })
         }
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
+        Stmt::InlineAsm(_) | Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
     }
 }
 

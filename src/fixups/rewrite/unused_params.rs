@@ -289,6 +289,11 @@ fn stmt_has_unsafe_ref(stmt: &Stmt, name: &str) -> bool {
             expr_has_unsafe_ref(expr, name)
                 || arms.iter().any(|arm| body_has_unsafe_ref(&arm.body, name))
         }
+        Stmt::InlineAsm(asm) => asm.operands.iter().any(|operand| {
+            let mut found = false;
+            operand.visit_exprs(&mut |expr| found |= expr_has_unsafe_ref(expr, name));
+            found
+        }),
     }
 }
 

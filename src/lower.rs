@@ -5,12 +5,12 @@ use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use crate::rust_ast::{
-    Abi, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType,
-    Cfg, CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl,
-    Feature, FnDef, FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, Item, Label,
-    Lint, MatchArm, Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue,
-    SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, UsedKind,
-    Visibility,
+    Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
+    Attr as RustAttr, BinOp, CLibType, Cfg, CrateAttr, Derive, EnumConst, EnumDef, Expr,
+    ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam, GenericParam, Ident,
+    ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint, MatchArm, Method, Path, Pattern,
+    Prim, Program, RecordDef, RecordField, Repr, RustValue, SelfKind, StdTrait, Stmt, StructDef,
+    StructFields, TraitBound, Type, UnaryOp, UsedKind, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -49,12 +49,6 @@ pub struct ProjectInfo {
 const WEAK_ANY_LINKAGE: i64 = 4;
 const HIDDEN_VISIBILITY: i64 = 1;
 const PROTECTED_VISIBILITY: i64 = 2;
-
-#[derive(Clone, Copy)]
-enum AsmDialect {
-    Att,
-    Intel,
-}
 
 /// CIR encodes external linkage as `linkage = 0`; weak definitions are external too.
 fn linkage_is_external(op: &Op) -> bool {
@@ -700,6 +694,7 @@ struct FunctionLowerer<'a, 'b> {
     layout_queries: VecDeque<LayoutQuery>,
     macro_consts: VecDeque<String>,
     macro_arith_values: BTreeMap<String, i128>,
+    asm_outputs: BTreeMap<String, Vec<Expr>>,
 }
 
 /// Maps CIR jump targets to dispatch-loop states for a `goto`-bearing function.
@@ -1662,6 +1657,7 @@ impl<'a> Lowerer<'a> {
             layout_queries,
             macro_consts,
             macro_arith_values: BTreeMap::new(),
+            asm_outputs: BTreeMap::new(),
         };
 
         for stmt in prelude {
@@ -2757,6 +2753,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn lower_store(&mut self, op: &Op) {
         if op.operands.len() < 2 {
+            return;
+        }
+        if let Some(outputs) = self.asm_outputs.get(&op.operands[0]).cloned() {
+            self.asm_outputs.insert(op.operands[1].clone(), outputs);
             return;
         }
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
@@ -3939,6 +3939,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ))));
             return;
         }
+        if self.lower_extended_asm(op) {
+            return;
+        }
         let Some(result) = op.results.first() else {
             return;
         };
@@ -3953,6 +3956,160 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .unwrap_or(Expr::Value(RustValue::I64(0)))
             });
         self.materialize_expr(result, expr, op_result_type(op));
+    }
+
+    fn lower_extended_asm(&mut self, op: &Op) -> bool {
+        if op.results.is_empty() {
+            return false;
+        }
+        let Some(raw_template) = attr_str(op, "asm_string") else {
+            return false;
+        };
+        let Some(raw_constraints) = attr_str(op, "constraints") else {
+            return false;
+        };
+        let constraints = raw_constraints
+            .split(',')
+            .map(str::trim)
+            .take_while(|constraint| !constraint.starts_with("~{"))
+            .collect::<Vec<_>>();
+        let Some(output_count) = constraints.len().checked_sub(op.operands.len()) else {
+            return false;
+        };
+        if output_count == 0
+            || (output_count != op.results.len() && !(op.results.len() == 1 && output_count > 1))
+        {
+            return false;
+        }
+        if constraints[..output_count]
+            .iter()
+            .any(|constraint| !matches!(*constraint, "=r" | "=&r"))
+        {
+            return false;
+        }
+        let mut tied_outputs = vec![None; output_count];
+        for (operand_index, constraint) in constraints[output_count..].iter().enumerate() {
+            if let Ok(output_index) = constraint.parse::<usize>() {
+                if output_index >= output_count || tied_outputs[output_index].is_some() {
+                    return false;
+                }
+                tied_outputs[output_index] = Some(operand_index);
+            } else if !matches!(*constraint, "r" | "i") {
+                return false;
+            }
+        }
+        let Some(result_types) = asm_output_types(op, &self.parent.aliases, output_count)
+            .map(|types| types.into_iter().map(str::to_string).collect::<Vec<_>>())
+        else {
+            return false;
+        };
+        let operand_types = op.ty.as_deref().map(op_operand_types).unwrap_or_default();
+        if operand_types.len() != op.operands.len() {
+            return false;
+        }
+        if constraints[output_count..]
+            .iter()
+            .zip(&op.operands)
+            .any(|(constraint, operand)| {
+                *constraint == "i" && self.known_arith_value(operand).is_none()
+            })
+        {
+            return false;
+        }
+        let mut slot_to_rust = vec![0; constraints.len()];
+        for (output_index, slot) in slot_to_rust.iter_mut().take(output_count).enumerate() {
+            *slot = output_index;
+        }
+        let mut next_rust_operand = output_count;
+        for (operand_index, constraint) in constraints[output_count..].iter().enumerate() {
+            let slot = output_count + operand_index;
+            if let Ok(output_index) = constraint.parse::<usize>() {
+                slot_to_rust[slot] = output_index;
+            } else {
+                slot_to_rust[slot] = next_rust_operand;
+                next_rust_operand += 1;
+            }
+        }
+        let Ok(template) = String::from_utf8(decode_cir_string(raw_template)) else {
+            self.parent.ctx.diagnostics.error(
+                "lower: inline assembly template is not valid UTF-8",
+                op.loc.clone(),
+            );
+            return true;
+        };
+        let template_types = result_types
+            .iter()
+            .map(String::as_str)
+            .chain(operand_types.iter().copied())
+            .collect::<Vec<_>>();
+        let Some(template) =
+            translate_asm_template(&template, &slot_to_rust, &constraints, &template_types)
+        else {
+            return false;
+        };
+        let mut operands = Vec::new();
+        let mut output_names = Vec::new();
+        for (output_index, constraint) in constraints[..output_count].iter().enumerate() {
+            let name = self.next_temp();
+            self.push_stmt(Stmt::Let {
+                name: name.clone(),
+                mutable: false,
+                ty: Some(self.parent.rust_type(&result_types[output_index])),
+                init: None,
+            });
+            let output = Expr::Var(name.clone().into());
+            if let Some(operand_index) = tied_outputs[output_index] {
+                operands.push(AsmOperand::InOut {
+                    reg: AsmReg::Class("reg".into()),
+                    late: *constraint == "=r",
+                    input: self.operand_expr(&op.operands[operand_index]),
+                    output,
+                });
+            } else {
+                operands.push(AsmOperand::Out {
+                    reg: AsmReg::Class("reg".into()),
+                    late: *constraint == "=r",
+                    value: output,
+                });
+            }
+            output_names.push(name);
+        }
+        for (operand_index, constraint) in constraints[output_count..].iter().enumerate() {
+            if constraint.parse::<usize>().is_ok() {
+                continue;
+            }
+            let value = if *constraint == "i" {
+                let value = self.known_arith_value(&op.operands[operand_index]).unwrap();
+                AsmOperand::Const(int_value_expr(value))
+            } else {
+                AsmOperand::In {
+                    reg: AsmReg::Class("reg".into()),
+                    value: self.operand_expr(&op.operands[operand_index]),
+                }
+            };
+            operands.push(value);
+        }
+        self.push_stmt(Self::unsafe_stmt(Stmt::InlineAsm(InlineAsm {
+            template,
+            dialect: cir_asm_dialect(op),
+            operands,
+            raw: false,
+        })));
+        if output_count == op.results.len() {
+            for (result, name) in op.results.iter().zip(output_names) {
+                self.values
+                    .insert(result.clone(), Val::Expr(Expr::Var(name.clone().into())));
+                self.immutable_temps.insert(name);
+            }
+        } else {
+            let outputs = output_names
+                .iter()
+                .map(|name| Expr::Var(name.clone().into()))
+                .collect();
+            self.asm_outputs.insert(op.results[0].clone(), outputs);
+            self.immutable_temps.extend(output_names);
+        }
+        true
     }
 
     fn lower_eh_setjmp(&mut self, op: &Op) {
@@ -4667,6 +4824,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(base_ptr) = op.operands.first() else {
             return;
         };
+        if let Some(outputs) = self.asm_outputs.get(base_ptr)
+            && let Some(output) = aggregate_member_index(op).and_then(|index| outputs.get(index))
+        {
+            self.forward_values.insert(result.clone(), output.clone());
+            return;
+        }
         let base = self.place_or_deref_expr(base_ptr);
         let logical_field = sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string();
         let storage = self.bitfield_storage_member(op);
@@ -7265,6 +7428,120 @@ fn asm_template_has_placeholders(template: &str) -> bool {
     false
 }
 
+fn translate_asm_template(
+    template: &str,
+    slot_to_rust: &[usize],
+    constraints: &[&str],
+    types: &[&str],
+) -> Option<String> {
+    let mut translated = String::new();
+    let mut referenced_operands = BTreeSet::new();
+    let mut chars = template.char_indices().peekable();
+    while let Some((_, ch)) = chars.next() {
+        if ch != '$' {
+            translated.push(ch);
+            continue;
+        }
+        if chars.peek().is_some_and(|(_, next)| *next == '$') {
+            chars.next();
+            translated.push('$');
+            continue;
+        }
+        let (slot, suppress_modifier) = if chars.peek().is_some_and(|(_, next)| *next == '{') {
+            chars.next();
+            let mut body = String::new();
+            let mut closed = false;
+            for (_, next) in chars.by_ref() {
+                if next == '}' {
+                    closed = true;
+                    break;
+                }
+                body.push(next);
+            }
+            if !closed {
+                return None;
+            }
+            let (slot, modifier) = body
+                .split_once(':')
+                .map(|(slot, modifier)| (slot, Some(modifier)))
+                .unwrap_or((body.as_str(), None));
+            (slot.parse::<usize>().ok()?, modifier == Some("c"))
+        } else {
+            let mut digits = String::new();
+            while let Some((_, next)) = chars.peek() {
+                if !next.is_ascii_digit() {
+                    break;
+                }
+                digits.push(*next);
+                chars.next();
+            }
+            if digits.is_empty() {
+                return None;
+            }
+            (digits.parse::<usize>().ok()?, false)
+        };
+        let rust_slot = *slot_to_rust.get(slot)?;
+        let constraint = *constraints.get(slot)?;
+        referenced_operands.insert(rust_slot);
+        translated.push('{');
+        translated.push_str(&rust_slot.to_string());
+        if !suppress_modifier
+            && (constraint.contains('r')
+                || constraint
+                    .parse::<usize>()
+                    .ok()
+                    .and_then(|output| constraints.get(output))
+                    .is_some_and(|output| output.contains('r')))
+            && let Some(modifier) = rust_asm_register_modifier(types.get(slot).copied()?)
+        {
+            translated.push(':');
+            translated.push(modifier);
+        }
+        translated.push('}');
+    }
+    for rust_slot in 0..slot_to_rust.iter().copied().max()?.saturating_add(1) {
+        if referenced_operands.contains(&rust_slot) {
+            continue;
+        }
+        let source_slot = slot_to_rust
+            .iter()
+            .position(|mapped| *mapped == rust_slot)?;
+        translated.push_str("\n/* {");
+        translated.push_str(&rust_slot.to_string());
+        let constraint = constraints[source_slot];
+        if (constraint.contains('r')
+            || constraint
+                .parse::<usize>()
+                .ok()
+                .and_then(|output| constraints.get(output))
+                .is_some_and(|output| output.contains('r')))
+            && let Some(modifier) = rust_asm_register_modifier(types.get(source_slot).copied()?)
+        {
+            translated.push(':');
+            translated.push(modifier);
+        }
+        translated.push_str("} */");
+    }
+    Some(translated)
+}
+
+fn rust_asm_register_modifier(cir_ty: &str) -> Option<char> {
+    let bits = cir_ty
+        .trim()
+        .strip_prefix("!s")
+        .or_else(|| cir_ty.trim().strip_prefix("!u"))?
+        .strip_suffix('i')?
+        .parse::<u16>()
+        .ok()?;
+    match bits {
+        8 => Some('l'),
+        16 => Some('x'),
+        32 => Some('e'),
+        64 => Some('r'),
+        _ => None,
+    }
+}
+
 fn attr_symbol_ref<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
     attr_str(op, key)
         .and_then(|value| value.trim().strip_prefix('@'))
@@ -7589,6 +7866,27 @@ fn op_result_types(op: &Op) -> Vec<&str> {
     } else {
         vec![ret]
     }
+}
+
+fn asm_output_types<'a>(
+    op: &'a Op,
+    aliases: &'a BTreeMap<String, String>,
+    output_count: usize,
+) -> Option<Vec<&'a str>> {
+    let direct = op_result_types(op);
+    if direct.len() == output_count {
+        return Some(direct);
+    }
+    let aggregate = aliases.get(op_result_type(op)?)?.trim();
+    let fields = aggregate
+        .strip_prefix("!cir.struct<{")?
+        .strip_suffix("}>")?;
+    let fields = split_top_level(fields, ',')
+        .into_iter()
+        .map(str::trim)
+        .filter(|field| !field.is_empty())
+        .collect::<Vec<_>>();
+    (fields.len() == output_count).then_some(fields)
 }
 
 fn op_operand_types(ty: &str) -> Vec<&str> {

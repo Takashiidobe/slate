@@ -62,6 +62,7 @@ pub(in crate::fixups) fn nested_bodies_with_path(
         Stmt::Let { .. }
         | Stmt::Assign { .. }
         | Stmt::CompoundAssign { .. }
+        | Stmt::InlineAsm(_)
         | Stmt::Expr(_)
         | Stmt::Return(_)
         | Stmt::Break(_)
@@ -125,6 +126,7 @@ pub(in crate::fixups) fn nested_bodies_mut_with_path(
         Stmt::Let { .. }
         | Stmt::Assign { .. }
         | Stmt::CompoundAssign { .. }
+        | Stmt::InlineAsm(_)
         | Stmt::Expr(_)
         | Stmt::Return(_)
         | Stmt::Break(_)
@@ -188,6 +190,7 @@ pub(in crate::fixups) fn nested_body_vecs_mut_with_path(
         Stmt::Let { .. }
         | Stmt::Assign { .. }
         | Stmt::CompoundAssign { .. }
+        | Stmt::InlineAsm(_)
         | Stmt::Expr(_)
         | Stmt::Return(_)
         | Stmt::Break(_)
@@ -201,6 +204,11 @@ pub(in crate::fixups) fn stmt_expr_any(stmt: &Stmt, pred: &mut impl FnMut(&Expr)
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
             expr_any(target, pred) || expr_any(value, pred)
         }
+        Stmt::InlineAsm(asm) => asm.operands.iter().any(|operand| {
+            let mut found = false;
+            operand.visit_exprs(&mut |expr| found |= expr_any(expr, pred));
+            found
+        }),
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_any(expr, pred),
         Stmt::If {
             cond,
@@ -383,6 +391,11 @@ pub(in crate::fixups) fn stmt_exprs_mut_with(
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
             exprs_mut_with(target, f);
             exprs_mut_with(value, f);
+        }
+        Stmt::InlineAsm(asm) => {
+            for operand in &mut asm.operands {
+                operand.visit_exprs_mut(&mut |expr| exprs_mut_with(expr, f));
+            }
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => exprs_mut_with(expr, f),
         Stmt::If {
@@ -609,6 +622,15 @@ pub(in crate::fixups) fn stmt_exprs_mut_with_path(
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
             stmt_root_expr_mut_with_path(target, 0, path, f);
             stmt_root_expr_mut_with_path(value, 1, path, f);
+        }
+        Stmt::InlineAsm(asm) => {
+            let mut index = 0;
+            for operand in &mut asm.operands {
+                operand.visit_exprs_mut(&mut |expr| {
+                    stmt_root_expr_mut_with_path(expr, index, path, f);
+                    index += 1;
+                });
+            }
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
             stmt_root_expr_mut_with_path(expr, 0, path, f);

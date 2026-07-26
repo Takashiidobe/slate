@@ -114,6 +114,7 @@ impl<'a> Collector<'a> {
                 self.collect_counted_loops(body, path, PathSegment::LabeledBody)
             }
             Stmt::Let { init: None, .. }
+            | Stmt::InlineAsm(_)
             | Stmt::Return(None)
             | Stmt::Break(_)
             | Stmt::Continue(_) => {}
@@ -433,6 +434,7 @@ impl<'a> LoopSliceUse<'a> {
                 self.expr(expr) || arms.iter().any(|arm| self.body(&arm.body))
             }
             Stmt::Let { init: None, .. }
+            | Stmt::InlineAsm(_)
             | Stmt::Return(None)
             | Stmt::Break(_)
             | Stmt::Continue(_) => false,

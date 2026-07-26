@@ -156,6 +156,11 @@ impl<'a> Collector<'a> {
                 self.place(target, PlaceAccess::ReadWrite, path);
                 self.expr(value, path);
             }
+            Stmt::InlineAsm(asm) => {
+                for operand in &asm.operands {
+                    operand.visit_exprs(&mut |expr| self.expr(expr, path));
+                }
+            }
             Stmt::Expr(expr) | Stmt::Return(Some(expr)) => self.expr(expr, path),
             Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
             Stmt::If {

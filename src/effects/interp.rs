@@ -8,9 +8,9 @@ use crate::effects::{
     call_summary,
 };
 use crate::rust_ast::{
-    AtomicOrdering, AtomicPlace, AtomicRmwOp, Attr, BinOp, Block, EnumDef, Expr, ExternDecl, FnDef,
-    IndentStmt, Item, Label, Path, Pattern, Prim, Program, Repr, Stmt, StructDef, StructFields,
-    Type, UnaryOp,
+    AsmOperand, AtomicOrdering, AtomicPlace, AtomicRmwOp, Attr, BinOp, Block, EnumDef, Expr,
+    ExternDecl, FnDef, IndentStmt, Item, Label, Path, Pattern, Prim, Program, Repr, Stmt,
+    StructDef, StructFields, Type, UnaryOp,
 };
 
 pub fn interpret(f: &FnDef) -> EResult<EffectTrace> {
@@ -92,6 +92,7 @@ struct Interp {
     globals: HashMap<String, Location>,
     scalar_locs: HashMap<String, Location>,
     pointer_elem_sizes: HashMap<String, u64>,
+    scalar_types: HashMap<String, Type>,
     once_locks: HashMap<String, OnceLockBinding>,
     funcs: HashMap<String, FnDef>,
     asm_functions: HashMap<String, Option<Type>>,
@@ -567,6 +568,41 @@ impl Interp {
                 };
                 self.trace.push(Effect::Call {
                     name: format!("core::arch::asm:{template}"),
+                    args: Vec::new(),
+                });
+                Ok(Flow::Normal)
+            }
+            Stmt::InlineAsm(asm) => {
+                for operand in &asm.operands {
+                    match operand {
+                        AsmOperand::In { value, .. } | AsmOperand::Const(value) => {
+                            self.eval(value)?;
+                        }
+                        AsmOperand::Out { value, .. } => {
+                            let Expr::Var(name) = value else {
+                                return Err(EffectError::unsupported(
+                                    Construct::UnsupportedExpr,
+                                    value.clone(),
+                                ));
+                            };
+                            let output =
+                                opaque_asm_return_value(self.scalar_types.get(name.as_str()))?;
+                            self.scalars.insert(name.to_string(), output);
+                        }
+                        AsmOperand::InOut { input, output, .. } => {
+                            let value = self.eval(input)?;
+                            let Expr::Var(name) = output else {
+                                return Err(EffectError::unsupported(
+                                    Construct::UnsupportedExpr,
+                                    output.clone(),
+                                ));
+                            };
+                            self.scalars.insert(name.to_string(), value);
+                        }
+                    }
+                }
+                self.trace.push(Effect::Call {
+                    name: format!("core::arch::asm:{}", asm.template),
                     args: Vec::new(),
                 });
                 Ok(Flow::Normal)
@@ -4431,6 +4467,7 @@ impl Interp {
 
     fn record_decl_type(&mut self, name: &str, ty: &Type) {
         let ty = ty.peel_aligned();
+        self.scalar_types.insert(name.to_string(), ty.clone());
         if let Some(size) = pointer_elem_size_from_type(ty) {
             self.pointer_elem_sizes.insert(name.to_string(), size);
         }

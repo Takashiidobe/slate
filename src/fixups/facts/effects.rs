@@ -156,6 +156,12 @@ impl Collector {
                 effects.extend(self.expr(target, path));
                 effects.extend(self.expr(value, path));
             }
+            Stmt::InlineAsm(asm) => {
+                effects.insert(EffectKind::MacroExpansion);
+                for operand in &asm.operands {
+                    operand.visit_exprs(&mut |expr| effects.extend(self.expr(expr, path)));
+                }
+            }
             Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
                 effects.extend(self.expr(expr, path));
             }

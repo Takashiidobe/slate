@@ -13,10 +13,10 @@
 use std::fmt::{self, Write};
 
 use crate::rust_ast::{
-    Abi, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr, Block, Cfg, Comment,
-    CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock, ImplItem, IndentStmt,
-    Item, Method, Path, Program, RecordDef, Repr, RustValue, SelfKind, Stmt, StructDef,
-    StructFields, TraitBound, Type,
+    Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
+    Attr, Block, Cfg, Comment, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock,
+    ImplItem, IndentStmt, Item, Method, Path, Program, RecordDef, Repr, RustValue, SelfKind, Stmt,
+    StructDef, StructFields, TraitBound, Type,
 };
 
 const INDENT: &str = "    ";
@@ -672,6 +672,66 @@ impl<W: Write> Codegen<W> {
                 self.expr(value)?;
                 self.out.write_str(";\n")
             }
+            Stmt::InlineAsm(asm) => {
+                self.out.write_str(&pad)?;
+                self.out.write_str("core::arch::asm!(")?;
+                self.expr(&Expr::Str(asm.template.clone()))?;
+                for operand in &asm.operands {
+                    self.out.write_str(", ")?;
+                    match operand {
+                        AsmOperand::In { reg, value } => {
+                            self.out.write_str("in(")?;
+                            self.asm_reg(reg)?;
+                            self.out.write_str(") ")?;
+                            self.expr(value)?;
+                        }
+                        AsmOperand::Out { reg, late, value } => {
+                            if *late {
+                                self.out.write_str("lateout(")?;
+                            } else {
+                                self.out.write_str("out(")?;
+                            }
+                            self.asm_reg(reg)?;
+                            self.out.write_str(") ")?;
+                            self.expr(value)?;
+                        }
+                        AsmOperand::InOut {
+                            reg,
+                            late,
+                            input,
+                            output,
+                        } => {
+                            if *late {
+                                self.out.write_str("inlateout(")?;
+                            } else {
+                                self.out.write_str("inout(")?;
+                            }
+                            self.asm_reg(reg)?;
+                            self.out.write_str(") ")?;
+                            self.expr(input)?;
+                            self.out.write_str(" => ")?;
+                            self.expr(output)?;
+                        }
+                        AsmOperand::Const(value) => {
+                            self.out.write_str("const ")?;
+                            self.expr(value)?;
+                        }
+                    }
+                }
+                let mut options = Vec::new();
+                if matches!(asm.dialect, Some(AsmDialect::Att)) {
+                    options.push("att_syntax");
+                }
+                if asm.raw {
+                    options.push("raw");
+                }
+                if !options.is_empty() {
+                    self.out.write_str(", options(")?;
+                    self.out.write_str(&options.join(", "))?;
+                    self.out.write_char(')')?;
+                }
+                self.out.write_str(");\n")
+            }
             Stmt::Expr(e) => {
                 self.out.write_str(&pad)?;
                 self.expr(e)?;
@@ -764,6 +824,17 @@ impl<W: Write> Codegen<W> {
                 writeln!(self.out, "{pad}{{")?;
                 self.block(b, depth + 1)?;
                 writeln!(self.out, "{pad}}}")
+            }
+        }
+    }
+
+    fn asm_reg(&mut self, reg: &AsmReg) -> fmt::Result {
+        match reg {
+            AsmReg::Class(class) => self.out.write_str(class),
+            AsmReg::Explicit(reg) => {
+                self.out.write_char('"')?;
+                self.out.write_str(reg)?;
+                self.out.write_char('"')
             }
         }
     }
