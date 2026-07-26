@@ -89,7 +89,7 @@ fn assert_all_selected_fixtures_match() {
 }
 
 #[test]
-// #[ignore = "diagnostic ratchet: run explicitly while expanding raw-to-fixuped Rust effects coverage"]
+#[ignore = "diagnostic ratchet: run explicitly while expanding raw-to-fixuped Rust effects coverage"]
 fn all_fixtures_preserve_rust_effects_through_fixups() {
     assert_all_selected_fixtures_match();
 }
