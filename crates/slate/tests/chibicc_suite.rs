@@ -69,10 +69,7 @@ fn run_bucket(bucket: &str) -> Vec<(String, Result<(), String>)> {
         .join(bucket);
     std::fs::create_dir_all(&work).expect("create work dir");
 
-    let attempts: Vec<Attempt> = cases
-        .iter()
-        .map(|(name, dir)| attempt_translate(name, dir, &work))
-        .collect();
+    let attempts = support::parallel_map(&cases, |(name, dir)| attempt_translate(name, dir, &work));
 
     let batch_cases: Vec<support::MultiBinCase> = attempts
         .iter()
@@ -91,37 +88,34 @@ fn run_bucket(bucket: &str) -> Vec<(String, Result<(), String>)> {
         support::build_multi_bin_batch(&batch_cases, &project).expect("spawn batched cargo build")
     };
 
-    attempts
-        .into_iter()
-        .map(|attempt| {
-            let result = (|| -> Result<(), String> {
-                if attempt.multi_bin.is_none() {
-                    return Err(format!(
-                        "translate-project failed: {}",
-                        attempt
-                            .translate_error
-                            .as_deref()
-                            .unwrap_or("unknown error")
-                    ));
-                }
-                let rs_bin = support::multi_bin_batch_path(&project, &attempt.name);
-                if !rs_bin.is_file() {
-                    return Err(format!("Rust build failed:\n{build_stderr}"));
-                }
-                let c_bin = work.join(format!("{}_c", attempt.name));
-                support::compile_c_multi(&c_sources(&attempt.dir), &c_bin)?;
-                let run_dir = work.join("runs").join(&attempt.name);
-                let _ = std::fs::remove_dir_all(&run_dir);
-                std::fs::create_dir_all(&run_dir)
-                    .map_err(|e| format!("create {}: {e}", run_dir.display()))?;
-                let cfg = support::RunConfig::default();
-                let c = support::run_with_config(&c_bin, &cfg, &run_dir)?;
-                let r = support::run_with_config(&rs_bin, &cfg, &run_dir)?;
-                support::compare_runs(&c, &r, false)
-            })();
-            (attempt.name, result)
-        })
-        .collect()
+    support::parallel_map(&attempts, |attempt| {
+        let result = (|| -> Result<(), String> {
+            if attempt.multi_bin.is_none() {
+                return Err(format!(
+                    "translate-project failed: {}",
+                    attempt
+                        .translate_error
+                        .as_deref()
+                        .unwrap_or("unknown error")
+                ));
+            }
+            let rs_bin = support::multi_bin_batch_path(&project, &attempt.name);
+            if !rs_bin.is_file() {
+                return Err(format!("Rust build failed:\n{build_stderr}"));
+            }
+            let c_bin = work.join(format!("{}_c", attempt.name));
+            support::compile_c_multi(&c_sources(&attempt.dir), &c_bin)?;
+            let run_dir = work.join("runs").join(&attempt.name);
+            let _ = std::fs::remove_dir_all(&run_dir);
+            std::fs::create_dir_all(&run_dir)
+                .map_err(|e| format!("create {}: {e}", run_dir.display()))?;
+            let cfg = support::RunConfig::default();
+            let c = support::run_with_config(&c_bin, &cfg, &run_dir)?;
+            let r = support::run_with_config(&rs_bin, &cfg, &run_dir)?;
+            support::compare_runs(&c, &r, false)
+        })();
+        (attempt.name.clone(), result)
+    })
 }
 
 #[test]

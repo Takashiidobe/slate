@@ -570,7 +570,7 @@ fn unsupported_embed_input_fails_explicitly() {
 #[test]
 fn directive_translated_fixtures_compile_for_current_host() {
     let work_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/directive-translate-compile");
-    for name in [
+    let names = [
         "os_targets.c",
         "win64_target.c",
         "unix_target.c",
@@ -589,12 +589,24 @@ fn directive_translated_fixtures_compile_for_current_host() {
         "warning_directives.c",
         "diagnostic_pragmas.c",
         "unsupported_conditional.c",
-    ] {
+    ];
+    let cases = support::parallel_map(&names, |name| {
         let rust = translate_directives(name);
         let rs = write_generated(name, &rust);
-        let package = format!("cfg_{}", name.trim_end_matches(".c"));
-        support::compile_rs_cargo(&rs, &work_dir, &package)
-            .unwrap_or_else(|err| panic!("generated cfg Rust did not compile for {name}:\n{err}"));
+        support::RustCase {
+            name: format!("cfg_{}", name.trim_end_matches(".c")),
+            rs_src: rs,
+        }
+    });
+    let failures: Vec<String> = support::compile_rs_batch(&cases, &work_dir)
+        .into_iter()
+        .filter_map(|(name, result)| result.err().map(|err| format!("{name}:\n{err}")))
+        .collect();
+    if !failures.is_empty() {
+        panic!(
+            "generated cfg Rust did not compile:\n{}",
+            failures.join("\n\n")
+        );
     }
 }
 

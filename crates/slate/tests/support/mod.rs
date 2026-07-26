@@ -1,12 +1,14 @@
 #![allow(dead_code)]
 
 pub mod alive;
-pub mod cgen;
 
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::mpsc;
+use std::thread;
 
 pub struct Run {
     stdout: Vec<u8>,
@@ -24,6 +26,61 @@ fn cargo() -> String {
 
 fn aligned_path() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/aligned")
+}
+
+pub fn test_jobs() -> usize {
+    std::env::var("SLATE_TEST_JOBS")
+        .ok()
+        .and_then(|value| value.parse().ok())
+        .filter(|jobs| *jobs > 0)
+        .unwrap_or_else(|| {
+            thread::available_parallelism()
+                .map(usize::from)
+                .unwrap_or(1)
+                .div_ceil(4)
+                .clamp(1, 8)
+        })
+}
+
+pub fn parallel_map<T, R, F>(items: &[T], f: F) -> Vec<R>
+where
+    T: Sync,
+    R: Send,
+    F: Fn(&T) -> R + Sync,
+{
+    if items.is_empty() {
+        return Vec::new();
+    }
+    let jobs = test_jobs().min(items.len());
+    let next = AtomicUsize::new(0);
+    let (tx, rx) = mpsc::channel();
+    thread::scope(|scope| {
+        for _ in 0..jobs {
+            let tx = tx.clone();
+            let next = &next;
+            let f = &f;
+            scope.spawn(move || {
+                loop {
+                    let index = next.fetch_add(1, Ordering::Relaxed);
+                    if index >= items.len() {
+                        break;
+                    }
+                    if tx.send((index, f(&items[index]))).is_err() {
+                        break;
+                    }
+                }
+            });
+        }
+    });
+    drop(tx);
+    let mut results: Vec<Option<R>> = (0..items.len()).map(|_| None).collect();
+    for (index, result) in rx {
+        results[index] = Some(result);
+    }
+    results
+        .into_iter()
+        .map(|result| result.expect("parallel worker did not produce a result"))
+        .collect()
 }
 
 /// Path to the `alive-tv` binary used for translation-validation regression
@@ -210,6 +267,11 @@ pub struct Case {
     pub config: RunConfig,
 }
 
+pub struct RustCase {
+    pub name: String,
+    pub rs_src: PathBuf,
+}
+
 #[derive(Default, Clone)]
 pub struct RunConfig {
     pub args: Vec<String>,
@@ -241,42 +303,74 @@ pub fn compare_batch(cases: &[Case], work_dir: &Path) -> Vec<(String, Result<(),
     // preserve the project so Cargo can reuse target artifacts across runs.
     let project = work_dir.join("batch_cargo");
     let bin_dir = project.join("src/bin");
+    let rust_cases: Vec<RustCase> = cases
+        .iter()
+        .map(|case| RustCase {
+            name: case.name.clone(),
+            rs_src: case.rs_src.clone(),
+        })
+        .collect();
 
-    let batch_bins = build_batch(cases, &project, &bin_dir);
+    let batch_bins = build_batch(&rust_cases, &project, &bin_dir);
     let target_dir = project.join("target");
 
-    cases
-        .iter()
-        .map(|case| {
-            let result = (|| {
-                let bn = bin_name(&case.name);
-                let rs_bin = match &batch_bins {
-                    Ok(()) => target_dir.join("debug").join(&bn),
-                    // fall back to an isolated build to pinpoint this case
-                    Err(_) => compile_rs_cargo(&case.rs_src, work_dir, &format!("{bn}_rs"))?,
-                };
-                let c_bin = work_dir.join(format!("{}_c", bn));
-                compile_c(&case.c_src, &c_bin)?;
-                let run_dir = work_dir.join("runs").join(&bn);
-                if run_dir.exists() {
-                    std::fs::remove_dir_all(&run_dir)
-                        .map_err(|e| format!("remove {}: {e}", run_dir.display()))?;
+    parallel_map(cases, |case| {
+        let result = (|| {
+            let bn = bin_name(&case.name);
+            let rs_bin = match &batch_bins {
+                Ok(()) => target_dir.join("debug").join(&bn),
+                // fall back to an isolated build to pinpoint this case
+                Err(_) => compile_rs_cargo(&case.rs_src, work_dir, &format!("{bn}_rs"))?,
+            };
+            let c_bin = work_dir.join(format!("{}_c", bn));
+            compile_c(&case.c_src, &c_bin)?;
+            let run_dir = work_dir.join("runs").join(&bn);
+            if run_dir.exists() {
+                std::fs::remove_dir_all(&run_dir)
+                    .map_err(|e| format!("remove {}: {e}", run_dir.display()))?;
+            }
+            std::fs::create_dir_all(&run_dir)
+                .map_err(|e| format!("create {}: {e}", run_dir.display()))?;
+            compare_runs(
+                &run_with_config(&c_bin, &case.config, &run_dir)?,
+                &run_with_config(&rs_bin, &case.config, &run_dir)?,
+                case.config.compare_stderr,
+            )
+        })();
+        (case.name.clone(), result)
+    })
+}
+
+pub fn compile_rs_batch(cases: &[RustCase], work_dir: &Path) -> Vec<(String, Result<(), String>)> {
+    if cases.is_empty() {
+        return Vec::new();
+    }
+    let project = work_dir.join("batch_cargo");
+    let bin_dir = project.join("src/bin");
+    let batch = build_batch(cases, &project, &bin_dir);
+    let target_dir = project.join("target");
+    parallel_map(cases, |case| {
+        let bn = bin_name(&case.name);
+        let result = match &batch {
+            Ok(()) => {
+                let bin = target_dir.join("debug").join(&bn);
+                if bin.is_file() {
+                    Ok(())
+                } else {
+                    Err(format!(
+                        "Rust batch build did not produce {}",
+                        bin.display()
+                    ))
                 }
-                std::fs::create_dir_all(&run_dir)
-                    .map_err(|e| format!("create {}: {e}", run_dir.display()))?;
-                compare_runs(
-                    &run_with_config(&c_bin, &case.config, &run_dir)?,
-                    &run_with_config(&rs_bin, &case.config, &run_dir)?,
-                    case.config.compare_stderr,
-                )
-            })();
-            (case.name.clone(), result)
-        })
-        .collect()
+            }
+            Err(_) => compile_rs_cargo(&case.rs_src, work_dir, &format!("{bn}_rs")).map(|_| ()),
+        };
+        (case.name.clone(), result)
+    })
 }
 
 /// Write one crate with a `src/bin/<name>.rs` per case and build them together.
-fn build_batch(cases: &[Case], project: &Path, bin_dir: &Path) -> Result<(), String> {
+fn build_batch(cases: &[RustCase], project: &Path, bin_dir: &Path) -> Result<(), String> {
     std::fs::create_dir_all(bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
         project.join("Cargo.toml"),
@@ -333,6 +427,8 @@ overflow-checks = false
     let o = Command::new(cargo())
         .args(["build", "--quiet", "--manifest-path"])
         .arg(project.join("Cargo.toml"))
+        .arg("--jobs")
+        .arg(test_jobs().to_string())
         .arg("--target-dir")
         .arg(project.join("target"))
         .output()
@@ -416,6 +512,8 @@ overflow-checks = false
     let o = Command::new(cargo())
         .args(["build", "--quiet", "--keep-going", "--manifest-path"])
         .arg(project.join("Cargo.toml"))
+        .arg("--jobs")
+        .arg(test_jobs().to_string())
         .arg("--target-dir")
         .arg(project.join("target"))
         .output()
@@ -575,7 +673,7 @@ fn render_long_double_shim_trampoline(name: &str) -> Option<String> {
     ))
 }
 
-fn write_if_changed(path: impl AsRef<Path>, contents: &[u8]) -> std::io::Result<bool> {
+pub fn write_if_changed(path: impl AsRef<Path>, contents: &[u8]) -> std::io::Result<bool> {
     let path = path.as_ref();
     if std::fs::read(path).is_ok_and(|current| current == contents) {
         return Ok(false);
@@ -638,39 +736,4 @@ pub fn translate(c_src: &Path, rs_out: &Path) -> Result<(), String> {
     write_if_changed(rs_out, &o.stdout)
         .map(|_| ())
         .map_err(|e| format!("write {}: {e}", rs_out.display()))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::time::{SystemTime, UNIX_EPOCH};
-
-    fn temp_path(name: &str) -> PathBuf {
-        let nonce = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        std::env::temp_dir().join(format!(
-            "slate-support-test-{}-{nonce}-{name}",
-            std::process::id()
-        ))
-    }
-
-    #[test]
-    fn write_if_changed_reports_unchanged_files() {
-        let path = temp_path("unchanged");
-        assert!(write_if_changed(&path, b"same").unwrap());
-        assert!(!write_if_changed(&path, b"same").unwrap());
-        assert_eq!(std::fs::read(&path).unwrap(), b"same");
-        std::fs::remove_file(&path).unwrap();
-    }
-
-    #[test]
-    fn write_if_changed_rewrites_changed_files() {
-        let path = temp_path("changed");
-        assert!(write_if_changed(&path, b"old").unwrap());
-        assert!(write_if_changed(&path, b"new").unwrap());
-        assert_eq!(std::fs::read(&path).unwrap(), b"new");
-        std::fs::remove_file(&path).unwrap();
-    }
 }
