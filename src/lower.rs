@@ -273,9 +273,16 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         .map(|enm| (sanitize_ident(&enm.name).into_string(), enm.clone()))
         .collect();
     for record in &anon_records {
-        records
-            .entry(sanitize_ident(&record.name).into_string())
-            .or_insert_with(|| record.clone());
+        let name = sanitize_ident(&record.name).into_string();
+        if record
+            .fields
+            .iter()
+            .any(|field| field.name.starts_with("__bitfield_"))
+        {
+            records.insert(name, record.clone());
+        } else {
+            records.entry(name).or_insert_with(|| record.clone());
+        }
     }
     let mut lowerer = Lowerer {
         ctx,
@@ -1470,15 +1477,20 @@ impl<'a> Lowerer<'a> {
         &self,
         record: &crate::c_ast::Record,
     ) -> Option<Vec<crate::c_ast::Decl>> {
-        if record.fields.is_empty() || record.fields.iter().any(|field| field.bit_width.is_none()) {
+        if record.fields.is_empty() || record.fields.iter().all(|field| field.bit_width.is_none()) {
             return None;
         }
-        let expanded = self
-            .aliases
-            .values()
-            .find(|ty| cir_record_name(ty) == Some(record.name.as_str()))?;
+        let expanded = self.aliases.values().find(|ty| {
+            cir_record_name(ty).is_some_and(|name| {
+                sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str()
+            })
+        })?;
         let open = expanded.find('{')?;
         let close = expanded.rfind('}')?;
+        let preserve_field_names = record
+            .fields
+            .iter()
+            .any(|field| field.name.starts_with("__bitfield_"));
         Some(
             split_top_level(&expanded[open + 1..close], ',')
                 .into_iter()
@@ -1486,7 +1498,15 @@ impl<'a> Lowerer<'a> {
                 .filter(|ty| !ty.is_empty())
                 .enumerate()
                 .map(|(index, ty)| crate::c_ast::Decl {
-                    name: format!("__bitfield_{index}"),
+                    name: if preserve_field_names {
+                        record
+                            .fields
+                            .get(index)
+                            .map(|field| field.name.clone())
+                            .unwrap_or_else(|| format!("__bitfield_{index}"))
+                    } else {
+                        format!("__bitfield_{index}")
+                    },
                     comments: Vec::new(),
                     ty: cir_type_to_ctype(ty, &self.aliases),
                     bit_width: None,
@@ -4651,17 +4671,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .and_then(|(inputs, _)| inputs.trim().strip_prefix('(')?.strip_suffix(')'))
             .and_then(|inputs| split_top_level(inputs, ',').first().copied())
             .and_then(cir_ptr_pointee)
+            .map(|ty| {
+                self.parent
+                    .aliases
+                    .get(ty)
+                    .map(String::as_str)
+                    .unwrap_or(ty)
+            })
             .and_then(cir_record_name)?;
         let record = self
             .parent
             .records
             .get(&sanitize_ident(record_name).into_string())?;
-        self.parent.bitfield_storage_fields(record)?;
+        let fields = self.parent.bitfield_storage_fields(record)?;
         let index = aggregate_member_index(op)?;
+        let field = fields.get(index)?;
         let ty = op_result_type(op)
             .and_then(cir_ptr_pointee)
             .map(|ty| self.parent.rust_type(ty))?;
-        Some((format!("__bitfield_{index}"), ty))
+        Some((sanitize_ident(&field.name).into_string(), ty))
     }
 
     fn lower_extract_member(&mut self, op: &Op) {
@@ -8178,6 +8206,44 @@ fn collect_anon_record_info(
     }
 }
 
+fn collect_anon_bitfield_slots(
+    ops: &[Op],
+    aliases: &BTreeMap<String, String>,
+    member_slots: &mut BTreeMap<String, (String, i64)>,
+    bitfield_slots: &mut BTreeSet<(String, i64)>,
+) {
+    for op in ops {
+        if op.kind() == CirOpKind::GetMember
+            && let (Some(result), Some(key), Some(index)) = (
+                op.results.first(),
+                op.ty
+                    .as_deref()
+                    .and_then(split_top_level_arrow)
+                    .and_then(|(inputs, _)| inputs.trim().strip_prefix('(')?.strip_suffix(')'))
+                    .and_then(|inputs| split_top_level(inputs, ',').first().copied())
+                    .and_then(cir_ptr_pointee)
+                    .and_then(|pointee| anon_alias_key(pointee, aliases)),
+                op.attrs.get("index_attr").and_then(Attr::as_int),
+            )
+        {
+            member_slots.insert(result.clone(), (key, index));
+        }
+        if matches!(op.kind(), CirOpKind::GetBitfield | CirOpKind::SetBitfield)
+            && let Some(slot) = op
+                .operands
+                .first()
+                .and_then(|operand| member_slots.get(operand))
+        {
+            bitfield_slots.insert(slot.clone());
+        }
+        for region in &op.regions {
+            for block in &region.blocks {
+                collect_anon_bitfield_slots(&block.ops, aliases, member_slots, bitfield_slots);
+            }
+        }
+    }
+}
+
 /// Recover the function-local anonymous record types the CIR uses as locals but
 /// that never surface as named Clang AST records (libyaml's STACK/QUEUE macro
 /// locals): field types from the type-alias table, field names from
@@ -8185,6 +8251,14 @@ fn collect_anon_record_info(
 pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
     let mut needed = BTreeSet::new();
     let mut field_names = BTreeMap::new();
+    let mut bitfield_slots = BTreeSet::new();
+    let mut member_slots = BTreeMap::new();
+    collect_anon_bitfield_slots(
+        &module.ops,
+        &module.aliases,
+        &mut member_slots,
+        &mut bitfield_slots,
+    );
     collect_anon_record_info(&module.ops, &module.aliases, &mut needed, &mut field_names);
 
     let mut frontier: Vec<String> = needed.iter().cloned().collect();
@@ -8224,13 +8298,19 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
             .filter(|s| !s.is_empty())
             .enumerate()
             .map(|(i, field_ty)| crate::c_ast::Decl {
-                name: field_names
-                    .get(&(key.clone(), i as i64))
-                    .cloned()
-                    .unwrap_or_else(|| format!("f{i}")),
+                name: if bitfield_slots.contains(&(key.clone(), i as i64)) {
+                    format!("__bitfield_{i}")
+                } else {
+                    field_names
+                        .get(&(key.clone(), i as i64))
+                        .cloned()
+                        .unwrap_or_else(|| format!("f{i}"))
+                },
                 comments: Vec::new(),
                 ty: cir_type_to_ctype(field_ty, &module.aliases),
-                bit_width: None,
+                bit_width: bitfield_slots
+                    .contains(&(key.clone(), i as i64))
+                    .then_some(0),
             })
             .collect();
         records.push(crate::c_ast::Record {
