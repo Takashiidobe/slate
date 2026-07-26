@@ -6,9 +6,9 @@ use crate::ctx::Ctx;
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use crate::rust_ast::{
     Abi, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType,
-    CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
-    FnDef, FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, Item, Label, Lint,
-    MatchArm, Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue,
+    Cfg, CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl,
+    Feature, FnDef, FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, Item, Label,
+    Lint, MatchArm, Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue,
     SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, UsedKind,
     Visibility,
 };
@@ -49,6 +49,12 @@ pub struct ProjectInfo {
 const WEAK_ANY_LINKAGE: i64 = 4;
 const HIDDEN_VISIBILITY: i64 = 1;
 const PROTECTED_VISIBILITY: i64 = 2;
+
+#[derive(Clone, Copy)]
+enum AsmDialect {
+    Att,
+    Intel,
+}
 
 /// CIR encodes external linkage as `linkage = 0`; weak definitions are external too.
 fn linkage_is_external(op: &Op) -> bool {
@@ -856,6 +862,20 @@ impl<'a> Lowerer<'a> {
         };
 
         let ops = region_ops(module_op);
+        let mut assembly_strings = Vec::new();
+        collect_assembly_strings(module_op, &mut assembly_strings);
+        let asm_referenced_globals: BTreeSet<String> = ops
+            .iter()
+            .filter(|op| op.kind() == CirOpKind::Global)
+            .filter_map(|op| attr_str(op, "sym_name"))
+            .filter(|name| {
+                assembly_strings
+                    .iter()
+                    .any(|assembly| assembly_mentions_symbol(assembly, name))
+            })
+            .map(|name| sanitize_ident(name).into_string())
+            .collect();
+        items.extend(lower_module_asm(module_op, &mut self.ctx.diagnostics));
         let has_main = ops.iter().any(|op| {
             op.kind() == CirOpKind::Func
                 && attr_str(op, "sym_name") == Some("main")
@@ -889,7 +909,7 @@ impl<'a> Lowerer<'a> {
             }
             items.push(Item::Static {
                 attrs: symbol_attrs(
-                    global_external_def,
+                    global_external_def || asm_referenced_globals.contains(&global.name),
                     global.weak,
                     global.section.as_deref(),
                     &global.used,
@@ -3901,6 +3921,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_asm(&mut self, op: &Op) {
+        if op.results.is_empty()
+            && op.operands.is_empty()
+            && let Some(raw) = attr_str(op, "asm_string")
+            && !asm_template_has_placeholders(raw)
+        {
+            let Ok(template) = String::from_utf8(decode_cir_string(raw)) else {
+                self.parent.ctx.diagnostics.error(
+                    "lower: inline assembly template is not valid UTF-8",
+                    op.loc.clone(),
+                );
+                return;
+            };
+            self.push_stmt(Self::unsafe_stmt(Stmt::Expr(asm_macro_expr(
+                template.replace("$$", "$"),
+                cir_asm_dialect(op),
+            ))));
+            return;
+        }
         let Some(result) = op.results.first() else {
             return;
         };
@@ -7074,6 +7112,157 @@ fn collect_region_ops_recursive<'a>(op: &'a Op, out: &mut Vec<&'a Op>) {
 
 fn attr_str<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
     op.attrs.get(key).and_then(Attr::as_str)
+}
+
+fn collect_assembly_strings<'a>(op: &'a Op, out: &mut Vec<&'a str>) {
+    if op.kind() == CirOpKind::Asm
+        && let Some(template) = attr_str(op, "asm_string")
+    {
+        out.push(template);
+    }
+    if let Some(Attr::Array(values)) = op.attrs.get("cir.module_asm") {
+        out.extend(values.iter().filter_map(Attr::as_str));
+    }
+    for region in &op.regions {
+        for block in &region.blocks {
+            for child in &block.ops {
+                collect_assembly_strings(child, out);
+            }
+        }
+    }
+}
+
+fn assembly_mentions_symbol(assembly: &str, symbol: &str) -> bool {
+    assembly.match_indices(symbol).any(|(start, _)| {
+        let before = assembly[..start].chars().next_back();
+        let after = assembly[start + symbol.len()..].chars().next();
+        !before.is_some_and(is_asm_symbol_char) && !after.is_some_and(is_asm_symbol_char)
+    })
+}
+
+fn is_asm_symbol_char(ch: char) -> bool {
+    ch.is_ascii_alphanumeric() || matches!(ch, '_' | '.' | '$')
+}
+
+fn lower_module_asm(module_op: &Op, diagnostics: &mut crate::ctx::Diagnostics) -> Vec<Item> {
+    let Some(Attr::Array(values)) = module_op.attrs.get("cir.module_asm") else {
+        return Vec::new();
+    };
+    let mut templates = Vec::new();
+    for raw in values.iter().filter_map(Attr::as_str) {
+        match String::from_utf8(decode_cir_string(raw)) {
+            Ok(template) if !template.is_empty() => templates.push(template),
+            Ok(_) => {}
+            Err(_) => diagnostics.error(
+                "lower: file-scope assembly template is not valid UTF-8",
+                module_op.loc.clone(),
+            ),
+        }
+    }
+    if templates.is_empty() {
+        return Vec::new();
+    }
+    let Some(triple) = attr_str(module_op, "cir.triple") else {
+        diagnostics.error(
+            "lower: file-scope assembly has no CIR target triple",
+            module_op.loc.clone(),
+        );
+        return Vec::new();
+    };
+    let Some(target_arch) = rust_target_arch(triple) else {
+        diagnostics.error(
+            format!("lower: unsupported file-scope assembly target `{triple}`"),
+            module_op.loc.clone(),
+        );
+        return Vec::new();
+    };
+    let dialect = matches!(target_arch, "x86" | "x86_64").then_some(AsmDialect::Att);
+    templates
+        .iter()
+        .map(|template| Item::Cfg {
+            cfg: Cfg::Opt {
+                key: "target_arch".into(),
+                value: target_arch.into(),
+            },
+            item: Box::new(Item::Macro {
+                name: "core::arch::global_asm".into(),
+                args: asm_macro_args(template.clone(), dialect),
+            }),
+        })
+        .collect()
+}
+
+fn rust_target_arch(triple: &str) -> Option<&'static str> {
+    let arch = triple.split('-').next()?;
+    match arch {
+        "x86_64" | "x86_64h" => Some("x86_64"),
+        "i386" | "i486" | "i586" | "i686" => Some("x86"),
+        "aarch64" | "aarch64_be" | "arm64" => Some("aarch64"),
+        arch if arch.starts_with("arm") || arch.starts_with("thumb") => Some("arm"),
+        "powerpc" => Some("powerpc"),
+        "powerpc64" | "powerpc64le" => Some("powerpc64"),
+        "riscv32" | "riscv32gc" | "riscv32imac" => Some("riscv32"),
+        "riscv64" | "riscv64gc" | "riscv64imac" => Some("riscv64"),
+        "s390x" => Some("s390x"),
+        "wasm32" => Some("wasm32"),
+        "wasm64" => Some("wasm64"),
+        "mips" | "mipsel" => Some("mips"),
+        "mips64" | "mips64el" => Some("mips64"),
+        "sparc" => Some("sparc"),
+        "sparc64" => Some("sparc64"),
+        "loongarch64" => Some("loongarch64"),
+        "hexagon" => Some("hexagon"),
+        "bpfeb" | "bpfel" => Some("bpf"),
+        "nvptx64" => Some("nvptx64"),
+        "xtensa" => Some("xtensa"),
+        _ => None,
+    }
+}
+
+fn cir_asm_dialect(op: &Op) -> Option<AsmDialect> {
+    match attr_int(op, "asm_flavor") {
+        Some(0) => Some(AsmDialect::Att),
+        Some(1) => Some(AsmDialect::Intel),
+        _ => None,
+    }
+}
+
+fn asm_macro_args(template: String, dialect: Option<AsmDialect>) -> Vec<Expr> {
+    let mut options = Vec::new();
+    if matches!(dialect, Some(AsmDialect::Att)) {
+        options.push(Expr::Var("att_syntax".into()));
+    }
+    options.push(Expr::Var("raw".into()));
+    vec![
+        Expr::Str(template),
+        Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Var("options".into())),
+            args: options,
+        },
+    ]
+}
+
+fn asm_macro_expr(template: String, dialect: Option<AsmDialect>) -> Expr {
+    Expr::Macro {
+        name: "core::arch::asm".into(),
+        args: asm_macro_args(template, dialect),
+    }
+}
+
+fn asm_template_has_placeholders(template: &str) -> bool {
+    let mut chars = template.chars().peekable();
+    while let Some(ch) = chars.next() {
+        if ch != '$' {
+            continue;
+        }
+        if chars.peek() == Some(&'$') {
+            chars.next();
+        } else {
+            return true;
+        }
+    }
+    false
 }
 
 fn attr_symbol_ref<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
