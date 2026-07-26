@@ -716,6 +716,21 @@ impl<W: Write> Codegen<W> {
                             self.out.write_str("const ")?;
                             self.expr(value)?;
                         }
+                        AsmOperand::Label {
+                            state,
+                            value,
+                            destination,
+                        } => {
+                            self.out.write_str("label {\n")?;
+                            write!(self.out, "{pad}{INDENT}")?;
+                            self.expr(state)?;
+                            self.out.write_str(" = ")?;
+                            self.expr(value)?;
+                            self.out.write_str(";\n")?;
+                            writeln!(self.out, "{pad}{INDENT}continue '{};", destination.as_str())?;
+                            self.out.write_str(&pad)?;
+                            self.out.write_char('}')?;
+                        }
                     }
                 }
                 let mut options = Vec::new();

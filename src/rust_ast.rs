@@ -140,6 +140,7 @@ impl Lint {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Feature {
+    AsmGotoWithOutputs,
     CVariadic,
     F128,
     Linkage,
@@ -149,6 +150,7 @@ pub enum Feature {
 impl Feature {
     pub fn spelling(self) -> &'static str {
         match self {
+            Feature::AsmGotoWithOutputs => "asm_goto_with_outputs",
             Feature::CVariadic => "c_variadic",
             Feature::F128 => "f128",
             Feature::Linkage => "linkage",
@@ -499,6 +501,11 @@ pub enum AsmOperand {
         output: Expr,
     },
     Const(Expr),
+    Label {
+        state: Expr,
+        value: Expr,
+        destination: Label,
+    },
 }
 
 impl AsmOperand {
@@ -509,6 +516,10 @@ impl AsmOperand {
                 f(input);
                 f(output);
             }
+            Self::Label { state, value, .. } => {
+                f(state);
+                f(value);
+            }
         }
     }
 
@@ -518,6 +529,10 @@ impl AsmOperand {
             Self::InOut { input, output, .. } => {
                 f(input);
                 f(output);
+            }
+            Self::Label { state, value, .. } => {
+                f(state);
+                f(value);
             }
         }
     }

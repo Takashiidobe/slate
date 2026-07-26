@@ -5,7 +5,7 @@ use crate::fixups::facts::{
     AstPath, BindingId, BorrowAliasFact, BorrowAliasReason, BorrowAliasState, BorrowAliasUseFact,
     BorrowAliasUseKind, FixupFacts, FunctionId, PathSegment,
 };
-use crate::rust_ast::{Block, Expr, Ident, IndentStmt, Item, Program, Stmt, UnaryOp};
+use crate::rust_ast::{AsmOperand, Block, Expr, Ident, IndentStmt, Item, Program, Stmt, UnaryOp};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.borrow_alias.clear();
@@ -161,7 +161,26 @@ impl<'a> Collector<'a> {
                     });
                 }
             }
-            Stmt::InlineAsm(_) => {}
+            Stmt::InlineAsm(asm) => {
+                for operand in &asm.operands {
+                    match operand {
+                        AsmOperand::In { value, .. } | AsmOperand::Const(value) => {
+                            self.expr(value, path);
+                        }
+                        AsmOperand::Out { value, .. } => {
+                            self.place(value, PlaceAccess::Assign, path);
+                        }
+                        AsmOperand::InOut { input, output, .. } => {
+                            self.expr(input, path);
+                            self.place(output, PlaceAccess::Assign, path);
+                        }
+                        AsmOperand::Label { state, value, .. } => {
+                            self.place(state, PlaceAccess::Assign, path);
+                            self.expr(value, path);
+                        }
+                    }
+                }
+            }
         }
     }
 

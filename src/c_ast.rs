@@ -75,6 +75,12 @@ pub struct Function {
     pub layout_queries: Vec<LayoutQuery>,
     pub nonnull_static_params: BTreeSet<usize>,
     pub macro_consts: Vec<String>,
+    pub asm_gotos: Vec<AsmGoto>,
+}
+
+#[derive(Debug, Clone)]
+pub struct AsmGoto {
+    pub labels: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -772,6 +778,7 @@ fn extract_function(
         layout_queries: collect_layout_queries(node, source_text),
         nonnull_static_params,
         macro_consts: collect_macro_consts(node, macro_events),
+        asm_gotos: collect_asm_gotos(node, source_text),
     })
 }
 
@@ -859,6 +866,121 @@ fn expansion_end_offset(node: &Value) -> Option<usize> {
         .get("offset")?
         .as_u64()
         .map(|offset| offset as usize)
+}
+
+fn collect_asm_gotos(node: &Value, source_text: Option<&str>) -> Vec<AsmGoto> {
+    let mut out = Vec::new();
+    if let Some(source) = source_text {
+        collect_asm_gotos_at(node, source, &mut out);
+    }
+    out
+}
+
+fn collect_asm_gotos_at(node: &Value, source: &str, out: &mut Vec<AsmGoto>) {
+    if kind(node) == Some("GCCAsmStmt")
+        && let (Some(begin), Some(end)) = (expansion_offset(node), expansion_end_offset(node))
+        && let Some(text) = source.get(begin..=end)
+        && let Some(labels) = parse_asm_goto_labels(text)
+    {
+        out.push(AsmGoto { labels });
+        return;
+    }
+    for child in children(node) {
+        collect_asm_gotos_at(child, source, out);
+    }
+}
+
+fn parse_asm_goto_labels(text: &str) -> Option<Vec<String>> {
+    let open = text.find('(')?;
+    if !text[..open]
+        .split(|ch: char| ch != '_' && !ch.is_ascii_alphanumeric())
+        .any(|word| word == "goto")
+    {
+        return None;
+    }
+    let close = matching_asm_paren(&text[open + 1..])?;
+    let sections = split_asm_sections(&text[open + 1..open + 1 + close], ':');
+    let labels = sections.get(4)?;
+    split_asm_sections(labels, ',')
+        .into_iter()
+        .map(str::trim)
+        .map(|label| {
+            (!label.is_empty()
+                && label.chars().enumerate().all(|(i, ch)| {
+                    ch == '_'
+                        || if i == 0 {
+                            ch.is_ascii_alphabetic()
+                        } else {
+                            ch.is_ascii_alphanumeric()
+                        }
+                }))
+            .then(|| label.to_string())
+        })
+        .collect()
+}
+
+fn matching_asm_paren(text: &str) -> Option<usize> {
+    let mut paren = 0usize;
+    let mut quote = None;
+    let mut escaped = false;
+    for (i, ch) in text.char_indices() {
+        if let Some(delimiter) = quote {
+            if escaped {
+                escaped = false;
+            } else if ch == '\\' {
+                escaped = true;
+            } else if ch == delimiter {
+                quote = None;
+            }
+            continue;
+        }
+        match ch {
+            '"' | '\'' => quote = Some(ch),
+            '(' => paren += 1,
+            ')' if paren == 0 => return Some(i),
+            ')' => paren -= 1,
+            _ => {}
+        }
+    }
+    None
+}
+
+fn split_asm_sections(text: &str, delimiter: char) -> Vec<&str> {
+    let mut sections = Vec::new();
+    let mut start = 0usize;
+    let mut paren = 0usize;
+    let mut bracket = 0usize;
+    let mut brace = 0usize;
+    let mut quote = None;
+    let mut escaped = false;
+    for (i, ch) in text.char_indices() {
+        if let Some(quote_delimiter) = quote {
+            if escaped {
+                escaped = false;
+            } else if ch == '\\' {
+                escaped = true;
+            } else if ch == quote_delimiter {
+                quote = None;
+            }
+            continue;
+        }
+        match ch {
+            '"' | '\'' => quote = Some(ch),
+            '(' => paren += 1,
+            ')' => paren = paren.saturating_sub(1),
+            '[' => bracket += 1,
+            ']' => bracket = bracket.saturating_sub(1),
+            '{' => brace += 1,
+            '}' => brace = brace.saturating_sub(1),
+            ch if ch == delimiter && paren == 0 && bracket == 0 && brace == 0 => {
+                sections.push(&text[start..i]);
+                start = i + ch.len_utf8();
+            }
+            _ => {}
+        }
+    }
+    sections.push(&text[start..]);
+    sections
 }
 
 fn collect_macro_consts(node: &Value, macro_events: &HashMap<usize, String>) -> Vec<String> {

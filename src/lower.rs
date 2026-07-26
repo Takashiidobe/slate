@@ -240,6 +240,12 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
         if linkage_is_weak(op) {
             features.insert(Feature::Linkage);
         }
+        if op.kind() == CirOpKind::Asm
+            && !op.results.is_empty()
+            && attr_str(op, "asm_string").is_some_and(asm_template_has_labels)
+        {
+            features.insert(Feature::AsmGotoWithOutputs);
+        }
         if op.kind() == CirOpKind::Func {
             let function_type = attr_str(op, "function_type").unwrap_or("");
             if function_type_is_variadic(function_type) {
@@ -314,6 +320,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_c_variadic: std::cell::Cell::new(false),
         uses_linkage: std::cell::Cell::new(false),
         uses_used_with_arg: std::cell::Cell::new(false),
+        uses_asm_goto_outputs: std::cell::Cell::new(false),
         uses_memchr: std::cell::Cell::new(false),
         variadic_defs: BTreeSet::new(),
         project: project.clone(),
@@ -331,6 +338,11 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .functions
             .iter()
             .map(|function| (function.name.clone(), function.macro_consts.clone()))
+            .collect(),
+        asm_gotos: c
+            .functions
+            .iter()
+            .map(|function| (function.name.clone(), function.asm_gotos.clone()))
             .collect(),
         nonnull_static_params: c
             .functions
@@ -638,6 +650,7 @@ struct Lowerer<'a> {
     uses_c_variadic: std::cell::Cell<bool>,
     uses_linkage: std::cell::Cell<bool>,
     uses_used_with_arg: std::cell::Cell<bool>,
+    uses_asm_goto_outputs: std::cell::Cell<bool>,
     uses_memchr: std::cell::Cell<bool>,
     variadic_defs: BTreeSet<String>,
     project: ProjectInfo,
@@ -654,6 +667,7 @@ struct Lowerer<'a> {
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     nonnull_static_params: BTreeMap<String, BTreeSet<usize>>,
     macro_consts: BTreeMap<String, Vec<String>>,
+    asm_gotos: BTreeMap<String, Vec<crate::c_ast::AsmGoto>>,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -695,6 +709,8 @@ struct FunctionLowerer<'a, 'b> {
     macro_consts: VecDeque<String>,
     macro_arith_values: BTreeMap<String, i128>,
     asm_outputs: BTreeMap<String, Vec<Expr>>,
+    asm_gotos: VecDeque<crate::c_ast::AsmGoto>,
+    asm_output_places: BTreeMap<String, Expr>,
 }
 
 /// Maps CIR jump targets to dispatch-loop states for a `goto`-bearing function.
@@ -1140,6 +1156,9 @@ impl<'a> Lowerer<'a> {
         }
         if self.uses_used_with_arg.get() {
             insert_crate_feature(&mut items, Feature::UsedWithArg);
+        }
+        if self.uses_asm_goto_outputs.get() {
+            insert_crate_feature(&mut items, Feature::AsmGotoWithOutputs);
         }
         for feature in &self.project.crate_features {
             insert_crate_feature(&mut items, *feature);
@@ -1627,6 +1646,7 @@ impl<'a> Lowerer<'a> {
             .cloned()
             .unwrap_or_default()
             .into();
+        let asm_gotos: VecDeque<_> = self.asm_gotos.get(name).cloned().unwrap_or_default().into();
         let mut f = FunctionLowerer {
             parent: self,
             values: BTreeMap::new(),
@@ -1658,6 +1678,8 @@ impl<'a> Lowerer<'a> {
             macro_consts,
             macro_arith_values: BTreeMap::new(),
             asm_outputs: BTreeMap::new(),
+            asm_gotos,
+            asm_output_places: BTreeMap::new(),
         };
 
         for stmt in prelude {
@@ -2374,6 +2396,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     self.lower_alloca_group(&block.ops[index..end]);
                     index = end;
                     continue;
+                }
+            }
+            self.asm_output_places.clear();
+            if op.kind() == CirOpKind::Asm
+                && attr_str(op, "asm_string").is_some_and(asm_template_has_labels)
+            {
+                for result in &op.results {
+                    if let Some(store) = block.ops[index + 1..].iter().find(|candidate| {
+                        candidate.kind() == CirOpKind::Store
+                            && candidate.operands.first() == Some(result)
+                    }) && let Some(pointer) = store.operands.get(1)
+                        && let Some(place) = self.place_expr(pointer)
+                    {
+                        self.asm_output_places.insert(result.clone(), place);
+                    }
                 }
             }
             self.lower_op(op);
@@ -3959,12 +3996,39 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_extended_asm(&mut self, op: &Op) -> bool {
-        if op.results.is_empty() {
-            return false;
-        }
         let Some(raw_template) = attr_str(op, "asm_string") else {
             return false;
         };
+        let Ok(template) = String::from_utf8(decode_cir_string(raw_template)) else {
+            self.parent.ctx.diagnostics.error(
+                "lower: inline assembly template is not valid UTF-8",
+                op.loc.clone(),
+            );
+            return true;
+        };
+        let label_count = asm_template_label_count(&template);
+        let asm_goto = if label_count == 0 {
+            None
+        } else {
+            let Some(asm_goto) = self.asm_gotos.pop_front() else {
+                self.parent.ctx.diagnostics.error(
+                    "lower: asm goto labels are missing from the Clang AST",
+                    op.loc.clone(),
+                );
+                return true;
+            };
+            Some(asm_goto)
+        };
+        if asm_goto
+            .as_ref()
+            .is_some_and(|asm_goto| asm_goto.labels.len() != label_count)
+        {
+            self.parent.ctx.diagnostics.error(
+                "lower: asm goto label count differs between CIR and the Clang AST",
+                op.loc.clone(),
+            );
+            return true;
+        }
         let Some(raw_constraints) = attr_str(op, "constraints") else {
             return false;
         };
@@ -3976,9 +4040,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(output_count) = constraints.len().checked_sub(op.operands.len()) else {
             return false;
         };
-        if output_count == 0
-            || (output_count != op.results.len() && !(op.results.len() == 1 && output_count > 1))
-        {
+        if output_count != op.results.len() && !(op.results.len() == 1 && output_count > 1) {
             return false;
         }
         if constraints[..output_count]
@@ -3998,10 +4060,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 return false;
             }
         }
-        let Some(result_types) = asm_output_types(op, &self.parent.aliases, output_count)
-            .map(|types| types.into_iter().map(str::to_string).collect::<Vec<_>>())
-        else {
-            return false;
+        let result_types = if output_count == 0 {
+            Vec::new()
+        } else {
+            let Some(result_types) = asm_output_types(op, &self.parent.aliases, output_count)
+                .map(|types| types.into_iter().map(str::to_string).collect::<Vec<_>>())
+            else {
+                return false;
+            };
+            result_types
         };
         let operand_types = op.ty.as_deref().map(op_operand_types).unwrap_or_default();
         if operand_types.len() != op.operands.len() {
@@ -4016,7 +4083,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         {
             return false;
         }
-        let mut slot_to_rust = vec![0; constraints.len()];
+        let mut slot_to_rust = vec![0; constraints.len() + label_count];
         for (output_index, slot) in slot_to_rust.iter_mut().take(output_count).enumerate() {
             *slot = output_index;
         }
@@ -4030,34 +4097,61 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 next_rust_operand += 1;
             }
         }
-        let Ok(template) = String::from_utf8(decode_cir_string(raw_template)) else {
-            self.parent.ctx.diagnostics.error(
-                "lower: inline assembly template is not valid UTF-8",
-                op.loc.clone(),
-            );
-            return true;
-        };
-        let template_types = result_types
+        for slot in &mut slot_to_rust[constraints.len()..] {
+            *slot = next_rust_operand;
+            next_rust_operand += 1;
+        }
+        let mut template_constraints = constraints.clone();
+        template_constraints.extend(std::iter::repeat_n("X", label_count));
+        let mut template_types = result_types
             .iter()
             .map(String::as_str)
             .chain(operand_types.iter().copied())
             .collect::<Vec<_>>();
-        let Some(template) =
-            translate_asm_template(&template, &slot_to_rust, &constraints, &template_types)
-        else {
+        template_types.extend(std::iter::repeat_n("()", label_count));
+        let Some(template) = translate_asm_template(
+            &template,
+            &slot_to_rust,
+            &template_constraints,
+            &template_types,
+        ) else {
             return false;
         };
         let mut operands = Vec::new();
+        let mut output_exprs = Vec::new();
         let mut output_names = Vec::new();
+        if asm_goto.is_some()
+            && output_count > 0
+            && (op.results.len() != output_count
+                || op
+                    .results
+                    .iter()
+                    .any(|result| !self.asm_output_places.contains_key(result)))
+        {
+            self.parent.ctx.diagnostics.error(
+                "lower: asm goto output does not have a direct CIR destination",
+                op.loc.clone(),
+            );
+            return true;
+        }
         for (output_index, constraint) in constraints[..output_count].iter().enumerate() {
-            let name = self.next_temp();
-            self.push_stmt(Stmt::Let {
-                name: name.clone(),
-                mutable: false,
-                ty: Some(self.parent.rust_type(&result_types[output_index])),
-                init: None,
-            });
-            let output = Expr::Var(name.clone().into());
+            let direct_output = op
+                .results
+                .get(output_index)
+                .and_then(|result| self.asm_output_places.get(result))
+                .cloned();
+            let (output, output_name) = if let Some(output) = direct_output {
+                (output, None)
+            } else {
+                let name = self.next_temp();
+                self.push_stmt(Stmt::Let {
+                    name: name.clone(),
+                    mutable: false,
+                    ty: Some(self.parent.rust_type(&result_types[output_index])),
+                    init: None,
+                });
+                (Expr::Var(name.clone().into()), Some(name))
+            };
             if let Some(operand_index) = tied_outputs[output_index] {
                 operands.push(AsmOperand::InOut {
                     reg: AsmReg::Class("reg".into()),
@@ -4072,7 +4166,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     value: output,
                 });
             }
-            output_names.push(name);
+            output_exprs.push(
+                operands
+                    .last()
+                    .and_then(|operand| match operand {
+                        AsmOperand::Out { value, .. } => Some(value.clone()),
+                        AsmOperand::InOut { output, .. } => Some(output.clone()),
+                        _ => None,
+                    })
+                    .unwrap(),
+            );
+            output_names.push(output_name);
         }
         for (operand_index, constraint) in constraints[output_count..].iter().enumerate() {
             if constraint.parse::<usize>().is_ok() {
@@ -4089,6 +4193,32 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             };
             operands.push(value);
         }
+        if let Some(asm_goto) = asm_goto {
+            let Some(dispatch) = self.dispatch.as_ref() else {
+                self.parent.ctx.diagnostics.error(
+                    "lower: asm goto requires dispatch control flow",
+                    op.loc.clone(),
+                );
+                return true;
+            };
+            for label in asm_goto.labels {
+                let Some(state) = dispatch.label_to_state.get(&label).copied() else {
+                    self.parent.ctx.diagnostics.error(
+                        format!("lower: asm goto target `{label}` is missing from CIR"),
+                        op.loc.clone(),
+                    );
+                    return true;
+                };
+                operands.push(AsmOperand::Label {
+                    state: Expr::Var(dispatch.state_var.clone().into()),
+                    value: Expr::Value(RustValue::I64(state as i64)),
+                    destination: dispatch.loop_label.clone(),
+                });
+            }
+            if output_count > 0 {
+                self.parent.uses_asm_goto_outputs.set(true);
+            }
+        }
         self.push_stmt(Self::unsafe_stmt(Stmt::InlineAsm(InlineAsm {
             template,
             dialect: cir_asm_dialect(op),
@@ -4096,18 +4226,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             raw: false,
         })));
         if output_count == op.results.len() {
-            for (result, name) in op.results.iter().zip(output_names) {
-                self.values
-                    .insert(result.clone(), Val::Expr(Expr::Var(name.clone().into())));
-                self.immutable_temps.insert(name);
+            for ((result, output), name) in op.results.iter().zip(output_exprs).zip(output_names) {
+                self.values.insert(result.clone(), Val::Expr(output));
+                if let Some(name) = name {
+                    self.immutable_temps.insert(name);
+                }
             }
         } else {
-            let outputs = output_names
-                .iter()
-                .map(|name| Expr::Var(name.clone().into()))
-                .collect();
-            self.asm_outputs.insert(op.results[0].clone(), outputs);
-            self.immutable_temps.extend(output_names);
+            self.asm_outputs.insert(op.results[0].clone(), output_exprs);
+            self.immutable_temps
+                .extend(output_names.into_iter().flatten());
         }
         true
     }
@@ -7428,6 +7556,31 @@ fn asm_template_has_placeholders(template: &str) -> bool {
     false
 }
 
+fn asm_template_has_labels(template: &str) -> bool {
+    asm_template_label_count(template) != 0
+}
+
+fn asm_template_label_count(template: &str) -> usize {
+    let mut slots = BTreeSet::new();
+    let mut chars = template.chars().peekable();
+    while let Some(ch) = chars.next() {
+        if ch != '$' || chars.peek() != Some(&'{') {
+            continue;
+        }
+        chars.next();
+        let body = chars
+            .by_ref()
+            .take_while(|next| *next != '}')
+            .collect::<String>();
+        if let Some((slot, "l")) = body.split_once(':')
+            && let Ok(slot) = slot.parse::<usize>()
+        {
+            slots.insert(slot);
+        }
+    }
+    slots.len()
+}
+
 fn translate_asm_template(
     template: &str,
     slot_to_rust: &[usize],
@@ -7465,7 +7618,10 @@ fn translate_asm_template(
                 .split_once(':')
                 .map(|(slot, modifier)| (slot, Some(modifier)))
                 .unwrap_or((body.as_str(), None));
-            (slot.parse::<usize>().ok()?, modifier == Some("c"))
+            (
+                slot.parse::<usize>().ok()?,
+                matches!(modifier, Some("c" | "l")),
+            )
         } else {
             let mut digits = String::new();
             while let Some((_, next)) = chars.peek() {
