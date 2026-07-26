@@ -277,7 +277,7 @@ fn find_arg_use(stmt: &Stmt, name: &str) -> Option<ArgUse> {
             arms.iter()
                 .find_map(|arm| find_arg_use_body(&arm.body, name))
         }),
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => None,
+        Stmt::InlineAsm(_) | Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => None,
     }
 }
 

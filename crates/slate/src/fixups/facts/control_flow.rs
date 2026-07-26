@@ -128,6 +128,7 @@ impl Collector {
             Stmt::Let { .. }
             | Stmt::Assign { .. }
             | Stmt::CompoundAssign { .. }
+            | Stmt::InlineAsm(_)
             | Stmt::Expr(_) => Summary {
                 expression_eligible: reachable && matches!(stmt, Stmt::Expr(_)),
                 ..Summary::plain(reachable)

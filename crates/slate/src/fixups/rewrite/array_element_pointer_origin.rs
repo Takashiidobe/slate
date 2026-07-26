@@ -161,6 +161,7 @@ fn collect_aliases_once(
             }
             Stmt::CompoundAssign { .. }
             | Stmt::Let { init: None, .. }
+            | Stmt::InlineAsm(_)
             | Stmt::Expr(_)
             | Stmt::Return(_)
             | Stmt::Break(_)

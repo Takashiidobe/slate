@@ -237,6 +237,7 @@ fn stmt_changes_name(stmt: &Stmt, name: &str) -> bool {
             expr_mutably_borrows_name(expr, name)
                 || arms.iter().any(|arm| body_changes_name(&arm.body, name))
         }
+        Stmt::InlineAsm(_) => true,
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
     }
 }

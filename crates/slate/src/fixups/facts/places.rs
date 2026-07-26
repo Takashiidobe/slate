@@ -139,6 +139,7 @@ impl Collector {
                     });
                 }
             }
+            Stmt::InlineAsm(_) => {}
         }
     }
 

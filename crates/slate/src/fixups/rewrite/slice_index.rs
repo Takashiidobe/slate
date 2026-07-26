@@ -164,6 +164,7 @@ fn rewrite_stmt(stmt: &mut Stmt, plans: &[Plan], path: &[PathSegment]) -> bool {
         }
         Stmt::Match { expr, .. } => changed |= rewrite_expr(expr, &stmt_plans, false),
         Stmt::Let { init: None, .. }
+        | Stmt::InlineAsm(_)
         | Stmt::Loop { .. }
         | Stmt::Scope { .. }
         | Stmt::LabeledBlock { .. }

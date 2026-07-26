@@ -89,6 +89,7 @@ impl<'a> Collector<'a> {
             | Stmt::LetIf { .. }
             | Stmt::Assign { .. }
             | Stmt::CompoundAssign { .. }
+            | Stmt::InlineAsm(_)
             | Stmt::Expr(_)
             | Stmt::Return(_)
             | Stmt::Unsafe { .. }
@@ -416,7 +417,8 @@ fn is_straight_line_stmt(stmt: &Stmt) -> bool {
         | Stmt::Break(_)
         | Stmt::Continue(_)
         | Stmt::While { .. }
-        | Stmt::Return(_) => false,
+        | Stmt::Return(_)
+        | Stmt::InlineAsm(_) => false,
     }
 }
 
@@ -500,6 +502,7 @@ fn analyze_stmt(
             analyze_expr(target, AccessMode::Mutate, slices, state)
                 && analyze_expr(value, AccessMode::Read, slices, state)
         }
+        Stmt::InlineAsm(_) => false,
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
             analyze_expr(expr, AccessMode::Read, slices, state)
         }

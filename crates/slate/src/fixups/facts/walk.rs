@@ -42,6 +42,11 @@ pub(in crate::fixups) fn stmt_exprs(stmt: &Stmt, f: &mut impl FnMut(&Expr)) {
             exprs(target, f);
             exprs(value, f);
         }
+        Stmt::InlineAsm(asm) => {
+            for operand in &asm.operands {
+                operand.visit_exprs(&mut |expr| exprs(expr, f));
+            }
+        }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => exprs(expr, f),
         Stmt::If {
             cond,
@@ -265,6 +270,15 @@ pub(in crate::fixups) fn stmt_exprs_with_path(
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
             stmt_root_expr_with_path(target, 0, path, f);
             stmt_root_expr_with_path(value, 1, path, f);
+        }
+        Stmt::InlineAsm(asm) => {
+            let mut index = 0;
+            for operand in &asm.operands {
+                operand.visit_exprs(&mut |expr| {
+                    stmt_root_expr_with_path(expr, index, path, f);
+                    index += 1;
+                });
+            }
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => stmt_root_expr_with_path(expr, 0, path, f),
         Stmt::If {
@@ -614,6 +628,11 @@ pub(in crate::fixups) fn stmt_exprs_any(stmt: &Stmt, pred: &mut impl FnMut(&Expr
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
             exprs_any(target, pred) || exprs_any(value, pred)
         }
+        Stmt::InlineAsm(asm) => asm.operands.iter().any(|operand| {
+            let mut found = false;
+            operand.visit_exprs(&mut |expr| found |= exprs_any(expr, pred));
+            found
+        }),
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => exprs_any(expr, pred),
         Stmt::If {
             cond,
@@ -788,6 +807,13 @@ pub(in crate::fixups) fn stmt_exprs_all_with(
             exprs_all_with_hooks(target, stmt_hook, expr_hook)
                 && exprs_all_with_hooks(value, stmt_hook, expr_hook)
         }
+        Stmt::InlineAsm(asm) => asm.operands.iter().all(|operand| {
+            let mut all = true;
+            operand.visit_exprs(&mut |expr| {
+                all &= exprs_all_with_hooks(expr, stmt_hook, expr_hook);
+            });
+            all
+        }),
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
             exprs_all_with_hooks(expr, stmt_hook, expr_hook)
         }
@@ -1005,6 +1031,11 @@ pub(in crate::fixups) fn stmt_exprs_mut_with(
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
             exprs_mut_with(target, f);
             exprs_mut_with(value, f);
+        }
+        Stmt::InlineAsm(asm) => {
+            for operand in &mut asm.operands {
+                operand.visit_exprs_mut(&mut |expr| exprs_mut_with(expr, f));
+            }
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => exprs_mut_with(expr, f),
         Stmt::If {

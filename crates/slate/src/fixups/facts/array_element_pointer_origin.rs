@@ -196,6 +196,7 @@ impl<'a> Collector<'a> {
                 }
             }
             Stmt::CompoundAssign { .. }
+            | Stmt::InlineAsm(_)
             | Stmt::Expr(_)
             | Stmt::Return(_)
             | Stmt::Break(_)

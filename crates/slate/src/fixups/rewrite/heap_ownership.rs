@@ -501,7 +501,11 @@ fn rewrite_owned_stmt(stmt: &mut Stmt, owned: &OwnedHeap) {
                 rewrite_owned_body(&mut arm.body, owned);
             }
         }
-        Stmt::Let { init: None, .. } | Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+        Stmt::Let { init: None, .. }
+        | Stmt::InlineAsm(_)
+        | Stmt::Return(None)
+        | Stmt::Break(_)
+        | Stmt::Continue(_) => {}
     }
 }
 

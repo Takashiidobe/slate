@@ -219,6 +219,7 @@ fn rewrite_current_loop_breaks_in_stmt(stmt: &mut Stmt, label: &str) {
         Stmt::Let { .. }
         | Stmt::Assign { .. }
         | Stmt::CompoundAssign { .. }
+        | Stmt::InlineAsm(_)
         | Stmt::Expr(_)
         | Stmt::Return(_)
         | Stmt::Break(_)
@@ -274,6 +275,7 @@ fn stmt_label_ref_count(stmt: &Stmt, label: &str) -> usize {
         Stmt::Let { .. }
         | Stmt::Assign { .. }
         | Stmt::CompoundAssign { .. }
+        | Stmt::InlineAsm(_)
         | Stmt::Expr(_)
         | Stmt::Return(_)
         | Stmt::Break(_)

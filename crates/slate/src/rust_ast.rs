@@ -469,6 +469,68 @@ pub struct Block {
     pub tail: Option<Box<Expr>>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AsmDialect {
+    Att,
+    Intel,
+}
+
+#[derive(Debug, Clone)]
+pub enum AsmReg {
+    Class(String),
+    Explicit(String),
+}
+
+#[derive(Debug, Clone)]
+pub enum AsmOperand {
+    In {
+        reg: AsmReg,
+        value: Expr,
+    },
+    Out {
+        reg: AsmReg,
+        late: bool,
+        value: Expr,
+    },
+    InOut {
+        reg: AsmReg,
+        late: bool,
+        input: Expr,
+        output: Expr,
+    },
+    Const(Expr),
+}
+
+impl AsmOperand {
+    pub fn visit_exprs(&self, f: &mut impl FnMut(&Expr)) {
+        match self {
+            Self::In { value, .. } | Self::Out { value, .. } | Self::Const(value) => f(value),
+            Self::InOut { input, output, .. } => {
+                f(input);
+                f(output);
+            }
+        }
+    }
+
+    pub fn visit_exprs_mut(&mut self, f: &mut impl FnMut(&mut Expr)) {
+        match self {
+            Self::In { value, .. } | Self::Out { value, .. } | Self::Const(value) => f(value),
+            Self::InOut { input, output, .. } => {
+                f(input);
+                f(output);
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct InlineAsm {
+    pub template: String,
+    pub dialect: Option<AsmDialect>,
+    pub operands: Vec<AsmOperand>,
+    pub raw: bool,
+}
+
 #[derive(Debug, Clone)]
 #[allow(clippy::large_enum_variant)]
 pub enum Stmt {
@@ -497,6 +559,7 @@ pub enum Stmt {
         op: BinOp,
         value: Expr,
     },
+    InlineAsm(InlineAsm),
     Expr(Expr),
     Return(Option<Expr>),
     Unsafe {
@@ -1226,6 +1289,15 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
             let t = target.substitute_var(name, replacement);
             let v = value.substitute_var(name, replacement);
             t || v
+        }
+        Stmt::InlineAsm(asm) => {
+            let mut changed = false;
+            for operand in &mut asm.operands {
+                operand.visit_exprs_mut(&mut |expr| {
+                    changed |= expr.substitute_var(name, replacement);
+                });
+            }
+            changed
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.substitute_var(name, replacement),
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,

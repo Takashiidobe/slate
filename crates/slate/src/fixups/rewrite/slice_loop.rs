@@ -252,6 +252,7 @@ fn extract_materialized_item(
             Stmt::Let { .. }
             | Stmt::Assign { .. }
             | Stmt::CompoundAssign { .. }
+            | Stmt::InlineAsm(_)
             | Stmt::Expr(_)
             | Stmt::Return(_)
             | Stmt::Break(_)
