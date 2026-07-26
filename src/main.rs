@@ -439,6 +439,7 @@ edition = "2024"
 
 [dependencies]
 libc = "0.2"
+aligned = {{ path = "aligned" }}
 {support_dependency}
 
 [profile.dev]
@@ -480,9 +481,37 @@ fn init_lib_crate(crate_dir: &Path) -> Result<(), String> {
     }
 
     write_lib_crate_manifest(crate_dir, &package, &[], false)?;
+    write_aligned_support(crate_dir)?;
     let main_rs = crate_dir.join("src/main.rs");
     if main_rs.exists() {
         std::fs::remove_file(&main_rs).map_err(|e| format!("remove {}: {e}", main_rs.display()))?;
+    }
+    Ok(())
+}
+
+fn write_aligned_support(crate_dir: &Path) -> Result<(), String> {
+    let aligned_dir = crate_dir.join("aligned");
+    let src_dir = aligned_dir.join("src");
+    std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
+    for (path, contents) in [
+        (
+            aligned_dir.join("Cargo.toml"),
+            include_str!("../vendor/aligned/Cargo.toml"),
+        ),
+        (
+            aligned_dir.join("LICENSE-MIT"),
+            include_str!("../vendor/aligned/LICENSE-MIT"),
+        ),
+        (
+            aligned_dir.join("LICENSE-APACHE"),
+            include_str!("../vendor/aligned/LICENSE-APACHE"),
+        ),
+        (
+            src_dir.join("lib.rs"),
+            include_str!("../vendor/aligned/src/lib.rs"),
+        ),
+    ] {
+        std::fs::write(&path, contents).map_err(|e| format!("write {}: {e}", path.display()))?;
     }
     Ok(())
 }
@@ -673,7 +702,8 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         written.push(output);
     }
 
-    if !shared_records.is_empty() || !shared_enums.is_empty() {
+    let has_shared_types = !shared_records.is_empty() || !shared_enums.is_empty();
+    if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
         let output = crate_src.join("types.rs");
@@ -686,7 +716,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     for feature in &project.crate_features {
         lib_rs.push_str(&format!("#![feature({})]\n", feature.spelling()));
     }
-    if project.shared_type_module.is_some() {
+    if has_shared_types {
         lib_rs.push_str("pub mod types;\n");
     }
     lib_rs.push_str(

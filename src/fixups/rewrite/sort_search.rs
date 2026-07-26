@@ -522,11 +522,12 @@ fn comparator_arg(expr: &Expr) -> Option<&str> {
 
 fn array_decl(stmt: &Stmt) -> Option<(String, ArrayBinding)> {
     let Stmt::Let {
-        name,
-        ty: Some(Type::Array { elem, len }),
-        ..
+        name, ty: Some(ty), ..
     } = stmt
     else {
+        return None;
+    };
+    let Type::Array { elem, len } = ty.peel_aligned() else {
         return None;
     };
     Some((

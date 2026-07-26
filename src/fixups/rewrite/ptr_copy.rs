@@ -143,7 +143,7 @@ impl CopyEnv {
             else {
                 continue;
             };
-            if let Some(Type::Array { elem, len }) = ty
+            if let Some(Type::Array { elem, len }) = ty.as_ref().map(|ty| ty.peel_aligned())
                 && let Some(elem_size) = type_size(elem)
             {
                 env.arrays.insert(

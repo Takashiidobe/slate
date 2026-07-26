@@ -226,6 +226,36 @@ fn library_project_creates_cargo_crate_without_main() {
 }
 
 #[test]
+fn uart_library_preserves_exported_volatile_io() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.library")
+        .join("uart");
+    let work = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/cross-tu")
+        .join("uart-library");
+    let crate_dir = work.join("uart");
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&work).expect("create uart library work dir");
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--lib"])
+        .arg(&dir)
+        .arg(&crate_dir)
+        .output()
+        .expect("run slate translate-project --lib");
+    assert!(
+        output.status.success(),
+        "translate-project --lib failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let rust = std::fs::read_to_string(crate_dir.join("src/uart.rs")).expect("read uart.rs");
+    assert!(rust.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn send_byte"));
+    assert!(rust.contains("std::ptr::read_volatile"));
+    assert!(rust.contains("std::ptr::write_volatile"));
+}
+
+#[test]
 fn cross_tu_functions() {
     let rs_dir = build_and_diff("cross_tu");
 
