@@ -1535,7 +1535,7 @@ impl Collector {
         if let Some(ty) = ty {
             self.facts.binding_types.push(BindingTypeFact {
                 binding: id,
-                rendered: ty.render(),
+                rendered: ty.peel_aligned().render(),
             });
         }
         id

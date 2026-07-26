@@ -370,10 +370,11 @@ fn base_original_type(
     plans: &BTreeMap<String, Plan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> Option<String> {
-    let Type::Custom(name) = expr_type(expr, local_types, plans, record_fields)? else {
+    let ty = expr_type(expr, local_types, plans, record_fields)?;
+    let Type::Custom(name) = ty.peel_aligned() else {
         return None;
     };
-    Some(name)
+    Some(name.clone())
 }
 
 fn expr_type(
@@ -383,11 +384,20 @@ fn expr_type(
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> Option<Type> {
     match expr {
-        Expr::Var(name) => local_types.get(name.as_str()).cloned(),
-        Expr::Index { base, .. } => match expr_type(base, local_types, plans, record_fields)? {
-            Type::Array { elem, .. } | Type::Slice(elem) => Some(*elem),
-            _ => None,
-        },
+        Expr::Var(name) => local_types
+            .get(name.as_str())
+            .map(|ty| ty.peel_aligned().clone()),
+        Expr::Unary {
+            op: crate::rust_ast::UnaryOp::Deref,
+            expr,
+        } => expr_type(expr, local_types, plans, record_fields),
+        Expr::Index { base, .. } => {
+            let base_ty = expr_type(base, local_types, plans, record_fields)?;
+            match base_ty.peel_aligned() {
+                Type::Array { elem, .. } | Type::Slice(elem) => Some((**elem).clone()),
+                _ => None,
+            }
+        }
         Expr::Field { base, field } => {
             let base_ty = base_original_type(base, local_types, plans, record_fields)?;
             record_fields.get(&base_ty)?.get(field).cloned()

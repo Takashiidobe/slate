@@ -25,6 +25,7 @@ pub struct Unit {
     pub enums: Vec<Enum>,
     pub records: Vec<Record>,
     pub functions: Vec<Function>,
+    call_bindings: HashMap<Loc, CallBinding>,
 }
 
 #[derive(Debug, Clone)]
@@ -160,7 +161,7 @@ pub struct Loc {
 
 impl Unit {
     pub fn call_bindings(&self) -> HashMap<Loc, CallBinding> {
-        let mut bindings = HashMap::new();
+        let mut bindings = self.call_bindings.clone();
         for body in self
             .functions
             .iter()
@@ -430,6 +431,11 @@ fn parse_json_with_record_roots(
             fact.loc = loc_from_offset(source, *offset);
         }
     }
+    let call_bindings = plugin_events
+        .calls
+        .values()
+        .filter_map(|fact| Some((fact.loc?, fact.binding.clone())))
+        .collect();
     CALL_FACTS.with(|facts| *facts.borrow_mut() = plugin_events.calls);
     collect_functions(
         &root,
@@ -442,6 +448,7 @@ fn parse_json_with_record_roots(
         enums,
         records,
         functions,
+        call_bindings,
     })
 }
 

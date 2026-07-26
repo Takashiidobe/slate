@@ -22,6 +22,10 @@ fn cargo() -> String {
     std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into())
 }
 
+fn aligned_path() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/aligned")
+}
+
 /// Path to the `alive-tv` binary used for translation-validation regression
 /// tests (compares C's LLVM IR against the baseline Rust lowering's).
 pub fn alive_tv() -> String {
@@ -105,13 +109,15 @@ edition = "2024"
 
 [dependencies]
 libc = "0.2"
+aligned = {{ path = "{}" }}
 
 [build-dependencies]
 cc = "1"
 
 [profile.dev]
 overflow-checks = false
-"#
+"#,
+            aligned_path().display()
         ),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
@@ -163,13 +169,15 @@ edition = "2024"
 
 [dependencies]
 libc = "0.2"
+aligned = {{ path = "{}" }}
 
 [build-dependencies]
 cc = "1"
 
 [profile.dev]
 overflow-checks = false
-"#
+"#,
+            aligned_path().display()
         ),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
@@ -272,13 +280,15 @@ fn build_batch(cases: &[Case], project: &Path, bin_dir: &Path) -> Result<(), Str
     std::fs::create_dir_all(bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
         project.join("Cargo.toml"),
-        r#"[package]
+        format!(
+            r#"[package]
 name = "slate_batch"
 version = "0.0.0"
 edition = "2024"
 
 [dependencies]
 libc = "0.2"
+aligned = {{ path = "{}" }}
 
 [build-dependencies]
 cc = "1"
@@ -289,7 +299,9 @@ cc = "1"
 # trap on both sides, so the generator keeps divisors to nonzero constants.
 [profile.dev]
 overflow-checks = false
-"#
+"#,
+            aligned_path().display()
+        )
         .as_bytes(),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
@@ -347,20 +359,24 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<S
     std::fs::create_dir_all(&bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
         project.join("Cargo.toml"),
-        r#"[package]
+        format!(
+            r#"[package]
 name = "slate_multi_batch"
 version = "0.0.0"
 edition = "2024"
 
 [dependencies]
 libc = "0.2"
+aligned = {{ path = "{}" }}
 
 [build-dependencies]
 cc = "1"
 
 [profile.dev]
 overflow-checks = false
-"#
+"#,
+            aligned_path().display()
+        )
         .as_bytes(),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;

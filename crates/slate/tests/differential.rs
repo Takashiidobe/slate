@@ -149,7 +149,9 @@ fn anonymous_struct_arrays_use_generated_tuple_structs() {
     let rust = std::fs::read_to_string(&generated).expect("read anonymous struct array rust");
 
     assert!(rust.contains("struct __slate_anonymous_struct_0(i32, *mut i8, f64);"));
-    assert!(rust.contains("error_log: [__slate_anonymous_struct_0; 3]"));
+    assert!(
+        rust.contains("error_log: aligned::Aligned<aligned::A16, [__slate_anonymous_struct_0; 3]>")
+    );
     assert!(rust.contains("__slate_anonymous_struct_0(404,"));
     assert!(rust.contains("error_log[0].0"));
     assert!(!rust.contains("anon_0"));
@@ -878,14 +880,18 @@ fn simple_printfs_are_recovered_as_format_macros() {
     assert!(array_init_rust.contains("println!(\"{} {}\", partial[1], partial[3]);"));
     assert!(array_init_rust.contains("println!(\"{}\", s);"));
     assert!(array_init_rust.contains("println!(\"{} {}\", \"hi\", padded[4] as i32);"));
-    assert!(array_init_rust.contains("let a: [i32; 5] = [1, 2, 3, 4, 5];"));
-    assert!(array_init_rust.contains("let partial: [i32; 4] = [7, 8, 0, 0];"));
+    assert!(array_init_rust.contains(
+        "let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);"
+    ));
+    assert!(array_init_rust.contains(
+        "let mut partial: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);"
+    ));
+    assert!(array_init_rust.contains("*a = [1, 2, 3, 4, 5];"));
+    assert!(array_init_rust.contains("*partial = [7, 8, 0, 0];"));
     assert!(array_init_rust.contains("let padded: [i8; 8] = [104, 105, 0, 0, 0, 0, 0, 0];"));
     assert!(!array_init_rust.contains("let mut a: [i32; 5] = [0; 5];"));
     assert!(!array_init_rust.contains("let mut partial: [i32; 4] = [0; 4];"));
     assert!(!array_init_rust.contains("let mut padded: [i8; 8] = [0; 8];"));
-    assert!(!array_init_rust.contains("a = [1, 2, 3, 4, 5];"));
-    assert!(!array_init_rust.contains("partial = [7, 8, 0, 0];"));
     assert!(!array_init_rust.contains("padded = [104, 105, 0, 0, 0, 0, 0, 0];"));
     assert!(!array_init_rust.contains("fn printf("));
     assert!(!array_init_rust.contains("unsafe { printf("));
@@ -1497,7 +1503,9 @@ fn file_scope_globals_emit_static_mut_definitions() {
     let rust = std::fs::read_to_string(&generated).expect("read generated global vars rust");
     assert!(rust.contains("static mut counter: i32 = 4;"));
     assert!(rust.contains("static mut zeroed: i32 = 0;"));
-    assert!(rust.contains("static mut numbers: [i32; 4] = [1, 2, 0, 0];"));
+    assert!(rust.contains(
+        "static mut numbers: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([1, 2, 0, 0]);"
+    ));
     assert!(rust.contains("static mut pair: Pair = Pair { left: 3, right: 5 };"));
 }
 
@@ -1552,8 +1560,8 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
             "global_vars",
             &[
                 "counter = (unsafe { counter }) + by;",
-                "numbers[2] =",
-                "pair.right = (unsafe { pair.right }) + unsafe { numbers[1] };",
+                "(*numbers)[2] =",
+                "pair.right = (unsafe { pair.right }) + unsafe { (*numbers)[1] };",
             ][..],
         ),
         (

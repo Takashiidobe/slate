@@ -5,7 +5,7 @@ use crate::effects::{
     ValueKind,
 };
 use crate::rust_ast::{
-    AtomicOrdering, AtomicRmwOp, AtomicType, BinOp, Expr, Path, Prim, RustValue, Type,
+    AtomicOrdering, AtomicRmwOp, AtomicType, BinOp, Expr, Path, Prim, RustValue, Type, UnaryOp,
 };
 use std::borrow::Borrow;
 
@@ -469,6 +469,7 @@ pub(super) fn cast_value_to_type(value: Value, ty: &Type) -> EResult<Value> {
 }
 
 pub(super) fn scalar_type_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
+    let ty = ty.peel_aligned();
     let Type::Prim(prim) = ty else {
         return None;
     };
@@ -492,6 +493,7 @@ pub(super) fn scalar_type_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
 }
 
 pub(super) fn type_size(ty: &Type) -> Option<u64> {
+    let ty = ty.peel_aligned();
     match ty {
         Type::Prim(Prim::F32) => Some(4),
         Type::Prim(Prim::F64) => Some(8),
@@ -506,6 +508,7 @@ pub(super) fn type_size(ty: &Type) -> Option<u64> {
 }
 
 pub(super) fn pointer_elem_size_from_type(ty: &Type) -> Option<u64> {
+    let ty = ty.peel_aligned();
     let Type::Ptr { inner, .. } = ty else {
         return None;
     };
@@ -513,6 +516,7 @@ pub(super) fn pointer_elem_size_from_type(ty: &Type) -> Option<u64> {
 }
 
 pub(super) fn slice_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
+    let ty = ty.peel_aligned();
     let elem = match ty {
         Type::Slice(elem) => Some(elem.as_ref()),
         Type::Ref { inner, .. } => match inner.as_ref() {
@@ -526,6 +530,7 @@ pub(super) fn slice_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
 }
 
 pub(super) fn box_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
+    let ty = ty.peel_aligned();
     let elem = match ty {
         Type::Generic { name, args } if name == "Box" => scalar_type_shape(args.first()?),
         Type::Custom(name) => {
@@ -540,6 +545,7 @@ pub(super) fn box_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
 }
 
 pub(super) fn array_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64, u64)> {
+    let ty = ty.peel_aligned();
     let Type::Array { elem, len } = ty else {
         return None;
     };
@@ -572,6 +578,10 @@ pub(super) fn collection_name(expr: &Expr) -> EResult<&str> {
     match expr {
         Expr::Var(ident) => Ok(ident.as_str()),
         Expr::Ref { expr, .. } => collection_name(expr),
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr,
+        } => collection_name(expr),
         Expr::MethodCall { recv, method, args }
             if args.is_empty()
                 && matches!(
@@ -913,6 +923,7 @@ pub(super) fn atomic_rmw_value(op: AtomicRmwOp, old: Value, operand: Value) -> E
 }
 
 pub(super) fn vec_elem_shape(ty: &Type) -> Option<(IntWidth, bool, u64)> {
+    let ty = ty.peel_aligned();
     let elem = match ty {
         Type::Generic { name, args } if name == "Vec" => return scalar_type_shape(args.first()?),
         Type::Custom(name) => name

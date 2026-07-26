@@ -162,6 +162,8 @@ impl Interp {
     }
 
     fn seed_static(&mut self, name: &str, ty: &Type, init: &Expr) -> EResult<()> {
+        let ty = ty.peel_aligned();
+        let init = init.peel_aligned();
         if let Expr::AtomicNew {
             ty: atomic_ty,
             value,
@@ -324,6 +326,8 @@ impl Interp {
                 init: Some(init),
                 ..
             } => {
+                let ty = ty.peel_aligned();
+                let init = init.peel_aligned();
                 self.record_decl_type(name, ty);
                 match init {
                     Expr::StructLit {
@@ -607,13 +611,23 @@ impl Interp {
             }
             Expr::Index { base, index } => self.assign_index(base, index, value)?,
             Expr::Field { base, field } => self.assign_field(base, field, value)?,
+            Expr::TupleField { base, index } => self.assign_tuple_field(base, *index, value)?,
             Expr::Unary {
                 op: UnaryOp::Deref,
                 expr,
             } => {
-                let loc = self.eval_ref(expr)?;
-                let value = self.eval(value)?;
-                self.write_loc(loc, value);
+                if let Ok(name) = collection_name(expr)
+                    && self.vecs.contains_key(name)
+                {
+                    return self.assign(expr, value);
+                }
+                match self.eval(expr)? {
+                    Value::Ref(loc) => {
+                        let value = self.eval(value)?;
+                        self.write_loc(loc, value);
+                    }
+                    _ => return self.assign(expr, value),
+                }
             }
             other => {
                 return Err(EffectError::unsupported(
@@ -623,6 +637,37 @@ impl Interp {
             }
         }
         Ok(Flow::Normal)
+    }
+
+    fn assign_tuple_field(&mut self, base: &Expr, index: usize, value: &Expr) -> EResult<()> {
+        let field = index.to_string();
+        if self.field_location(base, &field).is_ok() {
+            return self.assign_field(base, &field, value);
+        }
+        let value = self.eval(value)?;
+        let (name, mut path) = tuple_place_path(base)?;
+        path.push(index);
+        if let Some(loc) = self.scalar_locs.get(&tuple_place_key(name, &path)).copied() {
+            self.write_loc(loc, value.clone());
+        }
+        let mut current = self
+            .scalars
+            .get_mut(name)
+            .ok_or_else(|| EffectError::unknown(BindingKind::Scalar, name))?;
+        for index in path {
+            let Value::Tuple(values) = current else {
+                return Err(EffectError::type_mismatch(
+                    ValueKind::Tuple,
+                    current.clone(),
+                ));
+            };
+            let len = values.len();
+            current = values
+                .get_mut(index)
+                .ok_or_else(|| EffectError::index_out_of_range(index, len))?;
+        }
+        *current = value;
+        Ok(())
     }
 
     fn assign_array(&mut self, name: &str, value: &Expr) -> EResult<()> {
@@ -1018,30 +1063,33 @@ impl Interp {
                 ));
             }
         };
-        let values: Vec<Value> = match init {
-            Expr::ArrayLit(elems) => {
-                let mut values = Vec::with_capacity(elems.len());
-                for elem in elems {
-                    values.push(self.eval(elem)?);
+        let values: Vec<Value> = if let Ok(source) = collection_name(init)
+            && self.vecs.contains_key(source)
+        {
+            self.collection_values(source)?
+        } else {
+            match init {
+                Expr::ArrayLit(elems) => {
+                    let mut values = Vec::with_capacity(elems.len());
+                    for elem in elems {
+                        values.push(self.eval(elem)?);
+                    }
+                    values
                 }
-                values
-            }
-            Expr::Var(source) if self.vecs.contains_key(source.as_str()) => {
-                self.collection_values(source.as_str())?
-            }
-            Expr::ArrayRepeat { elem, len } => {
-                let value = self.eval(elem)?;
-                if value_is_zero(&value) {
-                    Vec::new()
-                } else {
-                    vec![value; *len]
+                Expr::ArrayRepeat { elem, len } => {
+                    let value = self.eval(elem)?;
+                    if value_is_zero(&value) {
+                        Vec::new()
+                    } else {
+                        vec![value; *len]
+                    }
                 }
-            }
-            other => {
-                return Err(EffectError::unsupported(
-                    Construct::ArrayInitializer,
-                    other.clone(),
-                ));
+                other => {
+                    return Err(EffectError::unsupported(
+                        Construct::ArrayInitializer,
+                        other.clone(),
+                    ));
+                }
             }
         };
         if !values.is_empty() && values.len() as u64 != len {
@@ -1812,15 +1860,7 @@ impl Interp {
             return Ok(());
         }
         let value = self.eval(value)?;
-        let name = match base {
-            Expr::Var(ident) => ident.as_str(),
-            other => {
-                return Err(EffectError::unsupported(
-                    Construct::AssignTargetBase,
-                    other.clone(),
-                ));
-            }
-        };
+        let name = collection_name(base)?;
         let index = self.eval(index)?;
         let idx = value_as_u64(index)?;
         self.materialize_collection(name);
@@ -3025,15 +3065,7 @@ impl Interp {
                     });
                     return Ok(value);
                 }
-                let name = match base.as_ref() {
-                    Expr::Var(ident) => ident.as_str(),
-                    other => {
-                        return Err(EffectError::unsupported(
-                            Construct::IndexBase,
-                            other.clone(),
-                        ));
-                    }
-                };
+                let name = collection_name(base)?;
                 let index_value = self.eval(index)?;
                 let idx = value_as_u64(index_value)?;
                 self.materialize_collection(name);
@@ -3570,6 +3602,12 @@ impl Interp {
         if self.field_location(base, &field).is_ok() {
             return self.eval_field(base, &field);
         }
+        if let Ok((name, mut path)) = tuple_place_path(base) {
+            path.push(index);
+            if let Some(loc) = self.scalar_locs.get(&tuple_place_key(name, &path)).copied() {
+                return self.read_loc(loc);
+            }
+        }
         match self.eval(base)? {
             Value::Float(value) if index == 0 => Ok(Value::Float(value)),
             Value::Tuple(values) => match values.get(index).cloned() {
@@ -3942,6 +3980,47 @@ impl Interp {
                 })
             }
             Expr::Field { base, field } => self.field_location(base, field),
+            Expr::TupleField { base, index } => {
+                let field = index.to_string();
+                if let Ok(loc) = self.field_location(base, &field) {
+                    return Ok(loc);
+                }
+                let (name, mut path) = tuple_place_path(base)?;
+                path.push(*index);
+                let key = tuple_place_key(name, &path);
+                if let Some(loc) = self.scalar_locs.get(&key).copied() {
+                    return Ok(loc);
+                }
+                let value = self.eval_tuple_field(base, *index)?;
+                let alloc = AllocId(self.next_alloc);
+                self.next_alloc += 1;
+                let loc = Location {
+                    alloc,
+                    byte_offset: 0,
+                };
+                self.scalar_locs.insert(key, loc);
+                self.heap.insert(loc, value.clone());
+                self.trace.push(Effect::Alloc {
+                    alloc,
+                    size: local_value_size(&value)?,
+                });
+                self.trace.push(Effect::Write { loc, value });
+                Ok(loc)
+            }
+            Expr::Unary {
+                op: UnaryOp::Deref,
+                expr,
+            } => {
+                if let Ok(name) = collection_name(expr)
+                    && self.vecs.contains_key(name)
+                {
+                    return self.collection_base(expr);
+                }
+                match self.eval(expr)? {
+                    Value::Ref(loc) => Ok(loc),
+                    _ => self.addr_of(expr),
+                }
+            }
             other => Err(EffectError::unsupported(
                 Construct::AddrOfExpr,
                 other.clone(),
@@ -4094,12 +4173,15 @@ impl Interp {
         if let Some(known) = binding.known() {
             return self.eval_call_summary(call_summary(known), args);
         }
-        if matches!(binding, crate::function_identity::CallBinding::Generated) {
-            match name.as_str() {
-                "__muldc3" => return self.eval_call_summary(CallSummary::MulDc3, args),
-                "__divdc3" => return self.eval_call_summary(CallSummary::DivDc3, args),
-                _ => {}
-            }
+        match name.as_str() {
+            "__muldc3" => return self.eval_call_summary(CallSummary::MulDc3, args),
+            "__divdc3" => return self.eval_call_summary(CallSummary::DivDc3, args),
+            "toupper" => return self.eval_call_summary(CallSummary::Toupper, args),
+            "tolower" => return self.eval_call_summary(CallSummary::Tolower, args),
+            _ => {}
+        }
+        if matches!(binding, crate::function_identity::CallBinding::Generated) && name == "fflush" {
+            return self.eval_call_summary(CallSummary::Fflush, args);
         }
         match name.as_str() {
             "__slate_runtime::parse_i32" => return self.parse_runtime_i32(args),
@@ -4236,6 +4318,7 @@ impl Interp {
     }
 
     fn record_decl_type(&mut self, name: &str, ty: &Type) {
+        let ty = ty.peel_aligned();
         if let Some(size) = pointer_elem_size_from_type(ty) {
             self.pointer_elem_sizes.insert(name.to_string(), size);
         }
@@ -4453,6 +4536,7 @@ impl Interp {
     }
 
     fn type_layout(&self, ty: &Type) -> EResult<(u64, u64)> {
+        let ty = ty.peel_aligned();
         match ty {
             Type::Custom(name) => {
                 if self.enums.contains_key(name) {
@@ -7501,6 +7585,30 @@ fn array_init_elems(init: &Expr, len: u64) -> EResult<Vec<&Expr>> {
             other.clone(),
         )),
     }
+}
+
+fn tuple_place_path(expr: &Expr) -> EResult<(&str, Vec<usize>)> {
+    match expr {
+        Expr::Var(ident) => Ok((ident.as_str(), Vec::new())),
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr,
+        } => tuple_place_path(expr),
+        Expr::TupleField { base, index } => {
+            let (name, mut path) = tuple_place_path(base)?;
+            path.push(*index);
+            Ok((name, path))
+        }
+        other => Err(EffectError::unsupported(
+            Construct::AssignTargetBase,
+            other.clone(),
+        )),
+    }
+}
+
+fn tuple_place_key(name: &str, path: &[usize]) -> String {
+    path.iter()
+        .fold(name.to_string(), |key, index| format!("{key}.{index}"))
 }
 
 fn local_value_size(value: &Value) -> EResult<u64> {

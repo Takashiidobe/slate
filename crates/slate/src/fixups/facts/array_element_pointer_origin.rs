@@ -258,7 +258,7 @@ impl<'a> Collector<'a> {
     }
 
     fn record_array_binding(&mut self, name: &str, ty: Option<&Type>, path: &[PathSegment]) {
-        if !matches!(ty, Some(Type::Array { .. })) {
+        if !matches!(ty.map(Type::peel_aligned), Some(Type::Array { .. })) {
             return;
         }
         let ast_path = AstPath(path.to_vec());
@@ -352,9 +352,7 @@ fn indexed_array_origin(expr: &Expr, mutable: bool) -> Option<OriginSource> {
     let Expr::Index { base, index } = expr else {
         return None;
     };
-    let Expr::Var(base_name) = &**base else {
-        return None;
-    };
+    let base_name = array_base_name(base)?;
     Some(OriginSource {
         base_name: base_name.clone(),
         index: integer_expr(index)?,
@@ -365,9 +363,7 @@ fn indexed_array_origin(expr: &Expr, mutable: bool) -> Option<OriginSource> {
 fn array_pointer_source(expr: &Expr) -> Option<(&Ident, bool)> {
     match peel_casts(expr) {
         Expr::ArrayPtr { array, mutable } => {
-            let Expr::Var(name) = &**array else {
-                return None;
-            };
+            let name = array_base_name(array)?;
             Some((name, *mutable))
         }
         Expr::MethodCall { recv, method, args } if args.is_empty() => {
@@ -376,11 +372,20 @@ fn array_pointer_source(expr: &Expr) -> Option<(&Ident, bool)> {
                 "as_mut_ptr" => true,
                 _ => return None,
             };
-            let Expr::Var(name) = &**recv else {
-                return None;
-            };
+            let name = array_base_name(recv)?;
             Some((name, mutable))
         }
+        _ => None,
+    }
+}
+
+fn array_base_name(expr: &Expr) -> Option<&Ident> {
+    match expr {
+        Expr::Var(name) => Some(name),
+        Expr::Unary {
+            op: crate::rust_ast::UnaryOp::Deref,
+            expr,
+        } => array_base_name(expr),
         _ => None,
     }
 }

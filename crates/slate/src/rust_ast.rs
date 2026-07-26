@@ -998,6 +998,21 @@ impl Stmt {
 }
 
 impl Expr {
+    pub fn aligned_inner(&self) -> Option<&Expr> {
+        match self {
+            Expr::TupleStructLit { name, fields }
+                if name == "aligned::Aligned" && fields.len() == 1 =>
+            {
+                fields.first()
+            }
+            _ => None,
+        }
+    }
+
+    pub fn peel_aligned(&self) -> &Expr {
+        self.aligned_inner().unwrap_or(self)
+    }
+
     pub fn render(&self) -> String {
         crate::codegen::expr_to_string(self)
     }
@@ -1295,6 +1310,19 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
 }
 
 impl Type {
+    pub fn aligned_inner(&self) -> Option<&Type> {
+        match self {
+            Type::Generic { name, args } if name == "aligned::Aligned" && args.len() == 2 => {
+                args.get(1)
+            }
+            _ => None,
+        }
+    }
+
+    pub fn peel_aligned(&self) -> &Type {
+        self.aligned_inner().unwrap_or(self)
+    }
+
     pub fn render(&self) -> String {
         crate::codegen::type_to_string(self)
     }

@@ -321,7 +321,6 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         cross_uses: Vec::new(),
         ctor_calls: Vec::new(),
         dtor_calls: Vec::new(),
-        aligned_wrappers: BTreeSet::new(),
         generated_alloca_frames: Vec::new(),
         layout_queries: c
             .functions
@@ -407,35 +406,18 @@ fn enum_attrs() -> Vec<RustAttr> {
     ]
 }
 
-fn aligned_wrapper_name(alignment: u32) -> String {
-    format!("__SlateAlign{alignment}")
-}
-
 fn aligned_type(ty: Type, alignment: u32) -> Type {
     Type::Generic {
-        name: aligned_wrapper_name(alignment),
-        args: vec![ty],
+        name: "aligned::Aligned".into(),
+        args: vec![Type::Custom(format!("aligned::A{alignment}")), ty],
     }
 }
 
-fn aligned_value(value: Expr, alignment: u32) -> Expr {
+fn aligned_value(value: Expr, _alignment: u32) -> Expr {
     Expr::TupleStructLit {
-        name: aligned_wrapper_name(alignment),
+        name: "aligned::Aligned".into(),
         fields: vec![value],
     }
-}
-
-fn aligned_wrapper_def(alignment: u32) -> Item {
-    Item::Struct(StructDef {
-        attrs: vec![RustAttr::Repr(vec![Repr::C, Repr::Align(alignment)])],
-        vis: Visibility::Private,
-        generics: vec![GenericParam {
-            name: "T".into(),
-            bounds: Vec::new(),
-        }],
-        name: aligned_wrapper_name(alignment),
-        fields: StructFields::Tuple(vec![Type::TyVar("T".into())]),
-    })
 }
 
 fn type_alignment(ty: &Type) -> u32 {
@@ -668,7 +650,6 @@ struct Lowerer<'a> {
     /// `__attribute__((destructor))` functions, in call order, spliced before
     /// every `main` return/exit site.
     dtor_calls: Vec<String>,
-    aligned_wrappers: BTreeSet<u32>,
     generated_alloca_frames: Vec<StructDef>,
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     nonnull_static_params: BTreeMap<String, BTreeSet<usize>>,
@@ -682,6 +663,7 @@ struct FunctionLowerer<'a, 'b> {
     function_pointer_null_values: BTreeSet<String>,
     slots: BTreeMap<String, String>,
     slot_places: BTreeMap<String, Expr>,
+    aligned_slots: BTreeSet<String>,
     slot_types: BTreeMap<String, Type>,
     member_ptrs: BTreeMap<String, MemberPtr>,
     element_ptrs: BTreeMap<String, ElementPtr>,
@@ -1067,18 +1049,12 @@ impl<'a> Lowerer<'a> {
             }
         }
 
-        let mut storage_items: Vec<Item> = self
-            .aligned_wrappers
+        let storage_items: Vec<Item> = self
+            .generated_alloca_frames
             .iter()
-            .copied()
-            .map(aligned_wrapper_def)
+            .cloned()
+            .map(Item::Struct)
             .collect();
-        storage_items.extend(
-            self.generated_alloca_frames
-                .iter()
-                .cloned()
-                .map(Item::Struct),
-        );
         items.splice(1..1, storage_items);
 
         if !self.long_double_shims.is_empty() {
@@ -1182,9 +1158,6 @@ impl<'a> Lowerer<'a> {
                     *alignment > type_alignment(ty) && !matches!(ty, Type::Custom(_))
                 })
         });
-        if let Some(alignment) = alignment {
-            self.aligned_wrappers.insert(alignment);
-        }
         let weak = linkage_is_weak(op);
         self.warn_protected_visibility(op, name);
         let section = attr_str(op, "section").map(str::to_owned);
@@ -1646,6 +1619,7 @@ impl<'a> Lowerer<'a> {
             function_pointer_null_values: BTreeSet::new(),
             slots: BTreeMap::new(),
             slot_places: BTreeMap::new(),
+            aligned_slots: BTreeSet::new(),
             slot_types: BTreeMap::new(),
             member_ptrs: BTreeMap::new(),
             element_ptrs: BTreeMap::new(),
@@ -2635,20 +2609,33 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let alignment = attr_int(op, "alignment")
                 .and_then(|alignment| u32::try_from(alignment).ok())
                 .unwrap_or_else(|| type_alignment(&ty));
-            self.parent.aligned_wrappers.insert(alignment);
-            fields.push(aligned_type(ty.clone(), alignment));
-            init.push(aligned_value(self.default_value_expr(&ty), alignment));
+            let over_aligned = alignment > type_alignment(&ty) && !matches!(ty, Type::Custom(_));
+            if over_aligned {
+                fields.push(aligned_type(ty.clone(), alignment));
+                init.push(aligned_value(self.default_value_expr(&ty), alignment));
+            } else {
+                fields.push(ty.clone());
+                init.push(self.default_value_expr(&ty));
+            }
+            let field = Expr::TupleField {
+                base: Box::new(Expr::Var(frame_var.clone().into())),
+                index: field_index,
+            };
             places.push((
                 result.clone(),
                 ty,
-                Expr::TupleField {
-                    base: Box::new(Expr::TupleField {
-                        base: Box::new(Expr::Var(frame_var.clone().into())),
-                        index: field_index,
-                    }),
-                    index: 0,
+                if over_aligned {
+                    Expr::Unary {
+                        op: UnaryOp::Deref,
+                        expr: Box::new(field),
+                    }
+                } else {
+                    field
                 },
             ));
+            if over_aligned {
+                self.aligned_slots.insert(result.clone());
+            }
         }
 
         self.parent.generated_alloca_frames.push(StructDef {
@@ -2724,12 +2711,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.slot_types.insert(result.clone(), ty.clone());
         let init = self.default_value_expr(&ty);
         if let Some(alignment) = alignment {
-            self.parent.aligned_wrappers.insert(alignment);
+            self.aligned_slots.insert(result.clone());
             self.slot_places.insert(
                 result.clone(),
-                Expr::TupleField {
-                    base: Box::new(Expr::Var(name.clone().into())),
-                    index: 0,
+                Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(Expr::Var(name.clone().into())),
                 },
             );
             self.push_stmt(Stmt::Let {
@@ -3020,9 +3007,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .globals
             .get(&name)
             .and_then(|global| global.alignment)
-            .map(|_| Expr::TupleField {
-                base: Box::new(base.clone()),
-                index: 0,
+            .map(|_| Expr::Unary {
+                op: UnaryOp::Deref,
+                expr: Box::new(base.clone()),
             })
             .or(Some(base))
     }
@@ -4624,6 +4611,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn place_or_deref_expr(&self, ptr: &str) -> Expr {
+        if self.aligned_slots.contains(ptr)
+            && let Some(place) = self.slot_receiver(ptr)
+        {
+            return place;
+        }
         self.place_expr(ptr).unwrap_or_else(|| Expr::Unary {
             op: UnaryOp::Deref,
             expr: Box::new(self.pointer_operand_expr(ptr)),
@@ -5217,7 +5209,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .is_some_and(|ty| matches!(ty, Type::Array { .. })) =>
             {
                 let array_ptr = Expr::ArrayPtr {
-                    array: Box::new(self.operand_expr(src)),
+                    array: Box::new(
+                        self.slot_receiver(src)
+                            .unwrap_or_else(|| self.operand_expr(src)),
+                    ),
                     mutable: true,
                 };
                 if result_ty.starts_with("!cir.ptr<") {
@@ -6723,6 +6718,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         })
     }
 
+    fn slot_receiver(&self, operand: &str) -> Option<Expr> {
+        let place = self.slot_place(operand)?;
+        if !self.aligned_slots.contains(operand) {
+            return Some(place);
+        }
+        match place {
+            Expr::Unary {
+                op: UnaryOp::Deref,
+                expr,
+            } => Some(*expr),
+            _ => Some(place),
+        }
+    }
+
     fn element_place_expr(&self, element: &ElementPtr) -> Expr {
         Expr::Index {
             base: Box::new(element.base.clone()),
@@ -6747,7 +6756,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .is_some_and(|ty| matches!(ty, Type::Array { .. }))
             {
                 Expr::MethodCall {
-                    recv: Box::new(slot),
+                    recv: Box::new(self.slot_receiver(operand).unwrap_or(slot)),
                     method: "as_mut_ptr".into(),
                     args: vec![],
                 }

@@ -1408,6 +1408,8 @@ impl<'a> Collector<'a> {
         init: Option<&Expr>,
         path: AstPath,
     ) -> Option<BufferSummary> {
+        let ty = ty.peel_aligned();
+        let init = init.map(Expr::peel_aligned);
         if is_char_array(ty) {
             let mut summary = BufferSummary::new(binding, path, StringBufferKind::CharArray);
             match init {
@@ -1506,7 +1508,21 @@ impl<'a> Collector<'a> {
             Expr::Unary {
                 op: UnaryOp::Deref,
                 expr,
-            } => walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(expr, path)),
+            } => {
+                if matches!(
+                    expr.as_ref(),
+                    Expr::Var(name)
+                        if self
+                            .binding_for_name(name.as_str())
+                            .is_some_and(|binding| self.summaries.contains_key(&binding))
+                ) {
+                    self.assign(expr, value, path);
+                } else {
+                    walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                        self.expr(expr, path)
+                    });
+                }
+            }
             Expr::Cast { expr, .. } => self.assign(expr, value, path),
             _ => self.expr(target, path),
         }
