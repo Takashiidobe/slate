@@ -39,17 +39,20 @@ fn generated_differential() {
         fixtures_dir()
     );
 
+    let translated = support::parallel_map(&fixtures, |(name, c_src)| {
+        let generated = tmp.join(format!("{name}.generated.rs"));
+        support::translate(c_src, &generated).map(|()| support::Case {
+            name: name.clone(),
+            c_src: c_src.clone(),
+            rs_src: generated,
+            config: support::RunConfig::default(),
+        })
+    });
     let mut cases = Vec::new();
     let mut failures = Vec::new();
-    for (name, c_src) in &fixtures {
-        let generated = tmp.join(format!("{name}.generated.rs"));
-        match support::translate(c_src, &generated) {
-            Ok(()) => cases.push(support::Case {
-                name: name.clone(),
-                c_src: c_src.clone(),
-                rs_src: generated,
-                config: support::RunConfig::default(),
-            }),
+    for ((name, _), result) in fixtures.iter().zip(translated) {
+        match result {
+            Ok(case) => cases.push(case),
             Err(e) => {
                 eprintln!("FAIL  {name}");
                 failures.push(format!("[{name}] {e}"));

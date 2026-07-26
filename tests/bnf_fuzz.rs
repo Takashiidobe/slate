@@ -1,5 +1,8 @@
 mod support;
 
+#[path = "support/cgen.rs"]
+mod cgen;
+
 use std::collections::BTreeMap;
 use std::path::Path;
 
@@ -143,7 +146,7 @@ fn split_alternatives(src: &str) -> Vec<&str> {
 }
 
 /// `c.bnf` is a reference grammar for Slate's supported C subset, not a program
-/// generator (that is `support::cgen`). These tests keep it honest: it must
+/// generator (that is `cgen`). These tests keep it honest: it must
 /// parse, expose the expected top-level rules, and be internally closed — every
 /// nonterminal referenced on a right-hand side must be defined somewhere.
 #[test]
@@ -224,38 +227,47 @@ fn generator_differential() {
     let tmp = manifest.join("target/cgen-fuzz");
     std::fs::create_dir_all(&tmp).expect("create cgen fuzz dir");
 
-    let mut cases = Vec::new();
-    let mut seeds = Vec::new();
-    let mut failures = Vec::new();
-    for i in 0..cases_n {
-        let seed = match base {
+    let seeds: Vec<u64> = (0..cases_n)
+        .map(|i| match base {
             Some(b) => b.wrapping_add(i),
             None => random_seed(),
-        };
+        })
+        .collect();
+    let generated = support::parallel_map(&seeds, |seed| {
         let name = format!("cgen_seed_{seed:016x}");
         let c_src = tmp.join(format!("{name}.c"));
         let rs_src = tmp.join(format!("{name}.generated.rs"));
-        let program = support::cgen::generate(seed);
+        let program = cgen::generate(*seed);
         std::fs::write(&c_src, program).expect("write generated c");
+        support::translate(&c_src, &rs_src).map(|()| support::Case {
+            name,
+            c_src,
+            rs_src,
+            config: support::RunConfig::default(),
+        })
+    });
 
-        match support::translate(&c_src, &rs_src) {
-            Ok(()) => {
-                seeds.push(seed);
-                cases.push(support::Case {
-                    name,
-                    c_src,
-                    rs_src,
-                    config: support::RunConfig::default(),
-                });
+    let mut cases = Vec::new();
+    let mut case_seeds = Vec::new();
+    let mut failures = Vec::new();
+    for (seed, result) in seeds.into_iter().zip(generated) {
+        match result {
+            Ok(case) => {
+                case_seeds.push(seed);
+                cases.push(case);
             }
             Err(e) => {
+                let name = format!("cgen_seed_{seed:016x}");
                 eprintln!("FAIL  {name}  (replay with SLATE_FUZZ_SEED={seed} SLATE_FUZZ_CASES=1)");
                 failures.push(format!("[seed {seed}] {e}"));
             }
         }
     }
 
-    for ((name, result), seed) in support::compare_batch(&cases, &tmp).into_iter().zip(&seeds) {
+    for ((name, result), seed) in support::compare_batch(&cases, &tmp)
+        .into_iter()
+        .zip(&case_seeds)
+    {
         match result {
             Ok(()) => eprintln!("ok    {name}"),
             Err(e) => {
@@ -273,4 +285,33 @@ fn generator_differential() {
             failures.join("\n\n")
         );
     }
+}
+
+fn support_temp_path(name: &str) -> std::path::PathBuf {
+    let nonce = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    std::env::temp_dir().join(format!(
+        "slate-support-test-{}-{nonce}-{name}",
+        std::process::id()
+    ))
+}
+
+#[test]
+fn write_if_changed_reports_unchanged_files() {
+    let path = support_temp_path("unchanged");
+    assert!(support::write_if_changed(&path, b"same").unwrap());
+    assert!(!support::write_if_changed(&path, b"same").unwrap());
+    assert_eq!(std::fs::read(&path).unwrap(), b"same");
+    std::fs::remove_file(&path).unwrap();
+}
+
+#[test]
+fn write_if_changed_rewrites_changed_files() {
+    let path = support_temp_path("changed");
+    assert!(support::write_if_changed(&path, b"old").unwrap());
+    assert!(support::write_if_changed(&path, b"new").unwrap());
+    assert_eq!(std::fs::read(&path).unwrap(), b"new");
+    std::fs::remove_file(&path).unwrap();
 }

@@ -64,22 +64,25 @@ fn stdlib_coverage() {
     assert!(!probes.is_empty(), "no probes found in {:?}", stdlib_dir());
     let known = known_unsupported_by_probe(&probes);
 
-    // Translate first; translate failures are recorded directly.
+    let translated = support::parallel_map(&probes, |(id, c_src)| {
+        let generated = tmp.join(format!("{}.generated.rs", id.replace('/', "__")));
+        support::translate(c_src, &generated).and_then(|()| {
+            let config = probe_config(c_src)
+                .map_err(|e| format!("load run config for {}: {e}", c_src.display()))?;
+            Ok(support::Case {
+                name: id.clone(),
+                c_src: c_src.clone(),
+                rs_src: generated,
+                config,
+            })
+        })
+    });
     let mut cases = Vec::new();
     let mut known_cases = Vec::new();
     let mut results: BTreeMap<String, Result<(), String>> = BTreeMap::new();
-    for (id, c_src) in &probes {
-        let generated = tmp.join(format!("{}.generated.rs", id.replace('/', "__")));
-        match support::translate(c_src, &generated) {
-            Ok(()) => {
-                let case = support::Case {
-                    name: id.clone(),
-                    c_src: c_src.clone(),
-                    rs_src: generated,
-                    config: probe_config(c_src)
-                        .unwrap_or_else(|e| panic!("load run config for {}: {e}", c_src.display())),
-                };
-                // expected failures would poison the shared batch and force per-case fallback.
+    for ((id, _), result) in probes.iter().zip(translated) {
+        match result {
+            Ok(case) => {
                 if known.contains_key(id.as_str()) {
                     known_cases.push(case);
                 } else {
@@ -87,7 +90,7 @@ fn stdlib_coverage() {
                 }
             }
             Err(e) => {
-                results.insert(id.clone(), Err(format!("translate: {e}")));
+                results.insert(id.clone(), Err(e));
             }
         }
     }
