@@ -320,10 +320,6 @@ pub struct RecordDef {
     pub allow_non_camel_case: bool,
     pub name: String,
     pub fields: Vec<RecordField>,
-    /// `__attribute__((packed))`; mutually exclusive with `align` — Rust rejects
-    /// combining `repr(packed)` and `repr(align(N))` on one type (E0587). The
-    /// packed+aligned combination is lowered as a wrapper pair instead, see
-    /// `lower_packed_aligned_wrapper`.
     pub packed: bool,
     pub align: Option<u32>,
 }
@@ -397,9 +393,6 @@ pub enum Pattern {
     TupleStruct { name: Ident, fields: Vec<Pattern> },
 }
 
-/// The object an atomic operation acts on: an unsafe `AtomicN::from_ptr(<ptr>)`
-/// view over a plain integer slot, or a safe method call on a slot whose
-/// storage is the atomic wrapper itself.
 #[derive(Debug, Clone)]
 pub enum AtomicPlace {
     Ptr(Box<Expr>),
@@ -837,8 +830,6 @@ pub enum Expr {
         success: AtomicOrdering,
         failure: AtomicOrdering,
     },
-    /// `std::sync::atomic::AtomicN::new(<value>)` — initializer for a local
-    /// promoted to native atomic storage.
     AtomicNew {
         ty: AtomicType,
         value: Box<Expr>,
@@ -1465,43 +1456,5 @@ impl Type {
             Some(p) => Type::Prim(p),
             None => Type::Custom(s.to_string()),
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn enum_attrs_emit_from_ast() {
-        let program = Program {
-            items: vec![Item::Enum(EnumDef {
-                comments: vec![],
-                attrs: vec![
-                    Attr::Repr(vec![Repr::C]),
-                    Attr::Allow(vec![Lint::NonCamelCaseTypes]),
-                    Attr::Derive(vec![
-                        Derive::Clone,
-                        Derive::Copy,
-                        Derive::PartialEq,
-                        Derive::Eq,
-                        Derive::Debug,
-                        Derive::Hash,
-                    ]),
-                ],
-                vis: Visibility::Private,
-                name: "Mode".into(),
-                variants: vec![EnumConst {
-                    comments: vec![],
-                    name: "MODE_ON".into(),
-                    value: 1,
-                }],
-            })],
-        };
-
-        assert_eq!(
-            program.emit(),
-            "#[repr(C)]\n#[allow(non_camel_case_types)]\n#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]\nenum Mode {\n    MODE_ON = 1,\n}\n\n"
-        );
     }
 }

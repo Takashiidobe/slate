@@ -14,35 +14,18 @@ use crate::rust_ast::{
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
-/// How a translation unit fits into a multi-file project: which symbols other
-/// units define, which sibling modules the crate root must declare, and whether
-/// definitions are emitted `pub` so siblings can import them.
 #[derive(Default, Clone)]
 pub struct ProjectInfo {
-    /// function symbol → module (rust file stem) that defines it, for functions
-    /// defined anywhere in the project. A body-less decl whose symbol is in here
-    /// becomes `use crate::<module>::<sym>;` instead of an `extern "C"` decl.
     pub cross_module: BTreeMap<String, String>,
-    /// global symbol → module that defines it. An `extern` global whose symbol is
-    /// in here becomes `use crate::<module>::<sym>;` instead of an extern static.
     pub cross_module_globals: BTreeMap<String, String>,
-    /// modules the crate root declares with `mod <name>;` (empty for non-root).
     pub child_modules: Vec<String>,
-    /// records emitted by a shared module rather than by each generated module.
     pub shared_records: BTreeSet<String>,
-    /// enums emitted by a shared module rather than by each generated module.
     pub shared_enums: BTreeSet<String>,
-    /// module name that owns shared record definitions.
     pub shared_type_module: Option<String>,
-    /// root segment for shared type imports; defaults to `crate`.
     pub shared_type_crate: Option<String>,
-    /// root segment for cross-module imports; defaults to `crate`.
     pub cross_module_crate: Option<String>,
-    /// function symbols whose generated Rust definitions require an unsafe caller.
     pub unsafe_functions: BTreeSet<String>,
-    /// crate-level feature gates needed by sibling modules.
     pub crate_features: BTreeSet<Feature>,
-    /// emit function and global definitions as `pub` so other modules can import them.
     pub emit_pub: bool,
 }
 
@@ -50,7 +33,6 @@ const WEAK_ANY_LINKAGE: i64 = 4;
 const HIDDEN_VISIBILITY: i64 = 1;
 const PROTECTED_VISIBILITY: i64 = 2;
 
-/// CIR encodes external linkage as `linkage = 0`; weak definitions are external too.
 fn linkage_is_external(op: &Op) -> bool {
     matches!(attr_int(op, "linkage").unwrap_or(0), 0 | WEAK_ANY_LINKAGE)
 }
@@ -103,12 +85,6 @@ fn insert_crate_feature(items: &mut [Item], feature: Feature) {
     }
 }
 
-/// True when a function body provably never falls off the end: its last op
-/// before the always-present structural `cir.return`/`cir.yield` terminator
-/// is a call tagged `{noreturn}` by CIR, unwrapping one level of `cir.scope`
-/// wrapping. `cir.return` is emitted even for genuinely divergent bodies (e.g.
-/// an unconditional infinite loop), so its presence says nothing about
-/// reachability — only what precedes it does.
 fn region_ends_in_noreturn_call(region: &Region) -> bool {
     if region.blocks.len() != 1 {
         return false;
@@ -260,12 +236,10 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
     features
 }
 
-/// Lower a parsed CIR module (with the C AST as an oracle) to a Rust program.
 pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
     lower_with_project(cir, c, ctx, &ProjectInfo::default())
 }
 
-/// Lower a translation unit that is part of a multi-file project.
 pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &ProjectInfo) -> Program {
     let anon_records = anon_local_records(cir);
     let mut records: BTreeMap<String, crate::c_ast::Record> = c
@@ -489,20 +463,10 @@ fn lower_record_def(
     })]
 }
 
-/// The synthetic name of the byte-packed inner struct behind a combined
-/// `packed, aligned(N)` wrapper (see [`lower_packed_aligned_wrapper`]). Shared
-/// by definition and struct-literal construction so both agree on the name.
 fn packed_aligned_inner_name(name: &str) -> String {
     format!("{name}__packed")
 }
 
-/// Rust rejects `#[repr(packed, align(N))]` on one type (E0587: conflicting
-/// packed and align hints), but C's combined
-/// `__attribute__((packed, aligned(N)))` needs both: byte-tight field packing
-/// *and* a forced outer alignment/size. Reproduce it as a packed inner struct
-/// wrapped in an aligned newtype, with `Deref`/`DerefMut` forwarding so callers
-/// still write `value.field` for everything but literal construction. Verified
-/// against clang to match `sizeof`/`_Alignof`/`offsetof` exactly.
 fn lower_packed_aligned_wrapper(
     name: &str,
     fields: Vec<RecordField>,
@@ -579,9 +543,6 @@ fn lower_packed_aligned_wrapper(
     vec![inner, outer, deref, deref_mut]
 }
 
-/// Struct-literal name for a record: the synthetic packed-inner name for a
-/// combined packed+aligned record (see [`lower_packed_aligned_wrapper`]), the
-/// record's own name otherwise.
 fn record_lit_name(record: &crate::c_ast::Record) -> String {
     let name = sanitize_ident(&record.name).into_string();
     if record.packed && record.align.is_some() {
@@ -591,9 +552,6 @@ fn record_lit_name(record: &crate::c_ast::Record) -> String {
     }
 }
 
-/// Wraps a record literal in the aligned newtype when `record` is a combined
-/// packed+aligned record, so construction matches [`lower_packed_aligned_wrapper`]'s
-/// two-item shape (`Name(Name__packed { .. })`); a no-op otherwise.
 fn wrap_record_lit(record: &crate::c_ast::Record, lit: Expr) -> Expr {
     if record.packed && record.align.is_some() {
         Expr::TupleStructLit {
@@ -622,25 +580,15 @@ struct Lowerer<'a> {
     known_functions: BTreeMap<String, FunctionIdentity>,
     records: BTreeMap<String, crate::c_ast::Record>,
     enums: BTreeMap<String, crate::c_ast::Enum>,
-    /// Function-local anonymous record types recovered from the CIR (libyaml's
-    /// STACK/QUEUE macro locals). Numbered per-TU, so emitted per-module rather
-    /// than into the shared type module.
     anon_records: Vec<crate::c_ast::Record>,
     globals: BTreeMap<String, GlobalVar>,
     extern_globals: BTreeMap<String, Type>,
     strings: BTreeMap<String, Vec<u8>>,
-    /// numeric aggregate const globals (e.g. `int a[5]={..}`) → element literals,
-    /// keyed by raw sym_name; consumed when a `cir.copy` initializes a local.
     const_arrays: BTreeMap<String, Vec<Expr>>,
     block_addr_globals: BTreeMap<String, Vec<String>>,
-    /// nested aggregate const globals (structs, unions, arrays of aggregates) →
-    /// their raw `#cir.const_record`/`#cir.const_array` initializer, keyed by raw
-    /// sym_name; rendered recursively against the destination type on `cir.copy`.
     const_aggregates: BTreeMap<String, String>,
     const_zero_globals: BTreeSet<String>,
     used_symbols: BTreeMap<String, Vec<UsedKind>>,
-    /// external (body-less) functions → rust types of their fixed params; the
-    /// call site uses this to `as`-cast args and wrap the call in `unsafe`.
     externs: BTreeMap<String, Vec<Type>>,
     extern_returns: BTreeMap<String, Option<String>>,
     long_double_shims: BTreeMap<String, ExternFnDecl>,
@@ -655,13 +603,8 @@ struct Lowerer<'a> {
     variadic_defs: BTreeSet<String>,
     project: ProjectInfo,
     unsafe_functions: BTreeSet<String>,
-    /// `use crate::<mod>::<sym>;` items for body-less decls resolved to a sibling.
     cross_uses: Vec<Item>,
-    /// `__attribute__((constructor))` functions, in call order, spliced into the
-    /// start of `main`.
     ctor_calls: Vec<String>,
-    /// `__attribute__((destructor))` functions, in call order, spliced before
-    /// every `main` return/exit site.
     dtor_calls: Vec<String>,
     generated_alloca_frames: Vec<StructDef>,
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
@@ -689,20 +632,12 @@ struct FunctionLowerer<'a, 'b> {
     is_main: bool,
     loop_stack: Vec<LoopFrame>,
     label_counter: usize,
-    /// Set for functions with unstructured control flow (goto/multi-block); drives
-    /// the state-machine dispatch loop. `None` for structured functions.
     dispatch: Option<DispatchCtx>,
-    /// Alloca results hoisted above the dispatch loop so locals outlive block arms.
     hoisted: BTreeSet<String>,
     declared_local_names: BTreeSet<String>,
-    /// Compiler-temp allocas (see `forwardable_temp_allocas`) lowered as forwarded
-    /// SSA values instead of named locals.
     forward_allocas: BTreeSet<String>,
-    /// Forwarded value recorded at each forward alloca's single store.
     forward_values: BTreeMap<String, Expr>,
-    /// Names bound by immutable `let`s; safe to forward across statements.
     immutable_temps: BTreeSet<String>,
-    /// `va_list` SSA values (the `ap` alloca and its array-decay casts) → slot name.
     va_places: BTreeMap<String, String>,
     va_args_param: Option<String>,
     layout_queries: VecDeque<LayoutQuery>,
@@ -713,21 +648,13 @@ struct FunctionLowerer<'a, 'b> {
     asm_output_places: BTreeMap<String, Expr>,
 }
 
-/// Maps CIR jump targets to dispatch-loop states for a `goto`-bearing function.
 struct DispatchCtx {
     loop_label: Label,
     state_var: String,
-    /// C label name (`cir.label`/`cir.goto`) -> block index.
     label_to_state: BTreeMap<String, usize>,
-    /// Block label (`^bbN`, entry as `bb0`) -> block index, for `cir.br`.
     block_to_state: BTreeMap<String, usize>,
 }
 
-// How `cir.break`/`cir.continue` lower for the enclosing loop. A C `for` loop's
-// step must still run on `continue`, but Rust's `continue` skips the loop tail,
-// so the body is wrapped in a labeled block and `continue` becomes
-// `break 'continue`. Rust then forbids an unlabeled `break` from diverging out
-// through that block, so the loop is labeled too and `break` targets it.
 struct LoopFrame {
     break_label: Option<Label>,
     continue_label: Option<Label>,
@@ -785,7 +712,6 @@ impl Val {
         match self {
             Val::Expr(e) => e.clone(),
             Val::Global(name) => match strings.get(name) {
-                // *mut so it fits *mut char slots; weakens to *const for printf/libc.
                 Some(bytes) => Expr::Cast {
                     expr: Box::new(Expr::MethodCall {
                         recv: Box::new(Expr::ByteStr(bytes.clone())),
@@ -941,7 +867,6 @@ impl<'a> Lowerer<'a> {
 
         let mut extern_decls = Vec::new();
         for (name, ty) in &self.extern_globals {
-            // an extern global defined in a sibling TU becomes a module import.
             if let Some(module) = self.project.cross_module_globals.get(name) {
                 let root = self
                     .project
@@ -973,12 +898,9 @@ impl<'a> Lowerer<'a> {
             let Some(name) = attr_str(op, "sym_name") else {
                 continue;
             };
-            // complex runtime routines are declared in the prelude.
             if is_complex_runtime_call(name) {
                 continue;
             }
-            // a prototype whose definition lives in a sibling TU becomes a module
-            // import; the call then flows through the normal (non-extern) path.
             if let Some(module) = self.project.cross_module.get(name) {
                 let root = self
                     .project
@@ -1052,7 +974,6 @@ impl<'a> Lowerer<'a> {
             });
         }
 
-        // collected before lowering so call sites wrap in `unsafe` regardless of order.
         for op in &ops {
             if op.kind() == CirOpKind::Func
                 && !region_ops(op).is_empty()
@@ -1109,7 +1030,6 @@ impl<'a> Lowerer<'a> {
             items.splice(1..1, vec![memchr_prelude()]);
         }
 
-        // module wiring goes right after the crate-level `#![allow(..)]` attr.
         let mut wiring: Vec<Item> = self
             .project
             .child_modules
@@ -1144,7 +1064,6 @@ impl<'a> Lowerer<'a> {
             items.insert(1 + offset, item);
         }
 
-        // grouped with the crate-level `#![allow(..)]` so both stay at the top.
         if self.uses_c_variadic.get() {
             insert_crate_feature(&mut items, Feature::CVariadic);
         }

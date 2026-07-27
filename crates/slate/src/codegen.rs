@@ -1,15 +1,3 @@
-//! Textual code generation for the Rust AST — the pipeline's output side.
-//!
-//! Lowering builds [`crate::rust_ast`] nodes; [`Codegen`] prints them. The
-//! emitter never concatenates source ad hoc: every node knows how to print
-//! itself, indentation is structural, and binary expressions are parenthesized
-//! only where precedence demands it. V0 output is meant to be correct, not
-//! pretty; the idiomatization passes (see docs/idiomatization.md) clean it up.
-//!
-//! Emission is written against [`std::fmt::Write`], so a caller can stream into
-//! any sink — a `String`, a formatter, or a test buffer — without forcing a
-//! heap allocation per node.
-
 use std::fmt::{self, Write};
 
 use crate::rust_ast::{
@@ -21,9 +9,6 @@ use crate::rust_ast::{
 
 const INDENT: &str = "    ";
 
-// Rust expression binding powers (higher binds tighter). Only the operators the
-// lowerer emits are modeled; anything atomic or brace/paren-delimited renders at
-// PREC_ATOM so it never needs wrapping.
 const PREC_CAST: u8 = 4;
 const PREC_RANGE: u8 = 2;
 const PREC_CAST_OPERAND: u8 = 12;
@@ -94,9 +79,6 @@ fn rmw_method(op: AtomicRmwOp) -> &'static str {
     }
 }
 
-/// Streams the Rust AST into a [`Write`] sink. Holds the sink so emission is a
-/// series of `&mut self` steps; carrying it here also leaves room for emitter
-/// state (config, symbol tables) without rethreading every method signature.
 pub struct Codegen<W: Write> {
     out: W,
 }
@@ -858,9 +840,6 @@ impl<W: Write> Codegen<W> {
         self.expr_prec(expr, 0)
     }
 
-    // Render, wrapping in parens when this expression binds looser than the
-    // enclosing position requires. Extra parens are always safe, so the rule is
-    // conservative: wrap on `<`, keep bare on `>=`.
     fn expr_prec(&mut self, expr: &Expr, min: u8) -> fmt::Result {
         if expr_prec(expr) < min {
             self.parenthesized(expr)
@@ -890,10 +869,6 @@ impl<W: Write> Codegen<W> {
             }
             Expr::Binary { op, lhs, rhs } => {
                 let p = op.precedence();
-                // left-assoc: the right operand must bind strictly tighter, so a
-                // same-precedence right child (`a - (b - c)`) still needs parens.
-                // comparisons are non-associative, so wrap same-precedence on both
-                // sides to avoid an illegal `a < b < c` chain.
                 let (lmin, rmin) = if op.is_comparison() {
                     (p + 1, p + 1)
                 } else {
@@ -1140,13 +1115,10 @@ impl<W: Write> Codegen<W> {
                 self.expr(value)?;
                 self.out.write_char(')')
             }
-            Expr::AtomicFence { ordering } => {
-                write!(
-                    self.out,
-                    "std::sync::atomic::fence({})",
-                    ordering_str(*ordering)
-                )
-            }
+            Expr::AtomicFence { ordering } => self.out.write_fmt(format_args!(
+                "std::sync::atomic::fence({})",
+                ordering_str(*ordering)
+            )),
             Expr::Transmute { from, to, expr } => {
                 self.out.write_str("unsafe { std::mem::transmute::<")?;
                 self.ty(from)?;
@@ -1219,8 +1191,6 @@ impl<W: Write> Codegen<W> {
         }
     }
 
-    // A prefix operator over another prefix form (`- -a`, `&&x`) tokenizes as
-    // `--` or `&&` without a barrier, so parenthesize a nested prefix operand.
     fn prefix_operand(&mut self, expr: &Expr) -> fmt::Result {
         if matches!(expr, Expr::Unary { .. } | Expr::Ref { .. }) {
             self.parenthesized(expr)
@@ -1369,8 +1339,6 @@ impl<W: Write> Codegen<W> {
     }
 }
 
-/// Emits `program` to a fresh `String`. Convenience over [`Codegen`] for the
-/// common whole-program case.
 pub fn program_to_string(program: &Program) -> String {
     let mut cg = Codegen::new(String::new());
     cg.program(program)

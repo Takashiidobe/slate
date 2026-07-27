@@ -1,5 +1,3 @@
-//! Clang AST oracle for source-level facts that CIR may not preserve.
-
 use serde_json::Value;
 use std::cell::RefCell;
 use std::collections::{BTreeSet, HashMap};
@@ -9,17 +7,12 @@ use std::process::Command;
 use crate::function_identity::{CallBinding, FunctionIdentity, Provenance, classify_function};
 
 thread_local! {
-    // Clang omits desugaredQualType for pointer/array-to-typedef, so parse_c_type
-    // resolves the base name here to recover the true signedness and width.
     static TYPEDEFS: RefCell<HashMap<String, String>> = RefCell::new(HashMap::new());
-    // Clang gives a C enum an unsigned underlying type unless an enumerator is
-    // negative; CIR follows suit, so parse_c_type resolves enum signedness here.
     static ENUM_SIGNED: RefCell<HashMap<String, bool>> = RefCell::new(HashMap::new());
     static ENUM_TYPEDEFS: RefCell<HashMap<String, String>> = RefCell::new(HashMap::new());
     static CALL_FACTS: RefCell<HashMap<usize, CallFact>> = RefCell::new(HashMap::new());
 }
 
-/// A parsed C translation unit.
 #[derive(Debug, Default, Clone)]
 pub struct Unit {
     pub enums: Vec<Enum>,
@@ -34,9 +27,7 @@ pub struct Record {
     pub comments: Vec<String>,
     pub kind: RecordKind,
     pub fields: Vec<Decl>,
-    /// `__attribute__((packed))` on the record itself.
     pub packed: bool,
-    /// `__attribute__((aligned(N)))` on the record itself, evaluated by Clang.
     pub align: Option<u32>,
 }
 
@@ -66,11 +57,8 @@ pub struct Function {
     pub name: String,
     pub params: Vec<Decl>,
     pub ret: CType,
-    /// `None` for a prototype with no body.
     pub body: Option<Vec<Stmt>>,
-    /// Source location `line:col` of the definition, for the CIR join.
     pub loc: Option<Loc>,
-    /// Raw Clang JSON node for demand-driven facts the small AST has not modeled.
     pub raw: Option<Value>,
     pub layout_queries: Vec<LayoutQuery>,
     pub nonnull_static_params: BTreeSet<usize>,
@@ -375,7 +363,6 @@ fn run_clang_ast_dump(src: &Path, extra_args: &[String]) -> Result<(String, Plug
     ))
 }
 
-/// Load Clang's JSON AST for `src` and extract a compact source-level oracle.
 pub fn parse_file(src: &Path) -> Result<Unit, String> {
     parse_file_with_args(src, &[])
 }
@@ -398,7 +385,6 @@ pub fn parse_file_with_project_records(src: &Path, project_root: &Path) -> Resul
     )
 }
 
-/// Parse a Clang JSON AST dump into a compact [`Unit`].
 pub fn parse(src: &str) -> Result<Unit, String> {
     parse_json(src, "")
 }
@@ -615,9 +601,6 @@ fn extract_record(node: &Value, name_override: Option<String>) -> Option<Record>
     })
 }
 
-/// Scans a `RecordDecl`'s direct attribute children for `__attribute__((packed))`
-/// and `__attribute__((aligned(N)))`, returning the record's own alignment
-/// request (not per-field attributes, which affect layout differently).
 fn record_layout_attrs(node: &Value) -> (bool, Option<u32>) {
     let mut packed = false;
     let mut align = None;
@@ -635,8 +618,6 @@ fn record_layout_attrs(node: &Value) -> (bool, Option<u32>) {
     (packed, align)
 }
 
-/// Recovers the Clang-evaluated integer from an attribute's `ConstantExpr`
-/// child, e.g. the `16` in `__attribute__((aligned(16)))`.
 fn constant_expr_value(node: &Value) -> Option<u32> {
     if kind(node) == Some("ConstantExpr")
         && let Some(v) = node.get("value").and_then(Value::as_str)
@@ -664,9 +645,6 @@ fn next_anonymous_field_name(kids: &[&Value], start: usize) -> Option<String> {
         .find_map(|sibling| anonymous_record_name_from_field(sibling))
 }
 
-// `typedef struct { ... } name;` gives an otherwise-anonymous record the typedef
-// name for linkage, so Clang prints its underlying type as `struct name`. Adopt
-// that name so the record is emitted and matches CIR's `!rec_name` references.
 fn next_anonymous_typedef_name(kids: &[&Value], start: usize) -> Option<String> {
     let sibling = kids.get(start)?;
     if kind(sibling) != Some("TypedefDecl") {
@@ -1271,14 +1249,10 @@ fn parse_c_type(s: &str) -> CType {
         parse_c_type(&underlying)
     } else if let Some(name) = s.strip_prefix("enum ") {
         CType::Enum(enum_rust_name(name.trim()))
-    } else if s.contains("unsigned") {
-        CType::Int {
-            signed: false,
-            bits: int_bits(s),
-        }
     } else {
+        let signed = !s.contains("unsigned");
         CType::Int {
-            signed: true,
+            signed,
             bits: int_bits(s),
         }
     }
