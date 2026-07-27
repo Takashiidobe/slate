@@ -14,7 +14,7 @@ pub(in crate::fixups) fn fixup(
     facts: &FixupFacts,
 ) -> bool {
     let mut logger = crate::fixups::trace::NoopLogger;
-    DeadLocals::new(&mut logger).fixup(body, function, facts)
+    DeadLocals::new(TracePass::DeadLocals, &mut logger).fixup(body, function, facts)
 }
 
 pub(in crate::fixups) struct DeadLocals<'a> {
@@ -23,11 +23,7 @@ pub(in crate::fixups) struct DeadLocals<'a> {
 }
 
 impl<'a> DeadLocals<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self::with_pass(TracePass::DeadLocals, logger)
-    }
-
-    pub(in crate::fixups) fn with_pass(pass: TracePass, logger: &'a mut dyn TraceLogger) -> Self {
+    pub(in crate::fixups) fn new(pass: TracePass, logger: &'a mut dyn TraceLogger) -> Self {
         Self { pass, logger }
     }
 

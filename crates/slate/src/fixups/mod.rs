@@ -13,6 +13,9 @@ mod test_support;
 use crate::fixups::trace::{CollectingLogger, NoopLogger, ProgramSummary, TraceLog, TraceLogger};
 use crate::rust_ast::{IndentStmt, Item, Program};
 
+use crate::fixups::rewrite::constant_conditions::ConstantConditions;
+use crate::fixups::rewrite::dead_locals::DeadLocals;
+use crate::fixups::rewrite::for_continue::ForContinue;
 use crate::fixups::rewrite::struct_field_init::StructFieldInit;
 use crate::fixups::rewrite::var_aliases::VarAliases;
 pub use trace::Pass;
@@ -555,8 +558,7 @@ fn constant_conditions_to_fixpoint(program: &mut Program, logger: &mut impl Trac
         let mut changed = false;
         for item in &mut program.items {
             if let Item::Fn(f) = item
-                && rewrite::constant_conditions::ConstantConditions::new(&f.name, logger)
-                    .fixup(&mut f.body)
+                && ConstantConditions::new(&f.name, logger).fixup(&mut f.body)
             {
                 changed = true;
             }
@@ -588,8 +590,7 @@ fn cleanup_for_continues(program: &mut Program, logger: &mut impl TraceLogger) {
         let mut changed = false;
         for item in &mut program.items {
             if let Item::Fn(f) = item
-                && rewrite::for_continue::ForContinue::new(f.name.clone(), logger)
-                    .fixup(&mut f.body)
+                && ForContinue::new(f.name.clone(), logger).fixup(&mut f.body)
             {
                 changed = true;
             }
@@ -656,6 +657,10 @@ fn inline_var_aliases_to_fixpoint(program: &mut Program, logger: &mut impl Trace
     to_fixpoint_items(program, &mut VarAliases::new(logger));
 }
 
+fn struct_field_init_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
+    to_fixpoint_items(program, &mut StructFieldInit::new(logger));
+}
+
 fn to_fixpoint_items(program: &mut Program, fixup: &mut dyn Fixup) {
     loop {
         let mut changed = false;
@@ -666,10 +671,6 @@ fn to_fixpoint_items(program: &mut Program, fixup: &mut dyn Fixup) {
             break;
         }
     }
-}
-
-fn struct_field_init_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
-    to_fixpoint_items(program, &mut StructFieldInit::new(logger));
 }
 
 fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceLogger) {
@@ -685,11 +686,7 @@ fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceL
                 )
                 .fixup(&mut f.body);
                 if let Some(function) = facts.function_by_item_index(item_index)
-                    && rewrite::dead_locals::DeadLocals::with_pass(pass, logger).fixup(
-                        &mut f.body,
-                        function,
-                        &facts,
-                    )
+                    && DeadLocals::new(pass, logger).fixup(&mut f.body, function, &facts)
                 {
                     changed |= true;
                 }
@@ -703,7 +700,7 @@ fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceL
 
 fn dead_locals_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
     loop {
-        let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program);
         let mut changed = false;
         for (item_index, item) in program.items.iter_mut().enumerate() {
             if let Item::Fn(f) = item
@@ -720,12 +717,12 @@ fn dead_locals_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger)
 }
 
 fn run_dead_locals_pass(
-    body: &mut Vec<crate::rust_ast::IndentStmt>,
+    body: &mut Vec<IndentStmt>,
     function: facts::FunctionId,
     facts: &facts::FixupFacts,
     logger: &mut impl TraceLogger,
 ) -> bool {
-    rewrite::dead_locals::DeadLocals::new(logger).fixup(body, function, facts)
+    DeadLocals::new(Pass::DeadLocals, logger).fixup(body, function, facts)
 }
 
 #[derive(Clone, Copy)]
@@ -746,7 +743,7 @@ fn inline_temps_to_fixpoint(
     };
     let mut rounds = 0;
     while rounds < inline_round_limit {
-        let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program);
         rounds += 1;
         let mut changed = false;
         for (item_index, item) in program.items.iter_mut().enumerate() {
@@ -779,7 +776,7 @@ fn inline_temps_to_fixpoint(
 }
 
 fn run_inline_temps_pass(
-    body: &mut Vec<crate::rust_ast::IndentStmt>,
+    body: &mut Vec<IndentStmt>,
     function: facts::FunctionId,
     facts: &facts::FixupFacts,
     phase: rewrite::inline_temps::Phase,
@@ -789,7 +786,7 @@ fn run_inline_temps_pass(
 }
 
 fn remove_mut(program: &mut Program, logger: &mut impl TraceLogger) {
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(program);
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
             && let Some(function) = facts.function_by_item_index(item_index)
@@ -800,7 +797,7 @@ fn remove_mut(program: &mut Program, logger: &mut impl TraceLogger) {
 }
 
 fn run_zero_init_pass(
-    body: &mut Vec<crate::rust_ast::IndentStmt>,
+    body: &mut Vec<IndentStmt>,
     function: facts::FunctionId,
     facts: &facts::FixupFacts,
     cross_effects: bool,
