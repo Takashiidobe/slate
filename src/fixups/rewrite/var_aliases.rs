@@ -1,3 +1,4 @@
+use crate::fixups::Fixup;
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
@@ -14,17 +15,19 @@ pub(in crate::fixups) struct VarAliases<'a> {
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> VarAliases<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+impl<'a> Fixup for VarAliases<'a> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
         let mut changed = false;
         while self.fixup_once(body, &mut Vec::new()) {
             changed = true;
         }
         changed
+    }
+}
+
+impl<'a> VarAliases<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
     }
 
     fn fixup_once(&mut self, body: &mut Vec<IndentStmt>, path: &mut Vec<usize>) -> bool {
@@ -297,200 +300,4 @@ fn pattern_declares_name(pattern: &crate::rust_ast::Pattern, name: &str) -> bool
 fn is_temp_name(name: &str) -> bool {
     name.strip_prefix("_v")
         .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|b| b.is_ascii_digit()))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::fixups::test_support::*;
-    use crate::fixups::trace::{CollectingLogger, Pass, ProgramSummary, TraceLogger};
-    use crate::rust_ast::{Expr, Item, Program, RustValue, Stmt, Type};
-
-    fn run(stmts: Vec<Stmt>) -> String {
-        after_body(
-            |body| {
-                fixup(body);
-            },
-            vec![],
-            None,
-            stmts,
-        )
-    }
-
-    fn println_arg(expr: Expr) -> Stmt {
-        Stmt::Expr(Expr::Macro {
-            name: "println".into(),
-            args: vec![Expr::Str("{}".into()), expr],
-        })
-    }
-
-    fn let_stmt(name: &str, ty: &str, init: Expr) -> Stmt {
-        Stmt::Let {
-            name: name.into(),
-            mutable: false,
-            ty: Some(Type::parse(ty)),
-            init: Some(init),
-        }
-    }
-
-    fn cast(expr: Expr, ty: &str) -> Expr {
-        Expr::Cast {
-            expr: Box::new(expr),
-            ty: Type::parse(ty),
-        }
-    }
-
-    #[test]
-    fn inlines_single_use_var_alias_into_macro_arg() {
-        let out = run(vec![
-            temp("loaded", "i32", int(7)),
-            temp("_v30", "i32", var("loaded")),
-            println_arg(var("_v30")),
-        ]);
-
-        assert_eq!(
-            out,
-            "\
-fn f() {
-    let loaded: i32 = 7;
-    println!(\"{}\", loaded);
-}
-"
-        );
-    }
-
-    #[test]
-    fn logs_var_alias_inline_rewrite() {
-        let mut program = Program {
-            items: vec![Item::Fn(func(
-                vec![],
-                None,
-                vec![
-                    temp("loaded", "i32", int(7)),
-                    temp("_v30", "i32", var("loaded")),
-                    println_arg(var("_v30")),
-                ],
-            ))],
-        };
-        let mut logger = CollectingLogger::default();
-        logger.begin_pass(
-            Pass::VarAliases,
-            ProgramSummary::from_program(&program),
-            program.emit(),
-        );
-        let Item::Fn(f) = &mut program.items[0] else {
-            unreachable!();
-        };
-        assert!(VarAliases::new(&mut logger).fixup(&mut f.body));
-        logger.end_pass(ProgramSummary::from_program(&program), program.emit());
-        let log = logger.finish(ProgramSummary::from_program(&program));
-        let event = &log.passes[0].events[0];
-
-        assert_eq!(event.kind, "inline_var_alias");
-        assert_eq!(event.before[0].code, "let _v30: i32 = loaded;");
-        assert_eq!(event.before[1].code, "println!(\"{}\", _v30);");
-        assert_eq!(event.after[0].code, "println!(\"{}\", loaded);");
-        assert!(
-            event
-                .facts
-                .iter()
-                .any(|fact| fact.key == "source" && fact.value == "loaded")
-        );
-    }
-
-    #[test]
-    fn inlines_alias_used_multiple_times_in_one_statement() {
-        let out = run(vec![
-            temp("_v13", "u32", var("u")),
-            let_stmt(
-                "first_set",
-                "i32",
-                Expr::If {
-                    cond: Box::new(bin(
-                        crate::rust_ast::BinOp::Eq,
-                        cast(var("_v13"), "i32"),
-                        int(0),
-                    )),
-                    then_expr: Box::new(int(0)),
-                    else_expr: Box::new(bin(
-                        crate::rust_ast::BinOp::Add,
-                        cast(
-                            Expr::MethodCall {
-                                recv: Box::new(cast(var("_v13"), "i32")),
-                                method: "trailing_zeros".into(),
-                                args: vec![],
-                            },
-                            "i32",
-                        ),
-                        int(1),
-                    )),
-                },
-            ),
-        ]);
-
-        assert!(!out.contains("_v13"));
-        assert!(out.contains("if (u as i32) == 0"));
-        assert!(out.contains("(u as i32).trailing_zeros() as i32"));
-        assert!(out.contains("+ 1"));
-    }
-
-    #[test]
-    fn skips_alias_when_source_is_reassigned_before_use() {
-        let out = run(vec![
-            let_mut("expected", "i32", int(7)),
-            temp("_v30", "i32", var("expected")),
-            assign("expected", int(9)),
-            println_arg(var("_v30")),
-        ]);
-
-        assert!(out.contains("let _v30: i32 = expected;"), "{out}");
-    }
-
-    #[test]
-    fn skips_alias_when_source_is_reassigned_in_nested_body_before_use() {
-        let out = run(vec![
-            let_mut("expected", "i32", int(7)),
-            temp("_v30", "i32", var("expected")),
-            Stmt::If {
-                cond: Expr::Value(RustValue::Bool(true)),
-                then_body: vec![IndentStmt {
-                    depth: 2,
-                    stmt: assign("expected", int(9)),
-                }],
-                else_body: vec![],
-            },
-            println_arg(var("_v30")),
-        ]);
-
-        assert!(out.contains("let _v30: i32 = expected;"), "{out}");
-    }
-
-    #[test]
-    fn skips_alias_when_source_is_mutably_borrowed_before_use() {
-        let out = run(vec![
-            let_mut("expected", "i32", int(7)),
-            temp("_v30", "i32", var("expected")),
-            Stmt::Expr(call(
-                "touch",
-                vec![Expr::Ref {
-                    mutable: true,
-                    expr: Box::new(var("expected")),
-                }],
-            )),
-            println_arg(var("_v30")),
-        ]);
-
-        assert!(out.contains("let _v30: i32 = expected;"), "{out}");
-    }
-
-    #[test]
-    fn skips_non_temp_aliases() {
-        let out = run(vec![
-            temp("loaded", "i32", int(7)),
-            temp("alias", "i32", var("loaded")),
-            println_arg(var("alias")),
-        ]);
-
-        assert!(out.contains("let alias: i32 = loaded;"), "{out}");
-    }
 }

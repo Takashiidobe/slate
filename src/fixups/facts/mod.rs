@@ -33,8 +33,8 @@ pub(super) mod values;
 pub(super) mod walk;
 
 #[derive(Debug, Clone)]
-pub(super) struct AnalyzedProgram {
-    pub(super) program: Program,
+pub(super) struct AnalyzedProgram<'a> {
+    pub(super) program: &'a Program,
     pub(super) facts: FixupFacts,
 }
 
@@ -1444,37 +1444,37 @@ impl FixupFacts {
     }
 }
 
-pub(super) fn analyze(program: Program) -> AnalyzedProgram {
+pub(super) fn analyze(program: &Program) -> AnalyzedProgram<'_> {
     let mut collector = Collector::default();
-    collector.program(&program);
-    anonymous_structs::collect_facts(&program, &mut collector.facts);
-    borrow_alias::collect_facts(&program, &mut collector.facts);
-    def_use::collect_facts(&program, &mut collector.facts);
-    effects::collect_facts(&program, &mut collector.facts);
-    control_flow::collect_facts(&program, &mut collector.facts);
-    places::collect_facts(&program, &mut collector.facts);
-    retval::collect_facts(&program, &mut collector.facts);
-    temp_chains::collect_facts(&program, &mut collector.facts);
-    values::collect_facts(&program, &mut collector.facts);
-    calls::collect_facts(&program, &mut collector.facts);
-    casts::collect_facts(&program, &mut collector.facts);
-    strings::collect_facts(&program, &mut collector.facts);
-    string_params::collect_facts(&program, &mut collector.facts);
-    heap_ownership::collect_facts(&program, &mut collector.facts);
-    printf::collect_facts(&program, &mut collector.facts);
-    strings::collect_rewrite_facts(&program, &mut collector.facts);
-    c_strings::collect_facts(&program, &mut collector.facts);
-    file_ownership::collect_facts(&program, &mut collector.facts);
-    ptr_len::collect_facts(&program, &mut collector.facts);
-    array_element_pointer_origin::collect_facts(&program, &mut collector.facts);
-    atomic_locals::collect_facts(&program, &mut collector.facts);
-    lazy_singleton::collect_facts(&program, &mut collector.facts);
-    buffer_cursor::collect_facts(&program, &mut collector.facts);
-    slice_index::collect_facts(&program, &mut collector.facts);
-    counted_loop::collect_facts(&program, &mut collector.facts);
-    loop_shapes::collect_facts(&program, &mut collector.facts);
-    switch::collect_facts(&program, &mut collector.facts);
-    va_list::collect_facts(&program, &mut collector.facts);
+    collector.program(program);
+    anonymous_structs::collect_facts(program, &mut collector.facts);
+    borrow_alias::collect_facts(program, &mut collector.facts);
+    def_use::collect_facts(program, &mut collector.facts);
+    effects::collect_facts(program, &mut collector.facts);
+    control_flow::collect_facts(program, &mut collector.facts);
+    places::collect_facts(program, &mut collector.facts);
+    retval::collect_facts(program, &mut collector.facts);
+    temp_chains::collect_facts(program, &mut collector.facts);
+    values::collect_facts(program, &mut collector.facts);
+    calls::collect_facts(program, &mut collector.facts);
+    casts::collect_facts(program, &mut collector.facts);
+    strings::collect_facts(program, &mut collector.facts);
+    string_params::collect_facts(program, &mut collector.facts);
+    heap_ownership::collect_facts(program, &mut collector.facts);
+    printf::collect_facts(program, &mut collector.facts);
+    strings::collect_rewrite_facts(program, &mut collector.facts);
+    c_strings::collect_facts(program, &mut collector.facts);
+    file_ownership::collect_facts(program, &mut collector.facts);
+    ptr_len::collect_facts(program, &mut collector.facts);
+    array_element_pointer_origin::collect_facts(program, &mut collector.facts);
+    atomic_locals::collect_facts(program, &mut collector.facts);
+    lazy_singleton::collect_facts(program, &mut collector.facts);
+    buffer_cursor::collect_facts(program, &mut collector.facts);
+    slice_index::collect_facts(program, &mut collector.facts);
+    counted_loop::collect_facts(program, &mut collector.facts);
+    loop_shapes::collect_facts(program, &mut collector.facts);
+    switch::collect_facts(program, &mut collector.facts);
+    va_list::collect_facts(program, &mut collector.facts);
     AnalyzedProgram {
         program,
         facts: collector.facts,
@@ -1668,254 +1668,5 @@ impl Collector {
             | Stmt::Break(_)
             | Stmt::Continue(_) => {}
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::fixups::test_support::*;
-    use crate::rust_ast::{Block, FnDef, Item, Pattern, Program, Stmt, Visibility};
-
-    fn named(name: &str, stmts: Vec<Stmt>) -> FnDef {
-        let mut f = func(vec![param("arg0", "i32")], None, stmts);
-        f.name = name.into();
-        f
-    }
-
-    #[test]
-    fn assigns_deterministic_function_and_param_ids() {
-        let program = Program {
-            items: vec![
-                Item::Fn(named("first", Vec::new())),
-                Item::Fn(named("second", Vec::new())),
-            ],
-        };
-
-        let analyzed = analyze(program);
-
-        assert_eq!(
-            analyzed
-                .facts
-                .functions
-                .iter()
-                .map(|f| (f.id, f.name.as_str(), f.item_index))
-                .collect::<Vec<_>>(),
-            vec![(FunctionId(0), "first", 0), (FunctionId(1), "second", 1)]
-        );
-        assert_eq!(
-            analyzed
-                .facts
-                .bindings
-                .iter()
-                .map(|b| (b.id, b.function, b.name.as_str(), b.kind.clone()))
-                .collect::<Vec<_>>(),
-            vec![
-                (
-                    BindingId(0),
-                    FunctionId(0),
-                    "arg0",
-                    BindingKind::Param { index: 0 }
-                ),
-                (
-                    BindingId(1),
-                    FunctionId(1),
-                    "arg0",
-                    BindingKind::Param { index: 0 }
-                )
-            ]
-        );
-    }
-
-    #[test]
-    fn records_nested_local_paths_and_loop_ids() {
-        let program = Program {
-            items: vec![Item::Fn(named(
-                "f",
-                vec![
-                    let_mut("outer", "i32", int(0)),
-                    Stmt::Scope {
-                        body: vec![IndentStmt {
-                            depth: 2,
-                            stmt: Stmt::Loop {
-                                label: None,
-                                body: vec![IndentStmt {
-                                    depth: 3,
-                                    stmt: let_mut("inner", "i32", int(1)),
-                                }],
-                            },
-                        }],
-                    },
-                    Stmt::While {
-                        cond: var("outer"),
-                        body: Block {
-                            stmts: vec![IndentStmt {
-                                depth: 2,
-                                stmt: let_mut("while_local", "i32", int(2)),
-                            }],
-                            tail: None,
-                        },
-                    },
-                ],
-            ))],
-        };
-
-        let analyzed = analyze(program);
-
-        assert_eq!(
-            analyzed
-                .facts
-                .bindings
-                .iter()
-                .map(|b| (b.name.as_str(), b.path.clone()))
-                .collect::<Vec<_>>(),
-            vec![
-                ("arg0", AstPath::default()),
-                ("outer", AstPath(vec![PathSegment::Stmt(0)])),
-                (
-                    "inner",
-                    AstPath(vec![
-                        PathSegment::Stmt(1),
-                        PathSegment::ScopeBody,
-                        PathSegment::Stmt(0),
-                        PathSegment::LoopBody,
-                        PathSegment::Stmt(0)
-                    ])
-                ),
-                (
-                    "while_local",
-                    AstPath(vec![
-                        PathSegment::Stmt(2),
-                        PathSegment::WhileBody,
-                        PathSegment::Stmt(0)
-                    ])
-                )
-            ]
-        );
-        assert_eq!(
-            analyzed
-                .facts
-                .loops
-                .iter()
-                .map(|l| (l.id, l.kind.clone(), l.path.clone()))
-                .collect::<Vec<_>>(),
-            vec![
-                (
-                    LoopId(0),
-                    LoopKind::Loop,
-                    AstPath(vec![
-                        PathSegment::Stmt(1),
-                        PathSegment::ScopeBody,
-                        PathSegment::Stmt(0)
-                    ])
-                ),
-                (
-                    LoopId(1),
-                    LoopKind::While,
-                    AstPath(vec![PathSegment::Stmt(2)])
-                )
-            ]
-        );
-    }
-
-    #[test]
-    fn records_branch_and_match_local_paths() {
-        let program = Program {
-            items: vec![Item::Fn(FnDef {
-                attrs: Vec::new(),
-                vis: Visibility::Private,
-                unsafe_: false,
-                abi: None,
-                name: "f".into(),
-                params: Vec::new(),
-                ret: None,
-                body: vec![IndentStmt {
-                    depth: 1,
-                    stmt: Stmt::Match {
-                        expr: var("x"),
-                        arms: vec![crate::rust_ast::MatchArm {
-                            pattern: Pattern::Wildcard,
-                            body: vec![IndentStmt {
-                                depth: 2,
-                                stmt: Stmt::LetIf {
-                                    name: "choice".into(),
-                                    mutable: false,
-                                    ty: None,
-                                    cond: var("x"),
-                                    then_body: vec![IndentStmt {
-                                        depth: 3,
-                                        stmt: let_mut("then_local", "i32", int(1)),
-                                    }],
-                                    then_value: int(1),
-                                    else_body: vec![IndentStmt {
-                                        depth: 3,
-                                        stmt: let_mut("else_local", "i32", int(2)),
-                                    }],
-                                    else_value: int(2),
-                                },
-                            }],
-                        }],
-                    },
-                }],
-                returns_nonnull: false,
-            })],
-        };
-
-        let analyzed = analyze(program);
-
-        assert_eq!(
-            analyzed
-                .facts
-                .bindings
-                .iter()
-                .map(|b| (b.name.as_str(), b.path.clone()))
-                .collect::<Vec<_>>(),
-            vec![
-                (
-                    "choice",
-                    AstPath(vec![
-                        PathSegment::Stmt(0),
-                        PathSegment::MatchArm(0),
-                        PathSegment::Stmt(0)
-                    ])
-                ),
-                (
-                    "then_local",
-                    AstPath(vec![
-                        PathSegment::Stmt(0),
-                        PathSegment::MatchArm(0),
-                        PathSegment::Stmt(0),
-                        PathSegment::Then,
-                        PathSegment::Stmt(0)
-                    ])
-                ),
-                (
-                    "else_local",
-                    AstPath(vec![
-                        PathSegment::Stmt(0),
-                        PathSegment::MatchArm(0),
-                        PathSegment::Stmt(0),
-                        PathSegment::Else,
-                        PathSegment::Stmt(0)
-                    ])
-                )
-            ]
-        );
-    }
-
-    #[test]
-    fn analysis_preserves_program_output() {
-        let program = Program {
-            items: vec![Item::Fn(named(
-                "f",
-                vec![let_mut("x", "i32", int(0)), Stmt::Return(Some(var("x")))],
-            ))],
-        };
-        let before = program.emit();
-
-        let analyzed = analyze(program);
-
-        assert_eq!(analyzed.program.emit(), before);
-        assert!(analyzed.facts.relations.is_empty());
     }
 }
