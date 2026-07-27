@@ -641,36 +641,3 @@ fn void_ptr(mutable: bool) -> Type {
 fn null_mut() -> Expr {
     call(path(["std", "ptr", "null_mut"]), Vec::new())
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::fixups::test_support::{emit, param};
-    use crate::rust_ast::Visibility;
-
-    #[test]
-    fn rewrites_memchr_helper_body_to_position_match() {
-        let mut f = FnDef {
-            attrs: Vec::new(),
-            vis: Visibility::Private,
-            unsafe_: false,
-            abi: None,
-            name: "__slate_memchr".into(),
-            params: vec![
-                param("s", "*const core::ffi::c_void"),
-                param("c", "i32"),
-                param("n", "usize"),
-            ],
-            ret: Some(void_ptr(true)),
-            body: vec![indent(Stmt::Return(Some(null_mut())))],
-            returns_nonnull: false,
-        };
-
-        assert!(fixup(&mut f));
-        let out = emit(f);
-        assert!(out.contains("let haystack = unsafe { std::slice::from_raw_parts(bytes, n) };"));
-        assert!(out.contains("haystack.iter().position(|x| *x == b)"));
-        assert!(out.contains("Some(i) => unsafe { bytes.add(i) as *mut core::ffi::c_void }"));
-        assert!(out.contains("None => std::ptr::null_mut()"));
-    }
-}

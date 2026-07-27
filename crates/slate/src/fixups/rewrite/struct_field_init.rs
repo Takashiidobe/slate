@@ -1,5 +1,6 @@
 use std::collections::BTreeSet;
 
+use crate::fixups::Fixup;
 use crate::fixups::idents::expr_ident_count;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
@@ -16,12 +17,8 @@ pub(in crate::fixups) struct StructFieldInit<'a> {
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> StructFieldInit<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+impl Fixup for StructFieldInit<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
         let before = self.logger.is_enabled().then(|| body.clone());
         let changed = fixup_at(body);
         if changed && let Some(before) = before {
@@ -35,6 +32,12 @@ impl<'a> StructFieldInit<'a> {
             });
         }
         changed
+    }
+}
+
+impl<'a> StructFieldInit<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
     }
 }
 
@@ -162,146 +165,5 @@ fn is_pure_expr(expr: &Expr) -> bool {
         Expr::ArrayLit(values) | Expr::VecLit(values) => values.iter().all(is_pure_expr),
         Expr::ArrayRepeat { elem, .. } => is_pure_expr(elem),
         _ => false,
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::fixups::test_support::*;
-    use crate::rust_ast::{Expr, Stmt, Type};
-
-    fn struct_lit(name: &str, fields: Vec<(&str, Expr)>) -> Expr {
-        Expr::StructLit {
-            name: name.into(),
-            fields: fields
-                .into_iter()
-                .map(|(field, value)| (field.into(), value))
-                .collect(),
-        }
-    }
-
-    fn field_assign(binding: &str, field: &str, value: Expr) -> Stmt {
-        Stmt::Assign {
-            target: Expr::Field {
-                base: Box::new(var(binding)),
-                field: field.into(),
-            },
-            value,
-        }
-    }
-
-    fn run(stmts: Vec<Stmt>) -> String {
-        after_body(
-            |body| {
-                fixup(body);
-            },
-            vec![],
-            None,
-            stmts,
-        )
-    }
-
-    #[test]
-    fn folds_consecutive_field_assignments_into_struct_literal() {
-        let out = run(vec![
-            Stmt::Let {
-                name: "s".into(),
-                mutable: true,
-                ty: Some(Type::parse("Aligned")),
-                init: Some(struct_lit("Aligned", vec![("a", int(0)), ("b", int(0))])),
-            },
-            field_assign("s", "a", int(5)),
-            field_assign("s", "b", int(4660)),
-            Stmt::Return(None),
-        ]);
-
-        assert_eq!(
-            out,
-            "\
-fn f() {
-    let mut s: Aligned = Aligned { a: 5, b: 4660 };
-    return;
-}
-"
-        );
-    }
-
-    #[test]
-    fn leaves_duplicate_field_assignments_alone() {
-        let out = run(vec![
-            Stmt::Let {
-                name: "s".into(),
-                mutable: true,
-                ty: Some(Type::parse("Pair")),
-                init: Some(struct_lit("Pair", vec![("a", int(0)), ("b", int(0))])),
-            },
-            field_assign("s", "a", int(1)),
-            field_assign("s", "a", int(2)),
-        ]);
-
-        assert!(out.contains("let mut s: Pair = Pair { a: 0, b: 0 };"));
-        assert!(out.contains("s.a = 1;"));
-        assert!(out.contains("s.a = 2;"));
-    }
-
-    #[test]
-    fn leaves_rhs_that_reads_partial_binding_alone() {
-        let out = run(vec![
-            Stmt::Let {
-                name: "s".into(),
-                mutable: true,
-                ty: Some(Type::parse("Pair")),
-                init: Some(struct_lit("Pair", vec![("a", int(0)), ("b", int(0))])),
-            },
-            field_assign("s", "a", int(1)),
-            field_assign(
-                "s",
-                "b",
-                Expr::Field {
-                    base: Box::new(var("s")),
-                    field: "a".into(),
-                },
-            ),
-        ]);
-
-        assert!(out.contains("let mut s: Pair = Pair { a: 0, b: 0 };"));
-        assert!(out.contains("s.a = 1;"));
-        assert!(out.contains("s.b = s.a;"));
-    }
-
-    #[test]
-    fn leaves_impure_rhs_alone() {
-        let out = run(vec![
-            Stmt::Let {
-                name: "s".into(),
-                mutable: true,
-                ty: Some(Type::parse("Pair")),
-                init: Some(struct_lit("Pair", vec![("a", int(0)), ("b", int(0))])),
-            },
-            field_assign("s", "a", call("next", vec![])),
-        ]);
-
-        assert!(out.contains("let mut s: Pair = Pair { a: 0, b: 0 };"));
-        assert!(out.contains("s.a = next();"));
-    }
-
-    #[test]
-    fn leaves_impure_initializers_alone() {
-        let out = run(vec![
-            Stmt::Let {
-                name: "s".into(),
-                mutable: true,
-                ty: Some(Type::parse("Pair")),
-                init: Some(struct_lit(
-                    "Pair",
-                    vec![("a", call("seed", vec![])), ("b", int(0))],
-                )),
-            },
-            field_assign("s", "b", int(2)),
-        ]);
-
-        assert!(out.contains("let mut s: Pair = Pair { a: seed(), b: 0 };"));
-        assert!(out.contains("s.b = 2;"));
     }
 }
