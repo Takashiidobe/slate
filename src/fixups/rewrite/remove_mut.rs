@@ -1,5 +1,3 @@
-//! Remove `mut` from bindings whose analyzed facts do not require mutation.
-
 use crate::fixups::facts::{
     AstPath, BindingId, BorrowAliasReason, CallArgPinning, FixupFacts, FunctionId, PathSegment,
 };

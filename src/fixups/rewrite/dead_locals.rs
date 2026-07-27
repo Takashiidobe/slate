@@ -66,12 +66,13 @@ impl<'a> DeadLocals<'a> {
         }
 
         for index in 0..body.len() {
-            let stmt_path = stmt_path(path, index);
-            if removable_dead_local(&body[index].stmt, function, facts, &stmt_path) {
-                self.log_dead_local_event(&body[index].stmt, function, facts, &stmt_path);
+            path.push(PathSegment::Stmt(index));
+            if removable_dead_local(&body[index].stmt, function, facts, path) {
+                self.log_dead_local_event(&body[index].stmt, function, facts, path);
                 body.remove(index);
                 return true;
             }
+            path.pop();
         }
         false
     }
@@ -188,12 +189,6 @@ fn discardable_receiver(expr: &Expr) -> bool {
         }
         _ => false,
     }
-}
-
-fn stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
-    let mut path = body_path.to_vec();
-    path.push(PathSegment::Stmt(index));
-    path
 }
 
 #[cfg(test)]
