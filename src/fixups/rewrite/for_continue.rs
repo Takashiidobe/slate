@@ -1,3 +1,4 @@
+use crate::fixups::Fixup;
 use crate::fixups::facts::PathSegment;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
@@ -6,14 +7,15 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Label, Stmt, UnaryOp};
 
-pub(in crate::fixups) fn fixup(body: &mut [IndentStmt]) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    ForContinue::new("<unknown>", &mut logger).fixup(body)
-}
-
 pub(in crate::fixups) struct ForContinue<'a> {
     function_name: String,
     logger: &'a mut dyn TraceLogger,
+}
+
+impl Fixup for ForContinue<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        self.fixup_at(body, &Vec::new())
+    }
 }
 
 impl<'a> ForContinue<'a> {
@@ -25,10 +27,6 @@ impl<'a> ForContinue<'a> {
             function_name: function_name.into(),
             logger,
         }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, body: &mut [IndentStmt]) -> bool {
-        self.fixup_at(body, &Vec::new())
     }
 
     fn fixup_at(&mut self, body: &mut [IndentStmt], path: &[PathSegment]) -> bool {
