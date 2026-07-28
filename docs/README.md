@@ -72,9 +72,10 @@ local objects preserves the strengthened type or object alignment.
 
 Address-of, dereference, pointer arithmetic, array-to-pointer decay, and
 function pointers (`Option<extern "C" fn(...) -> ...>`), all raw on the baseline
-path. C23 `nullptr_t` uses a concrete mutable `c_void` pointer representation,
-so standalone `nullptr` assignment and equality do not depend on Rust pointee
-type inference.
+path. GNU function-pointer arithmetic uses byte-pointer strides and differences
+while preserving compatible function-pointer comparisons. C23 `nullptr_t` uses
+a concrete mutable `c_void` pointer representation, so standalone `nullptr`
+assignment and equality do not depend on Rust pointee type inference.
 Fixed-size arrays and C99 block-scope variable-length arrays support indexing,
 address-taking, and scope cleanup. C99 flexible array members retain their
 zero-size trailing layout and support allocation-backed indexed reads and
