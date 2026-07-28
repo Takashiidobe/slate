@@ -2,6 +2,7 @@
 //! is spliced as an `Expr` subtree into its use site and precedence-aware
 //! rendering elides redundant parens.
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment,
 };
@@ -19,35 +20,20 @@ pub(in crate::fixups) enum Phase {
     Late,
 }
 
-pub(in crate::fixups) fn fixup(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-    phase: Phase,
-) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    InlineTemps::new(phase, &mut logger).fixup(body, function, facts)
-}
-
 pub(in crate::fixups) struct InlineTemps<'a> {
     phase: Phase,
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
+impl Fixup for InlineTemps<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        self.fixup_at(body, self.function, self.facts, &mut Vec::new())
+    }
+}
+
 impl<'a> InlineTemps<'a> {
-    pub(in crate::fixups) fn new(phase: Phase, logger: &'a mut dyn TraceLogger) -> Self {
-        Self { phase, logger }
-    }
-
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        body: &mut Vec<IndentStmt>,
-        function: FunctionId,
-        facts: &FixupFacts,
-    ) -> bool {
-        self.fixup_at(body, function, facts, &mut Vec::new())
-    }
-
     fn fixup_at(
         &mut self,
         body: &mut Vec<IndentStmt>,
@@ -202,6 +188,20 @@ impl<'a> InlineTemps<'a> {
             after: vec![stmt_snippet("consumer", after_use)],
             facts: event_facts,
         });
+    }
+
+    pub(in crate::fixups) fn new(
+        phase: Phase,
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            phase,
+            function,
+            facts,
+            logger,
+        }
     }
 }
 

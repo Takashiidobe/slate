@@ -11,7 +11,7 @@ pub mod trace;
 mod test_support;
 
 use crate::fixups::trace::{CollectingLogger, NoopLogger, ProgramSummary, TraceLog, TraceLogger};
-use crate::rust_ast::{IndentStmt, Item, Program};
+use crate::rust_ast::{FnDef, IndentStmt, Item, Program};
 
 use crate::fixups::rewrite::constant_conditions::ConstantConditions;
 use crate::fixups::rewrite::dead_locals::DeadLocals;
@@ -136,33 +136,49 @@ fn apply_with_logger(
     let facts::AnalyzedProgram { program, .. } = facts::analyze(&input);
     let mut program = program.clone();
     step!(program, Pass::Goto, {
-        structure_goto(&mut program, logger);
+        to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, function| {
+            let mut fixup = rewrite::goto::Goto::new(function.name.clone(), logger);
+            run_once(&mut function.body, &mut fixup)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::Switch, {
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-            {
-                rewrite::switch::Switch::new(logger).fixup(&mut f.body, function, &facts);
-            }
-        }
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::switch::Switch::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::EarlyInlineTemps, {
-        inline_temps_to_fixpoint(&mut program, InlinePass::Early, logger);
+        let limit = inline_temp_fixpoint_limit(&program);
+        to_fixpoint_items_with_facts(&mut program, limit, |item_index, f, facts| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::inline_temps::InlineTemps::new(
+                rewrite::inline_temps::Phase::Early,
+                function,
+                facts,
+                logger,
+            );
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::AnonymousStructs, {
-        rewrite::anonymous_structs::AnonymousStructs::new(logger).fixup(&mut program, &facts);
+        run_once_program(&mut program, |program| {
+            rewrite::anonymous_structs::AnonymousStructs::new(&facts, logger).fixup(program)
+        });
     });
     step!(program, Pass::ParamSpills, {
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-            {
-                rewrite::param_spills::ParamSpills::new(logger).fixup(f, function, &facts);
-            }
-        }
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            rewrite::param_spills::ParamSpills::new(function, &facts, logger).fixup(f)
+        });
     });
     step!(program, Pass::ZeroInit, {
         zero_init_to_fixpoint(&mut program, false, logger);
@@ -457,7 +473,7 @@ fn apply_with_logger(
         rewrite::memchr_prelude::MemchrPrelude::new(logger).prune_unused_helper(&mut program);
     });
     step!(program, Pass::LateInlineTemps, {
-        inline_temps_to_fixpoint(&mut program, InlinePass::Late, logger);
+        inline_temps_to_fixpoint(&mut program, rewrite::inline_temps::Phase::Late, logger);
     });
     step!(program, Pass::PtrCopy, {
         ptr_copy_to_fixpoint(&mut program, logger);
@@ -479,7 +495,7 @@ fn apply_with_logger(
         rewrite::atomic_locals::AtomicLocals::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::LateInlineTemps, {
-        inline_temps_to_fixpoint(&mut program, InlinePass::Late, logger);
+        inline_temps_to_fixpoint(&mut program, rewrite::inline_temps::Phase::Late, logger);
     });
     step!(program, Pass::ZeroInit, {
         zero_init_to_fixpoint(&mut program, true, logger);
@@ -552,14 +568,6 @@ fn apply_with_logger(
     });
     let _ = debug_done;
     program.clone()
-}
-
-fn structure_goto(program: &mut Program, logger: &mut impl TraceLogger) {
-    for item in &mut program.items {
-        if let Item::Fn(f) = item {
-            while rewrite::goto::Goto::new(f.name.clone(), logger).fixup(&mut f.body) {}
-        }
-    }
 }
 
 fn constant_conditions_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
@@ -657,34 +665,77 @@ fn run_once(body: &mut Vec<IndentStmt>, fixup: &mut impl Fixup) -> bool {
     fixup.fixup(body)
 }
 
+fn run_once_program(program: &mut Program, mut fixup: impl FnMut(&mut Program) -> bool) -> bool {
+    fixup(program)
+}
+
 fn to_fixpoint_program(program: &mut Program, mut fixup: impl FnMut(&mut Program) -> bool) {
     while fixup(program) {}
 }
 
-fn apply_fixup(item: &mut Item, fixup: &mut dyn Fixup) -> bool {
-    if let Item::Fn(f) = item
-        && fixup.fixup(&mut f.body)
-    {
-        return true;
+fn run_once_items(program: &mut Program, mut fixup: impl FnMut(usize, &mut FnDef) -> bool) -> bool {
+    let mut changed = false;
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        if let Item::Fn(f) = item {
+            changed |= fixup(item_index, f);
+        }
     }
-    false
+    changed
+}
+
+#[derive(Clone, Copy)]
+enum FixpointLimit {
+    Unlimited,
+    Rounds(usize),
+}
+
+impl FixpointLimit {
+    fn permits(self, completed_rounds: usize) -> bool {
+        match self {
+            Self::Unlimited => true,
+            Self::Rounds(limit) => completed_rounds < limit,
+        }
+    }
 }
 
 fn inline_var_aliases_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
-    to_fixpoint_items(program, &mut VarAliases::new(logger));
+    let mut fixup = VarAliases::new(logger);
+    to_fixpoint_items(program, FixpointLimit::Unlimited, |_, f| {
+        run_once(&mut f.body, &mut fixup)
+    });
 }
 
 fn struct_field_init_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
-    to_fixpoint_items(program, &mut StructFieldInit::new(logger));
+    let mut fixup = StructFieldInit::new(logger);
+    to_fixpoint_items(program, FixpointLimit::Unlimited, |_, f| {
+        run_once(&mut f.body, &mut fixup)
+    });
 }
 
-fn to_fixpoint_items(program: &mut Program, fixup: &mut dyn Fixup) {
-    loop {
-        let mut changed = false;
-        for item in &mut program.items {
-            changed |= apply_fixup(item, fixup);
+fn to_fixpoint_items(
+    program: &mut Program,
+    limit: FixpointLimit,
+    mut fixup: impl FnMut(usize, &mut FnDef) -> bool,
+) {
+    let mut completed_rounds = 0;
+    while limit.permits(completed_rounds) {
+        completed_rounds += 1;
+        if !run_once_items(program, &mut fixup) {
+            break;
         }
-        if !changed {
+    }
+}
+
+fn to_fixpoint_items_with_facts(
+    program: &mut Program,
+    limit: FixpointLimit,
+    mut fixup: impl FnMut(usize, &mut FnDef, &facts::FixupFacts) -> bool,
+) {
+    let mut completed_rounds = 0;
+    while limit.permits(completed_rounds) {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program);
+        completed_rounds += 1;
+        if !run_once_items(program, |item_index, f| fixup(item_index, f, &facts)) {
             break;
         }
     }
@@ -742,64 +793,27 @@ fn run_dead_locals_pass(
     DeadLocals::new(Pass::DeadLocals, logger).fixup(body, function, facts)
 }
 
-#[derive(Clone, Copy)]
-enum InlinePass {
-    Early,
-    Late,
-}
-
 fn inline_temps_to_fixpoint(
     program: &mut Program,
-    pass: InlinePass,
-    logger: &mut impl TraceLogger,
-) {
-    let inline_round_limit = if ProgramSummary::from_program(program).stmts > 2_000 {
-        5
-    } else {
-        usize::MAX
-    };
-    let mut rounds = 0;
-    while rounds < inline_round_limit {
-        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program);
-        rounds += 1;
-        let mut changed = false;
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-                && match pass {
-                    InlinePass::Early => run_inline_temps_pass(
-                        &mut f.body,
-                        function,
-                        &facts,
-                        rewrite::inline_temps::Phase::Early,
-                        logger,
-                    ),
-                    InlinePass::Late => run_inline_temps_pass(
-                        &mut f.body,
-                        function,
-                        &facts,
-                        rewrite::inline_temps::Phase::Late,
-                        logger,
-                    ),
-                }
-            {
-                changed = true;
-            }
-        }
-        if !changed {
-            break;
-        }
-    }
-}
-
-fn run_inline_temps_pass(
-    body: &mut Vec<IndentStmt>,
-    function: facts::FunctionId,
-    facts: &facts::FixupFacts,
     phase: rewrite::inline_temps::Phase,
     logger: &mut impl TraceLogger,
-) -> bool {
-    rewrite::inline_temps::InlineTemps::new(phase, logger).fixup(body, function, facts)
+) {
+    let limit = inline_temp_fixpoint_limit(program);
+    to_fixpoint_items_with_facts(program, limit, |item_index, f, facts| {
+        let Some(function) = facts.function_by_item_index(item_index) else {
+            return false;
+        };
+        let mut fixup = rewrite::inline_temps::InlineTemps::new(phase, function, facts, logger);
+        run_once(&mut f.body, &mut fixup)
+    });
+}
+
+fn inline_temp_fixpoint_limit(program: &Program) -> FixpointLimit {
+    if ProgramSummary::from_program(program).stmts > 2_000 {
+        FixpointLimit::Rounds(5)
+    } else {
+        FixpointLimit::Unlimited
+    }
 }
 
 fn remove_mut(program: &mut Program, logger: &mut impl TraceLogger) {

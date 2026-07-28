@@ -10,44 +10,45 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{FnDef, IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    ParamSpills::new(&mut logger).fixup(f, function, facts);
-}
-
 pub(in crate::fixups) struct ParamSpills<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
 impl<'a> ParamSpills<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
     }
 
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        f: &mut FnDef,
-        function: FunctionId,
-        facts: &FixupFacts,
-    ) {
+    pub(in crate::fixups) fn fixup(&mut self, f: &mut FnDef) -> bool {
         let before = self.logger.is_enabled().then(|| f.body.clone());
-        fixup_impl(f, function, facts);
+        let changed = fixup_impl(f, self.function, self.facts);
         if let Some(before) = before
             && body_code(&before) != body_code(&f.body)
         {
             self.logger.rewrite(RewriteEvent {
                 pass: TracePass::ParamSpills,
                 kind: "fold_param_spills".into(),
-                location: function_path_location(facts, function, &[]),
+                location: function_path_location(self.facts, self.function, &[]),
                 before: vec![stmts_snippet("body", &before)],
                 after: vec![stmts_snippet("body", &f.body)],
                 facts: vec![fact("params", f.params.len().to_string())],
             });
         }
+        changed
     }
 }
 
-fn fixup_impl(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
+fn fixup_impl(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) -> bool {
     let param_names: Vec<String> = f.params.iter().map(|p| p.name.clone()).collect();
     let mut claimed_locals: Vec<String> = Vec::new();
     let mut removed: Vec<usize> = Vec::new();
@@ -147,9 +148,11 @@ fn fixup_impl(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
 
     removed.sort_unstable();
     removed.dedup();
+    let changed = !removed.is_empty();
     for index in removed.into_iter().rev() {
         f.body.remove(index);
     }
+    changed
 }
 
 fn body_code(body: &[IndentStmt]) -> String {

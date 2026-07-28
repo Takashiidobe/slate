@@ -39,29 +39,21 @@ copy the surrounding depth like the existing passes do.
 
 ## Shape of a pass
 
-Each pass lives in its own file under `src/fixups/` and exposes one entry point
-that walks a statement list. The canonical example is
-[`src/fixups/compound_assign.rs`](../src/fixups/compound_assign.rs), which turns
-`a = a - 5` into `a -= 5`:
+A body pass lives in its own file under `src/fixups/rewrite/`, stores every
+dependency on its pass struct, and implements the shared `Fixup` trait. Its
+`fixup` method takes only the statement list and reports whether that invocation
+changed it:
 
 ```rust
-pub(super) fn fixup(body: &mut Vec<IndentStmt>) {
-    for indent in body.iter_mut() {
-        match &mut indent.stmt {
-            // 1. recurse into every nested body first
-            Stmt::If { then_body, else_body, .. }
-            | Stmt::LetIf { then_body, else_body, .. } => {
-                fixup(then_body);
-                fixup(else_body);
-            }
-            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-                fixup(body)
-            }
-            Stmt::Unsafe { body } => fixup(&mut body.stmts),
-            // 2. do the local rewrite
-            Stmt::Assign { target, value } => { /* match, then reassign indent.stmt */ }
-            _ => {}
-        }
+pub(in crate::fixups) struct MyPass<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl Fixup for MyPass<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        rewrite_body(body, self.function, self.facts, self.logger)
     }
 }
 ```
@@ -72,29 +64,14 @@ missing, extend the shared helper instead of adding a private walker. Match the
 existing nested-body coverage so a pass reaches statements inside
 `if`/loops/scopes/`unsafe`.
 
-Passes that emit structured debug events should use a small stateful pass struct
-instead of threading a logger through every helper:
-
-```rust
-pub(in crate::fixups) fn fixup(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    MyPass::new(&mut logger).fixup(body, function, facts)
-}
-
-pub(in crate::fixups) struct MyPass<'a> {
-    logger: &'a mut dyn TraceLogger,
-}
-```
-
-`src/fixups/mod.rs` constructs the same pass struct with the active logger when
-running the shared pass sequence. Normal translation passes a `NoopLogger`;
-`fixup-debug` passes a collecting logger. Keep event-only work behind
-`self.logger.is_enabled()` so the normal path does not clone AST nodes or render
-snippets.
+Do not add a module-level function that only creates a `NoopLogger` and
+delegates. `src/fixups/mod.rs` constructs the pass struct with the active logger
+and chooses `run_once_items` or `to_fixpoint_items`. Facts-backed fixpoint passes
+use `to_fixpoint_items_with_facts`, which reanalyzes before every program round.
+Program-wide and `FnDef`-shape rewrites use the corresponding program or
+per-function runner without pretending to be body-only passes. Keep event-only
+work behind `self.logger.is_enabled()` so the normal path does not clone AST
+nodes or render snippets.
 
 ## Reuse the shared helpers
 
@@ -157,18 +134,25 @@ Treat the new node like its closest existing sibling in the walkers (a
 
 ## Register the pass
 
-Add it to `src/fixups/mod.rs`: a `mod` line and a call inside `apply`. **Order
-matters** — put your pass where its input already exists. `compound_assign` runs
-after `inline_temps` (so the `a - 5` binop is already assembled) and after
-`zero_init`, but before `retval`:
+Add it to `src/fixups/mod.rs`: a `mod` line and a call inside
+`apply_with_logger`. **Order matters** — put your pass where its input already
+exists. Instantiate the concrete pass at the call site and make its scheduling
+mode explicit:
 
 ```rust
-inline_temps::fixup(&mut f.body);
-param_spills::fixup(&mut f);
-zero_init::fixup(&mut f.body);
-compound_assign::fixup(&mut f.body);   // new
-retval::fixup(&mut f.body);
+run_once_items(&mut program, |item_index, f| {
+    let Some(function) = facts.function_by_item_index(item_index) else {
+        return false;
+    };
+    let mut fixup = MyPass::new(function, &facts, logger);
+    run_once(&mut f.body, &mut fixup)
+});
 ```
+
+Use `to_fixpoint_items` when rewrites can cascade without invalidating facts,
+and `to_fixpoint_items_with_facts` when every round requires fresh facts. A
+single `Fixup::fixup` invocation must perform one round; convergence belongs to
+the runner.
 
 If the pass should appear in `fixup-debug`, add a variant to
 `src/fixups/trace.rs`'s `Pass` enum and wire that enum value at the pass boundary
@@ -254,10 +238,7 @@ event by emitting at least one pass-local event when you instrument that pass.
 
 ## Test it
 
-1. **Unit tests, in-file.** Build input with the `test_support.rs` helpers
-   (`func`, `let_mut`, `assign`, `bin`, `var`, `int`, ...), run your `fixup`, and
-   assert the emitted string with `after_body`/`emit`. Cover both the fold and the
-   cases you deliberately leave alone (impure rhs, non-matching shape).
+1. **Fixture coverage.** Add or update a C fixture under `tests/fixtures/`.
 2. **Output-shape coverage.** Add or update an assertion in `tests/differential.rs`
    that the generated Rust for a real fixture now contains the cleaner form.
 3. **Differential must stay green** — the fixture's C and Rust outputs must still
@@ -266,6 +247,7 @@ event by emitting at least one pass-local event when you instrument that pass.
 
 ```bash
 cargo fmt
+cargo clippy --all-targets
 cargo nextest r --release
 ```
 

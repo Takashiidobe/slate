@@ -4,6 +4,7 @@
 //! for fallthrough, which a plain `match` arm cannot express; when no case
 //! falls through, the loop and its synthetic case index are unnecessary.
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AstPath, FixupFacts, FunctionId, PathSegment, SwitchCaseFact, SwitchDispatchFact,
 };
@@ -14,31 +15,35 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{IndentStmt, MatchArm, Pattern, Stmt};
 
-pub(in crate::fixups) fn fixup(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    Switch::new(&mut logger).fixup(body, function, facts);
-}
-
 pub(in crate::fixups) struct Switch<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> Switch<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+impl Fixup for Switch<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        collapse_dispatches(
+            body,
+            self.function,
+            self.facts,
+            &mut Vec::new(),
+            self.logger,
+        )
     }
+}
 
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        body: &mut Vec<IndentStmt>,
+impl<'a> Switch<'a> {
+    pub(in crate::fixups) fn new(
         function: FunctionId,
-        facts: &FixupFacts,
-    ) {
-        collapse_dispatches(body, function, facts, &mut Vec::new(), self.logger);
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
     }
 }
 
@@ -48,11 +53,12 @@ fn collapse_dispatches(
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
     logger: &mut dyn TraceLogger,
-) {
+) -> bool {
+    let mut changed = false;
     for (index, stmt) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |nested, path| {
-                collapse_dispatches(nested, function, facts, path, logger);
+                changed |= collapse_dispatches(nested, function, facts, path, logger);
             });
         });
     }
@@ -69,7 +75,9 @@ fn collapse_dispatches(
             continue;
         }
         collapse_dispatch(body, path, index, dispatch, function, facts, logger);
+        changed = true;
     }
+    changed
 }
 
 fn is_eligible(dispatch: &SwitchDispatchFact) -> bool {
