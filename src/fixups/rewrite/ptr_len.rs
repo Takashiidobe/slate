@@ -7,56 +7,52 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Expr, FnDef, Ident, IndentStmt, Item, Program, Type};
 
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    PtrLen::new(&mut logger).fixup(program, facts);
-}
-
 pub(in crate::fixups) struct PtrLen<'a> {
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
 impl<'a> PtrLen<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+    pub(in crate::fixups) fn new(facts: &'a FixupFacts, logger: &'a mut dyn TraceLogger) -> Self {
+        Self { facts, logger }
     }
 
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) {
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
         let before = self.logger.is_enabled().then(|| program.emit());
-        fixup_impl(program, facts);
-        if let Some(before) = before {
-            let after = program.emit();
-            if before != after {
-                self.logger.rewrite(RewriteEvent {
-                    pass: TracePass::PtrLen,
-                    kind: "rewrite_ptr_len_slice_params".into(),
-                    location: TraceLocation::default(),
-                    before: vec![TraceSnippet::new("program", before.trim_end())],
-                    after: vec![TraceSnippet::new("program", after.trim_end())],
-                    facts: vec![fact(
-                        "planned_pairs",
-                        facts.ptr_len_slices.len().to_string(),
-                    )],
-                });
-            }
+        let changed = fixup_impl(program, self.facts);
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::PtrLen,
+                kind: "rewrite_ptr_len_slice_params".into(),
+                location: TraceLocation::default(),
+                before: vec![TraceSnippet::new("program", before.trim_end())],
+                after: vec![TraceSnippet::new("program", program.emit().trim_end())],
+                facts: vec![fact(
+                    "planned_pairs",
+                    self.facts.ptr_len_slices.len().to_string(),
+                )],
+            });
         }
+        changed
     }
 }
 
-fn fixup_impl(program: &mut Program, facts: &FixupFacts) {
+fn fixup_impl(program: &mut Program, facts: &FixupFacts) -> bool {
     let plans = plans_from_facts(facts);
     if plans.is_empty() {
-        return;
+        return false;
     }
 
+    let mut changed = false;
     for item in &mut program.items {
         if let Item::Fn(f) = item {
             if let Some(fn_plans) = plans.get(&f.name) {
-                rewrite_function(f, fn_plans);
+                changed |= rewrite_function(f, fn_plans);
             }
-            rewrite_calls_in_body(&mut f.body, &plans);
+            changed |= rewrite_calls_in_body(&mut f.body, &plans);
         }
     }
+    changed
 }
 
 #[derive(Clone)]
@@ -106,23 +102,28 @@ fn plans_from_facts(facts: &FixupFacts) -> BTreeMap<String, Vec<Plan>> {
     plans
 }
 
-fn rewrite_function(f: &mut FnDef, plans: &[Plan]) {
+fn rewrite_function(f: &mut FnDef, plans: &[Plan]) -> bool {
     if plans.iter().any(|plan| f.params.len() <= plan.ptr_index) {
-        return;
+        return false;
     }
 
+    let mut changed = false;
     for plan in plans {
         f.params[plan.ptr_index].ty = Type::Ref {
             mutable: plan.mutable,
             inner: Box::new(Type::Slice(Box::new(plan.elem.clone()))),
         };
-        rewrite_body_pointer_param(&mut f.body, &plan.ptr_name, plan.mutable);
+        changed = true;
+        changed |= rewrite_body_pointer_param(&mut f.body, &plan.ptr_name, plan.mutable);
     }
+    changed
 }
 
-fn rewrite_body_pointer_param(body: &mut [IndentStmt], name: &str, mutable: bool) {
+fn rewrite_body_pointer_param(body: &mut [IndentStmt], name: &str, mutable: bool) -> bool {
+    let mut changed = false;
     walk::body_exprs_mut_with(body, &mut |expr| {
         if matches!(expr, Expr::Var(var) if var.as_str() == name) {
+            changed = true;
             *expr = Expr::MethodCall {
                 recv: Box::new(Expr::Var(name.into())),
                 method: if mutable { "as_mut_ptr" } else { "as_ptr" }.into(),
@@ -132,9 +133,11 @@ fn rewrite_body_pointer_param(body: &mut [IndentStmt], name: &str, mutable: bool
         }
         true
     });
+    changed
 }
 
-fn rewrite_calls_in_body(body: &mut [IndentStmt], plans: &BTreeMap<String, Vec<Plan>>) {
+fn rewrite_calls_in_body(body: &mut [IndentStmt], plans: &BTreeMap<String, Vec<Plan>>) -> bool {
+    let mut changed = false;
     walk::body_exprs_mut_with(body, &mut |expr| {
         let Expr::Call { func, args, .. } = expr else {
             return true;
@@ -169,8 +172,10 @@ fn rewrite_calls_in_body(body: &mut [IndentStmt], plans: &BTreeMap<String, Vec<P
             };
         }
 
+        changed = true;
         false
     });
+    changed
 }
 
 fn array_pointer_arg(expr: &Expr) -> Option<String> {

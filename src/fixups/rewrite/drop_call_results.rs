@@ -9,6 +9,7 @@
 //! preserved), and only when the temp is unused in its entire lexical scope, so
 //! a used call result is left materialized.
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment,
 };
@@ -19,39 +20,30 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Block, IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(body: &mut [IndentStmt], function: FunctionId, facts: &FixupFacts) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    DropCallResults::new(&mut logger).fixup(body, function, facts);
-}
-
 pub(in crate::fixups) struct DropCallResults<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
+impl Fixup for DropCallResults<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        self.scope(body, self.function, self.facts, &mut Vec::new())
+    }
+}
+
 impl<'a> DropCallResults<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        body: &mut [IndentStmt],
-        function: FunctionId,
-        facts: &FixupFacts,
-    ) {
-        self.scope(body, function, facts, &mut Vec::new());
-    }
-
     fn scope(
         &mut self,
         stmts: &mut [IndentStmt],
         function: FunctionId,
         facts: &FixupFacts,
         path: &mut Vec<PathSegment>,
-    ) {
+    ) -> bool {
+        let mut changed = false;
         for (index, stmt) in stmts.iter_mut().enumerate() {
             walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-                self.recurse(&mut stmt.stmt, function, facts, path);
+                changed |= self.recurse(&mut stmt.stmt, function, facts, path);
             });
         }
         for (i, stmt) in stmts.iter_mut().enumerate() {
@@ -85,6 +77,7 @@ impl<'a> DropCallResults<'a> {
                 _ => None,
             };
             if let Some(init) = init {
+                changed = true;
                 stmt.stmt = Stmt::Expr(init);
                 if let Some(before) = before {
                     let mut event_facts = binding_facts(facts, binding);
@@ -100,6 +93,7 @@ impl<'a> DropCallResults<'a> {
                 }
             }
         }
+        changed
     }
 
     fn recurse(
@@ -108,70 +102,88 @@ impl<'a> DropCallResults<'a> {
         function: FunctionId,
         facts: &FixupFacts,
         path: &mut Vec<PathSegment>,
-    ) {
+    ) -> bool {
         match stmt {
             Stmt::If {
                 then_body,
                 else_body,
                 ..
             } => {
+                let mut changed = false;
                 walk::with_path_segment(path, PathSegment::Then, |path| {
-                    self.scope(then_body, function, facts, path);
+                    changed |= self.scope(then_body, function, facts, path);
                 });
                 walk::with_path_segment(path, PathSegment::Else, |path| {
-                    self.scope(else_body, function, facts, path);
+                    changed |= self.scope(else_body, function, facts, path);
                 });
+                changed
             }
             Stmt::LetIf {
                 then_body,
                 else_body,
                 ..
             } => {
+                let mut changed = false;
                 walk::with_path_segment(path, PathSegment::Then, |path| {
-                    self.scope(then_body, function, facts, path);
+                    changed |= self.scope(then_body, function, facts, path);
                 });
                 walk::with_path_segment(path, PathSegment::Else, |path| {
-                    self.scope(else_body, function, facts, path);
+                    changed |= self.scope(else_body, function, facts, path);
                 });
+                changed
             }
             Stmt::Loop { body, .. } => {
+                let mut changed = false;
                 walk::with_path_segment(path, PathSegment::LoopBody, |path| {
-                    self.scope(body, function, facts, path);
+                    changed = self.scope(body, function, facts, path);
                 });
+                changed
             }
             Stmt::Scope { body } => {
+                let mut changed = false;
                 walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
-                    self.scope(body, function, facts, path);
+                    changed = self.scope(body, function, facts, path);
                 });
+                changed
             }
             Stmt::LabeledBlock { body, .. } => {
+                let mut changed = false;
                 walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
-                    self.scope(body, function, facts, path);
+                    changed = self.scope(body, function, facts, path);
                 });
+                changed
             }
             Stmt::Unsafe { body } => {
+                let mut changed = false;
                 walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
-                    self.scope_block(body, function, facts, path);
+                    changed = self.scope_block(body, function, facts, path);
                 });
+                changed
             }
             Stmt::While { body, .. } => {
+                let mut changed = false;
                 walk::with_path_segment(path, PathSegment::WhileBody, |path| {
-                    self.scope_block(body, function, facts, path);
+                    changed = self.scope_block(body, function, facts, path);
                 });
+                changed
             }
             Stmt::Block(body) => {
+                let mut changed = false;
                 walk::with_path_segment(path, PathSegment::BlockBody, |path| {
-                    self.scope_block(body, function, facts, path);
+                    changed = self.scope_block(body, function, facts, path);
                 });
+                changed
             }
             Stmt::Match { arms, .. } => {
+                let mut changed = false;
                 for (index, arm) in arms.iter_mut().enumerate() {
                     walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
-                        self.scope(&mut arm.body, function, facts, path);
+                        changed |= self.scope(&mut arm.body, function, facts, path);
                     });
                 }
+                changed
             }
-            _ => {}
+            _ => false,
         }
     }
 
@@ -181,8 +193,20 @@ impl<'a> DropCallResults<'a> {
         function: FunctionId,
         facts: &FixupFacts,
         path: &mut Vec<PathSegment>,
-    ) {
-        self.scope(&mut block.stmts, function, facts, path);
+    ) -> bool {
+        self.scope(&mut block.stmts, function, facts, path)
+    }
+
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
     }
 }
 

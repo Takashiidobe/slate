@@ -7,25 +7,21 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Expr, FnDef, Ident, IndentStmt, Item, Prim, Program, Stmt, Type};
 
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    StringParams::new(&mut logger).fixup(program, facts)
-}
-
 pub(in crate::fixups) struct StringParams<'a> {
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
 impl<'a> StringParams<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+    pub(in crate::fixups) fn new(facts: &'a FixupFacts, logger: &'a mut dyn TraceLogger) -> Self {
+        Self { facts, logger }
     }
 
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
         let before = self.logger.is_enabled().then(|| program.emit());
-        let changed = fixup_impl(program, facts);
+        let changed = fixup_impl(program, self.facts);
         if changed && let Some(before) = before {
-            let planned_params = facts.string_param_lifts.len();
+            let planned_params = self.facts.string_param_lifts.len();
             self.logger.rewrite(RewriteEvent {
                 pass: TracePass::StringParams,
                 kind: "rewrite_string_params".into(),

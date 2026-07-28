@@ -282,52 +282,48 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::LazySingleton, {
-        rewrite::lazy_singleton::LazySingleton::new(logger).fixup(&mut program, &facts);
+        let mut fixup = rewrite::lazy_singleton::LazySingleton::new(&facts, logger);
+        run_once_program(&mut program, |program| fixup.fixup(program));
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::DropCallResults, {
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-            {
-                rewrite::drop_call_results::DropCallResults::new(logger).fixup(
-                    &mut f.body,
-                    function,
-                    &facts,
-                );
-            }
-        }
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup =
+                rewrite::drop_call_results::DropCallResults::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::StringLift, {
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-            {
-                rewrite::string_lift::StringLift::new(Pass::StringLift, logger)
-                    .fixup_with_recoveries(
-                        &mut f.body,
-                        function,
-                        &facts,
-                        &[
-                            facts::StringRecoveryCandidate::BorrowedStr,
-                            facts::StringRecoveryCandidate::BorrowedBytes,
-                        ],
-                    );
-            }
-        }
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::string_lift::StringLift::new(
+                Pass::StringLift,
+                function,
+                &facts,
+                &[
+                    facts::StringRecoveryCandidate::BorrowedStr,
+                    facts::StringRecoveryCandidate::BorrowedBytes,
+                ],
+                logger,
+            );
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::StringParams, {
-        loop {
-            let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-            if !rewrite::string_params::StringParams::new(logger).fixup(&mut program, &facts) {
-                break;
-            }
-        }
+        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
+            rewrite::string_params::StringParams::new(facts, logger).fixup(program)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::PtrLen, {
-        rewrite::ptr_len::PtrLen::new(logger).fixup(&mut program, &facts);
+        let mut fixup = rewrite::ptr_len::PtrLen::new(&facts, logger);
+        run_once_program(&mut program, |program| fixup.fixup(program));
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::SliceIndex, {
@@ -371,12 +367,9 @@ fn apply_with_logger(
         rewrite::string_copy::StringCopy::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::StringParams, {
-        loop {
-            let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-            if !rewrite::string_params::StringParams::new(logger).fixup(&mut program, &facts) {
-                break;
-            }
-        }
+        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
+            rewrite::string_params::StringParams::new(facts, logger).fixup(program)
+        });
     });
     step!(program, Pass::RemoveMut, {
         remove_mut(&mut program, logger);
@@ -410,12 +403,9 @@ fn apply_with_logger(
         rewrite::printf_format::PrintfFormat::new(logger).fixup(&mut program, &facts);
     });
     step!(program, Pass::StringParams, {
-        loop {
-            let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-            if !rewrite::string_params::StringParams::new(logger).fixup(&mut program, &facts) {
-                break;
-            }
-        }
+        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
+            rewrite::string_params::StringParams::new(facts, logger).fixup(program)
+        });
     });
     step!(program, Pass::RemoveMut, {
         remove_mut(&mut program, logger);
@@ -446,19 +436,19 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::StringLiftFixupCStrings, {
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-            {
-                rewrite::string_lift::StringLift::new(Pass::StringLiftFixupCStrings, logger)
-                    .fixup_with_recoveries(
-                        &mut f.body,
-                        function,
-                        &facts,
-                        &[facts::StringRecoveryCandidate::BorrowedCStr],
-                    );
-            }
-        }
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::string_lift::StringLift::new(
+                Pass::StringLiftFixupCStrings,
+                function,
+                &facts,
+                &[facts::StringRecoveryCandidate::BorrowedCStr],
+                logger,
+            );
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::MemchrPrelude, {
         for item in &mut program.items {
@@ -624,6 +614,21 @@ fn run_once_program(program: &mut Program, mut fixup: impl FnMut(&mut Program) -
 
 fn to_fixpoint_program(program: &mut Program, mut fixup: impl FnMut(&mut Program) -> bool) {
     while fixup(program) {}
+}
+
+fn to_fixpoint_program_with_facts(
+    program: &mut Program,
+    limit: FixpointLimit,
+    mut fixup: impl FnMut(&mut Program, &facts::FixupFacts) -> bool,
+) {
+    let mut completed_rounds = 0;
+    while limit.permits(completed_rounds) {
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program);
+        completed_rounds += 1;
+        if !fixup(program, &facts) {
+            break;
+        }
+    }
 }
 
 fn run_once_items(program: &mut Program, mut fixup: impl FnMut(usize, &mut FnDef) -> bool) -> bool {

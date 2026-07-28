@@ -111,11 +111,11 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 13. `call_args` - inline single-use call-argument temps - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`).
 14. `retval` - collapse a return-slot store into the final return/exit - once, per function (`run_once_items`).
 15. `final_return_temps` - collapse a return-value temp into the final `return` - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`).
-16. `lazy_singleton` - recover the "static flag guards a static payload" lazy-init idiom into `std::sync::OnceLock::get_or_init` - once, program-wide.
-17. `drop_call_results` - turn `let _v = call();` into `call();` when unused - once, per function.
-18. `string_lift` - lift NUL-terminated buffers to `CStr`/`str`/byte slices - once, per function.
-19. `string_params` - turn a C-string pointer parameter into `&str` - to fixpoint (its own `loop { ... }`); re-run three more times later in the sequence (after `string_copy`, after `string_libc`'s first pass, and after `printf_format`), since each of those can create a new liftable parameter.
-20. `ptr_len` - pair a pointer+length parameter into a slice parameter - once.
+16. `lazy_singleton` - recover the "static flag guards a static payload" lazy-init idiom into `std::sync::OnceLock::get_or_init` - once, program-wide (`run_once_program`).
+17. `drop_call_results` - turn `let _v = call();` into `call();` when unused - once, per function (`run_once_items`).
+18. `string_lift` - lift NUL-terminated buffers to `CStr`/`str`/byte slices - once, per function (`run_once_items`).
+19. `string_params` - turn a C-string pointer parameter into `&str` - program-wide to fixpoint with facts refreshed before every round (`to_fixpoint_program_with_facts`); re-run twice later in the sequence after `string_copy` and `printf_format`, since each can create a new liftable parameter.
+20. `ptr_len` - pair a pointer+length parameter into a slice parameter - once, program-wide (`run_once_program`).
 21. `slice_index` - rewrite pointer-offset derefs into `slice[i]` once the param is a slice - once.
 22. `slice_loop` - recover `for x in slice.iter()/.iter_mut()`, or `for (i, x) in slice.iter()/.iter_mut().enumerate()` when the body also reads the index directly (re-casting the `usize` enumerate index back to its original type via a shadowing `let`) - once; if it changed anything, `late_loop_cleanup` runs, itself `singleton_scopes` + `dead_locals` to fixpoint.
 23. `slice_reduce` - fold a slice-iterator accumulator loop into `.sum()`/`.product()`/`.fold()` - once; runs right after `slice_loop` (its only producer) since it consumes the `for`-loop shape that pass emits; same conditional `late_loop_cleanup` as above.
@@ -132,7 +132,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 34. `stdio` - `fopen`/`fputs`/`fclose` sequences to `File`/`OpenOptions` owners - once.
 35. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls - once.
 36. `nullable_pointer` - recover `Option<*T>` null-check idioms - to fixpoint (its own `loop { ... }`); runs directly after its only producers - the two `string_libc::fixup` runs and `memchr_prelude::fixup_calls`, the sole places that emit the `<index>.map_or(null_mut(), |i| ptr.add(i) as *T)` shape it rewrites. Despite the name, it has no relationship to the pointer-provenance cluster (`slice_index`/`slice_loop`/`array_element_pointer_origin`/`buffer_cursor`): those match constant-index pointer arithmetic, this matches dynamic-index `Option`-wrapped search results, and the two never touch the same bindings.
-37. `string_lift::fixup_c_strings` then `memchr_prelude` / `memchr_prelude::prune_unused_helper` - a second, narrower string-lift pass plus memchr-helper cleanup - once each.
+37. `string_lift::fixup_c_strings` then `memchr_prelude` / `memchr_prelude::prune_unused_helper` - a second, narrower string-lift pass plus memchr-helper cleanup - once each; the string lift uses `run_once_items`.
 38. `late_inline_temps` - inline single-use pure temps, late variant - to fixpoint (`inline_temps_to_fixpoint`, same round cap as step 3).
 39. `ptr_copy` - collapse indexed pointer-copy loops into `std::ptr::copy` or `std::ptr::copy_nonoverlapping` - to fixpoint, per function.
 40. `dead_locals` - remove locals made dead by pointer-copy recovery - to fixpoint, per function, across the program.
