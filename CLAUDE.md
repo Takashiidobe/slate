@@ -106,6 +106,14 @@ cargo run -- translate tests/fixtures/add.c # C -> Rust on stdout
 cargo run -- emit-cir   tests/fixtures/add.c # inspect the CIR the lowerer sees
 ```
 
+During feature development, isolate the new differential fixture:
+
+```bash
+SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --test differential -E 'test(generated_differential)' --nocapture
+```
+
+Run the unfiltered full release suite only as the completion gate.
+
 Generated fixture trees are ignored inspection artifacts. Do not run
 `emit-fixtures` or `emit-lowered-fixtures` as part of implementation or session
 completion. The user regenerates them manually when desired.

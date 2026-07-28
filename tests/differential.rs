@@ -14,6 +14,7 @@ fn fixtures_dir() -> PathBuf {
 
 fn fixtures() -> Vec<(String, PathBuf)> {
     let dir = fixtures_dir();
+    let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
     let mut fixtures = Vec::new();
     for entry in std::fs::read_dir(&dir).expect("read fixtures dir") {
         let path = entry.expect("dir entry").path();
@@ -21,6 +22,9 @@ fn fixtures() -> Vec<(String, PathBuf)> {
             continue;
         }
         let name = path.file_stem().unwrap().to_string_lossy().into_owned();
+        if selected.as_ref().is_some_and(|selected| selected != &name) {
+            continue;
+        }
         fixtures.push((name, path));
     }
     fixtures.sort_by(|a, b| a.0.cmp(&b.0));
@@ -176,6 +180,24 @@ fn anonymous_struct_arrays_use_generated_tuple_structs() {
     assert!(rust.contains("error_log[0].0"));
     assert!(!rust.contains("anon_0"));
     assert!(!rust.contains("error_log[0].code"));
+}
+
+#[test]
+fn anonymous_members_emit_nested_repr_c_storage() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-anonymous-members");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("anonymous_members.c");
+    let generated = tmp.join("anonymous_members.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate anonymous members fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated anonymous members rust");
+    assert!(rust.contains("union anon_0 {\n    integer: i32,\n    real: f32,"));
+    assert!(rust.contains(
+        "struct container {\n    prefix: i32,\n    __slate_anon_1: anon_0,\n    __slate_anon_2: __slate_anonymous_struct_0,"
+    ));
+    assert!(rust.contains("value.__slate_anon_1.integer"));
+    assert!(rust.contains("value.__slate_anon_2.0"));
+    assert!(rust.contains("value.__slate_anon_2.1"));
 }
 
 #[test]
