@@ -8,11 +8,6 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Expr, IndentStmt, Stmt, UnaryOp};
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    StructFieldInit::new(&mut logger).fixup(body)
-}
-
 pub(in crate::fixups) struct StructFieldInit<'a> {
     logger: &'a mut dyn TraceLogger,
 }

@@ -525,19 +525,28 @@ fn apply_with_logger(
         rewrite::unused_items::UnusedItems::new(logger).fixup(&mut program);
     });
     step!(program, Pass::UnusedParams, {
-        rewrite::unused_params::UnusedParams::new(logger).fixup(&mut program);
+        to_fixpoint_program(&mut program, |program| {
+            rewrite::unused_params::UnusedParams::new(logger).fixup(program)
+        });
     });
     step!(program, Pass::FinalReturns, {
         for item in &mut program.items {
             if let Item::Fn(f) = item {
-                rewrite::final_returns::FinalReturns::new(logger).fixup(f);
+                let mut fixup = rewrite::final_returns::FinalReturns::new(
+                    f.name.clone(),
+                    f.ret.is_some(),
+                    logger,
+                );
+                run_once(&mut f.body, &mut fixup);
             }
         }
     });
     step!(program, Pass::MainZeroExit, {
         for item in &mut program.items {
             if let Item::Fn(f) = item {
-                rewrite::main_zero_exit::MainZeroExit::new(logger).fixup(f);
+                let mut fixup =
+                    rewrite::main_zero_exit::MainZeroExit::new(f.name == "main", logger);
+                run_once(&mut f.body, &mut fixup);
             }
         }
     });
@@ -642,6 +651,14 @@ fn zero_init_to_fixpoint(
 
 pub trait Fixup {
     fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool;
+}
+
+fn run_once(body: &mut Vec<IndentStmt>, fixup: &mut impl Fixup) -> bool {
+    fixup.fixup(body)
+}
+
+fn to_fixpoint_program(program: &mut Program, mut fixup: impl FnMut(&mut Program) -> bool) {
+    while fixup(program) {}
 }
 
 fn apply_fixup(item: &mut Item, fixup: &mut dyn Fixup) -> bool {
