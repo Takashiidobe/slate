@@ -467,7 +467,7 @@ fn generated_weak_symbols_lose_to_strong_external_definitions() {
     let bin = work.join("strong_wins");
     let cc = std::env::var("SLATE_CC").unwrap_or_else(|_| "clang".into());
     let output = std::process::Command::new(cc)
-        .args(["-O0", "-std=c11"])
+        .args(["-O0", "-std=c23"])
         .arg(dir.join("strong_main.c"))
         .args(["-Wl,--whole-archive"])
         .arg(&libweak)

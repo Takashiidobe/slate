@@ -13,7 +13,10 @@ SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --test differential -E 'test
 
 Use `SLATE_DIFF_FIXTURE` for the red/green implementation loop so only the new
 fixture is translated, compiled, and compared. The unfiltered differential test
-runs as part of the full release suite before completion.
+runs as part of the full release suite before completion. The shared
+differential harness translates and compiles C fixtures in C23 mode; fixtures
+for earlier standards remain compatibility regressions within that language
+mode.
 
 The effects regression is diagnostic-only and is not a required feature or
 fixup completion gate. Do not run it by default. Use it only when working

@@ -122,6 +122,16 @@ impl Known {
         }
     }
 
+    pub fn matches_symbol(self, name: &str) -> bool {
+        name == self.symbol()
+            || matches!(
+                (self, name),
+                (Self::StrTol, "__isoc23_strtol")
+                    | (Self::StrToul, "__isoc23_strtoul")
+                    | (Self::StrTod, "__isoc23_strtod")
+            )
+    }
+
     fn classify(name: &str, headers: &[&str]) -> Option<Self> {
         let (known, header) = match name {
             "malloc" => (Self::Malloc, "stdlib.h"),
@@ -148,9 +158,9 @@ impl Known {
             "strcspn" => (Self::StrCSpn, "string.h"),
             "atoi" => (Self::Atoi, "stdlib.h"),
             "atol" => (Self::Atol, "stdlib.h"),
-            "strtol" => (Self::StrTol, "stdlib.h"),
-            "strtoul" => (Self::StrToul, "stdlib.h"),
-            "strtod" => (Self::StrTod, "stdlib.h"),
+            "strtol" | "__isoc23_strtol" => (Self::StrTol, "stdlib.h"),
+            "strtoul" | "__isoc23_strtoul" => (Self::StrToul, "stdlib.h"),
+            "strtod" | "__isoc23_strtod" => (Self::StrTod, "stdlib.h"),
             "printf" => (Self::Printf, "stdio.h"),
             "exit" => (Self::Exit, "stdlib.h"),
             "puts" => (Self::Puts, "stdio.h"),
@@ -311,13 +321,13 @@ pub fn known_call(expr: &crate::rust_ast::Expr) -> Option<Known> {
             }
         }
     };
-    matches!(&**func, crate::rust_ast::Expr::Var(name) if name.as_str() == known.symbol())
+    matches!(&**func, crate::rust_ast::Expr::Var(name) if known.matches_symbol(name.as_str()))
         .then_some(known)
 }
 
 pub fn known_declaration(identity: FunctionIdentity, name: &str) -> Option<Known> {
     match identity {
-        FunctionIdentity::Known(known) if known.symbol() == name => Some(known),
+        FunctionIdentity::Known(known) if known.matches_symbol(name) => Some(known),
         #[cfg(test)]
         FunctionIdentity::Unknown => Known::for_test_symbol(name),
         _ => None,

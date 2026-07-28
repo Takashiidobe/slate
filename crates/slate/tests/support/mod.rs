@@ -24,6 +24,11 @@ fn cargo() -> String {
     std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into())
 }
 
+fn c23_clang_args() -> String {
+    let existing = std::env::var("SLATE_CLANG_ARGS").unwrap_or_default();
+    format!("{existing} -std=c23").trim().to_string()
+}
+
 fn aligned_path() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/aligned")
 }
@@ -94,7 +99,7 @@ pub fn alive_tv() -> String {
 
 pub fn compile_c(src: &Path, out: &Path) -> Result<(), String> {
     let o = Command::new(cc())
-        .args(["-O0", "-std=c11", "-o"])
+        .args(["-O0", "-std=c23", "-o"])
         .arg(out)
         .arg(src)
         .arg("-lm")
@@ -112,7 +117,7 @@ pub fn compile_c(src: &Path, out: &Path) -> Result<(), String> {
 /// Compile several C translation units together into one binary (cross-TU link).
 pub fn compile_c_multi(srcs: &[PathBuf], out: &Path) -> Result<(), String> {
     let o = Command::new(cc())
-        .args(["-O0", "-std=c11", "-o"])
+        .args(["-O0", "-std=c23", "-o"])
         .arg(out)
         .args(srcs)
         .arg("-lm")
@@ -134,6 +139,7 @@ pub fn translate_project(dir: &Path, out_dir: &Path) -> Result<(), String> {
         .arg("translate-project")
         .arg(dir)
         .arg(out_dir)
+        .env("SLATE_CLANG_ARGS", c23_clang_args())
         .output()
         .map_err(|e| format!("spawn slate translate-project: {e}"))?;
     if !o.status.success() {
@@ -725,6 +731,7 @@ pub fn translate(c_src: &Path, rs_out: &Path) -> Result<(), String> {
     let o = Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("translate")
         .arg(c_src)
+        .env("SLATE_CLANG_ARGS", c23_clang_args())
         .output()
         .map_err(|e| format!("spawn slate translate: {e}"))?;
     if !o.status.success() {

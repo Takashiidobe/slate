@@ -14,6 +14,7 @@
 
 <include_list> ::= <include> <include_list> | <include> ;
 <include> ::= "#include <stdio.h>" | "#include <stdlib.h>" | "#include <stdint.h>" | "#include <stddef.h>" | "#include <stdbool.h>" | "#include <stdatomic.h>" | "#include <threads.h>" | "#include <time.h>" | "#include <uchar.h>" ;
+<conditional_directive> ::= "#if 0" | "#if 1" | "#ifdef " <ident> | "#ifndef " <ident> | "#elif defined(" <ident> ")" | "#elifdef " <ident> | "#elifndef " <ident> | "#else" | "#endif" ;
 
 # ----- top-level declarations -----
 
@@ -77,7 +78,7 @@
 # ----- expressions -----
 
 <expr> ::= <term> | <unary_op> <term> | <term> <binary_op> <expr> | "(" <expr> <cmp_op> <expr> ")" | "(" <expr> <logical_op> <expr> ")" ;
-<term> ::= <int> | <float> | <char> | <lvalue> | "&" <lvalue> | <cast_expr> | <call> | <function_pointer_call> | <atomic_expr> | <sizeof> | <alignof> | "(" <expr> ")" ;
+<term> ::= <int> | <float> | <char> | "nullptr" | <lvalue> | "&" <lvalue> | <cast_expr> | <call> | <function_pointer_call> | <atomic_expr> | <sizeof> | <alignof> | "(" <expr> ")" ;
 <lvalue> ::= <ident> | "*" <term> | <ident> "." <ident> | <ident> "[" <expr> "]" ;
 <binary_op> ::= <arith_op> | <bitwise_op> | <shift_op> ;
 <arith_op> ::= "+" | "-" | "*" | "/" | "%" ;
@@ -112,7 +113,7 @@
 
 <type> ::= <base_type> | <pointer_type> | <function_pointer_type> ;
 <base_type> ::= <unqualified_base_type> | <type_qualifier> <unqualified_base_type> ;
-<unqualified_base_type> ::= <int_type> | "float" | "double" | "long double" | "__float128" | <complex_type> | <char_type> | <bool_type> | <record_type> | <ident> ;
+<unqualified_base_type> ::= <int_type> | "float" | "double" | "long double" | "__float128" | "nullptr_t" | <complex_type> | <char_type> | <bool_type> | <record_type> | <ident> ;
 <pointer_type> ::= <base_type> "*" | <base_type> "*" "restrict" ;
 <function_pointer_type> ::= <ret_type> "(" "*" ")" "(" <function_pointer_param_types> ")" ;
 <function_pointer_param_types> ::= "void" | <function_pointer_params> ;

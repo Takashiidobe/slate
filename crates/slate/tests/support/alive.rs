@@ -289,6 +289,7 @@ fn translate_raw(fixture: &Path) -> Result<String, String> {
         .arg("translate")
         .arg(fixture)
         .env("SLATE_RAW_LOWER", "1")
+        .env("SLATE_CLANG_ARGS", super::c23_clang_args())
         .output()
         .map_err(|e| format!("spawn slate translate: {e}"))?;
     if !o.status.success() {
@@ -303,7 +304,7 @@ fn translate_raw(fixture: &Path) -> Result<String, String> {
 fn emit_c_llvm_ir(src: &Path, out_ll: &Path, target: &str) -> Result<(), String> {
     let cc = super::cc();
     let o = Command::new(&cc)
-        .args(["-S", "-emit-llvm", "-O0", "-std=c11", "-target"])
+        .args(["-S", "-emit-llvm", "-O0", "-std=c23", "-target"])
         .arg(target)
         .arg("-o")
         .arg(out_ll)

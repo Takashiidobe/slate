@@ -11,6 +11,8 @@ pub enum DirectiveKind {
     Ifdef,
     Ifndef,
     Elif,
+    Elifdef,
+    Elifndef,
     Else,
 }
 
@@ -21,6 +23,8 @@ impl DirectiveKind {
             DirectiveKind::Ifdef => "ifdef",
             DirectiveKind::Ifndef => "ifndef",
             DirectiveKind::Elif => "elif",
+            DirectiveKind::Elifdef => "elifdef",
+            DirectiveKind::Elifndef => "elifndef",
             DirectiveKind::Else => "else",
         }
     }
@@ -54,6 +58,7 @@ pub struct Diagnostic {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PredExpr {
+    Constant(bool),
     Defined(String),
     Not(Box<PredExpr>),
     And(Vec<PredExpr>),
@@ -88,6 +93,8 @@ pub enum DirectiveName {
     Ifdef,
     Ifndef,
     Elif,
+    Elifdef,
+    Elifndef,
     Else,
     Endif,
     Define,
@@ -113,6 +120,8 @@ impl DirectiveName {
             "ifdef" => Self::Ifdef,
             "ifndef" => Self::Ifndef,
             "elif" => Self::Elif,
+            "elifdef" => Self::Elifdef,
+            "elifndef" => Self::Elifndef,
             "else" => Self::Else,
             "endif" => Self::Endif,
             "define" => Self::Define,
@@ -138,6 +147,8 @@ impl DirectiveName {
             Self::Ifdef => "ifdef",
             Self::Ifndef => "ifndef",
             Self::Elif => "elif",
+            Self::Elifdef => "elifdef",
+            Self::Elifndef => "elifndef",
             Self::Else => "else",
             Self::Endif => "endif",
             Self::Define => "define",
@@ -162,6 +173,8 @@ impl DirectiveName {
             | Self::Ifdef
             | Self::Ifndef
             | Self::Elif
+            | Self::Elifdef
+            | Self::Elifndef
             | Self::Else
             | Self::Endif
             | Self::Error => DirectiveDisposition::RepresentedInRust,
@@ -423,7 +436,7 @@ fn coverage_note(uncovered: bool) -> &'static str {
 fn has_opaque(expr: &PredExpr) -> bool {
     match expr {
         PredExpr::Opaque(_) => true,
-        PredExpr::Defined(_) => false,
+        PredExpr::Constant(_) | PredExpr::Defined(_) => false,
         PredExpr::Not(inner) => has_opaque(inner),
         PredExpr::And(items) | PredExpr::Or(items) => items.iter().any(has_opaque),
     }
@@ -437,6 +450,7 @@ fn unmapped_atoms(expr: &PredExpr) -> Vec<String> {
 
 fn collect_unmapped(expr: &PredExpr, out: &mut Vec<String>) {
     match expr {
+        PredExpr::Constant(_) => {}
         PredExpr::Defined(name) => {
             if macro_cfg(name).is_none() && !out.contains(name) {
                 out.push(name.clone());
@@ -832,6 +846,8 @@ fn conditional_directive<'a>(name: &str, payload: &'a str) -> Option<(Directive,
         "ifdef" => Directive::Open(DirectiveKind::Ifdef),
         "ifndef" => Directive::Open(DirectiveKind::Ifndef),
         "elif" => Directive::Cont(DirectiveKind::Elif),
+        "elifdef" => Directive::Cont(DirectiveKind::Elifdef),
+        "elifndef" => Directive::Cont(DirectiveKind::Elifndef),
         "else" => Directive::Cont(DirectiveKind::Else),
         "endif" => Directive::Endif,
         _ => return None,
@@ -842,8 +858,10 @@ fn conditional_directive<'a>(name: &str, payload: &'a str) -> Option<(Directive,
 fn open_predicate(kind: DirectiveKind, arg: Option<&str>) -> PredExpr {
     let arg = arg.unwrap_or("");
     match kind {
-        DirectiveKind::Ifdef => PredExpr::Defined(arg.to_string()),
-        DirectiveKind::Ifndef => PredExpr::Not(Box::new(PredExpr::Defined(arg.to_string()))),
+        DirectiveKind::Ifdef | DirectiveKind::Elifdef => PredExpr::Defined(arg.to_string()),
+        DirectiveKind::Ifndef | DirectiveKind::Elifndef => {
+            PredExpr::Not(Box::new(PredExpr::Defined(arg.to_string())))
+        }
         _ => parse_predicate(arg),
     }
 }
@@ -870,6 +888,7 @@ fn resolve_active(chain: &mut CondChain, macros: &BTreeMap<String, String>) {
 
 fn eval(expr: &PredExpr, macros: &BTreeMap<String, String>) -> Option<bool> {
     match expr {
+        PredExpr::Constant(value) => Some(*value),
         PredExpr::Defined(name) => Some(macros.contains_key(name)),
         PredExpr::Not(inner) => eval(inner, macros).map(|b| !b),
         PredExpr::And(items) => {
@@ -979,6 +998,8 @@ fn macro_cfg(macro_name: &str) -> Option<Cfg> {
 
 pub(crate) fn pred_to_cfg(expr: &PredExpr) -> Option<Cfg> {
     match expr {
+        PredExpr::Constant(true) => Some(Cfg::All(Vec::new())),
+        PredExpr::Constant(false) => Some(Cfg::Any(Vec::new())),
         PredExpr::Defined(name) => macro_cfg(name),
         PredExpr::Opaque(_) => None,
         PredExpr::Not(inner) => pred_to_cfg(inner).map(negate_cfg),
@@ -1153,6 +1174,11 @@ impl Parser {
 }
 
 fn parse_predicate(raw: &str) -> PredExpr {
+    match raw.trim() {
+        "0" => return PredExpr::Constant(false),
+        "1" => return PredExpr::Constant(true),
+        _ => {}
+    }
     let opaque = || PredExpr::Opaque(raw.trim().to_string());
     let Some(toks) = tokenize(raw) else {
         return opaque();
@@ -1166,6 +1192,8 @@ fn parse_predicate(raw: &str) -> PredExpr {
 
 pub fn predicate_text(expr: &PredExpr) -> String {
     match expr {
+        PredExpr::Constant(true) => "1".into(),
+        PredExpr::Constant(false) => "0".into(),
         PredExpr::Defined(name) => format!("defined({name})"),
         PredExpr::Not(inner) => format!("!({})", predicate_text(inner)),
         PredExpr::And(items) => items

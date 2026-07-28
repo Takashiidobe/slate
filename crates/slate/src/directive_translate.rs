@@ -280,6 +280,7 @@ fn chain_atoms(branches: &[Branch]) -> BTreeSet<String> {
 
 fn collect_atoms(expr: &PredExpr, out: &mut BTreeSet<String>) {
     match expr {
+        PredExpr::Constant(_) => {}
         PredExpr::Defined(name) => {
             out.insert(name.clone());
         }
@@ -306,6 +307,7 @@ fn branch_defines(branch: &Branch) -> BTreeSet<String> {
 
 fn collect_positive_atoms(expr: &PredExpr, positive: bool, out: &mut BTreeSet<String>) {
     match expr {
+        PredExpr::Constant(_) => {}
         PredExpr::Defined(name) if positive => {
             out.insert(name.clone());
         }
