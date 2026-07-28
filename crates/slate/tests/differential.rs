@@ -1530,6 +1530,20 @@ fn file_scope_globals_emit_static_mut_definitions() {
 }
 
 #[test]
+fn thread_local_globals_emit_thread_local_statics() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-thread-local");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("thread_local.c");
+    let generated = tmp.join("thread_local.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate thread local fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated thread local rust");
+    assert!(rust.contains("#![feature(thread_local)]"));
+    assert!(rust.contains("#[thread_local]\nstatic mut file_value: i32 = 5;"));
+    assert!(rust.contains("#[thread_local]\nstatic mut update_values_block_value: i32 = 7;"));
+}
+
+#[test]
 fn aggregate_value_member_ops_inline_member_access_temps() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-aggregate-members");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

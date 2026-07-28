@@ -368,6 +368,16 @@ fn cross_tu_globals() {
 }
 
 #[test]
+fn cross_tu_thread_local_globals() {
+    let rs_dir = build_and_diff("thread_local");
+    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
+    let state_rs = std::fs::read_to_string(rs_dir.join("state.rs")).expect("read state.rs");
+
+    assert!(main_rs.contains("use crate::state::shared_value;"));
+    assert!(state_rs.contains("#[thread_local]\npub static mut shared_value: i32 = 5;"));
+}
+
+#[test]
 fn used_and_retain_attrs_preserve_dead_statics() {
     let rs_dir = build_and_diff("used_retain");
     let work = cross_tu_work_dir("used_retain");

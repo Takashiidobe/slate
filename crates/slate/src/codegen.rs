@@ -421,6 +421,7 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char(')')
             }
             Attr::NoMangle => self.out.write_str("unsafe(no_mangle)"),
+            Attr::ThreadLocal => self.out.write_str("thread_local"),
             Attr::WeakLinkage => self.out.write_str("linkage = \"weak\""),
             Attr::LinkSection(section) => {
                 write!(
@@ -555,7 +556,16 @@ impl<W: Write> Codegen<W> {
                 }
                 self.out.write_str(";\n")
             }
-            ExternDecl::Static { mutable, name, ty } => {
+            ExternDecl::Static {
+                mutable,
+                name,
+                ty,
+                thread_local,
+            } => {
+                if *thread_local {
+                    self.out.write_str("#[thread_local]\n")?;
+                    self.out.write_str(INDENT)?;
+                }
                 self.out.write_str("static ")?;
                 if *mutable {
                     self.out.write_str("mut ")?;

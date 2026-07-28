@@ -104,8 +104,11 @@ cargo fmt                                   # required before finishing
 
 cargo run -- translate tests/fixtures/add.c # C -> Rust on stdout
 cargo run -- emit-cir   tests/fixtures/add.c # inspect the CIR the lowerer sees
-cargo run -- emit-fixtures                   # regenerate supported suites in tests/*.generated/
 ```
+
+Generated fixture trees are ignored inspection artifacts. Do not run
+`emit-fixtures` or `emit-lowered-fixtures` as part of implementation or session
+completion. The user regenerates them manually when desired.
 
 ## Architecture Overview
 
