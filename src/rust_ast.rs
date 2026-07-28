@@ -910,6 +910,7 @@ pub enum CLibType {
     File,
     Pthread,
     PthreadAttr,
+    Timespec,
 }
 
 impl CLibType {
@@ -919,6 +920,7 @@ impl CLibType {
             CLibType::File => "libc::FILE",
             CLibType::Pthread => "libc::pthread_t",
             CLibType::PthreadAttr => "libc::pthread_attr_t",
+            CLibType::Timespec => "libc::timespec",
         }
     }
 }

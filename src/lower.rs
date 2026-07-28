@@ -419,6 +419,7 @@ fn type_alignment(ty: &Type) -> u32 {
         | Type::FnPtr { .. }
         | Type::Ref { .. }
         | Type::VaList => 8,
+        Type::CLib(CLibType::Timespec) => 8,
         Type::Prim(Prim::I128 | Prim::U128 | Prim::F128) | Type::LongDouble => 16,
         Type::Array { elem, .. } => type_alignment(elem),
         Type::Complex(inner) => type_alignment(inner),
@@ -1970,6 +1971,13 @@ impl<'a> Lowerer<'a> {
                 elem: Box::new(self.default_value_expr(elem)),
                 len: *len as usize,
             },
+            Type::CLib(CLibType::Timespec) => Expr::StructLit {
+                name: "libc::timespec".into(),
+                fields: vec![
+                    ("tv_sec".into(), Expr::Value(RustValue::I64(0))),
+                    ("tv_nsec".into(), Expr::Value(RustValue::I64(0))),
+                ],
+            },
             _ => default_value_for_type(ty),
         }
     }
@@ -2192,6 +2200,7 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
         CType::Record(name) if name == "_IO_FILE" => Type::CLib(CLibType::File),
         CType::Record(name) if name == "pthread" => Type::CLib(CLibType::Pthread),
         CType::Record(name) if name == "pthread_attr_t" => Type::CLib(CLibType::PthreadAttr),
+        CType::Record(name) if name == "timespec" => Type::CLib(CLibType::Timespec),
         CType::Record(name) => Type::Custom(sanitize_ident(name).into_string()),
         CType::Enum(name) => Type::Custom(sanitize_ident(name).into_string()),
     }
@@ -8691,6 +8700,7 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
             "_IO_FILE" => Type::CLib(CLibType::File),
             "pthread" => Type::CLib(CLibType::Pthread),
             "pthread_attr_t" => Type::CLib(CLibType::PthreadAttr),
+            "timespec" => Type::CLib(CLibType::Timespec),
             _ => Type::Custom(sanitize_ident(name).into_string()),
         }
     } else {
