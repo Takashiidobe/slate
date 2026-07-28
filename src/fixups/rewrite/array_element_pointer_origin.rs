@@ -1,70 +1,64 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::{FixupFacts, FunctionId};
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
 };
-use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, Stmt};
-
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    ArrayElementPointerOrigin::new(&mut logger).fixup(program, facts)
-}
+use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Stmt};
 
 pub(in crate::fixups) struct ArrayElementPointerOrigin<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> ArrayElementPointerOrigin<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
-        fixup_impl(program, facts, self.logger)
-    }
-}
-
-fn fixup_impl(program: &mut Program, facts: &FixupFacts, logger: &mut dyn TraceLogger) -> bool {
-    let mut changed = false;
-    for (item_index, item) in program.items.iter_mut().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        let mut origins = origins_for_function(function, facts);
+impl Fixup for ArrayElementPointerOrigin<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        let mut origins = origins_for_function(self.function, self.facts);
         if origins.is_empty() {
-            continue;
+            return false;
         }
-        collect_aliases(&f.body, &mut origins);
+        collect_aliases(body, &mut origins);
         if origins.is_empty() {
-            continue;
+            return false;
         }
-        let before = logger.is_enabled().then(|| f.body.clone());
-        let function_changed = rewrite_body(&mut f.body, &origins);
-        changed |= function_changed;
+        let before = self.logger.is_enabled().then(|| body.clone());
+        let mut changed = rewrite_body(body, &origins);
         if changed {
             let removable = origins.keys().cloned().collect();
-            changed |= prune_dead_pointer_stmts(&mut f.body, &removable);
+            changed |= prune_dead_pointer_stmts(body, &removable);
             if let Some(before) = before
-                && body_code(&before) != body_code(&f.body)
+                && body_code(&before) != body_code(body)
             {
-                logger.rewrite(RewriteEvent {
+                self.logger.rewrite(RewriteEvent {
                     pass: TracePass::ArrayElementPointerOrigin,
                     kind: "rewrite_array_element_pointer_origins".into(),
-                    location: function_path_location(facts, function, &[]),
+                    location: function_path_location(self.facts, self.function, &[]),
                     before: vec![stmts_snippet("body", &before)],
-                    after: vec![stmts_snippet("body", &f.body)],
+                    after: vec![stmts_snippet("body", body)],
                     facts: vec![fact("origins", origins.len().to_string())],
                 });
             }
         }
+        changed
     }
-    changed
+}
+
+impl<'a> ArrayElementPointerOrigin<'a> {
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
+    }
 }
 
 fn body_code(body: &[IndentStmt]) -> String {

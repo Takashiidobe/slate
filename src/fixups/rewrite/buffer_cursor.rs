@@ -1,69 +1,64 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::{FixupFacts, FunctionId};
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
 };
-use crate::rust_ast::{BinOp, Block, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt};
-
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    BufferCursor::new(&mut logger).fixup(program, facts)
-}
+use crate::rust_ast::{BinOp, Block, Expr, Ident, IndentStmt, RustValue, Stmt};
 
 pub(in crate::fixups) struct BufferCursor<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> BufferCursor<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
-        fixup_impl(program, facts, self.logger)
-    }
-}
-
-fn fixup_impl(program: &mut Program, facts: &FixupFacts, logger: &mut dyn TraceLogger) -> bool {
-    let mut changed = false;
-    for (item_index, item) in program.items.iter_mut().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        let context = Context::new(function, facts);
+impl Fixup for BufferCursor<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        let context = Context::new(self.function, self.facts);
         if context.arrays.is_empty() || context.buffers.is_empty() {
-            continue;
+            return false;
         }
-        let before = logger.is_enabled().then(|| f.body.clone());
-        let mut rewritten = f.body.clone();
+        let before = self.logger.is_enabled().then(|| body.clone());
+        let mut rewritten = body.clone();
         let mut rewriter = Rewriter::new(context.clone());
         if rewriter.body(&mut rewritten)
             && !contains_unresolved_pointer_uses(&rewritten, &context, &rewriter.aliases)
         {
-            f.body = rewritten;
+            *body = rewritten;
             if let Some(before) = before {
-                logger.rewrite(RewriteEvent {
+                self.logger.rewrite(RewriteEvent {
                     pass: TracePass::BufferCursor,
                     kind: "rewrite_buffer_cursor".into(),
-                    location: function_path_location(facts, function, &[]),
+                    location: function_path_location(self.facts, self.function, &[]),
                     before: vec![stmts_snippet("body", &before)],
-                    after: vec![stmts_snippet("body", &f.body)],
+                    after: vec![stmts_snippet("body", body)],
                     facts: vec![
                         fact("arrays", context.arrays.len().to_string()),
                         fact("buffers", context.buffers.len().to_string()),
                     ],
                 });
             }
-            changed = true;
+            return true;
+        }
+        false
+    }
+}
+
+impl<'a> BufferCursor<'a> {
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
         }
     }
-    changed
 }
 
 #[derive(Clone)]

@@ -564,7 +564,19 @@ fn apply_with_logger(
         });
     });
     step!(program, Pass::LateInlineTemps, {
-        inline_temps_to_fixpoint(&mut program, rewrite::inline_temps::Phase::Late, logger);
+        let limit = inline_temp_fixpoint_limit(&program);
+        to_fixpoint_items_with_facts(&mut program, limit, |item_index, f, facts| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::inline_temps::InlineTemps::new(
+                rewrite::inline_temps::Phase::Late,
+                function,
+                facts,
+                logger,
+            );
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::PtrCopy, {
         to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
@@ -587,19 +599,46 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::ArrayElementPointerOrigin, {
-        rewrite::array_element_pointer_origin::ArrayElementPointerOrigin::new(logger)
-            .fixup(&mut program, &facts);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::array_element_pointer_origin::ArrayElementPointerOrigin::new(
+                function, &facts, logger,
+            );
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::BufferCursor, {
-        rewrite::buffer_cursor::BufferCursor::new(logger).fixup(&mut program, &facts);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::buffer_cursor::BufferCursor::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::AtomicLocals, {
-        rewrite::atomic_locals::AtomicLocals::new(logger).fixup(&mut program, &facts);
+        run_once_program(&mut program, |program| {
+            rewrite::atomic_locals::AtomicLocals::new(&facts, logger).fixup(program)
+        });
     });
     step!(program, Pass::LateInlineTemps, {
-        inline_temps_to_fixpoint(&mut program, rewrite::inline_temps::Phase::Late, logger);
+        let limit = inline_temp_fixpoint_limit(&program);
+        to_fixpoint_items_with_facts(&mut program, limit, |item_index, f, facts| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::inline_temps::InlineTemps::new(
+                rewrite::inline_temps::Phase::Late,
+                function,
+                facts,
+                logger,
+            );
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::ZeroInit, {
         to_fixpoint_items_with_facts(
@@ -615,25 +654,19 @@ fn apply_with_logger(
         );
     });
     step!(program, Pass::AtomicCompareExchange, {
-        loop {
-            let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-            let mut changed = false;
-            for (item_index, item) in program.items.iter_mut().enumerate() {
-                if let Item::Fn(f) = item
-                    && let Some(function) = facts.function_by_item_index(item_index)
-                    && rewrite::atomic_compare_exchange::AtomicCompareExchange::new(logger).fixup(
-                        &mut f.body,
-                        function,
-                        &facts,
-                    )
-                {
-                    changed = true;
-                }
-            }
-            if !changed {
-                break;
-            }
-        }
+        to_fixpoint_items_with_facts(
+            &mut program,
+            FixpointLimit::Unlimited,
+            |item_index, f, facts| {
+                let Some(function) = facts.function_by_item_index(item_index) else {
+                    return false;
+                };
+                let mut fixup = rewrite::atomic_compare_exchange::AtomicCompareExchange::new(
+                    function, facts, logger,
+                );
+                run_once(&mut f.body, &mut fixup)
+            },
+        );
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::RemoveMut, {
@@ -820,21 +853,6 @@ fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceL
             break;
         }
     }
-}
-
-fn inline_temps_to_fixpoint(
-    program: &mut Program,
-    phase: rewrite::inline_temps::Phase,
-    logger: &mut impl TraceLogger,
-) {
-    let limit = inline_temp_fixpoint_limit(program);
-    to_fixpoint_items_with_facts(program, limit, |item_index, f, facts| {
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            return false;
-        };
-        let mut fixup = rewrite::inline_temps::InlineTemps::new(phase, function, facts, logger);
-        run_once(&mut f.body, &mut fixup)
-    });
 }
 
 fn inline_temp_fixpoint_limit(program: &Program) -> FixpointLimit {

@@ -1,3 +1,4 @@
+use crate::fixups::Fixup;
 use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
@@ -7,31 +8,35 @@ use crate::rust_ast::{
     Block, Expr, ExprMatchArm, IndentStmt, Pattern, Prim, RustValue, Stmt, Type, UnaryOp,
 };
 
-pub(in crate::fixups) fn fixup(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    AtomicCompareExchange::new(&mut logger).fixup(body, function, facts)
-}
-
 pub(in crate::fixups) struct AtomicCompareExchange<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> AtomicCompareExchange<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+impl Fixup for AtomicCompareExchange<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        fixup_at(
+            body,
+            self.function,
+            self.facts,
+            &mut Vec::new(),
+            self.logger,
+        )
     }
+}
 
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        body: &mut Vec<IndentStmt>,
+impl<'a> AtomicCompareExchange<'a> {
+    pub(in crate::fixups) fn new(
         function: FunctionId,
-        facts: &FixupFacts,
-    ) -> bool {
-        fixup_at(body, function, facts, &mut Vec::new(), self.logger)
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
     }
 }
 
