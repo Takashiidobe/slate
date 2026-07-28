@@ -1323,8 +1323,9 @@ impl<'a> Lowerer<'a> {
                     },
                 );
             }
-        } else if let Some(init) = parse_cir_scalar_expr(raw) {
-            let ty = ty.unwrap_or_else(|| self.rust_type("!s32i"));
+        } else if let Some(ty) = ty
+            && let Some(init) = self.render_const_value_expr(&ty, raw)
+        {
             let external = externally_exported(op);
             self.globals.insert(
                 rust_name.clone(),
@@ -9583,7 +9584,13 @@ fn typed_fp_literal_expr(ty: Option<&Type>, fp: String) -> Expr {
     }
 }
 
-fn complex_const_expr(ty: Option<&Type>, re: String, im: String) -> Expr {
+enum CirComplexComponent {
+    Int(i128),
+    Uint(u128),
+    Float(String),
+}
+
+fn complex_const_expr(ty: Option<&Type>, re: CirComplexComponent, im: CirComplexComponent) -> Expr {
     let inner = match ty {
         Some(Type::Complex(inner)) => Some(inner.as_ref()),
         _ => None,
@@ -9591,9 +9598,17 @@ fn complex_const_expr(ty: Option<&Type>, re: String, im: String) -> Expr {
     Expr::StructLit {
         name: "Complex".into(),
         fields: vec![
-            ("re".into(), typed_fp_literal_expr(inner, re)),
-            ("im".into(), typed_fp_literal_expr(inner, im)),
+            ("re".into(), complex_component_expr(inner, re)),
+            ("im".into(), complex_component_expr(inner, im)),
         ],
+    }
+}
+
+fn complex_component_expr(ty: Option<&Type>, component: CirComplexComponent) -> Expr {
+    match component {
+        CirComplexComponent::Int(value) => int_value_expr(value),
+        CirComplexComponent::Uint(value) => Expr::Value(RustValue::U128(value)),
+        CirComplexComponent::Float(value) => typed_fp_literal_expr(ty, value),
     }
 }
 
@@ -9649,14 +9664,20 @@ fn cir_fp_text(s: &str) -> Option<&str> {
     Some(rest[..end].trim())
 }
 
-// `#cir.const_complex<#cir.fp<re> : ty, #cir.fp<im> : ty>` -> (re, im) literals.
-fn parse_cir_const_complex(s: &str) -> Option<(String, String)> {
+fn parse_cir_const_complex(s: &str) -> Option<(CirComplexComponent, CirComplexComponent)> {
     let start = s.find("#cir.const_complex<")? + "#cir.const_complex<".len();
     let inner = &s[start..];
-    let re = parse_cir_fp(inner)?;
-    let comma = inner.find(',')?;
-    let im = parse_cir_fp(&inner[comma..])?;
+    let parts = split_top_level(inner, ',');
+    let re = parse_cir_complex_component(parts.first()?.trim())?;
+    let im = parse_cir_complex_component(parts.get(1)?.trim())?;
     Some((re, im))
+}
+
+fn parse_cir_complex_component(s: &str) -> Option<CirComplexComponent> {
+    parse_cir_int(s)
+        .map(CirComplexComponent::Int)
+        .or_else(|| parse_cir_uint128(s).map(CirComplexComponent::Uint))
+        .or_else(|| parse_cir_fp(s).map(CirComplexComponent::Float))
 }
 
 fn parse_cir_const_array(s: &str) -> Option<Vec<u8>> {

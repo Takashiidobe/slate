@@ -37,12 +37,13 @@ surface:
 `_Bool`/`bool`, `float`/`double`, `long double` (aligned, f64-precision internal
 representation with generated C ABI trampolines for supported libc calls),
 IEEE binary128 via Clang's `__float128` spelling (native nightly Rust `f128`),
-and `float`/`double _Complex` (`#[repr(C)]` newtype, libgcc-backed `*`/`/`). The
-standard C23 `_Float128` spelling follows the same path when the configured
-CIR-enabled Clang accepts it. Full arithmetic
-(`+ - * / %`), bitwise
-(`& | ^ ~ << >>`), logical (`&& || !`), comparisons, compound assignment,
-increment, unary negation, and explicit casts across all of the above. Integer
+and `float`/`double _Complex` (`#[repr(C)]` newtype, libgcc-backed `*`/`/).
+GNU `__complex__` integer types and imaginary integer suffixes preserve both
+components in the same representation. The standard C23 `_Float128` spelling
+follows the same path when the configured CIR-enabled Clang accepts it. Full
+arithmetic (`+ - * / %`), bitwise (`& | ^ ~ << >>`), logical (`&& || !`),
+comparisons, compound assignment, increment, unary negation, and explicit casts
+across all of the above. Integer
 overflow wraps two's-complement on both sides (`overflow-checks = false`)
 instead of panicking on the Rust side. `<stdint.h>`/`<stddef.h>` fixed-width
 typedefs and `typedef` aliases generally, resolved through Clang's desugared

@@ -123,7 +123,7 @@
 <int_type> ::= "int" | "unsigned int" | "short" | "unsigned short" | "long" | "unsigned long" | "long long" | "unsigned long long" ;
 <char_type> ::= "char" | "signed char" | "unsigned char" ;
 <bool_type> ::= "_Bool" | "bool" ;
-<complex_type> ::= "float" "_Complex" | "double" "_Complex" ;
+<complex_type> ::= "float" "_Complex" | "double" "_Complex" | "__complex__" <int_type> ;
 <record_type> ::= "struct" <ident> | "union" <ident> ;
 
 # Lexical placeholders: a real lexer supplies identifiers and numeric
