@@ -1,3 +1,4 @@
+use crate::fixups::Fixup;
 use crate::fixups::facts::PathSegment;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
@@ -6,45 +7,40 @@ use crate::fixups::trace::{
 use crate::function_identity::{Known, known_call, known_declaration};
 use crate::rust_ast::{Expr, Ident, IndentStmt, Item, Path, Program, Stmt, Type};
 
-pub(in crate::fixups) fn fixup(program: &mut Program) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    LibcExit::new(&mut logger).fixup(program);
-}
-
 pub(in crate::fixups) struct LibcExit<'a> {
+    function_name: String,
+    enabled: bool,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> LibcExit<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
-        if !has_libc_exit_extern(program) {
+impl Fixup for LibcExit<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        if !self.enabled {
             return false;
         }
-        let mut changed = false;
-        for item in &mut program.items {
-            let Item::Fn(f) = item else {
-                continue;
-            };
-            changed |= self.fixup_body(&mut f.body, &f.name, &mut Vec::new());
+        self.fixup_body(body, &mut Vec::new())
+    }
+}
+
+impl<'a> LibcExit<'a> {
+    pub(in crate::fixups) fn new(
+        function_name: impl Into<String>,
+        enabled: bool,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function_name: function_name.into(),
+            enabled,
+            logger,
         }
-        changed
     }
 
-    fn fixup_body(
-        &mut self,
-        body: &mut [IndentStmt],
-        function_name: &str,
-        path: &mut Vec<PathSegment>,
-    ) -> bool {
+    fn fixup_body(&mut self, body: &mut [IndentStmt], path: &mut Vec<PathSegment>) -> bool {
         let mut changed = false;
         for (index, indent) in body.iter_mut().enumerate() {
             walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
                 walk::nested_body_vecs_mut_with_path(&mut indent.stmt, path, &mut |body, path| {
-                    changed |= self.fixup_body(body, function_name, path);
+                    changed |= self.fixup_body(body, path);
                 });
                 let before = self.logger.is_enabled().then(|| indent.stmt.clone());
                 if rewrite_stmt_exit(&mut indent.stmt) {
@@ -53,7 +49,7 @@ impl<'a> LibcExit<'a> {
                         self.logger.rewrite(RewriteEvent {
                             pass: TracePass::LibcExit,
                             kind: "rewrite_libc_exit".into(),
-                            location: named_path_location(function_name, path),
+                            location: named_path_location(self.function_name.clone(), path),
                             before: vec![stmt_snippet("stmt", &before)],
                             after: vec![stmt_snippet("stmt", &indent.stmt)],
                             facts: vec![path_fact("stmt_path", path)],
@@ -63,6 +59,10 @@ impl<'a> LibcExit<'a> {
             });
         }
         changed
+    }
+
+    pub(in crate::fixups) fn is_enabled(program: &Program) -> bool {
+        has_libc_exit_extern(program)
     }
 }
 

@@ -6,22 +6,13 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Block, Expr, IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    VarAliases::new(&mut logger).fixup(body)
-}
-
 pub(in crate::fixups) struct VarAliases<'a> {
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> Fixup for VarAliases<'a> {
+impl Fixup for VarAliases<'_> {
     fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
-        let mut changed = false;
-        while self.fixup_once(body, &mut Vec::new()) {
-            changed = true;
-        }
-        changed
+        self.fixup_once(body, &mut Vec::new())
     }
 }
 

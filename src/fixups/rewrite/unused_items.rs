@@ -8,11 +8,6 @@ use crate::rust_ast::{
 };
 use std::collections::{BTreeMap, BTreeSet};
 
-pub(in crate::fixups) fn fixup(program: &mut Program) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    UnusedItems::new(&mut logger).fixup(program)
-}
-
 pub(in crate::fixups) struct UnusedItems<'a> {
     logger: &'a mut dyn TraceLogger,
 }

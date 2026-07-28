@@ -678,20 +678,34 @@ fn apply_with_logger(
         });
     });
     step!(program, Pass::VarAliases, {
-        inline_var_aliases_to_fixpoint(&mut program, logger);
+        to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
+            let mut fixup = VarAliases::new(logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::ConstantConditions, {
-        constant_conditions_to_fixpoint(&mut program, logger);
+        to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
+            let mut fixup = ConstantConditions::new(&f.name, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::LibcExit, {
-        rewrite::libc_exit::LibcExit::new(logger).fixup(&mut program);
+        let enabled = rewrite::libc_exit::LibcExit::is_enabled(&program);
+        run_once_items(&mut program, |_, f| {
+            let mut fixup = rewrite::libc_exit::LibcExit::new(f.name.clone(), enabled, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::PruneUnusedExterns, {
-        rewrite::prune_unused_externs::PruneUnusedExterns::new(logger).fixup(&mut program, &facts);
+        run_once_program(&mut program, |program| {
+            rewrite::prune_unused_externs::PruneUnusedExterns::new(&facts, logger).fixup(program)
+        });
     });
     step!(program, Pass::UnusedItems, {
-        rewrite::unused_items::UnusedItems::new(logger).fixup(&mut program);
+        run_once_program(&mut program, |program| {
+            rewrite::unused_items::UnusedItems::new(logger).fixup(program)
+        });
     });
     step!(program, Pass::UnusedParams, {
         to_fixpoint_program(&mut program, |program| {
@@ -721,22 +735,6 @@ fn apply_with_logger(
     });
     let _ = debug_done;
     program.clone()
-}
-
-fn constant_conditions_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
-    loop {
-        let mut changed = false;
-        for item in &mut program.items {
-            if let Item::Fn(f) = item
-                && ConstantConditions::new(&f.name, logger).fixup(&mut f.body)
-            {
-                changed = true;
-            }
-        }
-        if !changed {
-            break;
-        }
-    }
 }
 
 pub trait Fixup {
@@ -793,13 +791,6 @@ impl FixpointLimit {
             Self::Rounds(limit) => completed_rounds < limit,
         }
     }
-}
-
-fn inline_var_aliases_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
-    let mut fixup = VarAliases::new(logger);
-    to_fixpoint_items(program, FixpointLimit::Unlimited, |_, f| {
-        run_once(&mut f.body, &mut fixup)
-    });
 }
 
 fn to_fixpoint_items(
