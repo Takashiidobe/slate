@@ -1970,13 +1970,7 @@ impl<'a> Lowerer<'a> {
     fn render_const_value_expr(&self, ty: &Type, raw: &str) -> Option<Expr> {
         let raw = raw.trim();
         if let Some((re, im)) = parse_cir_const_complex(raw) {
-            Some(Expr::StructLit {
-                name: "Complex".into(),
-                fields: vec![
-                    ("re".into(), fp_literal_expr(re)),
-                    ("im".into(), fp_literal_expr(im)),
-                ],
-            })
+            Some(complex_const_expr(Some(ty), re, im))
         } else if raw.starts_with("#cir.const_record<") {
             let Type::Custom(name) = ty else {
                 return None;
@@ -3075,15 +3069,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         if let Some((re, im)) = parse_cir_const_complex(raw) {
+            let rust_ty = result_ty.map(|ty| self.parent.rust_type(ty));
             self.materialize_expr(
                 result,
-                Expr::StructLit {
-                    name: "Complex".into(),
-                    fields: vec![
-                        ("re".into(), fp_literal_expr(re)),
-                        ("im".into(), fp_literal_expr(im)),
-                    ],
-                },
+                complex_const_expr(rust_ty.as_ref(), re, im),
                 result_ty,
             );
             return;
@@ -9283,6 +9272,33 @@ fn fp_literal_expr(fp: String) -> Expr {
     fp.parse::<f64>()
         .map(|n| Expr::Value(RustValue::Float(n)))
         .unwrap_or_else(|_| Expr::HexFloat(fp))
+}
+
+fn typed_fp_literal_expr(ty: Option<&Type>, fp: String) -> Expr {
+    let value = fp_literal_expr(fp);
+    if matches!(ty, Some(Type::LongDouble)) {
+        Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
+            func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+            args: vec![value],
+        }
+    } else {
+        value
+    }
+}
+
+fn complex_const_expr(ty: Option<&Type>, re: String, im: String) -> Expr {
+    let inner = match ty {
+        Some(Type::Complex(inner)) => Some(inner.as_ref()),
+        _ => None,
+    };
+    Expr::StructLit {
+        name: "Complex".into(),
+        fields: vec![
+            ("re".into(), typed_fp_literal_expr(inner, re)),
+            ("im".into(), typed_fp_literal_expr(inner, im)),
+        ],
+    }
 }
 
 fn cir_int_digits(s: &str) -> Option<&str> {
