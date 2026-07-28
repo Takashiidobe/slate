@@ -27,7 +27,7 @@
 <enumerator_list> ::= <enumerator> "," <enumerator_list> | <enumerator> ;
 <enumerator> ::= <ident> | <ident> "=" <int> ;
 
-<struct_decl> ::= "struct" <ident> "{" <field_list> "};" ;
+<struct_decl> ::= "struct" <ident> "{" <field_list> "};" | "struct" <ident> "{" "};" ;
 <union_decl> ::= "union" <ident> "{" <field_list> "};" ;
 <field_list> ::= <field> <field_list> | <field> ;
 <field> ::= <type> <ident> ";" | <type> <ident> "[" "]" ";" | "_Alignas" "(" <int> ")" <type> <ident> ";" | <anonymous_record_member> ;

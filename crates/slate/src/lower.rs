@@ -1448,7 +1448,7 @@ impl<'a> Lowerer<'a> {
         } else {
             record
         };
-        lower_record_def(record, Visibility::Private, Visibility::Private, false)
+        lower_record_def(record, Visibility::Private, Visibility::Private, true)
     }
 
     fn bitfield_storage_fields(
@@ -5921,7 +5921,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             return;
         }
-        if self.try_format_call_shims(op, &callee_name, &args, arg_types) {
+        if self.try_fixed_long_double_call_shim(op, &callee_name, &args, arg_types)
+            || self.try_format_call_shims(op, &callee_name, &args, arg_types)
+        {
             return;
         }
         let call = Expr::Call {
@@ -5978,7 +5980,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(fmt_index) = self.format_string_arg_index(callee_name, arg_types) else {
             return false;
         };
-        self.try_long_double_variadic_shim(op, callee_name, args, arg_types, fmt_index + 1)
+        self.try_long_double_i32_shim(op, callee_name, args, arg_types, fmt_index + 1)
+    }
+
+    fn try_fixed_long_double_call_shim(
+        &mut self,
+        op: &Op,
+        callee_name: &str,
+        args: &[Expr],
+        arg_types: &[&str],
+    ) -> bool {
+        let Some(fixed) = self.parent.externs.get(callee_name) else {
+            return false;
+        };
+        if args.len() != fixed.len() || op_result_type(op) != Some("!s32i") {
+            return false;
+        }
+        self.try_long_double_i32_shim(op, callee_name, args, arg_types, 0)
     }
 
     fn format_string_arg_index(&self, callee_name: &str, arg_types: &[&str]) -> Option<usize> {
@@ -5990,7 +6008,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         is_format_string_arg(arg_types.get(fmt_index)?).then_some(fmt_index)
     }
 
-    fn try_long_double_variadic_shim(
+    fn try_long_double_i32_shim(
         &mut self,
         op: &Op,
         callee_name: &str,

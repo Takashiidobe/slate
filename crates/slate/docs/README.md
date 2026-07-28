@@ -34,11 +34,12 @@ surface:
 ### Scalars, operators, and casts
 
 `int`/`char`/`short`/`long`/`long long` (signed and unsigned) by CIR width,
-`_Bool`/`bool`, `float`/`double`, `long double` (ABI-exact `#[repr(C, align(16))]`
-newtype, `f64`-precision arithmetic), IEEE binary128 via Clang's `__float128`
-spelling (native nightly Rust `f128`), and `float`/`double _Complex` (`#[repr(C)]`
-newtype, libgcc-backed `*`/`/`). The standard C23 `_Float128` spelling follows
-the same path when the configured CIR-enabled Clang accepts it. Full arithmetic
+`_Bool`/`bool`, `float`/`double`, `long double` (aligned, f64-precision internal
+representation with generated C ABI trampolines for supported libc calls),
+IEEE binary128 via Clang's `__float128` spelling (native nightly Rust `f128`),
+and `float`/`double _Complex` (`#[repr(C)]` newtype, libgcc-backed `*`/`/`). The
+standard C23 `_Float128` spelling follows the same path when the configured
+CIR-enabled Clang accepts it. Full arithmetic
 (`+ - * / %`), bitwise
 (`& | ^ ~ << >>`), logical (`&& || !`), comparisons, compound assignment,
 increment, unary negation, and explicit casts across all of the above. Integer
@@ -59,8 +60,8 @@ when the state graph is reducible enough (see [passes.md](passes.md)).
 
 ### Aggregates
 
-Structs and unions, including nested aggregates (structs of structs/arrays,
-arrays of structs), member/element access composed into a single Rust place
+Structs and unions, including GNU zero-sized empty structs and nested aggregates
+(structs of structs/arrays, arrays of structs), member/element access composed into a single Rust place
 (`b.data[i]`, `ps[i].x`), struct assignment via derived `Copy`, bitfields
 (per-field mask/sign-extend storage), and aggregate initializers (nested,
 partial with zero-filled trailing fields, and designated). Enum constants
