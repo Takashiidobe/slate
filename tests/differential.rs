@@ -348,6 +348,28 @@ fn translate_fixture(tmp: &Path, fixture: &str) -> String {
 }
 
 #[test]
+fn gnu_empty_struct_emits_zero_sized_rust_type() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-gnu-empty-struct");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let rust = translate_fixture(&tmp, "gnu_empty_struct");
+    assert!(rust.contains("#[repr(C)]\n#[derive(Clone, Copy)]\nstruct GNUEmpty {\n}"));
+    assert!(rust.contains("fn empty_size(value: GNUEmpty) -> u64"));
+    assert!(rust.contains("let mut value: GNUEmpty = GNUEmpty {  };"));
+}
+
+#[test]
+fn c23_long_double_libc_call_uses_c_abi_shim() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-c23-long-double");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let rust = translate_fixture(&tmp, "c23");
+    assert!(rust.contains("fn __slate_strfroml__pi8_u64_pi8_ld("));
+    assert!(rust.contains("__slate_strfroml__pi8_u64_pi8_ld("));
+    assert!(!rust.contains("unsafe { strfroml("));
+}
+
+#[test]
 fn pointer_comparisons_preserve_address_operands() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pointer-compare-address");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
