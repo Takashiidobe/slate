@@ -1,3 +1,4 @@
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AstPath, CountedLoopBound, CountedLoopIndexUse, CountedLoopStart, CountedLoopStep,
     CountedSliceLoopFact, FixupFacts, FunctionId, PathSegment, SliceLoopAccess,
@@ -7,48 +8,39 @@ use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, fact as trace_fact, function_path_location,
     path_fact, stmt_snippet, stmts_snippet,
 };
-use crate::rust_ast::{Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type, UnaryOp};
-
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    SliceLoop::new(&mut logger).fixup(program, facts)
-}
+use crate::rust_ast::{Expr, Ident, IndentStmt, RustValue, Stmt, Type, UnaryOp};
 
 pub(in crate::fixups) struct SliceLoop<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
+impl Fixup for SliceLoop<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        self.rewrite_body(body, &mut Vec::new())
+    }
+}
+
 impl<'a> SliceLoop<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
-        let mut changed = false;
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            let Item::Fn(f) = item else {
-                continue;
-            };
-            let Some(function) = facts.function_by_item_index(item_index) else {
-                continue;
-            };
-            changed |= self.rewrite_body(&mut f.body, function, facts, &mut Vec::new());
-        }
-        changed
-    }
-
-    fn rewrite_body(
-        &mut self,
-        body: &mut Vec<IndentStmt>,
+    pub(in crate::fixups) fn new(
         function: FunctionId,
-        facts: &FixupFacts,
-        path: &mut Vec<PathSegment>,
-    ) -> bool {
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
+    }
+
+    fn rewrite_body(&mut self, body: &mut Vec<IndentStmt>, path: &mut Vec<PathSegment>) -> bool {
         let mut changed = false;
         for (index, indent) in body.iter_mut().enumerate() {
             walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
                 walk::nested_body_vecs_mut_with_path(&mut indent.stmt, path, &mut |body, path| {
-                    changed |= self.rewrite_body(body, function, facts, path);
+                    changed |= self.rewrite_body(body, path);
                 });
             });
         }
@@ -56,10 +48,11 @@ impl<'a> SliceLoop<'a> {
         for index in (0..body.len().saturating_sub(1)).rev() {
             let mut loop_path = path.to_vec();
             loop_path.push(PathSegment::Stmt(index + 1));
-            let Some(fact) = loop_fact(function, facts, &AstPath(loop_path.clone())) else {
+            let Some(fact) = loop_fact(self.function, self.facts, &AstPath(loop_path.clone()))
+            else {
                 continue;
             };
-            let Some(replacement) = replacement_for_pair(&body[index..index + 2], fact, facts)
+            let Some(replacement) = replacement_for_pair(&body[index..index + 2], fact, self.facts)
             else {
                 continue;
             };
@@ -74,7 +67,7 @@ impl<'a> SliceLoop<'a> {
                 self.logger.rewrite(RewriteEvent {
                     pass: TracePass::SliceLoop,
                     kind: "rewrite_counted_loop_to_slice_iter".into(),
-                    location: function_path_location(facts, function, &loop_path),
+                    location: function_path_location(self.facts, self.function, &loop_path),
                     before: vec![stmts_snippet("counted_loop_pair", &before)],
                     after: vec![stmt_snippet("for_loop", &after)],
                     facts: vec![

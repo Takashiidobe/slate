@@ -5,6 +5,7 @@
 //! (0/1); the bitwise ops have no such identity requirement and fold to
 //! `.fold(init, |acc, x| acc OP *x)` instead, reusing the original init verbatim.
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::PathSegment;
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
@@ -12,44 +13,33 @@ use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, fact, named_path_location, path_fact,
     stmt_snippet, stmts_snippet,
 };
-use crate::rust_ast::{BinOp, Expr, IndentStmt, Item, Program, RustValue, Stmt, UnaryOp};
-
-pub(in crate::fixups) fn fixup(program: &mut Program) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    SliceReduce::new(&mut logger).fixup(program)
-}
+use crate::rust_ast::{BinOp, Expr, IndentStmt, RustValue, Stmt, UnaryOp};
 
 pub(in crate::fixups) struct SliceReduce<'a> {
+    function_name: String,
     logger: &'a mut dyn TraceLogger,
 }
 
+impl Fixup for SliceReduce<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        self.rewrite_body(body, &mut Vec::new())
+    }
+}
+
 impl<'a> SliceReduce<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
-        let mut changed = false;
-        for item in &mut program.items {
-            let Item::Fn(f) = item else {
-                continue;
-            };
-            changed |= self.rewrite_body(&mut f.body, &f.name, &mut Vec::new());
+    pub(in crate::fixups) fn new(function_name: String, logger: &'a mut dyn TraceLogger) -> Self {
+        Self {
+            function_name,
+            logger,
         }
-        changed
     }
 
-    fn rewrite_body(
-        &mut self,
-        body: &mut Vec<IndentStmt>,
-        function_name: &str,
-        path: &mut Vec<PathSegment>,
-    ) -> bool {
+    fn rewrite_body(&mut self, body: &mut Vec<IndentStmt>, path: &mut Vec<PathSegment>) -> bool {
         let mut changed = false;
         for (index, indent) in body.iter_mut().enumerate() {
             walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
                 walk::nested_body_vecs_mut_with_path(&mut indent.stmt, path, &mut |body, path| {
-                    changed |= self.rewrite_body(body, function_name, path);
+                    changed |= self.rewrite_body(body, path);
                 });
             });
         }
@@ -78,7 +68,7 @@ impl<'a> SliceReduce<'a> {
                 self.logger.rewrite(RewriteEvent {
                     pass: TracePass::SliceReduce,
                     kind: "rewrite_slice_reduction".into(),
-                    location: named_path_location(function_name, &reduce_path),
+                    location: named_path_location(&self.function_name, &reduce_path),
                     before: vec![stmts_snippet("accumulator_loop_pair", &before)],
                     after: vec![stmt_snippet("reduction", &after)],
                     facts,

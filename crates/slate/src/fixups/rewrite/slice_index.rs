@@ -1,68 +1,55 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment, PointerOffsetUnit};
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
-    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
 };
-use crate::rust_ast::{Expr, Ident, IndentStmt, Item, Prim, Program, Stmt, Type, UnaryOp};
-
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    SliceIndex::new(&mut logger).fixup(program, facts)
-}
+use crate::rust_ast::{Expr, Ident, IndentStmt, Prim, Stmt, Type, UnaryOp};
 
 pub(in crate::fixups) struct SliceIndex<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> SliceIndex<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
-        let before = self.logger.is_enabled().then(|| program.emit());
-        let changed = fixup_impl(program, facts);
+impl Fixup for SliceIndex<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        let plans = plans_for_function(self.facts, self.function);
+        if plans.is_empty() {
+            return false;
+        }
+        let before = self.logger.is_enabled().then(|| body.clone());
+        let mut changed = rewrite_body(body, &plans, &mut Vec::new());
+        changed |= prune_dead_fact_temps(body, &plans);
         if changed && let Some(before) = before {
             self.logger.rewrite(RewriteEvent {
                 pass: TracePass::SliceIndex,
                 kind: "rewrite_slice_pointer_indexes".into(),
-                location: TraceLocation::default(),
-                before: vec![TraceSnippet::new("program", before.trim_end())],
-                after: vec![TraceSnippet::new("program", program.emit().trim_end())],
-                facts: vec![fact(
-                    "planned_indexes",
-                    facts.slice_pointer_indexes.len().to_string(),
-                )],
+                location: function_path_location(self.facts, self.function, &[]),
+                before: vec![stmts_snippet("body", &before)],
+                after: vec![stmts_snippet("body", body)],
+                facts: vec![fact("planned_indexes", plans.len().to_string())],
             });
         }
         changed
     }
 }
 
-fn fixup_impl(program: &mut Program, facts: &FixupFacts) -> bool {
-    let plans = plans_by_function(facts);
-    if plans.is_empty() {
-        return false;
+impl<'a> SliceIndex<'a> {
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
     }
-
-    let mut changed = false;
-    for (item_index, item) in program.items.iter_mut().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        let Some(function_plans) = plans.get(&function) else {
-            continue;
-        };
-        changed |= rewrite_body(&mut f.body, function_plans, &mut Vec::new());
-        changed |= prune_dead_fact_temps(&mut f.body, function_plans);
-    }
-    changed
 }
 
 #[derive(Clone)]
@@ -75,10 +62,10 @@ struct Plan {
     mutable: bool,
 }
 
-fn plans_by_function(facts: &FixupFacts) -> BTreeMap<FunctionId, Vec<Plan>> {
-    let mut by_function = BTreeMap::new();
+fn plans_for_function(facts: &FixupFacts, function: FunctionId) -> Vec<Plan> {
+    let mut plans = Vec::new();
     for fact in &facts.slice_pointer_indexes {
-        if fact.unit != PointerOffsetUnit::Elements {
+        if fact.site.function != function || fact.unit != PointerOffsetUnit::Elements {
             continue;
         }
         let Some(view) = facts
@@ -96,19 +83,16 @@ fn plans_by_function(facts: &FixupFacts) -> BTreeMap<FunctionId, Vec<Plan>> {
         ) else {
             continue;
         };
-        by_function
-            .entry(fact.site.function)
-            .or_insert_with(Vec::new)
-            .push(Plan {
-                path: fact.site.path.clone(),
-                pointer_name: pointer_name.to_string(),
-                offset_name: offset_name.to_string(),
-                slice_name: slice_name.to_string(),
-                index_name: index_name.to_string(),
-                mutable: view.mutable,
-            });
+        plans.push(Plan {
+            path: fact.site.path.clone(),
+            pointer_name: pointer_name.to_string(),
+            offset_name: offset_name.to_string(),
+            slice_name: slice_name.to_string(),
+            index_name: index_name.to_string(),
+            mutable: view.mutable,
+        });
     }
-    by_function
+    plans
 }
 
 fn rewrite_body(body: &mut [IndentStmt], plans: &[Plan], path: &mut Vec<PathSegment>) -> bool {
