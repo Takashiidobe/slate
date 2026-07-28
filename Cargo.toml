@@ -18,6 +18,10 @@ name = "effects_regression"
 path = "tests/effects_regression.rs"
 test = false
 
-[profile.dev]
+[profile.test]
 opt-level = 3
+debug = false
+debug-assertions = false
 overflow-checks = false
+incremental = false
+codegen-units = 16

@@ -8325,7 +8325,7 @@ fn complex_prelude() -> Vec<Item> {
         Item::Struct(StructDef {
             attrs: vec![
                 RustAttr::Repr(vec![Repr::C]),
-                RustAttr::Derive(vec![Derive::Clone, Derive::Copy]),
+                RustAttr::Derive(vec![Derive::Clone, Derive::Copy, Derive::PartialEq]),
             ],
             vis: Visibility::Private,
             generics: vec![GenericParam {
