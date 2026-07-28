@@ -51,9 +51,34 @@ public:
   }
 };
 
+llvm::json::Array headerNames(const std::set<HeaderEvidence> &Headers) {
+  llvm::json::Array Out;
+  for (const HeaderEvidence &Header : Headers)
+    Out.push_back(Header.Written);
+  return Out;
+}
+
 class MacroDumpCallbacks : public PPCallbacks {
   SourceManager &SM;
   std::shared_ptr<ProvenanceState> State;
+
+  std::set<HeaderEvidence> headersFor(SourceLocation Loc) const {
+    std::set<HeaderEvidence> Headers;
+    Loc = SM.getSpellingLoc(Loc);
+    if (Loc.isInvalid())
+      return Headers;
+    FileID Current = SM.getFileID(Loc);
+    while (!Current.isInvalid()) {
+      if (auto File = SM.getFileEntryRefForID(Current))
+        if (const auto *Found = State->headers(File->getFileEntry()))
+          Headers.insert(Found->begin(), Found->end());
+      SourceLocation Include = SM.getIncludeLoc(Current);
+      if (Include.isInvalid())
+        break;
+      Current = SM.getFileID(SM.getExpansionLoc(Include));
+    }
+    return Headers;
+  }
 
 public:
   MacroDumpCallbacks(SourceManager &SM, std::shared_ptr<ProvenanceState> State)
@@ -69,6 +94,14 @@ public:
         {"file", SM.getFilename(Loc).str()},
         {"offset", static_cast<int64_t>(SM.getFileOffset(Loc))},
     };
+    if (const MacroInfo *Info = MD.getMacroInfo()) {
+      SourceLocation Definition = SM.getSpellingLoc(Info->getDefinitionLoc());
+      if (Definition.isValid()) {
+        Event["definition_file"] = SM.getFilename(Definition).str();
+        Event["definition_system"] = SM.isInSystemHeader(Definition);
+        Event["headers"] = headerNames(headersFor(Definition));
+      }
+    }
     llvm::errs() << "MACRO_EXPANSION " << llvm::json::Value(std::move(Event))
                  << "\n";
   }
@@ -96,13 +129,6 @@ public:
       State->recordTrustedHeader(*File, FileName);
   }
 };
-
-llvm::json::Array headerNames(const std::set<HeaderEvidence> &Headers) {
-  llvm::json::Array Out;
-  for (const HeaderEvidence &Header : Headers)
-    Out.push_back(Header.Written);
-  return Out;
-}
 
 llvm::json::Array headerDetails(const std::set<HeaderEvidence> &Headers) {
   llvm::json::Array Out;

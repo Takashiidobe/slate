@@ -203,6 +203,7 @@ pub enum Derive {
     Clone,
     Copy,
     PartialEq,
+    PartialOrd,
     Eq,
     Debug,
     Hash,

@@ -62,8 +62,14 @@ pub struct Function {
     pub raw: Option<Value>,
     pub layout_queries: Vec<LayoutQuery>,
     pub nonnull_static_params: BTreeSet<usize>,
-    pub macro_consts: Vec<String>,
+    pub macro_consts: Vec<MacroConst>,
     pub asm_gotos: Vec<AsmGoto>,
+}
+
+#[derive(Debug, Clone)]
+pub struct MacroConst {
+    pub name: String,
+    pub loc: Loc,
 }
 
 #[derive(Debug, Clone)]
@@ -244,8 +250,14 @@ struct CallFact {
 
 #[derive(Debug, Default)]
 struct PluginEvents {
-    macros: HashMap<usize, String>,
+    macros: HashMap<usize, MacroExpansion>,
     calls: HashMap<usize, CallFact>,
+}
+
+#[derive(Debug)]
+struct MacroExpansion {
+    name: String,
+    headers: BTreeSet<String>,
 }
 
 fn clang() -> String {
@@ -294,7 +306,21 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
             continue;
         };
         if kind == "macro" {
-            out.macros.insert(offset as usize, name.to_string());
+            let headers = event
+                .get("headers")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten()
+                .filter_map(Value::as_str)
+                .map(str::to_string)
+                .collect();
+            out.macros.insert(
+                offset as usize,
+                MacroExpansion {
+                    name: name.to_string(),
+                    headers,
+                },
+            );
             continue;
         }
         let canonical_type = event
@@ -510,7 +536,7 @@ fn collect_functions(
     node: &Value,
     source_file: &str,
     source_text: Option<&str>,
-    macro_events: &HashMap<usize, String>,
+    macro_events: &HashMap<usize, MacroExpansion>,
     out: &mut Vec<Function>,
 ) {
     if kind(node) == Some("FunctionDecl") && is_source_node(node, source_file) && has_body(node) {
@@ -711,7 +737,7 @@ fn enum_constant_value(node: &Value) -> Option<i64> {
 fn extract_function(
     node: &Value,
     source_text: Option<&str>,
-    macro_events: &HashMap<usize, String>,
+    macro_events: &HashMap<usize, MacroExpansion>,
 ) -> Option<Function> {
     let name = node.get("name")?.as_str()?.to_string();
     let fn_qual_type = qual_type(node).unwrap_or("int ()");
@@ -755,7 +781,7 @@ fn extract_function(
         raw: Some(node.clone()),
         layout_queries: collect_layout_queries(node, source_text),
         nonnull_static_params,
-        macro_consts: collect_macro_consts(node, macro_events),
+        macro_consts: collect_macro_consts(node, source_text, macro_events),
         asm_gotos: collect_asm_gotos(node, source_text),
     })
 }
@@ -961,27 +987,43 @@ fn split_asm_sections(text: &str, delimiter: char) -> Vec<&str> {
     sections
 }
 
-fn collect_macro_consts(node: &Value, macro_events: &HashMap<usize, String>) -> Vec<String> {
+fn collect_macro_consts(
+    node: &Value,
+    source_text: Option<&str>,
+    macro_events: &HashMap<usize, MacroExpansion>,
+) -> Vec<MacroConst> {
     let mut out = Vec::new();
-    collect_macro_consts_at(node, macro_events, &mut out);
+    if let Some(source) = source_text {
+        collect_macro_consts_at(node, source, macro_events, &mut out);
+    }
     out
 }
 
 fn collect_macro_consts_at(
     node: &Value,
-    macro_events: &HashMap<usize, String>,
-    out: &mut Vec<String>,
+    source: &str,
+    macro_events: &HashMap<usize, MacroExpansion>,
+    out: &mut Vec<MacroConst>,
 ) {
     if let (Some(begin), Some(end)) = (expansion_offset(node), expansion_end_offset(node))
         && begin == end
-        && let Some(name) = macro_events.get(&begin)
-        && crate::limits_macros::lookup(name).is_some()
+        && let Some(event) = macro_events.get(&begin)
+        && let Some(known) = crate::macros::lookup(&event.name)
+        && event.headers.contains(known.header)
+        && node
+            .get("value")
+            .and_then(Value::as_str)
+            .is_some_and(|value| known.source_value_matches(value))
+        && let Some(loc) = loc_from_offset(source, begin)
     {
-        out.push(name.clone());
+        out.push(MacroConst {
+            name: event.name.clone(),
+            loc,
+        });
         return;
     }
     for child in children(node) {
-        collect_macro_consts_at(child, macro_events, out);
+        collect_macro_consts_at(child, source, macro_events, out);
     }
 }
 

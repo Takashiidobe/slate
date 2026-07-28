@@ -1,6 +1,6 @@
 //! lower: combine the CIR Op-tree with the C AST oracle into Rust output.
 
-use crate::c_ast::{LayoutQuery, Loc, RecordKind, Unit};
+use crate::c_ast::{LayoutQuery, Loc, MacroConst, RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::function_identity::{CallBinding, FunctionIdentity};
@@ -609,7 +609,7 @@ struct Lowerer<'a> {
     generated_alloca_frames: Vec<StructDef>,
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     nonnull_static_params: BTreeMap<String, BTreeSet<usize>>,
-    macro_consts: BTreeMap<String, Vec<String>>,
+    macro_consts: BTreeMap<String, Vec<MacroConst>>,
     asm_gotos: BTreeMap<String, Vec<crate::c_ast::AsmGoto>>,
 }
 
@@ -641,7 +641,7 @@ struct FunctionLowerer<'a, 'b> {
     va_places: BTreeMap<String, String>,
     va_args_param: Option<String>,
     layout_queries: VecDeque<LayoutQuery>,
-    macro_consts: VecDeque<String>,
+    macro_consts: VecDeque<MacroConst>,
     macro_arith_values: BTreeMap<String, i128>,
     asm_outputs: BTreeMap<String, Vec<Expr>>,
     asm_gotos: VecDeque<crate::c_ast::AsmGoto>,
@@ -3094,14 +3094,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let value = if result_ty == Some("!cir.f128") {
             parse_cir_f128_expr(raw).unwrap_or_else(|| Expr::HexFloat("0.0f128".into()))
         } else if result_ty.is_some_and(is_long_double) {
-            let value = parse_cir_fp_expr(raw)
-                .or_else(|| parse_cir_int(raw).map(int_value_expr))
-                .unwrap_or(Expr::Value(RustValue::Float(0.0)));
-            Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-                args: vec![value],
-            }
+            self.next_long_double_macro_const_expr(op)
+                .unwrap_or_else(|| {
+                    let value = parse_cir_fp_expr(raw)
+                        .or_else(|| parse_cir_int(raw).map(int_value_expr))
+                        .unwrap_or(Expr::Value(RustValue::Float(0.0)));
+                    Expr::Call {
+                        binding: crate::function_identity::CallBinding::Generated,
+                        func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                        args: vec![value],
+                    }
+                })
         } else {
             parse_cir_scalar_expr(raw).unwrap_or(Expr::Value(RustValue::I64(0)))
         };
@@ -3127,13 +3130,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn next_macro_const_expr(&mut self, value: i128, result_ty: Option<&str>) -> Option<Expr> {
-        let name = self.macro_consts.front()?;
-        let known = crate::limits_macros::lookup(name)?;
-        if known.value != value {
+        let macro_const = self.macro_consts.front()?;
+        let known = crate::macros::lookup(&macro_const.name)?;
+        let crate::macros::MacroValue::Integer { source, rust_path } = known.value else {
+            return None;
+        };
+        if source != value {
             return None;
         }
         self.macro_consts.pop_front();
-        let mut expr = Expr::Var(known.rust_path.into());
+        let mut expr = Expr::Var(rust_path.into());
         if let Some(result_ty) = result_ty {
             expr = Expr::Cast {
                 expr: Box::new(expr),
@@ -3141,6 +3147,32 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             };
         }
         Some(expr)
+    }
+
+    fn next_long_double_macro_const_expr(&mut self, op: &Op) -> Option<Expr> {
+        let macro_const = self.macro_consts.front()?;
+        let known = crate::macros::lookup(&macro_const.name)?;
+        let crate::macros::MacroValue::LongDouble { rust_bits, .. } = known.value else {
+            return None;
+        };
+        if op
+            .loc
+            .as_deref()
+            .and_then(|raw| self.parent.resolve_loc(raw))
+            != Some(macro_const.loc)
+        {
+            return None;
+        }
+        self.macro_consts.pop_front();
+        Some(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
+            func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+            args: vec![Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Var("f64::from_bits".into())),
+                args: vec![Expr::Value(RustValue::I64(rust_bits as i64))],
+            }],
+        })
     }
 
     fn lower_complex_create(&mut self, op: &Op) {
@@ -8178,7 +8210,12 @@ fn long_double_prelude() -> Vec<Item> {
         Item::Struct(StructDef {
             attrs: vec![
                 RustAttr::Repr(vec![Repr::C, Repr::Align(16)]),
-                RustAttr::Derive(vec![Derive::Clone, Derive::Copy, Derive::PartialEq]),
+                RustAttr::Derive(vec![
+                    Derive::Clone,
+                    Derive::Copy,
+                    Derive::PartialEq,
+                    Derive::PartialOrd,
+                ]),
             ],
             vis: Visibility::Private,
             generics: vec![],

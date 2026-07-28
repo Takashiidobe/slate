@@ -412,6 +412,7 @@ impl<W: Write> Codegen<W> {
                         Derive::Clone => "Clone",
                         Derive::Copy => "Copy",
                         Derive::PartialEq => "PartialEq",
+                        Derive::PartialOrd => "PartialOrd",
                         Derive::Eq => "Eq",
                         Derive::Debug => "Debug",
                         Derive::Hash => "Hash",
