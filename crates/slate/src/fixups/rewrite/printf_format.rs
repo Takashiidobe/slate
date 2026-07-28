@@ -11,58 +11,62 @@ use crate::rust_ast::{
     Block, Expr, ExternDecl, ExternFnDecl, FnParam, IndentStmt, Item, Prim, Program, Stmt, Type,
 };
 
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    PrintfFormat::new(&mut logger).fixup(program, facts);
-}
-
 pub(in crate::fixups) struct PrintfFormat<'a> {
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
 impl<'a> PrintfFormat<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+    pub(in crate::fixups) fn new(facts: &'a FixupFacts, logger: &'a mut dyn TraceLogger) -> Self {
+        Self { facts, logger }
     }
 
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) {
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
         let before = self.logger.is_enabled().then(|| program.emit());
-        fixup_impl(program, facts);
-        if let Some(before) = before {
-            let after = program.emit();
-            if before != after {
-                self.logger.rewrite(RewriteEvent {
-                    pass: TracePass::PrintfFormat,
-                    kind: "rewrite_printf_format_calls".into(),
-                    location: TraceLocation::default(),
-                    before: vec![TraceSnippet::new("program", before.trim_end())],
-                    after: vec![TraceSnippet::new("program", after.trim_end())],
-                    facts: vec![fact("printf_calls", facts.printf_calls.len().to_string())],
-                });
-            }
+        let changed = fixup_impl(program, self.facts);
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::PrintfFormat,
+                kind: "rewrite_printf_format_calls".into(),
+                location: TraceLocation::default(),
+                before: vec![TraceSnippet::new("program", before.trim_end())],
+                after: vec![TraceSnippet::new("program", program.emit().trim_end())],
+                facts: vec![fact(
+                    "printf_calls",
+                    self.facts.printf_calls.len().to_string(),
+                )],
+            });
         }
+        changed
     }
 }
 
-fn fixup_impl(program: &mut Program, facts: &FixupFacts) {
+fn fixup_impl(program: &mut Program, facts: &FixupFacts) -> bool {
+    let mut changed = false;
     for (item_index, item) in program.items.iter_mut().enumerate() {
         if let Item::Fn(f) = item
             && let Some(function) = facts.function_by_item_index(item_index)
         {
-            fixup_body(&mut f.body, function, facts);
+            fixup_body(&mut f.body, function, facts, &mut changed);
         }
     }
     let has_remaining_raw_calls = program_has_printf_call(program);
     if has_remaining_raw_calls {
-        ensure_stdout_and_fflush_externs(program);
-        wrap_remaining_raw_printf_calls(program);
+        changed |= ensure_stdout_and_fflush_externs(program);
+        changed |= wrap_remaining_raw_printf_calls(program);
     } else {
-        prune_printf_extern(program);
+        changed |= prune_printf_extern(program);
     }
+    changed
 }
 
-fn fixup_body(body: &mut [IndentStmt], function: FunctionId, facts: &FixupFacts) {
-    fixup_body_with_env(body, function, facts, &mut Vec::new());
+fn fixup_body(
+    body: &mut [IndentStmt],
+    function: FunctionId,
+    facts: &FixupFacts,
+    changed: &mut bool,
+) {
+    fixup_body_with_env(body, function, facts, &mut Vec::new(), changed);
 }
 
 fn fixup_body_with_env(
@@ -70,10 +74,11 @@ fn fixup_body_with_env(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    changed: &mut bool,
 ) {
     for (index, indent) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            fixup_stmt(&mut indent.stmt, function, facts, path);
+            fixup_stmt(&mut indent.stmt, function, facts, path, changed);
         });
     }
 }
@@ -83,11 +88,13 @@ fn fixup_stmt(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    changed: &mut bool,
 ) {
     match stmt {
         Stmt::Expr(expr) => {
             if let Some(replacement) = rewrite_printf_expr(expr, function, facts, path) {
                 *expr = replacement;
+                *changed = true;
             }
         }
         Stmt::Let {
@@ -98,6 +105,7 @@ fn fixup_stmt(
         } if unused_local(function, facts, name, path) => {
             if let Some(replacement) = rewrite_printf_expr(init, function, facts, path) {
                 *stmt = Stmt::Expr(replacement);
+                *changed = true;
             }
         }
         Stmt::If {
@@ -111,51 +119,51 @@ fn fixup_stmt(
             ..
         } => {
             walk::with_path_segment(path, PathSegment::Then, |path| {
-                fixup_body_with_env(then_body, function, facts, path);
+                fixup_body_with_env(then_body, function, facts, path, changed);
             });
             walk::with_path_segment(path, PathSegment::Else, |path| {
-                fixup_body_with_env(else_body, function, facts, path);
+                fixup_body_with_env(else_body, function, facts, path, changed);
             });
         }
         Stmt::Loop { body, .. } => {
             walk::with_path_segment(path, PathSegment::LoopBody, |path| {
-                fixup_body_with_env(body, function, facts, path);
+                fixup_body_with_env(body, function, facts, path, changed);
             });
         }
         Stmt::For { body, .. } => {
             walk::with_path_segment(path, PathSegment::ForBody, |path| {
-                fixup_body_with_env(body, function, facts, path);
+                fixup_body_with_env(body, function, facts, path, changed);
             });
         }
         Stmt::Scope { body } => {
             walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
-                fixup_body_with_env(body, function, facts, path);
+                fixup_body_with_env(body, function, facts, path, changed);
             });
         }
         Stmt::LabeledBlock { body, .. } => {
             walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
-                fixup_body_with_env(body, function, facts, path);
+                fixup_body_with_env(body, function, facts, path, changed);
             });
         }
         Stmt::Unsafe { body } => {
             walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
-                fixup_block(body, function, facts, path);
+                fixup_block(body, function, facts, path, changed);
             });
         }
         Stmt::While { body, .. } => {
             walk::with_path_segment(path, PathSegment::WhileBody, |path| {
-                fixup_block(body, function, facts, path);
+                fixup_block(body, function, facts, path, changed);
             });
         }
         Stmt::Block(body) => {
             walk::with_path_segment(path, PathSegment::BlockBody, |path| {
-                fixup_block(body, function, facts, path);
+                fixup_block(body, function, facts, path, changed);
             });
         }
         Stmt::Match { arms, .. } => {
             for (index, arm) in arms.iter_mut().enumerate() {
                 walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
-                    fixup_body_with_env(&mut arm.body, function, facts, path);
+                    fixup_body_with_env(&mut arm.body, function, facts, path, changed);
                 });
             }
         }
@@ -168,14 +176,16 @@ fn fixup_block(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    changed: &mut bool,
 ) {
-    fixup_body_with_env(&mut block.stmts, function, facts, path);
+    fixup_body_with_env(&mut block.stmts, function, facts, path, changed);
     if let Some(tail) = &mut block.tail
         && let Some(replacement) = walk::with_path_segment(path, PathSegment::BlockTail, |path| {
             rewrite_printf_expr(tail, function, facts, path)
         })
     {
         **tail = replacement;
+        *changed = true;
     }
 }
 
@@ -1606,7 +1616,7 @@ fn pad_general_body(body: String, width: usize, left: bool, zero: bool) -> Strin
     format!("{}{body}", " ".repeat(pad_len))
 }
 
-fn ensure_stdout_and_fflush_externs(program: &mut Program) {
+fn ensure_stdout_and_fflush_externs(program: &mut Program) -> bool {
     let has_stdout = program.items.iter().any(|item| {
         matches!(item, Item::ExternBlock { decls, .. } if decls.iter().any(|decl| matches!(decl, ExternDecl::Static { name, .. } if name == "stdout")))
     });
@@ -1614,7 +1624,7 @@ fn ensure_stdout_and_fflush_externs(program: &mut Program) {
         matches!(item, Item::ExternBlock { decls, .. } if decls.iter().any(|decl| matches!(decl, ExternDecl::Fn(f) if f.name == "fflush")))
     });
     if has_stdout && has_fflush {
-        return;
+        return false;
     }
     let mut new_decls = Vec::new();
     if !has_stdout {
@@ -1638,6 +1648,7 @@ fn ensure_stdout_and_fflush_externs(program: &mut Program) {
             },
         );
     }
+    true
 }
 
 fn stdout_static_decl() -> ExternDecl {
@@ -1664,20 +1675,23 @@ fn fflush_fn_decl() -> ExternDecl {
     })
 }
 
-fn wrap_remaining_raw_printf_calls(program: &mut Program) {
+fn wrap_remaining_raw_printf_calls(program: &mut Program) -> bool {
+    let mut changed = false;
     for item in &mut program.items {
         if let Item::Fn(f) = item {
-            wrap_raw_printf_in_body(&mut f.body);
+            changed |= wrap_raw_printf_in_body(&mut f.body);
         }
     }
+    changed
 }
 
-fn wrap_raw_printf_in_body(body: &mut Vec<IndentStmt>) {
+fn wrap_raw_printf_in_body(body: &mut Vec<IndentStmt>) -> bool {
+    let mut changed = false;
     let mut index = 0;
     while index < body.len() {
         let mut path = Vec::new();
         walk::nested_body_vecs_mut_with_path(&mut body[index].stmt, &mut path, &mut |body, _| {
-            wrap_raw_printf_in_body(body);
+            changed |= wrap_raw_printf_in_body(body);
         });
         if is_raw_printf_call_stmt(&body[index].stmt) {
             let depth = body[index].depth;
@@ -1695,11 +1709,13 @@ fn wrap_raw_printf_in_body(body: &mut Vec<IndentStmt>) {
                     stmt: flush_before_stmt(),
                 },
             );
+            changed = true;
             index += 3;
         } else {
             index += 1;
         }
     }
+    changed
 }
 
 fn is_raw_printf_call_stmt(stmt: &Stmt) -> bool {
@@ -1745,7 +1761,16 @@ fn fflush_after_stmt() -> Stmt {
     })))
 }
 
-fn prune_printf_extern(program: &mut Program) {
+fn prune_printf_extern(program: &mut Program) -> bool {
+    let before_items = program.items.len();
+    let before_decls = program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            Item::ExternBlock { decls, .. } => Some(decls.len()),
+            _ => None,
+        })
+        .sum::<usize>();
     program.items.retain_mut(|item| match item {
         Item::ExternBlock { decls, .. } => {
             decls.retain(|decl| {
@@ -1755,6 +1780,15 @@ fn prune_printf_extern(program: &mut Program) {
         }
         _ => true,
     });
+    let after_decls = program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            Item::ExternBlock { decls, .. } => Some(decls.len()),
+            _ => None,
+        })
+        .sum::<usize>();
+    program.items.len() != before_items || after_decls != before_decls
 }
 
 fn program_has_printf_call(program: &Program) -> bool {

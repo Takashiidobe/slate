@@ -380,76 +380,145 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::RemoveMut, {
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-            {
-                rewrite::remove_mut::RemoveMut::new(logger).fixup(f, function, &facts);
-            }
-        }
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            rewrite::remove_mut::RemoveMut::new(function, &facts, logger).fixup(f)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::StringCopy, {
-        rewrite::string_copy::StringCopy::new(logger).fixup(&mut program, &facts);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::string_copy::StringCopy::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::StringParams, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
             rewrite::string_params::StringParams::new(facts, logger).fixup(program)
         });
     });
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::RemoveMut, {
-        remove_mut(&mut program, logger);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            rewrite::remove_mut::RemoveMut::new(function, &facts, logger).fixup(f)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::StringLibc, {
-        rewrite::string_libc::StringLibc::new(logger).fixup(&mut program, &facts);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::string_libc::StringLibc::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
+        runtime::ensure_numeric_parse(&mut program);
     });
     step!(program, Pass::SortSearch, {
-        rewrite::sort_search::SortSearch::new(logger).fixup(&mut program);
+        run_once_program(&mut program, |program| {
+            rewrite::sort_search::SortSearch::new(logger).fixup(program)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::HeapOwnership, {
-        rewrite::heap_ownership::HeapOwnership::new(logger).fixup(&mut program, &facts);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::heap_ownership::HeapOwnership::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::DeadLocals, {
-        dead_locals_to_fixpoint(&mut program, logger);
+        to_fixpoint_items_with_facts(
+            &mut program,
+            FixpointLimit::Unlimited,
+            |item_index, f, facts| {
+                let Some(function) = facts.function_by_item_index(item_index) else {
+                    return false;
+                };
+                let mut fixup = DeadLocals::new(Pass::DeadLocals, function, facts, logger);
+                run_once(&mut f.body, &mut fixup)
+            },
+        );
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::RemoveMut, {
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-            {
-                rewrite::remove_mut::RemoveMut::new(logger).fixup(f, function, &facts);
-            }
-        }
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            rewrite::remove_mut::RemoveMut::new(function, &facts, logger).fixup(f)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::PrintfFormat, {
-        rewrite::printf_format::PrintfFormat::new(logger).fixup(&mut program, &facts);
+        run_once_program(&mut program, |program| {
+            rewrite::printf_format::PrintfFormat::new(&facts, logger).fixup(program)
+        });
     });
     step!(program, Pass::StringParams, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
             rewrite::string_params::StringParams::new(facts, logger).fixup(program)
         });
     });
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::RemoveMut, {
-        remove_mut(&mut program, logger);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            rewrite::remove_mut::RemoveMut::new(function, &facts, logger).fixup(f)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::StringLibc, {
-        rewrite::string_libc::StringLibc::new(logger).fixup(&mut program, &facts);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::string_libc::StringLibc::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
+        runtime::ensure_numeric_parse(&mut program);
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::CStrings, {
-        rewrite::c_strings::CStrings::new(logger).fixup(&mut program, &facts);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::c_strings::CStrings::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::Stdio, {
-        rewrite::stdio::Stdio::new(logger).fixup(&mut program, &facts);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::stdio::Stdio::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::MemchrPreludeFixupCalls, {
-        rewrite::memchr_prelude::MemchrPrelude::new(logger).fixup_calls(&mut program, &facts);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup =
+                rewrite::memchr_prelude::MemchrPreludeCalls::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::NullablePointer, {
         loop {
@@ -493,7 +562,17 @@ fn apply_with_logger(
         ptr_copy_to_fixpoint(&mut program, logger);
     });
     step!(program, Pass::DeadLocals, {
-        dead_locals_to_fixpoint(&mut program, logger);
+        to_fixpoint_items_with_facts(
+            &mut program,
+            FixpointLimit::Unlimited,
+            |item_index, f, facts| {
+                let Some(function) = facts.function_by_item_index(item_index) else {
+                    return false;
+                };
+                let mut fixup = DeadLocals::new(Pass::DeadLocals, function, facts, logger);
+                run_once(&mut f.body, &mut fixup)
+            },
+        );
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::ArrayElementPointerOrigin, {
@@ -545,8 +624,14 @@ fn apply_with_logger(
             }
         }
     });
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::RemoveMut, {
-        remove_mut(&mut program, logger);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            rewrite::remove_mut::RemoveMut::new(function, &facts, logger).fixup(f)
+        });
     });
     step!(program, Pass::VarAliases, {
         inline_var_aliases_to_fixpoint(&mut program, logger);
@@ -730,10 +815,9 @@ fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceL
                     logger,
                 )
                 .fixup(&mut f.body);
-                if let Some(function) = facts.function_by_item_index(item_index)
-                    && DeadLocals::new(pass, logger).fixup(&mut f.body, function, &facts)
-                {
-                    changed |= true;
+                if let Some(function) = facts.function_by_item_index(item_index) {
+                    let mut fixup = DeadLocals::new(pass, function, &facts, logger);
+                    changed |= run_once(&mut f.body, &mut fixup);
                 }
             }
         }
@@ -741,33 +825,6 @@ fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceL
             break;
         }
     }
-}
-
-fn dead_locals_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
-    loop {
-        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program);
-        let mut changed = false;
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-                && run_dead_locals_pass(&mut f.body, function, &facts, logger)
-            {
-                changed = true;
-            }
-        }
-        if !changed {
-            break;
-        }
-    }
-}
-
-fn run_dead_locals_pass(
-    body: &mut Vec<IndentStmt>,
-    function: facts::FunctionId,
-    facts: &facts::FixupFacts,
-    logger: &mut impl TraceLogger,
-) -> bool {
-    DeadLocals::new(Pass::DeadLocals, logger).fixup(body, function, facts)
 }
 
 fn inline_temps_to_fixpoint(
@@ -790,16 +847,5 @@ fn inline_temp_fixpoint_limit(program: &Program) -> FixpointLimit {
         FixpointLimit::Rounds(5)
     } else {
         FixpointLimit::Unlimited
-    }
-}
-
-fn remove_mut(program: &mut Program, logger: &mut impl TraceLogger) {
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(program);
-    for (item_index, item) in program.items.iter_mut().enumerate() {
-        if let Item::Fn(f) = item
-            && let Some(function) = facts.function_by_item_index(item_index)
-        {
-            rewrite::remove_mut::RemoveMut::new(logger).fixup(f, function, &facts);
-        }
     }
 }

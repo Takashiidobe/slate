@@ -1,55 +1,58 @@
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AstPath, FixupFacts, FunctionId, PathSegment, StringBufferProvenance, StringCopyRewrite,
     StringRecoveryCandidate,
 };
 use crate::fixups::trace::{
-    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
 };
-use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
+use crate::rust_ast::{Block, Expr, IndentStmt, Stmt, Type};
 use std::collections::BTreeSet;
 
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    StringCopy::new(&mut logger).fixup(program, facts);
-}
-
 pub(in crate::fixups) struct StringCopy<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> StringCopy<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) {
-        let before = self.logger.is_enabled().then(|| program.emit());
-        fixup_impl(program, facts);
-        if let Some(before) = before {
-            let after = program.emit();
-            if before != after {
-                self.logger.rewrite(RewriteEvent {
-                    pass: TracePass::StringCopy,
-                    kind: "rewrite_string_copy_idioms".into(),
-                    location: TraceLocation::default(),
-                    before: vec![TraceSnippet::new("program", before.trim_end())],
-                    after: vec![TraceSnippet::new("program", after.trim_end())],
-                    facts: vec![fact(
-                        "string_copy_rewrites",
-                        facts.string_copy_rewrites.len().to_string(),
-                    )],
-                });
-            }
+impl Fixup for StringCopy<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        let before = self.logger.is_enabled().then(|| body.clone());
+        let mut changed = false;
+        fixup_body_at(
+            body,
+            self.function,
+            self.facts,
+            &mut Vec::new(),
+            &mut changed,
+        );
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::StringCopy,
+                kind: "rewrite_string_copy_idioms".into(),
+                location: function_path_location(self.facts, self.function, &[]),
+                before: vec![stmts_snippet("body", &before)],
+                after: vec![stmts_snippet("body", body)],
+                facts: vec![fact(
+                    "string_copy_rewrites",
+                    self.facts.string_copy_rewrites.len().to_string(),
+                )],
+            });
         }
+        changed
     }
 }
 
-fn fixup_impl(program: &mut Program, facts: &FixupFacts) {
-    for (item_index, item) in program.items.iter_mut().enumerate() {
-        if let Item::Fn(f) = item
-            && let Some(function) = facts.function_by_item_index(item_index)
-        {
-            fixup_body(&mut f.body, function, facts);
+impl<'a> StringCopy<'a> {
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
         }
     }
 }
@@ -60,17 +63,14 @@ struct Candidate {
     remove_index: Option<usize>,
 }
 
-fn fixup_body(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFacts) {
-    fixup_body_at(body, function, facts, &mut Vec::new());
-}
-
 fn fixup_body_at(
     body: &mut Vec<IndentStmt>,
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    changed: &mut bool,
 ) {
-    fixup_nested(body, function, facts, path);
+    fixup_nested(body, function, facts, path, changed);
     let liftable = liftable_names(body, function, facts, path);
     let mut remove = Vec::new();
     for i in 0..body.len() {
@@ -85,13 +85,15 @@ fn fixup_body_at(
         }
         *ty = Some(Type::Custom("String".into()));
         *init = Some(to_owned(candidate.init));
+        *changed = true;
         if let Some(remove_index) = candidate.remove_index {
             remove.push(remove_index);
         }
     }
-    rewrite_body(body, function, facts, path, &liftable);
+    rewrite_body(body, function, facts, path, &liftable, changed);
     for i in remove.into_iter().rev() {
         body.remove(i);
+        *changed = true;
     }
 }
 
@@ -185,6 +187,7 @@ fn fixup_nested(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    changed: &mut bool,
 ) {
     for (index, indent) in body.iter_mut().enumerate() {
         crate::fixups::support::walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
@@ -203,31 +206,31 @@ fn fixup_nested(
                         path,
                         PathSegment::Then,
                         |path| {
-                            fixup_body_at(then_body, function, facts, path);
+                            fixup_body_at(then_body, function, facts, path, changed);
                         },
                     );
                     crate::fixups::support::walk::with_path_segment(
                         path,
                         PathSegment::Else,
                         |path| {
-                            fixup_body_at(else_body, function, facts, path);
+                            fixup_body_at(else_body, function, facts, path, changed);
                         },
                     );
                 }
                 Stmt::Loop { body, .. }
                 | Stmt::Scope { body }
                 | Stmt::LabeledBlock { body, .. } => {
-                    fixup_body_at(body, function, facts, path);
+                    fixup_body_at(body, function, facts, path, changed);
                 }
                 Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-                    fixup_body_at(&mut body.stmts, function, facts, path);
+                    fixup_body_at(&mut body.stmts, function, facts, path, changed);
                 }
                 Stmt::Match { arms, .. } => {
                     for (arm_index, arm) in arms.iter_mut().enumerate() {
                         crate::fixups::support::walk::with_path_segment(
                             path,
                             PathSegment::MatchArm(arm_index),
-                            |path| fixup_body_at(&mut arm.body, function, facts, path),
+                            |path| fixup_body_at(&mut arm.body, function, facts, path, changed),
                         );
                     }
                 }
@@ -243,10 +246,11 @@ fn rewrite_body(
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
     liftable: &BTreeSet<String>,
+    changed: &mut bool,
 ) {
     for (index, indent) in body.iter_mut().enumerate() {
         crate::fixups::support::walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            rewrite_stmt(&mut indent.stmt, function, facts, path, liftable);
+            rewrite_stmt(&mut indent.stmt, function, facts, path, liftable, changed);
         });
     }
 }
@@ -257,35 +261,39 @@ fn rewrite_stmt(
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
     liftable: &BTreeSet<String>,
+    changed: &mut bool,
 ) {
     if let Stmt::Expr(_expr) = stmt
         && let Some(replacement) = copy_replacement(function, facts, &AstPath(path.to_vec()))
     {
         *stmt = replacement;
+        *changed = true;
         return;
     }
     match stmt {
         Stmt::Let { init, .. } => {
             if let Some(init) = init {
-                rewrite_expr_pointer_views(init, liftable);
+                rewrite_expr_pointer_views(init, liftable, changed);
             }
         }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => rewrite_expr_pointer_views(expr, liftable),
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
+            rewrite_expr_pointer_views(expr, liftable, changed)
+        }
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            rewrite_expr_pointer_views(target, liftable);
-            rewrite_expr_pointer_views(value, liftable);
+            rewrite_expr_pointer_views(target, liftable, changed);
+            rewrite_expr_pointer_views(value, liftable, changed);
         }
         Stmt::If {
             cond,
             then_body,
             else_body,
         } => {
-            rewrite_expr_pointer_views(cond, liftable);
+            rewrite_expr_pointer_views(cond, liftable, changed);
             crate::fixups::support::walk::with_path_segment(path, PathSegment::Then, |path| {
-                rewrite_body(then_body, function, facts, path, liftable);
+                rewrite_body(then_body, function, facts, path, liftable, changed);
             });
             crate::fixups::support::walk::with_path_segment(path, PathSegment::Else, |path| {
-                rewrite_body(else_body, function, facts, path, liftable);
+                rewrite_body(else_body, function, facts, path, liftable, changed);
             });
         }
         Stmt::LetIf {
@@ -296,37 +304,37 @@ fn rewrite_stmt(
             else_value,
             ..
         } => {
-            rewrite_expr_pointer_views(cond, liftable);
+            rewrite_expr_pointer_views(cond, liftable, changed);
             crate::fixups::support::walk::with_path_segment(path, PathSegment::Then, |path| {
-                rewrite_body(then_body, function, facts, path, liftable);
+                rewrite_body(then_body, function, facts, path, liftable, changed);
             });
-            rewrite_expr_pointer_views(then_value, liftable);
+            rewrite_expr_pointer_views(then_value, liftable, changed);
             crate::fixups::support::walk::with_path_segment(path, PathSegment::Else, |path| {
-                rewrite_body(else_body, function, facts, path, liftable);
+                rewrite_body(else_body, function, facts, path, liftable, changed);
             });
-            rewrite_expr_pointer_views(else_value, liftable);
+            rewrite_expr_pointer_views(else_value, liftable, changed);
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            rewrite_body(body, function, facts, path, liftable);
+            rewrite_body(body, function, facts, path, liftable, changed);
         }
         Stmt::For { iter, body, .. } => {
-            rewrite_expr_pointer_views(iter, liftable);
-            rewrite_body(body, function, facts, path, liftable);
+            rewrite_expr_pointer_views(iter, liftable, changed);
+            rewrite_body(body, function, facts, path, liftable, changed);
         }
         Stmt::While { cond, body } => {
-            rewrite_expr_pointer_views(cond, liftable);
-            rewrite_block_pointer_views(body, function, facts, path, liftable);
+            rewrite_expr_pointer_views(cond, liftable, changed);
+            rewrite_block_pointer_views(body, function, facts, path, liftable, changed);
         }
         Stmt::Block(body) | Stmt::Unsafe { body } => {
-            rewrite_block_pointer_views(body, function, facts, path, liftable)
+            rewrite_block_pointer_views(body, function, facts, path, liftable, changed)
         }
         Stmt::Match { expr, arms } => {
-            rewrite_expr_pointer_views(expr, liftable);
+            rewrite_expr_pointer_views(expr, liftable, changed);
             for (arm_index, arm) in arms.iter_mut().enumerate() {
                 crate::fixups::support::walk::with_path_segment(
                     path,
                     PathSegment::MatchArm(arm_index),
-                    |path| rewrite_body(&mut arm.body, function, facts, path, liftable),
+                    |path| rewrite_body(&mut arm.body, function, facts, path, liftable, changed),
                 );
             }
         }
@@ -340,18 +348,20 @@ fn rewrite_block_pointer_views(
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
     liftable: &BTreeSet<String>,
+    changed: &mut bool,
 ) {
-    rewrite_body(&mut block.stmts, function, facts, path, liftable);
+    rewrite_body(&mut block.stmts, function, facts, path, liftable, changed);
     if let Some(tail) = &mut block.tail {
-        rewrite_expr_pointer_views(tail, liftable);
+        rewrite_expr_pointer_views(tail, liftable, changed);
     }
 }
 
-fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>) {
+fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>, changed: &mut bool) {
     if let Some(source) = pointer_view_source(expr)
         && liftable.contains(source)
     {
         *expr = Expr::Var(source.into());
+        *changed = true;
         return;
     }
     match expr {
@@ -359,69 +369,69 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>) {
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => rewrite_expr_pointer_views(expr, liftable),
+        | Expr::Transmute { expr, .. } => rewrite_expr_pointer_views(expr, liftable, changed),
         Expr::Binary { lhs, rhs, .. } => {
-            rewrite_expr_pointer_views(lhs, liftable);
-            rewrite_expr_pointer_views(rhs, liftable);
+            rewrite_expr_pointer_views(lhs, liftable, changed);
+            rewrite_expr_pointer_views(rhs, liftable, changed);
         }
         Expr::Range { start, end } => {
-            rewrite_expr_pointer_views(start, liftable);
-            rewrite_expr_pointer_views(end, liftable);
+            rewrite_expr_pointer_views(start, liftable, changed);
+            rewrite_expr_pointer_views(end, liftable, changed);
         }
         Expr::Call { func, args, .. } => {
-            rewrite_expr_pointer_views(func, liftable);
+            rewrite_expr_pointer_views(func, liftable, changed);
             for arg in args {
-                rewrite_expr_pointer_views(arg, liftable);
+                rewrite_expr_pointer_views(arg, liftable, changed);
             }
         }
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            rewrite_expr_pointer_views(recv, liftable);
+            rewrite_expr_pointer_views(recv, liftable, changed);
             for arg in args {
-                rewrite_expr_pointer_views(arg, liftable);
+                rewrite_expr_pointer_views(arg, liftable, changed);
             }
         }
         Expr::Field { base, .. }
         | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => rewrite_expr_pointer_views(base, liftable),
+        | Expr::ArrayPtr { array: base, .. } => rewrite_expr_pointer_views(base, liftable, changed),
         Expr::Index { base, index } => {
-            rewrite_expr_pointer_views(base, liftable);
-            rewrite_expr_pointer_views(index, liftable);
+            rewrite_expr_pointer_views(base, liftable, changed);
+            rewrite_expr_pointer_views(index, liftable, changed);
         }
         Expr::StructLit { fields, .. } => {
             for (_, value) in fields {
-                rewrite_expr_pointer_views(value, liftable);
+                rewrite_expr_pointer_views(value, liftable, changed);
             }
         }
         Expr::TupleStructLit { fields, .. } => {
             for value in fields {
-                rewrite_expr_pointer_views(value, liftable);
+                rewrite_expr_pointer_views(value, liftable, changed);
             }
         }
         Expr::ArrayLit(elems) => {
             for elem in elems {
-                rewrite_expr_pointer_views(elem, liftable);
+                rewrite_expr_pointer_views(elem, liftable, changed);
             }
         }
-        Expr::ArrayRepeat { elem, .. } => rewrite_expr_pointer_views(elem, liftable),
+        Expr::ArrayRepeat { elem, .. } => rewrite_expr_pointer_views(elem, liftable, changed),
         Expr::VecLit(elems) => {
             for elem in elems {
-                rewrite_expr_pointer_views(elem, liftable);
+                rewrite_expr_pointer_views(elem, liftable, changed);
             }
         }
         Expr::VecRepeat { elem, len } => {
-            rewrite_expr_pointer_views(elem, liftable);
-            rewrite_expr_pointer_views(len, liftable);
+            rewrite_expr_pointer_views(elem, liftable, changed);
+            rewrite_expr_pointer_views(len, liftable, changed);
         }
         Expr::Macro { args, .. } => {
             for arg in args {
-                rewrite_expr_pointer_views(arg, liftable);
+                rewrite_expr_pointer_views(arg, liftable, changed);
             }
         }
-        Expr::Closure { body, .. } => rewrite_expr_pointer_views(body, liftable),
+        Expr::Closure { body, .. } => rewrite_expr_pointer_views(body, liftable, changed),
         Expr::Match { expr, arms } => {
-            rewrite_expr_pointer_views(expr, liftable);
+            rewrite_expr_pointer_views(expr, liftable, changed);
             for arm in arms {
-                rewrite_expr_pointer_views(&mut arm.value, liftable);
+                rewrite_expr_pointer_views(&mut arm.value, liftable, changed);
             }
         }
         Expr::If {
@@ -429,43 +439,43 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>) {
             then_expr,
             else_expr,
         } => {
-            rewrite_expr_pointer_views(cond, liftable);
-            rewrite_expr_pointer_views(then_expr, liftable);
-            rewrite_expr_pointer_views(else_expr, liftable);
+            rewrite_expr_pointer_views(cond, liftable, changed);
+            rewrite_expr_pointer_views(then_expr, liftable, changed);
+            rewrite_expr_pointer_views(else_expr, liftable, changed);
         }
         Expr::Block(block) | Expr::Unsafe(block) => {
-            rewrite_block_expr_pointer_views(block, liftable)
+            rewrite_block_expr_pointer_views(block, liftable, changed)
         }
         Expr::CopyNonoverlapping { src, dst, .. } => {
-            rewrite_expr_pointer_views(src, liftable);
-            rewrite_expr_pointer_views(dst, liftable);
+            rewrite_expr_pointer_views(src, liftable, changed);
+            rewrite_expr_pointer_views(dst, liftable, changed);
         }
         Expr::PtrCopy {
             src, dst, count, ..
         } => {
-            rewrite_expr_pointer_views(src, liftable);
-            rewrite_expr_pointer_views(dst, liftable);
-            rewrite_expr_pointer_views(count, liftable);
+            rewrite_expr_pointer_views(src, liftable, changed);
+            rewrite_expr_pointer_views(dst, liftable, changed);
+            rewrite_expr_pointer_views(count, liftable, changed);
         }
         Expr::WriteBytes { dst, val, count } => {
-            rewrite_expr_pointer_views(dst, liftable);
-            rewrite_expr_pointer_views(val, liftable);
-            rewrite_expr_pointer_views(count, liftable);
+            rewrite_expr_pointer_views(dst, liftable, changed);
+            rewrite_expr_pointer_views(val, liftable, changed);
+            rewrite_expr_pointer_views(count, liftable, changed);
         }
         Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
             if let Some(ptr) = place.ptr_expr_mut() {
-                rewrite_expr_pointer_views(ptr, liftable);
+                rewrite_expr_pointer_views(ptr, liftable, changed);
             }
         }
         Expr::AtomicStore { place, value, .. }
         | Expr::AtomicFetch { place, value, .. }
         | Expr::AtomicSwap { place, value, .. } => {
             if let Some(ptr) = place.ptr_expr_mut() {
-                rewrite_expr_pointer_views(ptr, liftable);
+                rewrite_expr_pointer_views(ptr, liftable, changed);
             }
-            rewrite_expr_pointer_views(value, liftable);
+            rewrite_expr_pointer_views(value, liftable, changed);
         }
-        Expr::AtomicNew { value, .. } => rewrite_expr_pointer_views(value, liftable),
+        Expr::AtomicNew { value, .. } => rewrite_expr_pointer_views(value, liftable, changed),
         Expr::AtomicCompareExchange {
             place,
             expected,
@@ -473,10 +483,10 @@ fn rewrite_expr_pointer_views(expr: &mut Expr, liftable: &BTreeSet<String>) {
             ..
         } => {
             if let Some(ptr) = place.ptr_expr_mut() {
-                rewrite_expr_pointer_views(ptr, liftable);
+                rewrite_expr_pointer_views(ptr, liftable, changed);
             }
-            rewrite_expr_pointer_views(expected, liftable);
-            rewrite_expr_pointer_views(desired, liftable);
+            rewrite_expr_pointer_views(expected, liftable, changed);
+            rewrite_expr_pointer_views(desired, liftable, changed);
         }
         Expr::Value(_)
         | Expr::Str(_)
@@ -523,12 +533,17 @@ fn copy_replacement(function: FunctionId, facts: &FixupFacts, path: &AstPath) ->
     })
 }
 
-fn rewrite_block_expr_pointer_views(block: &mut Block, liftable: &BTreeSet<String>) {
+fn rewrite_block_expr_pointer_views(
+    block: &mut Block,
+    liftable: &BTreeSet<String>,
+    changed: &mut bool,
+) {
     crate::fixups::support::walk::block_exprs_mut_with(block, &mut |expr| {
         if let Some(source) = pointer_view_source(expr)
             && liftable.contains(source)
         {
             *expr = Expr::Var(source.into());
+            *changed = true;
             return false;
         }
         true
