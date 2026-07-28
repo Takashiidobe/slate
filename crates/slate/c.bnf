@@ -13,7 +13,7 @@
 <program> ::= <include_list> <decl_list> <function_list> ;
 
 <include_list> ::= <include> <include_list> | <include> ;
-<include> ::= "#include <stdio.h>" | "#include <stdlib.h>" | "#include <stdint.h>" | "#include <stddef.h>" | "#include <stdbool.h>" | "#include <stdatomic.h>" | "#include <threads.h>" | "#include <time.h>" ;
+<include> ::= "#include <stdio.h>" | "#include <stdlib.h>" | "#include <stdint.h>" | "#include <stddef.h>" | "#include <stdbool.h>" | "#include <stdatomic.h>" | "#include <threads.h>" | "#include <time.h>" | "#include <uchar.h>" ;
 
 # ----- top-level declarations -----
 
@@ -130,5 +130,5 @@
 <const> ::= <int> | <float> | <char> ;
 <int> ::= "0" ;
 <float> ::= "0.0" | "0.0f" ;
-<char> ::= "'A'" ;
+<char> ::= "'A'" | "u'A'" | "U'A'" ;
 <string_literal> ::= "\"text\"" | "u8\"text\"" ;

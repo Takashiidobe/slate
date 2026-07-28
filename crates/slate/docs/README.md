@@ -98,7 +98,8 @@ become owned `String`, and a C-string pointer parameter can become `&str`.
 `fopen`/`fputs`/`fclose` sequences become `File`/`OpenOptions` owners.
 `qsort`/`bsearch` become `.sort_by()`/`.binary_search_by()`. `printf`-family
 calls with a constant, fully-supported format string become `println!`/
-`print!`; anything else stays `libc::printf`.
+`print!`; anything else stays `libc::printf`. C11 UTF-16/UTF-32 conversion
+functions use the platform `libc::mbstate_t` ABI.
 
 ### Atomics and concurrency builtins
 

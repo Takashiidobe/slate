@@ -908,6 +908,7 @@ pub enum Type {
 pub enum CLibType {
     Void,
     File,
+    MbState,
     Pthread,
     PthreadAttr,
     Timespec,
@@ -918,6 +919,7 @@ impl CLibType {
         match self {
             CLibType::Void => "core::ffi::c_void",
             CLibType::File => "libc::FILE",
+            CLibType::MbState => "libc::mbstate_t",
             CLibType::Pthread => "libc::pthread_t",
             CLibType::PthreadAttr => "libc::pthread_attr_t",
             CLibType::Timespec => "libc::timespec",
