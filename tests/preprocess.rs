@@ -71,6 +71,35 @@ fn record_cfg_exposes_the_directive_ledger() {
 }
 
 #[test]
+fn records_c23_elifdef_and_elifndef_activity() {
+    let doc = record_cfg("../fixtures/elifdef.c", &[]);
+    let directives = doc["directives"].as_array().expect("directives array");
+    let branches: Vec<_> = directives
+        .iter()
+        .filter(|directive| matches!(directive["name"].as_str(), Some("elifdef" | "elifndef")))
+        .map(|directive| {
+            (
+                directive["name"].as_str().unwrap(),
+                directive["disposition"].as_str().unwrap(),
+                directive["active"].as_bool().unwrap(),
+            )
+        })
+        .collect();
+
+    assert_eq!(
+        branches,
+        vec![
+            ("elifdef", "represented-in-rust", true),
+            ("elifndef", "represented-in-rust", false),
+            ("elifdef", "represented-in-rust", false),
+            ("elifndef", "represented-in-rust", true),
+            ("elifdef", "represented-in-rust", false),
+            ("elifndef", "represented-in-rust", false),
+        ]
+    );
+}
+
+#[test]
 fn directive_ledger_exposes_every_disposition() {
     let doc = record_cfg("reject/directive_dispositions.c", &[]);
     let directives = doc["directives"].as_array().expect("directives array");

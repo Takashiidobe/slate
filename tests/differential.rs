@@ -405,6 +405,17 @@ fn uchar_conversions_use_libc_mbstate_abi() {
 }
 
 #[test]
+fn c23_nullptr_uses_concrete_void_pointer_type() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-c23-nullptr");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let rust = translate_fixture(&tmp, "c23_nullptr");
+    assert!(rust.contains("let mut null_value: *mut core::ffi::c_void"));
+    assert!(rust.contains("std::ptr::null_mut() as *mut core::ffi::c_void"));
+    assert!(!rust.contains("std::ptr::null_mut() == std::ptr::null_mut()"));
+}
+
+#[test]
 fn lazy_singleton_recovers_once_lock() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-lazy-singleton");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
@@ -2029,7 +2040,7 @@ fn numeric_parse_calls_use_runtime_parse_support() {
     assert!(rust.contains("__slate_runtime::parse_i64(large)"));
     assert!(rust.contains("__slate_runtime::parse_u64(empty)"));
     assert!(rust.contains("__slate_runtime::parse_f64(flt)"));
-    assert!(rust.contains("unsafe { strtol("));
+    assert!(rust.contains("unsafe { strtol(") || rust.contains("unsafe { __isoc23_strtol("));
     assert!(!rust.contains("fn atoi("));
     assert!(!rust.contains("fn atol("));
     assert!(!rust.contains("fn strtoul("));

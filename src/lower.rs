@@ -1836,8 +1836,9 @@ impl<'a> Lowerer<'a> {
             name: name.into(),
             identity: self
                 .known_functions
-                .get(name)
+                .get(canonical_c23_libc_symbol(name))
                 .copied()
+                .or_else(|| c23_redirected_function(name))
                 .unwrap_or(FunctionIdentity::Unknown),
             params,
             variadic,
@@ -3156,6 +3157,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let value = if result_ty.is_some_and(is_cir_function_pointer_type) {
                 self.function_pointer_null_values.insert(result.clone());
                 Expr::Value(RustValue::None)
+            } else if result_ty.is_some_and(|ty| self.parent.expand_alias(ty) == "!cir.ptr<!void>")
+            {
+                Expr::Cast {
+                    expr: Box::new(Expr::Value(RustValue::NullPtr)),
+                    ty: self.parent.rust_type(result_ty.unwrap()),
+                }
             } else {
                 Expr::Value(RustValue::NullPtr)
             };
@@ -5798,11 +5805,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mut binding = self.parent.call_binding(op, direct_callee.is_some());
         if binding.known().is_none()
             && let Some(callee) = direct_callee.as_deref()
-            && let Some(identity @ FunctionIdentity::Known(_)) =
-                self.parent.known_functions.get(callee)
+            && let Some(identity @ FunctionIdentity::Known(_)) = self
+                .parent
+                .known_functions
+                .get(canonical_c23_libc_symbol(callee))
+                .copied()
+                .or_else(|| c23_redirected_function(callee))
         {
             binding = crate::function_identity::CallBinding::Direct {
-                identity: *identity,
+                identity,
                 canonical_type: match binding {
                     crate::function_identity::CallBinding::Direct { canonical_type, .. } => {
                         canonical_type
@@ -8613,6 +8624,24 @@ fn memchr_prelude() -> Item {
 
 fn rust_type(cir_ty: &str) -> Type {
     rust_type_with_aliases(cir_ty, &BTreeMap::new())
+}
+
+fn canonical_c23_libc_symbol(name: &str) -> &str {
+    match name {
+        "__isoc23_strtol" => "strtol",
+        "__isoc23_strtoul" => "strtoul",
+        "__isoc23_strtod" => "strtod",
+        _ => name,
+    }
+}
+
+fn c23_redirected_function(name: &str) -> Option<FunctionIdentity> {
+    Some(FunctionIdentity::Known(match name {
+        "__isoc23_strtol" => crate::function_identity::Known::StrTol,
+        "__isoc23_strtoul" => crate::function_identity::Known::StrToul,
+        "__isoc23_strtod" => crate::function_identity::Known::StrTod,
+        _ => return None,
+    }))
 }
 
 // True if the region contains a `cir.continue` that targets the enclosing loop,

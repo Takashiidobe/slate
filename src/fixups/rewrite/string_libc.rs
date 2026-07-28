@@ -645,21 +645,21 @@ fn supported_numeric_parse_call(
     let (helper, direct) = match (name.as_str(), usage.callee) {
         ("atoi", StringLibcFunction::Atoi) if args.len() == 1 => ("parse_i32", ParseTarget::I32),
         ("atol", StringLibcFunction::Atol) if args.len() == 1 => ("parse_i64", ParseTarget::I64),
-        ("strtol", StringLibcFunction::StrTol)
+        ("strtol" | "__isoc23_strtol", StringLibcFunction::StrTol)
             if args.len() == 3
                 && is_null_at(&args[1], function, facts, &call_arg_path(expr, path, 1))
                 && is_ten_at(&args[2], function, facts, &call_arg_path(expr, path, 2)) =>
         {
             ("parse_i64", ParseTarget::I64)
         }
-        ("strtoul", StringLibcFunction::StrToul)
+        ("strtoul" | "__isoc23_strtoul", StringLibcFunction::StrToul)
             if args.len() == 3
                 && is_null_at(&args[1], function, facts, &call_arg_path(expr, path, 1))
                 && is_ten_at(&args[2], function, facts, &call_arg_path(expr, path, 2)) =>
         {
             ("parse_u64", ParseTarget::U64)
         }
-        ("strtod", StringLibcFunction::StrTod)
+        ("strtod" | "__isoc23_strtod", StringLibcFunction::StrTod)
             if args.len() == 2
                 && is_null_at(&args[1], function, facts, &call_arg_path(expr, path, 1)) =>
         {

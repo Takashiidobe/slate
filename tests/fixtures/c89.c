@@ -48,10 +48,7 @@ static int C89_JOIN(c89_joined_, value) = 23;
 static int c89_add(int left, int right);
 static void c89_store(void *destination, const void *source);
 
-static int c89_add(left, right)
-int left;
-int right;
-{
+static int c89_add(int left, int right) {
   return left + right;
 }
 

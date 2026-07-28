@@ -71,7 +71,9 @@ local objects preserves the strengthened type or object alignment.
 
 Address-of, dereference, pointer arithmetic, array-to-pointer decay, and
 function pointers (`Option<extern "C" fn(...) -> ...>`), all raw on the baseline
-path.
+path. C23 `nullptr_t` uses a concrete mutable `c_void` pointer representation,
+so standalone `nullptr` assignment and equality do not depend on Rust pointee
+type inference.
 Fixed-size arrays and C99 block-scope variable-length arrays support indexing,
 address-taking, and scope cleanup. C99 flexible array members retain their
 zero-size trailing layout and support allocation-backed indexed reads and
@@ -121,9 +123,11 @@ parameters) are recovered as facts too.
 
 ### Multi-config translation
 
-`slate translate-directives` recovers `#if`/`#ifdef`-gated portability that a single
-Clang invocation can't see, mapping predicates to Rust `cfg`s and Cargo
-features. See [cfg-portability.md](cfg-portability.md).
+Single-config translation recognizes C23 `#elifdef`/`#elifndef` continuations
+and literal `#if 0`/`#if 1` gates. `slate translate-directives` recovers
+`#if`/`#ifdef`-gated portability that a single Clang invocation can't see,
+mapping predicates to Rust `cfg`s and Cargo features. See
+[cfg-portability.md](cfg-portability.md).
 
 Generated Rust trees are ignored inspection artifacts and are not regenerated
 as part of feature work or completion. When explicitly requested for manual

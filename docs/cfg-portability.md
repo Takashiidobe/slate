@@ -13,7 +13,9 @@ current target and flags (`SLATE_TARGET`, `SLATE_CLANG_ARGS`, `-D`/`-U`). The
 generated Rust is faithful to _that_ configuration only. If the source gates
 code behind `#if defined(_WIN32)` and you translate on Linux, the Windows branch
 is simply absent from the output — not wrong, just not present. This is the
-right mode when you have one target in mind.
+right mode when you have one target in mind. Conditional scanning recognizes
+C23 `#elifdef` and `#elifndef` continuations, including active and inactive
+branches after literal `#if 0` and `#if 1` gates.
 
 ## Multi-config (`translate-directives`)
 
