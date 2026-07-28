@@ -1,3 +1,4 @@
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AstPath, FixupFacts, FunctionId, PathSegment, StringBufferProvenance, StringRecoveryCandidate,
 };
@@ -8,83 +9,67 @@ use crate::fixups::trace::{
 use crate::rust_ast::{Expr, IndentStmt, Prim, Stmt, Type};
 use std::collections::BTreeSet;
 
-pub(in crate::fixups) fn fixup(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    StringLift::new(TracePass::StringLift, &mut logger).fixup_with_recoveries(
-        body,
-        function,
-        facts,
-        &[
-            StringRecoveryCandidate::BorrowedStr,
-            StringRecoveryCandidate::BorrowedBytes,
-        ],
-    );
-}
-
-pub(in crate::fixups) fn fixup_c_strings(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    StringLift::new(TracePass::StringLiftFixupCStrings, &mut logger).fixup_with_recoveries(
-        body,
-        function,
-        facts,
-        &[StringRecoveryCandidate::BorrowedCStr],
-    );
-}
-
 pub(in crate::fixups) struct StringLift<'a> {
     pass: TracePass,
+    function: FunctionId,
+    facts: &'a FixupFacts,
+    recoveries: Vec<StringRecoveryCandidate>,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> StringLift<'a> {
-    pub(in crate::fixups) fn new(pass: TracePass, logger: &'a mut dyn TraceLogger) -> Self {
-        Self { pass, logger }
-    }
-
-    pub(in crate::fixups) fn fixup_with_recoveries(
-        &mut self,
-        body: &mut Vec<IndentStmt>,
-        function: FunctionId,
-        facts: &FixupFacts,
-        recoveries: &[StringRecoveryCandidate],
-    ) {
+impl Fixup for StringLift<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
         let before = self.logger.is_enabled().then(|| body.clone());
-        fixup_nested(body, function, facts, &mut Vec::new(), recoveries);
-        fixup_body(body, function, facts, &Vec::new(), recoveries);
-        if let Some(before) = before
-            && body_code(&before) != body_code(body)
-        {
+        let mut changed = fixup_nested(
+            body,
+            self.function,
+            self.facts,
+            &mut Vec::new(),
+            &self.recoveries,
+        );
+        changed |= fixup_body(
+            body,
+            self.function,
+            self.facts,
+            &Vec::new(),
+            &self.recoveries,
+        );
+        if changed && let Some(before) = before {
             self.logger.rewrite(RewriteEvent {
                 pass: self.pass,
                 kind: "lift_string_buffer".into(),
-                location: function_path_location(facts, function, &[]),
+                location: function_path_location(self.facts, self.function, &[]),
                 before: vec![stmts_snippet("body", &before)],
                 after: vec![stmts_snippet("body", body)],
                 facts: vec![
-                    fact("recoveries", recoveries.len().to_string()),
+                    fact("recoveries", self.recoveries.len().to_string()),
                     fact(
                         "string_lift_plans",
-                        facts.string_lift_plans.len().to_string(),
+                        self.facts.string_lift_plans.len().to_string(),
                     ),
                 ],
             });
         }
+        changed
     }
 }
 
-fn body_code(body: &[IndentStmt]) -> String {
-    body.iter()
-        .map(|stmt| stmt.stmt.render())
-        .collect::<Vec<_>>()
-        .join("")
+impl<'a> StringLift<'a> {
+    pub(in crate::fixups) fn new(
+        pass: TracePass,
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        recoveries: &[StringRecoveryCandidate],
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            pass,
+            function,
+            facts,
+            recoveries: recoveries.to_vec(),
+            logger,
+        }
+    }
 }
 
 fn fixup_body(
@@ -93,8 +78,9 @@ fn fixup_body(
     facts: &FixupFacts,
     path: &[PathSegment],
     recoveries: &[StringRecoveryCandidate],
-) {
+) -> bool {
     let mut removals = BTreeSet::new();
+    let mut changed = false;
     let mut i = 0;
     while i < body.len() {
         let stmt_path = stmt_path(path, i);
@@ -104,6 +90,7 @@ fn fixup_body(
             i += 1;
             continue;
         };
+        changed = true;
         let Stmt::Let {
             mutable, ty, init, ..
         } = &mut body[i].stmt
@@ -124,6 +111,7 @@ fn fixup_body(
     for index in removals.into_iter().rev() {
         body.remove(index);
     }
+    changed
 }
 
 fn fixup_nested(
@@ -132,7 +120,8 @@ fn fixup_nested(
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
     recoveries: &[StringRecoveryCandidate],
-) {
+) -> bool {
+    let mut changed = false;
     for (index, indent) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             match &mut indent.stmt {
@@ -147,29 +136,30 @@ fn fixup_nested(
                     ..
                 } => {
                     walk::with_path_segment(path, PathSegment::Then, |path| {
-                        fixup_nested(then_body, function, facts, path, recoveries);
-                        fixup_body(then_body, function, facts, path, recoveries);
+                        changed |= fixup_nested(then_body, function, facts, path, recoveries);
+                        changed |= fixup_body(then_body, function, facts, path, recoveries);
                     });
                     walk::with_path_segment(path, PathSegment::Else, |path| {
-                        fixup_nested(else_body, function, facts, path, recoveries);
-                        fixup_body(else_body, function, facts, path, recoveries);
+                        changed |= fixup_nested(else_body, function, facts, path, recoveries);
+                        changed |= fixup_body(else_body, function, facts, path, recoveries);
                     });
                 }
                 Stmt::Loop { body, .. }
                 | Stmt::Scope { body }
                 | Stmt::LabeledBlock { body, .. } => {
-                    fixup_nested(body, function, facts, path, recoveries);
-                    fixup_body(body, function, facts, path, recoveries);
+                    changed |= fixup_nested(body, function, facts, path, recoveries);
+                    changed |= fixup_body(body, function, facts, path, recoveries);
                 }
                 Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
-                    fixup_nested(&mut body.stmts, function, facts, path, recoveries);
-                    fixup_body(&mut body.stmts, function, facts, path, recoveries);
+                    changed |= fixup_nested(&mut body.stmts, function, facts, path, recoveries);
+                    changed |= fixup_body(&mut body.stmts, function, facts, path, recoveries);
                 }
                 Stmt::Match { arms, .. } => {
                     for (arm_index, arm) in arms.iter_mut().enumerate() {
                         walk::with_path_segment(path, PathSegment::MatchArm(arm_index), |path| {
-                            fixup_nested(&mut arm.body, function, facts, path, recoveries);
-                            fixup_body(&mut arm.body, function, facts, path, recoveries);
+                            changed |=
+                                fixup_nested(&mut arm.body, function, facts, path, recoveries);
+                            changed |= fixup_body(&mut arm.body, function, facts, path, recoveries);
                         });
                     }
                 }
@@ -177,6 +167,7 @@ fn fixup_nested(
             }
         });
     }
+    changed
 }
 
 struct Lifted {
