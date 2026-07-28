@@ -3,6 +3,7 @@
 use crate::c_ast::{LayoutQuery, Loc, RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
+use crate::effects::Construct::AtomicOrdering;
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use crate::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
@@ -6055,8 +6056,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             value: Box::new(val.clone()),
             ordering: rust_ordering(attr_int(op, "mem_order").unwrap_or(5)),
         });
-        // std atomics always return the pre-op value; `fetch_first` wants that,
-        // otherwise recompute the post-op value the op just stored.
         if attr_bool(op, "fetch_first") {
             self.materialize_expr(&result, fetched, op_result_type(op));
         } else {
@@ -6167,8 +6166,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
         if let Some(atomic_ty) = atomic_type(&ty) {
-            // Always strong: `compare_exchange_weak` may spuriously fail and
-            // diverge from the C reference under differential testing.
             let res = self.next_temp();
             self.push_stmt(Stmt::Let {
                 name: res.clone(),
@@ -6272,7 +6269,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_atomic_fence(&mut self, op: &Op) {
-        // a relaxed thread fence is a no-op, and `fence(Relaxed)` panics in Rust.
         let ordering = attr_int(op, "ordering").unwrap_or(5);
         if ordering == 0 {
             return;
@@ -6282,8 +6278,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }));
     }
 
-    // atomic `cir.load`/`cir.store` (they carry `mem_order`) — real atomic
-    // access so a shared `_Atomic` object is never touched non-atomically.
     fn atomic_load_expr(&self, op: &Op, ptr: &str) -> Option<Expr> {
         let mem_order = attr_int(op, "mem_order")?;
         let ty = op_result_type(op).map(|ty| self.parent.rust_type(ty))?;
@@ -6925,9 +6919,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .insert(result.to_string(), Val::Expr(Expr::Var(name.into())));
     }
 
-    /// A value forwarded past its store must not observe later mutation:
-    /// literals and immutable bindings forward as-is, anything else is
-    /// snapshotted into a fresh immutable temp at the store site.
     fn forward_safe_value(&mut self, value: Expr, cir_ty: Option<&str>) -> Expr {
         let stable = match &value {
             Expr::Value(_) => true,
@@ -7069,8 +7060,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         name
     }
 
-    /// Raw escape hatch for CIR constructs slate cannot lower yet: emits a
-    /// `todo!("<note>")` placeholder so the generated Rust still compiles-shaped.
     fn emit_todo(&mut self, note: &str) {
         self.push_stmt(Stmt::Expr(Expr::Todo(note.to_string())));
     }

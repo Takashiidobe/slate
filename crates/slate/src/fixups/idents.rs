@@ -133,8 +133,6 @@ fn block_ident_count(block: &Block, name: &str) -> usize {
             .map_or(0, |tail| expr_ident_count(tail, name))
 }
 
-/// A promoted atomic local (`AtomicPlace::Local`) is a read of that name even
-/// though no `Expr::Var` node exists for it.
 fn atomic_place_ident_count(place: &AtomicPlace, name: &str) -> usize {
     match place {
         AtomicPlace::Ptr(ptr) => expr_ident_count(ptr, name),
