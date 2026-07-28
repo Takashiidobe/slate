@@ -5725,8 +5725,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let lhs = self.pointer_operand_expr(&op.operands[0]);
-        let rhs = self.pointer_operand_expr(&op.operands[1]);
+        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let lhs = if operand_types
+            .first()
+            .is_some_and(|ty| is_cir_function_pointer_type(ty))
+        {
+            self.function_pointer_byte_operand_expr(&op.operands[0])
+        } else {
+            self.pointer_operand_expr(&op.operands[0])
+        };
+        let rhs = if operand_types
+            .get(1)
+            .is_some_and(|ty| is_cir_function_pointer_type(ty))
+        {
+            self.function_pointer_byte_operand_expr(&op.operands[1])
+        } else {
+            self.pointer_operand_expr(&op.operands[1])
+        };
         let ty = op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I64));
@@ -5751,17 +5766,38 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let base = self.pointer_operand_expr(&op.operands[0]);
+        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let function_pointer_stride = operand_types
+            .first()
+            .is_some_and(|ty| is_cir_function_pointer_type(ty))
+            && op_result_type(op).is_some_and(is_cir_function_pointer_type);
+        let base = if function_pointer_stride {
+            self.function_pointer_byte_operand_expr(&op.operands[0])
+        } else {
+            self.pointer_operand_expr(&op.operands[0])
+        };
         let index = self.operand_expr(&op.operands[1]);
         let (method, args) = self.ptr_stride_method_and_args(op, index);
-        self.values.insert(
-            result.clone(),
-            Val::Expr(Self::unsafe_expr(Expr::MethodCall {
-                recv: Box::new(base),
-                method,
-                args,
-            })),
-        );
+        let stride = Self::unsafe_expr(Expr::MethodCall {
+            recv: Box::new(base),
+            method,
+            args,
+        });
+        let value = if function_pointer_stride {
+            Expr::Transmute {
+                from: Type::Ptr {
+                    mutable: false,
+                    inner: Box::new(Type::Prim(Prim::U8)),
+                },
+                to: self
+                    .parent
+                    .rust_type(op_result_type(op).expect("checked above")),
+                expr: Box::new(stride),
+            }
+        } else {
+            stride
+        };
+        self.values.insert(result.clone(), Val::Expr(value));
     }
 
     fn ptr_stride_method_and_args(&self, op: &Op, index: Expr) -> (String, Vec<Expr>) {
@@ -7266,6 +7302,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             Some(value) => value.to_expr(&self.parent.strings),
             None => self.operand_expr(operand),
+        }
+    }
+
+    fn function_pointer_byte_operand_expr(&self, operand: &str) -> Expr {
+        Expr::Cast {
+            expr: Box::new(Expr::MethodCall {
+                recv: Box::new(self.function_pointer_operand_expr(operand)),
+                method: "unwrap".into(),
+                args: Vec::new(),
+            }),
+            ty: Type::Ptr {
+                mutable: false,
+                inner: Box::new(Type::Prim(Prim::U8)),
+            },
         }
     }
 
