@@ -5642,8 +5642,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: self.parent.rust_type(result_ty),
                 })
             }
-            // integer sentinel (SIG_IGN/SIG_DFL/SIG_ERR = (void(*)(int))N) cast to a
-            // fn pointer: `as` cannot target Option<fn(..)>, so reinterpret the bits.
+            _ if operand_ty.starts_with("!cir.ptr<")
+                && result_ty != "!cir.bool"
+                && !is_cir_function_pointer_type(operand_ty) =>
+            {
+                Val::Expr(Expr::Cast {
+                    expr: Box::new(self.pointer_operand_expr(src)),
+                    ty: self.parent.rust_type(result_ty),
+                })
+            }
             _ if result_ty.starts_with("!cir.ptr<!cir.func<") => {
                 let ptr_ty = self.parent.rust_type(result_ty);
                 Val::Expr(Expr::Transmute {

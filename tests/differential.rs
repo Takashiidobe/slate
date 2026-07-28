@@ -517,6 +517,21 @@ fn struct_field_initialization_is_folded_into_literal() {
 }
 
 #[test]
+fn over_aligned_types_and_locals_preserve_alignment_and_addresses() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-over-aligned-local");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let rust = translate_fixture(&tmp, "over_aligned_local");
+    assert!(rust.contains("#[repr(C, align(32))]"));
+    assert!(rust.contains("std::mem::align_of::<OverAligned>() as u64"));
+    assert!(rust.contains("std::ptr::addr_of_mut!(object) as u64"));
+    assert!(rust.contains("aligned::Aligned<aligned::A64, i32>"));
+    assert!(rust.contains("std::ptr::addr_of_mut!(*local) as u64"));
+    assert!(!rust.contains("(object as u64)"));
+    assert!(!rust.contains("(*local as u64)"));
+}
+
+#[test]
 fn final_return_temps_are_collapsed() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-final-return-temps");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
