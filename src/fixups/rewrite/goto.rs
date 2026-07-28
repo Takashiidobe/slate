@@ -16,6 +16,7 @@
 
 use std::collections::BTreeSet;
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::PathSegment;
 use crate::fixups::facts::goto::{
     self, ArmFlow, CfgEdge, CfgNode, DispatchLoop, NaturalLoop, Transfer, cycle_entry_targets,
@@ -27,28 +28,13 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Expr, IndentStmt, MatchArm, Prim, RustValue, Stmt, Type, UnaryOp};
 
-pub(in crate::fixups) fn fixup(body: &mut Vec<IndentStmt>) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    Goto::new("<unknown>", &mut logger).fixup(body)
-}
-
 pub(in crate::fixups) struct Goto<'a> {
     function_name: String,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> Goto<'a> {
-    pub(in crate::fixups) fn new(
-        function_name: impl Into<String>,
-        logger: &'a mut dyn TraceLogger,
-    ) -> Self {
-        Self {
-            function_name: function_name.into(),
-            logger,
-        }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+impl Fixup for Goto<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
         for dispatch in goto::recognize_dispatch_loops(body) {
             if let Some(structured) = structure(&dispatch) {
                 let trace_before = self.logger.is_enabled().then(|| {
@@ -84,6 +70,18 @@ impl<'a> Goto<'a> {
             }
         }
         false
+    }
+}
+
+impl<'a> Goto<'a> {
+    pub(in crate::fixups) fn new(
+        function_name: impl Into<String>,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function_name: function_name.into(),
+            logger,
+        }
     }
 }
 
