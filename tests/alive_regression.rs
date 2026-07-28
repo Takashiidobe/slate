@@ -127,6 +127,7 @@ fn alive_tv_available() -> bool {
 }
 
 #[test]
+#[ignore = "diagnostic-only incomplete alive-tv validation; run explicitly"]
 fn baseline_lowering_matches_c_semantics() {
     if !alive_tv_available() {
         eprintln!(

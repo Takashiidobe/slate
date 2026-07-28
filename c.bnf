@@ -53,7 +53,8 @@
 
 <declaration> ::= <scalar_declaration> | <array_declaration> ;
 <scalar_declaration> ::= <type> <ident> "=" <expr> ";" ;
-<array_declaration> ::= <type> <ident> "[" <int> "]" ";" ;
+<array_declaration> ::= <type> <ident> "[" <array_bound> "]" ";" ;
+<array_bound> ::= <int> | <ident> ;
 <assignment> ::= <lvalue> "=" <expr> ";" ;
 <compound_assignment> ::= <lvalue> <compound_assign_op> <expr> ";" ;
 <for_loop> ::= "for" "(" "int" <ident> "=" <expr> ";" <expr> ";" <ident> "++" ")" "{" <stmt_list> "}" ;

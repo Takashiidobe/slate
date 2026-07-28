@@ -70,10 +70,12 @@ lower to Rust integer `const` items.
 
 Address-of, dereference, pointer arithmetic, array-to-pointer decay, and
 function pointers (`Option<fn(...) -> ...>`), all raw on the baseline path.
-Fixups recover safer shapes where facts prove it's sound: a pointer+length
-parameter pair becomes a `&[T]`/`&mut [T]` slice parameter, raw index
-arithmetic over a lifted slice becomes `slice[i]`, and a 0-start/step-1 loop
-that only indexes one slice becomes `for x in slice.iter()`/`.iter_mut()`.
+Fixed-size arrays and C99 block-scope variable-length arrays support indexing,
+address-taking, and scope cleanup. Fixups recover safer shapes where facts prove
+it's sound: a pointer+length parameter pair becomes a `&[T]`/`&mut [T]` slice
+parameter, raw index arithmetic over a lifted slice becomes `slice[i]`, and a
+0-start/step-1 loop that only indexes one slice becomes
+`for x in slice.iter()`/`.iter_mut()`.
 
 ### Globals and linkage
 

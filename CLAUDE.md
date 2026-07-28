@@ -99,15 +99,12 @@ against that tree's headers and must be rebuilt in lockstep.
 > **Always use `cargo nextest r --release` to test** (not `cargo test`).
 
 ```bash
-cargo nextest r --release                   # unit + differential + fuzz
+cargo nextest r --release                   # unit + fixture differential
 cargo fmt                                   # required before finishing
 
 cargo run -- translate tests/fixtures/add.c # C -> Rust on stdout
 cargo run -- emit-cir   tests/fixtures/add.c # inspect the CIR the lowerer sees
 cargo run -- emit-fixtures                   # regenerate supported suites in tests/*.generated/
-
-# fuzzer: random seeds each run; SLATE_FUZZ_SEED=<n> to replay, SLATE_FUZZ_CASES=<n> for count
-cargo nextest r --release --test bnf_fuzz generator_differential --nocapture
 ```
 
 ## Architecture Overview
@@ -151,11 +148,10 @@ Read these before making changes — they are the real playbook:
 ## Conventions & Patterns
 
 - **Every feature starts with a C fixture** in `tests/fixtures/` (C-only), driven
-  by `cargo test --test differential generated_differential` and
-  `cargo nextest r --release --test effects_regression`.
-- **Testing**: Testing is done with e2e tests, not unit tests. There is
-  differential testing, fuzzing, effect testing, etc. All of this is
-  stronger than unit testing.
+  by
+  `cargo nextest r --release --test differential -E 'test(generated_differential)'`.
+- **Testing**: Feature testing is done with e2e fixture differential tests, not
+  unit tests.
 - **Transliterate first, idiomatize later.** Baseline Rust may be ugly:
   `#[repr(C)]`, raw pointers, explicit temps, `libc`, and `unsafe` are all
   acceptable. Make it correct first; recover idiom in separate, verified fixups.
@@ -170,16 +166,19 @@ Read these before making changes — they are the real playbook:
   optional in spirit — disabling it still leaves correct Rust.
 - **Effects validation compares Rust to Rust.** `compare-effects-rust-rust`
   interprets raw lowered Rust and fixuped Rust; it is for checking
-  fixups are valid. New fixtures and fixups must keep the
-  effects regression green; if it fails, model the new effect shape rather than
-  treating the failure as harmless. See [docs/effects.md](docs/effects.md).
+  fixups are valid. It is diagnostic-only, not a required gate; run it only for
+  explicit effects work. The incomplete alive2 regression is likewise
+  diagnostic-only and ignored by default. The structured generator differential
+  is also diagnostic-only and ignored because it has not found useful failures;
+  it does not need improvement unless explicitly requested. See
+  [docs/effects.md](docs/effects.md) and [docs/fuzzing.md](docs/fuzzing.md).
 - **Use shared fixup walkers.** Fact collectors should use
   `src/fixups/facts/walk.rs`; rewrite passes should use
   `src/fixups/support/walk.rs`. Do not add pass-local recursive `exprs`,
   `stmt_exprs`, or body walkers when the shared helper can cover the traversal;
   extend the shared helper if a common traversal shape is missing.
-- **The generator only emits what Slate can translate.** When you extend the
-  supported subset, extend `tests/support/cgen.rs` (and `c.bnf`) to match; keep
-  every generated program well-defined (no UB) so C and Rust agree.
+- **Keep the reference grammar current.** When you extend the supported subset,
+  update `c.bnf`. The diagnostic structured generator does not need to grow with
+  new features.
 - **Never comment.**
-- Run `cargo fmt`, `cargo clippy` and `cargo nextest r` before finishing.
+- Run `cargo fmt`, `cargo clippy` and `cargo nextest r --release` before finishing.

@@ -2,7 +2,7 @@
 //! identical stdout and exit code.
 //!
 //! Compilers are overridable so the CIR-built clang can be swapped in:
-//!   SLATE_CC=~/llvm-project/build-cir/bin/clang cargo test
+//!   SLATE_CC=~/llvm-project/build-cir/bin/clang cargo nextest r --release
 
 mod support;
 

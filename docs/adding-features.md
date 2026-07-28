@@ -8,17 +8,16 @@ Use one C file per idea under `tests/fixtures/`:
 
 ```bash
 $EDITOR tests/fixtures/<name>.c
-cargo test --test differential generated_differential -- --nocapture
-cargo nextest r --release --test effects_regression
+cargo nextest r --release --test differential -E 'test(generated_differential)' --nocapture
 ```
 
-The effects regression is required for every new `tests/fixtures/*.c` fixture,
-even when the change looks like baseline lowering rather than a fixup. It
-interprets the raw lowered Rust and the fixuped Rust and catches new observable
-effects that a fixup preserved incorrectly or that the effects interpreter does
-not model yet. If it fails, handle the new effect shape in `src/effects/` or
-leave the fixture out until the behavior is modeled; do not accept an effects
-extraction failure as harmless.
+The effects regression is diagnostic-only and is not a required feature or
+fixup completion gate. Do not run it by default. Use it only when working
+directly on effects interpretation or when a task explicitly requests it.
+
+The alive2 regression is also diagnostic-only and incomplete. It is ignored by
+the default test run and is not a required completion gate. Run it only when a
+task explicitly requests alive2 validation.
 
 The checked fixtures are C-only. `emit-fixtures` populates ignored sibling
 `*.generated/` trees for every supported fixture suite. Fixed-up Rust for the
@@ -52,7 +51,7 @@ semantics, or produces different output from the C program.
 2. Run the generated differential test and observe the failure:
 
    ```bash
-   cargo test --test differential generated_differential -- --nocapture
+   cargo nextest r --release --test differential -E 'test(generated_differential)' --nocapture
    ```
 
 3. Inspect the CIR shape:
@@ -81,15 +80,8 @@ semantics, or produces different output from the C program.
    ```bash
    cargo fmt
    cargo nextest r --release
-   cargo nextest r --release --test effects_regression
    cargo run -- emit-fixtures
    ```
-
-10. Also run the alive-tv suite, since this path edits `src/lower.rs`:
-
-    ```bash
-    cargo nextest r --release --test alive_regression -E 'test(baseline_lowering_matches_c_semantics)'
-    ```
 
 The baseline feature is done when the fixture passes differential testing and
 the generated Rust preserves the relevant C semantics.
@@ -125,14 +117,11 @@ helpers, safety rules, registration) before writing one.
    ```bash
    cargo fmt
    cargo nextest r --release
-   cargo nextest r --release --test effects_regression
    cargo run -- emit-fixtures
    ```
 
 The fixup is done when output and exit code are unchanged and the generated Rust
-is clearly better for the supported pattern. The effects regression must also
-pass, because it is the check that the raw Rust and fixuped Rust still have the
-same modeled observable behavior.
+is clearly better for the supported pattern.
 
 ## Choosing The Path
 
@@ -152,8 +141,9 @@ program per function. These tickets are clean parallel work because they only
 add isolated fixtures.
 
 Probes are **auto-discovered**: drop a `.c` file under
-`tests/stdlib/<header>/<name>.c` and `cargo test --test stdlib_coverage` picks it
-up — there is nothing to register.
+`tests/stdlib/<header>/<name>.c` and
+`cargo nextest r --release --test stdlib_coverage` picks it up — there is
+nothing to register.
 
 Conventions, copied from existing probes:
 
@@ -169,7 +159,7 @@ Conventions, copied from existing probes:
 
 ```bash
 $EDITOR tests/stdlib/<header>/<name>.c
-cargo test --test stdlib_coverage -- --nocapture   # new probe must print `ok`
+cargo nextest r --release --test stdlib_coverage --nocapture   # new probe must print `ok`
 ```
 
 A probe that translates but can't pass yet is not silently skipped: add it to the

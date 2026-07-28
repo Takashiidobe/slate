@@ -3,7 +3,6 @@
 use crate::c_ast::{LayoutQuery, Loc, RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
-use crate::effects::Construct::AtomicOrdering;
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use crate::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
@@ -2500,6 +2499,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::AtomicFence => self.lower_atomic_fence(op),
             CirOpKind::Return => self.lower_return(op),
             CirOpKind::Scope => self.lower_scope(op),
+            CirOpKind::CleanupScope => self.lower_cleanup_scope(op),
             CirOpKind::If => self.lower_if(op),
             CirOpKind::Switch => self.lower_switch(op),
             CirOpKind::For => self.lower_for(op),
@@ -2550,9 +2550,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn alloca_group_is_lowerable(&self, ops: &[Op]) -> bool {
         ops.iter().all(|op| {
-            op.results
-                .first()
-                .is_some_and(|result| !self.forward_allocas.contains(result))
+            op.operands.is_empty()
+                && op
+                    .results
+                    .first()
+                    .is_some_and(|result| !self.forward_allocas.contains(result))
                 && !op
                     .ty
                     .as_deref()
@@ -2658,6 +2660,35 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let name = self.unique_local_name(
             sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string(),
         );
+        if let Some(count) = op.operands.first() {
+            let ty = self
+                .pointee_type(op.ty.as_deref().unwrap_or(""))
+                .unwrap_or(Type::Prim(Prim::I32));
+            self.values.insert(
+                result.clone(),
+                Val::Expr(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(name.clone().into())),
+                    method: "as_mut_ptr".into(),
+                    args: Vec::new(),
+                }),
+            );
+            self.push_stmt(Stmt::Let {
+                name,
+                mutable: true,
+                ty: Some(Type::Generic {
+                    name: "Vec".into(),
+                    args: vec![ty.clone()],
+                }),
+                init: Some(Expr::VecRepeat {
+                    elem: Box::new(self.parent.default_value_expr(&ty)),
+                    len: Box::new(Expr::Cast {
+                        expr: Box::new(self.operand_expr(count)),
+                        ty: Type::Prim(Prim::Usize),
+                    }),
+                }),
+            });
+            return;
+        }
         // a `va_list` local becomes a Rust `VaList`, assigned by `va_start`.
         if op
             .ty
@@ -6397,6 +6428,36 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn lower_scope(&mut self, op: &Op) {
         let body = self.capture_body(|this| {
             for region in &op.regions {
+                this.lower_region_ops(region);
+            }
+        });
+        self.push_stmt(Stmt::Scope { body });
+    }
+
+    fn lower_cleanup_scope(&mut self, op: &Op) {
+        let Some(cleanup) = op.regions.get(1) else {
+            self.emit_todo("cir.cleanup.scope");
+            return;
+        };
+        let mut saw_stackrestore = false;
+        for block in &cleanup.blocks {
+            for cleanup_op in &block.ops {
+                match cleanup_op.kind() {
+                    CirOpKind::Load | CirOpKind::Yield => {}
+                    CirOpKind::Stackrestore => saw_stackrestore = true,
+                    _ => {
+                        self.emit_todo("cir.cleanup.scope");
+                        return;
+                    }
+                }
+            }
+        }
+        if !saw_stackrestore {
+            self.emit_todo("cir.cleanup.scope");
+            return;
+        }
+        let body = self.capture_body(|this| {
+            if let Some(region) = op.regions.first() {
                 this.lower_region_ops(region);
             }
         });
