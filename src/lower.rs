@@ -1180,6 +1180,9 @@ impl<'a> Lowerer<'a> {
             }
         } else if let Some(mut bytes) = parse_cir_const_array(raw) {
             if is_c_global && let Some(ty) = ty {
+                let len = type_array_len(&ty)
+                    .and_then(|len| usize::try_from(len).ok())
+                    .unwrap_or(bytes.len());
                 let elems = byte_array_elems(&bytes, &ty);
                 self.globals.insert(
                     rust_name.clone(),
@@ -1188,7 +1191,7 @@ impl<'a> Lowerer<'a> {
                         ty,
                         init: render_array_literal_expr(
                             &elems,
-                            bytes.len(),
+                            len,
                             Expr::Value(RustValue::I64(0)),
                         ),
                         alignment,
