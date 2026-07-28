@@ -573,7 +573,7 @@ fn collect_type_refs(ty: &Type, refs: &mut BTreeSet<String>) {
         | Type::Ptr { inner, .. }
         | Type::Ref { inner, .. } => collect_type_refs(inner, refs),
         Type::Array { elem, .. } => collect_type_refs(elem, refs),
-        Type::FnPtr { params, ret } => {
+        Type::FnPtr { params, ret, .. } => {
             for param in params {
                 collect_type_refs(param, refs);
             }

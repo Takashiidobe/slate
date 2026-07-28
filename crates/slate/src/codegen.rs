@@ -1331,8 +1331,10 @@ impl<W: Write> Codegen<W> {
                 self.ty(elem)?;
                 write!(self.out, "; {len}]")
             }
-            Type::FnPtr { params, ret } => {
-                self.out.write_str("Option<fn(")?;
+            Type::FnPtr { abi, params, ret } => {
+                self.out.write_str("Option<")?;
+                self.abi(*abi)?;
+                self.out.write_str(" fn(")?;
                 for (i, p) in params.iter().enumerate() {
                     if i > 0 {
                         self.out.write_str(", ")?;

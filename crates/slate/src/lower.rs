@@ -299,6 +299,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_asm_goto_outputs: std::cell::Cell::new(false),
         uses_memchr: std::cell::Cell::new(false),
         variadic_defs: BTreeSet::new(),
+        c_abi_functions: BTreeSet::new(),
         project: project.clone(),
         unsafe_functions: project.unsafe_functions.clone(),
         cross_uses: Vec::new(),
@@ -457,7 +458,7 @@ fn lower_record_def(
         vis,
         field_vis,
         is_union,
-        allow_non_camel_case: false,
+        allow_non_camel_case: name == "__once_flag",
         name,
         fields,
         packed: record.packed,
@@ -604,6 +605,7 @@ struct Lowerer<'a> {
     uses_asm_goto_outputs: std::cell::Cell<bool>,
     uses_memchr: std::cell::Cell<bool>,
     variadic_defs: BTreeSet<String>,
+    c_abi_functions: BTreeSet<String>,
     project: ProjectInfo,
     unsafe_functions: BTreeSet<String>,
     cross_uses: Vec<Item>,
@@ -815,6 +817,7 @@ impl<'a> Lowerer<'a> {
         };
 
         let ops = region_ops(module_op);
+        self.c_abi_functions = c_abi_function_targets(module_op);
         let mut assembly_strings = Vec::new();
         collect_assembly_strings(module_op, &mut assembly_strings);
         let asm_referenced_globals: BTreeSet<String> = ops
@@ -1404,7 +1407,11 @@ impl<'a> Lowerer<'a> {
                 Visibility::Private
             },
             unsafe_,
-            abi: if external_def { Some(Abi::C) } else { None },
+            abi: if external_def || self.c_abi_functions.contains(name) {
+                Some(Abi::C)
+            } else {
+                None
+            },
             name: name.to_string(),
             params: decl.params,
             ret: decl.ret,
@@ -1559,7 +1566,7 @@ impl<'a> Lowerer<'a> {
             } else {
                 Visibility::Private
             };
-            let abi = if external_def || is_variadic {
+            let abi = if external_def || is_variadic || self.c_abi_functions.contains(name) {
                 Some(Abi::C)
             } else {
                 None
@@ -2173,6 +2180,7 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
         },
         CType::Ptr(inner) => ptr(inner),
         CType::FuncPtr { ret, params } => Type::FnPtr {
+            abi: Abi::C,
             params: params.iter().map(c_type_to_type).collect(),
             ret: Box::new(c_type_to_type(ret)),
         },
@@ -7479,6 +7487,16 @@ fn collect_region_ops_recursive<'a>(op: &'a Op, out: &mut Vec<&'a Op>) {
     }
 }
 
+fn c_abi_function_targets(op: &Op) -> BTreeSet<String> {
+    let mut ops = Vec::new();
+    collect_region_ops_recursive(op, &mut ops);
+    ops.into_iter()
+        .filter(|op| op.kind() == CirOpKind::GetGlobal)
+        .filter(|op| op_result_type(op).is_some_and(is_cir_function_pointer_type))
+        .filter_map(|op| attr_symbol_ref(op, "name").map(str::to_string))
+        .collect()
+}
+
 fn attr_str<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
     op.attrs.get(key).and_then(Attr::as_str)
 }
@@ -8688,6 +8706,7 @@ fn cir_fn_type_to_type(ty: &str, aliases: &BTreeMap<String, String>) -> Option<T
         .collect::<Vec<_>>();
     let ret = rust_type_with_aliases(ret.trim(), aliases);
     Some(Type::FnPtr {
+        abi: Abi::C,
         params,
         ret: Box::new(ret),
     })
@@ -8702,7 +8721,7 @@ fn type_mentions_long_double(ty: &Type) -> bool {
         Type::Slice(elem) => type_mentions_long_double(elem),
         Type::Ptr { inner, .. } => type_mentions_long_double(inner),
         Type::Array { elem, .. } => type_mentions_long_double(elem),
-        Type::FnPtr { params, ret } => {
+        Type::FnPtr { params, ret, .. } => {
             params.iter().any(type_mentions_long_double) || type_mentions_long_double(ret)
         }
         Type::Prim(_)
@@ -8724,7 +8743,7 @@ fn type_mentions_complex(ty: &Type) -> bool {
         Type::Slice(elem) => type_mentions_complex(elem),
         Type::Ptr { inner, .. } => type_mentions_complex(inner),
         Type::Array { elem, .. } => type_mentions_complex(elem),
-        Type::FnPtr { params, ret } => {
+        Type::FnPtr { params, ret, .. } => {
             params.iter().any(type_mentions_complex) || type_mentions_complex(ret)
         }
         Type::Generic { args, .. } => args.iter().any(type_mentions_complex),
@@ -8748,7 +8767,7 @@ fn type_mentions_f128(ty: &Type) -> bool {
             type_mentions_f128(inner)
         }
         Type::Ptr { inner, .. } | Type::Array { elem: inner, .. } => type_mentions_f128(inner),
-        Type::FnPtr { params, ret } => {
+        Type::FnPtr { params, ret, .. } => {
             params.iter().any(type_mentions_f128) || type_mentions_f128(ret)
         }
         Type::Generic { args, .. } => args.iter().any(type_mentions_f128),
@@ -8810,12 +8829,10 @@ fn cir_ptr_pointee(ty: &str) -> Option<&str> {
         .and_then(|s| s.strip_suffix('>'))
 }
 
-// The alias-table key (e.g. `!rec_anon2E36`) for an anonymous record type,
-// gating on the expanded struct/union name starting with `anon.`.
 fn anon_alias_key(ty: &str, aliases: &BTreeMap<String, String>) -> Option<String> {
     let ty = ty.trim();
     let name = cir_record_name(aliases.get(ty)?)?;
-    name.starts_with("anon.").then(|| ty.to_string())
+    (name.starts_with("anon.") || name == "__once_flag").then(|| ty.to_string())
 }
 
 fn collect_anon_alias_keys(

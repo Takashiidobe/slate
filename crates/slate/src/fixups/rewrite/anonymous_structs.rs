@@ -434,7 +434,7 @@ fn rewrite_type(ty: &mut Type, plans: &BTreeMap<String, Plan>) -> bool {
         | Type::Ptr { inner, .. } => rewrite_type(inner, plans),
         Type::Generic { args, .. } => rewrite_types(args, plans),
         Type::Array { elem, .. } => rewrite_type(elem, plans),
-        Type::FnPtr { params, ret } => rewrite_types(params, plans) | rewrite_type(ret, plans),
+        Type::FnPtr { params, ret, .. } => rewrite_types(params, plans) | rewrite_type(ret, plans),
         Type::Prim(_)
         | Type::LongDouble
         | Type::TyVar(_)

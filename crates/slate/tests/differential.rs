@@ -1581,6 +1581,18 @@ fn thread_local_globals_emit_thread_local_statics() {
 }
 
 #[test]
+fn c11_library_callbacks_preserve_c_abi() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-c11-callbacks");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let rust = translate_fixture(&tmp, "c11_callbacks");
+    assert_eq!(rust.matches("Option<extern \"C\" fn").count(), 4);
+    assert_eq!(rust.matches("extern \"C\" fn ").count(), 4);
+    assert!(!rust.contains("Option<fn("));
+    assert!(rust.contains("struct __once_flag {\n    f0: i32,\n}"));
+}
+
+#[test]
 fn aggregate_value_member_ops_inline_member_access_temps() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-aggregate-members");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

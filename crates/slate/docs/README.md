@@ -69,7 +69,8 @@ lower to Rust integer `const` items.
 ### Pointers and arrays
 
 Address-of, dereference, pointer arithmetic, array-to-pointer decay, and
-function pointers (`Option<fn(...) -> ...>`), all raw on the baseline path.
+function pointers (`Option<extern "C" fn(...) -> ...>`), all raw on the baseline
+path.
 Fixed-size arrays and C99 block-scope variable-length arrays support indexing,
 address-taking, and scope cleanup. C99 flexible array members retain their
 zero-size trailing layout and support allocation-backed indexed reads and
