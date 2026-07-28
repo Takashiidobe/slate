@@ -143,11 +143,11 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 45. `zero_init` (`cross_effects = true`) - same fusion as step 6, now allowed to cross intervening effects - to fixpoint with facts refreshed before every round.
 46. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`).
 47. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery - once, per function.
-48. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint (`inline_var_aliases_to_fixpoint`).
-49. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches - to fixpoint, per function.
-50. `libc_exit` - rewrite direct `libc::exit` calls as `std::process::exit` - once.
-51. `prune_unused_externs` - drop now-dead `extern` decls for the libc functions `string_copy`, `string_libc`, `sort_search`, and `heap_ownership` replace - once, after all four rewrites (and their re-runs) have finished, rather than once per rewrite.
-52. `unused_items` - remove dead top-level items - once.
+48. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint, per function, across the program (`to_fixpoint_items`).
+49. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches - to fixpoint, per function, across the program (`to_fixpoint_items`).
+50. `libc_exit` - rewrite direct `libc::exit` calls as `std::process::exit` - once, per function (`run_once_items`), gated by the program's matching extern declaration.
+51. `prune_unused_externs` - drop now-dead `extern` decls for the libc functions `string_copy`, `string_libc`, `sort_search`, and `heap_ownership` replace - once, program-wide (`run_once_program`), after all four rewrites (and their re-runs) have finished, rather than once per rewrite.
+52. `unused_items` - remove dead top-level items - once, program-wide (`run_once_program`).
 53. `unused_params` - drop a function parameter that's never read in its body and rewrite every direct call site to match, once the function's only references are direct-by-name calls whose argument at that slot is pure and whose type can't own a destructor - to fixpoint.
 54. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function - once, per function.
 55. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
