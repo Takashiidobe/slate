@@ -1,36 +1,29 @@
+use crate::fixups::Fixup;
 use crate::fixups::facts::PathSegment;
 use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, fact, named_path_location, path_fact,
     stmt_snippet,
 };
-use crate::rust_ast::{Expr, FnDef, IndentStmt, Path, Prim, RustValue, Stmt, Type};
-
-pub(in crate::fixups) fn fixup(f: &mut FnDef) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    MainZeroExit::new(&mut logger).fixup(f);
-}
+use crate::rust_ast::{Expr, IndentStmt, Path, Prim, RustValue, Stmt, Type};
 
 pub(in crate::fixups) struct MainZeroExit<'a> {
+    is_main: bool,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> MainZeroExit<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, f: &mut FnDef) {
-        if f.name != "main" {
-            return;
+impl Fixup for MainZeroExit<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        if !self.is_main {
+            return false;
         }
-        if final_main_exit_is_zero(&f.body) {
+        if final_main_exit_is_zero(body) {
             if let Some(before) = self
                 .logger
                 .is_enabled()
-                .then(|| f.body.last().map(|stmt| stmt.stmt.clone()))
+                .then(|| body.last().map(|stmt| stmt.stmt.clone()))
                 .flatten()
             {
-                let path = vec![PathSegment::Stmt(f.body.len() - 1)];
+                let path = vec![PathSegment::Stmt(body.len() - 1)];
                 self.logger.rewrite(RewriteEvent {
                     pass: TracePass::MainZeroExit,
                     kind: "remove_trailing_zero_exit".into(),
@@ -40,8 +33,16 @@ impl<'a> MainZeroExit<'a> {
                     facts: vec![path_fact("stmt_path", &path), fact("exit_status", "0")],
                 });
             }
-            f.body.pop();
+            body.pop();
+            return true;
         };
+        false
+    }
+}
+
+impl<'a> MainZeroExit<'a> {
+    pub(in crate::fixups) fn new(is_main: bool, logger: &'a mut dyn TraceLogger) -> Self {
+        Self { is_main, logger }
     }
 }
 
