@@ -521,13 +521,18 @@ fn apply_with_logger(
         });
     });
     step!(program, Pass::NullablePointer, {
-        loop {
-            let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-            if !rewrite::nullable_pointer::NullablePointer::new(logger).fixup(&mut program, &facts)
-            {
-                break;
-            }
-        }
+        to_fixpoint_items_with_facts(
+            &mut program,
+            FixpointLimit::Unlimited,
+            |item_index, f, facts| {
+                let Some(function) = facts.function_by_item_index(item_index) else {
+                    return false;
+                };
+                let mut fixup =
+                    rewrite::nullable_pointer::NullablePointer::new(function, facts, logger);
+                run_once(&mut f.body, &mut fixup)
+            },
+        );
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::StringLiftFixupCStrings, {
@@ -546,20 +551,26 @@ fn apply_with_logger(
         });
     });
     step!(program, Pass::MemchrPrelude, {
-        for item in &mut program.items {
-            if let Item::Fn(f) = item {
-                rewrite::memchr_prelude::MemchrPrelude::new(logger).fixup(f);
-            }
-        }
+        run_once_items(&mut program, |_, f| {
+            let enabled = f.name == "__slate_memchr" && f.params.len() == 3;
+            let mut fixup =
+                rewrite::memchr_prelude::MemchrPrelude::new(f.name.clone(), enabled, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::MemchrPreludePruneUnusedHelper, {
-        rewrite::memchr_prelude::MemchrPrelude::new(logger).prune_unused_helper(&mut program);
+        run_once_program(&mut program, |program| {
+            rewrite::memchr_prelude::MemchrPreludePruneUnusedHelper::new(logger).fixup(program)
+        });
     });
     step!(program, Pass::LateInlineTemps, {
         inline_temps_to_fixpoint(&mut program, rewrite::inline_temps::Phase::Late, logger);
     });
     step!(program, Pass::PtrCopy, {
-        ptr_copy_to_fixpoint(&mut program, logger);
+        to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
+            let mut fixup = rewrite::ptr_copy::PtrCopy::new(&f.name, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::DeadLocals, {
         to_fixpoint_items_with_facts(
@@ -685,22 +696,6 @@ fn constant_conditions_to_fixpoint(program: &mut Program, logger: &mut impl Trac
         for item in &mut program.items {
             if let Item::Fn(f) = item
                 && ConstantConditions::new(&f.name, logger).fixup(&mut f.body)
-            {
-                changed = true;
-            }
-        }
-        if !changed {
-            break;
-        }
-    }
-}
-
-fn ptr_copy_to_fixpoint(program: &mut Program, logger: &mut impl TraceLogger) {
-    loop {
-        let mut changed = false;
-        for item in &mut program.items {
-            if let Item::Fn(f) = item
-                && rewrite::ptr_copy::PtrCopy::new(&f.name, logger).fixup(&mut f.body)
             {
                 changed = true;
             }

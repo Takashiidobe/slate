@@ -1,3 +1,4 @@
+use crate::fixups::Fixup;
 use crate::fixups::facts::{AstPath, BindingId, FixupFacts, FunctionId, PathSegment};
 use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk;
@@ -5,32 +6,37 @@ use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, path_fact,
     stmts_snippet,
 };
-use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
-
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    NullablePointer::new(&mut logger).fixup(program, facts)
-}
+use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, RustValue, Stmt, Type};
 
 pub(in crate::fixups) struct NullablePointer<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> NullablePointer<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+impl Fixup for NullablePointer<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        fixup_body(
+            body,
+            self.function,
+            self.facts,
+            &mut Vec::new(),
+            self.logger,
+        )
     }
+}
 
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
-        let mut changed = false;
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-            {
-                changed |= fixup_body(&mut f.body, function, facts, &mut Vec::new(), self.logger);
-            }
+impl<'a> NullablePointer<'a> {
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
         }
-        changed
     }
 }
 
