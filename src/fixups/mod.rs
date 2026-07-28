@@ -327,30 +327,56 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::SliceIndex, {
-        rewrite::slice_index::SliceIndex::new(logger).fixup(&mut program, &facts);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::slice_index::SliceIndex::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::SliceLoop, {
-        if rewrite::slice_loop::SliceLoop::new(logger).fixup(&mut program, &facts) {
+        if run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup = rewrite::slice_loop::SliceLoop::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        }) {
             late_loop_cleanup(&mut program, Pass::SliceLoop, logger);
         }
     });
     step!(program, Pass::SliceReduce, {
-        if rewrite::slice_reduce::SliceReduce::new(logger).fixup(&mut program) {
+        if run_once_items(&mut program, |_, f| {
+            let mut fixup = rewrite::slice_reduce::SliceReduce::new(f.name.clone(), logger);
+            run_once(&mut f.body, &mut fixup)
+        }) {
             late_loop_cleanup(&mut program, Pass::SliceReduce, logger);
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::RangeLoop, {
         if !skip.contains(Pass::RangeLoop)
-            && rewrite::range_loop::RangeLoop::new(logger).fixup(&mut program, &facts)
+            && run_once_items(&mut program, |item_index, f| {
+                let Some(function) = facts.function_by_item_index(item_index) else {
+                    return false;
+                };
+                let mut fixup = rewrite::range_loop::RangeLoop::new(function, &facts, logger);
+                run_once(&mut f.body, &mut fixup)
+            })
         {
             late_loop_cleanup(&mut program, Pass::RangeLoop, logger);
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::VaList, {
-        rewrite::va_list::VaList::new(logger).fixup(&mut program, &facts);
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            rewrite::va_list::VaList::new(function, &facts, logger).fixup(f)
+        });
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::RemoveMut, {

@@ -116,11 +116,11 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 18. `string_lift` - lift NUL-terminated buffers to `CStr`/`str`/byte slices - once, per function (`run_once_items`).
 19. `string_params` - turn a C-string pointer parameter into `&str` - program-wide to fixpoint with facts refreshed before every round (`to_fixpoint_program_with_facts`); re-run twice later in the sequence after `string_copy` and `printf_format`, since each can create a new liftable parameter.
 20. `ptr_len` - pair a pointer+length parameter into a slice parameter - once, program-wide (`run_once_program`).
-21. `slice_index` - rewrite pointer-offset derefs into `slice[i]` once the param is a slice - once.
-22. `slice_loop` - recover `for x in slice.iter()/.iter_mut()`, or `for (i, x) in slice.iter()/.iter_mut().enumerate()` when the body also reads the index directly (re-casting the `usize` enumerate index back to its original type via a shadowing `let`) - once; if it changed anything, `late_loop_cleanup` runs, itself `singleton_scopes` + `dead_locals` to fixpoint.
-23. `slice_reduce` - fold a slice-iterator accumulator loop into `.sum()`/`.product()`/`.fold()` - once; runs right after `slice_loop` (its only producer) since it consumes the `for`-loop shape that pass emits; same conditional `late_loop_cleanup` as above.
-24. `range_loop` - recover `for i in 0..bound` for the remaining counted loops - once; same conditional `late_loop_cleanup` as above.
-25. `va_list` - remove redundant `va_list` clone/alias bookkeeping - once.
+21. `slice_index` - rewrite pointer-offset derefs into `slice[i]` once the param is a slice - once, per function (`run_once_items`).
+22. `slice_loop` - recover `for x in slice.iter()/.iter_mut()`, or `for (i, x) in slice.iter()/.iter_mut().enumerate()` when the body also reads the index directly (re-casting the `usize` enumerate index back to its original type via a shadowing `let`) - once, per function (`run_once_items`); if it changed anything, `late_loop_cleanup` runs, itself `singleton_scopes` + `dead_locals` to fixpoint.
+23. `slice_reduce` - fold a slice-iterator accumulator loop into `.sum()`/`.product()`/`.fold()` - once, per function (`run_once_items`); runs right after `slice_loop` (its only producer) since it consumes the `for`-loop shape that pass emits; same conditional `late_loop_cleanup` as above.
+24. `range_loop` - recover `for i in 0..bound` for the remaining counted loops - once, per function (`run_once_items`); same conditional `late_loop_cleanup` as above.
+25. `va_list` - remove redundant `va_list` clone/alias bookkeeping - once, per function (`run_once_items`); it remains an explicit `FnDef`-level exception because it renames a parameter while removing its body aliases.
 26. `remove_mut` - drop `mut` where facts prove no mutation - once, per function; re-run as a bare pass four more times later in the sequence, after each group of passes that could have made a binding provably immutable (`string_copy`, `heap_ownership`, `printf_format`, `atomic_compare_exchange`).
 27. `string_copy` - `strcpy`/`strcat`-only buffers to owned `String` - once.
 28. `string_libc` - `strlen`/`strcmp`-family calls on lifted strings to native Rust - once; repeated once more later (after `c_strings`) since lifting more C strings exposes more libc calls to rewrite.
