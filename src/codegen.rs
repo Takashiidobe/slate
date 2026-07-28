@@ -1260,6 +1260,9 @@ impl<W: Write> Codegen<W> {
             crate::rust_ast::Pattern::I64(n) => write!(self.out, "{n}"),
             crate::rust_ast::Pattern::I128(n) => write!(self.out, "{n}"),
             crate::rust_ast::Pattern::U128(n) => write!(self.out, "{n}"),
+            crate::rust_ast::Pattern::InclusiveRange { start, end } => {
+                write!(self.out, "{start}..={end}")
+            }
             crate::rust_ast::Pattern::TupleStruct { name, fields } => {
                 self.out.write_str(name.as_str())?;
                 self.out.write_char('(')?;

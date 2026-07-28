@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, Type};
+use crate::rust_ast::{Block, Expr, IndentStmt, Item, Pattern, Program, Stmt, Type};
 
 pub(super) mod anonymous_structs;
 pub(super) mod array_element_pointer_origin;
@@ -240,7 +240,7 @@ pub(super) struct SwitchDispatchFact {
 
 #[derive(Debug, Clone)]
 pub(super) struct SwitchCaseFact {
-    pub(super) values: Vec<i128>,
+    pub(super) patterns: Vec<Pattern>,
     pub(super) is_default: bool,
     pub(super) body: Vec<IndentStmt>,
     pub(super) falls_through: bool,

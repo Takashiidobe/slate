@@ -395,6 +395,7 @@ pub enum Pattern {
     I64(i64),
     I128(i128),
     U128(u128),
+    InclusiveRange { start: i128, end: i128 },
     TupleStruct { name: Ident, fields: Vec<Pattern> },
 }
 

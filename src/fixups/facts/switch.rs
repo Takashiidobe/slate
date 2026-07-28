@@ -56,7 +56,7 @@ impl<'a> Collector<'a> {
             consumed,
         ) = parts;
 
-        let mut values_by_index: std::collections::BTreeMap<i64, Vec<i128>> =
+        let mut patterns_by_index: std::collections::BTreeMap<i64, Vec<Pattern>> =
             std::collections::BTreeMap::new();
         let mut default_index: Option<i64> = None;
         for arm in selector_arms {
@@ -65,8 +65,13 @@ impl<'a> Collector<'a> {
             };
             match &arm.pattern {
                 Pattern::Wildcard => default_index = Some(index),
-                Pattern::I64(v) => values_by_index.entry(index).or_default().push(*v as i128),
-                Pattern::I128(v) => values_by_index.entry(index).or_default().push(*v),
+                Pattern::I64(_)
+                | Pattern::I128(_)
+                | Pattern::U128(_)
+                | Pattern::InclusiveRange { .. } => patterns_by_index
+                    .entry(index)
+                    .or_default()
+                    .push(arm.pattern.clone()),
                 _ => return,
             }
         }
@@ -80,13 +85,13 @@ impl<'a> Collector<'a> {
                 _ => return,
             };
             let is_default = default_index == Some(index);
-            let values = values_by_index.get(&index).cloned().unwrap_or_default();
-            if !is_default && values.is_empty() {
+            let patterns = patterns_by_index.get(&index).cloned().unwrap_or_default();
+            if !is_default && patterns.is_empty() {
                 return;
             }
             let (body, falls_through) = classify_case_body(&arm.body, case_name, switch_label);
             cases.push(SwitchCaseFact {
-                values,
+                patterns,
                 is_default,
                 body,
                 falls_through,

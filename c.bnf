@@ -65,7 +65,8 @@
 <else_clause> ::= "else" "{" <stmt_list> "}" | "else" <if_stmt> | "" ;
 <switch_stmt> ::= "switch" "(" <expr> ")" "{" <case_list> <default_case> "}" ;
 <case_list> ::= <case> <case_list> | <case> ;
-<case> ::= "case" <int> ":" <stmt_list> ;
+<case> ::= "case" <case_value> ":" <stmt_list> ;
+<case_value> ::= <int> | <int> "..." <int> ;
 <default_case> ::= "default" ":" <stmt_list> | "" ;
 <call_stmt> ::= <call> ";" ;
 <atomic_stmt> ::= <atomic_store> ";" | <atomic_expr> ";" ;

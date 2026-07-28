@@ -50,13 +50,14 @@ type facts.
 
 ### Control flow
 
-`if`/`else`/`else if`, `for`, `while`, `do while`, `switch` (sparse cases,
-fallthrough, missing defaults, multiple labels), `break`/`continue` (including
-nested loops and `for`'s step-region `continue` semantics), and `goto`/labels.
-Structured CIR lowers directly; unstructured jumps (`cir.goto`/`cir.label`/
-`cir.br` across blocks) lower to a conservative dispatch-loop state machine,
-which a later fixup restructures back into ordinary `if`/`loop`/sequence Rust
-when the state graph is reducible enough (see [passes.md](passes.md)).
+`if`/`else`/`else if`, `for`, `while`, `do while`, `switch` (sparse cases, GNU
+inclusive case ranges, fallthrough, missing defaults, multiple labels),
+`break`/`continue` (including nested loops and `for`'s step-region `continue`
+semantics), and `goto`/labels. Structured CIR lowers directly; unstructured
+jumps (`cir.goto`/`cir.label`/`cir.br` across blocks) lower to a conservative
+dispatch-loop state machine, which a later fixup restructures back into ordinary
+`if`/`loop`/sequence Rust when the state graph is reducible enough (see
+[passes.md](passes.md)).
 
 ### Aggregates
 

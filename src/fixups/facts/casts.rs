@@ -575,7 +575,11 @@ impl<'a> Collector<'a> {
                     self.shadow_pattern(field);
                 }
             }
-            Pattern::Wildcard | Pattern::I64(_) | Pattern::I128(_) | Pattern::U128(_) => {}
+            Pattern::Wildcard
+            | Pattern::I64(_)
+            | Pattern::I128(_)
+            | Pattern::U128(_)
+            | Pattern::InclusiveRange { .. } => {}
         }
     }
 }
