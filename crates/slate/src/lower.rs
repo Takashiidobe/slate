@@ -264,6 +264,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             records.entry(name).or_insert_with(|| record.clone());
         }
     }
+    reconcile_anonymous_member_types(cir, &mut records);
     let mut lowerer = Lowerer {
         ctx,
         aliases: cir.aliases.clone(),
@@ -789,7 +790,12 @@ impl<'a> Lowerer<'a> {
             if self.project.shared_records.contains(&name) {
                 continue;
             }
-            items.extend(self.lower_record(record));
+            let record = self
+                .records
+                .get(&name)
+                .cloned()
+                .unwrap_or_else(|| record.clone());
+            items.extend(self.lower_record(&record));
         }
         for record in &self.anon_records {
             items.extend(lower_record_def(
@@ -4983,7 +4989,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let base = self.place_or_deref_expr(base_ptr);
-        let logical_field = sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string();
+        let raw_field = attr_str(op, "name").unwrap_or(result);
+        let logical_field = if raw_field.is_empty() {
+            aggregate_member_index(op)
+                .map(|index| format!("__slate_anon_{index}"))
+                .unwrap_or_else(|| sanitize_ident(result).into_string())
+        } else {
+            sanitize_ident(raw_field).into_string()
+        };
         let storage = self.bitfield_storage_member(op);
         let field = storage
             .as_ref()
@@ -8807,15 +8820,32 @@ fn collect_anon_alias_keys(
     aliases: &BTreeMap<String, String>,
     out: &mut BTreeSet<String>,
 ) {
+    collect_anon_alias_keys_inner(ty, aliases, out, &mut BTreeSet::new());
+}
+
+fn collect_anon_alias_keys_inner(
+    ty: &str,
+    aliases: &BTreeMap<String, String>,
+    out: &mut BTreeSet<String>,
+    seen: &mut BTreeSet<String>,
+) {
     let ty = ty.trim();
-    if let Some(key) = anon_alias_key(ty, aliases) {
-        out.insert(key);
+    if !seen.insert(ty.to_string()) {
         return;
     }
+    if let Some(key) = anon_alias_key(ty, aliases) {
+        out.insert(key);
+    }
     if let Some(inner) = cir_ptr_pointee(ty) {
-        collect_anon_alias_keys(inner, aliases, out);
+        collect_anon_alias_keys_inner(inner, aliases, out, seen);
     } else if let Some((elem, _)) = parse_cir_array_type(ty) {
-        collect_anon_alias_keys(&elem, aliases, out);
+        collect_anon_alias_keys_inner(&elem, aliases, out, seen);
+    } else if let Some(expanded) = aliases.get(ty)
+        && let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}'))
+    {
+        for field_ty in split_top_level(&expanded[open + 1..close], ',') {
+            collect_anon_alias_keys_inner(field_ty, aliases, out, seen);
+        }
     }
 }
 
@@ -8874,6 +8904,33 @@ fn cir_type_to_ctype(ty: &str, aliases: &BTreeMap<String, String>) -> crate::c_a
     CType::Int {
         signed: true,
         bits: 32,
+    }
+}
+
+fn reconcile_anonymous_member_types(
+    module: &Module,
+    records: &mut BTreeMap<String, crate::c_ast::Record>,
+) {
+    for record in records.values_mut() {
+        let Some(expanded) = module.aliases.values().find(|expanded| {
+            cir_record_name(expanded).is_some_and(|name| {
+                sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str()
+            })
+        }) else {
+            continue;
+        };
+        let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}')) else {
+            continue;
+        };
+        let field_types = split_top_level(&expanded[open + 1..close], ',');
+        if field_types.len() != record.fields.len() {
+            continue;
+        }
+        for (index, field) in record.fields.iter_mut().enumerate() {
+            if field.name == format!("__slate_anon_{index}") {
+                field.ty = cir_type_to_ctype(field_types[index], &module.aliases);
+            }
+        }
     }
 }
 

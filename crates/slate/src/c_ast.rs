@@ -602,9 +602,21 @@ fn extract_record(node: &Value, name_override: Option<String>) -> Option<Record>
     let fields = children(node)
         .iter()
         .filter(|child| kind(child) == Some("FieldDecl"))
-        .filter_map(|child| {
+        .enumerate()
+        .filter_map(|(index, child)| {
+            let name = child
+                .get("name")
+                .and_then(Value::as_str)
+                .map(str::to_string)
+                .or_else(|| {
+                    let ty = qual_type(child)?;
+                    (child.get("isImplicit").and_then(Value::as_bool) == Some(true)
+                        && (ty.starts_with("struct ") || ty.starts_with("union "))
+                        && (ty.contains("(anonymous at ") || ty.contains("(unnamed at ")))
+                    .then(|| format!("__slate_anon_{index}"))
+                })?;
             Some(Decl {
-                name: child.get("name")?.as_str()?.to_string(),
+                name,
                 comments: attached_comment(child),
                 ty: parse_c_type(qual_type(child).unwrap_or("int")),
                 bit_width: child

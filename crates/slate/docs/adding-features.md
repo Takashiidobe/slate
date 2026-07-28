@@ -8,8 +8,12 @@ Use one C file per idea under `tests/fixtures/`:
 
 ```bash
 $EDITOR tests/fixtures/<name>.c
-cargo nextest r --release --test differential -E 'test(generated_differential)' --nocapture
+SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --test differential -E 'test(generated_differential)' --nocapture
 ```
+
+Use `SLATE_DIFF_FIXTURE` for the red/green implementation loop so only the new
+fixture is translated, compiled, and compared. The unfiltered differential test
+runs as part of the full release suite before completion.
 
 The effects regression is diagnostic-only and is not a required feature or
 fixup completion gate. Do not run it by default. Use it only when working
@@ -52,7 +56,7 @@ semantics, or produces different output from the C program.
 2. Run the generated differential test and observe the failure:
 
    ```bash
-   cargo nextest r --release --test differential -E 'test(generated_differential)' --nocapture
+   SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --test differential -E 'test(generated_differential)' --nocapture
    ```
 
 3. Inspect the CIR shape:

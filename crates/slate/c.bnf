@@ -29,7 +29,8 @@
 <struct_decl> ::= "struct" <ident> "{" <field_list> "};" ;
 <union_decl> ::= "union" <ident> "{" <field_list> "};" ;
 <field_list> ::= <field> <field_list> | <field> ;
-<field> ::= <type> <ident> ";" | <type> <ident> "[" "]" ";" ;
+<field> ::= <type> <ident> ";" | <type> <ident> "[" "]" ";" | <anonymous_record_member> ;
+<anonymous_record_member> ::= "struct" "{" <field_list> "};" | "union" "{" <field_list> "};" ;
 
 <global_decl> ::= <storage_class> <type> <ident> <global_init> ";" | <type> <ident> <global_init> ";" | "extern" <type> <ident> ";" | "extern _Thread_local" <type> <ident> ";" ;
 <storage_class> ::= "static" | "_Thread_local" | "static _Thread_local" | "" ;
