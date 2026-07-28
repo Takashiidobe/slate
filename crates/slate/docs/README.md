@@ -64,7 +64,8 @@ arrays of structs), member/element access composed into a single Rust place
 (`b.data[i]`, `ps[i].x`), struct assignment via derived `Copy`, bitfields
 (per-field mask/sign-extend storage), and aggregate initializers (nested,
 partial with zero-filled trailing fields, and designated). Enum constants
-lower to Rust integer `const` items.
+lower to Rust integer `const` items. C11 `_Alignas` on aggregate members and
+local objects preserves the strengthened type or object alignment.
 
 ### Pointers and arrays
 

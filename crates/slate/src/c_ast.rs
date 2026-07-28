@@ -650,6 +650,15 @@ fn record_layout_attrs(node: &Value) -> (bool, Option<u32>) {
                     align = Some(align.unwrap_or(0).max(n));
                 }
             }
+            Some("FieldDecl") => {
+                for attr in children(child) {
+                    if kind(attr) == Some("AlignedAttr")
+                        && let Some(n) = constant_expr_value(attr)
+                    {
+                        align = Some(align.unwrap_or(0).max(n));
+                    }
+                }
+            }
             _ => {}
         }
     }

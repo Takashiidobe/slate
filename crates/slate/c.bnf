@@ -29,7 +29,7 @@
 <struct_decl> ::= "struct" <ident> "{" <field_list> "};" ;
 <union_decl> ::= "union" <ident> "{" <field_list> "};" ;
 <field_list> ::= <field> <field_list> | <field> ;
-<field> ::= <type> <ident> ";" | <type> <ident> "[" "]" ";" | <anonymous_record_member> ;
+<field> ::= <type> <ident> ";" | <type> <ident> "[" "]" ";" | "_Alignas" "(" <int> ")" <type> <ident> ";" | <anonymous_record_member> ;
 <anonymous_record_member> ::= "struct" "{" <field_list> "};" | "union" "{" <field_list> "};" ;
 
 <global_decl> ::= <storage_class> <type> <ident> <global_init> ";" | <type> <ident> <global_init> ";" | "extern" <type> <ident> ";" | "extern _Thread_local" <type> <ident> ";" ;
@@ -53,7 +53,7 @@
 <stmt> ::= <declaration> | <assignment> | <compound_assignment> | <atomic_stmt> | <for_loop> | <while_loop> | <if_stmt> | <switch_stmt> | <call_stmt> | <return_stmt> | <break_stmt> | <continue_stmt> | <goto_stmt> | <labeled_stmt> ;
 
 <declaration> ::= <scalar_declaration> | <array_declaration> ;
-<scalar_declaration> ::= <type> <ident> "=" <expr> ";" | "static _Thread_local" <type> <ident> <global_init> ";" ;
+<scalar_declaration> ::= <type> <ident> "=" <expr> ";" | "_Alignas" "(" <int> ")" <type> <ident> "=" <expr> ";" | "static _Thread_local" <type> <ident> <global_init> ";" ;
 <array_declaration> ::= <type> <ident> "[" <array_bound> "]" ";" | "static" <type> <ident> "[" "]" "=" <string_literal> ";" ;
 <array_bound> ::= <int> | <ident> ;
 <assignment> ::= <lvalue> "=" <expr> ";" ;
@@ -77,7 +77,7 @@
 # ----- expressions -----
 
 <expr> ::= <term> | <unary_op> <term> | <term> <binary_op> <expr> | "(" <expr> <cmp_op> <expr> ")" | "(" <expr> <logical_op> <expr> ")" ;
-<term> ::= <int> | <float> | <char> | <lvalue> | "&" <lvalue> | <cast_expr> | <call> | <function_pointer_call> | <atomic_expr> | <sizeof> | "(" <expr> ")" ;
+<term> ::= <int> | <float> | <char> | <lvalue> | "&" <lvalue> | <cast_expr> | <call> | <function_pointer_call> | <atomic_expr> | <sizeof> | <alignof> | "(" <expr> ")" ;
 <lvalue> ::= <ident> | "*" <term> | <ident> "." <ident> | <ident> "[" <expr> "]" ;
 <binary_op> ::= <arith_op> | <bitwise_op> | <shift_op> ;
 <arith_op> ::= "+" | "-" | "*" | "/" | "%" ;
@@ -92,6 +92,7 @@
 <function_pointer_call> ::= <lvalue> "(" <arg_list> ")" ;
 <arg_list> ::= <expr> "," <arg_list> | <expr> ;
 <sizeof> ::= "sizeof" "(" <sizeof_arg> ")" ;
+<alignof> ::= "_Alignof" "(" <sizeof_arg> ")" ;
 <sizeof_arg> ::= "int" | <ident> | "struct" <ident> | "union" <ident> ;
 
 # ----- single-threaded atomics -----
