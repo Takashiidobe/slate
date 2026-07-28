@@ -4933,8 +4933,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, expr, Some("!cir.bool"));
             return;
         }
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let lhs = operand_types.first().map_or_else(
+            || self.operand_expr(&op.operands[0]),
+            |ty| self.call_arg_expr(&op.operands[0], ty),
+        );
+        let rhs = operand_types.get(1).map_or_else(
+            || self.operand_expr(&op.operands[1]),
+            |ty| self.call_arg_expr(&op.operands[1], ty),
+        );
         let cmp = match attr_int(op, "kind") {
             Some(0) => BinOp::Lt,
             Some(1) => BinOp::Le,
