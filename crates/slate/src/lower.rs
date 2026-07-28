@@ -439,7 +439,7 @@ fn lower_record_def(
         .map(|field| RecordField {
             comments: comments(&field.comments),
             name: sanitize_ident(&field.name),
-            ty: c_type_to_type(&field.ty),
+            ty: c_record_field_type(&field.ty),
         })
         .collect();
     let name = sanitize_ident(&record.name).into_string();
@@ -681,6 +681,7 @@ struct ElementPtr {
     base: Expr,
     index: Expr,
     unsafe_access: bool,
+    unbounded: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -1835,7 +1836,7 @@ impl<'a> Lowerer<'a> {
         if ctype_uses_long_double(ty) {
             self.uses_long_double.set(true);
         }
-        c_type_to_type(ty)
+        c_record_field_type(ty)
     }
 
     fn default_value_expr(&self, ty: &Type) -> Expr {
@@ -1858,7 +1859,7 @@ impl<'a> Lowerer<'a> {
                                 .map(|field| {
                                     (
                                         field.name.clone(),
-                                        self.default_value_expr(&c_type_to_type(&field.ty)),
+                                        self.default_value_expr(&c_record_field_type(&field.ty)),
                                     )
                                 })
                                 .collect(),
@@ -1872,7 +1873,7 @@ impl<'a> Lowerer<'a> {
                                 .map(|field| {
                                     (
                                         sanitize_ident(&field.name).into_string(),
-                                        self.default_value_expr(&c_type_to_type(&field.ty)),
+                                        self.default_value_expr(&c_record_field_type(&field.ty)),
                                     )
                                 })
                                 .collect();
@@ -1892,7 +1893,9 @@ impl<'a> Lowerer<'a> {
                                         name: record_lit_name(record),
                                         fields: vec![(
                                             sanitize_ident(&field.name).into_string(),
-                                            self.default_value_expr(&c_type_to_type(&field.ty)),
+                                            self.default_value_expr(&c_record_field_type(
+                                                &field.ty,
+                                            )),
                                         )],
                                     },
                                 );
@@ -1989,7 +1992,7 @@ impl<'a> Lowerer<'a> {
                             .iter()
                             .enumerate()
                             .map(|(i, field)| {
-                                let field_ty = c_type_to_type(&field.ty);
+                                let field_ty = c_record_field_type(&field.ty);
                                 let value = elems
                                     .get(i)
                                     .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
@@ -2007,7 +2010,7 @@ impl<'a> Lowerer<'a> {
                         .iter()
                         .enumerate()
                         .map(|(i, field)| {
-                            let field_ty = c_type_to_type(&field.ty);
+                            let field_ty = c_record_field_type(&field.ty);
                             let value = elems
                                 .get(i)
                                 .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
@@ -2025,7 +2028,7 @@ impl<'a> Lowerer<'a> {
                 }
                 RecordKind::Union => {
                     let field = record.fields.first()?;
-                    let field_ty = c_type_to_type(&field.ty);
+                    let field_ty = c_record_field_type(&field.ty);
                     let value = elems
                         .first()
                         .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
@@ -2150,6 +2153,16 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
     }
 }
 
+fn c_record_field_type(ty: &crate::c_ast::CType) -> Type {
+    match ty {
+        crate::c_ast::CType::Array(inner, None) => Type::Array {
+            elem: Box::new(c_type_to_type(inner)),
+            len: 0,
+        },
+        _ => c_type_to_type(ty),
+    }
+}
+
 #[derive(Clone, Copy)]
 struct CLayout {
     size: u64,
@@ -2188,7 +2201,13 @@ fn c_layout(
                 align: elem.align,
             })
         }
-        CType::Array(elem, None) => c_layout(&CType::Ptr(elem.clone()), records),
+        CType::Array(elem, None) => {
+            let elem = c_layout(elem, records)?;
+            Some(CLayout {
+                size: 0,
+                align: elem.align,
+            })
+        }
         CType::Record(name) => record_layout(name, records),
         CType::Enum(_) => scalar_layout(32),
     }
@@ -5150,7 +5169,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .fields
             .iter()
             .find(|candidate| sanitize_ident(&candidate.name).as_str() == field)
-            .map(|candidate| c_type_to_type(&candidate.ty))
+            .map(|candidate| self.parent.record_field_type(&candidate.ty))
     }
 
     fn lower_set_bitfield(&mut self, op: &Op) {
@@ -5309,6 +5328,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let base_ptr = &op.operands[0];
         let index = self.operand_expr(&op.operands[1]);
+        let unbounded = self
+            .member_ptrs
+            .get(base_ptr)
+            .is_some_and(|member| matches!(&member.field_ty, Some(Type::Array { len: 0, .. })));
         if let Some(Val::Global(name)) = self.values.get(base_ptr).cloned() {
             if let Some(labels) = self.parent.block_addr_globals.get(&name) {
                 self.block_addr_element_ptrs.insert(
@@ -5335,6 +5358,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         base,
                         index,
                         unsafe_access: false,
+                        unbounded: false,
                     },
                 );
                 return;
@@ -5342,13 +5366,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let base = self.place_or_deref_expr(base_ptr);
         let unsafe_access =
-            self.place_expr(base_ptr).is_none() || self.ptr_requires_unsafe(base_ptr);
+            unbounded || self.place_expr(base_ptr).is_none() || self.ptr_requires_unsafe(base_ptr);
         self.element_ptrs.insert(
             result.clone(),
             ElementPtr {
                 base,
                 index,
                 unsafe_access,
+                unbounded,
             },
         );
     }
@@ -7033,12 +7058,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn element_place_expr(&self, element: &ElementPtr) -> Expr {
+        let index = Expr::Cast {
+            expr: Box::new(element.index.clone()),
+            ty: Type::Prim(Prim::Usize),
+        };
+        if element.unbounded {
+            return Expr::Unary {
+                op: UnaryOp::Deref,
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(Expr::ArrayPtr {
+                        array: Box::new(element.base.clone()),
+                        mutable: true,
+                    }),
+                    method: "add".into(),
+                    args: vec![index],
+                }),
+            };
+        }
         Expr::Index {
             base: Box::new(element.base.clone()),
-            index: Box::new(Expr::Cast {
-                expr: Box::new(element.index.clone()),
-                ty: Type::Prim(Prim::Usize),
-            }),
+            index: Box::new(index),
         }
     }
 

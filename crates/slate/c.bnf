@@ -29,7 +29,7 @@
 <struct_decl> ::= "struct" <ident> "{" <field_list> "};" ;
 <union_decl> ::= "union" <ident> "{" <field_list> "};" ;
 <field_list> ::= <field> <field_list> | <field> ;
-<field> ::= <type> <ident> ";" ;
+<field> ::= <type> <ident> ";" | <type> <ident> "[" "]" ";" ;
 
 <global_decl> ::= <storage_class> <type> <ident> <global_init> ";" | <type> <ident> <global_init> ";" | "extern" <type> <ident> ";" ;
 <storage_class> ::= "static" | "" ;
