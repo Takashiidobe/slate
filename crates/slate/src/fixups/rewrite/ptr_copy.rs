@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::PathSegment;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
@@ -8,14 +9,15 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 
-pub(in crate::fixups) fn fixup(body: &mut [IndentStmt]) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    PtrCopy::new("<unknown>", &mut logger).fixup(body)
-}
-
 pub(in crate::fixups) struct PtrCopy<'a> {
     function_name: String,
     logger: &'a mut dyn TraceLogger,
+}
+
+impl Fixup for PtrCopy<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        self.fixup_at(body, &mut Vec::new())
+    }
 }
 
 impl<'a> PtrCopy<'a> {
@@ -27,10 +29,6 @@ impl<'a> PtrCopy<'a> {
             function_name: function_name.into(),
             logger,
         }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, body: &mut [IndentStmt]) -> bool {
-        self.fixup_at(body, &mut Vec::new())
     }
 
     fn fixup_at(&mut self, body: &mut [IndentStmt], path: &mut Vec<PathSegment>) -> bool {

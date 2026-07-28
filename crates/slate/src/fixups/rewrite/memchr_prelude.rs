@@ -9,11 +9,17 @@ use crate::fixups::trace::{
     function_path_location, path_fact, stmts_snippet,
 };
 use crate::rust_ast::{
-    BinOp, Block, CLibType, Expr, ExprMatchArm, FnDef, Ident, IndentStmt, Item, Pattern, Prim,
-    Program, RustValue, Stmt, Type, UnaryOp,
+    BinOp, Block, CLibType, Expr, ExprMatchArm, Ident, IndentStmt, Item, Pattern, Prim, Program,
+    RustValue, Stmt, Type, UnaryOp,
 };
 
 pub(in crate::fixups) struct MemchrPrelude<'a> {
+    function_name: String,
+    enabled: bool,
+    logger: &'a mut dyn TraceLogger,
+}
+
+pub(in crate::fixups) struct MemchrPreludePruneUnusedHelper<'a> {
     logger: &'a mut dyn TraceLogger,
 }
 
@@ -44,30 +50,50 @@ impl<'a> MemchrPreludeCalls<'a> {
 }
 
 impl<'a> MemchrPrelude<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+    pub(in crate::fixups) fn new(
+        function_name: String,
+        enabled: bool,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function_name,
+            enabled,
+            logger,
+        }
     }
+}
 
-    pub(in crate::fixups) fn fixup(&mut self, f: &mut FnDef) -> bool {
-        let before = self.logger.is_enabled().then(|| f.body.clone());
-        let changed = fixup_impl(f);
+impl Fixup for MemchrPrelude<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        if !self.enabled {
+            return false;
+        }
+        let before = self.logger.is_enabled().then(|| body.clone());
+        *body = memchr_body();
+        let changed = true;
         if changed && let Some(before) = before {
             self.logger.rewrite(RewriteEvent {
                 pass: TracePass::MemchrPrelude,
                 kind: "rewrite_memchr_helper_body".into(),
                 location: TraceLocation {
-                    function: Some(f.name.clone()),
+                    function: Some(self.function_name.clone()),
                     ..TraceLocation::default()
                 },
                 before: vec![stmts_snippet("body", &before)],
-                after: vec![stmts_snippet("body", &f.body)],
+                after: vec![stmts_snippet("body", body)],
                 facts: Vec::new(),
             });
         }
         changed
     }
+}
 
-    pub(in crate::fixups) fn prune_unused_helper(&mut self, program: &mut Program) -> bool {
+impl<'a> MemchrPreludePruneUnusedHelper<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
+    }
+
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
         let before = self.logger.is_enabled().then(|| program.emit());
         let changed = prune_unused_helper_impl(program);
         if changed && let Some(before) = before {
@@ -85,14 +111,6 @@ impl<'a> MemchrPrelude<'a> {
         }
         changed
     }
-}
-
-fn fixup_impl(f: &mut FnDef) -> bool {
-    if f.name != "__slate_memchr" || f.params.len() != 3 {
-        return false;
-    }
-    f.body = memchr_body();
-    true
 }
 
 fn prune_unused_helper_impl(program: &mut Program) -> bool {
