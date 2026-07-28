@@ -83,30 +83,29 @@ The fixups directory is split by concern:
 
 `apply` is a straight-line sequence, not a scheduler: it calls `facts::analyze`
 again whenever an earlier rewrite could have invalidated the facts a later pass
-needs, and re-runs several passes to a fixpoint (`inline_temps_to_fixpoint`,
-`zero_init_to_fixpoint`, `dead_locals_to_fixpoint`, ...) since one fold can
-expose another. Order matters — see
+needs, and re-runs several passes through `to_fixpoint_items` or
+`to_fixpoint_items_with_facts` since one fold can expose another. Order matters — see
 [writing-a-fixup.md](writing-a-fixup.md#register-the-pass) for how to place a
 new pass in that sequence.
 
 ### The pass sequence
 
 This is the order `src/fixups::apply` (`src/fixups/mod.rs`) actually runs in.
-Every pass listed below lives at `src/fixups/rewrite/<name>.rs` and exposes a
-`fixup` entry point, so the module name is enough to find it. "To fixpoint"
-means the pass re-runs - recomputing facts each round - until a round makes no
-change; "once" means it runs exactly one time per `apply` call.
+Every pass listed below lives at `src/fixups/rewrite/<name>.rs`, so the module
+name is enough to find it. "To fixpoint" means the pass re-runs until a round
+makes no change; facts-backed runners explicitly recompute facts each round.
+"Once" means it runs exactly one time per `apply` call.
 
-1. `goto` - restructure the goto dispatch loop into structured control flow - to fixpoint, per function (`structure_goto`).
+1. `goto` - restructure the goto dispatch loop into structured control flow - to fixpoint, per function (`to_fixpoint_items`).
 2. `switch` - collapse a fallthrough-free switch dispatch loop into a direct `match` over the selector expression - once, per function.
-3. `early_inline_temps` - inline single-use pure temps, early variant - to fixpoint (`inline_temps_to_fixpoint`), capped at 5 rounds for very large functions (`> 2_000` statements) so pathological cases don't spin.
+3. `early_inline_temps` - inline single-use pure temps, early variant - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`), capped at 5 rounds for very large functions (`> 2_000` statements) so pathological cases don't spin.
 4. `anonymous_structs` - hoist repeated anonymous-struct shapes into named structs - once.
 5. `param_spills` - fold a parameter's stack spill into its binding - once, per function.
-6. `zero_init` (`cross_effects = false`) - fuse a zero-init `let` with the assignment that overwrites it - to fixpoint (`zero_init_to_fixpoint`).
-7. `struct_field_init` - fold field assignments into the preceding struct literal - to fixpoint (`struct_field_init_to_fixpoint`).
-8. `singleton_scopes` - unwrap a one-statement `{ }` scope - to fixpoint (`singleton_scopes_to_fixpoint`).
+6. `zero_init` (`cross_effects = false`) - fuse a zero-init `let` with the assignment that overwrites it - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`).
+7. `struct_field_init` - fold field assignments into the preceding struct literal - to fixpoint (`to_fixpoint_items`).
+8. `singleton_scopes` - unwrap a one-statement `{ }` scope - to fixpoint (`to_fixpoint_items`).
 9. `compound_assign` - recover `a -= 5` - once, per function.
-10. `for_continue` - invert synthetic continue-blocks - to fixpoint (`cleanup_for_continues`), then `singleton_scopes` again to fixpoint.
+10. `for_continue` - invert synthetic continue-blocks - to fixpoint (`to_fixpoint_items`), then `singleton_scopes` again to fixpoint.
 11. `constant_index_casts` - drop redundant `as usize` on constant indices - once, per function.
 12. `unnecessary_casts` - drop casts a typed context already makes redundant - once, per function.
 13. `call_args` - inline single-use call-argument temps - to fixpoint, per function, across the whole program.
@@ -141,7 +140,7 @@ change; "once" means it runs exactly one time per `apply` call.
 42. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops - once.
 43. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage - once.
 44. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites - to fixpoint.
-45. `zero_init` (`cross_effects = true`) - same fusion as step 6, now allowed to cross intervening effects - to fixpoint.
+45. `zero_init` (`cross_effects = true`) - same fusion as step 6, now allowed to cross intervening effects - to fixpoint with facts refreshed before every round.
 46. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, across the program.
 47. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery - once, per function.
 48. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint (`inline_var_aliases_to_fixpoint`).

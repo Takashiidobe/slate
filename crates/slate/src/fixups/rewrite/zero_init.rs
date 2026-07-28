@@ -1,6 +1,7 @@
 //! Fuse a zero-initialized declaration with the assignment that immediately
 //! overwrites it, when the assignment does not read the placeholder.
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AstPath, BindingId, ConstValue, EffectSubject, FixupFacts, FunctionId, PathSegment,
     PlaceAccess, PlaceKind, Purity, ValueSubject,
@@ -13,38 +14,20 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Expr, IndentStmt, Stmt, UnaryOp};
 
-pub(in crate::fixups) fn fixup(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-    cross_effects: bool,
-) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    ZeroInit::new(cross_effects, &mut logger).fixup(body, function, facts)
-}
-
 pub(in crate::fixups) struct ZeroInit<'a> {
     cross_effects: bool,
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
+impl Fixup for ZeroInit<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        self.fixup_at(body, self.function, self.facts, &mut Vec::new())
+    }
+}
+
 impl<'a> ZeroInit<'a> {
-    pub(in crate::fixups) fn new(cross_effects: bool, logger: &'a mut dyn TraceLogger) -> Self {
-        Self {
-            cross_effects,
-            logger,
-        }
-    }
-
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        body: &mut Vec<IndentStmt>,
-        function: FunctionId,
-        facts: &FixupFacts,
-    ) -> bool {
-        self.fixup_at(body, function, facts, &mut Vec::new())
-    }
-
     fn fixup_at(
         &mut self,
         body: &mut Vec<IndentStmt>,
@@ -217,6 +200,20 @@ impl<'a> ZeroInit<'a> {
             after: vec![stmt_snippet("declaration", after_decl)],
             facts: event_facts,
         });
+    }
+
+    pub(in crate::fixups) fn new(
+        cross_effects: bool,
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            cross_effects,
+            function,
+            facts,
+            logger,
+        }
     }
 }
 

@@ -4,6 +4,7 @@
 //! form. Restricted to simple local slots (a plain variable target) with a pure
 //! rhs, so it never reorders a side effect or touches a volatile/complex lvalue.
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::{AstPath, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity};
 use crate::fixups::idents::expr_ident;
 use crate::fixups::support::walk;
@@ -12,27 +13,35 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(body: &mut [IndentStmt], function: FunctionId, facts: &FixupFacts) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    CompoundAssign::new(&mut logger).fixup(body, function, facts);
-}
-
 pub(in crate::fixups) struct CompoundAssign<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> CompoundAssign<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+impl Fixup for CompoundAssign<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        fixup_at(
+            body,
+            self.function,
+            self.facts,
+            &mut Vec::new(),
+            self.logger,
+        )
     }
+}
 
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        body: &mut [IndentStmt],
+impl<'a> CompoundAssign<'a> {
+    pub(in crate::fixups) fn new(
         function: FunctionId,
-        facts: &FixupFacts,
-    ) {
-        fixup_at(body, function, facts, &mut Vec::new(), self.logger);
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
     }
 }
 
@@ -42,14 +51,16 @@ fn fixup_at(
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
     logger: &mut dyn TraceLogger,
-) {
+) -> bool {
+    let mut changed = false;
     for index in 0..body.len() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_mut_with_path(&mut body[index].stmt, path, &mut |body, path| {
-                fixup_at(body, function, facts, path, logger);
+                changed |= fixup_at(body, function, facts, path, logger);
             });
 
             if recover_temp_backed_compound_assign(body, index, function, facts, path, logger) {
+                changed = true;
                 return;
             }
 
@@ -62,6 +73,7 @@ fn fixup_at(
                     op,
                     value: rhs,
                 };
+                changed = true;
                 if let Some(before) = before {
                     logger.rewrite(RewriteEvent {
                         pass: TracePass::CompoundAssign,
@@ -75,6 +87,7 @@ fn fixup_at(
             }
         });
     }
+    changed
 }
 
 fn recover_temp_backed_compound_assign(
