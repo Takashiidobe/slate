@@ -669,7 +669,7 @@ struct LoopFrame {
 }
 
 struct SwitchCase<'a> {
-    values: Vec<i64>,
+    patterns: Vec<Pattern>,
     is_default: bool,
     region: &'a Region,
 }
@@ -6864,9 +6864,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
         let mut selector_arms = Vec::new();
         for (index, case) in cases.iter().enumerate() {
-            for value in &case.values {
+            for pattern in &case.patterns {
                 selector_arms.push(ExprMatchArm {
-                    pattern: int_pattern(*value as i128),
+                    pattern: pattern.clone(),
                     value: Expr::Value(RustValue::I64(index as i64)),
                 });
             }
@@ -8147,7 +8147,8 @@ fn store_ordering(mem_order: i64) -> AtomicOrdering {
 }
 
 fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
-    let is_default = attr_int(op, "kind") == Some(0);
+    let kind = attr_int(op, "kind");
+    let is_default = kind == Some(0);
     let values = match op.attrs.get("value") {
         Some(Attr::Array(values)) => values
             .iter()
@@ -8159,9 +8160,23 @@ fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
             .collect(),
         _ => Vec::new(),
     };
+    let patterns = if kind == Some(3) {
+        let [start, end] = values.as_slice() else {
+            return None;
+        };
+        vec![Pattern::InclusiveRange {
+            start: i128::from(*start),
+            end: i128::from(*end),
+        }]
+    } else {
+        values
+            .into_iter()
+            .map(|value| int_pattern(i128::from(value)))
+            .collect()
+    };
     let region = op.regions.first()?;
     Some(SwitchCase {
-        values,
+        patterns,
         is_default,
         region,
     })

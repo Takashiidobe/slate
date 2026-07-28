@@ -377,7 +377,8 @@ fn collect_pattern_refs(pattern: &Pattern, refs: &mut BTreeSet<String>) {
         | Pattern::Binding(_)
         | Pattern::I64(_)
         | Pattern::I128(_)
-        | Pattern::U128(_) => {}
+        | Pattern::U128(_)
+        | Pattern::InclusiveRange { .. } => {}
     }
 }
 

@@ -284,7 +284,8 @@ fn pattern_declares_name(pattern: &crate::rust_ast::Pattern, name: &str) -> bool
         crate::rust_ast::Pattern::Wildcard
         | crate::rust_ast::Pattern::I64(_)
         | crate::rust_ast::Pattern::I128(_)
-        | crate::rust_ast::Pattern::U128(_) => false,
+        | crate::rust_ast::Pattern::U128(_)
+        | crate::rust_ast::Pattern::InclusiveRange { .. } => false,
     }
 }
 

@@ -6889,6 +6889,9 @@ fn pattern_matches(pattern: &Pattern, value: Value) -> bool {
         (Pattern::Wildcard, _) => true,
         (Pattern::I64(expected), Value::Int { value, .. }) => *expected as i128 == value,
         (Pattern::I128(expected), Value::Int { value, .. }) => *expected == value,
+        (Pattern::InclusiveRange { start, end }, Value::Int { value, .. }) => {
+            *start <= value && value <= *end
+        }
         (Pattern::Binding(_), _) => true,
         _ => false,
     }

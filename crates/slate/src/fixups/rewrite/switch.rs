@@ -85,7 +85,7 @@ fn is_eligible(dispatch: &SwitchDispatchFact) -> bool {
         && dispatch
             .cases
             .iter()
-            .all(|case| case.is_default || case.values.len() == 1)
+            .all(|case| case.is_default || case.patterns.len() == 1)
 }
 
 fn collapse_dispatch(
@@ -149,14 +149,7 @@ fn case_pattern(case: &SwitchCaseFact) -> Pattern {
     if case.is_default {
         Pattern::Wildcard
     } else {
-        int_pattern(case.values[0])
-    }
-}
-
-fn int_pattern(value: i128) -> Pattern {
-    match i64::try_from(value) {
-        Ok(v) => Pattern::I64(v),
-        Err(_) => Pattern::I128(value),
+        case.patterns[0].clone()
     }
 }
 
