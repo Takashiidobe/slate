@@ -223,8 +223,8 @@ arithmetic, new arithmetic operators, globals, `if`, `switch`.
 
 See [adding-features.md](adding-features.md) for the step-by-step workflow. The
 short version is: add a C fixture under `tests/fixtures/`, inspect CIR and Clang
-AST as needed, implement conservative baseline lowering, run the test suite, and
-refresh ignored generated fixtures with `cargo run -- emit-fixtures`.
+AST as needed, implement conservative baseline lowering, and run the test suite.
+Ignored generated fixture trees are refreshed manually only when requested.
 
 ## Adding a fixup
 

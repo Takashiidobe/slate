@@ -31,8 +31,8 @@
 <field_list> ::= <field> <field_list> | <field> ;
 <field> ::= <type> <ident> ";" | <type> <ident> "[" "]" ";" ;
 
-<global_decl> ::= <storage_class> <type> <ident> <global_init> ";" | <type> <ident> <global_init> ";" | "extern" <type> <ident> ";" ;
-<storage_class> ::= "static" | "" ;
+<global_decl> ::= <storage_class> <type> <ident> <global_init> ";" | <type> <ident> <global_init> ";" | "extern" <type> <ident> ";" | "extern _Thread_local" <type> <ident> ";" ;
+<storage_class> ::= "static" | "_Thread_local" | "static _Thread_local" | "" ;
 <global_init> ::= "=" <const> | "=" <aggregate_init> | "" ;
 <aggregate_init> ::= "{" <const_list> "}" ;
 <const_list> ::= <const> "," <const_list> | <const> ;
@@ -52,7 +52,7 @@
 <stmt> ::= <declaration> | <assignment> | <compound_assignment> | <atomic_stmt> | <for_loop> | <while_loop> | <if_stmt> | <switch_stmt> | <call_stmt> | <return_stmt> | <break_stmt> | <continue_stmt> | <goto_stmt> | <labeled_stmt> ;
 
 <declaration> ::= <scalar_declaration> | <array_declaration> ;
-<scalar_declaration> ::= <type> <ident> "=" <expr> ";" ;
+<scalar_declaration> ::= <type> <ident> "=" <expr> ";" | "static _Thread_local" <type> <ident> <global_init> ";" ;
 <array_declaration> ::= <type> <ident> "[" <array_bound> "]" ";" ;
 <array_bound> ::= <int> | <ident> ;
 <assignment> ::= <lvalue> "=" <expr> ";" ;

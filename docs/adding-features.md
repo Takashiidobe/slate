@@ -19,17 +19,18 @@ The alive2 regression is also diagnostic-only and incomplete. It is ignored by
 the default test run and is not a required completion gate. Run it only when a
 task explicitly requests alive2 validation.
 
-The checked fixtures are C-only. `emit-fixtures` populates ignored sibling
-`*.generated/` trees for every supported fixture suite. Fixed-up Rust for the
-primary fixtures lives under `tests/fixtures.generated/`:
+The checked fixtures are C-only. Generated fixture trees are ignored inspection
+artifacts, not implementation outputs or completion gates. Do not regenerate
+them unless the user explicitly asks. When the user wants to inspect fixed-up
+Rust, `emit-fixtures` writes it under `tests/fixtures.generated/`:
 
 ```bash
 cargo run -- emit-fixtures
 sed -n '1,160p' tests/fixtures.generated/<name>.rs
 ```
 
-Raw lowered Rust before fixups lives under
-`tests/fixtures.lowered.generated/`:
+For user-requested inspection, raw lowered Rust before fixups can be written
+under `tests/fixtures.lowered.generated/`:
 
 ```bash
 cargo run -- emit-lowered-fixtures
@@ -80,7 +81,6 @@ semantics, or produces different output from the C program.
    ```bash
    cargo fmt
    cargo nextest r --release
-   cargo run -- emit-fixtures
    ```
 
 The baseline feature is done when the fixture passes differential testing and
@@ -99,10 +99,10 @@ helpers, safety rules, registration) before writing one.
 
 1. Start from an existing passing fixture, or add a new C fixture if the pattern
    needs a clearer example.
-2. Generate the baseline Rust:
+2. Inspect the baseline Rust without regenerating fixture trees:
 
    ```bash
-   cargo run -- emit-fixtures
+   cargo run -- translate tests/fixtures/<name>.c
    ```
 
 3. Identify the narrow Rust pattern to rewrite and the proof that semantics do
@@ -117,7 +117,6 @@ helpers, safety rules, registration) before writing one.
    ```bash
    cargo fmt
    cargo nextest r --release
-   cargo run -- emit-fixtures
    ```
 
 The fixup is done when output and exit code are unchanged and the generated Rust

@@ -58,10 +58,11 @@ of adding trace noise.
 Start from the failing fixture and the AST shape, not from the source C.
 
 ```bash
-cargo run -- emit-lowered-fixtures
-cargo run -- emit-fixtures
 cargo run -- compare-effects-rust-rust tests/fixtures/<name>.c
 ```
+
+The ignored generated fixture trees are optional inspection artifacts and are
+regenerated manually only when explicitly requested.
 
 For all-fixture triage:
 

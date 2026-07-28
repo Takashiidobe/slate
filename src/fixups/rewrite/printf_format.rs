@@ -1656,6 +1656,7 @@ fn stdout_static_decl() -> ExternDecl {
         mutable: true,
         name: "stdout".into(),
         ty: Type::parse("*mut libc::FILE"),
+        thread_local: false,
     }
 }
 

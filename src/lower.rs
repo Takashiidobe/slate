@@ -293,6 +293,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_f128: std::cell::Cell::new(false),
         uses_c_variadic: std::cell::Cell::new(false),
         uses_linkage: std::cell::Cell::new(false),
+        uses_thread_local: std::cell::Cell::new(false),
         uses_used_with_arg: std::cell::Cell::new(false),
         uses_asm_goto_outputs: std::cell::Cell::new(false),
         uses_memchr: std::cell::Cell::new(false),
@@ -582,7 +583,7 @@ struct Lowerer<'a> {
     enums: BTreeMap<String, crate::c_ast::Enum>,
     anon_records: Vec<crate::c_ast::Record>,
     globals: BTreeMap<String, GlobalVar>,
-    extern_globals: BTreeMap<String, Type>,
+    extern_globals: BTreeMap<String, ExternGlobal>,
     strings: BTreeMap<String, Vec<u8>>,
     const_arrays: BTreeMap<String, Vec<Expr>>,
     block_addr_globals: BTreeMap<String, Vec<String>>,
@@ -597,6 +598,7 @@ struct Lowerer<'a> {
     uses_f128: std::cell::Cell<bool>,
     uses_c_variadic: std::cell::Cell<bool>,
     uses_linkage: std::cell::Cell<bool>,
+    uses_thread_local: std::cell::Cell<bool>,
     uses_used_with_arg: std::cell::Cell<bool>,
     uses_asm_goto_outputs: std::cell::Cell<bool>,
     uses_memchr: std::cell::Cell<bool>,
@@ -696,10 +698,17 @@ struct GlobalVar {
     ty: Type,
     init: Expr,
     alignment: Option<u32>,
+    thread_local: bool,
     external: bool,
     weak: bool,
     section: Option<String>,
     used: Vec<UsedKind>,
+}
+
+#[derive(Debug, Clone)]
+struct ExternGlobal {
+    ty: Type,
+    thread_local: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -845,29 +854,36 @@ impl<'a> Lowerer<'a> {
             if global.weak {
                 self.uses_linkage.set(true);
             }
+            let ty = global
+                .alignment
+                .map(|alignment| aligned_type(global.ty.clone(), alignment))
+                .unwrap_or_else(|| global.ty.clone());
+            let init = global
+                .alignment
+                .map(|alignment| aligned_value(global.init.clone(), alignment))
+                .unwrap_or_else(|| global.init.clone());
+            let mut attrs = symbol_attrs(
+                global_external_def || asm_referenced_globals.contains(&global.name),
+                global.weak,
+                global.section.as_deref(),
+                &global.used,
+            );
+            if global.thread_local {
+                attrs.push(RustAttr::ThreadLocal);
+                self.uses_thread_local.set(true);
+            }
             items.push(Item::Static {
-                attrs: symbol_attrs(
-                    global_external_def || asm_referenced_globals.contains(&global.name),
-                    global.weak,
-                    global.section.as_deref(),
-                    &global.used,
-                ),
+                attrs,
                 vis: global_vis,
                 mutable: true,
                 name: global.name.clone(),
-                ty: global
-                    .alignment
-                    .map(|alignment| aligned_type(global.ty.clone(), alignment))
-                    .unwrap_or_else(|| global.ty.clone()),
-                init: global
-                    .alignment
-                    .map(|alignment| aligned_value(global.init.clone(), alignment))
-                    .unwrap_or_else(|| global.init.clone()),
+                ty,
+                init,
             });
         }
 
         let mut extern_decls = Vec::new();
-        for (name, ty) in &self.extern_globals {
+        for (name, global) in &self.extern_globals {
             if let Some(module) = self.project.cross_module_globals.get(name) {
                 let root = self
                     .project
@@ -886,7 +902,8 @@ impl<'a> Lowerer<'a> {
             extern_decls.push(ExternDecl::Static {
                 mutable: true,
                 name: name.clone(),
-                ty: ty.clone(),
+                ty: global.ty.clone(),
+                thread_local: global.thread_local,
             });
         }
         for op in &ops {
@@ -1074,6 +1091,9 @@ impl<'a> Lowerer<'a> {
         if self.uses_linkage.get() {
             insert_crate_feature(&mut items, Feature::Linkage);
         }
+        if self.uses_thread_local.get() {
+            insert_crate_feature(&mut items, Feature::ThreadLocal);
+        }
         if self.uses_used_with_arg.get() {
             insert_crate_feature(&mut items, Feature::UsedWithArg);
         }
@@ -1113,6 +1133,10 @@ impl<'a> Lowerer<'a> {
                 })
         });
         let weak = linkage_is_weak(op);
+        let thread_local = op.attrs.contains_key("tls_model");
+        if thread_local {
+            self.uses_thread_local.set(true);
+        }
         self.warn_protected_visibility(op, name);
         let section = attr_str(op, "section").map(str::to_owned);
         let used = self
@@ -1125,7 +1149,8 @@ impl<'a> Lowerer<'a> {
             let Some(ty) = ty else {
                 return;
             };
-            self.extern_globals.insert(rust_name, ty);
+            self.extern_globals
+                .insert(rust_name, ExternGlobal { ty, thread_local });
             return;
         };
         if let Some(labels) = parse_cir_block_addr_labels(raw) {
@@ -1139,6 +1164,7 @@ impl<'a> Lowerer<'a> {
                         ty,
                         init,
                         alignment,
+                        thread_local,
                         external: externally_exported(op),
                         weak,
                         section: section.clone(),
@@ -1160,6 +1186,7 @@ impl<'a> Lowerer<'a> {
                             Expr::Value(RustValue::I64(0)),
                         ),
                         alignment,
+                        thread_local,
                         external: externally_exported(op),
                         weak,
                         section: section.clone(),
@@ -1184,6 +1211,7 @@ impl<'a> Lowerer<'a> {
                                 Expr::Value(RustValue::I64(0)),
                             ),
                             alignment,
+                            thread_local,
                             external: externally_exported(op),
                             weak,
                             section: section.clone(),
@@ -1204,6 +1232,7 @@ impl<'a> Lowerer<'a> {
                             ty,
                             init,
                             alignment,
+                            thread_local,
                             external: externally_exported(op),
                             weak,
                             section: section.clone(),
@@ -1229,6 +1258,7 @@ impl<'a> Lowerer<'a> {
                             len: len as usize,
                         },
                         alignment,
+                        thread_local,
                         external: externally_exported(op),
                         weak,
                         section: section.clone(),
@@ -1249,6 +1279,7 @@ impl<'a> Lowerer<'a> {
                         init: self.default_value_expr(&ty),
                         ty,
                         alignment,
+                        thread_local,
                         external: externally_exported(op),
                         weak,
                         section: section.clone(),
@@ -1270,6 +1301,7 @@ impl<'a> Lowerer<'a> {
                         ty,
                         init,
                         alignment,
+                        thread_local,
                         external: externally_exported(op),
                         weak,
                         section: section.clone(),
@@ -1287,6 +1319,7 @@ impl<'a> Lowerer<'a> {
                     ty,
                     init,
                     alignment,
+                    thread_local,
                     external,
                     weak,
                     section,

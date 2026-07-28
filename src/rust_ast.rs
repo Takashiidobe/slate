@@ -144,6 +144,7 @@ pub enum Feature {
     CVariadic,
     F128,
     Linkage,
+    ThreadLocal,
     UsedWithArg,
 }
 
@@ -154,6 +155,7 @@ impl Feature {
             Feature::CVariadic => "c_variadic",
             Feature::F128 => "f128",
             Feature::Linkage => "linkage",
+            Feature::ThreadLocal => "thread_local",
             Feature::UsedWithArg => "used_with_arg",
         }
     }
@@ -165,6 +167,7 @@ pub enum Attr {
     Repr(Vec<Repr>),
     Derive(Vec<Derive>),
     NoMangle,
+    ThreadLocal,
     WeakLinkage,
     LinkSection(String),
     Used(UsedKind),
@@ -332,6 +335,7 @@ pub enum ExternDecl {
         mutable: bool,
         name: String,
         ty: Type,
+        thread_local: bool,
     },
 }
 

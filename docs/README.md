@@ -121,7 +121,9 @@ parameters) are recovered as facts too.
 Clang invocation can't see, mapping predicates to Rust `cfg`s and Cargo
 features. See [cfg-portability.md](cfg-portability.md).
 
-Generated Rust for inspection is written with:
+Generated Rust trees are ignored inspection artifacts and are not regenerated
+as part of feature work or completion. When explicitly requested for manual
+inspection, they can be written with:
 
 ```bash
 cargo run -- emit-fixtures
