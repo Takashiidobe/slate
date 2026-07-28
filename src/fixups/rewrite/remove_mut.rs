@@ -8,43 +8,45 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{FnDef, IndentStmt, Stmt, Type};
 
-pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    RemoveMut::new(&mut logger).fixup(f, function, facts);
-}
-
 pub(in crate::fixups) struct RemoveMut<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
 impl<'a> RemoveMut<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
     }
 
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        f: &mut FnDef,
-        function: FunctionId,
-        facts: &FixupFacts,
-    ) {
+    pub(in crate::fixups) fn fixup(&mut self, f: &mut FnDef) -> bool {
+        let mut changed = false;
         for (index, param) in f.params.iter_mut().enumerate() {
             if matches!(param.ty, Type::Variadic | Type::VaList) {
                 continue;
             }
-            let Some(binding) = facts.binding_by_param_index(function, index) else {
+            let Some(binding) = self.facts.binding_by_param_index(self.function, index) else {
                 continue;
             };
-            if param_can_drop_mut(binding, facts) {
+            if param_can_drop_mut(binding, self.facts) {
                 let before = self
                     .logger
                     .is_enabled()
                     .then(|| format!("mut {}: {}", param.name, param.ty.render()));
                 let param_name = param.name.clone();
                 let param_ty = param.ty.render();
+                changed |= param.mutable;
                 param.mutable = false;
                 if let Some(before) = before {
-                    let mut event_facts = binding_facts(facts, binding);
+                    let mut event_facts = binding_facts(self.facts, binding);
                     event_facts.extend([
                         fact("param", param_name.clone()),
                         fact("param_index", index.to_string()),
@@ -52,7 +54,7 @@ impl<'a> RemoveMut<'a> {
                     self.logger.rewrite(RewriteEvent {
                         pass: TracePass::RemoveMut,
                         kind: "remove_param_mut".into(),
-                        location: function_path_location(facts, function, &[]),
+                        location: function_path_location(self.facts, self.function, &[]),
                         before: vec![TraceSnippet::new("param", before)],
                         after: vec![TraceSnippet::new(
                             "param",
@@ -63,7 +65,8 @@ impl<'a> RemoveMut<'a> {
                 }
             }
         }
-        self.remove_unneeded_mut(&mut f.body, function, facts, &mut Vec::new());
+        changed |= self.remove_unneeded_mut(&mut f.body, &mut Vec::new());
+        changed
     }
 }
 
@@ -109,40 +112,37 @@ impl<'a> RemoveMut<'a> {
     fn remove_unneeded_mut(
         &mut self,
         body: &mut [IndentStmt],
-        function: FunctionId,
-        facts: &FixupFacts,
         path: &mut Vec<PathSegment>,
-    ) {
+    ) -> bool {
+        let mut changed = false;
         for (index, indent) in body.iter_mut().enumerate() {
             path.push(PathSegment::Stmt(index));
-            self.remove_stmt_unneeded_mut(&mut indent.stmt, function, facts, path);
+            changed |= self.remove_stmt_unneeded_mut(&mut indent.stmt, path);
             path.pop();
         }
+        changed
     }
 
-    fn remove_stmt_unneeded_mut(
-        &mut self,
-        stmt: &mut Stmt,
-        function: FunctionId,
-        facts: &FixupFacts,
-        path: &mut Vec<PathSegment>,
-    ) {
+    fn remove_stmt_unneeded_mut(&mut self, stmt: &mut Stmt, path: &mut Vec<PathSegment>) -> bool {
         let before = self.logger.is_enabled().then(|| stmt.clone());
         let mut removed_name = None;
+        let mut changed = false;
         match stmt {
             Stmt::Let { name, mutable, .. } | Stmt::LetIf { name, mutable, .. }
-                if local_can_drop_mut(function, facts, name, path) =>
+                if local_can_drop_mut(self.function, self.facts, name, path) =>
             {
                 removed_name = Some(name.clone());
+                changed |= *mutable;
                 *mutable = false;
             }
             _ => {}
         }
         if let (Some(before), Some(name)) = (before, removed_name) {
             let mut event_facts = if let Some(binding) =
-                facts.binding_by_local_path(function, &name, &AstPath(path.to_vec()))
+                self.facts
+                    .binding_by_local_path(self.function, &name, &AstPath(path.to_vec()))
             {
-                binding_facts(facts, binding)
+                binding_facts(self.facts, binding)
             } else {
                 vec![fact("binding_name", name)]
             };
@@ -150,15 +150,16 @@ impl<'a> RemoveMut<'a> {
             self.logger.rewrite(RewriteEvent {
                 pass: TracePass::RemoveMut,
                 kind: "remove_local_mut".into(),
-                location: function_path_location(facts, function, path),
+                location: function_path_location(self.facts, self.function, path),
                 before: vec![stmt_snippet("binding", &before)],
                 after: vec![stmt_snippet("binding", stmt)],
                 facts: event_facts,
             });
         }
         walk::nested_bodies_mut_with_path(stmt, path, &mut |body, path| {
-            self.remove_unneeded_mut(body, function, facts, path);
+            changed |= self.remove_unneeded_mut(body, path);
         });
+        changed
     }
 }
 

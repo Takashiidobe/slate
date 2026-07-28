@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AstPath, FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind,
     HeapReadSafety, HeapResizeKind, PathSegment,
@@ -10,62 +11,56 @@ use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
 };
 use crate::function_identity::{Known, known_call};
-use crate::rust_ast::{
-    Block, Expr, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
-};
-
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    HeapOwnership::new(&mut logger).fixup(program, facts);
-}
+use crate::rust_ast::{Block, Expr, IndentStmt, Prim, RustValue, Stmt, Type, UnaryOp};
 
 pub(in crate::fixups) struct HeapOwnership<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> HeapOwnership<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) {
-        fixup_impl(program, facts, self.logger);
+impl Fixup for HeapOwnership<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        let plans = plans_for_function(self.facts, self.function);
+        if plans.is_empty() {
+            return false;
+        }
+        let before = self.logger.is_enabled().then(|| body.clone());
+        let changed = rewrite_body(body, &plans);
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::HeapOwnership,
+                kind: "rewrite_heap_ownership".into(),
+                location: function_path_location(self.facts, self.function, &[]),
+                before: vec![stmts_snippet("body", &before)],
+                after: vec![stmts_snippet("body", body)],
+                facts: vec![fact("plans", plans.len().to_string())],
+            });
+        }
+        changed
     }
 }
 
-fn fixup_impl(program: &mut Program, facts: &FixupFacts, logger: &mut dyn TraceLogger) {
-    let plans = plans_by_function(facts);
-    if plans.is_empty() {
-        return;
-    }
-    for (item_index, item) in program.items.iter_mut().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        let Some(function_plans) = plans.get(&function) else {
-            continue;
-        };
-        let before = logger.is_enabled().then(|| f.body.clone());
-        rewrite_body(&mut f.body, function_plans);
-        if let Some(before) = before {
-            logger.rewrite(RewriteEvent {
-                pass: TracePass::HeapOwnership,
-                kind: "rewrite_heap_ownership".into(),
-                location: function_path_location(facts, function, &[]),
-                before: vec![stmts_snippet("body", &before)],
-                after: vec![stmts_snippet("body", &f.body)],
-                facts: vec![fact("plans", function_plans.len().to_string())],
-            });
+impl<'a> HeapOwnership<'a> {
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
         }
     }
 }
 
-fn plans_by_function(facts: &FixupFacts) -> BTreeMap<FunctionId, Vec<Plan>> {
-    let mut by_function = BTreeMap::new();
+fn plans_for_function(facts: &FixupFacts, function: FunctionId) -> Vec<Plan> {
+    let mut plans = Vec::new();
     for fact in &facts.heap_ownership {
+        if fact.function != function {
+            continue;
+        }
         let kind = fact.kind;
         if kind == HeapOwnershipKind::VecBuffer
             && fact.read_safety == HeapReadSafety::MayReadUninitialized
@@ -100,29 +95,26 @@ fn plans_by_function(facts: &FixupFacts) -> BTreeMap<FunctionId, Vec<Plan>> {
         let Some(reallocs) = reallocs else {
             continue;
         };
-        by_function
-            .entry(fact.function)
-            .or_insert_with(Vec::new)
-            .push(Plan {
-                pointer_name: pointer_name.to_string(),
-                kind,
-                pointer_stmt: stmt_index(&fact.pointer_path),
-                size_stmt: fact
-                    .size_temp
-                    .and_then(|_| previous_stmt_index(&fact.allocation_path)),
-                allocation_stmt: stmt_index(&fact.allocation_path),
-                assign_stmt: stmt_index(&fact.assign_path),
-                free_temp_stmt: fact
-                    .free_temp
-                    .and_then(|_| previous_stmt_index(&fact.free_path)),
-                free_stmt: stmt_index(&fact.free_path),
-                reallocs,
-                elem_ty: fact.elem_ty.clone(),
-                init,
-                count,
-            });
+        plans.push(Plan {
+            pointer_name: pointer_name.to_string(),
+            kind,
+            pointer_stmt: stmt_index(&fact.pointer_path),
+            size_stmt: fact
+                .size_temp
+                .and_then(|_| previous_stmt_index(&fact.allocation_path)),
+            allocation_stmt: stmt_index(&fact.allocation_path),
+            assign_stmt: stmt_index(&fact.assign_path),
+            free_temp_stmt: fact
+                .free_temp
+                .and_then(|_| previous_stmt_index(&fact.free_path)),
+            free_stmt: stmt_index(&fact.free_path),
+            reallocs,
+            elem_ty: fact.elem_ty.clone(),
+            init,
+            count,
+        });
     }
-    by_function
+    plans
 }
 
 #[derive(Clone)]
@@ -184,14 +176,15 @@ impl OwnedHeap {
     }
 }
 
-fn rewrite_body(body: &mut Vec<IndentStmt>, plans: &[Plan]) {
+fn rewrite_body(body: &mut Vec<IndentStmt>, plans: &[Plan]) -> bool {
+    let mut changed = false;
     let mut remove = BTreeSet::new();
     for plan in plans {
         let Some(pointer_stmt) = plan.pointer_stmt else {
             continue;
         };
         if let Some(indent) = body.get_mut(pointer_stmt) {
-            rewrite_pointer_decl(&mut indent.stmt, plan);
+            changed |= rewrite_pointer_decl(&mut indent.stmt, plan);
         }
         for index in [
             plan.size_stmt,
@@ -221,6 +214,7 @@ fn rewrite_body(body: &mut Vec<IndentStmt>, plans: &[Plan]) {
                 && let Some(indent) = body.get_mut(assign_stmt)
             {
                 indent.stmt = realloc_stmt(&plan.pointer_name, realloc, &plan.init);
+                changed = true;
             }
         }
     }
@@ -235,21 +229,24 @@ fn rewrite_body(body: &mut Vec<IndentStmt>, plans: &[Plan]) {
             remove.insert(index);
             continue;
         }
-        rewrite_owned_stmt(&mut indent.stmt, &owned);
+        changed |= rewrite_owned_stmt(&mut indent.stmt, &owned);
     }
-    fuse_scalar_box_initializers(body, plans, &mut remove);
+    changed |= fuse_scalar_box_initializers(body, plans, &mut remove);
     for index in remove.into_iter().rev() {
         if index < body.len() {
             body.remove(index);
+            changed = true;
         }
     }
+    changed
 }
 
 fn fuse_scalar_box_initializers(
     body: &mut [IndentStmt],
     plans: &[Plan],
     remove: &mut BTreeSet<usize>,
-) {
+) -> bool {
+    let mut changed = false;
     for plan in plans {
         if plan.kind != HeapOwnershipKind::ScalarBox {
             continue;
@@ -272,8 +269,10 @@ fn fuse_scalar_box_initializers(
         let value = value.clone();
         if set_box_new_arg(&mut body[pointer_stmt].stmt, value) {
             remove.insert(store_index);
+            changed = true;
         }
     }
+    changed
 }
 
 fn first_scalar_box_store(
@@ -342,7 +341,7 @@ fn set_box_new_arg(stmt: &mut Stmt, value: Expr) -> bool {
     true
 }
 
-fn rewrite_pointer_decl(stmt: &mut Stmt, plan: &Plan) {
+fn rewrite_pointer_decl(stmt: &mut Stmt, plan: &Plan) -> bool {
     let Stmt::Let {
         name,
         mutable,
@@ -350,10 +349,10 @@ fn rewrite_pointer_decl(stmt: &mut Stmt, plan: &Plan) {
         init,
     } = stmt
     else {
-        return;
+        return false;
     };
     if name != &plan.pointer_name {
-        return;
+        return false;
     }
     *mutable = true;
     match plan.kind {
@@ -379,6 +378,7 @@ fn rewrite_pointer_decl(stmt: &mut Stmt, plan: &Plan) {
             });
         }
     }
+    true
 }
 
 fn owned_alias(stmt: &Stmt, owned: &OwnedHeap) -> Option<(String, String)> {
@@ -444,22 +444,24 @@ fn realloc_stmt(pointer_name: &str, realloc: &ReallocPlan, init: &Expr) -> Stmt 
     }
 }
 
-fn rewrite_owned_stmt(stmt: &mut Stmt, owned: &OwnedHeap) {
+fn rewrite_owned_stmt(stmt: &mut Stmt, owned: &OwnedHeap) -> bool {
+    let mut changed = false;
     match stmt {
         Stmt::Unsafe { body } if body.tail.is_none() && body.stmts.len() == 1 => {
             let mut replacement = body.stmts[0].stmt.clone();
-            rewrite_owned_stmt(&mut replacement, owned);
+            changed |= rewrite_owned_stmt(&mut replacement, owned);
             if stmt_can_leave_unsafe(&replacement, owned) {
                 *stmt = replacement;
+                changed = true;
             } else if let Stmt::Unsafe { body } = stmt {
                 body.stmts[0].stmt = replacement;
             }
         }
-        Stmt::Unsafe { body } => rewrite_owned_block(body, owned),
-        Stmt::Block(body) | Stmt::While { body, .. } => rewrite_owned_block(body, owned),
+        Stmt::Unsafe { body } => changed |= rewrite_owned_block(body, owned),
+        Stmt::Block(body) | Stmt::While { body, .. } => changed |= rewrite_owned_block(body, owned),
         Stmt::Let {
             init: Some(init), ..
-        } => rewrite_owned_expr(init, owned),
+        } => changed |= rewrite_owned_expr(init, owned),
         Stmt::LetIf {
             cond,
             then_body,
@@ -468,37 +470,37 @@ fn rewrite_owned_stmt(stmt: &mut Stmt, owned: &OwnedHeap) {
             else_value,
             ..
         } => {
-            rewrite_owned_expr(cond, owned);
-            rewrite_owned_body(then_body, owned);
-            rewrite_owned_expr(then_value, owned);
-            rewrite_owned_body(else_body, owned);
-            rewrite_owned_expr(else_value, owned);
+            changed |= rewrite_owned_expr(cond, owned);
+            changed |= rewrite_owned_body(then_body, owned);
+            changed |= rewrite_owned_expr(then_value, owned);
+            changed |= rewrite_owned_body(else_body, owned);
+            changed |= rewrite_owned_expr(else_value, owned);
         }
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            rewrite_owned_expr(target, owned);
-            rewrite_owned_expr(value, owned);
+            changed |= rewrite_owned_expr(target, owned);
+            changed |= rewrite_owned_expr(value, owned);
         }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => rewrite_owned_expr(expr, owned),
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => changed |= rewrite_owned_expr(expr, owned),
         Stmt::If {
             cond,
             then_body,
             else_body,
         } => {
-            rewrite_owned_expr(cond, owned);
-            rewrite_owned_body(then_body, owned);
-            rewrite_owned_body(else_body, owned);
+            changed |= rewrite_owned_expr(cond, owned);
+            changed |= rewrite_owned_body(then_body, owned);
+            changed |= rewrite_owned_body(else_body, owned);
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            rewrite_owned_body(body, owned);
+            changed |= rewrite_owned_body(body, owned);
         }
         Stmt::For { iter, body, .. } => {
-            rewrite_owned_expr(iter, owned);
-            rewrite_owned_body(body, owned);
+            changed |= rewrite_owned_expr(iter, owned);
+            changed |= rewrite_owned_body(body, owned);
         }
         Stmt::Match { expr, arms } => {
-            rewrite_owned_expr(expr, owned);
+            changed |= rewrite_owned_expr(expr, owned);
             for arm in arms {
-                rewrite_owned_body(&mut arm.body, owned);
+                changed |= rewrite_owned_body(&mut arm.body, owned);
             }
         }
         Stmt::Let { init: None, .. }
@@ -507,33 +509,40 @@ fn rewrite_owned_stmt(stmt: &mut Stmt, owned: &OwnedHeap) {
         | Stmt::Break(_)
         | Stmt::Continue(_) => {}
     }
+    changed
 }
 
-fn rewrite_owned_body(body: &mut [IndentStmt], owned: &OwnedHeap) {
+fn rewrite_owned_body(body: &mut [IndentStmt], owned: &OwnedHeap) -> bool {
+    let mut changed = false;
     for indent in body {
-        rewrite_owned_stmt(&mut indent.stmt, owned);
+        changed |= rewrite_owned_stmt(&mut indent.stmt, owned);
     }
+    changed
 }
 
-fn rewrite_owned_block(block: &mut Block, owned: &OwnedHeap) {
-    rewrite_owned_body(&mut block.stmts, owned);
+fn rewrite_owned_block(block: &mut Block, owned: &OwnedHeap) -> bool {
+    let mut changed = rewrite_owned_body(&mut block.stmts, owned);
     if let Some(tail) = &mut block.tail {
-        rewrite_owned_expr(tail, owned);
+        changed |= rewrite_owned_expr(tail, owned);
     }
+    changed
 }
 
-fn rewrite_owned_expr(expr: &mut Expr, owned: &OwnedHeap) {
+fn rewrite_owned_expr(expr: &mut Expr, owned: &OwnedHeap) -> bool {
     if let Some(replacement) = owned_heap_access(expr, owned) {
         *expr = replacement;
-        return;
+        return true;
     }
+    let mut changed = false;
     walk::exprs_mut_with(expr, &mut |expr| {
         if let Some(replacement) = owned_heap_access(expr, owned) {
             *expr = replacement;
+            changed = true;
             return false;
         }
         true
     });
+    changed
 }
 
 fn stmt_can_leave_unsafe(stmt: &Stmt, owned: &OwnedHeap) -> bool {

@@ -9,11 +9,6 @@ use crate::rust_ast::{
     BinOp, Expr, FnDef, Ident, IndentStmt, Item, Program, RecordDef, RustValue, Stmt, Type, UnaryOp,
 };
 
-pub(in crate::fixups) fn fixup(program: &mut Program) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    SortSearch::new(&mut logger).fixup(program);
-}
-
 pub(in crate::fixups) struct SortSearch<'a> {
     logger: &'a mut dyn TraceLogger,
 }
@@ -23,37 +18,37 @@ impl<'a> SortSearch<'a> {
         Self { logger }
     }
 
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) {
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
         let before = self.logger.is_enabled().then(|| program.emit());
-        fixup_impl(program);
-        if let Some(before) = before {
-            let after = program.emit();
-            if before != after {
-                self.logger.rewrite(RewriteEvent {
-                    pass: TracePass::SortSearch,
-                    kind: "rewrite_sort_search_calls".into(),
-                    location: TraceLocation::default(),
-                    before: vec![TraceSnippet::new("program", before.trim_end())],
-                    after: vec![TraceSnippet::new("program", after.trim_end())],
-                    facts: Vec::new(),
-                });
-            }
+        let changed = fixup_impl(program);
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::SortSearch,
+                kind: "rewrite_sort_search_calls".into(),
+                location: TraceLocation::default(),
+                before: vec![TraceSnippet::new("program", before.trim_end())],
+                after: vec![TraceSnippet::new("program", program.emit().trim_end())],
+                facts: Vec::new(),
+            });
         }
+        changed
     }
 }
 
-fn fixup_impl(program: &mut Program) {
+fn fixup_impl(program: &mut Program) -> bool {
     let records = record_layouts(program);
     let comparators = comparator_plans(program);
     if comparators.is_empty() {
-        return;
+        return false;
     }
 
+    let mut changed = false;
     for item in &mut program.items {
         if let Item::Fn(f) = item {
-            rewrite_body(&mut f.body, &records, &comparators);
+            changed |= rewrite_body(&mut f.body, &records, &comparators);
         }
     }
+    changed
 }
 
 #[derive(Clone, PartialEq, Eq)]
@@ -78,7 +73,8 @@ fn rewrite_body(
     body: &mut [IndentStmt],
     records: &BTreeMap<String, Layout>,
     comparators: &BTreeMap<String, ComparatorPlan>,
-) {
+) -> bool {
+    let mut changed = false;
     let mut arrays = BTreeMap::new();
     let mut ints = BTreeMap::new();
     let mut layout_sizes = BTreeMap::new();
@@ -103,13 +99,15 @@ fn rewrite_body(
             comparators,
         ) {
             indent.stmt = replacement;
+            changed = true;
             continue;
         }
 
         walk::nested_body_vecs_mut_with_path(&mut indent.stmt, &mut Vec::new(), &mut |body, _| {
-            rewrite_body(body, records, comparators);
+            changed |= rewrite_body(body, records, comparators);
         });
     }
+    changed
 }
 
 fn replacement_stmt(

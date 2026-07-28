@@ -1,3 +1,4 @@
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AstPath, ConstValue, FixupFacts, FunctionId, NulTermination, PathSegment, StringBufferKind,
     ValueSubject,
@@ -12,23 +13,34 @@ use crate::rust_ast::{
     Program, RustValue, Stmt, Type, UnaryOp,
 };
 
-pub(in crate::fixups) fn fixup(f: &mut FnDef) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    MemchrPrelude::new(&mut logger).fixup(f)
-}
-
-pub(in crate::fixups) fn fixup_calls(program: &mut Program, facts: &FixupFacts) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    MemchrPrelude::new(&mut logger).fixup_calls(program, facts)
-}
-
-pub(in crate::fixups) fn prune_unused_helper(program: &mut Program) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    MemchrPrelude::new(&mut logger).prune_unused_helper(program)
-}
-
 pub(in crate::fixups) struct MemchrPrelude<'a> {
     logger: &'a mut dyn TraceLogger,
+}
+
+pub(in crate::fixups) struct MemchrPreludeCalls<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
+    logger: &'a mut dyn TraceLogger,
+}
+
+impl Fixup for MemchrPreludeCalls<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        fixup_body_calls(body, self.function, self.facts, self.logger)
+    }
+}
+
+impl<'a> MemchrPreludeCalls<'a> {
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
+    }
 }
 
 impl<'a> MemchrPrelude<'a> {
@@ -53,14 +65,6 @@ impl<'a> MemchrPrelude<'a> {
             });
         }
         changed
-    }
-
-    pub(in crate::fixups) fn fixup_calls(
-        &mut self,
-        program: &mut Program,
-        facts: &FixupFacts,
-    ) -> bool {
-        fixup_calls_impl(program, facts, self.logger)
     }
 
     pub(in crate::fixups) fn prune_unused_helper(&mut self, program: &mut Program) -> bool {
@@ -89,22 +93,6 @@ fn fixup_impl(f: &mut FnDef) -> bool {
     }
     f.body = memchr_body();
     true
-}
-
-fn fixup_calls_impl(
-    program: &mut Program,
-    facts: &FixupFacts,
-    logger: &mut dyn TraceLogger,
-) -> bool {
-    let mut changed = false;
-    for (item_index, item) in program.items.iter_mut().enumerate() {
-        if let Item::Fn(f) = item
-            && let Some(function) = facts.function_by_item_index(item_index)
-        {
-            changed |= fixup_body_calls(&mut f.body, function, facts, logger);
-        }
-    }
-    changed
 }
 
 fn prune_unused_helper_impl(program: &mut Program) -> bool {

@@ -1,3 +1,4 @@
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AstPath, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment,
 };
@@ -8,41 +9,35 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Expr, IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    DeadLocals::new(TracePass::DeadLocals, &mut logger).fixup(body, function, facts)
-}
-
 pub(in crate::fixups) struct DeadLocals<'a> {
     pass: TracePass,
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
+impl Fixup for DeadLocals<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        self.fixup_at(body, &mut Vec::new())
+    }
+}
+
 impl<'a> DeadLocals<'a> {
-    pub(in crate::fixups) fn new(pass: TracePass, logger: &'a mut dyn TraceLogger) -> Self {
-        Self { pass, logger }
+    pub(in crate::fixups) fn new(
+        pass: TracePass,
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            pass,
+            function,
+            facts,
+            logger,
+        }
     }
 
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        body: &mut Vec<IndentStmt>,
-        function: FunctionId,
-        facts: &FixupFacts,
-    ) -> bool {
-        self.fixup_at(body, function, facts, &mut Vec::new())
-    }
-
-    fn fixup_at(
-        &mut self,
-        body: &mut Vec<IndentStmt>,
-        function: FunctionId,
-        facts: &FixupFacts,
-        path: &mut Vec<PathSegment>,
-    ) -> bool {
+    fn fixup_at(&mut self, body: &mut Vec<IndentStmt>, path: &mut Vec<PathSegment>) -> bool {
         for index in 0..body.len() {
             let mut changed = false;
             walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
@@ -51,7 +46,7 @@ impl<'a> DeadLocals<'a> {
                     path,
                     &mut |body, path| {
                         if !changed {
-                            changed = self.fixup_at(body, function, facts, path);
+                            changed = self.fixup_at(body, path);
                         }
                     },
                 );
@@ -63,8 +58,8 @@ impl<'a> DeadLocals<'a> {
 
         for index in 0..body.len() {
             path.push(PathSegment::Stmt(index));
-            if removable_dead_local(&body[index].stmt, function, facts, path) {
-                self.log_dead_local_event(&body[index].stmt, function, facts, path);
+            if removable_dead_local(&body[index].stmt, self.function, self.facts, path) {
+                self.log_dead_local_event(&body[index].stmt, path);
                 body.remove(index);
                 return true;
             }
@@ -73,37 +68,36 @@ impl<'a> DeadLocals<'a> {
         false
     }
 
-    fn log_dead_local_event(
-        &mut self,
-        stmt: &Stmt,
-        function: FunctionId,
-        facts: &FixupFacts,
-        path: &[PathSegment],
-    ) {
+    fn log_dead_local_event(&mut self, stmt: &Stmt, path: &[PathSegment]) {
         if !self.logger.is_enabled() {
             return;
         }
         let Stmt::Let { name, .. } = stmt else {
             return;
         };
-        let Some(binding) = facts.binding_by_local_path(function, name, &AstPath(path.to_vec()))
+        let Some(binding) =
+            self.facts
+                .binding_by_local_path(self.function, name, &AstPath(path.to_vec()))
         else {
             return;
         };
-        let mut event_facts = binding_facts(facts, binding);
+        let mut event_facts = binding_facts(self.facts, binding);
         event_facts.extend([
             fact("local", name),
             path_fact("decl_path", path),
             fact("discardable_init", "true"),
         ]);
-        if let Some(effect) = facts.effect(function, EffectSubject::Expr, &AstPath(path.to_vec())) {
+        if let Some(effect) =
+            self.facts
+                .effect(self.function, EffectSubject::Expr, &AstPath(path.to_vec()))
+        {
             event_facts.push(fact("purity", format!("{:?}", effect.purity)));
             event_facts.push(fact("effects", format!("{:?}", effect.effects)));
         }
         self.logger.rewrite(RewriteEvent {
             pass: self.pass,
             kind: "remove_dead_local".into(),
-            location: function_path_location(facts, function, path),
+            location: function_path_location(self.facts, self.function, path),
             before: vec![stmt_snippet("declaration", stmt)],
             after: Vec::new(),
             facts: event_facts,

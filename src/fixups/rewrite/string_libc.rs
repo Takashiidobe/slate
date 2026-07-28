@@ -1,3 +1,4 @@
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AsciiNumericSign, AstPath, ConstValue, FixupFacts, FunctionId, PathSegment, StringBufferFact,
     StringBufferKind, StringLibcFunction, ValueSubject,
@@ -5,57 +6,52 @@ use crate::fixups::facts::{
 use crate::fixups::runtime;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
-    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+    Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
 };
-use crate::rust_ast::{BinOp, Block, Expr, Ident, IndentStmt, Item, Path, Prim, Type, UnaryOp};
-use crate::rust_ast::{Program, RustValue, Stmt};
+use crate::rust_ast::{BinOp, Block, Expr, Ident, IndentStmt, Path, Prim, Type, UnaryOp};
+use crate::rust_ast::{RustValue, Stmt};
 use std::collections::BTreeMap;
 
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    StringLibc::new(&mut logger).fixup(program, facts);
-}
-
 pub(in crate::fixups) struct StringLibc<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> StringLibc<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) {
-        let before = self.logger.is_enabled().then(|| program.emit());
-        fixup_impl(program, facts);
-        if let Some(before) = before {
-            let after = program.emit();
-            if before != after {
-                self.logger.rewrite(RewriteEvent {
-                    pass: TracePass::StringLibc,
-                    kind: "rewrite_string_libc_idioms".into(),
-                    location: TraceLocation::default(),
-                    before: vec![TraceSnippet::new("program", before.trim_end())],
-                    after: vec![TraceSnippet::new("program", after.trim_end())],
-                    facts: vec![fact(
-                        "string_libc_uses",
-                        facts.string_libc_uses.len().to_string(),
-                    )],
-                });
-            }
+impl Fixup for StringLibc<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        let before = self.logger.is_enabled().then(|| body.clone());
+        let mut changed = false;
+        fixup_body(body, self.function, self.facts, &Vec::new(), &mut changed);
+        if changed && let Some(before) = before {
+            self.logger.rewrite(RewriteEvent {
+                pass: TracePass::StringLibc,
+                kind: "rewrite_string_libc_idioms".into(),
+                location: function_path_location(self.facts, self.function, &[]),
+                before: vec![stmts_snippet("body", &before)],
+                after: vec![stmts_snippet("body", body)],
+                facts: vec![fact(
+                    "string_libc_uses",
+                    self.facts.string_libc_uses.len().to_string(),
+                )],
+            });
         }
+        changed
     }
 }
 
-fn fixup_impl(program: &mut Program, facts: &FixupFacts) {
-    for (item_index, item) in program.items.iter_mut().enumerate() {
-        if let Item::Fn(f) = item
-            && let Some(function) = facts.function_by_item_index(item_index)
-        {
-            fixup_body(&mut f.body, function, facts, &Vec::new());
+impl<'a> StringLibc<'a> {
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
         }
     }
-    runtime::ensure_numeric_parse(program);
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -82,6 +78,7 @@ fn fixup_body(
     function: FunctionId,
     facts: &FixupFacts,
     path: &[PathSegment],
+    changed: &mut bool,
 ) {
     let mut temps = BTreeMap::new();
     let mut remove = Vec::new();
@@ -102,11 +99,19 @@ fn fixup_body(
             temps.insert(name, compare);
             remove.push(i);
         } else {
-            fixup_stmt(&mut body[i].stmt, function, facts, &temps, &mut stmt_path);
+            fixup_stmt(
+                &mut body[i].stmt,
+                function,
+                facts,
+                &temps,
+                &mut stmt_path,
+                changed,
+            );
         }
     }
     for i in remove.into_iter().rev() {
         body.remove(i);
+        *changed = true;
     }
 }
 
@@ -116,6 +121,7 @@ fn fixup_stmt(
     facts: &FixupFacts,
     temps: &BTreeMap<String, Compare>,
     path: &mut Vec<PathSegment>,
+    changed: &mut bool,
 ) {
     match stmt {
         Stmt::Let { ty, init, .. } => {
@@ -125,29 +131,30 @@ fn fixup_stmt(
                     if matches!(ty, Some(Type::Prim(Prim::U64))) {
                         *ty = Some(Type::Prim(Prim::Usize));
                     }
+                    *changed = true;
                     return;
                 }
-                fixup_expr(init, function, facts, temps, path);
+                fixup_expr(init, function, facts, temps, path, changed);
             }
         }
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            fixup_expr(target, function, facts, temps, path);
-            fixup_expr(value, function, facts, temps, path);
+            fixup_expr(target, function, facts, temps, path, changed);
+            fixup_expr(value, function, facts, temps, path, changed);
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
-            fixup_expr(expr, function, facts, temps, path)
+            fixup_expr(expr, function, facts, temps, path, changed)
         }
         Stmt::If {
             cond,
             then_body,
             else_body,
         } => {
-            fixup_expr(cond, function, facts, temps, path);
+            fixup_expr(cond, function, facts, temps, path, changed);
             walk::with_path_segment(path, PathSegment::Then, |path| {
-                fixup_body(then_body, function, facts, path);
+                fixup_body(then_body, function, facts, path, changed);
             });
             walk::with_path_segment(path, PathSegment::Else, |path| {
-                fixup_body(else_body, function, facts, path);
+                fixup_body(else_body, function, facts, path, changed);
             });
         }
         Stmt::LetIf {
@@ -158,33 +165,35 @@ fn fixup_stmt(
             else_value,
             ..
         } => {
-            fixup_expr(cond, function, facts, temps, path);
+            fixup_expr(cond, function, facts, temps, path, changed);
             walk::with_path_segment(path, PathSegment::Then, |path| {
-                fixup_body(then_body, function, facts, path);
-                fixup_expr(then_value, function, facts, temps, path);
+                fixup_body(then_body, function, facts, path, changed);
+                fixup_expr(then_value, function, facts, temps, path, changed);
             });
             walk::with_path_segment(path, PathSegment::Else, |path| {
-                fixup_body(else_body, function, facts, path);
-                fixup_expr(else_value, function, facts, temps, path);
+                fixup_body(else_body, function, facts, path, changed);
+                fixup_expr(else_value, function, facts, temps, path, changed);
             });
         }
         Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
-            fixup_body(body, function, facts, path);
+            fixup_body(body, function, facts, path, changed);
         }
         Stmt::For { iter, body, .. } => {
-            fixup_expr(iter, function, facts, temps, path);
-            fixup_body(body, function, facts, path);
+            fixup_expr(iter, function, facts, temps, path, changed);
+            fixup_body(body, function, facts, path, changed);
         }
         Stmt::While { cond, body } => {
-            fixup_expr(cond, function, facts, temps, path);
-            fixup_block(body, function, facts, path);
+            fixup_expr(cond, function, facts, temps, path, changed);
+            fixup_block(body, function, facts, path, changed);
         }
-        Stmt::Block(body) | Stmt::Unsafe { body } => fixup_block(body, function, facts, path),
+        Stmt::Block(body) | Stmt::Unsafe { body } => {
+            fixup_block(body, function, facts, path, changed)
+        }
         Stmt::Match { expr, arms } => {
-            fixup_expr(expr, function, facts, temps, path);
+            fixup_expr(expr, function, facts, temps, path, changed);
             for (index, arm) in arms.iter_mut().enumerate() {
                 walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
-                    fixup_body(&mut arm.body, function, facts, path);
+                    fixup_body(&mut arm.body, function, facts, path, changed);
                 });
             }
         }
@@ -197,11 +206,12 @@ fn fixup_block(
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
+    changed: &mut bool,
 ) {
-    fixup_body(&mut block.stmts, function, facts, path);
+    fixup_body(&mut block.stmts, function, facts, path, changed);
     if let Some(tail) = &mut block.tail {
         walk::with_path_segment(path, PathSegment::BlockTail, |path| {
-            fixup_expr(tail, function, facts, &BTreeMap::new(), path);
+            fixup_expr(tail, function, facts, &BTreeMap::new(), path, changed);
         });
     }
 }
@@ -212,9 +222,11 @@ fn fixup_expr(
     facts: &FixupFacts,
     temps: &BTreeMap<String, Compare>,
     path: &mut Vec<PathSegment>,
+    changed: &mut bool,
 ) {
     if let Some(replacement) = replacement_expr(expr, function, facts, temps, path) {
         *expr = replacement;
+        *changed = true;
         return;
     }
     match expr {
@@ -224,42 +236,42 @@ fn fixup_expr(
         | Expr::AddrOf { expr, .. }
         | Expr::Transmute { expr, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(expr, function, facts, temps, path)
+                fixup_expr(expr, function, facts, temps, path, changed)
             });
         }
         Expr::Binary { lhs, rhs, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(lhs, function, facts, temps, path)
+                fixup_expr(lhs, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                fixup_expr(rhs, function, facts, temps, path)
+                fixup_expr(rhs, function, facts, temps, path, changed)
             });
         }
         Expr::Range { start, end } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(start, function, facts, temps, path)
+                fixup_expr(start, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                fixup_expr(end, function, facts, temps, path)
+                fixup_expr(end, function, facts, temps, path, changed)
             });
         }
         Expr::Call { func, args, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(func, function, facts, temps, path)
+                fixup_expr(func, function, facts, temps, path, changed)
             });
             for (index, arg) in args.iter_mut().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
-                    fixup_expr(arg, function, facts, temps, path)
+                    fixup_expr(arg, function, facts, temps, path, changed)
                 });
             }
         }
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(recv, function, facts, temps, path)
+                fixup_expr(recv, function, facts, temps, path, changed)
             });
             for (index, arg) in args.iter_mut().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
-                    fixup_expr(arg, function, facts, temps, path)
+                    fixup_expr(arg, function, facts, temps, path, changed)
                 });
             }
         }
@@ -267,58 +279,58 @@ fn fixup_expr(
         | Expr::TupleField { base, .. }
         | Expr::ArrayPtr { array: base, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(base, function, facts, temps, path)
+                fixup_expr(base, function, facts, temps, path, changed)
             });
         }
         Expr::Index { base, index } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(base, function, facts, temps, path)
+                fixup_expr(base, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                fixup_expr(index, function, facts, temps, path)
+                fixup_expr(index, function, facts, temps, path, changed)
             });
         }
         Expr::StructLit { fields, .. } => {
             for (index, (_, value)) in fields.iter_mut().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index), |path| {
-                    fixup_expr(value, function, facts, temps, path)
+                    fixup_expr(value, function, facts, temps, path, changed)
                 });
             }
         }
         Expr::TupleStructLit { fields, .. } => {
             for (index, value) in fields.iter_mut().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index), |path| {
-                    fixup_expr(value, function, facts, temps, path)
+                    fixup_expr(value, function, facts, temps, path, changed)
                 });
             }
         }
         Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => {
             for (index, elem) in elems.iter_mut().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index), |path| {
-                    fixup_expr(elem, function, facts, temps, path)
+                    fixup_expr(elem, function, facts, temps, path, changed)
                 });
             }
         }
         Expr::ArrayRepeat { elem, .. } | Expr::Closure { body: elem, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(elem, function, facts, temps, path)
+                fixup_expr(elem, function, facts, temps, path, changed)
             });
         }
         Expr::VecRepeat { elem, len } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(elem, function, facts, temps, path)
+                fixup_expr(elem, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                fixup_expr(len, function, facts, temps, path)
+                fixup_expr(len, function, facts, temps, path, changed)
             });
         }
         Expr::Match { expr, arms } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(expr, function, facts, temps, path)
+                fixup_expr(expr, function, facts, temps, path, changed)
             });
             for (index, arm) in arms.iter_mut().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
-                    fixup_expr(&mut arm.value, function, facts, temps, path)
+                    fixup_expr(&mut arm.value, function, facts, temps, path, changed)
                 });
             }
         }
@@ -328,61 +340,61 @@ fn fixup_expr(
             else_expr,
         } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(cond, function, facts, temps, path)
+                fixup_expr(cond, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                fixup_expr(then_expr, function, facts, temps, path)
+                fixup_expr(then_expr, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                fixup_expr(else_expr, function, facts, temps, path)
+                fixup_expr(else_expr, function, facts, temps, path, changed)
             });
         }
         Expr::Block(block) => {
             walk::with_path_segment(path, PathSegment::BlockBody, |path| {
-                fixup_block(block, function, facts, path)
+                fixup_block(block, function, facts, path, changed)
             });
         }
         Expr::Unsafe(block) => {
             walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
-                fixup_block(block, function, facts, path)
+                fixup_block(block, function, facts, path, changed)
             });
         }
         Expr::CopyNonoverlapping { src, dst, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(src, function, facts, temps, path)
+                fixup_expr(src, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                fixup_expr(dst, function, facts, temps, path)
+                fixup_expr(dst, function, facts, temps, path, changed)
             });
         }
         Expr::PtrCopy {
             src, dst, count, ..
         } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(src, function, facts, temps, path)
+                fixup_expr(src, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                fixup_expr(dst, function, facts, temps, path)
+                fixup_expr(dst, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                fixup_expr(count, function, facts, temps, path)
+                fixup_expr(count, function, facts, temps, path, changed)
             });
         }
         Expr::WriteBytes { dst, val, count } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(dst, function, facts, temps, path)
+                fixup_expr(dst, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                fixup_expr(val, function, facts, temps, path)
+                fixup_expr(val, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                fixup_expr(count, function, facts, temps, path)
+                fixup_expr(count, function, facts, temps, path, changed)
             });
         }
         Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
             if let Some(ptr) = place.ptr_expr_mut() {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    fixup_expr(ptr, function, facts, temps, path)
+                    fixup_expr(ptr, function, facts, temps, path, changed)
                 });
             }
         }
@@ -391,16 +403,16 @@ fn fixup_expr(
         | Expr::AtomicSwap { place, value, .. } => {
             if let Some(ptr) = place.ptr_expr_mut() {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    fixup_expr(ptr, function, facts, temps, path)
+                    fixup_expr(ptr, function, facts, temps, path, changed)
                 });
             }
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                fixup_expr(value, function, facts, temps, path)
+                fixup_expr(value, function, facts, temps, path, changed)
             });
         }
         Expr::AtomicNew { value, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                fixup_expr(value, function, facts, temps, path)
+                fixup_expr(value, function, facts, temps, path, changed)
             });
         }
         Expr::AtomicCompareExchange {
@@ -411,14 +423,14 @@ fn fixup_expr(
         } => {
             if let Some(ptr) = place.ptr_expr_mut() {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    fixup_expr(ptr, function, facts, temps, path)
+                    fixup_expr(ptr, function, facts, temps, path, changed)
                 });
             }
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                fixup_expr(expected, function, facts, temps, path)
+                fixup_expr(expected, function, facts, temps, path, changed)
             });
             walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                fixup_expr(desired, function, facts, temps, path)
+                fixup_expr(desired, function, facts, temps, path, changed)
             });
         }
         Expr::Value(_)
