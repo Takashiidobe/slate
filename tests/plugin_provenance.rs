@@ -48,6 +48,13 @@ impl Case {
         )
     }
 
+    fn macro_events(&self) -> Vec<Value> {
+        self.tagged_events(
+            "MACRO_EXPANSION ",
+            &["-I", self.dir.to_str().expect("UTF-8 case path")],
+        )
+    }
+
     fn tagged_events(&self, prefix: &str, args: &[&str]) -> Vec<Value> {
         let output = Command::new(clang())
             .arg(format!("-fplugin={}", plugin().display()))
@@ -180,6 +187,26 @@ fn reports_toolchain_string_header_provenance() {
             .get("canonical_type")
             .and_then(Value::as_str)
             .is_some_and(|ty| ty.contains("const char *"))
+    );
+}
+
+#[test]
+fn reports_toolchain_macro_header_provenance() {
+    let source = "#include <float.h>\nlong double f(void) { return LDBL_TRUE_MIN; }\n";
+    let case = Case::new(source, &[]);
+    let events = by_name(case.macro_events(), "LDBL_TRUE_MIN");
+    assert_eq!(events.len(), 1, "events: {events:#?}");
+    let event = &events[0];
+    assert!(headers(event).contains(&"float.h"));
+    assert_eq!(
+        event.get("definition_system").and_then(Value::as_bool),
+        Some(true)
+    );
+    assert!(
+        event
+            .get("definition_file")
+            .and_then(Value::as_str)
+            .is_some_and(|file| file.ends_with("/__float_float.h"))
     );
 }
 
