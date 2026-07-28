@@ -106,11 +106,11 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 8. `singleton_scopes` - unwrap a one-statement `{ }` scope - to fixpoint (`to_fixpoint_items`).
 9. `compound_assign` - recover `a -= 5` - once, per function.
 10. `for_continue` - invert synthetic continue-blocks - to fixpoint (`to_fixpoint_items`), then `singleton_scopes` again to fixpoint.
-11. `constant_index_casts` - drop redundant `as usize` on constant indices - once, per function.
-12. `unnecessary_casts` - drop casts a typed context already makes redundant - once, per function.
-13. `call_args` - inline single-use call-argument temps - to fixpoint, per function, across the whole program.
-14. `retval` - collapse a return-slot store into the final return/exit - once, per function.
-15. `final_return_temps` - collapse a return-value temp into the final `return` - to fixpoint, per function, across the whole program.
+11. `constant_index_casts` - drop redundant `as usize` on constant indices - once, per function (`run_once_items`).
+12. `unnecessary_casts` - drop casts a typed context already makes redundant - once, per function (`run_once_items`).
+13. `call_args` - inline single-use call-argument temps - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`).
+14. `retval` - collapse a return-slot store into the final return/exit - once, per function (`run_once_items`).
+15. `final_return_temps` - collapse a return-value temp into the final `return` - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`).
 16. `lazy_singleton` - recover the "static flag guards a static payload" lazy-init idiom into `std::sync::OnceLock::get_or_init` - once, program-wide.
 17. `drop_call_results` - turn `let _v = call();` into `call();` when unused - once, per function.
 18. `string_lift` - lift NUL-terminated buffers to `CStr`/`str`/byte slices - once, per function.
