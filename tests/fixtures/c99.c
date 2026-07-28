@@ -4,14 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#pragma STDC FENV_ACCESS ON
-#pragma STDC FP_CONTRACT OFF
-#pragma STDC CX_LIMITED_RANGE OFF
-
-#define C99_PRAGMA(value) _Pragma(#value)
 #define C99_SUM3(first, ...) sum3(first, __VA_ARGS__)
-
-C99_PRAGMA(STDC FP_CONTRACT OFF)
 
 struct C99Pair {
   int first;
