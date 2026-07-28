@@ -105,6 +105,7 @@ calls with a constant, fully-supported format string become `println!`/
 `_Atomic` locals proven non-escaping get native `std::sync::atomic::AtomicN`
 storage with safe method calls (int/bool; float/pointer fall back to
 non-atomic RMW); CAS temp-chains fold into a single `compare_exchange` match.
+C11 `timespec_get` uses the platform `libc::timespec` ABI.
 
 ### Varargs, attributes, and builtins
 

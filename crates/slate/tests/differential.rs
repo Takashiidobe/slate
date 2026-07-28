@@ -367,6 +367,21 @@ fn pthread_opaque_types_use_libc_paths() {
 }
 
 #[test]
+fn timespec_get_uses_libc_timespec_abi() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-timespec-get");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let rust = translate_fixture(&tmp, "timespec_get");
+    assert!(rust.contains("fn timespec_get(_0: *mut libc::timespec, _1: i32) -> i32;"));
+    assert!(
+        rust.contains("let mut value: libc::timespec = libc::timespec { tv_sec: 0, tv_nsec: 0 };")
+    );
+    assert!(rust.contains("value.tv_nsec >= 0"));
+    assert!(rust.contains("value.tv_nsec < 1000000000"));
+    assert!(!rust.contains("*mut timespec"));
+}
+
+#[test]
 fn lazy_singleton_recovers_once_lock() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-lazy-singleton");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

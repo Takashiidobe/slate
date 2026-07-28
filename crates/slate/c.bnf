@@ -13,7 +13,7 @@
 <program> ::= <include_list> <decl_list> <function_list> ;
 
 <include_list> ::= <include> <include_list> | <include> ;
-<include> ::= "#include <stdio.h>" | "#include <stdlib.h>" | "#include <stdint.h>" | "#include <stddef.h>" | "#include <stdbool.h>" | "#include <stdatomic.h>" | "#include <threads.h>" ;
+<include> ::= "#include <stdio.h>" | "#include <stdlib.h>" | "#include <stdint.h>" | "#include <stddef.h>" | "#include <stdbool.h>" | "#include <stdatomic.h>" | "#include <threads.h>" | "#include <time.h>" ;
 
 # ----- top-level declarations -----
 
@@ -112,7 +112,7 @@
 
 <type> ::= <base_type> | <pointer_type> | <function_pointer_type> ;
 <base_type> ::= <unqualified_base_type> | <type_qualifier> <unqualified_base_type> ;
-<unqualified_base_type> ::= <int_type> | "float" | "double" | "long double" | "__float128" | <complex_type> | <char_type> | <bool_type> | <ident> ;
+<unqualified_base_type> ::= <int_type> | "float" | "double" | "long double" | "__float128" | <complex_type> | <char_type> | <bool_type> | <record_type> | <ident> ;
 <pointer_type> ::= <base_type> "*" | <base_type> "*" "restrict" ;
 <function_pointer_type> ::= <ret_type> "(" "*" ")" "(" <function_pointer_param_types> ")" ;
 <function_pointer_param_types> ::= "void" | <function_pointer_params> ;
@@ -122,6 +122,7 @@
 <char_type> ::= "char" | "signed char" | "unsigned char" ;
 <bool_type> ::= "_Bool" | "bool" ;
 <complex_type> ::= "float" "_Complex" | "double" "_Complex" ;
+<record_type> ::= "struct" <ident> | "union" <ident> ;
 
 # Lexical placeholders: a real lexer supplies identifiers and numeric
 # literals. They are single productions here so the grammar is self-contained.
