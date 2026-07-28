@@ -1,6 +1,7 @@
 //! Collapse a return-value slot store into the final return or main exit when
 //! the slot is used only for that round trip.
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::effects::is_movable_pure_expr;
 use crate::fixups::facts::{
     AstPath, BindingId, ControlFlowSubject, FixupFacts, FunctionId, PathSegment, PlaceAccess,
@@ -12,58 +13,60 @@ use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLogger, ast_path_fact, fact, function_path_location,
     path_fact, stmt_snippet, stmts_snippet,
 };
-use crate::rust_ast::{Expr, FnDef, IndentStmt, Path, Prim, Stmt, Type};
-
-pub(in crate::fixups) fn fixup(f: &mut FnDef, function: FunctionId, facts: &FixupFacts) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    Retval::new(&mut logger).fixup(f, function, facts);
-}
+use crate::rust_ast::{Expr, IndentStmt, Path, Prim, Stmt, Type};
 
 pub(in crate::fixups) struct Retval<'a> {
+    is_main: bool,
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> Retval<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
+impl Fixup for Retval<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        let mut changed = collapse_return_slots_logged(
+            body,
+            self.function,
+            self.facts,
+            &mut Vec::new(),
+            self.logger,
+        );
 
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        f: &mut FnDef,
-        function: FunctionId,
-        facts: &FixupFacts,
-    ) {
-        collapse_return_slots_logged(&mut f.body, function, facts, &mut Vec::new(), self.logger);
-
-        if f.name == "main" {
-            collapse_main_exit_slots_logged(
-                &mut f.body,
-                function,
-                facts,
+        if self.is_main {
+            changed |= collapse_main_exit_slots_logged(
+                body,
+                self.function,
+                self.facts,
                 &mut Vec::new(),
                 self.logger,
             );
         }
 
-        remove_unused_retval_artifacts_logged(
-            &mut f.body,
-            function,
-            facts,
+        changed |= remove_unused_retval_artifacts_logged(
+            body,
+            self.function,
+            self.facts,
             &Vec::new(),
             self.logger,
         );
+        changed
     }
 }
 
-fn collapse_return_slots(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
-) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    collapse_return_slots_logged(body, function, facts, path, &mut logger);
+impl<'a> Retval<'a> {
+    pub(in crate::fixups) fn new(
+        is_main: bool,
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            is_main,
+            function,
+            facts,
+            logger,
+        }
+    }
 }
 
 fn collapse_return_slots_logged(
@@ -72,11 +75,12 @@ fn collapse_return_slots_logged(
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
     logger: &mut dyn TraceLogger,
-) {
+) -> bool {
+    let mut changed = false;
     for (index, stmt) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |nested, path| {
-                collapse_return_slots_logged(nested, function, facts, path, logger);
+                changed |= collapse_return_slots_logged(nested, function, facts, path, logger);
             });
         });
     }
@@ -89,8 +93,9 @@ fn collapse_return_slots_logged(
         .collect();
     collapses.sort_by_key(|(ret_index, _)| *ret_index);
     for (ret_index, fact) in collapses.into_iter().rev() {
-        collapse_return_slot(body, path, ret_index, fact, function, facts, logger);
+        changed |= collapse_return_slot(body, path, ret_index, fact, function, facts, logger);
     }
+    changed
 }
 
 fn collapse_return_slot(
@@ -101,27 +106,27 @@ fn collapse_return_slot(
     function: FunctionId,
     facts: &FixupFacts,
     logger: &mut dyn TraceLogger,
-) {
+) -> bool {
     let Some(value_index) = direct_stmt_index(body_path, &collapse_fact.value_path) else {
-        return;
+        return false;
     };
     if ret_index >= body.len() || value_index >= body.len() {
-        return;
+        return false;
     }
     let value = match &body[value_index].stmt {
         Stmt::Let {
             init: Some(init), ..
         } => init.clone(),
         Stmt::Assign { value, .. } => value.clone(),
-        _ => return,
+        _ => return false,
     };
     let mut remove = Vec::new();
     for path in &collapse_fact.remove_paths {
         let Some(index) = direct_stmt_index(body_path, path) else {
-            return;
+            return false;
         };
         if index >= body.len() || index == ret_index {
-            return;
+            return false;
         }
         remove.push(index);
     }
@@ -129,7 +134,7 @@ fn collapse_return_slot(
     remove.dedup();
 
     let Stmt::Return(Some(_)) = &body[ret_index].stmt else {
-        return;
+        return false;
     };
     let before = logger.is_enabled().then(|| {
         let removed = remove
@@ -182,9 +187,10 @@ fn collapse_return_slot(
     for index in remove.into_iter().rev() {
         body.remove(index);
     }
+    true
 }
 
-fn remove_unused_retval_decl(body: &mut Vec<IndentStmt>) {
+fn remove_unused_retval_decl(body: &mut Vec<IndentStmt>) -> bool {
     let Some(index) = body.iter().position(|indent| {
         matches!(
             &indent.stmt,
@@ -195,7 +201,7 @@ fn remove_unused_retval_decl(body: &mut Vec<IndentStmt>) {
             } if name == "__retval"
         )
     }) else {
-        return;
+        return false;
     };
     let uses = body
         .iter()
@@ -205,15 +211,18 @@ fn remove_unused_retval_decl(body: &mut Vec<IndentStmt>) {
         .sum::<usize>();
     if uses == 0 {
         body.remove(index);
+        return true;
     }
+    false
 }
 
-fn remove_unused_retval_artifacts(body: &mut Vec<IndentStmt>) {
+fn remove_unused_retval_artifacts(body: &mut Vec<IndentStmt>) -> bool {
     if retval_read_count(body) != 0 {
-        return;
+        return false;
     }
-    remove_unused_retval_writes(body);
-    remove_unused_retval_decl(body);
+    let mut changed = remove_unused_retval_writes(body);
+    changed |= remove_unused_retval_decl(body);
+    changed
 }
 
 fn remove_unused_retval_artifacts_logged(
@@ -222,15 +231,15 @@ fn remove_unused_retval_artifacts_logged(
     facts: &FixupFacts,
     path: &[PathSegment],
     logger: &mut dyn TraceLogger,
-) {
+) -> bool {
     let before = logger.is_enabled().then(|| body.clone());
-    remove_unused_retval_artifacts(body);
-    let Some(before) = before else {
-        return;
-    };
-    if stmts_code(&before) == stmts_code(body) {
-        return;
+    let changed = remove_unused_retval_artifacts(body);
+    if !changed {
+        return false;
     }
+    let Some(before) = before else {
+        return true;
+    };
     logger.rewrite(RewriteEvent {
         pass: TracePass::Retval,
         kind: "remove_unused_retval_artifacts".into(),
@@ -239,13 +248,7 @@ fn remove_unused_retval_artifacts_logged(
         after: vec![stmts_snippet("body", body)],
         facts: vec![path_fact("body_path", path)],
     });
-}
-
-fn stmts_code(body: &[IndentStmt]) -> String {
-    body.iter()
-        .map(|stmt| stmt.stmt.render())
-        .collect::<Vec<_>>()
-        .join("")
+    true
 }
 
 fn retval_read_count(body: &[IndentStmt]) -> usize {
@@ -316,14 +319,17 @@ fn stmt_retval_read_count(stmt: &Stmt) -> usize {
     }
 }
 
-fn remove_unused_retval_writes(body: &mut Vec<IndentStmt>) {
+fn remove_unused_retval_writes(body: &mut Vec<IndentStmt>) -> bool {
+    let mut changed = false;
     for indent in body.iter_mut() {
         let mut path = Vec::new();
         walk::nested_body_vecs_mut_with_path(&mut indent.stmt, &mut path, &mut |body, _| {
-            remove_unused_retval_writes(body);
+            changed |= remove_unused_retval_writes(body);
         });
     }
+    let before = body.len();
     body.retain(|indent| !is_removable_retval_write(&indent.stmt));
+    changed || body.len() != before
 }
 
 fn is_removable_retval_write(stmt: &Stmt) -> bool {
@@ -335,31 +341,23 @@ fn is_removable_retval_write(stmt: &Stmt) -> bool {
     }
 }
 
-fn collapse_main_exit_slots(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-    path: &mut Vec<PathSegment>,
-) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    collapse_main_exit_slots_logged(body, function, facts, path, &mut logger);
-}
-
 fn collapse_main_exit_slots_logged(
     body: &mut Vec<IndentStmt>,
     function: FunctionId,
     facts: &FixupFacts,
     path: &mut Vec<PathSegment>,
     logger: &mut dyn TraceLogger,
-) {
+) -> bool {
+    let mut changed = false;
     for (index, stmt) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_mut_with_path(&mut stmt.stmt, path, &mut |nested, path| {
-                collapse_main_exit_slots_logged(nested, function, facts, path, logger);
+                changed |= collapse_main_exit_slots_logged(nested, function, facts, path, logger);
             });
         });
     }
-    collapse_main_exit_slot(body, function, facts, path, logger);
+    changed |= collapse_main_exit_slot(body, function, facts, path, logger);
+    changed
 }
 
 fn collapse_main_exit_slot(
@@ -368,7 +366,7 @@ fn collapse_main_exit_slot(
     facts: &FixupFacts,
     body_path: &[PathSegment],
     logger: &mut dyn TraceLogger,
-) {
+) -> bool {
     let Some((exit_index, temp_name)) =
         body.iter()
             .enumerate()
@@ -381,10 +379,10 @@ fn collapse_main_exit_slot(
                 _ => None,
             })
     else {
-        return;
+        return false;
     };
     if exit_index < 2 {
-        return;
+        return false;
     }
 
     let temp_index = exit_index - 1;
@@ -398,11 +396,11 @@ fn collapse_main_exit_slot(
         _ => None,
     };
     let Some(retval_name) = retval_name else {
-        return;
+        return false;
     };
     let temp_path = AstPath(stmt_path(body_path, temp_index));
     let Some(temp_binding) = facts.binding_by_local_path(function, &temp_name, &temp_path) else {
-        return;
+        return false;
     };
     let Some(retval_binding) = facts
         .bindings
@@ -410,7 +408,7 @@ fn collapse_main_exit_slot(
         .find(|binding| binding.function == function && binding.name == retval_name)
         .map(|binding| binding.id)
     else {
-        return;
+        return false;
     };
 
     let store_index = temp_index - 1;
@@ -426,14 +424,14 @@ fn collapse_main_exit_slot(
         {
             value.clone()
         }
-        _ => return,
+        _ => return false,
     };
 
     let Some(retval_def_use) = facts.def_use(retval_binding) else {
-        return;
+        return false;
     };
     let Some(temp_def_use) = facts.def_use(temp_binding) else {
-        return;
+        return false;
     };
     let store_path = AstPath(stmt_path(body_path, store_index));
     if retval_def_use.reads != [AstPath(stmt_path(body_path, temp_index))]
@@ -441,7 +439,7 @@ fn collapse_main_exit_slot(
         || temp_def_use.reads != [AstPath(stmt_path(body_path, exit_index))]
         || !temp_def_use.writes.is_empty()
     {
-        return;
+        return false;
     }
 
     let mut remove = vec![temp_index, store_index];
@@ -453,7 +451,7 @@ fn collapse_main_exit_slot(
             if index > store_index
                 || !pure_retval_write(function, facts, index, retval_binding, body)
             {
-                return;
+                return false;
             }
             remove.push(index);
         }
@@ -516,6 +514,7 @@ fn collapse_main_exit_slot(
     for index in remove.into_iter().rev() {
         body.remove(index);
     }
+    true
 }
 
 fn main_exit_arg_temp(expr: &Expr) -> Option<&str> {

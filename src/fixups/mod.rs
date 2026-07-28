@@ -228,77 +228,57 @@ fn apply_with_logger(
         });
     });
     step!(program, Pass::ConstantIndexCasts, {
-        for item in &mut program.items {
-            if let Item::Fn(f) = item {
-                rewrite::constant_index_casts::ConstantIndexCasts::new(logger).fixup(&mut f.body);
-            }
-        }
+        let mut fixup = rewrite::constant_index_casts::ConstantIndexCasts::new(logger);
+        run_once_items(&mut program, |_, f| run_once(&mut f.body, &mut fixup));
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::UnnecessaryCasts, {
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-            {
-                rewrite::unnecessary_casts::UnnecessaryCasts::new(logger).fixup(
-                    &mut f.body,
-                    function,
-                    &facts,
-                );
-            }
-        }
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup =
+                rewrite::unnecessary_casts::UnnecessaryCasts::new(function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::CallArgs, {
-        loop {
-            let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-            let mut changed = false;
-            for (item_index, item) in program.items.iter_mut().enumerate() {
-                if let Item::Fn(f) = item
-                    && let Some(function) = facts.function_by_item_index(item_index)
-                    && rewrite::call_args::CallArgs::new(logger).fixup(
-                        &mut f.body,
-                        function,
-                        &facts,
-                    )
-                {
-                    changed = true;
-                }
-            }
-            if !changed {
-                break;
-            }
-        }
+        to_fixpoint_items_with_facts(
+            &mut program,
+            FixpointLimit::Unlimited,
+            |item_index, f, facts| {
+                let Some(function) = facts.function_by_item_index(item_index) else {
+                    return false;
+                };
+                let mut fixup = rewrite::call_args::CallArgs::new(function, facts, logger);
+                run_once(&mut f.body, &mut fixup)
+            },
+        );
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::Retval, {
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            if let Item::Fn(f) = item
-                && let Some(function) = facts.function_by_item_index(item_index)
-            {
-                rewrite::retval::Retval::new(logger).fixup(f, function, &facts);
-            }
-        }
+        run_once_items(&mut program, |item_index, f| {
+            let Some(function) = facts.function_by_item_index(item_index) else {
+                return false;
+            };
+            let mut fixup =
+                rewrite::retval::Retval::new(f.name == "main", function, &facts, logger);
+            run_once(&mut f.body, &mut fixup)
+        });
     });
     step!(program, Pass::FinalReturnTemps, {
-        loop {
-            let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-            let mut changed = false;
-            for (item_index, item) in program.items.iter_mut().enumerate() {
-                if let Item::Fn(f) = item
-                    && let Some(function) = facts.function_by_item_index(item_index)
-                    && rewrite::final_return_temps::FinalReturnTemps::new(logger).fixup(
-                        &mut f.body,
-                        function,
-                        &facts,
-                    )
-                {
-                    changed = true;
-                }
-            }
-            if !changed {
-                break;
-            }
-        }
+        to_fixpoint_items_with_facts(
+            &mut program,
+            FixpointLimit::Unlimited,
+            |item_index, f, facts| {
+                let Some(function) = facts.function_by_item_index(item_index) else {
+                    return false;
+                };
+                let mut fixup =
+                    rewrite::final_return_temps::FinalReturnTemps::new(function, facts, logger);
+                run_once(&mut f.body, &mut fixup)
+            },
+        );
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::LazySingleton, {

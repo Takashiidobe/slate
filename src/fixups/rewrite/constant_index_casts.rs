@@ -1,28 +1,22 @@
+use crate::fixups::Fixup;
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
     Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet,
 };
 use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Type};
 
-pub(in crate::fixups) fn fixup(body: &mut [IndentStmt]) {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    ConstantIndexCasts::new(&mut logger).fixup(body);
-}
-
 pub(in crate::fixups) struct ConstantIndexCasts<'a> {
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> ConstantIndexCasts<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, body: &mut [IndentStmt]) {
+impl Fixup for ConstantIndexCasts<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        let mut changed = false;
         walk::body_exprs_mut_with(body, &mut |expr| {
             if let Expr::Index { index, .. } = expr
                 && let Some(replacement) = simplified_index(index)
             {
+                changed = true;
                 let before = self.logger.is_enabled().then(|| (**index).clone());
                 **index = replacement;
                 if let Some(before) = before {
@@ -38,6 +32,13 @@ impl<'a> ConstantIndexCasts<'a> {
             }
             true
         });
+        changed
+    }
+}
+
+impl<'a> ConstantIndexCasts<'a> {
+    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
+        Self { logger }
     }
 }
 

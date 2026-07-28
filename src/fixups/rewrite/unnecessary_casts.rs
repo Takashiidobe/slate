@@ -1,5 +1,6 @@
 //! Simplify casts whose typed context already preserves behavior.
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
 use crate::fixups::support::walk;
 use crate::fixups::trace::{
@@ -7,31 +8,35 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Prim, Stmt, Type};
 
-pub(in crate::fixups) fn fixup(
-    body: &mut [IndentStmt],
-    function: FunctionId,
-    facts: &FixupFacts,
-) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    UnnecessaryCasts::new(&mut logger).fixup(body, function, facts)
-}
-
 pub(in crate::fixups) struct UnnecessaryCasts<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
-impl<'a> UnnecessaryCasts<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+impl Fixup for UnnecessaryCasts<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        fixup_at(
+            body,
+            self.function,
+            self.facts,
+            &mut Vec::new(),
+            self.logger,
+        )
     }
+}
 
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        body: &mut [IndentStmt],
+impl<'a> UnnecessaryCasts<'a> {
+    pub(in crate::fixups) fn new(
         function: FunctionId,
-        facts: &FixupFacts,
-    ) -> bool {
-        fixup_at(body, function, facts, &mut Vec::new(), self.logger)
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
     }
 }
 

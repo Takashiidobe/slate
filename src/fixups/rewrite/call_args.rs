@@ -17,6 +17,7 @@
 //!   slot; the between-statements guard keeps its side effect from being
 //!   reordered.
 
+use crate::fixups::Fixup;
 use crate::fixups::facts::{
     AstPath, CallArgPinning, CallCallee, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
 };
@@ -27,33 +28,19 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Expr, IndentStmt, Stmt};
 
-pub(in crate::fixups) fn fixup(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    CallArgs::new(&mut logger).fixup(body, function, facts)
-}
-
 pub(in crate::fixups) struct CallArgs<'a> {
+    function: FunctionId,
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
+impl Fixup for CallArgs<'_> {
+    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
+        self.fixup_at(body, self.function, self.facts, &mut Vec::new())
+    }
+}
+
 impl<'a> CallArgs<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(
-        &mut self,
-        body: &mut Vec<IndentStmt>,
-        function: FunctionId,
-        facts: &FixupFacts,
-    ) -> bool {
-        self.fixup_at(body, function, facts, &mut Vec::new())
-    }
-
     fn fixup_at(
         &mut self,
         body: &mut Vec<IndentStmt>,
@@ -188,6 +175,18 @@ impl<'a> CallArgs<'a> {
             after: vec![stmt_snippet("consumer", after_use)],
             facts: event_facts,
         });
+    }
+
+    pub(in crate::fixups) fn new(
+        function: FunctionId,
+        facts: &'a FixupFacts,
+        logger: &'a mut dyn TraceLogger,
+    ) -> Self {
+        Self {
+            function,
+            facts,
+            logger,
+        }
     }
 }
 
