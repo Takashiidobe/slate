@@ -348,6 +348,18 @@ fn translate_fixture(tmp: &Path, fixture: &str) -> String {
 }
 
 #[test]
+fn pointer_comparisons_preserve_address_operands() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pointer-compare-address");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let rust = translate_fixture(&tmp, "pointer_compare_address");
+    assert!(rust.contains("_v2 == std::ptr::addr_of_mut!(utc)"));
+    assert!(rust.contains("_v4 == std::ptr::addr_of_mut!(local)"));
+    assert!(!rust.contains("_v2 == utc"));
+    assert!(!rust.contains("_v4 == local"));
+}
+
+#[test]
 fn pthread_opaque_types_use_libc_paths() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pthread-types");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
