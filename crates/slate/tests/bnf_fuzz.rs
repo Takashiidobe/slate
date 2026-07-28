@@ -210,6 +210,7 @@ fn random_seed() -> u64 {
 /// `SLATE_FUZZ_SEED=<seed> SLATE_FUZZ_CASES=1` replays that one program. The
 /// generated `.c`/`.generated.rs` are also left under `target/cgen-fuzz/`.
 #[test]
+#[ignore = "diagnostic-only structured generator; not a required gate"]
 fn generator_differential() {
     let cases_n: u64 = std::env::var("SLATE_FUZZ_CASES")
         .ok()

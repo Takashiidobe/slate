@@ -8,7 +8,7 @@
 //! it (drop it from the list) — so coverage only ratchets forward.
 //!
 //! Run just this suite with:
-//!   cargo test --test stdlib_coverage -- --nocapture
+//!   cargo nextest r --release --test stdlib_coverage --nocapture
 
 mod support;
 

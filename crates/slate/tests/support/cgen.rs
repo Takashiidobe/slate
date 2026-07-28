@@ -962,6 +962,17 @@ impl Gen {
         }
         let idx = self.rng.int_in(0, n - 1);
         self.printf(&format!("arr[{idx}]"));
+        let vla_value = self.rng.int_in(0, CONST_MAX);
+        self.line("{");
+        self.indent += 1;
+        self.line(&format!("int vla_length = {n};"));
+        self.line("int vla[vla_length];");
+        self.line(&format!("vla[{idx}] = {vla_value};"));
+        self.line("int (*vla_address)[vla_length] = &vla;");
+        self.printf(&format!("(*vla_address)[{idx}]"));
+        self.indent -= 1;
+        self.line("}");
+        self.printf(&format!("{}", vla_value + 1));
         if self.has_char {
             let ch = self.rng.int_in(0, 63);
             self.line("char chars[2];");
@@ -1470,6 +1481,13 @@ mod tests {
         assert!(corpus.contains("double weights[2];"));
         assert!(corpus.contains("chars[1] = chars[0] + 1;"));
         assert!(corpus.contains("weights[1] = weights[0] + 1.25;"));
+    }
+
+    #[test]
+    fn emits_variable_length_array_declarations() {
+        let corpus = generate(0);
+        assert!(corpus.contains("int vla[vla_length];"));
+        assert!(corpus.contains("int (*vla_address)[vla_length] = &vla;"));
     }
 
     #[test]

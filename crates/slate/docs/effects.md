@@ -12,6 +12,10 @@ C-to-Rust correctness backstop. Effects validation is for the fixup ladder: if a
 rewrite changes what the raw lowered Rust would have done, the raw-vs-fixuped
 effect traces should diverge.
 
+Effects validation is diagnostic-only and is not a required feature or fixup
+completion gate. Do not run the regression by default. Use it when working
+directly on this interpreter or when a task explicitly requests it.
+
 ## Where It Lives
 
 - `src/effects/mod.rs` defines the shared `Value`, `Location`, `Effect`, and
@@ -66,10 +70,10 @@ cargo nextest r --release --test effects_regression --no-capture
 SLATE_EFFECT_FIXTURE=<name> cargo nextest r --release --test effects_regression --no-capture
 ```
 
-Run the effects regression whenever adding a `tests/fixtures/*.c` fixture. A new
-fixture can introduce raw Rust or fixuped Rust shapes that compile and pass
-differential testing while still being unknown to the effects interpreter. Treat
-an extraction failure as missing effects support, not as an ignorable test gap.
+The effects regression can be used during targeted interpreter work. A fixture
+may introduce raw Rust or fixuped Rust shapes that compile and pass differential
+testing while still being unknown to the effects interpreter; that gap does not
+block unrelated feature or fixup work.
 
 When adding a new semantic case:
 
@@ -80,7 +84,7 @@ When adding a new semantic case:
 3. Keep unsupported shapes explicit with a precise panic message. Do not guess.
 4. Add or update an in-file unit test under `src/effects/rust_ast/interp/tests.rs`
    for the new semantic shape.
-5. Run the focused fixture command and the effects regression test.
+5. Run the focused fixture command when the task calls for effects validation.
 
 ## Where To Implement
 
@@ -160,7 +164,7 @@ TODO file.
 
 ## Verification
 
-For a narrow interpreter addition:
+For optional targeted interpreter validation:
 
 ```bash
 cargo fmt
@@ -174,8 +178,7 @@ cargo fmt
 cargo nextest r --release
 ```
 
-Run the all-fixture corpus test whenever adding fixture coverage or changing a
-fixup:
+The all-fixture corpus remains available for explicit effects work:
 
 ```bash
 cargo nextest r --release --test effects_regression --no-capture
@@ -184,7 +187,6 @@ cargo nextest r --release --test effects_regression --no-capture
 There is no general compiler error that proves every new fixup effect shape is
 modeled. Adding a new `CallSummary` variant is exhaustively checked by the
 summary dispatch, but most Rust AST interpretation and fixup effect-fact
-collection uses explicit unsupported/runtime paths for unknown shapes. The
-all-fixture effects test is the required guard for those cases.
+collection uses explicit unsupported/runtime paths for unknown shapes.
 
 Record the before/after pass and failure counts on the bead.

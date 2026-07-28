@@ -127,7 +127,8 @@ Examples: structs, arrays, pointer arithmetic, new arithmetic operators, `if`,
 Use this order:
 
 1. Add or extend a C fixture in `tests/fixtures/`.
-2. Run `cargo test --test differential generated_differential -- --nocapture`
+2. Run
+   `cargo nextest r --release --test differential -E 'test(generated_differential)' --nocapture`
    and confirm the generated path fails for the missing feature.
 3. Inspect actual CIR with `cargo run -- emit-cir tests/fixtures/<name>.c`.
 4. Inspect source context with `clang -Xclang -ast-dump=json -fsyntax-only`.
@@ -136,7 +137,7 @@ Use this order:
    from Clang JSON and preserve the raw node while the compact model catches up.
 7. Keep baseline Rust conservative: `#[repr(C)]`, raw pointers, explicit temps,
    `libc`, and `unsafe` are acceptable.
-8. Run `cargo fmt` and `cargo test`.
+8. Run `cargo fmt` and `cargo nextest r --release`.
 
 For structs specifically, the baseline shape is:
 

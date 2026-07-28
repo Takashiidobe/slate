@@ -51,6 +51,7 @@
   - [x] `cir.return`
 - [x] structured control flow
   - [x] `cir.scope`
+  - [x] `cir.cleanup.scope` for VLA stack restoration
   - [x] `cir.if`
   - [x] `cir.for`
   - [x] `cir.while`

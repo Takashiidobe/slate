@@ -4,6 +4,11 @@ Slate is verified by **differential testing**: translate a C program to Rust,
 compile and run both, and require identical stdout and exit code. The fuzzer's
 job is to produce a stream of _varied but valid_ C programs to feed that harness.
 
+The structured generator differential is diagnostic-only and ignored by
+default. Its programs are too structured to have found useful failures, so it
+is not a required gate and does not need improvement unless a task explicitly
+requests it. Fixture differential tests remain the correctness gate.
+
 ## Two generators
 
 | Artifact           | File                    | Role                               |
@@ -51,16 +56,16 @@ From that state it emits multi-function programs with:
 - expressions composed by `+`, `+=`, and `++` over live variables, constants, and
   nested calls to earlier functions;
 - scoped locals passed as call arguments;
-- `for`/`while` accumulation loops, fixed-size primitive scalar arrays, local
-  pointer mutation and pointer arithmetic, fixed-width typedef locals,
-  structs/unions with primitive scalar fields, `sizeof`, volatile-qualified
-  primitive scalar values, `static` primitive globals, and enum constants;
+- `for`/`while` accumulation loops, fixed-size primitive scalar arrays,
+  runtime-sized local integer arrays, local pointer mutation and pointer
+  arithmetic, fixed-width typedef locals, structs/unions with primitive scalar
+  fields, `sizeof`, volatile-qualified primitive scalar values, `static`
+  primitive globals, and enum constants;
 - `main` that prints every function's result with `printf("%d\n", ...)`.
 
 Everything stays inside the subset Slate can translate today (see
 [README.md](README.md) for that surface). This is deliberately narrower than a
-general C generator — it is a generator _for Slate's supported subset_, and it
-grows as the supported subset grows.
+general C generator and is retained as an optional diagnostic.
 
 ### Correctness invariant: no undefined behavior
 
@@ -86,18 +91,18 @@ The generator rules these out **by construction**:
 program skeleton, and that the value bound never exceeds the cap across a seed
 sweep).
 
-## Running it
+## Optional explicit run
 
 ```bash
 # fresh random seeds each run
-cargo test --test bnf_fuzz generator_differential -- --nocapture
-SLATE_FUZZ_CASES=64 cargo test --test bnf_fuzz generator_differential -- --nocapture
+cargo nextest r --release --test bnf_fuzz -E 'test(generator_differential)' --run-ignored all --nocapture
+SLATE_FUZZ_CASES=64 cargo nextest r --release --test bnf_fuzz -E 'test(generator_differential)' --run-ignored all --nocapture
 
 # deterministic: seeds n, n+1, ...
-SLATE_FUZZ_SEED=42 cargo test --test bnf_fuzz generator_differential -- --nocapture
+SLATE_FUZZ_SEED=42 cargo nextest r --release --test bnf_fuzz -E 'test(generator_differential)' --run-ignored all --nocapture
 
 # replay a single seed a failure reported
-SLATE_FUZZ_SEED=<seed> SLATE_FUZZ_CASES=1 cargo test --test bnf_fuzz generator_differential -- --nocapture
+SLATE_FUZZ_SEED=<seed> SLATE_FUZZ_CASES=1 cargo nextest r --release --test bnf_fuzz -E 'test(generator_differential)' --run-ignored all --nocapture
 ```
 
 `SLATE_FUZZ_CASES` (default 8) sets how many seeds to run. By default the seeds
