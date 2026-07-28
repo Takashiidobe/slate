@@ -1130,6 +1130,21 @@ fn nul_terminated_char_pointer_literals_use_c_string_syntax() {
 }
 
 #[test]
+fn u8_string_literal_preserves_storage_and_index_reads() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-u8-string-literal");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("u8_string_literal.c");
+    let generated = tmp.join("u8_string_literal.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate u8 string literal fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated u8 string literal rust");
+    assert!(rust.contains("static mut main_text: [i8; 3] = [-50, -87, 0];"));
+    assert_eq!(rust.matches("main_text[1]").count(), 3);
+    assert!(rust.contains("main_text[2]"));
+    assert!(rust.contains("let alignment: i32 = 4;"));
+}
+
+#[test]
 fn literal_fopen_fputs_fclose_owner_uses_open_options() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-stdio-file-write");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

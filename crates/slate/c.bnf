@@ -54,7 +54,7 @@
 
 <declaration> ::= <scalar_declaration> | <array_declaration> ;
 <scalar_declaration> ::= <type> <ident> "=" <expr> ";" | "static _Thread_local" <type> <ident> <global_init> ";" ;
-<array_declaration> ::= <type> <ident> "[" <array_bound> "]" ";" ;
+<array_declaration> ::= <type> <ident> "[" <array_bound> "]" ";" | "static" <type> <ident> "[" "]" "=" <string_literal> ";" ;
 <array_bound> ::= <int> | <ident> ;
 <assignment> ::= <lvalue> "=" <expr> ";" ;
 <compound_assignment> ::= <lvalue> <compound_assign_op> <expr> ";" ;
@@ -129,3 +129,4 @@
 <int> ::= "0" ;
 <float> ::= "0.0" | "0.0f" ;
 <char> ::= "'A'" ;
+<string_literal> ::= "\"text\"" | "u8\"text\"" ;
