@@ -382,6 +382,29 @@ fn timespec_get_uses_libc_timespec_abi() {
 }
 
 #[test]
+fn uchar_conversions_use_libc_mbstate_abi() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-uchar-conversions");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let rust = translate_fixture(&tmp, "uchar_conversions");
+    assert!(rust.contains(
+        "fn mbrtoc16(_0: *mut u16, _1: *mut i8, _2: u64, _3: *mut libc::mbstate_t) -> u64;"
+    ));
+    assert!(rust.contains("fn c16rtomb(_0: *mut i8, _1: u16, _2: *mut libc::mbstate_t) -> u64;"));
+    assert!(rust.contains(
+        "fn mbrtoc32(_0: *mut u32, _1: *mut i8, _2: u64, _3: *mut libc::mbstate_t) -> u64;"
+    ));
+    assert!(rust.contains("fn c32rtomb(_0: *mut i8, _1: u32, _2: *mut libc::mbstate_t) -> u64;"));
+    assert!(rust.contains(
+        "let mut state16: libc::mbstate_t = unsafe { std::mem::zeroed::<libc::mbstate_t>() };"
+    ));
+    assert!(rust.contains(
+        "let mut state32: libc::mbstate_t = unsafe { std::mem::zeroed::<libc::mbstate_t>() };"
+    ));
+    assert!(!rust.contains("*mut __mbstate_t"));
+}
+
+#[test]
 fn lazy_singleton_recovers_once_lock() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-lazy-singleton");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
