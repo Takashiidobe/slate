@@ -12,23 +12,19 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{AtomicPlace, AtomicType, Expr, IndentStmt, Item, Program, Stmt, Type};
 
-pub(in crate::fixups) fn fixup(program: &mut Program, facts: &FixupFacts) -> bool {
-    let mut logger = crate::fixups::trace::NoopLogger;
-    AtomicLocals::new(&mut logger).fixup(program, facts)
-}
-
 pub(in crate::fixups) struct AtomicLocals<'a> {
+    facts: &'a FixupFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
 impl<'a> AtomicLocals<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
+    pub(in crate::fixups) fn new(facts: &'a FixupFacts, logger: &'a mut dyn TraceLogger) -> Self {
+        Self { facts, logger }
     }
 
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program, facts: &FixupFacts) -> bool {
+    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
         let before = self.logger.is_enabled().then(|| program.emit());
-        let changed = fixup_impl(program, facts);
+        let changed = fixup_impl(program, self.facts);
         if changed && let Some(before) = before {
             self.logger.rewrite(RewriteEvent {
                 pass: TracePass::AtomicLocals,
@@ -37,8 +33,11 @@ impl<'a> AtomicLocals<'a> {
                 before: vec![TraceSnippet::new("program", before.trim_end())],
                 after: vec![TraceSnippet::new("program", program.emit().trim_end())],
                 facts: vec![
-                    fact("atomic_locals", facts.atomic_locals.len().to_string()),
-                    fact("atomic_globals", facts.atomic_globals.len().to_string()),
+                    fact("atomic_locals", self.facts.atomic_locals.len().to_string()),
+                    fact(
+                        "atomic_globals",
+                        self.facts.atomic_globals.len().to_string(),
+                    ),
                 ],
             });
         }

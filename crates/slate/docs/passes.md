@@ -133,15 +133,15 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 35. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls - once, per function (`run_once_items`) through the distinct `MemchrPreludeCalls` body pass.
 36. `nullable_pointer` - recover `Option<*T>` null-check idioms - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`); runs directly after its only producers - the two `string_libc` runs and `memchr_prelude::fixup_calls`, the sole places that emit the `<index>.map_or(null_mut(), |i| ptr.add(i) as *T)` shape it rewrites. Despite the name, it has no relationship to the pointer-provenance cluster (`slice_index`/`slice_loop`/`array_element_pointer_origin`/`buffer_cursor`): those match constant-index pointer arithmetic, this matches dynamic-index `Option`-wrapped search results, and the two never touch the same bindings.
 37. `string_lift::fixup_c_strings` then `memchr_prelude` / `memchr_prelude::prune_unused_helper` - a second, narrower string-lift pass plus memchr-helper cleanup - once each; string lift and the helper-body rewrite run per function (`run_once_items`), while unused-helper pruning is program-wide (`run_once_program`).
-38. `late_inline_temps` - inline single-use pure temps, late variant - to fixpoint (`inline_temps_to_fixpoint`, same round cap as step 3).
+38. `late_inline_temps` - inline single-use pure temps, late variant - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`, same round cap as step 3).
 39. `ptr_copy` - collapse indexed pointer-copy loops into `std::ptr::copy` or `std::ptr::copy_nonoverlapping` - to fixpoint, per function (`to_fixpoint_items`).
 40. `dead_locals` - remove locals made dead by pointer-copy recovery - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`).
-41. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing - once.
-42. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops - once.
-43. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage - once.
-44. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites - to fixpoint.
+41. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing - once, per function (`run_once_items`).
+42. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops - once, per function (`run_once_items`).
+43. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage - once, program-wide (`run_once_program`), because the same pass rewrites both static items and function bodies.
+44. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`, same round cap as step 3).
 45. `zero_init` (`cross_effects = true`) - same fusion as step 6, now allowed to cross intervening effects - to fixpoint with facts refreshed before every round.
-46. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, across the program.
+46. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`).
 47. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery - once, per function.
 48. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint (`inline_var_aliases_to_fixpoint`).
 49. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches - to fixpoint, per function.
