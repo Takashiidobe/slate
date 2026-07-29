@@ -12,6 +12,10 @@ impl<T> Proof<T> {
     pub(super) fn new(value: T, evidence: Vec<Evidence>) -> Self {
         Self { value, evidence }
     }
+
+    pub(in crate::fixups) fn into_parts(self) -> (T, Vec<Evidence>) {
+        (self.value, self.evidence)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -66,7 +70,7 @@ pub(in crate::fixups) struct Rejection {
 }
 
 impl Rejection {
-    pub(super) fn new(
+    pub(in crate::fixups) fn new(
         predicate: Predicate,
         site: Option<ExprSite>,
         reason: RejectionReason,
