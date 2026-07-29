@@ -122,9 +122,10 @@ pub(super) struct BindingFact {
     pub(super) path: AstPath,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub(super) struct BindingTypeFact {
     pub(super) binding: BindingId,
+    pub(super) ty: Type,
     pub(super) rendered: String,
 }
 
@@ -1091,10 +1092,10 @@ pub(super) enum SemanticId {
     Loop(LoopId),
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct AstPath(pub(super) Vec<PathSegment>);
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum PathSegment {
     Stmt(usize),
     Then,
@@ -1226,6 +1227,13 @@ impl FixupFacts {
             .iter()
             .find(|fact| fact.binding == binding)
             .map(|fact| fact.rendered.as_str())
+    }
+
+    pub(super) fn binding_type_ast(&self, binding: BindingId) -> Option<&Type> {
+        self.binding_types
+            .iter()
+            .find(|fact| fact.binding == binding)
+            .map(|fact| &fact.ty)
     }
 
     pub(super) fn binding_requires_mut(&self, binding: BindingId) -> bool {
@@ -1533,9 +1541,11 @@ impl Collector {
             path,
         });
         if let Some(ty) = ty {
+            let ty = ty.peel_aligned().clone();
             self.facts.binding_types.push(BindingTypeFact {
                 binding: id,
-                rendered: ty.peel_aligned().render(),
+                rendered: ty.render(),
+                ty,
             });
         }
         id
