@@ -10,10 +10,10 @@ use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_decla
 use crate::rust_ast::{Attr, Expr, ExternDecl, ImplItem, Item, Prim, Program, Type, Visibility};
 
 use super::{
-    ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup, DefinitionKind,
-    DefinitionLocation, DefinitionSelector, DefinitionSite, Evidence, EvidenceDetail, ExprSite,
-    NulPosition, PointerMutability, Predicate, Proof, QueryResult, Rejection, RejectionReason,
-    StableExpr, ZeroGroupUsers, ZeroUsers,
+    AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ByteExtent, ByteRepresentation,
+    ByteSource, ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
+    DefinitionSite, Evidence, EvidenceDetail, ExprSite, NulPosition, PointerMutability, Predicate,
+    Proof, QueryResult, Rejection, RejectionReason, StableExpr, ZeroGroupUsers, ZeroUsers,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -106,6 +106,131 @@ impl<'snapshot> QueryContext<'snapshot> {
             .get(&(target.clone(), arity))
             .map(Vec::as_slice)
             .unwrap_or_default()
+    }
+
+    pub(in crate::fixups) fn has_anonymous_structs(&self) -> bool {
+        !self.facts.anonymous_structs.is_empty()
+    }
+
+    pub(in crate::fixups) fn anonymous_structs(&self) -> QueryResult<AnonymousStructSet> {
+        let records = self
+            .program
+            .items
+            .iter()
+            .enumerate()
+            .filter_map(|(item_index, item)| match item {
+                Item::Record(record) if !record.is_union && record.name.starts_with("anon_") => {
+                    Some((item_index, record))
+                }
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        let generated = self
+            .facts
+            .anonymous_structs
+            .iter()
+            .map(|fact| fact.generated_name.as_str())
+            .collect::<BTreeSet<_>>();
+        let originals = self
+            .facts
+            .anonymous_structs
+            .iter()
+            .map(|fact| fact.original_name.as_str())
+            .collect::<BTreeSet<_>>();
+        let record_names = records
+            .iter()
+            .map(|(_, record)| record.name.as_str())
+            .collect::<BTreeSet<_>>();
+        let occupied = self
+            .program
+            .items
+            .iter()
+            .filter_map(item_type_name)
+            .collect::<BTreeSet<_>>();
+        let conflicts = generated.intersection(&occupied).count()
+            + self
+                .facts
+                .anonymous_structs
+                .len()
+                .saturating_sub(generated.len())
+            + self
+                .facts
+                .anonymous_structs
+                .len()
+                .saturating_sub(originals.len())
+            + records.len().saturating_sub(record_names.len());
+        let complete = !records.is_empty()
+            && records.len() == self.facts.anonymous_structs.len()
+            && conflicts == 0
+            && self.facts.anonymous_structs.iter().all(|fact| {
+                records.iter().any(|(_, record)| {
+                    record.name == fact.original_name
+                        && record.fields.len() == fact.fields.len()
+                        && record
+                            .fields
+                            .iter()
+                            .zip(&fact.fields)
+                            .all(|(field, fact)| field.name.as_str() == fact.name)
+                })
+            });
+        let site = ExprSite {
+            item_index: records.first().map(|(index, _)| *index).unwrap_or(0),
+            path: AstPath(Vec::new()),
+            fact_path: AstPath(Vec::new()),
+        };
+        let evidence = vec![Evidence {
+            predicate: Predicate::AnonymousStructDomain,
+            site: site.clone(),
+            detail: EvidenceDetail::AnonymousStructDomain {
+                records: records.len(),
+                facts: self.facts.anonymous_structs.len(),
+                conflicts,
+                complete,
+            },
+        }];
+        if !complete {
+            return Err(Rejection::new(
+                Predicate::AnonymousStructDomain,
+                Some(site),
+                RejectionReason::IncompleteDomain,
+                evidence,
+            ));
+        }
+        let structs = self
+            .facts
+            .anonymous_structs
+            .iter()
+            .map(|fact| {
+                let item_index = records
+                    .iter()
+                    .find_map(|(item_index, record)| {
+                        (record.name == fact.original_name).then_some(*item_index)
+                    })
+                    .unwrap();
+                AnonymousStructPlan {
+                    item_index,
+                    original_name: fact.original_name.clone(),
+                    generated_name: fact.generated_name.clone(),
+                    fields: fact
+                        .fields
+                        .iter()
+                        .map(|field| AnonymousStructField {
+                            name: field.name.clone(),
+                            ty: field.ty.clone(),
+                        })
+                        .collect(),
+                }
+            })
+            .collect();
+        Ok(Proof::new(AnonymousStructSet { structs }, evidence))
+    }
+
+    pub(super) fn snapshot_program(&self) -> &'snapshot Program {
+        self.program
+    }
+
+    pub(super) fn snapshot_facts(&self) -> &'snapshot FixupFacts {
+        self.facts
     }
 
     pub(in crate::fixups) fn never_returning_extern(&self, call: &CallRecord) -> QueryResult<()> {
@@ -1072,5 +1197,15 @@ fn byte_extent(ty: &Type) -> ByteExtent {
                 .unwrap_or(ByteExtent::Dynamic)
         }
         _ => ByteExtent::Dynamic,
+    }
+}
+
+fn item_type_name(item: &Item) -> Option<&str> {
+    match item {
+        Item::Record(record) => Some(record.name.as_str()),
+        Item::Struct(record) => Some(record.name.as_str()),
+        Item::Enum(record) => Some(record.name.as_str()),
+        Item::Cfg { item, .. } => item_type_name(item),
+        _ => None,
     }
 }

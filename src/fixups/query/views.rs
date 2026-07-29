@@ -1,6 +1,7 @@
 use std::marker::PhantomData;
 
 use crate::fixups::facts::{AstPath, BindingId};
+use crate::rust_ast::Type;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(in crate::fixups) struct ExprSite {
@@ -65,6 +66,25 @@ pub(in crate::fixups) struct ZeroUsers {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct ZeroGroupUsers {
     pub(in crate::fixups) group: DefinitionGroup,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct AnonymousStructSet {
+    pub(super) structs: Vec<AnonymousStructPlan>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct AnonymousStructPlan {
+    pub(super) item_index: usize,
+    pub(super) original_name: String,
+    pub(super) generated_name: String,
+    pub(super) fields: Vec<AnonymousStructField>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct AnonymousStructField {
+    pub(super) name: String,
+    pub(super) ty: Type,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

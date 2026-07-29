@@ -31,6 +31,7 @@ pub(in crate::fixups) struct Evidence {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(in crate::fixups) enum Predicate {
     Call,
+    AnonymousStructDomain,
     ByteSource,
     ConstantU8,
     ConstantUsize,
@@ -48,6 +49,12 @@ pub(in crate::fixups) enum EvidenceDetail {
     IndexedCall {
         target: CallTarget,
         arity: usize,
+    },
+    AnonymousStructDomain {
+        records: usize,
+        facts: usize,
+        conflicts: usize,
+        complete: bool,
     },
     Binding {
         name: String,

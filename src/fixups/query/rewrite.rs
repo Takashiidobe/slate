@@ -422,6 +422,7 @@ pub(super) fn evidence_trace_fact(evidence: &Evidence) -> TraceFact {
 pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
     match predicate {
         Predicate::Call => "call",
+        Predicate::AnonymousStructDomain => "anonymous_struct_domain",
         Predicate::ByteSource => "byte_source",
         Predicate::ConstantU8 => "constant_u8",
         Predicate::ConstantUsize => "constant_usize",
@@ -451,6 +452,12 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::IndexedCall { target, arity } => {
             format!("{};arity={arity}", call_target_name(target))
         }
+        EvidenceDetail::AnonymousStructDomain {
+            records,
+            facts,
+            conflicts,
+            complete,
+        } => format!("records={records};facts={facts};conflicts={conflicts};complete={complete}"),
         EvidenceDetail::Binding { name } => format!("binding={name}"),
         EvidenceDetail::PointerView {
             representation,

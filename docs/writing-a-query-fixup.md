@@ -141,6 +141,25 @@ snapshot; overlapping edits are rejected.
 Recompute facts before the next fact-dependent query. Place definition deletion
 after the final pass that can remove a user.
 
+## Program rules
+
+Use `ProgramRule` for one proof-gated transformation that must update definitions,
+types, and expressions together. `ProgramPlanBuilder` prepares the entire result
+from one immutable AST and facts snapshot, validates its definition anchors, and
+applies it atomically:
+
+```rust
+ProgramRule::anonymous_structs(Pass::AnonymousStructs, "rewrite_anonymous_structs")
+    .case("complete_domain", |case| {
+        let structs = case.anonymous_structs()?;
+        Ok(rewrite_anonymous_structs(structs))
+    })
+```
+
+Keep traversal and coordinated AST construction in a typed program recipe. The
+rule should only select the program domain, prove it complete, and choose that
+recipe.
+
 ## Files and tests
 
 - Put concise rules in `src/fixups/query/rules/`.
