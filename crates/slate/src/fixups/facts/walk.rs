@@ -2,7 +2,7 @@ use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
 pub(in crate::fixups) use crate::fixups::support::walk::{
     nested_bodies_with_path, with_path_segment,
 };
-use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt};
+use crate::rust_ast::{AsmOperand, Block, Expr, IndentStmt, InlineAsm, Item, Program, Stmt};
 
 pub(in crate::fixups) fn body_exprs(body: &[IndentStmt], f: &mut impl FnMut(&Expr)) {
     for stmt in body {
@@ -1211,6 +1211,270 @@ pub(in crate::fixups) fn path_starts_with(path: &[PathSegment], prefix: &[PathSe
 
 pub(in crate::fixups) fn paths_overlap(a: &[PathSegment], b: &[PathSegment]) -> bool {
     path_starts_with(a, b) || path_starts_with(b, a)
+}
+
+pub(in crate::fixups) fn target_expr_at_path<'a>(
+    program: &'a Program,
+    item_index: usize,
+    path: &AstPath,
+) -> Option<&'a Expr> {
+    let Item::Fn(function) = program.items.get(item_index)? else {
+        return None;
+    };
+    target_expr_in_body(&function.body, &path.0)
+}
+
+fn target_expr_in_body<'a>(body: &'a [IndentStmt], path: &[PathSegment]) -> Option<&'a Expr> {
+    let [PathSegment::Stmt(index), rest @ ..] = path else {
+        return None;
+    };
+    target_stmt_expr_at(&body.get(*index)?.stmt, rest)
+}
+
+fn target_stmt_expr_at<'a>(stmt: &'a Stmt, path: &[PathSegment]) -> Option<&'a Expr> {
+    match (stmt, path) {
+        (
+            Stmt::Let {
+                init: Some(init), ..
+            },
+            [PathSegment::Expr(0), rest @ ..],
+        ) => target_expr_at(init, rest),
+        (
+            Stmt::LetIf {
+                cond,
+                then_body,
+                then_value,
+                else_body,
+                else_value,
+                ..
+            },
+            path,
+        ) => match path {
+            [PathSegment::Expr(0), rest @ ..] => target_expr_at(cond, rest),
+            [PathSegment::Then, PathSegment::Expr(0), rest @ ..] => {
+                target_expr_at(then_value, rest)
+            }
+            [PathSegment::Then, rest @ ..] => target_expr_in_body(then_body, rest),
+            [PathSegment::Else, PathSegment::Expr(0), rest @ ..] => {
+                target_expr_at(else_value, rest)
+            }
+            [PathSegment::Else, rest @ ..] => target_expr_in_body(else_body, rest),
+            _ => None,
+        },
+        (Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. }, path) => {
+            match path {
+                [PathSegment::Expr(0), rest @ ..] => target_expr_at(target, rest),
+                [PathSegment::Expr(1), rest @ ..] => target_expr_at(value, rest),
+                _ => None,
+            }
+        }
+        (Stmt::InlineAsm(asm), [PathSegment::Expr(index), rest @ ..]) => {
+            target_inline_asm_expr_at(asm, *index, rest)
+        }
+        (Stmt::Expr(expr) | Stmt::Return(Some(expr)), [PathSegment::Expr(0), rest @ ..]) => {
+            target_expr_at(expr, rest)
+        }
+        (
+            Stmt::If {
+                cond,
+                then_body,
+                else_body,
+            },
+            path,
+        ) => match path {
+            [PathSegment::Expr(0), rest @ ..] => target_expr_at(cond, rest),
+            [PathSegment::Then, rest @ ..] => target_expr_in_body(then_body, rest),
+            [PathSegment::Else, rest @ ..] => target_expr_in_body(else_body, rest),
+            _ => None,
+        },
+        (Stmt::Loop { body, .. }, [PathSegment::LoopBody, rest @ ..]) => {
+            target_expr_in_body(body, rest)
+        }
+        (Stmt::For { iter, .. }, [PathSegment::Expr(0), rest @ ..]) => target_expr_at(iter, rest),
+        (Stmt::For { body, .. }, [PathSegment::ForBody, rest @ ..]) => {
+            target_expr_in_body(body, rest)
+        }
+        (Stmt::Scope { body }, [PathSegment::ScopeBody, rest @ ..]) => {
+            target_expr_in_body(body, rest)
+        }
+        (Stmt::LabeledBlock { body, .. }, [PathSegment::LabeledBody, rest @ ..]) => {
+            target_expr_in_body(body, rest)
+        }
+        (Stmt::Unsafe { body }, [PathSegment::UnsafeBody, rest @ ..]) => {
+            target_expr_in_block(body, rest)
+        }
+        (Stmt::While { cond, .. }, [PathSegment::Expr(0), rest @ ..]) => target_expr_at(cond, rest),
+        (Stmt::While { body, .. }, [PathSegment::WhileBody, rest @ ..]) => {
+            target_expr_in_block(body, rest)
+        }
+        (Stmt::Block(body), [PathSegment::BlockBody, rest @ ..]) => {
+            target_expr_in_block(body, rest)
+        }
+        (Stmt::Match { expr, .. }, [PathSegment::Expr(0), rest @ ..]) => target_expr_at(expr, rest),
+        (Stmt::Match { arms, .. }, [PathSegment::MatchArm(index), rest @ ..]) => {
+            target_expr_in_body(&arms.get(*index)?.body, rest)
+        }
+        _ => None,
+    }
+}
+
+fn target_expr_in_block<'a>(block: &'a Block, path: &[PathSegment]) -> Option<&'a Expr> {
+    match path {
+        [PathSegment::BlockTail] => block.tail.as_deref(),
+        [PathSegment::BlockTail, rest @ ..] => target_expr_at(block.tail.as_deref()?, rest),
+        _ => target_expr_in_body(&block.stmts, path),
+    }
+}
+
+fn target_inline_asm_expr_at<'a>(
+    asm: &'a InlineAsm,
+    index: usize,
+    path: &[PathSegment],
+) -> Option<&'a Expr> {
+    let mut current = 0;
+    for operand in &asm.operands {
+        let exprs = match operand {
+            AsmOperand::In { value, .. }
+            | AsmOperand::Out { value, .. }
+            | AsmOperand::Const(value) => [Some(value), None],
+            AsmOperand::InOut { input, output, .. } => [Some(input), Some(output)],
+            AsmOperand::Label { state, value, .. } => [Some(state), Some(value)],
+        };
+        for expr in exprs.into_iter().flatten() {
+            if current == index {
+                return target_expr_at(expr, path);
+            }
+            current += 1;
+        }
+    }
+    None
+}
+
+fn target_expr_at<'a>(expr: &'a Expr, path: &[PathSegment]) -> Option<&'a Expr> {
+    if path.is_empty() {
+        return Some(expr);
+    }
+    match (expr, path) {
+        (Expr::Call { func, .. }, [PathSegment::Expr(0), rest @ ..]) => target_expr_at(func, rest),
+        (Expr::Call { args, .. }, [PathSegment::Expr(index), rest @ ..]) if *index > 0 => {
+            target_expr_at(args.get(index - 1)?, rest)
+        }
+        (
+            Expr::Unary { expr, .. }
+            | Expr::Cast { expr, .. }
+            | Expr::Ref { expr, .. }
+            | Expr::AddrOf { expr, .. }
+            | Expr::Transmute { expr, .. },
+            [PathSegment::Expr(0), rest @ ..],
+        ) => target_expr_at(expr, rest),
+        (Expr::Range { start, .. }, [PathSegment::Expr(0), rest @ ..]) => {
+            target_expr_at(start, rest)
+        }
+        (Expr::Range { end, .. }, [PathSegment::Expr(1), rest @ ..]) => target_expr_at(end, rest),
+        (
+            Expr::Binary { lhs, .. }
+            | Expr::Index { base: lhs, .. }
+            | Expr::Field { base: lhs, .. }
+            | Expr::TupleField { base: lhs, .. }
+            | Expr::ArrayPtr { array: lhs, .. },
+            [PathSegment::Expr(0), rest @ ..],
+        ) => target_expr_at(lhs, rest),
+        (
+            Expr::Binary { rhs, .. } | Expr::Index { index: rhs, .. },
+            [PathSegment::Expr(1), rest @ ..],
+        ) => target_expr_at(rhs, rest),
+        (
+            Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. },
+            [PathSegment::Expr(0), rest @ ..],
+        ) => target_expr_at(recv, rest),
+        (
+            Expr::MethodCall { args, .. } | Expr::MethodCallGeneric { args, .. },
+            [PathSegment::Expr(index), rest @ ..],
+        ) if *index > 0 => target_expr_at(args.get(index - 1)?, rest),
+        (Expr::StructLit { fields, .. }, [PathSegment::Expr(index), rest @ ..]) => {
+            target_expr_at(&fields.get(*index)?.1, rest)
+        }
+        (
+            Expr::TupleStructLit { fields, .. } | Expr::ArrayLit(fields) | Expr::VecLit(fields),
+            [PathSegment::Expr(index), rest @ ..],
+        ) => target_expr_at(fields.get(*index)?, rest),
+        (Expr::Macro { args, .. }, [PathSegment::Expr(index), rest @ ..]) => {
+            target_expr_at(args.get(*index)?, rest)
+        }
+        (
+            Expr::ArrayRepeat { elem, .. } | Expr::Closure { body: elem, .. },
+            [PathSegment::Expr(0), rest @ ..],
+        ) => target_expr_at(elem, rest),
+        (Expr::VecRepeat { elem, .. }, [PathSegment::Expr(0), rest @ ..]) => {
+            target_expr_at(elem, rest)
+        }
+        (Expr::VecRepeat { len, .. }, [PathSegment::Expr(1), rest @ ..]) => {
+            target_expr_at(len, rest)
+        }
+        (Expr::Match { expr, .. }, [PathSegment::Expr(0), rest @ ..]) => target_expr_at(expr, rest),
+        (Expr::Match { arms, .. }, [PathSegment::Expr(index), rest @ ..]) if *index > 0 => {
+            target_expr_at(&arms.get(index - 1)?.value, rest)
+        }
+        (Expr::If { cond, .. }, [PathSegment::Expr(0), rest @ ..]) => target_expr_at(cond, rest),
+        (Expr::If { then_expr, .. }, [PathSegment::Expr(1), rest @ ..]) => {
+            target_expr_at(then_expr, rest)
+        }
+        (Expr::If { else_expr, .. }, [PathSegment::Expr(2), rest @ ..]) => {
+            target_expr_at(else_expr, rest)
+        }
+        (Expr::Block(block) | Expr::Unsafe(block), [PathSegment::BlockBody, rest @ ..]) => {
+            target_expr_in_block(block, rest)
+        }
+        (
+            Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. },
+            [PathSegment::Expr(0), rest @ ..],
+        ) => target_expr_at(place.ptr_expr()?, rest),
+        (
+            Expr::AtomicStore { place, .. }
+            | Expr::AtomicFetch { place, .. }
+            | Expr::AtomicSwap { place, .. },
+            [PathSegment::Expr(0), rest @ ..],
+        ) => target_expr_at(place.ptr_expr()?, rest),
+        (
+            Expr::AtomicStore { value, .. }
+            | Expr::AtomicFetch { value, .. }
+            | Expr::AtomicSwap { value, .. },
+            [PathSegment::Expr(1), rest @ ..],
+        ) => target_expr_at(value, rest),
+        (Expr::AtomicNew { value, .. }, [PathSegment::Expr(0), rest @ ..]) => {
+            target_expr_at(value, rest)
+        }
+        (Expr::AtomicCompareExchange { place, .. }, [PathSegment::Expr(0), rest @ ..]) => {
+            target_expr_at(place.ptr_expr()?, rest)
+        }
+        (Expr::AtomicCompareExchange { expected, .. }, [PathSegment::Expr(1), rest @ ..]) => {
+            target_expr_at(expected, rest)
+        }
+        (Expr::AtomicCompareExchange { desired, .. }, [PathSegment::Expr(2), rest @ ..]) => {
+            target_expr_at(desired, rest)
+        }
+        (Expr::CopyNonoverlapping { src, .. }, [PathSegment::Expr(0), rest @ ..])
+        | (Expr::PtrCopy { src, .. }, [PathSegment::Expr(0), rest @ ..]) => {
+            target_expr_at(src, rest)
+        }
+        (Expr::CopyNonoverlapping { dst, .. }, [PathSegment::Expr(1), rest @ ..])
+        | (Expr::PtrCopy { dst, .. }, [PathSegment::Expr(1), rest @ ..]) => {
+            target_expr_at(dst, rest)
+        }
+        (Expr::PtrCopy { count, .. }, [PathSegment::Expr(2), rest @ ..]) => {
+            target_expr_at(count, rest)
+        }
+        (Expr::WriteBytes { dst, .. }, [PathSegment::Expr(0), rest @ ..]) => {
+            target_expr_at(dst, rest)
+        }
+        (Expr::WriteBytes { val, .. }, [PathSegment::Expr(1), rest @ ..]) => {
+            target_expr_at(val, rest)
+        }
+        (Expr::WriteBytes { count, .. }, [PathSegment::Expr(2), rest @ ..]) => {
+            target_expr_at(count, rest)
+        }
+        _ => None,
+    }
 }
 
 /// Resolves an `AstPath` back to the `Expr` it was recorded from. Needed

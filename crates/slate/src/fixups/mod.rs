@@ -2,6 +2,8 @@
 
 pub(crate) mod facts;
 mod idents;
+#[allow(dead_code, unused_imports)]
+mod query;
 mod rewrite;
 mod runtime;
 mod support;
