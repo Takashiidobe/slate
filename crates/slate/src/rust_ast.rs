@@ -169,6 +169,7 @@ pub enum Attr {
     NoMangle,
     ThreadLocal,
     WeakLinkage,
+    ExternWeakLinkage,
     LinkSection(String),
     Used(UsedKind),
     Deprecated(String),
@@ -332,10 +333,10 @@ pub struct RecordDef {
 pub enum ExternDecl {
     Fn(ExternFnDecl),
     Static {
+        attrs: Vec<Attr>,
         mutable: bool,
         name: String,
         ty: Type,
-        thread_local: bool,
     },
 }
 

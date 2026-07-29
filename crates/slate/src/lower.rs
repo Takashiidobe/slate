@@ -275,6 +275,12 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .filter_map(|binding| binding.known())
             .map(|known| (known.symbol().to_string(), FunctionIdentity::Known(known)))
             .collect(),
+        weak_refs: c
+            .weak_refs
+            .iter()
+            .map(|attribute| (attribute.name.clone(), attribute.target.clone()))
+            .collect(),
+        external_weak_targets: BTreeSet::new(),
         records,
         enums,
         anon_records,
@@ -586,6 +592,8 @@ struct Lowerer<'a> {
     aliases: BTreeMap<String, String>,
     call_bindings: HashMap<Loc, CallBinding>,
     known_functions: BTreeMap<String, FunctionIdentity>,
+    weak_refs: BTreeMap<String, String>,
+    external_weak_targets: BTreeSet<String>,
     records: BTreeMap<String, crate::c_ast::Record>,
     enums: BTreeMap<String, crate::c_ast::Enum>,
     anon_records: Vec<crate::c_ast::Record>,
@@ -822,6 +830,17 @@ impl<'a> Lowerer<'a> {
         };
 
         let ops = region_ops(module_op);
+        self.external_weak_targets = self
+            .weak_refs
+            .values()
+            .filter(|target| {
+                !ops.iter().any(|op| {
+                    op.kind() == CirOpKind::Func
+                        && attr_str(op, "sym_name") == Some(target.as_str())
+                })
+            })
+            .cloned()
+            .collect();
         self.c_abi_functions = c_abi_function_targets(module_op);
         let mut assembly_strings = Vec::new();
         collect_assembly_strings(module_op, &mut assembly_strings);
@@ -914,12 +933,17 @@ impl<'a> Lowerer<'a> {
                 continue;
             }
             extern_decls.push(ExternDecl::Static {
+                attrs: if global.thread_local {
+                    vec![RustAttr::ThreadLocal]
+                } else {
+                    Vec::new()
+                },
                 mutable: true,
                 name: name.clone(),
                 ty: global.ty.clone(),
-                thread_local: global.thread_local,
             });
         }
+        let mut emitted_weak_targets = BTreeSet::new();
         for op in &ops {
             if op.kind() != CirOpKind::Func || !region_ops(op).is_empty() {
                 continue;
@@ -930,6 +954,37 @@ impl<'a> Lowerer<'a> {
             let Some(name) = attr_str(op, "sym_name") else {
                 continue;
             };
+            if let Some(target) = self.weak_refs.get(name).cloned() {
+                if self.external_weak_targets.contains(&target)
+                    && emitted_weak_targets.insert(target.clone())
+                {
+                    let function_type = attr_str(op, "function_type").unwrap_or("");
+                    let (decl, params, ret) = self.extern_fn_signature(&target, function_type, op);
+                    if decl.variadic {
+                        self.ctx.diagnostics.error(
+                            format!(
+                                "lower: variadic weakref alias `{name}` to external target `{target}`"
+                            ),
+                            None,
+                        );
+                    } else {
+                        self.externs.insert(target.clone(), params);
+                        self.extern_returns.insert(target.clone(), ret);
+                        extern_decls.push(ExternDecl::Static {
+                            attrs: vec![RustAttr::ExternWeakLinkage],
+                            mutable: false,
+                            name: target,
+                            ty: Type::FnPtr {
+                                abi: Abi::C,
+                                params: decl.params.into_iter().map(|param| param.ty).collect(),
+                                ret: Box::new(decl.ret.unwrap_or(Type::Unit)),
+                            },
+                        });
+                        self.uses_linkage.set(true);
+                    }
+                }
+                continue;
+            }
             if is_complex_runtime_call(name) {
                 continue;
             }
@@ -5002,6 +5057,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .trim_start_matches('@')
             .trim_matches('"')
             .to_string();
+        let name = self.parent.weak_refs.get(&name).cloned().unwrap_or(name);
         self.values.insert(result.clone(), Val::Global(name));
     }
 
@@ -5856,7 +5912,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
         let direct_callee =
             attr_str(op, "callee").map(|callee| callee.trim_start_matches('@').to_string());
-        let mut binding = self.parent.call_binding(op, direct_callee.is_some());
+        let weak_ref_target = direct_callee
+            .as_ref()
+            .and_then(|callee| self.parent.weak_refs.get(callee))
+            .cloned();
+        let external_weak_call = weak_ref_target
+            .as_ref()
+            .is_some_and(|target| self.parent.external_weak_targets.contains(target));
+        let direct_callee = weak_ref_target.clone().or(direct_callee);
+        let mut binding = if weak_ref_target.is_some() {
+            crate::function_identity::CallBinding::Generated
+        } else {
+            self.parent.call_binding(op, direct_callee.is_some())
+        };
         if binding.known().is_none()
             && let Some(callee) = direct_callee.as_deref()
             && let Some(identity @ FunctionIdentity::Known(_)) = self
@@ -5879,9 +5947,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let (callee_name, callee_expr, arg_operands, arg_types) =
             if let Some(callee) = direct_callee {
+                let callee_expr = if external_weak_call {
+                    Expr::MethodCall {
+                        recv: Box::new(Expr::Var(callee.clone().into())),
+                        method: "unwrap".into(),
+                        args: vec![],
+                    }
+                } else {
+                    Expr::Var(callee.clone().into())
+                };
                 (
                     callee.clone(),
-                    Expr::Var(callee.into()),
+                    callee_expr,
                     op.operands.as_slice(),
                     operand_types.as_slice(),
                 )

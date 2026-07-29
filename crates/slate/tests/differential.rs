@@ -102,6 +102,23 @@ fn function_alias_lowers_to_forwarding_wrapper() {
 }
 
 #[test]
+fn weakref_function_calls_preserve_local_and_external_targets() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-weakref-function");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("weakref_function.c");
+    let generated = tmp.join("weakref_function.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate weakref function fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated weakref function rust");
+
+    assert!(!rust.contains("fn weakref_alias"));
+    assert!(rust.contains("weakref_target(35)"));
+    assert!(rust.contains("#[linkage = \"extern_weak\"]"));
+    assert!(rust.contains("static abs: Option<extern \"C\" fn(i32) -> i32>;"));
+    assert!(rust.contains("abs.unwrap()(-53 as i32)"));
+}
+
+#[test]
 fn global_alias_emits_unsupported_diagnostic() {
     let c_src = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures.unsupported")

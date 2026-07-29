@@ -21,9 +21,10 @@
 # ----- top-level declarations -----
 
 <decl_list> ::= <decl> <decl_list> | <decl> ;
-<decl> ::= <typedef_decl> | <enum_decl> | <struct_decl> | <union_decl> | <global_decl> | <pack_directive> ;
+<decl> ::= <typedef_decl> | <enum_decl> | <struct_decl> | <union_decl> | <global_decl> | <weakref_decl> | <pack_directive> ;
 
 <typedef_decl> ::= "typedef" <type> <ident> ";" ;
+<weakref_decl> ::= "static" <ret_type> <ident> "(" <param_list> ")" "__attribute__((weakref(" <string_literal> ")));" ;
 
 <enum_decl> ::= "enum" <ident> "{" <enumerator_list> "};" ;
 <enumerator_list> ::= <enumerator> "," <enumerator_list> | <enumerator> ;

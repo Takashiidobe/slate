@@ -59,6 +59,12 @@ Function aliases from `__attribute__((alias("target")))` lower as exported C ABI
 forwarding wrappers. This preserves call behavior, but it is not a true LLVM-style
 symbol alias.
 
+Function weak references from `__attribute__((weakref("target")))` resolve
+directly to targets defined in the same translation unit. External targets
+lower as nullable C function pointers on extern statics with `extern_weak`
+linkage. Both forms preserve the target symbol's address identity without
+emitting a forwarding wrapper.
+
 Global/static aliases are diagnosed as unsupported. Rust has no faithful static
 aliasing construct here; emitting a second `static` would duplicate storage and
 break address identity.

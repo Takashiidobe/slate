@@ -1653,10 +1653,10 @@ fn ensure_stdout_and_fflush_externs(program: &mut Program) -> bool {
 
 fn stdout_static_decl() -> ExternDecl {
     ExternDecl::Static {
+        attrs: Vec::new(),
         mutable: true,
         name: "stdout".into(),
         ty: Type::parse("*mut libc::FILE"),
-        thread_local: false,
     }
 }
 
