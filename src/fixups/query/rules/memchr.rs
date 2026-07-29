@@ -1,6 +1,9 @@
 use crate::fixups::trace::Pass;
 
-use super::super::{CallRule, DefinitionRule, byte_position, known_index, pointer_at_or_null};
+use super::super::{
+    CallRule, DefinitionRule, byte_position, delete_definition, known_index, memchr_fallback_body,
+    pointer_at_or_null, replace_body,
+};
 
 pub(in crate::fixups) fn calls() -> CallRule {
     CallRule::generated(
@@ -27,10 +30,15 @@ pub(in crate::fixups) fn calls() -> CallRule {
     })
 }
 
-pub(in crate::fixups) fn unused_helper() -> DefinitionRule {
+pub(in crate::fixups) fn helper() -> DefinitionRule {
     DefinitionRule::function(
-        Pass::MemchrPreludePruneUnusedHelper,
-        "prune_unused_memchr_helper",
+        Pass::MemchrPrelude,
+        "manage_memchr_helper",
         "__slate_memchr",
     )
+    .case("unused", |case| {
+        case.zero_users()?;
+        Ok(delete_definition())
+    })
+    .case("retained", |_| Ok(replace_body(memchr_fallback_body())))
 }

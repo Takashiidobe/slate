@@ -132,6 +132,66 @@ impl Known {
             )
     }
 
+    pub fn header(self) -> &'static str {
+        match self {
+            Self::Malloc
+            | Self::Calloc
+            | Self::Realloc
+            | Self::Free
+            | Self::Atoi
+            | Self::Atol
+            | Self::StrTol
+            | Self::StrToul
+            | Self::StrTod
+            | Self::Exit
+            | Self::Qsort
+            | Self::Bsearch => "stdlib.h",
+            Self::MemCpy
+            | Self::MemMove
+            | Self::MemSet
+            | Self::MemChr
+            | Self::StrLen
+            | Self::StrCpy
+            | Self::StrCat
+            | Self::StrNCpy
+            | Self::StrNCat
+            | Self::StrCmp
+            | Self::StrNCmp
+            | Self::MemCmp
+            | Self::StrChr
+            | Self::StrRChr
+            | Self::StrStr
+            | Self::StrPBrk
+            | Self::StrSpn
+            | Self::StrCSpn => "string.h",
+            Self::Printf
+            | Self::Puts
+            | Self::FOpen
+            | Self::FPuts
+            | Self::FGets
+            | Self::FRead
+            | Self::FWrite
+            | Self::FClose
+            | Self::FFlush
+            | Self::Remove => "stdio.h",
+            Self::ToUpper | Self::ToLower => "ctype.h",
+            Self::Sin
+            | Self::Cos
+            | Self::Tan
+            | Self::Log
+            | Self::Log10
+            | Self::Log2
+            | Self::Pow
+            | Self::Sqrt
+            | Self::Exp
+            | Self::Exp2
+            | Self::Fmod
+            | Self::Lround
+            | Self::Llround => "math.h",
+            Self::PthreadCreate | Self::PthreadJoin => "pthread.h",
+        }
+    }
+
     fn classify(name: &str, headers: &[&str]) -> Option<Self> {
         let (known, header) = match name {
             "malloc" => (Self::Malloc, "stdlib.h"),

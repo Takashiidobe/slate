@@ -1,4 +1,7 @@
-use super::{ByteExtent, ByteRepresentation, CallTarget, ExprSite, NulPosition, PointerMutability};
+use super::{
+    ByteExtent, ByteRepresentation, CallTarget, DefinitionGroup, ExprSite, NulPosition,
+    PointerMutability,
+};
 
 pub(in crate::fixups) type QueryResult<T> = Result<Proof<T>, Rejection>;
 
@@ -36,6 +39,7 @@ pub(in crate::fixups) enum Predicate {
     PrefixContains,
     MovablePure,
     ZeroUsers,
+    ZeroGroupUsers,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -63,6 +67,12 @@ pub(in crate::fixups) enum EvidenceDetail {
     MovablePure,
     UseDomain {
         name: String,
+        users: usize,
+        complete: bool,
+    },
+    GroupUseDomain {
+        group: DefinitionGroup,
+        definitions: usize,
         users: usize,
         complete: bool,
     },

@@ -1,5 +1,5 @@
 use crate::fixups::support::walk;
-use crate::rust_ast::{Expr, Ident, Item, Path, Program};
+use crate::rust_ast::{Expr, Ident, Item, Path, Program, SupportModule};
 
 pub(super) fn ensure_numeric_parse(program: &mut Program) {
     if !uses_numeric_parse(program) || has_runtime_module(program) {
@@ -10,7 +10,17 @@ pub(super) fn ensure_numeric_parse(program: &mut Program) {
         .iter()
         .take_while(|item| matches!(item, Item::CrateAttrs(_)))
         .count();
-    program.items.insert(index, Item::Raw(NUMERIC_PARSE.into()));
+    program.items.insert(
+        index,
+        Item::SupportModule(SupportModule {
+            name: Ident::new("__slate_runtime"),
+            source: NUMERIC_PARSE.into(),
+            exports: ["parse_i32", "parse_i64", "parse_u64", "parse_f64"]
+                .into_iter()
+                .map(|name| Path::new(["__slate_runtime", name].into_iter().map(Ident::new)))
+                .collect(),
+        }),
+    );
 }
 
 pub(super) fn numeric_parse_path(name: &str) -> Expr {
@@ -51,7 +61,7 @@ fn is_numeric_parse_path(expr: &Expr) -> bool {
 
 fn has_runtime_module(program: &Program) -> bool {
     program.items.iter().any(|item| match item {
-        Item::Raw(raw) => raw.contains("mod __slate_runtime"),
+        Item::SupportModule(module) => module.name.as_str() == "__slate_runtime",
         _ => false,
     })
 }
