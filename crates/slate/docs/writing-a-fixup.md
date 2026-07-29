@@ -7,6 +7,12 @@ must be optional in spirit: disable it and the generated Rust is still correct.
 This doc is the how. For _whether_ your change is a fixup or a baseline feature,
 read [adding-features.md](adding-features.md) first.
 
+For a rewrite shape supported by `src/fixups/query/`, use the query engine rather
+than writing a walker-based pass. Read
+[writing-a-query-fixup.md](writing-a-query-fixup.md) before implementing or
+migrating a rewrite. The query guide covers declarative cases, proof predicates,
+typed recipes, definition cleanup, scheduling, and automatic tracing.
+
 If the fixup needs semantic trace coverage or changes the shape that the effects
 interpreter sees, read [effects.md](effects.md) as well.
 
@@ -26,6 +32,7 @@ manage parentheses yourself. Build the node; the renderer parenthesizes minimall
 ```
 Program { items: Vec<Item> }
   Item::Fn(FnDef { params, ret, body: Vec<IndentStmt>, .. })
+  Item::SupportModule(SupportModule { exports, .. })
   Item::Raw(String)                 // items not yet structured; skip these
 IndentStmt { depth: usize, stmt: Stmt }
 Stmt::{ Let, Assign, CompoundAssign, Expr, Return, If, LetIf, Loop, Scope,
@@ -37,7 +44,18 @@ Expr::{ Value, Var, Binary, Unary, Cast, Call, MethodCall, Field, Index, ... }
 you rewrite a statement in place, keep its `depth`; when you build a nested body,
 copy the surrounding depth like the existing passes do.
 
-## Shape of a pass
+## Choose the authoring interface
+
+Prefer a query-driven rule for supported expression and definition rewrites. It
+centralizes traversal, facts, mutation, conflicts, and tracing while leaving the
+rule as ordered preconditions plus a typed recipe. See
+[writing-a-query-fixup.md](writing-a-query-fixup.md).
+
+Use the legacy pass shape below only when the query planner cannot yet express
+the transformation, such as a multi-statement region or coordinated signature
+and call-site change.
+
+## Shape of a legacy pass
 
 A body pass lives in its own file under `src/fixups/rewrite/`, stores every
 dependency on its pass struct, and implements the shared `Fixup` trait. Its
@@ -132,7 +150,7 @@ target+value pair, the sites are:
 Treat the new node like its closest existing sibling in the walkers (a
 `CompoundAssign` counts/substitutes/walks exactly like `Assign`).
 
-## Register the pass
+## Register a legacy pass
 
 Add it to `src/fixups/mod.rs`: a `mod` line and a call inside
 `apply_with_logger`. **Order matters** — put your pass where its input already
@@ -251,4 +269,4 @@ cargo clippy --all-targets
 cargo nextest r --release
 ```
 
-Both must pass before the work is done.
+All must pass before the work is done.

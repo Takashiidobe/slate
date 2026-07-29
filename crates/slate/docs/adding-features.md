@@ -102,7 +102,10 @@ or recovering idiomatic `for` loops.
 Use this path only when the baseline generated Rust already compiles and passes
 differential testing. A fixup is **AST-to-AST** — see
 [writing-a-fixup.md](writing-a-fixup.md) for the pass recipe (shape, shared
-helpers, safety rules, registration) before writing one.
+helpers, safety rules, registration) before writing one. For expression and
+definition rewrites supported by the query engine, also read
+[writing-a-query-fixup.md](writing-a-query-fixup.md) and author the rewrite as
+proof-gated cases plus a typed recipe.
 
 1. Start from an existing passing fixture, or add a new C fixture if the pattern
    needs a clearer example.
