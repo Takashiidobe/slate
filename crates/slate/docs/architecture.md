@@ -91,7 +91,10 @@ directly: every handler emits structured `Item`/`Stmt`/`Expr` nodes that
 `codegen.rs` renders once, never Rust source strings. Keep that output as strongly
 typed as possible — a new enum variant is preferred over a `String` bridge, so the
 compiler enforces exhaustiveness and fixups can pattern-match the shape. Fixups
-operate on the same tree (AST-to-AST only).
+operate on the same tree (AST-to-AST only). AST nodes can also carry typed,
+non-rendered metadata populated by lowering when CIR or the Clang AST provides
+semantic contracts that Rust syntax cannot express. Fact analysis imports that
+metadata without coupling the lowerer to the fixup fact API.
 
 ## Shared context
 

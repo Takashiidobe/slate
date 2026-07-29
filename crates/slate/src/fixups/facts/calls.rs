@@ -53,7 +53,7 @@ fn collect_signatures(program: &Program, facts: &FixupFacts) -> Vec<CallSignatur
                     params_from_fn_params(&f.params),
                     false,
                     f.ret.clone(),
-                    f.returns_nonnull,
+                    f.metadata.returns_nonnull,
                 );
             }
             Item::ExternBlock { decls, .. } => {
@@ -71,7 +71,7 @@ fn collect_signatures(program: &Program, facts: &FixupFacts) -> Vec<CallSignatur
                         params_from_fn_params(&f.params),
                         f.variadic,
                         f.ret.clone(),
-                        f.returns_nonnull,
+                        f.metadata.returns_nonnull,
                     );
                 }
             }
@@ -100,7 +100,7 @@ fn collect_cfg_signature(
                     params_from_fn_params(&f.params),
                     false,
                     f.ret.clone(),
-                    f.returns_nonnull,
+                    f.metadata.returns_nonnull,
                 );
             }
         }
@@ -119,7 +119,7 @@ fn collect_cfg_signature(
                     params_from_fn_params(&f.params),
                     f.variadic,
                     f.ret.clone(),
-                    f.returns_nonnull,
+                    f.metadata.returns_nonnull,
                 );
             }
         }
@@ -158,7 +158,7 @@ fn params_from_fn_params(params: &[FnParam]) -> Vec<CallParamFact> {
             index,
             name: param.name.clone(),
             ty: param.ty.clone(),
-            nonnull: param.nonnull,
+            nonnull: param.metadata.nonnull,
         })
         .collect()
 }

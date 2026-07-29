@@ -65,7 +65,7 @@ pub(super) fn param(name: &str, ty: &str) -> FnParam {
         name: name.into(),
         mutable: false,
         ty: Type::parse(ty),
-        nonnull: false,
+        metadata: Default::default(),
     }
 }
 
@@ -82,7 +82,7 @@ pub(super) fn func(params: Vec<FnParam>, ret: Option<&str>, stmts: Vec<Stmt>) ->
             .into_iter()
             .map(|stmt| IndentStmt { depth: 1, stmt })
             .collect(),
-        returns_nonnull: false,
+        metadata: Default::default(),
     }
 }
 
@@ -122,13 +122,13 @@ pub(super) fn migrated_fn(body: Vec<Stmt>) -> FnDef {
                 name: "arg0".into(),
                 mutable: false,
                 ty: Type::Prim(Prim::I32),
-                nonnull: false,
+                metadata: Default::default(),
             },
             FnParam {
                 name: "arg1".into(),
                 mutable: false,
                 ty: Type::Prim(Prim::I32),
-                nonnull: false,
+                metadata: Default::default(),
             },
         ],
         ret: Some(Type::Prim(Prim::I32)),
@@ -136,6 +136,6 @@ pub(super) fn migrated_fn(body: Vec<Stmt>) -> FnDef {
             .into_iter()
             .map(|stmt| IndentStmt { depth: 1, stmt })
             .collect(),
-        returns_nonnull: false,
+        metadata: Default::default(),
     }
 }
