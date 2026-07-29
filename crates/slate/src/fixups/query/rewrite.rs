@@ -73,6 +73,12 @@ impl RuleResult {
     }
 }
 
+impl From<Result<ReplaceExpr, Rejection>> for RuleResult {
+    fn from(result: Result<ReplaceExpr, Rejection>) -> Self {
+        result.map_or_else(Self::Reject, Self::Replace)
+    }
+}
+
 pub(in crate::fixups) struct RuleCase {
     pub(in crate::fixups) name: String,
     pub(in crate::fixups) result: RuleResult,
@@ -451,6 +457,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             mutability_name(*mutability)
         ),
         EvidenceDetail::Extent(extent) => extent_name(*extent),
+        EvidenceDetail::SourceLength => "source_length".into(),
         EvidenceDetail::ConstantU8(value) => value.to_string(),
         EvidenceDetail::ConstantUsize(value) => value.to_string(),
         EvidenceDetail::NulPosition(position) => nul_position_name(*position),

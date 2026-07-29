@@ -122,6 +122,17 @@ impl<'snapshot> QueryContext<'snapshot> {
                     Vec::new(),
                 )
             })?;
+        let (shape_name, shape_mutable) = self
+            .expr(site)
+            .and_then(stable_pointer_source)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::UnsupportedShape,
+                    Vec::new(),
+                )
+            })?;
         let name = self
             .facts
             .binding_name(pointer.source)
@@ -134,6 +145,14 @@ impl<'snapshot> QueryContext<'snapshot> {
                 )
             })?
             .to_string();
+        if shape_name != name || shape_mutable != pointer.mutable {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
         let ty = self.facts.binding_type_ast(pointer.source).ok_or_else(|| {
             Rejection::new(
                 predicate,
@@ -258,35 +277,51 @@ impl<'snapshot> QueryContext<'snapshot> {
         source: &ByteSource<'snapshot>,
         count: &ExprSite,
     ) -> QueryResult<ByteView<'snapshot>> {
-        let count_proof = self.const_usize(count)?;
-        let count_value = count_proof.value;
-        let ByteExtent::Constant(extent) = source.extent else {
-            return Err(Rejection::new(
-                Predicate::FullByteView,
-                Some(count.clone()),
-                RejectionReason::MissingEvidence,
-                count_proof.evidence,
-            ));
-        };
-        if extent != count_value {
-            return Err(Rejection::new(
-                Predicate::FullByteView,
-                Some(count.clone()),
-                RejectionReason::Contradicted,
-                count_proof.evidence,
+        let constant = self.const_usize(count);
+        if let (ByteExtent::Constant(extent), Ok(count_proof)) = (source.extent, &constant) {
+            if extent != count_proof.value {
+                return Err(Rejection::new(
+                    Predicate::FullByteView,
+                    Some(count.clone()),
+                    RejectionReason::Contradicted,
+                    count_proof.evidence.clone(),
+                ));
+            }
+            let mut evidence = count_proof.evidence.clone();
+            evidence.extend(self.pure(count)?.evidence);
+            evidence.push(Evidence {
+                predicate: Predicate::FullByteView,
+                site: source.site.clone(),
+                detail: EvidenceDetail::Extent(source.extent),
+            });
+            return Ok(Proof::new(
+                ByteView {
+                    source: source.clone(),
+                    extent: source.extent,
+                },
+                evidence,
             ));
         }
-        let mut evidence = count_proof.evidence;
-        evidence.push(Evidence {
-            predicate: Predicate::FullByteView,
-            site: source.site.clone(),
-            detail: EvidenceDetail::Extent(source.extent),
-        });
-        Ok(Proof::new(
-            ByteView {
-                source: source.clone(),
-                extent,
-            },
+        if self.count_matches_source_len(source, count) {
+            return Ok(Proof::new(
+                ByteView {
+                    source: source.clone(),
+                    extent: source.extent,
+                },
+                vec![Evidence {
+                    predicate: Predicate::FullByteView,
+                    site: count.clone(),
+                    detail: EvidenceDetail::SourceLength,
+                }],
+            ));
+        }
+        let evidence = constant
+            .map(|proof| proof.evidence)
+            .unwrap_or_else(|rejection| rejection.evidence);
+        Err(Rejection::new(
+            Predicate::FullByteView,
+            Some(count.clone()),
+            RejectionReason::MissingEvidence,
             evidence,
         ))
     }
@@ -362,6 +397,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         nul: NulPosition,
     ) -> QueryResult<()> {
         let count_proof = self.const_usize(count)?;
+        let count_stable = self.pure(count)?;
         let NulPosition::Constant(nul) = nul else {
             return Err(Rejection::new(
                 Predicate::PrefixContains,
@@ -380,6 +416,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
         let count_value = count_proof.value;
         let mut evidence = count_proof.evidence;
+        evidence.extend(count_stable.evidence);
         evidence.push(Evidence {
             predicate: Predicate::PrefixContains,
             site: count.clone(),
@@ -433,6 +470,13 @@ impl<'snapshot> QueryContext<'snapshot> {
     fn function(&self, site: &ExprSite) -> Option<FunctionId> {
         self.program.items.get(site.item_index)?;
         self.facts.function_by_item_index(site.item_index)
+    }
+
+    fn count_matches_source_len(&self, source: &ByteSource<'snapshot>, count: &ExprSite) -> bool {
+        let Some(count) = self.expr(count) else {
+            return false;
+        };
+        count_matches_source_len(source, count)
     }
 
     fn constant_values<T: Ord>(
@@ -538,6 +582,51 @@ fn call_target(func: &Expr, binding: &CallBinding) -> CallTarget {
             .map(|name| CallTarget::Direct(name.to_string()))
             .unwrap_or(CallTarget::Indirect),
         CallBinding::Indirect => CallTarget::Indirect,
+    }
+}
+
+fn stable_pointer_source(expr: &Expr) -> Option<(&str, bool)> {
+    match expr {
+        Expr::Cast { expr, .. } => stable_pointer_source(expr),
+        Expr::ArrayPtr { array, mutable } => {
+            let Expr::Var(name) = &**array else {
+                return None;
+            };
+            Some((name.as_str(), *mutable))
+        }
+        Expr::MethodCall { recv, method, args }
+            if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
+        {
+            let Expr::Var(name) = &**recv else {
+                return None;
+            };
+            Some((name.as_str(), method == "as_mut_ptr"))
+        }
+        _ => None,
+    }
+}
+
+fn count_matches_source_len(source: &ByteSource<'_>, count: &Expr) -> bool {
+    match count {
+        Expr::Cast { expr, .. } => count_matches_source_len(source, expr),
+        Expr::MethodCall { recv, method, args } if args.is_empty() && method == "len" => {
+            matches_source_expr(source, recv)
+        }
+        _ => false,
+    }
+}
+
+fn matches_source_expr(source: &ByteSource<'_>, expr: &Expr) -> bool {
+    match expr {
+        Expr::Var(name) => name.as_str() == source.name,
+        Expr::MethodCall { recv, method, args }
+            if args.is_empty()
+                && method == "as_bytes"
+                && source.representation == ByteRepresentation::Str =>
+        {
+            matches_source_expr(source, recv)
+        }
+        _ => false,
     }
 }
 
@@ -662,6 +751,22 @@ mod tests {
                         ),
                     ),
                     temp(
+                        "length_view",
+                        "*mut core::ffi::c_void",
+                        call(
+                            "__slate_memchr",
+                            vec![
+                                array_ptr("bytes", true),
+                                int(20),
+                                Expr::MethodCall {
+                                    recv: Box::new(var("bytes")),
+                                    method: "len".into(),
+                                    args: Vec::new(),
+                                },
+                            ],
+                        ),
+                    ),
+                    temp(
                         "text_len",
                         "usize",
                         call("strlen", vec![array_ptr("text", false)]),
@@ -678,7 +783,7 @@ mod tests {
         let query = QueryContext::new(analyzed.program, &analyzed.facts);
         let memchr = query.calls(&CallTarget::Generated("__slate_memchr".into()), 3);
 
-        assert_eq!(memchr.len(), 5);
+        assert_eq!(memchr.len(), 6);
         assert!(matches!(
             query.expr(&memchr[0].site),
             Some(Expr::Call { .. })
@@ -699,7 +804,7 @@ mod tests {
                 .unwrap()
                 .value
                 .extent,
-            4
+            ByteExtent::Constant(4)
         );
         assert!(query.pure(&memchr[0].args[1]).is_ok());
 
@@ -725,6 +830,7 @@ mod tests {
             query.const_u8(&memchr[4].args[1]).unwrap_err().reason,
             RejectionReason::OutOfRange
         );
+        assert!(query.full_byte_view(&bytes, &memchr[5].args[2]).is_ok());
         assert_eq!(query.calls(&CallTarget::Known(Known::StrLen), 1).len(), 1);
     }
 
