@@ -7,10 +7,11 @@ use crate::function_identity::{CallBinding, FunctionIdentity};
 use crate::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
     Attr as RustAttr, BinOp, CLibType, Cfg, CrateAttr, Derive, EnumConst, EnumDef, Expr,
-    ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam, GenericParam, Ident,
-    ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint, MatchArm, Method, Path, Pattern,
-    Prim, Program, RecordDef, RecordField, Repr, RustValue, SelfKind, StdTrait, Stmt, StructDef,
-    StructFields, TraitBound, Type, UnaryOp, UsedKind, Visibility,
+    ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam, FunctionMetadata,
+    GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint, MatchArm,
+    Method, ParameterMetadata, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr,
+    RustValue, SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp,
+    UsedKind, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -1055,7 +1056,7 @@ impl<'a> Lowerer<'a> {
                                 mutable: true,
                                 inner: Box::new(Type::Prim(Prim::I8)),
                             },
-                            nonnull: false,
+                            metadata: ParameterMetadata::default(),
                         },
                         FnParam {
                             name: "_1".into(),
@@ -1067,7 +1068,7 @@ impl<'a> Lowerer<'a> {
                                     inner: Box::new(Type::Prim(Prim::I8)),
                                 }),
                             },
-                            nonnull: false,
+                            metadata: ParameterMetadata::default(),
                         },
                         FnParam {
                             name: "_2".into(),
@@ -1076,12 +1077,12 @@ impl<'a> Lowerer<'a> {
                                 mutable: true,
                                 inner: Box::new(Type::Prim(Prim::F64)),
                             },
-                            nonnull: false,
+                            metadata: ParameterMetadata::default(),
                         },
                     ],
                     variadic: false,
                     ret: None,
-                    returns_nonnull: false,
+                    metadata: FunctionMetadata::default(),
                 }));
             } else {
                 extern_decls.push(ExternDecl::Fn(decl));
@@ -1516,7 +1517,7 @@ impl<'a> Lowerer<'a> {
             params: decl.params,
             ret: decl.ret,
             body: vec![IndentStmt { depth: 1, stmt }],
-            returns_nonnull: decl.returns_nonnull,
+            metadata: decl.metadata,
         }))
     }
 
@@ -1633,7 +1634,9 @@ impl<'a> Lowerer<'a> {
                     name: arg.clone(),
                     mutable: false,
                     ty: self.rust_type(ty),
-                    nonnull: arg_nonnull.contains(&i) || source_nonnull.contains(&i),
+                    metadata: ParameterMetadata {
+                        nonnull: arg_nonnull.contains(&i) || source_nonnull.contains(&i),
+                    },
                 }
             })
             .collect::<Vec<_>>();
@@ -1644,7 +1647,7 @@ impl<'a> Lowerer<'a> {
                 name: param.clone(),
                 mutable: true,
                 ty: Type::Variadic,
-                nonnull: false,
+                metadata: ParameterMetadata::default(),
             });
             Some(param)
         } else {
@@ -1781,7 +1784,9 @@ impl<'a> Lowerer<'a> {
             params,
             ret,
             body: f.body,
-            returns_nonnull: op_returns_nonnull(op),
+            metadata: FunctionMetadata {
+                returns_nonnull: op_returns_nonnull(op),
+            },
         }))
     }
 
@@ -1923,7 +1928,9 @@ impl<'a> Lowerer<'a> {
                     name: format!("_{i}"),
                     mutable: false,
                     ty: ty.clone(),
-                    nonnull: arg_nonnull.contains(&i),
+                    metadata: ParameterMetadata {
+                        nonnull: arg_nonnull.contains(&i),
+                    },
                 });
                 param_types.push(ty);
             }
@@ -1944,7 +1951,9 @@ impl<'a> Lowerer<'a> {
             params,
             variadic,
             ret: ret_ast,
-            returns_nonnull: op_returns_nonnull(op),
+            metadata: FunctionMetadata {
+                returns_nonnull: op_returns_nonnull(op),
+            },
         };
         (decl, param_types, ret_ty)
     }
@@ -6262,12 +6271,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         name: format!("_{i}"),
                         mutable: false,
                         ty: ty.clone(),
-                        nonnull: false,
+                        metadata: ParameterMetadata::default(),
                     })
                     .collect(),
                 variadic: false,
                 ret: Some(Type::Prim(Prim::I32)),
-                returns_nonnull: false,
+                metadata: FunctionMetadata::default(),
             });
         let call_args = args
             .iter()
@@ -8639,7 +8648,7 @@ fn long_double_binary(trait_: StdTrait, op: BinOp) -> Item {
         name: "o".into(),
         mutable: false,
         ty: long_double_ty(),
-        nonnull: false,
+        metadata: ParameterMetadata::default(),
     };
     long_double_op_impl(trait_, vec![o], arg)
 }
@@ -8744,7 +8753,7 @@ fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
             name: "o".into(),
             mutable: false,
             ty: complex_ty(Type::TyVar("T".into())),
-            nonnull: false,
+            metadata: ParameterMetadata::default(),
         }],
         ret: Some(complex_ty(Type::TyVar("T".into()))),
         body: Expr::StructLit {
@@ -8777,7 +8786,7 @@ fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
         name: n.into(),
         mutable: false,
         ty: Type::Prim(prim),
-        nonnull: false,
+        metadata: ParameterMetadata::default(),
     };
     ExternDecl::Fn(ExternFnDecl {
         identity: crate::function_identity::FunctionIdentity::Unknown,
@@ -8785,7 +8794,7 @@ fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
         params: vec![param("a"), param("b"), param("c"), param("d")],
         variadic: false,
         ret: Some(complex_ty(Type::Prim(prim))),
-        returns_nonnull: false,
+        metadata: FunctionMetadata::default(),
     })
 }
 
@@ -8940,24 +8949,24 @@ fn memchr_prelude() -> Item {
                 name: "s".into(),
                 mutable: false,
                 ty: void_ptr(false),
-                nonnull: false,
+                metadata: ParameterMetadata::default(),
             },
             FnParam {
                 name: "c".into(),
                 mutable: false,
                 ty: Type::Prim(Prim::I32),
-                nonnull: false,
+                metadata: ParameterMetadata::default(),
             },
             FnParam {
                 name: "n".into(),
                 mutable: false,
                 ty: Type::Prim(Prim::Usize),
-                nonnull: false,
+                metadata: ParameterMetadata::default(),
             },
         ],
         ret: Some(void_ptr(true)),
         body,
-        returns_nonnull: false,
+        metadata: FunctionMetadata::default(),
     })
 }
 

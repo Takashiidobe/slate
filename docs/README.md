@@ -133,7 +133,8 @@ control-flow builtins, target/frame/stack builtins, vector extensions
 (`memcpy`/`memmove`/`memset`/`memchr`) — see
 [cir-op-prioritization.md](cir-op-prioritization.md) for the full op-level
 checklist. `nonnull`/`returns_nonnull` (including `T name[static N]`
-parameters) are recovered as facts too.
+parameters) are preserved as typed, non-rendered function and parameter
+metadata for later fact analysis.
 
 ### Multi-config translation
 

@@ -349,7 +349,7 @@ pub struct ExternFnDecl {
     pub params: Vec<FnParam>,
     pub variadic: bool,
     pub ret: Option<Type>,
-    pub returns_nonnull: bool,
+    pub metadata: FunctionMetadata,
 }
 
 #[derive(Debug, Clone)]
@@ -362,7 +362,7 @@ pub struct FnDef {
     pub params: Vec<FnParam>,
     pub ret: Option<Type>,
     pub body: Vec<IndentStmt>,
-    pub returns_nonnull: bool,
+    pub metadata: FunctionMetadata,
 }
 
 #[derive(Debug, Clone)]
@@ -370,6 +370,16 @@ pub struct FnParam {
     pub name: String,
     pub mutable: bool,
     pub ty: Type,
+    pub metadata: ParameterMetadata,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct FunctionMetadata {
+    pub returns_nonnull: bool,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ParameterMetadata {
     pub nonnull: bool,
 }
 
