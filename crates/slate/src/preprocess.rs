@@ -258,7 +258,10 @@ impl DirectiveRecord {
 
     pub fn is_clang_resolved_pragma(&self) -> bool {
         self.name == DirectiveName::Pragma
-            && (is_pack_pragma(&self.raw_payload) || is_visibility_pragma(&self.raw_payload))
+            && (is_pack_pragma(&self.raw_payload)
+                || is_visibility_pragma(&self.raw_payload)
+                || is_weak_pragma(&self.raw_payload)
+                || is_redefine_extname_pragma(&self.raw_payload))
     }
 }
 
@@ -313,6 +316,31 @@ fn is_visibility_pragma(payload: &str) -> bool {
         return false;
     };
     matches!(value, "default" | "hidden" | "protected" | "internal")
+}
+
+fn is_weak_pragma(payload: &str) -> bool {
+    let Some(rest) = payload.trim().strip_prefix("weak") else {
+        return false;
+    };
+    if !rest.starts_with(char::is_whitespace) {
+        return false;
+    }
+    let rest = rest.trim();
+    if let Some((alias, target)) = rest.split_once('=') {
+        return !target.contains('=') && c_identifier(alias.trim()) && c_identifier(target.trim());
+    }
+    c_identifier(rest)
+}
+
+fn is_redefine_extname_pragma(payload: &str) -> bool {
+    let Some(rest) = payload.trim().strip_prefix("redefine_extname") else {
+        return false;
+    };
+    if !rest.starts_with(char::is_whitespace) {
+        return false;
+    }
+    let parts: Vec<_> = rest.split_whitespace().collect();
+    matches!(parts.as_slice(), [name, target] if c_identifier(name) && c_identifier(target))
 }
 
 fn pack_alignment(value: &str) -> bool {

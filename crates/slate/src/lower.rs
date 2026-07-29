@@ -146,7 +146,8 @@ pub fn defined_functions(module: &Module) -> Vec<String> {
         .filter(|op| {
             op.kind() == CirOpKind::Func
                 && externally_exported(op)
-                && (!region_ops(op).is_empty() || attr_symbol_ref(op, "aliasee").is_some())
+                && (!region_ops(op).is_empty()
+                    || attr_symbol_ref(op, "aliasee").is_some() && !linkage_is_weak(op))
         })
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
         .collect()
@@ -213,7 +214,7 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
         {
             features.insert(Feature::F128);
         }
-        if linkage_is_weak(op) {
+        if linkage_is_weak(op) && attr_symbol_ref(op, "aliasee").is_none() {
             features.insert(Feature::Linkage);
         }
         if op.kind() == CirOpKind::Asm
@@ -281,6 +282,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .map(|attribute| (attribute.name.clone(), attribute.target.clone()))
             .collect(),
         external_weak_targets: BTreeSet::new(),
+        weak_aliases: BTreeMap::new(),
         records,
         enums,
         anon_records,
@@ -594,6 +596,7 @@ struct Lowerer<'a> {
     known_functions: BTreeMap<String, FunctionIdentity>,
     weak_refs: BTreeMap<String, String>,
     external_weak_targets: BTreeSet<String>,
+    weak_aliases: BTreeMap<String, String>,
     records: BTreeMap<String, crate::c_ast::Record>,
     enums: BTreeMap<String, crate::c_ast::Enum>,
     anon_records: Vec<crate::c_ast::Record>,
@@ -830,6 +833,16 @@ impl<'a> Lowerer<'a> {
         };
 
         let ops = region_ops(module_op);
+        self.weak_aliases = ops
+            .iter()
+            .filter(|op| op.kind() == CirOpKind::Func && linkage_is_weak(op))
+            .filter_map(|op| {
+                Some((
+                    attr_str(op, "sym_name")?.to_string(),
+                    attr_symbol_ref(op, "aliasee")?.to_string(),
+                ))
+            })
+            .collect();
         self.external_weak_targets = self
             .weak_refs
             .values()
@@ -856,6 +869,11 @@ impl<'a> Lowerer<'a> {
             .map(|name| sanitize_ident(name).into_string())
             .collect();
         items.extend(lower_module_asm(module_op, &mut self.ctx.diagnostics));
+        items.extend(lower_weak_alias_asm(
+            module_op,
+            &self.weak_aliases,
+            &mut self.ctx.diagnostics,
+        ));
         let has_main = ops.iter().any(|op| {
             op.kind() == CirOpKind::Func
                 && attr_str(op, "sym_name") == Some("main")
@@ -949,6 +967,19 @@ impl<'a> Lowerer<'a> {
                 continue;
             }
             if attr_symbol_ref(op, "aliasee").is_some() {
+                if linkage_is_weak(op) {
+                    let Some(name) = attr_str(op, "sym_name") else {
+                        continue;
+                    };
+                    let function_type = attr_str(op, "function_type").unwrap_or("");
+                    let (decl, params, ret) = self.extern_fn_signature(name, function_type, op);
+                    if decl.variadic {
+                        self.uses_c_variadic.set(true);
+                    }
+                    self.externs.insert(name.to_string(), params);
+                    self.extern_returns.insert(name.to_string(), ret);
+                    extern_decls.push(ExternDecl::Fn(decl));
+                }
                 continue;
             }
             let Some(name) = attr_str(op, "sym_name") else {
@@ -1405,6 +1436,9 @@ impl<'a> Lowerer<'a> {
     fn lower_func_alias(&mut self, op: &Op, ops: &[&Op]) -> Option<Item> {
         let name = attr_str(op, "sym_name")?;
         let target = attr_symbol_ref(op, "aliasee")?;
+        if linkage_is_weak(op) {
+            return None;
+        }
         let target_op = ops.iter().find(|candidate| {
             candidate.kind() == CirOpKind::Func
                 && attr_str(candidate, "sym_name") == Some(target)
@@ -1571,6 +1605,7 @@ impl<'a> Lowerer<'a> {
 
     fn lower_func(&mut self, op: &Op) -> Option<Item> {
         let name = attr_str(op, "sym_name")?;
+        let weak_alias_target = self.weak_aliases.values().any(|target| target == name);
         let function_type = attr_str(op, "function_type").unwrap_or("");
         let (param_types, ret_ty) = parse_function_type(function_type);
         let entry = op.regions.first()?.blocks.first()?;
@@ -1621,7 +1656,8 @@ impl<'a> Lowerer<'a> {
             );
             (Visibility::Private, None, None, prelude)
         } else {
-            let external_def = self.project.emit_pub && externally_exported(op);
+            let external_def =
+                self.project.emit_pub && externally_exported(op) || weak_alias_target;
             let vis = if external_def {
                 Visibility::Pub
             } else {
@@ -1654,7 +1690,7 @@ impl<'a> Lowerer<'a> {
         let ret = if diverges { Some(Type::Never) } else { ret };
 
         let attrs = symbol_attrs(
-            !is_main && self.project.emit_pub && externally_exported(op),
+            !is_main && (self.project.emit_pub && externally_exported(op) || weak_alias_target),
             linkage_is_weak(op),
             attr_str(op, "section"),
             &[],
@@ -5000,14 +5036,31 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
-        let lhs = operand_types.first().map_or_else(
-            || self.operand_expr(&op.operands[0]),
-            |ty| self.call_arg_expr(&op.operands[0], ty),
-        );
-        let rhs = operand_types.get(1).map_or_else(
-            || self.operand_expr(&op.operands[1]),
-            |ty| self.call_arg_expr(&op.operands[1], ty),
-        );
+        let concrete_function_symbols = operand_types
+            .first()
+            .zip(operand_types.get(1))
+            .is_some_and(|(lhs, rhs)| {
+                is_cir_function_pointer_type(lhs)
+                    && is_cir_function_pointer_type(rhs)
+                    && matches!(self.values.get(&op.operands[0]), Some(Val::Global(_)))
+                    && matches!(self.values.get(&op.operands[1]), Some(Val::Global(_)))
+            });
+        let lhs = if concrete_function_symbols {
+            self.function_pointer_byte_operand_expr(&op.operands[0])
+        } else {
+            operand_types.first().map_or_else(
+                || self.operand_expr(&op.operands[0]),
+                |ty| self.call_arg_expr(&op.operands[0], ty),
+            )
+        };
+        let rhs = if concrete_function_symbols {
+            self.function_pointer_byte_operand_expr(&op.operands[1])
+        } else {
+            operand_types.get(1).map_or_else(
+                || self.operand_expr(&op.operands[1]),
+                |ty| self.call_arg_expr(&op.operands[1], ty),
+            )
+        };
         let cmp = match attr_int(op, "kind") {
             Some(0) => BinOp::Lt,
             Some(1) => BinOp::Le,
@@ -7776,6 +7829,44 @@ fn lower_module_asm(module_op: &Op, diagnostics: &mut crate::ctx::Diagnostics) -
             item: Box::new(Item::Macro {
                 name: "core::arch::global_asm".into(),
                 args: asm_macro_args(template.clone(), dialect),
+            }),
+        })
+        .collect()
+}
+
+fn lower_weak_alias_asm(
+    module_op: &Op,
+    aliases: &BTreeMap<String, String>,
+    diagnostics: &mut crate::ctx::Diagnostics,
+) -> Vec<Item> {
+    if aliases.is_empty() {
+        return Vec::new();
+    }
+    let Some(triple) = attr_str(module_op, "cir.triple") else {
+        diagnostics.error(
+            "lower: weak aliases require a CIR target triple",
+            module_op.loc.clone(),
+        );
+        return Vec::new();
+    };
+    let Some(target_arch) = rust_target_arch(triple) else {
+        diagnostics.error(
+            format!("lower: unsupported weak alias target `{triple}`"),
+            module_op.loc.clone(),
+        );
+        return Vec::new();
+    };
+    let dialect = matches!(target_arch, "x86" | "x86_64").then_some(AsmDialect::Att);
+    aliases
+        .iter()
+        .map(|(name, target)| Item::Cfg {
+            cfg: Cfg::Opt {
+                key: "target_arch".into(),
+                value: target_arch.into(),
+            },
+            item: Box::new(Item::Macro {
+                name: "core::arch::global_asm".into(),
+                args: asm_macro_args(format!(".weak {name}\n.set {name}, {target}"), dialect),
             }),
         })
         .collect()

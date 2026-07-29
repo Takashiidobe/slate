@@ -119,6 +119,22 @@ fn weakref_function_calls_preserve_local_and_external_targets() {
 }
 
 #[test]
+fn gnu_symbol_pragmas_preserve_alias_and_external_names() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-gnu-symbol-pragmas");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("gnu_symbol_pragmas.c");
+    let generated = tmp.join("gnu_symbol_pragmas.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate GNU symbol pragmas fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated GNU symbol pragma Rust");
+
+    assert!(rust.contains(".weak pragma_weak_alias\\n.set pragma_weak_alias, pragma_weak_target"));
+    assert!(rust.contains("fn pragma_weak_alias("));
+    assert!(rust.contains("fn pragma_actual("));
+    assert!(!rust.contains("fn pragma_renamed("));
+}
+
+#[test]
 fn global_alias_emits_unsupported_diagnostic() {
     let c_src = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures.unsupported")

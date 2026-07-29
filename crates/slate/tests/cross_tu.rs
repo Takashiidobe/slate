@@ -493,6 +493,22 @@ fn generated_weak_symbols_lose_to_strong_external_definitions() {
 }
 
 #[test]
+fn gnu_symbol_pragmas_preserve_cross_tu_linkage() {
+    let rs_dir = build_and_diff("gnu_symbol_pragmas");
+    let symbols_rs = std::fs::read_to_string(rs_dir.join("symbols.rs")).expect("read symbols.rs");
+    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
+
+    assert!(
+        symbols_rs.contains(".weak pragma_weak_alias\\n.set pragma_weak_alias, pragma_weak_target")
+    );
+    assert!(symbols_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn pragma_weak_target"));
+    assert!(symbols_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn pragma_actual"));
+    assert!(main_rs.contains("use crate::strong::pragma_weak_alias;"));
+    assert!(main_rs.contains("use crate::symbols::pragma_actual;"));
+    assert!(!main_rs.contains("pragma_renamed"));
+}
+
+#[test]
 fn function_alias_exports_forwarding_wrapper() {
     let rs_dir = build_and_diff("alias_function");
     let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
