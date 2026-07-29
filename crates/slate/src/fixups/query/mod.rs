@@ -17,7 +17,7 @@ pub(in crate::fixups) use proof::{
 };
 pub(in crate::fixups) use recipe::{
     ExprRecipe, FunctionBodyRecipe, SearchIndex, byte_position, known_index, memchr_fallback_body,
-    pointer_at_or_null,
+    pointer_at_or_null, process_exit,
 };
 pub(in crate::fixups) use rewrite::{
     ApplyReport, CaseRejection, ExprPlan, ExprPlanBuilder, ExprRule, PlanDiagnostic, ReplaceExpr,

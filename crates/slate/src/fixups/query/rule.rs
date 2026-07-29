@@ -1,4 +1,5 @@
 use crate::fixups::trace::Pass;
+use crate::function_identity::Known;
 
 use super::{
     ByteSource, CallRecord, CallTarget, ExprRecipe, ExprRule, ExprSite, NulPosition, Predicate,
@@ -23,6 +24,7 @@ pub(in crate::fixups) struct CallRule {
     target: CallTarget,
     arity: usize,
     cases: Vec<DeclarativeCallCase>,
+    replace_trivial_unsafe: bool,
 }
 
 impl CallRule {
@@ -37,7 +39,28 @@ impl CallRule {
             target: CallTarget::Generated(symbol.into()),
             arity,
             cases: Vec::new(),
+            replace_trivial_unsafe: false,
         }
+    }
+
+    pub(in crate::fixups) fn known(
+        pass: Pass,
+        rule: impl Into<String>,
+        target: Known,
+        arity: usize,
+    ) -> Self {
+        Self {
+            identity: RuleIdentity::new(pass, rule),
+            target: CallTarget::Known(target),
+            arity,
+            cases: Vec::new(),
+            replace_trivial_unsafe: false,
+        }
+    }
+
+    pub(in crate::fixups) fn replace_trivial_unsafe(mut self) -> Self {
+        self.replace_trivial_unsafe = true;
+        self
     }
 
     pub(in crate::fixups) fn case(mut self, name: impl Into<String>, apply: CallCaseFn) -> Self {
@@ -87,6 +110,11 @@ impl<'snapshot> CallCaseContext<'_, 'snapshot> {
     pub(in crate::fixups) fn pure(&mut self, arg: CallArg) -> Result<StableExpr, Rejection> {
         let site = self.arg(arg).clone();
         self.prove(self.query.pure(&site))
+    }
+
+    pub(in crate::fixups) fn never_returning_extern(&mut self) -> Result<(), Rejection> {
+        self.prove(self.query.never_returning_extern(self.call))
+            .map(drop)
     }
 
     pub(in crate::fixups) fn full_byte_view(
@@ -159,7 +187,14 @@ impl ExprRule for CallRule {
     }
 
     fn target(&self, candidate: &Self::Candidate) -> ExprSite {
-        candidate.site.clone()
+        if self.replace_trivial_unsafe {
+            candidate
+                .trivial_unsafe_site
+                .clone()
+                .unwrap_or_else(|| candidate.site.clone())
+        } else {
+            candidate.site.clone()
+        }
     }
 
     fn cases(&self, query: &QueryContext<'_>, candidate: &Self::Candidate) -> Vec<RuleCase> {
@@ -171,10 +206,10 @@ impl ExprRule for CallRule {
                     call: candidate,
                     evidence: candidate.evidence.clone(),
                 };
+                let target = self.target(candidate);
                 let result = (case.apply)(&mut context).and_then(|recipe| {
-                    recipe.lower(query).map(|replacement| {
-                        ReplaceExpr::new(candidate.site.clone(), replacement)
-                            .with_evidence(context.evidence)
+                    recipe.lower(query, &candidate.site).map(|replacement| {
+                        ReplaceExpr::new(target, replacement).with_evidence(context.evidence)
                     })
                 });
                 RuleCase::new(case.name.clone(), RuleResult::from(result))

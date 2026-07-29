@@ -6,7 +6,7 @@ use crate::fixups::facts::{
     AstPath, ConstValue, EffectSubject, FixupFacts, FunctionId, NulTermination, PathSegment,
     Purity, StringBufferKind, ValueSubject,
 };
-use crate::function_identity::{CallBinding, FunctionIdentity, Known};
+use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_declaration};
 use crate::rust_ast::{Attr, Expr, ExternDecl, ImplItem, Item, Prim, Program, Type, Visibility};
 
 use super::{
@@ -27,6 +27,7 @@ pub(in crate::fixups) enum CallTarget {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct CallRecord {
     pub(in crate::fixups) site: ExprSite,
+    pub(in crate::fixups) trivial_unsafe_site: Option<ExprSite>,
     pub(in crate::fixups) target: CallTarget,
     pub(in crate::fixups) args: Vec<ExprSite>,
     pub(in crate::fixups) evidence: Vec<Evidence>,
@@ -81,6 +82,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                         .entry((target.clone(), args.len()))
                         .or_default()
                         .push(CallRecord {
+                            trivial_unsafe_site: trivial_unsafe_site(program, &site),
                             site,
                             target,
                             args: arg_sites,
@@ -104,6 +106,57 @@ impl<'snapshot> QueryContext<'snapshot> {
             .get(&(target.clone(), arity))
             .map(Vec::as_slice)
             .unwrap_or_default()
+    }
+
+    pub(in crate::fixups) fn never_returning_extern(&self, call: &CallRecord) -> QueryResult<()> {
+        let predicate = Predicate::NeverReturningExtern;
+        let CallTarget::Known(target) = call.target else {
+            return Err(Rejection::new(
+                predicate,
+                Some(call.site.clone()),
+                RejectionReason::UnsupportedShape,
+                Vec::new(),
+            ));
+        };
+        let mut saw_declaration = false;
+        let mut evidence = Vec::new();
+        for item in &self.program.items {
+            let Item::ExternBlock { decls, .. } = item else {
+                continue;
+            };
+            for decl in decls {
+                let ExternDecl::Fn(function) = decl else {
+                    continue;
+                };
+                if known_declaration(function.identity, &function.name) != Some(target) {
+                    continue;
+                }
+                saw_declaration = true;
+                let returns_never = matches!(function.ret, Some(Type::Never));
+                evidence.push(Evidence {
+                    predicate,
+                    site: call.site.clone(),
+                    detail: EvidenceDetail::KnownExternDeclaration {
+                        target,
+                        arity: function.params.len(),
+                        returns_never,
+                    },
+                });
+                if function.params.len() == call.args.len() && returns_never {
+                    return Ok(Proof::new((), evidence));
+                }
+            }
+        }
+        Err(Rejection::new(
+            predicate,
+            Some(call.site.clone()),
+            if saw_declaration {
+                RejectionReason::Contradicted
+            } else {
+                RejectionReason::MissingEvidence
+            },
+            evidence,
+        ))
     }
 
     pub(in crate::fixups) fn expr(&self, site: &ExprSite) -> Option<&'snapshot Expr> {
@@ -776,6 +829,19 @@ fn index_definitions(
         }
         _ => {}
     }
+}
+
+fn trivial_unsafe_site(program: &Program, call: &ExprSite) -> Option<ExprSite> {
+    let path = &call.path.0;
+    if !path.ends_with(&[PathSegment::BlockBody, PathSegment::BlockTail]) {
+        return None;
+    }
+    let parent = expression_site(call.item_index, &path[..path.len() - 2]);
+    let Expr::Unsafe(block) = walk::target_expr_at_path(program, parent.item_index, &parent.path)?
+    else {
+        return None;
+    };
+    (block.stmts.is_empty() && block.tail.is_some()).then_some(parent)
 }
 
 fn exporting_attr(attr: &Attr) -> bool {

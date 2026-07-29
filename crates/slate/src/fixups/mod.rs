@@ -689,11 +689,14 @@ fn apply_with_logger(
         });
     });
     step!(program, Pass::LibcExit, {
-        let enabled = rewrite::libc_exit::LibcExit::is_enabled(&program);
-        run_once_items(&mut program, |_, f| {
-            let mut fixup = rewrite::libc_exit::LibcExit::new(f.name.clone(), enabled, logger);
-            run_once(&mut f.body, &mut fixup)
-        });
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ExprPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::libc_exit::calls());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger).changed
     });
     step!(program, Pass::UnusedItems, {
         run_once_program(&mut program, |program| {
