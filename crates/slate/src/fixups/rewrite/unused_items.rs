@@ -193,6 +193,7 @@ fn collect_item_refs(item: &Item, refs: &mut BTreeSet<String>) {
         | Item::Comment(_)
         | Item::CrateAttrs(_)
         | Item::Mod { .. }
+        | Item::SupportModule(_)
         | Item::Raw(_) => {}
     }
 }

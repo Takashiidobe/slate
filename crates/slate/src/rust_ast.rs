@@ -55,7 +55,15 @@ pub enum Item {
         cfg: Cfg,
         item: Box<Item>,
     },
+    SupportModule(SupportModule),
     Raw(String),
+}
+
+#[derive(Debug, Clone)]
+pub struct SupportModule {
+    pub name: Ident,
+    pub source: String,
+    pub exports: Vec<Path>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

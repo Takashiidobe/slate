@@ -132,7 +132,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 34. `stdio` - `fopen`/`fputs`/`fclose` sequences to `File`/`OpenOptions` owners - once, per function (`run_once_items`).
 35. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls - once, per function (`run_once_items`) through the distinct `MemchrPreludeCalls` body pass.
 36. `nullable_pointer` - recover `Option<*T>` null-check idioms - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`); runs directly after its only producers - the two `string_libc` runs and `memchr_prelude::fixup_calls`, the sole places that emit the `<index>.map_or(null_mut(), |i| ptr.add(i) as *T)` shape it rewrites. Despite the name, it has no relationship to the pointer-provenance cluster (`slice_index`/`slice_loop`/`array_element_pointer_origin`/`buffer_cursor`): those match constant-index pointer arithmetic, this matches dynamic-index `Option`-wrapped search results, and the two never touch the same bindings.
-37. `string_lift::fixup_c_strings` then `memchr_prelude` / `memchr_prelude::prune_unused_helper` - a second, narrower string-lift pass plus memchr-helper cleanup - once each; string lift and the helper-body rewrite run per function (`run_once_items`), while unused-helper pruning is program-wide (`run_once_program`).
+37. `string_lift::fixup_c_strings` then `memchr_prelude` - a second, narrower string-lift pass followed by a query-driven memchr definition lifecycle; the helper is deleted when its complete use domain is empty and otherwise receives the idiomatic fallback body.
 38. `late_inline_temps` - inline single-use pure temps, late variant - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`, same round cap as step 3).
 39. `ptr_copy` - collapse indexed pointer-copy loops into `std::ptr::copy` or `std::ptr::copy_nonoverlapping` - to fixpoint, per function (`to_fixpoint_items`).
 40. `dead_locals` - remove locals made dead by pointer-copy recovery - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`).
@@ -146,11 +146,11 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 48. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint, per function, across the program (`to_fixpoint_items`).
 49. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches - to fixpoint, per function, across the program (`to_fixpoint_items`).
 50. `libc_exit` - rewrite direct `libc::exit` calls as `std::process::exit` - once, per function (`run_once_items`), gated by the program's matching extern declaration.
-51. `prune_unused_externs` - drop now-dead `extern` decls for the libc functions `string_copy`, `string_libc`, `sort_search`, and `heap_ownership` replace - once, program-wide (`run_once_program`), after all four rewrites (and their re-runs) have finished, rather than once per rewrite.
-52. `unused_items` - remove dead top-level items - once, program-wide (`run_once_program`).
-53. `unused_params` - drop a function parameter that's never read in its body and rewrite every direct call site to match, once the function's only references are direct-by-name calls whose argument at that slot is pure and whose type can't own a destructor - to fixpoint.
-54. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function - once, per function.
-55. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
+51. `unused_items` - remove dead top-level items - once, program-wide (`run_once_program`).
+52. `unused_params` - drop a function parameter that's never read in its body and rewrite every direct call site to match, once the function's only references are direct-by-name calls whose argument at that slot is pure and whose type can't own a destructor - to fixpoint.
+53. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function - once, per function.
+54. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
+55. `prune_unused_definitions` - query the final complete definition-use domain and delete now-dead known libc `extern` declarations and generated support modules after all users have stabilized; empty extern containers are removed by the shared definition planner.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
 because later groups can create new opportunities for earlier ones; re-running

@@ -1,17 +1,34 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::trace::{Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact};
-use crate::rust_ast::{ExternDecl, Item, Program};
+use crate::rust_ast::{ExternDecl, IndentStmt, Item, Program};
 
-use super::rewrite::evidence_trace_fact;
+use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, Evidence, QueryContext,
-    Rejection, RuleIdentity,
+    CaseRejection, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
+    DefinitionSite, Evidence, FunctionBodyRecipe, QueryContext, Rejection, RuleCaseIdentity,
+    RuleIdentity,
 };
+
+enum DefinitionRuleSelector {
+    Exact(DefinitionSelector),
+    Group(DefinitionGroup),
+    KnownExternFunctions,
+}
+
+type DefinitionCaseFn = for<'case, 'snapshot> fn(
+    &mut DefinitionCaseContext<'case, 'snapshot>,
+) -> Result<DefinitionRecipe, Rejection>;
+
+struct DeclarativeDefinitionCase {
+    name: String,
+    apply: DefinitionCaseFn,
+}
 
 pub(in crate::fixups) struct DefinitionRule {
     identity: RuleIdentity,
-    selector: DefinitionSelector,
+    selector: DefinitionRuleSelector,
+    cases: Vec<DeclarativeDefinitionCase>,
 }
 
 impl DefinitionRule {
@@ -22,10 +39,11 @@ impl DefinitionRule {
     ) -> Self {
         Self {
             identity: RuleIdentity::new(pass, rule),
-            selector: DefinitionSelector {
+            selector: DefinitionRuleSelector::Exact(DefinitionSelector {
                 kind: DefinitionKind::Function,
                 name: name.into(),
-            },
+            }),
+            cases: Vec::new(),
         }
     }
 
@@ -36,22 +54,137 @@ impl DefinitionRule {
     ) -> Self {
         Self {
             identity: RuleIdentity::new(pass, rule),
-            selector: DefinitionSelector {
+            selector: DefinitionRuleSelector::Exact(DefinitionSelector {
                 kind: DefinitionKind::ExternFunction,
                 name: name.into(),
-            },
+            }),
+            cases: Vec::new(),
+        }
+    }
+
+    pub(in crate::fixups) fn header(
+        pass: Pass,
+        rule: impl Into<String>,
+        header: impl Into<String>,
+    ) -> Self {
+        Self {
+            identity: RuleIdentity::new(pass, rule),
+            selector: DefinitionRuleSelector::Group(DefinitionGroup::Header(header.into())),
+            cases: Vec::new(),
+        }
+    }
+
+    pub(in crate::fixups) fn known_extern_functions(pass: Pass, rule: impl Into<String>) -> Self {
+        Self {
+            identity: RuleIdentity::new(pass, rule),
+            selector: DefinitionRuleSelector::KnownExternFunctions,
+            cases: Vec::new(),
+        }
+    }
+
+    pub(in crate::fixups) fn support_module(
+        pass: Pass,
+        rule: impl Into<String>,
+        name: impl Into<String>,
+    ) -> Self {
+        Self {
+            identity: RuleIdentity::new(pass, rule),
+            selector: DefinitionRuleSelector::Exact(DefinitionSelector {
+                kind: DefinitionKind::SupportModule,
+                name: name.into(),
+            }),
+            cases: Vec::new(),
+        }
+    }
+
+    pub(in crate::fixups) fn case(
+        mut self,
+        name: impl Into<String>,
+        apply: DefinitionCaseFn,
+    ) -> Self {
+        self.cases.push(DeclarativeDefinitionCase {
+            name: name.into(),
+            apply,
+        });
+        self
+    }
+
+    fn candidates(&self, query: &QueryContext<'_>) -> Vec<DefinitionSite> {
+        match &self.selector {
+            DefinitionRuleSelector::Exact(selector) => query.definitions(selector).to_vec(),
+            DefinitionRuleSelector::Group(group) => query.definitions_in_group(group),
+            DefinitionRuleSelector::KnownExternFunctions => query
+                .definitions_of_kind(DefinitionKind::ExternFunction)
+                .into_iter()
+                .filter(|definition| definition.group.is_some())
+                .collect(),
         }
     }
 }
 
-pub(in crate::fixups) struct DeleteDefinition {
-    target: DefinitionSite,
+pub(in crate::fixups) struct DefinitionCaseContext<'case, 'snapshot> {
+    query: &'case QueryContext<'snapshot>,
+    definition: &'case DefinitionSite,
     evidence: Vec<Evidence>,
 }
 
+impl DefinitionCaseContext<'_, '_> {
+    pub(in crate::fixups) fn zero_users(&mut self) -> Result<(), Rejection> {
+        self.prove(self.query.zero_users(self.definition)).map(drop)
+    }
+
+    pub(in crate::fixups) fn zero_group_users(&mut self) -> Result<(), Rejection> {
+        let Some(group) = &self.definition.group else {
+            return Err(Rejection::new(
+                super::Predicate::ZeroGroupUsers,
+                None,
+                super::RejectionReason::MissingEvidence,
+                self.evidence.clone(),
+            ));
+        };
+        self.prove(self.query.zero_group_users(group)).map(drop)
+    }
+
+    fn prove<T>(&mut self, result: super::QueryResult<T>) -> Result<T, Rejection> {
+        match result {
+            Ok(proof) => {
+                self.evidence.extend(proof.evidence);
+                Ok(proof.value)
+            }
+            Err(mut rejection) => {
+                let mut evidence = self.evidence.clone();
+                evidence.append(&mut rejection.evidence);
+                rejection.evidence = evidence;
+                Err(rejection)
+            }
+        }
+    }
+}
+
+pub(in crate::fixups) enum DefinitionRecipe {
+    Delete,
+    ReplaceBody(FunctionBodyRecipe),
+}
+
+pub(in crate::fixups) fn delete_definition() -> DefinitionRecipe {
+    DefinitionRecipe::Delete
+}
+
+pub(in crate::fixups) fn replace_body(body: FunctionBodyRecipe) -> DefinitionRecipe {
+    DefinitionRecipe::ReplaceBody(body)
+}
+
+enum DefinitionEditAction {
+    Delete,
+    ReplaceBody(Vec<IndentStmt>),
+}
+
 struct PlannedDefinitionEdit {
-    identity: RuleIdentity,
-    deletion: DeleteDefinition,
+    identity: RuleCaseIdentity,
+    target: DefinitionSite,
+    action: DefinitionEditAction,
+    evidence: Vec<Evidence>,
+    rejected_cases: Vec<CaseRejection>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -59,17 +192,17 @@ pub(in crate::fixups) enum DefinitionPlanDiagnostic {
     CandidateRejected {
         rule: RuleIdentity,
         target: DefinitionSite,
-        rejection: Rejection,
+        rejections: Vec<CaseRejection>,
     },
     AmbiguousTarget {
         target: DefinitionLocation,
-        contenders: Vec<RuleIdentity>,
+        contenders: Vec<RuleCaseIdentity>,
     },
     OverlappingTargets {
         item_index: usize,
     },
     MissingTarget {
-        rule: RuleIdentity,
+        contender: RuleCaseIdentity,
         target: DefinitionSite,
     },
 }
@@ -92,23 +225,50 @@ impl DefinitionPlanBuilder {
         query: &QueryContext<'_>,
         rule: &DefinitionRule,
     ) -> &mut Self {
-        for definition in query.definitions(&rule.selector) {
-            match query.zero_users(definition) {
-                Ok(proof) => self.proposals.push(PlannedDefinitionEdit {
-                    identity: rule.identity.clone(),
-                    deletion: DeleteDefinition {
-                        target: proof.value.definition,
-                        evidence: proof.evidence,
-                    },
-                }),
-                Err(rejection) => {
-                    self.diagnostics
-                        .push(DefinitionPlanDiagnostic::CandidateRejected {
-                            rule: rule.identity.clone(),
+        for definition in rule.candidates(query) {
+            let mut rejected_cases = Vec::new();
+            let mut selected = None;
+            for case in &rule.cases {
+                let mut context = DefinitionCaseContext {
+                    query,
+                    definition: &definition,
+                    evidence: Vec::new(),
+                };
+                match (case.apply)(&mut context) {
+                    Ok(recipe) => {
+                        let action = match recipe {
+                            DefinitionRecipe::Delete => DefinitionEditAction::Delete,
+                            DefinitionRecipe::ReplaceBody(body) => {
+                                DefinitionEditAction::ReplaceBody(body.lower())
+                            }
+                        };
+                        selected = Some(PlannedDefinitionEdit {
+                            identity: RuleCaseIdentity {
+                                rule: rule.identity.clone(),
+                                case: case.name.clone(),
+                            },
                             target: definition.clone(),
-                            rejection,
+                            action,
+                            evidence: context.evidence,
+                            rejected_cases: std::mem::take(&mut rejected_cases),
                         });
+                        break;
+                    }
+                    Err(rejection) => rejected_cases.push(CaseRejection {
+                        case: case.name.clone(),
+                        rejection,
+                    }),
                 }
+            }
+            if let Some(selected) = selected {
+                self.proposals.push(selected);
+            } else if !rejected_cases.is_empty() {
+                self.diagnostics
+                    .push(DefinitionPlanDiagnostic::CandidateRejected {
+                        rule: rule.identity.clone(),
+                        target: definition,
+                        rejections: rejected_cases,
+                    });
             }
         }
         self
@@ -119,7 +279,7 @@ impl DefinitionPlanBuilder {
         let mut grouped = BTreeMap::<DefinitionLocation, Vec<PlannedDefinitionEdit>>::new();
         for proposal in self.proposals {
             grouped
-                .entry(proposal.deletion.target.location.clone())
+                .entry(proposal.target.location.clone())
                 .or_default()
                 .push(proposal);
         }
@@ -139,14 +299,14 @@ impl DefinitionPlanBuilder {
         }
         let whole_items = edits
             .iter()
-            .filter_map(|edit| match edit.deletion.target.location {
+            .filter_map(|edit| match edit.target.location {
                 DefinitionLocation::Item(item_index) => Some(item_index),
                 DefinitionLocation::ExternDecl { .. } => None,
             })
             .collect::<BTreeSet<_>>();
         let overlapping = edits
             .iter()
-            .filter_map(|edit| match edit.deletion.target.location {
+            .filter_map(|edit| match edit.target.location {
                 DefinitionLocation::ExternDecl { item_index, .. }
                     if whole_items.contains(&item_index) =>
                 {
@@ -160,13 +320,8 @@ impl DefinitionPlanBuilder {
                 item_index: *item_index,
             });
         }
-        edits.retain(|edit| !overlapping.contains(&edit.deletion.target.location.item_index()));
-        edits.sort_by(|left, right| {
-            left.deletion
-                .target
-                .location
-                .cmp(&right.deletion.target.location)
-        });
+        edits.retain(|edit| !overlapping.contains(&edit.target.location.item_index()));
+        edits.sort_by(|left, right| left.target.location.cmp(&right.target.location));
         DefinitionPlan { edits, diagnostics }
     }
 }
@@ -197,75 +352,68 @@ impl DefinitionPlan {
         let mut by_item = BTreeMap::<usize, Vec<PlannedDefinitionEdit>>::new();
         for edit in self.edits {
             by_item
-                .entry(edit.deletion.target.location.item_index())
+                .entry(edit.target.location.item_index())
                 .or_default()
                 .push(edit);
         }
         let mut applied = 0;
         for (item_index, mut edits) in by_item.into_iter().rev() {
-            edits.sort_by(|left, right| {
-                right
-                    .deletion
-                    .target
-                    .location
-                    .cmp(&left.deletion.target.location)
-            });
+            edits.sort_by(|left, right| right.target.location.cmp(&left.target.location));
             if item_index >= program.items.len() {
                 for edit in edits {
-                    diagnostics.push(DefinitionPlanDiagnostic::MissingTarget {
-                        rule: edit.identity,
-                        target: edit.deletion.target,
-                    });
+                    diagnostics.push(missing_target(edit));
                 }
                 continue;
             }
             if matches!(
-                edits.first().map(|edit| &edit.deletion.target.location),
+                edits.first().map(|edit| &edit.target.location),
                 Some(DefinitionLocation::Item(_))
             ) {
                 let edit = edits.pop().unwrap();
-                if definition_matches(&program.items[item_index], &edit.deletion.target) {
-                    let before = item_snippet(&program.items[item_index]);
-                    program.items.remove(item_index);
-                    log_deletion(logger, &edit, before);
-                    applied += 1;
-                } else {
-                    diagnostics.push(DefinitionPlanDiagnostic::MissingTarget {
-                        rule: edit.identity,
-                        target: edit.deletion.target,
-                    });
+                if !definition_matches(&program.items[item_index], &edit.target) {
+                    diagnostics.push(missing_target(edit));
+                    continue;
                 }
+                let before = item_snippet(&program.items[item_index]);
+                match &edit.action {
+                    DefinitionEditAction::Delete => {
+                        program.items.remove(item_index);
+                        log_edit(logger, &edit, before, None);
+                    }
+                    DefinitionEditAction::ReplaceBody(body) => {
+                        let Item::Fn(function) = &mut program.items[item_index] else {
+                            unreachable!()
+                        };
+                        function.body = body.clone();
+                        let after = item_snippet(&program.items[item_index]);
+                        log_edit(logger, &edit, before, Some(after));
+                    }
+                }
+                applied += 1;
                 continue;
             }
             let Item::ExternBlock { abi, decls } = &mut program.items[item_index] else {
                 for edit in edits {
-                    diagnostics.push(DefinitionPlanDiagnostic::MissingTarget {
-                        rule: edit.identity,
-                        target: edit.deletion.target,
-                    });
+                    diagnostics.push(missing_target(edit));
                 }
                 continue;
             };
             for edit in edits {
-                let DefinitionLocation::ExternDecl { decl_index, .. } =
-                    edit.deletion.target.location
-                else {
+                let DefinitionLocation::ExternDecl { decl_index, .. } = edit.target.location else {
                     unreachable!()
                 };
-                if decls
-                    .get(decl_index)
-                    .is_some_and(|decl| extern_definition_matches(decl, &edit.deletion.target))
+                if !matches!(&edit.action, DefinitionEditAction::Delete)
+                    || !decls
+                        .get(decl_index)
+                        .is_some_and(|decl| extern_definition_matches(decl, &edit.target))
                 {
-                    let before = extern_decl_snippet(abi, &decls[decl_index]);
-                    decls.remove(decl_index);
-                    log_deletion(logger, &edit, before);
-                    applied += 1;
-                } else {
-                    diagnostics.push(DefinitionPlanDiagnostic::MissingTarget {
-                        rule: edit.identity,
-                        target: edit.deletion.target,
-                    });
+                    diagnostics.push(missing_target(edit));
+                    continue;
                 }
+                let before = extern_decl_snippet(abi, &decls[decl_index]);
+                decls.remove(decl_index);
+                log_edit(logger, &edit, before, None);
+                applied += 1;
             }
             if decls.is_empty() {
                 program.items.remove(item_index);
@@ -288,11 +436,21 @@ pub(in crate::fixups) struct DefinitionApplyReport {
     pub(in crate::fixups) diagnostics: Vec<DefinitionPlanDiagnostic>,
 }
 
+fn missing_target(edit: PlannedDefinitionEdit) -> DefinitionPlanDiagnostic {
+    DefinitionPlanDiagnostic::MissingTarget {
+        contender: edit.identity,
+        target: edit.target,
+    }
+}
+
 fn definition_matches(item: &Item, definition: &DefinitionSite) -> bool {
-    matches!(
-        (item, definition.kind),
-        (Item::Fn(function), DefinitionKind::Function) if function.name == definition.name
-    )
+    match (item, definition.kind) {
+        (Item::Fn(function), DefinitionKind::Function) => function.name == definition.name,
+        (Item::SupportModule(module), DefinitionKind::SupportModule) => {
+            module.name.as_str() == definition.name
+        }
+        _ => false,
+    }
 }
 
 fn extern_definition_matches(decl: &ExternDecl, definition: &DefinitionSite) -> bool {
@@ -321,24 +479,41 @@ fn extern_decl_snippet(abi: &str, decl: &ExternDecl) -> String {
     })
 }
 
-fn log_deletion(logger: &mut dyn TraceLogger, edit: &PlannedDefinitionEdit, before: String) {
+fn log_edit(
+    logger: &mut dyn TraceLogger,
+    edit: &PlannedDefinitionEdit,
+    before: String,
+    after: Option<String>,
+) {
     if !logger.is_enabled() {
         return;
     }
     let mut facts = vec![
-        fact("query_rule", edit.identity.name.clone()),
-        fact("query_case", "zero_users"),
+        fact("query_rule", edit.identity.rule.name.clone()),
+        fact("query_case", edit.identity.case.clone()),
     ];
-    facts.extend(edit.deletion.evidence.iter().map(evidence_trace_fact));
+    facts.extend(edit.evidence.iter().map(evidence_trace_fact));
+    facts.extend(edit.rejected_cases.iter().map(|rejected| {
+        fact(
+            format!("rejected_case.{}", rejected.case),
+            format!(
+                "{}:{}",
+                predicate_name(rejected.rejection.predicate),
+                rejection_name(rejected.rejection.reason)
+            ),
+        )
+    }));
     logger.rewrite(RewriteEvent {
-        pass: edit.identity.pass,
-        kind: edit.identity.name.clone(),
+        pass: edit.identity.rule.pass,
+        kind: edit.identity.rule.name.clone(),
         location: TraceLocation {
-            function: Some(edit.deletion.target.name.clone()),
+            function: Some(edit.target.name.clone()),
             ..TraceLocation::default()
         },
         before: vec![TraceSnippet::new("definition", before)],
-        after: Vec::new(),
+        after: after
+            .map(|after| vec![TraceSnippet::new("definition", after)])
+            .unwrap_or_default(),
         facts,
     });
 }

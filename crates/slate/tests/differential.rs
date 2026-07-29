@@ -1972,7 +1972,7 @@ fn memchr_zero_use_query_prunes_the_generated_helper() {
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("fixup-debug")
         .arg("--debug-only-pass")
-        .arg("memchr_prelude::prune_unused_helper")
+        .arg("memchr_prelude")
         .arg(c_src)
         .output()
         .expect("run zero-user memchr cleanup trace");
@@ -1982,8 +1982,8 @@ fn memchr_zero_use_query_prunes_the_generated_helper() {
         String::from_utf8_lossy(&output.stderr)
     );
     let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
-    assert!(stdout.contains("prune_unused_memchr_helper"));
-    assert!(stdout.contains("query_case=zero_users"));
+    assert!(stdout.contains("manage_memchr_helper"));
+    assert!(stdout.contains("query_case=unused"));
     assert!(stdout.contains("evidence.zero_users=name=__slate_memchr;users=0;complete=true"));
 }
 
@@ -2011,6 +2011,9 @@ fn fixup_debug_reports_passes_and_change_summary() {
     assert!(stdout.contains("query_case=byte_position"));
     assert!(stdout.contains("evidence.prefix_contains=count=4;nul=3"));
     assert!(stdout.contains("rejected_case.known_nul=constant_u8:contradicted"));
+    assert!(stdout.contains("manage_memchr_helper"));
+    assert!(stdout.contains("query_case=retained"));
+    assert!(stdout.contains("rejected_case.unused=zero_users:contradicted"));
     assert!(stdout.contains("changed; stmts"));
     assert!(stdout.contains("temp_lets"));
     assert!(stdout.contains("final: items="));
@@ -2098,6 +2101,22 @@ fn internal_char_pointer_params_lift_to_str() {
     assert!(rust.contains("text_len(word)"));
     assert!(!rust.contains("fn atoi("));
     assert!(!rust.contains("fn strlen("));
+}
+
+#[test]
+fn generated_support_tracks_qualified_ast_users() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-support-module-cleanup");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_src = fixtures_dir().join("support_module_cleanup.c");
+    let generated = tmp.join("support_module_cleanup.generated.rs");
+    support::translate(&c_src, &generated).expect("translate support_module_cleanup fixture");
+    let rust =
+        std::fs::read_to_string(&generated).expect("read generated support_module_cleanup rust");
+
+    assert!(rust.contains("digits.parse::<i32>().unwrap_or(0)"));
+    assert!(!rust.contains("mod __slate_runtime"));
+    assert!(!rust.contains("fn atoi("));
 }
 
 #[test]

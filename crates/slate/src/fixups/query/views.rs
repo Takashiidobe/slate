@@ -32,6 +32,13 @@ pub(in crate::fixups) enum DefinitionKind {
     Function,
     ExternFunction,
     ExternStatic,
+    SupportModule,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(in crate::fixups) enum DefinitionGroup {
+    Header(String),
+    SupportModule(String),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -45,12 +52,19 @@ pub(in crate::fixups) struct DefinitionSite {
     pub(in crate::fixups) location: DefinitionLocation,
     pub(in crate::fixups) kind: DefinitionKind,
     pub(in crate::fixups) name: String,
+    pub(in crate::fixups) symbols: Vec<String>,
+    pub(in crate::fixups) group: Option<DefinitionGroup>,
     pub(super) externally_reachable: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct ZeroUsers {
     pub(in crate::fixups) definition: DefinitionSite,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct ZeroGroupUsers {
+    pub(in crate::fixups) group: DefinitionGroup,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

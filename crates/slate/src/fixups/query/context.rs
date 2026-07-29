@@ -10,10 +10,10 @@ use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{Attr, Expr, ExternDecl, ImplItem, Item, Prim, Program, Type, Visibility};
 
 use super::{
-    ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionKind, DefinitionLocation,
-    DefinitionSelector, DefinitionSite, Evidence, EvidenceDetail, ExprSite, NulPosition,
-    PointerMutability, Predicate, Proof, QueryResult, Rejection, RejectionReason, StableExpr,
-    ZeroUsers,
+    ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup, DefinitionKind,
+    DefinitionLocation, DefinitionSelector, DefinitionSite, Evidence, EvidenceDetail, ExprSite,
+    NulPosition, PointerMutability, Predicate, Proof, QueryResult, Rejection, RejectionReason,
+    StableExpr, ZeroGroupUsers, ZeroUsers,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -120,20 +120,38 @@ impl<'snapshot> QueryContext<'snapshot> {
             .unwrap_or_default()
     }
 
+    pub(in crate::fixups) fn definitions_in_group(
+        &self,
+        group: &DefinitionGroup,
+    ) -> Vec<DefinitionSite> {
+        self.definitions
+            .values()
+            .flatten()
+            .filter(|definition| definition.group.as_ref() == Some(group))
+            .cloned()
+            .collect()
+    }
+
+    pub(in crate::fixups) fn definitions_of_kind(
+        &self,
+        kind: DefinitionKind,
+    ) -> Vec<DefinitionSite> {
+        self.definitions
+            .values()
+            .flatten()
+            .filter(|definition| definition.kind == kind)
+            .cloned()
+            .collect()
+    }
+
     pub(in crate::fixups) fn zero_users(
         &self,
         definition: &DefinitionSite,
     ) -> QueryResult<ZeroUsers> {
-        let users = self
-            .symbol_uses
-            .get(&definition.name)
-            .map(|users| {
-                users
-                    .iter()
-                    .filter(|item_index| **item_index != definition.location.item_index())
-                    .count()
-            })
-            .unwrap_or(0);
+        let users = self.definition_users(
+            definition,
+            &BTreeSet::from([definition.location.item_index()]),
+        );
         let complete = self.use_domain_complete && !definition.externally_reachable;
         let evidence = vec![Evidence {
             predicate: Predicate::ZeroUsers,
@@ -166,6 +184,87 @@ impl<'snapshot> QueryContext<'snapshot> {
             },
             evidence,
         ))
+    }
+
+    pub(in crate::fixups) fn zero_group_users(
+        &self,
+        group: &DefinitionGroup,
+    ) -> QueryResult<ZeroGroupUsers> {
+        let definitions = self.definitions_in_group(group);
+        let definition_items = definitions
+            .iter()
+            .map(|definition| definition.location.item_index())
+            .collect::<BTreeSet<_>>();
+        let users = definitions
+            .iter()
+            .map(|definition| self.definition_users(definition, &definition_items))
+            .sum();
+        let complete = !definitions.is_empty()
+            && self.use_domain_complete
+            && definitions
+                .iter()
+                .all(|definition| !definition.externally_reachable);
+        let site = definitions
+            .first()
+            .map(definition_evidence_site)
+            .unwrap_or_else(|| ExprSite {
+                item_index: 0,
+                path: AstPath(Vec::new()),
+                fact_path: AstPath(Vec::new()),
+            });
+        let evidence = vec![Evidence {
+            predicate: Predicate::ZeroGroupUsers,
+            site: site.clone(),
+            detail: EvidenceDetail::GroupUseDomain {
+                group: group.clone(),
+                definitions: definitions.len(),
+                users,
+                complete,
+            },
+        }];
+        if !complete {
+            return Err(Rejection::new(
+                Predicate::ZeroGroupUsers,
+                Some(site),
+                RejectionReason::IncompleteDomain,
+                evidence,
+            ));
+        }
+        if users != 0 {
+            return Err(Rejection::new(
+                Predicate::ZeroGroupUsers,
+                Some(site),
+                RejectionReason::Contradicted,
+                evidence,
+            ));
+        }
+        Ok(Proof::new(
+            ZeroGroupUsers {
+                group: group.clone(),
+            },
+            evidence,
+        ))
+    }
+
+    fn definition_users(
+        &self,
+        definition: &DefinitionSite,
+        definition_items: &BTreeSet<usize>,
+    ) -> usize {
+        definition
+            .symbols
+            .iter()
+            .map(|symbol| {
+                self.symbol_uses
+                    .get(symbol)
+                    .map(|uses| {
+                        uses.iter()
+                            .filter(|item_index| !definition_items.contains(item_index))
+                            .count()
+                    })
+                    .unwrap_or(0)
+            })
+            .sum()
     }
 
     pub(in crate::fixups) fn byte_source(
@@ -606,6 +705,8 @@ fn index_definitions(
                 location: DefinitionLocation::Item(item_index),
                 kind: DefinitionKind::Function,
                 name: function.name.clone(),
+                symbols: vec![function.name.clone()],
+                group: None,
                 externally_reachable: function.vis == Visibility::Pub
                     || function.abi.is_some()
                     || function.attrs.iter().any(exporting_attr),
@@ -620,11 +721,20 @@ fn index_definitions(
         }
         Item::ExternBlock { decls, .. } => {
             for (decl_index, decl) in decls.iter().enumerate() {
-                let (kind, name) = match decl {
-                    ExternDecl::Fn(function) => {
-                        (DefinitionKind::ExternFunction, function.name.clone())
+                let (kind, name, group) = match decl {
+                    ExternDecl::Fn(function) => (
+                        DefinitionKind::ExternFunction,
+                        function.name.clone(),
+                        match function.identity {
+                            FunctionIdentity::Known(known) => {
+                                Some(DefinitionGroup::Header(known.header().into()))
+                            }
+                            FunctionIdentity::Unknown => None,
+                        },
+                    ),
+                    ExternDecl::Static { name, .. } => {
+                        (DefinitionKind::ExternStatic, name.clone(), None)
                     }
-                    ExternDecl::Static { name, .. } => (DefinitionKind::ExternStatic, name.clone()),
                 };
                 let site = DefinitionSite {
                     location: DefinitionLocation::ExternDecl {
@@ -632,7 +742,9 @@ fn index_definitions(
                         decl_index,
                     },
                     kind,
+                    symbols: vec![name.clone()],
                     name,
+                    group,
                     externally_reachable: false,
                 };
                 definitions
@@ -643,6 +755,24 @@ fn index_definitions(
                     .or_default()
                     .push(site);
             }
+        }
+        Item::SupportModule(module) => {
+            let name = module.name.as_str().to_owned();
+            let site = DefinitionSite {
+                location: DefinitionLocation::Item(item_index),
+                kind: DefinitionKind::SupportModule,
+                name: name.clone(),
+                symbols: module.exports.iter().map(qualified_path).collect(),
+                group: Some(DefinitionGroup::SupportModule(name)),
+                externally_reachable: false,
+            };
+            definitions
+                .entry(DefinitionSelector {
+                    kind: site.kind,
+                    name: site.name.clone(),
+                })
+                .or_default()
+                .push(site);
         }
         _ => {}
     }
@@ -691,6 +821,7 @@ fn index_item_uses(item: &Item, item_index: usize, uses: &mut BTreeMap<String, V
         | Item::Enum(_)
         | Item::Record(_)
         | Item::Struct(_)
+        | Item::SupportModule(_)
         | Item::Raw(_) => {}
     }
 }
@@ -709,15 +840,20 @@ fn index_expr_use(expr: &Expr, item_index: usize, uses: &mut BTreeMap<String, Ve
             .entry(name.as_str().to_owned())
             .or_default()
             .push(item_index),
-        Expr::Path(path) => {
-            for segment in &path.segments {
-                uses.entry(segment.as_str().to_owned())
-                    .or_default()
-                    .push(item_index);
-            }
-        }
+        Expr::Path(path) => uses
+            .entry(qualified_path(path))
+            .or_default()
+            .push(item_index),
         _ => {}
     }
+}
+
+fn qualified_path(path: &crate::rust_ast::Path) -> String {
+    path.segments
+        .iter()
+        .map(crate::rust_ast::Ident::as_str)
+        .collect::<Vec<_>>()
+        .join("::")
 }
 
 fn definition_evidence_site(definition: &DefinitionSite) -> ExprSite {

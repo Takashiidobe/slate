@@ -419,7 +419,7 @@ pub(super) fn evidence_trace_fact(evidence: &Evidence) -> TraceFact {
     )
 }
 
-fn predicate_name(predicate: Predicate) -> &'static str {
+pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
     match predicate {
         Predicate::Call => "call",
         Predicate::ByteSource => "byte_source",
@@ -430,10 +430,11 @@ fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::PrefixContains => "prefix_contains",
         Predicate::MovablePure => "movable_pure",
         Predicate::ZeroUsers => "zero_users",
+        Predicate::ZeroGroupUsers => "zero_group_users",
     }
 }
 
-fn rejection_name(rejection: RejectionReason) -> &'static str {
+pub(super) fn rejection_name(rejection: RejectionReason) -> &'static str {
     match rejection {
         RejectionReason::MissingEvidence => "missing_evidence",
         RejectionReason::Contradicted => "contradicted",
@@ -472,6 +473,12 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             users,
             complete,
         } => format!("name={name};users={users};complete={complete}"),
+        EvidenceDetail::GroupUseDomain {
+            group,
+            definitions,
+            users,
+            complete,
+        } => format!("group={group:?};definitions={definitions};users={users};complete={complete}"),
     }
 }
 

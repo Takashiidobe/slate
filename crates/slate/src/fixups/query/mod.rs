@@ -9,14 +9,15 @@ mod views;
 
 pub(in crate::fixups) use context::{CallRecord, CallTarget, QueryContext};
 pub(in crate::fixups) use definition::{
-    DefinitionApplyReport, DefinitionPlan, DefinitionPlanBuilder, DefinitionPlanDiagnostic,
-    DefinitionRule, DeleteDefinition,
+    DefinitionApplyReport, DefinitionCaseContext, DefinitionPlan, DefinitionPlanBuilder,
+    DefinitionPlanDiagnostic, DefinitionRecipe, DefinitionRule, delete_definition, replace_body,
 };
 pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
 };
 pub(in crate::fixups) use recipe::{
-    ExprRecipe, SearchIndex, byte_position, known_index, pointer_at_or_null,
+    ExprRecipe, FunctionBodyRecipe, SearchIndex, byte_position, known_index, memchr_fallback_body,
+    pointer_at_or_null,
 };
 pub(in crate::fixups) use rewrite::{
     ApplyReport, CaseRejection, ExprPlan, ExprPlanBuilder, ExprRule, PlanDiagnostic, ReplaceExpr,
@@ -24,7 +25,7 @@ pub(in crate::fixups) use rewrite::{
 };
 pub(in crate::fixups) use rule::{CallArg, CallCaseContext, CallRule};
 pub(in crate::fixups) use views::{
-    ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionKind, DefinitionLocation,
-    DefinitionSelector, DefinitionSite, ExprSite, NulPosition, PointerMutability, StableExpr,
-    ZeroUsers,
+    ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup, DefinitionKind,
+    DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite, NulPosition,
+    PointerMutability, StableExpr, ZeroGroupUsers, ZeroUsers,
 };

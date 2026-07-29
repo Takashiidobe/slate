@@ -553,19 +553,11 @@ fn apply_with_logger(
         });
     });
     step!(program, Pass::MemchrPrelude, {
-        run_once_items(&mut program, |_, f| {
-            let enabled = f.name == "__slate_memchr" && f.params.len() == 3;
-            let mut fixup =
-                rewrite::memchr_prelude::MemchrPrelude::new(f.name.clone(), enabled, logger);
-            run_once(&mut f.body, &mut fixup)
-        });
-    });
-    step!(program, Pass::MemchrPreludePruneUnusedHelper, {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
             let mut builder = query::DefinitionPlanBuilder::new();
-            builder.add_rule(&query, &query::rules::memchr::unused_helper());
+            builder.add_rule(&query, &query::rules::memchr::helper());
             builder.finish()
         };
         plan.apply(&mut program, logger).changed
@@ -703,12 +695,6 @@ fn apply_with_logger(
             run_once(&mut f.body, &mut fixup)
         });
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-    step!(program, Pass::PruneUnusedExterns, {
-        run_once_program(&mut program, |program| {
-            rewrite::prune_unused_externs::PruneUnusedExterns::new(&facts, logger).fixup(program)
-        });
-    });
     step!(program, Pass::UnusedItems, {
         run_once_program(&mut program, |program| {
             rewrite::unused_items::UnusedItems::new(logger).fixup(program)
@@ -739,6 +725,17 @@ fn apply_with_logger(
                 run_once(&mut f.body, &mut fixup);
             }
         }
+    });
+    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    step!(program, Pass::PruneUnusedDefinitions, {
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::DefinitionPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::externs::unused_known_declarations());
+            builder.add_rule(&query, &query::rules::support::unused_numeric_parse());
+            builder.finish()
+        };
+        plan.apply(&mut program, logger).changed
     });
     let _ = debug_done;
     program.clone()

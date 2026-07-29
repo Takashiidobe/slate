@@ -2,7 +2,10 @@ use crate::fixups::query::{
     ByteRepresentation, ByteSource, NulPosition, PointerMutability, Predicate, QueryContext,
     Rejection, RejectionReason, StableExpr,
 };
-use crate::rust_ast::{BinOp, Block, CLibType, Expr, Ident, Prim, RustValue, Type, UnaryOp};
+use crate::rust_ast::{
+    BinOp, Block, CLibType, Expr, ExprMatchArm, Ident, IndentStmt, Pattern, Prim, RustValue, Stmt,
+    Type, UnaryOp,
+};
 
 pub(in crate::fixups) struct ExprRecipe<'snapshot> {
     source: ByteSource<'snapshot>,
@@ -12,6 +15,10 @@ pub(in crate::fixups) struct ExprRecipe<'snapshot> {
 pub(in crate::fixups) enum SearchIndex {
     Known(NulPosition),
     Position(StableExpr),
+}
+
+pub(in crate::fixups) struct FunctionBodyRecipe {
+    body: Vec<IndentStmt>,
 }
 
 pub(in crate::fixups) fn pointer_at_or_null(
@@ -27,6 +34,56 @@ pub(in crate::fixups) fn known_index(position: NulPosition) -> SearchIndex {
 
 pub(in crate::fixups) fn byte_position(needle: StableExpr) -> SearchIndex {
     SearchIndex::Position(needle)
+}
+
+pub(in crate::fixups) fn memchr_fallback_body() -> FunctionBodyRecipe {
+    FunctionBodyRecipe {
+        body: vec![
+            indent(let_stmt(
+                "b",
+                Some(Type::Prim(Prim::U8)),
+                cast(var("c"), Type::Prim(Prim::U8)),
+            )),
+            indent(let_stmt(
+                "bytes",
+                Some(ptr(false, Type::Prim(Prim::U8))),
+                cast(var("s"), ptr(false, Type::Prim(Prim::U8))),
+            )),
+            indent(let_stmt(
+                "haystack",
+                None,
+                unsafe_expr(call(
+                    path(["std", "slice", "from_raw_parts"]),
+                    vec![var("bytes"), var("n")],
+                )),
+            )),
+            indent(Stmt::Return(Some(Expr::Match {
+                expr: Box::new(helper_position()),
+                arms: vec![
+                    ExprMatchArm {
+                        pattern: Pattern::TupleStruct {
+                            name: Ident::from("Some"),
+                            fields: vec![Pattern::Binding(Ident::from("i"))],
+                        },
+                        value: unsafe_expr(cast(
+                            method(var("bytes"), "add", vec![var("i")]),
+                            void_ptr(true),
+                        )),
+                    },
+                    ExprMatchArm {
+                        pattern: Pattern::Binding(Ident::from("None")),
+                        value: null_mut(),
+                    },
+                ],
+            }))),
+        ],
+    }
+}
+
+impl FunctionBodyRecipe {
+    pub(super) fn lower(self) -> Vec<IndentStmt> {
+        self.body
+    }
 }
 
 impl ExprRecipe<'_> {
@@ -176,4 +233,35 @@ fn void_ptr(mutable: bool) -> Type {
 
 fn null_mut() -> Expr {
     call(path(["std", "ptr", "null_mut"]), Vec::new())
+}
+
+fn helper_position() -> Expr {
+    method(
+        method(var("haystack"), "iter", Vec::new()),
+        "position",
+        vec![Expr::Closure {
+            params: vec![Ident::from("x")],
+            body: Box::new(Expr::Binary {
+                op: BinOp::Eq,
+                lhs: Box::new(Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(var("x")),
+                }),
+                rhs: Box::new(var("b")),
+            }),
+        }],
+    )
+}
+
+fn indent(stmt: Stmt) -> IndentStmt {
+    IndentStmt { depth: 1, stmt }
+}
+
+fn let_stmt(name: &str, ty: Option<Type>, init: Expr) -> Stmt {
+    Stmt::Let {
+        name: name.into(),
+        mutable: false,
+        ty,
+        init: Some(init),
+    }
 }
