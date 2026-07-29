@@ -261,7 +261,13 @@ impl DirectiveRecord {
             && (is_pack_pragma(&self.raw_payload)
                 || is_visibility_pragma(&self.raw_payload)
                 || is_weak_pragma(&self.raw_payload)
-                || is_redefine_extname_pragma(&self.raw_payload))
+                || is_redefine_extname_pragma(&self.raw_payload)
+                || is_macro_state_pragma(&self.raw_payload)
+                || is_poison_pragma(&self.raw_payload))
+    }
+
+    pub fn is_poison_pragma(&self) -> bool {
+        self.name == DirectiveName::Pragma && is_poison_pragma(&self.raw_payload)
     }
 }
 
@@ -341,6 +347,32 @@ fn is_redefine_extname_pragma(payload: &str) -> bool {
     }
     let parts: Vec<_> = rest.split_whitespace().collect();
     matches!(parts.as_slice(), [name, target] if c_identifier(name) && c_identifier(target))
+}
+
+fn is_macro_state_pragma(payload: &str) -> bool {
+    ["push_macro", "pop_macro"].iter().any(|name| {
+        payload
+            .trim()
+            .strip_prefix(name)
+            .map(str::trim_start)
+            .and_then(|rest| rest.strip_prefix('('))
+            .and_then(|rest| rest.strip_suffix(')'))
+            .map(str::trim)
+            .and_then(|name| name.strip_prefix('"'))
+            .and_then(|name| name.strip_suffix('"'))
+            .is_some_and(c_identifier)
+    })
+}
+
+fn is_poison_pragma(payload: &str) -> bool {
+    let Some(rest) = payload.trim().strip_prefix("GCC poison") else {
+        return false;
+    };
+    if !rest.starts_with(char::is_whitespace) {
+        return false;
+    }
+    let names: Vec<_> = rest.split_whitespace().collect();
+    !names.is_empty() && names.into_iter().all(c_identifier)
 }
 
 fn pack_alignment(value: &str) -> bool {

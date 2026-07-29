@@ -121,6 +121,7 @@ attributes, `noreturn` (both spellings), inline `asm`, computed goto,
 GNU `#pragma pack` record layout with nested `push`/`pop`,
 GNU `#pragma GCC visibility` with nested `push`/`pop`,
 GNU `#pragma weak` aliases and `#pragma redefine_extname`,
+GNU `#pragma push_macro`/`pop_macro` state and `#pragma GCC poison`,
 GNU `weakref("target")` calls to local and external targets,
 `__builtin_assume`/`__builtin_expect` and other control-flow builtins, target/
 frame/stack builtins, vector extensions (`cir.vec.*`), and the byte-wise memory

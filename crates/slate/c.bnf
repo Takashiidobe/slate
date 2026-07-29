@@ -21,11 +21,13 @@
 <visibility> ::= "default" | "hidden" | "protected" | "internal" ;
 <weak_directive> ::= "#pragma weak " <ident> | "#pragma weak " <ident> "=" <ident> | "#pragma weak " <ident> " = " <ident> ;
 <redefine_extname_directive> ::= "#pragma redefine_extname " <ident> " " <ident> ;
+<macro_state_directive> ::= "#pragma push_macro(\"" <ident> "\")" | "#pragma pop_macro(\"" <ident> "\")" ;
+<poison_directive> ::= "#pragma GCC poison " <ident> ;
 
 # ----- top-level declarations -----
 
 <decl_list> ::= <decl> <decl_list> | <decl> ;
-<decl> ::= <typedef_decl> | <enum_decl> | <struct_decl> | <union_decl> | <global_decl> | <weakref_decl> | <pack_directive> | <visibility_directive> | <weak_directive> | <redefine_extname_directive> ;
+<decl> ::= <typedef_decl> | <enum_decl> | <struct_decl> | <union_decl> | <global_decl> | <weakref_decl> | <pack_directive> | <visibility_directive> | <weak_directive> | <redefine_extname_directive> | <macro_state_directive> | <poison_directive> ;
 
 <typedef_decl> ::= "typedef" <type> <ident> ";" ;
 <weakref_decl> ::= "static" <ret_type> <ident> "(" <param_list> ")" "__attribute__((weakref(" <string_literal> ")));" ;
@@ -48,7 +50,7 @@
 
 # ----- functions -----
 
-<function_list> ::= <function> <function_list> | <visibility_directive> <function_list> | <weak_directive> <function_list> | <redefine_extname_directive> <function_list> | <function> ;
+<function_list> ::= <function> <function_list> | <visibility_directive> <function_list> | <weak_directive> <function_list> | <redefine_extname_directive> <function_list> | <macro_state_directive> <function_list> | <poison_directive> <function_list> | <function> ;
 <function> ::= <ret_type> <ident> "(" <param_list> ")" "{" <stmt_list> "}" ;
 <ret_type> ::= <type> | "void" ;
 <param_list> ::= "void" | <params> ;

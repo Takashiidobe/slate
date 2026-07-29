@@ -587,6 +587,60 @@ fn conditional_symbol_pragmas_remain_unsupported_only_in_multi_config_translatio
 }
 
 #[test]
+fn conditional_macro_state_remains_unsupported_only_in_multi_config_translation() {
+    let single = translate("unsupported_conditional_macro_state.c");
+    assert!(!single.contains("compile_error!"));
+
+    let active_single = translate_with_clang_args(
+        "unsupported_conditional_macro_state.c",
+        Some("-DNESTED_MACRO_STATE"),
+    );
+    assert!(!active_single.contains("compile_error!"));
+
+    let rust = translate_directives("unsupported_conditional_macro_state.c");
+    assert!(rust.contains(
+        "#[cfg(feature = \"nested_macro_state\")]\ncompile_error!(\"unsupported semantic directive #pragma at line 4: push_macro(\\\"MACRO_STATE_VALUE\\\")\");"
+    ));
+    assert!(
+        compile_with_cfgs("unsupported_conditional_macro_state_inactive", &rust, &[])
+            .status
+            .success()
+    );
+    let active = compile_with_cfgs(
+        "unsupported_conditional_macro_state_active",
+        &rust,
+        &["nested_macro_state"],
+    );
+    assert!(!active.status.success());
+}
+
+#[test]
+fn unused_conditional_poison_needs_no_generated_error() {
+    let rust = translate_directives("conditional_poison_unused.c");
+    assert!(!rust.contains("compile_error!"));
+    assert!(
+        compile_with_cfgs("conditional_poison_unused_inactive", &rust, &[])
+            .status
+            .success()
+    );
+    assert!(
+        compile_with_cfgs("conditional_poison_unused_active", &rust, &["strict_names"],)
+            .status
+            .success()
+    );
+}
+
+#[test]
+fn poison_use_surfaces_the_clang_frontend_error() {
+    let error = translate_err_with_clang_args("reject/poison_used.c", None);
+
+    assert!(error.contains("clang -emit-cir failed"));
+    assert!(error.contains("attempt to use a poisoned identifier"));
+    assert!(error.contains("forbidden_identifier"));
+    assert!(!error.contains("unsupported semantic directive"));
+}
+
+#[test]
 fn unsupported_directive_with_unmappable_condition_stops_translation() {
     let err = translate_directives_err("reject/unsupported_unmapped.c");
 

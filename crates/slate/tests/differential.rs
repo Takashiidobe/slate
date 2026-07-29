@@ -135,6 +135,21 @@ fn gnu_symbol_pragmas_preserve_alias_and_external_names() {
 }
 
 #[test]
+fn gnu_macro_pragmas_are_consumed_by_clang() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-gnu-macro-pragmas");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("gnu_macro_pragmas.c");
+    let generated = tmp.join("gnu_macro_pragmas.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate GNU macro pragmas fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated GNU macro pragma Rust");
+
+    assert!(rust.contains("static mut macro_inner: i32 = 11;"));
+    assert!(rust.contains("static mut macro_outer: i32 = 7;"));
+    assert!(!rust.contains("poisoned_but_unused"));
+}
+
+#[test]
 fn global_alias_emits_unsupported_diagnostic() {
     let c_src = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures.unsupported")
