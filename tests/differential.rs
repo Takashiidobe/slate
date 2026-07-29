@@ -1922,7 +1922,7 @@ fn string_libc_calls_use_lifted_string_operations() {
 }
 
 #[test]
-fn memchr_calls_use_iter_position_when_source_is_iterable() {
+fn memchr_calls_rewrite_only_with_proven_extent_and_nul_range() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memchr-helper");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
     let c_src = fixtures_dir().join("mem_memchr.c");
@@ -1930,38 +1930,32 @@ fn memchr_calls_use_iter_position_when_source_is_iterable() {
     support::translate(&c_src, &generated).expect("translate mem_memchr fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated mem_memchr rust");
 
-    assert!(rust.contains("buf.as_slice().iter().position("));
-    assert!(rust.contains("(*__slate_byte as u8) == ((_v1 as i32) as u8)"));
-    assert!(rust.contains("(*__slate_byte as u8) == ((_v4 as i32) as u8)"));
     assert!(rust.contains("let hit = buf.as_slice().iter().position("));
+    assert!(rust.contains("(*__slate_byte as u8) == ((needle as i32) as u8)"));
     assert!(rust.contains("let miss = buf.as_slice().iter().position("));
-    assert!(rust.contains("let nul = Some(3);"));
-    assert!(rust.contains("let _v11: i64 = hit.unwrap() as i64;"));
-    assert!(rust.contains("let _v14: bool = miss.is_none();"));
-    assert!(rust.contains("println!(\"{} {} {}\", _v11, _v14 as i32, nul.unwrap() as i64);"));
-    for temp in ["let _v2:", "let _v5:", "let _v7:", "let _v8:"] {
-        assert!(!rust.contains(temp), "{temp} survived in:\n{rust}");
+    assert!(rust.contains("let const_hit = cbuf.as_slice().iter().position("));
+    assert!(rust.contains("let nul_after = Some(3);"));
+    assert!(rust.contains("fn __slate_memchr("));
+    assert!(rust.contains("std::slice::from_raw_parts(bytes, n)"));
+    assert_eq!(rust.matches("__slate_memchr(").count(), 6);
+    for fallback in [
+        "let zero: *mut u8",
+        "let nul_equal: *mut i8",
+        "let nul_before: *mut i8",
+        "let partial: *mut u8",
+        "let offset: *mut u8",
+    ] {
+        assert!(rust.contains(fallback), "{fallback} missing from:\n{rust}");
     }
-    assert!(!rust.contains("let _v16: i64 = _v9.unwrap() as i64;"));
-    assert!(!rust.contains("let _v3 = buf.as_slice().iter().position("));
-    assert!(!rust.contains("let _v6 = buf.as_slice().iter().position("));
-    assert!(!rust.contains("let _v9 = Some(3);"));
     assert!(!rust.contains("let mut hit"));
     assert!(!rust.contains("let mut miss"));
-    assert!(!rust.contains("let mut nul"));
-    assert!(!rust.contains("let word: &core::ffi::CStr"));
+    assert!(!rust.contains("let mut nul_after"));
     assert!(!rust.contains("let mut word: [i8; 4]"));
     assert!(!rust.contains("word = [97, 98, 99, 0];"));
     assert!(!rust.contains("map_or(std::ptr::null_mut()"));
-    assert!(!rust.contains(".add(__slate_index)"));
-    assert!(!rust.contains(".offset_from("));
-    assert!(!rust.contains("hit = _v3 as *mut u8"));
-    assert!(!rust.contains("miss = _v6 as *mut u8"));
-    assert!(!rust.contains("nul = _v9 as *mut i8"));
+    assert!(rust.contains("partial.offset_from("));
+    assert!(rust.contains("offset.offset_from("));
     assert!(!rust.contains("miss == std::ptr::null_mut()"));
-    assert!(!rust.contains("fn __slate_memchr("));
-    assert!(!rust.contains("from_raw_parts"));
-    assert!(!rust.contains("while i < n"));
 }
 
 #[test]
