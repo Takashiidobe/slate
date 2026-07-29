@@ -27,7 +27,7 @@ pub struct Record {
     pub comments: Vec<String>,
     pub kind: RecordKind,
     pub fields: Vec<Decl>,
-    pub packed: bool,
+    pub packed: Option<u32>,
     pub align: Option<u32>,
 }
 
@@ -252,12 +252,21 @@ struct CallFact {
 struct PluginEvents {
     macros: HashMap<usize, MacroExpansion>,
     calls: HashMap<usize, CallFact>,
+    pack_attributes: Vec<PackAttribute>,
 }
 
 #[derive(Debug)]
 struct MacroExpansion {
     name: String,
     headers: BTreeSet<String>,
+}
+
+#[derive(Debug)]
+struct PackAttribute {
+    name: String,
+    file: String,
+    offset: usize,
+    alignment: u32,
 }
 
 fn clang() -> String {
@@ -293,16 +302,40 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
             ("macro", json)
         } else if let Some(json) = line.strip_prefix("FUNCTION_PROVENANCE ") {
             ("function", json)
+        } else if let Some(json) = line.strip_prefix("RECORD_PACKING ") {
+            ("record", json)
         } else {
             continue;
         };
         let Ok(event) = serde_json::from_str::<Value>(json) else {
             continue;
         };
-        let (Some(name), Some(offset)) = (
-            event.get("name").and_then(Value::as_str),
-            event.get("offset").and_then(Value::as_u64),
-        ) else {
+        let Some(offset) = event.get("offset").and_then(Value::as_u64) else {
+            continue;
+        };
+        if kind == "record" {
+            let (Some(name), Some(file), Some(alignment_bits)) = (
+                event.get("name").and_then(Value::as_str),
+                event.get("file").and_then(Value::as_str),
+                event.get("alignment_bits").and_then(Value::as_u64),
+            ) else {
+                continue;
+            };
+            let Ok(alignment) = u32::try_from(alignment_bits / 8) else {
+                continue;
+            };
+            if alignment == 0 || alignment_bits % 8 != 0 {
+                continue;
+            }
+            out.pack_attributes.push(PackAttribute {
+                name: name.to_string(),
+                file: file.to_string(),
+                offset: offset as usize,
+                alignment,
+            });
+            continue;
+        }
+        let Some(name) = event.get("name").and_then(Value::as_str) else {
             continue;
         };
         if kind == "macro" {
@@ -440,7 +473,13 @@ fn parse_json_with_record_roots(
     let mut records = Vec::new();
     let mut functions = Vec::new();
     collect_enums(&root, source_file, record_roots, &enum_typedefs, &mut enums);
-    collect_records(&root, source_file, record_roots, &mut records);
+    collect_records(
+        &root,
+        source_file,
+        record_roots,
+        &plugin_events.pack_attributes,
+        &mut records,
+    );
     let source_text = (!source_file.is_empty())
         .then(|| std::fs::read_to_string(source_file).ok())
         .flatten();
@@ -554,6 +593,7 @@ fn collect_records(
     node: &Value,
     source_file: &str,
     record_roots: &[PathBuf],
+    pack_attributes: &[PackAttribute],
     out: &mut Vec<Record>,
 ) {
     if kind(node) == Some("RecordDecl")
@@ -562,7 +602,7 @@ fn collect_records(
             .get("completeDefinition")
             .and_then(Value::as_bool)
             .unwrap_or(false)
-        && let Some(record) = extract_record(node, None)
+        && let Some(record) = extract_record(node, None, source_file, pack_attributes)
     {
         out.push(record);
     }
@@ -581,15 +621,20 @@ fn collect_records(
                 .is_empty()
             && let Some(record) = next_anonymous_field_name(&kids, i + 1)
                 .or_else(|| next_anonymous_typedef_name(&kids, i + 1))
-                .and_then(|name| extract_record(child, Some(name)))
+                .and_then(|name| extract_record(child, Some(name), source_file, pack_attributes))
         {
             out.push(record);
         }
-        collect_records(child, source_file, record_roots, out);
+        collect_records(child, source_file, record_roots, pack_attributes, out);
     }
 }
 
-fn extract_record(node: &Value, name_override: Option<String>) -> Option<Record> {
+fn extract_record(
+    node: &Value,
+    name_override: Option<String>,
+    source_file: &str,
+    pack_attributes: &[PackAttribute],
+) -> Option<Record> {
     let name = name_override.or_else(|| node.get("name")?.as_str().map(str::to_string))?;
     if name.is_empty() {
         return None;
@@ -628,7 +673,7 @@ fn extract_record(node: &Value, name_override: Option<String>) -> Option<Record>
             })
         })
         .collect();
-    let (packed, align) = record_layout_attrs(node);
+    let (packed, align) = record_layout_attrs(node, source_file, pack_attributes);
     Some(Record {
         name,
         comments: attached_comment(node),
@@ -639,12 +684,16 @@ fn extract_record(node: &Value, name_override: Option<String>) -> Option<Record>
     })
 }
 
-fn record_layout_attrs(node: &Value) -> (bool, Option<u32>) {
-    let mut packed = false;
+fn record_layout_attrs(
+    node: &Value,
+    source_file: &str,
+    pack_attributes: &[PackAttribute],
+) -> (Option<u32>, Option<u32>) {
+    let mut packed = record_packing(node, source_file, pack_attributes);
     let mut align = None;
     for child in children(node) {
         match kind(child) {
-            Some("PackedAttr") => packed = true,
+            Some("PackedAttr") => packed = Some(1),
             Some("AlignedAttr") => {
                 if let Some(n) = constant_expr_value(child) {
                     align = Some(align.unwrap_or(0).max(n));
@@ -663,6 +712,41 @@ fn record_layout_attrs(node: &Value) -> (bool, Option<u32>) {
         }
     }
     (packed, align)
+}
+
+fn record_packing(
+    node: &Value,
+    source_file: &str,
+    pack_attributes: &[PackAttribute],
+) -> Option<u32> {
+    let name = node.get("name").and_then(Value::as_str).unwrap_or("");
+    let offset = source_offset(node.get("loc")?)?;
+    let files = source_files(node);
+    pack_attributes
+        .iter()
+        .find(|attribute| {
+            attribute.name == name
+                && attribute.offset == offset
+                && if files.is_empty() {
+                    same_source_file(&attribute.file, source_file)
+                } else {
+                    files
+                        .iter()
+                        .any(|file| same_source_file(&attribute.file, file))
+                }
+        })
+        .map(|attribute| attribute.alignment)
+}
+
+fn source_offset(node: &Value) -> Option<usize> {
+    node.get("expansionLoc")
+        .and_then(source_offset)
+        .or_else(|| {
+            node.get("offset")
+                .and_then(Value::as_u64)
+                .map(|n| n as usize)
+        })
+        .or_else(|| node.get("spellingLoc").and_then(source_offset))
 }
 
 fn constant_expr_value(node: &Value) -> Option<u32> {

@@ -270,8 +270,8 @@ impl<W: Write> Codegen<W> {
             self.comment(comment, 0)?;
         }
         let mut repr = vec![Repr::C];
-        if r.packed {
-            repr.push(Repr::Packed);
+        if let Some(n) = r.packed {
+            repr.push(Repr::Packed(n));
         }
         if let Some(n) = r.align {
             repr.push(Repr::Align(n));
@@ -397,7 +397,8 @@ impl<W: Write> Codegen<W> {
                     match r {
                         Repr::C => self.out.write_str("C")?,
                         Repr::Align(n) => write!(self.out, "align({n})")?,
-                        Repr::Packed => self.out.write_str("packed")?,
+                        Repr::Packed(1) => self.out.write_str("packed")?,
+                        Repr::Packed(n) => write!(self.out, "packed({n})")?,
                     }
                 }
                 self.out.write_char(')')

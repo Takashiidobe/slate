@@ -449,10 +449,12 @@ fn lower_record_def(
         .collect();
     let name = sanitize_ident(&record.name).into_string();
 
-    if record.packed
+    if let Some(packed) = record.packed
         && let Some(align) = record.align
     {
-        return lower_packed_aligned_wrapper(&name, fields, is_union, vis, field_vis, align);
+        return lower_packed_aligned_wrapper(
+            &name, fields, is_union, vis, field_vis, packed, align,
+        );
     }
 
     vec![Item::Record(RecordDef {
@@ -478,6 +480,7 @@ fn lower_packed_aligned_wrapper(
     is_union: bool,
     vis: Visibility,
     field_vis: Visibility,
+    packed: u32,
     align: u32,
 ) -> Vec<Item> {
     let inner_name = packed_aligned_inner_name(name);
@@ -489,7 +492,7 @@ fn lower_packed_aligned_wrapper(
         allow_non_camel_case: false,
         name: inner_name.clone(),
         fields,
-        packed: true,
+        packed: Some(packed),
         align: None,
     });
     let outer = Item::Struct(StructDef {
@@ -550,7 +553,7 @@ fn lower_packed_aligned_wrapper(
 
 fn record_lit_name(record: &crate::c_ast::Record) -> String {
     let name = sanitize_ident(&record.name).into_string();
-    if record.packed && record.align.is_some() {
+    if record.packed.is_some() && record.align.is_some() {
         packed_aligned_inner_name(&name)
     } else {
         name
@@ -558,7 +561,7 @@ fn record_lit_name(record: &crate::c_ast::Record) -> String {
 }
 
 fn wrap_record_lit(record: &crate::c_ast::Record, lit: Expr) -> Expr {
-    if record.packed && record.align.is_some() {
+    if record.packed.is_some() && record.align.is_some() {
         Expr::TupleStructLit {
             name: sanitize_ident(&record.name).into_string(),
             fields: vec![lit],
@@ -2023,7 +2026,7 @@ impl<'a> Lowerer<'a> {
             LayoutQuery::Size(_) | LayoutQuery::Align(_) => None,
             LayoutQuery::Offset { record, field } => {
                 let source_record = self.records.get(&sanitize_ident(record).into_string())?;
-                if source_record.packed && source_record.align.is_some() {
+                if source_record.packed.is_some() && source_record.align.is_some() {
                     return None;
                 }
                 let record = sanitize_ident(record).into_string();
@@ -2302,7 +2305,9 @@ fn record_layout(name: &str, records: &BTreeMap<String, crate::c_ast::Record>) -
             let mut offset = 0;
             for field in &record.fields {
                 let field_layout = c_layout(&field.ty, records)?;
-                let field_align = if record.packed { 1 } else { field_layout.align };
+                let field_align = record.packed.map_or(field_layout.align, |packed| {
+                    field_layout.align.min(u64::from(packed))
+                });
                 offset = align_to(offset, field_align);
                 offset += field_layout.size;
             }
@@ -2330,13 +2335,16 @@ fn record_natural_align(
     record: &crate::c_ast::Record,
     records: &BTreeMap<String, crate::c_ast::Record>,
 ) -> Option<u64> {
-    if record.packed {
-        return Some(1);
-    }
     record
         .fields
         .iter()
-        .map(|field| c_layout(&field.ty, records).map(|layout| layout.align))
+        .map(|field| {
+            c_layout(&field.ty, records).map(|layout| {
+                record
+                    .packed
+                    .map_or(layout.align, |packed| layout.align.min(u64::from(packed)))
+            })
+        })
         .max()
         .unwrap_or(Some(1))
 }
@@ -2353,7 +2361,9 @@ fn record_field_offset(
     let mut offset = 0;
     for field in &record.fields {
         let field_layout = c_layout(&field.ty, records)?;
-        let field_align = if record.packed { 1 } else { field_layout.align };
+        let field_align = record.packed.map_or(field_layout.align, |packed| {
+            field_layout.align.min(u64::from(packed))
+        });
         offset = align_to(offset, field_align);
         if field.name == field_name {
             return Some(offset);
@@ -9268,7 +9278,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
                 RecordKind::Struct
             },
             fields,
-            packed: false,
+            packed: None,
             align: None,
         });
     }
@@ -9372,7 +9382,7 @@ fn standard_record_def(name: &str) -> RecordDef {
         allow_non_camel_case: true,
         name: name.to_string(),
         fields,
-        packed: false,
+        packed: None,
         align: None,
     }
 }

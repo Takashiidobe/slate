@@ -75,7 +75,7 @@ fn project_translation_rejects_active_unsupported_directives() {
     assert!(!output.status.success());
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(stderr.contains("unsupported semantic directive #pragma at line 1"));
-    assert!(stderr.contains("pack(push, 1)"));
+    assert!(stderr.contains("STDC FENV_ACCESS ON"));
 }
 
 fn assert_binary_sections(binary: &Path, sections: &[&str]) {

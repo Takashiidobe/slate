@@ -472,10 +472,19 @@ fn semantic_and_unknown_pragmas_remain_explicitly_unsupported() {
 }
 
 #[test]
-fn active_unsupported_directives_stop_single_config_translation() {
-    let pragma = translate_err_with_clang_args("reject/unsupported_pragma.c", None);
-    assert!(pragma.contains("unsupported semantic directive #pragma at line 1"));
-    assert!(pragma.contains("pack(push, 1)"));
+fn pack_pragmas_are_consumed_in_single_config_translation() {
+    let pragma = translate("reject/unsupported_pragma.c");
+    assert!(
+        compile_and_run("single_config_pack_pragma", &pragma)
+            .status
+            .success()
+    );
+    let pragma = translate_directives("reject/unsupported_pragma.c");
+    assert!(
+        compile_and_run("unconditional_directive_pack_pragma", &pragma)
+            .status
+            .success()
+    );
 
     let unknown = translate_err_with_clang_args("reject/unsupported_unknown.c", None);
     assert!(unknown.contains("unsupported semantic directive #slate_unknown at line 1"));
@@ -483,13 +492,13 @@ fn active_unsupported_directives_stop_single_config_translation() {
 }
 
 #[test]
-fn conditional_unsupported_directive_fails_only_in_selected_configurations() {
+fn conditional_pack_remains_unsupported_only_in_multi_config_translation() {
     let single = translate("unsupported_conditional.c");
     assert!(!single.contains("compile_error!"));
 
     let active_single =
-        translate_err_with_clang_args("unsupported_conditional.c", Some("-DPACKED_LAYOUT"));
-    assert!(active_single.contains("unsupported semantic directive #pragma at line 2"));
+        translate_with_clang_args("unsupported_conditional.c", Some("-DPACKED_LAYOUT"));
+    assert!(!active_single.contains("compile_error!"));
 
     let rust = translate_directives("unsupported_conditional.c");
     assert!(rust.contains(

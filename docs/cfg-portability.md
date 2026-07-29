@@ -67,20 +67,24 @@ a pragma was unknown to the compiler and build configuration for which the C
 source was written. A recognized pragma can affect ABI or evaluation even when
 the configured Clang ignores the same spelling. Slate therefore uses an
 allowlist: exact `#pragma once` is no-output, diagnostic controls retain the
-diagnostic-only disposition, and every other pragma remains unsupported until
-its effect is recovered.
+diagnostic-only disposition, record packing is recovered from Clang in a
+concrete configuration, and every other pragma remains unsupported until its
+effect is recovered.
 
 | Family | Examples | Current disposition | Follow-up |
 | --- | --- | --- | --- |
 | Include guard | `once` | no output | supported |
 | Diagnostic controls | `GCC diagnostic`, `clang diagnostic`, MSVC `warning(...)` | diagnostic only | warning handling is covered by `slate-9msj.7` |
 | Standard floating point | `STDC FENV_ACCESS`, `STDC FP_CONTRACT`, `STDC CX_LIMITED_RANGE` | unsupported semantic | `slate-9msj.10` |
-| Record packing | `pack(push, n)`, `pack(pop)`, `pack(n)` | unsupported semantic | `slate-9msj.11` |
+| Record packing | `pack(push, n)`, `pack(pop)`, `pack(n)` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.7` |
 | Vendor symbol and code generation controls | GCC/Clang visibility, section, optimize, and target pragmas; MSVC segment and optimization controls | unsupported semantic | `slate-9msj.12` |
 | Unknown vendor pragmas | any other pragma outside the allowlist | unsupported semantic | add a focused ticket before extending the allowlist |
 
-The repository fixture inventory currently contains diagnostic pragmas and
-`#pragma pack`; no supported fixture relies on another semantic pragma. The
+Clang resolves the pack stack into a maximum field alignment on each affected
+record. Slate emits `repr(C, packed)` or `repr(C, packed(n))` from that
+per-record attribute. `translate-directives` retains an explicit error for
+conditional packing because pack state can flow beyond `#endif`, outside the
+textual item regions its current merger associates with Rust `cfg`s. The
 inventory fixture also locks in explicit rejection for the three standard
 floating-point controls and representative GCC and unknown-vendor forms.
 

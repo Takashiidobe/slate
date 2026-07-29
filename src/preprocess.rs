@@ -251,6 +251,10 @@ impl DirectiveRecord {
         }
         message
     }
+
+    pub fn is_pack_pragma(&self) -> bool {
+        self.name == DirectiveName::Pragma && is_pack_pragma(&self.raw_payload)
+    }
 }
 
 fn is_diagnostic_pragma(payload: &str) -> bool {
@@ -258,6 +262,41 @@ fn is_diagnostic_pragma(payload: &str) -> bool {
     payload.starts_with("GCC diagnostic ")
         || payload.starts_with("clang diagnostic ")
         || payload.starts_with("warning(")
+}
+
+fn is_pack_pragma(payload: &str) -> bool {
+    let Some(args) = payload
+        .trim()
+        .strip_prefix("pack")
+        .map(str::trim_start)
+        .and_then(|rest| rest.strip_prefix('('))
+        .and_then(|rest| rest.strip_suffix(')'))
+    else {
+        return false;
+    };
+    let args: Vec<_> = args.split(',').map(str::trim).collect();
+    match args.as_slice() {
+        [""] => true,
+        ["push"] | ["pop"] => true,
+        [alignment] => pack_alignment(alignment),
+        ["push", value] | ["pop", value] => pack_alignment(value) || c_identifier(value),
+        ["push", label, alignment] | ["pop", label, alignment] => {
+            c_identifier(label) && pack_alignment(alignment)
+        }
+        _ => false,
+    }
+}
+
+fn pack_alignment(value: &str) -> bool {
+    !value.is_empty() && value.bytes().all(|byte| byte.is_ascii_digit())
+}
+
+fn c_identifier(value: &str) -> bool {
+    let mut bytes = value.bytes();
+    bytes
+        .next()
+        .is_some_and(|byte| byte == b'_' || byte.is_ascii_alphabetic())
+        && bytes.all(|byte| byte == b'_' || byte.is_ascii_alphanumeric())
 }
 
 #[derive(Debug, Clone, Default)]
