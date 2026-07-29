@@ -2634,6 +2634,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.lower_known_unary_method(op, crate::function_identity::Known::Sqrt, "sqrt")
             }
             CirOpKind::FrameAddress => self.lower_opaque_pointer(op, true),
+            CirOpKind::ReturnAddress => self.lower_opaque_pointer(op, true),
             CirOpKind::Stacksave => self.lower_opaque_pointer(op, false),
             CirOpKind::Stackrestore => {}
             CirOpKind::Tan => {

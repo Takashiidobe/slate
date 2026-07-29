@@ -31,6 +31,7 @@
   - [x] `cir.clear_cache`
   - [x] `cir.prefetch`
   - [x] `cir.frame_address`
+  - [x] `cir.return_address`
   - [x] `cir.stacksave`
   - [x] `cir.stackrestore`
 - [x] extensions
