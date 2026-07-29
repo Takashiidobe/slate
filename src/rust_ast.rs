@@ -376,11 +376,37 @@ pub struct FnParam {
 #[derive(Debug, Clone, Default)]
 pub struct FunctionMetadata {
     pub returns_nonnull: bool,
+    pub returned_value: ValueMetadata,
 }
 
 #[derive(Debug, Clone, Default)]
 pub struct ParameterMetadata {
     pub nonnull: bool,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ValueMetadata {
+    pub allocation: Option<AllocationMetadata>,
+    pub assumed_alignment: Option<AssumedAlignment>,
+}
+
+#[derive(Debug, Clone)]
+pub struct AllocationMetadata {
+    pub fresh: bool,
+    pub size: Option<AllocationSize>,
+    pub alignment_argument: Option<usize>,
+}
+
+#[derive(Debug, Clone)]
+pub enum AllocationSize {
+    Argument(usize),
+    Product(usize, usize),
+}
+
+#[derive(Debug, Clone)]
+pub struct AssumedAlignment {
+    pub bytes: u64,
+    pub offset: u64,
 }
 
 #[derive(Debug, Clone)]

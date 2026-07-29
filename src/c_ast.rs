@@ -19,6 +19,7 @@ pub struct Unit {
     pub records: Vec<Record>,
     pub functions: Vec<Function>,
     pub weak_refs: Vec<WeakRefAttribute>,
+    pub function_allocation_attributes: HashMap<String, FunctionAllocationAttributes>,
     call_bindings: HashMap<Loc, CallBinding>,
 }
 
@@ -82,6 +83,20 @@ pub struct AsmGoto {
 pub struct WeakRefAttribute {
     pub name: String,
     pub target: String,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+pub struct FunctionAllocationAttributes {
+    pub fresh: bool,
+    pub size_arguments: Vec<usize>,
+    pub alignment_argument: Option<usize>,
+    pub assumed_alignment: Option<AssumedAlignmentAttribute>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AssumedAlignmentAttribute {
+    pub bytes: u64,
+    pub offset: u64,
 }
 
 #[derive(Debug, Clone)]
@@ -480,6 +495,7 @@ fn parse_json_with_record_roots(
     let mut records = Vec::new();
     let mut functions = Vec::new();
     let mut weak_refs = Vec::new();
+    let mut function_allocation_attributes = HashMap::new();
     collect_enums(&root, source_file, record_roots, &enum_typedefs, &mut enums);
     collect_records(
         &root,
@@ -509,12 +525,19 @@ fn parse_json_with_record_roots(
         &plugin_events.macros,
         &mut functions,
     );
+    collect_function_allocation_attributes(
+        &root,
+        source_file,
+        source_text.as_deref(),
+        &mut function_allocation_attributes,
+    );
     collect_weak_ref_attributes(&root, source_file, &mut weak_refs);
     Ok(Unit {
         enums,
         records,
         functions,
         weak_refs,
+        function_allocation_attributes,
         call_bindings,
     })
 }
@@ -597,6 +620,111 @@ fn collect_functions(
     for child in children(node) {
         collect_functions(child, source_file, source_text, macro_events, out);
     }
+}
+
+fn collect_function_allocation_attributes(
+    node: &Value,
+    source_file: &str,
+    source_text: Option<&str>,
+    out: &mut HashMap<String, FunctionAllocationAttributes>,
+) {
+    if kind(node) == Some("FunctionDecl")
+        && is_source_node(node, source_file)
+        && let Some(name) = node.get("name").and_then(Value::as_str)
+    {
+        let mut attributes = FunctionAllocationAttributes::default();
+        for child in children(node) {
+            match kind(child) {
+                Some("RestrictAttr")
+                    if attribute_text(child, source_text).is_some_and(|text| {
+                        text.split_once('(')
+                            .map_or(text, |(name, _)| name)
+                            .trim()
+                            .trim_matches('_')
+                            == "malloc"
+                    }) =>
+                {
+                    attributes.fresh = true;
+                }
+                Some("AllocSizeAttr") => {
+                    attributes.size_arguments = attribute_indices(child, source_text);
+                }
+                Some("AllocAlignAttr") => {
+                    attributes.alignment_argument =
+                        attribute_indices(child, source_text).into_iter().next();
+                }
+                Some("AssumeAlignedAttr") => {
+                    let values = attribute_integer_values(child);
+                    if let Some(bytes) = values.first().copied() {
+                        attributes.assumed_alignment = Some(AssumedAlignmentAttribute {
+                            bytes,
+                            offset: values.get(1).copied().unwrap_or(0),
+                        });
+                    }
+                }
+                _ => {}
+            }
+        }
+        if attributes != FunctionAllocationAttributes::default() {
+            let existing = out.entry(name.to_string()).or_default();
+            existing.fresh |= attributes.fresh;
+            if !attributes.size_arguments.is_empty() {
+                existing.size_arguments = attributes.size_arguments;
+            }
+            if attributes.alignment_argument.is_some() {
+                existing.alignment_argument = attributes.alignment_argument;
+            }
+            if attributes.assumed_alignment.is_some() {
+                existing.assumed_alignment = attributes.assumed_alignment;
+            }
+        }
+    }
+    for child in children(node) {
+        collect_function_allocation_attributes(child, source_file, source_text, out);
+    }
+}
+
+fn attribute_text<'a>(node: &Value, source_text: Option<&'a str>) -> Option<&'a str> {
+    let source = source_text?;
+    let begin = expansion_offset(node)?;
+    let end = expansion_end_after_token(node)?;
+    source.get(begin..end)
+}
+
+fn expansion_end_after_token(node: &Value) -> Option<usize> {
+    let end = node.get("range")?.get("end")?;
+    let location = end.get("expansionLoc").unwrap_or(end);
+    let offset = location.get("offset")?.as_u64()? as usize;
+    let token_len = location
+        .get("tokLen")
+        .or_else(|| end.get("tokLen"))
+        .and_then(Value::as_u64)? as usize;
+    offset.checked_add(token_len)
+}
+
+fn attribute_indices(node: &Value, source_text: Option<&str>) -> Vec<usize> {
+    let Some(text) = attribute_text(node, source_text) else {
+        return Vec::new();
+    };
+    let Some((_, arguments)) = text.split_once('(') else {
+        return Vec::new();
+    };
+    let Some(arguments) = arguments.rsplit_once(')').map(|(arguments, _)| arguments) else {
+        return Vec::new();
+    };
+    arguments
+        .split(',')
+        .filter_map(|argument| argument.trim().parse::<usize>().ok())
+        .filter_map(|index| index.checked_sub(1))
+        .collect()
+}
+
+fn attribute_integer_values(node: &Value) -> Vec<u64> {
+    children(node)
+        .iter()
+        .filter_map(|child| child.get("value").and_then(Value::as_str))
+        .filter_map(|value| value.parse().ok())
+        .collect()
 }
 
 fn collect_weak_ref_attributes(node: &Value, source_file: &str, out: &mut Vec<WeakRefAttribute>) {

@@ -134,7 +134,9 @@ control-flow builtins, target/frame/stack builtins, vector extensions
 [cir-op-prioritization.md](cir-op-prioritization.md) for the full op-level
 checklist. `nonnull`/`returns_nonnull` (including `T name[static N]`
 parameters) are preserved as typed, non-rendered function and parameter
-metadata for later fact analysis.
+metadata for later fact analysis. GNU `malloc`, `alloc_size`, `alloc_align`,
+and `assume_aligned` attributes are likewise preserved as optional metadata
+on function return values.
 
 ### Multi-config translation
 
@@ -170,8 +172,9 @@ doesn't rot. As of this writing, open gaps are mostly about widening the
 idiomatization ladder rather than baseline C coverage — e.g. fully
 target-complete scalar modeling, `setjmp`/`longjmp`, remaining printf
 edge cases (precision/width forms), further libc idiomatization (`fgets`/
-`fread`/`fwrite` on owned `FILE` handles), `alloc_size`-driven pointer facts,
-and `enumerate()` recovery for slice loops with a live index use.
+`fread`/`fwrite` on owned `FILE` handles), consumption of allocation metadata
+by the fact passes, and `enumerate()` recovery for slice loops with a live
+index use.
 
 ## Pipeline
 
