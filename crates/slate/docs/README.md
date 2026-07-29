@@ -126,9 +126,10 @@ GNU `#pragma push_macro`/`pop_macro` state and `#pragma GCC poison`,
 GNU `weakref("target")` calls to local and external targets,
 GNU `__builtin_addressof` and source-location builtins
 (`__builtin_FUNCTION`/`FILE`/`LINE`/`COLUMN`),
-`__builtin_assume`/`__builtin_expect` and other control-flow builtins, target/
-frame/stack builtins, vector extensions (`cir.vec.*`), and the byte-wise memory
-builtins (`memcpy`/`memmove`/`memset`/`memchr`) — see
+`__builtin_assume`/`__builtin_expect`/`__builtin_debugtrap` and other
+control-flow builtins, target/frame/stack builtins, vector extensions
+(`cir.vec.*`), and the byte-wise memory builtins
+(`memcpy`/`memmove`/`memset`/`memchr`) — see
 [cir-op-prioritization.md](cir-op-prioritization.md) for the full op-level
 checklist. `nonnull`/`returns_nonnull` (including `T name[static N]`
 parameters) are recovered as facts too.
