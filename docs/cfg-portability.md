@@ -68,9 +68,9 @@ source was written. A recognized pragma can affect ABI or evaluation even when
 the configured Clang ignores the same spelling. Slate therefore uses an
 allowlist: exact `#pragma once` is no-output, diagnostic controls retain the
 diagnostic-only disposition, and record packing, symbol visibility, weak
-aliases, and external-name remapping are recovered from Clang in a concrete
-configuration. Every other pragma remains unsupported until its effect is
-recovered.
+aliases, external-name remapping, macro stack state, and poisoned identifiers
+are recovered or enforced by Clang. Every other pragma remains unsupported
+until its effect is recovered.
 
 | Family | Examples | Current disposition | Follow-up |
 | --- | --- | --- | --- |
@@ -80,6 +80,8 @@ recovered.
 | Record packing | `pack(push, n)`, `pack(pop)`, `pack(n)` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.7` |
 | Symbol visibility | `GCC visibility push(...)`, `GCC visibility pop` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.8` |
 | Weak and renamed symbols | `weak alias = target`, `redefine_extname source target` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.9` |
+| Macro stack | `push_macro("NAME")`, `pop_macro("NAME")` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.6` |
+| Poisoned identifiers | `GCC poison name` | Clang-consumed; later uses surface the Clang frontend error and unused poison emits no Rust | `slate-3f8g.2.6` |
 | Vendor code generation controls | GCC/Clang section, optimize, and target pragmas; MSVC segment and optimization controls | unsupported semantic | `slate-9msj.12` |
 | Unknown vendor pragmas | any other pragma outside the allowlist | unsupported semantic | add a focused ticket before extending the allowlist |
 
@@ -103,6 +105,13 @@ symbol-name attributes. Slate preserves weak function aliases as assembler
 aliases and uses renamed symbols directly. Conditional instances remain
 unsupported in `translate-directives` because either pragma can affect a
 declaration outside its textual conditional region.
+
+Clang also resolves macro push/pop state before CIR emission. Conditional macro
+stack changes remain unsupported in `translate-directives` because the restored
+macro value can affect code after `#endif`. Poison pragmas stay in every Clang
+frontend invocation: a later poisoned identifier stops translation with
+Clang's diagnostic, while an unused poison directive requires no generated
+Rust representation.
 
 ## Supported predicate → `cfg` mappings
 
