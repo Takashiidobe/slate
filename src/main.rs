@@ -183,7 +183,7 @@ fn reject_active_unsupported(pp: &preprocess::Preprocessing, context: &str) -> R
     for directive in pp.directives.iter().filter(|directive| {
         directive.disposition() == preprocess::DirectiveDisposition::UnsupportedSemantic
     }) {
-        if directive.is_pack_pragma() {
+        if directive.is_clang_resolved_pragma() {
             continue;
         }
         match directive.active {

@@ -17,11 +17,13 @@
 <conditional_directive> ::= "#if 0" | "#if 1" | "#ifdef " <ident> | "#ifndef " <ident> | "#elif defined(" <ident> ")" | "#elifdef " <ident> | "#elifndef " <ident> | "#else" | "#endif" ;
 <pack_directive> ::= "#pragma pack(push, " <pack_alignment> ")" | "#pragma pack(pop)" | "#pragma pack(" <pack_alignment> ")" | "#pragma pack()" ;
 <pack_alignment> ::= "1" | "2" | "4" | "8" | "16" ;
+<visibility_directive> ::= "#pragma GCC visibility push(" <visibility> ")" | "#pragma GCC visibility pop" ;
+<visibility> ::= "default" | "hidden" | "protected" | "internal" ;
 
 # ----- top-level declarations -----
 
 <decl_list> ::= <decl> <decl_list> | <decl> ;
-<decl> ::= <typedef_decl> | <enum_decl> | <struct_decl> | <union_decl> | <global_decl> | <weakref_decl> | <pack_directive> ;
+<decl> ::= <typedef_decl> | <enum_decl> | <struct_decl> | <union_decl> | <global_decl> | <weakref_decl> | <pack_directive> | <visibility_directive> ;
 
 <typedef_decl> ::= "typedef" <type> <ident> ";" ;
 <weakref_decl> ::= "static" <ret_type> <ident> "(" <param_list> ")" "__attribute__((weakref(" <string_literal> ")));" ;
@@ -44,7 +46,7 @@
 
 # ----- functions -----
 
-<function_list> ::= <function> <function_list> | <function> ;
+<function_list> ::= <function> <function_list> | <visibility_directive> <function_list> | <function> ;
 <function> ::= <ret_type> <ident> "(" <param_list> ")" "{" <stmt_list> "}" ;
 <ret_type> ::= <type> | "void" ;
 <param_list> ::= "void" | <params> ;

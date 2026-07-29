@@ -74,6 +74,8 @@ break address identity.
 `__attribute__((visibility("hidden")))` lowers by keeping the generated item
 Rust-private and omitting `#[unsafe(no_mangle)]`. This preserves in-translation
 unit behavior while avoiding an exported symbol.
+`#pragma GCC visibility push(...)` and `pop` use the same lowering after Clang
+resolves their stack state onto each declaration.
 
 `__attribute__((visibility("protected")))` has no faithful Rust representation
 today. Slate emits a warning and falls back to default exported visibility.

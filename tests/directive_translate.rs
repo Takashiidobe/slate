@@ -518,6 +518,36 @@ fn conditional_pack_remains_unsupported_only_in_multi_config_translation() {
 }
 
 #[test]
+fn conditional_visibility_remains_unsupported_only_in_multi_config_translation() {
+    let single = translate("unsupported_conditional_visibility.c");
+    assert!(!single.contains("compile_error!"));
+
+    let active_single =
+        translate_with_clang_args("unsupported_conditional_visibility.c", Some("-DHIDDEN_API"));
+    assert!(!active_single.contains("compile_error!"));
+
+    let rust = translate_directives("unsupported_conditional_visibility.c");
+    assert!(rust.contains(
+        "#[cfg(feature = \"hidden_api\")]\ncompile_error!(\"unsupported semantic directive #pragma at line 2: GCC visibility push(hidden)\");"
+    ));
+    assert!(
+        compile_with_cfgs("unsupported_conditional_visibility_inactive", &rust, &[])
+            .status
+            .success()
+    );
+    let active = compile_with_cfgs(
+        "unsupported_conditional_visibility_active",
+        &rust,
+        &["hidden_api"],
+    );
+    assert!(!active.status.success());
+    assert!(
+        String::from_utf8_lossy(&active.stderr)
+            .contains("unsupported semantic directive #pragma at line 2")
+    );
+}
+
+#[test]
 fn unsupported_directive_with_unmappable_condition_stops_translation() {
     let err = translate_directives_err("reject/unsupported_unmapped.c");
 

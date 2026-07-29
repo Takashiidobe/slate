@@ -70,7 +70,7 @@ fn directive_items(pp: &Preprocessing) -> Result<Vec<Item>, String> {
             DirectiveName::Error | DirectiveName::Warning
         ) || directive.disposition() == DirectiveDisposition::UnsupportedSemantic
     }) {
-        if directive.is_pack_pragma() && directive.condition.is_none() {
+        if directive.is_clang_resolved_pragma() && directive.condition.is_none() {
             continue;
         }
         if directive.disposition() == DirectiveDisposition::UnsupportedSemantic
@@ -488,7 +488,7 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, Stri
                 directive.name,
                 DirectiveName::Error | DirectiveName::Warning
             ) || directive.disposition() == DirectiveDisposition::UnsupportedSemantic
-                && (!directive.is_pack_pragma() || directive.condition.is_some())
+                && (!directive.is_clang_resolved_pragma() || directive.condition.is_some())
         })
         .collect();
     let input = preprocess::clang_input(path, &source, &sanitized)?;
