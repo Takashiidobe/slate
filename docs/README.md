@@ -203,6 +203,9 @@ location (`file:line:col`):
   fixup.
 - [writing-a-fixup.md](writing-a-fixup.md) — the AST-to-AST recipe for a fixup
   pass: shape, shared helpers, safety rules, and registration.
+- [writing-a-query-fixup.md](writing-a-query-fixup.md) — how to state
+  query-driven rewrite cases, proofs, typed recipes, definition lifecycles,
+  scheduling, and tracing.
 - [effects.md](effects.md) — how to extend the Rust-to-Rust effects interpreter
   used to validate that fixups preserve semantic behavior.
 - [architecture.md](architecture.md) — sources, IRs, pipeline, shared context.

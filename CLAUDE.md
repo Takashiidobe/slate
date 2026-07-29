@@ -141,6 +141,9 @@ Read these before making changes — they are the real playbook:
 - **[docs/writing-a-fixup.md](docs/writing-a-fixup.md)** — the AST-to-AST recipe
   for a fixup pass (fixups are AST-to-AST only, never string rewrites). Read this
   before writing or modifying anything under `src/fixups/`.
+- **[docs/writing-a-query-fixup.md](docs/writing-a-query-fixup.md)** — the
+  preferred query-driven interface for supported expression and definition
+  rewrites. Read this before writing or migrating a rewrite.
 - **[docs/effects.md](docs/effects.md)** — the Rust-to-Rust effects interpreter
   workflow for validating that raw lowered Rust and fixuped Rust preserve the
   same semantic effects. Read this before changing anything under `src/effects/`.
