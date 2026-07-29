@@ -1959,6 +1959,35 @@ fn memchr_calls_rewrite_only_with_proven_extent_and_nul_range() {
 }
 
 #[test]
+fn memchr_zero_use_query_prunes_the_generated_helper() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memchr-zero-users");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("effects_nullable_pointer.c");
+    let generated = tmp.join("effects_nullable_pointer.generated.rs");
+    support::translate(&c_src, &generated).expect("translate nullable pointer fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated nullable pointer rust");
+
+    assert!(!rust.contains("fn __slate_memchr("));
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg("--debug-only-pass")
+        .arg("memchr_prelude::prune_unused_helper")
+        .arg(c_src)
+        .output()
+        .expect("run zero-user memchr cleanup trace");
+    assert!(
+        output.status.success(),
+        "fixup-debug failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
+    assert!(stdout.contains("prune_unused_memchr_helper"));
+    assert!(stdout.contains("query_case=zero_users"));
+    assert!(stdout.contains("evidence.zero_users=name=__slate_memchr;users=0;complete=true"));
+}
+
+#[test]
 fn fixup_debug_reports_passes_and_change_summary() {
     let c_src = fixtures_dir().join("mem_memchr.c");
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))

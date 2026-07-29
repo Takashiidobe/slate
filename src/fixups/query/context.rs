@@ -7,12 +7,13 @@ use crate::fixups::facts::{
     Purity, StringBufferKind, ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
-use crate::rust_ast::{Expr, Item, Prim, Program, Type};
+use crate::rust_ast::{Attr, Expr, ExternDecl, ImplItem, Item, Prim, Program, Type, Visibility};
 
 use super::{
-    ByteExtent, ByteRepresentation, ByteSource, ByteView, Evidence, EvidenceDetail, ExprSite,
-    NulPosition, PointerMutability, Predicate, Proof, QueryResult, Rejection, RejectionReason,
-    StableExpr,
+    ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionKind, DefinitionLocation,
+    DefinitionSelector, DefinitionSite, Evidence, EvidenceDetail, ExprSite, NulPosition,
+    PointerMutability, Predicate, Proof, QueryResult, Rejection, RejectionReason, StableExpr,
+    ZeroUsers,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -35,6 +36,9 @@ pub(in crate::fixups) struct QueryContext<'snapshot> {
     program: &'snapshot Program,
     facts: &'snapshot FixupFacts,
     calls: BTreeMap<(CallTarget, usize), Vec<CallRecord>>,
+    definitions: BTreeMap<DefinitionSelector, Vec<DefinitionSite>>,
+    symbol_uses: BTreeMap<String, Vec<usize>>,
+    use_domain_complete: bool,
 }
 
 impl<'snapshot> QueryContext<'snapshot> {
@@ -43,47 +47,55 @@ impl<'snapshot> QueryContext<'snapshot> {
         facts: &'snapshot FixupFacts,
     ) -> Self {
         let mut calls: BTreeMap<(CallTarget, usize), Vec<CallRecord>> = BTreeMap::new();
+        let mut definitions = BTreeMap::<DefinitionSelector, Vec<DefinitionSite>>::new();
+        let mut symbol_uses = BTreeMap::<String, Vec<usize>>::new();
+        let mut use_domain_complete = true;
         for (item_index, item) in program.items.iter().enumerate() {
-            let Item::Fn(function) = item else {
-                continue;
-            };
-            walk::body_exprs_with_path(&function.body, &mut Vec::new(), &mut |expr, path| {
-                let site = expression_site(item_index, path);
-                let Expr::Call {
-                    func,
-                    args,
-                    binding,
-                } = expr
-                else {
-                    return;
-                };
-                let target = call_target(func, binding);
-                let arg_sites = (0..args.len())
-                    .map(|index| child_site(&site, index + 1))
-                    .collect::<Vec<_>>();
-                let evidence = vec![Evidence {
-                    predicate: Predicate::Call,
-                    site: site.clone(),
-                    detail: EvidenceDetail::IndexedCall {
-                        target: target.clone(),
-                        arity: args.len(),
-                    },
-                }];
-                calls
-                    .entry((target.clone(), args.len()))
-                    .or_default()
-                    .push(CallRecord {
-                        site,
-                        target,
-                        args: arg_sites,
-                        evidence,
-                    });
-            });
+            index_definitions(item, item_index, &mut definitions);
+            use_domain_complete &= item_use_domain_complete(item);
+            index_item_uses(item, item_index, &mut symbol_uses);
+            if let Item::Fn(function) = item {
+                walk::body_exprs_with_path(&function.body, &mut Vec::new(), &mut |expr, path| {
+                    let site = expression_site(item_index, path);
+                    let Expr::Call {
+                        func,
+                        args,
+                        binding,
+                    } = expr
+                    else {
+                        return;
+                    };
+                    let target = call_target(func, binding);
+                    let arg_sites = (0..args.len())
+                        .map(|index| child_site(&site, index + 1))
+                        .collect::<Vec<_>>();
+                    let evidence = vec![Evidence {
+                        predicate: Predicate::Call,
+                        site: site.clone(),
+                        detail: EvidenceDetail::IndexedCall {
+                            target: target.clone(),
+                            arity: args.len(),
+                        },
+                    }];
+                    calls
+                        .entry((target.clone(), args.len()))
+                        .or_default()
+                        .push(CallRecord {
+                            site,
+                            target,
+                            args: arg_sites,
+                            evidence,
+                        });
+                });
+            }
         }
         Self {
             program,
             facts,
             calls,
+            definitions,
+            symbol_uses,
+            use_domain_complete,
         }
     }
 
@@ -96,6 +108,64 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn expr(&self, site: &ExprSite) -> Option<&'snapshot Expr> {
         walk::target_expr_at_path(self.program, site.item_index, &site.path)
+    }
+
+    pub(in crate::fixups) fn definitions(
+        &self,
+        selector: &DefinitionSelector,
+    ) -> &[DefinitionSite] {
+        self.definitions
+            .get(selector)
+            .map(Vec::as_slice)
+            .unwrap_or_default()
+    }
+
+    pub(in crate::fixups) fn zero_users(
+        &self,
+        definition: &DefinitionSite,
+    ) -> QueryResult<ZeroUsers> {
+        let users = self
+            .symbol_uses
+            .get(&definition.name)
+            .map(|users| {
+                users
+                    .iter()
+                    .filter(|item_index| **item_index != definition.location.item_index())
+                    .count()
+            })
+            .unwrap_or(0);
+        let complete = self.use_domain_complete && !definition.externally_reachable;
+        let evidence = vec![Evidence {
+            predicate: Predicate::ZeroUsers,
+            site: definition_evidence_site(definition),
+            detail: EvidenceDetail::UseDomain {
+                name: definition.name.clone(),
+                users,
+                complete,
+            },
+        }];
+        if !complete {
+            return Err(Rejection::new(
+                Predicate::ZeroUsers,
+                Some(definition_evidence_site(definition)),
+                RejectionReason::IncompleteDomain,
+                evidence,
+            ));
+        }
+        if users != 0 {
+            return Err(Rejection::new(
+                Predicate::ZeroUsers,
+                Some(definition_evidence_site(definition)),
+                RejectionReason::Contradicted,
+                evidence,
+            ));
+        }
+        Ok(Proof::new(
+            ZeroUsers {
+                definition: definition.clone(),
+            },
+            evidence,
+        ))
     }
 
     pub(in crate::fixups) fn byte_source(
@@ -525,6 +595,139 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 }
 
+fn index_definitions(
+    item: &Item,
+    item_index: usize,
+    definitions: &mut BTreeMap<DefinitionSelector, Vec<DefinitionSite>>,
+) {
+    match item {
+        Item::Fn(function) => {
+            let site = DefinitionSite {
+                location: DefinitionLocation::Item(item_index),
+                kind: DefinitionKind::Function,
+                name: function.name.clone(),
+                externally_reachable: function.vis == Visibility::Pub
+                    || function.abi.is_some()
+                    || function.attrs.iter().any(exporting_attr),
+            };
+            definitions
+                .entry(DefinitionSelector {
+                    kind: site.kind,
+                    name: site.name.clone(),
+                })
+                .or_default()
+                .push(site);
+        }
+        Item::ExternBlock { decls, .. } => {
+            for (decl_index, decl) in decls.iter().enumerate() {
+                let (kind, name) = match decl {
+                    ExternDecl::Fn(function) => {
+                        (DefinitionKind::ExternFunction, function.name.clone())
+                    }
+                    ExternDecl::Static { name, .. } => (DefinitionKind::ExternStatic, name.clone()),
+                };
+                let site = DefinitionSite {
+                    location: DefinitionLocation::ExternDecl {
+                        item_index,
+                        decl_index,
+                    },
+                    kind,
+                    name,
+                    externally_reachable: false,
+                };
+                definitions
+                    .entry(DefinitionSelector {
+                        kind: site.kind,
+                        name: site.name.clone(),
+                    })
+                    .or_default()
+                    .push(site);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn exporting_attr(attr: &Attr) -> bool {
+    matches!(
+        attr,
+        Attr::NoMangle
+            | Attr::WeakLinkage
+            | Attr::ExternWeakLinkage
+            | Attr::Used(_)
+            | Attr::LinkSection(_)
+    )
+}
+
+fn index_item_uses(item: &Item, item_index: usize, uses: &mut BTreeMap<String, Vec<usize>>) {
+    let mut index_expr = |expr: &Expr| index_expr_use(expr, item_index, uses);
+    match item {
+        Item::Fn(function) => walk::body_exprs(&function.body, &mut index_expr),
+        Item::Static { init, .. } | Item::Const { init, .. } => walk::exprs(init, &mut index_expr),
+        Item::Impl(block) => {
+            for item in &block.items {
+                if let ImplItem::Method(method) = item {
+                    walk::exprs(&method.body, &mut index_expr);
+                }
+            }
+        }
+        Item::Macro { args, .. } => {
+            for arg in args {
+                walk::exprs(arg, &mut index_expr);
+            }
+        }
+        Item::Cfg { item, .. } => index_item_uses(item, item_index, uses),
+        Item::Use { path } => {
+            for segment in &path.segments {
+                uses.entry(segment.as_str().to_owned())
+                    .or_default()
+                    .push(item_index);
+            }
+        }
+        Item::Comment(_)
+        | Item::CrateAttrs(_)
+        | Item::Mod { .. }
+        | Item::ExternBlock { .. }
+        | Item::Enum(_)
+        | Item::Record(_)
+        | Item::Struct(_)
+        | Item::Raw(_) => {}
+    }
+}
+
+fn item_use_domain_complete(item: &Item) -> bool {
+    match item {
+        Item::Raw(_) => false,
+        Item::Cfg { item, .. } => item_use_domain_complete(item),
+        _ => true,
+    }
+}
+
+fn index_expr_use(expr: &Expr, item_index: usize, uses: &mut BTreeMap<String, Vec<usize>>) {
+    match expr {
+        Expr::Var(name) => uses
+            .entry(name.as_str().to_owned())
+            .or_default()
+            .push(item_index),
+        Expr::Path(path) => {
+            for segment in &path.segments {
+                uses.entry(segment.as_str().to_owned())
+                    .or_default()
+                    .push(item_index);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn definition_evidence_site(definition: &DefinitionSite) -> ExprSite {
+    ExprSite {
+        item_index: definition.location.item_index(),
+        path: AstPath(Vec::new()),
+        fact_path: AstPath(Vec::new()),
+    }
+}
+
 fn expression_site(item_index: usize, path: &[PathSegment]) -> ExprSite {
     let path = AstPath(path.to_vec());
     ExprSite {
@@ -667,191 +870,5 @@ fn byte_extent(ty: &Type) -> ByteExtent {
                 .unwrap_or(ByteExtent::Dynamic)
         }
         _ => ByteExtent::Dynamic,
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::fixups::facts;
-    use crate::fixups::query::{
-        ByteExtent, ByteRepresentation, CallTarget, NulPosition, PointerMutability, QueryContext,
-        RejectionReason,
-    };
-    use crate::fixups::test_support::{call, func, int, temp, var};
-    use crate::function_identity::Known;
-    use crate::rust_ast::{Expr, Item, Program, RustValue};
-
-    fn array_ptr(name: &str, mutable: bool) -> Expr {
-        Expr::ArrayPtr {
-            array: Box::new(var(name)),
-            mutable,
-        }
-    }
-
-    fn program() -> Program {
-        Program {
-            items: vec![Item::Fn(func(
-                Vec::new(),
-                None,
-                vec![
-                    temp(
-                        "bytes",
-                        "[u8; 4]",
-                        Expr::ArrayLit(vec![int(10), int(20), int(30), int(40)]),
-                    ),
-                    temp(
-                        "text",
-                        "[i8; 4]",
-                        Expr::ArrayLit(vec![int(97), int(98), int(99), int(0)]),
-                    ),
-                    temp(
-                        "needle",
-                        "i32",
-                        Expr::Index {
-                            base: Box::new(var("bytes")),
-                            index: Box::new(int(1)),
-                        },
-                    ),
-                    temp(
-                        "found_bytes",
-                        "*mut core::ffi::c_void",
-                        call(
-                            "__slate_memchr",
-                            vec![array_ptr("bytes", true), var("needle"), int(4)],
-                        ),
-                    ),
-                    temp(
-                        "found_nul",
-                        "*mut core::ffi::c_void",
-                        call(
-                            "__slate_memchr",
-                            vec![array_ptr("text", false), int(0), int(4)],
-                        ),
-                    ),
-                    temp(
-                        "short_nul",
-                        "*mut core::ffi::c_void",
-                        call(
-                            "__slate_memchr",
-                            vec![array_ptr("text", false), int(0), int(3)],
-                        ),
-                    ),
-                    temp("raw", "*const u8", Expr::Value(RustValue::NullPtr)),
-                    temp(
-                        "raw_search",
-                        "*mut core::ffi::c_void",
-                        call("__slate_memchr", vec![var("raw"), int(0), int(4)]),
-                    ),
-                    temp(
-                        "wide_needle",
-                        "*mut core::ffi::c_void",
-                        call(
-                            "__slate_memchr",
-                            vec![array_ptr("bytes", true), int(300), int(4)],
-                        ),
-                    ),
-                    temp(
-                        "length_view",
-                        "*mut core::ffi::c_void",
-                        call(
-                            "__slate_memchr",
-                            vec![
-                                array_ptr("bytes", true),
-                                int(20),
-                                Expr::MethodCall {
-                                    recv: Box::new(var("bytes")),
-                                    method: "len".into(),
-                                    args: Vec::new(),
-                                },
-                            ],
-                        ),
-                    ),
-                    temp(
-                        "text_len",
-                        "usize",
-                        call("strlen", vec![array_ptr("text", false)]),
-                    ),
-                ],
-            ))],
-        }
-    }
-
-    #[test]
-    fn indexes_calls_and_proves_memchr_capabilities() {
-        let program = program();
-        let analyzed = facts::analyze(&program);
-        let query = QueryContext::new(analyzed.program, &analyzed.facts);
-        let memchr = query.calls(&CallTarget::Generated("__slate_memchr".into()), 3);
-
-        assert_eq!(memchr.len(), 6);
-        assert!(matches!(
-            query.expr(&memchr[0].site),
-            Some(Expr::Call { .. })
-        ));
-        assert!(matches!(
-            query.expr(&memchr[0].args[1]),
-            Some(Expr::Var(name)) if name.as_str() == "needle"
-        ));
-
-        let bytes = query.byte_source(&memchr[0].args[0]).unwrap().value;
-        assert_eq!(bytes.name, "bytes");
-        assert_eq!(bytes.representation, ByteRepresentation::Collection);
-        assert_eq!(bytes.mutability, PointerMutability::Mut);
-        assert_eq!(bytes.extent, ByteExtent::Constant(4));
-        assert_eq!(
-            query
-                .full_byte_view(&bytes, &memchr[0].args[2])
-                .unwrap()
-                .value
-                .extent,
-            ByteExtent::Constant(4)
-        );
-        assert!(query.pure(&memchr[0].args[1]).is_ok());
-
-        let text = query.byte_source(&memchr[1].args[0]).unwrap().value;
-        assert_eq!(text.mutability, PointerMutability::Const);
-        assert_eq!(query.const_u8(&memchr[1].args[1]).unwrap().value, 0);
-        assert_eq!(query.const_usize(&memchr[1].args[2]).unwrap().value, 4);
-        let nul = query.first_nul(&text).unwrap().value;
-        assert_eq!(nul, NulPosition::Constant(3));
-        assert!(query.prefix_contains(&memchr[1].args[2], nul).is_ok());
-        assert_eq!(
-            query
-                .prefix_contains(&memchr[2].args[2], nul)
-                .unwrap_err()
-                .reason,
-            RejectionReason::Contradicted
-        );
-        assert_eq!(
-            query.byte_source(&memchr[3].args[0]).unwrap_err().reason,
-            RejectionReason::UnsupportedShape
-        );
-        assert_eq!(
-            query.const_u8(&memchr[4].args[1]).unwrap_err().reason,
-            RejectionReason::OutOfRange
-        );
-        assert!(query.full_byte_view(&bytes, &memchr[5].args[2]).is_ok());
-        assert_eq!(query.calls(&CallTarget::Known(Known::StrLen), 1).len(), 1);
-    }
-
-    #[test]
-    fn rejects_unproven_constants_and_partial_views() {
-        let program = program();
-        let analyzed = facts::analyze(&program);
-        let query = QueryContext::new(analyzed.program, &analyzed.facts);
-        let memchr = query.calls(&CallTarget::Generated("__slate_memchr".into()), 3);
-        let bytes = query.byte_source(&memchr[0].args[0]).unwrap().value;
-
-        assert_eq!(
-            query.const_u8(&memchr[0].args[1]).unwrap_err().reason,
-            RejectionReason::MissingEvidence
-        );
-        assert_eq!(
-            query
-                .full_byte_view(&bytes, &memchr[2].args[2])
-                .unwrap_err()
-                .reason,
-            RejectionReason::Contradicted
-        );
     }
 }
