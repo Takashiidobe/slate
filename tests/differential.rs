@@ -1977,6 +1977,11 @@ fn fixup_debug_reports_passes_and_change_summary() {
     assert!(stdout.contains("memchr_prelude::fixup_calls"));
     assert!(stdout.contains("late_inline_temps"));
     assert!(stdout.contains("dead_locals"));
+    assert!(stdout.contains("rewrite_memchr_call"));
+    assert!(stdout.contains("query_case=known_nul"));
+    assert!(stdout.contains("query_case=byte_position"));
+    assert!(stdout.contains("evidence.prefix_contains=count=4;nul=3"));
+    assert!(stdout.contains("rejected_case.known_nul=constant_u8:contradicted"));
     assert!(stdout.contains("changed; stmts"));
     assert!(stdout.contains("temp_lets"));
     assert!(stdout.contains("final: items="));

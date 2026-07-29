@@ -49,7 +49,7 @@ pub(in crate::fixups) struct ByteSource<'snapshot> {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct ByteView<'snapshot> {
     pub(in crate::fixups) source: ByteSource<'snapshot>,
-    pub(in crate::fixups) extent: usize,
+    pub(in crate::fixups) extent: ByteExtent,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

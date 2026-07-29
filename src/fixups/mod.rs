@@ -513,14 +513,14 @@ fn apply_with_logger(
         });
     });
     step!(program, Pass::MemchrPreludeFixupCalls, {
-        run_once_items(&mut program, |item_index, f| {
-            let Some(function) = facts.function_by_item_index(item_index) else {
-                return false;
-            };
-            let mut fixup =
-                rewrite::memchr_prelude::MemchrPreludeCalls::new(function, &facts, logger);
-            run_once(&mut f.body, &mut fixup)
-        });
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ExprPlanBuilder::new();
+            builder.add_rule(&query, &rewrite::memchr_prelude::MemchrCalls);
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger).changed
     });
     step!(program, Pass::NullablePointer, {
         to_fixpoint_items_with_facts(

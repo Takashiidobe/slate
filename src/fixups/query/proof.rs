@@ -51,6 +51,7 @@ pub(in crate::fixups) enum EvidenceDetail {
         mutability: PointerMutability,
     },
     Extent(ByteExtent),
+    SourceLength,
     ConstantU8(u8),
     ConstantUsize(usize),
     NulPosition(NulPosition),
