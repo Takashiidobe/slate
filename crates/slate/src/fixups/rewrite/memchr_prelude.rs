@@ -195,6 +195,13 @@ fn memchr_call_replacement(
     let needle = byte_value(&args[1], function, facts, &call_arg_path(path, 1));
     if needle == Some(0)
         && let Some(nul_index) = source.nul_index
+        && nul_within_search(
+            nul_index,
+            &args[2],
+            function,
+            facts,
+            &call_arg_path(path, 2),
+        )
     {
         return Some(pointer_search(
             source.clone(),
@@ -231,14 +238,9 @@ fn source_for_arg(expr: &Expr, function: FunctionId, facts: &FixupFacts) -> Opti
             StringBufferKind::BorrowedBytes => SourceKind::Bytes,
             StringBufferKind::CharArray => source_kind_for_type(facts.binding_type(binding)?)?,
         };
-        let nul_index = well_formed_string.then(|| match buffer.kind {
-            StringBufferKind::CharArray => {
-                NulIndex::Const(buffer.bytes.as_ref().map_or(0, Vec::len))
-            }
-            StringBufferKind::BorrowedStr
-            | StringBufferKind::BorrowedCStr
-            | StringBufferKind::BorrowedBytes
-            | StringBufferKind::OwnedString => NulIndex::SourceLen,
+        let nul_index = well_formed_string.then_some(match &buffer.bytes {
+            Some(bytes) => NulIndex::Const(bytes.len()),
+            None => NulIndex::SourceLen,
         });
         return Some(Source {
             name,
@@ -289,6 +291,19 @@ fn source_kind_for_type(rendered: &str) -> Option<SourceKind> {
         _ => return None,
     };
     matches!(elem, Type::Prim(Prim::U8 | Prim::I8)).then_some(SourceKind::U8Collection)
+}
+
+fn nul_within_search(
+    nul_index: NulIndex,
+    len: &Expr,
+    function: FunctionId,
+    facts: &FixupFacts,
+    path: &[PathSegment],
+) -> bool {
+    let NulIndex::Const(nul_index) = nul_index else {
+        return false;
+    };
+    usize_value(len, function, facts, path).is_some_and(|len| nul_index < len)
 }
 
 fn full_source_len(
