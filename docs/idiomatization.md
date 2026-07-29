@@ -59,6 +59,11 @@ Function aliases from `__attribute__((alias("target")))` lower as exported C ABI
 forwarding wrappers. This preserves call behavior, but it is not a true LLVM-style
 symbol alias.
 
+Function aliases from `#pragma weak alias = target` lower as assembler-level
+weak aliases. They preserve weak override behavior and share the target's
+address. `#pragma redefine_extname source target` uses Clang's resolved target
+symbol throughout generated declarations, definitions, and calls.
+
 Function weak references from `__attribute__((weakref("target")))` resolve
 directly to targets defined in the same translation unit. External targets
 lower as nullable C function pointers on extern statics with `extern_weak`

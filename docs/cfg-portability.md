@@ -67,9 +67,10 @@ a pragma was unknown to the compiler and build configuration for which the C
 source was written. A recognized pragma can affect ABI or evaluation even when
 the configured Clang ignores the same spelling. Slate therefore uses an
 allowlist: exact `#pragma once` is no-output, diagnostic controls retain the
-diagnostic-only disposition, record packing and symbol visibility are recovered
-from Clang in a concrete configuration, and every other pragma remains
-unsupported until its effect is recovered.
+diagnostic-only disposition, and record packing, symbol visibility, weak
+aliases, and external-name remapping are recovered from Clang in a concrete
+configuration. Every other pragma remains unsupported until its effect is
+recovered.
 
 | Family | Examples | Current disposition | Follow-up |
 | --- | --- | --- | --- |
@@ -78,6 +79,7 @@ unsupported until its effect is recovered.
 | Standard floating point | `STDC FENV_ACCESS`, `STDC FP_CONTRACT`, `STDC CX_LIMITED_RANGE` | unsupported semantic | `slate-9msj.10` |
 | Record packing | `pack(push, n)`, `pack(pop)`, `pack(n)` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.7` |
 | Symbol visibility | `GCC visibility push(...)`, `GCC visibility pop` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.8` |
+| Weak and renamed symbols | `weak alias = target`, `redefine_extname source target` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.9` |
 | Vendor code generation controls | GCC/Clang section, optimize, and target pragmas; MSVC segment and optimization controls | unsupported semantic | `slate-9msj.12` |
 | Unknown vendor pragmas | any other pragma outside the allowlist | unsupported semantic | add a focused ticket before extending the allowlist |
 
@@ -95,6 +97,12 @@ deciding which project items remain exported. Conditional visibility pragmas
 remain unsupported in `translate-directives`: a push inside a conditional can
 change declarations after `#endif`, beyond the textual region associated with
 the corresponding Rust `cfg`.
+
+Clang resolves weak and renamed symbol pragmas into CIR linkage, alias, and
+symbol-name attributes. Slate preserves weak function aliases as assembler
+aliases and uses renamed symbols directly. Conditional instances remain
+unsupported in `translate-directives` because either pragma can affect a
+declaration outside its textual conditional region.
 
 ## Supported predicate → `cfg` mappings
 
