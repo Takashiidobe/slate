@@ -308,6 +308,12 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_asm_goto_outputs: std::cell::Cell::new(false),
         uses_breakpoint: std::cell::Cell::new(false),
         uses_memchr: std::cell::Cell::new(false),
+        target_arch: cir
+            .ops
+            .iter()
+            .find_map(|op| attr_str(op, "cir.triple"))
+            .and_then(rust_target_arch)
+            .map(str::to_string),
         variadic_defs: BTreeSet::new(),
         c_abi_functions: BTreeSet::new(),
         project: project.clone(),
@@ -660,6 +666,7 @@ struct Lowerer<'a> {
     uses_asm_goto_outputs: std::cell::Cell<bool>,
     uses_breakpoint: std::cell::Cell<bool>,
     uses_memchr: std::cell::Cell<bool>,
+    target_arch: Option<String>,
     variadic_defs: BTreeSet<String>,
     c_abi_functions: BTreeSet<String>,
     project: ProjectInfo,
@@ -4510,7 +4517,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_llvm_intrinsic(&mut self, op: &Op) {
-        if attr_str(op, "intrinsic_name") == Some("debugtrap") {
+        let Some(name) = attr_str(op, "intrinsic_name") else {
+            self.lower_unsupported_value(op, "cir.call_llvm_intrinsic");
+            return;
+        };
+        if name == "debugtrap" {
             self.parent.uses_breakpoint.set(true);
             self.push_stmt(Stmt::Expr(Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
@@ -4519,9 +4530,124 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 ))),
                 args: Vec::new(),
             }));
-        } else {
+        } else if !self.lower_x86_intrinsic(op, name) {
             self.lower_unsupported_value(op, "cir.call_llvm_intrinsic");
         }
+    }
+
+    fn lower_x86_intrinsic(&mut self, op: &Op, name: &str) -> bool {
+        let function = match name {
+            "x86.sse2.pause" => "_mm_pause",
+            "x86.sse2.lfence" => "_mm_lfence",
+            "x86.sse2.mfence" => "_mm_mfence",
+            "x86.sse.sfence" => "_mm_sfence",
+            "x86.rdtsc" => "_rdtsc",
+            "x86.sse42.crc32.32.8" => "_mm_crc32_u8",
+            "x86.sse42.crc32.32.16" => "_mm_crc32_u16",
+            "x86.sse42.crc32.32.32" => "_mm_crc32_u32",
+            "x86.sse42.crc32.64.64" => "_mm_crc32_u64",
+            "x86.rdtscp" => return self.lower_x86_rdtscp(op),
+            _ => return false,
+        };
+        let Some(call) = self.x86_intrinsic_op_call(function, op) else {
+            return false;
+        };
+        let call = Self::unsafe_expr(call);
+        if matches!(
+            name,
+            "x86.sse2.pause" | "x86.sse2.lfence" | "x86.sse2.mfence" | "x86.sse.sfence"
+        ) {
+            self.push_stmt(Stmt::Expr(call));
+        } else if let Some(result) = op.results.first() {
+            self.materialize_expr(result, call, op_result_type(op));
+        }
+        true
+    }
+
+    fn lower_x86_rdtscp(&mut self, op: &Op) -> bool {
+        let Some(result) = op.results.first() else {
+            return false;
+        };
+        let Some(result_ty) = op_result_type(op) else {
+            return false;
+        };
+        let Type::Custom(record_name) = self.parent.rust_type(result_ty) else {
+            return false;
+        };
+        let Some(record) = self.parent.records.get(&record_name) else {
+            return false;
+        };
+        let [counter_field, auxiliary_field] = record.fields.as_slice() else {
+            return false;
+        };
+        let counter_field = sanitize_ident(&counter_field.name).into_string();
+        let auxiliary_field = sanitize_ident(&auxiliary_field.name).into_string();
+        let auxiliary = self.unique_local_name("__slate_rdtscp_aux".into());
+        let counter = self.unique_local_name("__slate_rdtscp_counter".into());
+        let Some(call) = self.x86_intrinsic_call(
+            "__rdtscp",
+            &[Expr::Ref {
+                mutable: true,
+                expr: Box::new(Expr::Var(auxiliary.clone().into())),
+            }],
+        ) else {
+            return false;
+        };
+        let expr = Expr::Block(Box::new(crate::rust_ast::Block {
+            stmts: vec![
+                IndentStmt {
+                    depth: 1,
+                    stmt: Stmt::Let {
+                        name: auxiliary.clone(),
+                        mutable: true,
+                        ty: Some(Type::Prim(Prim::U32)),
+                        init: Some(Expr::Value(RustValue::I64(0))),
+                    },
+                },
+                IndentStmt {
+                    depth: 1,
+                    stmt: Stmt::Let {
+                        name: counter.clone(),
+                        mutable: false,
+                        ty: Some(Type::Prim(Prim::U64)),
+                        init: Some(Self::unsafe_expr(call)),
+                    },
+                },
+            ],
+            tail: Some(Box::new(Expr::StructLit {
+                name: record_name,
+                fields: vec![
+                    (counter_field, Expr::Var(counter.into())),
+                    (auxiliary_field, Expr::Var(auxiliary.into())),
+                ],
+            })),
+        }));
+        self.materialize_expr(result, expr, Some(result_ty));
+        true
+    }
+
+    fn x86_intrinsic_op_call(&self, function: &str, op: &Op) -> Option<Expr> {
+        let args = op
+            .operands
+            .iter()
+            .map(|operand| self.operand_expr(operand))
+            .collect::<Vec<_>>();
+        self.x86_intrinsic_call(function, &args)
+    }
+
+    fn x86_intrinsic_call(&self, function: &str, args: &[Expr]) -> Option<Expr> {
+        let arch = match self.parent.target_arch.as_deref()? {
+            "x86" => "x86",
+            "x86_64" => "x86_64",
+            _ => return None,
+        };
+        Some(Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Path(Path::new(
+                ["core", "arch", arch, function].map(Ident::from),
+            ))),
+            args: args.to_vec(),
+        })
     }
 
     fn vector_binary_expr(&self, lhs: &str, rhs: &str, len: u64, op: BinOp) -> Expr {
@@ -9061,6 +9187,11 @@ fn ops_have_direct_continue(ops: &[Op]) -> bool {
 fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> Type {
     let ty = cir_ty.trim();
     if let Some(expanded) = aliases.get(ty) {
+        if (expanded.starts_with("!cir.struct<{") || expanded.starts_with("!cir.union<{"))
+            && let Some(name) = ty.strip_prefix("!rec_")
+        {
+            return Type::Custom(sanitize_ident(name).into_string());
+        }
         return rust_type_with_aliases(expanded, aliases);
     }
     if ty == "()" || ty.is_empty() {
@@ -9286,8 +9417,10 @@ fn cir_ptr_pointee(ty: &str) -> Option<&str> {
 
 fn anon_alias_key(ty: &str, aliases: &BTreeMap<String, String>) -> Option<String> {
     let ty = ty.trim();
-    let name = cir_record_name(aliases.get(ty)?)?;
-    (name.starts_with("anon.") || name == "__once_flag").then(|| ty.to_string())
+    let expanded = aliases.get(ty)?;
+    let name = cir_record_name(expanded).or_else(|| ty.strip_prefix("!rec_"))?;
+    (name.starts_with("anon.") || name.starts_with("anon_") || name == "__once_flag")
+        .then(|| ty.to_string())
 }
 
 fn collect_anon_alias_keys(
@@ -9447,6 +9580,11 @@ fn collect_anon_record_info(
                     collect_anon_alias_keys(ty, aliases, needed);
                 }
             }
+            CirOpKind::CallLlvmIntrinsic => {
+                if let Some(ty) = op_result_type(op) {
+                    collect_anon_alias_keys(ty, aliases, needed);
+                }
+            }
             _ => {}
         }
         for region in &op.regions {
@@ -9536,7 +9674,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
         let Some(expanded) = module.aliases.get(key) else {
             continue;
         };
-        let Some(name) = cir_record_name(expanded) else {
+        let Some(name) = cir_record_name(expanded).or_else(|| key.strip_prefix("!rec_")) else {
             continue;
         };
         let is_union = expanded.trim_start().starts_with("!cir.union");

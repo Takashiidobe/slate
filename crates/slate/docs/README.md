@@ -129,7 +129,8 @@ GNU `__builtin_addressof` and source-location builtins
 (`__builtin_FUNCTION`/`FILE`/`LINE`/`COLUMN`),
 `__builtin_assume`/`__builtin_expect`/`__builtin_debugtrap` and other
 control-flow builtins, target/frame/stack builtins, vector extensions
-(`cir.vec.*`), and the byte-wise memory builtins
+(`cir.vec.*`), x86 pause/fence/time-stamp-counter and CRC32 intrinsics, and the
+byte-wise memory builtins
 (`memcpy`/`memmove`/`memset`/`memchr`) — see
 [cir-op-prioritization.md](cir-op-prioritization.md) for the full op-level
 checklist. `nonnull`/`returns_nonnull` (including `T name[static N]`
