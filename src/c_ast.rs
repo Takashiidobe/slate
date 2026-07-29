@@ -18,6 +18,7 @@ pub struct Unit {
     pub enums: Vec<Enum>,
     pub records: Vec<Record>,
     pub functions: Vec<Function>,
+    pub weak_refs: Vec<WeakRefAttribute>,
     call_bindings: HashMap<Loc, CallBinding>,
 }
 
@@ -75,6 +76,12 @@ pub struct MacroConst {
 #[derive(Debug, Clone)]
 pub struct AsmGoto {
     pub labels: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct WeakRefAttribute {
+    pub name: String,
+    pub target: String,
 }
 
 #[derive(Debug, Clone)]
@@ -472,6 +479,7 @@ fn parse_json_with_record_roots(
     let mut enums = Vec::new();
     let mut records = Vec::new();
     let mut functions = Vec::new();
+    let mut weak_refs = Vec::new();
     collect_enums(&root, source_file, record_roots, &enum_typedefs, &mut enums);
     collect_records(
         &root,
@@ -501,10 +509,12 @@ fn parse_json_with_record_roots(
         &plugin_events.macros,
         &mut functions,
     );
+    collect_weak_ref_attributes(&root, source_file, &mut weak_refs);
     Ok(Unit {
         enums,
         records,
         functions,
+        weak_refs,
         call_bindings,
     })
 }
@@ -586,6 +596,29 @@ fn collect_functions(
     }
     for child in children(node) {
         collect_functions(child, source_file, source_text, macro_events, out);
+    }
+}
+
+fn collect_weak_ref_attributes(node: &Value, source_file: &str, out: &mut Vec<WeakRefAttribute>) {
+    if kind(node) == Some("FunctionDecl")
+        && is_source_node(node, source_file)
+        && children(node)
+            .iter()
+            .any(|child| kind(child) == Some("WeakRefAttr"))
+        && let Some(name) = node.get("name").and_then(Value::as_str)
+        && let Some(target) = children(node)
+            .iter()
+            .find(|child| kind(child) == Some("AliasAttr"))
+            .and_then(|child| child.get("aliasee"))
+            .and_then(Value::as_str)
+    {
+        out.push(WeakRefAttribute {
+            name: name.to_string(),
+            target: target.to_string(),
+        });
+    }
+    for child in children(node) {
+        collect_weak_ref_attributes(child, source_file, out);
     }
 }
 
