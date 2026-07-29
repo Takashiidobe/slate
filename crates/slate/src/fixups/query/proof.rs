@@ -35,6 +35,7 @@ pub(in crate::fixups) enum Predicate {
     FirstNul,
     PrefixContains,
     MovablePure,
+    ZeroUsers,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -60,6 +61,11 @@ pub(in crate::fixups) enum EvidenceDetail {
         nul: usize,
     },
     MovablePure,
+    UseDomain {
+        name: String,
+        users: usize,
+        complete: bool,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -93,4 +99,5 @@ pub(in crate::fixups) enum RejectionReason {
     UnsupportedShape,
     Ambiguous,
     OutOfRange,
+    IncompleteDomain,
 }

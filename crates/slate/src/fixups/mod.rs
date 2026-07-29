@@ -517,7 +517,7 @@ fn apply_with_logger(
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
             let mut builder = query::ExprPlanBuilder::new();
-            builder.add_rule(&query, &rewrite::memchr_prelude::MemchrCalls);
+            builder.add_rule(&query, &query::rules::memchr::calls());
             builder.finish()
         };
         plan.apply(&mut program, &facts, logger).changed
@@ -561,9 +561,14 @@ fn apply_with_logger(
         });
     });
     step!(program, Pass::MemchrPreludePruneUnusedHelper, {
-        run_once_program(&mut program, |program| {
-            rewrite::memchr_prelude::MemchrPreludePruneUnusedHelper::new(logger).fixup(program)
-        });
+        let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::DefinitionPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::memchr::unused_helper());
+            builder.finish()
+        };
+        plan.apply(&mut program, logger).changed
     });
     step!(program, Pass::LateInlineTemps, {
         let limit = inline_temp_fixpoint_limit(&program);

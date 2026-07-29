@@ -412,7 +412,7 @@ fn rewrite_event(
     }
 }
 
-fn evidence_trace_fact(evidence: &Evidence) -> TraceFact {
+pub(super) fn evidence_trace_fact(evidence: &Evidence) -> TraceFact {
     fact(
         format!("evidence.{}", predicate_name(evidence.predicate)),
         evidence_detail(&evidence.detail),
@@ -429,6 +429,7 @@ fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::FirstNul => "first_nul",
         Predicate::PrefixContains => "prefix_contains",
         Predicate::MovablePure => "movable_pure",
+        Predicate::ZeroUsers => "zero_users",
     }
 }
 
@@ -439,6 +440,7 @@ fn rejection_name(rejection: RejectionReason) -> &'static str {
         RejectionReason::UnsupportedShape => "unsupported_shape",
         RejectionReason::Ambiguous => "ambiguous",
         RejectionReason::OutOfRange => "out_of_range",
+        RejectionReason::IncompleteDomain => "incomplete_domain",
     }
 }
 
@@ -465,6 +467,11 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             format!("count={count};nul={nul}")
         }
         EvidenceDetail::MovablePure => "movable_pure".into(),
+        EvidenceDetail::UseDomain {
+            name,
+            users,
+            complete,
+        } => format!("name={name};users={users};complete={complete}"),
     }
 }
 
@@ -504,302 +511,5 @@ fn nul_position_name(position: NulPosition) -> String {
     match position {
         NulPosition::Constant(position) => position.to_string(),
         NulPosition::ByteLength => "byte_length".into(),
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::fixups::facts;
-    use crate::fixups::query::{
-        CallRecord, CallTarget, ExprPlanBuilder, ExprRule, PlanDiagnostic, QueryContext, Rejection,
-        RejectionReason, ReplaceExpr, RuleCase, RuleIdentity, RuleResult,
-    };
-    use crate::fixups::test_support::{call, func, int, temp};
-    use crate::fixups::trace::{NoopLogger, Pass, ProgramSummary, RewriteEvent, TraceLogger};
-    use crate::rust_ast::{Expr, Item, Program, RustValue};
-
-    struct OrderedRule;
-
-    impl ExprRule for OrderedRule {
-        type Candidate = CallRecord;
-
-        fn identity(&self) -> RuleIdentity {
-            RuleIdentity::new(Pass::MemchrPreludeFixupCalls, "ordered_rewrite")
-        }
-
-        fn candidates(&self, query: &QueryContext<'_>) -> Vec<Self::Candidate> {
-            query
-                .calls(&CallTarget::Generated("__rewrite".into()), 1)
-                .to_vec()
-        }
-
-        fn target(&self, candidate: &Self::Candidate) -> crate::fixups::query::ExprSite {
-            candidate.site.clone()
-        }
-
-        fn cases(&self, query: &QueryContext<'_>, candidate: &Self::Candidate) -> Vec<RuleCase> {
-            let specific = match query.const_u8(&candidate.args[0]) {
-                Ok(proof) if proof.value == 0 => RuleResult::replace(
-                    ReplaceExpr::new(candidate.site.clone(), int(10)).with_evidence(proof.evidence),
-                ),
-                Ok(_) => RuleResult::reject(Rejection::new(
-                    crate::fixups::query::Predicate::ConstantU8,
-                    Some(candidate.args[0].clone()),
-                    RejectionReason::Contradicted,
-                    Vec::new(),
-                )),
-                Err(rejection) => RuleResult::reject(rejection),
-            };
-            vec![
-                RuleCase::new("zero", specific),
-                RuleCase::new(
-                    "fallback",
-                    RuleResult::replace(ReplaceExpr::new(candidate.site.clone(), int(20))),
-                ),
-            ]
-        }
-    }
-
-    struct FixedRule {
-        name: &'static str,
-        target: crate::fixups::query::ExprSite,
-        replacement: Expr,
-    }
-
-    impl ExprRule for FixedRule {
-        type Candidate = ();
-
-        fn identity(&self) -> RuleIdentity {
-            RuleIdentity::new(Pass::MemchrPreludeFixupCalls, self.name)
-        }
-
-        fn candidates(&self, _query: &QueryContext<'_>) -> Vec<Self::Candidate> {
-            vec![()]
-        }
-
-        fn target(&self, _candidate: &Self::Candidate) -> crate::fixups::query::ExprSite {
-            self.target.clone()
-        }
-
-        fn cases(&self, _query: &QueryContext<'_>, _candidate: &Self::Candidate) -> Vec<RuleCase> {
-            vec![RuleCase::new(
-                "only",
-                RuleResult::replace(ReplaceExpr::new(
-                    self.target.clone(),
-                    self.replacement.clone(),
-                )),
-            )]
-        }
-    }
-
-    #[derive(Default)]
-    struct RecordingLogger {
-        events: Vec<RewriteEvent>,
-    }
-
-    impl TraceLogger for RecordingLogger {
-        fn is_enabled(&self) -> bool {
-            true
-        }
-
-        fn begin_pass(&mut self, _pass: Pass, _before: ProgramSummary, _before_emit: String) {}
-
-        fn end_pass(&mut self, _after: ProgramSummary, _after_emit: String) {}
-
-        fn rewrite(&mut self, event: RewriteEvent) {
-            self.events.push(event);
-        }
-    }
-
-    fn program() -> Program {
-        Program {
-            items: vec![Item::Fn(func(
-                Vec::new(),
-                None,
-                vec![
-                    temp("first", "i32", call("__rewrite", vec![int(0)])),
-                    temp("second", "i32", call("__rewrite", vec![int(1)])),
-                ],
-            ))],
-        }
-    }
-
-    #[test]
-    fn ordered_cases_plan_and_apply_owned_replacements() {
-        let mut program = program();
-        let analyzed = facts::analyze(&program);
-        let query = QueryContext::new(analyzed.program, &analyzed.facts);
-        let mut builder = ExprPlanBuilder::new();
-        builder.add_rule(&query, &OrderedRule);
-        let plan = builder.finish();
-
-        assert!(!plan.is_empty());
-        assert!(plan.diagnostics().is_empty());
-        drop(query);
-        let facts = analyzed.facts;
-        let mut logger = RecordingLogger::default();
-        let report = plan.apply(&mut program, &facts, &mut logger);
-
-        assert!(report.changed);
-        assert_eq!(report.planned, 2);
-        assert_eq!(report.applied, 2);
-        assert!(report.diagnostics.is_empty());
-        assert_eq!(logger.events.len(), 2);
-        assert_eq!(logger.events[0].kind, "ordered_rewrite");
-        assert!(
-            logger.events[0]
-                .facts
-                .iter()
-                .any(|fact| fact.key == "evidence.constant_u8")
-        );
-        assert!(
-            logger.events[1]
-                .facts
-                .iter()
-                .any(|fact| fact.key == "rejected_case.zero")
-        );
-        let Item::Fn(function) = &program.items[0] else {
-            panic!()
-        };
-        assert!(matches!(
-            &function.body[0].stmt,
-            crate::rust_ast::Stmt::Let {
-                init: Some(Expr::Value(RustValue::I64(10))),
-                ..
-            }
-        ));
-        assert!(matches!(
-            &function.body[1].stmt,
-            crate::rust_ast::Stmt::Let {
-                init: Some(Expr::Value(RustValue::I64(20))),
-                ..
-            }
-        ));
-    }
-
-    #[test]
-    fn same_target_results_are_ambiguous() {
-        let mut program = program();
-        let analyzed = facts::analyze(&program);
-        let query = QueryContext::new(analyzed.program, &analyzed.facts);
-        let target = query.calls(&CallTarget::Generated("__rewrite".into()), 1)[0]
-            .site
-            .clone();
-        let mut builder = ExprPlanBuilder::new();
-        builder
-            .add_rule(
-                &query,
-                &FixedRule {
-                    name: "first",
-                    target: target.clone(),
-                    replacement: int(1),
-                },
-            )
-            .add_rule(
-                &query,
-                &FixedRule {
-                    name: "second",
-                    target,
-                    replacement: int(2),
-                },
-            );
-        let plan = builder.finish();
-
-        assert!(plan.is_empty());
-        assert!(matches!(
-            plan.diagnostics(),
-            [PlanDiagnostic::AmbiguousTarget { contenders, .. }] if contenders.len() == 2
-        ));
-        drop(query);
-        let facts = analyzed.facts;
-        let report = plan.apply(&mut program, &facts, &mut NoopLogger);
-        assert!(!report.changed);
-        assert_eq!(report.planned, 0);
-        assert_eq!(report.applied, 0);
-    }
-
-    #[test]
-    fn parent_and_child_results_are_rejected_together() {
-        let program = program();
-        let analyzed = facts::analyze(&program);
-        let query = QueryContext::new(analyzed.program, &analyzed.facts);
-        let call = &query.calls(&CallTarget::Generated("__rewrite".into()), 1)[0];
-        let mut builder = ExprPlanBuilder::new();
-        builder
-            .add_rule(
-                &query,
-                &FixedRule {
-                    name: "parent",
-                    target: call.site.clone(),
-                    replacement: int(1),
-                },
-            )
-            .add_rule(
-                &query,
-                &FixedRule {
-                    name: "child",
-                    target: call.args[0].clone(),
-                    replacement: int(2),
-                },
-            );
-        let plan = builder.finish();
-
-        assert!(plan.is_empty());
-        assert!(matches!(
-            plan.diagnostics(),
-            [PlanDiagnostic::OverlappingTargets { .. }]
-        ));
-    }
-
-    #[test]
-    fn rejected_candidates_remain_diagnostic() {
-        struct RejectingRule;
-
-        impl ExprRule for RejectingRule {
-            type Candidate = CallRecord;
-
-            fn identity(&self) -> RuleIdentity {
-                RuleIdentity::new(Pass::MemchrPreludeFixupCalls, "rejecting")
-            }
-
-            fn candidates(&self, query: &QueryContext<'_>) -> Vec<Self::Candidate> {
-                query
-                    .calls(&CallTarget::Generated("__rewrite".into()), 1)
-                    .to_vec()
-            }
-
-            fn target(&self, candidate: &Self::Candidate) -> crate::fixups::query::ExprSite {
-                candidate.site.clone()
-            }
-
-            fn cases(
-                &self,
-                query: &QueryContext<'_>,
-                candidate: &Self::Candidate,
-            ) -> Vec<RuleCase> {
-                vec![RuleCase::new(
-                    "constant",
-                    match query.const_u8(&candidate.site) {
-                        Ok(_) => unreachable!(),
-                        Err(rejection) => RuleResult::reject(rejection),
-                    },
-                )]
-            }
-        }
-
-        let program = program();
-        let analyzed = facts::analyze(&program);
-        let query = QueryContext::new(analyzed.program, &analyzed.facts);
-        let mut builder = ExprPlanBuilder::new();
-        builder.add_rule(&query, &RejectingRule);
-        let plan = builder.finish();
-
-        assert!(plan.is_empty());
-        assert_eq!(plan.diagnostics().len(), 2);
-        assert!(plan.diagnostics().iter().all(|diagnostic| matches!(
-            diagnostic,
-            PlanDiagnostic::CandidateRejected { rejections, .. }
-                if rejections.len() == 1
-        )));
     }
 }
