@@ -112,6 +112,7 @@ functions use the platform `libc::mbstate_t` ABI.
 `_Atomic` locals proven non-escaping get native `std::sync::atomic::AtomicN`
 storage with safe method calls (int/bool; float/pointer fall back to
 non-atomic RMW); CAS temp-chains fold into a single `compare_exchange` match.
+GNU `__atomic_test_and_set` and `__atomic_clear` preserve byte-atomic ordering.
 C11 `timespec_get` uses the platform `libc::timespec` ABI.
 
 ### Varargs, attributes, and builtins

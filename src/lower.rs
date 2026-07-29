@@ -2684,6 +2684,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::AtomicFetch => self.lower_atomic_fetch(op),
             CirOpKind::AtomicXchg => self.lower_atomic_xchg(op),
             CirOpKind::AtomicCmpxchg => self.lower_atomic_cmpxchg(op),
+            CirOpKind::AtomicTestAndSet => self.lower_atomic_test_and_set(op),
+            CirOpKind::AtomicClear => self.lower_atomic_clear(op),
             CirOpKind::AtomicFence => self.lower_atomic_fence(op),
             CirOpKind::Return => self.lower_return(op),
             CirOpKind::Scope => self.lower_scope(op),
@@ -6538,6 +6540,42 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
         self.immutable_temps.insert(old.clone());
         self.values.insert(result, Val::Expr(Expr::Var(old.into())));
+    }
+
+    fn lower_atomic_test_and_set(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(ptr) = op.operands.first() else {
+            return;
+        };
+        let old = Self::unsafe_expr(Expr::AtomicSwap {
+            ty: AtomicType::I8,
+            place: AtomicPlace::Ptr(Box::new(self.store_address_expr(ptr))),
+            value: Box::new(Expr::Value(RustValue::I64(1))),
+            ordering: rust_ordering(attr_int(op, "mem_order").unwrap_or(5)),
+        });
+        self.materialize_expr(
+            result,
+            Expr::Binary {
+                op: BinOp::Ne,
+                lhs: Box::new(old),
+                rhs: Box::new(Expr::Value(RustValue::I64(0))),
+            },
+            op_result_type(op),
+        );
+    }
+
+    fn lower_atomic_clear(&mut self, op: &Op) {
+        let Some(ptr) = op.operands.first() else {
+            return;
+        };
+        self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::AtomicStore {
+            ty: AtomicType::I8,
+            place: AtomicPlace::Ptr(Box::new(self.store_address_expr(ptr))),
+            value: Box::new(Expr::Value(RustValue::I64(0))),
+            ordering: store_ordering(attr_int(op, "mem_order").unwrap_or(5)),
+        })));
     }
 
     fn lower_atomic_cmpxchg(&mut self, op: &Op) {
