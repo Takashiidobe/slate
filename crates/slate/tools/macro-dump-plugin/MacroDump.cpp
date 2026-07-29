@@ -248,6 +248,26 @@ public:
                  << llvm::json::Value(std::move(Event)) << "\n";
     return true;
   }
+
+  bool VisitRecordDecl(RecordDecl *Decl) {
+    if (!Decl->isCompleteDefinition())
+      return true;
+    const auto *Attr = Decl->getAttr<MaxFieldAlignmentAttr>();
+    if (!Attr)
+      return true;
+    SourceLocation Loc = SM.getExpansionLoc(Decl->getLocation());
+    if (Loc.isInvalid())
+      return true;
+    llvm::json::Object Event{
+        {"name", Decl->getNameAsString()},
+        {"file", SM.getFilename(Loc).str()},
+        {"offset", static_cast<int64_t>(SM.getFileOffset(Loc))},
+        {"alignment_bits", static_cast<int64_t>(Attr->getAlignment())},
+    };
+    llvm::errs() << "RECORD_PACKING "
+                 << llvm::json::Value(std::move(Event)) << "\n";
+    return true;
+  }
 };
 
 class ProvenanceConsumer : public ASTConsumer {

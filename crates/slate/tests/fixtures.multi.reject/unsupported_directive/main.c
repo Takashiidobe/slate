@@ -1,3 +1,3 @@
-#pragma pack(push, 1)
+#pragma STDC FENV_ACCESS ON
 
 int main(void) { return 0; }

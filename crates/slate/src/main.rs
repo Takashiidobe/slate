@@ -183,6 +183,9 @@ fn reject_active_unsupported(pp: &preprocess::Preprocessing, context: &str) -> R
     for directive in pp.directives.iter().filter(|directive| {
         directive.disposition() == preprocess::DirectiveDisposition::UnsupportedSemantic
     }) {
+        if directive.is_pack_pragma() {
+            continue;
+        }
         match directive.active {
             Some(false) => {}
             Some(true) => return Err(format!("{context}: {}", directive.unsupported_message())),
@@ -664,7 +667,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             comments: Vec::new(),
             kind: c_ast::RecordKind::Struct,
             fields: Vec::new(),
-            packed: false,
+            packed: None,
             align: None,
         });
     }

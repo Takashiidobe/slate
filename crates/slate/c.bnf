@@ -15,11 +15,13 @@
 <include_list> ::= <include> <include_list> | <include> ;
 <include> ::= "#include <stdio.h>" | "#include <stdlib.h>" | "#include <stdint.h>" | "#include <stddef.h>" | "#include <stdbool.h>" | "#include <stdatomic.h>" | "#include <threads.h>" | "#include <time.h>" | "#include <uchar.h>" ;
 <conditional_directive> ::= "#if 0" | "#if 1" | "#ifdef " <ident> | "#ifndef " <ident> | "#elif defined(" <ident> ")" | "#elifdef " <ident> | "#elifndef " <ident> | "#else" | "#endif" ;
+<pack_directive> ::= "#pragma pack(push, " <pack_alignment> ")" | "#pragma pack(pop)" | "#pragma pack(" <pack_alignment> ")" | "#pragma pack()" ;
+<pack_alignment> ::= "1" | "2" | "4" | "8" | "16" ;
 
 # ----- top-level declarations -----
 
 <decl_list> ::= <decl> <decl_list> | <decl> ;
-<decl> ::= <typedef_decl> | <enum_decl> | <struct_decl> | <union_decl> | <global_decl> ;
+<decl> ::= <typedef_decl> | <enum_decl> | <struct_decl> | <union_decl> | <global_decl> | <pack_directive> ;
 
 <typedef_decl> ::= "typedef" <type> <ident> ";" ;
 
@@ -29,7 +31,7 @@
 
 <struct_decl> ::= "struct" <ident> "{" <field_list> "};" | "struct" <ident> "{" "};" ;
 <union_decl> ::= "union" <ident> "{" <field_list> "};" ;
-<field_list> ::= <field> <field_list> | <field> ;
+<field_list> ::= <field> <field_list> | <pack_directive> <field_list> | <field> ;
 <field> ::= <type> <ident> ";" | <type> <ident> "[" "]" ";" | "_Alignas" "(" <int> ")" <type> <ident> ";" | <anonymous_record_member> ;
 <anonymous_record_member> ::= "struct" "{" <field_list> "};" | "union" "{" <field_list> "};" ;
 

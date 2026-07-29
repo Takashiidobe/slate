@@ -118,6 +118,7 @@ C11 `timespec_get` uses the platform `libc::timespec` ABI.
 
 `va_list`/`va_start`/`va_arg`/`va_end`. Constructor/destructor priority
 attributes, `noreturn` (both spellings), inline `asm`, computed goto,
+GNU `#pragma pack` record layout with nested `push`/`pop`,
 `__builtin_assume`/`__builtin_expect` and other control-flow builtins, target/
 frame/stack builtins, vector extensions (`cir.vec.*`), and the byte-wise memory
 builtins (`memcpy`/`memmove`/`memset`/`memchr`) — see
@@ -132,6 +133,9 @@ and literal `#if 0`/`#if 1` gates. `slate translate-directives` recovers
 `#if`/`#ifdef`-gated portability that a single Clang invocation can't see,
 mapping predicates to Rust `cfg`s and Cargo features. See
 [cfg-portability.md](cfg-portability.md).
+Conditional `#pragma pack` remains unsupported in `translate-directives`
+because its layout state can affect records outside the textual conditional
+region.
 
 Generated Rust trees are ignored inspection artifacts and are not regenerated
 as part of feature work or completion. When explicitly requested for manual

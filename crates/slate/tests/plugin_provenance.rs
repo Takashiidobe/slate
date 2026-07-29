@@ -55,6 +55,10 @@ impl Case {
         )
     }
 
+    fn pack_events(&self) -> Vec<Value> {
+        self.tagged_events("RECORD_PACKING ", &[])
+    }
+
     fn tagged_events(&self, prefix: &str, args: &[&str]) -> Vec<Value> {
         let output = Command::new(clang())
             .arg(format!("-fplugin={}", plugin().display()))
@@ -140,6 +144,17 @@ fn reasons(event: &Value) -> Vec<&str> {
         .iter()
         .map(|reason| reason.as_str().expect("reason string"))
         .collect()
+}
+
+#[test]
+fn reports_resolved_record_pack_attributes() {
+    let source = "#pragma pack(push, 2)\nstruct P2 { char tag; int value; };\n#pragma pack(push, 1)\nstruct P1 { char tag; int value; };\n#pragma pack(pop)\nstruct P2Again { char tag; int value; };\n#pragma pack(pop)\nstruct Natural { char tag; int value; };\n";
+    let case = Case::new(source, &[]);
+    let events = case.pack_events();
+    assert_eq!(by_name(events.clone(), "P2")[0]["alignment_bits"], 16);
+    assert_eq!(by_name(events.clone(), "P1")[0]["alignment_bits"], 8);
+    assert_eq!(by_name(events.clone(), "P2Again")[0]["alignment_bits"], 16);
+    assert!(by_name(events, "Natural").is_empty());
 }
 
 #[test]

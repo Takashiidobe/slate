@@ -2480,8 +2480,8 @@ impl Interp {
         let mut offset = 0u64;
         for field in &record.fields {
             let (field_size, field_align) = self.type_layout(&field.ty)?;
-            if !record.is_union && !record.packed {
-                offset = align_to(offset, field_align);
+            if !record.is_union {
+                offset = align_to(offset, self.record_field_align(record, field_align));
             }
             let field_offset = if record.is_union { 0 } else { offset };
             let path = if prefix.is_empty() {
@@ -4677,9 +4677,7 @@ impl Interp {
         let mut offset = 0u64;
         for field in &record.fields {
             let (size, align) = self.type_layout(&field.ty)?;
-            if !record.packed {
-                offset = align_to(offset, align);
-            }
+            offset = align_to(offset, self.record_field_align(record, align));
             offset += size;
         }
         Ok(align_to(offset, self.record_align(record)?))
@@ -4731,9 +4729,7 @@ impl Interp {
         let mut offset = 0u64;
         for field in &record.fields {
             let (size, align) = self.type_layout(&field.ty)?;
-            if !record.packed {
-                offset = align_to(offset, align);
-            }
+            offset = align_to(offset, self.record_field_align(record, align));
             if field.name.as_str() == field_name {
                 return Ok(offset);
             }
@@ -4743,19 +4739,18 @@ impl Interp {
     }
 
     fn record_align(&self, record: &crate::rust_ast::RecordDef) -> EResult<u64> {
-        if record.packed {
-            return Ok(1);
+        let mut max_align = 1u64;
+        for field in &record.fields {
+            let field_align = self.type_layout(&field.ty)?.1;
+            max_align = max_align.max(self.record_field_align(record, field_align));
         }
-        match record.align.map(u64::from) {
-            Some(align) => Ok(align),
-            None => {
-                let mut max_align = 1u64;
-                for field in &record.fields {
-                    max_align = max_align.max(self.type_layout(&field.ty)?.1);
-                }
-                Ok(max_align)
-            }
-        }
+        Ok(record.align.map(u64::from).unwrap_or(1).max(max_align))
+    }
+
+    fn record_field_align(&self, record: &crate::rust_ast::RecordDef, natural_align: u64) -> u64 {
+        record
+            .packed
+            .map_or(natural_align, |packed| natural_align.min(u64::from(packed)))
     }
 
     fn tuple_struct_size(&self, def: &StructDef) -> EResult<u64> {

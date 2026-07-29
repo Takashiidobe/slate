@@ -198,7 +198,7 @@ impl Abi {
 pub enum Repr {
     C,
     Align(u32),
-    Packed,
+    Packed(u32),
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -324,7 +324,7 @@ pub struct RecordDef {
     pub allow_non_camel_case: bool,
     pub name: String,
     pub fields: Vec<RecordField>,
-    pub packed: bool,
+    pub packed: Option<u32>,
     pub align: Option<u32>,
 }
 
