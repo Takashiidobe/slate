@@ -305,6 +305,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_thread_local: std::cell::Cell::new(false),
         uses_used_with_arg: std::cell::Cell::new(false),
         uses_asm_goto_outputs: std::cell::Cell::new(false),
+        uses_breakpoint: std::cell::Cell::new(false),
         uses_memchr: std::cell::Cell::new(false),
         variadic_defs: BTreeSet::new(),
         c_abi_functions: BTreeSet::new(),
@@ -619,6 +620,7 @@ struct Lowerer<'a> {
     uses_thread_local: std::cell::Cell<bool>,
     uses_used_with_arg: std::cell::Cell<bool>,
     uses_asm_goto_outputs: std::cell::Cell<bool>,
+    uses_breakpoint: std::cell::Cell<bool>,
     uses_memchr: std::cell::Cell<bool>,
     variadic_defs: BTreeSet<String>,
     c_abi_functions: BTreeSet<String>,
@@ -1199,6 +1201,9 @@ impl<'a> Lowerer<'a> {
         }
         if self.uses_asm_goto_outputs.get() {
             insert_crate_feature(&mut items, Feature::AsmGotoWithOutputs);
+        }
+        if self.uses_breakpoint.get() {
+            insert_crate_feature(&mut items, Feature::Breakpoint);
         }
         for feature in &self.project.crate_features {
             insert_crate_feature(&mut items, *feature);
@@ -2704,9 +2709,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::VecInsert => self.lower_vec_insert(op),
             CirOpKind::VecShuffle => self.lower_vec_shuffle(op),
             CirOpKind::EhSetjmp => self.lower_eh_setjmp(op),
-            CirOpKind::CallLlvmIntrinsic => {
-                self.lower_unsupported_value(op, "cir.call_llvm_intrinsic")
-            }
+            CirOpKind::CallLlvmIntrinsic => self.lower_llvm_intrinsic(op),
             CirOpKind::Label => {}
             CirOpKind::Yield | CirOpKind::Condition => {}
             _ => {
@@ -4446,6 +4449,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             },
             op_result_type(op),
         );
+    }
+
+    fn lower_llvm_intrinsic(&mut self, op: &Op) {
+        if attr_str(op, "intrinsic_name") == Some("debugtrap") {
+            self.parent.uses_breakpoint.set(true);
+            self.push_stmt(Stmt::Expr(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Path(Path::new(
+                    ["core", "arch", "breakpoint"].map(Ident::from),
+                ))),
+                args: Vec::new(),
+            }));
+        } else {
+            self.lower_unsupported_value(op, "cir.call_llvm_intrinsic");
+        }
     }
 
     fn vector_binary_expr(&self, lhs: &str, rhs: &str, len: u64, op: BinOp) -> Expr {
