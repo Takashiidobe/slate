@@ -3251,6 +3251,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             );
             return;
         }
+        if let Some(target) = parse_cir_global_view(raw)
+            && let Some(result_ty) = result_ty
+            && let Some(value) = self
+                .parent
+                .global_view_init_expr(target, &self.parent.rust_type(result_ty))
+        {
+            self.materialize_expr(result, value, Some(result_ty));
+            return;
+        }
         if let Some(b) = parse_cir_bool(raw) {
             self.materialize_expr(result, Expr::Value(RustValue::Bool(b)), result_ty);
             return;
