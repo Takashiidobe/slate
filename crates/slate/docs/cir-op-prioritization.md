@@ -167,6 +167,8 @@
   - [x] `cir.atomic.fetch`
   - [x] `cir.atomic.xchg`
   - [x] `cir.atomic.cmpxchg`
+  - [x] `cir.atomic.test_and_set`
+  - [x] `cir.atomic.clear`
   - [x] `cir.atomic.fence`
 - [x] memory operations (byte-wise `std::ptr` ops; only clang builtins raise these — `__builtin_bzero`→memset, `__builtin_bcopy`→memmove, aggregate `__builtin_bit_cast`→memcpy, `__builtin_memchr`→memchr — while plain libc `memcpy`/`memset`/... stay `cir.call`s to the extern symbol)
   - [x] `cir.libc.memcpy` (`std::ptr::copy_nonoverlapping`)
