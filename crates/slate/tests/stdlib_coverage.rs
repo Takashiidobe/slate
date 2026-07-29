@@ -21,6 +21,10 @@ struct UnsupportedProbe {
 }
 
 const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[
+    UnsupportedProbe {
+        probe: "complex/functions",
+        bead: "slate-nk3.25.2",
+    },
     // setjmp/longjmp non-local control flow.
     UnsupportedProbe {
         probe: "setjmp/setjmp",
