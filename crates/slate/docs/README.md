@@ -124,6 +124,7 @@ GNU `#pragma GCC visibility` with nested `push`/`pop`,
 GNU `#pragma weak` aliases and `#pragma redefine_extname`,
 GNU `#pragma push_macro`/`pop_macro` state and `#pragma GCC poison`,
 GNU `weakref("target")` calls to local and external targets,
+the zero-based monotonic `__COUNTER__` predefined macro,
 GNU `__builtin_addressof` and source-location builtins
 (`__builtin_FUNCTION`/`FILE`/`LINE`/`COLUMN`),
 `__builtin_assume`/`__builtin_expect`/`__builtin_debugtrap` and other
