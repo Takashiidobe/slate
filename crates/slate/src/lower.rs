@@ -5,13 +5,13 @@ use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use crate::rust_ast::{
-    Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
-    Attr as RustAttr, BinOp, CLibType, Cfg, CrateAttr, Derive, EnumConst, EnumDef, Expr,
-    ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam, FunctionMetadata,
-    GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint, MatchArm,
-    Method, ParameterMetadata, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr,
-    RustValue, SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp,
-    UsedKind, Visibility,
+    Abi, AllocationMetadata, AllocationSize, AsmDialect, AsmOperand, AsmReg, AssumedAlignment,
+    AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType, Cfg,
+    CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
+    FnDef, FnParam, FunctionMetadata, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt,
+    InlineAsm, Item, Label, Lint, MatchArm, Method, ParameterMetadata, Path, Pattern, Prim,
+    Program, RecordDef, RecordField, Repr, RustValue, SelfKind, StdTrait, Stmt, StructDef,
+    StructFields, TraitBound, Type, UnaryOp, UsedKind, ValueMetadata, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -341,8 +341,45 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
                 )
             })
             .collect(),
+        returned_value_metadata: c
+            .function_allocation_attributes
+            .iter()
+            .map(|(name, attributes)| {
+                (
+                    name.clone(),
+                    returned_value_metadata_from_attributes(attributes),
+                )
+            })
+            .collect(),
     };
     lowerer.lower_module(cir, c)
+}
+
+fn returned_value_metadata_from_attributes(
+    attributes: &crate::c_ast::FunctionAllocationAttributes,
+) -> ValueMetadata {
+    let size = match attributes.size_arguments.as_slice() {
+        [index] => Some(AllocationSize::Argument(*index)),
+        [left, right] => Some(AllocationSize::Product(*left, *right)),
+        _ => None,
+    };
+    let allocation = (attributes.fresh
+        || size.is_some()
+        || attributes.alignment_argument.is_some())
+    .then_some(AllocationMetadata {
+        fresh: attributes.fresh,
+        size,
+        alignment_argument: attributes.alignment_argument,
+    });
+    ValueMetadata {
+        allocation,
+        assumed_alignment: attributes.assumed_alignment.as_ref().map(|alignment| {
+            AssumedAlignment {
+                bytes: alignment.bytes,
+                offset: alignment.offset,
+            }
+        }),
+    }
 }
 
 pub fn lower_shared_types(
@@ -633,6 +670,7 @@ struct Lowerer<'a> {
     generated_alloca_frames: Vec<StructDef>,
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     nonnull_static_params: BTreeMap<String, BTreeSet<usize>>,
+    returned_value_metadata: BTreeMap<String, ValueMetadata>,
     macro_consts: BTreeMap<String, Vec<MacroConst>>,
     asm_gotos: BTreeMap<String, Vec<crate::c_ast::AsmGoto>>,
 }
@@ -1786,6 +1824,11 @@ impl<'a> Lowerer<'a> {
             body: f.body,
             metadata: FunctionMetadata {
                 returns_nonnull: op_returns_nonnull(op),
+                returned_value: self
+                    .returned_value_metadata
+                    .get(name)
+                    .cloned()
+                    .unwrap_or_default(),
             },
         }))
     }
@@ -1953,6 +1996,11 @@ impl<'a> Lowerer<'a> {
             ret: ret_ast,
             metadata: FunctionMetadata {
                 returns_nonnull: op_returns_nonnull(op),
+                returned_value: self
+                    .returned_value_metadata
+                    .get(name)
+                    .cloned()
+                    .unwrap_or_default(),
             },
         };
         (decl, param_types, ret_ty)
