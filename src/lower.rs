@@ -243,7 +243,26 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
 }
 
 pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &ProjectInfo) -> Program {
-    let anon_records = anon_local_records(cir);
+    let mut anon_records = anon_local_records(cir);
+    let cir_record_names: BTreeSet<String> = cir
+        .aliases
+        .values()
+        .filter_map(|ty| cir_record_name(ty))
+        .map(|name| sanitize_ident(name).into_string())
+        .collect();
+    let mut anon_record_names: BTreeSet<String> = anon_records
+        .iter()
+        .map(|record| sanitize_ident(&record.name).into_string())
+        .collect();
+    for record in &c.anonymous_header_records {
+        let name = sanitize_ident(&record.name).into_string();
+        if cir_record_names.contains(&name)
+            && clib_record_type(&record.name).is_none()
+            && anon_record_names.insert(name)
+        {
+            anon_records.push(record.clone());
+        }
+    }
     let mut records: BTreeMap<String, crate::c_ast::Record> = c
         .records
         .iter()
@@ -863,13 +882,12 @@ impl<'a> Lowerer<'a> {
                 .unwrap_or_else(|| record.clone());
             items.extend(self.lower_record(&record));
         }
-        for record in &self.anon_records {
-            items.extend(lower_record_def(
-                record,
-                Visibility::Private,
-                Visibility::Private,
-                false,
-            ));
+        for record in self.anon_records.clone() {
+            let name = sanitize_ident(&record.name).into_string();
+            let record = self.records.get(&name).cloned().unwrap_or(record);
+            if !record.fields.is_empty() {
+                items.extend(self.lower_record(&record));
+            }
         }
         items.extend(self.standard_record_defs());
 
@@ -2332,6 +2350,17 @@ impl<'a> Lowerer<'a> {
     }
 }
 
+fn clib_record_type(name: &str) -> Option<CLibType> {
+    Some(match name {
+        "_IO_FILE" => CLibType::File,
+        "__mbstate_t" | "mbstate_t" => CLibType::MbState,
+        "pthread" => CLibType::Pthread,
+        "pthread_attr_t" => CLibType::PthreadAttr,
+        "timespec" => CLibType::Timespec,
+        _ => return None,
+    })
+}
+
 fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
     use crate::c_ast::CType;
     let ptr = |inner: &CType| Type::Ptr {
@@ -2372,14 +2401,9 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
             len: *len,
         },
         CType::Array(inner, None) => ptr(inner),
-        CType::Record(name) if name == "_IO_FILE" => Type::CLib(CLibType::File),
-        CType::Record(name) if matches!(name.as_str(), "__mbstate_t" | "mbstate_t") => {
-            Type::CLib(CLibType::MbState)
-        }
-        CType::Record(name) if name == "pthread" => Type::CLib(CLibType::Pthread),
-        CType::Record(name) if name == "pthread_attr_t" => Type::CLib(CLibType::PthreadAttr),
-        CType::Record(name) if name == "timespec" => Type::CLib(CLibType::Timespec),
-        CType::Record(name) => Type::Custom(sanitize_ident(name).into_string()),
+        CType::Record(name) => clib_record_type(name)
+            .map(Type::CLib)
+            .unwrap_or_else(|| Type::Custom(sanitize_ident(name).into_string())),
         CType::Enum(name) => Type::Custom(sanitize_ident(name).into_string()),
     }
 }
@@ -9264,14 +9288,9 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
             len,
         }
     } else if let Some(name) = cir_record_name(ty) {
-        match name {
-            "_IO_FILE" => Type::CLib(CLibType::File),
-            "__mbstate_t" | "mbstate_t" => Type::CLib(CLibType::MbState),
-            "pthread" => Type::CLib(CLibType::Pthread),
-            "pthread_attr_t" => Type::CLib(CLibType::PthreadAttr),
-            "timespec" => Type::CLib(CLibType::Timespec),
-            _ => Type::Custom(sanitize_ident(name).into_string()),
-        }
+        clib_record_type(name)
+            .map(Type::CLib)
+            .unwrap_or_else(|| Type::Custom(sanitize_ident(name).into_string()))
     } else {
         Type::Prim(Prim::I32)
     }
@@ -9633,10 +9652,6 @@ fn collect_anon_bitfield_slots(
     }
 }
 
-/// Recover the function-local anonymous record types the CIR uses as locals but
-/// that never surface as named Clang AST records (libyaml's STACK/QUEUE macro
-/// locals): field types from the type-alias table, field names from
-/// `cir.get_member`.
 pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
     let mut needed = BTreeSet::new();
     let mut field_names = BTreeMap::new();

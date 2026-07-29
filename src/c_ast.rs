@@ -17,6 +17,7 @@ thread_local! {
 pub struct Unit {
     pub enums: Vec<Enum>,
     pub records: Vec<Record>,
+    pub anonymous_header_records: Vec<Record>,
     pub functions: Vec<Function>,
     pub weak_refs: Vec<WeakRefAttribute>,
     pub function_allocation_attributes: HashMap<String, FunctionAllocationAttributes>,
@@ -493,6 +494,7 @@ fn parse_json_with_record_roots(
     ENUM_TYPEDEFS.with(|table| *table.borrow_mut() = enum_typedefs.clone());
     let mut enums = Vec::new();
     let mut records = Vec::new();
+    let mut anonymous_header_records = Vec::new();
     let mut functions = Vec::new();
     let mut weak_refs = Vec::new();
     let mut function_allocation_attributes = HashMap::new();
@@ -503,6 +505,7 @@ fn parse_json_with_record_roots(
         record_roots,
         &plugin_events.pack_attributes,
         &mut records,
+        &mut anonymous_header_records,
     );
     let source_text = (!source_file.is_empty())
         .then(|| std::fs::read_to_string(source_file).ok())
@@ -535,6 +538,7 @@ fn parse_json_with_record_roots(
     Ok(Unit {
         enums,
         records,
+        anonymous_header_records,
         functions,
         weak_refs,
         function_allocation_attributes,
@@ -756,6 +760,7 @@ fn collect_records(
     record_roots: &[PathBuf],
     pack_attributes: &[PackAttribute],
     out: &mut Vec<Record>,
+    anonymous_header_out: &mut Vec<Record>,
 ) {
     if kind(node) == Some("RecordDecl")
         && (is_source_node(node, source_file) || is_in_record_roots(node, record_roots))
@@ -770,7 +775,6 @@ fn collect_records(
     let kids = children(node);
     for (i, child) in kids.iter().enumerate() {
         if kind(child) == Some("RecordDecl")
-            && is_included_record(child, source_file, record_roots)
             && child
                 .get("completeDefinition")
                 .and_then(Value::as_bool)
@@ -780,13 +784,29 @@ fn collect_records(
                 .and_then(Value::as_str)
                 .unwrap_or("")
                 .is_empty()
-            && let Some(record) = next_anonymous_field_name(&kids, i + 1)
-                .or_else(|| next_anonymous_typedef_name(&kids, i + 1))
-                .and_then(|name| extract_record(child, Some(name), source_file, pack_attributes))
         {
-            out.push(record);
+            if is_included_record(child, source_file, record_roots)
+                && let Some(record) = next_anonymous_field_name(&kids, i + 1)
+                    .or_else(|| next_anonymous_typedef_name(&kids, i + 1))
+                    .and_then(|name| {
+                        extract_record(child, Some(name), source_file, pack_attributes)
+                    })
+            {
+                out.push(record);
+            } else if let Some(record) = next_referenced_anonymous_typedef_name(&kids, i + 1)
+                .and_then(|name| extract_record(child, Some(name), source_file, pack_attributes))
+            {
+                anonymous_header_out.push(record);
+            }
         }
-        collect_records(child, source_file, record_roots, pack_attributes, out);
+        collect_records(
+            child,
+            source_file,
+            record_roots,
+            pack_attributes,
+            out,
+            anonymous_header_out,
+        );
     }
 }
 
@@ -945,6 +965,13 @@ fn next_anonymous_typedef_name(kids: &[&Value], start: usize) -> Option<String> 
     let name = sibling.get("name")?.as_str()?;
     let ty = qual_type(sibling)?;
     (ty == format!("struct {name}") || ty == format!("union {name}")).then(|| name.to_string())
+}
+
+fn next_referenced_anonymous_typedef_name(kids: &[&Value], start: usize) -> Option<String> {
+    let sibling = kids.get(start)?;
+    (sibling.get("isReferenced").and_then(Value::as_bool) == Some(true))
+        .then(|| next_anonymous_typedef_name(kids, start))
+        .flatten()
 }
 
 fn next_enum_typedef_name(kids: &[&Value], start: usize, tag: &str) -> Option<String> {
