@@ -255,6 +255,11 @@ impl DirectiveRecord {
     pub fn is_pack_pragma(&self) -> bool {
         self.name == DirectiveName::Pragma && is_pack_pragma(&self.raw_payload)
     }
+
+    pub fn is_clang_resolved_pragma(&self) -> bool {
+        self.name == DirectiveName::Pragma
+            && (is_pack_pragma(&self.raw_payload) || is_visibility_pragma(&self.raw_payload))
+    }
 }
 
 fn is_diagnostic_pragma(payload: &str) -> bool {
@@ -285,6 +290,29 @@ fn is_pack_pragma(payload: &str) -> bool {
         }
         _ => false,
     }
+}
+
+fn is_visibility_pragma(payload: &str) -> bool {
+    let Some(rest) = payload
+        .trim()
+        .strip_prefix("GCC visibility")
+        .map(str::trim_start)
+    else {
+        return false;
+    };
+    if rest == "pop" {
+        return true;
+    }
+    let Some(value) = rest
+        .strip_prefix("push")
+        .map(str::trim_start)
+        .and_then(|rest| rest.strip_prefix('('))
+        .and_then(|rest| rest.strip_suffix(')'))
+        .map(str::trim)
+    else {
+        return false;
+    };
+    matches!(value, "default" | "hidden" | "protected" | "internal")
 }
 
 fn pack_alignment(value: &str) -> bool {

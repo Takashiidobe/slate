@@ -119,6 +119,7 @@ C11 `timespec_get` uses the platform `libc::timespec` ABI.
 `va_list`/`va_start`/`va_arg`/`va_end`. Constructor/destructor priority
 attributes, `noreturn` (both spellings), inline `asm`, computed goto,
 GNU `#pragma pack` record layout with nested `push`/`pop`,
+GNU `#pragma GCC visibility` with nested `push`/`pop`,
 GNU `weakref("target")` calls to local and external targets,
 `__builtin_assume`/`__builtin_expect` and other control-flow builtins, target/
 frame/stack builtins, vector extensions (`cir.vec.*`), and the byte-wise memory

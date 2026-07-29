@@ -544,3 +544,40 @@ fn visibility_attrs_lower_best_effort() {
         "expected protected visibility warnings, got:\n{stderr}"
     );
 }
+
+#[test]
+fn visibility_pragma_stack_controls_rust_exports() {
+    let rs_dir = build_and_diff("visibility_pragma");
+    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
+
+    for name in ["visible_before", "visible_inner", "visible_after"] {
+        assert!(
+            main_rs.contains(&format!("#[unsafe(no_mangle)]\npub extern \"C\" fn {name}")),
+            "visible symbol `{name}` should remain exported:\n{main_rs}"
+        );
+    }
+    for name in [
+        "visible_before_global",
+        "visible_inner_global",
+        "visible_after_global",
+    ] {
+        assert!(
+            main_rs.contains(&format!("#[unsafe(no_mangle)]\npub static mut {name}")),
+            "visible symbol `{name}` should remain exported:\n{main_rs}"
+        );
+    }
+    for name in ["hidden_outer", "hidden_again"] {
+        assert!(
+            main_rs.contains(&format!("fn {name}"))
+                && !main_rs.contains(&format!("pub extern \"C\" fn {name}")),
+            "hidden symbol `{name}` should remain private:\n{main_rs}"
+        );
+    }
+    for name in ["hidden_outer_global", "hidden_again_global"] {
+        assert!(
+            main_rs.contains(&format!("static mut {name}"))
+                && !main_rs.contains(&format!("pub static mut {name}")),
+            "hidden symbol `{name}` should remain private:\n{main_rs}"
+        );
+    }
+}
