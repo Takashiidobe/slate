@@ -39,7 +39,7 @@
   - [x] `cir.block_address`
   - [x] `cir.indirect_br`
   - [x] `cir.eh.setjmp` initial-return lowering
-  - [x] `cir.call_llvm_intrinsic` debugtrap and deliberate panic fallback
+  - [x] `cir.call_llvm_intrinsic` debugtrap, emitted x86 pause/fence/RDTSC/RDTSCP/CRC32 intrinsics, and deliberate panic fallback
 - [x] vector extensions
   - [x] `!cir.vector`
   - [x] `#cir.const_vector`
