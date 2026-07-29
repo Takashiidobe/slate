@@ -208,6 +208,27 @@ fn anonymous_local_structs_use_generated_tuple_structs() {
     assert!(!rust.contains("anon_0 { x:"));
     assert!(!rust.contains("point.x"));
     assert!(!rust.contains("point.y"));
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg("--debug-only-pass")
+        .arg("anonymous_structs")
+        .arg(c_src)
+        .output()
+        .expect("run anonymous_structs query trace");
+    assert!(
+        output.status.success(),
+        "fixup-debug failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
+    assert!(stdout.contains("rewrite_anonymous_structs"));
+    assert!(stdout.contains("query_case=complete_domain"));
+    assert!(
+        stdout.contains(
+            "evidence.anonymous_struct_domain=records=1;facts=1;conflicts=0;complete=true"
+        )
+    );
 }
 
 #[test]
@@ -228,6 +249,43 @@ fn anonymous_struct_arrays_use_generated_tuple_structs() {
     assert!(rust.contains("error_log[0].0"));
     assert!(!rust.contains("anon_0"));
     assert!(!rust.contains("error_log[0].code"));
+}
+
+#[test]
+fn anonymous_struct_name_collisions_preserve_the_baseline_ast() {
+    let tmp =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-anon-struct-name-collision");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("anon_struct_name_collision.c");
+    let generated = tmp.join("anon_struct_name_collision.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate anonymous struct collision fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read anonymous struct collision Rust");
+    assert!(rust.contains("struct __slate_anonymous_struct_0 {"));
+    assert!(rust.contains("struct anon_0 {"));
+    assert!(rust.contains("let point: anon_0 = anon_0 { x: 3, y: 4 };"));
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg("--debug-only-pass")
+        .arg("anonymous_structs")
+        .arg(c_src)
+        .output()
+        .expect("run rejected anonymous_structs query trace");
+    assert!(
+        output.status.success(),
+        "fixup-debug failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
+    assert!(
+        stdout.contains("rejected_case.complete_domain=anonymous_struct_domain:incomplete_domain")
+    );
+    assert!(
+        stdout.contains(
+            "evidence.anonymous_struct_domain=records=1;facts=1;conflicts=1;complete=false"
+        )
+    );
 }
 
 #[test]

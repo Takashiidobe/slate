@@ -1,4 +1,3 @@
-pub(super) mod anonymous_structs;
 pub(super) mod array_element_pointer_origin;
 pub(super) mod atomic_compare_exchange;
 pub(super) mod atomic_locals;

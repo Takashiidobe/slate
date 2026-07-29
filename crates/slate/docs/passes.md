@@ -99,7 +99,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 1. `goto` - restructure the goto dispatch loop into structured control flow - to fixpoint, per function (`to_fixpoint_items`).
 2. `switch` - collapse a fallthrough-free switch dispatch loop into a direct `match` over the selector expression - once, per function.
 3. `early_inline_temps` - inline single-use pure temps, early variant - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`), capped at 5 rounds for very large functions (`> 2_000` statements) so pathological cases don't spin.
-4. `anonymous_structs` - hoist repeated anonymous-struct shapes into named structs - once.
+4. `anonymous_structs` - query the complete anonymous-record domain and atomically hoist its definitions, types, literals, and field accesses into named tuple structs - once.
 5. `param_spills` - fold a parameter's stack spill into its binding - once, per function.
 6. `zero_init` (`cross_effects = false`) - fuse a zero-init `let` with the assignment that overwrites it - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`).
 7. `struct_field_init` - fold field assignments into the preceding struct literal - to fixpoint (`to_fixpoint_items`).

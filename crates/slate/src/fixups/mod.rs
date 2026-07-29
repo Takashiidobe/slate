@@ -170,9 +170,13 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::AnonymousStructs, {
-        run_once_program(&mut program, |program| {
-            rewrite::anonymous_structs::AnonymousStructs::new(&facts, logger).fixup(program)
-        });
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ProgramPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::anonymous_structs::program());
+            builder.finish()
+        };
+        plan.apply(&mut program, logger);
     });
     step!(program, Pass::ParamSpills, {
         run_once_items(&mut program, |item_index, f| {

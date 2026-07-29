@@ -2,49 +2,80 @@ use std::collections::BTreeMap;
 
 use crate::fixups::facts::{FixupFacts, FunctionId};
 use crate::fixups::support::walk;
-use crate::fixups::trace::{
-    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
-};
 use crate::rust_ast::{
     Attr, Derive, Expr, FnDef, ImplItem, IndentStmt, Item, Program, Repr, Stmt, StructDef,
     StructFields, Type,
 };
 
-pub(in crate::fixups) struct AnonymousStructs<'a> {
-    facts: &'a FixupFacts,
-    logger: &'a mut dyn TraceLogger,
+use super::{
+    AnonymousStructPlan, AnonymousStructSet, ExprSite, Predicate, QueryContext, Rejection,
+    RejectionReason,
+};
+
+pub(in crate::fixups) struct ProgramRecipe {
+    kind: ProgramRecipeKind,
 }
 
-impl<'a> AnonymousStructs<'a> {
-    pub(in crate::fixups) fn new(facts: &'a FixupFacts, logger: &'a mut dyn TraceLogger) -> Self {
-        Self { facts, logger }
-    }
+enum ProgramRecipeKind {
+    AnonymousStructs(AnonymousStructSet),
+}
 
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
-        let before = self.logger.is_enabled().then(|| program.emit());
-        let changed = fixup_impl(program, self.facts);
-        if changed && let Some(before) = before {
-            self.logger.rewrite(RewriteEvent {
-                pass: TracePass::AnonymousStructs,
-                kind: "rewrite_anonymous_structs".into(),
-                location: TraceLocation::default(),
-                before: vec![TraceSnippet::new("program", before.trim_end())],
-                after: vec![TraceSnippet::new("program", program.emit().trim_end())],
-                facts: vec![fact(
-                    "anonymous_structs",
-                    self.facts.anonymous_structs.len().to_string(),
-                )],
-            });
+pub(in crate::fixups) fn rewrite_anonymous_structs(structs: AnonymousStructSet) -> ProgramRecipe {
+    ProgramRecipe {
+        kind: ProgramRecipeKind::AnonymousStructs(structs),
+    }
+}
+
+pub(super) struct PreparedProgram {
+    pub(super) replacement: Program,
+    pub(super) anchors: Vec<(usize, String)>,
+}
+
+impl ProgramRecipe {
+    pub(super) fn lower(self, query: &QueryContext<'_>) -> Result<PreparedProgram, Rejection> {
+        match self.kind {
+            ProgramRecipeKind::AnonymousStructs(structs) => {
+                let anchors = structs
+                    .structs
+                    .iter()
+                    .map(|plan| (plan.item_index, plan.original_name.clone()))
+                    .collect();
+                let site = structs.structs.first().map(|plan| ExprSite {
+                    item_index: plan.item_index,
+                    path: Default::default(),
+                    fact_path: Default::default(),
+                });
+                let mut replacement = query.snapshot_program().clone();
+                if !apply_anonymous_structs(
+                    &mut replacement,
+                    query.snapshot_facts(),
+                    structs.structs,
+                ) {
+                    return Err(Rejection::new(
+                        Predicate::AnonymousStructDomain,
+                        site,
+                        RejectionReason::Contradicted,
+                        Vec::new(),
+                    ));
+                }
+                Ok(PreparedProgram {
+                    replacement,
+                    anchors,
+                })
+            }
         }
-        changed
     }
 }
 
-fn fixup_impl(program: &mut Program, facts: &FixupFacts) -> bool {
-    let plans = plans(facts);
-    if plans.is_empty() {
-        return false;
-    }
+fn apply_anonymous_structs(
+    program: &mut Program,
+    facts: &FixupFacts,
+    structs: Vec<AnonymousStructPlan>,
+) -> bool {
+    let plans = structs
+        .into_iter()
+        .map(|plan| (plan.original_name.clone(), plan))
+        .collect::<BTreeMap<_, _>>();
     let record_fields = record_field_types(program);
     let global_types = global_types(program);
     let mut changed = false;
@@ -83,44 +114,9 @@ fn global_types(program: &Program) -> BTreeMap<String, Type> {
         .collect()
 }
 
-#[derive(Clone)]
-struct Plan {
-    generated_name: String,
-    fields: Vec<FieldPlan>,
-}
-
-#[derive(Clone)]
-struct FieldPlan {
-    name: String,
-    ty: Type,
-}
-
-fn plans(facts: &FixupFacts) -> BTreeMap<String, Plan> {
-    facts
-        .anonymous_structs
-        .iter()
-        .map(|fact| {
-            (
-                fact.original_name.clone(),
-                Plan {
-                    generated_name: fact.generated_name.clone(),
-                    fields: fact
-                        .fields
-                        .iter()
-                        .map(|field| FieldPlan {
-                            name: field.name.clone(),
-                            ty: field.ty.clone(),
-                        })
-                        .collect(),
-                },
-            )
-        })
-        .collect()
-}
-
 fn rewrite_item(
     item: &mut Item,
-    plans: &BTreeMap<String, Plan>,
+    plans: &BTreeMap<String, AnonymousStructPlan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
     global_types: &BTreeMap<String, Type>,
     facts: &FixupFacts,
@@ -151,27 +147,28 @@ fn rewrite_item(
             });
             true
         }
-        Item::Fn(f) => {
-            let Some(function) = facts
+        Item::Fn(function) => {
+            let function_id = facts
                 .functions
                 .iter()
-                .find(|function| function.name == f.name)
-                .map(|function| function.id)
-            else {
-                return rewrite_fn(f, None, plans, record_fields, global_types, facts);
-            };
-            rewrite_fn(f, Some(function), plans, record_fields, global_types, facts)
+                .find(|fact| fact.name == function.name)
+                .map(|fact| fact.id);
+            rewrite_fn(
+                function,
+                function_id,
+                plans,
+                record_fields,
+                global_types,
+                facts,
+            )
         }
-        Item::Static { ty, init, .. } => {
+        Item::Static { ty, init, .. } | Item::Const { ty, init, .. } => {
             rewrite_type(ty, plans) | rewrite_expr(init, global_types, plans, record_fields)
         }
-        Item::Const { ty, init, .. } => {
-            rewrite_type(ty, plans) | rewrite_expr(init, global_types, plans, record_fields)
-        }
-        Item::Struct(s) => rewrite_struct_def(s, plans),
-        Item::Impl(im) => {
-            let mut changed = rewrite_type(&mut im.self_ty, plans);
-            for item in &mut im.items {
+        Item::Struct(record) => rewrite_struct_def(record, plans),
+        Item::Impl(block) => {
+            let mut changed = rewrite_type(&mut block.self_ty, plans);
+            for item in &mut block.items {
                 match item {
                     ImplItem::AssocType { ty, .. } => changed |= rewrite_type(ty, plans),
                     ImplItem::Method(method) => {
@@ -193,11 +190,11 @@ fn rewrite_item(
             let mut changed = false;
             for decl in decls {
                 match decl {
-                    crate::rust_ast::ExternDecl::Fn(f) => {
-                        for param in &mut f.params {
+                    crate::rust_ast::ExternDecl::Fn(function) => {
+                        for param in &mut function.params {
                             changed |= rewrite_type(&mut param.ty, plans);
                         }
-                        if let Some(ret) = &mut f.ret {
+                        if let Some(ret) = &mut function.ret {
                             changed |= rewrite_type(ret, plans);
                         }
                     }
@@ -220,25 +217,25 @@ fn rewrite_item(
 }
 
 fn rewrite_fn(
-    f: &mut FnDef,
-    function: Option<FunctionId>,
-    plans: &BTreeMap<String, Plan>,
+    function: &mut FnDef,
+    function_id: Option<FunctionId>,
+    plans: &BTreeMap<String, AnonymousStructPlan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
     global_types: &BTreeMap<String, Type>,
     facts: &FixupFacts,
 ) -> bool {
     let mut local_types = global_types.clone();
-    if let Some(function) = function {
-        local_types.extend(local_anonymous_types(function, facts));
+    if let Some(function_id) = function_id {
+        local_types.extend(local_anonymous_types(function_id, facts));
     }
     let mut changed = false;
-    for param in &mut f.params {
+    for param in &mut function.params {
         changed |= rewrite_type(&mut param.ty, plans);
     }
-    if let Some(ret) = &mut f.ret {
+    if let Some(ret) = &mut function.ret {
         changed |= rewrite_type(ret, plans);
     }
-    changed |= rewrite_body(&mut f.body, &local_types, plans, record_fields);
+    changed |= rewrite_body(&mut function.body, &local_types, plans, record_fields);
     changed
 }
 
@@ -257,7 +254,7 @@ fn local_anonymous_types(function: FunctionId, facts: &FixupFacts) -> BTreeMap<S
 fn rewrite_body(
     body: &mut Vec<IndentStmt>,
     local_types: &BTreeMap<String, Type>,
-    plans: &BTreeMap<String, Plan>,
+    plans: &BTreeMap<String, AnonymousStructPlan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> bool {
     let mut changed = false;
@@ -273,7 +270,7 @@ fn rewrite_body(
 fn rewrite_stmt(
     stmt: &mut Stmt,
     local_types: &BTreeMap<String, Type>,
-    plans: &BTreeMap<String, Plan>,
+    plans: &BTreeMap<String, AnonymousStructPlan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> bool {
     let mut changed = false;
@@ -295,7 +292,7 @@ fn rewrite_stmt(
 fn rewrite_expr(
     expr: &mut Expr,
     local_types: &BTreeMap<String, Type>,
-    plans: &BTreeMap<String, Plan>,
+    plans: &BTreeMap<String, AnonymousStructPlan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> bool {
     match expr {
@@ -347,7 +344,7 @@ fn rewrite_expr(
     }
 }
 
-fn positional_fields(fields: &[(String, Expr)], plan: &Plan) -> Option<Vec<Expr>> {
+fn positional_fields(fields: &[(String, Expr)], plan: &AnonymousStructPlan) -> Option<Vec<Expr>> {
     if fields.len() != plan.fields.len() {
         return None;
     }
@@ -364,7 +361,7 @@ fn positional_fields(fields: &[(String, Expr)], plan: &Plan) -> Option<Vec<Expr>
 fn base_original_type(
     expr: &Expr,
     local_types: &BTreeMap<String, Type>,
-    plans: &BTreeMap<String, Plan>,
+    plans: &BTreeMap<String, AnonymousStructPlan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> Option<String> {
     let ty = expr_type(expr, local_types, plans, record_fields)?;
@@ -377,7 +374,7 @@ fn base_original_type(
 fn expr_type(
     expr: &Expr,
     local_types: &BTreeMap<String, Type>,
-    plans: &BTreeMap<String, Plan>,
+    plans: &BTreeMap<String, AnonymousStructPlan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
 ) -> Option<Type> {
     match expr {
@@ -407,8 +404,11 @@ fn expr_type(
     }
 }
 
-fn rewrite_struct_def(s: &mut StructDef, plans: &BTreeMap<String, Plan>) -> bool {
-    match &mut s.fields {
+fn rewrite_struct_def(
+    record: &mut StructDef,
+    plans: &BTreeMap<String, AnonymousStructPlan>,
+) -> bool {
+    match &mut record.fields {
         StructFields::Tuple(fields) => rewrite_types(fields, plans),
         StructFields::Named(fields) => {
             let mut changed = false;
@@ -420,7 +420,7 @@ fn rewrite_struct_def(s: &mut StructDef, plans: &BTreeMap<String, Plan>) -> bool
     }
 }
 
-fn rewrite_type(ty: &mut Type, plans: &BTreeMap<String, Plan>) -> bool {
+fn rewrite_type(ty: &mut Type, plans: &BTreeMap<String, AnonymousStructPlan>) -> bool {
     match ty {
         Type::Custom(name) => {
             let Some(plan) = plans.get(name) else {
@@ -448,7 +448,7 @@ fn rewrite_type(ty: &mut Type, plans: &BTreeMap<String, Plan>) -> bool {
     }
 }
 
-fn rewrite_types(types: &mut [Type], plans: &BTreeMap<String, Plan>) -> bool {
+fn rewrite_types(types: &mut [Type], plans: &BTreeMap<String, AnonymousStructPlan>) -> bool {
     let mut changed = false;
     for ty in types {
         changed |= rewrite_type(ty, plans);
