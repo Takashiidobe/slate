@@ -1,6 +1,5 @@
 #include "test.h"
 #include <pthread.h>
-#include <stdio.h>
 
 _Thread_local int v1;
 _Thread_local int v2 = 5;

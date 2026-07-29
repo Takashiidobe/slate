@@ -1704,7 +1704,8 @@ impl<'a> Lowerer<'a> {
         if linkage_is_weak(op) {
             self.uses_linkage.set(true);
         }
-        let unsafe_ = is_variadic || self.unsafe_functions.contains(name);
+        let unsafe_ = is_variadic
+            || self.unsafe_functions.contains(name) && !self.c_abi_functions.contains(name);
         let layout_queries: VecDeque<_> = self
             .layout_queries
             .get(name)
@@ -7468,6 +7469,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn pointer_operand_expr(&self, operand: &str) -> Expr {
         if self.member_ptrs.contains_key(operand) || self.element_ptrs.contains_key(operand) {
+            return self.store_address_expr(operand);
+        }
+        if self.global_name(operand).is_some() {
             return self.store_address_expr(operand);
         }
         if let Some(value) = self.values.get(operand) {
