@@ -51,6 +51,8 @@ The current `CallCaseContext` helpers are:
 - `full_byte_view(source, count)` proves the count covers the full byte view.
 - `first_nul(source)` proves NUL termination and captures its position.
 - `prefix_contains(count, nul)` proves the searched prefix reaches that NUL.
+- `never_returning_extern()` proves the selected known call has a matching
+  extern declaration with the same arity and a `!` return type.
 
 Use `?` for every precondition. The context automatically records accepted proof
 evidence and earlier case rejections for `fixup-debug`.

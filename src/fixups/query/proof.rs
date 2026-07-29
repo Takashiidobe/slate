@@ -38,6 +38,7 @@ pub(in crate::fixups) enum Predicate {
     FirstNul,
     PrefixContains,
     MovablePure,
+    NeverReturningExtern,
     ZeroUsers,
     ZeroGroupUsers,
 }
@@ -65,6 +66,11 @@ pub(in crate::fixups) enum EvidenceDetail {
         nul: usize,
     },
     MovablePure,
+    KnownExternDeclaration {
+        target: crate::function_identity::Known,
+        arity: usize,
+        returns_never: bool,
+    },
     UseDomain {
         name: String,
         users: usize,

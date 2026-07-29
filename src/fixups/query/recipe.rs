@@ -8,8 +8,15 @@ use crate::rust_ast::{
 };
 
 pub(in crate::fixups) struct ExprRecipe<'snapshot> {
-    source: ByteSource<'snapshot>,
-    index: SearchIndex,
+    kind: ExprRecipeKind<'snapshot>,
+}
+
+enum ExprRecipeKind<'snapshot> {
+    PointerAtOrNull {
+        source: ByteSource<'snapshot>,
+        index: SearchIndex,
+    },
+    ProcessExit,
 }
 
 pub(in crate::fixups) enum SearchIndex {
@@ -25,7 +32,15 @@ pub(in crate::fixups) fn pointer_at_or_null(
     source: ByteSource<'_>,
     index: SearchIndex,
 ) -> ExprRecipe<'_> {
-    ExprRecipe { source, index }
+    ExprRecipe {
+        kind: ExprRecipeKind::PointerAtOrNull { source, index },
+    }
+}
+
+pub(in crate::fixups) fn process_exit() -> ExprRecipe<'static> {
+    ExprRecipe {
+        kind: ExprRecipeKind::ProcessExit,
+    }
 }
 
 pub(in crate::fixups) fn known_index(position: NulPosition) -> SearchIndex {
@@ -87,22 +102,49 @@ impl FunctionBodyRecipe {
 }
 
 impl ExprRecipe<'_> {
-    pub(super) fn lower(self, query: &QueryContext<'_>) -> Result<Expr, Rejection> {
-        let index = match self.index {
-            SearchIndex::Known(position) => some(nul_index_expr(self.source.clone(), position)),
-            SearchIndex::Position(needle) => {
-                let value = query.expr(&needle.site).cloned().ok_or_else(|| {
-                    Rejection::new(
-                        Predicate::MovablePure,
-                        Some(needle.site),
-                        RejectionReason::MissingEvidence,
-                        Vec::new(),
-                    )
-                })?;
-                position(byte_source_expr(self.source.clone()), byte_expr(value))
+    pub(super) fn lower(
+        self,
+        query: &QueryContext<'_>,
+        call_site: &crate::fixups::query::ExprSite,
+    ) -> Result<Expr, Rejection> {
+        match self.kind {
+            ExprRecipeKind::PointerAtOrNull { source, index } => {
+                let index = match index {
+                    SearchIndex::Known(position) => some(nul_index_expr(source.clone(), position)),
+                    SearchIndex::Position(needle) => {
+                        let value = query.expr(&needle.site).cloned().ok_or_else(|| {
+                            Rejection::new(
+                                Predicate::MovablePure,
+                                Some(needle.site),
+                                RejectionReason::MissingEvidence,
+                                Vec::new(),
+                            )
+                        })?;
+                        position(byte_source_expr(source.clone()), byte_expr(value))
+                    }
+                };
+                Ok(pointer_search(source, index))
             }
-        };
-        Ok(pointer_search(self.source, index))
+            ExprRecipeKind::ProcessExit => {
+                let Some(Expr::Call { args, .. }) = query.expr(call_site) else {
+                    return Err(Rejection::new(
+                        Predicate::Call,
+                        Some(call_site.clone()),
+                        RejectionReason::UnsupportedShape,
+                        Vec::new(),
+                    ));
+                };
+                let [status] = args.as_slice() else {
+                    return Err(Rejection::new(
+                        Predicate::Call,
+                        Some(call_site.clone()),
+                        RejectionReason::UnsupportedShape,
+                        Vec::new(),
+                    ));
+                };
+                Ok(call(path(["std", "process", "exit"]), vec![status.clone()]))
+            }
+        }
     }
 }
 

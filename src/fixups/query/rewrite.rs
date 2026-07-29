@@ -429,6 +429,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::FirstNul => "first_nul",
         Predicate::PrefixContains => "prefix_contains",
         Predicate::MovablePure => "movable_pure",
+        Predicate::NeverReturningExtern => "never_returning_extern",
         Predicate::ZeroUsers => "zero_users",
         Predicate::ZeroGroupUsers => "zero_group_users",
     }
@@ -468,6 +469,14 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             format!("count={count};nul={nul}")
         }
         EvidenceDetail::MovablePure => "movable_pure".into(),
+        EvidenceDetail::KnownExternDeclaration {
+            target,
+            arity,
+            returns_never,
+        } => format!(
+            "known:{};arity={arity};returns_never={returns_never}",
+            target.symbol()
+        ),
         EvidenceDetail::UseDomain {
             name,
             users,
