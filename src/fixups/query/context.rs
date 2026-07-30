@@ -1012,14 +1012,12 @@ fn index_item_uses(item: &Item, item_index: usize, uses: &mut BTreeMap<String, V
         | Item::Enum(_)
         | Item::Record(_)
         | Item::Struct(_)
-        | Item::SupportModule(_)
-        | Item::Raw(_) => {}
+        | Item::SupportModule(_) => {}
     }
 }
 
 fn item_use_domain_complete(item: &Item) -> bool {
     match item {
-        Item::Raw(_) => false,
         Item::Cfg { item, .. } => item_use_domain_complete(item),
         _ => true,
     }

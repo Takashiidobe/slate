@@ -211,8 +211,7 @@ fn rewrite_item(
         | Item::Mod { .. }
         | Item::Use { .. }
         | Item::Enum(_)
-        | Item::SupportModule(_)
-        | Item::Raw(_) => false,
+        | Item::SupportModule(_) => false,
     }
 }
 
