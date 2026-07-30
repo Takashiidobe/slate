@@ -178,7 +178,6 @@ impl<W: Write> Codegen<W> {
                 self.item(item)?;
             }
             Item::SupportModule(module) => writeln!(self.out, "{}", module.source)?,
-            Item::Raw(s) => writeln!(self.out, "{s}")?,
         }
         Ok(())
     }

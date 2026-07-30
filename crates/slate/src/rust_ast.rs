@@ -1,14 +1,3 @@
-//! The Rust AST and its textual emitter — the pipeline's output side.
-//!
-//! Lowering builds this tree; [`Program::emit`] prints it. The emitter never
-//! concatenates source ad hoc: every node knows how to print itself, indentation
-//! is structural, and binary expressions are fully parenthesized so precedence is
-//! never in question. V0 output is meant to be correct, not pretty; the
-//! idiomatization passes (see docs/idiomatization.md) clean it up later.
-//!
-//! The textual emitter lives in [`crate::codegen`]; this module is the data and
-//! the AST-manipulation methods (parsing spellings, variable substitution).
-
 #[derive(Debug, Default, Clone)]
 pub struct Program {
     pub items: Vec<Item>,
@@ -56,7 +45,6 @@ pub enum Item {
         item: Box<Item>,
     },
     SupportModule(SupportModule),
-    Raw(String),
 }
 
 #[derive(Debug, Clone)]
