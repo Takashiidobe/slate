@@ -1,6 +1,7 @@
 use crate::fixups::trace::{Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact};
 use crate::rust_ast::{Item, Program};
 
+use super::plan::{EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlannedEdit};
 use super::program_recipe::PreparedProgram;
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
@@ -77,31 +78,20 @@ impl ProgramCaseContext<'_, '_> {
     }
 }
 
-struct PlannedProgramEdit {
-    identity: RuleCaseIdentity,
+struct ProgramEdit {
     prepared: PreparedProgram,
     evidence: Vec<Evidence>,
-    rejected_cases: Vec<CaseRejection>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) enum ProgramPlanDiagnostic {
-    CandidateRejected {
-        rule: RuleIdentity,
-        rejections: Vec<CaseRejection>,
-    },
-    AmbiguousRules {
-        contenders: Vec<RuleCaseIdentity>,
-    },
-    MissingTarget {
-        contender: RuleCaseIdentity,
-    },
+impl EditTarget for ProgramEdit {
+    type Site = ();
+
+    fn site(&self) {}
 }
 
 #[derive(Default)]
 pub(in crate::fixups) struct ProgramPlanBuilder {
-    proposals: Vec<PlannedProgramEdit>,
-    diagnostics: Vec<ProgramPlanDiagnostic>,
+    builder: PlanBuilder<ProgramEdit>,
 }
 
 impl ProgramPlanBuilder {
@@ -134,13 +124,15 @@ impl ProgramPlanBuilder {
             });
             match result {
                 Ok(prepared) => {
-                    selected = Some(PlannedProgramEdit {
+                    selected = Some(PlannedEdit {
                         identity: RuleCaseIdentity {
                             rule: rule.identity.clone(),
                             case: case.name.clone(),
                         },
-                        prepared,
-                        evidence: context.evidence,
+                        edit: ProgramEdit {
+                            prepared,
+                            evidence: context.evidence,
+                        },
                         rejected_cases: std::mem::take(&mut rejected_cases),
                     });
                     break;
@@ -152,43 +144,26 @@ impl ProgramPlanBuilder {
             }
         }
         if let Some(selected) = selected {
-            self.proposals.push(selected);
+            self.builder.propose(selected);
         } else if !rejected_cases.is_empty() {
-            self.diagnostics
-                .push(ProgramPlanDiagnostic::CandidateRejected {
-                    rule: rule.identity.clone(),
-                    rejections: rejected_cases,
-                });
+            self.builder.diagnose(PlanDiagnostic::CandidateRejected {
+                rule: rule.identity.clone(),
+                target: None,
+                rejections: rejected_cases,
+            });
         }
         self
     }
 
-    pub(in crate::fixups) fn finish(mut self) -> ProgramPlan {
-        let edit = if self.proposals.len() == 1 {
-            self.proposals.pop()
-        } else if self.proposals.is_empty() {
-            None
-        } else {
-            self.diagnostics
-                .push(ProgramPlanDiagnostic::AmbiguousRules {
-                    contenders: self
-                        .proposals
-                        .into_iter()
-                        .map(|proposal| proposal.identity)
-                        .collect(),
-                });
-            None
-        };
+    pub(in crate::fixups) fn finish(self) -> ProgramPlan {
         ProgramPlan {
-            edit,
-            diagnostics: self.diagnostics,
+            plan: self.builder.finish(),
         }
     }
 }
 
 pub(in crate::fixups) struct ProgramPlan {
-    edit: Option<PlannedProgramEdit>,
-    diagnostics: Vec<ProgramPlanDiagnostic>,
+    plan: Plan<ProgramEdit>,
 }
 
 impl ProgramPlan {
@@ -197,14 +172,14 @@ impl ProgramPlan {
         program: &mut Program,
         logger: &mut dyn TraceLogger,
     ) -> ProgramApplyReport {
-        let planned = usize::from(self.edit.is_some());
-        let mut diagnostics = self.diagnostics;
+        let planned = self.plan.edits.len();
+        let mut diagnostics = self.plan.diagnostics;
         if logger.is_enabled() {
             for diagnostic in &diagnostics {
                 log_diagnostic(logger, diagnostic);
             }
         }
-        let Some(edit) = self.edit else {
+        let Some(edit) = self.plan.edits.into_iter().next() else {
             return ProgramApplyReport {
                 changed: false,
                 planned,
@@ -212,9 +187,10 @@ impl ProgramPlan {
                 diagnostics,
             };
         };
-        if !anchors_match(program, &edit.prepared.anchors) {
-            diagnostics.push(ProgramPlanDiagnostic::MissingTarget {
+        if !anchors_match(program, &edit.edit.prepared.anchors) {
+            diagnostics.push(PlanDiagnostic::MissingTarget {
                 contender: edit.identity,
+                target: (),
             });
             return ProgramApplyReport {
                 changed: false,
@@ -224,11 +200,13 @@ impl ProgramPlan {
             };
         }
         let before = logger.is_enabled().then(|| program.emit());
-        let after = before.as_ref().map(|_| edit.prepared.replacement.emit());
+        let after = before
+            .as_ref()
+            .map(|_| edit.edit.prepared.replacement.emit());
         if let (Some(before), Some(after)) = (before, after) {
             log_edit(logger, &edit, before, after);
         }
-        *program = edit.prepared.replacement;
+        *program = edit.edit.prepared.replacement;
         ProgramApplyReport {
             changed: true,
             planned,
@@ -238,12 +216,12 @@ impl ProgramPlan {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct ProgramApplyReport {
     pub(in crate::fixups) changed: bool,
     pub(in crate::fixups) planned: usize,
     pub(in crate::fixups) applied: usize,
-    pub(in crate::fixups) diagnostics: Vec<ProgramPlanDiagnostic>,
+    #[allow(dead_code)]
+    pub(super) diagnostics: Vec<PlanDiagnostic<()>>,
 }
 
 fn anchors_match(program: &Program, anchors: &[(usize, String)]) -> bool {
@@ -257,7 +235,7 @@ fn anchors_match(program: &Program, anchors: &[(usize, String)]) -> bool {
 
 fn log_edit(
     logger: &mut dyn TraceLogger,
-    edit: &PlannedProgramEdit,
+    edit: &PlannedEdit<ProgramEdit>,
     before: String,
     after: String,
 ) {
@@ -265,7 +243,7 @@ fn log_edit(
         fact("query_rule", edit.identity.rule.name.clone()),
         fact("query_case", edit.identity.case.clone()),
     ];
-    facts.extend(edit.evidence.iter().map(evidence_trace_fact));
+    facts.extend(edit.edit.evidence.iter().map(evidence_trace_fact));
     facts.extend(edit.rejected_cases.iter().map(|rejected| {
         fact(
             format!("rejected_case.{}", rejected.case),
@@ -290,8 +268,11 @@ fn log_edit(
     });
 }
 
-fn log_diagnostic(logger: &mut dyn TraceLogger, diagnostic: &ProgramPlanDiagnostic) {
-    let ProgramPlanDiagnostic::CandidateRejected { rule, rejections } = diagnostic else {
+fn log_diagnostic(logger: &mut dyn TraceLogger, diagnostic: &PlanDiagnostic<()>) {
+    let PlanDiagnostic::CandidateRejected {
+        rule, rejections, ..
+    } = diagnostic
+    else {
         return;
     };
     let mut facts = vec![fact("query_rule", rule.name.clone())];

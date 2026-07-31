@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use crate::fixups::facts::{AstPath, FixupFacts};
 use crate::fixups::support::walk;
@@ -8,6 +8,7 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Expr, Item, Program};
 
+use super::plan::{EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit};
 use super::{
     ByteExtent, ByteRepresentation, CallTarget, Evidence, EvidenceDetail, ExprSite, NulPosition,
     PointerMutability, Predicate, QueryContext, Rejection, RejectionReason,
@@ -55,6 +56,22 @@ impl ReplaceExpr {
     ) -> Self {
         self.evidence.extend(evidence);
         self
+    }
+}
+
+impl EditTarget for ReplaceExpr {
+    type Site = ExprSite;
+
+    fn site(&self) -> ExprSite {
+        self.target.clone()
+    }
+}
+
+impl PlanSite for ExprSite {
+    fn overlaps(&self, other: &Self) -> bool {
+        self.item_index == other.item_index
+            && (path_starts_with(&self.path.0, &other.path.0)
+                || path_starts_with(&other.path.0, &self.path.0))
     }
 }
 
@@ -108,48 +125,14 @@ pub(in crate::fixups) struct CaseRejection {
     pub(in crate::fixups) rejection: Rejection,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) enum PlanDiagnostic {
-    CandidateRejected {
-        rule: RuleIdentity,
-        target: ExprSite,
-        rejections: Vec<CaseRejection>,
-    },
-    TargetMismatch {
-        contender: RuleCaseIdentity,
-        candidate: ExprSite,
-        replacement: ExprSite,
-    },
-    AmbiguousTarget {
-        target: ExprSite,
-        contenders: Vec<RuleCaseIdentity>,
-    },
-    OverlappingTargets {
-        first: ExprSite,
-        second: ExprSite,
-    },
-    MissingTarget {
-        contender: RuleCaseIdentity,
-        target: ExprSite,
-    },
-}
-
-struct PlannedEdit {
-    identity: RuleCaseIdentity,
-    replacement: ReplaceExpr,
-    rejected_cases: Vec<CaseRejection>,
-}
-
 pub(in crate::fixups) struct ExprPlanBuilder {
-    proposals: Vec<PlannedEdit>,
-    diagnostics: Vec<PlanDiagnostic>,
+    builder: PlanBuilder<ReplaceExpr>,
 }
 
 impl ExprPlanBuilder {
     pub(in crate::fixups) fn new() -> Self {
         Self {
-            proposals: Vec::new(),
-            diagnostics: Vec::new(),
+            builder: PlanBuilder::new(),
         }
     }
 
@@ -172,7 +155,7 @@ impl ExprPlanBuilder {
                             case: case.name,
                         };
                         if replacement.target != target {
-                            self.diagnostics.push(PlanDiagnostic::TargetMismatch {
+                            self.builder.diagnose(PlanDiagnostic::TargetMismatch {
                                 contender,
                                 candidate: target.clone(),
                                 replacement: replacement.target,
@@ -181,7 +164,7 @@ impl ExprPlanBuilder {
                         } else {
                             selected = Some(PlannedEdit {
                                 identity: contender,
-                                replacement,
+                                edit: replacement,
                                 rejected_cases: std::mem::take(&mut rejected_cases),
                             });
                         }
@@ -196,11 +179,11 @@ impl ExprPlanBuilder {
                 }
             }
             if let Some(selected) = selected {
-                self.proposals.push(selected);
+                self.builder.propose(selected);
             } else if !terminal_diagnostic && !rejected_cases.is_empty() {
-                self.diagnostics.push(PlanDiagnostic::CandidateRejected {
+                self.builder.diagnose(PlanDiagnostic::CandidateRejected {
                     rule: identity.clone(),
-                    target,
+                    target: Some(target),
                     rejections: rejected_cases,
                 });
             }
@@ -209,50 +192,9 @@ impl ExprPlanBuilder {
     }
 
     pub(in crate::fixups) fn finish(self) -> ExprPlan {
-        let mut diagnostics = self.diagnostics;
-        let mut grouped = BTreeMap::<ExprSite, Vec<PlannedEdit>>::new();
-        for proposal in self.proposals {
-            grouped
-                .entry(proposal.replacement.target.clone())
-                .or_default()
-                .push(proposal);
+        ExprPlan {
+            plan: self.builder.finish(),
         }
-        let mut edits = Vec::new();
-        for (target, mut contenders) in grouped {
-            if contenders.len() == 1 {
-                edits.push(contenders.pop().unwrap());
-            } else {
-                diagnostics.push(PlanDiagnostic::AmbiguousTarget {
-                    target,
-                    contenders: contenders
-                        .into_iter()
-                        .map(|contender| contender.identity)
-                        .collect(),
-                });
-            }
-        }
-        edits.sort_by(|left, right| left.replacement.target.cmp(&right.replacement.target));
-        let mut overlapping = BTreeSet::new();
-        for first in 0..edits.len() {
-            for second in first + 1..edits.len() {
-                let first_site = &edits[first].replacement.target;
-                let second_site = &edits[second].replacement.target;
-                if sites_overlap(first_site, second_site) {
-                    overlapping.insert(first);
-                    overlapping.insert(second);
-                    diagnostics.push(PlanDiagnostic::OverlappingTargets {
-                        first: first_site.clone(),
-                        second: second_site.clone(),
-                    });
-                }
-            }
-        }
-        let edits = edits
-            .into_iter()
-            .enumerate()
-            .filter_map(|(index, edit)| (!overlapping.contains(&index)).then_some(edit))
-            .collect();
-        ExprPlan { edits, diagnostics }
     }
 }
 
@@ -263,17 +205,12 @@ impl Default for ExprPlanBuilder {
 }
 
 pub(in crate::fixups) struct ExprPlan {
-    edits: Vec<PlannedEdit>,
-    diagnostics: Vec<PlanDiagnostic>,
+    plan: Plan<ReplaceExpr>,
 }
 
 impl ExprPlan {
     pub(in crate::fixups) fn is_empty(&self) -> bool {
-        self.edits.is_empty()
-    }
-
-    pub(in crate::fixups) fn diagnostics(&self) -> &[PlanDiagnostic] {
-        &self.diagnostics
+        self.plan.edits.is_empty()
     }
 
     pub(in crate::fixups) fn apply(
@@ -282,17 +219,15 @@ impl ExprPlan {
         facts: &FixupFacts,
         logger: &mut dyn TraceLogger,
     ) -> ApplyReport {
-        let planned = self.edits.len();
-        let mut diagnostics = self.diagnostics;
+        let planned = self.plan.edits.len();
+        let mut diagnostics = self.plan.diagnostics;
         let mut edits = self
+            .plan
             .edits
             .into_iter()
             .map(|edit| {
                 (
-                    (
-                        edit.replacement.target.item_index,
-                        edit.replacement.target.path.clone(),
-                    ),
+                    (edit.edit.target.item_index, edit.edit.target.path.clone()),
                     edit,
                 )
             })
@@ -316,18 +251,23 @@ impl ExprPlan {
                     let Some(edit) = edits.remove(&key) else {
                         return true;
                     };
-                    let ReplaceExpr {
-                        target,
-                        replacement,
-                        evidence,
-                    } = edit.replacement;
+                    let PlannedEdit {
+                        identity,
+                        edit:
+                            ReplaceExpr {
+                                target,
+                                replacement,
+                                evidence,
+                            },
+                        rejected_cases,
+                    } = edit;
                     let before = std::mem::replace(expr, replacement);
                     if logger.is_enabled() {
                         logger.rewrite(rewrite_event(
-                            &edit.identity,
+                            &identity,
                             &target,
                             &evidence,
-                            &edit.rejected_cases,
+                            &rejected_cases,
                             &before,
                             expr,
                             facts,
@@ -341,7 +281,7 @@ impl ExprPlan {
         for (_, edit) in edits {
             diagnostics.push(PlanDiagnostic::MissingTarget {
                 contender: edit.identity,
-                target: edit.replacement.target,
+                target: edit.edit.target,
             });
         }
         ApplyReport {
@@ -353,18 +293,12 @@ impl ExprPlan {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct ApplyReport {
     pub(in crate::fixups) changed: bool,
     pub(in crate::fixups) planned: usize,
     pub(in crate::fixups) applied: usize,
-    pub(in crate::fixups) diagnostics: Vec<PlanDiagnostic>,
-}
-
-fn sites_overlap(first: &ExprSite, second: &ExprSite) -> bool {
-    first.item_index == second.item_index
-        && (path_starts_with(&first.path.0, &second.path.0)
-            || path_starts_with(&second.path.0, &first.path.0))
+    #[allow(dead_code)]
+    pub(super) diagnostics: Vec<PlanDiagnostic<ExprSite>>,
 }
 
 fn path_starts_with(

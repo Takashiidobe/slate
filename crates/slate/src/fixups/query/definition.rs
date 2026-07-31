@@ -1,8 +1,9 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use crate::fixups::trace::{Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact};
 use crate::rust_ast::{ExternDecl, IndentStmt, Item, Program};
 
+use super::plan::{EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit};
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
     CaseRejection, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
@@ -179,46 +180,40 @@ enum DefinitionEditAction {
     ReplaceBody(Vec<IndentStmt>),
 }
 
-struct PlannedDefinitionEdit {
-    identity: RuleCaseIdentity,
+struct DefinitionEdit {
     target: DefinitionSite,
     action: DefinitionEditAction,
     evidence: Vec<Evidence>,
-    rejected_cases: Vec<CaseRejection>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) enum DefinitionPlanDiagnostic {
-    CandidateRejected {
-        rule: RuleIdentity,
-        target: DefinitionSite,
-        rejections: Vec<CaseRejection>,
-    },
-    AmbiguousTarget {
-        target: DefinitionLocation,
-        contenders: Vec<RuleCaseIdentity>,
-    },
-    OverlappingTargets {
-        item_index: usize,
-    },
-    MissingTarget {
-        contender: RuleCaseIdentity,
-        target: DefinitionSite,
-    },
+impl EditTarget for DefinitionEdit {
+    type Site = DefinitionLocation;
+
+    fn site(&self) -> DefinitionLocation {
+        self.target.location.clone()
+    }
+}
+
+impl PlanSite for DefinitionLocation {
+    fn overlaps(&self, other: &Self) -> bool {
+        match (self, other) {
+            (DefinitionLocation::Item(item), DefinitionLocation::ExternDecl { item_index, .. })
+            | (DefinitionLocation::ExternDecl { item_index, .. }, DefinitionLocation::Item(item)) => {
+                item == item_index
+            }
+            _ => false,
+        }
+    }
 }
 
 #[derive(Default)]
 pub(in crate::fixups) struct DefinitionPlanBuilder {
-    proposals: Vec<PlannedDefinitionEdit>,
-    diagnostics: Vec<DefinitionPlanDiagnostic>,
+    builder: PlanBuilder<DefinitionEdit>,
 }
 
 impl DefinitionPlanBuilder {
     pub(in crate::fixups) fn new() -> Self {
-        Self {
-            proposals: Vec::new(),
-            diagnostics: Vec::new(),
-        }
+        Self::default()
     }
 
     pub(in crate::fixups) fn add_rule(
@@ -243,14 +238,16 @@ impl DefinitionPlanBuilder {
                                 DefinitionEditAction::ReplaceBody(body.lower())
                             }
                         };
-                        selected = Some(PlannedDefinitionEdit {
+                        selected = Some(PlannedEdit {
                             identity: RuleCaseIdentity {
                                 rule: rule.identity.clone(),
                                 case: case.name.clone(),
                             },
-                            target: definition.clone(),
-                            action,
-                            evidence: context.evidence,
+                            edit: DefinitionEdit {
+                                target: definition.clone(),
+                                action,
+                                evidence: context.evidence,
+                            },
                             rejected_cases: std::mem::take(&mut rejected_cases),
                         });
                         break;
@@ -262,98 +259,47 @@ impl DefinitionPlanBuilder {
                 }
             }
             if let Some(selected) = selected {
-                self.proposals.push(selected);
+                self.builder.propose(selected);
             } else if !rejected_cases.is_empty() {
-                self.diagnostics
-                    .push(DefinitionPlanDiagnostic::CandidateRejected {
-                        rule: rule.identity.clone(),
-                        target: definition,
-                        rejections: rejected_cases,
-                    });
+                self.builder.diagnose(PlanDiagnostic::CandidateRejected {
+                    rule: rule.identity.clone(),
+                    target: Some(definition.location.clone()),
+                    rejections: rejected_cases,
+                });
             }
         }
         self
     }
 
     pub(in crate::fixups) fn finish(self) -> DefinitionPlan {
-        let mut diagnostics = self.diagnostics;
-        let mut grouped = BTreeMap::<DefinitionLocation, Vec<PlannedDefinitionEdit>>::new();
-        for proposal in self.proposals {
-            grouped
-                .entry(proposal.target.location.clone())
-                .or_default()
-                .push(proposal);
+        DefinitionPlan {
+            plan: self.builder.finish(),
         }
-        let mut edits = Vec::new();
-        for (target, mut contenders) in grouped {
-            if contenders.len() == 1 {
-                edits.push(contenders.pop().unwrap());
-            } else {
-                diagnostics.push(DefinitionPlanDiagnostic::AmbiguousTarget {
-                    target,
-                    contenders: contenders
-                        .into_iter()
-                        .map(|contender| contender.identity)
-                        .collect(),
-                });
-            }
-        }
-        let whole_items = edits
-            .iter()
-            .filter_map(|edit| match edit.target.location {
-                DefinitionLocation::Item(item_index) => Some(item_index),
-                DefinitionLocation::ExternDecl { .. } => None,
-            })
-            .collect::<BTreeSet<_>>();
-        let overlapping = edits
-            .iter()
-            .filter_map(|edit| match edit.target.location {
-                DefinitionLocation::ExternDecl { item_index, .. }
-                    if whole_items.contains(&item_index) =>
-                {
-                    Some(item_index)
-                }
-                _ => None,
-            })
-            .collect::<BTreeSet<_>>();
-        for item_index in &overlapping {
-            diagnostics.push(DefinitionPlanDiagnostic::OverlappingTargets {
-                item_index: *item_index,
-            });
-        }
-        edits.retain(|edit| !overlapping.contains(&edit.target.location.item_index()));
-        edits.sort_by(|left, right| left.target.location.cmp(&right.target.location));
-        DefinitionPlan { edits, diagnostics }
     }
 }
 
 pub(in crate::fixups) struct DefinitionPlan {
-    edits: Vec<PlannedDefinitionEdit>,
-    diagnostics: Vec<DefinitionPlanDiagnostic>,
+    plan: Plan<DefinitionEdit>,
 }
 
 impl DefinitionPlan {
-    pub(in crate::fixups) fn diagnostics(&self) -> &[DefinitionPlanDiagnostic] {
-        &self.diagnostics
-    }
-
     pub(in crate::fixups) fn apply(
         self,
         program: &mut Program,
         logger: &mut dyn TraceLogger,
     ) -> DefinitionApplyReport {
-        let planned = self.edits.len();
-        let mut diagnostics = self.diagnostics;
-        let mut by_item = BTreeMap::<usize, Vec<PlannedDefinitionEdit>>::new();
-        for edit in self.edits {
+        let planned = self.plan.edits.len();
+        let mut diagnostics = self.plan.diagnostics;
+        let mut by_item = BTreeMap::<usize, Vec<PlannedEdit<DefinitionEdit>>>::new();
+        for edit in self.plan.edits {
             by_item
-                .entry(edit.target.location.item_index())
+                .entry(edit.edit.target.location.item_index())
                 .or_default()
                 .push(edit);
         }
         let mut applied = 0;
         for (item_index, mut edits) in by_item.into_iter().rev() {
-            edits.sort_by(|left, right| right.target.location.cmp(&left.target.location));
+            edits.sort_by(|left, right| right.edit.target.location.cmp(&left.edit.target.location));
             if item_index >= program.items.len() {
                 for edit in edits {
                     diagnostics.push(missing_target(edit));
@@ -361,16 +307,16 @@ impl DefinitionPlan {
                 continue;
             }
             if matches!(
-                edits.first().map(|edit| &edit.target.location),
+                edits.first().map(|edit| &edit.edit.target.location),
                 Some(DefinitionLocation::Item(_))
             ) {
                 let edit = edits.pop().unwrap();
-                if !definition_matches(&program.items[item_index], &edit.target) {
+                if !definition_matches(&program.items[item_index], &edit.edit.target) {
                     diagnostics.push(missing_target(edit));
                     continue;
                 }
                 let before = item_snippet(&program.items[item_index]);
-                match &edit.action {
+                match &edit.edit.action {
                     DefinitionEditAction::Delete => {
                         program.items.remove(item_index);
                         log_edit(logger, &edit, before, None);
@@ -394,13 +340,14 @@ impl DefinitionPlan {
                 continue;
             };
             for edit in edits {
-                let DefinitionLocation::ExternDecl { decl_index, .. } = edit.target.location else {
+                let DefinitionLocation::ExternDecl { decl_index, .. } = edit.edit.target.location
+                else {
                     unreachable!()
                 };
-                if !matches!(&edit.action, DefinitionEditAction::Delete)
+                if !matches!(&edit.edit.action, DefinitionEditAction::Delete)
                     || !decls
                         .get(decl_index)
-                        .is_some_and(|decl| extern_definition_matches(decl, &edit.target))
+                        .is_some_and(|decl| extern_definition_matches(decl, &edit.edit.target))
                 {
                     diagnostics.push(missing_target(edit));
                     continue;
@@ -423,18 +370,18 @@ impl DefinitionPlan {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct DefinitionApplyReport {
     pub(in crate::fixups) changed: bool,
     pub(in crate::fixups) planned: usize,
     pub(in crate::fixups) applied: usize,
-    pub(in crate::fixups) diagnostics: Vec<DefinitionPlanDiagnostic>,
+    #[allow(dead_code)]
+    pub(super) diagnostics: Vec<PlanDiagnostic<DefinitionLocation>>,
 }
 
-fn missing_target(edit: PlannedDefinitionEdit) -> DefinitionPlanDiagnostic {
-    DefinitionPlanDiagnostic::MissingTarget {
+fn missing_target(edit: PlannedEdit<DefinitionEdit>) -> PlanDiagnostic<DefinitionLocation> {
+    PlanDiagnostic::MissingTarget {
         contender: edit.identity,
-        target: edit.target,
+        target: edit.edit.target.location,
     }
 }
 
@@ -476,7 +423,7 @@ fn extern_decl_snippet(abi: &str, decl: &ExternDecl) -> String {
 
 fn log_edit(
     logger: &mut dyn TraceLogger,
-    edit: &PlannedDefinitionEdit,
+    edit: &PlannedEdit<DefinitionEdit>,
     before: String,
     after: Option<String>,
 ) {
@@ -487,7 +434,7 @@ fn log_edit(
         fact("query_rule", edit.identity.rule.name.clone()),
         fact("query_case", edit.identity.case.clone()),
     ];
-    facts.extend(edit.evidence.iter().map(evidence_trace_fact));
+    facts.extend(edit.edit.evidence.iter().map(evidence_trace_fact));
     facts.extend(edit.rejected_cases.iter().map(|rejected| {
         fact(
             format!("rejected_case.{}", rejected.case),
@@ -502,7 +449,7 @@ fn log_edit(
         pass: edit.identity.rule.pass,
         kind: edit.identity.rule.name.clone(),
         location: TraceLocation {
-            function: Some(edit.target.name.clone()),
+            function: Some(edit.edit.target.name.clone()),
             ..TraceLocation::default()
         },
         before: vec![TraceSnippet::new("definition", before)],
