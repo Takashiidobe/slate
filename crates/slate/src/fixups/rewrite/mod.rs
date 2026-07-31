@@ -15,7 +15,6 @@ pub(super) mod for_continue;
 pub(super) mod goto;
 pub(super) mod heap_ownership;
 pub(super) mod inline_temps;
-pub(super) mod lazy_singleton;
 pub(super) mod main_zero_exit;
 pub(super) mod nullable_pointer;
 pub(super) mod param_spills;

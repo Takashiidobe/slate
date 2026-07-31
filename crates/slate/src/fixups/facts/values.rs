@@ -6,7 +6,8 @@ use crate::fixups::facts::{
     ValueFact, ValueSubject,
 };
 use crate::rust_ast::{
-    BinOp, Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
+    BinOp, Block, Expr, FnDef, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type,
+    UnaryOp,
 };
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -19,12 +20,25 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut collector = Collector::new(function, facts);
-        collector.enter_root_scope();
-        collector.body(&f.body, &mut Vec::new(), false);
-        all.extend(collector.values);
+        all.extend(collect_for_function(function, f, facts));
     }
     facts.values = all;
+}
+
+/// Values for one function's body, independent of any other function's
+/// facts - the entry point `slate-04q.75.56.8` (incremental facts) needs to
+/// re-derive one function's values without a whole-program walk. Still
+/// needs read access to `facts` (for `binding_by_local_path`, populated by
+/// the earlier function/binding walk), just not write access.
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &FixupFacts,
+) -> Vec<ValueFact> {
+    let mut collector = Collector::new(function, facts);
+    collector.enter_root_scope();
+    collector.body(&f.body, &mut Vec::new(), false);
+    collector.values
 }
 
 struct Collector<'a> {

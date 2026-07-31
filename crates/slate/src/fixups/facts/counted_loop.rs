@@ -7,7 +7,9 @@ use crate::fixups::facts::{
     PathSegment, SliceLoopAccess,
 };
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
-use crate::rust_ast::{BinOp, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
+use crate::rust_ast::{
+    BinOp, Expr, FnDef, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type,
+};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.counted_loops.clear();
@@ -19,16 +21,31 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut collector = Collector::new(function, facts);
-        for (index, param) in f.params.iter().enumerate() {
-            if slice_elem_ty(&param.ty).is_some()
-                && let Some(binding) = collector.facts.binding_by_param_index(function, index)
-            {
-                collector.slices.insert(param.name.to_string(), binding);
-            }
-        }
-        collector.body(&f.body, &mut Vec::new());
+        collect_for_function(function, f, facts);
     }
+}
+
+/// Counted (and counted-slice) loops for one function's body, independent
+/// of any other function's facts - the entry point `slate-04q.75.56.8`
+/// (incremental facts) needs to re-derive one function's loop facts
+/// without a whole-program walk. Pushes straight into `facts.counted_loops`
+/// / `facts.counted_slice_loops`, same as the whole-program pass; the
+/// caller is responsible for clearing that function's stale entries first
+/// if this isn't the initial whole-program collection.
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &mut FixupFacts,
+) {
+    let mut collector = Collector::new(function, facts);
+    for (index, param) in f.params.iter().enumerate() {
+        if slice_elem_ty(&param.ty).is_some()
+            && let Some(binding) = collector.facts.binding_by_param_index(function, index)
+        {
+            collector.slices.insert(param.name.to_string(), binding);
+        }
+    }
+    collector.body(&f.body, &mut Vec::new());
 }
 
 struct Collector<'a> {

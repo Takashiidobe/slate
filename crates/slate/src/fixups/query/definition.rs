@@ -3,7 +3,9 @@ use std::collections::BTreeMap;
 use crate::fixups::trace::{Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact};
 use crate::rust_ast::{ExternDecl, IndentStmt, Item, Program};
 
-use super::plan::{EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit};
+use super::plan::{
+    EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit, TouchedItems,
+};
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
     CaseRejection, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
@@ -298,6 +300,7 @@ impl DefinitionPlan {
                 .push(edit);
         }
         let mut applied = 0;
+        let mut touched = TouchedItems::none();
         for (item_index, mut edits) in by_item.into_iter().rev() {
             edits.sort_by(|left, right| right.edit.target.location.cmp(&left.edit.target.location));
             if item_index >= program.items.len() {
@@ -320,6 +323,7 @@ impl DefinitionPlan {
                     DefinitionEditAction::Delete => {
                         program.items.remove(item_index);
                         log_edit(logger, &edit, before, None);
+                        touched.removed.push(item_index);
                     }
                     DefinitionEditAction::ReplaceBody(body) => {
                         let Item::Fn(function) = &mut program.items[item_index] else {
@@ -328,6 +332,7 @@ impl DefinitionPlan {
                         function.body = body.clone();
                         let after = item_snippet(&program.items[item_index]);
                         log_edit(logger, &edit, before, Some(after));
+                        touched.in_place.push(item_index);
                     }
                 }
                 applied += 1;
@@ -339,6 +344,7 @@ impl DefinitionPlan {
                 }
                 continue;
             };
+            let mut any_removed = false;
             for edit in edits {
                 let DefinitionLocation::ExternDecl { decl_index, .. } = edit.edit.target.location
                 else {
@@ -356,9 +362,13 @@ impl DefinitionPlan {
                 decls.remove(decl_index);
                 log_edit(logger, &edit, before, None);
                 applied += 1;
+                any_removed = true;
             }
             if decls.is_empty() {
                 program.items.remove(item_index);
+                touched.removed.push(item_index);
+            } else if any_removed {
+                touched.in_place.push(item_index);
             }
         }
         DefinitionApplyReport {
@@ -366,6 +376,7 @@ impl DefinitionPlan {
             planned,
             applied,
             diagnostics,
+            touched,
         }
     }
 }
@@ -376,6 +387,7 @@ pub(in crate::fixups) struct DefinitionApplyReport {
     pub(in crate::fixups) applied: usize,
     #[allow(dead_code)]
     pub(super) diagnostics: Vec<PlanDiagnostic<DefinitionLocation>>,
+    pub(in crate::fixups) touched: TouchedItems,
 }
 
 fn missing_target(edit: PlannedEdit<DefinitionEdit>) -> PlanDiagnostic<DefinitionLocation> {

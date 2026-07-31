@@ -133,3 +133,43 @@ pub(super) struct Plan<E: EditTarget> {
     pub(super) edits: Vec<PlannedEdit<E>>,
     pub(super) diagnostics: Vec<PlanDiagnostic<E::Site>>,
 }
+
+/// Which `Program::items` positions an applied edit actually changed, for
+/// `slate-04q.75.56.8` (incremental facts) to splice instead of triggering
+/// a full `facts::analyze`. Two disjoint kinds of change, tracked
+/// separately because they need different handling: `in_place` items kept
+/// their position (only their content changed - a function body edit), so
+/// only that item's own facts need re-deriving; `removed` items are gone
+/// entirely, which shifts every later item's `item_index` and needs
+/// renumbering, not just re-derivation. `unbounded` is an honest escape
+/// hatch for edits whose blast radius isn't a small tracked set (e.g.
+/// `anonymous_structs`, which can touch any function or type that
+/// references the rewritten record) - callers must fall back to a full
+/// reanalyze when it's set, ignoring the (empty) `in_place`/`removed`
+/// lists.
+#[derive(Debug, Clone, Default)]
+pub(in crate::fixups) struct TouchedItems {
+    pub(in crate::fixups) in_place: Vec<usize>,
+    pub(in crate::fixups) removed: Vec<usize>,
+    pub(in crate::fixups) unbounded: bool,
+}
+
+impl TouchedItems {
+    pub(in crate::fixups) fn none() -> Self {
+        Self::default()
+    }
+
+    pub(in crate::fixups) fn unbounded() -> Self {
+        Self {
+            unbounded: true,
+            ..Self::default()
+        }
+    }
+
+    #[allow(dead_code)]
+    pub(in crate::fixups) fn merge(&mut self, other: TouchedItems) {
+        self.unbounded |= other.unbounded;
+        self.in_place.extend(other.in_place);
+        self.removed.extend(other.removed);
+    }
+}
