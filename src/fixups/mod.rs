@@ -77,27 +77,34 @@ impl IncrementalFactsReport {
         pass: Pass,
         pre_edit_facts: &facts::FixupFacts,
         program: &Program,
-        in_place: &[usize],
-        removed: &[usize],
-        unbounded: bool,
+        touched: &query::TouchedItems,
     ) {
-        if unbounded || (in_place.is_empty() && removed.is_empty()) {
+        if touched.unbounded || (touched.in_place.is_empty() && touched.removed.is_empty()) {
             return;
         }
-        let mut spliced = pre_edit_facts.clone();
-        if !removed.is_empty() {
-            spliced.remove_items(removed);
-        }
-        for &item_index in in_place {
-            if let Some(function) = pre_edit_facts.function_by_item_index(item_index) {
-                spliced.splice_function(program, function);
-            }
-        }
+        let spliced = splice_incremental_facts(pre_edit_facts, program, touched);
         let fresh = facts::analyze(program).facts;
         if let Some(mismatch) = spliced.diff_incremental(&fresh) {
             self.mismatches.push(format!("{}: {mismatch}", pass.name()));
         }
     }
+}
+
+fn splice_incremental_facts(
+    pre_edit_facts: &facts::FixupFacts,
+    program: &Program,
+    touched: &query::TouchedItems,
+) -> facts::FixupFacts {
+    let mut updated = pre_edit_facts.clone();
+    if !touched.removed.is_empty() {
+        updated.remove_items(&touched.removed);
+    }
+    for &item_index in &touched.in_place {
+        if let Some(function) = pre_edit_facts.function_by_item_index(item_index) {
+            updated.splice_function(program, function);
+        }
+    }
+    updated
 }
 
 pub fn debug(program: Program) -> String {
@@ -338,7 +345,7 @@ fn apply_with_logger(
         );
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-    step!(program, Pass::LazySingleton, {
+    let lazy_singleton_touched = step!(program, Pass::LazySingleton, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
             let mut builder = query::ProgramPlanBuilder::new();
@@ -347,18 +354,14 @@ fn apply_with_logger(
         };
         let report = plan.apply(&mut program, logger);
         if let Some(verify) = verify.as_deref_mut() {
-            verify.check(
-                Pass::LazySingleton,
-                &facts,
-                &program,
-                &report.touched.in_place,
-                &report.touched.removed,
-                report.touched.unbounded,
-            );
+            verify.check(Pass::LazySingleton, &facts, &program, &report.touched);
         }
-        report.changed
+        report.touched
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = match lazy_singleton_touched {
+        Some(touched) if !touched.unbounded => splice_incremental_facts(&facts, &program, &touched),
+        _ => facts::analyze(&program).facts,
+    };
     step!(program, Pass::DropCallResults, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -429,7 +432,7 @@ fn apply_with_logger(
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-    step!(program, Pass::RangeLoop, {
+    let range_loop_touched = step!(program, Pass::RangeLoop, {
         if !skip.contains(Pass::RangeLoop) {
             let plan = {
                 let query = query::QueryContext::new(&program, &facts);
@@ -439,21 +442,22 @@ fn apply_with_logger(
             };
             let report = plan.apply(&mut program, &facts, logger);
             if let Some(verify) = verify {
-                verify.check(
-                    Pass::RangeLoop,
-                    &facts,
-                    &program,
-                    &report.touched.in_place,
-                    &report.touched.removed,
-                    report.touched.unbounded,
-                );
+                verify.check(Pass::RangeLoop, &facts, &program, &report.touched);
             }
             if report.changed {
                 late_loop_cleanup(&mut program, Pass::RangeLoop, logger);
+                None
+            } else {
+                Some(report.touched)
             }
+        } else {
+            Some(query::TouchedItems::none())
         }
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = match range_loop_touched.flatten() {
+        Some(touched) if !touched.unbounded => splice_incremental_facts(&facts, &program, &touched),
+        _ => facts::analyze(&program).facts,
+    };
     step!(program, Pass::VaList, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
