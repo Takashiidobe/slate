@@ -98,6 +98,7 @@ pub(in crate::fixups) enum ProgramPlanDiagnostic {
     },
 }
 
+#[derive(Default)]
 pub(in crate::fixups) struct ProgramPlanBuilder {
     proposals: Vec<PlannedProgramEdit>,
     diagnostics: Vec<ProgramPlanDiagnostic>,
@@ -105,10 +106,7 @@ pub(in crate::fixups) struct ProgramPlanBuilder {
 
 impl ProgramPlanBuilder {
     pub(in crate::fixups) fn new() -> Self {
-        Self {
-            proposals: Vec::new(),
-            diagnostics: Vec::new(),
-        }
+        Self::default()
     }
 
     pub(in crate::fixups) fn add_rule(
@@ -185,12 +183,6 @@ impl ProgramPlanBuilder {
             edit,
             diagnostics: self.diagnostics,
         }
-    }
-}
-
-impl Default for ProgramPlanBuilder {
-    fn default() -> Self {
-        Self::new()
     }
 }
 

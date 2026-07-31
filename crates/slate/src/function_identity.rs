@@ -255,21 +255,6 @@ impl Known {
         };
         headers.contains(&header).then_some(known)
     }
-
-    #[cfg(test)]
-    pub fn for_test_symbol(name: &str) -> Option<Self> {
-        Self::classify(
-            name,
-            &[
-                "stdlib.h",
-                "string.h",
-                "stdio.h",
-                "ctype.h",
-                "math.h",
-                "pthread.h",
-            ],
-        )
-    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -365,22 +350,7 @@ pub fn known_call(expr: &crate::rust_ast::Expr) -> Option<Known> {
     let crate::rust_ast::Expr::Call { func, binding, .. } = expr else {
         return None;
     };
-    let known = match binding.known() {
-        Some(known) => known,
-        None => {
-            #[cfg(test)]
-            {
-                let crate::rust_ast::Expr::Var(name) = &**func else {
-                    return None;
-                };
-                Known::for_test_symbol(name.as_str())?
-            }
-            #[cfg(not(test))]
-            {
-                return None;
-            }
-        }
-    };
+    let known = binding.known()?;
     matches!(&**func, crate::rust_ast::Expr::Var(name) if known.matches_symbol(name.as_str()))
         .then_some(known)
 }
@@ -388,8 +358,6 @@ pub fn known_call(expr: &crate::rust_ast::Expr) -> Option<Known> {
 pub fn known_declaration(identity: FunctionIdentity, name: &str) -> Option<Known> {
     match identity {
         FunctionIdentity::Known(known) if known.matches_symbol(name) => Some(known),
-        #[cfg(test)]
-        FunctionIdentity::Unknown => Known::for_test_symbol(name),
         _ => None,
     }
 }

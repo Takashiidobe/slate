@@ -1,5 +1,3 @@
-//! Shared builders for fixup-pass unit tests.
-
 use crate::rust_ast::{
     BinOp, Expr, FnDef, FnParam, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, Visibility,
 };
@@ -35,21 +33,6 @@ pub(super) fn var(name: &str) -> Expr {
 
 pub(super) fn int(n: i64) -> Expr {
     Expr::Value(RustValue::I64(n))
-}
-
-pub(super) fn call(func: &str, args: Vec<Expr>) -> Expr {
-    let binding = crate::function_identity::Known::for_test_symbol(func).map_or(
-        crate::function_identity::CallBinding::Generated,
-        |known| crate::function_identity::CallBinding::Direct {
-            identity: crate::function_identity::FunctionIdentity::Known(known),
-            canonical_type: None,
-        },
-    );
-    Expr::Call {
-        binding,
-        func: Box::new(Expr::Var(func.into())),
-        args,
-    }
 }
 
 pub(super) fn bin(op: BinOp, lhs: Expr, rhs: Expr) -> Expr {

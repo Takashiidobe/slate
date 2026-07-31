@@ -1,31 +1,3 @@
-//! A stateful, csmith-style generator for Slate's supported C subset.
-//!
-//! Unlike the BNF expander (which stitches fixed template fragments together),
-//! this generator maintains *generation state* — a stack of scopes holding the
-//! variables that are currently declared, plus the signatures of functions
-//! emitted so far — and composes expressions from whatever is live. That lets it
-//! exercise variable scope, expression composition, reusable declarations, and
-//! passing scoped locals to functions.
-//!
-//! Everything it emits is restricted to the subset Slate can translate today
-//! (int arithmetic with `+`/`-`/`*`/`/`/`%`/bitwise/logical ops/unary negation/`++`/compound assignments,
-//! `float`/`double`/`long double` arithmetic with `+`/`-`/`*`/`/`, comparisons, `for`/`while`/`if`/`switch`,
-//! `double _Complex` `+`/`-`/`*`/`/` with `__real__`/`__imag__` extraction,
-//! arrays, pointers, structs, unions, typedef aliases, fixed-width typedefs,
-//! `_Bool`/`bool`, `sizeof`, type qualifiers, static globals, enum constants, and
-//! single-threaded integer atomics, and `printf("%d\n", ...)` / `printf("%f\n", ...)`).
-//!
-//! Correctness rests on keeping the two sides in agreement on the operations
-//! the differential harness actually compares. Integer overflow is *not* one of
-//! the things kept out of bounds: clang builds the C side at `-O0` (two's
-//! complement wrap) and the Rust batch crate sets `overflow-checks = false`, so
-//! both wrap identically. What the generator still guarantees is the arithmetic
-//! that traps on both sides regardless of overflow flags: divisors are nonzero
-//! constants (no division by zero, no `INT_MIN / -1`). It also carries a
-//! conservative upper bound on every value ([`VALUE_CAP`]) to keep programs
-//! tame, keeps array indices in range, and initializes every variable before it
-//! is read.
-
 #![allow(dead_code)]
 
 /// Never let a tracked value bound exceed this; well under `i32::MAX` so no
