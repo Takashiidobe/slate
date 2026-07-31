@@ -1162,6 +1162,10 @@ impl FixupFacts {
         // bindings by name+path against `self.bindings`, so it must
         // already reflect this function's current body before they run.
         Collector::resume(self).function(function, f);
+        self.borrow_alias
+            .extend(borrow_alias::collect_for_function(function, f, self));
+        self.def_use
+            .extend(def_use::collect_for_function(function, f, self));
         self.effects
             .extend(effects::collect_for_function(function, f));
         self.values
@@ -1214,6 +1218,8 @@ impl FixupFacts {
             .retain(|binding_type| !stale_bindings.contains(&binding_type.binding));
         self.loops
             .retain(|loop_fact| loop_fact.function != function);
+        self.borrow_alias.retain(|fact| fact.function != function);
+        self.def_use.retain(|fact| fact.function != function);
         self.effects
             .retain(|effect| effect.site.function != function);
         self.values.retain(|value| value.site.function != function);

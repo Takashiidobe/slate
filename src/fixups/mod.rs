@@ -15,7 +15,6 @@ use crate::fixups::trace::{CollectingLogger, NoopLogger, ProgramSummary, TraceLo
 use crate::rust_ast::{FnDef, IndentStmt, Item, Program};
 
 use crate::fixups::rewrite::constant_conditions::ConstantConditions;
-use crate::fixups::rewrite::dead_locals::DeadLocals;
 use crate::fixups::rewrite::for_continue::ForContinue;
 use crate::fixups::rewrite::struct_field_init::StructFieldInit;
 use crate::fixups::rewrite::var_aliases::VarAliases;
@@ -357,20 +356,16 @@ fn apply_with_logger(
         });
         incremental.mark_everything_dirty();
     });
+    let facts = incremental.resolve(&program);
     step!(program, Pass::FinalReturnTemps, {
-        to_fixpoint_items_with_facts(
-            &mut program,
-            FixpointLimit::Unlimited,
-            |item_index, f, facts| {
-                let Some(function) = facts.function_by_item_index(item_index) else {
-                    return false;
-                };
-                let mut fixup =
-                    rewrite::final_return_temps::FinalReturnTemps::new(function, facts, logger);
-                run_once(&mut f.body, &mut fixup)
-            },
-        );
-        incremental.mark_everything_dirty();
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::StmtWindowPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::final_return_temps::rewrite());
+            builder.finish()
+        };
+        let report = plan.apply(&mut program, &facts, logger);
+        incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::LazySingleton, {
@@ -555,18 +550,23 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::DeadLocals, {
-        to_fixpoint_items_with_facts(
-            &mut program,
-            FixpointLimit::Unlimited,
-            |item_index, f, facts| {
-                let Some(function) = facts.function_by_item_index(item_index) else {
-                    return false;
-                };
-                let mut fixup = DeadLocals::new(Pass::DeadLocals, function, facts, logger);
-                run_once(&mut f.body, &mut fixup)
-            },
-        );
-        incremental.mark_everything_dirty();
+        loop {
+            let facts = incremental.resolve(&program);
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::StmtWindowPlanBuilder::new();
+                builder.add_rule(
+                    &query,
+                    &query::rules::dead_locals::rewrite(Pass::DeadLocals),
+                );
+                builder.finish()
+            };
+            let report = plan.apply(&mut program, &facts, logger);
+            incremental.mark_touched(&report.touched);
+            if !report.changed {
+                break;
+            }
+        }
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::RemoveMut, {
@@ -715,18 +715,23 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::DeadLocals, {
-        to_fixpoint_items_with_facts(
-            &mut program,
-            FixpointLimit::Unlimited,
-            |item_index, f, facts| {
-                let Some(function) = facts.function_by_item_index(item_index) else {
-                    return false;
-                };
-                let mut fixup = DeadLocals::new(Pass::DeadLocals, function, facts, logger);
-                run_once(&mut f.body, &mut fixup)
-            },
-        );
-        incremental.mark_everything_dirty();
+        loop {
+            let facts = incremental.resolve(&program);
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::StmtWindowPlanBuilder::new();
+                builder.add_rule(
+                    &query,
+                    &query::rules::dead_locals::rewrite(Pass::DeadLocals),
+                );
+                builder.finish()
+            };
+            let report = plan.apply(&mut program, &facts, logger);
+            incremental.mark_touched(&report.touched);
+            if !report.changed {
+                break;
+            }
+        }
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::ArrayElementPointerOrigin, {
@@ -982,7 +987,7 @@ fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceL
     loop {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program);
         let mut changed = false;
-        for (item_index, item) in program.items.iter_mut().enumerate() {
+        for item in &mut program.items {
             if let Item::Fn(f) = item {
                 changed |= rewrite::singleton_scopes::SingletonScopes::with_pass(
                     pass,
@@ -990,12 +995,16 @@ fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceL
                     logger,
                 )
                 .fixup(&mut f.body);
-                if let Some(function) = facts.function_by_item_index(item_index) {
-                    let mut fixup = DeadLocals::new(pass, function, &facts, logger);
-                    changed |= run_once(&mut f.body, &mut fixup);
-                }
             }
         }
+        let plan = {
+            let query = query::QueryContext::new(program, &facts);
+            let mut builder = query::StmtWindowPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::dead_locals::rewrite(pass));
+            builder.finish()
+        };
+        let report = plan.apply(program, &facts, logger);
+        changed |= report.changed;
         if !changed {
             break;
         }

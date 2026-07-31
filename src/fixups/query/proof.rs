@@ -47,6 +47,9 @@ pub(in crate::fixups) enum Predicate {
     CountedLoop,
     StmtWindowGuard,
     LazySingletonDomain,
+    SoleUse,
+    DeadLocal,
+    NoEffects,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -102,6 +105,7 @@ pub(in crate::fixups) enum EvidenceDetail {
     LazySingletonDomain {
         singletons: usize,
     },
+    NoEffects,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

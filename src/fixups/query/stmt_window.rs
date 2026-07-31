@@ -129,8 +129,24 @@ impl<'snapshot> StmtWindowCaseContext<'_, 'snapshot> {
         self.prove(self.query.counted_loop(&self.candidate.site))
     }
 
-    /// Rejects the case when `condition` is false, carrying forward whatever
-    /// evidence earlier proofs in this case already accumulated.
+    pub(in crate::fixups) fn sole_use(
+        &mut self,
+        name: &str,
+    ) -> Result<crate::fixups::facts::BindingId, Rejection> {
+        self.prove(self.query.sole_use(&self.candidate.site, name))
+    }
+
+    pub(in crate::fixups) fn dead_local(
+        &mut self,
+        name: &str,
+    ) -> Result<crate::fixups::facts::BindingId, Rejection> {
+        self.prove(self.query.dead_local(&self.candidate.site, name))
+    }
+
+    pub(in crate::fixups) fn no_effects(&mut self) -> Result<(), Rejection> {
+        self.prove(self.query.no_effects(&self.candidate.site))
+    }
+
     pub(in crate::fixups) fn require(&self, condition: bool) -> Result<(), Rejection> {
         if condition {
             Ok(())
@@ -139,13 +155,6 @@ impl<'snapshot> StmtWindowCaseContext<'_, 'snapshot> {
         }
     }
 
-    /// Builds a rejection for a structural shape that doesn't fit this case,
-    /// carrying forward whatever evidence earlier proofs already
-    /// accumulated. Statement-window shapes are arbitrary `Stmt` patterns,
-    /// not one fixed shape like a call's argument list, so unlike
-    /// `CallCaseContext` there is no single named predicate for "the
-    /// window doesn't look like this case wants" - rule bodies match the
-    /// shape themselves and reject through this when it doesn't fit.
     pub(in crate::fixups) fn reject(&self) -> Rejection {
         Rejection::new(
             Predicate::StmtWindowGuard,

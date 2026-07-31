@@ -5,7 +5,8 @@ use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, DefUseFact, FixupFacts, FunctionId, PathSegment,
 };
 use crate::rust_ast::{
-    AsmOperand, AtomicPlace, Block, Expr, Ident, IndentStmt, Item, Pattern, Program, Stmt, UnaryOp,
+    AsmOperand, AtomicPlace, Block, Expr, FnDef, Ident, IndentStmt, Item, Pattern, Program, Stmt,
+    UnaryOp,
 };
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -18,12 +19,20 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut collector = Collector::new(function, facts);
-        collector.enter_root_scope();
-        collector.body(&f.body, &mut Vec::new(), false);
-        all.extend(collector.finish());
+        all.extend(collect_for_function(function, f, facts));
     }
     facts.def_use = all;
+}
+
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &FixupFacts,
+) -> Vec<DefUseFact> {
+    let mut collector = Collector::new(function, facts);
+    collector.enter_root_scope();
+    collector.body(&f.body, &mut Vec::new(), false);
+    collector.finish()
 }
 
 struct Collector<'a> {
