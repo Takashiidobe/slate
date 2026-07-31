@@ -960,6 +960,155 @@ query_cache! {
         ))
     }
 
+    fn sole_use(&self, window: &StmtWindowSite, name: &str) -> QueryResult<BindingId>;
+    key: (StmtWindowSite, String) = (window.clone(), name.to_string());
+    {
+        let predicate = Predicate::SoleUse;
+        let evidence_site = stmt_window_evidence_site(window, window.start);
+        let function = self.facts.function_by_item_index(window.item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(evidence_site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let mut def_path = window.path.0.clone();
+        def_path.push(PathSegment::Stmt(window.start));
+        let def_path = AstPath(def_path);
+        let Some(binding) = self.facts.binding_by_local_path(function, name, &def_path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(uses) = self.facts.def_use(binding) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let mut use_path = window.path.0.clone();
+        use_path.push(PathSegment::Stmt(window.start + 1));
+        let use_path = AstPath(use_path);
+        if !uses.writes.is_empty() || uses.reads != [use_path] {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
+        Ok(Proof::new(
+            binding,
+            vec![Evidence {
+                predicate,
+                site: evidence_site,
+                detail: EvidenceDetail::Binding {
+                    name: name.to_string(),
+                },
+            }],
+        ))
+    }
+
+    fn dead_local(&self, window: &StmtWindowSite, name: &str) -> QueryResult<BindingId>;
+    key: (StmtWindowSite, String) = (window.clone(), name.to_string());
+    {
+        let predicate = Predicate::DeadLocal;
+        let evidence_site = stmt_window_evidence_site(window, window.start);
+        let function = self.facts.function_by_item_index(window.item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(evidence_site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let mut def_path = window.path.0.clone();
+        def_path.push(PathSegment::Stmt(window.start));
+        let def_path = AstPath(def_path);
+        let Some(binding) = self.facts.binding_by_local_path(function, name, &def_path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(uses) = self.facts.def_use(binding) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        if !uses.reads.is_empty() || !uses.writes.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
+        Ok(Proof::new(
+            binding,
+            vec![Evidence {
+                predicate,
+                site: evidence_site,
+                detail: EvidenceDetail::Binding {
+                    name: name.to_string(),
+                },
+            }],
+        ))
+    }
+
+    fn no_effects(&self, window: &StmtWindowSite) -> QueryResult<()>;
+    key: StmtWindowSite = window.clone();
+    {
+        let predicate = Predicate::NoEffects;
+        let evidence_site = stmt_window_evidence_site(window, window.start);
+        let function = self.facts.function_by_item_index(window.item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(evidence_site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let mut def_path = window.path.0.clone();
+        def_path.push(PathSegment::Stmt(window.start));
+        let def_path = AstPath(def_path);
+        let Some(effect) = self.facts.effect(function, EffectSubject::Expr, &def_path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        if !effect.effects.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
+        Ok(Proof::new(
+            (),
+            vec![Evidence {
+                predicate,
+                site: evidence_site,
+                detail: EvidenceDetail::NoEffects,
+            }],
+        ))
+    }
+
     fn lazy_singletons(&self) -> QueryResult<LazySingletonSet>;
     key: () = ();
     {

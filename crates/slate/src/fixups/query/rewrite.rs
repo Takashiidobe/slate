@@ -376,6 +376,9 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::CountedLoop => "counted_loop",
         Predicate::StmtWindowGuard => "stmt_window_guard",
         Predicate::LazySingletonDomain => "lazy_singleton_domain",
+        Predicate::SoleUse => "sole_use",
+        Predicate::DeadLocal => "dead_local",
+        Predicate::NoEffects => "no_effects",
     }
 }
 
@@ -446,6 +449,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::LazySingletonDomain { singletons } => {
             format!("singletons={singletons}")
         }
+        EvidenceDetail::NoEffects => "no_effects".into(),
     }
 }
 

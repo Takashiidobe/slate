@@ -5,7 +5,9 @@ use crate::fixups::facts::{
     AstPath, BindingId, BorrowAliasFact, BorrowAliasReason, BorrowAliasState, BorrowAliasUseFact,
     BorrowAliasUseKind, FixupFacts, FunctionId, PathSegment,
 };
-use crate::rust_ast::{AsmOperand, Block, Expr, Ident, IndentStmt, Item, Program, Stmt, UnaryOp};
+use crate::rust_ast::{
+    AsmOperand, Block, Expr, FnDef, Ident, IndentStmt, Item, Program, Stmt, UnaryOp,
+};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.borrow_alias.clear();
@@ -17,11 +19,19 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut collector = Collector::new(function, facts);
-        collector.body(&f.body, &mut Vec::new());
-        all.extend(collector.finish());
+        all.extend(collect_for_function(function, f, facts));
     }
     facts.borrow_alias = all;
+}
+
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &FixupFacts,
+) -> Vec<BorrowAliasFact> {
+    let mut collector = Collector::new(function, facts);
+    collector.body(&f.body, &mut Vec::new());
+    collector.finish()
 }
 
 struct Collector<'a> {
