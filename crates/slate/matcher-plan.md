@@ -400,9 +400,43 @@ checks already are (diagnostic-only, not part of the default
   `SLATE_CLANG_ARGS=-std=c23`, a pre-existing gap shared with
   `effects_regression.rs`, not a splice bug).
 
-Once that's solid for a while, wire the migrated steps in `fixups/mod.rs`
-to use the incremental path (`slate-04q.75.56.8.4`); every other pass keeps
-its full `facts::analyze` call exactly as today.
+**Wired in, but only where it's actually safe (`slate-04q.75.56.8.4`).**
+`fixups/mod.rs` calls `facts::analyze(&program)` ~20 times end to end; the
+naive framing ("skip the analyze right after any migrated step") turned out
+to apply to exactly *one* of the six currently-migrated steps, not all of
+them — the other five either self-contain their own `facts::analyze` call
+(`MemchrPreludeFixupCalls`, `MemchrPrelude`, `LibcExit`, so there's no
+external analyze to skip) or have several legacy passes running before the
+next external analyze (`AnonymousStructs`), or are the pipeline's last step
+(`PruneUnusedDefinitions`, nothing follows to skip).
+
+- **`LazySingleton`** is the one clean transition: `plan.apply` followed
+  immediately by an external `facts::analyze` with nothing else running in
+  between. `apply_with_logger` now captures `report.touched` as the step's
+  result and, when the step ran and `!touched.unbounded`, builds the next
+  `facts` via a shared `splice_incremental_facts` helper
+  (`remove_items` then `splice_function` per touched item) instead of a
+  fresh `facts::analyze`. When the step didn't run (debug-mode pass
+  filtering) or reported `unbounded`, it falls back to a full reanalyze —
+  identical to the old unconditional behavior.
+- **`RangeLoop`** looked like a second candidate but isn't safe in the case
+  that actually matters: its step body calls `late_loop_cleanup` (a legacy
+  pass — `SingletonScopes`/`DeadLocals`) whenever `report.changed`, and that
+  legacy pass walks and can mutate *every* function in the program, not
+  just the ones `StmtWindowPlan::apply` reported as touched. Splicing only
+  the reported items in that case would leave `late_loop_cleanup`'s
+  untracked mutations stale. So the wiring only splices when
+  `late_loop_cleanup` did *not* run (`!report.changed`, where the splice is
+  a correctness-preserving no-op since nothing changed); whenever it does
+  run, `facts` falls back to a full reanalyze exactly as before.
+
+Every other migrated step, and all ~40 remaining legacy `rewrite::*`
+passes, keep their `facts::analyze` calls exactly as today. Verified via
+the full differential suite (`cargo nextest r --release`, 191 passed, 2
+skipped) producing byte-identical output to before this change, and via
+`slate verify-incremental-facts`/`tests/incremental_facts_regression.rs`
+(238/240, same baseline as `.8.3`) confirming the spliced facts the
+pipeline now actually uses match a full reanalyze.
 
 ## memchr: current vs. what's actually worth changing
 
