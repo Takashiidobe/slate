@@ -367,6 +367,8 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::NeverReturningExtern => "never_returning_extern",
         Predicate::ZeroUsers => "zero_users",
         Predicate::ZeroGroupUsers => "zero_group_users",
+        Predicate::CountedLoop => "counted_loop",
+        Predicate::StmtWindowGuard => "stmt_window_guard",
     }
 }
 
@@ -429,6 +431,11 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             users,
             complete,
         } => format!("group={group:?};definitions={definitions};users={users};complete={complete}"),
+        EvidenceDetail::CountedLoop {
+            start,
+            step,
+            index_use,
+        } => format!("start={start:?};step={step:?};index_use={index_use:?}"),
     }
 }
 

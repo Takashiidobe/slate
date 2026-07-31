@@ -362,16 +362,16 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::RangeLoop, {
-        if !skip.contains(Pass::RangeLoop)
-            && run_once_items(&mut program, |item_index, f| {
-                let Some(function) = facts.function_by_item_index(item_index) else {
-                    return false;
-                };
-                let mut fixup = rewrite::range_loop::RangeLoop::new(function, &facts, logger);
-                run_once(&mut f.body, &mut fixup)
-            })
-        {
-            late_loop_cleanup(&mut program, Pass::RangeLoop, logger);
+        if !skip.contains(Pass::RangeLoop) {
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::StmtWindowPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::range_loop::rewrite());
+                builder.finish()
+            };
+            if plan.apply(&mut program, &facts, logger).changed {
+                late_loop_cleanup(&mut program, Pass::RangeLoop, logger);
+            }
         }
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
