@@ -1,10 +1,11 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::cell::RefCell;
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, ConstValue, EffectSubject, FixupFacts, FunctionId, NulTermination, PathSegment,
-    Purity, StringBufferKind, ValueSubject,
+    AstPath, BindingId, ConstValue, EffectSubject, FixupFacts, FunctionId, NulTermination,
+    PathSegment, Purity, StringBufferKind, ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_declaration};
 use crate::rust_ast::{Attr, Expr, ExternDecl, ImplItem, Item, Prim, Program, Type, Visibility};
@@ -15,6 +16,40 @@ use super::{
     DefinitionSite, Evidence, EvidenceDetail, ExprSite, NulPosition, PointerMutability, Predicate,
     Proof, QueryResult, Rejection, RejectionReason, StableExpr, ZeroGroupUsers, ZeroUsers,
 };
+
+macro_rules! query_cache {
+    ($(
+        fn $name:ident(& $slf:tt $(, $arg:ident : $arg_ty:ty)*) -> QueryResult<$ret:ty>;
+        key: $key_ty:ty = $key:expr;
+        $body:block
+    )*) => {
+        #[derive(Default)]
+        struct QueryCache<'snapshot> {
+            $($name: RefCell<HashMap<$key_ty, QueryResult<$ret>>>,)*
+        }
+
+        impl<'snapshot> QueryContext<'snapshot> {
+            $(
+                pub(in crate::fixups) fn $name(&$slf, $($arg: $arg_ty),*) -> QueryResult<$ret> {
+                    cached(&$slf.cache.$name, $key, || $body)
+                }
+            )*
+        }
+    };
+}
+
+fn cached<K, V>(cache: &RefCell<HashMap<K, V>>, key: K, compute: impl FnOnce() -> V) -> V
+where
+    K: Eq + std::hash::Hash + Clone,
+    V: Clone,
+{
+    if let Some(hit) = cache.borrow().get(&key) {
+        return hit.clone();
+    }
+    let value = compute();
+    cache.borrow_mut().insert(key, value.clone());
+    value
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(in crate::fixups) enum CallTarget {
@@ -40,6 +75,7 @@ pub(in crate::fixups) struct QueryContext<'snapshot> {
     definitions: BTreeMap<DefinitionSelector, Vec<DefinitionSite>>,
     symbol_uses: BTreeMap<String, Vec<usize>>,
     use_domain_complete: bool,
+    cache: QueryCache<'snapshot>,
 }
 
 impl<'snapshot> QueryContext<'snapshot> {
@@ -98,6 +134,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             definitions,
             symbol_uses,
             use_domain_complete,
+            cache: QueryCache::default(),
         }
     }
 
@@ -112,7 +149,135 @@ impl<'snapshot> QueryContext<'snapshot> {
         !self.facts.anonymous_structs.is_empty()
     }
 
-    pub(in crate::fixups) fn anonymous_structs(&self) -> QueryResult<AnonymousStructSet> {
+    pub(super) fn snapshot_program(&self) -> &'snapshot Program {
+        self.program
+    }
+
+    pub(super) fn snapshot_facts(&self) -> &'snapshot FixupFacts {
+        self.facts
+    }
+
+    pub(in crate::fixups) fn expr(&self, site: &ExprSite) -> Option<&'snapshot Expr> {
+        walk::target_expr_at_path(self.program, site.item_index, &site.path)
+    }
+
+    pub(in crate::fixups) fn definitions(
+        &self,
+        selector: &DefinitionSelector,
+    ) -> &[DefinitionSite] {
+        self.definitions
+            .get(selector)
+            .map(Vec::as_slice)
+            .unwrap_or_default()
+    }
+
+    pub(in crate::fixups) fn definitions_in_group(
+        &self,
+        group: &DefinitionGroup,
+    ) -> Vec<DefinitionSite> {
+        self.definitions
+            .values()
+            .flatten()
+            .filter(|definition| definition.group.as_ref() == Some(group))
+            .cloned()
+            .collect()
+    }
+
+    pub(in crate::fixups) fn definitions_of_kind(
+        &self,
+        kind: DefinitionKind,
+    ) -> Vec<DefinitionSite> {
+        self.definitions
+            .values()
+            .flatten()
+            .filter(|definition| definition.kind == kind)
+            .cloned()
+            .collect()
+    }
+
+    fn definition_users(
+        &self,
+        definition: &DefinitionSite,
+        definition_items: &BTreeSet<usize>,
+    ) -> usize {
+        definition
+            .symbols
+            .iter()
+            .map(|symbol| {
+                self.symbol_uses
+                    .get(symbol)
+                    .map(|uses| {
+                        uses.iter()
+                            .filter(|item_index| !definition_items.contains(item_index))
+                            .count()
+                    })
+                    .unwrap_or(0)
+            })
+            .sum()
+    }
+
+    fn function(&self, site: &ExprSite) -> Option<FunctionId> {
+        self.program.items.get(site.item_index)?;
+        self.facts.function_by_item_index(site.item_index)
+    }
+
+    fn count_matches_source_len(&self, source: &ByteSource<'snapshot>, count: &ExprSite) -> bool {
+        let Some(count) = self.expr(count) else {
+            return false;
+        };
+        count_matches_source_len(source, count)
+    }
+
+    fn constant_values<T: Ord>(
+        &self,
+        predicate: Predicate,
+        site: &ExprSite,
+        convert: impl Fn(&ConstValue) -> Result<Option<T>, RejectionReason>,
+    ) -> Result<Vec<T>, Rejection> {
+        let function = self.function(site).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let mut values = BTreeSet::new();
+        for value in self
+            .facts
+            .values_at(function, ValueSubject::Expr, &site.fact_path)
+        {
+            match convert(value) {
+                Ok(Some(value)) => {
+                    values.insert(value);
+                }
+                Ok(None) => {}
+                Err(reason) => {
+                    return Err(Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        reason,
+                        Vec::new(),
+                    ));
+                }
+            }
+        }
+        if values.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        Ok(values.into_iter().collect())
+    }
+}
+
+query_cache! {
+    fn anonymous_structs(&self) -> QueryResult<AnonymousStructSet>;
+    key: () = ();
+    {
         let records = self
             .program
             .items
@@ -225,15 +390,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(AnonymousStructSet { structs }, evidence))
     }
 
-    pub(super) fn snapshot_program(&self) -> &'snapshot Program {
-        self.program
-    }
-
-    pub(super) fn snapshot_facts(&self) -> &'snapshot FixupFacts {
-        self.facts
-    }
-
-    pub(in crate::fixups) fn never_returning_extern(&self, call: &CallRecord) -> QueryResult<()> {
+    fn never_returning_extern(&self, call: &CallRecord) -> QueryResult<()>;
+    key: ExprSite = call.site.clone();
+    {
         let predicate = Predicate::NeverReturningExtern;
         let CallTarget::Known(target) = call.target else {
             return Err(Rejection::new(
@@ -284,48 +443,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn expr(&self, site: &ExprSite) -> Option<&'snapshot Expr> {
-        walk::target_expr_at_path(self.program, site.item_index, &site.path)
-    }
-
-    pub(in crate::fixups) fn definitions(
-        &self,
-        selector: &DefinitionSelector,
-    ) -> &[DefinitionSite] {
-        self.definitions
-            .get(selector)
-            .map(Vec::as_slice)
-            .unwrap_or_default()
-    }
-
-    pub(in crate::fixups) fn definitions_in_group(
-        &self,
-        group: &DefinitionGroup,
-    ) -> Vec<DefinitionSite> {
-        self.definitions
-            .values()
-            .flatten()
-            .filter(|definition| definition.group.as_ref() == Some(group))
-            .cloned()
-            .collect()
-    }
-
-    pub(in crate::fixups) fn definitions_of_kind(
-        &self,
-        kind: DefinitionKind,
-    ) -> Vec<DefinitionSite> {
-        self.definitions
-            .values()
-            .flatten()
-            .filter(|definition| definition.kind == kind)
-            .cloned()
-            .collect()
-    }
-
-    pub(in crate::fixups) fn zero_users(
-        &self,
-        definition: &DefinitionSite,
-    ) -> QueryResult<ZeroUsers> {
+    fn zero_users(&self, definition: &DefinitionSite) -> QueryResult<ZeroUsers>;
+    key: DefinitionLocation = definition.location.clone();
+    {
         let users = self.definition_users(
             definition,
             &BTreeSet::from([definition.location.item_index()]),
@@ -364,10 +484,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn zero_group_users(
-        &self,
-        group: &DefinitionGroup,
-    ) -> QueryResult<ZeroGroupUsers> {
+    fn zero_group_users(&self, group: &DefinitionGroup) -> QueryResult<ZeroGroupUsers>;
+    key: DefinitionGroup = group.clone();
+    {
         let definitions = self.definitions_in_group(group);
         let definition_items = definitions
             .iter()
@@ -424,31 +543,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    fn definition_users(
-        &self,
-        definition: &DefinitionSite,
-        definition_items: &BTreeSet<usize>,
-    ) -> usize {
-        definition
-            .symbols
-            .iter()
-            .map(|symbol| {
-                self.symbol_uses
-                    .get(symbol)
-                    .map(|uses| {
-                        uses.iter()
-                            .filter(|item_index| !definition_items.contains(item_index))
-                            .count()
-                    })
-                    .unwrap_or(0)
-            })
-            .sum()
-    }
-
-    pub(in crate::fixups) fn byte_source(
-        &self,
-        site: &ExprSite,
-    ) -> QueryResult<ByteSource<'snapshot>> {
+    fn byte_source(&self, site: &ExprSite) -> QueryResult<ByteSource<'snapshot>>;
+    key: ExprSite = site.clone();
+    {
         let predicate = Predicate::ByteSource;
         let function = self.function(site).ok_or_else(|| {
             Rejection::new(
@@ -560,7 +657,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn const_u8(&self, site: &ExprSite) -> QueryResult<u8> {
+    fn const_u8(&self, site: &ExprSite) -> QueryResult<u8>;
+    key: ExprSite = site.clone();
+    {
         let values = self.constant_values(Predicate::ConstantU8, site, |value| match value {
             ConstValue::Integer(value) => u8::try_from(*value)
                 .map(Some)
@@ -590,7 +689,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn const_usize(&self, site: &ExprSite) -> QueryResult<usize> {
+    fn const_usize(&self, site: &ExprSite) -> QueryResult<usize>;
+    key: ExprSite = site.clone();
+    {
         let values = self.constant_values(Predicate::ConstantUsize, site, |value| match value {
             ConstValue::Integer(value) => usize::try_from(*value)
                 .map(Some)
@@ -619,11 +720,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn full_byte_view(
-        &self,
-        source: &ByteSource<'snapshot>,
-        count: &ExprSite,
-    ) -> QueryResult<ByteView<'snapshot>> {
+    fn full_byte_view(&self, source: &ByteSource<'snapshot>, count: &ExprSite) -> QueryResult<ByteView<'snapshot>>;
+    key: (ExprSite, ExprSite) = (source.site.clone(), count.clone());
+    {
         let constant = self.const_usize(count);
         if let (ByteExtent::Constant(extent), Ok(count_proof)) = (source.extent, &constant) {
             if extent != count_proof.value {
@@ -673,10 +772,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn first_nul(
-        &self,
-        source: &ByteSource<'snapshot>,
-    ) -> QueryResult<NulPosition> {
+    fn first_nul(&self, source: &ByteSource<'snapshot>) -> QueryResult<NulPosition>;
+    key: BindingId = source.binding;
+    {
         let predicate = Predicate::FirstNul;
         let Some(buffer) = self.facts.string_buffer(source.binding) else {
             return Err(Rejection::new(
@@ -738,11 +836,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn prefix_contains(
-        &self,
-        count: &ExprSite,
-        nul: NulPosition,
-    ) -> QueryResult<()> {
+    fn prefix_contains(&self, count: &ExprSite, nul: NulPosition) -> QueryResult<()>;
+    key: (ExprSite, NulPosition) = (count.clone(), nul);
+    {
         let count_proof = self.const_usize(count)?;
         let count_stable = self.pure(count)?;
         let NulPosition::Constant(nul) = nul else {
@@ -775,7 +871,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new((), evidence))
     }
 
-    pub(in crate::fixups) fn pure(&self, site: &ExprSite) -> QueryResult<StableExpr> {
+    fn pure(&self, site: &ExprSite) -> QueryResult<StableExpr>;
+    key: ExprSite = site.clone();
+    {
         let predicate = Predicate::MovablePure;
         let function = self.function(site).ok_or_else(|| {
             Rejection::new(
@@ -812,63 +910,6 @@ impl<'snapshot> QueryContext<'snapshot> {
                 detail: EvidenceDetail::MovablePure,
             }],
         ))
-    }
-
-    fn function(&self, site: &ExprSite) -> Option<FunctionId> {
-        self.program.items.get(site.item_index)?;
-        self.facts.function_by_item_index(site.item_index)
-    }
-
-    fn count_matches_source_len(&self, source: &ByteSource<'snapshot>, count: &ExprSite) -> bool {
-        let Some(count) = self.expr(count) else {
-            return false;
-        };
-        count_matches_source_len(source, count)
-    }
-
-    fn constant_values<T: Ord>(
-        &self,
-        predicate: Predicate,
-        site: &ExprSite,
-        convert: impl Fn(&ConstValue) -> Result<Option<T>, RejectionReason>,
-    ) -> Result<Vec<T>, Rejection> {
-        let function = self.function(site).ok_or_else(|| {
-            Rejection::new(
-                predicate,
-                Some(site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            )
-        })?;
-        let mut values = BTreeSet::new();
-        for value in self
-            .facts
-            .values_at(function, ValueSubject::Expr, &site.fact_path)
-        {
-            match convert(value) {
-                Ok(Some(value)) => {
-                    values.insert(value);
-                }
-                Ok(None) => {}
-                Err(reason) => {
-                    return Err(Rejection::new(
-                        predicate,
-                        Some(site.clone()),
-                        reason,
-                        Vec::new(),
-                    ));
-                }
-            }
-        }
-        if values.is_empty() {
-            return Err(Rejection::new(
-                predicate,
-                Some(site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        }
-        Ok(values.into_iter().collect())
     }
 }
 

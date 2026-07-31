@@ -107,7 +107,7 @@ pub(in crate::fixups) enum ByteExtent {
     Dynamic,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub(in crate::fixups) enum NulPosition {
     Constant(usize),
     ByteLength,
