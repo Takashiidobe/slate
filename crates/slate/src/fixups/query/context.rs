@@ -4,8 +4,8 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, ConstValue, EffectSubject, FixupFacts, FunctionId, NulTermination,
-    PathSegment, Purity, StringBufferKind, ValueSubject,
+    AstPath, BindingId, ConstValue, CountedLoopFact, EffectSubject, FixupFacts, FunctionId,
+    NulTermination, PathSegment, Purity, StringBufferKind, ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_declaration};
 use crate::rust_ast::{Attr, Expr, ExternDecl, ImplItem, Item, Prim, Program, Type, Visibility};
@@ -13,8 +13,9 @@ use crate::rust_ast::{Attr, Expr, ExternDecl, ImplItem, Item, Prim, Program, Typ
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ByteExtent, ByteRepresentation,
     ByteSource, ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, Evidence, EvidenceDetail, ExprSite, NulPosition, PointerMutability, Predicate,
-    Proof, QueryResult, Rejection, RejectionReason, StableExpr, ZeroGroupUsers, ZeroUsers,
+    DefinitionSite, Evidence, EvidenceDetail, ExprSite, NulPosition, NullaryMethodCall,
+    PointerMutability, Predicate, Proof, QueryResult, Rejection, RejectionReason, StableExpr,
+    StmtWindowSite, ZeroGroupUsers, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -911,6 +912,49 @@ query_cache! {
             }],
         ))
     }
+
+    fn counted_loop(&self, window: &StmtWindowSite) -> QueryResult<CountedLoopFact>;
+    key: StmtWindowSite = window.clone();
+    {
+        let predicate = Predicate::CountedLoop;
+        let evidence_site = stmt_window_evidence_site(window, window.start);
+        let function = self.facts.function_by_item_index(window.item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(evidence_site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let mut loop_path = window.path.0.clone();
+        loop_path.push(PathSegment::Stmt(window.start + 1));
+        let loop_path = AstPath(loop_path);
+        let Some(fact) = self
+            .facts
+            .counted_loops
+            .iter()
+            .find(|fact| fact.site.function == function && fact.site.loop_path == loop_path)
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        Ok(Proof::new(
+            fact.clone(),
+            vec![Evidence {
+                predicate,
+                site: evidence_site,
+                detail: EvidenceDetail::CountedLoop {
+                    start: fact.start,
+                    step: fact.step,
+                    index_use: fact.index_use,
+                },
+            }],
+        ))
+    }
 }
 
 fn index_definitions(
@@ -1103,6 +1147,15 @@ fn expression_site(item_index: usize, path: &[PathSegment]) -> ExprSite {
     }
 }
 
+/// An `ExprSite` pointing at one statement in a `StmtWindowSite`'s window,
+/// for `Evidence`/`Rejection` locations - `Evidence`/`Rejection` are shared
+/// by every rule kind and only know how to carry an `ExprSite`.
+fn stmt_window_evidence_site(window: &StmtWindowSite, stmt_index: usize) -> ExprSite {
+    let mut path = window.path.0.clone();
+    path.push(PathSegment::Stmt(stmt_index));
+    expression_site(window.item_index, &path)
+}
+
 fn child_site(parent: &ExprSite, index: usize) -> ExprSite {
     let mut path = parent.path.clone();
     path.0.push(PathSegment::Expr(index));
@@ -1163,39 +1216,38 @@ fn stable_pointer_source(expr: &Expr) -> Option<(&str, bool)> {
             };
             Some((name.as_str(), *mutable))
         }
-        Expr::MethodCall { recv, method, args }
-            if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
-        {
-            let Expr::Var(name) = &**recv else {
+        _ => {
+            let (method, recv) = pointer_method().matches(expr, &())?;
+            let Expr::Var(name) = recv else {
                 return None;
             };
             Some((name.as_str(), method == "as_mut_ptr"))
         }
-        _ => None,
     }
+}
+
+fn pointer_method() -> NullaryMethodCall {
+    NullaryMethodCall::one_of(&["as_ptr", "as_mut_ptr"])
 }
 
 fn count_matches_source_len(source: &ByteSource<'_>, count: &Expr) -> bool {
     match count {
         Expr::Cast { expr, .. } => count_matches_source_len(source, expr),
-        Expr::MethodCall { recv, method, args } if args.is_empty() && method == "len" => {
-            matches_source_expr(source, recv)
-        }
-        _ => false,
+        _ => NullaryMethodCall::named("len")
+            .matches(count, &())
+            .is_some_and(|(_, recv)| matches_source_expr(source, recv)),
     }
 }
 
 fn matches_source_expr(source: &ByteSource<'_>, expr: &Expr) -> bool {
     match expr {
         Expr::Var(name) => name.as_str() == source.name,
-        Expr::MethodCall { recv, method, args }
-            if args.is_empty()
-                && method == "as_bytes"
-                && source.representation == ByteRepresentation::Str =>
-        {
-            matches_source_expr(source, recv)
+        _ => {
+            source.representation == ByteRepresentation::Str
+                && NullaryMethodCall::named("as_bytes")
+                    .matches(expr, &())
+                    .is_some_and(|(_, recv)| matches_source_expr(source, recv))
         }
-        _ => false,
     }
 }
 

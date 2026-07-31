@@ -1,5 +1,7 @@
 mod context;
 mod definition;
+mod field;
+mod patterns;
 mod plan;
 mod program;
 mod program_recipe;
@@ -8,12 +10,14 @@ mod recipe;
 mod rewrite;
 mod rule;
 pub(in crate::fixups) mod rules;
+mod stmt_window;
 mod views;
 
 pub(in crate::fixups) use context::{CallRecord, CallTarget, QueryContext};
 pub(in crate::fixups) use definition::{
     DefinitionPlanBuilder, DefinitionRule, delete_definition, replace_body,
 };
+pub(in crate::fixups) use patterns::{LetStmtPattern, LoopStmtPattern, NullaryMethodCall};
 pub(in crate::fixups) use program::{ProgramPlanBuilder, ProgramRule};
 pub(in crate::fixups) use program_recipe::{ProgramRecipe, rewrite_anonymous_structs};
 pub(in crate::fixups) use proof::{
@@ -28,9 +32,10 @@ pub(in crate::fixups) use rewrite::{
     RuleIdentity, RuleResult,
 };
 pub(in crate::fixups) use rule::CallRule;
+pub(in crate::fixups) use stmt_window::{StmtWindowPlanBuilder, StmtWindowRule};
 use views::{AnonymousStructField, AnonymousStructPlan};
 pub(in crate::fixups) use views::{
     AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
     DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite, NulPosition,
-    PointerMutability, StableExpr, ZeroGroupUsers, ZeroUsers,
+    PointerMutability, StableExpr, StmtWindowSite, ZeroGroupUsers, ZeroUsers,
 };

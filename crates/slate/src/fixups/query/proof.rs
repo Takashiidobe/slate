@@ -1,3 +1,5 @@
+use crate::fixups::facts::{CountedLoopIndexUse, CountedLoopStart, CountedLoopStep};
+
 use super::{
     ByteExtent, ByteRepresentation, CallTarget, DefinitionGroup, ExprSite, NulPosition,
     PointerMutability,
@@ -42,6 +44,8 @@ pub(in crate::fixups) enum Predicate {
     NeverReturningExtern,
     ZeroUsers,
     ZeroGroupUsers,
+    CountedLoop,
+    StmtWindowGuard,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -88,6 +92,11 @@ pub(in crate::fixups) enum EvidenceDetail {
         definitions: usize,
         users: usize,
         complete: bool,
+    },
+    CountedLoop {
+        start: CountedLoopStart,
+        step: CountedLoopStep,
+        index_use: CountedLoopIndexUse,
     },
 }
 

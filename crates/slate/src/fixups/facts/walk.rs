@@ -1,6 +1,6 @@
 use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
 pub(in crate::fixups) use crate::fixups::support::walk::{
-    nested_bodies_with_path, with_path_segment,
+    nested_bodies_with_path, nested_body_vecs_with_path, with_path_segment,
 };
 use crate::rust_ast::{AsmOperand, Block, Expr, IndentStmt, InlineAsm, Item, Program, Stmt};
 

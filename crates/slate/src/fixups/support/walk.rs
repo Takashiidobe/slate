@@ -70,6 +70,69 @@ pub(in crate::fixups) fn nested_bodies_with_path(
     }
 }
 
+/// Same traversal as `nested_bodies_with_path`, but with `stmt`'s lifetime
+/// named explicitly so a caller collecting borrowed `&'a [IndentStmt]`
+/// slices across the whole walk (rather than just visiting-and-dropping
+/// each one) can do so - `impl FnMut(&[IndentStmt], ..)` alone would bind a
+/// fresh, call-local lifetime unrelated to `stmt`'s.
+pub(in crate::fixups) fn nested_body_vecs_with_path<'a>(
+    stmt: &'a Stmt,
+    path: &mut Vec<PathSegment>,
+    f: &mut impl FnMut(&'a [IndentStmt], &mut Vec<PathSegment>),
+) {
+    match stmt {
+        Stmt::If {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        } => {
+            with_path_segment(path, PathSegment::Then, |path| f(then_body, path));
+            with_path_segment(path, PathSegment::Else, |path| f(else_body, path));
+        }
+        Stmt::Loop { body, .. } => {
+            with_path_segment(path, PathSegment::LoopBody, |path| f(body, path));
+        }
+        Stmt::For { body, .. } => {
+            with_path_segment(path, PathSegment::ForBody, |path| f(body, path));
+        }
+        Stmt::Scope { body } => {
+            with_path_segment(path, PathSegment::ScopeBody, |path| f(body, path));
+        }
+        Stmt::LabeledBlock { body, .. } => {
+            with_path_segment(path, PathSegment::LabeledBody, |path| f(body, path));
+        }
+        Stmt::Unsafe { body } => {
+            with_path_segment(path, PathSegment::UnsafeBody, |path| f(&body.stmts, path));
+        }
+        Stmt::While { body, .. } => {
+            with_path_segment(path, PathSegment::WhileBody, |path| f(&body.stmts, path));
+        }
+        Stmt::Block(body) => {
+            with_path_segment(path, PathSegment::BlockBody, |path| f(&body.stmts, path));
+        }
+        Stmt::Match { arms, .. } => {
+            for (index, arm) in arms.iter().enumerate() {
+                with_path_segment(path, PathSegment::MatchArm(index), |path| {
+                    f(&arm.body, path)
+                });
+            }
+        }
+        Stmt::Let { .. }
+        | Stmt::Assign { .. }
+        | Stmt::CompoundAssign { .. }
+        | Stmt::InlineAsm(_)
+        | Stmt::Expr(_)
+        | Stmt::Return(_)
+        | Stmt::Break(_)
+        | Stmt::Continue(_) => {}
+    }
+}
+
 pub(in crate::fixups) fn nested_bodies_mut_with_path(
     stmt: &mut Stmt,
     path: &mut Vec<PathSegment>,

@@ -1,14 +1,17 @@
 # Writing a Query-Driven Fixup
 
-Use `src/fixups/query/` when a rewrite can replace a selected expression, delete
-a definition, or replace a function body. The query engine owns AST traversal,
-fact lookup, stable node locations, conflict detection, mutation, and tracing.
-The rule should contain only candidate selection, ordered preconditions, and a
-typed recipe.
+Use `src/fixups/query/` when a rewrite can replace a selected expression,
+delete a definition, replace a function body, splice a run of adjacent
+statements, or replace the whole program. The query engine owns AST
+traversal, fact lookup, stable node locations, conflict detection, mutation,
+and tracing. The rule should contain only candidate selection, ordered
+preconditions, and a typed recipe.
 
 Read [writing-a-fixup.md](writing-a-fixup.md) first. Use a legacy pass under
-`src/fixups/rewrite/` only when the query planner cannot represent the change,
-such as a multi-statement or control-flow rewrite.
+`src/fixups/rewrite/` only when the query planner still cannot represent the
+change - for example a rewrite whose window width isn't fixed in advance, or
+one that needs to inspect mutated state left behind by an earlier statement
+in the same pass.
 
 ## Call rules
 
@@ -118,6 +121,56 @@ definition is externally reachable, or the use domain is otherwise incomplete.
 Generated support must use `Item::SupportModule` and list every exported
 qualified path so its lifetime is tied to real AST users.
 
+## Statement window rules
+
+`StmtWindowRule` matches a fixed-width run of adjacent statements anywhere in
+the program - inside a function body or any nested block, loop, arm, or
+branch - and its recipe splices in a replacement `Vec<IndentStmt>` (empty to
+delete, one or more to replace). This is the rule kind for rewrites that
+depend on more than one statement at a time, such as folding a canonical
+`let i = 0; loop { ... }` pair into a Rust `for` loop:
+
+```rust
+pub(in crate::fixups) fn rewrite() -> StmtWindowRule {
+    StmtWindowRule::new(Pass::RangeLoop, "rewrite_counted_loop_to_range", 2).case(
+        "zero_step_one",
+        |case| {
+            let [index_stmt, loop_stmt] = case.stmts();
+            let Stmt::Let { name: index_name, .. } = &index_stmt.stmt else {
+                return Err(case.reject());
+            };
+            let Stmt::Loop { body: loop_body, .. } = &loop_stmt.stmt else {
+                return Err(case.reject());
+            };
+            case.require(loop_body.len() >= 2)?;
+            let fact = case.counted_loop()?;
+            case.require(fact.start == CountedLoopStart::Zero)?;
+            case.require(fact.step == CountedLoopStep::One)?;
+            // ...build and return the replacement Vec<IndentStmt>...
+        },
+    )
+}
+```
+
+Structural shape (is this a `Let` followed by a `Loop`?) is matched directly
+in the rule with ordinary `let else` - a window can hold any `Stmt`, unlike a
+call's fixed argument list, so there is no one structural helper to reuse the
+way `CallCaseContext::args()` covers every call. `case.reject()` and
+`case.require(condition)` turn a failed structural or boolean check into a
+`Rejection`, carrying forward whatever proof evidence the case already
+accumulated. Semantic guards work exactly like other rule kinds:
+`case.counted_loop()` proves and captures the fact backing this window.
+
+Overlap detection generalizes path-prefix overlap (as for expressions) with a
+statement-range check: two windows conflict when they select overlapping
+indices in the same container, or when one window's statement range would
+delete the container the other window lives inside. As with call and
+expression rules, conflicting edits are dropped rather than applied in some
+implicit order - a rewrite that depends on an enclosing statement's fixup
+already having happened in the same pass (e.g. a nested counted loop inside
+another counted loop) may need another pass round rather than firing in one
+shot; this mirrors how overlapping call rewrites already behave today.
+
 ## Scheduling
 
 Build a plan from one immutable `Program` and fresh `FixupFacts` snapshot, then
@@ -135,8 +188,9 @@ plan.apply(&mut program, &facts, logger).changed
 ```
 
 Use `DefinitionPlanBuilder` and `plan.apply(&mut program, logger)` for definition
-rules. Add several rules to one builder only when they intentionally share a
-snapshot; overlapping edits are rejected.
+rules, or `StmtWindowPlanBuilder` and `plan.apply(&mut program, &facts, logger)`
+for statement-window rules. Add several rules to one builder only when they
+intentionally share a snapshot; overlapping edits are rejected.
 
 Recompute facts before the next fact-dependent query. Place definition deletion
 after the final pass that can remove a user.
