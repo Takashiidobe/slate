@@ -1229,6 +1229,337 @@ impl FixupFacts {
             .retain(|loop_fact| loop_fact.site.function != function);
     }
 
+    pub(super) fn diff_incremental(&self, fresh: &FixupFacts) -> Option<String> {
+        fn function_name(f: &FixupFacts, id: FunctionId) -> String {
+            f.function_name(id)
+                .unwrap_or("<unknown function>")
+                .to_string()
+        }
+        fn site_key(f: &FixupFacts, site: &Site) -> String {
+            format!("{}|{:?}", function_name(f, site.function), site.path)
+        }
+        fn loop_site_key(f: &FixupFacts, site: &LoopSite) -> String {
+            format!(
+                "{}|{:?}|{:?}",
+                function_name(f, site.function),
+                site.loop_path,
+                site.body_path
+            )
+        }
+        fn binding_key(f: &FixupFacts, id: BindingId) -> String {
+            f.bindings
+                .iter()
+                .find(|b| b.id == id)
+                .map(|b| format!("{}|{}|{:?}", function_name(f, b.function), b.name, b.path))
+                .unwrap_or_else(|| format!("<missing binding {id:?}>"))
+        }
+
+        let mut mismatches: Vec<String> = Vec::new();
+        macro_rules! check_field {
+            ($name:literal, $a:expr, $b:expr) => {{
+                let mut a: Vec<String> = $a;
+                let mut b: Vec<String> = $b;
+                a.sort();
+                b.sort();
+                if a != b {
+                    mismatches.push(format!(
+                        "{} mismatch ({} spliced vs {} fresh):\nspliced: {:#?}\nfresh:   {:#?}",
+                        $name,
+                        a.len(),
+                        b.len(),
+                        a,
+                        b
+                    ));
+                }
+            }};
+        }
+
+        check_field!(
+            "functions",
+            self.functions
+                .iter()
+                .map(|f| format!("{}@{}", f.name, f.item_index))
+                .collect(),
+            fresh
+                .functions
+                .iter()
+                .map(|f| format!("{}@{}", f.name, f.item_index))
+                .collect()
+        );
+        check_field!(
+            "bindings",
+            self.bindings
+                .iter()
+                .map(|b| format!(
+                    "{}|{}|{:?}|{:?}",
+                    function_name(self, b.function),
+                    b.name,
+                    b.kind,
+                    b.path
+                ))
+                .collect(),
+            fresh
+                .bindings
+                .iter()
+                .map(|b| format!(
+                    "{}|{}|{:?}|{:?}",
+                    function_name(fresh, b.function),
+                    b.name,
+                    b.kind,
+                    b.path
+                ))
+                .collect()
+        );
+        check_field!(
+            "binding_types",
+            self.binding_types
+                .iter()
+                .map(|bt| format!(
+                    "{}|{}|{:?}",
+                    binding_key(self, bt.binding),
+                    bt.rendered,
+                    bt.ty
+                ))
+                .collect(),
+            fresh
+                .binding_types
+                .iter()
+                .map(|bt| format!(
+                    "{}|{}|{:?}",
+                    binding_key(fresh, bt.binding),
+                    bt.rendered,
+                    bt.ty
+                ))
+                .collect()
+        );
+        check_field!(
+            "loops",
+            self.loops
+                .iter()
+                .map(|l| format!(
+                    "{}|{:?}|{:?}",
+                    function_name(self, l.function),
+                    l.kind,
+                    l.path
+                ))
+                .collect(),
+            fresh
+                .loops
+                .iter()
+                .map(|l| format!(
+                    "{}|{:?}|{:?}",
+                    function_name(fresh, l.function),
+                    l.kind,
+                    l.path
+                ))
+                .collect()
+        );
+        check_field!(
+            "effects",
+            self.effects
+                .iter()
+                .map(|e| format!(
+                    "{}|{:?}|{:?}|{:?}",
+                    site_key(self, &e.site),
+                    e.subject,
+                    e.purity,
+                    e.effects
+                ))
+                .collect(),
+            fresh
+                .effects
+                .iter()
+                .map(|e| format!(
+                    "{}|{:?}|{:?}|{:?}",
+                    site_key(fresh, &e.site),
+                    e.subject,
+                    e.purity,
+                    e.effects
+                ))
+                .collect()
+        );
+        check_field!(
+            "values",
+            self.values
+                .iter()
+                .map(|v| {
+                    let subject = match v.subject {
+                        ValueSubject::Expr => "expr".to_string(),
+                        ValueSubject::Binding(id) => binding_key(self, id),
+                    };
+                    format!("{}|{}|{:?}", site_key(self, &v.site), subject, v.value)
+                })
+                .collect(),
+            fresh
+                .values
+                .iter()
+                .map(|v| {
+                    let subject = match v.subject {
+                        ValueSubject::Expr => "expr".to_string(),
+                        ValueSubject::Binding(id) => binding_key(fresh, id),
+                    };
+                    format!("{}|{}|{:?}", site_key(fresh, &v.site), subject, v.value)
+                })
+                .collect()
+        );
+        check_field!(
+            "string_buffers",
+            self.string_buffers
+                .iter()
+                .map(|b| format!(
+                    "{}|{}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}",
+                    site_key(self, &b.site),
+                    binding_key(self, b.binding),
+                    b.kind,
+                    b.provenance,
+                    b.bytes,
+                    b.nul_termination,
+                    b.interior_nul,
+                    b.ascii_only,
+                    b.candidates,
+                    b.rejections
+                ))
+                .collect(),
+            fresh
+                .string_buffers
+                .iter()
+                .map(|b| format!(
+                    "{}|{}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}",
+                    site_key(fresh, &b.site),
+                    binding_key(fresh, b.binding),
+                    b.kind,
+                    b.provenance,
+                    b.bytes,
+                    b.nul_termination,
+                    b.interior_nul,
+                    b.ascii_only,
+                    b.candidates,
+                    b.rejections
+                ))
+                .collect()
+        );
+        check_field!(
+            "string_pointer_views",
+            self.string_pointer_views
+                .iter()
+                .map(|v| format!(
+                    "{}|{}|{:?}|{:?}",
+                    site_key(self, &v.site),
+                    binding_key(self, v.source),
+                    v.mutable,
+                    v.kind
+                ))
+                .collect(),
+            fresh
+                .string_pointer_views
+                .iter()
+                .map(|v| format!(
+                    "{}|{}|{:?}|{:?}",
+                    site_key(fresh, &v.site),
+                    binding_key(fresh, v.source),
+                    v.mutable,
+                    v.kind
+                ))
+                .collect()
+        );
+        check_field!(
+            "string_libc_uses",
+            self.string_libc_uses
+                .iter()
+                .map(|u| format!(
+                    "{}|{:?}|{}",
+                    site_key(self, &u.site),
+                    u.callee,
+                    u.pointer_args
+                        .iter()
+                        .map(|id| binding_key(self, *id))
+                        .collect::<Vec<_>>()
+                        .join(",")
+                ))
+                .collect(),
+            fresh
+                .string_libc_uses
+                .iter()
+                .map(|u| format!(
+                    "{}|{:?}|{}",
+                    site_key(fresh, &u.site),
+                    u.callee,
+                    u.pointer_args
+                        .iter()
+                        .map(|id| binding_key(fresh, *id))
+                        .collect::<Vec<_>>()
+                        .join(",")
+                ))
+                .collect()
+        );
+        check_field!(
+            "counted_loops",
+            self.counted_loops
+                .iter()
+                .map(|c| format!(
+                    "{}|{}|{:?}|{:?}|{:?}|{:?}",
+                    loop_site_key(self, &c.site),
+                    binding_key(self, c.index),
+                    c.bound,
+                    c.start,
+                    c.step,
+                    c.index_use
+                ))
+                .collect(),
+            fresh
+                .counted_loops
+                .iter()
+                .map(|c| format!(
+                    "{}|{}|{:?}|{:?}|{:?}|{:?}",
+                    loop_site_key(fresh, &c.site),
+                    binding_key(fresh, c.index),
+                    c.bound,
+                    c.start,
+                    c.step,
+                    c.index_use
+                ))
+                .collect()
+        );
+        check_field!(
+            "counted_slice_loops",
+            self.counted_slice_loops
+                .iter()
+                .map(|c| format!(
+                    "{}|{}|{}|{:?}|{:?}|{:?}|{:?}|{:?}",
+                    loop_site_key(self, &c.site),
+                    binding_key(self, c.index),
+                    binding_key(self, c.slice),
+                    c.start,
+                    c.bound,
+                    c.step,
+                    c.index_use,
+                    c.access
+                ))
+                .collect(),
+            fresh
+                .counted_slice_loops
+                .iter()
+                .map(|c| format!(
+                    "{}|{}|{}|{:?}|{:?}|{:?}|{:?}|{:?}",
+                    loop_site_key(fresh, &c.site),
+                    binding_key(fresh, c.index),
+                    binding_key(fresh, c.slice),
+                    c.start,
+                    c.bound,
+                    c.step,
+                    c.index_use,
+                    c.access
+                ))
+                .collect()
+        );
+
+        if mismatches.is_empty() {
+            None
+        } else {
+            Some(mismatches.join("\n\n"))
+        }
+    }
+
     pub(super) fn binding_by_param_index(
         &self,
         function: FunctionId,

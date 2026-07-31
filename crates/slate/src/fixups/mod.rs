@@ -46,7 +46,58 @@ pub fn apply(program: Program) -> Program {
 
 pub fn apply_with(program: Program, skip: &SkipSet) -> Program {
     let mut logger = NoopLogger;
-    apply_with_logger(program, skip, &mut logger, DebugOptions::default())
+    apply_with_logger(program, skip, &mut logger, DebugOptions::default(), None)
+}
+
+pub fn verify_incremental_facts(program: Program) -> Result<(), String> {
+    let mut logger = NoopLogger;
+    let mut report = IncrementalFactsReport::default();
+    apply_with_logger(
+        program,
+        &SkipSet::none(),
+        &mut logger,
+        DebugOptions::default(),
+        Some(&mut report),
+    );
+    if report.mismatches.is_empty() {
+        Ok(())
+    } else {
+        Err(report.mismatches.join("\n\n"))
+    }
+}
+
+#[derive(Default)]
+struct IncrementalFactsReport {
+    mismatches: Vec<String>,
+}
+
+impl IncrementalFactsReport {
+    fn check(
+        &mut self,
+        pass: Pass,
+        pre_edit_facts: &facts::FixupFacts,
+        program: &Program,
+        in_place: &[usize],
+        removed: &[usize],
+        unbounded: bool,
+    ) {
+        if unbounded || (in_place.is_empty() && removed.is_empty()) {
+            return;
+        }
+        let mut spliced = pre_edit_facts.clone();
+        if !removed.is_empty() {
+            spliced.remove_items(removed);
+        }
+        for &item_index in in_place {
+            if let Some(function) = pre_edit_facts.function_by_item_index(item_index) {
+                spliced.splice_function(program, function);
+            }
+        }
+        let fresh = facts::analyze(program).facts;
+        if let Some(mismatch) = spliced.diff_incremental(&fresh) {
+            self.mismatches.push(format!("{}: {mismatch}", pass.name()));
+        }
+    }
 }
 
 pub fn debug(program: Program) -> String {
@@ -65,7 +116,7 @@ pub fn debug_with(program: Program, options: DebugOptions) -> String {
 
 pub fn debug_log_with(program: Program, options: DebugOptions) -> (Program, TraceLog) {
     let mut logger = CollectingLogger::default();
-    let final_program = apply_with_logger(program, &SkipSet::none(), &mut logger, options);
+    let final_program = apply_with_logger(program, &SkipSet::none(), &mut logger, options, None);
     let final_summary = ProgramSummary::from_program(&final_program);
     let log = logger.finish(final_summary);
     (final_program, log)
@@ -108,6 +159,7 @@ fn apply_with_logger(
     skip: &SkipSet,
     logger: &mut impl TraceLogger,
     debug_options: DebugOptions,
+    mut verify: Option<&mut IncrementalFactsReport>,
 ) -> Program {
     let mut debug_done = false;
 
@@ -293,7 +345,18 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::lazy_singleton::program());
             builder.finish()
         };
-        plan.apply(&mut program, logger).changed
+        let report = plan.apply(&mut program, logger);
+        if let Some(verify) = verify.as_deref_mut() {
+            verify.check(
+                Pass::LazySingleton,
+                &facts,
+                &program,
+                &report.touched.in_place,
+                &report.touched.removed,
+                report.touched.unbounded,
+            );
+        }
+        report.changed
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::DropCallResults, {
@@ -375,6 +438,16 @@ fn apply_with_logger(
                 builder.finish()
             };
             let report = plan.apply(&mut program, &facts, logger);
+            if let Some(verify) = verify {
+                verify.check(
+                    Pass::RangeLoop,
+                    &facts,
+                    &program,
+                    &report.touched.in_place,
+                    &report.touched.removed,
+                    report.touched.unbounded,
+                );
+            }
             if report.changed {
                 late_loop_cleanup(&mut program, Pass::RangeLoop, logger);
             }

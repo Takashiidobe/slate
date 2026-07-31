@@ -310,22 +310,35 @@ fields through `QueryContext` — `functions`, `bindings`, `binding_types`,
 tractable without touching the other ~40 collectors or the 40+ legacy
 `rewrite::*` passes at all.
 
-**The real hazard, and why it sets the scope boundary.** `item_index` is
-used as an identity key throughout `FixupFacts` (`FunctionFact.item_index`,
-`DefinitionLocation::Item(item_index)`, ...). Deleting or inserting a
-`Program` item shifts every subsequent item's index, which silently
-invalidates facts far outside the touched function. `DefinitionRule`'s
-`delete_definition()` (used by the memchr helper cleanup and
-`PruneUnusedDefinitions`) and `ProgramRule`'s whole-program replacement
-(`anonymous_structs`) both do exactly this. So:
+**The real hazard, and why item-index-unsafe passes aren't excluded.**
+`item_index` is used as an identity key throughout `FixupFacts`
+(`FunctionFact.item_index`, `DefinitionLocation::Item(item_index)`, ...).
+Deleting or inserting a `Program` item shifts every subsequent item's
+index, which silently invalidates facts far outside the touched function.
+`DefinitionRule`'s `delete_definition()` and `ProgramRule`'s whole-program
+replacement (`anonymous_structs`, `lazy_singleton`) can do exactly this.
+This was originally going to be handled by excluding
+`DefinitionPlan::apply`/`ProgramPlan::apply` edits from incremental update
+entirely and always falling back to a full `facts::analyze` for them — but
+that would leave the two plan kinds most likely to appear as more of the
+pipeline migrates permanently un-incremental. Proven out instead via
+`lazy_singleton` (slate-04q.75.56.8.1), the first pass migrated onto
+`ProgramRule`: item deletion/insertion is *renumbering*, not a reason to
+fall back.
 
-- **In scope for incremental update**: `ExprPlan::apply` (`CallRule`) and
-  `StmtWindowPlan::apply` (`StmtWindowRule`) edits — both mutate content
-  strictly *within* one function's body, at a stable `item_index`.
-- **Out of scope, stays on full `facts::analyze`** ("wrap with a facts
-  analyze," per the scoping this was given): `DefinitionPlan::apply` and
-  `ProgramPlan::apply`. Both can shift `item_index` or restructure types in
-  ways that ripple past one function.
+- **`ExprPlan::apply` (`CallRule`) and `StmtWindowPlan::apply`
+  (`StmtWindowRule`)** edits mutate content strictly *within* one
+  function's body, at a stable `item_index` — always incrementable via
+  `FixupFacts::splice_function`.
+- **`DefinitionPlan::apply` and `ProgramPlan::apply`** edits can also
+  delete or insert whole `Program::items` entries. `FixupFacts::remove_items`
+  removes the deleted item(s)' own facts and shifts every later
+  `FunctionFact.item_index` to match; combined with `splice_function` for
+  any item that was edited in place (not deleted) by the same edit, this
+  covers both plan kinds too. Only `ProgramRule`'s `anonymous_structs` case
+  stays on a full `facts::analyze` — it can rewrite every function/static/
+  const/impl that references the anonymous struct, which isn't a small
+  tracked set (reported as `TouchedItems::unbounded()`).
 
 **Mechanism: recompute-and-splice per touched function, not fine-grained
 delta patching.** A `StmtWindowRule` edit reshapes the *path space* inside a
@@ -334,31 +347,62 @@ function — folding a `Loop` into a `For` turns every descendant fact's
 facts one at a time would mean hand-deriving that path remapping per fact
 kind; re-walking the (small, single-function) subtree with the existing
 collector logic gets it for free and correctly, since it's the same code
-that already produces the right paths for a whole program. Concretely:
+that already produces the right paths for a whole program. Concretely
+(slate-04q.75.56.8.5, .8.2):
 
-1. Give each of the ~8 relevant collectors a per-function entry point
-   alongside their existing whole-program `collect_facts` (most are already
-   structured as "for each function, walk body, push facts" internally —
-   this is extracting that inner loop body into a reusable function, not a
-   rewrite).
-2. Add a `FixupFacts` method that, given a touched `FunctionId`, removes
-   that function's entries from the ~8 `Vec` fields and re-inserts freshly
-   computed ones, leaving every other function's facts untouched.
-3. Have `ExprPlan::apply`/`StmtWindowPlan::apply` report which function(s)
-   they touched, so a caller can call the splice instead of a full
-   `facts::analyze`.
+1. Each of the ~8 relevant collectors (`bindings`/`binding_types`/`loops`
+   via the shared `Collector`, `effects`, `values`, `strings`,
+   `counted_loop`) has a `collect_for_function` entry point alongside its
+   existing whole-program `collect_facts`, extracted from the same inner
+   "for each function, walk body, push facts" loop rather than rewritten.
+2. `FixupFacts::splice_function(&mut self, program, function)` removes
+   that function's entries from the ~8 `Vec` fields (`purge_function_facts`)
+   and re-inserts freshly computed ones via `Collector::resume`, leaving
+   every other function's facts untouched. `Collector::resume` computes
+   fresh `BindingId`/`LoopId`s as `max(existing_id) + 1`, not
+   `Vec::len()` — `len()` is only valid for pure-append whole-program
+   construction; `purge_function_facts`'s `retain()` leaves holes that a
+   post-removal `len()` can collide with.
+3. `FixupFacts::remove_items(&mut self, item_indices)` removes one or more
+   deleted items' own facts entirely and decrements every later
+   `FunctionFact.item_index`. When an edit both deletes an item and edits
+   another in place (`lazy_singleton`: the guard-flag static is deleted,
+   the function body and payload static are edited in place), call
+   `remove_items` *before* resolving the in-place item(s)' current
+   position — the deletion may have already shifted them in the mutated
+   `Program`, and `splice_function` reads the function's *current*
+   `item_index` off `self`, not the pre-edit one.
+4. `ExprPlan`/`StmtWindowPlan`/`DefinitionPlan`/`ProgramPlan::apply` all
+   report a shared `TouchedItems { in_place, removed, unbounded }` so a
+   caller can splice instead of calling `facts::analyze`.
 
 **Prove it before trusting it.** This is exactly the kind of thing that's
 easy to get subtly wrong (a collector that has an undocumented
-cross-function dependency, an edge case in path remapping). Before wiring
-it into `fixups/mod.rs` to actually skip reanalysis, add a diagnostic-only
-consistency check — recompute the touched function via full
-`facts::analyze` and assert it matches the spliced result — gated the same
-way the existing alive2 and effects checks already are (diagnostic-only,
-not part of the default `cargo nextest r --release` gate). Once that's
-solid for a while, wire the six migrated steps in `fixups/mod.rs` to use
-the incremental path; every other pass keeps its full `facts::analyze` call
-exactly as today.
+cross-function dependency, an edge case in path remapping, or — the actual
+bug this caught — an item-index shift ordering hazard between a same-edit
+deletion and an in-place edit). Before wiring it into `fixups/mod.rs` to
+actually skip reanalysis, `slate-04q.75.56.8.3` added a diagnostic-only
+consistency check, gated the same way the existing alive2 and effects
+checks already are (diagnostic-only, not part of the default
+`cargo nextest r --release` gate):
+
+- `FixupFacts::diff_incremental` compares two `FixupFacts` by content,
+  normalizing every `FunctionId`/`BindingId`/`LoopId` to a
+  (function name, ...) key first — a full reanalysis renumbers ids from
+  scratch while a splice resumes from the current max, so raw ids
+  legitimately differ between the two even when every fact is identical.
+- `slate verify-incremental-facts <file.c>` runs the real pipeline,
+  splices+compares against a full `facts::analyze` after every
+  incrementally-migrated step, and reports every mismatch found.
+- `tests/incremental_facts_regression.rs` runs it across the whole fixture
+  corpus (`cargo nextest r --release --test incremental_facts_regression
+  --run-ignored=all`); 238 of 240 fixtures match (the other two need
+  `SLATE_CLANG_ARGS=-std=c23`, a pre-existing gap shared with
+  `effects_regression.rs`, not a splice bug).
+
+Once that's solid for a while, wire the migrated steps in `fixups/mod.rs`
+to use the incremental path (`slate-04q.75.56.8.4`); every other pass keeps
+its full `facts::analyze` call exactly as today.
 
 ## memchr: current vs. what's actually worth changing
 
