@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-use crate::rust_ast::{Block, Expr, IndentStmt, Item, Pattern, Program, Stmt, Type};
+use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Item, Pattern, Program, Stmt, Type};
 
 pub(super) mod anonymous_structs;
 pub(super) mod array_element_pointer_origin;
@@ -1134,6 +1134,101 @@ impl FixupFacts {
             .map(|fact| fact.name.as_str())
     }
 
+    /// Re-derives one function's entries in the incrementally-maintained
+    /// fact kinds (bindings, binding types, loops, effects, values, string
+    /// buffers/pointer views/libc uses, counted (slice) loops) from its
+    /// current body, without touching any other function's facts or
+    /// shifting any `item_index`. Only valid when `function` kept its
+    /// `item_index` and is still an `Item::Fn` there - i.e. after a
+    /// `CallRule`/`StmtWindowRule` edit, or a `DefinitionRule`
+    /// `ReplaceBody` edit. For an edit that deleted or inserted a whole
+    /// `Program::items` entry, use `remove_items` instead.
+    ///
+    /// The other ~30 fact kinds this doesn't maintain are allowed to go
+    /// stale between splices: nothing in the currently-migrated query
+    /// passes reads them, and a full `facts::analyze` already runs before
+    /// any pass that does (every legacy `rewrite::*` pass still gets a
+    /// fresh analysis exactly as before this - see matcher-plan.md
+    /// section 5).
+    pub(super) fn splice_function(&mut self, program: &Program, function: FunctionId) {
+        let Some(item_index) = self.function_item_index(function) else {
+            return;
+        };
+        let Some(Item::Fn(f)) = program.items.get(item_index) else {
+            return;
+        };
+        self.purge_function_facts(function);
+        // Bindings/binding types/loops first - everything below resolves
+        // bindings by name+path against `self.bindings`, so it must
+        // already reflect this function's current body before they run.
+        Collector::resume(self).function(function, f);
+        self.effects
+            .extend(effects::collect_for_function(function, f));
+        self.values
+            .extend(values::collect_for_function(function, f, self));
+        let collected = strings::collect_for_function(function, f, self);
+        self.string_buffers.extend(collected.buffers);
+        self.string_pointer_views.extend(collected.pointer_views);
+        self.string_libc_uses.extend(collected.libc_uses);
+        counted_loop::collect_for_function(function, f, self);
+    }
+
+    /// Removes whole `Program::items` entries and shifts every later
+    /// `FunctionFact.item_index` to match, reflecting one or more
+    /// `Program::items` removals from a single edit (e.g. `DefinitionRule`
+    /// deletions, or `ProgramRule`'s lazy-singleton guard-flag cleanup).
+    /// `item_indices` must be the *original* positions, as they were
+    /// before any of them were removed - order doesn't matter, this sorts
+    /// descending internally so an earlier removal's renumbering can't
+    /// invalidate a later one's target index.
+    pub(super) fn remove_items(&mut self, item_indices: &[usize]) {
+        let mut sorted = item_indices.to_vec();
+        sorted.sort_unstable();
+        sorted.dedup();
+        for item_index in sorted.into_iter().rev() {
+            self.remove_item(item_index);
+        }
+    }
+
+    fn remove_item(&mut self, item_index: usize) {
+        if let Some(function) = self.function_by_item_index(item_index) {
+            self.purge_function_facts(function);
+            self.functions.retain(|fact| fact.id != function);
+        }
+        for fact in &mut self.functions {
+            if fact.item_index > item_index {
+                fact.item_index -= 1;
+            }
+        }
+    }
+
+    fn purge_function_facts(&mut self, function: FunctionId) {
+        let stale_bindings = self
+            .bindings
+            .iter()
+            .filter(|binding| binding.function == function)
+            .map(|binding| binding.id)
+            .collect::<BTreeSet<_>>();
+        self.bindings.retain(|binding| binding.function != function);
+        self.binding_types
+            .retain(|binding_type| !stale_bindings.contains(&binding_type.binding));
+        self.loops
+            .retain(|loop_fact| loop_fact.function != function);
+        self.effects
+            .retain(|effect| effect.site.function != function);
+        self.values.retain(|value| value.site.function != function);
+        self.string_buffers
+            .retain(|buffer| !stale_bindings.contains(&buffer.binding));
+        self.string_pointer_views
+            .retain(|view| view.site.function != function);
+        self.string_libc_uses
+            .retain(|use_fact| use_fact.site.function != function);
+        self.counted_loops
+            .retain(|loop_fact| loop_fact.site.function != function);
+        self.counted_slice_loops
+            .retain(|loop_fact| loop_fact.site.function != function);
+    }
+
     pub(super) fn binding_by_param_index(
         &self,
         function: FunctionId,
@@ -1453,65 +1548,105 @@ impl FixupFacts {
 }
 
 pub(super) fn analyze(program: &Program) -> AnalyzedProgram<'_> {
-    let mut collector = Collector::default();
-    collector.program(program);
-    anonymous_structs::collect_facts(program, &mut collector.facts);
-    borrow_alias::collect_facts(program, &mut collector.facts);
-    def_use::collect_facts(program, &mut collector.facts);
-    effects::collect_facts(program, &mut collector.facts);
-    control_flow::collect_facts(program, &mut collector.facts);
-    places::collect_facts(program, &mut collector.facts);
-    retval::collect_facts(program, &mut collector.facts);
-    temp_chains::collect_facts(program, &mut collector.facts);
-    values::collect_facts(program, &mut collector.facts);
-    calls::collect_facts(program, &mut collector.facts);
-    casts::collect_facts(program, &mut collector.facts);
-    strings::collect_facts(program, &mut collector.facts);
-    string_params::collect_facts(program, &mut collector.facts);
-    heap_ownership::collect_facts(program, &mut collector.facts);
-    printf::collect_facts(program, &mut collector.facts);
-    strings::collect_rewrite_facts(program, &mut collector.facts);
-    c_strings::collect_facts(program, &mut collector.facts);
-    file_ownership::collect_facts(program, &mut collector.facts);
-    ptr_len::collect_facts(program, &mut collector.facts);
-    array_element_pointer_origin::collect_facts(program, &mut collector.facts);
-    atomic_locals::collect_facts(program, &mut collector.facts);
-    lazy_singleton::collect_facts(program, &mut collector.facts);
-    buffer_cursor::collect_facts(program, &mut collector.facts);
-    slice_index::collect_facts(program, &mut collector.facts);
-    counted_loop::collect_facts(program, &mut collector.facts);
-    loop_shapes::collect_facts(program, &mut collector.facts);
-    switch::collect_facts(program, &mut collector.facts);
-    va_list::collect_facts(program, &mut collector.facts);
-    AnalyzedProgram {
-        program,
-        facts: collector.facts,
+    let mut facts = FixupFacts::default();
+    Collector::new(&mut facts).program(program);
+    anonymous_structs::collect_facts(program, &mut facts);
+    borrow_alias::collect_facts(program, &mut facts);
+    def_use::collect_facts(program, &mut facts);
+    effects::collect_facts(program, &mut facts);
+    control_flow::collect_facts(program, &mut facts);
+    places::collect_facts(program, &mut facts);
+    retval::collect_facts(program, &mut facts);
+    temp_chains::collect_facts(program, &mut facts);
+    values::collect_facts(program, &mut facts);
+    calls::collect_facts(program, &mut facts);
+    casts::collect_facts(program, &mut facts);
+    strings::collect_facts(program, &mut facts);
+    string_params::collect_facts(program, &mut facts);
+    heap_ownership::collect_facts(program, &mut facts);
+    printf::collect_facts(program, &mut facts);
+    strings::collect_rewrite_facts(program, &mut facts);
+    c_strings::collect_facts(program, &mut facts);
+    file_ownership::collect_facts(program, &mut facts);
+    ptr_len::collect_facts(program, &mut facts);
+    array_element_pointer_origin::collect_facts(program, &mut facts);
+    atomic_locals::collect_facts(program, &mut facts);
+    lazy_singleton::collect_facts(program, &mut facts);
+    buffer_cursor::collect_facts(program, &mut facts);
+    slice_index::collect_facts(program, &mut facts);
+    counted_loop::collect_facts(program, &mut facts);
+    loop_shapes::collect_facts(program, &mut facts);
+    switch::collect_facts(program, &mut facts);
+    va_list::collect_facts(program, &mut facts);
+    AnalyzedProgram { program, facts }
+}
+
+struct Collector<'a> {
+    facts: &'a mut FixupFacts,
+    next_binding: usize,
+    next_loop: usize,
+}
+
+impl<'a> Collector<'a> {
+    /// For a fresh whole-program walk, where `bindings`/`loops` only ever
+    /// grow by appending - `Vec::len()` is a safe, O(1) source of the next
+    /// id.
+    fn new(facts: &'a mut FixupFacts) -> Self {
+        let next_binding = facts.bindings.len();
+        let next_loop = facts.loops.len();
+        Self {
+            facts,
+            next_binding,
+            next_loop,
+        }
     }
-}
 
-#[derive(Default)]
-struct Collector {
-    facts: FixupFacts,
-}
+    /// For re-deriving one function's bindings/loops after removing its
+    /// stale entries from the middle of `bindings`/`loops` (incremental
+    /// splicing - see `FixupFacts::splice_function`). `Vec::len()` is not
+    /// safe there: it can be smaller than an id already held by some
+    /// *other* function's surviving entry, since that entry's position
+    /// shifted down when the removed entries were spliced out from
+    /// earlier in the vec. Scans once for the true maximum instead - paid
+    /// per splice, not per push.
+    fn resume(facts: &'a mut FixupFacts) -> Self {
+        let next_binding = facts.bindings.iter().map(|b| b.id.0 + 1).max().unwrap_or(0);
+        let next_loop = facts.loops.iter().map(|l| l.id.0 + 1).max().unwrap_or(0);
+        Self {
+            facts,
+            next_binding,
+            next_loop,
+        }
+    }
 
-impl Collector {
     fn program(&mut self, program: &Program) {
         for (item_index, item) in program.items.iter().enumerate() {
             let Item::Fn(f) = item else {
                 continue;
             };
             let function = self.push_function(f.name.clone(), item_index);
-            for (index, param) in f.params.iter().enumerate() {
-                self.push_binding(
-                    function,
-                    param.name.clone(),
-                    BindingKind::Param { index },
-                    AstPath::default(),
-                    Some(param.ty.clone()),
-                );
-            }
-            self.body(function, &f.body, &mut Vec::new());
+            self.function(function, f);
         }
+    }
+
+    /// Bindings, binding types, and loops for one function, given an
+    /// already-assigned `FunctionId` - independent of any other function's
+    /// facts. The entry point `slate-04q.75.56.8` (incremental facts)
+    /// needs to re-derive one function's bindings/loops in place without a
+    /// whole-program walk; it must not call `push_function`, which assigns
+    /// a fresh `FunctionId` - only `program()` does that, for a function
+    /// seen for the first time.
+    fn function(&mut self, function: FunctionId, f: &FnDef) {
+        for (index, param) in f.params.iter().enumerate() {
+            self.push_binding(
+                function,
+                param.name.clone(),
+                BindingKind::Param { index },
+                AstPath::default(),
+                Some(param.ty.clone()),
+            );
+        }
+        self.body(function, &f.body, &mut Vec::new());
     }
 
     fn push_function(&mut self, name: String, item_index: usize) -> FunctionId {
@@ -1532,7 +1667,8 @@ impl Collector {
         path: AstPath,
         ty: Option<Type>,
     ) -> BindingId {
-        let id = BindingId(self.facts.bindings.len());
+        let id = BindingId(self.next_binding);
+        self.next_binding += 1;
         self.facts.bindings.push(BindingFact {
             id,
             function,
@@ -1552,7 +1688,8 @@ impl Collector {
     }
 
     fn push_loop(&mut self, function: FunctionId, kind: LoopKind, path: AstPath) -> LoopId {
-        let id = LoopId(self.facts.loops.len());
+        let id = LoopId(self.next_loop);
+        self.next_loop += 1;
         self.facts.loops.push(LoopFact {
             id,
             function,

@@ -6,7 +6,7 @@ use crate::fixups::facts::{
     Site,
 };
 use crate::function_identity::{Known, known_call};
-use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, UnaryOp};
+use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Item, Program, Stmt, UnaryOp};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.effects.clear();
@@ -18,14 +18,21 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut collector = Collector {
-            function,
-            effects: Vec::new(),
-        };
-        collector.body(&f.body, &mut Vec::new());
-        all.extend(collector.effects);
+        all.extend(collect_for_function(function, f));
     }
     facts.effects = all;
+}
+
+/// Effects for one function's body, independent of any other function's
+/// facts - the entry point `slate-04q.75.56.8` (incremental facts) needs to
+/// re-derive one function's effects without a whole-program walk.
+pub(in crate::fixups) fn collect_for_function(function: FunctionId, f: &FnDef) -> Vec<EffectFact> {
+    let mut collector = Collector {
+        function,
+        effects: Vec::new(),
+    };
+    collector.body(&f.body, &mut Vec::new());
+    collector.effects
 }
 
 pub(in crate::fixups) fn is_movable_pure_expr(expr: &Expr) -> bool {

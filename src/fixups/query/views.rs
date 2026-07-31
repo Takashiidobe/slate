@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use crate::fixups::facts::{AstPath, BindingId};
-use crate::rust_ast::Type;
+use crate::rust_ast::{Expr, Type};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(in crate::fixups) struct ExprSite {
@@ -143,4 +143,21 @@ pub(in crate::fixups) struct StmtWindowSite {
     pub(in crate::fixups) path: AstPath,
     pub(in crate::fixups) start: usize,
     pub(in crate::fixups) end: usize,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct LazySingletonSet {
+    pub(super) singletons: Vec<LazySingletonPlan>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct LazySingletonPlan {
+    pub(super) function_item_index: usize,
+    pub(super) function_name: String,
+    pub(super) payload_item_index: usize,
+    pub(super) payload_name: String,
+    pub(super) payload_ty: Type,
+    pub(super) init_expr: Expr,
+    pub(super) flag_item_index: usize,
+    pub(super) flag_name: String,
 }

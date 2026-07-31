@@ -287,29 +287,78 @@ Cx>`, generate a `Default`-via-`Field::any()` constructor, and generate
 cost is easier to justify because it's amortized over real duplication
 instead of paid up front speculatively. Treat this as Phase 3, not Phase 1.
 
-## 5. Pipeline-level laziness (optional, separate from the query engine)
+## 5. Incremental facts, scoped to migrated passes
 
-The user-visible "facts get re-analyzed constantly" pain is mostly
-`fixups/mod.rs` calling `facts::analyze(&program)` ~20 times end to end,
-each one recomputing all ~40 sub-analyses in `FixupFacts` regardless of
-which passes actually run between one `analyze()` call and the next. That's
-a pipeline-scheduling problem, not a query-engine problem — it's not inside
-`src/fixups/query/` at all, it's the imperative sequence of `step!` blocks
-in `fixups/mod.rs`. Fixing it for real means each of the ~40 sub-analyses in
-`facts::analyze` becoming independently lazy/cached and invalidated by
-*which AST paths actually changed* between passes — a proper incremental
-dependency graph across the whole fixup pipeline, not just within one
-`QueryContext`.
+`fixups/mod.rs` calls `facts::analyze(&program)` ~20 times end to end, each
+one recomputing all ~40 sub-analyses in `FixupFacts` regardless of which
+passes actually run between one call and the next. §3's per-snapshot
+`QueryCache` (built in slate-04q.75.56.2) does not touch this — it only
+removes *redundant* recomputation of the same query *within* one
+`QueryContext`'s lifetime. A `QueryContext` is only ever valid for the exact
+`Program` snapshot it was built from, so nothing carries across an edit by
+construction.
 
-That's out of scope for "scaffold the query module": it touches all 46
-non-query fixups and the `facts::analyze` entry point, is a much bigger
-project than the matcher/rewrite ergonomics this doc is about, and the
-value only shows up once most rewrites have migrated onto the query engine
-(so there's a single scheduler to make lazy, instead of 46 independently
-imperative `step!` blocks). Track it separately once migration is far
-enough along that `fixups/mod.rs` is mostly `query::Plan` calls; don't block
-this redesign on it. §3 gets the query engine itself off the "recompute
-every call" pattern, which is the part actually inside its scope.
+This was originally scoped out entirely as "wait until most of the pipeline
+has migrated." Narrowed down, though, there's a bounded slice worth doing
+now: the six currently-migrated query passes (`AnonymousStructs`,
+`MemchrPreludeFixupCalls`, `MemchrPrelude`, `RangeLoop`, `LibcExit`,
+`PruneUnusedDefinitions`) together only ever read ~8 of `FixupFacts`'s ~40
+fields through `QueryContext` — `functions`, `bindings`, `binding_types`,
+`effects`, `values`, `string_buffers`, `string_pointer_views`,
+`counted_loops` — and every one of those is keyed per-function
+(`FunctionId`/`AstPath`). That's small enough to make incremental update
+tractable without touching the other ~40 collectors or the 40+ legacy
+`rewrite::*` passes at all.
+
+**The real hazard, and why it sets the scope boundary.** `item_index` is
+used as an identity key throughout `FixupFacts` (`FunctionFact.item_index`,
+`DefinitionLocation::Item(item_index)`, ...). Deleting or inserting a
+`Program` item shifts every subsequent item's index, which silently
+invalidates facts far outside the touched function. `DefinitionRule`'s
+`delete_definition()` (used by the memchr helper cleanup and
+`PruneUnusedDefinitions`) and `ProgramRule`'s whole-program replacement
+(`anonymous_structs`) both do exactly this. So:
+
+- **In scope for incremental update**: `ExprPlan::apply` (`CallRule`) and
+  `StmtWindowPlan::apply` (`StmtWindowRule`) edits — both mutate content
+  strictly *within* one function's body, at a stable `item_index`.
+- **Out of scope, stays on full `facts::analyze`** ("wrap with a facts
+  analyze," per the scoping this was given): `DefinitionPlan::apply` and
+  `ProgramPlan::apply`. Both can shift `item_index` or restructure types in
+  ways that ripple past one function.
+
+**Mechanism: recompute-and-splice per touched function, not fine-grained
+delta patching.** A `StmtWindowRule` edit reshapes the *path space* inside a
+function — folding a `Loop` into a `For` turns every descendant fact's
+`AstPath` from `[..., LoopBody, ...]` into `[..., ForBody, ...]`. Patching
+facts one at a time would mean hand-deriving that path remapping per fact
+kind; re-walking the (small, single-function) subtree with the existing
+collector logic gets it for free and correctly, since it's the same code
+that already produces the right paths for a whole program. Concretely:
+
+1. Give each of the ~8 relevant collectors a per-function entry point
+   alongside their existing whole-program `collect_facts` (most are already
+   structured as "for each function, walk body, push facts" internally —
+   this is extracting that inner loop body into a reusable function, not a
+   rewrite).
+2. Add a `FixupFacts` method that, given a touched `FunctionId`, removes
+   that function's entries from the ~8 `Vec` fields and re-inserts freshly
+   computed ones, leaving every other function's facts untouched.
+3. Have `ExprPlan::apply`/`StmtWindowPlan::apply` report which function(s)
+   they touched, so a caller can call the splice instead of a full
+   `facts::analyze`.
+
+**Prove it before trusting it.** This is exactly the kind of thing that's
+easy to get subtly wrong (a collector that has an undocumented
+cross-function dependency, an edge case in path remapping). Before wiring
+it into `fixups/mod.rs` to actually skip reanalysis, add a diagnostic-only
+consistency check — recompute the touched function via full
+`facts::analyze` and assert it matches the spliced result — gated the same
+way the existing alive2 and effects checks already are (diagnostic-only,
+not part of the default `cargo nextest r --release` gate). Once that's
+solid for a while, wire the six migrated steps in `fixups/mod.rs` to use
+the incremental path; every other pass keeps its full `facts::analyze` call
+exactly as today.
 
 ## memchr: current vs. what's actually worth changing
 

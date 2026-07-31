@@ -13,9 +13,9 @@ use crate::rust_ast::{Attr, Expr, ExternDecl, ImplItem, Item, Prim, Program, Typ
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ByteExtent, ByteRepresentation,
     ByteSource, ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, Evidence, EvidenceDetail, ExprSite, NulPosition, NullaryMethodCall,
-    PointerMutability, Predicate, Proof, QueryResult, Rejection, RejectionReason, StableExpr,
-    StmtWindowSite, ZeroGroupUsers, ZeroUsers,
+    DefinitionSite, Evidence, EvidenceDetail, ExprSite, LazySingletonPlan, LazySingletonSet,
+    NulPosition, NullaryMethodCall, PointerMutability, Predicate, Proof, QueryResult, Rejection,
+    RejectionReason, StableExpr, StmtWindowSite, ZeroGroupUsers, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -148,6 +148,10 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn has_anonymous_structs(&self) -> bool {
         !self.facts.anonymous_structs.is_empty()
+    }
+
+    pub(in crate::fixups) fn has_lazy_singletons(&self) -> bool {
+        !self.facts.lazy_init_singletons.is_empty()
     }
 
     pub(super) fn snapshot_program(&self) -> &'snapshot Program {
@@ -955,6 +959,83 @@ query_cache! {
             }],
         ))
     }
+
+    fn lazy_singletons(&self) -> QueryResult<LazySingletonSet>;
+    key: () = ();
+    {
+        let predicate = Predicate::LazySingletonDomain;
+        let mut singletons = Vec::new();
+        for singleton in &self.facts.lazy_init_singletons {
+            let Some(function_item_index) = self.facts.function_item_index(singleton.function)
+            else {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            let Some(function_name) = self.facts.function_name(singleton.function) else {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            if !matches!(
+                self.program.items.get(function_item_index),
+                Some(Item::Fn(f)) if f.name == function_name
+            ) {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::Contradicted,
+                    Vec::new(),
+                ));
+            }
+            let Some(payload_item_index) = static_item_index(self.program, &singleton.payload_name)
+            else {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            let Some(flag_item_index) = static_item_index(self.program, &singleton.flag_name)
+            else {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            singletons.push(LazySingletonPlan {
+                function_item_index,
+                function_name: function_name.to_string(),
+                payload_item_index,
+                payload_name: singleton.payload_name.clone(),
+                payload_ty: singleton.payload_ty.clone(),
+                init_expr: singleton.init_expr.clone(),
+                flag_item_index,
+                flag_name: singleton.flag_name.clone(),
+            });
+        }
+        let site = expression_site(
+            singletons.first().map_or(0, |plan| plan.function_item_index),
+            &[],
+        );
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::LazySingletonDomain {
+                singletons: singletons.len(),
+            },
+        }];
+        Ok(Proof::new(LazySingletonSet { singletons }, evidence))
+    }
 }
 
 fn index_definitions(
@@ -1299,4 +1380,10 @@ fn item_type_name(item: &Item) -> Option<&str> {
         Item::Cfg { item, .. } => item_type_name(item),
         _ => None,
     }
+}
+
+fn static_item_index(program: &Program, name: &str) -> Option<usize> {
+    program.items.iter().position(
+        |item| matches!(item, Item::Static { name: static_name, .. } if static_name == name),
+    )
 }

@@ -287,8 +287,13 @@ fn apply_with_logger(
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::LazySingleton, {
-        let mut fixup = rewrite::lazy_singleton::LazySingleton::new(&facts, logger);
-        run_once_program(&mut program, |program| fixup.fixup(program));
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ProgramPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::lazy_singleton::program());
+            builder.finish()
+        };
+        plan.apply(&mut program, logger).changed
     });
     let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
     step!(program, Pass::DropCallResults, {
@@ -369,7 +374,8 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::range_loop::rewrite());
                 builder.finish()
             };
-            if plan.apply(&mut program, &facts, logger).changed {
+            let report = plan.apply(&mut program, &facts, logger);
+            if report.changed {
                 late_loop_cleanup(&mut program, Pass::RangeLoop, logger);
             }
         }

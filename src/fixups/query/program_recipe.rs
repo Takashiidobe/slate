@@ -3,13 +3,14 @@ use std::collections::BTreeMap;
 use crate::fixups::facts::{FixupFacts, FunctionId};
 use crate::fixups::support::walk;
 use crate::rust_ast::{
-    Attr, Derive, Expr, FnDef, ImplItem, IndentStmt, Item, Program, Repr, Stmt, StructDef,
-    StructFields, Type,
+    Attr, Derive, Expr, FnDef, Ident, ImplItem, IndentStmt, Item, Program, Repr, Stmt, StructDef,
+    StructFields, Type, UnaryOp,
 };
 
+use super::plan::TouchedItems;
 use super::{
-    AnonymousStructPlan, AnonymousStructSet, ExprSite, Predicate, QueryContext, Rejection,
-    RejectionReason,
+    AnonymousStructPlan, AnonymousStructSet, ExprSite, LazySingletonPlan, LazySingletonSet,
+    Predicate, QueryContext, Rejection, RejectionReason,
 };
 
 pub(in crate::fixups) struct ProgramRecipe {
@@ -18,6 +19,7 @@ pub(in crate::fixups) struct ProgramRecipe {
 
 enum ProgramRecipeKind {
     AnonymousStructs(AnonymousStructSet),
+    LazySingletons(LazySingletonSet),
 }
 
 pub(in crate::fixups) fn rewrite_anonymous_structs(structs: AnonymousStructSet) -> ProgramRecipe {
@@ -26,9 +28,26 @@ pub(in crate::fixups) fn rewrite_anonymous_structs(structs: AnonymousStructSet) 
     }
 }
 
+pub(in crate::fixups) fn rewrite_lazy_singletons(singletons: LazySingletonSet) -> ProgramRecipe {
+    ProgramRecipe {
+        kind: ProgramRecipeKind::LazySingletons(singletons),
+    }
+}
+
+/// What an applied program-level edit expects to still find at each
+/// `usize` item index before it's safe to install the replacement program -
+/// the item kind matters, not just the index, since a program edit can
+/// touch several unrelated items at once.
+pub(super) enum ItemAnchor {
+    Record(String),
+    Static(String),
+    Fn(String),
+}
+
 pub(super) struct PreparedProgram {
     pub(super) replacement: Program,
-    pub(super) anchors: Vec<(usize, String)>,
+    pub(super) anchors: Vec<(usize, ItemAnchor)>,
+    pub(super) touched: TouchedItems,
 }
 
 impl ProgramRecipe {
@@ -38,7 +57,12 @@ impl ProgramRecipe {
                 let anchors = structs
                     .structs
                     .iter()
-                    .map(|plan| (plan.item_index, plan.original_name.clone()))
+                    .map(|plan| {
+                        (
+                            plan.item_index,
+                            ItemAnchor::Record(plan.original_name.clone()),
+                        )
+                    })
                     .collect();
                 let site = structs.structs.first().map(|plan| ExprSite {
                     item_index: plan.item_index,
@@ -61,6 +85,68 @@ impl ProgramRecipe {
                 Ok(PreparedProgram {
                     replacement,
                     anchors,
+                    // anonymous_structs can rewrite type declarations plus
+                    // every function/static/const/impl that references
+                    // them - not a small tracked set, so incremental facts
+                    // must fall back to a full reanalyze for this recipe.
+                    touched: TouchedItems::unbounded(),
+                })
+            }
+            ProgramRecipeKind::LazySingletons(set) => {
+                let anchors = set
+                    .singletons
+                    .iter()
+                    .flat_map(|plan| {
+                        [
+                            (
+                                plan.function_item_index,
+                                ItemAnchor::Fn(plan.function_name.clone()),
+                            ),
+                            (
+                                plan.payload_item_index,
+                                ItemAnchor::Static(plan.payload_name.clone()),
+                            ),
+                            (
+                                plan.flag_item_index,
+                                ItemAnchor::Static(plan.flag_name.clone()),
+                            ),
+                        ]
+                    })
+                    .collect();
+                let site = set.singletons.first().map(|plan| ExprSite {
+                    item_index: plan.function_item_index,
+                    path: Default::default(),
+                    fact_path: Default::default(),
+                });
+                let mut replacement = query.snapshot_program().clone();
+                if !apply_lazy_singletons(&mut replacement, &set.singletons) {
+                    return Err(Rejection::new(
+                        Predicate::LazySingletonDomain,
+                        site,
+                        RejectionReason::Contradicted,
+                        Vec::new(),
+                    ));
+                }
+                // The function body and payload static both keep their
+                // item_index (content-only edits); the flag static is
+                // removed outright.
+                let touched = TouchedItems {
+                    in_place: set
+                        .singletons
+                        .iter()
+                        .flat_map(|plan| [plan.function_item_index, plan.payload_item_index])
+                        .collect(),
+                    removed: set
+                        .singletons
+                        .iter()
+                        .map(|plan| plan.flag_item_index)
+                        .collect(),
+                    unbounded: false,
+                };
+                Ok(PreparedProgram {
+                    replacement,
+                    anchors,
+                    touched,
                 })
             }
         }
@@ -453,4 +539,78 @@ fn rewrite_types(types: &mut [Type], plans: &BTreeMap<String, AnonymousStructPla
         changed |= rewrite_type(ty, plans);
     }
     changed
+}
+
+/// Converts each proven lazy-init singleton's payload static to
+/// `OnceLock`, collapses its accessor function to one `get_or_init` return,
+/// and drops the now-dead guard-flag static. Each plan's proof already
+/// established (in `QueryContext::lazy_singletons`) that the flag and
+/// payload are used nowhere else in the program, so no further use-count
+/// check is needed here - only that the expected items are still in place.
+fn apply_lazy_singletons(program: &mut Program, singletons: &[LazySingletonPlan]) -> bool {
+    if singletons.is_empty() {
+        return false;
+    }
+    for plan in singletons {
+        let Some(Item::Static {
+            mutable, ty, init, ..
+        }) = program.items.get_mut(plan.payload_item_index)
+        else {
+            return false;
+        };
+        *mutable = false;
+        *ty = once_lock_type(plan.payload_ty.clone());
+        *init = once_lock_new();
+
+        let Some(Item::Fn(f)) = program.items.get_mut(plan.function_item_index) else {
+            return false;
+        };
+        f.body = vec![IndentStmt {
+            depth: 1,
+            stmt: Stmt::Return(Some(get_or_init_deref(
+                &plan.payload_name,
+                plan.init_expr.clone(),
+            ))),
+        }];
+    }
+    let mut changed = true;
+    let flag_names = singletons
+        .iter()
+        .map(|plan| plan.flag_name.as_str())
+        .collect::<std::collections::BTreeSet<_>>();
+    let before = program.items.len();
+    program.items.retain(
+        |item| !matches!(item, Item::Static { name, .. } if flag_names.contains(name.as_str())),
+    );
+    changed |= program.items.len() != before;
+    changed
+}
+
+fn once_lock_type(payload_ty: Type) -> Type {
+    Type::Generic {
+        name: "std::sync::OnceLock".to_string(),
+        args: vec![payload_ty],
+    }
+}
+
+fn once_lock_new() -> Expr {
+    Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
+        func: Box::new(Expr::Var(Ident::from("std::sync::OnceLock::new"))),
+        args: Vec::new(),
+    }
+}
+
+fn get_or_init_deref(payload_name: &str, init_expr: Expr) -> Expr {
+    Expr::Unary {
+        op: UnaryOp::Deref,
+        expr: Box::new(Expr::MethodCall {
+            recv: Box::new(Expr::Var(Ident::from(payload_name))),
+            method: "get_or_init".to_string(),
+            args: vec![Expr::Closure {
+                params: Vec::new(),
+                body: Box::new(init_expr),
+            }],
+        }),
+    }
 }

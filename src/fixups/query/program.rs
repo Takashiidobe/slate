@@ -1,16 +1,17 @@
 use crate::fixups::trace::{Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact};
 use crate::rust_ast::{Item, Program};
 
-use super::plan::{EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlannedEdit};
-use super::program_recipe::PreparedProgram;
+use super::plan::{EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlannedEdit, TouchedItems};
+use super::program_recipe::{ItemAnchor, PreparedProgram};
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    AnonymousStructSet, CaseRejection, Evidence, ProgramRecipe, QueryContext, Rejection,
-    RuleCaseIdentity, RuleIdentity,
+    AnonymousStructSet, CaseRejection, Evidence, LazySingletonSet, ProgramRecipe, QueryContext,
+    Rejection, RuleCaseIdentity, RuleIdentity,
 };
 
 enum ProgramRuleSelector {
     AnonymousStructs,
+    LazySingletons,
 }
 
 type ProgramCaseFn = for<'case, 'snapshot> fn(
@@ -37,6 +38,14 @@ impl ProgramRule {
         }
     }
 
+    pub(in crate::fixups) fn lazy_singletons(pass: Pass, rule: impl Into<String>) -> Self {
+        Self {
+            identity: RuleIdentity::new(pass, rule),
+            selector: ProgramRuleSelector::LazySingletons,
+            cases: Vec::new(),
+        }
+    }
+
     pub(in crate::fixups) fn case(mut self, name: impl Into<String>, apply: ProgramCaseFn) -> Self {
         self.cases.push(DeclarativeProgramCase {
             name: name.into(),
@@ -48,6 +57,7 @@ impl ProgramRule {
     fn has_candidates(&self, query: &QueryContext<'_>) -> bool {
         match self.selector {
             ProgramRuleSelector::AnonymousStructs => query.has_anonymous_structs(),
+            ProgramRuleSelector::LazySingletons => query.has_lazy_singletons(),
         }
     }
 }
@@ -60,6 +70,10 @@ pub(in crate::fixups) struct ProgramCaseContext<'case, 'snapshot> {
 impl ProgramCaseContext<'_, '_> {
     pub(in crate::fixups) fn anonymous_structs(&mut self) -> Result<AnonymousStructSet, Rejection> {
         self.prove(self.query.anonymous_structs())
+    }
+
+    pub(in crate::fixups) fn lazy_singletons(&mut self) -> Result<LazySingletonSet, Rejection> {
+        self.prove(self.query.lazy_singletons())
     }
 
     fn prove<T>(&mut self, result: super::QueryResult<T>) -> Result<T, Rejection> {
@@ -185,6 +199,7 @@ impl ProgramPlan {
                 planned,
                 applied: 0,
                 diagnostics,
+                touched: TouchedItems::none(),
             };
         };
         if !anchors_match(program, &edit.edit.prepared.anchors) {
@@ -197,6 +212,7 @@ impl ProgramPlan {
                 planned,
                 applied: 0,
                 diagnostics,
+                touched: TouchedItems::none(),
             };
         }
         let before = logger.is_enabled().then(|| program.emit());
@@ -206,12 +222,18 @@ impl ProgramPlan {
         if let (Some(before), Some(after)) = (before, after) {
             log_edit(logger, &edit, before, after);
         }
-        *program = edit.edit.prepared.replacement;
+        let PreparedProgram {
+            replacement,
+            touched,
+            ..
+        } = edit.edit.prepared;
+        *program = replacement;
         ProgramApplyReport {
             changed: true,
             planned,
             applied: 1,
             diagnostics,
+            touched,
         }
     }
 }
@@ -222,15 +244,23 @@ pub(in crate::fixups) struct ProgramApplyReport {
     pub(in crate::fixups) applied: usize,
     #[allow(dead_code)]
     pub(super) diagnostics: Vec<PlanDiagnostic<()>>,
+    pub(in crate::fixups) touched: TouchedItems,
 }
 
-fn anchors_match(program: &Program, anchors: &[(usize, String)]) -> bool {
-    anchors.iter().all(|(item_index, name)| {
-        matches!(
-            program.items.get(*item_index),
-            Some(Item::Record(record)) if record.name == *name
-        )
-    })
+fn anchors_match(program: &Program, anchors: &[(usize, ItemAnchor)]) -> bool {
+    anchors.iter().all(
+        |(item_index, anchor)| match (program.items.get(*item_index), anchor) {
+            (Some(Item::Record(record)), ItemAnchor::Record(name)) => record.name == *name,
+            (
+                Some(Item::Static {
+                    name: static_name, ..
+                }),
+                ItemAnchor::Static(name),
+            ) => static_name == name,
+            (Some(Item::Fn(f)), ItemAnchor::Fn(name)) => f.name == *name,
+            _ => false,
+        },
+    )
 }
 
 fn log_edit(

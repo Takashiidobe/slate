@@ -8,7 +8,9 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{IndentStmt, Item, Program};
 
-use super::plan::{EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit};
+use super::plan::{
+    EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit, TouchedItems,
+};
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
     CaseRejection, Evidence, Predicate, QueryContext, Rejection, RejectionReason, RuleCaseIdentity,
@@ -290,53 +292,64 @@ impl StmtWindowPlan {
     ) -> StmtWindowApplyReport {
         let planned = self.plan.edits.len();
         let mut diagnostics = self.plan.diagnostics;
-        let mut edits = self
+        let edits = self
             .plan
             .edits
             .into_iter()
             .map(|edit| (edit.edit.target.clone(), edit))
             .collect::<BTreeMap<_, _>>();
-        let mut applied = 0;
+        let mut state = ApplyState {
+            edits,
+            applied: 0,
+            touched: TouchedItems::none(),
+            facts,
+            logger,
+        };
         for (item_index, item) in program.items.iter_mut().enumerate() {
             let Item::Fn(function) = item else {
                 continue;
             };
-            if !edits.keys().any(|target| target.item_index == item_index) {
+            if !state
+                .edits
+                .keys()
+                .any(|target| target.item_index == item_index)
+            {
                 continue;
             }
-            apply_body(
-                item_index,
-                &mut function.body,
-                &mut Vec::new(),
-                &mut edits,
-                &mut applied,
-                facts,
-                logger,
-            );
+            apply_body(item_index, &mut function.body, &mut Vec::new(), &mut state);
         }
-        for (_, edit) in edits {
+        for (_, edit) in state.edits {
             diagnostics.push(PlanDiagnostic::MissingTarget {
                 contender: edit.identity,
                 target: edit.edit.target,
             });
         }
         StmtWindowApplyReport {
-            changed: applied != 0,
+            changed: state.applied != 0,
             planned,
-            applied,
+            applied: state.applied,
             diagnostics,
+            touched: state.touched,
         }
     }
+}
+
+/// The parts of `apply`'s state that stay the same across the whole
+/// recursive descent - bundled so `apply_body` doesn't need eight separate
+/// parameters just to thread them through.
+struct ApplyState<'a> {
+    edits: BTreeMap<StmtWindowSite, PlannedEdit<StmtWindowEdit>>,
+    applied: usize,
+    touched: TouchedItems,
+    facts: &'a FixupFacts,
+    logger: &'a mut dyn TraceLogger,
 }
 
 fn apply_body(
     item_index: usize,
     body: &mut Vec<IndentStmt>,
     path: &mut Vec<PathSegment>,
-    edits: &mut BTreeMap<StmtWindowSite, PlannedEdit<StmtWindowEdit>>,
-    applied: &mut usize,
-    facts: &FixupFacts,
-    logger: &mut dyn TraceLogger,
+    state: &mut ApplyState<'_>,
 ) {
     for (index, indent) in body.iter_mut().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
@@ -344,24 +357,25 @@ fn apply_body(
                 &mut indent.stmt,
                 path,
                 &mut |nested, path| {
-                    apply_body(item_index, nested, path, edits, applied, facts, logger);
+                    apply_body(item_index, nested, path, state);
                 },
             );
         });
     }
     let here = AstPath(path.clone());
-    let mut here_sites = edits
+    let mut here_sites = state
+        .edits
         .keys()
         .filter(|site| site.item_index == item_index && site.path == here)
         .cloned()
         .collect::<Vec<_>>();
     here_sites.sort_by_key(|site| std::cmp::Reverse(site.start));
     for site in here_sites {
-        let Some(edit) = edits.remove(&site) else {
+        let Some(edit) = state.edits.remove(&site) else {
             continue;
         };
         if site.end > body.len() {
-            edits.insert(site.clone(), edit);
+            state.edits.insert(site.clone(), edit);
             continue;
         }
         let PlannedEdit {
@@ -375,19 +389,20 @@ fn apply_body(
             rejected_cases,
         } = edit;
         let before = body[target.start..target.end].to_vec();
-        if logger.is_enabled() {
-            logger.rewrite(rewrite_event(
+        if state.logger.is_enabled() {
+            state.logger.rewrite(rewrite_event(
                 &identity,
                 &target,
                 &evidence,
                 &rejected_cases,
                 &before,
                 &replacement,
-                facts,
+                state.facts,
             ));
         }
         body.splice(target.start..target.end, replacement);
-        *applied += 1;
+        state.applied += 1;
+        state.touched.in_place.push(item_index);
     }
 }
 
@@ -397,6 +412,7 @@ pub(in crate::fixups) struct StmtWindowApplyReport {
     pub(in crate::fixups) applied: usize,
     #[allow(dead_code)]
     pub(super) diagnostics: Vec<PlanDiagnostic<StmtWindowSite>>,
+    pub(in crate::fixups) touched: TouchedItems,
 }
 
 fn rewrite_event(

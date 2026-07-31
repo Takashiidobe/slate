@@ -8,7 +8,9 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Expr, Item, Program};
 
-use super::plan::{EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit};
+use super::plan::{
+    EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit, TouchedItems,
+};
 use super::{
     ByteExtent, ByteRepresentation, CallTarget, Evidence, EvidenceDetail, ExprSite, NulPosition,
     PointerMutability, Predicate, QueryContext, Rejection, RejectionReason,
@@ -233,6 +235,7 @@ impl ExprPlan {
             })
             .collect::<BTreeMap<_, _>>();
         let mut applied = 0;
+        let mut touched = TouchedItems::none();
         for (item_index, item) in program.items.iter_mut().enumerate() {
             let Item::Fn(function) = item else {
                 continue;
@@ -274,6 +277,7 @@ impl ExprPlan {
                         ));
                     }
                     applied += 1;
+                    touched.in_place.push(item_index);
                     false
                 },
             );
@@ -289,6 +293,7 @@ impl ExprPlan {
             planned,
             applied,
             diagnostics,
+            touched,
         }
     }
 }
@@ -299,6 +304,7 @@ pub(in crate::fixups) struct ApplyReport {
     pub(in crate::fixups) applied: usize,
     #[allow(dead_code)]
     pub(super) diagnostics: Vec<PlanDiagnostic<ExprSite>>,
+    pub(in crate::fixups) touched: TouchedItems,
 }
 
 fn path_starts_with(
@@ -369,6 +375,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::ZeroGroupUsers => "zero_group_users",
         Predicate::CountedLoop => "counted_loop",
         Predicate::StmtWindowGuard => "stmt_window_guard",
+        Predicate::LazySingletonDomain => "lazy_singleton_domain",
     }
 }
 
@@ -436,6 +443,9 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             step,
             index_use,
         } => format!("start={start:?};step={step:?};index_use={index_use:?}"),
+        EvidenceDetail::LazySingletonDomain { singletons } => {
+            format!("singletons={singletons}")
+        }
     }
 }
 

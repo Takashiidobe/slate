@@ -11,7 +11,7 @@ use crate::fixups::facts::{
 };
 use crate::function_identity::Known;
 use crate::rust_ast::{
-    Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
+    Block, Expr, FnDef, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -30,10 +30,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut collector = Collector::new(function, facts);
-        collector.enter_root_scope();
-        collector.body(&f.body, &mut Vec::new(), false);
-        let collected = collector.finish();
+        let collected = collect_for_function(function, f, facts);
         buffers.extend(collected.buffers);
         pointer_views.extend(collected.pointer_views);
         libc_uses.extend(collected.libc_uses);
@@ -43,6 +40,24 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
     facts.string_buffers = buffers;
     facts.string_pointer_views = pointer_views;
     facts.string_libc_uses = libc_uses;
+}
+
+/// String buffers, pointer views, and libc uses for one function's body,
+/// independent of any other function's facts - the entry point
+/// `slate-04q.75.56.8` (incremental facts) needs to re-derive one
+/// function's string facts without a whole-program walk.
+/// `ascii_numeric_strings` is deliberately not part of this: it's derived
+/// from the *whole* buffers list after every function has been collected,
+/// not per-function.
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &FixupFacts,
+) -> Collected {
+    let mut collector = Collector::new(function, facts);
+    collector.enter_root_scope();
+    collector.body(&f.body, &mut Vec::new(), false);
+    collector.finish()
 }
 
 fn collect_ascii_numeric_strings(buffers: &[StringBufferFact]) -> Vec<AsciiNumericStringFact> {
@@ -947,10 +962,10 @@ fn assignment_index(def_path: &[PathSegment], assignment_path: &[PathSegment]) -
     }
 }
 
-struct Collected {
-    buffers: Vec<StringBufferFact>,
-    pointer_views: Vec<StringPointerViewFact>,
-    libc_uses: Vec<StringLibcUseFact>,
+pub(in crate::fixups) struct Collected {
+    pub(in crate::fixups) buffers: Vec<StringBufferFact>,
+    pub(in crate::fixups) pointer_views: Vec<StringPointerViewFact>,
+    pub(in crate::fixups) libc_uses: Vec<StringLibcUseFact>,
 }
 
 struct Collector<'a> {

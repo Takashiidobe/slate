@@ -19,7 +19,9 @@ pub(in crate::fixups) use definition::{
 };
 pub(in crate::fixups) use patterns::{LetStmtPattern, LoopStmtPattern, NullaryMethodCall};
 pub(in crate::fixups) use program::{ProgramPlanBuilder, ProgramRule};
-pub(in crate::fixups) use program_recipe::{ProgramRecipe, rewrite_anonymous_structs};
+pub(in crate::fixups) use program_recipe::{
+    ProgramRecipe, rewrite_anonymous_structs, rewrite_lazy_singletons,
+};
 pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
 };
@@ -33,9 +35,10 @@ pub(in crate::fixups) use rewrite::{
 };
 pub(in crate::fixups) use rule::CallRule;
 pub(in crate::fixups) use stmt_window::{StmtWindowPlanBuilder, StmtWindowRule};
-use views::{AnonymousStructField, AnonymousStructPlan};
+use views::{AnonymousStructField, AnonymousStructPlan, LazySingletonPlan};
 pub(in crate::fixups) use views::{
     AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
-    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite, NulPosition,
-    PointerMutability, StableExpr, StmtWindowSite, ZeroGroupUsers, ZeroUsers,
+    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite,
+    LazySingletonSet, NulPosition, PointerMutability, StableExpr, StmtWindowSite, ZeroGroupUsers,
+    ZeroUsers,
 };
