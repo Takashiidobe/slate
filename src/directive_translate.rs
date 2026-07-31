@@ -607,42 +607,6 @@ fn line_in_direct_branch(
     })
 }
 
-#[cfg(test)]
-fn merge_legacy_variants(variants: &[Variant]) -> Program {
-    let mut order = Vec::new();
-    let mut seen = BTreeSet::new();
-    let mut by_key: BTreeMap<String, Vec<(Cfg, Item)>> = BTreeMap::new();
-
-    for variant in variants {
-        for item in &variant.program.items {
-            let key = item_key(item);
-            if seen.insert(key.clone()) {
-                order.push(key.clone());
-            }
-            by_key
-                .entry(key)
-                .or_default()
-                .push((variant.config.rust_cfg.clone(), item.clone()));
-        }
-    }
-
-    let mut items = Vec::new();
-    for key in order {
-        let entries = by_key.remove(&key).expect("key recorded but group absent");
-        if all_items_equal(&entries) {
-            items.push(entries.into_iter().next().unwrap().1);
-        } else {
-            for (cfg, item) in entries {
-                items.push(Item::Cfg {
-                    cfg,
-                    item: Box::new(item),
-                });
-            }
-        }
-    }
-    Program { items }
-}
-
 fn all_items_equal(entries: &[(Cfg, Item)]) -> bool {
     let mut rendered = entries.iter().map(|(_, item)| render_item(item));
     match rendered.next() {

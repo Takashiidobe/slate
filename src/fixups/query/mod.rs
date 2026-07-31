@@ -11,26 +11,22 @@ mod views;
 
 pub(in crate::fixups) use context::{CallRecord, CallTarget, QueryContext};
 pub(in crate::fixups) use definition::{
-    DefinitionApplyReport, DefinitionCaseContext, DefinitionPlan, DefinitionPlanBuilder,
-    DefinitionPlanDiagnostic, DefinitionRecipe, DefinitionRule, delete_definition, replace_body,
+    DefinitionPlanBuilder, DefinitionRule, delete_definition, replace_body,
 };
-pub(in crate::fixups) use program::{
-    ProgramApplyReport, ProgramCaseContext, ProgramPlan, ProgramPlanBuilder, ProgramPlanDiagnostic,
-    ProgramRule,
-};
+pub(in crate::fixups) use program::{ProgramPlanBuilder, ProgramRule};
 pub(in crate::fixups) use program_recipe::{ProgramRecipe, rewrite_anonymous_structs};
 pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
 };
 pub(in crate::fixups) use recipe::{
-    ExprRecipe, FunctionBodyRecipe, SearchIndex, byte_position, known_index, memchr_fallback_body,
+    ExprRecipe, FunctionBodyRecipe, byte_position, known_index, memchr_fallback_body,
     pointer_at_or_null, process_exit,
 };
 pub(in crate::fixups) use rewrite::{
-    ApplyReport, CaseRejection, ExprPlan, ExprPlanBuilder, ExprRule, PlanDiagnostic, ReplaceExpr,
-    RuleCase, RuleCaseIdentity, RuleIdentity, RuleResult,
+    CaseRejection, ExprPlanBuilder, ExprRule, ReplaceExpr, RuleCase, RuleCaseIdentity,
+    RuleIdentity, RuleResult,
 };
-pub(in crate::fixups) use rule::{CallArg, CallCaseContext, CallRule};
+pub(in crate::fixups) use rule::CallRule;
 use views::{AnonymousStructField, AnonymousStructPlan};
 pub(in crate::fixups) use views::{
     AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,

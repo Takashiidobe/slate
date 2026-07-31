@@ -207,6 +207,7 @@ pub(in crate::fixups) enum DefinitionPlanDiagnostic {
     },
 }
 
+#[derive(Default)]
 pub(in crate::fixups) struct DefinitionPlanBuilder {
     proposals: Vec<PlannedDefinitionEdit>,
     diagnostics: Vec<DefinitionPlanDiagnostic>,
@@ -323,12 +324,6 @@ impl DefinitionPlanBuilder {
         edits.retain(|edit| !overlapping.contains(&edit.target.location.item_index()));
         edits.sort_by(|left, right| left.target.location.cmp(&right.target.location));
         DefinitionPlan { edits, diagnostics }
-    }
-}
-
-impl Default for DefinitionPlanBuilder {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
