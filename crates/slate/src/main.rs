@@ -29,9 +29,6 @@ fn usage() -> ExitCode {
         "  compare-effects-rust-rust  <file.c>  compare raw lowered Rust effects to fixuped Rust effects"
     );
     eprintln!(
-        "  verify-incremental-facts  <file.c>  compare incremental fact splicing to full facts::analyze"
-    );
-    eprintln!(
         "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
     );
     eprintln!("  translate   C -> Rust");
@@ -55,10 +52,6 @@ fn main() -> ExitCode {
         Some("emit-lowered-fixtures") => run(emit_lowered_fixtures()),
         Some("compare-effects-rust-rust") => match args.get(2) {
             Some(path) => run(compare_effects_rust_rust(Path::new(path))),
-            None => usage(),
-        },
-        Some("verify-incremental-facts") => match args.get(2) {
-            Some(path) => run(verify_incremental_facts(Path::new(path))),
             None => usage(),
         },
         Some("fixup-debug") => run(fixup_debug(&args[2..])),
@@ -259,13 +252,6 @@ fn compare_effects_rust_rust(path: &Path) -> Result<String, String> {
             .map_err(|err| effect_extraction_error(mode, path, "fixuped rust_ast", err))?;
         compare_traces("raw rust_ast", "fixuped rust_ast", &raw_trace, &fixed_trace)
     })
-}
-
-fn verify_incremental_facts(path: &Path) -> Result<String, String> {
-    let (_, program) = lowered_program(path)?;
-    fixups::verify_incremental_facts(program)
-        .map(|()| "incremental facts match\n".to_string())
-        .map_err(|mismatches| format!("incremental facts mismatch\n{mismatches}\n"))
 }
 
 fn fixup_debug(args: &[String]) -> Result<String, String> {

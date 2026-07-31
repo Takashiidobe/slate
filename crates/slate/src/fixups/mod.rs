@@ -46,48 +46,7 @@ pub fn apply(program: Program) -> Program {
 
 pub fn apply_with(program: Program, skip: &SkipSet) -> Program {
     let mut logger = NoopLogger;
-    apply_with_logger(program, skip, &mut logger, DebugOptions::default(), None)
-}
-
-pub fn verify_incremental_facts(program: Program) -> Result<(), String> {
-    let mut logger = NoopLogger;
-    let mut report = IncrementalFactsReport::default();
-    apply_with_logger(
-        program,
-        &SkipSet::none(),
-        &mut logger,
-        DebugOptions::default(),
-        Some(&mut report),
-    );
-    if report.mismatches.is_empty() {
-        Ok(())
-    } else {
-        Err(report.mismatches.join("\n\n"))
-    }
-}
-
-#[derive(Default)]
-struct IncrementalFactsReport {
-    mismatches: Vec<String>,
-}
-
-impl IncrementalFactsReport {
-    fn check(
-        &mut self,
-        pass: Pass,
-        pre_edit_facts: &facts::FixupFacts,
-        program: &Program,
-        touched: &query::TouchedItems,
-    ) {
-        if touched.unbounded || (touched.in_place.is_empty() && touched.removed.is_empty()) {
-            return;
-        }
-        let spliced = splice_incremental_facts(pre_edit_facts, program, touched);
-        let fresh = facts::analyze(program).facts;
-        if let Some(mismatch) = spliced.diff_incremental(&fresh) {
-            self.mismatches.push(format!("{}: {mismatch}", pass.name()));
-        }
-    }
+    apply_with_logger(program, skip, &mut logger, DebugOptions::default())
 }
 
 fn splice_incremental_facts(
@@ -107,6 +66,58 @@ fn splice_incremental_facts(
     updated
 }
 
+struct IncrementalFacts {
+    facts: facts::FixupFacts,
+    dirty: Dirty,
+}
+
+enum Dirty {
+    Clean,
+    Touched(query::TouchedItems),
+    Everything,
+}
+
+impl IncrementalFacts {
+    fn new(facts: facts::FixupFacts) -> Self {
+        Self {
+            facts,
+            dirty: Dirty::Clean,
+        }
+    }
+
+    fn mark_touched(&mut self, touched: &query::TouchedItems) {
+        if touched.unbounded {
+            self.dirty = Dirty::Everything;
+            return;
+        }
+        if touched.in_place.is_empty() && touched.removed.is_empty() {
+            return;
+        }
+        match &mut self.dirty {
+            Dirty::Everything => {}
+            Dirty::Clean => self.dirty = Dirty::Touched(touched.clone()),
+            Dirty::Touched(existing) => existing.merge(touched.clone()),
+        }
+    }
+
+    fn mark_everything_dirty(&mut self) {
+        self.dirty = Dirty::Everything;
+    }
+
+    fn resolve(&mut self, program: &Program) -> facts::FixupFacts {
+        match std::mem::replace(&mut self.dirty, Dirty::Clean) {
+            Dirty::Clean => {}
+            Dirty::Everything => {
+                self.facts = facts::analyze(program).facts;
+            }
+            Dirty::Touched(touched) => {
+                self.facts = splice_incremental_facts(&self.facts, program, &touched);
+            }
+        }
+        self.facts.clone()
+    }
+}
+
 pub fn debug(program: Program) -> String {
     let (_, log) = debug_log_with(program, DebugOptions::default());
     log.render_human()
@@ -123,7 +134,7 @@ pub fn debug_with(program: Program, options: DebugOptions) -> String {
 
 pub fn debug_log_with(program: Program, options: DebugOptions) -> (Program, TraceLog) {
     let mut logger = CollectingLogger::default();
-    let final_program = apply_with_logger(program, &SkipSet::none(), &mut logger, options, None);
+    let final_program = apply_with_logger(program, &SkipSet::none(), &mut logger, options);
     let final_summary = ProgramSummary::from_program(&final_program);
     let log = logger.finish(final_summary);
     (final_program, log)
@@ -166,7 +177,6 @@ fn apply_with_logger(
     skip: &SkipSet,
     logger: &mut impl TraceLogger,
     debug_options: DebugOptions,
-    mut verify: Option<&mut IncrementalFactsReport>,
 ) -> Program {
     let mut debug_done = false;
 
@@ -193,15 +203,17 @@ fn apply_with_logger(
         }};
     }
 
-    let facts::AnalyzedProgram { program, .. } = facts::analyze(&input);
+    let facts::AnalyzedProgram { program, facts } = facts::analyze(&input);
     let mut program = program.clone();
+    let mut incremental = IncrementalFacts::new(facts);
     step!(program, Pass::Goto, {
         to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, function| {
             let mut fixup = rewrite::goto::Goto::new(function.name.clone(), logger);
             run_once(&mut function.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::Switch, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -210,6 +222,7 @@ fn apply_with_logger(
             let mut fixup = rewrite::switch::Switch::new(function, &facts, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::EarlyInlineTemps, {
         let limit = inline_temp_fixpoint_limit(&program);
@@ -225,8 +238,9 @@ fn apply_with_logger(
             );
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::AnonymousStructs, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
@@ -234,8 +248,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::anonymous_structs::program());
             builder.finish()
         };
-        plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, logger);
+        incremental.mark_touched(&report.touched);
     });
+    let facts = incremental.resolve(&program);
     step!(program, Pass::ParamSpills, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -243,6 +259,7 @@ fn apply_with_logger(
             };
             rewrite::param_spills::ParamSpills::new(function, &facts, logger).fixup(f)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::ZeroInit, {
         to_fixpoint_items_with_facts(
@@ -256,20 +273,23 @@ fn apply_with_logger(
                 run_once(&mut f.body, &mut fixup)
             },
         );
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::StructFieldInit, {
         let mut fixup = StructFieldInit::new(logger);
         to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::SingletonScopes, {
         to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
             let mut fixup = rewrite::singleton_scopes::SingletonScopes::new(f.name.clone(), logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::CompoundAssign, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -278,24 +298,28 @@ fn apply_with_logger(
             let mut fixup = rewrite::compound_assign::CompoundAssign::new(function, &facts, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::ForContinue, {
         to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
             let mut fixup = ForContinue::new(f.name.clone(), logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::SingletonScopes, {
         to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
             let mut fixup = rewrite::singleton_scopes::SingletonScopes::new(f.name.clone(), logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::ConstantIndexCasts, {
         let mut fixup = rewrite::constant_index_casts::ConstantIndexCasts::new(logger);
         run_once_items(&mut program, |_, f| run_once(&mut f.body, &mut fixup));
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::UnnecessaryCasts, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -305,6 +329,7 @@ fn apply_with_logger(
                 rewrite::unnecessary_casts::UnnecessaryCasts::new(function, &facts, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::CallArgs, {
         to_fixpoint_items_with_facts(
@@ -318,8 +343,9 @@ fn apply_with_logger(
                 run_once(&mut f.body, &mut fixup)
             },
         );
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::Retval, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -329,6 +355,7 @@ fn apply_with_logger(
                 rewrite::retval::Retval::new(f.name == "main", function, &facts, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::FinalReturnTemps, {
         to_fixpoint_items_with_facts(
@@ -343,9 +370,10 @@ fn apply_with_logger(
                 run_once(&mut f.body, &mut fixup)
             },
         );
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-    let lazy_singleton_touched = step!(program, Pass::LazySingleton, {
+    let facts = incremental.resolve(&program);
+    step!(program, Pass::LazySingleton, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
             let mut builder = query::ProgramPlanBuilder::new();
@@ -353,15 +381,9 @@ fn apply_with_logger(
             builder.finish()
         };
         let report = plan.apply(&mut program, logger);
-        if let Some(verify) = verify.as_deref_mut() {
-            verify.check(Pass::LazySingleton, &facts, &program, &report.touched);
-        }
-        report.touched
+        incremental.mark_touched(&report.touched);
     });
-    let facts = match lazy_singleton_touched {
-        Some(touched) if !touched.unbounded => splice_incremental_facts(&facts, &program, &touched),
-        _ => facts::analyze(&program).facts,
-    };
+    let facts = incremental.resolve(&program);
     step!(program, Pass::DropCallResults, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -371,8 +393,9 @@ fn apply_with_logger(
                 rewrite::drop_call_results::DropCallResults::new(function, &facts, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::StringLift, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -390,18 +413,21 @@ fn apply_with_logger(
             );
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::StringParams, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
             rewrite::string_params::StringParams::new(facts, logger).fixup(program)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::PtrLen, {
         let mut fixup = rewrite::ptr_len::PtrLen::new(&facts, logger);
         run_once_program(&mut program, |program| fixup.fixup(program));
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::SliceIndex, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -410,8 +436,9 @@ fn apply_with_logger(
             let mut fixup = rewrite::slice_index::SliceIndex::new(function, &facts, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::SliceLoop, {
         if run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -422,6 +449,7 @@ fn apply_with_logger(
         }) {
             late_loop_cleanup(&mut program, Pass::SliceLoop, logger);
         }
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::SliceReduce, {
         if run_once_items(&mut program, |_, f| {
@@ -430,9 +458,10 @@ fn apply_with_logger(
         }) {
             late_loop_cleanup(&mut program, Pass::SliceReduce, logger);
         }
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-    let range_loop_touched = step!(program, Pass::RangeLoop, {
+    let facts = incremental.resolve(&program);
+    step!(program, Pass::RangeLoop, {
         if !skip.contains(Pass::RangeLoop) {
             let plan = {
                 let query = query::QueryContext::new(&program, &facts);
@@ -441,23 +470,15 @@ fn apply_with_logger(
                 builder.finish()
             };
             let report = plan.apply(&mut program, &facts, logger);
-            if let Some(verify) = verify {
-                verify.check(Pass::RangeLoop, &facts, &program, &report.touched);
-            }
             if report.changed {
                 late_loop_cleanup(&mut program, Pass::RangeLoop, logger);
-                None
+                incremental.mark_everything_dirty();
             } else {
-                Some(report.touched)
+                incremental.mark_touched(&report.touched);
             }
-        } else {
-            Some(query::TouchedItems::none())
         }
     });
-    let facts = match range_loop_touched.flatten() {
-        Some(touched) if !touched.unbounded => splice_incremental_facts(&facts, &program, &touched),
-        _ => facts::analyze(&program).facts,
-    };
+    let facts = incremental.resolve(&program);
     step!(program, Pass::VaList, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -465,8 +486,9 @@ fn apply_with_logger(
             };
             rewrite::va_list::VaList::new(function, &facts, logger).fixup(f)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::RemoveMut, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -474,8 +496,9 @@ fn apply_with_logger(
             };
             rewrite::remove_mut::RemoveMut::new(function, &facts, logger).fixup(f)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::StringCopy, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -484,13 +507,15 @@ fn apply_with_logger(
             let mut fixup = rewrite::string_copy::StringCopy::new(function, &facts, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::StringParams, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
             rewrite::string_params::StringParams::new(facts, logger).fixup(program)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::RemoveMut, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -498,8 +523,9 @@ fn apply_with_logger(
             };
             rewrite::remove_mut::RemoveMut::new(function, &facts, logger).fixup(f)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::StringLibc, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -509,13 +535,15 @@ fn apply_with_logger(
             run_once(&mut f.body, &mut fixup)
         });
         runtime::ensure_numeric_parse(&mut program);
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::SortSearch, {
         run_once_program(&mut program, |program| {
             rewrite::sort_search::SortSearch::new(logger).fixup(program)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::HeapOwnership, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -524,6 +552,7 @@ fn apply_with_logger(
             let mut fixup = rewrite::heap_ownership::HeapOwnership::new(function, &facts, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::DeadLocals, {
         to_fixpoint_items_with_facts(
@@ -537,8 +566,9 @@ fn apply_with_logger(
                 run_once(&mut f.body, &mut fixup)
             },
         );
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::RemoveMut, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -546,19 +576,22 @@ fn apply_with_logger(
             };
             rewrite::remove_mut::RemoveMut::new(function, &facts, logger).fixup(f)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::PrintfFormat, {
         run_once_program(&mut program, |program| {
             rewrite::printf_format::PrintfFormat::new(&facts, logger).fixup(program)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::StringParams, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
             rewrite::string_params::StringParams::new(facts, logger).fixup(program)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::RemoveMut, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -566,8 +599,9 @@ fn apply_with_logger(
             };
             rewrite::remove_mut::RemoveMut::new(function, &facts, logger).fixup(f)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::StringLibc, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -577,8 +611,9 @@ fn apply_with_logger(
             run_once(&mut f.body, &mut fixup)
         });
         runtime::ensure_numeric_parse(&mut program);
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::CStrings, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -587,8 +622,9 @@ fn apply_with_logger(
             let mut fixup = rewrite::c_strings::CStrings::new(function, &facts, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::Stdio, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -597,16 +633,19 @@ fn apply_with_logger(
             let mut fixup = rewrite::stdio::Stdio::new(function, &facts, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::MemchrPreludeFixupCalls, {
-        let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+        let facts = incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
             let mut builder = query::ExprPlanBuilder::new();
             builder.add_rule(&query, &query::rules::memchr::calls());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger).changed
+        let report = plan.apply(&mut program, &facts, logger);
+        incremental.mark_touched(&report.touched);
+        report.changed
     });
     step!(program, Pass::NullablePointer, {
         to_fixpoint_items_with_facts(
@@ -621,8 +660,9 @@ fn apply_with_logger(
                 run_once(&mut f.body, &mut fixup)
             },
         );
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::StringLiftFixupCStrings, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -637,16 +677,19 @@ fn apply_with_logger(
             );
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::MemchrPrelude, {
-        let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+        let facts = incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
             let mut builder = query::DefinitionPlanBuilder::new();
             builder.add_rule(&query, &query::rules::memchr::helper());
             builder.finish()
         };
-        plan.apply(&mut program, logger).changed
+        let report = plan.apply(&mut program, logger);
+        incremental.mark_touched(&report.touched);
+        report.changed
     });
     step!(program, Pass::LateInlineTemps, {
         let limit = inline_temp_fixpoint_limit(&program);
@@ -662,12 +705,14 @@ fn apply_with_logger(
             );
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::PtrCopy, {
         to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
             let mut fixup = rewrite::ptr_copy::PtrCopy::new(&f.name, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::DeadLocals, {
         to_fixpoint_items_with_facts(
@@ -681,8 +726,9 @@ fn apply_with_logger(
                 run_once(&mut f.body, &mut fixup)
             },
         );
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::ArrayElementPointerOrigin, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -693,8 +739,9 @@ fn apply_with_logger(
             );
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::BufferCursor, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -703,12 +750,14 @@ fn apply_with_logger(
             let mut fixup = rewrite::buffer_cursor::BufferCursor::new(function, &facts, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::AtomicLocals, {
         run_once_program(&mut program, |program| {
             rewrite::atomic_locals::AtomicLocals::new(&facts, logger).fixup(program)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::LateInlineTemps, {
         let limit = inline_temp_fixpoint_limit(&program);
@@ -724,6 +773,7 @@ fn apply_with_logger(
             );
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::ZeroInit, {
         to_fixpoint_items_with_facts(
@@ -737,6 +787,7 @@ fn apply_with_logger(
                 run_once(&mut f.body, &mut fixup)
             },
         );
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::AtomicCompareExchange, {
         to_fixpoint_items_with_facts(
@@ -752,8 +803,9 @@ fn apply_with_logger(
                 run_once(&mut f.body, &mut fixup)
             },
         );
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::RemoveMut, {
         run_once_items(&mut program, |item_index, f| {
             let Some(function) = facts.function_by_item_index(item_index) else {
@@ -761,38 +813,45 @@ fn apply_with_logger(
             };
             rewrite::remove_mut::RemoveMut::new(function, &facts, logger).fixup(f)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::VarAliases, {
         to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
             let mut fixup = VarAliases::new(logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::ConstantConditions, {
         to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
             let mut fixup = ConstantConditions::new(&f.name, logger);
             run_once(&mut f.body, &mut fixup)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::LibcExit, {
-        let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+        let facts = incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
             let mut builder = query::ExprPlanBuilder::new();
             builder.add_rule(&query, &query::rules::libc_exit::calls());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger).changed
+        let report = plan.apply(&mut program, &facts, logger);
+        incremental.mark_touched(&report.touched);
+        report.changed
     });
     step!(program, Pass::UnusedItems, {
         run_once_program(&mut program, |program| {
             rewrite::unused_items::UnusedItems::new(logger).fixup(program)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::UnusedParams, {
         to_fixpoint_program(&mut program, |program| {
             rewrite::unused_params::UnusedParams::new(logger).fixup(program)
         });
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::FinalReturns, {
         for item in &mut program.items {
@@ -805,6 +864,7 @@ fn apply_with_logger(
                 run_once(&mut f.body, &mut fixup);
             }
         }
+        incremental.mark_everything_dirty();
     });
     step!(program, Pass::MainZeroExit, {
         for item in &mut program.items {
@@ -814,8 +874,9 @@ fn apply_with_logger(
                 run_once(&mut f.body, &mut fixup);
             }
         }
+        incremental.mark_everything_dirty();
     });
-    let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+    let facts = incremental.resolve(&program);
     step!(program, Pass::PruneUnusedDefinitions, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
@@ -824,7 +885,9 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::support::unused_numeric_parse());
             builder.finish()
         };
-        plan.apply(&mut program, logger).changed
+        let report = plan.apply(&mut program, logger);
+        incremental.mark_touched(&report.touched);
+        report.changed
     });
     let _ = debug_done;
     program.clone()

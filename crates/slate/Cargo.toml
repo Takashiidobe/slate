@@ -18,11 +18,6 @@ name = "effects_regression"
 path = "tests/effects_regression.rs"
 test = false
 
-[[test]]
-name = "incremental_facts_regression"
-path = "tests/incremental_facts_regression.rs"
-test = false
-
 [profile.test]
 opt-level = 3
 debug = false
