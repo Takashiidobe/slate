@@ -10,7 +10,7 @@ use crate::rust_ast::{
 use super::plan::TouchedItems;
 use super::{
     AnonymousStructPlan, AnonymousStructSet, ExprSite, LazySingletonPlan, LazySingletonSet,
-    Predicate, QueryContext, Rejection, RejectionReason,
+    Predicate, PtrLenPlan, PtrLenPlanSet, QueryContext, Rejection, RejectionReason,
 };
 
 pub(in crate::fixups) struct ProgramRecipe {
@@ -20,6 +20,7 @@ pub(in crate::fixups) struct ProgramRecipe {
 enum ProgramRecipeKind {
     AnonymousStructs(AnonymousStructSet),
     LazySingletons(LazySingletonSet),
+    PtrLen(PtrLenPlanSet),
 }
 
 pub(in crate::fixups) fn rewrite_anonymous_structs(structs: AnonymousStructSet) -> ProgramRecipe {
@@ -34,10 +35,12 @@ pub(in crate::fixups) fn rewrite_lazy_singletons(singletons: LazySingletonSet) -
     }
 }
 
-/// What an applied program-level edit expects to still find at each
-/// `usize` item index before it's safe to install the replacement program -
-/// the item kind matters, not just the index, since a program edit can
-/// touch several unrelated items at once.
+pub(in crate::fixups) fn rewrite_ptr_len(plans: PtrLenPlanSet) -> ProgramRecipe {
+    ProgramRecipe {
+        kind: ProgramRecipeKind::PtrLen(plans),
+    }
+}
+
 pub(super) enum ItemAnchor {
     Record(String),
     Static(String),
@@ -85,10 +88,6 @@ impl ProgramRecipe {
                 Ok(PreparedProgram {
                     replacement,
                     anchors,
-                    // anonymous_structs can rewrite type declarations plus
-                    // every function/static/const/impl that references
-                    // them - not a small tracked set, so incremental facts
-                    // must fall back to a full reanalyze for this recipe.
                     touched: TouchedItems::unbounded(),
                 })
             }
@@ -127,9 +126,6 @@ impl ProgramRecipe {
                         Vec::new(),
                     ));
                 }
-                // The function body and payload static both keep their
-                // item_index (content-only edits); the flag static is
-                // removed outright.
                 let touched = TouchedItems {
                     in_place: set
                         .singletons
@@ -147,6 +143,39 @@ impl ProgramRecipe {
                     replacement,
                     anchors,
                     touched,
+                })
+            }
+            ProgramRecipeKind::PtrLen(set) => {
+                let anchors = set
+                    .plans
+                    .iter()
+                    .map(|plan| (plan.item_index, ItemAnchor::Fn(plan.function_name.clone())))
+                    .collect();
+                let site = set.plans.first().map(|plan| ExprSite {
+                    item_index: plan.item_index,
+                    path: Default::default(),
+                    fact_path: Default::default(),
+                });
+                let mut grouped = BTreeMap::<String, Vec<PtrLenPlan>>::new();
+                for plan in set.plans {
+                    grouped
+                        .entry(plan.function_name.clone())
+                        .or_default()
+                        .push(plan);
+                }
+                let mut replacement = query.snapshot_program().clone();
+                if !apply_ptr_len(&mut replacement, &grouped) {
+                    return Err(Rejection::new(
+                        Predicate::PtrLenSlice,
+                        site,
+                        RejectionReason::Contradicted,
+                        Vec::new(),
+                    ));
+                }
+                Ok(PreparedProgram {
+                    replacement,
+                    anchors,
+                    touched: TouchedItems::unbounded(),
                 })
             }
         }
@@ -612,5 +641,119 @@ fn get_or_init_deref(payload_name: &str, init_expr: Expr) -> Expr {
                 body: Box::new(init_expr),
             }],
         }),
+    }
+}
+
+fn apply_ptr_len(program: &mut Program, plans: &BTreeMap<String, Vec<PtrLenPlan>>) -> bool {
+    let mut changed = false;
+    for item in &mut program.items {
+        let Item::Fn(f) = item else { continue };
+        if let Some(fn_plans) = plans.get(&f.name) {
+            changed |= rewrite_ptr_len_function(f, fn_plans);
+        }
+        changed |= rewrite_ptr_len_calls_in_body(&mut f.body, plans);
+    }
+    changed
+}
+
+fn rewrite_ptr_len_function(f: &mut FnDef, plans: &[PtrLenPlan]) -> bool {
+    if plans.iter().any(|plan| f.params.len() <= plan.ptr_index) {
+        return false;
+    }
+    let mut changed = false;
+    for plan in plans {
+        f.params[plan.ptr_index].ty = Type::Ref {
+            mutable: plan.mutable,
+            inner: Box::new(Type::Slice(Box::new(plan.elem.clone()))),
+        };
+        changed = true;
+        changed |= rewrite_ptr_len_body_pointer_param(&mut f.body, &plan.ptr_name, plan.mutable);
+    }
+    changed
+}
+
+fn rewrite_ptr_len_body_pointer_param(body: &mut [IndentStmt], name: &str, mutable: bool) -> bool {
+    let mut changed = false;
+    walk::body_exprs_mut_with(body, &mut |expr| {
+        if matches!(expr, Expr::Var(var) if var.as_str() == name) {
+            changed = true;
+            *expr = Expr::MethodCall {
+                recv: Box::new(Expr::Var(name.into())),
+                method: if mutable { "as_mut_ptr" } else { "as_ptr" }.into(),
+                args: Vec::new(),
+            };
+            return false;
+        }
+        true
+    });
+    changed
+}
+
+fn rewrite_ptr_len_calls_in_body(
+    body: &mut [IndentStmt],
+    plans: &BTreeMap<String, Vec<PtrLenPlan>>,
+) -> bool {
+    let mut changed = false;
+    walk::body_exprs_mut_with(body, &mut |expr| {
+        let Expr::Call { func, args, .. } = expr else {
+            return true;
+        };
+        let Expr::Var(name) = &**func else {
+            return true;
+        };
+        let Some(fn_plans) = plans.get(name.as_str()) else {
+            return true;
+        };
+        if fn_plans.iter().any(|plan| args.len() <= plan.ptr_index) {
+            return true;
+        }
+        let Some(array_names) = fn_plans
+            .iter()
+            .map(|plan| args.get(plan.ptr_index).and_then(ptr_len_array_pointer_arg))
+            .collect::<Option<Vec<_>>>()
+        else {
+            return true;
+        };
+
+        for (plan, array_name) in fn_plans.iter().zip(array_names) {
+            args[plan.ptr_index] = Expr::MethodCall {
+                recv: Box::new(Expr::Var(Ident::from(array_name))),
+                method: if plan.mutable {
+                    "as_mut_slice"
+                } else {
+                    "as_slice"
+                }
+                .into(),
+                args: Vec::new(),
+            };
+        }
+
+        changed = true;
+        false
+    });
+    changed
+}
+
+fn ptr_len_array_pointer_arg(expr: &Expr) -> Option<String> {
+    match peel_ptr_len_pointer_view(expr) {
+        Expr::Var(name) => Some(name.as_str().into()),
+        _ => None,
+    }
+}
+
+fn peel_ptr_len_pointer_view(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr, .. }
+        | Expr::Unary { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => peel_ptr_len_pointer_view(expr),
+        Expr::MethodCall { recv, method, args }
+            if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
+        {
+            peel_ptr_len_pointer_view(recv)
+        }
+        Expr::ArrayPtr { array, .. } => peel_ptr_len_pointer_view(array),
+        _ => expr,
     }
 }

@@ -4,10 +4,10 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, ConstValue, CountedLoopFact, EffectSubject, FixupFacts, FunctionId,
-    HeapExtent, HeapOwnershipFact, HeapOwnershipKind, HeapReadSafety, NulTermination, PathSegment,
-    Purity, StringBufferFact, StringBufferKind, StringBufferProvenance, StringRecoveryCandidate,
-    ValueSubject,
+    AstPath, BindingId, BindingKind, ConstValue, CountedLoopFact, EffectSubject, FixupFacts,
+    FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind, HeapReadSafety, NulTermination,
+    PathSegment, PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind,
+    StringBufferProvenance, StringRecoveryCandidate, ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
@@ -19,9 +19,9 @@ use super::{
     ByteSource, ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
     DefinitionSite, Evidence, EvidenceDetail, ExprSite, ExternFn, Field, HeapOwnershipPlan,
     HeapOwnershipPlanSet, HeapOwnershipReallocPlan, LazySingletonPlan, LazySingletonSet,
-    NulPosition, NullaryMethodCall, PointerMutability, Predicate, Proof, QueryResult, Rejection,
-    RejectionReason, ResolvedValue, StableExpr, StmtWindowSite, StringLiftPlan, StringLiftPlanSet,
-    Usage, ZeroGroupUsers, ZeroUsers,
+    NulPosition, NullaryMethodCall, PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet,
+    QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr, StmtWindowSite,
+    StringLiftPlan, StringLiftPlanSet, Usage, ZeroGroupUsers, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -281,6 +281,10 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn has_lazy_singletons(&self) -> bool {
         !self.facts.lazy_init_singletons.is_empty()
+    }
+
+    pub(in crate::fixups) fn has_ptr_len_slices(&self) -> bool {
+        !self.facts.ptr_len_slices.is_empty()
     }
 
     pub(super) fn snapshot_program(&self) -> &'snapshot Program {
@@ -1221,6 +1225,28 @@ query_cache! {
         }];
         Ok(Proof::new(HeapOwnershipPlanSet { plans }, evidence))
     }
+
+    fn ptr_len_slices(&self) -> QueryResult<PtrLenPlanSet>;
+    key: () = ();
+    {
+        let predicate = Predicate::PtrLenSlice;
+        let plans = ptr_len_plans_from_facts(self.facts);
+        let site = expression_site(plans.first().map_or(0, |plan| plan.item_index), &[]);
+        if plans.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::PtrLenSlice { plans: plans.len() },
+        }];
+        Ok(Proof::new(PtrLenPlanSet { plans }, evidence))
+    }
 }
 
 fn index_definitions(
@@ -1394,6 +1420,42 @@ fn qualified_path(path: &crate::rust_ast::Path) -> String {
         .map(crate::rust_ast::Ident::as_str)
         .collect::<Vec<_>>()
         .join("::")
+}
+
+fn ptr_len_plans_from_facts(facts: &FixupFacts) -> Vec<PtrLenPlan> {
+    let mut grouped = BTreeMap::<(FunctionId, BindingId), Vec<&PtrLenSliceFact>>::new();
+    for fact in &facts.ptr_len_slices {
+        grouped
+            .entry((fact.callee, fact.ptr_param))
+            .or_default()
+            .push(fact);
+    }
+    let mut plans = Vec::new();
+    for ((function, ptr_param), calls) in grouped {
+        let Some(function_fact) = facts.functions.iter().find(|fact| fact.id == function) else {
+            continue;
+        };
+        let Some(ptr_binding) = facts
+            .bindings
+            .iter()
+            .find(|binding| binding.id == ptr_param)
+        else {
+            continue;
+        };
+        let BindingKind::Param { index: ptr_index } = ptr_binding.kind else {
+            continue;
+        };
+        let mutable = calls.iter().any(|call| call.mutable);
+        plans.push(PtrLenPlan {
+            item_index: function_fact.item_index,
+            function_name: function_fact.name.clone(),
+            ptr_index,
+            ptr_name: ptr_binding.name.clone(),
+            mutable,
+            elem: calls[0].elem_ty.clone(),
+        });
+    }
+    plans
 }
 
 fn heap_ownership_plans_for_function(

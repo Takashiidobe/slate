@@ -51,6 +51,7 @@ pub(in crate::fixups) enum Predicate {
     NoEffects,
     HeapOwnershipPlan,
     StringLiftPlan,
+    PtrLenSlice,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -111,6 +112,9 @@ pub(in crate::fixups) enum EvidenceDetail {
         plans: usize,
     },
     StringLiftPlan {
+        plans: usize,
+    },
+    PtrLenSlice {
         plans: usize,
     },
 }
