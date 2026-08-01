@@ -4,10 +4,10 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, ConstValue, CountedLoopFact, EffectKind, EffectSubject,
-    FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind, HeapReadSafety,
-    NulTermination, PathSegment, PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind,
-    StringRecoveryCandidate, ValueSubject,
+    AstPath, BindingId, BindingKind, CastFact, ConstValue, CountedLoopFact, EffectKind,
+    EffectSubject, FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind,
+    HeapReadSafety, NulTermination, PathSegment, PtrLenSliceFact, Purity, StringBufferFact,
+    StringBufferKind, StringRecoveryCandidate, ValueSubject,
 };
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::support::walk as support_walk;
@@ -277,6 +277,53 @@ impl<'snapshot> QueryContext<'snapshot> {
             detail: EvidenceDetail::AllExprs { count: sites.len() },
         }];
         Ok(Proof::new(sites, evidence))
+    }
+
+    pub(in crate::fixups) fn assign_value_sites(&self) -> Vec<ExprSite> {
+        let mut sites = Vec::new();
+        for (item_index, item) in self.program.items.iter().enumerate() {
+            let Item::Fn(function) = item else {
+                continue;
+            };
+            collect_assign_value_sites(item_index, &function.body, &mut Vec::new(), &mut sites);
+        }
+        sites
+    }
+
+    /// The recorded from/to types of the cast Clang's CIR observed at `site`,
+    /// independent of any particular rewrite's shape - callers do their own
+    /// structural matching before consulting this.
+    pub(in crate::fixups) fn cast_at(&self, site: &ExprSite) -> QueryResult<CastFact> {
+        let predicate = Predicate::Cast;
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(fact) = self.facts.cast_at(function, &site.path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let evidence = vec![Evidence {
+            predicate,
+            site: site.clone(),
+            detail: EvidenceDetail::Cast {
+                to: fact.to.clone(),
+            },
+        }];
+        Ok(Proof::new(fact.clone(), evidence))
+    }
+
+    /// The `index`th direct child expression site of `site`.
+    pub(in crate::fixups) fn child(&self, site: &ExprSite, index: usize) -> ExprSite {
+        child_site(site, index)
     }
 
     pub(in crate::fixups) fn string_buffer(
@@ -1996,6 +2043,26 @@ fn buffer_cursor_contains_unresolved_uses(
                 .keys()
                 .any(|alias| stmt_ident_count(&indent.stmt, alias) > 0)
     })
+}
+
+fn collect_assign_value_sites(
+    item_index: usize,
+    body: &[IndentStmt],
+    path: &mut Vec<PathSegment>,
+    out: &mut Vec<ExprSite>,
+) {
+    for (index, indent) in body.iter().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            if matches!(&indent.stmt, Stmt::Assign { .. }) {
+                let mut value_path = path.clone();
+                value_path.push(PathSegment::Expr(1));
+                out.push(expression_site(item_index, &value_path));
+            }
+            walk::nested_body_vecs_with_path(&indent.stmt, path, &mut |nested, path| {
+                collect_assign_value_sites(item_index, nested, path, out);
+            });
+        });
+    }
 }
 
 fn index_definitions(

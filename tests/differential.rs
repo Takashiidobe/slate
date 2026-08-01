@@ -882,6 +882,42 @@ fn buffer_cursor_writes_collapse_to_array_indexing() {
 }
 
 #[test]
+fn unnecessary_promotion_casts_are_stripped() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-unnecessary-casts");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_src = fixtures_dir().join("unnecessary_casts.c");
+    let generated = tmp.join("unnecessary_casts.generated.rs");
+    support::translate(&c_src, &generated).expect("translate unnecessary_casts fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated unnecessary_casts rust");
+
+    assert!(rust.contains("c = a + b;"));
+    assert!(!rust.contains("a as i32"));
+    assert!(!rust.contains("b as i32"));
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg("--debug-only-pass")
+        .arg("unnecessary_casts")
+        .arg(&c_src)
+        .output()
+        .expect("run unnecessary_casts query trace");
+    assert!(
+        output.status.success(),
+        "fixup-debug failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
+    assert!(stdout.contains("query_rule=strip_unnecessary_assignment_cast"));
+    assert!(stdout.contains("query_case=resolved"));
+    assert_eq!(
+        stdout.matches("evidence.cast=").count(),
+        3,
+        "expected one cast proof for the outer cast plus each operand:\n{stdout}"
+    );
+}
+
+#[test]
 fn redundant_singleton_scopes_are_unwrapped() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-singleton-scopes");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

@@ -387,6 +387,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::StringBuffer => "string_buffer",
         Predicate::StringUse => "string_use",
         Predicate::AllExprs => "all_exprs",
+        Predicate::Cast => "cast",
     }
 }
 
@@ -467,6 +468,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::StringBuffer { bytes } => format!("bytes={bytes}"),
         EvidenceDetail::StringUse { allowed } => format!("allowed={allowed}"),
         EvidenceDetail::AllExprs { count } => format!("count={count}"),
+        EvidenceDetail::Cast { to } => format!("to={to:?}"),
     }
 }
 

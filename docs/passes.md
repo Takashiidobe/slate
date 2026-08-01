@@ -107,7 +107,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 9. `compound_assign` - recover `a -= 5` - once, per function.
 10. `for_continue` - invert synthetic continue-blocks - to fixpoint (`to_fixpoint_items`), then `singleton_scopes` again to fixpoint.
 11. `constant_index_casts` - drop redundant `as usize` on constant indices - once, per function (`run_once_items`).
-12. `unnecessary_casts` - drop casts a typed context already makes redundant - once, per function (`run_once_items`).
+12. `unnecessary_casts` - drop casts a typed context already makes redundant - once, program-wide, through a query expression plan over every assignment's value.
 13. `call_args` - inline single-use call-argument temps - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`).
 14. `retval` - collapse a return-slot store into the final return/exit - once, per function (`run_once_items`).
 15. `final_return_temps` - collapse a return-value temp into the final `return` - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`).
