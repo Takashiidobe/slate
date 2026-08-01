@@ -379,6 +379,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::ReadPath => "read_path",
         Predicate::NoEffects => "no_effects",
         Predicate::HeapOwnershipPlan => "heap_ownership_plan",
+        Predicate::StringLiftPlan => "string_lift_plan",
     }
 }
 
@@ -448,6 +449,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         }
         EvidenceDetail::NoEffects => "no_effects".into(),
         EvidenceDetail::HeapOwnershipPlan { plans } => format!("plans={plans}"),
+        EvidenceDetail::StringLiftPlan { plans } => format!("plans={plans}"),
     }
 }
 

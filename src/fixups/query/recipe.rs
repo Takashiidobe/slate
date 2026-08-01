@@ -1,11 +1,11 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::fixups::facts::{HeapOwnershipKind, HeapResizeKind};
+use crate::fixups::facts::{HeapOwnershipKind, HeapResizeKind, PathSegment};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::query::{
     ByteRepresentation, ByteSource, HeapOwnershipPlan, HeapOwnershipPlanSet,
     HeapOwnershipReallocPlan, NulPosition, PointerMutability, Predicate, QueryContext, Rejection,
-    RejectionReason, StableExpr, default_value,
+    RejectionReason, StableExpr, StringLiftPlan, StringLiftPlanSet, default_value,
 };
 use crate::fixups::support::walk;
 use crate::function_identity::{Known, known_call};
@@ -834,5 +834,107 @@ fn let_stmt(name: &str, ty: Option<Type>, init: Expr) -> Stmt {
         mutable: false,
         ty,
         init: Some(init),
+    }
+}
+
+pub(in crate::fixups) fn rewrite_string_lift(
+    body: Vec<IndentStmt>,
+    plans: StringLiftPlanSet,
+) -> FunctionBodyRecipe {
+    let mut body = body;
+    apply_string_lift(&mut Vec::new(), &mut body, &plans.plans);
+    FunctionBodyRecipe { body }
+}
+
+fn apply_string_lift(
+    path: &mut Vec<PathSegment>,
+    body: &mut Vec<IndentStmt>,
+    plans: &[StringLiftPlan],
+) -> bool {
+    let mut changed = false;
+    for (index, indent) in body.iter_mut().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_mut_with_path(&mut indent.stmt, path, &mut |nested, path| {
+                changed |= apply_string_lift(path, nested, plans);
+            });
+        });
+    }
+    let container = path.clone();
+    let mut removals = BTreeSet::new();
+    for index in 0..body.len() {
+        let mut stmt_path = path.clone();
+        stmt_path.push(PathSegment::Stmt(index));
+        let Some(plan) = plans.iter().find(|plan| plan.path.0 == stmt_path) else {
+            continue;
+        };
+        let Stmt::Let {
+            mutable, ty, init, ..
+        } = &mut body[index].stmt
+        else {
+            unreachable!();
+        };
+        *mutable = false;
+        *ty = Some(plan.ty.clone());
+        *init = Some(plan.expr.clone());
+        changed = true;
+        if let Some(remove_path) = &plan.remove_path
+            && let Some((PathSegment::Stmt(remove_index), remove_parent)) =
+                remove_path.0.split_last()
+            && remove_parent == container.as_slice()
+        {
+            removals.insert(*remove_index);
+        }
+        for later in body.iter_mut().skip(index + 1) {
+            rewrite_stmt_pointer_views(&mut later.stmt, &plan.name);
+        }
+    }
+    for index in removals.into_iter().rev() {
+        if index < body.len() {
+            body.remove(index);
+            changed = true;
+        }
+    }
+    changed
+}
+
+fn rewrite_stmt_pointer_views(stmt: &mut Stmt, name: &str) {
+    walk::stmt_exprs_mut_with(stmt, &mut |expr| rewrite_pointer_view_expr(expr, name));
+}
+
+fn rewrite_pointer_view_expr(expr: &mut Expr, name: &str) -> bool {
+    match expr {
+        Expr::MethodCall { recv, method, args }
+            if args.is_empty()
+                && matches!(&**recv, Expr::Var(v) if v.as_str() == name)
+                && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
+        {
+            *expr = Expr::Cast {
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(name.into())),
+                    method: "as_ptr".into(),
+                    args: Vec::new(),
+                }),
+                ty: Type::Ptr {
+                    mutable: true,
+                    inner: Box::new(Type::Prim(Prim::I8)),
+                },
+            };
+            false
+        }
+        Expr::ArrayPtr { array, .. } if matches!(&**array, Expr::Var(v) if v.as_str() == name) => {
+            *expr = Expr::Cast {
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(name.into())),
+                    method: "as_ptr".into(),
+                    args: Vec::new(),
+                }),
+                ty: Type::Ptr {
+                    mutable: true,
+                    inner: Box::new(Type::Prim(Prim::I8)),
+                },
+            };
+            false
+        }
+        _ => true,
     }
 }

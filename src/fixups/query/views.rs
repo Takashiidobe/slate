@@ -205,3 +205,17 @@ pub(super) struct HeapOwnershipReallocPlan {
     pub(super) resize: HeapResizeKind,
     pub(super) count: Expr,
 }
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct StringLiftPlanSet {
+    pub(super) plans: Vec<StringLiftPlan>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct StringLiftPlan {
+    pub(super) path: AstPath,
+    pub(super) name: String,
+    pub(super) ty: Type,
+    pub(super) expr: Expr,
+    pub(super) remove_path: Option<AstPath>,
+}
