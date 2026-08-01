@@ -31,4 +31,3 @@ pub(super) mod unused_items;
 pub(super) mod unused_params;
 pub(super) mod va_list;
 pub(super) mod var_aliases;
-pub(super) mod zero_init;

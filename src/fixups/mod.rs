@@ -258,17 +258,15 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::ZeroInit, {
-        to_fixpoint_items_with_facts(
-            &mut program,
-            FixpointLimit::Unlimited,
-            |item_index, f, facts| {
-                let Some(function) = facts.function_by_item_index(item_index) else {
-                    return false;
-                };
-                let mut fixup = rewrite::zero_init::ZeroInit::new(false, function, facts, logger);
-                run_once(&mut f.body, &mut fixup)
-            },
-        );
+        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
+            let plan = {
+                let query = query::QueryContext::new(program, facts);
+                let mut builder = query::DefinitionPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::zero_init::direct());
+                builder.finish()
+            };
+            plan.apply(program, logger).changed
+        });
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::StructFieldInit, {
@@ -762,17 +760,15 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::ZeroInit, {
-        to_fixpoint_items_with_facts(
-            &mut program,
-            FixpointLimit::Unlimited,
-            |item_index, f, facts| {
-                let Some(function) = facts.function_by_item_index(item_index) else {
-                    return false;
-                };
-                let mut fixup = rewrite::zero_init::ZeroInit::new(true, function, facts, logger);
-                run_once(&mut f.body, &mut fixup)
-            },
-        );
+        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
+            let plan = {
+                let query = query::QueryContext::new(program, facts);
+                let mut builder = query::DefinitionPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::zero_init::deferred());
+                builder.finish()
+            };
+            plan.apply(program, logger).changed
+        });
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::AtomicCompareExchange, {

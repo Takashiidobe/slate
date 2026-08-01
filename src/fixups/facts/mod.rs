@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Item, Pattern, Program, Stmt, Type};
 
@@ -218,6 +218,13 @@ pub(super) struct DefUseFact {
     pub(super) reads: Vec<AstPath>,
     pub(super) writes: Vec<AstPath>,
     pub(super) last_use: Option<AstPath>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) struct BindingTouch {
+    pub(super) index: usize,
+    pub(super) reads: bool,
+    pub(super) writes: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1364,6 +1371,35 @@ impl FixupFacts {
         self.def_use.iter().find(|fact| fact.binding == binding)
     }
 
+    pub(super) fn binding_touches_in_body(
+        &self,
+        binding: BindingId,
+        body_path: &[PathSegment],
+    ) -> Vec<BindingTouch> {
+        let Some(def_use) = self.def_use(binding) else {
+            return Vec::new();
+        };
+        let mut by_index = BTreeMap::<usize, (bool, bool)>::new();
+        for path in &def_use.reads {
+            if let Some(index) = direct_child_stmt_index(body_path, &path.0) {
+                by_index.entry(index).or_default().0 = true;
+            }
+        }
+        for path in &def_use.writes {
+            if let Some(index) = direct_child_stmt_index(body_path, &path.0) {
+                by_index.entry(index).or_default().1 = true;
+            }
+        }
+        by_index
+            .into_iter()
+            .map(|(index, (reads, writes))| BindingTouch {
+                index,
+                reads,
+                writes,
+            })
+            .collect()
+    }
+
     pub(super) fn effect(
         &self,
         function: FunctionId,
@@ -1573,6 +1609,16 @@ impl FixupFacts {
         self.file_ownership
             .iter()
             .find(|fact| fact.handle == handle)
+    }
+}
+
+fn direct_child_stmt_index(body_path: &[PathSegment], path: &[PathSegment]) -> Option<usize> {
+    if !path.starts_with(body_path) {
+        return None;
+    }
+    match path.get(body_path.len()) {
+        Some(PathSegment::Stmt(index)) => Some(*index),
+        _ => None,
     }
 }
 

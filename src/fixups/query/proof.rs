@@ -60,6 +60,7 @@ pub(in crate::fixups) enum Predicate {
     StringUse,
     AllExprs,
     Cast,
+    ZeroInit,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -143,6 +144,9 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     Cast {
         to: Type,
+    },
+    ZeroInit {
+        moved_decl: bool,
     },
 }
 

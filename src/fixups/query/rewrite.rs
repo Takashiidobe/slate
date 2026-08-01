@@ -388,6 +388,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::StringUse => "string_use",
         Predicate::AllExprs => "all_exprs",
         Predicate::Cast => "cast",
+        Predicate::ZeroInit => "zero_init",
     }
 }
 
@@ -469,6 +470,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::StringUse { allowed } => format!("allowed={allowed}"),
         EvidenceDetail::AllExprs { count } => format!("count={count}"),
         EvidenceDetail::Cast { to } => format!("to={to:?}"),
+        EvidenceDetail::ZeroInit { moved_decl } => format!("moved_decl={moved_decl}"),
     }
 }
 
