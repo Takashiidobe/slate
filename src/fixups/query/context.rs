@@ -18,13 +18,14 @@ use crate::rust_ast::{
 };
 
 use super::{
-    AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ByteExtent, ByteRepresentation,
-    ByteSource, ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, Evidence, EvidenceDetail, ExprSite, ExternFn, Field, HeapOwnershipPlan,
-    HeapOwnershipPlanSet, HeapOwnershipReallocPlan, InlineTempPlan, LazySingletonPlan,
-    LazySingletonSet, NulPosition, NullaryMethodCall, Phase, PointerMutability, Predicate, Proof,
-    PtrLenPlan, PtrLenPlanSet, QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr,
-    StmtWindowSite, StringLiftPlan, StringLiftPlanSet, Usage, ZeroGroupUsers, ZeroUsers,
+    AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
+    ArrayElementPointerOriginSet, ByteExtent, ByteRepresentation, ByteSource, ByteView,
+    DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite,
+    Evidence, EvidenceDetail, ExprSite, ExternFn, Field, HeapOwnershipPlan, HeapOwnershipPlanSet,
+    HeapOwnershipReallocPlan, InlineTempPlan, LazySingletonPlan, LazySingletonSet, NulPosition,
+    NullaryMethodCall, Phase, PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet,
+    QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr, StmtWindowSite,
+    StringLiftPlan, StringLiftPlanSet, Usage, ZeroGroupUsers, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -1229,6 +1230,74 @@ query_cache! {
         Ok(Proof::new(HeapOwnershipPlanSet { plans }, evidence))
     }
 
+    fn array_element_pointer_origins(
+        &self,
+        definition: &DefinitionSite
+    ) -> QueryResult<ArrayElementPointerOriginSet>;
+    key: DefinitionLocation = definition.location.clone();
+    {
+        let predicate = Predicate::ArrayElementPointerOrigin;
+        let site = definition_evidence_site(definition);
+        let Some(function) = self
+            .facts
+            .function_by_item_index(definition.location.item_index())
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let mut origins = self
+            .facts
+            .array_element_pointer_origins
+            .iter()
+            .filter(|fact| fact.site.function == function)
+            .filter_map(|fact| {
+                Some((
+                    self.facts.binding_name(fact.pointer)?.to_string(),
+                    ArrayElementPointerOrigin {
+                        pointer_name: self.facts.binding_name(fact.pointer)?.to_string(),
+                        base_name: self.facts.binding_name(fact.base)?.to_string(),
+                        index: fact.index.clone(),
+                    },
+                ))
+            })
+            .collect::<BTreeMap<_, _>>();
+        if origins.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let Item::Fn(function_item) = &self.program.items[definition.location.item_index()]
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        collect_array_element_pointer_aliases(&function_item.body, &mut origins);
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::ArrayElementPointerOrigin {
+                origins: origins.len(),
+            },
+        }];
+        Ok(Proof::new(
+            ArrayElementPointerOriginSet {
+                origins: origins.into_values().collect(),
+            },
+            evidence,
+        ))
+    }
+
     fn ptr_len_slices(&self) -> QueryResult<PtrLenPlanSet>;
     key: () = ();
     {
@@ -1302,6 +1371,54 @@ query_cache! {
             },
         }];
         Ok(Proof::new(plan, evidence))
+    }
+}
+
+fn collect_array_element_pointer_aliases(
+    body: &[IndentStmt],
+    origins: &mut BTreeMap<String, ArrayElementPointerOrigin>,
+) {
+    let mut changed = true;
+    while changed {
+        changed = false;
+        collect_array_element_pointer_aliases_once(body, origins, &mut changed);
+    }
+}
+
+fn collect_array_element_pointer_aliases_once(
+    body: &[IndentStmt],
+    origins: &mut BTreeMap<String, ArrayElementPointerOrigin>,
+    changed: &mut bool,
+) {
+    for indent in body {
+        let alias = match &indent.stmt {
+            Stmt::Let {
+                name,
+                init: Some(Expr::Var(source)),
+                ..
+            } => Some((name.as_str(), source.as_str())),
+            Stmt::Assign {
+                target: Expr::Var(name),
+                value: Expr::Var(source),
+            } => Some((name.as_str(), source.as_str())),
+            _ => None,
+        };
+        if let Some((name, source)) = alias
+            && let Some(origin) = origins.get(source).cloned()
+            && !origins.contains_key(name)
+        {
+            origins.insert(
+                name.to_string(),
+                ArrayElementPointerOrigin {
+                    pointer_name: name.to_string(),
+                    ..origin
+                },
+            );
+            *changed = true;
+        }
+        walk::nested_body_vecs_with_path(&indent.stmt, &mut Vec::new(), &mut |nested, _| {
+            collect_array_element_pointer_aliases_once(nested, origins, changed);
+        });
     }
 }
 

@@ -3,10 +3,10 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::{HeapOwnershipKind, HeapResizeKind, PathSegment};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::query::{
-    ByteRepresentation, ByteSource, HeapOwnershipPlan, HeapOwnershipPlanSet,
-    HeapOwnershipReallocPlan, InlineTempPlan, NulPosition, PointerMutability, Predicate,
-    QueryContext, Rejection, RejectionReason, StableExpr, StringLiftPlan, StringLiftPlanSet,
-    default_value,
+    ArrayElementPointerOriginSet, ByteRepresentation, ByteSource, HeapOwnershipPlan,
+    HeapOwnershipPlanSet, HeapOwnershipReallocPlan, InlineTempPlan, NulPosition, PointerMutability,
+    Predicate, QueryContext, Rejection, RejectionReason, StableExpr, StringLiftPlan,
+    StringLiftPlanSet, default_value,
 };
 use crate::fixups::support::walk;
 use crate::function_identity::{Known, known_call};
@@ -937,6 +937,197 @@ fn rewrite_pointer_view_expr(expr: &mut Expr, name: &str) -> bool {
             false
         }
         _ => true,
+    }
+}
+
+pub(in crate::fixups) fn rewrite_array_element_pointer_origins(
+    body: Vec<IndentStmt>,
+    origins: ArrayElementPointerOriginSet,
+) -> Option<FunctionBodyRecipe> {
+    let mut body = body;
+    let origins = origins
+        .origins
+        .into_iter()
+        .map(|origin| {
+            (
+                origin.pointer_name,
+                ArrayElementOrigin {
+                    base: origin.base_name,
+                    index: origin.index,
+                },
+            )
+        })
+        .collect::<BTreeMap<_, _>>();
+    if !rewrite_array_element_body(&mut body, &origins) {
+        return None;
+    }
+    let removable = origins.keys().cloned().collect();
+    prune_dead_array_element_pointer_stmts(&mut body, &removable);
+    Some(FunctionBodyRecipe { body })
+}
+
+#[derive(Clone)]
+struct ArrayElementOrigin {
+    base: String,
+    index: Expr,
+}
+
+fn array_element_var_name(expr: &Expr) -> Option<&str> {
+    let Expr::Var(name) = expr else {
+        return None;
+    };
+    Some(name.as_str())
+}
+
+fn rewrite_array_element_body(
+    body: &mut [IndentStmt],
+    origins: &BTreeMap<String, ArrayElementOrigin>,
+) -> bool {
+    let mut changed = false;
+    for indent in body {
+        changed |= rewrite_array_element_stmt(&mut indent.stmt, origins);
+        walk::nested_body_vecs_mut_with_path(&mut indent.stmt, &mut Vec::new(), &mut |body, _| {
+            changed |= rewrite_array_element_body(body, origins);
+        });
+    }
+    changed
+}
+
+fn rewrite_array_element_stmt(
+    stmt: &mut Stmt,
+    origins: &BTreeMap<String, ArrayElementOrigin>,
+) -> bool {
+    let mut changed = false;
+    walk::stmt_exprs_mut_with(stmt, &mut |expr| {
+        if let Some(replacement) = safe_array_element_replacement(expr, origins) {
+            *expr = replacement;
+            changed = true;
+            return false;
+        }
+        true
+    });
+    changed
+}
+
+fn safe_array_element_replacement(
+    expr: &Expr,
+    origins: &BTreeMap<String, ArrayElementOrigin>,
+) -> Option<Expr> {
+    match expr {
+        Expr::Unsafe(block) if block.stmts.is_empty() => {
+            safe_array_element_replacement(block.tail.as_ref()?, origins)
+        }
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr,
+        } => indexed_array_element_pointer(expr, origins),
+        Expr::Cast { expr, ty } => {
+            array_element_pointer_diff(expr, origins).map(|expr| Expr::Cast {
+                expr: Box::new(expr),
+                ty: ty.clone(),
+            })
+        }
+        _ => array_element_pointer_diff(expr, origins),
+    }
+}
+
+fn indexed_array_element_pointer(
+    expr: &Expr,
+    origins: &BTreeMap<String, ArrayElementOrigin>,
+) -> Option<Expr> {
+    let Expr::Var(name) = peel_array_element_unsafe(expr) else {
+        return None;
+    };
+    let origin = origins.get(name.as_str())?;
+    Some(Expr::Index {
+        base: Box::new(Expr::Var(Ident::from(origin.base.as_str()))),
+        index: Box::new(origin.index.clone()),
+    })
+}
+
+fn array_element_pointer_diff(
+    expr: &Expr,
+    origins: &BTreeMap<String, ArrayElementOrigin>,
+) -> Option<Expr> {
+    let Expr::MethodCall { recv, method, args } = peel_array_element_unsafe(expr) else {
+        return None;
+    };
+    if method != "offset_from" || args.len() != 1 {
+        return None;
+    }
+    let lhs = array_element_origin_for_pointer(recv, origins)?;
+    let rhs = array_element_origin_for_pointer(&args[0], origins)?;
+    if lhs.base != rhs.base {
+        return None;
+    }
+    Some(Expr::Binary {
+        op: BinOp::Sub,
+        lhs: Box::new(lhs.index.clone()),
+        rhs: Box::new(rhs.index.clone()),
+    })
+}
+
+fn array_element_origin_for_pointer<'a>(
+    expr: &Expr,
+    origins: &'a BTreeMap<String, ArrayElementOrigin>,
+) -> Option<&'a ArrayElementOrigin> {
+    let Expr::Var(name) = peel_array_element_unsafe(expr) else {
+        return None;
+    };
+    origins.get(name.as_str())
+}
+
+fn peel_array_element_unsafe(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Unsafe(block) if block.stmts.is_empty() => block
+            .tail
+            .as_deref()
+            .map_or(expr, peel_array_element_unsafe),
+        _ => expr,
+    }
+}
+
+fn prune_dead_array_element_pointer_stmts(
+    body: &mut Vec<IndentStmt>,
+    removable: &BTreeSet<String>,
+) -> bool {
+    let mut changed = false;
+    for indent in body.iter_mut() {
+        walk::nested_body_vecs_mut_with_path(&mut indent.stmt, &mut Vec::new(), &mut |body, _| {
+            changed |= prune_dead_array_element_pointer_stmts(body, removable);
+        });
+    }
+    while let Some(index) = dead_array_element_pointer_stmt_index(body, removable) {
+        body.remove(index);
+        changed = true;
+    }
+    changed
+}
+
+fn dead_array_element_pointer_stmt_index(
+    body: &[IndentStmt],
+    removable: &BTreeSet<String>,
+) -> Option<usize> {
+    body.iter().enumerate().position(|(index, indent)| {
+        removable_array_element_stmt_name(&indent.stmt, removable).is_some_and(|name| {
+            body[index + 1..]
+                .iter()
+                .all(|later| stmt_ident_count(&later.stmt, name) == 0)
+        })
+    })
+}
+
+fn removable_array_element_stmt_name<'a>(
+    stmt: &'a Stmt,
+    removable: &BTreeSet<String>,
+) -> Option<&'a str> {
+    match stmt {
+        Stmt::Let { name, .. } if removable.contains(name) => Some(name.as_str()),
+        Stmt::Assign { target, .. } => {
+            let name = array_element_var_name(target)?;
+            removable.contains(name).then_some(name)
+        }
+        _ => None,
     }
 }
 

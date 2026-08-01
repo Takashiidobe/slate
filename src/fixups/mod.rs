@@ -719,16 +719,17 @@ fn apply_with_logger(
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::ArrayElementPointerOrigin, {
-        run_once_items(&mut program, |item_index, f| {
-            let Some(function) = facts.function_by_item_index(item_index) else {
-                return false;
-            };
-            let mut fixup = rewrite::array_element_pointer_origin::ArrayElementPointerOrigin::new(
-                function, &facts, logger,
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::DefinitionPlanBuilder::new();
+            builder.add_rule(
+                &query,
+                &query::rules::array_element_pointer_origin::rewrite(),
             );
-            run_once(&mut f.body, &mut fixup)
-        });
-        incremental.mark_everything_dirty();
+            builder.finish()
+        };
+        let report = plan.apply(&mut program, logger);
+        incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::BufferCursor, {
