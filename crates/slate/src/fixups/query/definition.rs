@@ -9,9 +9,10 @@ use super::plan::{
 };
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    CaseRejection, Definition, DefinitionKind, DefinitionLocation, DefinitionSite, Evidence, Field,
-    FunctionBodyRecipe, HeapOwnershipPlanSet, InlineTempPlan, Phase, QueryContext, Rejection,
-    RuleCaseIdentity, RuleIdentity, StringLiftPlanSet,
+    ArrayElementPointerOriginSet, CaseRejection, Definition, DefinitionKind, DefinitionLocation,
+    DefinitionSite, Evidence, Field, FunctionBodyRecipe, HeapOwnershipPlanSet, InlineTempPlan,
+    Phase, Predicate, QueryContext, Rejection, RejectionReason, RuleCaseIdentity, RuleIdentity,
+    StringLiftPlanSet,
 };
 
 type DefinitionCaseFn = for<'case, 'snapshot> fn(
@@ -94,6 +95,21 @@ impl DefinitionCaseContext<'_, '_> {
         &mut self,
     ) -> Result<HeapOwnershipPlanSet, Rejection> {
         self.prove(self.query.heap_ownership_plans(self.definition))
+    }
+
+    pub(in crate::fixups) fn array_element_pointer_origins(
+        &mut self,
+    ) -> Result<ArrayElementPointerOriginSet, Rejection> {
+        self.prove(self.query.array_element_pointer_origins(self.definition))
+    }
+
+    pub(in crate::fixups) fn unsupported_array_element_pointer_origin(&self) -> Rejection {
+        Rejection::new(
+            Predicate::ArrayElementPointerOrigin,
+            None,
+            RejectionReason::UnsupportedShape,
+            self.evidence.clone(),
+        )
     }
 
     pub(in crate::fixups) fn string_lift_plans(
@@ -261,6 +277,11 @@ impl DefinitionPlan {
     ) -> DefinitionApplyReport {
         let planned = self.plan.edits.len();
         let mut diagnostics = self.plan.diagnostics;
+        if logger.is_enabled() {
+            for diagnostic in &diagnostics {
+                log_diagnostic(logger, diagnostic);
+            }
+        }
         let mut by_item = BTreeMap::<usize, Vec<PlannedEdit<DefinitionEdit>>>::new();
         for edit in self.plan.edits {
             by_item
@@ -437,6 +458,41 @@ fn log_edit(
         after: after
             .map(|after| vec![TraceSnippet::new("definition", after)])
             .unwrap_or_default(),
+        facts,
+    });
+}
+
+fn log_diagnostic(logger: &mut dyn TraceLogger, diagnostic: &PlanDiagnostic<DefinitionLocation>) {
+    let PlanDiagnostic::CandidateRejected {
+        rule,
+        target,
+        rejections,
+    } = diagnostic
+    else {
+        return;
+    };
+    let mut facts = vec![fact("query_rule", rule.name.clone())];
+    for rejected in rejections {
+        facts.push(fact(
+            format!("rejected_case.{}", rejected.case),
+            format!(
+                "{}:{}",
+                predicate_name(rejected.rejection.predicate),
+                rejection_name(rejected.rejection.reason)
+            ),
+        ));
+        facts.extend(rejected.rejection.evidence.iter().map(evidence_trace_fact));
+    }
+    logger.rewrite(RewriteEvent {
+        pass: rule.pass,
+        kind: rule.name.clone(),
+        location: TraceLocation {
+            function: Some("definition".into()),
+            ast_path: target.as_ref().map(|target| format!("{target:?}")),
+            ..TraceLocation::default()
+        },
+        before: Vec::new(),
+        after: Vec::new(),
         facts,
     });
 }

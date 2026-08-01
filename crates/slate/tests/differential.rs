@@ -824,6 +824,28 @@ fn address_of_array_elements_use_safe_indexes() {
     assert!(!rust.contains("unsafe { *p }"));
     assert!(!rust.contains("unsafe { *q }"));
     assert!(!rust.contains(".offset_from("));
+    assert!(rust.contains("read_pointer(pointer)"));
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg("--debug-only-pass")
+        .arg("array_element_pointer_origin")
+        .arg(c_src)
+        .output()
+        .expect("run array_element_pointer_origin query trace");
+    assert!(
+        output.status.success(),
+        "fixup-debug failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
+    assert!(stdout.contains("query_rule=rewrite_array_element_pointer_origins"));
+    assert!(stdout.contains("query_case=known_origins"));
+    assert!(stdout.contains("evidence.array_element_pointer_origin=origins=3"));
+    assert!(
+        stdout
+            .contains("rejected_case.known_origins=array_element_pointer_origin:unsupported_shape")
+    );
 }
 
 #[test]

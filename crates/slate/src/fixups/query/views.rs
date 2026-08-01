@@ -181,6 +181,18 @@ pub(in crate::fixups) struct HeapOwnershipPlanSet {
 }
 
 #[derive(Debug, Clone)]
+pub(in crate::fixups) struct ArrayElementPointerOriginSet {
+    pub(super) origins: Vec<ArrayElementPointerOrigin>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct ArrayElementPointerOrigin {
+    pub(super) pointer_name: String,
+    pub(super) base_name: String,
+    pub(super) index: Expr,
+}
+
+#[derive(Debug, Clone)]
 pub(super) struct HeapOwnershipPlan {
     pub(super) pointer_name: String,
     pub(super) kind: HeapOwnershipKind,

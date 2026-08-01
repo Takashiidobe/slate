@@ -1,4 +1,3 @@
-pub(super) mod array_element_pointer_origin;
 pub(super) mod atomic_compare_exchange;
 pub(super) mod atomic_locals;
 pub(super) mod buffer_cursor;

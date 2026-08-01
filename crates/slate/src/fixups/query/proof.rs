@@ -49,6 +49,7 @@ pub(in crate::fixups) enum Predicate {
     LazySingletonDomain,
     ReadPath,
     NoEffects,
+    ArrayElementPointerOrigin,
     HeapOwnershipPlan,
     StringLiftPlan,
     PtrLenSlice,
@@ -109,6 +110,9 @@ pub(in crate::fixups) enum EvidenceDetail {
         singletons: usize,
     },
     NoEffects,
+    ArrayElementPointerOrigin {
+        origins: usize,
+    },
     HeapOwnershipPlan {
         plans: usize,
     },
