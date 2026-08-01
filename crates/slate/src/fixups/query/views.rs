@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use crate::fixups::facts::{AstPath, BindingId, HeapOwnershipKind, HeapResizeKind, Purity};
-use crate::rust_ast::{Expr, Type};
+use crate::rust_ast::{Expr, IndentStmt, Type};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(in crate::fixups) struct Usage {
@@ -238,6 +238,13 @@ pub(super) struct PtrLenPlan {
 pub(in crate::fixups) enum Phase {
     Early,
     Late,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct BufferCursorPlan {
+    pub(super) body: Vec<IndentStmt>,
+    pub(super) arrays: usize,
+    pub(super) buffers: usize,
 }
 
 #[derive(Debug, Clone)]

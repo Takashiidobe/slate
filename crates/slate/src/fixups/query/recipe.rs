@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::{HeapOwnershipKind, HeapResizeKind, PathSegment};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::query::{
-    ByteRepresentation, ByteSource, HeapOwnershipPlan, HeapOwnershipPlanSet,
+    BufferCursorPlan, ByteRepresentation, ByteSource, HeapOwnershipPlan, HeapOwnershipPlanSet,
     HeapOwnershipReallocPlan, InlineTempPlan, NulPosition, PointerMutability, Predicate,
     QueryContext, Rejection, RejectionReason, StableExpr, default_value,
 };
@@ -106,6 +106,10 @@ impl FunctionBodyRecipe {
     pub(super) fn lower(self) -> Vec<IndentStmt> {
         self.body
     }
+}
+
+pub(in crate::fixups) fn rewrite_buffer_cursor(plan: BufferCursorPlan) -> FunctionBodyRecipe {
+    FunctionBodyRecipe { body: plan.body }
 }
 
 pub(in crate::fixups) fn rewrite_heap_ownership(

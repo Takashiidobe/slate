@@ -50,6 +50,7 @@ pub(in crate::fixups) enum Predicate {
     ReadPath,
     NoEffects,
     ArrayElementPointerOrigin,
+    BufferCursor,
     HeapOwnershipPlan,
     PtrLenSlice,
     InlineTemp,
@@ -115,6 +116,10 @@ pub(in crate::fixups) enum EvidenceDetail {
     NoEffects,
     ArrayElementPointerOrigin {
         origins: usize,
+    },
+    BufferCursor {
+        arrays: usize,
+        buffers: usize,
     },
     HeapOwnershipPlan {
         plans: usize,
