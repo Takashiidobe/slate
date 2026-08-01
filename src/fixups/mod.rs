@@ -225,17 +225,14 @@ fn apply_with_logger(
     });
     step!(program, Pass::EarlyInlineTemps, {
         let limit = inline_temp_fixpoint_limit(&program);
-        to_fixpoint_items_with_facts(&mut program, limit, |item_index, f, facts| {
-            let Some(function) = facts.function_by_item_index(item_index) else {
-                return false;
+        to_fixpoint_program_with_facts(&mut program, limit, |program, facts| {
+            let plan = {
+                let query = query::QueryContext::new(program, facts);
+                let mut builder = query::DefinitionPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::inline_temps::early());
+                builder.finish()
             };
-            let mut fixup = rewrite::inline_temps::InlineTemps::new(
-                rewrite::inline_temps::Phase::Early,
-                function,
-                facts,
-                logger,
-            );
-            run_once(&mut f.body, &mut fixup)
+            plan.apply(program, logger).changed
         });
         incremental.mark_everything_dirty();
     });
@@ -683,17 +680,14 @@ fn apply_with_logger(
     });
     step!(program, Pass::LateInlineTemps, {
         let limit = inline_temp_fixpoint_limit(&program);
-        to_fixpoint_items_with_facts(&mut program, limit, |item_index, f, facts| {
-            let Some(function) = facts.function_by_item_index(item_index) else {
-                return false;
+        to_fixpoint_program_with_facts(&mut program, limit, |program, facts| {
+            let plan = {
+                let query = query::QueryContext::new(program, facts);
+                let mut builder = query::DefinitionPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::inline_temps::late());
+                builder.finish()
             };
-            let mut fixup = rewrite::inline_temps::InlineTemps::new(
-                rewrite::inline_temps::Phase::Late,
-                function,
-                facts,
-                logger,
-            );
-            run_once(&mut f.body, &mut fixup)
+            plan.apply(program, logger).changed
         });
         incremental.mark_everything_dirty();
     });
@@ -756,17 +750,14 @@ fn apply_with_logger(
     });
     step!(program, Pass::LateInlineTemps, {
         let limit = inline_temp_fixpoint_limit(&program);
-        to_fixpoint_items_with_facts(&mut program, limit, |item_index, f, facts| {
-            let Some(function) = facts.function_by_item_index(item_index) else {
-                return false;
+        to_fixpoint_program_with_facts(&mut program, limit, |program, facts| {
+            let plan = {
+                let query = query::QueryContext::new(program, facts);
+                let mut builder = query::DefinitionPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::inline_temps::late());
+                builder.finish()
             };
-            let mut fixup = rewrite::inline_temps::InlineTemps::new(
-                rewrite::inline_temps::Phase::Late,
-                function,
-                facts,
-                logger,
-            );
-            run_once(&mut f.body, &mut fixup)
+            plan.apply(program, logger).changed
         });
         incremental.mark_everything_dirty();
     });

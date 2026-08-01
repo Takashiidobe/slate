@@ -10,8 +10,8 @@ use super::plan::{
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
     CaseRejection, Definition, DefinitionKind, DefinitionLocation, DefinitionSite, Evidence, Field,
-    FunctionBodyRecipe, HeapOwnershipPlanSet, QueryContext, Rejection, RuleCaseIdentity,
-    RuleIdentity, StringLiftPlanSet,
+    FunctionBodyRecipe, HeapOwnershipPlanSet, InlineTempPlan, Phase, QueryContext, Rejection,
+    RuleCaseIdentity, RuleIdentity, StringLiftPlanSet,
 };
 
 type DefinitionCaseFn = for<'case, 'snapshot> fn(
@@ -101,6 +101,13 @@ impl DefinitionCaseContext<'_, '_> {
         recovery: &Field<StringRecoveryCandidate>,
     ) -> Result<StringLiftPlanSet, Rejection> {
         self.prove(self.query.string_lift_plans(self.definition, recovery))
+    }
+
+    pub(in crate::fixups) fn inline_temp_candidate(
+        &mut self,
+        phase: Phase,
+    ) -> Result<InlineTempPlan, Rejection> {
+        self.prove(self.query.inline_temp_candidate(self.definition, phase))
     }
 
     pub(in crate::fixups) fn function_body(&self) -> Vec<IndentStmt> {

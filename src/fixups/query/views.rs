@@ -234,3 +234,17 @@ pub(super) struct PtrLenPlan {
     pub(super) mutable: bool,
     pub(super) elem: Type,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(in crate::fixups) enum Phase {
+    Early,
+    Late,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct InlineTempPlan {
+    pub(super) name: String,
+    pub(super) init: Expr,
+    pub(super) def_path: AstPath,
+    pub(super) use_path: AstPath,
+}
