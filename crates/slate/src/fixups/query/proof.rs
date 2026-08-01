@@ -49,6 +49,7 @@ pub(in crate::fixups) enum Predicate {
     LazySingletonDomain,
     ReadPath,
     NoEffects,
+    HeapOwnershipPlan,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -105,6 +106,9 @@ pub(in crate::fixups) enum EvidenceDetail {
         singletons: usize,
     },
     NoEffects,
+    HeapOwnershipPlan {
+        plans: usize,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

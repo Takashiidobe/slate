@@ -13,6 +13,7 @@ pub(in crate::fixups) mod rules;
 mod stmt_window;
 mod views;
 
+use context::default_value;
 pub(in crate::fixups) use context::{CallRecord, CallTarget, QueryContext};
 pub(in crate::fixups) use definition::{
     DefinitionPlanBuilder, DefinitionRule, delete_definition, replace_body,
@@ -31,7 +32,7 @@ pub(in crate::fixups) use proof::{
 };
 pub(in crate::fixups) use recipe::{
     ExprRecipe, FunctionBodyRecipe, byte_position, known_index, memchr_fallback_body,
-    pointer_at_or_null, process_exit,
+    pointer_at_or_null, process_exit, rewrite_heap_ownership,
 };
 pub(in crate::fixups) use rewrite::{
     CaseRejection, ExprPlanBuilder, ExprRule, ReplaceExpr, RuleCase, RuleCaseIdentity,
@@ -39,10 +40,13 @@ pub(in crate::fixups) use rewrite::{
 };
 pub(in crate::fixups) use rule::CallRule;
 pub(in crate::fixups) use stmt_window::{StmtWindowPlanBuilder, StmtWindowRule};
-use views::{AnonymousStructField, AnonymousStructPlan, LazySingletonPlan};
+use views::{
+    AnonymousStructField, AnonymousStructPlan, HeapOwnershipPlan, HeapOwnershipReallocPlan,
+    LazySingletonPlan,
+};
 pub(in crate::fixups) use views::{
     AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
     DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite,
-    LazySingletonSet, NulPosition, PointerMutability, ResolvedValue, StableExpr, StmtWindowSite,
-    Usage, ZeroGroupUsers, ZeroUsers,
+    HeapOwnershipPlanSet, LazySingletonSet, NulPosition, PointerMutability, ResolvedValue,
+    StableExpr, StmtWindowSite, Usage, ZeroGroupUsers, ZeroUsers,
 };

@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use crate::fixups::facts::{AstPath, BindingId, Purity};
+use crate::fixups::facts::{AstPath, BindingId, HeapOwnershipKind, HeapResizeKind, Purity};
 use crate::rust_ast::{Expr, Type};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -173,4 +173,35 @@ pub(super) struct LazySingletonPlan {
     pub(super) init_expr: Expr,
     pub(super) flag_item_index: usize,
     pub(super) flag_name: String,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct HeapOwnershipPlanSet {
+    pub(super) plans: Vec<HeapOwnershipPlan>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct HeapOwnershipPlan {
+    pub(super) pointer_name: String,
+    pub(super) kind: HeapOwnershipKind,
+    pub(super) pointer_stmt: Option<usize>,
+    pub(super) size_stmt: Option<usize>,
+    pub(super) allocation_stmt: Option<usize>,
+    pub(super) assign_stmt: Option<usize>,
+    pub(super) free_temp_stmt: Option<usize>,
+    pub(super) free_stmt: Option<usize>,
+    pub(super) reallocs: Vec<HeapOwnershipReallocPlan>,
+    pub(super) elem_ty: Type,
+    pub(super) init: Expr,
+    pub(super) count: Option<Expr>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct HeapOwnershipReallocPlan {
+    pub(super) source_temp_stmt: Option<usize>,
+    pub(super) size_stmt: Option<usize>,
+    pub(super) allocation_stmt: Option<usize>,
+    pub(super) assign_stmt: Option<usize>,
+    pub(super) resize: HeapResizeKind,
+    pub(super) count: Expr,
 }

@@ -9,7 +9,8 @@ use super::plan::{
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
     CaseRejection, Definition, DefinitionKind, DefinitionLocation, DefinitionSite, Evidence,
-    FunctionBodyRecipe, QueryContext, Rejection, RuleCaseIdentity, RuleIdentity,
+    FunctionBodyRecipe, HeapOwnershipPlanSet, QueryContext, Rejection, RuleCaseIdentity,
+    RuleIdentity,
 };
 
 type DefinitionCaseFn = for<'case, 'snapshot> fn(
@@ -86,6 +87,19 @@ impl DefinitionCaseContext<'_, '_> {
             ));
         };
         self.prove(self.query.zero_group_users(group)).map(drop)
+    }
+
+    pub(in crate::fixups) fn heap_ownership_plans(
+        &mut self,
+    ) -> Result<HeapOwnershipPlanSet, Rejection> {
+        self.prove(self.query.heap_ownership_plans(self.definition))
+    }
+
+    pub(in crate::fixups) fn function_body(&self) -> Vec<IndentStmt> {
+        match &self.query.snapshot_program().items[self.definition.location.item_index()] {
+            Item::Fn(function) => function.body.clone(),
+            _ => Vec::new(),
+        }
     }
 
     fn prove<T>(&mut self, result: super::QueryResult<T>) -> Result<T, Rejection> {

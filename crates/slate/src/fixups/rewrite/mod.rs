@@ -11,7 +11,6 @@ pub(super) mod drop_call_results;
 pub(super) mod final_returns;
 pub(super) mod for_continue;
 pub(super) mod goto;
-pub(super) mod heap_ownership;
 pub(super) mod inline_temps;
 pub(super) mod main_zero_exit;
 pub(super) mod nullable_pointer;
