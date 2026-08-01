@@ -6,7 +6,8 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, ConstValue, CountedLoopFact, EffectSubject, FixupFacts, FunctionId,
     HeapExtent, HeapOwnershipFact, HeapOwnershipKind, HeapReadSafety, NulTermination, PathSegment,
-    Purity, StringBufferKind, ValueSubject,
+    Purity, StringBufferFact, StringBufferKind, StringBufferProvenance, StringRecoveryCandidate,
+    ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
@@ -16,10 +17,11 @@ use crate::rust_ast::{
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ByteExtent, ByteRepresentation,
     ByteSource, ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, Evidence, EvidenceDetail, ExprSite, ExternFn, HeapOwnershipPlan,
+    DefinitionSite, Evidence, EvidenceDetail, ExprSite, ExternFn, Field, HeapOwnershipPlan,
     HeapOwnershipPlanSet, HeapOwnershipReallocPlan, LazySingletonPlan, LazySingletonSet,
     NulPosition, NullaryMethodCall, PointerMutability, Predicate, Proof, QueryResult, Rejection,
-    RejectionReason, ResolvedValue, StableExpr, StmtWindowSite, Usage, ZeroGroupUsers, ZeroUsers,
+    RejectionReason, ResolvedValue, StableExpr, StmtWindowSite, StringLiftPlan, StringLiftPlanSet,
+    Usage, ZeroGroupUsers, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -236,6 +238,41 @@ impl<'snapshot> QueryContext<'snapshot> {
             },
             Vec::new(),
         ))
+    }
+
+    pub(in crate::fixups) fn string_lift_plans(
+        &self,
+        definition: &DefinitionSite,
+        recovery: &Field<StringRecoveryCandidate>,
+    ) -> QueryResult<StringLiftPlanSet> {
+        let predicate = Predicate::StringLiftPlan;
+        let site = definition_evidence_site(definition);
+        let Some(function) = self
+            .facts
+            .function_by_item_index(definition.location.item_index())
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let plans = string_lift_plans_for_function(self.facts, function, recovery);
+        if plans.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::StringLiftPlan { plans: plans.len() },
+        }];
+        Ok(Proof::new(StringLiftPlanSet { plans }, evidence))
     }
 
     pub(in crate::fixups) fn has_anonymous_structs(&self) -> bool {
@@ -1463,6 +1500,116 @@ fn stmt_index(path: &AstPath) -> Option<usize> {
 
 fn previous_stmt_index(path: &AstPath) -> Option<usize> {
     stmt_index(path).and_then(|index| index.checked_sub(1))
+}
+
+fn string_lift_plans_for_function(
+    facts: &FixupFacts,
+    function: FunctionId,
+    recovery: &Field<StringRecoveryCandidate>,
+) -> Vec<StringLiftPlan> {
+    let mut plans = Vec::new();
+    for buffer in &facts.string_buffers {
+        if buffer.site.function != function {
+            continue;
+        }
+        let Some(name) = facts.binding_name(buffer.binding) else {
+            continue;
+        };
+        let Some(plan) = facts.string_lift_plans.iter().find(|plan| {
+            plan.site.function == function
+                && plan.binding == buffer.binding
+                && plan.site.path == buffer.site.path
+                && recovery.matches(&plan.recovery, &())
+        }) else {
+            continue;
+        };
+        let Some(lifted) = lifted_buffer(buffer, plan.recovery) else {
+            continue;
+        };
+        let remove_path = match &buffer.provenance {
+            StringBufferProvenance::Literal => None,
+            StringBufferProvenance::AssignedLiteral { .. } => plan
+                .remove_assignment
+                .as_ref()
+                .filter(|assignment| same_container(&buffer.site.path, assignment))
+                .cloned(),
+            _ => continue,
+        };
+        plans.push(StringLiftPlan {
+            path: buffer.site.path.clone(),
+            name: name.to_string(),
+            ty: lifted.ty,
+            expr: lifted.expr,
+            remove_path,
+        });
+    }
+    plans
+}
+
+fn same_container(declaration: &AstPath, assignment: &AstPath) -> bool {
+    let Some((PathSegment::Stmt(_), decl_parent)) = declaration.0.split_last() else {
+        return false;
+    };
+    let Some((PathSegment::Stmt(_), assignment_parent)) = assignment.0.split_last() else {
+        return false;
+    };
+    decl_parent == assignment_parent
+}
+
+struct LiftedBuffer {
+    ty: Type,
+    expr: Expr,
+}
+
+fn lifted_buffer(
+    buffer: &StringBufferFact,
+    recovery: StringRecoveryCandidate,
+) -> Option<LiftedBuffer> {
+    let bytes = buffer.bytes.clone()?;
+    if recovery == StringRecoveryCandidate::BorrowedStr {
+        let text = String::from_utf8(bytes).ok()?;
+        return Some(LiftedBuffer {
+            ty: str_ref_type(),
+            expr: Expr::Str(text),
+        });
+    }
+    if recovery == StringRecoveryCandidate::BorrowedBytes {
+        return Some(LiftedBuffer {
+            ty: byte_slice_ref_type(),
+            expr: Expr::ByteStr(bytes),
+        });
+    }
+    if recovery == StringRecoveryCandidate::BorrowedCStr {
+        if !buffer.ascii_only || buffer.interior_nul {
+            return None;
+        }
+        return Some(LiftedBuffer {
+            ty: cstr_ref_type(),
+            expr: Expr::CStr(bytes),
+        });
+    }
+    None
+}
+
+fn str_ref_type() -> Type {
+    Type::Ref {
+        mutable: false,
+        inner: Box::new(Type::Str),
+    }
+}
+
+fn byte_slice_ref_type() -> Type {
+    Type::Ref {
+        mutable: false,
+        inner: Box::new(Type::Slice(Box::new(Type::Prim(Prim::U8)))),
+    }
+}
+
+fn cstr_ref_type() -> Type {
+    Type::Ref {
+        mutable: false,
+        inner: Box::new(Type::Custom("core::ffi::CStr".into())),
+    }
 }
 
 fn definition_evidence_site(definition: &DefinitionSite) -> ExprSite {

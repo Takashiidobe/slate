@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+use crate::fixups::facts::StringRecoveryCandidate;
 use crate::fixups::trace::{Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact};
 use crate::rust_ast::{ExternDecl, IndentStmt, Item, Program};
 
@@ -8,9 +9,9 @@ use super::plan::{
 };
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    CaseRejection, Definition, DefinitionKind, DefinitionLocation, DefinitionSite, Evidence,
+    CaseRejection, Definition, DefinitionKind, DefinitionLocation, DefinitionSite, Evidence, Field,
     FunctionBodyRecipe, HeapOwnershipPlanSet, QueryContext, Rejection, RuleCaseIdentity,
-    RuleIdentity,
+    RuleIdentity, StringLiftPlanSet,
 };
 
 type DefinitionCaseFn = for<'case, 'snapshot> fn(
@@ -93,6 +94,13 @@ impl DefinitionCaseContext<'_, '_> {
         &mut self,
     ) -> Result<HeapOwnershipPlanSet, Rejection> {
         self.prove(self.query.heap_ownership_plans(self.definition))
+    }
+
+    pub(in crate::fixups) fn string_lift_plans(
+        &mut self,
+        recovery: &Field<StringRecoveryCandidate>,
+    ) -> Result<StringLiftPlanSet, Rejection> {
+        self.prove(self.query.string_lift_plans(self.definition, recovery))
     }
 
     pub(in crate::fixups) fn function_body(&self) -> Vec<IndentStmt> {

@@ -32,7 +32,7 @@ pub(in crate::fixups) use proof::{
 };
 pub(in crate::fixups) use recipe::{
     ExprRecipe, FunctionBodyRecipe, byte_position, known_index, memchr_fallback_body,
-    pointer_at_or_null, process_exit, rewrite_heap_ownership,
+    pointer_at_or_null, process_exit, rewrite_heap_ownership, rewrite_string_lift,
 };
 pub(in crate::fixups) use rewrite::{
     CaseRejection, ExprPlanBuilder, ExprRule, ReplaceExpr, RuleCase, RuleCaseIdentity,
@@ -42,11 +42,11 @@ pub(in crate::fixups) use rule::CallRule;
 pub(in crate::fixups) use stmt_window::{StmtWindowPlanBuilder, StmtWindowRule};
 use views::{
     AnonymousStructField, AnonymousStructPlan, HeapOwnershipPlan, HeapOwnershipReallocPlan,
-    LazySingletonPlan,
+    LazySingletonPlan, StringLiftPlan,
 };
 pub(in crate::fixups) use views::{
     AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
     DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite,
     HeapOwnershipPlanSet, LazySingletonSet, NulPosition, PointerMutability, ResolvedValue,
-    StableExpr, StmtWindowSite, Usage, ZeroGroupUsers, ZeroUsers,
+    StableExpr, StmtWindowSite, StringLiftPlanSet, Usage, ZeroGroupUsers, ZeroUsers,
 };

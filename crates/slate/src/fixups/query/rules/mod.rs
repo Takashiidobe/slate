@@ -7,4 +7,5 @@ pub(in crate::fixups) mod lazy_singleton;
 pub(in crate::fixups) mod libc_exit;
 pub(in crate::fixups) mod memchr;
 pub(in crate::fixups) mod range_loop;
+pub(in crate::fixups) mod string_lift;
 pub(in crate::fixups) mod support;
