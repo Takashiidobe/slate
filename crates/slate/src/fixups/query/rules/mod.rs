@@ -14,4 +14,5 @@ pub(in crate::fixups) mod range_loop;
 pub(in crate::fixups) mod string_lift;
 pub(in crate::fixups) mod support;
 pub(in crate::fixups) mod unnecessary_casts;
+pub(in crate::fixups) mod unused_items;
 pub(in crate::fixups) mod zero_init;

@@ -1,3 +1,4 @@
+use std::collections::BTreeSet;
 use std::marker::PhantomData;
 
 use crate::fixups::facts::{AstPath, BindingId, HeapOwnershipKind, HeapResizeKind, Purity};
@@ -47,6 +48,9 @@ pub(in crate::fixups) enum DefinitionKind {
     ExternFunction,
     ExternStatic,
     SupportModule,
+    Struct,
+    Record,
+    Enum,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -79,6 +83,11 @@ pub(in crate::fixups) struct ZeroUsers {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct ZeroGroupUsers {
     pub(in crate::fixups) group: DefinitionGroup,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct UnusedTypeDefinitionSet {
+    pub(super) doomed: BTreeSet<usize>,
 }
 
 #[derive(Debug, Clone)]

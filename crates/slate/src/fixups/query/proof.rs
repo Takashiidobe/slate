@@ -61,6 +61,7 @@ pub(in crate::fixups) enum Predicate {
     AllExprs,
     Cast,
     ZeroInit,
+    UnusedTypeDefinition,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -147,6 +148,9 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     ZeroInit {
         moved_decl: bool,
+    },
+    UnusedTypeDefinition {
+        doomed: usize,
     },
 }
 

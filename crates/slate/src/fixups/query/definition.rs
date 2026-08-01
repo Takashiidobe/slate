@@ -116,6 +116,21 @@ impl DefinitionCaseContext<'_, '_> {
         )
     }
 
+    pub(in crate::fixups) fn unused_type_definition(&mut self) -> Result<(), Rejection> {
+        let doomed = self.prove(self.query.unused_type_definitions())?;
+        let item_index = self.definition.location.item_index();
+        if doomed.doomed.contains(&item_index) {
+            Ok(())
+        } else {
+            Err(Rejection::new(
+                super::Predicate::UnusedTypeDefinition,
+                None,
+                super::RejectionReason::Contradicted,
+                self.evidence.clone(),
+            ))
+        }
+    }
+
     pub(in crate::fixups) fn function_body(&self) -> Vec<IndentStmt> {
         match &self.query.snapshot_program().items[self.definition.location.item_index()] {
             Item::Fn(function) => function.body.clone(),
@@ -378,12 +393,23 @@ fn missing_target(edit: PlannedEdit<DefinitionEdit>) -> PlanDiagnostic<Definitio
 }
 
 fn definition_matches(item: &Item, definition: &DefinitionSite) -> bool {
+    let item = unwrap_cfg(item);
     match (item, definition.kind) {
         (Item::Fn(function), DefinitionKind::Function) => function.name == definition.name,
         (Item::SupportModule(module), DefinitionKind::SupportModule) => {
             module.name.as_str() == definition.name
         }
+        (Item::Struct(def), DefinitionKind::Struct) => def.name == definition.name,
+        (Item::Record(def), DefinitionKind::Record) => def.name == definition.name,
+        (Item::Enum(def), DefinitionKind::Enum) => def.name == definition.name,
         _ => false,
+    }
+}
+
+fn unwrap_cfg(item: &Item) -> &Item {
+    match item {
+        Item::Cfg { item, .. } => unwrap_cfg(item),
+        _ => item,
     }
 }
 

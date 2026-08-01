@@ -47,7 +47,8 @@ pub(in crate::fixups) use value::{
 };
 use views::{
     AnonymousStructField, AnonymousStructPlan, ArrayElementPointerOrigin, BufferCursorPlan,
-    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan, ZeroInitPlan,
+    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan,
+    UnusedTypeDefinitionSet, ZeroInitPlan,
 };
 pub(in crate::fixups) use views::{
     AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,

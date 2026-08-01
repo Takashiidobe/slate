@@ -66,12 +66,21 @@ pub struct Function {
     pub layout_queries: Vec<LayoutQuery>,
     pub nonnull_static_params: BTreeSet<usize>,
     pub macro_consts: Vec<MacroConst>,
+    pub enum_consts: Vec<EnumConstRef>,
     pub asm_gotos: Vec<AsmGoto>,
 }
 
 #[derive(Debug, Clone)]
 pub struct MacroConst {
     pub name: String,
+    pub loc: Loc,
+}
+
+#[derive(Debug, Clone)]
+pub struct EnumConstRef {
+    pub enum_name: String,
+    pub constant_name: String,
+    pub value: i64,
     pub loc: Loc,
 }
 
@@ -492,6 +501,8 @@ fn parse_json_with_record_roots(
     let mut enum_typedefs = HashMap::new();
     collect_enum_typedefs(&root, &mut enum_typedefs);
     ENUM_TYPEDEFS.with(|table| *table.borrow_mut() = enum_typedefs.clone());
+    let mut enum_const_ids = HashMap::new();
+    collect_enum_const_ids(&root, &mut enum_const_ids);
     let mut enums = Vec::new();
     let mut records = Vec::new();
     let mut anonymous_header_records = Vec::new();
@@ -526,6 +537,7 @@ fn parse_json_with_record_roots(
         source_file,
         source_text.as_deref(),
         &plugin_events.macros,
+        &enum_const_ids,
         &mut functions,
     );
     collect_function_allocation_attributes(
@@ -588,6 +600,69 @@ fn collect_enum_typedefs(node: &Value, out: &mut HashMap<String, String>) {
     }
 }
 
+fn collect_enum_const_ids(node: &Value, out: &mut HashMap<String, (String, String, i64)>) {
+    if kind(node) == Some("EnumDecl") {
+        let tag = node.get("name").and_then(Value::as_str).unwrap_or("");
+        let enum_name = enum_rust_name(tag);
+        if !enum_name.is_empty() {
+            let mut next_value = 0;
+            for child in children(node) {
+                if kind(child) == Some("EnumConstantDecl")
+                    && let Some(name) = child.get("name").and_then(Value::as_str)
+                {
+                    let value = enum_constant_value(child).unwrap_or(next_value);
+                    next_value = value + 1;
+                    if let Some(id) = child.get("id").and_then(Value::as_str) {
+                        out.insert(id.to_string(), (enum_name.clone(), name.to_string(), value));
+                    }
+                }
+            }
+        }
+    }
+    for child in children(node) {
+        collect_enum_const_ids(child, out);
+    }
+}
+
+fn collect_enum_const_refs(
+    node: &Value,
+    source_text: Option<&str>,
+    enum_const_ids: &HashMap<String, (String, String, i64)>,
+) -> Vec<EnumConstRef> {
+    let mut out = Vec::new();
+    if let Some(source) = source_text {
+        collect_enum_const_refs_at(node, source, enum_const_ids, &mut out);
+    }
+    out
+}
+
+fn collect_enum_const_refs_at(
+    node: &Value,
+    source: &str,
+    enum_const_ids: &HashMap<String, (String, String, i64)>,
+    out: &mut Vec<EnumConstRef>,
+) {
+    if kind(node) == Some("DeclRefExpr")
+        && let Some(referenced) = node.get("referencedDecl")
+        && kind(referenced) == Some("EnumConstantDecl")
+        && let Some(id) = referenced.get("id").and_then(Value::as_str)
+        && let Some((enum_name, constant_name, value)) = enum_const_ids.get(id)
+        && let Some(offset) = expansion_offset(node)
+        && let Some(loc) = loc_from_offset(source, offset)
+    {
+        out.push(EnumConstRef {
+            enum_name: enum_name.clone(),
+            constant_name: constant_name.clone(),
+            value: *value,
+            loc,
+        });
+        return;
+    }
+    for child in children(node) {
+        collect_enum_const_refs_at(child, source, enum_const_ids, out);
+    }
+}
+
 fn collect_enums(
     node: &Value,
     source_file: &str,
@@ -613,16 +688,24 @@ fn collect_functions(
     source_file: &str,
     source_text: Option<&str>,
     macro_events: &HashMap<usize, MacroExpansion>,
+    enum_const_ids: &HashMap<String, (String, String, i64)>,
     out: &mut Vec<Function>,
 ) {
     if kind(node) == Some("FunctionDecl") && is_source_node(node, source_file) && has_body(node) {
-        if let Some(function) = extract_function(node, source_text, macro_events) {
+        if let Some(function) = extract_function(node, source_text, macro_events, enum_const_ids) {
             out.push(function);
         }
         return;
     }
     for child in children(node) {
-        collect_functions(child, source_file, source_text, macro_events, out);
+        collect_functions(
+            child,
+            source_file,
+            source_text,
+            macro_events,
+            enum_const_ids,
+            out,
+        );
     }
 }
 
@@ -1031,6 +1114,7 @@ fn extract_function(
     node: &Value,
     source_text: Option<&str>,
     macro_events: &HashMap<usize, MacroExpansion>,
+    enum_const_ids: &HashMap<String, (String, String, i64)>,
 ) -> Option<Function> {
     let name = node.get("name")?.as_str()?.to_string();
     let fn_qual_type = qual_type(node).unwrap_or("int ()");
@@ -1075,6 +1159,7 @@ fn extract_function(
         layout_queries: collect_layout_queries(node, source_text),
         nonnull_static_params,
         macro_consts: collect_macro_consts(node, source_text, macro_events),
+        enum_consts: collect_enum_const_refs(node, source_text, enum_const_ids),
         asm_gotos: collect_asm_gotos(node, source_text),
     })
 }
