@@ -4,8 +4,9 @@ use crate::fixups::facts::{HeapOwnershipKind, HeapResizeKind, PathSegment};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::query::{
     ByteRepresentation, ByteSource, HeapOwnershipPlan, HeapOwnershipPlanSet,
-    HeapOwnershipReallocPlan, NulPosition, PointerMutability, Predicate, QueryContext, Rejection,
-    RejectionReason, StableExpr, StringLiftPlan, StringLiftPlanSet, default_value,
+    HeapOwnershipReallocPlan, InlineTempPlan, NulPosition, PointerMutability, Predicate,
+    QueryContext, Rejection, RejectionReason, StableExpr, StringLiftPlan, StringLiftPlanSet,
+    default_value,
 };
 use crate::fixups::support::walk;
 use crate::function_identity::{Known, known_call};
@@ -936,5 +937,82 @@ fn rewrite_pointer_view_expr(expr: &mut Expr, name: &str) -> bool {
             false
         }
         _ => true,
+    }
+}
+
+pub(in crate::fixups) fn rewrite_inline_temp(
+    body: Vec<IndentStmt>,
+    plan: InlineTempPlan,
+) -> FunctionBodyRecipe {
+    let mut body = body;
+    let (def_container, def_index) = split_stmt_path(&plan.def_path.0);
+    let (use_container, use_index) = split_stmt_path(&plan.use_path.0);
+    if let (Some((def_container, def_index)), Some((use_container, use_index))) =
+        (def_container.zip(def_index), use_container.zip(use_index))
+        && def_container == use_container
+        && let Some(container) = navigate_container_mut(&mut body, def_container)
+    {
+        if let Some(use_stmt) = container.get_mut(use_index) {
+            use_stmt.stmt.substitute_var(&plan.name, &plan.init);
+        }
+        if def_index < container.len() {
+            container.remove(def_index);
+        }
+    }
+    FunctionBodyRecipe { body }
+}
+
+fn split_stmt_path(path: &[PathSegment]) -> (Option<&[PathSegment]>, Option<usize>) {
+    match path.split_last() {
+        Some((PathSegment::Stmt(index), container)) => (Some(container), Some(*index)),
+        _ => (None, None),
+    }
+}
+
+fn navigate_container_mut<'a>(
+    body: &'a mut Vec<IndentStmt>,
+    path: &[PathSegment],
+) -> Option<&'a mut Vec<IndentStmt>> {
+    let [PathSegment::Stmt(index), rest @ ..] = path else {
+        return Some(body);
+    };
+    if rest.is_empty() {
+        return Some(body);
+    }
+    let stmt = &mut body.get_mut(*index)?.stmt;
+    match (stmt, rest) {
+        (
+            Stmt::If { then_body, .. } | Stmt::LetIf { then_body, .. },
+            [PathSegment::Then, rest @ ..],
+        ) => navigate_container_mut(then_body, rest),
+        (
+            Stmt::If { else_body, .. } | Stmt::LetIf { else_body, .. },
+            [PathSegment::Else, rest @ ..],
+        ) => navigate_container_mut(else_body, rest),
+        (Stmt::Loop { body, .. }, [PathSegment::LoopBody, rest @ ..]) => {
+            navigate_container_mut(body, rest)
+        }
+        (Stmt::For { body, .. }, [PathSegment::ForBody, rest @ ..]) => {
+            navigate_container_mut(body, rest)
+        }
+        (Stmt::Scope { body }, [PathSegment::ScopeBody, rest @ ..]) => {
+            navigate_container_mut(body, rest)
+        }
+        (Stmt::LabeledBlock { body, .. }, [PathSegment::LabeledBody, rest @ ..]) => {
+            navigate_container_mut(body, rest)
+        }
+        (Stmt::Unsafe { body }, [PathSegment::UnsafeBody, rest @ ..]) => {
+            navigate_container_mut(&mut body.stmts, rest)
+        }
+        (Stmt::While { body, .. }, [PathSegment::WhileBody, rest @ ..]) => {
+            navigate_container_mut(&mut body.stmts, rest)
+        }
+        (Stmt::Block(body), [PathSegment::BlockBody, rest @ ..]) => {
+            navigate_container_mut(&mut body.stmts, rest)
+        }
+        (Stmt::Match { arms, .. }, [PathSegment::MatchArm(index), rest @ ..]) => {
+            navigate_container_mut(&mut arms.get_mut(*index)?.body, rest)
+        }
+        _ => None,
     }
 }
