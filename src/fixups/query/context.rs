@@ -13,8 +13,9 @@ use crate::fixups::idents::{expr_ident, expr_ident_count, stmt_ident_count};
 use crate::fixups::support::walk as support_walk;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
-    Attr, BinOp, Block, Expr, ExternDecl, Ident, ImplItem, IndentStmt, Item, Prim, Program,
-    RustValue, Stmt, Type, UnaryOp, Visibility,
+    Attr, BinOp, Block, Expr, ExternDecl, FnDef, FnParam, GenericParam, Ident, ImplBlock, ImplItem,
+    IndentStmt, Item, MatchArm, Method, Pattern, Prim, Program, RecordDef, RustValue, Stmt,
+    StructDef, StructFields, TraitBound, Type, UnaryOp, Visibility,
 };
 
 use super::{
@@ -24,8 +25,8 @@ use super::{
     EvidenceDetail, ExprSite, ExternFn, HeapOwnershipPlan, HeapOwnershipPlanSet,
     HeapOwnershipReallocPlan, InlineTempPlan, LazySingletonPlan, LazySingletonSet, NulPosition,
     NullaryMethodCall, Phase, PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet,
-    QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr, StmtWindowSite, Usage,
-    ValueSite, ZeroGroupUsers, ZeroInitPlan, ZeroUsers,
+    QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr, StmtWindowSite,
+    UnusedTypeDefinitionSet, Usage, ValueSite, ZeroGroupUsers, ZeroInitPlan, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -560,6 +561,30 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn all_definitions(&self) -> impl Iterator<Item = &DefinitionSite> {
         self.definitions.values().flatten()
+    }
+
+    fn unused_item_candidates(&self) -> BTreeMap<usize, UnusedItemCandidate> {
+        self.all_definitions()
+            .filter(|site| {
+                matches!(
+                    site.kind,
+                    DefinitionKind::Struct | DefinitionKind::Record | DefinitionKind::Enum
+                )
+            })
+            .filter_map(|site| {
+                let item_index = site.location.item_index();
+                let item = self.program.items.get(item_index)?;
+                let (variants, refs) = unused_item_variants_and_refs(unwrap_cfg(item))?;
+                Some((
+                    item_index,
+                    UnusedItemCandidate {
+                        name: site.name.clone(),
+                        variants,
+                        refs,
+                    },
+                ))
+            })
+            .collect()
     }
 
     pub(in crate::fixups) fn definitions_in_group(
@@ -1680,6 +1705,44 @@ query_cache! {
             evidence,
         ))
     }
+
+    fn unused_type_definitions(&self) -> QueryResult<UnusedTypeDefinitionSet>;
+    key: () = ();
+    {
+        let predicate = Predicate::UnusedTypeDefinition;
+        let site = expression_site(0, &[]);
+        let candidates = self.unused_item_candidates();
+        let mut live = BTreeSet::new();
+        for (index, item) in self.program.items.iter().enumerate() {
+            if candidates.contains_key(&index) {
+                continue;
+            }
+            unused_item_mark_refs(&unused_item_refs(item), &candidates, &mut live);
+        }
+        let mut pending: Vec<usize> = live.iter().copied().collect();
+        while let Some(index) = pending.pop() {
+            let before = live.len();
+            if let Some(candidate) = candidates.get(&index) {
+                unused_item_mark_refs(&candidate.refs, &candidates, &mut live);
+            }
+            if live.len() != before {
+                pending = live.iter().copied().collect();
+            }
+        }
+        let doomed: BTreeSet<usize> = candidates
+            .keys()
+            .copied()
+            .filter(|index| !live.contains(index))
+            .collect();
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::UnusedTypeDefinition {
+                doomed: doomed.len(),
+            },
+        }];
+        Ok(Proof::new(UnusedTypeDefinitionSet { doomed }, evidence))
+    }
 }
 
 fn collect_array_element_pointer_aliases(
@@ -2477,7 +2540,534 @@ fn index_definitions(
                 .or_default()
                 .push(site);
         }
+        Item::Struct(def) => {
+            if !attrs_have_used(&def.attrs) {
+                push_type_definition(definitions, item_index, DefinitionKind::Struct, &def.name);
+            }
+        }
+        Item::Record(def) => {
+            push_type_definition(definitions, item_index, DefinitionKind::Record, &def.name);
+        }
+        Item::Enum(def) => {
+            if !attrs_have_used(&def.attrs) {
+                push_type_definition(definitions, item_index, DefinitionKind::Enum, &def.name);
+            }
+        }
+        Item::Cfg { item, .. } => index_definitions(item, item_index, definitions),
         _ => {}
+    }
+}
+
+fn push_type_definition(
+    definitions: &mut BTreeMap<DefinitionSelector, Vec<DefinitionSite>>,
+    item_index: usize,
+    kind: DefinitionKind,
+    name: &str,
+) {
+    let site = DefinitionSite {
+        location: DefinitionLocation::Item(item_index),
+        kind,
+        name: name.to_string(),
+        symbols: vec![name.to_string()],
+        group: None,
+        externally_reachable: false,
+    };
+    definitions
+        .entry(DefinitionSelector {
+            kind: site.kind,
+            name: site.name.clone(),
+        })
+        .or_default()
+        .push(site);
+}
+
+fn attrs_have_used(attrs: &[Attr]) -> bool {
+    attrs.iter().any(|attr| matches!(attr, Attr::Used(_)))
+}
+
+fn unwrap_cfg(item: &Item) -> &Item {
+    match item {
+        Item::Cfg { item, .. } => unwrap_cfg(item),
+        _ => item,
+    }
+}
+
+struct UnusedItemCandidate {
+    name: String,
+    variants: BTreeSet<String>,
+    refs: BTreeSet<String>,
+}
+
+fn unused_item_variants_and_refs(item: &Item) -> Option<(BTreeSet<String>, BTreeSet<String>)> {
+    match item {
+        Item::Enum(def) => Some((
+            def.variants
+                .iter()
+                .map(|variant| variant.name.clone())
+                .collect(),
+            BTreeSet::new(),
+        )),
+        Item::Record(def) => Some((BTreeSet::new(), unused_item_record_refs(def))),
+        Item::Struct(def) => Some((BTreeSet::new(), unused_item_struct_refs(def))),
+        _ => None,
+    }
+}
+
+fn unused_item_mark_refs(
+    refs: &BTreeSet<String>,
+    candidates: &BTreeMap<usize, UnusedItemCandidate>,
+    live: &mut BTreeSet<usize>,
+) {
+    for referenced in refs {
+        for (index, candidate) in candidates {
+            if referenced == &candidate.name || candidate.variants.contains(referenced) {
+                live.insert(*index);
+            }
+        }
+    }
+}
+
+fn unused_item_refs(item: &Item) -> BTreeSet<String> {
+    let mut refs = BTreeSet::new();
+    unused_item_collect_item_refs(item, &mut refs);
+    refs
+}
+
+fn unused_item_collect_item_refs(item: &Item, refs: &mut BTreeSet<String>) {
+    match item {
+        Item::Fn(f) => unused_item_fn_refs(f, refs),
+        Item::Static { ty, init, .. } => {
+            unused_item_collect_type_refs(ty, refs);
+            unused_item_collect_expr_refs(init, refs);
+        }
+        Item::Const { ty, init, .. } => {
+            unused_item_collect_type_refs(ty, refs);
+            unused_item_collect_expr_refs(init, refs);
+        }
+        Item::ExternBlock { decls, .. } => {
+            for decl in decls {
+                match decl {
+                    ExternDecl::Fn(f) => {
+                        for param in &f.params {
+                            unused_item_fn_param_refs(param, refs);
+                        }
+                        if let Some(ret) = &f.ret {
+                            unused_item_collect_type_refs(ret, refs);
+                        }
+                    }
+                    ExternDecl::Static { ty, .. } => unused_item_collect_type_refs(ty, refs),
+                }
+            }
+        }
+        Item::Struct(def) => unused_item_collect_struct_refs(def, refs),
+        Item::Record(def) => unused_item_collect_record_refs(def, refs),
+        Item::Impl(block) => unused_item_impl_refs(block, refs),
+        Item::Cfg { item, .. } => unused_item_collect_item_refs(item, refs),
+        Item::Use { path } => {
+            for segment in &path.segments {
+                refs.insert(segment.as_str().to_owned());
+            }
+        }
+        Item::Enum(_)
+        | Item::Macro { .. }
+        | Item::Comment(_)
+        | Item::CrateAttrs(_)
+        | Item::Mod { .. }
+        | Item::SupportModule(_) => {}
+    }
+}
+
+fn unused_item_fn_refs(f: &FnDef, refs: &mut BTreeSet<String>) {
+    for param in &f.params {
+        unused_item_fn_param_refs(param, refs);
+    }
+    if let Some(ret) = &f.ret {
+        unused_item_collect_type_refs(ret, refs);
+    }
+    unused_item_collect_body_refs(&f.body, refs);
+}
+
+fn unused_item_fn_param_refs(param: &FnParam, refs: &mut BTreeSet<String>) {
+    unused_item_collect_type_refs(&param.ty, refs);
+}
+
+fn unused_item_impl_refs(block: &ImplBlock, refs: &mut BTreeSet<String>) {
+    for param in &block.generics {
+        unused_item_generic_param_refs(param, refs);
+    }
+    unused_item_collect_type_refs(&block.self_ty, refs);
+    for item in &block.items {
+        match item {
+            ImplItem::AssocType { ty, .. } => unused_item_collect_type_refs(ty, refs),
+            ImplItem::Method(method) => unused_item_method_refs(method, refs),
+        }
+    }
+}
+
+fn unused_item_method_refs(method: &Method, refs: &mut BTreeSet<String>) {
+    for param in &method.params {
+        unused_item_fn_param_refs(param, refs);
+    }
+    if let Some(ret) = &method.ret {
+        unused_item_collect_type_refs(ret, refs);
+    }
+    unused_item_collect_expr_refs(&method.body, refs);
+}
+
+fn unused_item_generic_param_refs(param: &GenericParam, refs: &mut BTreeSet<String>) {
+    for bound in &param.bounds {
+        unused_item_trait_bound_refs(bound, refs);
+    }
+}
+
+fn unused_item_trait_bound_refs(bound: &TraitBound, refs: &mut BTreeSet<String>) {
+    for (_, ty) in &bound.assoc {
+        unused_item_collect_type_refs(ty, refs);
+    }
+}
+
+fn unused_item_struct_refs(def: &StructDef) -> BTreeSet<String> {
+    let mut refs = BTreeSet::new();
+    unused_item_collect_struct_refs(def, &mut refs);
+    refs
+}
+
+fn unused_item_collect_struct_refs(def: &StructDef, refs: &mut BTreeSet<String>) {
+    for param in &def.generics {
+        unused_item_generic_param_refs(param, refs);
+    }
+    match &def.fields {
+        StructFields::Tuple(fields) => {
+            for ty in fields {
+                unused_item_collect_type_refs(ty, refs);
+            }
+        }
+        StructFields::Named(fields) => {
+            for (_, ty) in fields {
+                unused_item_collect_type_refs(ty, refs);
+            }
+        }
+    }
+}
+
+fn unused_item_record_refs(def: &RecordDef) -> BTreeSet<String> {
+    let mut refs = BTreeSet::new();
+    unused_item_collect_record_refs(def, &mut refs);
+    refs
+}
+
+fn unused_item_collect_record_refs(def: &RecordDef, refs: &mut BTreeSet<String>) {
+    for field in &def.fields {
+        unused_item_collect_type_refs(&field.ty, refs);
+    }
+}
+
+fn unused_item_collect_body_refs(body: &[IndentStmt], refs: &mut BTreeSet<String>) {
+    for indent in body {
+        unused_item_collect_stmt_refs(&indent.stmt, refs);
+    }
+}
+
+fn unused_item_collect_block_refs(block: &Block, refs: &mut BTreeSet<String>) {
+    unused_item_collect_body_refs(&block.stmts, refs);
+    if let Some(tail) = &block.tail {
+        unused_item_collect_expr_refs(tail, refs);
+    }
+}
+
+fn unused_item_collect_stmt_refs(stmt: &Stmt, refs: &mut BTreeSet<String>) {
+    match stmt {
+        Stmt::Let { ty, init, .. } => {
+            if let Some(ty) = ty {
+                unused_item_collect_type_refs(ty, refs);
+            }
+            if let Some(init) = init {
+                unused_item_collect_expr_refs(init, refs);
+            }
+        }
+        Stmt::LetIf {
+            ty,
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            if let Some(ty) = ty {
+                unused_item_collect_type_refs(ty, refs);
+            }
+            unused_item_collect_expr_refs(cond, refs);
+            unused_item_collect_body_refs(then_body, refs);
+            unused_item_collect_expr_refs(then_value, refs);
+            unused_item_collect_body_refs(else_body, refs);
+            unused_item_collect_expr_refs(else_value, refs);
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            unused_item_collect_expr_refs(target, refs);
+            unused_item_collect_expr_refs(value, refs);
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => unused_item_collect_expr_refs(expr, refs),
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+        Stmt::Unsafe { body } | Stmt::Block(body) => unused_item_collect_block_refs(body, refs),
+        Stmt::While { cond, body } => {
+            unused_item_collect_expr_refs(cond, refs);
+            unused_item_collect_block_refs(body, refs);
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            unused_item_collect_expr_refs(cond, refs);
+            unused_item_collect_body_refs(then_body, refs);
+            unused_item_collect_body_refs(else_body, refs);
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            unused_item_collect_body_refs(body, refs)
+        }
+        Stmt::For { iter, body, .. } => {
+            unused_item_collect_expr_refs(iter, refs);
+            unused_item_collect_body_refs(body, refs);
+        }
+        Stmt::Match { expr, arms } => {
+            unused_item_collect_expr_refs(expr, refs);
+            for arm in arms {
+                unused_item_collect_match_arm_refs(arm, refs);
+            }
+        }
+        Stmt::InlineAsm(_) => {}
+    }
+}
+
+fn unused_item_collect_match_arm_refs(arm: &MatchArm, refs: &mut BTreeSet<String>) {
+    unused_item_collect_pattern_refs(&arm.pattern, refs);
+    unused_item_collect_body_refs(&arm.body, refs);
+}
+
+fn unused_item_collect_pattern_refs(pattern: &Pattern, refs: &mut BTreeSet<String>) {
+    match pattern {
+        Pattern::TupleStruct { name, fields } => {
+            refs.insert(name.as_str().to_owned());
+            for field in fields {
+                unused_item_collect_pattern_refs(field, refs);
+            }
+        }
+        Pattern::Wildcard
+        | Pattern::Binding(_)
+        | Pattern::I64(_)
+        | Pattern::I128(_)
+        | Pattern::U128(_)
+        | Pattern::InclusiveRange { .. } => {}
+    }
+}
+
+fn unused_item_collect_expr_refs(expr: &Expr, refs: &mut BTreeSet<String>) {
+    match expr {
+        Expr::Var(name) => {
+            refs.insert(name.as_str().to_owned());
+            unused_item_collect_layout_call_type_ref(name.as_str(), refs);
+        }
+        Expr::Path(path) => {
+            for segment in &path.segments {
+                refs.insert(segment.as_str().to_owned());
+            }
+        }
+        Expr::Unary { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Closure { body: expr, .. }
+        | Expr::AtomicNew { value: expr, .. } => unused_item_collect_expr_refs(expr, refs),
+        Expr::Cast { expr, ty } => {
+            unused_item_collect_expr_refs(expr, refs);
+            unused_item_collect_type_refs(ty, refs);
+        }
+        Expr::Transmute { from, to, expr } => {
+            unused_item_collect_type_refs(from, refs);
+            unused_item_collect_type_refs(to, refs);
+            unused_item_collect_expr_refs(expr, refs);
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => unused_item_collect_block_refs(block, refs),
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            if let Some(ptr) = place.ptr_expr() {
+                unused_item_collect_expr_refs(ptr, refs);
+            }
+        }
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            if let Some(ptr) = place.ptr_expr() {
+                unused_item_collect_expr_refs(ptr, refs);
+            }
+            unused_item_collect_expr_refs(value, refs);
+        }
+        Expr::AtomicCompareExchange {
+            place,
+            expected,
+            desired,
+            ..
+        } => {
+            if let Some(ptr) = place.ptr_expr() {
+                unused_item_collect_expr_refs(ptr, refs);
+            }
+            unused_item_collect_expr_refs(expected, refs);
+            unused_item_collect_expr_refs(desired, refs);
+        }
+        Expr::Binary { lhs, rhs, .. }
+        | Expr::Range {
+            start: lhs,
+            end: rhs,
+        }
+        | Expr::Index {
+            base: lhs,
+            index: rhs,
+        } => {
+            unused_item_collect_expr_refs(lhs, refs);
+            unused_item_collect_expr_refs(rhs, refs);
+        }
+        Expr::Call { func, args, .. } => {
+            unused_item_collect_expr_refs(func, refs);
+            for arg in args {
+                unused_item_collect_expr_refs(arg, refs);
+            }
+        }
+        Expr::MethodCall { recv, args, .. } => {
+            unused_item_collect_expr_refs(recv, refs);
+            for arg in args {
+                unused_item_collect_expr_refs(arg, refs);
+            }
+        }
+        Expr::MethodCallGeneric {
+            recv,
+            type_args,
+            args,
+            ..
+        } => {
+            unused_item_collect_expr_refs(recv, refs);
+            for ty in type_args {
+                unused_item_collect_type_refs(ty, refs);
+            }
+            for arg in args {
+                unused_item_collect_expr_refs(arg, refs);
+            }
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => unused_item_collect_expr_refs(base, refs),
+        Expr::StructLit { name, fields } => {
+            refs.insert(name.clone());
+            for (_, value) in fields {
+                unused_item_collect_expr_refs(value, refs);
+            }
+        }
+        Expr::TupleStructLit { name, fields } => {
+            refs.insert(name.clone());
+            for value in fields {
+                unused_item_collect_expr_refs(value, refs);
+            }
+        }
+        Expr::ArrayLit(elems) | Expr::VecLit(elems) => {
+            for elem in elems {
+                unused_item_collect_expr_refs(elem, refs);
+            }
+        }
+        Expr::ArrayRepeat { elem, .. } => unused_item_collect_expr_refs(elem, refs),
+        Expr::VecRepeat { elem, len } => {
+            unused_item_collect_expr_refs(elem, refs);
+            unused_item_collect_expr_refs(len, refs);
+        }
+        Expr::Macro { name, args } => {
+            refs.insert(name.clone());
+            for arg in args {
+                unused_item_collect_expr_refs(arg, refs);
+            }
+        }
+        Expr::Match { expr, arms } => {
+            unused_item_collect_expr_refs(expr, refs);
+            for arm in arms {
+                unused_item_collect_pattern_refs(&arm.pattern, refs);
+                unused_item_collect_expr_refs(&arm.value, refs);
+            }
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            unused_item_collect_expr_refs(cond, refs);
+            unused_item_collect_expr_refs(then_expr, refs);
+            unused_item_collect_expr_refs(else_expr, refs);
+        }
+        Expr::CopyNonoverlapping { src, dst, .. } => {
+            unused_item_collect_expr_refs(src, refs);
+            unused_item_collect_expr_refs(dst, refs);
+        }
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => {
+            unused_item_collect_expr_refs(src, refs);
+            unused_item_collect_expr_refs(dst, refs);
+            unused_item_collect_expr_refs(count, refs);
+        }
+        Expr::WriteBytes { dst, val, count } => {
+            unused_item_collect_expr_refs(dst, refs);
+            unused_item_collect_expr_refs(val, refs);
+            unused_item_collect_expr_refs(count, refs);
+        }
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::CStr(_)
+        | Expr::Todo(_)
+        | Expr::AtomicFence { .. } => {}
+    }
+}
+
+fn unused_item_collect_layout_call_type_ref(name: &str, refs: &mut BTreeSet<String>) {
+    let Some(ty) = name
+        .strip_prefix("std::mem::size_of::<")
+        .or_else(|| name.strip_prefix("std::mem::align_of::<"))
+        .and_then(|rest| rest.strip_suffix('>'))
+    else {
+        return;
+    };
+    refs.insert(ty.to_string());
+}
+
+fn unused_item_collect_type_refs(ty: &Type, refs: &mut BTreeSet<String>) {
+    match ty {
+        Type::Custom(name) => {
+            refs.insert(name.clone());
+        }
+        Type::TyVar(name) => {
+            refs.insert(name.as_str().to_owned());
+        }
+        Type::Generic { name, args } => {
+            refs.insert(name.clone());
+            for arg in args {
+                unused_item_collect_type_refs(arg, refs);
+            }
+        }
+        Type::Complex(inner)
+        | Type::Slice(inner)
+        | Type::Ptr { inner, .. }
+        | Type::Ref { inner, .. } => unused_item_collect_type_refs(inner, refs),
+        Type::Array { elem, .. } => unused_item_collect_type_refs(elem, refs),
+        Type::FnPtr { params, ret, .. } => {
+            for param in params {
+                unused_item_collect_type_refs(param, refs);
+            }
+            unused_item_collect_type_refs(ret, refs);
+        }
+        Type::Prim(_)
+        | Type::LongDouble
+        | Type::CLib(_)
+        | Type::VaList
+        | Type::Str
+        | Type::Unit
+        | Type::Variadic
+        | Type::Never => {}
     }
 }
 

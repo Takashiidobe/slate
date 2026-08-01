@@ -389,6 +389,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::AllExprs => "all_exprs",
         Predicate::Cast => "cast",
         Predicate::ZeroInit => "zero_init",
+        Predicate::UnusedTypeDefinition => "unused_type_definition",
     }
 }
 
@@ -471,6 +472,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::AllExprs { count } => format!("count={count}"),
         EvidenceDetail::Cast { to } => format!("to={to:?}"),
         EvidenceDetail::ZeroInit { moved_decl } => format!("moved_decl={moved_decl}"),
+        EvidenceDetail::UnusedTypeDefinition { doomed } => format!("doomed={doomed}"),
     }
 }
 

@@ -66,9 +66,13 @@ Structs and unions, including GNU zero-sized empty structs and nested aggregates
 (structs of structs/arrays, arrays of structs), member/element access composed into a single Rust place
 (`b.data[i]`, `ps[i].x`), struct assignment via derived `Copy`, bitfields
 (per-field mask/sign-extend storage), and aggregate initializers (nested,
-partial with zero-filled trailing fields, and designated). Enum constants
-lower to Rust integer `const` items. C11 `_Alignas` on aggregate members and
-local objects preserves the strengthened type or object alignment.
+partial with zero-filled trailing fields, and designated). Enum constant
+references are re-symbolized back to `Enum::Variant` (cast to the expected
+integer type) rather than left as the bare integer ClangIR folds them to,
+using the same source-location provenance technique as macro constants; a
+`enum` declaration with no remaining reference anywhere is pruned as dead
+code. C11 `_Alignas` on aggregate members and local objects preserves the
+strengthened type or object alignment.
 
 ### Pointers and arrays
 

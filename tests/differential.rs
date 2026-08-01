@@ -388,8 +388,8 @@ fn atomic_temp_allocas_forward_instead_of_shadowed_locals() {
         "{rust}"
     );
     assert!(!rust.contains(".is_ok()"));
-    assert!(rust.contains("enum memory_order"));
-    assert!(rust.contains("struct atomic_flag"));
+    assert!(!rust.contains("enum memory_order"));
+    assert!(!rust.contains("struct atomic_flag"));
 }
 
 #[test]
@@ -2050,7 +2050,7 @@ fn preserves_documentation_comments_on_enums() {
 }
 
 #[test]
-fn preserves_enum_declaration_when_variants_are_folded() {
+fn preserves_enum_variant_names_instead_of_folded_constants() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-enums");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
     let c_src = fixtures_dir().join("enums.c");
@@ -2062,7 +2062,47 @@ fn preserves_enum_declaration_when_variants_are_folded() {
     assert!(rust.contains("enum Basic"));
     assert!(rust.contains("BasicFive = 5"));
     assert!(rust.contains("BasicNegative = -2"));
-    assert!(rust.contains("println!(\"{}\", 5);"));
+    assert!(rust.contains("Basic::BasicZero as i32"));
+    assert!(rust.contains("Basic::BasicOne as i32"));
+    assert!(rust.contains("Basic::BasicFive as i32"));
+    assert!(rust.contains("Basic::BasicSix as i32"));
+    assert!(rust.contains("Basic::BasicNegative as i32"));
+    assert!(rust.contains("Basic::BasicNegativeNext as i32"));
+    assert!(!rust.contains("println!(\"{}\", 5);"));
+}
+
+#[test]
+fn unused_type_definitions_are_pruned_but_reachable_ones_survive() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-unused-items");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("unused_items.c");
+    let generated = tmp.join("unused_items.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate unused_items fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated unused_items rust");
+
+    assert!(!rust.contains("totally_unused"));
+    assert!(!rust.contains("linked_a"));
+    assert!(!rust.contains("linked_b"));
+    assert!(!rust.contains("truly_dead"));
+    assert!(rust.contains("enum color"));
+    assert!(rust.contains("color::GREEN as u32"));
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg("--debug-only-pass")
+        .arg("unused_items")
+        .arg(&c_src)
+        .output()
+        .expect("run unused_items query trace");
+    assert!(
+        output.status.success(),
+        "fixup-debug failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
+    assert!(stdout.contains("query_rule=prune_unused_type_definition"));
+    assert!(stdout.contains("evidence.unused_type_definition=doomed=4"));
 }
 
 #[test]

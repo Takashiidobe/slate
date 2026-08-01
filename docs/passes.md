@@ -146,7 +146,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 48. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint, per function, across the program (`to_fixpoint_items`).
 49. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches - to fixpoint, per function, across the program (`to_fixpoint_items`).
 50. `libc_exit` - query known direct `libc::exit` calls and rewrite them as `std::process::exit` when the matching one-argument, never-returning extern declaration is proven.
-51. `unused_items` - remove dead top-level items - once, program-wide (`run_once_program`).
+51. `unused_items` - remove dead top-level struct/record/enum definitions, via mark-and-sweep reachability over a query definition plan - once, program-wide.
 52. `unused_params` - drop a function parameter that's never read in its body and rewrite every direct call site to match, once the function's only references are direct-by-name calls whose argument at that slot is pure and whose type can't own a destructor - to fixpoint.
 53. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function - once, per function.
 54. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.

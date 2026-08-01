@@ -1,6 +1,6 @@
 //! lower: combine the CIR Op-tree with the C AST oracle into Rust output.
 
-use crate::c_ast::{LayoutQuery, Loc, MacroConst, RecordKind, Unit};
+use crate::c_ast::{EnumConstRef, LayoutQuery, Loc, MacroConst, RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::function_identity::{CallBinding, FunctionIdentity};
@@ -351,6 +351,11 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .iter()
             .map(|function| (function.name.clone(), function.macro_consts.clone()))
             .collect(),
+        enum_consts: c
+            .functions
+            .iter()
+            .map(|function| (function.name.clone(), function.enum_consts.clone()))
+            .collect(),
         asm_gotos: c
             .functions
             .iter()
@@ -698,6 +703,7 @@ struct Lowerer<'a> {
     nonnull_static_params: BTreeMap<String, BTreeSet<usize>>,
     returned_value_metadata: BTreeMap<String, ValueMetadata>,
     macro_consts: BTreeMap<String, Vec<MacroConst>>,
+    enum_consts: BTreeMap<String, Vec<EnumConstRef>>,
     asm_gotos: BTreeMap<String, Vec<crate::c_ast::AsmGoto>>,
 }
 
@@ -730,6 +736,7 @@ struct FunctionLowerer<'a, 'b> {
     va_args_param: Option<String>,
     layout_queries: VecDeque<LayoutQuery>,
     macro_consts: VecDeque<MacroConst>,
+    enum_consts: VecDeque<EnumConstRef>,
     macro_arith_values: BTreeMap<String, i128>,
     asm_outputs: BTreeMap<String, Vec<Expr>>,
     asm_gotos: VecDeque<crate::c_ast::AsmGoto>,
@@ -1784,6 +1791,12 @@ impl<'a> Lowerer<'a> {
             .cloned()
             .unwrap_or_default()
             .into();
+        let enum_consts: VecDeque<_> = self
+            .enum_consts
+            .get(name)
+            .cloned()
+            .unwrap_or_default()
+            .into();
         let asm_gotos: VecDeque<_> = self.asm_gotos.get(name).cloned().unwrap_or_default().into();
         let mut f = FunctionLowerer {
             parent: self,
@@ -1814,6 +1827,7 @@ impl<'a> Lowerer<'a> {
             va_args_param,
             layout_queries,
             macro_consts,
+            enum_consts,
             macro_arith_values: BTreeMap::new(),
             asm_outputs: BTreeMap::new(),
             asm_gotos,
@@ -3333,6 +3347,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, expr, result_ty);
             return;
         }
+        if let Some(value) = parse_cir_int(raw)
+            && let Some(expr) = self.next_enum_const_expr(op, value, result_ty)
+        {
+            self.materialize_expr(result, expr, result_ty);
+            return;
+        }
         if let Some(value) = parse_cir_const_vector(raw) {
             self.materialize_expr(result, value, result_ty);
             return;
@@ -3424,6 +3444,38 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         self.macro_consts.pop_front();
         let mut expr = Expr::Var(rust_path.into());
+        if let Some(result_ty) = result_ty {
+            expr = Expr::Cast {
+                expr: Box::new(expr),
+                ty: self.parent.rust_type(result_ty),
+            };
+        }
+        Some(expr)
+    }
+
+    fn next_enum_const_expr(
+        &mut self,
+        op: &Op,
+        value: i128,
+        result_ty: Option<&str>,
+    ) -> Option<Expr> {
+        let enum_const = self.enum_consts.front()?;
+        if enum_const.value as i128 != value {
+            return None;
+        }
+        if op
+            .loc
+            .as_deref()
+            .and_then(|raw| self.parent.resolve_loc(raw))
+            != Some(enum_const.loc)
+        {
+            return None;
+        }
+        let enum_const = self.enum_consts.pop_front()?;
+        let mut expr = Expr::Path(Path::new([
+            sanitize_ident(&enum_const.enum_name),
+            sanitize_ident(&enum_const.constant_name),
+        ]));
         if let Some(result_ty) = result_ty {
             expr = Expr::Cast {
                 expr: Box::new(expr),

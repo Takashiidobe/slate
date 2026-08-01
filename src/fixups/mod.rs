@@ -824,10 +824,16 @@ fn apply_with_logger(
         report.changed
     });
     step!(program, Pass::UnusedItems, {
-        run_once_program(&mut program, |program| {
-            rewrite::unused_items::UnusedItems::new(logger).fixup(program)
-        });
-        incremental.mark_everything_dirty();
+        let facts = incremental.resolve(&program);
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::DefinitionPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::unused_items::rewrite());
+            builder.finish()
+        };
+        let report = plan.apply(&mut program, logger);
+        incremental.mark_touched(&report.touched);
+        report.changed
     });
     step!(program, Pass::UnusedParams, {
         to_fixpoint_program(&mut program, |program| {
