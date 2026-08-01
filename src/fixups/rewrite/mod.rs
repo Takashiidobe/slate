@@ -1,6 +1,5 @@
 pub(super) mod atomic_compare_exchange;
 pub(super) mod atomic_locals;
-pub(super) mod buffer_cursor;
 pub(super) mod c_strings;
 pub(super) mod call_args;
 pub(super) mod compound_assign;

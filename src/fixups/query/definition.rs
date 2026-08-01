@@ -8,9 +8,9 @@ use super::plan::{
 };
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    CaseRejection, Definition, DefinitionKind, DefinitionLocation, DefinitionSite, Evidence,
-    FunctionBodyRecipe, HeapOwnershipPlanSet, InlineTempPlan, Phase, QueryContext, Rejection,
-    RuleCaseIdentity, RuleIdentity,
+    BufferCursorPlan, CaseRejection, Definition, DefinitionKind, DefinitionLocation,
+    DefinitionSite, Evidence, FunctionBodyRecipe, HeapOwnershipPlanSet, InlineTempPlan, Phase,
+    QueryContext, Rejection, RuleCaseIdentity, RuleIdentity,
 };
 
 type DefinitionCaseFn = for<'case, 'snapshot> fn(
@@ -100,6 +100,10 @@ impl DefinitionCaseContext<'_, '_> {
         phase: Phase,
     ) -> Result<InlineTempPlan, Rejection> {
         self.prove(self.query.inline_temp_candidate(self.definition, phase))
+    }
+
+    pub(in crate::fixups) fn buffer_cursor_plan(&mut self) -> Result<BufferCursorPlan, Rejection> {
+        self.prove(self.query.buffer_cursor_rewrite(self.definition))
     }
 
     pub(in crate::fixups) fn function_body(&self) -> Vec<IndentStmt> {

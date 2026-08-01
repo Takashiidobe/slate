@@ -400,9 +400,9 @@ impl PassInvocation {
         let status = if self.changed { "changed" } else { "skipped" };
         format!(
             "{status}; stmts {:+}, temp_lets {:+}, items {:+}",
-            self.after.stmts - self.before.stmts,
-            self.after.temp_lets - self.before.temp_lets,
-            self.after.items - self.before.items
+            self.after.stmts as i64 - self.before.stmts as i64,
+            self.after.temp_lets as i64 - self.before.temp_lets as i64,
+            self.after.items as i64 - self.before.items as i64
         )
     }
 }

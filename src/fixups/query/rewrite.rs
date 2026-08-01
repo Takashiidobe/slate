@@ -379,6 +379,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::ReadPath => "read_path",
         Predicate::NoEffects => "no_effects",
         Predicate::ArrayElementPointerOrigin => "array_element_pointer_origin",
+        Predicate::BufferCursor => "buffer_cursor",
         Predicate::HeapOwnershipPlan => "heap_ownership_plan",
         Predicate::PtrLenSlice => "ptr_len_slice",
         Predicate::InlineTemp => "inline_temp",
@@ -456,6 +457,9 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::NoEffects => "no_effects".into(),
         EvidenceDetail::ArrayElementPointerOrigin { origins } => {
             format!("origins={origins}")
+        }
+        EvidenceDetail::BufferCursor { arrays, buffers } => {
+            format!("arrays={arrays};buffers={buffers}")
         }
         EvidenceDetail::HeapOwnershipPlan { plans } => format!("plans={plans}"),
         EvidenceDetail::PtrLenSlice { plans } => format!("plans={plans}"),

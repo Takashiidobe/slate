@@ -848,6 +848,40 @@ fn address_of_array_elements_use_safe_indexes() {
 }
 
 #[test]
+fn buffer_cursor_writes_collapse_to_array_indexing() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-buffer-cursor");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_src = fixtures_dir().join("buffer_cursor.c");
+    let generated = tmp.join("buffer_cursor.generated.rs");
+    support::translate(&c_src, &generated).expect("translate buffer_cursor fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated buffer_cursor rust");
+
+    assert!(rust.contains("values[1] + values[3]"));
+    assert!(rust.contains("3 - 1"));
+    assert!(!rust.contains("c.ptr"));
+    assert!(!rust.contains("d.ptr"));
+    assert!(!rust.contains(".offset_from("));
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg("--debug-only-pass")
+        .arg("buffer_cursor")
+        .arg(&c_src)
+        .output()
+        .expect("run buffer_cursor query trace");
+    assert!(
+        output.status.success(),
+        "fixup-debug failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
+    assert!(stdout.contains("query_rule=rewrite_buffer_cursor"));
+    assert!(stdout.contains("query_case=resolved"));
+    assert!(stdout.contains("evidence.buffer_cursor=arrays=1;buffers=2"));
+}
+
+#[test]
 fn redundant_singleton_scopes_are_unwrapped() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-singleton-scopes");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
