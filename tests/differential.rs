@@ -840,11 +840,10 @@ fn address_of_array_elements_use_safe_indexes() {
     );
     let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
     assert!(stdout.contains("query_rule=rewrite_array_element_pointer_origins"));
-    assert!(stdout.contains("query_case=known_origins"));
-    assert!(stdout.contains("evidence.array_element_pointer_origin=origins=3"));
-    assert!(
-        stdout
-            .contains("rejected_case.known_origins=array_element_pointer_origin:unsupported_shape")
+    assert_eq!(
+        stdout.matches("query_case=known_origin").count(),
+        3,
+        "expected one known_origin match per pointer (p, q, _v8):\n{stdout}"
     );
 }
 

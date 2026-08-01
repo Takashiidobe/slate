@@ -158,6 +158,12 @@ pub(in crate::fixups) struct StmtWindowSite {
     pub(in crate::fixups) end: usize,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(in crate::fixups) struct ValueSite {
+    pub(in crate::fixups) item_index: usize,
+    pub(in crate::fixups) path: AstPath,
+}
+
 #[derive(Debug, Clone)]
 pub(in crate::fixups) struct LazySingletonSet {
     pub(super) singletons: Vec<LazySingletonPlan>,
@@ -181,15 +187,10 @@ pub(in crate::fixups) struct HeapOwnershipPlanSet {
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct ArrayElementPointerOriginSet {
-    pub(super) origins: Vec<ArrayElementPointerOrigin>,
-}
-
-#[derive(Debug, Clone)]
-pub(super) struct ArrayElementPointerOrigin {
-    pub(super) pointer_name: String,
-    pub(super) base_name: String,
-    pub(super) index: Expr,
+pub(in crate::fixups) struct ArrayElementPointerOrigin {
+    pub(in crate::fixups) pointer_name: String,
+    pub(in crate::fixups) base_name: String,
+    pub(in crate::fixups) index: Expr,
 }
 
 #[derive(Debug, Clone)]
@@ -216,20 +217,6 @@ pub(super) struct HeapOwnershipReallocPlan {
     pub(super) assign_stmt: Option<usize>,
     pub(super) resize: HeapResizeKind,
     pub(super) count: Expr,
-}
-
-#[derive(Debug, Clone)]
-pub(in crate::fixups) struct StringLiftPlanSet {
-    pub(super) plans: Vec<StringLiftPlan>,
-}
-
-#[derive(Debug, Clone)]
-pub(super) struct StringLiftPlan {
-    pub(super) path: AstPath,
-    pub(super) name: String,
-    pub(super) ty: Type,
-    pub(super) expr: Expr,
-    pub(super) remove_path: Option<AstPath>,
 }
 
 #[derive(Debug, Clone)]

@@ -11,6 +11,7 @@ mod rewrite;
 mod rule;
 pub(in crate::fixups) mod rules;
 mod stmt_window;
+mod value;
 mod views;
 
 use context::default_value;
@@ -32,8 +33,7 @@ pub(in crate::fixups) use proof::{
 };
 pub(in crate::fixups) use recipe::{
     ExprRecipe, FunctionBodyRecipe, byte_position, known_index, memchr_fallback_body,
-    pointer_at_or_null, process_exit, rewrite_array_element_pointer_origins,
-    rewrite_heap_ownership, rewrite_inline_temp, rewrite_string_lift,
+    pointer_at_or_null, process_exit, rewrite_heap_ownership, rewrite_inline_temp,
 };
 pub(in crate::fixups) use rewrite::{
     CaseRejection, ExprPlanBuilder, ExprRule, ReplaceExpr, RuleCase, RuleCaseIdentity,
@@ -41,14 +41,17 @@ pub(in crate::fixups) use rewrite::{
 };
 pub(in crate::fixups) use rule::CallRule;
 pub(in crate::fixups) use stmt_window::{StmtWindowPlanBuilder, StmtWindowRule};
+pub(in crate::fixups) use value::{
+    ValueCaseContext, ValueEdit, ValuePlanBuilder, ValueRule, same_container,
+};
 use views::{
     AnonymousStructField, AnonymousStructPlan, ArrayElementPointerOrigin, HeapOwnershipPlan,
-    HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan, StringLiftPlan,
+    HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan,
 };
 pub(in crate::fixups) use views::{
-    AnonymousStructSet, ArrayElementPointerOriginSet, ByteExtent, ByteRepresentation, ByteSource,
-    ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, ExprSite, HeapOwnershipPlanSet, InlineTempPlan, LazySingletonSet, NulPosition,
-    Phase, PointerMutability, PtrLenPlanSet, ResolvedValue, StableExpr, StmtWindowSite,
-    StringLiftPlanSet, Usage, ZeroGroupUsers, ZeroUsers,
+    AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
+    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite,
+    HeapOwnershipPlanSet, InlineTempPlan, LazySingletonSet, NulPosition, Phase, PointerMutability,
+    PtrLenPlanSet, ResolvedValue, StableExpr, StmtWindowSite, Usage, ValueSite, ZeroGroupUsers,
+    ZeroUsers,
 };

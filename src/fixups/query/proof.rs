@@ -51,9 +51,12 @@ pub(in crate::fixups) enum Predicate {
     NoEffects,
     ArrayElementPointerOrigin,
     HeapOwnershipPlan,
-    StringLiftPlan,
     PtrLenSlice,
     InlineTemp,
+    ValueGuard,
+    StringBuffer,
+    StringUse,
+    AllExprs,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -116,14 +119,20 @@ pub(in crate::fixups) enum EvidenceDetail {
     HeapOwnershipPlan {
         plans: usize,
     },
-    StringLiftPlan {
-        plans: usize,
-    },
     PtrLenSlice {
         plans: usize,
     },
     InlineTemp {
         name: String,
+    },
+    StringBuffer {
+        bytes: usize,
+    },
+    StringUse {
+        allowed: bool,
+    },
+    AllExprs {
+        count: usize,
     },
 }
 
