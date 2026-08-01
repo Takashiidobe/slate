@@ -1,6 +1,5 @@
 use std::collections::BTreeMap;
 
-use crate::fixups::facts::StringRecoveryCandidate;
 use crate::fixups::trace::{Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact};
 use crate::rust_ast::{ExternDecl, IndentStmt, Item, Program};
 
@@ -9,10 +8,9 @@ use super::plan::{
 };
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    ArrayElementPointerOriginSet, CaseRejection, Definition, DefinitionKind, DefinitionLocation,
-    DefinitionSite, Evidence, Field, FunctionBodyRecipe, HeapOwnershipPlanSet, InlineTempPlan,
-    Phase, Predicate, QueryContext, Rejection, RejectionReason, RuleCaseIdentity, RuleIdentity,
-    StringLiftPlanSet,
+    CaseRejection, Definition, DefinitionKind, DefinitionLocation, DefinitionSite, Evidence,
+    FunctionBodyRecipe, HeapOwnershipPlanSet, InlineTempPlan, Phase, QueryContext, Rejection,
+    RuleCaseIdentity, RuleIdentity,
 };
 
 type DefinitionCaseFn = for<'case, 'snapshot> fn(
@@ -95,28 +93,6 @@ impl DefinitionCaseContext<'_, '_> {
         &mut self,
     ) -> Result<HeapOwnershipPlanSet, Rejection> {
         self.prove(self.query.heap_ownership_plans(self.definition))
-    }
-
-    pub(in crate::fixups) fn array_element_pointer_origins(
-        &mut self,
-    ) -> Result<ArrayElementPointerOriginSet, Rejection> {
-        self.prove(self.query.array_element_pointer_origins(self.definition))
-    }
-
-    pub(in crate::fixups) fn unsupported_array_element_pointer_origin(&self) -> Rejection {
-        Rejection::new(
-            Predicate::ArrayElementPointerOrigin,
-            None,
-            RejectionReason::UnsupportedShape,
-            self.evidence.clone(),
-        )
-    }
-
-    pub(in crate::fixups) fn string_lift_plans(
-        &mut self,
-        recovery: &Field<StringRecoveryCandidate>,
-    ) -> Result<StringLiftPlanSet, Rejection> {
-        self.prove(self.query.string_lift_plans(self.definition, recovery))
     }
 
     pub(in crate::fixups) fn inline_temp_candidate(

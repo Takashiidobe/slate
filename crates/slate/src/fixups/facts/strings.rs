@@ -542,7 +542,7 @@ fn binding_uses_under(
     uses
 }
 
-fn use_allowed(
+pub(super) fn use_allowed(
     function: FunctionId,
     use_path: &AstPath,
     facts: &FixupFacts,

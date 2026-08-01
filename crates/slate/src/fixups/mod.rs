@@ -391,11 +391,11 @@ fn apply_with_logger(
     step!(program, Pass::StringLift, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::DefinitionPlanBuilder::new();
+            let mut builder = query::ValuePlanBuilder::new();
             builder.add_rule(&query, &query::rules::string_lift::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
     });
     step!(program, Pass::StringParams, {
@@ -659,11 +659,11 @@ fn apply_with_logger(
     step!(program, Pass::StringLiftFixupCStrings, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::DefinitionPlanBuilder::new();
+            let mut builder = query::ValuePlanBuilder::new();
             builder.add_rule(&query, &query::rules::string_lift::rewrite_c_strings());
             builder.finish()
         };
-        let report = plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
     });
     step!(program, Pass::MemchrPrelude, {
@@ -721,14 +721,14 @@ fn apply_with_logger(
     step!(program, Pass::ArrayElementPointerOrigin, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::DefinitionPlanBuilder::new();
+            let mut builder = query::ValuePlanBuilder::new();
             builder.add_rule(
                 &query,
                 &query::rules::array_element_pointer_origin::rewrite(),
             );
             builder.finish()
         };
-        let report = plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);

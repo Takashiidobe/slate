@@ -1496,6 +1496,29 @@ impl FixupFacts {
             .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
+    pub(super) fn string_use_allowed(
+        &self,
+        function: FunctionId,
+        use_path: &AstPath,
+        binding: BindingId,
+        recovery: StringRecoveryCandidate,
+        liftable: &BTreeSet<BindingId>,
+    ) -> bool {
+        strings::use_allowed(function, use_path, self, binding, recovery, liftable)
+    }
+
+    pub(super) fn liftable_string_bindings(
+        &self,
+        function: FunctionId,
+        recovery: StringRecoveryCandidate,
+    ) -> BTreeSet<BindingId> {
+        self.string_lift_plans
+            .iter()
+            .filter(|plan| plan.site.function == function && plan.recovery == recovery)
+            .map(|plan| plan.binding)
+            .collect()
+    }
+
     pub(super) fn string_libc_use(
         &self,
         function: FunctionId,

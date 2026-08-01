@@ -7,7 +7,7 @@ use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, ConstValue, CountedLoopFact, EffectKind, EffectSubject,
     FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind, HeapReadSafety,
     NulTermination, PathSegment, PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind,
-    StringBufferProvenance, StringRecoveryCandidate, ValueSubject,
+    StringRecoveryCandidate, ValueSubject,
 };
 use crate::fixups::idents::expr_ident_count;
 use crate::fixups::support::walk as support_walk;
@@ -19,13 +19,12 @@ use crate::rust_ast::{
 
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
-    ArrayElementPointerOriginSet, ByteExtent, ByteRepresentation, ByteSource, ByteView,
-    DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite,
-    Evidence, EvidenceDetail, ExprSite, ExternFn, Field, HeapOwnershipPlan, HeapOwnershipPlanSet,
-    HeapOwnershipReallocPlan, InlineTempPlan, LazySingletonPlan, LazySingletonSet, NulPosition,
-    NullaryMethodCall, Phase, PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet,
-    QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr, StmtWindowSite,
-    StringLiftPlan, StringLiftPlanSet, Usage, ZeroGroupUsers, ZeroUsers,
+    ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup, DefinitionKind,
+    DefinitionLocation, DefinitionSelector, DefinitionSite, Evidence, EvidenceDetail, ExprSite,
+    ExternFn, HeapOwnershipPlan, HeapOwnershipPlanSet, HeapOwnershipReallocPlan, InlineTempPlan,
+    LazySingletonPlan, LazySingletonSet, NulPosition, NullaryMethodCall, Phase, PointerMutability,
+    Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, Rejection, RejectionReason,
+    ResolvedValue, StableExpr, StmtWindowSite, Usage, ValueSite, ZeroGroupUsers, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -172,17 +171,29 @@ impl<'snapshot> QueryContext<'snapshot> {
         window: &StmtWindowSite,
         name: &str,
     ) -> ResolvedValue {
-        let Some(function) = self.facts.function_by_item_index(window.item_index) else {
+        let mut def_path = window.path.0.clone();
+        def_path.push(PathSegment::Stmt(window.start));
+        self.resolved_value_at(window.item_index, &AstPath(def_path), name)
+    }
+
+    pub(in crate::fixups) fn value_local(&self, site: &ValueSite, name: &str) -> ResolvedValue {
+        self.resolved_value_at(site.item_index, &site.path, name)
+    }
+
+    fn resolved_value_at(
+        &self,
+        item_index: usize,
+        def_path: &AstPath,
+        name: &str,
+    ) -> ResolvedValue {
+        let Some(function) = self.facts.function_by_item_index(item_index) else {
             return ResolvedValue {
                 ty: None,
                 usage: None,
                 purity: None,
             };
         };
-        let mut def_path = window.path.0.clone();
-        def_path.push(PathSegment::Stmt(window.start));
-        let def_path = AstPath(def_path);
-        let binding = self.facts.binding_by_local_path(function, name, &def_path);
+        let binding = self.facts.binding_by_local_path(function, name, def_path);
         let ty = binding.and_then(|binding| self.facts.binding_type_ast(binding).cloned());
         let usage = binding
             .and_then(|binding| self.facts.def_use(binding))
@@ -192,7 +203,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             });
         let purity = self
             .facts
-            .effect(function, EffectSubject::Expr, &def_path)
+            .effect(function, EffectSubject::Expr, def_path)
             .map(|effect| effect.purity);
         ResolvedValue { ty, usage, purity }
     }
@@ -244,39 +255,235 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn string_lift_plans(
-        &self,
-        definition: &DefinitionSite,
-        recovery: &Field<StringRecoveryCandidate>,
-    ) -> QueryResult<StringLiftPlanSet> {
-        let predicate = Predicate::StringLiftPlan;
-        let site = definition_evidence_site(definition);
-        let Some(function) = self
-            .facts
-            .function_by_item_index(definition.location.item_index())
-        else {
+    pub(in crate::fixups) fn all_exprs(&self, item_index: usize) -> QueryResult<Vec<ExprSite>> {
+        let predicate = Predicate::AllExprs;
+        let evidence_site = expression_site(item_index, &[]);
+        let Some(Item::Fn(function)) = self.program.items.get(item_index) else {
             return Err(Rejection::new(
                 predicate,
-                Some(site),
+                Some(evidence_site),
                 RejectionReason::MissingEvidence,
                 Vec::new(),
             ));
         };
-        let plans = string_lift_plans_for_function(self.facts, function, recovery);
-        if plans.is_empty() {
+        let mut sites = Vec::new();
+        walk::body_exprs_with_path(&function.body, &mut Vec::new(), &mut |_, path| {
+            sites.push(expression_site(item_index, path));
+        });
+        let evidence = vec![Evidence {
+            predicate,
+            site: evidence_site,
+            detail: EvidenceDetail::AllExprs { count: sites.len() },
+        }];
+        Ok(Proof::new(sites, evidence))
+    }
+
+    pub(in crate::fixups) fn string_buffer(
+        &self,
+        site: &ValueSite,
+    ) -> QueryResult<StringBufferFact> {
+        let predicate = Predicate::StringBuffer;
+        let evidence_site = expression_site(site.item_index, &site.path.0);
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
-                Some(site),
+                Some(evidence_site),
                 RejectionReason::MissingEvidence,
                 Vec::new(),
             ));
-        }
+        };
+        let Some(buffer) = self.facts.string_buffer_at(function, &site.path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
         let evidence = vec![Evidence {
             predicate,
-            site,
-            detail: EvidenceDetail::StringLiftPlan { plans: plans.len() },
+            site: evidence_site,
+            detail: EvidenceDetail::StringBuffer {
+                bytes: buffer.bytes.as_ref().map_or(0, Vec::len),
+            },
         }];
-        Ok(Proof::new(StringLiftPlanSet { plans }, evidence))
+        Ok(Proof::new(buffer.clone(), evidence))
+    }
+
+    pub(in crate::fixups) fn value_uses(
+        &self,
+        site: &ValueSite,
+        name: &str,
+    ) -> QueryResult<Vec<ExprSite>> {
+        let predicate = Predicate::ReadPath;
+        let evidence_site = expression_site(site.item_index, &site.path.0);
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(binding) = self.facts.binding_by_local_path(function, name, &site.path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let sites = self
+            .facts
+            .def_use(binding)
+            .map(|uses| {
+                uses.reads
+                    .iter()
+                    .chain(uses.writes.iter())
+                    .map(|path| expression_site(site.item_index, &path.0))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let evidence = vec![Evidence {
+            predicate,
+            site: evidence_site,
+            detail: EvidenceDetail::Binding {
+                name: name.to_string(),
+            },
+        }];
+        Ok(Proof::new(sites, evidence))
+    }
+
+    pub(in crate::fixups) fn string_pointer_view_sites(
+        &self,
+        site: &ValueSite,
+        name: &str,
+    ) -> QueryResult<Vec<ExprSite>> {
+        let predicate = Predicate::ReadPath;
+        let evidence_site = expression_site(site.item_index, &site.path.0);
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(binding) = self.facts.binding_by_local_path(function, name, &site.path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let sites = self
+            .facts
+            .string_pointer_views
+            .iter()
+            .filter(|view| view.site.function == function && view.source == binding)
+            .map(|view| expression_site(site.item_index, &view.site.path.0))
+            .collect();
+        let evidence = vec![Evidence {
+            predicate,
+            site: evidence_site,
+            detail: EvidenceDetail::Binding {
+                name: name.to_string(),
+            },
+        }];
+        Ok(Proof::new(sites, evidence))
+    }
+
+    pub(in crate::fixups) fn string_use_allows_lift(
+        &self,
+        site: &ValueSite,
+        name: &str,
+        use_site: &ExprSite,
+        recovery: StringRecoveryCandidate,
+    ) -> QueryResult<bool> {
+        let predicate = Predicate::StringUse;
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(use_site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(binding) = self.facts.binding_by_local_path(function, name, &site.path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(use_site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let liftable = self.facts.liftable_string_bindings(function, recovery);
+        let allowed =
+            self.facts
+                .string_use_allowed(function, &use_site.path, binding, recovery, &liftable);
+        let evidence = vec![Evidence {
+            predicate,
+            site: use_site.clone(),
+            detail: EvidenceDetail::StringUse { allowed },
+        }];
+        Ok(Proof::new(allowed, evidence))
+    }
+
+    pub(in crate::fixups) fn pointer_origin(
+        &self,
+        site: &ValueSite,
+        name: &str,
+    ) -> QueryResult<ArrayElementPointerOrigin> {
+        let predicate = Predicate::ArrayElementPointerOrigin;
+        let evidence_site = expression_site(site.item_index, &site.path.0);
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let mut origins = self
+            .facts
+            .array_element_pointer_origins
+            .iter()
+            .filter(|fact| fact.site.function == function)
+            .filter_map(|fact| {
+                Some((
+                    self.facts.binding_name(fact.pointer)?.to_string(),
+                    ArrayElementPointerOrigin {
+                        pointer_name: self.facts.binding_name(fact.pointer)?.to_string(),
+                        base_name: self.facts.binding_name(fact.base)?.to_string(),
+                        index: fact.index.clone(),
+                    },
+                ))
+            })
+            .collect::<BTreeMap<_, _>>();
+        let Item::Fn(function_item) = &self.program.items[site.item_index] else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        collect_array_element_pointer_aliases(&function_item.body, &mut origins);
+        let Some(origin) = origins.remove(name) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let evidence = vec![Evidence {
+            predicate,
+            site: evidence_site,
+            detail: EvidenceDetail::ArrayElementPointerOrigin { origins: 1 },
+        }];
+        Ok(Proof::new(origin, evidence))
     }
 
     pub(in crate::fixups) fn has_anonymous_structs(&self) -> bool {
@@ -1230,74 +1437,6 @@ query_cache! {
         Ok(Proof::new(HeapOwnershipPlanSet { plans }, evidence))
     }
 
-    fn array_element_pointer_origins(
-        &self,
-        definition: &DefinitionSite
-    ) -> QueryResult<ArrayElementPointerOriginSet>;
-    key: DefinitionLocation = definition.location.clone();
-    {
-        let predicate = Predicate::ArrayElementPointerOrigin;
-        let site = definition_evidence_site(definition);
-        let Some(function) = self
-            .facts
-            .function_by_item_index(definition.location.item_index())
-        else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let mut origins = self
-            .facts
-            .array_element_pointer_origins
-            .iter()
-            .filter(|fact| fact.site.function == function)
-            .filter_map(|fact| {
-                Some((
-                    self.facts.binding_name(fact.pointer)?.to_string(),
-                    ArrayElementPointerOrigin {
-                        pointer_name: self.facts.binding_name(fact.pointer)?.to_string(),
-                        base_name: self.facts.binding_name(fact.base)?.to_string(),
-                        index: fact.index.clone(),
-                    },
-                ))
-            })
-            .collect::<BTreeMap<_, _>>();
-        if origins.is_empty() {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        }
-        let Item::Fn(function_item) = &self.program.items[definition.location.item_index()]
-        else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        collect_array_element_pointer_aliases(&function_item.body, &mut origins);
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::ArrayElementPointerOrigin {
-                origins: origins.len(),
-            },
-        }];
-        Ok(Proof::new(
-            ArrayElementPointerOriginSet {
-                origins: origins.into_values().collect(),
-            },
-            evidence,
-        ))
-    }
-
     fn ptr_len_slices(&self) -> QueryResult<PtrLenPlanSet>;
     key: () = ();
     {
@@ -1735,116 +1874,6 @@ fn stmt_index(path: &AstPath) -> Option<usize> {
 
 fn previous_stmt_index(path: &AstPath) -> Option<usize> {
     stmt_index(path).and_then(|index| index.checked_sub(1))
-}
-
-fn string_lift_plans_for_function(
-    facts: &FixupFacts,
-    function: FunctionId,
-    recovery: &Field<StringRecoveryCandidate>,
-) -> Vec<StringLiftPlan> {
-    let mut plans = Vec::new();
-    for buffer in &facts.string_buffers {
-        if buffer.site.function != function {
-            continue;
-        }
-        let Some(name) = facts.binding_name(buffer.binding) else {
-            continue;
-        };
-        let Some(plan) = facts.string_lift_plans.iter().find(|plan| {
-            plan.site.function == function
-                && plan.binding == buffer.binding
-                && plan.site.path == buffer.site.path
-                && recovery.matches(&plan.recovery, &())
-        }) else {
-            continue;
-        };
-        let Some(lifted) = lifted_buffer(buffer, plan.recovery) else {
-            continue;
-        };
-        let remove_path = match &buffer.provenance {
-            StringBufferProvenance::Literal => None,
-            StringBufferProvenance::AssignedLiteral { .. } => plan
-                .remove_assignment
-                .as_ref()
-                .filter(|assignment| same_container(&buffer.site.path, assignment))
-                .cloned(),
-            _ => continue,
-        };
-        plans.push(StringLiftPlan {
-            path: buffer.site.path.clone(),
-            name: name.to_string(),
-            ty: lifted.ty,
-            expr: lifted.expr,
-            remove_path,
-        });
-    }
-    plans
-}
-
-fn same_container(declaration: &AstPath, assignment: &AstPath) -> bool {
-    let Some((PathSegment::Stmt(_), decl_parent)) = declaration.0.split_last() else {
-        return false;
-    };
-    let Some((PathSegment::Stmt(_), assignment_parent)) = assignment.0.split_last() else {
-        return false;
-    };
-    decl_parent == assignment_parent
-}
-
-struct LiftedBuffer {
-    ty: Type,
-    expr: Expr,
-}
-
-fn lifted_buffer(
-    buffer: &StringBufferFact,
-    recovery: StringRecoveryCandidate,
-) -> Option<LiftedBuffer> {
-    let bytes = buffer.bytes.clone()?;
-    if recovery == StringRecoveryCandidate::BorrowedStr {
-        let text = String::from_utf8(bytes).ok()?;
-        return Some(LiftedBuffer {
-            ty: str_ref_type(),
-            expr: Expr::Str(text),
-        });
-    }
-    if recovery == StringRecoveryCandidate::BorrowedBytes {
-        return Some(LiftedBuffer {
-            ty: byte_slice_ref_type(),
-            expr: Expr::ByteStr(bytes),
-        });
-    }
-    if recovery == StringRecoveryCandidate::BorrowedCStr {
-        if !buffer.ascii_only || buffer.interior_nul {
-            return None;
-        }
-        return Some(LiftedBuffer {
-            ty: cstr_ref_type(),
-            expr: Expr::CStr(bytes),
-        });
-    }
-    None
-}
-
-fn str_ref_type() -> Type {
-    Type::Ref {
-        mutable: false,
-        inner: Box::new(Type::Str),
-    }
-}
-
-fn byte_slice_ref_type() -> Type {
-    Type::Ref {
-        mutable: false,
-        inner: Box::new(Type::Slice(Box::new(Type::Prim(Prim::U8)))),
-    }
-}
-
-fn cstr_ref_type() -> Type {
-    Type::Ref {
-        mutable: false,
-        inner: Box::new(Type::Custom("core::ffi::CStr".into())),
-    }
 }
 
 #[derive(Clone, Copy)]
