@@ -62,6 +62,7 @@ pub(in crate::fixups) enum Predicate {
     Cast,
     ZeroInit,
     UnusedTypeDefinition,
+    UnusedParam,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -151,6 +152,11 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     UnusedTypeDefinition {
         doomed: usize,
+    },
+    UnusedParam {
+        function: String,
+        param: String,
+        param_index: usize,
     },
 }
 

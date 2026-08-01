@@ -27,6 +27,7 @@ pub(in crate::fixups) use plan::TouchedItems;
 pub(in crate::fixups) use program::{ProgramPlanBuilder, ProgramRule};
 pub(in crate::fixups) use program_recipe::{
     ProgramRecipe, rewrite_anonymous_structs, rewrite_lazy_singletons, rewrite_ptr_len,
+    rewrite_unused_param,
 };
 pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
@@ -47,8 +48,8 @@ pub(in crate::fixups) use value::{
 };
 use views::{
     AnonymousStructField, AnonymousStructPlan, ArrayElementPointerOrigin, BufferCursorPlan,
-    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan,
-    UnusedTypeDefinitionSet, ZeroInitPlan,
+    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, ParamSite, PtrLenPlan,
+    UnusedParamPlan, UnusedTypeDefinitionSet, ZeroInitPlan,
 };
 pub(in crate::fixups) use views::{
     AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,

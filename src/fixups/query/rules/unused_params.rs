@@ -1,89 +1,58 @@
-use crate::fixups::idents::stmt_ident_count;
-use crate::fixups::support::walk::{body_expr_any, body_exprs_mut_with, expr_any, exprs_mut_with};
-use crate::fixups::trace::{
-    Pass as TracePass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
-};
+use crate::fixups::support::walk;
+use crate::fixups::trace::Pass;
 use crate::rust_ast::{
     Attr, Block, Expr, FnDef, ImplItem, IndentStmt, Item, Program, Stmt, Type, UnaryOp,
 };
 
-pub(in crate::fixups) struct UnusedParams<'a> {
-    logger: &'a mut dyn TraceLogger,
-}
+use super::super::{
+    Predicate, ProgramRule, Rejection, RejectionReason, UnusedParamPlan, rewrite_unused_param,
+};
 
-impl<'a> UnusedParams<'a> {
-    pub(in crate::fixups) fn new(logger: &'a mut dyn TraceLogger) -> Self {
-        Self { logger }
-    }
-
-    pub(in crate::fixups) fn fixup(&mut self, program: &mut Program) -> bool {
-        let Some((name, param_index)) = find_removable(program) else {
-            return false;
-        };
-        let before = self.logger.is_enabled().then(|| program.emit());
-        let removed = removed_param(program, &name, param_index);
-        remove_param(program, &name, param_index);
-        if let (Some(before), Some((param_name, param_ty))) = (before, removed) {
-            self.logger.rewrite(RewriteEvent {
-                pass: TracePass::UnusedParams,
-                kind: "remove_unused_param".into(),
-                location: TraceLocation {
-                    function: Some(name.clone()),
-                    ..TraceLocation::default()
-                },
-                before: vec![TraceSnippet::new("program", before.trim_end())],
-                after: vec![TraceSnippet::new("program", program.emit().trim_end())],
-                facts: vec![
-                    fact("function", name),
-                    fact("param", param_name),
-                    fact("param_index", param_index.to_string()),
-                    fact("param_type", param_ty),
-                ],
-            });
-        }
-        true
-    }
-}
-
-fn removed_param(program: &Program, name: &str, param_index: usize) -> Option<(String, String)> {
-    let mut removed = None;
-    each_item(&program.items, &mut |item| {
-        if removed.is_some() {
-            return;
-        }
-        let Item::Fn(f) = item else { return };
-        if f.name == name
-            && let Some(param) = f.params.get(param_index)
-        {
-            removed = Some((param.name.clone(), param.ty.render()));
-        }
-    });
-    removed
-}
-
-fn find_removable(program: &Program) -> Option<(String, usize)> {
-    let mut found = None;
-    each_item(&program.items, &mut |item| {
-        if found.is_some() {
-            return;
-        }
-        let Item::Fn(f) = item else { return };
-        if !eligible_signature(f) {
-            return;
-        }
-        for (index, param) in f.params.iter().enumerate() {
-            if !trivially_droppable(&param.ty)
-                || body_ident_count(&f.body, &param.name) != 0
-                || program_has_unsafe_ref(program, &f.name)
-                || any_undroppable_call(program, &f.name, index, f.params.len())
-            {
-                continue;
+pub(in crate::fixups) fn program() -> ProgramRule {
+    ProgramRule::unused_params(Pass::UnusedParams, "remove_unused_param").case(
+        "unreachable_param",
+        |case| {
+            let program = case.snapshot_program();
+            for param in case.all_params() {
+                if !trivially_droppable(&param.param_ty) {
+                    continue;
+                }
+                let usage = case.param_usage(&param);
+                if usage.reads != 0 || usage.writes != 0 {
+                    continue;
+                }
+                let Some(Item::Fn(f)) = program.items.get(param.function_item_index) else {
+                    continue;
+                };
+                if !eligible_signature(f)
+                    || program_has_unsafe_ref(program, &param.function_name)
+                    || any_undroppable_call(
+                        program,
+                        &param.function_name,
+                        param.param_index,
+                        f.params.len(),
+                    )
+                {
+                    continue;
+                }
+                let plan = UnusedParamPlan {
+                    function_item_index: param.function_item_index,
+                    function_name: param.function_name.clone(),
+                    param_index: param.param_index,
+                    param_name: param.param_name.clone(),
+                    param_ty: param.param_ty.render(),
+                };
+                case.note_unused_param(&plan);
+                return Ok(rewrite_unused_param(plan));
             }
-            found = Some((f.name.clone(), index));
-            break;
-        }
-    });
-    found
+            Err(Rejection::new(
+                Predicate::UnusedParam,
+                None,
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ))
+        },
+    )
 }
 
 fn eligible_signature(f: &FnDef) -> bool {
@@ -96,13 +65,6 @@ fn is_exported(attrs: &[Attr]) -> bool {
         .any(|attr| matches!(attr, Attr::Used(_) | Attr::NoMangle | Attr::WeakLinkage))
 }
 
-fn body_ident_count(body: &[IndentStmt], name: &str) -> usize {
-    body.iter()
-        .map(|stmt| stmt_ident_count(&stmt.stmt, name))
-        .sum()
-}
-
-// excludes Vec/Box/File-like types: dropping them earlier than the call would move their Drop point
 fn trivially_droppable(ty: &Type) -> bool {
     match ty {
         Type::Prim(_) | Type::Unit | Type::Ptr { .. } | Type::Ref { .. } => true,
@@ -153,7 +115,6 @@ fn is_named_callee(expr: &Expr, name: &str) -> bool {
     }
 }
 
-// true if `name` is referenced anywhere other than as the callee of a direct call (address taken, stored, passed as a callback)
 fn expr_has_unsafe_ref(expr: &Expr, name: &str) -> bool {
     match expr {
         Expr::Var(_) | Expr::Path(_) => is_named_callee(expr, name),
@@ -219,8 +180,7 @@ fn expr_has_unsafe_ref(expr: &Expr, name: &str) -> bool {
         | Expr::ByteStr(_)
         | Expr::CStr(_)
         | Expr::Todo(_) => false,
-        // atomics/transmute/raw-pointer intrinsics: can't prove call-position here, so treat any occurrence as unsafe
-        other => expr_any(other, &mut |e| is_named_callee(e, name)),
+        other => walk::expr_any(other, &mut |e| is_named_callee(e, name)),
     }
 }
 
@@ -327,10 +287,10 @@ fn any_undroppable_call(
         }
         let pred = &mut |e: &Expr| is_undroppable_call(e, name, param_index, expected_len);
         found = match item {
-            Item::Fn(f) => body_expr_any(&f.body, pred),
-            Item::Static { init, .. } => expr_any(init, pred),
+            Item::Fn(f) => walk::body_expr_any(&f.body, pred),
+            Item::Static { init, .. } => walk::expr_any(init, pred),
             Item::Impl(block) => block.items.iter().any(|it| match it {
-                ImplItem::Method(m) => expr_any(&m.body, pred),
+                ImplItem::Method(m) => walk::expr_any(&m.body, pred),
                 ImplItem::AssocType { .. } => false,
             }),
             _ => false,
@@ -345,56 +305,10 @@ fn is_undroppable_call(expr: &Expr, name: &str, param_index: usize, expected_len
             && (args.len() != expected_len || !is_pure_expr(&args[param_index])))
 }
 
-fn remove_param(program: &mut Program, name: &str, param_index: usize) {
-    each_item_mut(&mut program.items, &mut |item| {
-        if let Item::Fn(f) = item
-            && f.name == name
-        {
-            f.params.remove(param_index);
-        }
-    });
-    remove_arg_everywhere(program, name, param_index);
-}
-
-fn remove_arg_everywhere(program: &mut Program, name: &str, param_index: usize) {
-    each_item_mut(&mut program.items, &mut |item| {
-        let visit = &mut |e: &mut Expr| {
-            if let Expr::Call { func, args, .. } = e
-                && is_named_callee(func, name)
-                && param_index < args.len()
-            {
-                args.remove(param_index);
-            }
-            true
-        };
-        match item {
-            Item::Fn(f) => body_exprs_mut_with(&mut f.body, visit),
-            Item::Static { init, .. } => exprs_mut_with(init, visit),
-            Item::Impl(block) => {
-                for it in &mut block.items {
-                    if let ImplItem::Method(m) = it {
-                        exprs_mut_with(&mut m.body, visit);
-                    }
-                }
-            }
-            _ => {}
-        }
-    });
-}
-
 fn each_item<'a>(items: &'a [Item], f: &mut impl FnMut(&'a Item)) {
     for item in items {
         match item {
             Item::Cfg { item, .. } => each_item(std::slice::from_ref(item.as_ref()), f),
-            other => f(other),
-        }
-    }
-}
-
-fn each_item_mut(items: &mut [Item], f: &mut impl FnMut(&mut Item)) {
-    for item in items {
-        match item {
-            Item::Cfg { item, .. } => each_item_mut(std::slice::from_mut(item.as_mut()), f),
             other => f(other),
         }
     }

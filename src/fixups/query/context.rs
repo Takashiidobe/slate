@@ -24,9 +24,10 @@ use super::{
     DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, Evidence,
     EvidenceDetail, ExprSite, ExternFn, HeapOwnershipPlan, HeapOwnershipPlanSet,
     HeapOwnershipReallocPlan, InlineTempPlan, LazySingletonPlan, LazySingletonSet, NulPosition,
-    NullaryMethodCall, Phase, PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet,
-    QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr, StmtWindowSite,
-    UnusedTypeDefinitionSet, Usage, ValueSite, ZeroGroupUsers, ZeroInitPlan, ZeroUsers,
+    NullaryMethodCall, ParamSite, Phase, PointerMutability, Predicate, Proof, PtrLenPlan,
+    PtrLenPlanSet, QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr,
+    StmtWindowSite, UnusedTypeDefinitionSet, Usage, ValueSite, ZeroGroupUsers, ZeroInitPlan,
+    ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -561,6 +562,48 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn all_definitions(&self) -> impl Iterator<Item = &DefinitionSite> {
         self.definitions.values().flatten()
+    }
+
+    pub(in crate::fixups) fn all_params(&self) -> Vec<ParamSite> {
+        let mut out = Vec::new();
+        for (item_index, item) in self.program.items.iter().enumerate() {
+            let Item::Fn(f) = unwrap_cfg(item) else {
+                continue;
+            };
+            for (param_index, param) in f.params.iter().enumerate() {
+                out.push(ParamSite {
+                    function_item_index: item_index,
+                    function_name: f.name.clone(),
+                    param_index,
+                    param_name: param.name.clone(),
+                    param_ty: param.ty.clone(),
+                });
+            }
+        }
+        out
+    }
+
+    pub(in crate::fixups) fn param_usage(&self, param: &ParamSite) -> Usage {
+        let no_uses = Usage {
+            reads: 0,
+            writes: 0,
+        };
+        let Some(function) = self.facts.function_by_item_index(param.function_item_index) else {
+            return no_uses;
+        };
+        let Some(binding) = self
+            .facts
+            .binding_by_param_index(function, param.param_index)
+        else {
+            return no_uses;
+        };
+        self.facts
+            .def_use(binding)
+            .map(|fact| Usage {
+                reads: fact.reads.len(),
+                writes: fact.writes.len(),
+            })
+            .unwrap_or(no_uses)
     }
 
     fn unused_item_candidates(&self) -> BTreeMap<usize, UnusedItemCandidate> {
