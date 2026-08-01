@@ -1,4 +1,5 @@
 use crate::fixups::facts::{CountedLoopIndexUse, CountedLoopStart, CountedLoopStep};
+use crate::rust_ast::Type;
 
 use super::{
     ByteExtent, ByteRepresentation, CallTarget, DefinitionGroup, ExprSite, NulPosition,
@@ -58,6 +59,7 @@ pub(in crate::fixups) enum Predicate {
     StringBuffer,
     StringUse,
     AllExprs,
+    Cast,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -138,6 +140,9 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     AllExprs {
         count: usize,
+    },
+    Cast {
+        to: Type,
     },
 }
 
