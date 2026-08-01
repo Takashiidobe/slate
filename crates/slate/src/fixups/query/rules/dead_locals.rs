@@ -1,25 +1,33 @@
 use crate::fixups::trace::Pass;
 use crate::rust_ast::{Expr, Stmt};
 
-use super::super::StmtWindowRule;
+use super::super::{Field, Local, StmtWindowRule, Usage, Value};
 
 pub(in crate::fixups) fn rewrite(pass: Pass) -> StmtWindowRule {
-    StmtWindowRule::new(pass, "remove_dead_local", 1).case("dead_local", |case| {
-        let [stmt] = case.stmts();
-        let Stmt::Let {
-            name,
-            init: Some(init),
-            ..
-        } = &stmt.stmt
-        else {
-            return Err(case.reject());
-        };
-        case.dead_local(name)?;
-        if !discardable_known_method(init) {
-            case.no_effects()?;
-        }
-        Ok(Vec::new())
-    })
+    StmtWindowRule::new(pass, "remove_dead_local", 1)
+        .matching_local(Local {
+            value: Value {
+                usage: Field::eq(Some(Usage {
+                    reads: 0,
+                    writes: 0,
+                })),
+                ..Default::default()
+            },
+            ..Default::default()
+        })
+        .case("dead_local", |case| {
+            let [stmt] = case.stmts();
+            let Stmt::Let {
+                init: Some(init), ..
+            } = &stmt.stmt
+            else {
+                return Err(case.reject());
+            };
+            if !discardable_known_method(init) {
+                case.no_effects()?;
+            }
+            Ok(Vec::new())
+        })
 }
 
 fn discardable_known_method(expr: &Expr) -> bool {

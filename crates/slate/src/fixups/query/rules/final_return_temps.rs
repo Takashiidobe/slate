@@ -1,16 +1,25 @@
 use crate::fixups::trace::Pass;
 use crate::rust_ast::{Expr, IndentStmt, Stmt};
 
-use super::super::StmtWindowRule;
+use super::super::{Field, Local, StmtWindowRule, Usage, Value};
 
 pub(in crate::fixups) fn rewrite() -> StmtWindowRule {
-    StmtWindowRule::new(Pass::FinalReturnTemps, "inline_final_return_temp", 2).case(
-        "temp_return",
-        |case| {
+    StmtWindowRule::new(Pass::FinalReturnTemps, "inline_final_return_temp", 2)
+        .matching_local(Local {
+            mutable: Field::eq(false),
+            value: Value {
+                usage: Field::eq(Some(Usage {
+                    reads: 1,
+                    writes: 0,
+                })),
+                ..Default::default()
+            },
+            ..Default::default()
+        })
+        .case("temp_return", |case| {
             let [temp_stmt, return_stmt] = case.stmts();
             let Stmt::Let {
                 name,
-                mutable: false,
                 init: Some(init),
                 ..
             } = &temp_stmt.stmt
@@ -22,13 +31,13 @@ pub(in crate::fixups) fn rewrite() -> StmtWindowRule {
                 return Err(case.reject());
             };
             case.require(returned.as_str() == name)?;
-            case.sole_use(name)?;
+            let read_path = case.read_path(name)?;
+            case.require(read_path == case.stmt_path(1))?;
             Ok(vec![IndentStmt {
                 depth: return_stmt.depth,
                 stmt: Stmt::Return(Some(init.clone())),
             }])
-        },
-    )
+        })
 }
 
 fn is_temp_name(name: &str) -> bool {

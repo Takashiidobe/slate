@@ -41,14 +41,13 @@ pub(in crate::fixups) enum Predicate {
     FirstNul,
     PrefixContains,
     MovablePure,
-    NeverReturningExtern,
+    ExternFn,
     ZeroUsers,
     ZeroGroupUsers,
     CountedLoop,
     StmtWindowGuard,
     LazySingletonDomain,
-    SoleUse,
-    DeadLocal,
+    ReadPath,
     NoEffects,
 }
 
@@ -81,8 +80,8 @@ pub(in crate::fixups) enum EvidenceDetail {
         nul: usize,
     },
     MovablePure,
-    KnownExternDeclaration {
-        target: crate::function_identity::Known,
+    ExternFnDeclaration {
+        name: String,
         arity: usize,
         returns_never: bool,
     },

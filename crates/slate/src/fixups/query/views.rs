@@ -1,7 +1,20 @@
 use std::marker::PhantomData;
 
-use crate::fixups::facts::{AstPath, BindingId};
+use crate::fixups::facts::{AstPath, BindingId, Purity};
 use crate::rust_ast::{Expr, Type};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(in crate::fixups) struct Usage {
+    pub(in crate::fixups) reads: usize,
+    pub(in crate::fixups) writes: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct ResolvedValue {
+    pub(in crate::fixups) ty: Option<Type>,
+    pub(in crate::fixups) usage: Option<Usage>,
+    pub(in crate::fixups) purity: Option<Purity>,
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(in crate::fixups) struct ExprSite {

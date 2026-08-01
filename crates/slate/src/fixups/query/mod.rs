@@ -18,7 +18,9 @@ pub(in crate::fixups) use definition::{
     DefinitionPlanBuilder, DefinitionRule, delete_definition, replace_body,
 };
 pub(in crate::fixups) use field::Field;
-pub(in crate::fixups) use patterns::{FnCall, LetStmtPattern, LoopStmtPattern, NullaryMethodCall};
+pub(in crate::fixups) use patterns::{
+    Definition, ExternFn, FnCall, LetStmtPattern, Local, LoopStmtPattern, NullaryMethodCall, Value,
+};
 pub(in crate::fixups) use plan::TouchedItems;
 pub(in crate::fixups) use program::{ProgramPlanBuilder, ProgramRule};
 pub(in crate::fixups) use program_recipe::{
@@ -41,6 +43,6 @@ use views::{AnonymousStructField, AnonymousStructPlan, LazySingletonPlan};
 pub(in crate::fixups) use views::{
     AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
     DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite,
-    LazySingletonSet, NulPosition, PointerMutability, StableExpr, StmtWindowSite, ZeroGroupUsers,
-    ZeroUsers,
+    LazySingletonSet, NulPosition, PointerMutability, ResolvedValue, StableExpr, StmtWindowSite,
+    Usage, ZeroGroupUsers, ZeroUsers,
 };

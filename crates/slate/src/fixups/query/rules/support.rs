@@ -1,12 +1,16 @@
 use crate::fixups::trace::Pass;
 
-use super::super::{DefinitionRule, delete_definition};
+use super::super::{Definition, DefinitionKind, DefinitionRule, Field, delete_definition};
 
 pub(in crate::fixups) fn unused_numeric_parse() -> DefinitionRule {
-    DefinitionRule::support_module(
+    DefinitionRule::matches(
         Pass::PruneUnusedDefinitions,
         "prune_unused_support_module",
-        "__slate_runtime",
+        Definition {
+            kind: Field::eq(DefinitionKind::SupportModule),
+            name: Field::eq("__slate_runtime".into()),
+            ..Default::default()
+        },
     )
     .case("unused", |case| {
         case.zero_users()?;

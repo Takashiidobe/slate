@@ -1543,9 +1543,7 @@ fn noreturn_c11_uses_process_exit_and_removes_dead_false_branch() {
     assert!(stdout.contains("rewrite_libc_exit"));
     assert!(stdout.contains("query_case=never_returning_extern"));
     assert!(stdout.contains("evidence.call=known:exit;arity=1"));
-    assert!(
-        stdout.contains("evidence.never_returning_extern=known:exit;arity=1;returns_never=true")
-    );
+    assert!(stdout.contains("evidence.extern_fn=name=exit;arity=1;returns_never=true"));
 }
 
 #[test]

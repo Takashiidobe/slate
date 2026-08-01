@@ -1,12 +1,12 @@
 use crate::fixups::trace::Pass;
 
 use super::super::{
-    CallRule, CallTarget, DefinitionRule, Field, FnCall, byte_position, delete_definition,
-    known_index, memchr_fallback_body, pointer_at_or_null, replace_body,
+    CallRule, CallTarget, Definition, DefinitionKind, DefinitionRule, Field, FnCall, byte_position,
+    delete_definition, known_index, memchr_fallback_body, pointer_at_or_null, replace_body,
 };
 
 pub(in crate::fixups) fn calls() -> CallRule {
-    CallRule::matching(
+    CallRule::matches(
         Pass::MemchrPreludeFixupCalls,
         "rewrite_memchr_call",
         FnCall {
@@ -34,10 +34,14 @@ pub(in crate::fixups) fn calls() -> CallRule {
 }
 
 pub(in crate::fixups) fn helper() -> DefinitionRule {
-    DefinitionRule::function(
+    DefinitionRule::matches(
         Pass::MemchrPrelude,
         "manage_memchr_helper",
-        "__slate_memchr",
+        Definition {
+            kind: Field::eq(DefinitionKind::Function),
+            name: Field::eq("__slate_memchr".into()),
+            ..Default::default()
+        },
     )
     .case("unused", |case| {
         case.zero_users()?;
