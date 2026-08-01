@@ -1,8 +1,7 @@
 use crate::fixups::trace::Pass;
-use crate::function_identity::Known;
 
 use super::{
-    ByteSource, CallRecord, CallTarget, ExprRecipe, ExprRule, ExprSite, NulPosition, Predicate,
+    ByteSource, CallRecord, ExprRecipe, ExprRule, ExprSite, FnCall, NulPosition, Predicate,
     QueryContext, Rejection, RejectionReason, ReplaceExpr, RuleCase, RuleIdentity, RuleResult,
     StableExpr,
 };
@@ -21,38 +20,20 @@ struct DeclarativeCallCase {
 
 pub(in crate::fixups) struct CallRule {
     identity: RuleIdentity,
-    target: CallTarget,
-    arity: usize,
+    matcher: FnCall,
     cases: Vec<DeclarativeCallCase>,
     replace_trivial_unsafe: bool,
 }
 
 impl CallRule {
-    pub(in crate::fixups) fn generated(
+    pub(in crate::fixups) fn matching(
         pass: Pass,
         rule: impl Into<String>,
-        symbol: impl Into<String>,
-        arity: usize,
+        matcher: FnCall,
     ) -> Self {
         Self {
             identity: RuleIdentity::new(pass, rule),
-            target: CallTarget::Generated(symbol.into()),
-            arity,
-            cases: Vec::new(),
-            replace_trivial_unsafe: false,
-        }
-    }
-
-    pub(in crate::fixups) fn known(
-        pass: Pass,
-        rule: impl Into<String>,
-        target: Known,
-        arity: usize,
-    ) -> Self {
-        Self {
-            identity: RuleIdentity::new(pass, rule),
-            target: CallTarget::Known(target),
-            arity,
+            matcher,
             cases: Vec::new(),
             replace_trivial_unsafe: false,
         }
@@ -183,7 +164,18 @@ impl ExprRule for CallRule {
     }
 
     fn candidates(&self, query: &QueryContext<'_>) -> Vec<Self::Candidate> {
-        query.calls(&self.target, self.arity).to_vec()
+        query
+            .all_calls()
+            .filter(|call| {
+                self.matcher.target.matches(&call.target, &())
+                    && self.matcher.arity.matches(&call.args.len(), &())
+                    && self
+                        .matcher
+                        .arg_types
+                        .matches(&query.call_arg_types(call), &())
+            })
+            .cloned()
+            .collect()
     }
 
     fn target(&self, candidate: &Self::Candidate) -> ExprSite {

@@ -1,16 +1,19 @@
 use crate::fixups::trace::Pass;
 
 use super::super::{
-    CallRule, DefinitionRule, byte_position, delete_definition, known_index, memchr_fallback_body,
-    pointer_at_or_null, replace_body,
+    CallRule, CallTarget, DefinitionRule, Field, FnCall, byte_position, delete_definition,
+    known_index, memchr_fallback_body, pointer_at_or_null, replace_body,
 };
 
 pub(in crate::fixups) fn calls() -> CallRule {
-    CallRule::generated(
+    CallRule::matching(
         Pass::MemchrPreludeFixupCalls,
         "rewrite_memchr_call",
-        "__slate_memchr",
-        3,
+        FnCall {
+            target: Field::eq(CallTarget::Generated("__slate_memchr".into())),
+            arity: Field::eq(3),
+            ..Default::default()
+        },
     )
     .case("known_nul", |case| {
         let [source, needle, count] = case.args();
