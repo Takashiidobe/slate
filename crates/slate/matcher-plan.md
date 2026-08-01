@@ -1,60 +1,66 @@
-# Query-owned incremental facts
+# Orthogonal, matcher-driven query predicates
 
-`src/fixups/query/` and per-function fact splicing
-(`FixupFacts::splice_function`/`remove_items`, `slate-04q.75.56.8.1`–`.8.4`)
-are done. What's left: nobody should ever have to decide whether facts need
-recomputing.
+`never_returning_extern()` (used by `libc_exit`) is one opaque predicate that
+bundles three separate facts: a matching extern declaration exists, its
+arity matches the call, and its return type is `!`. Nobody else can reuse
+"does this known target have a matching extern declaration" without also
+getting the arity/never-return checks baked in. Same shape problem, smaller
+stakes: `dead_local(name)` bundles "no reads" and "no writes" — useful
+independently (e.g. "no writes" alone is what a mut-removal predicate would
+want) but only queryable as a pair today.
 
-## Goal
+## Two different fixes for two different things
 
-Rule authors already don't decide this — a `.case()` closure just calls
-`context.foo(...)` and gets a `QueryResult`. The pipeline author wiring
-`fixups/mod.rs` still does: `.8.4` required hand-auditing each step
-transition ("does `facts::analyze` immediately follow, does anything mutate
-outside the reported `touched` set") and writing bespoke splice code per
-case. Doesn't scale — every future migration would repeat that audit.
+**Binding-level fact predicates** (`no_reads`, `no_writes`, `sole_read`,
+`no_effects`) — these prove a property of one already-identified binding.
+No "which one matches" search involved, so they stay flat named
+`QueryContext` methods, just split one-condition-per-method instead of
+bundled. `dead_local(name)` becomes `case.no_reads(name)?;
+case.no_writes(name)?;` composed in the rule case.
 
-## Mechanism: dirty-tracked, resolve-on-read
+**Language-item queries** (calls, extern declarations, and future kinds) —
+these search for a candidate matching a shape, where the shape has several
+independently-optional criteria. These get a matcher struct instead of a
+bespoke method per shape combination.
 
-Introduce `IncrementalFacts` — a `FixupFacts` plus a `Dirty` marker
-(`Clean`, `Touched(TouchedItems)`, `Everything`) — threaded once through
-`apply_with_logger`, replacing today's ~20 manual
-`facts::analyze(&program)` rebindings.
+## Matcher structs, not a new mechanism
 
-- Every migrated step's `plan.apply()` calls
-  `incremental.mark_touched(&report.touched)`: cheap, unions item indices
-  into the dirty set, never recomputes.
-- Every legacy step, and `late_loop_cleanup` (mutates arbitrary functions
-  without reporting what), calls `incremental.mark_everything_dirty()` when
-  it changed something — same treatment for both, no `RangeLoop`-style
-  special-casing.
-- Whenever a step needs facts, it calls `incremental.resolve(&program)` —
-  the only place recompute happens: `Clean` no-ops, `Touched(set)` splices
-  each function via `splice_function`/`remove_items`, `Everything` falls
-  back to a full `facts::analyze`. Resolving clears the marker.
+`Field<T, Cx>` (`field.rs`: `Any`/`Eq`/`Predicate`) and hand-written
+matchers built from it (`NullaryMethodCall`, `LetStmtPattern`,
+`LoopStmtPattern` in `patterns.rs`) already exist — they're just scoped to
+pure AST shape today, no facts, no evidence, no caching. Extend the same
+pattern to facts-backed queries:
 
-This subsumes and deletes `.8.4`'s hand-picked `LazySingleton`/`RangeLoop`
-wiring. The win now applies to every future migration automatically:
-whenever two migrated steps end up adjacent, `resolve()` skips the
-reanalyze for free, no per-pair auditing added. Legacy passes still force a
-full reanalyze at the next `resolve()`, same as today — just uniform now.
+```rust
+pub(in crate::fixups) struct ExternFnMatch<Cx = ()> {
+    name: Field<String, Cx>,
+    arity: Field<usize, Cx>,
+    returns: Field<Option<Type>, Cx>,
+}
+```
 
-## Why not finer-grained
+A `QueryContext` method takes the matcher, scans extern declarations,
+checks each field via `Field::matches`, and returns the usual
+`QueryResult<ExternFnView>` (cached, with `Evidence`/`Rejection` like every
+other predicate) instead of a boolean. The rule composes:
 
-`QueryContext` is already rebuilt fresh once per step, so resolving once
-per construction is already as fine-grained as visibly matters. Per-field
-self-healing inside `FixupFacts` (~25 accessors, each interior-mutable)
-would buy nothing more under that lifetime.
+```rust
+case.extern_fn(&ExternFnMatch {
+    name: Field::eq("exit".into()),
+    arity: Field::eq(1),
+    returns: Field::eq(Some(Type::Never)),
+})?
+```
 
-## Verification
-
-Reuse `.8.3`'s precedent — `FixupFacts::diff_incremental` and
-`slate verify-incremental-facts` already exist; generalize the check to run
-after every `resolve()`, not just the two sites `.8.4` covered.
+Unset fields default to `Field::Any` (same as today's structural matchers),
+so one method serves every combination of criteria a future rule needs
+instead of a new method per combination.
 
 ## Scope boundary
 
-Legacy `Fixup`-trait passes don't report touched functions, so one between
-two migrated steps still forces `Everything`. Extending self-healing across
-legacy boundaries is out of scope — only makes sense as each legacy pass is
-itself migrated.
+Hand-written matcher structs per item kind, not a generic/derived
+mechanism — matches this file's own earlier "scope this down" call on a
+`Matchable` derive: revisit only once hand-written matcher structs are
+repetitive across 3+ item kinds. Right now there's exactly one candidate
+(`ExternFnMatch`, replacing `never_returning_extern`); building a reflection
+layer for one caller would be premature.

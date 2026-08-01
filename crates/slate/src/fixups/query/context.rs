@@ -139,11 +139,22 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
-    pub(in crate::fixups) fn calls(&self, target: &CallTarget, arity: usize) -> &[CallRecord] {
-        self.calls
-            .get(&(target.clone(), arity))
-            .map(Vec::as_slice)
-            .unwrap_or_default()
+    pub(in crate::fixups) fn all_calls(&self) -> impl Iterator<Item = &CallRecord> {
+        self.calls.values().flatten()
+    }
+
+    pub(in crate::fixups) fn call_arg_types(&self, call: &CallRecord) -> Vec<Option<Type>> {
+        let Some(function) = self.facts.function_by_item_index(call.site.item_index) else {
+            return vec![None; call.args.len()];
+        };
+        call.args
+            .iter()
+            .map(|arg| {
+                self.facts
+                    .call_arg_at(function, &arg.path)
+                    .and_then(|(_, arg_fact)| arg_fact.declared_ty.clone())
+            })
+            .collect()
     }
 
     pub(in crate::fixups) fn has_anonymous_structs(&self) -> bool {

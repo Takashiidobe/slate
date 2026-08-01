@@ -1,6 +1,14 @@
-use crate::rust_ast::{Expr, IndentStmt, Label, Stmt};
+use crate::rust_ast::{Expr, IndentStmt, Label, Stmt, Type};
 
+use super::CallTarget;
 use super::field::Field;
+
+#[derive(Default)]
+pub(in crate::fixups) struct FnCall<Cx = ()> {
+    pub(in crate::fixups) target: Field<CallTarget, Cx>,
+    pub(in crate::fixups) arity: Field<usize, Cx>,
+    pub(in crate::fixups) arg_types: Field<Vec<Option<Type>>, Cx>,
+}
 
 pub(in crate::fixups) struct NullaryMethodCall<Cx = ()> {
     method: Field<String, Cx>,

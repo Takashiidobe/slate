@@ -17,7 +17,8 @@ pub(in crate::fixups) use context::{CallRecord, CallTarget, QueryContext};
 pub(in crate::fixups) use definition::{
     DefinitionPlanBuilder, DefinitionRule, delete_definition, replace_body,
 };
-pub(in crate::fixups) use patterns::{LetStmtPattern, LoopStmtPattern, NullaryMethodCall};
+pub(in crate::fixups) use field::Field;
+pub(in crate::fixups) use patterns::{FnCall, LetStmtPattern, LoopStmtPattern, NullaryMethodCall};
 pub(in crate::fixups) use plan::TouchedItems;
 pub(in crate::fixups) use program::{ProgramPlanBuilder, ProgramRule};
 pub(in crate::fixups) use program_recipe::{
