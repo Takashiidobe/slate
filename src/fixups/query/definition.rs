@@ -8,16 +8,9 @@ use super::plan::{
 };
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    CaseRejection, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, Evidence, FunctionBodyRecipe, QueryContext, Rejection, RuleCaseIdentity,
-    RuleIdentity,
+    CaseRejection, Definition, DefinitionKind, DefinitionLocation, DefinitionSite, Evidence,
+    FunctionBodyRecipe, QueryContext, Rejection, RuleCaseIdentity, RuleIdentity,
 };
-
-enum DefinitionRuleSelector {
-    Exact(DefinitionSelector),
-    Group(DefinitionGroup),
-    KnownExternFunctions,
-}
 
 type DefinitionCaseFn = for<'case, 'snapshot> fn(
     &mut DefinitionCaseContext<'case, 'snapshot>,
@@ -30,72 +23,19 @@ struct DeclarativeDefinitionCase {
 
 pub(in crate::fixups) struct DefinitionRule {
     identity: RuleIdentity,
-    selector: DefinitionRuleSelector,
+    matcher: Definition,
     cases: Vec<DeclarativeDefinitionCase>,
 }
 
 impl DefinitionRule {
-    pub(in crate::fixups) fn function(
+    pub(in crate::fixups) fn matches(
         pass: Pass,
         rule: impl Into<String>,
-        name: impl Into<String>,
+        matcher: Definition,
     ) -> Self {
         Self {
             identity: RuleIdentity::new(pass, rule),
-            selector: DefinitionRuleSelector::Exact(DefinitionSelector {
-                kind: DefinitionKind::Function,
-                name: name.into(),
-            }),
-            cases: Vec::new(),
-        }
-    }
-
-    pub(in crate::fixups) fn extern_function(
-        pass: Pass,
-        rule: impl Into<String>,
-        name: impl Into<String>,
-    ) -> Self {
-        Self {
-            identity: RuleIdentity::new(pass, rule),
-            selector: DefinitionRuleSelector::Exact(DefinitionSelector {
-                kind: DefinitionKind::ExternFunction,
-                name: name.into(),
-            }),
-            cases: Vec::new(),
-        }
-    }
-
-    pub(in crate::fixups) fn header(
-        pass: Pass,
-        rule: impl Into<String>,
-        header: impl Into<String>,
-    ) -> Self {
-        Self {
-            identity: RuleIdentity::new(pass, rule),
-            selector: DefinitionRuleSelector::Group(DefinitionGroup::Header(header.into())),
-            cases: Vec::new(),
-        }
-    }
-
-    pub(in crate::fixups) fn known_extern_functions(pass: Pass, rule: impl Into<String>) -> Self {
-        Self {
-            identity: RuleIdentity::new(pass, rule),
-            selector: DefinitionRuleSelector::KnownExternFunctions,
-            cases: Vec::new(),
-        }
-    }
-
-    pub(in crate::fixups) fn support_module(
-        pass: Pass,
-        rule: impl Into<String>,
-        name: impl Into<String>,
-    ) -> Self {
-        Self {
-            identity: RuleIdentity::new(pass, rule),
-            selector: DefinitionRuleSelector::Exact(DefinitionSelector {
-                kind: DefinitionKind::SupportModule,
-                name: name.into(),
-            }),
+            matcher,
             cases: Vec::new(),
         }
     }
@@ -113,15 +53,15 @@ impl DefinitionRule {
     }
 
     fn candidates(&self, query: &QueryContext<'_>) -> Vec<DefinitionSite> {
-        match &self.selector {
-            DefinitionRuleSelector::Exact(selector) => query.definitions(selector).to_vec(),
-            DefinitionRuleSelector::Group(group) => query.definitions_in_group(group),
-            DefinitionRuleSelector::KnownExternFunctions => query
-                .definitions_of_kind(DefinitionKind::ExternFunction)
-                .into_iter()
-                .filter(|definition| definition.group.is_some())
-                .collect(),
-        }
+        query
+            .all_definitions()
+            .filter(|definition| {
+                self.matcher.kind.matches(&definition.kind, &())
+                    && self.matcher.name.matches(&definition.name, &())
+                    && self.matcher.group.matches(&definition.group, &())
+            })
+            .cloned()
+            .collect()
     }
 }
 

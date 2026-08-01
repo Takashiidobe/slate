@@ -6,15 +6,15 @@ use crate::fixups::support::walk as mut_walk;
 use crate::fixups::trace::{
     Pass, RewriteEvent, TraceLogger, TraceSnippet, fact, function_path_location, path_location,
 };
-use crate::rust_ast::{IndentStmt, Item, Program};
+use crate::rust_ast::{IndentStmt, Item, Program, Stmt};
 
 use super::plan::{
     EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit, TouchedItems,
 };
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    CaseRejection, Evidence, Predicate, QueryContext, Rejection, RejectionReason, RuleCaseIdentity,
-    RuleIdentity, StmtWindowSite,
+    CaseRejection, Evidence, Local, Predicate, QueryContext, Rejection, RejectionReason,
+    RuleCaseIdentity, RuleIdentity, StmtWindowSite,
 };
 
 type StmtWindowCaseFn = for<'case, 'snapshot> fn(
@@ -29,6 +29,7 @@ struct DeclarativeStmtWindowCase {
 pub(in crate::fixups) struct StmtWindowRule {
     identity: RuleIdentity,
     width: usize,
+    local: Option<Local>,
     cases: Vec<DeclarativeStmtWindowCase>,
 }
 
@@ -41,8 +42,14 @@ impl StmtWindowRule {
         Self {
             identity: RuleIdentity::new(pass, rule),
             width,
+            local: None,
             cases: Vec::new(),
         }
+    }
+
+    pub(in crate::fixups) fn matching_local(mut self, matcher: Local) -> Self {
+        self.local = Some(matcher);
+        self
     }
 
     pub(in crate::fixups) fn case(
@@ -73,7 +80,22 @@ impl StmtWindowRule {
                 );
             }
         }
+        let Some(local) = &self.local else {
+            return candidates;
+        };
         candidates
+            .into_iter()
+            .filter(|candidate| {
+                let Stmt::Let { name, mutable, .. } = &candidate.window[0].stmt else {
+                    return false;
+                };
+                local.name.matches(name, &())
+                    && local.mutable.matches(mutable, &())
+                    && local
+                        .value
+                        .matches(&query.local_value(&candidate.site, name), &())
+            })
+            .collect()
     }
 }
 
@@ -123,24 +145,23 @@ impl<'snapshot> StmtWindowCaseContext<'_, 'snapshot> {
         std::array::from_fn(|index| &self.candidate.window[index])
     }
 
+    pub(in crate::fixups) fn stmt_path(&self, offset: usize) -> AstPath {
+        let mut path = self.candidate.site.path.0.clone();
+        path.push(PathSegment::Stmt(self.candidate.site.start + offset));
+        AstPath(path)
+    }
+
     pub(in crate::fixups) fn counted_loop(
         &mut self,
     ) -> Result<crate::fixups::facts::CountedLoopFact, Rejection> {
         self.prove(self.query.counted_loop(&self.candidate.site))
     }
 
-    pub(in crate::fixups) fn sole_use(
+    pub(in crate::fixups) fn read_path(
         &mut self,
         name: &str,
-    ) -> Result<crate::fixups::facts::BindingId, Rejection> {
-        self.prove(self.query.sole_use(&self.candidate.site, name))
-    }
-
-    pub(in crate::fixups) fn dead_local(
-        &mut self,
-        name: &str,
-    ) -> Result<crate::fixups::facts::BindingId, Rejection> {
-        self.prove(self.query.dead_local(&self.candidate.site, name))
+    ) -> Result<crate::fixups::facts::AstPath, Rejection> {
+        self.prove(self.query.read_path(&self.candidate.site, name))
     }
 
     pub(in crate::fixups) fn no_effects(&mut self) -> Result<(), Rejection> {

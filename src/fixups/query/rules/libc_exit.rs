@@ -1,10 +1,11 @@
 use crate::fixups::trace::Pass;
 use crate::function_identity::Known;
+use crate::rust_ast::Type;
 
-use super::super::{CallRule, CallTarget, Field, FnCall, process_exit};
+use super::super::{CallRule, CallTarget, ExternFn, Field, FnCall, process_exit};
 
 pub(in crate::fixups) fn calls() -> CallRule {
-    CallRule::matching(
+    CallRule::matches(
         Pass::LibcExit,
         "rewrite_libc_exit",
         FnCall {
@@ -15,7 +16,11 @@ pub(in crate::fixups) fn calls() -> CallRule {
     )
     .replace_trivial_unsafe()
     .case("never_returning_extern", |case| {
-        case.never_returning_extern()?;
+        case.extern_fn(&ExternFn {
+            name: Field::eq(Known::Exit.symbol().into()),
+            arity: Field::eq(1),
+            returns: Field::eq(Some(Type::Never)),
+        })?;
         Ok(process_exit())
     })
 }

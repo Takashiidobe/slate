@@ -7,15 +7,16 @@ use crate::fixups::facts::{
     AstPath, BindingId, ConstValue, CountedLoopFact, EffectSubject, FixupFacts, FunctionId,
     NulTermination, PathSegment, Purity, StringBufferKind, ValueSubject,
 };
-use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_declaration};
+use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{Attr, Expr, ExternDecl, ImplItem, Item, Prim, Program, Type, Visibility};
 
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ByteExtent, ByteRepresentation,
     ByteSource, ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, Evidence, EvidenceDetail, ExprSite, LazySingletonPlan, LazySingletonSet,
-    NulPosition, NullaryMethodCall, PointerMutability, Predicate, Proof, QueryResult, Rejection,
-    RejectionReason, StableExpr, StmtWindowSite, ZeroGroupUsers, ZeroUsers,
+    DefinitionSite, Evidence, EvidenceDetail, ExprSite, ExternFn, LazySingletonPlan,
+    LazySingletonSet, NulPosition, NullaryMethodCall, PointerMutability, Predicate, Proof,
+    QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr, StmtWindowSite, Usage,
+    ZeroGroupUsers, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -157,6 +158,83 @@ impl<'snapshot> QueryContext<'snapshot> {
             .collect()
     }
 
+    pub(in crate::fixups) fn local_value(
+        &self,
+        window: &StmtWindowSite,
+        name: &str,
+    ) -> ResolvedValue {
+        let Some(function) = self.facts.function_by_item_index(window.item_index) else {
+            return ResolvedValue {
+                ty: None,
+                usage: None,
+                purity: None,
+            };
+        };
+        let mut def_path = window.path.0.clone();
+        def_path.push(PathSegment::Stmt(window.start));
+        let def_path = AstPath(def_path);
+        let binding = self.facts.binding_by_local_path(function, name, &def_path);
+        let ty = binding.and_then(|binding| self.facts.binding_type_ast(binding).cloned());
+        let usage = binding
+            .and_then(|binding| self.facts.def_use(binding))
+            .map(|uses| Usage {
+                reads: uses.reads.len(),
+                writes: uses.writes.len(),
+            });
+        let purity = self
+            .facts
+            .effect(function, EffectSubject::Expr, &def_path)
+            .map(|effect| effect.purity);
+        ResolvedValue { ty, usage, purity }
+    }
+
+    pub(in crate::fixups) fn extern_fn(&self, matcher: &ExternFn) -> QueryResult<()> {
+        let predicate = Predicate::ExternFn;
+        let mut saw_name = false;
+        for (item_index, item) in self.program.items.iter().enumerate() {
+            let Item::ExternBlock { decls, .. } = item else {
+                continue;
+            };
+            for decl in decls {
+                let ExternDecl::Fn(function) = decl else {
+                    continue;
+                };
+                if !matcher.name.matches(&function.name, &()) {
+                    continue;
+                }
+                saw_name = true;
+                let arity = function.params.len();
+                let ret = function.ret.clone();
+                if !matcher.arity.matches(&arity, &()) || !matcher.returns.matches(&ret, &()) {
+                    continue;
+                }
+                let site = expression_site(item_index, &[]);
+                return Ok(Proof::new(
+                    (),
+                    vec![Evidence {
+                        predicate,
+                        site,
+                        detail: EvidenceDetail::ExternFnDeclaration {
+                            name: function.name.clone(),
+                            arity,
+                            returns_never: matches!(ret, Some(Type::Never)),
+                        },
+                    }],
+                ));
+            }
+        }
+        Err(Rejection::new(
+            predicate,
+            None,
+            if saw_name {
+                RejectionReason::Contradicted
+            } else {
+                RejectionReason::MissingEvidence
+            },
+            Vec::new(),
+        ))
+    }
+
     pub(in crate::fixups) fn has_anonymous_structs(&self) -> bool {
         !self.facts.anonymous_structs.is_empty()
     }
@@ -177,14 +255,8 @@ impl<'snapshot> QueryContext<'snapshot> {
         walk::target_expr_at_path(self.program, site.item_index, &site.path)
     }
 
-    pub(in crate::fixups) fn definitions(
-        &self,
-        selector: &DefinitionSelector,
-    ) -> &[DefinitionSite] {
-        self.definitions
-            .get(selector)
-            .map(Vec::as_slice)
-            .unwrap_or_default()
+    pub(in crate::fixups) fn all_definitions(&self) -> impl Iterator<Item = &DefinitionSite> {
+        self.definitions.values().flatten()
     }
 
     pub(in crate::fixups) fn definitions_in_group(
@@ -195,18 +267,6 @@ impl<'snapshot> QueryContext<'snapshot> {
             .values()
             .flatten()
             .filter(|definition| definition.group.as_ref() == Some(group))
-            .cloned()
-            .collect()
-    }
-
-    pub(in crate::fixups) fn definitions_of_kind(
-        &self,
-        kind: DefinitionKind,
-    ) -> Vec<DefinitionSite> {
-        self.definitions
-            .values()
-            .flatten()
-            .filter(|definition| definition.kind == kind)
             .cloned()
             .collect()
     }
@@ -404,59 +464,6 @@ query_cache! {
             })
             .collect();
         Ok(Proof::new(AnonymousStructSet { structs }, evidence))
-    }
-
-    fn never_returning_extern(&self, call: &CallRecord) -> QueryResult<()>;
-    key: ExprSite = call.site.clone();
-    {
-        let predicate = Predicate::NeverReturningExtern;
-        let CallTarget::Known(target) = call.target else {
-            return Err(Rejection::new(
-                predicate,
-                Some(call.site.clone()),
-                RejectionReason::UnsupportedShape,
-                Vec::new(),
-            ));
-        };
-        let mut saw_declaration = false;
-        let mut evidence = Vec::new();
-        for item in &self.program.items {
-            let Item::ExternBlock { decls, .. } = item else {
-                continue;
-            };
-            for decl in decls {
-                let ExternDecl::Fn(function) = decl else {
-                    continue;
-                };
-                if known_declaration(function.identity, &function.name) != Some(target) {
-                    continue;
-                }
-                saw_declaration = true;
-                let returns_never = matches!(function.ret, Some(Type::Never));
-                evidence.push(Evidence {
-                    predicate,
-                    site: call.site.clone(),
-                    detail: EvidenceDetail::KnownExternDeclaration {
-                        target,
-                        arity: function.params.len(),
-                        returns_never,
-                    },
-                });
-                if function.params.len() == call.args.len() && returns_never {
-                    return Ok(Proof::new((), evidence));
-                }
-            }
-        }
-        Err(Rejection::new(
-            predicate,
-            Some(call.site.clone()),
-            if saw_declaration {
-                RejectionReason::Contradicted
-            } else {
-                RejectionReason::MissingEvidence
-            },
-            evidence,
-        ))
     }
 
     fn zero_users(&self, definition: &DefinitionSite) -> QueryResult<ZeroUsers>;
@@ -971,10 +978,10 @@ query_cache! {
         ))
     }
 
-    fn sole_use(&self, window: &StmtWindowSite, name: &str) -> QueryResult<BindingId>;
+    fn read_path(&self, window: &StmtWindowSite, name: &str) -> QueryResult<AstPath>;
     key: (StmtWindowSite, String) = (window.clone(), name.to_string());
     {
-        let predicate = Predicate::SoleUse;
+        let predicate = Predicate::ReadPath;
         let evidence_site = stmt_window_evidence_site(window, window.start);
         let function = self.facts.function_by_item_index(window.item_index).ok_or_else(|| {
             Rejection::new(
@@ -1003,71 +1010,16 @@ query_cache! {
                 Vec::new(),
             ));
         };
-        let mut use_path = window.path.0.clone();
-        use_path.push(PathSegment::Stmt(window.start + 1));
-        let use_path = AstPath(use_path);
-        if !uses.writes.is_empty() || uses.reads != [use_path] {
+        let [read] = uses.reads.as_slice() else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
-                RejectionReason::Contradicted,
-                Vec::new(),
-            ));
-        }
-        Ok(Proof::new(
-            binding,
-            vec![Evidence {
-                predicate,
-                site: evidence_site,
-                detail: EvidenceDetail::Binding {
-                    name: name.to_string(),
-                },
-            }],
-        ))
-    }
-
-    fn dead_local(&self, window: &StmtWindowSite, name: &str) -> QueryResult<BindingId>;
-    key: (StmtWindowSite, String) = (window.clone(), name.to_string());
-    {
-        let predicate = Predicate::DeadLocal;
-        let evidence_site = stmt_window_evidence_site(window, window.start);
-        let function = self.facts.function_by_item_index(window.item_index).ok_or_else(|| {
-            Rejection::new(
-                predicate,
-                Some(evidence_site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            )
-        })?;
-        let mut def_path = window.path.0.clone();
-        def_path.push(PathSegment::Stmt(window.start));
-        let def_path = AstPath(def_path);
-        let Some(binding) = self.facts.binding_by_local_path(function, name, &def_path) else {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::MissingEvidence,
+                RejectionReason::Ambiguous,
                 Vec::new(),
             ));
         };
-        let Some(uses) = self.facts.def_use(binding) else {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        if !uses.reads.is_empty() || !uses.writes.is_empty() {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::Contradicted,
-                Vec::new(),
-            ));
-        }
         Ok(Proof::new(
-            binding,
+            read.clone(),
             vec![Evidence {
                 predicate,
                 site: evidence_site,

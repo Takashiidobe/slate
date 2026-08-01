@@ -370,14 +370,13 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::FirstNul => "first_nul",
         Predicate::PrefixContains => "prefix_contains",
         Predicate::MovablePure => "movable_pure",
-        Predicate::NeverReturningExtern => "never_returning_extern",
+        Predicate::ExternFn => "extern_fn",
         Predicate::ZeroUsers => "zero_users",
         Predicate::ZeroGroupUsers => "zero_group_users",
         Predicate::CountedLoop => "counted_loop",
         Predicate::StmtWindowGuard => "stmt_window_guard",
         Predicate::LazySingletonDomain => "lazy_singleton_domain",
-        Predicate::SoleUse => "sole_use",
-        Predicate::DeadLocal => "dead_local",
+        Predicate::ReadPath => "read_path",
         Predicate::NoEffects => "no_effects",
     }
 }
@@ -422,14 +421,11 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             format!("count={count};nul={nul}")
         }
         EvidenceDetail::MovablePure => "movable_pure".into(),
-        EvidenceDetail::KnownExternDeclaration {
-            target,
+        EvidenceDetail::ExternFnDeclaration {
+            name,
             arity,
             returns_never,
-        } => format!(
-            "known:{};arity={arity};returns_never={returns_never}",
-            target.symbol()
-        ),
+        } => format!("name={name};arity={arity};returns_never={returns_never}"),
         EvidenceDetail::UseDomain {
             name,
             users,

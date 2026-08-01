@@ -1,9 +1,9 @@
 use crate::fixups::trace::Pass;
 
 use super::{
-    ByteSource, CallRecord, ExprRecipe, ExprRule, ExprSite, FnCall, NulPosition, Predicate,
-    QueryContext, Rejection, RejectionReason, ReplaceExpr, RuleCase, RuleIdentity, RuleResult,
-    StableExpr,
+    ByteSource, CallRecord, ExprRecipe, ExprRule, ExprSite, ExternFn, FnCall, NulPosition,
+    Predicate, QueryContext, Rejection, RejectionReason, ReplaceExpr, RuleCase, RuleIdentity,
+    RuleResult, StableExpr,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -26,11 +26,7 @@ pub(in crate::fixups) struct CallRule {
 }
 
 impl CallRule {
-    pub(in crate::fixups) fn matching(
-        pass: Pass,
-        rule: impl Into<String>,
-        matcher: FnCall,
-    ) -> Self {
+    pub(in crate::fixups) fn matches(pass: Pass, rule: impl Into<String>, matcher: FnCall) -> Self {
         Self {
             identity: RuleIdentity::new(pass, rule),
             matcher,
@@ -93,9 +89,8 @@ impl<'snapshot> CallCaseContext<'_, 'snapshot> {
         self.prove(self.query.pure(&site))
     }
 
-    pub(in crate::fixups) fn never_returning_extern(&mut self) -> Result<(), Rejection> {
-        self.prove(self.query.never_returning_extern(self.call))
-            .map(drop)
+    pub(in crate::fixups) fn extern_fn(&mut self, matcher: &ExternFn) -> Result<(), Rejection> {
+        self.prove(self.query.extern_fn(matcher))
     }
 
     pub(in crate::fixups) fn full_byte_view(

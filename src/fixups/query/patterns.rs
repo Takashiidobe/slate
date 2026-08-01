@@ -1,13 +1,50 @@
+use crate::fixups::facts::Purity;
 use crate::rust_ast::{Expr, IndentStmt, Label, Stmt, Type};
 
-use super::CallTarget;
 use super::field::Field;
+use super::{CallTarget, DefinitionGroup, DefinitionKind, ResolvedValue, Usage};
 
 #[derive(Default)]
 pub(in crate::fixups) struct FnCall<Cx = ()> {
     pub(in crate::fixups) target: Field<CallTarget, Cx>,
     pub(in crate::fixups) arity: Field<usize, Cx>,
     pub(in crate::fixups) arg_types: Field<Vec<Option<Type>>, Cx>,
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct Definition<Cx = ()> {
+    pub(in crate::fixups) kind: Field<DefinitionKind, Cx>,
+    pub(in crate::fixups) name: Field<String, Cx>,
+    pub(in crate::fixups) group: Field<Option<DefinitionGroup>, Cx>,
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct Value<Cx = ()> {
+    pub(in crate::fixups) ty: Field<Option<Type>, Cx>,
+    pub(in crate::fixups) usage: Field<Option<Usage>, Cx>,
+    pub(in crate::fixups) purity: Field<Option<Purity>, Cx>,
+}
+
+impl<Cx> Value<Cx> {
+    pub(in crate::fixups) fn matches(&self, resolved: &ResolvedValue, cx: &Cx) -> bool {
+        self.ty.matches(&resolved.ty, cx)
+            && self.usage.matches(&resolved.usage, cx)
+            && self.purity.matches(&resolved.purity, cx)
+    }
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct Local<Cx = ()> {
+    pub(in crate::fixups) name: Field<String, Cx>,
+    pub(in crate::fixups) mutable: Field<bool, Cx>,
+    pub(in crate::fixups) value: Value<Cx>,
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct ExternFn<Cx = ()> {
+    pub(in crate::fixups) name: Field<String, Cx>,
+    pub(in crate::fixups) arity: Field<usize, Cx>,
+    pub(in crate::fixups) returns: Field<Option<Type>, Cx>,
 }
 
 pub(in crate::fixups) struct NullaryMethodCall<Cx = ()> {
