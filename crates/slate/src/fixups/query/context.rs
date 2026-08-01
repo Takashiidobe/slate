@@ -6,10 +6,10 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, CastFact, ConstValue, CountedLoopFact, EffectKind,
     EffectSubject, FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind,
-    HeapReadSafety, NulTermination, PathSegment, PtrLenSliceFact, Purity, StringBufferFact,
-    StringBufferKind, StringRecoveryCandidate, ValueSubject,
+    HeapReadSafety, NulTermination, PathSegment, PlaceAccess, PlaceKind, PtrLenSliceFact, Purity,
+    StringBufferFact, StringBufferKind, StringRecoveryCandidate, ValueSubject,
 };
-use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
+use crate::fixups::idents::{expr_ident, expr_ident_count, stmt_ident_count};
 use crate::fixups::support::walk as support_walk;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
@@ -25,7 +25,7 @@ use super::{
     HeapOwnershipReallocPlan, InlineTempPlan, LazySingletonPlan, LazySingletonSet, NulPosition,
     NullaryMethodCall, Phase, PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet,
     QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr, StmtWindowSite, Usage,
-    ValueSite, ZeroGroupUsers, ZeroUsers,
+    ValueSite, ZeroGroupUsers, ZeroInitPlan, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -1623,6 +1623,63 @@ query_cache! {
             evidence,
         ))
     }
+
+    fn zero_init_candidate(
+        &self,
+        definition: &DefinitionSite,
+        cross_effects: bool
+    ) -> QueryResult<ZeroInitPlan>;
+    key: (DefinitionLocation, bool) = (definition.location.clone(), cross_effects);
+    {
+        let predicate = Predicate::ZeroInit;
+        let site = definition_evidence_site(definition);
+        let Some(function) = self
+            .facts
+            .function_by_item_index(definition.location.item_index())
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Item::Fn(function_item) = &self.program.items[definition.location.item_index()]
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let mut body = function_item.body.clone();
+        let Some(found) =
+            zero_init_apply(&mut body, function, self.facts, cross_effects, &mut Vec::new())
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::ZeroInit {
+                moved_decl: found.moved_decl,
+            },
+        }];
+        Ok(Proof::new(
+            ZeroInitPlan {
+                body,
+                name: found.name,
+                moved_decl: found.moved_decl,
+            },
+            evidence,
+        ))
+    }
 }
 
 fn collect_array_element_pointer_aliases(
@@ -2063,6 +2120,281 @@ fn collect_assign_value_sites(
             });
         });
     }
+}
+
+struct ZeroInitFound {
+    name: String,
+    moved_decl: bool,
+}
+
+fn zero_init_apply(
+    body: &mut Vec<IndentStmt>,
+    function: FunctionId,
+    facts: &FixupFacts,
+    cross_effects: bool,
+    path: &mut Vec<PathSegment>,
+) -> Option<ZeroInitFound> {
+    for (index, indent) in body.iter_mut().enumerate() {
+        let mut found = None;
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            support_walk::nested_body_vecs_mut_with_path(
+                &mut indent.stmt,
+                path,
+                &mut |nested, path| {
+                    if found.is_none() {
+                        found = zero_init_apply(nested, function, facts, cross_effects, path);
+                    }
+                },
+            );
+        });
+        if found.is_some() {
+            return found;
+        }
+    }
+    for i in 0..body.len().saturating_sub(1) {
+        let decl_path = zero_init_stmt_path(path, i);
+        let Stmt::Let {
+            name,
+            mutable: true,
+            ty: Some(_),
+            init: Some(_),
+        } = &body[i].stmt
+        else {
+            continue;
+        };
+        let name = name.clone();
+        let Some(binding) =
+            facts.binding_by_local_path(function, &name, &AstPath(decl_path.clone()))
+        else {
+            continue;
+        };
+        if !zero_init_binding_is_zero(function, facts, binding, &decl_path) {
+            continue;
+        }
+        let Some((assign_index, moved_decl)) = zero_init_fold_target(
+            body,
+            i,
+            &name,
+            function,
+            facts,
+            binding,
+            cross_effects,
+            path,
+        ) else {
+            continue;
+        };
+        let Stmt::Assign { value, .. } = &body[assign_index].stmt else {
+            unreachable!();
+        };
+        let value = value.clone();
+        let found_name = name.clone();
+        if moved_decl {
+            let Stmt::Let { mutable, ty, .. } = &body[i].stmt else {
+                unreachable!();
+            };
+            let (mutable, ty) = (*mutable, ty.clone());
+            let depth = body[assign_index].depth;
+            body[assign_index] = IndentStmt {
+                depth,
+                stmt: Stmt::Let {
+                    name,
+                    mutable,
+                    ty,
+                    init: Some(value),
+                },
+            };
+            body.remove(i);
+        } else if let Stmt::Let { init, .. } = &mut body[i].stmt {
+            *init = Some(value);
+            body.remove(assign_index);
+        }
+        return Some(ZeroInitFound {
+            name: found_name,
+            moved_decl,
+        });
+    }
+    None
+}
+
+#[allow(clippy::too_many_arguments)]
+fn zero_init_fold_target(
+    body: &[IndentStmt],
+    decl_index: usize,
+    name: &str,
+    function: FunctionId,
+    facts: &FixupFacts,
+    binding: BindingId,
+    cross_effects: bool,
+    body_path: &[PathSegment],
+) -> Option<(usize, bool)> {
+    let touches = facts.binding_touches_in_body(binding, body_path);
+    let assign_index = touches
+        .iter()
+        .find(|touch| touch.writes && touch.index > decl_index)
+        .map(|touch| touch.index)?;
+    let Stmt::Assign { target, value } = &body[assign_index].stmt else {
+        return None;
+    };
+    if expr_ident(target) != Some(name) {
+        return None;
+    }
+    if !zero_init_is_ordinary_local_write(
+        function,
+        facts,
+        name,
+        &zero_init_stmt_path(body_path, assign_index),
+    ) {
+        return None;
+    }
+    let touches_at = |index: usize| {
+        touches
+            .iter()
+            .find(|touch| touch.index == index)
+            .is_some_and(|touch| touch.reads || touch.writes)
+    };
+    let assign_reads = touches
+        .iter()
+        .find(|touch| touch.index == assign_index)
+        .is_some_and(|touch| touch.reads);
+    if assign_reads {
+        return None;
+    }
+
+    let value_reads_nothing = zero_init_reads_nothing(value);
+    let mut direct = !zero_init_assignment_reads_intervening_binding(
+        body,
+        decl_index,
+        assign_index,
+        function,
+        facts,
+        body_path,
+    );
+    let mut moved = true;
+    for (index, indent) in body
+        .iter()
+        .enumerate()
+        .take(assign_index)
+        .skip(decl_index + 1)
+    {
+        let touched = touches_at(index);
+        let movable = !touched
+            && zero_init_movable_pure_stmt(
+                function,
+                facts,
+                &indent.stmt,
+                &zero_init_stmt_path(body_path, index),
+            );
+        let effect_free = !touched && value_reads_nothing;
+        if !(movable || (cross_effects && effect_free)) {
+            direct = false;
+        }
+        if touched {
+            moved = false;
+        }
+    }
+    if direct {
+        Some((assign_index, false))
+    } else if cross_effects && moved {
+        Some((assign_index, true))
+    } else {
+        None
+    }
+}
+
+fn zero_init_movable_pure_stmt(
+    function: FunctionId,
+    facts: &FixupFacts,
+    stmt: &Stmt,
+    path: &[PathSegment],
+) -> bool {
+    let Stmt::Let { init, .. } = stmt else {
+        return false;
+    };
+    init.is_none()
+        || facts
+            .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
+            .is_some_and(|fact| fact.purity == Purity::MovablePure)
+}
+
+fn zero_init_reads_nothing(expr: &Expr) -> bool {
+    match expr {
+        Expr::Value(_) | Expr::Str(_) | Expr::ByteStr(_) | Expr::CStr(_) | Expr::HexFloat(_) => {
+            true
+        }
+        Expr::Cast { expr, .. } => zero_init_reads_nothing(expr),
+        Expr::Unary { op, expr } => {
+            matches!(op, UnaryOp::Neg | UnaryOp::Not) && zero_init_reads_nothing(expr)
+        }
+        Expr::Binary { lhs, rhs, .. } => {
+            zero_init_reads_nothing(lhs) && zero_init_reads_nothing(rhs)
+        }
+        _ => false,
+    }
+}
+
+fn zero_init_assignment_reads_intervening_binding(
+    body: &[IndentStmt],
+    decl_index: usize,
+    assign_index: usize,
+    function: FunctionId,
+    facts: &FixupFacts,
+    body_path: &[PathSegment],
+) -> bool {
+    let assign_path = zero_init_stmt_path(body_path, assign_index);
+    body.iter()
+        .enumerate()
+        .take(assign_index)
+        .skip(decl_index + 1)
+        .any(|(index, indent)| {
+            let Stmt::Let { name, .. } = &indent.stmt else {
+                return false;
+            };
+            let path = zero_init_stmt_path(body_path, index);
+            facts
+                .binding_by_local_path(function, name, &AstPath(path))
+                .and_then(|binding| facts.def_use(binding))
+                .is_some_and(|def_use| {
+                    def_use
+                        .reads
+                        .iter()
+                        .any(|read| read.0.as_slice().starts_with(&assign_path))
+                })
+        })
+}
+
+fn zero_init_binding_is_zero(
+    function: FunctionId,
+    facts: &FixupFacts,
+    binding: BindingId,
+    path: &[PathSegment],
+) -> bool {
+    facts.has_value(
+        function,
+        ValueSubject::Binding(binding),
+        &AstPath(path.to_vec()),
+        &ConstValue::Zero,
+    )
+}
+
+fn zero_init_is_ordinary_local_write(
+    function: FunctionId,
+    facts: &FixupFacts,
+    name: &str,
+    path: &[PathSegment],
+) -> bool {
+    facts
+        .place(function, &AstPath(path.to_vec()))
+        .is_some_and(|fact| {
+            fact.access == PlaceAccess::Write
+                && fact.ordinary_slot
+                && matches!(&fact.kind, PlaceKind::Local { name: place } if place == name)
+        })
+}
+
+fn zero_init_stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
+    let mut path = body_path.to_vec();
+    path.push(PathSegment::Stmt(index));
+    path
 }
 
 fn index_definitions(

@@ -5,7 +5,7 @@ use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::query::{
     BufferCursorPlan, ByteRepresentation, ByteSource, HeapOwnershipPlan, HeapOwnershipPlanSet,
     HeapOwnershipReallocPlan, InlineTempPlan, NulPosition, PointerMutability, Predicate,
-    QueryContext, Rejection, RejectionReason, StableExpr, default_value,
+    QueryContext, Rejection, RejectionReason, StableExpr, ZeroInitPlan, default_value,
 };
 use crate::fixups::support::walk;
 use crate::function_identity::{Known, known_call};
@@ -106,6 +106,10 @@ impl FunctionBodyRecipe {
     pub(super) fn lower(self) -> Vec<IndentStmt> {
         self.body
     }
+}
+
+pub(in crate::fixups) fn rewrite_zero_init(plan: ZeroInitPlan) -> FunctionBodyRecipe {
+    FunctionBodyRecipe { body: plan.body }
 }
 
 pub(in crate::fixups) fn rewrite_buffer_cursor(plan: BufferCursorPlan) -> FunctionBodyRecipe {

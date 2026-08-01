@@ -101,7 +101,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 3. `early_inline_temps` - inline single-use pure temps, early variant - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`), capped at 5 rounds for very large functions (`> 2_000` statements) so pathological cases don't spin.
 4. `anonymous_structs` - query the complete anonymous-record domain and atomically hoist its definitions, types, literals, and field accesses into named tuple structs - once.
 5. `param_spills` - fold a parameter's stack spill into its binding - once, per function.
-6. `zero_init` (`cross_effects = false`) - fuse a zero-init `let` with the assignment that overwrites it - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`).
+6. `zero_init` (`cross_effects = false`) - fuse a zero-init `let` with the assignment that overwrites it - to fixpoint through a query definition plan, with facts refreshed before every round (`to_fixpoint_program_with_facts`).
 7. `struct_field_init` - fold field assignments into the preceding struct literal - to fixpoint (`to_fixpoint_items`).
 8. `singleton_scopes` - unwrap a one-statement `{ }` scope - to fixpoint (`to_fixpoint_items`).
 9. `compound_assign` - recover `a -= 5` - once, per function.
@@ -140,7 +140,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 42. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops - once, per function through a query definition plan, reusing the same facts snapshot as `array_element_pointer_origin`.
 43. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage - once, program-wide (`run_once_program`), because the same pass rewrites both static items and function bodies.
 44. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`, same round cap as step 3).
-45. `zero_init` (`cross_effects = true`) - same fusion as step 6, now allowed to cross intervening effects - to fixpoint with facts refreshed before every round.
+45. `zero_init` (`cross_effects = true`) - same query-driven fusion as step 6, now allowed to cross intervening effects - to fixpoint with facts refreshed before every round.
 46. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`).
 47. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery - once, per function.
 48. `var_aliases` - inline a `let b = a;` alias into its single later use - to fixpoint, per function, across the program (`to_fixpoint_items`).
@@ -194,18 +194,24 @@ Human output is grouped by pass invocation and then by function:
 zero_init                          changed; stmts -1, temp_lets +0, items +0
   function main:
     fold_zero_init_assignment
-      at fn main, ast stmt[1]
+      at fn main
       before:
-        declaration:
-          let mut x: i32 = 0;
-        assignment:
-          x = 10;
+        definition:
+          fn main() {
+              let mut x: i32 = 0;
+              x = 10;
+              ...
+          }
       after:
-        declaration:
-          let mut x: i32 = 10;
+        definition:
+          fn main() {
+              let mut x: i32 = 10;
+              ...
+          }
       facts:
-        binding_name=x
-        binding_is_zero=true
+        query_rule=fold_zero_init_assignment
+        query_case=direct
+        evidence.zero_init=moved_decl=false
 ```
 
 Passes that make no textual change are still listed as `skipped`. If a changed

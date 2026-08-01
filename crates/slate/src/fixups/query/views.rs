@@ -241,6 +241,13 @@ pub(in crate::fixups) enum Phase {
 }
 
 #[derive(Debug, Clone)]
+pub(in crate::fixups) struct ZeroInitPlan {
+    pub(super) body: Vec<IndentStmt>,
+    pub(super) name: String,
+    pub(super) moved_decl: bool,
+}
+
+#[derive(Debug, Clone)]
 pub(in crate::fixups) struct BufferCursorPlan {
     pub(super) body: Vec<IndentStmt>,
     pub(super) arrays: usize,

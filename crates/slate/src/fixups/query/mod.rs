@@ -34,7 +34,7 @@ pub(in crate::fixups) use proof::{
 pub(in crate::fixups) use recipe::{
     ExprRecipe, FunctionBodyRecipe, byte_position, known_index, memchr_fallback_body,
     pointer_at_or_null, process_exit, rewrite_buffer_cursor, rewrite_heap_ownership,
-    rewrite_inline_temp,
+    rewrite_inline_temp, rewrite_zero_init,
 };
 pub(in crate::fixups) use rewrite::{
     CaseRejection, ExprPlanBuilder, ExprRule, ReplaceExpr, RuleCase, RuleCaseIdentity,
@@ -47,7 +47,7 @@ pub(in crate::fixups) use value::{
 };
 use views::{
     AnonymousStructField, AnonymousStructPlan, ArrayElementPointerOrigin, BufferCursorPlan,
-    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan,
+    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan, ZeroInitPlan,
 };
 pub(in crate::fixups) use views::{
     AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
