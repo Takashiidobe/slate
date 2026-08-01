@@ -390,6 +390,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::Cast => "cast",
         Predicate::ZeroInit => "zero_init",
         Predicate::UnusedTypeDefinition => "unused_type_definition",
+        Predicate::UnusedParam => "unused_param",
     }
 }
 
@@ -473,6 +474,11 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::Cast { to } => format!("to={to:?}"),
         EvidenceDetail::ZeroInit { moved_decl } => format!("moved_decl={moved_decl}"),
         EvidenceDetail::UnusedTypeDefinition { doomed } => format!("doomed={doomed}"),
+        EvidenceDetail::UnusedParam {
+            function,
+            param,
+            param_index,
+        } => format!("function={function};param={param};param_index={param_index}"),
     }
 }
 

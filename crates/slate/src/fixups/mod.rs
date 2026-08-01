@@ -836,10 +836,20 @@ fn apply_with_logger(
         report.changed
     });
     step!(program, Pass::UnusedParams, {
-        to_fixpoint_program(&mut program, |program| {
-            rewrite::unused_params::UnusedParams::new(logger).fixup(program)
-        });
-        incremental.mark_everything_dirty();
+        loop {
+            let facts = incremental.resolve(&program);
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::ProgramPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::unused_params::program());
+                builder.finish()
+            };
+            let report = plan.apply(&mut program, logger);
+            incremental.mark_touched(&report.touched);
+            if !report.changed {
+                break;
+            }
+        }
     });
     step!(program, Pass::FinalReturns, {
         for item in &mut program.items {

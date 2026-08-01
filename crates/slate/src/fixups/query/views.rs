@@ -91,6 +91,24 @@ pub(in crate::fixups) struct UnusedTypeDefinitionSet {
 }
 
 #[derive(Debug, Clone)]
+pub(in crate::fixups) struct ParamSite {
+    pub(super) function_item_index: usize,
+    pub(super) function_name: String,
+    pub(super) param_index: usize,
+    pub(super) param_name: String,
+    pub(super) param_ty: Type,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct UnusedParamPlan {
+    pub(super) function_item_index: usize,
+    pub(super) function_name: String,
+    pub(super) param_index: usize,
+    pub(super) param_name: String,
+    pub(super) param_ty: String,
+}
+
+#[derive(Debug, Clone)]
 pub(in crate::fixups) struct AnonymousStructSet {
     pub(super) structs: Vec<AnonymousStructPlan>,
 }

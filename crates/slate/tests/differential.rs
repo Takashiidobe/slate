@@ -2106,6 +2106,40 @@ fn unused_type_definitions_are_pruned_but_reachable_ones_survive() {
 }
 
 #[test]
+fn unused_params_are_removed_but_used_ones_survive() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-unused-params");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("unused_params.c");
+    let generated = tmp.join("unused_params.generated.rs");
+
+    support::translate(&c_src, &generated).expect("translate unused_params fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated unused_params rust");
+
+    assert!(rust.contains("fn add(a: i32) -> i32"));
+    assert!(rust.contains("fn get_used(a: i32, b: i32) -> i32"));
+    assert!(rust.contains("add(5)"));
+    assert!(rust.contains("get_used(1, 2)"));
+    assert!(!rust.contains("add(5, 10)"));
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("fixup-debug")
+        .arg("--debug-only-pass")
+        .arg("unused_params")
+        .arg(&c_src)
+        .output()
+        .expect("run unused_params query trace");
+    assert!(
+        output.status.success(),
+        "fixup-debug failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
+    assert!(stdout.contains("query_rule=remove_unused_param"));
+    assert!(stdout.contains("evidence.unused_param=function=add;param=unused;param_index=1"));
+    assert!(stdout.contains("rejected_case.unreachable_param=unused_param:missing_evidence"));
+}
+
+#[test]
 fn string_lift_recovers_safe_local_string_buffers() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-string-lift");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
