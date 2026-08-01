@@ -25,7 +25,7 @@ pub(in crate::fixups) use patterns::{
 pub(in crate::fixups) use plan::TouchedItems;
 pub(in crate::fixups) use program::{ProgramPlanBuilder, ProgramRule};
 pub(in crate::fixups) use program_recipe::{
-    ProgramRecipe, rewrite_anonymous_structs, rewrite_lazy_singletons,
+    ProgramRecipe, rewrite_anonymous_structs, rewrite_lazy_singletons, rewrite_ptr_len,
 };
 pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
@@ -42,11 +42,11 @@ pub(in crate::fixups) use rule::CallRule;
 pub(in crate::fixups) use stmt_window::{StmtWindowPlanBuilder, StmtWindowRule};
 use views::{
     AnonymousStructField, AnonymousStructPlan, HeapOwnershipPlan, HeapOwnershipReallocPlan,
-    LazySingletonPlan, StringLiftPlan,
+    LazySingletonPlan, PtrLenPlan, StringLiftPlan,
 };
 pub(in crate::fixups) use views::{
     AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
     DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite,
-    HeapOwnershipPlanSet, LazySingletonSet, NulPosition, PointerMutability, ResolvedValue,
-    StableExpr, StmtWindowSite, StringLiftPlanSet, Usage, ZeroGroupUsers, ZeroUsers,
+    HeapOwnershipPlanSet, LazySingletonSet, NulPosition, PointerMutability, PtrLenPlanSet,
+    ResolvedValue, StableExpr, StmtWindowSite, StringLiftPlanSet, Usage, ZeroGroupUsers, ZeroUsers,
 };

@@ -5,13 +5,14 @@ use super::plan::{EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlannedEdit, To
 use super::program_recipe::{ItemAnchor, PreparedProgram};
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    AnonymousStructSet, CaseRejection, Evidence, LazySingletonSet, ProgramRecipe, QueryContext,
-    Rejection, RuleCaseIdentity, RuleIdentity,
+    AnonymousStructSet, CaseRejection, Evidence, LazySingletonSet, ProgramRecipe, PtrLenPlanSet,
+    QueryContext, Rejection, RuleCaseIdentity, RuleIdentity,
 };
 
 enum ProgramRuleSelector {
     AnonymousStructs,
     LazySingletons,
+    PtrLen,
 }
 
 type ProgramCaseFn = for<'case, 'snapshot> fn(
@@ -46,6 +47,14 @@ impl ProgramRule {
         }
     }
 
+    pub(in crate::fixups) fn ptr_len(pass: Pass, rule: impl Into<String>) -> Self {
+        Self {
+            identity: RuleIdentity::new(pass, rule),
+            selector: ProgramRuleSelector::PtrLen,
+            cases: Vec::new(),
+        }
+    }
+
     pub(in crate::fixups) fn case(mut self, name: impl Into<String>, apply: ProgramCaseFn) -> Self {
         self.cases.push(DeclarativeProgramCase {
             name: name.into(),
@@ -58,6 +67,7 @@ impl ProgramRule {
         match self.selector {
             ProgramRuleSelector::AnonymousStructs => query.has_anonymous_structs(),
             ProgramRuleSelector::LazySingletons => query.has_lazy_singletons(),
+            ProgramRuleSelector::PtrLen => query.has_ptr_len_slices(),
         }
     }
 }
@@ -74,6 +84,10 @@ impl ProgramCaseContext<'_, '_> {
 
     pub(in crate::fixups) fn lazy_singletons(&mut self) -> Result<LazySingletonSet, Rejection> {
         self.prove(self.query.lazy_singletons())
+    }
+
+    pub(in crate::fixups) fn ptr_len_slices(&mut self) -> Result<PtrLenPlanSet, Rejection> {
+        self.prove(self.query.ptr_len_slices())
     }
 
     fn prove<T>(&mut self, result: super::QueryResult<T>) -> Result<T, Rejection> {

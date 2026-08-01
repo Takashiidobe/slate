@@ -219,3 +219,18 @@ pub(super) struct StringLiftPlan {
     pub(super) expr: Expr,
     pub(super) remove_path: Option<AstPath>,
 }
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct PtrLenPlanSet {
+    pub(super) plans: Vec<PtrLenPlan>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct PtrLenPlan {
+    pub(super) item_index: usize,
+    pub(super) function_name: String,
+    pub(super) ptr_index: usize,
+    pub(super) ptr_name: String,
+    pub(super) mutable: bool,
+    pub(super) elem: Type,
+}

@@ -409,9 +409,14 @@ fn apply_with_logger(
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::PtrLen, {
-        let mut fixup = rewrite::ptr_len::PtrLen::new(&facts, logger);
-        run_once_program(&mut program, |program| fixup.fixup(program));
-        incremental.mark_everything_dirty();
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ProgramPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::ptr_len::program());
+            builder.finish()
+        };
+        let report = plan.apply(&mut program, logger);
+        incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::SliceIndex, {

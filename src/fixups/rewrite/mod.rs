@@ -17,7 +17,6 @@ pub(super) mod nullable_pointer;
 pub(super) mod param_spills;
 pub(super) mod printf_format;
 pub(super) mod ptr_copy;
-pub(super) mod ptr_len;
 pub(super) mod remove_mut;
 pub(super) mod retval;
 pub(super) mod singleton_scopes;
