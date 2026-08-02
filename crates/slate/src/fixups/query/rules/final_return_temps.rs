@@ -36,8 +36,8 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
         };
         case.require(returned.as_str() == name)?;
         let statement = matched.statement(0);
-        let binding =
-            case.fact(|query| query.binding_at(statement.item_index, &statement.path, name))?;
+        let binding = case.fact(|query| query.statement_binding(&statement))?;
+        case.require(binding.name == *name)?;
         let uses = case.fact(|query| query.binding_uses(&binding))?;
         let [usage] = uses.uses.as_slice() else {
             return Err(case.reject());

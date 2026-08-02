@@ -44,8 +44,10 @@ pub(in crate::fixups) enum Predicate {
     ExpressionPlace,
     ExpressionType,
     ExpressionValues,
+    Function,
     ParentExpression,
     ReferenceDomain,
+    Statement,
     AnonymousStructDomain,
     ByteSource,
     ConstantU8,
@@ -61,7 +63,6 @@ pub(in crate::fixups) enum Predicate {
     ItemGuard,
     LazySingletonDomain,
     ReadPath,
-    NoEffects,
     ArrayElementPointerOrigin,
     BufferCursor,
     HeapOwnershipPlan,
@@ -100,6 +101,7 @@ pub(in crate::fixups) enum EvidenceDetail {
         writes: usize,
     },
     Expression,
+    Statement,
     ExpressionEffects {
         purity: Purity,
         effects: usize,
@@ -113,6 +115,9 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     ExpressionValues {
         count: usize,
+    },
+    Function {
+        name: String,
     },
     ReferenceDomain {
         definitions: usize,
@@ -157,7 +162,6 @@ pub(in crate::fixups) enum EvidenceDetail {
     LazySingletonDomain {
         singletons: usize,
     },
-    NoEffects,
     ArrayElementPointerOrigin {
         origins: usize,
     },

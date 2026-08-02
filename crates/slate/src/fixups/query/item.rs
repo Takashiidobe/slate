@@ -337,24 +337,6 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
         self.attempt(recipe.lower(self.query, site))
     }
 
-    pub(in crate::fixups) fn function_body(&self, definition: &DefinitionSite) -> Vec<IndentStmt> {
-        match &self.query.snapshot_program().items[definition.location.item_index()] {
-            Item::Fn(function) => function.body.clone(),
-            _ => Vec::new(),
-        }
-    }
-
-    pub(in crate::fixups) fn function(
-        &self,
-        definition: &DefinitionSite,
-    ) -> Result<FunctionRef, Rejection> {
-        self.query
-            .all_functions()
-            .into_iter()
-            .find(|function| function.item_index == definition.location.item_index())
-            .ok_or_else(|| self.reject())
-    }
-
     pub(in crate::fixups) fn replace_function_body(
         &self,
         target: FunctionRef,

@@ -32,11 +32,12 @@ pub(in crate::fixups) fn calls() -> QueryRule<FnCall> {
     )
     .case("known_nul", |case, call| {
         let [source, needle, count] = case.call_args(call);
-        let source = case.byte_source(&source)?;
-        case.u8_eq(&needle, 0)?;
-        case.pure(&needle)?;
-        let nul = case.first_nul(&source)?;
-        case.prefix_contains(&count, nul)?;
+        let source = case.fact(|query| query.byte_source(&source))?;
+        let value = case.fact(|query| query.const_u8(&needle))?;
+        case.require_at(value == 0, Predicate::ConstantU8, &needle)?;
+        case.fact(|query| query.pure(&needle))?;
+        let nul = case.fact(|query| query.first_nul(&source))?;
+        case.fact(|query| query.prefix_contains(&count, nul))?;
         let replacement = case.lower_expr(
             pointer_at_or_null(source, known_index(nul)),
             &call.site,
@@ -45,9 +46,9 @@ pub(in crate::fixups) fn calls() -> QueryRule<FnCall> {
     })
     .case("byte_position", |case, call| {
         let [source, needle, count] = case.call_args(call);
-        let source = case.byte_source(&source)?;
-        case.full_byte_view(&source, &count)?;
-        let needle = case.pure(&needle)?;
+        let source = case.fact(|query| query.byte_source(&source))?;
+        case.fact(|query| query.full_byte_view(&source, &count))?;
+        let needle = case.fact(|query| query.pure(&needle))?;
         let replacement = case.lower_expr(
             pointer_at_or_null(source, byte_position(needle)),
             &call.site,
@@ -57,7 +58,8 @@ pub(in crate::fixups) fn calls() -> QueryRule<FnCall> {
 }
 ```
 
-The common item case context provides call fact helpers including:
+`ItemCaseContext::fact` accepts any `QueryContext` query and accumulates its
+proof evidence. Common orthogonal facts include:
 
 - `call_args(call)` binds fixed-arity argument sites.
 - `byte_source(arg)` proves and captures a byte-oriented source.
@@ -98,8 +100,8 @@ When a rule needs a new precondition or capture:
 1. Add the semantic fact under `src/fixups/facts/` if it does not exist.
 2. Add a `QueryContext` method returning `QueryResult<T>`.
 3. Add its `Predicate` and stable `EvidenceDetail`.
-4. Add a small method to the rule case context that accepts the relevant stable
-   handle and accumulates the proof.
+4. Invoke the query through `case.fact(|query| query.method(handle))` so proof
+   accumulation remains generic.
 5. Add trace formatting in `query/rewrite.rs`.
 6. Use the helper as one short precondition in the rule.
 
@@ -136,7 +138,8 @@ pub(in crate::fixups) fn helper() -> QueryRule<Definition> {
         },
     )
     .case("unused", |case, definition| {
-        case.zero_users(definition)?;
+        let uses = case.fact(|query| query.definition_users(definition))?;
+        case.require_at(uses.users == 0, Predicate::ZeroUsers, &uses.site)?;
         Ok(EditSet::delete_definition(definition.clone()))
     })
     .case("retained", |_, definition| {
@@ -176,8 +179,8 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
         StatementSequence::new(2),
     )
     .case("zero_step_one", |case, matched| {
-        let [index_stmt, loop_stmt] = matched.stmts();
-        let fact = case.counted_loop(&matched.statement(1))?;
+        let [index_stmt, loop_stmt] = case.statements(matched)?;
+        let fact = case.fact(|query| query.counted_loop(&matched.statement(1)))?;
         case.require(fact.start == CountedLoopStart::Zero)?;
         case.require(fact.step == CountedLoopStep::One)?;
         Ok(EditSet::replace_statements(
@@ -229,8 +232,9 @@ item removals follow the same rule, so earlier removals cannot shift a later
 target. Reports count applied edit sets and deduplicate touched items.
 
 The fundamental edits replace a typed expression, statement range, complete
-function, or complete definition. Signature, parameter, and body changes clone
-the matched `FunctionRef`, update the typed `FnDef`, and replace that function.
+function, or complete definition. Signature, parameter, and body changes use a
+lightweight `FunctionRef` to look up the snapshot `FnDef`, clone it only while
+constructing the accepted edit, and replace that function.
 Argument-list changes replace the anchored call expression. Binding declarations,
 initializers, nested blocks, and match arms use statement-range replacement;
 record fields and enum variants replace their enclosing definition. Definition

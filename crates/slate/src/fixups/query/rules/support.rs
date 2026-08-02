@@ -1,6 +1,6 @@
 use crate::fixups::trace::Pass;
 
-use super::super::{Definition, DefinitionKind, EditSet, Field, QueryRule};
+use super::super::{Definition, DefinitionKind, EditSet, Field, Predicate, QueryRule};
 
 pub(in crate::fixups) fn unused_numeric_parse() -> QueryRule<Definition> {
     QueryRule::new(
@@ -13,7 +13,8 @@ pub(in crate::fixups) fn unused_numeric_parse() -> QueryRule<Definition> {
         },
     )
     .case("unused", |case, definition| {
-        case.fact(|query| query.zero_users(definition))?;
+        let users = case.fact(|query| query.definition_users(definition))?;
+        case.require_at(users.users == 0, Predicate::ZeroUsers, &users.site)?;
         Ok(EditSet::delete_definition(definition.clone()))
     })
 }

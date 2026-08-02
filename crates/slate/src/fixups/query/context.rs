@@ -23,15 +23,15 @@ use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
     BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse, BindingUses,
     BufferCursorPlan, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
-    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, EnumVariantRef,
-    Evidence, EvidenceDetail, ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace,
-    ExpressionRef, ExpressionRole, ExpressionValues, ExternFn, FieldRef, FunctionRef,
-    HeapOwnershipPlan, HeapOwnershipPlanSet, HeapOwnershipReallocPlan, InlineTempPlan,
-    ItemReferences, LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition,
+    DefinitionGroupUsers, DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite,
+    DefinitionUsers, EnumVariantRef, Evidence, EvidenceDetail, ExprSite, ExpressionEffects,
+    ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole, ExpressionValues, ExternFn,
+    FieldRef, FunctionRef, HeapOwnershipPlan, HeapOwnershipPlanSet, HeapOwnershipReallocPlan,
+    InlineTempPlan, ItemReferences, LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition,
     NullaryMethodCall, ParameterRef, Phase, PointerMutability, Predicate, Proof, PtrLenPlan,
     PtrLenPlanSet, QueryResult, ReferenceDomain, Rejection, RejectionReason, ResolvedValue,
-    StableExpr, StatementContainerRef, StatementRange, TypeUseRef, Usage, ValueSite,
-    ZeroGroupUsers, ZeroInitPlan, ZeroUsers,
+    StableExpr, StatementContainerRef, StatementRange, TypeUseRef, Usage, UseSiteRef, ValueSite,
+    ZeroInitPlan,
 };
 
 macro_rules! query_cache {
@@ -334,8 +334,32 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             )
         })?;
-        let reads = fact.reads.clone();
-        let writes = fact.writes.clone();
+        let reads = fact
+            .reads
+            .iter()
+            .map(|path| self.use_site(binding.item_index, path))
+            .collect::<Option<Vec<_>>>()
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        let writes = fact
+            .writes
+            .iter()
+            .map(|path| self.use_site(binding.item_index, path))
+            .collect::<Option<Vec<_>>>()
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
         let evidence = vec![Evidence {
             predicate,
             site,
@@ -354,6 +378,25 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
+    fn use_site(&self, item_index: usize, path: &AstPath) -> Option<UseSiteRef> {
+        if matches!(path.0.last(), Some(PathSegment::Stmt(_))) {
+            let statement = StatementRef {
+                item_index,
+                path: path.clone(),
+            };
+            return self
+                .statement_tail(&statement)
+                .is_some()
+                .then_some(UseSiteRef::Statement(statement));
+        }
+        let expression = ExpressionRef {
+            site: expression_site(item_index, &path.0),
+        };
+        self.expr(&expression.site)
+            .is_some()
+            .then_some(UseSiteRef::Expression(expression))
+    }
+
     pub(in crate::fixups) fn binding_value(&self, binding: &BindingRef) -> ResolvedValue {
         ResolvedValue {
             ty: binding.ty.clone(),
@@ -363,6 +406,53 @@ impl<'snapshot> QueryContext<'snapshot> {
             }),
             purity: None,
         }
+    }
+
+    pub(in crate::fixups) fn binding_type(&self, binding: &BindingRef) -> QueryResult<Type> {
+        let predicate = Predicate::ExpressionType;
+        let site = expression_site(binding.item_index, &binding.definition.0);
+        let ty = binding.ty.clone().ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        Ok(Proof::new(
+            ty.clone(),
+            vec![Evidence {
+                predicate,
+                site,
+                detail: EvidenceDetail::ExpressionType { ty },
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn binding_usage(&self, binding: &BindingRef) -> QueryResult<Usage> {
+        let proof = self.binding_def_use(binding)?;
+        let usage = Usage {
+            reads: proof.value.reads.len(),
+            writes: proof.value.writes.len(),
+        };
+        Ok(Proof::new(usage, proof.evidence))
+    }
+
+    pub(in crate::fixups) fn binding_resolved_value(
+        &self,
+        binding: &BindingRef,
+    ) -> QueryResult<ResolvedValue> {
+        let (ty, mut evidence) = self.binding_type(binding)?.into_parts();
+        let (usage, usage_evidence) = self.binding_usage(binding)?.into_parts();
+        evidence.extend(usage_evidence);
+        Ok(Proof::new(
+            ResolvedValue {
+                ty: Some(ty),
+                usage: Some(usage),
+                purity: None,
+            },
+            evidence,
+        ))
     }
 
     fn resolved_value_at(
@@ -537,6 +627,98 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.expression(&expression_site(statement.item_index, &path))
     }
 
+    pub(in crate::fixups) fn statement(
+        &self,
+        statement: &StatementRef,
+    ) -> QueryResult<&'snapshot IndentStmt> {
+        let site = statement_evidence_site(statement);
+        let value = self
+            .statement_tail(statement)
+            .and_then(|tail| tail.first())
+            .ok_or_else(|| {
+                Rejection::new(
+                    Predicate::Statement,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        Ok(Proof::new(
+            value,
+            vec![Evidence {
+                predicate: Predicate::Statement,
+                site,
+                detail: EvidenceDetail::Statement,
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn statement_binding(
+        &self,
+        statement: &StatementRef,
+    ) -> QueryResult<BindingRef> {
+        let proof = self.statement(statement)?;
+        let name = match &proof.value.stmt {
+            Stmt::Let { name, .. } | Stmt::LetIf { name, .. } => name,
+            _ => {
+                return Err(Rejection::new(
+                    Predicate::Binding,
+                    Some(statement_evidence_site(statement)),
+                    RejectionReason::UnsupportedShape,
+                    proof.evidence,
+                ));
+            }
+        };
+        let mut binding = self.binding_at(statement.item_index, &statement.path, name)?;
+        let mut evidence = proof.evidence;
+        evidence.append(&mut binding.evidence);
+        Ok(Proof::new(binding.value, evidence))
+    }
+
+    pub(in crate::fixups) fn statement_effects(
+        &self,
+        statement: &StatementRef,
+    ) -> QueryResult<ExpressionEffects> {
+        let predicate = Predicate::ExpressionEffects;
+        let site = statement_evidence_site(statement);
+        let function = self
+            .facts
+            .function_by_item_index(statement.item_index)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        let fact = self
+            .facts
+            .effect(function, EffectSubject::Expr, &statement.path)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        Ok(Proof::new(
+            ExpressionEffects {
+                purity: fact.purity,
+                effects: fact.effects.clone(),
+            },
+            vec![Evidence {
+                predicate,
+                site,
+                detail: EvidenceDetail::ExpressionEffects {
+                    purity: fact.purity,
+                    effects: fact.effects.len(),
+                },
+            }],
+        ))
+    }
+
     pub(in crate::fixups) fn parent_expression(
         &self,
         expression: &ExpressionRef,
@@ -564,6 +746,22 @@ impl<'snapshot> QueryContext<'snapshot> {
                 detail: EvidenceDetail::ParentExpression,
             }],
         ))
+    }
+
+    pub(in crate::fixups) fn ancestor_expressions(
+        &self,
+        expression: &ExpressionRef,
+    ) -> QueryResult<Vec<ExpressionRef>> {
+        let mut ancestors = Vec::new();
+        let mut evidence = Vec::new();
+        let mut current = expression.clone();
+        while self.expression_parents.contains_key(&current.site) {
+            let proof = self.parent_expression(&current)?;
+            evidence.extend(proof.evidence);
+            current = proof.value;
+            ancestors.push(current.clone());
+        }
+        Ok(Proof::new(ancestors, evidence))
     }
 
     pub(in crate::fixups) fn expression_call(
@@ -1274,6 +1472,93 @@ impl<'snapshot> QueryContext<'snapshot> {
         (definition.name == function.name).then_some(definition)
     }
 
+    pub(in crate::fixups) fn definition_function(
+        &self,
+        definition: &DefinitionSite,
+    ) -> QueryResult<FunctionRef> {
+        let predicate = Predicate::Function;
+        let site = definition_evidence_site(definition);
+        let function = self
+            .all_functions()
+            .into_iter()
+            .find(|function| {
+                function.item_index == definition.location.item_index()
+                    && function.name == definition.name
+            })
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        Ok(Proof::new(
+            function.clone(),
+            vec![Evidence {
+                predicate,
+                site,
+                detail: EvidenceDetail::Function {
+                    name: function.name,
+                },
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn function_snapshot(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<&'snapshot FnDef> {
+        let predicate = Predicate::Function;
+        let site = expression_site(function.item_index, &[]);
+        let definition = self.function_def(function).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        Ok(Proof::new(
+            definition,
+            vec![Evidence {
+                predicate,
+                site,
+                detail: EvidenceDetail::Function {
+                    name: function.name.clone(),
+                },
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn function_bindings(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<Vec<BindingRef>> {
+        let mut proof = self.function_snapshot(function)?;
+        let bindings = self
+            .all_bindings()
+            .into_iter()
+            .filter(|binding| binding.item_index == function.item_index)
+            .collect();
+        Ok(Proof::new(bindings, std::mem::take(&mut proof.evidence)))
+    }
+
+    pub(in crate::fixups) fn function_expressions(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<Vec<ExpressionRef>> {
+        let mut proof = self.function_snapshot(function)?;
+        let expressions = self
+            .expression_sites
+            .iter()
+            .filter(|site| site.item_index == function.item_index)
+            .cloned()
+            .map(|site| ExpressionRef { site })
+            .collect();
+        Ok(Proof::new(expressions, std::mem::take(&mut proof.evidence)))
+    }
+
     pub(in crate::fixups) fn statement_tail(
         &self,
         statement: &StatementRef,
@@ -1378,7 +1663,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             .collect()
     }
 
-    fn definition_users(
+    fn count_definition_users(
         &self,
         definition: &DefinitionSite,
         definition_items: &BTreeSet<usize>,
@@ -1618,10 +1903,10 @@ query_cache! {
         Ok(Proof::new(AnonymousStructSet { structs }, evidence))
     }
 
-    fn zero_users(&self, definition: &DefinitionSite) -> QueryResult<ZeroUsers>;
+    fn definition_users(&self, definition: &DefinitionSite) -> QueryResult<DefinitionUsers>;
     key: DefinitionLocation = definition.location.clone();
     {
-        let users = self.definition_users(
+        let users = self.count_definition_users(
             definition,
             &BTreeSet::from([definition.location.item_index()]),
         );
@@ -1643,23 +1928,18 @@ query_cache! {
                 evidence,
             ));
         }
-        if users != 0 {
-            return Err(Rejection::new(
-                Predicate::ZeroUsers,
-                Some(definition_evidence_site(definition)),
-                RejectionReason::Contradicted,
-                evidence,
-            ));
-        }
+        let site = definition_evidence_site(definition);
         Ok(Proof::new(
-            ZeroUsers {
+            DefinitionUsers {
                 definition: definition.clone(),
+                users,
+                site,
             },
             evidence,
         ))
     }
 
-    fn zero_group_users(&self, group: &DefinitionGroup) -> QueryResult<ZeroGroupUsers>;
+    fn definition_group_users(&self, group: &DefinitionGroup) -> QueryResult<DefinitionGroupUsers>;
     key: DefinitionGroup = group.clone();
     {
         let definitions = self.definitions_in_group(group);
@@ -1669,7 +1949,7 @@ query_cache! {
             .collect::<BTreeSet<_>>();
         let users = definitions
             .iter()
-            .map(|definition| self.definition_users(definition, &definition_items))
+            .map(|definition| self.count_definition_users(definition, &definition_items))
             .sum();
         let complete = !definitions.is_empty()
             && self.use_domain_complete
@@ -1702,17 +1982,11 @@ query_cache! {
                 evidence,
             ));
         }
-        if users != 0 {
-            return Err(Rejection::new(
-                Predicate::ZeroGroupUsers,
-                Some(site),
-                RejectionReason::Contradicted,
-                evidence,
-            ));
-        }
         Ok(Proof::new(
-            ZeroGroupUsers {
+            DefinitionGroupUsers {
                 group: group.clone(),
+                users,
+                site,
             },
             evidence,
         ))
@@ -2123,48 +2397,6 @@ query_cache! {
                     step: fact.step,
                     index_use: fact.index_use,
                 },
-            }],
-        ))
-    }
-
-    fn no_effects(&self, statement: &StatementRef) -> QueryResult<()>;
-    key: StatementRef = statement.clone();
-    {
-        let predicate = Predicate::NoEffects;
-        let evidence_site = statement_evidence_site(statement);
-        let function = self.facts.function_by_item_index(statement.item_index).ok_or_else(|| {
-            Rejection::new(
-                predicate,
-                Some(evidence_site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            )
-        })?;
-        let Some(effect) = self
-            .facts
-            .effect(function, EffectSubject::Expr, &statement.path)
-        else {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        if !effect.effects.is_empty() {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::Contradicted,
-                Vec::new(),
-            ));
-        }
-        Ok(Proof::new(
-            (),
-            vec![Evidence {
-                predicate,
-                site: evidence_site,
-                detail: EvidenceDetail::NoEffects,
             }],
         ))
     }

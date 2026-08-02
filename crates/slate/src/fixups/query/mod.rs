@@ -45,11 +45,11 @@ use views::{
 pub(in crate::fixups) use views::{
     AnonymousStructSet, BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse,
     BindingUses, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
-    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, EnumVariantRef,
-    ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
-    ExpressionValues, FieldRef, FunctionRef, HeapOwnershipPlanSet, InlineTempPlan, ItemReferences,
-    LazySingletonSet, MatchArmRef, NulPosition, ParameterRef, ParameterRemoval, Phase,
-    PointerMutability, PtrLenPlanSet, ReferenceDomain, ResolvedValue, StableExpr,
-    StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef, Usage, ValueSite,
-    ZeroGroupUsers, ZeroUsers,
+    DefinitionGroupUsers, DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite,
+    DefinitionUsers, EnumVariantRef, ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace,
+    ExpressionRef, ExpressionRole, ExpressionValues, FieldRef, FunctionRef, HeapOwnershipPlanSet,
+    InlineTempPlan, ItemReferences, LazySingletonSet, MatchArmRef, NulPosition, ParameterRef,
+    ParameterRemoval, Phase, PointerMutability, PtrLenPlanSet, ReferenceDomain, ResolvedValue,
+    StableExpr, StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef, Usage, UseSiteRef,
+    ValueSite,
 };

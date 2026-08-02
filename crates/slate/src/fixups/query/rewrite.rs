@@ -49,6 +49,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::ExpressionPlace => "expression_place",
         Predicate::ExpressionType => "expression_type",
         Predicate::ExpressionValues => "expression_values",
+        Predicate::Function => "function",
         Predicate::ParentExpression => "parent_expression",
         Predicate::AnonymousStructDomain => "anonymous_struct_domain",
         Predicate::ByteSource => "byte_source",
@@ -65,7 +66,6 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::ItemGuard => "item_guard",
         Predicate::LazySingletonDomain => "lazy_singleton_domain",
         Predicate::ReadPath => "read_path",
-        Predicate::NoEffects => "no_effects",
         Predicate::ArrayElementPointerOrigin => "array_element_pointer_origin",
         Predicate::BufferCursor => "buffer_cursor",
         Predicate::HeapOwnershipPlan => "heap_ownership_plan",
@@ -78,6 +78,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::Cast => "cast",
         Predicate::ZeroInit => "zero_init",
         Predicate::ReferenceDomain => "reference_domain",
+        Predicate::Statement => "statement",
         Predicate::UnusedParam => "unused_param",
     }
 }
@@ -112,6 +113,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             format!("reads={reads},writes={writes}")
         }
         EvidenceDetail::Expression => "resolved=true".into(),
+        EvidenceDetail::Statement => "resolved=true".into(),
         EvidenceDetail::ExpressionEffects { purity, effects } => {
             format!("purity={purity:?};effects={effects}")
         }
@@ -121,6 +123,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         } => format!("access={access:?};ordinary_slot={ordinary_slot}"),
         EvidenceDetail::ExpressionType { ty } => format!("type={ty:?}"),
         EvidenceDetail::ExpressionValues { count } => format!("count={count}"),
+        EvidenceDetail::Function { name } => format!("function={name}"),
         EvidenceDetail::ParentExpression => "resolved=true".into(),
         EvidenceDetail::PointerView {
             representation,
@@ -163,7 +166,6 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::LazySingletonDomain { singletons } => {
             format!("singletons={singletons}")
         }
-        EvidenceDetail::NoEffects => "no_effects".into(),
         EvidenceDetail::ArrayElementPointerOrigin { origins } => {
             format!("origins={origins}")
         }
