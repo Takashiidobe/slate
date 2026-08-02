@@ -5,6 +5,7 @@ pub(in crate::fixups) mod atomic_locals;
 pub(in crate::fixups) mod buffer_cursor;
 pub(in crate::fixups) mod c_strings;
 pub(in crate::fixups) mod call_args;
+pub(in crate::fixups) mod compound_assign;
 pub(in crate::fixups) mod constant_index_casts;
 pub(in crate::fixups) mod dead_locals;
 pub(in crate::fixups) mod externs;
