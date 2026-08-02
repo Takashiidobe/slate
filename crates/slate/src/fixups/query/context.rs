@@ -18,18 +18,18 @@ use crate::rust_ast::{
 use super::item::StatementRef;
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
-    AtomicCompareExchangeChain, BindingAccess, BindingCategory, BindingDefUse, BindingRef,
-    BindingUse, BindingUses, BufferPointerField, BufferPointerFields, ByteExtent,
-    ByteRepresentation, ByteSource, ByteView, DefinitionGroup, DefinitionGroupUsers,
-    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, DefinitionUsers,
-    DispatchRegion, EnumVariantRef, Evidence, EvidenceDetail, ExprSite, ExpressionEffects,
-    ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole, ExpressionValues, ExternFn,
-    FieldRef, FunctionCallDomain, FunctionReachability, FunctionRef, HeapOwnership,
-    HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences, LazySingletonPlan,
-    LazySingletonSet, MatchArmRef, NulPosition, NullaryMethodCall, ParameterRef, PointerMutability,
-    Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, ReferenceDomain, Rejection,
-    RejectionReason, ResolvedValue, StableExpr, StatementContainerRef, StatementRange, TypeUseRef,
-    Usage, UseSiteRef, ValueSite,
+    AtomicCompareExchangeChain, AtomicGlobalPromotion, AtomicLocalPromotion, AtomicPromotionSet,
+    BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse, BindingUses,
+    BufferPointerField, BufferPointerFields, ByteExtent, ByteRepresentation, ByteSource, ByteView,
+    DefinitionGroup, DefinitionGroupUsers, DefinitionKind, DefinitionLocation, DefinitionSelector,
+    DefinitionSite, DefinitionUsers, DispatchRegion, EnumVariantRef, Evidence, EvidenceDetail,
+    ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
+    ExpressionValues, ExternFn, FieldRef, FunctionCallDomain, FunctionReachability, FunctionRef,
+    HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences,
+    LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition, NullaryMethodCall, ParameterRef,
+    PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, ReferenceDomain,
+    Rejection, RejectionReason, ResolvedValue, StableExpr, StatementContainerRef, StatementRange,
+    TypeUseRef, Usage, UseSiteRef, ValueSite,
 };
 
 macro_rules! query_cache {
@@ -1909,6 +1909,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         !self.facts.ptr_len_slices.is_empty()
     }
 
+    pub(in crate::fixups) fn has_atomic_promotions(&self) -> bool {
+        !self.facts.atomic_locals.is_empty() || !self.facts.atomic_globals.is_empty()
+    }
+
     pub(super) fn snapshot_program(&self) -> &'snapshot Program {
         self.program
     }
@@ -3213,6 +3217,52 @@ query_cache! {
         Ok(Proof::new(LazySingletonSet { singletons }, evidence))
     }
 
+    fn atomic_promotions(&self) -> QueryResult<AtomicPromotionSet>;
+    key: () = ();
+    {
+        let predicate = Predicate::AtomicPromotionDomain;
+        let mut locals = Vec::new();
+        for fact in &self.facts.atomic_locals {
+            let Some(function_item_index) = self.facts.function_item_index(fact.function) else {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            locals.push(AtomicLocalPromotion {
+                function_item_index,
+                name: fact.name.clone(),
+                ty: fact.ty,
+            });
+        }
+        let mut globals = Vec::new();
+        for fact in &self.facts.atomic_globals {
+            if !static_exists(&self.program.items, &fact.name) {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            }
+            globals.push(AtomicGlobalPromotion {
+                name: fact.name.clone(),
+                ty: fact.ty,
+            });
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site: expression_site(locals.first().map_or(0, |plan| plan.function_item_index), &[]),
+            detail: EvidenceDetail::AtomicPromotionDomain {
+                locals: locals.len(),
+                globals: globals.len(),
+            },
+        }];
+        Ok(Proof::new(AtomicPromotionSet { locals, globals }, evidence))
+    }
+
     fn heap_ownership_facts(&self, function: &FunctionRef) -> QueryResult<HeapOwnershipFacts>;
     key: FunctionId = function.id;
     {
@@ -4495,4 +4545,14 @@ fn static_item_index(program: &Program, name: &str) -> Option<usize> {
     program.items.iter().position(
         |item| matches!(item, Item::Static { name: static_name, .. } if static_name == name),
     )
+}
+
+fn static_exists(items: &[Item], name: &str) -> bool {
+    items.iter().any(|item| match item {
+        Item::Static {
+            name: static_name, ..
+        } => static_name == name,
+        Item::Cfg { item, .. } => static_exists(std::slice::from_ref(item), name),
+        _ => false,
+    })
 }

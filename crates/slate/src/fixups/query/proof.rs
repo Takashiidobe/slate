@@ -64,6 +64,7 @@ pub(in crate::fixups) enum Predicate {
     CountedLoop,
     ItemGuard,
     LazySingletonDomain,
+    AtomicPromotionDomain,
     ReadPath,
     ArrayElementPointerOrigin,
     BufferPointerFields,
@@ -170,6 +171,10 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     LazySingletonDomain {
         singletons: usize,
+    },
+    AtomicPromotionDomain {
+        locals: usize,
+        globals: usize,
     },
     ArrayElementPointerOrigin {
         origins: usize,
