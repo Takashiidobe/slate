@@ -1,4 +1,3 @@
-pub(super) mod final_returns;
 pub(super) mod for_continue;
 pub(super) mod main_zero_exit;
 pub(super) mod nullable_pointer;

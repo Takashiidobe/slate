@@ -876,16 +876,14 @@ fn apply_with_logger(
         }
     });
     step!(program, Pass::FinalReturns, {
-        for item in &mut program.items {
-            if let Item::Fn(f) = item {
-                let mut fixup = rewrite::final_returns::FinalReturns::new(
-                    f.name.clone(),
-                    f.ret.is_some(),
-                    logger,
-                );
-                run_once(&mut f.body, &mut fixup);
-            }
-        }
+        let facts = incremental.resolve(&program);
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::final_returns::rewrite());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::MainZeroExit, {
