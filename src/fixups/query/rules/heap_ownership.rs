@@ -12,7 +12,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Definition> {
         },
     )
     .case("owned_heap", |case, definition| {
-        let plans = case.heap_ownership_plans(definition)?;
+        let plans = case.fact(|query| query.heap_ownership_plans(definition))?;
         let body = case.function_body(definition);
         Ok(EditSet::replace_function_body(
             definition.clone(),

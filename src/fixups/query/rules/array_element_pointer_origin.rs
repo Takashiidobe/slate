@@ -17,11 +17,12 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
         },
     )
     .case("known_origin", |case, binding| {
-        let origin = case.pointer_origin(binding, &binding.name)?;
+        let origin =
+            case.fact(|query| query.pointer_origin(&binding.value_site(), &binding.name))?;
         let mut edits = EditSet::new();
         let mut covered: Vec<Vec<PathSegment>> = Vec::new();
         let mut skip_prefix: Option<Vec<PathSegment>> = None;
-        for site in case.all_exprs(binding)? {
+        for site in case.fact(|query| query.all_exprs(binding.item_index))? {
             if skip_prefix
                 .as_ref()
                 .is_some_and(|prefix| site.path.0.starts_with(prefix.as_slice()))
@@ -39,11 +40,14 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
             covered.push(site.path.0.clone());
             edits.push_replace_expression(site, rewritten);
         }
-        let still_referenced = case.value_uses(binding)?.iter().any(|use_site| {
-            !covered
-                .iter()
-                .any(|prefix| use_site.path.0.starts_with(prefix.as_slice()))
-        });
+        let still_referenced = case
+            .fact(|query| query.value_uses(&binding.value_site(), &binding.name))?
+            .iter()
+            .any(|use_site| {
+                !covered
+                    .iter()
+                    .any(|prefix| use_site.path.0.starts_with(prefix.as_slice()))
+            });
         if !still_referenced {
             edits.push_replace_statement(binding.item_index, binding.definition.clone(), None);
         }
@@ -127,7 +131,8 @@ fn pointer_origin_for(
     if name.as_str() == current.pointer_name {
         return Some(current.clone());
     }
-    case.pointer_origin(binding, name.as_str()).ok()
+    case.fact(|query| query.pointer_origin(&binding.value_site(), name.as_str()))
+        .ok()
 }
 
 fn peel_array_element_unsafe(expr: &Expr) -> &Expr {

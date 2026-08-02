@@ -21,14 +21,15 @@ use crate::rust_ast::{
 use super::item::StatementRef;
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
-    BindingCategory, BindingDefUse, BindingRef, BufferCursorPlan, ByteExtent, ByteRepresentation,
-    ByteSource, ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, Evidence, EvidenceDetail, ExprSite, ExternFn, FunctionRef, HeapOwnershipPlan,
-    HeapOwnershipPlanSet, HeapOwnershipReallocPlan, InlineTempPlan, LazySingletonPlan,
-    LazySingletonSet, NulPosition, NullaryMethodCall, Phase, PointerMutability, Predicate, Proof,
-    PtrLenPlan, PtrLenPlanSet, QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr,
-    StatementRange, UnusedTypeDefinitionSet, Usage, ValueSite, ZeroGroupUsers, ZeroInitPlan,
-    ZeroUsers,
+    BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse, BindingUses,
+    BufferCursorPlan, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
+    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, Evidence,
+    EvidenceDetail, ExprSite, ExpressionEffects, ExpressionPlace, ExpressionRef, ExpressionValues,
+    ExternFn, FunctionRef, HeapOwnershipPlan, HeapOwnershipPlanSet, HeapOwnershipReallocPlan,
+    InlineTempPlan, ItemReferences, LazySingletonPlan, LazySingletonSet, NulPosition,
+    NullaryMethodCall, Phase, PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet,
+    QueryResult, ReferenceDomain, Rejection, RejectionReason, ResolvedValue, StableExpr,
+    StatementRange, Usage, ValueSite, ZeroGroupUsers, ZeroInitPlan, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -399,6 +400,454 @@ impl<'snapshot> QueryContext<'snapshot> {
         sites
     }
 
+    pub(in crate::fixups) fn expression(&self, site: &ExprSite) -> QueryResult<ExpressionRef> {
+        let predicate = Predicate::Expression;
+        if self.expr(site).is_none() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        Ok(Proof::new(
+            ExpressionRef { site: site.clone() },
+            vec![Evidence {
+                predicate,
+                site: site.clone(),
+                detail: EvidenceDetail::Expression,
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn statement_expression(
+        &self,
+        statement: &StatementRef,
+        index: usize,
+    ) -> QueryResult<ExpressionRef> {
+        let mut path = statement.path.0.clone();
+        path.push(PathSegment::Expr(index));
+        self.expression(&expression_site(statement.item_index, &path))
+    }
+
+    pub(in crate::fixups) fn parent_expression(
+        &self,
+        expression: &ExpressionRef,
+    ) -> QueryResult<ExpressionRef> {
+        let predicate = Predicate::ParentExpression;
+        let parent = self
+            .expression_sites()
+            .into_iter()
+            .filter(|site| site.item_index == expression.site.item_index)
+            .filter(|site| {
+                site.path.0.len() < expression.site.path.0.len()
+                    && expression.site.path.0.starts_with(&site.path.0)
+            })
+            .max_by_key(|site| site.path.0.len())
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(expression.site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        Ok(Proof::new(
+            ExpressionRef {
+                site: parent.clone(),
+            },
+            vec![Evidence {
+                predicate,
+                site: parent,
+                detail: EvidenceDetail::ParentExpression,
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn expression_call(
+        &self,
+        expression: &ExpressionRef,
+    ) -> QueryResult<CallRecord> {
+        let predicate = Predicate::Call;
+        let call = self
+            .all_calls()
+            .find(|call| {
+                call.site == expression.site
+                    || call.trivial_unsafe_site.as_ref() == Some(&expression.site)
+            })
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(expression.site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        Ok(Proof::new(call.clone(), call.evidence.clone()))
+    }
+
+    pub(in crate::fixups) fn expression_values(
+        &self,
+        expression: &ExpressionRef,
+    ) -> QueryResult<ExpressionValues> {
+        let predicate = Predicate::ExpressionValues;
+        let function = self.function(&expression.site).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let values = self
+            .facts
+            .values_at(function, ValueSubject::Expr, &expression.site.fact_path)
+            .cloned()
+            .collect::<Vec<_>>();
+        if values.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        Ok(Proof::new(
+            ExpressionValues {
+                values: values.clone(),
+            },
+            vec![Evidence {
+                predicate,
+                site: expression.site.clone(),
+                detail: EvidenceDetail::ExpressionValues {
+                    count: values.len(),
+                },
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn expression_effects(
+        &self,
+        expression: &ExpressionRef,
+    ) -> QueryResult<ExpressionEffects> {
+        let predicate = Predicate::ExpressionEffects;
+        let function = self.function(&expression.site).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let fact = self
+            .facts
+            .effect(function, EffectSubject::Expr, &expression.site.fact_path)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(expression.site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        Ok(Proof::new(
+            ExpressionEffects {
+                purity: fact.purity,
+                effects: fact.effects.clone(),
+            },
+            vec![Evidence {
+                predicate,
+                site: expression.site.clone(),
+                detail: EvidenceDetail::ExpressionEffects {
+                    purity: fact.purity,
+                    effects: fact.effects.len(),
+                },
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn expression_place(
+        &self,
+        expression: &ExpressionRef,
+    ) -> QueryResult<ExpressionPlace> {
+        let predicate = Predicate::ExpressionPlace;
+        let function = self.function(&expression.site).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let fact = self
+            .facts
+            .place(function, &expression.site.fact_path)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(expression.site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        Ok(Proof::new(
+            ExpressionPlace {
+                access: fact.access,
+                kind: fact.kind.clone(),
+                readable: fact.readable,
+                assignable: fact.assignable,
+                ordinary_slot: fact.ordinary_slot,
+            },
+            vec![Evidence {
+                predicate,
+                site: expression.site.clone(),
+                detail: EvidenceDetail::ExpressionPlace {
+                    access: fact.access,
+                    ordinary_slot: fact.ordinary_slot,
+                },
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn expression_type(
+        &self,
+        expression: &ExpressionRef,
+    ) -> QueryResult<Type> {
+        let predicate = Predicate::ExpressionType;
+        let expr = self.expr(&expression.site).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let mut evidence = Vec::new();
+        let ty = match expr {
+            Expr::Cast { ty, .. } => Some(ty.clone()),
+            Expr::Value(value) => rust_value_type(value),
+            Expr::Str(_) => Some(Type::Ref {
+                mutable: false,
+                inner: Box::new(Type::Str),
+            }),
+            Expr::ByteStr(_) => Some(Type::Ref {
+                mutable: false,
+                inner: Box::new(Type::Slice(Box::new(Type::Prim(Prim::U8)))),
+            }),
+            Expr::CStr(_) => Some(Type::Ref {
+                mutable: false,
+                inner: Box::new(Type::Custom("core::ffi::CStr".into())),
+            }),
+            Expr::Var(_) => {
+                let proof = self.expression_binding(expression)?;
+                evidence.extend(proof.evidence);
+                proof.value.ty
+            }
+            Expr::Ref { mutable, .. } => {
+                let proof = self.expression_type(&ExpressionRef {
+                    site: child_site(&expression.site, 0),
+                })?;
+                evidence.extend(proof.evidence);
+                Some(Type::Ref {
+                    mutable: *mutable,
+                    inner: Box::new(proof.value),
+                })
+            }
+            Expr::AddrOf { mutable, .. } => {
+                let proof = self.expression_type(&ExpressionRef {
+                    site: child_site(&expression.site, 0),
+                })?;
+                evidence.extend(proof.evidence);
+                Some(Type::Ptr {
+                    mutable: *mutable,
+                    inner: Box::new(proof.value),
+                })
+            }
+            Expr::Unary { .. } => {
+                let proof = self.expression_type(&ExpressionRef {
+                    site: child_site(&expression.site, 0),
+                })?;
+                evidence.extend(proof.evidence);
+                Some(proof.value)
+            }
+            Expr::Binary { .. } => {
+                let left = self.expression_type(&ExpressionRef {
+                    site: child_site(&expression.site, 0),
+                })?;
+                let right = self.expression_type(&ExpressionRef {
+                    site: child_site(&expression.site, 1),
+                })?;
+                evidence.extend(left.evidence);
+                evidence.extend(right.evidence);
+                (left.value == right.value).then_some(left.value)
+            }
+            Expr::Call { .. } => {
+                let function = self.function(&expression.site);
+                function
+                    .and_then(|function| {
+                        self.facts
+                            .callsite(function, &expression.site.fact_path)
+                            .or_else(|| self.facts.callsite(function, &expression.site.path))
+                    })
+                    .and_then(|call| call.ret.clone())
+            }
+            _ => None,
+        }
+        .ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::MissingEvidence,
+                evidence.clone(),
+            )
+        })?;
+        evidence.push(Evidence {
+            predicate,
+            site: expression.site.clone(),
+            detail: EvidenceDetail::ExpressionType { ty: ty.clone() },
+        });
+        Ok(Proof::new(ty, evidence))
+    }
+
+    pub(in crate::fixups) fn expression_binding(
+        &self,
+        expression: &ExpressionRef,
+    ) -> QueryResult<BindingRef> {
+        let predicate = Predicate::Binding;
+        let Some(Expr::Var(name)) = self.expr(&expression.site) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::UnsupportedShape,
+                Vec::new(),
+            ));
+        };
+        let function = self.function(&expression.site).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let mut candidates =
+            self.facts
+                .bindings_read_under(function, name.as_str(), &expression.site.fact_path);
+        candidates.extend(self.facts.bindings_written_under(
+            function,
+            name.as_str(),
+            &expression.site.fact_path,
+        ));
+        candidates.sort();
+        candidates.dedup();
+        if candidates.len() != 1 {
+            return Err(Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                if candidates.is_empty() {
+                    RejectionReason::MissingEvidence
+                } else {
+                    RejectionReason::Ambiguous
+                },
+                Vec::new(),
+            ));
+        }
+        let binding = self
+            .all_bindings()
+            .into_iter()
+            .find(|binding| binding.id == candidates[0])
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(expression.site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        Ok(Proof::new(
+            binding,
+            vec![Evidence {
+                predicate,
+                site: expression.site.clone(),
+                detail: EvidenceDetail::Binding {
+                    name: name.to_string(),
+                },
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn binding_uses(&self, binding: &BindingRef) -> QueryResult<BindingUses> {
+        let predicate = Predicate::BindingUses;
+        let function = self
+            .facts
+            .function_by_item_index(binding.item_index)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(expression_site(binding.item_index, &binding.definition.0)),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        let mut uses = Vec::new();
+        for site in self
+            .expression_sites()
+            .into_iter()
+            .filter(|site| site.item_index == binding.item_index)
+        {
+            let Some(Expr::Var(name)) = self.expr(&site) else {
+                continue;
+            };
+            if name.as_str() != binding.name {
+                continue;
+            }
+            let reads = self
+                .facts
+                .bindings_read_under(function, name.as_str(), &site.fact_path);
+            let writes =
+                self.facts
+                    .bindings_written_under(function, name.as_str(), &site.fact_path);
+            let read = reads.as_slice() == [binding.id];
+            let write = writes.as_slice() == [binding.id];
+            let access = match (read, write) {
+                (true, true) => Some(BindingAccess::ReadWrite),
+                (true, false) => Some(BindingAccess::Read),
+                (false, true) => Some(BindingAccess::Write),
+                (false, false) => None,
+            };
+            if let Some(access) = access {
+                uses.push(BindingUse {
+                    expression: ExpressionRef { site },
+                    access,
+                });
+            }
+        }
+        let reads = uses
+            .iter()
+            .filter(|usage| matches!(usage.access, BindingAccess::Read | BindingAccess::ReadWrite))
+            .count();
+        let writes = uses
+            .iter()
+            .filter(|usage| {
+                matches!(
+                    usage.access,
+                    BindingAccess::Write | BindingAccess::ReadWrite
+                )
+            })
+            .count();
+        Ok(Proof::new(
+            BindingUses {
+                binding: binding.clone(),
+                uses,
+            },
+            vec![Evidence {
+                predicate,
+                site: expression_site(binding.item_index, &binding.definition.0),
+                detail: EvidenceDetail::BindingUses { reads, writes },
+            }],
+        ))
+    }
+
     pub(in crate::fixups) fn assign_value_sites(&self) -> Vec<ExprSite> {
         let mut sites = Vec::new();
         for (item_index, item) in self.program.items.iter().enumerate() {
@@ -722,30 +1171,6 @@ impl<'snapshot> QueryContext<'snapshot> {
                     ty: self.facts.binding_type_ast(binding.id).cloned(),
                     id: binding.id,
                 })
-            })
-            .collect()
-    }
-
-    fn unused_item_candidates(&self) -> BTreeMap<usize, UnusedItemCandidate> {
-        self.all_definitions()
-            .filter(|site| {
-                matches!(
-                    site.kind,
-                    DefinitionKind::Struct | DefinitionKind::Record | DefinitionKind::Enum
-                )
-            })
-            .filter_map(|site| {
-                let item_index = site.location.item_index();
-                let item = self.program.items.get(item_index)?;
-                let (variants, refs) = unused_item_variants_and_refs(unwrap_cfg(item))?;
-                Some((
-                    item_index,
-                    UnusedItemCandidate {
-                        name: site.name.clone(),
-                        variants,
-                        refs,
-                    },
-                ))
             })
             .collect()
     }
@@ -1814,42 +2239,39 @@ query_cache! {
         ))
     }
 
-    fn unused_type_definitions(&self) -> QueryResult<UnusedTypeDefinitionSet>;
+    fn reference_domain(&self) -> QueryResult<ReferenceDomain>;
     key: () = ();
     {
-        let predicate = Predicate::UnusedTypeDefinition;
+        let predicate = Predicate::ReferenceDomain;
         let site = expression_site(0, &[]);
-        let candidates = self.unused_item_candidates();
-        let mut live = BTreeSet::new();
-        for (index, item) in self.program.items.iter().enumerate() {
-            if candidates.contains_key(&index) {
-                continue;
-            }
-            unused_item_mark_refs(&unused_item_refs(item), &candidates, &mut live);
+        if !self.use_domain_complete {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::IncompleteDomain,
+                Vec::new(),
+            ));
         }
-        let mut pending: Vec<usize> = live.iter().copied().collect();
-        while let Some(index) = pending.pop() {
-            let before = live.len();
-            if let Some(candidate) = candidates.get(&index) {
-                unused_item_mark_refs(&candidate.refs, &candidates, &mut live);
-            }
-            if live.len() != before {
-                pending = live.iter().copied().collect();
-            }
-        }
-        let doomed: BTreeSet<usize> = candidates
-            .keys()
-            .copied()
-            .filter(|index| !live.contains(index))
-            .collect();
+        let definitions = self.all_definitions().cloned().collect::<Vec<_>>();
+        let items = self
+            .program
+            .items
+            .iter()
+            .enumerate()
+            .map(|(item_index, item)| ItemReferences {
+                item_index,
+                symbols: unused_item_refs(item),
+            })
+            .collect::<Vec<_>>();
         let evidence = vec![Evidence {
             predicate,
             site,
-            detail: EvidenceDetail::UnusedTypeDefinition {
-                doomed: doomed.len(),
+            detail: EvidenceDetail::ReferenceDomain {
+                definitions: definitions.len(),
+                items: items.len(),
             },
         }];
-        Ok(Proof::new(UnusedTypeDefinitionSet { doomed }, evidence))
+        Ok(Proof::new(ReferenceDomain { definitions, items }, evidence))
     }
 }
 
@@ -2650,15 +3072,35 @@ fn index_definitions(
         }
         Item::Struct(def) => {
             if !attrs_have_used(&def.attrs) {
-                push_type_definition(definitions, item_index, DefinitionKind::Struct, &def.name);
+                push_type_definition(
+                    definitions,
+                    item_index,
+                    DefinitionKind::Struct,
+                    &def.name,
+                    vec![def.name.clone()],
+                );
             }
         }
         Item::Record(def) => {
-            push_type_definition(definitions, item_index, DefinitionKind::Record, &def.name);
+            push_type_definition(
+                definitions,
+                item_index,
+                DefinitionKind::Record,
+                &def.name,
+                vec![def.name.clone()],
+            );
         }
         Item::Enum(def) => {
             if !attrs_have_used(&def.attrs) {
-                push_type_definition(definitions, item_index, DefinitionKind::Enum, &def.name);
+                let mut symbols = vec![def.name.clone()];
+                symbols.extend(def.variants.iter().map(|variant| variant.name.clone()));
+                push_type_definition(
+                    definitions,
+                    item_index,
+                    DefinitionKind::Enum,
+                    &def.name,
+                    symbols,
+                );
             }
         }
         Item::Cfg { item, .. } => index_definitions(item, item_index, definitions),
@@ -2671,12 +3113,13 @@ fn push_type_definition(
     item_index: usize,
     kind: DefinitionKind,
     name: &str,
+    symbols: Vec<String>,
 ) {
     let site = DefinitionSite {
         location: DefinitionLocation::Item(item_index),
         kind,
         name: name.to_string(),
-        symbols: vec![name.to_string()],
+        symbols,
         group: None,
         externally_reachable: false,
     };
@@ -2697,41 +3140,6 @@ fn unwrap_cfg(item: &Item) -> &Item {
     match item {
         Item::Cfg { item, .. } => unwrap_cfg(item),
         _ => item,
-    }
-}
-
-struct UnusedItemCandidate {
-    name: String,
-    variants: BTreeSet<String>,
-    refs: BTreeSet<String>,
-}
-
-fn unused_item_variants_and_refs(item: &Item) -> Option<(BTreeSet<String>, BTreeSet<String>)> {
-    match item {
-        Item::Enum(def) => Some((
-            def.variants
-                .iter()
-                .map(|variant| variant.name.clone())
-                .collect(),
-            BTreeSet::new(),
-        )),
-        Item::Record(def) => Some((BTreeSet::new(), unused_item_record_refs(def))),
-        Item::Struct(def) => Some((BTreeSet::new(), unused_item_struct_refs(def))),
-        _ => None,
-    }
-}
-
-fn unused_item_mark_refs(
-    refs: &BTreeSet<String>,
-    candidates: &BTreeMap<usize, UnusedItemCandidate>,
-    live: &mut BTreeSet<usize>,
-) {
-    for referenced in refs {
-        for (index, candidate) in candidates {
-            if referenced == &candidate.name || candidate.variants.contains(referenced) {
-                live.insert(*index);
-            }
-        }
     }
 }
 
@@ -3847,6 +4255,18 @@ fn fact_path(path: &AstPath) -> AstPath {
         fact.remove(stmt + 2);
     }
     AstPath(fact)
+}
+
+fn rust_value_type(value: &RustValue) -> Option<Type> {
+    match value {
+        RustValue::I64(_) => Some(Type::Prim(Prim::I64)),
+        RustValue::Usize(_) => Some(Type::Prim(Prim::Usize)),
+        RustValue::I128(_) => Some(Type::Prim(Prim::I128)),
+        RustValue::U128(_) => Some(Type::Prim(Prim::U128)),
+        RustValue::Float(_) => Some(Type::Prim(Prim::F64)),
+        RustValue::Bool(_) => Some(Type::Prim(Prim::Bool)),
+        RustValue::None | RustValue::NullPtr => None,
+    }
 }
 
 fn call_target(func: &Expr, binding: &CallBinding) -> CallTarget {

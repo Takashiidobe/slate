@@ -13,7 +13,7 @@ pub(in crate::fixups) fn unused_numeric_parse() -> QueryRule<Definition> {
         },
     )
     .case("unused", |case, definition| {
-        case.zero_users(definition)?;
+        case.fact(|query| query.zero_users(definition))?;
         Ok(EditSet::delete_definition(definition.clone()))
     })
 }

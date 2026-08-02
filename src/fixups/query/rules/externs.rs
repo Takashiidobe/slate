@@ -13,7 +13,7 @@ pub(in crate::fixups) fn unused_known_declarations() -> QueryRule<Definition> {
         },
     )
     .case("unused", |case, definition| {
-        case.zero_users(definition)?;
+        case.fact(|query| query.zero_users(definition))?;
         Ok(EditSet::delete_definition(definition.clone()))
     })
 }
@@ -28,7 +28,8 @@ pub(in crate::fixups) fn unused_header(header: impl Into<String>) -> QueryRule<D
         },
     )
     .case("unused", |case, definition| {
-        case.zero_group_users(definition)?;
+        let group = definition.group.as_ref().ok_or_else(|| case.reject())?;
+        case.fact(|query| query.zero_group_users(group))?;
         Ok(EditSet::delete_definition(definition.clone()))
     })
 }

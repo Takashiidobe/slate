@@ -15,10 +15,12 @@ pub(in crate::fixups) fn calls() -> QueryRule<FnCall> {
         },
     )
     .case("never_returning_extern", |case, call| {
-        case.extern_fn(&ExternFn {
-            name: Field::eq(Known::Exit.symbol().into()),
-            arity: Field::eq(1),
-            returns: Field::eq(Some(Type::Never)),
+        case.fact(|query| {
+            query.extern_fn(&ExternFn {
+                name: Field::eq(Known::Exit.symbol().into()),
+                arity: Field::eq(1),
+                returns: Field::eq(Some(Type::Never)),
+            })
         })?;
         let replacement = case.lower_expr(process_exit(), &call.site)?;
         let target = call

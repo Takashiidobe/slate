@@ -1,4 +1,6 @@
-use crate::fixups::facts::{CountedLoopIndexUse, CountedLoopStart, CountedLoopStep};
+use crate::fixups::facts::{
+    CountedLoopIndexUse, CountedLoopStart, CountedLoopStep, PlaceAccess, Purity,
+};
 use crate::rust_ast::Type;
 
 use super::{
@@ -35,7 +37,15 @@ pub(in crate::fixups) struct Evidence {
 pub(in crate::fixups) enum Predicate {
     Call,
     Binding,
+    BindingUses,
     DefUse,
+    Expression,
+    ExpressionEffects,
+    ExpressionPlace,
+    ExpressionType,
+    ExpressionValues,
+    ParentExpression,
+    ReferenceDomain,
     AnonymousStructDomain,
     ByteSource,
     ConstantU8,
@@ -63,7 +73,6 @@ pub(in crate::fixups) enum Predicate {
     AllExprs,
     Cast,
     ZeroInit,
-    UnusedTypeDefinition,
     UnusedParam,
 }
 
@@ -82,10 +91,34 @@ pub(in crate::fixups) enum EvidenceDetail {
     Binding {
         name: String,
     },
+    BindingUses {
+        reads: usize,
+        writes: usize,
+    },
     DefUse {
         reads: usize,
         writes: usize,
     },
+    Expression,
+    ExpressionEffects {
+        purity: Purity,
+        effects: usize,
+    },
+    ExpressionPlace {
+        access: PlaceAccess,
+        ordinary_slot: bool,
+    },
+    ExpressionType {
+        ty: Type,
+    },
+    ExpressionValues {
+        count: usize,
+    },
+    ReferenceDomain {
+        definitions: usize,
+        items: usize,
+    },
+    ParentExpression,
     PointerView {
         representation: ByteRepresentation,
         mutability: PointerMutability,
@@ -155,9 +188,6 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     ZeroInit {
         moved_decl: bool,
-    },
-    UnusedTypeDefinition {
-        doomed: usize,
     },
     UnusedParam {
         function: String,

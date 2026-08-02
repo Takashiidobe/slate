@@ -1,7 +1,9 @@
 use crate::fixups::trace::Pass;
 use crate::rust_ast::{Expr, IndentStmt, Stmt};
 
-use super::super::{EditSet, Field, Local, QueryRule, StatementSequence, Usage, Value};
+use super::super::{
+    BindingAccess, EditSet, Field, Local, QueryRule, StatementSequence, Usage, Value,
+};
 
 pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
     QueryRule::new(
@@ -33,12 +35,20 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
             return Err(case.reject());
         };
         case.require(returned.as_str() == name)?;
-        let binding = case.local_binding(&matched.statement(0), name)?;
-        let uses = case.def_use(&binding)?;
-        let [read_path] = uses.reads.as_slice() else {
+        let statement = matched.statement(0);
+        let binding =
+            case.fact(|query| query.binding_at(statement.item_index, &statement.path, name))?;
+        let uses = case.fact(|query| query.binding_uses(&binding))?;
+        let [usage] = uses.uses.as_slice() else {
             return Err(case.reject());
         };
-        case.require(uses.writes.is_empty() && read_path == &matched.statement(1).path)?;
+        let returned = case.fact(|query| {
+            let statement = matched.statement(1);
+            query.statement_expression(&statement, 0)
+        })?;
+        case.require(
+            usage.access == BindingAccess::Read && usage.expression.site == returned.site,
+        )?;
         Ok(EditSet::replace_statements(
             matched.target().clone(),
             vec![IndentStmt {

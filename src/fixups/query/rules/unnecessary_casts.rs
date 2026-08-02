@@ -40,7 +40,7 @@ fn narrowing_promotion_cast(
         return Err(case.reject_at(Predicate::Cast, site, RejectionReason::UnsupportedShape));
     }
 
-    let outer = case.cast_at(site)?;
+    let outer = case.fact(|query| query.cast_at(site))?;
     if !type_is_prim(outer.from.as_ref(), Prim::I32) || !owned_type_is_prim(&outer.to, target) {
         return Err(Rejection::new(
             Predicate::Cast,
@@ -50,11 +50,12 @@ fn narrowing_promotion_cast(
         ));
     }
 
-    let binary_site = case.child(site, 0);
-    let lhs_site = case.child(&binary_site, 0);
-    let rhs_site = case.child(&binary_site, 1);
-    let lhs = stripped_operand(case, &lhs, target, &lhs_site)?;
-    let rhs = stripped_operand(case, &rhs, target, &rhs_site)?;
+    let binary_site = case.fact(|query| query.expression(site))?;
+    let binary_site = case.fact(|query| query.expression(&query.child(&binary_site.site, 0)))?;
+    let lhs_site = case.fact(|query| query.expression(&query.child(&binary_site.site, 0)))?;
+    let rhs_site = case.fact(|query| query.expression(&query.child(&binary_site.site, 1)))?;
+    let lhs = stripped_operand(case, &lhs, target, &lhs_site.site)?;
+    let rhs = stripped_operand(case, &rhs, target, &rhs_site.site)?;
 
     Ok(EditSet::replace_expression(
         site.clone(),
@@ -88,7 +89,7 @@ fn stripped_operand(
             Vec::new(),
         ));
     }
-    let fact = case.cast_at(site)?;
+    let fact = case.fact(|query| query.cast_at(site))?;
     if !type_is_prim(fact.from.as_ref(), target) || !owned_type_is_prim(&fact.to, Prim::I32) {
         return Err(Rejection::new(
             Predicate::Cast,

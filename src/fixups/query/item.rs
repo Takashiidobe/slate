@@ -1,9 +1,7 @@
 use std::collections::BTreeMap;
 
 use crate::fixups::facts::walk;
-use crate::fixups::facts::{
-    AstPath, FixupFacts, PathSegment, StringBufferFact, StringRecoveryCandidate,
-};
+use crate::fixups::facts::{AstPath, FixupFacts, PathSegment};
 use crate::fixups::support::walk as mut_walk;
 use crate::fixups::trace::{
     Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact, function_path_location,
@@ -16,11 +14,9 @@ use super::plan::{
 };
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    ArrayElementPointerOrigin, BindingRef, BufferCursorPlan, ByteSource, CallRecord, CaseRejection,
-    DefinitionKind, DefinitionLocation, DefinitionSite, Evidence, ExprRecipe, ExprSite, ExternFn,
-    FunctionBodyRecipe, FunctionRef, HeapOwnershipPlanSet, InlineTempPlan, NulPosition, Phase,
-    Predicate, QueryContext, Rejection, RejectionReason, RuleCaseIdentity, RuleIdentity,
-    StableExpr, StatementRange, ValueSite, ZeroInitPlan,
+    BindingRef, CallRecord, CaseRejection, DefinitionKind, DefinitionLocation, DefinitionSite,
+    Evidence, ExprRecipe, ExprSite, ExpressionRef, FunctionBodyRecipe, FunctionRef, Predicate,
+    QueryContext, Rejection, RejectionReason, RuleCaseIdentity, RuleIdentity, StatementRange,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -41,11 +37,6 @@ pub(in crate::fixups) enum QueryItem<'snapshot> {
         site: StatementRef,
         tail: &'snapshot [IndentStmt],
     },
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct ExpressionRef {
-    pub(in crate::fixups) site: ExprSite,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -232,81 +223,19 @@ pub(in crate::fixups) struct ItemCaseContext<'case, 'snapshot> {
 }
 
 impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
-    pub(in crate::fixups) fn expr(&self, site: &ExprSite) -> Option<&Expr> {
-        self.query.expr(site)
-    }
-
-    pub(in crate::fixups) fn child(&self, site: &ExprSite, index: usize) -> ExprSite {
-        self.query.child(site, index)
-    }
-
-    pub(in crate::fixups) fn cast_at(
+    pub(in crate::fixups) fn fact<T>(
         &mut self,
-        site: &ExprSite,
-    ) -> Result<crate::fixups::facts::CastFact, Rejection> {
-        self.prove(self.query.cast_at(site))
+        query: impl FnOnce(&QueryContext<'snapshot>) -> super::QueryResult<T>,
+    ) -> Result<T, Rejection> {
+        self.prove(query(self.query))
     }
 
-    pub(in crate::fixups) fn call_args<const N: usize>(&self, call: &CallRecord) -> [ExprSite; N] {
-        assert_eq!(N, call.args.len());
-        std::array::from_fn(|index| call.args[index].clone())
-    }
-
-    pub(in crate::fixups) fn byte_source(
+    pub(in crate::fixups) fn attempt<T>(
         &mut self,
-        site: &ExprSite,
-    ) -> Result<ByteSource<'snapshot>, Rejection> {
-        self.prove(self.query.byte_source(site))
-    }
-
-    pub(in crate::fixups) fn u8_eq(
-        &mut self,
-        site: &ExprSite,
-        expected: u8,
-    ) -> Result<(), Rejection> {
-        let actual = self.prove(self.query.const_u8(site))?;
-        self.require_at(actual == expected, Predicate::ConstantU8, site)
-    }
-
-    pub(in crate::fixups) fn pure(&mut self, site: &ExprSite) -> Result<StableExpr, Rejection> {
-        self.prove(self.query.pure(site))
-    }
-
-    pub(in crate::fixups) fn extern_fn(&mut self, matcher: &ExternFn) -> Result<(), Rejection> {
-        self.prove(self.query.extern_fn(matcher))
-    }
-
-    pub(in crate::fixups) fn full_byte_view(
-        &mut self,
-        source: &ByteSource<'snapshot>,
-        count: &ExprSite,
-    ) -> Result<(), Rejection> {
-        self.prove(self.query.full_byte_view(source, count))
-            .map(drop)
-    }
-
-    pub(in crate::fixups) fn first_nul(
-        &mut self,
-        source: &ByteSource<'snapshot>,
-    ) -> Result<NulPosition, Rejection> {
-        self.prove(self.query.first_nul(source))
-    }
-
-    pub(in crate::fixups) fn prefix_contains(
-        &mut self,
-        count: &ExprSite,
-        nul: NulPosition,
-    ) -> Result<(), Rejection> {
-        self.prove(self.query.prefix_contains(count, nul))
-    }
-
-    pub(in crate::fixups) fn lower_expr(
-        &mut self,
-        recipe: ExprRecipe<'snapshot>,
-        site: &ExprSite,
-    ) -> Result<Expr, Rejection> {
-        match recipe.lower(self.query, site) {
-            Ok(expr) => Ok(expr),
+        result: Result<T, Rejection>,
+    ) -> Result<T, Rejection> {
+        match result {
+            Ok(value) => Ok(value),
             Err(mut rejection) => {
                 let mut evidence = self.evidence.clone();
                 evidence.append(&mut rejection.evidence);
@@ -316,154 +245,21 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
         }
     }
 
-    fn value_site(binding: &BindingRef) -> ValueSite {
-        ValueSite {
-            item_index: binding.item_index,
-            path: binding.definition.clone(),
-        }
+    pub(in crate::fixups) fn expr(&self, site: &ExprSite) -> Option<&Expr> {
+        self.query.expr(site)
     }
 
-    pub(in crate::fixups) fn string_buffer(
-        &mut self,
-        binding: &BindingRef,
-    ) -> Result<StringBufferFact, Rejection> {
-        self.prove(self.query.string_buffer(&Self::value_site(binding)))
+    pub(in crate::fixups) fn call_args<const N: usize>(&self, call: &CallRecord) -> [ExprSite; N] {
+        assert_eq!(N, call.args.len());
+        std::array::from_fn(|index| call.args[index].clone())
     }
 
-    pub(in crate::fixups) fn all_exprs(
+    pub(in crate::fixups) fn lower_expr(
         &mut self,
-        binding: &BindingRef,
-    ) -> Result<Vec<ExprSite>, Rejection> {
-        self.prove(self.query.all_exprs(binding.item_index))
-    }
-
-    pub(in crate::fixups) fn value_uses(
-        &mut self,
-        binding: &BindingRef,
-    ) -> Result<Vec<ExprSite>, Rejection> {
-        self.prove(
-            self.query
-                .value_uses(&Self::value_site(binding), &binding.name),
-        )
-    }
-
-    pub(in crate::fixups) fn string_pointer_view_sites(
-        &mut self,
-        binding: &BindingRef,
-    ) -> Result<Vec<ExprSite>, Rejection> {
-        self.prove(
-            self.query
-                .string_pointer_view_sites(&Self::value_site(binding), &binding.name),
-        )
-    }
-
-    pub(in crate::fixups) fn string_use_allows_lift(
-        &mut self,
-        binding: &BindingRef,
+        recipe: ExprRecipe<'snapshot>,
         site: &ExprSite,
-        recovery: StringRecoveryCandidate,
-    ) -> Result<bool, Rejection> {
-        self.prove(self.query.string_use_allows_lift(
-            &Self::value_site(binding),
-            &binding.name,
-            site,
-            recovery,
-        ))
-    }
-
-    pub(in crate::fixups) fn pointer_origin(
-        &mut self,
-        binding: &BindingRef,
-        name: &str,
-    ) -> Result<ArrayElementPointerOrigin, Rejection> {
-        self.prove(self.query.pointer_origin(&Self::value_site(binding), name))
-    }
-
-    fn require_at(
-        &self,
-        condition: bool,
-        predicate: Predicate,
-        site: &ExprSite,
-    ) -> Result<(), Rejection> {
-        if condition {
-            Ok(())
-        } else {
-            Err(Rejection::new(
-                predicate,
-                Some(site.clone()),
-                RejectionReason::Contradicted,
-                self.evidence.clone(),
-            ))
-        }
-    }
-
-    pub(in crate::fixups) fn zero_users(
-        &mut self,
-        definition: &DefinitionSite,
-    ) -> Result<(), Rejection> {
-        self.prove(self.query.zero_users(definition)).map(drop)
-    }
-
-    pub(in crate::fixups) fn zero_group_users(
-        &mut self,
-        definition: &DefinitionSite,
-    ) -> Result<(), Rejection> {
-        let Some(group) = &definition.group else {
-            return Err(Rejection::new(
-                Predicate::ZeroGroupUsers,
-                None,
-                RejectionReason::MissingEvidence,
-                self.evidence.clone(),
-            ));
-        };
-        self.prove(self.query.zero_group_users(group)).map(drop)
-    }
-
-    pub(in crate::fixups) fn heap_ownership_plans(
-        &mut self,
-        definition: &DefinitionSite,
-    ) -> Result<HeapOwnershipPlanSet, Rejection> {
-        self.prove(self.query.heap_ownership_plans(definition))
-    }
-
-    pub(in crate::fixups) fn inline_temp_candidate(
-        &mut self,
-        definition: &DefinitionSite,
-        phase: Phase,
-    ) -> Result<InlineTempPlan, Rejection> {
-        self.prove(self.query.inline_temp_candidate(definition, phase))
-    }
-
-    pub(in crate::fixups) fn buffer_cursor_plan(
-        &mut self,
-        definition: &DefinitionSite,
-    ) -> Result<BufferCursorPlan, Rejection> {
-        self.prove(self.query.buffer_cursor_rewrite(definition))
-    }
-
-    pub(in crate::fixups) fn zero_init_candidate(
-        &mut self,
-        definition: &DefinitionSite,
-        cross_effects: bool,
-    ) -> Result<ZeroInitPlan, Rejection> {
-        self.prove(self.query.zero_init_candidate(definition, cross_effects))
-    }
-
-    pub(in crate::fixups) fn unused_type_definition(
-        &mut self,
-        definition: &DefinitionSite,
-    ) -> Result<(), Rejection> {
-        let doomed = self.prove(self.query.unused_type_definitions())?;
-        if doomed.doomed.contains(&definition.location.item_index()) {
-            Ok(())
-        } else {
-            Err(Rejection::new(
-                Predicate::UnusedTypeDefinition,
-                None,
-                RejectionReason::Contradicted,
-                self.evidence.clone(),
-            ))
-        }
+    ) -> Result<Expr, Rejection> {
+        self.attempt(recipe.lower(self.query, site))
     }
 
     pub(in crate::fixups) fn function_body(&self, definition: &DefinitionSite) -> Vec<IndentStmt> {
@@ -471,45 +267,6 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
             Item::Fn(function) => function.body.clone(),
             _ => Vec::new(),
         }
-    }
-
-    pub(in crate::fixups) fn local_binding(
-        &mut self,
-        statement: &StatementRef,
-        name: &str,
-    ) -> Result<super::BindingRef, Rejection> {
-        self.prove(
-            self.query
-                .binding_at(statement.item_index, &statement.path, name),
-        )
-    }
-
-    pub(in crate::fixups) fn removable_parameter(
-        &mut self,
-        binding: &BindingRef,
-    ) -> Result<super::ParameterRemoval, Rejection> {
-        self.prove(super::parameter::removable_parameter(self.query, binding))
-    }
-
-    pub(in crate::fixups) fn def_use(
-        &mut self,
-        binding: &super::BindingRef,
-    ) -> Result<super::BindingDefUse, Rejection> {
-        self.prove(self.query.binding_def_use(binding))
-    }
-
-    pub(in crate::fixups) fn counted_loop(
-        &mut self,
-        statement: &StatementRef,
-    ) -> Result<crate::fixups::facts::CountedLoopFact, Rejection> {
-        self.prove(self.query.counted_loop(statement))
-    }
-
-    pub(in crate::fixups) fn no_effects(
-        &mut self,
-        statement: &StatementRef,
-    ) -> Result<(), Rejection> {
-        self.prove(self.query.no_effects(statement))
     }
 
     pub(in crate::fixups) fn require(&self, condition: bool) -> Result<(), Rejection> {
