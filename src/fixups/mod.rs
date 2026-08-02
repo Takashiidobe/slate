@@ -14,7 +14,6 @@ mod test_support;
 use crate::fixups::trace::{CollectingLogger, NoopLogger, ProgramSummary, TraceLog, TraceLogger};
 use crate::rust_ast::{FnDef, IndentStmt, Item, Program};
 
-use crate::fixups::rewrite::for_continue::ForContinue;
 use crate::fixups::rewrite::var_aliases::VarAliases;
 pub use trace::Pass;
 
@@ -311,9 +310,14 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::ForContinue, {
-        to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
-            let mut fixup = ForContinue::new(f.name.clone(), logger);
-            run_once(&mut f.body, &mut fixup)
+        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
+            let plan = {
+                let query = query::QueryContext::new(program, facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::for_continue::rewrite());
+                builder.finish()
+            };
+            plan.apply(program, facts, logger).changed
         });
         incremental.mark_everything_dirty();
     });

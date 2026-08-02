@@ -1,103 +1,46 @@
-use crate::fixups::Fixup;
-use crate::fixups::facts::PathSegment;
-use crate::fixups::support::walk;
-use crate::fixups::trace::{
-    Pass as TracePass, RewriteEvent, TraceLogger, fact, named_path_location, path_fact,
-    stmt_snippet,
-};
-use crate::rust_ast::{BinOp, Expr, IndentStmt, Label, Stmt, UnaryOp};
+use crate::fixups::trace::Pass;
+use crate::rust_ast::{BinOp, Expr, IndentStmt, Label, RustValue, Stmt, UnaryOp};
 
-pub(in crate::fixups) struct ForContinue<'a> {
-    function_name: String,
-    logger: &'a mut dyn TraceLogger,
+use super::super::item::StatementMatch;
+use super::super::{EditSet, ItemCaseContext, QueryRule, Rejection, StatementSequence};
+
+pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
+    QueryRule::new(
+        Pass::ForContinue,
+        "rewrite_continue_block",
+        StatementSequence::new(1),
+    )
+    .case("synthetic_loop_label", rewrite_loop_case)
+    .ordered_non_overlapping()
 }
 
-impl Fixup for ForContinue<'_> {
-    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
-        self.fixup_at(body, &Vec::new())
+fn rewrite_loop_case(
+    case: &mut ItemCaseContext<'_, '_>,
+    matched: &StatementMatch,
+) -> Result<EditSet, Rejection> {
+    let [stmt] = case.statements(matched)?;
+    let Stmt::Loop { label, mut body } = stmt.stmt else {
+        return Err(case.reject());
+    };
+    let Some(loop_label) = synthetic_label_name(&label, "__loop") else {
+        return Err(case.reject());
+    };
+    if !rewrite_continue_blocks(&mut body) {
+        return Err(case.reject());
     }
-}
-
-impl<'a> ForContinue<'a> {
-    pub(in crate::fixups) fn new(
-        function_name: impl Into<String>,
-        logger: &'a mut dyn TraceLogger,
-    ) -> Self {
-        Self {
-            function_name: function_name.into(),
-            logger,
-        }
-    }
-
-    fn fixup_at(&mut self, body: &mut [IndentStmt], path: &[PathSegment]) -> bool {
-        for index in 0..body.len() {
-            let mut stmt_path = path.to_owned();
-            stmt_path.push(PathSegment::Stmt(index));
-            let trace_before = self.logger.is_enabled().then(|| body[index].stmt.clone());
-            let mut rewrote_continue = false;
-            let mut rewrite_event = None;
-            match &mut body[index].stmt {
-                Stmt::Loop {
-                    label,
-                    body: loop_body,
-                } => {
-                    let mut loop_body_path = stmt_path.clone();
-                    loop_body_path.push(PathSegment::LoopBody);
-                    if self.fixup_at(loop_body, &loop_body_path) {
-                        return true;
-                    }
-                    let Some(loop_label) = synthetic_label_name(label, "__loop") else {
-                        continue;
-                    };
-                    if rewrite_continue_blocks(loop_body) {
-                        rewrote_continue = true;
-                        rewrite_current_loop_breaks(loop_body, &loop_label);
-                        let removed_loop_label = label_ref_count(loop_body, &loop_label) == 0;
-                        if removed_loop_label {
-                            *label = None;
-                        }
-                        if let Some(before) = trace_before {
-                            rewrite_event = Some((before, loop_label, removed_loop_label));
-                        }
-                    }
-                }
-                stmt => {
-                    let mut changed = false;
-                    walk::nested_body_vecs_mut_with_path(
-                        stmt,
-                        &mut stmt_path,
-                        &mut |body, path| {
-                            if !changed && self.fixup_at(body, path) {
-                                changed = true;
-                            }
-                        },
-                    );
-                    if changed {
-                        return true;
-                    }
-                }
-            }
-            if let Some((before, loop_label, removed_loop_label)) = rewrite_event {
-                self.logger.rewrite(RewriteEvent {
-                    pass: TracePass::ForContinue,
-                    kind: "rewrite_continue_block".into(),
-                    location: named_path_location(self.function_name.clone(), &stmt_path),
-                    before: vec![stmt_snippet("loop", &before)],
-                    after: vec![stmt_snippet("loop", &body[index].stmt)],
-                    facts: vec![
-                        path_fact("loop_path", &stmt_path),
-                        fact("loop_label", loop_label),
-                        fact("removed_loop_label", removed_loop_label.to_string()),
-                    ],
-                });
-                return true;
-            }
-            if rewrote_continue {
-                return true;
-            }
-        }
-        false
-    }
+    rewrite_current_loop_breaks(&mut body, &loop_label);
+    let label = if label_ref_count(&body, &loop_label) == 0 {
+        None
+    } else {
+        label
+    };
+    Ok(EditSet::replace_statements(
+        matched.target().clone(),
+        vec![IndentStmt {
+            depth: stmt.depth,
+            stmt: Stmt::Loop { label, body },
+        }],
+    ))
 }
 
 fn rewrite_continue_blocks(body: &mut [IndentStmt]) -> bool {
@@ -295,9 +238,7 @@ fn is_synthetic_label(label: &Label, prefix: &str) -> bool {
 
 fn not_expr(expr: Expr) -> Expr {
     match expr {
-        Expr::Value(crate::rust_ast::RustValue::Bool(value)) => {
-            Expr::Value(crate::rust_ast::RustValue::Bool(!value))
-        }
+        Expr::Value(RustValue::Bool(value)) => Expr::Value(RustValue::Bool(!value)),
         Expr::Unary {
             op: UnaryOp::Not,
             expr,
