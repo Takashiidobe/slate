@@ -23,11 +23,12 @@ use super::{
     DefinitionGroup, DefinitionGroupUsers, DefinitionKind, DefinitionLocation, DefinitionSelector,
     DefinitionSite, DefinitionUsers, EnumVariantRef, Evidence, EvidenceDetail, ExprSite,
     ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
-    ExpressionValues, ExternFn, FieldRef, FunctionRef, HeapOwnership, HeapOwnershipFacts,
-    HeapReallocation, HeapUse, ItemReferences, LazySingletonPlan, LazySingletonSet, MatchArmRef,
-    NulPosition, NullaryMethodCall, ParameterRef, PointerMutability, Predicate, Proof, PtrLenPlan,
-    PtrLenPlanSet, QueryResult, ReferenceDomain, Rejection, RejectionReason, ResolvedValue,
-    StableExpr, StatementContainerRef, StatementRange, TypeUseRef, Usage, UseSiteRef, ValueSite,
+    ExpressionValues, ExternFn, FieldRef, FunctionCallDomain, FunctionReachability, FunctionRef,
+    HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences,
+    LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition, NullaryMethodCall, ParameterRef,
+    PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, ReferenceDomain,
+    Rejection, RejectionReason, ResolvedValue, StableExpr, StatementContainerRef, StatementRange,
+    TypeUseRef, Usage, UseSiteRef, ValueSite,
 };
 
 macro_rules! query_cache {
@@ -1789,6 +1790,200 @@ impl<'snapshot> QueryContext<'snapshot> {
             return None;
         };
         (definition.name == function.name).then_some(definition)
+    }
+
+    pub(in crate::fixups) fn parameter_function(
+        &self,
+        parameter: &ParameterRef,
+    ) -> QueryResult<FunctionRef> {
+        let predicate = Predicate::Function;
+        let site = expression_site(
+            parameter.binding.item_index,
+            &parameter.binding.definition.0,
+        );
+        if self.parameter_def(parameter).is_none() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let function = self
+            .all_functions()
+            .into_iter()
+            .find(|function| function.item_index == parameter.binding.item_index)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        Ok(Proof::new(
+            function.clone(),
+            vec![Evidence {
+                predicate,
+                site,
+                detail: EvidenceDetail::Function {
+                    name: function.name,
+                },
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn parameter_uses(
+        &self,
+        parameter: &ParameterRef,
+    ) -> QueryResult<BindingUses> {
+        if self.parameter_def(parameter).is_none() {
+            return Err(Rejection::new(
+                Predicate::BindingUses,
+                Some(expression_site(
+                    parameter.binding.item_index,
+                    &parameter.binding.definition.0,
+                )),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        self.binding_uses(&parameter.binding)
+    }
+
+    pub(in crate::fixups) fn direct_calls(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<Vec<CallRecord>> {
+        let (_, mut evidence) = self.function_snapshot(function)?.into_parts();
+        let calls = self
+            .all_calls()
+            .filter(
+                |call| matches!(&call.target, CallTarget::Direct(name) if name == &function.name),
+            )
+            .cloned()
+            .collect::<Vec<_>>();
+        evidence.extend(calls.iter().flat_map(|call| call.evidence.clone()));
+        evidence.push(Evidence {
+            predicate: Predicate::DirectCalls,
+            site: expression_site(function.item_index, &[]),
+            detail: EvidenceDetail::DirectCalls {
+                function: function.name.clone(),
+                calls: calls.len(),
+                references: self.symbol_use_count(&function.name),
+            },
+        });
+        Ok(Proof::new(calls, evidence))
+    }
+
+    pub(in crate::fixups) fn function_reachability(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<FunctionReachability> {
+        let (definition, mut evidence) = self.function_snapshot(function)?.into_parts();
+        let direct_calls = self.direct_calls(function)?;
+        evidence.extend(direct_calls.evidence);
+        let externally_reachable = definition.name == "main"
+            || definition.vis == Visibility::Pub
+            || definition.abi.is_some()
+            || definition.attrs.iter().any(exporting_attr);
+        let address_exposed = self.symbol_use_count(&function.name) != direct_calls.value.len();
+        let reachability = FunctionReachability {
+            externally_reachable,
+            address_exposed,
+        };
+        evidence.push(Evidence {
+            predicate: Predicate::FunctionReachability,
+            site: expression_site(function.item_index, &[]),
+            detail: EvidenceDetail::FunctionReachability {
+                function: function.name.clone(),
+                externally_reachable,
+                address_exposed,
+            },
+        });
+        Ok(Proof::new(reachability, evidence))
+    }
+
+    pub(in crate::fixups) fn function_call_domain(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<FunctionCallDomain> {
+        let predicate = Predicate::FunctionCallDomain;
+        let site = expression_site(function.item_index, &[]);
+        let (reachability, mut evidence) = self.function_reachability(function)?.into_parts();
+        if !self.use_domain_complete || reachability.address_exposed {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::IncompleteDomain,
+                evidence,
+            ));
+        }
+        if reachability.externally_reachable {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::Contradicted,
+                evidence,
+            ));
+        }
+        let (calls, call_evidence) = self.direct_calls(function)?.into_parts();
+        evidence.extend(call_evidence);
+        evidence.push(Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::FunctionCallDomain {
+                function: function.name.clone(),
+                calls: calls.len(),
+            },
+        });
+        Ok(Proof::new(
+            FunctionCallDomain {
+                function: function.clone(),
+                calls,
+            },
+            evidence,
+        ))
+    }
+
+    pub(in crate::fixups) fn call_argument(
+        &self,
+        call: &CallRecord,
+        index: usize,
+    ) -> QueryResult<ExpressionRef> {
+        let predicate = Predicate::CallArgument;
+        let Some(indexed) = self.calls_by_site.get(&call.site) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(call.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        if indexed != call {
+            return Err(Rejection::new(
+                predicate,
+                Some(call.site.clone()),
+                RejectionReason::Contradicted,
+                indexed.evidence.clone(),
+            ));
+        }
+        let Some(argument) = call.args.get(index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(call.site.clone()),
+                RejectionReason::OutOfRange,
+                call.evidence.clone(),
+            ));
+        };
+        let (expression, mut evidence) = self.expression(argument)?.into_parts();
+        evidence.extend(call.evidence.clone());
+        evidence.push(Evidence {
+            predicate,
+            site: argument.clone(),
+            detail: EvidenceDetail::CallArgument { index },
+        });
+        Ok(Proof::new(expression, evidence))
     }
 
     pub(in crate::fixups) fn definition_function(

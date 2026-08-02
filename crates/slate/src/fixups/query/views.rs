@@ -5,7 +5,7 @@ use crate::fixups::facts::{
     AstPath, BindingId, ConstValue, EffectKind, HeapAllocationKind, HeapExtent, HeapInitKind,
     HeapReadSafety, HeapResizeKind, HeapUseKind, PlaceAccess, PlaceKind, Purity,
 };
-use crate::rust_ast::{Expr, FnDef, Type};
+use crate::rust_ast::{Expr, Type};
 
 use super::item::StatementRef;
 
@@ -66,6 +66,18 @@ pub(in crate::fixups) struct ParameterRef {
     pub(in crate::fixups) index: usize,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct FunctionReachability {
+    pub(in crate::fixups) externally_reachable: bool,
+    pub(in crate::fixups) address_exposed: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct FunctionCallDomain {
+    pub(in crate::fixups) function: FunctionRef,
+    pub(in crate::fixups) calls: Vec<super::CallRecord>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(in crate::fixups) struct StatementContainerRef {
     pub(in crate::fixups) item_index: usize,
@@ -102,15 +114,6 @@ pub(in crate::fixups) enum TypeUseKind {
     FunctionReturn,
     Parameter,
     Field,
-}
-
-#[derive(Debug, Clone)]
-pub(in crate::fixups) struct ParameterRemoval {
-    pub(in crate::fixups) binding: BindingRef,
-    pub(in crate::fixups) function: FunctionRef,
-    pub(in crate::fixups) replacement: FnDef,
-    pub(in crate::fixups) index: usize,
-    pub(in crate::fixups) calls: Vec<(ExprSite, Expr)>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

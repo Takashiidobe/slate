@@ -1,7 +1,6 @@
 mod context;
 mod field;
 mod item;
-mod parameter;
 mod patterns;
 mod plan;
 mod program_recipe;
@@ -46,9 +45,9 @@ pub(in crate::fixups) use views::{
     ByteSource, ByteView, DefinitionGroup, DefinitionGroupUsers, DefinitionKind,
     DefinitionLocation, DefinitionSelector, DefinitionSite, DefinitionUsers, EnumVariantRef,
     ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
-    ExpressionValues, FieldRef, FunctionRef, HeapOwnership, HeapOwnershipFacts, HeapReallocation,
-    HeapUse, ItemReferences, LazySingletonSet, MatchArmRef, NulPosition, ParameterRef,
-    ParameterRemoval, Phase, PointerMutability, ProgramRef, PtrLenPlanSet, ReferenceDomain,
-    ResolvedValue, StableExpr, StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef,
-    Usage, UseSiteRef, ValueSite,
+    ExpressionValues, FieldRef, FunctionCallDomain, FunctionReachability, FunctionRef,
+    HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences, LazySingletonSet,
+    MatchArmRef, NulPosition, ParameterRef, Phase, PointerMutability, ProgramRef, PtrLenPlanSet,
+    ReferenceDomain, ResolvedValue, StableExpr, StatementContainerRef, StatementRange, TypeUseKind,
+    TypeUseRef, Usage, UseSiteRef, ValueSite,
 };

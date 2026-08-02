@@ -73,7 +73,10 @@ pub(in crate::fixups) enum Predicate {
     StringUse,
     AllExprs,
     Cast,
-    UnusedParam,
+    DirectCalls,
+    FunctionReachability,
+    FunctionCallDomain,
+    CallArgument,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -188,10 +191,22 @@ pub(in crate::fixups) enum EvidenceDetail {
     Cast {
         to: Type,
     },
-    UnusedParam {
+    DirectCalls {
         function: String,
-        param: String,
-        param_index: usize,
+        calls: usize,
+        references: usize,
+    },
+    FunctionReachability {
+        function: String,
+        externally_reachable: bool,
+        address_exposed: bool,
+    },
+    FunctionCallDomain {
+        function: String,
+        calls: usize,
+    },
+    CallArgument {
+        index: usize,
     },
 }
 

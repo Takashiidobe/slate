@@ -78,7 +78,10 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::Cast => "cast",
         Predicate::ReferenceDomain => "reference_domain",
         Predicate::Statement => "statement",
-        Predicate::UnusedParam => "unused_param",
+        Predicate::DirectCalls => "direct_calls",
+        Predicate::FunctionReachability => "function_reachability",
+        Predicate::FunctionCallDomain => "function_call_domain",
+        Predicate::CallArgument => "call_argument",
     }
 }
 
@@ -179,11 +182,22 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::ReferenceDomain { definitions, items } => {
             format!("definitions={definitions}, items={items}")
         }
-        EvidenceDetail::UnusedParam {
+        EvidenceDetail::DirectCalls {
             function,
-            param,
-            param_index,
-        } => format!("function={function};param={param};param_index={param_index}"),
+            calls,
+            references,
+        } => format!("function={function};calls={calls};references={references}"),
+        EvidenceDetail::FunctionReachability {
+            function,
+            externally_reachable,
+            address_exposed,
+        } => format!(
+            "function={function};externally_reachable={externally_reachable};address_exposed={address_exposed}"
+        ),
+        EvidenceDetail::FunctionCallDomain { function, calls } => {
+            format!("function={function};calls={calls}")
+        }
+        EvidenceDetail::CallArgument { index } => format!("index={index}"),
     }
 }
 

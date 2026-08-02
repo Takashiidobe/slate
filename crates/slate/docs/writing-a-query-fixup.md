@@ -134,6 +134,16 @@ resize direction remain independent observations. The rule decides Box/Vec
 eligibility and constructs the private recipe plan; the query never returns a
 rewrite plan or rewritten body.
 
+For signature rewrites, `parameter_function` relates a stable parameter handle
+to its function and `parameter_uses` exposes its binding uses.
+`function_reachability` reports external reachability and address exposure,
+while `direct_calls` returns stable call handles without claiming completeness.
+Use `function_call_domain` when every caller must be known; it rejects
+incomplete, address-exposed, and externally reachable domains with the evidence
+collected so far. `call_argument` resolves a stable argument expression by
+position. The rule owns signature eligibility, argument policy, and the atomic
+function-and-call edit set.
+
 ## Definition items
 
 Definitions are `QueryItem`s selected by the reusable `Definition` matcher. The
