@@ -844,6 +844,106 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(statements, evidence))
     }
 
+    pub(in crate::fixups) fn following_statements(
+        &self,
+        statement: &StatementRef,
+    ) -> QueryResult<Vec<StatementRef>> {
+        let predicate = Predicate::StatementRegion;
+        let Some(container) = statement.container() else {
+            return Err(Rejection::new(
+                predicate,
+                Some(statement_evidence_site(statement)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(index) = statement.index() else {
+            return Err(Rejection::new(
+                predicate,
+                Some(statement_evidence_site(statement)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let body = self.statement_container(&container).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(statement_evidence_site(statement)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let statements = (index + 1..body.len())
+            .map(|index| {
+                let mut path = container.path.0.clone();
+                path.push(PathSegment::Stmt(index));
+                StatementRef {
+                    item_index: statement.item_index,
+                    path: AstPath(path),
+                }
+            })
+            .collect::<Vec<_>>();
+        let mut evidence = self.statement(statement)?.evidence;
+        evidence.push(Evidence {
+            predicate,
+            site: statement_evidence_site(statement),
+            detail: EvidenceDetail::StatementRegion {
+                statements: statements.len(),
+            },
+        });
+        Ok(Proof::new(statements, evidence))
+    }
+
+    pub(in crate::fixups) fn statement_range(
+        &self,
+        start: &StatementRef,
+        end: &StatementRef,
+    ) -> QueryResult<StatementRange> {
+        let predicate = Predicate::StatementRegion;
+        let (Some(start_container), Some(end_container)) = (start.container(), end.container())
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(statement_evidence_site(start)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let (Some(start_index), Some(end_index)) = (start.index(), end.index()) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(statement_evidence_site(start)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let mut evidence = self.statement(start)?.evidence;
+        evidence.extend(self.statement(end)?.evidence);
+        if start_container != end_container || start_index > end_index {
+            return Err(Rejection::new(
+                predicate,
+                Some(statement_evidence_site(start)),
+                RejectionReason::Contradicted,
+                evidence,
+            ));
+        }
+        let statements = end_index - start_index + 1;
+        evidence.push(Evidence {
+            predicate,
+            site: statement_evidence_site(start),
+            detail: EvidenceDetail::StatementRegion { statements },
+        });
+        Ok(Proof::new(
+            StatementRange {
+                item_index: start.item_index,
+                path: start_container.path,
+                start: start_index,
+                end: end_index + 1,
+            },
+            evidence,
+        ))
+    }
+
     pub(in crate::fixups) fn statement(
         &self,
         statement: &StatementRef,
@@ -1457,6 +1557,45 @@ impl<'snapshot> QueryContext<'snapshot> {
         evidence.push(Evidence {
             predicate: Predicate::BindingUses,
             site: statement_evidence_site(statement),
+            detail: EvidenceDetail::BindingUses { reads, writes },
+        });
+        Ok(Proof::new(uses, evidence))
+    }
+
+    pub(in crate::fixups) fn binding_uses_in_expression(
+        &self,
+        binding: &BindingRef,
+        expression: &ExpressionRef,
+    ) -> QueryResult<BindingUses> {
+        let (mut uses, mut evidence) = self.binding_uses(binding)?.into_parts();
+        uses.uses.retain(|usage| match &usage.site {
+            UseSiteRef::Expression(use_expression) => use_expression
+                .site
+                .path
+                .0
+                .starts_with(&expression.site.path.0),
+            UseSiteRef::Statement(statement) => {
+                walk::paths_overlap(&statement.path.0, &expression.site.fact_path.0)
+            }
+        });
+        let reads = uses
+            .uses
+            .iter()
+            .filter(|usage| matches!(usage.access, BindingAccess::Read | BindingAccess::ReadWrite))
+            .count();
+        let writes = uses
+            .uses
+            .iter()
+            .filter(|usage| {
+                matches!(
+                    usage.access,
+                    BindingAccess::Write | BindingAccess::ReadWrite
+                )
+            })
+            .count();
+        evidence.push(Evidence {
+            predicate: Predicate::BindingUses,
+            site: expression.site.clone(),
             detail: EvidenceDetail::BindingUses { reads, writes },
         });
         Ok(Proof::new(uses, evidence))

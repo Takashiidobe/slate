@@ -16,7 +16,6 @@ use crate::rust_ast::{FnDef, IndentStmt, Item, Program};
 
 use crate::fixups::rewrite::constant_conditions::ConstantConditions;
 use crate::fixups::rewrite::for_continue::ForContinue;
-use crate::fixups::rewrite::struct_field_init::StructFieldInit;
 use crate::fixups::rewrite::var_aliases::VarAliases;
 pub use trace::Pass;
 
@@ -273,11 +272,20 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::StructFieldInit, {
-        let mut fixup = StructFieldInit::new(logger);
-        to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
-            run_once(&mut f.body, &mut fixup)
-        });
-        incremental.mark_everything_dirty();
+        loop {
+            let facts = incremental.resolve(&program);
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::struct_field_init::rewrite());
+                builder.finish()
+            };
+            let report = plan.apply(&mut program, &facts, logger);
+            incremental.mark_touched(&report.touched);
+            if !report.changed {
+                break;
+            }
+        }
     });
     step!(program, Pass::SingletonScopes, {
         to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {

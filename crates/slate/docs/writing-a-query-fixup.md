@@ -222,6 +222,14 @@ with adjacency, while structural captures such as `LetStmtPattern` and
 and `case.require(condition)` reject unsupported shapes while retaining prior
 proof evidence.
 
+Variable-width regions start from an ordinary statement match.
+`following_statements` returns stable handles for the rest of the same
+container, and `statement_range` validates an inclusive start/end pair before
+constructing the replacement anchor. Compose those navigation queries with
+`binding_uses_in_expression` and `expression_effects` for dataflow-gated region
+rewrites. The rule decides where the structural run ends; path arithmetic and
+same-container validation stay in the query layer.
+
 Overlap detection generalizes path-prefix overlap (as for expressions) with a
 statement-range check. Two edit sets conflict when any of their anchors overlap,
 including when one statement edit removes the container of another edit.
