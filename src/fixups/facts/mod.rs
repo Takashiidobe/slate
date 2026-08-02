@@ -1147,8 +1147,7 @@ impl FixupFacts {
     /// current body, without touching any other function's facts or
     /// shifting any `item_index`. Only valid when `function` kept its
     /// `item_index` and is still an `Item::Fn` there - i.e. after a
-    /// `CallRule`/`QueryRule` edit, or a `DefinitionRule`
-    /// `ReplaceBody` edit. For an edit that deleted or inserted a whole
+    /// `CallRule` or in-place `QueryRule` edit. For an edit that deleted or inserted a whole
     /// `Program::items` entry, use `remove_items` instead.
     ///
     /// The other ~30 fact kinds this doesn't maintain are allowed to go
@@ -1186,7 +1185,7 @@ impl FixupFacts {
 
     /// Removes whole `Program::items` entries and shifts every later
     /// `FunctionFact.item_index` to match, reflecting one or more
-    /// `Program::items` removals from a single edit (e.g. `DefinitionRule`
+    /// `Program::items` removals from a single edit (e.g. definition `QueryRule`
     /// deletions, or `ProgramRule`'s lazy-singleton guard-flag cleanup).
     /// `item_indices` must be the *original* positions, as they were
     /// before any of them were removed - order doesn't matter, this sorts

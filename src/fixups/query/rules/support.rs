@@ -1,9 +1,9 @@
 use crate::fixups::trace::Pass;
 
-use super::super::{Definition, DefinitionKind, DefinitionRule, Field, delete_definition};
+use super::super::{Definition, DefinitionKind, EditSet, Field, QueryRule};
 
-pub(in crate::fixups) fn unused_numeric_parse() -> DefinitionRule {
-    DefinitionRule::matches(
+pub(in crate::fixups) fn unused_numeric_parse() -> QueryRule<Definition> {
+    QueryRule::new(
         Pass::PruneUnusedDefinitions,
         "prune_unused_support_module",
         Definition {
@@ -12,8 +12,8 @@ pub(in crate::fixups) fn unused_numeric_parse() -> DefinitionRule {
             ..Default::default()
         },
     )
-    .case("unused", |case| {
-        case.zero_users()?;
-        Ok(delete_definition())
+    .case("unused", |case, definition| {
+        case.zero_users(definition)?;
+        Ok(EditSet::delete_definition(definition.clone()))
     })
 }

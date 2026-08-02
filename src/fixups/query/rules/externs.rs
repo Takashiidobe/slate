@@ -1,11 +1,9 @@
 use crate::fixups::trace::Pass;
 
-use super::super::{
-    Definition, DefinitionGroup, DefinitionKind, DefinitionRule, Field, delete_definition,
-};
+use super::super::{Definition, DefinitionGroup, DefinitionKind, EditSet, Field, QueryRule};
 
-pub(in crate::fixups) fn unused_known_declarations() -> DefinitionRule {
-    DefinitionRule::matches(
+pub(in crate::fixups) fn unused_known_declarations() -> QueryRule<Definition> {
+    QueryRule::new(
         Pass::PruneUnusedDefinitions,
         "prune_unused_extern_decl",
         Definition {
@@ -14,14 +12,14 @@ pub(in crate::fixups) fn unused_known_declarations() -> DefinitionRule {
             ..Default::default()
         },
     )
-    .case("unused", |case| {
-        case.zero_users()?;
-        Ok(delete_definition())
+    .case("unused", |case, definition| {
+        case.zero_users(definition)?;
+        Ok(EditSet::delete_definition(definition.clone()))
     })
 }
 
-pub(in crate::fixups) fn unused_header(header: impl Into<String>) -> DefinitionRule {
-    DefinitionRule::matches(
+pub(in crate::fixups) fn unused_header(header: impl Into<String>) -> QueryRule<Definition> {
+    QueryRule::new(
         Pass::PruneUnusedDefinitions,
         "prune_unused_header",
         Definition {
@@ -29,8 +27,8 @@ pub(in crate::fixups) fn unused_header(header: impl Into<String>) -> DefinitionR
             ..Default::default()
         },
     )
-    .case("unused", |case| {
-        case.zero_group_users()?;
-        Ok(delete_definition())
+    .case("unused", |case, definition| {
+        case.zero_group_users(definition)?;
+        Ok(EditSet::delete_definition(definition.clone()))
     })
 }

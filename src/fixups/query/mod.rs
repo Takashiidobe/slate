@@ -1,5 +1,4 @@
 mod context;
-mod definition;
 mod field;
 mod item;
 mod patterns;
@@ -16,9 +15,6 @@ mod views;
 
 use context::default_value;
 pub(in crate::fixups) use context::{CallRecord, CallTarget, QueryContext};
-pub(in crate::fixups) use definition::{
-    DefinitionPlanBuilder, DefinitionRule, delete_definition, replace_body,
-};
 pub(in crate::fixups) use field::Field;
 pub(in crate::fixups) use item::{EditSet, ItemPlanBuilder, QueryRule};
 pub(in crate::fixups) use patterns::{

@@ -1,9 +1,8 @@
 # Matcher-driven query predicates
 
-Rule selection used to be one hardcoded constructor per shape:
-`CallRule::generated`/`CallRule::known`, `DefinitionRule::function`/
-`extern_function`/`header`/`known_extern_functions`/`support_module`. Every
-new selection shape needed a new method, and case-level predicates like
+Rule selection used to be one hardcoded constructor per shape. Call and
+definition selectors each had their own rule and planner API. Every new
+selection shape needed a new method, and case-level predicates like
 `never_returning_extern()`/`dead_local()`/`sole_use()` each bundled several
 independent facts into one opaque call nobody else could reuse a piece of.
 
@@ -17,11 +16,10 @@ shape only. Extended the same pattern to facts-backed candidate selection:
 - **`FnCall<Cx>`** (`target`, `arity`, `arg_types`) replaces
   `CallRule::generated`/`known`. `target: Field<CallTarget, Cx>` reuses the
   existing enum, so one field subsumes both old constructors.
-- **`Definition<Cx>`** (`kind`, `name`, `group`) replaces all five
-  `DefinitionRule` constructors the same way.
-- Both rules now take one `::matches(pass, rule, matcher)` constructor;
-  `candidates()` changed from an exact index lookup to a full scan filtered
-  by `Field::matches` per field. Unset fields default to `Field::Any`.
+- **`Definition<Cx>`** (`kind`, `name`, `group`) implements the common
+  `Matcher` trait over definition `QueryItem`s.
+- Definition rewrites use `QueryRule::new(pass, rule, matcher)` and the shared
+  `ItemPlanBuilder`. Unset fields default to `Field::Any`.
 
 ## `Value`/`Local`: one resolver for "what do we know about this data"
 

@@ -4,24 +4,39 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{AstPath, FixupFacts, PathSegment};
 use crate::fixups::support::walk as mut_walk;
 use crate::fixups::trace::{
-    Pass, RewriteEvent, TraceLogger, TraceSnippet, fact, function_path_location, path_location,
+    Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact, function_path_location,
+    path_location,
 };
-use crate::rust_ast::{IndentStmt, Item, Program};
+use crate::rust_ast::{ExternDecl, IndentStmt, Item, Program};
 
 use super::plan::{
     EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit, TouchedItems,
 };
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    CaseRejection, Evidence, Predicate, QueryContext, Rejection, RejectionReason, RuleCaseIdentity,
-    RuleIdentity, StatementRange,
+    BufferCursorPlan, CaseRejection, DefinitionKind, DefinitionLocation, DefinitionSite, Evidence,
+    FunctionBodyRecipe, HeapOwnershipPlanSet, InlineTempPlan, Phase, Predicate, QueryContext,
+    Rejection, RejectionReason, RuleCaseIdentity, RuleIdentity, StatementRange, ZeroInitPlan,
 };
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(in crate::fixups) enum QueryDomain {
+    Definition,
+    Statement,
+}
+
 pub(in crate::fixups) enum QueryItem<'snapshot> {
+    Definition(&'snapshot DefinitionSite),
     Statement {
         site: StatementRef,
         tail: &'snapshot [IndentStmt],
     },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub(in crate::fixups) enum Anchor {
+    Definition(DefinitionLocation),
+    Statements(StatementRange),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -77,9 +92,26 @@ impl StatementMatch {
 }
 
 pub(in crate::fixups) trait Matcher {
-    type Capture: Clone;
+    type Capture: MatchCapture;
 
+    fn domain(&self) -> QueryDomain;
     fn matches(&self, query: &QueryContext<'_>, item: &QueryItem<'_>) -> Option<Self::Capture>;
+}
+
+pub(in crate::fixups) trait MatchCapture: Clone {
+    fn anchor(&self) -> Anchor;
+}
+
+impl MatchCapture for DefinitionSite {
+    fn anchor(&self) -> Anchor {
+        Anchor::Definition(self.location.clone())
+    }
+}
+
+impl MatchCapture for StatementMatch {
+    fn anchor(&self) -> Anchor {
+        Anchor::Statements(self.target.clone())
+    }
 }
 
 type ItemCaseFn<C> = for<'case, 'snapshot> fn(
@@ -126,6 +158,82 @@ pub(in crate::fixups) struct ItemCaseContext<'case, 'snapshot> {
 }
 
 impl ItemCaseContext<'_, '_> {
+    pub(in crate::fixups) fn zero_users(
+        &mut self,
+        definition: &DefinitionSite,
+    ) -> Result<(), Rejection> {
+        self.prove(self.query.zero_users(definition)).map(drop)
+    }
+
+    pub(in crate::fixups) fn zero_group_users(
+        &mut self,
+        definition: &DefinitionSite,
+    ) -> Result<(), Rejection> {
+        let Some(group) = &definition.group else {
+            return Err(Rejection::new(
+                Predicate::ZeroGroupUsers,
+                None,
+                RejectionReason::MissingEvidence,
+                self.evidence.clone(),
+            ));
+        };
+        self.prove(self.query.zero_group_users(group)).map(drop)
+    }
+
+    pub(in crate::fixups) fn heap_ownership_plans(
+        &mut self,
+        definition: &DefinitionSite,
+    ) -> Result<HeapOwnershipPlanSet, Rejection> {
+        self.prove(self.query.heap_ownership_plans(definition))
+    }
+
+    pub(in crate::fixups) fn inline_temp_candidate(
+        &mut self,
+        definition: &DefinitionSite,
+        phase: Phase,
+    ) -> Result<InlineTempPlan, Rejection> {
+        self.prove(self.query.inline_temp_candidate(definition, phase))
+    }
+
+    pub(in crate::fixups) fn buffer_cursor_plan(
+        &mut self,
+        definition: &DefinitionSite,
+    ) -> Result<BufferCursorPlan, Rejection> {
+        self.prove(self.query.buffer_cursor_rewrite(definition))
+    }
+
+    pub(in crate::fixups) fn zero_init_candidate(
+        &mut self,
+        definition: &DefinitionSite,
+        cross_effects: bool,
+    ) -> Result<ZeroInitPlan, Rejection> {
+        self.prove(self.query.zero_init_candidate(definition, cross_effects))
+    }
+
+    pub(in crate::fixups) fn unused_type_definition(
+        &mut self,
+        definition: &DefinitionSite,
+    ) -> Result<(), Rejection> {
+        let doomed = self.prove(self.query.unused_type_definitions())?;
+        if doomed.doomed.contains(&definition.location.item_index()) {
+            Ok(())
+        } else {
+            Err(Rejection::new(
+                Predicate::UnusedTypeDefinition,
+                None,
+                RejectionReason::Contradicted,
+                self.evidence.clone(),
+            ))
+        }
+    }
+
+    pub(in crate::fixups) fn function_body(&self, definition: &DefinitionSite) -> Vec<IndentStmt> {
+        match &self.query.snapshot_program().items[definition.location.item_index()] {
+            Item::Fn(function) => function.body.clone(),
+            _ => Vec::new(),
+        }
+    }
+
     pub(in crate::fixups) fn local_binding(
         &mut self,
         statement: &StatementRef,
@@ -192,6 +300,13 @@ impl ItemCaseContext<'_, '_> {
 }
 
 pub(in crate::fixups) enum AnchoredEdit {
+    DeleteDefinition {
+        target: DefinitionSite,
+    },
+    ReplaceFunctionBody {
+        target: DefinitionSite,
+        body: Vec<IndentStmt>,
+    },
     ReplaceStatements {
         target: StatementRange,
         replacement: Vec<IndentStmt>,
@@ -204,6 +319,26 @@ pub(in crate::fixups) struct EditSet {
 }
 
 impl EditSet {
+    pub(in crate::fixups) fn delete_definition(target: DefinitionSite) -> Self {
+        Self {
+            edits: vec![AnchoredEdit::DeleteDefinition { target }],
+            evidence: Vec::new(),
+        }
+    }
+
+    pub(in crate::fixups) fn replace_function_body(
+        target: DefinitionSite,
+        body: FunctionBodyRecipe,
+    ) -> Self {
+        Self {
+            edits: vec![AnchoredEdit::ReplaceFunctionBody {
+                target,
+                body: body.lower(),
+            }],
+            evidence: Vec::new(),
+        }
+    }
+
     pub(in crate::fixups) fn replace_statements(
         target: StatementRange,
         replacement: Vec<IndentStmt>,
@@ -219,7 +354,7 @@ impl EditSet {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub(in crate::fixups) struct EditSetSite(Vec<StatementRange>);
+pub(in crate::fixups) struct EditSetSite(Vec<Anchor>);
 
 impl EditTarget for EditSet {
     type Site = EditSetSite;
@@ -229,7 +364,13 @@ impl EditTarget for EditSet {
             .edits
             .iter()
             .map(|edit| match edit {
-                AnchoredEdit::ReplaceStatements { target, .. } => target.clone(),
+                AnchoredEdit::DeleteDefinition { target }
+                | AnchoredEdit::ReplaceFunctionBody { target, .. } => {
+                    Anchor::Definition(target.location.clone())
+                }
+                AnchoredEdit::ReplaceStatements { target, .. } => {
+                    Anchor::Statements(target.clone())
+                }
             })
             .collect::<Vec<_>>();
         sites.sort();
@@ -241,7 +382,28 @@ impl PlanSite for EditSetSite {
     fn overlaps(&self, other: &Self) -> bool {
         self.0
             .iter()
-            .any(|left| other.0.iter().any(|right| left.overlaps(right)))
+            .any(|left| other.0.iter().any(|right| anchors_overlap(left, right)))
+    }
+}
+
+fn anchors_overlap(left: &Anchor, right: &Anchor) -> bool {
+    match (left, right) {
+        (Anchor::Statements(left), Anchor::Statements(right)) => left.overlaps(right),
+        (Anchor::Definition(left), Anchor::Definition(right)) => definitions_overlap(left, right),
+        (Anchor::Definition(definition), Anchor::Statements(statements))
+        | (Anchor::Statements(statements), Anchor::Definition(definition)) => {
+            definition.item_index() == statements.item_index
+        }
+    }
+}
+
+fn definitions_overlap(left: &DefinitionLocation, right: &DefinitionLocation) -> bool {
+    match (left, right) {
+        (DefinitionLocation::Item(item), DefinitionLocation::ExternDecl { item_index, .. })
+        | (DefinitionLocation::ExternDecl { item_index, .. }, DefinitionLocation::Item(item)) => {
+            item == item_index
+        }
+        _ => left == right,
     }
 }
 
@@ -288,7 +450,7 @@ impl ItemPlanBuilder {
         rule: &QueryRule<M>,
     ) -> &mut Self {
         let identity = rule.identity.clone();
-        for item in query_items(query) {
+        for item in query_items(query, rule.matcher.domain()) {
             let Some(capture) = rule.matcher.matches(query, &item) else {
                 continue;
             };
@@ -323,7 +485,7 @@ impl ItemPlanBuilder {
             } else if !rejected_cases.is_empty() {
                 self.builder.diagnose(PlanDiagnostic::CandidateRejected {
                     rule: identity.clone(),
-                    target: None,
+                    target: Some(EditSetSite(vec![capture.anchor()])),
                     rejections: rejected_cases,
                 });
             }
@@ -338,7 +500,13 @@ impl ItemPlanBuilder {
     }
 }
 
-fn query_items<'snapshot>(query: &QueryContext<'snapshot>) -> Vec<QueryItem<'snapshot>> {
+fn query_items<'query>(
+    query: &'query QueryContext<'_>,
+    domain: QueryDomain,
+) -> Vec<QueryItem<'query>> {
+    if domain == QueryDomain::Definition {
+        return query.all_definitions().map(QueryItem::Definition).collect();
+    }
     let mut items = Vec::new();
     for (item_index, item) in query.snapshot_program().items.iter().enumerate() {
         if let Item::Fn(function) = item {
@@ -387,7 +555,13 @@ impl ItemPlan {
     ) -> ItemApplyReport {
         let planned = self.plan.edits.len();
         let mut diagnostics = self.plan.diagnostics;
-        let mut edits = BTreeMap::new();
+        if logger.is_enabled() {
+            for diagnostic in &diagnostics {
+                log_diagnostic(logger, diagnostic);
+            }
+        }
+        let mut statement_edits = BTreeMap::new();
+        let mut definition_edits = Vec::new();
         for planned_edit in self.plan.edits {
             let PlannedEdit {
                 identity,
@@ -395,54 +569,188 @@ impl ItemPlan {
                 rejected_cases,
             } = planned_edit;
             for anchored in edit.edits {
-                let AnchoredEdit::ReplaceStatements {
-                    target,
-                    replacement,
-                } = anchored;
-                edits.insert(
-                    target.clone(),
-                    PlannedStatementEdit {
-                        identity: identity.clone(),
+                match anchored {
+                    AnchoredEdit::DeleteDefinition { target } => {
+                        definition_edits.push(PlannedDefinitionEdit {
+                            identity: identity.clone(),
+                            target,
+                            action: DefinitionAction::Delete,
+                            evidence: edit.evidence.clone(),
+                            rejected_cases: rejected_cases.clone(),
+                        });
+                    }
+                    AnchoredEdit::ReplaceFunctionBody { target, body } => {
+                        definition_edits.push(PlannedDefinitionEdit {
+                            identity: identity.clone(),
+                            target,
+                            action: DefinitionAction::ReplaceBody(body),
+                            evidence: edit.evidence.clone(),
+                            rejected_cases: rejected_cases.clone(),
+                        });
+                    }
+                    AnchoredEdit::ReplaceStatements {
                         target,
                         replacement,
-                        evidence: edit.evidence.clone(),
-                        rejected_cases: rejected_cases.clone(),
-                    },
-                );
+                    } => {
+                        statement_edits.insert(
+                            target.clone(),
+                            PlannedStatementEdit {
+                                identity: identity.clone(),
+                                target,
+                                replacement,
+                                evidence: edit.evidence.clone(),
+                                rejected_cases: rejected_cases.clone(),
+                            },
+                        );
+                    }
+                }
             }
         }
-        let mut state = ApplyState {
-            edits,
-            applied: 0,
-            touched: TouchedItems::none(),
-            facts,
-            logger,
-        };
-        for (item_index, item) in program.items.iter_mut().enumerate() {
-            let Item::Fn(function) = item else {
-                continue;
+        let (mut applied, mut touched, missing_statements) = {
+            let mut state = ApplyState {
+                edits: statement_edits,
+                applied: 0,
+                touched: TouchedItems::none(),
+                facts,
+                logger,
             };
-            if state
-                .edits
-                .keys()
-                .any(|target| target.item_index == item_index)
-            {
-                apply_body(item_index, &mut function.body, &mut Vec::new(), &mut state);
+            for (item_index, item) in program.items.iter_mut().enumerate() {
+                let Item::Fn(function) = item else {
+                    continue;
+                };
+                if state
+                    .edits
+                    .keys()
+                    .any(|target| target.item_index == item_index)
+                {
+                    apply_body(item_index, &mut function.body, &mut Vec::new(), &mut state);
+                }
             }
-        }
-        for (_, edit) in state.edits {
+            (state.applied, state.touched, state.edits)
+        };
+        for (_, edit) in missing_statements {
             diagnostics.push(PlanDiagnostic::MissingTarget {
                 contender: edit.identity,
-                target: EditSetSite(vec![edit.target]),
+                target: EditSetSite(vec![Anchor::Statements(edit.target)]),
             });
         }
+        applied += apply_definition_edits(
+            program,
+            definition_edits,
+            logger,
+            &mut diagnostics,
+            &mut touched,
+        );
         ItemApplyReport {
-            changed: state.applied != 0,
+            changed: applied != 0,
             planned,
-            applied: state.applied,
+            applied,
             diagnostics,
-            touched: state.touched,
+            touched,
         }
+    }
+}
+
+enum DefinitionAction {
+    Delete,
+    ReplaceBody(Vec<IndentStmt>),
+}
+
+struct PlannedDefinitionEdit {
+    identity: RuleCaseIdentity,
+    target: DefinitionSite,
+    action: DefinitionAction,
+    evidence: Vec<Evidence>,
+    rejected_cases: Vec<CaseRejection>,
+}
+
+fn apply_definition_edits(
+    program: &mut Program,
+    edits: Vec<PlannedDefinitionEdit>,
+    logger: &mut dyn TraceLogger,
+    diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
+    touched: &mut TouchedItems,
+) -> usize {
+    let mut by_item = BTreeMap::<usize, Vec<PlannedDefinitionEdit>>::new();
+    for edit in edits {
+        by_item
+            .entry(edit.target.location.item_index())
+            .or_default()
+            .push(edit);
+    }
+    let mut applied = 0;
+    for (item_index, mut edits) in by_item.into_iter().rev() {
+        edits.sort_by(|left, right| right.target.location.cmp(&left.target.location));
+        if item_index >= program.items.len() {
+            diagnostics.extend(edits.into_iter().map(missing_definition));
+            continue;
+        }
+        if matches!(
+            edits.first().map(|edit| &edit.target.location),
+            Some(DefinitionLocation::Item(_))
+        ) {
+            let edit = edits.pop().unwrap();
+            if !definition_matches(&program.items[item_index], &edit.target) {
+                diagnostics.push(missing_definition(edit));
+                continue;
+            }
+            let before = item_snippet(&program.items[item_index]);
+            match &edit.action {
+                DefinitionAction::Delete => {
+                    program.items.remove(item_index);
+                    log_definition_edit(logger, &edit, before, None);
+                    touched.removed.push(item_index);
+                }
+                DefinitionAction::ReplaceBody(body) => {
+                    let Item::Fn(function) = &mut program.items[item_index] else {
+                        unreachable!()
+                    };
+                    function.body = body.clone();
+                    let after = item_snippet(&program.items[item_index]);
+                    log_definition_edit(logger, &edit, before, Some(after));
+                    touched.in_place.push(item_index);
+                }
+            }
+            applied += 1;
+            continue;
+        }
+        let Item::ExternBlock { abi, decls } = &mut program.items[item_index] else {
+            diagnostics.extend(edits.into_iter().map(missing_definition));
+            continue;
+        };
+        let mut any_removed = false;
+        for edit in edits {
+            let DefinitionLocation::ExternDecl { decl_index, .. } = edit.target.location else {
+                unreachable!()
+            };
+            if !matches!(&edit.action, DefinitionAction::Delete)
+                || !decls
+                    .get(decl_index)
+                    .is_some_and(|decl| extern_definition_matches(decl, &edit.target))
+            {
+                diagnostics.push(missing_definition(edit));
+                continue;
+            }
+            let before = extern_decl_snippet(abi, &decls[decl_index]);
+            decls.remove(decl_index);
+            log_definition_edit(logger, &edit, before, None);
+            applied += 1;
+            any_removed = true;
+        }
+        if decls.is_empty() {
+            program.items.remove(item_index);
+            touched.removed.push(item_index);
+        } else if any_removed {
+            touched.in_place.push(item_index);
+        }
+    }
+    applied
+}
+
+fn missing_definition(edit: PlannedDefinitionEdit) -> PlanDiagnostic<EditSetSite> {
+    PlanDiagnostic::MissingTarget {
+        contender: edit.identity,
+        target: EditSetSite(vec![Anchor::Definition(edit.target.location)]),
     }
 }
 
@@ -565,4 +873,131 @@ fn rewrite_event(
         after: vec![TraceSnippet::new("stmts", render(after).trim_end())],
         facts: trace_facts,
     }
+}
+
+fn definition_matches(item: &Item, definition: &DefinitionSite) -> bool {
+    let item = unwrap_cfg(item);
+    match (item, definition.kind) {
+        (Item::Fn(function), DefinitionKind::Function) => function.name == definition.name,
+        (Item::SupportModule(module), DefinitionKind::SupportModule) => {
+            module.name.as_str() == definition.name
+        }
+        (Item::Struct(definition_item), DefinitionKind::Struct) => {
+            definition_item.name == definition.name
+        }
+        (Item::Record(definition_item), DefinitionKind::Record) => {
+            definition_item.name == definition.name
+        }
+        (Item::Enum(definition_item), DefinitionKind::Enum) => {
+            definition_item.name == definition.name
+        }
+        _ => false,
+    }
+}
+
+fn unwrap_cfg(item: &Item) -> &Item {
+    match item {
+        Item::Cfg { item, .. } => unwrap_cfg(item),
+        _ => item,
+    }
+}
+
+fn extern_definition_matches(decl: &ExternDecl, definition: &DefinitionSite) -> bool {
+    match (decl, definition.kind) {
+        (ExternDecl::Fn(function), DefinitionKind::ExternFunction) => {
+            function.name == definition.name
+        }
+        (ExternDecl::Static { name, .. }, DefinitionKind::ExternStatic) => name == &definition.name,
+        _ => false,
+    }
+}
+
+fn item_snippet(item: &Item) -> String {
+    Program {
+        items: vec![item.clone()],
+    }
+    .emit()
+    .trim_end()
+    .to_owned()
+}
+
+fn extern_decl_snippet(abi: &str, decl: &ExternDecl) -> String {
+    item_snippet(&Item::ExternBlock {
+        abi: abi.to_owned(),
+        decls: vec![decl.clone()],
+    })
+}
+
+fn log_definition_edit(
+    logger: &mut dyn TraceLogger,
+    edit: &PlannedDefinitionEdit,
+    before: String,
+    after: Option<String>,
+) {
+    if !logger.is_enabled() {
+        return;
+    }
+    let mut facts = vec![
+        fact("query_rule", edit.identity.rule.name.clone()),
+        fact("query_case", edit.identity.case.clone()),
+    ];
+    facts.extend(edit.evidence.iter().map(evidence_trace_fact));
+    facts.extend(edit.rejected_cases.iter().map(|rejected| {
+        fact(
+            format!("rejected_case.{}", rejected.case),
+            format!(
+                "{}:{}",
+                predicate_name(rejected.rejection.predicate),
+                rejection_name(rejected.rejection.reason)
+            ),
+        )
+    }));
+    logger.rewrite(RewriteEvent {
+        pass: edit.identity.rule.pass,
+        kind: edit.identity.rule.name.clone(),
+        location: TraceLocation {
+            function: Some(edit.target.name.clone()),
+            ..TraceLocation::default()
+        },
+        before: vec![TraceSnippet::new("definition", before)],
+        after: after
+            .map(|after| vec![TraceSnippet::new("definition", after)])
+            .unwrap_or_default(),
+        facts,
+    });
+}
+
+fn log_diagnostic(logger: &mut dyn TraceLogger, diagnostic: &PlanDiagnostic<EditSetSite>) {
+    let PlanDiagnostic::CandidateRejected {
+        rule,
+        target,
+        rejections,
+    } = diagnostic
+    else {
+        return;
+    };
+    let mut facts = vec![fact("query_rule", rule.name.clone())];
+    for rejected in rejections {
+        facts.push(fact(
+            format!("rejected_case.{}", rejected.case),
+            format!(
+                "{}:{}",
+                predicate_name(rejected.rejection.predicate),
+                rejection_name(rejected.rejection.reason)
+            ),
+        ));
+        facts.extend(rejected.rejection.evidence.iter().map(evidence_trace_fact));
+    }
+    logger.rewrite(RewriteEvent {
+        pass: rule.pass,
+        kind: rule.name.clone(),
+        location: TraceLocation {
+            function: Some("item".into()),
+            ast_path: target.as_ref().map(|target| format!("{target:?}")),
+            ..TraceLocation::default()
+        },
+        before: Vec::new(),
+        after: Vec::new(),
+        facts,
+    });
 }

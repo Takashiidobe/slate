@@ -2,7 +2,7 @@ use crate::fixups::facts::Purity;
 use crate::rust_ast::{Expr, IndentStmt, Label, Stmt, Type};
 
 use super::field::Field;
-use super::item::{Matcher, QueryItem, StatementMatch};
+use super::item::{Matcher, QueryDomain, QueryItem, StatementMatch};
 use super::{CallTarget, DefinitionGroup, DefinitionKind, ResolvedValue, StatementRange, Usage};
 
 #[derive(Default)]
@@ -17,6 +17,28 @@ pub(in crate::fixups) struct Definition<Cx = ()> {
     pub(in crate::fixups) kind: Field<DefinitionKind, Cx>,
     pub(in crate::fixups) name: Field<String, Cx>,
     pub(in crate::fixups) group: Field<Option<DefinitionGroup>, Cx>,
+}
+
+impl Matcher for Definition {
+    type Capture = super::DefinitionSite;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::Definition
+    }
+
+    fn matches(
+        &self,
+        _query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::Definition(definition) = item else {
+            return None;
+        };
+        (self.kind.matches(&definition.kind, &())
+            && self.name.matches(&definition.name, &())
+            && self.group.matches(&definition.group, &()))
+        .then(|| (*definition).clone())
+    }
 }
 
 #[derive(Default)]
@@ -61,12 +83,18 @@ impl StatementSequence {
 impl Matcher for StatementSequence {
     type Capture = StatementMatch;
 
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::Statement
+    }
+
     fn matches(
         &self,
         query: &super::QueryContext<'_>,
         item: &QueryItem<'_>,
     ) -> Option<Self::Capture> {
-        let QueryItem::Statement { site, tail } = item;
+        let QueryItem::Statement { site, tail } = item else {
+            return None;
+        };
         let statements = tail.get(..self.width)?;
         let target = StatementRange {
             item_index: site.item_index,

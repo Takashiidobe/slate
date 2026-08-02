@@ -1,8 +1,8 @@
 use crate::fixups::trace::Pass;
 
 use super::super::{
-    CallRule, CallTarget, Definition, DefinitionKind, DefinitionRule, Field, FnCall, byte_position,
-    delete_definition, known_index, memchr_fallback_body, pointer_at_or_null, replace_body,
+    CallRule, CallTarget, Definition, DefinitionKind, EditSet, Field, FnCall, QueryRule,
+    byte_position, known_index, memchr_fallback_body, pointer_at_or_null,
 };
 
 pub(in crate::fixups) fn calls() -> CallRule {
@@ -33,8 +33,8 @@ pub(in crate::fixups) fn calls() -> CallRule {
     })
 }
 
-pub(in crate::fixups) fn helper() -> DefinitionRule {
-    DefinitionRule::matches(
+pub(in crate::fixups) fn helper() -> QueryRule<Definition> {
+    QueryRule::new(
         Pass::MemchrPrelude,
         "manage_memchr_helper",
         Definition {
@@ -43,9 +43,14 @@ pub(in crate::fixups) fn helper() -> DefinitionRule {
             ..Default::default()
         },
     )
-    .case("unused", |case| {
-        case.zero_users()?;
-        Ok(delete_definition())
+    .case("unused", |case, definition| {
+        case.zero_users(definition)?;
+        Ok(EditSet::delete_definition(definition.clone()))
     })
-    .case("retained", |_| Ok(replace_body(memchr_fallback_body())))
+    .case("retained", |_, definition| {
+        Ok(EditSet::replace_function_body(
+            definition.clone(),
+            memchr_fallback_body(),
+        ))
+    })
 }
