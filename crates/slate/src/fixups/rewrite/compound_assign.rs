@@ -66,7 +66,7 @@ fn fixup_at(
 
             let before = logger.is_enabled().then(|| body[index].stmt.clone());
             if let Stmt::Assign { target, value } = &mut body[index].stmt
-                && let Some((op, rhs)) = compound_parts(target, value, function, facts, path)
+                && let Some((op, rhs)) = compound_parts(target, value, function, facts, path, 1)
             {
                 body[index].stmt = Stmt::CompoundAssign {
                     target: target.clone(),
@@ -122,7 +122,7 @@ fn recover_post_update(
     if expr_ident(target) != Some(source) {
         return false;
     }
-    let Some((op, rhs)) = temp_compound_value(value, temp, function, facts, path) else {
+    let Some((op, rhs)) = temp_compound_value(value, temp, function, facts, path, 1) else {
         return false;
     };
 
@@ -181,7 +181,7 @@ fn recover_pre_update(
     if expr_ident(assigned) != Some(name.as_str()) {
         return false;
     }
-    let Some((op, rhs)) = compound_parts(target, value, function, facts, path) else {
+    let Some((op, rhs)) = compound_parts(target, value, function, facts, path, 0) else {
         return false;
     };
 
@@ -244,11 +244,13 @@ fn temp_compound_value(
     function: FunctionId,
     facts: &FixupFacts,
     path: &[PathSegment],
+    value_index: usize,
 ) -> Option<(BinOp, Expr)> {
     let Expr::Binary { op, lhs, rhs } = value else {
         return None;
     };
     let mut rhs_path = path.to_vec();
+    rhs_path.push(PathSegment::Expr(value_index));
     rhs_path.push(PathSegment::Expr(1));
     if !is_compound_op(*op)
         || expr_ident(lhs) != Some(temp)
@@ -265,12 +267,14 @@ fn compound_parts(
     function: FunctionId,
     facts: &FixupFacts,
     path: &[PathSegment],
+    value_index: usize,
 ) -> Option<(BinOp, Expr)> {
     let name = expr_ident(target)?;
     let Expr::Binary { op, lhs, rhs } = value else {
         return None;
     };
     let mut rhs_path = path.to_vec();
+    rhs_path.push(PathSegment::Expr(value_index));
     rhs_path.push(PathSegment::Expr(1));
     if !is_compound_op(*op)
         || expr_ident(lhs) != Some(name)

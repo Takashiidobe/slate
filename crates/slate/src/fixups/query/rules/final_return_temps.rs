@@ -47,7 +47,10 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
             query.statement_expression(&statement, 0)
         })?;
         case.require(
-            usage.access == BindingAccess::Read && usage.expression.site == returned.site,
+            usage.access == BindingAccess::Read
+                && usage
+                    .expression()
+                    .is_some_and(|expression| expression.site == returned.site),
         )?;
         Ok(EditSet::replace_statements(
             matched.target().clone(),

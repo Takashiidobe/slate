@@ -31,14 +31,14 @@ pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
 };
 pub(in crate::fixups) use recipe::{
-    ExprRecipe, FunctionBodyRecipe, byte_position, known_index, memchr_fallback_body,
-    pointer_at_or_null, process_exit, rewrite_buffer_cursor, rewrite_heap_ownership,
-    rewrite_zero_init,
+    ExprRecipe, FunctionBodyRecipe, byte_position, initialize_local, known_index,
+    memchr_fallback_body, pointer_at_or_null, process_exit, rewrite_buffer_cursor,
+    rewrite_heap_ownership,
 };
 pub(in crate::fixups) use rewrite::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 use views::{
     AnonymousStructField, AnonymousStructPlan, ArrayElementPointerOrigin, BufferCursorPlan,
-    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan, ZeroInitPlan,
+    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan,
 };
 pub(in crate::fixups) use views::{
     AnonymousStructSet, BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse,

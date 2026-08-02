@@ -92,6 +92,21 @@ impl StatementRef {
             end: index + 1,
         }
     }
+
+    pub(in crate::fixups) fn container(&self) -> Option<super::StatementContainerRef> {
+        let mut path = self.path.0.clone();
+        matches!(path.pop(), Some(PathSegment::Stmt(_))).then_some(super::StatementContainerRef {
+            item_index: self.item_index,
+            path: AstPath(path),
+        })
+    }
+
+    pub(in crate::fixups) fn index(&self) -> Option<usize> {
+        match self.path.0.last()? {
+            PathSegment::Stmt(index) => Some(*index),
+            _ => None,
+        }
+    }
 }
 
 pub(in crate::fixups) fn same_statement_container(declaration: &AstPath, other: &AstPath) -> bool {

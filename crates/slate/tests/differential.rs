@@ -928,26 +928,10 @@ fn zero_init_declarations_fold_into_their_overwriting_assignment() {
     let rust = std::fs::read_to_string(&generated).expect("read generated zero_init rust");
 
     assert!(rust.contains("let x: i32 = 42;"));
+    assert!(rust.contains("let z: i32 = unsafe { getchar() };\n    let y: i32 = z + 1;"));
     assert!(rust.contains("let y: i32 = z + 1;"));
     assert!(!rust.contains("let mut x"));
     assert!(!rust.contains("let mut y"));
-
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("fixup-debug")
-        .arg("--debug-only-pass")
-        .arg("zero_init")
-        .arg(&c_src)
-        .output()
-        .expect("run zero_init query trace");
-    assert!(
-        output.status.success(),
-        "fixup-debug failed:\n{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
-    assert!(stdout.contains("query_rule=fold_zero_init_assignment"));
-    assert!(stdout.contains("evidence.zero_init=moved_decl=true"));
-    assert!(stdout.contains("evidence.zero_init=moved_decl=false"));
 }
 
 #[test]

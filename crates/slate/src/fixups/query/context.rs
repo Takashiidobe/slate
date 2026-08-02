@@ -6,10 +6,10 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, CastFact, ConstValue, CountedLoopFact, EffectSubject,
     FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind, HeapReadSafety,
-    NulTermination, PathSegment, PlaceAccess, PlaceKind, PtrLenSliceFact, Purity, StringBufferFact,
-    StringBufferKind, StringRecoveryCandidate, ValueSubject,
+    NulTermination, PathSegment, PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind,
+    StringRecoveryCandidate, ValueSubject,
 };
-use crate::fixups::idents::{expr_ident, stmt_ident_count};
+use crate::fixups::idents::stmt_ident_count;
 use crate::fixups::support::walk as support_walk;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
@@ -31,7 +31,6 @@ use super::{
     NullaryMethodCall, ParameterRef, PointerMutability, Predicate, Proof, PtrLenPlan,
     PtrLenPlanSet, QueryResult, ReferenceDomain, Rejection, RejectionReason, ResolvedValue,
     StableExpr, StatementContainerRef, StatementRange, TypeUseRef, Usage, UseSiteRef, ValueSite,
-    ZeroInitPlan,
 };
 
 macro_rules! query_cache {
@@ -386,27 +385,16 @@ impl<'snapshot> QueryContext<'snapshot> {
             item_index: binding.item_index,
             path: binding.definition.clone(),
         };
-        let mut statement_proof = self.statement(&statement)?;
-        if !matches!(
-            &statement_proof.value.stmt,
-            Stmt::Let {
-                mutable: false,
-                init: Some(_),
-                ..
-            }
-        ) {
+        let (initializer, evidence) = self.statement_initializer(&statement)?.into_parts();
+        let Some(initializer) = initializer else {
             return Err(Rejection::new(
                 Predicate::Expression,
                 Some(statement_evidence_site(&statement)),
-                RejectionReason::UnsupportedShape,
-                statement_proof.evidence,
+                RejectionReason::MissingEvidence,
+                evidence,
             ));
-        }
-        let mut path = binding.definition.0.clone();
-        path.push(PathSegment::Expr(0));
-        let mut initializer = self.expression(&expression_site(binding.item_index, &path))?;
-        statement_proof.evidence.append(&mut initializer.evidence);
-        Ok(Proof::new(initializer.value, statement_proof.evidence))
+        };
+        Ok(Proof::new(initializer, evidence))
     }
 
     pub(in crate::fixups) fn enclosing_statement(
@@ -674,6 +662,34 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
+    pub(in crate::fixups) fn expression_dependencies(
+        &self,
+        expression: &ExpressionRef,
+    ) -> QueryResult<Vec<ExpressionRef>> {
+        let predicate = Predicate::ExpressionDependencies;
+        let dependencies = self
+            .expression_sites
+            .iter()
+            .filter(|site| {
+                site.item_index == expression.site.item_index
+                    && site.path.0.starts_with(&expression.site.path.0)
+                    && matches!(self.expr(site), Some(Expr::Var(_) | Expr::Path(_)))
+            })
+            .cloned()
+            .map(|site| ExpressionRef { site })
+            .collect::<Vec<_>>();
+        Ok(Proof::new(
+            dependencies.clone(),
+            vec![Evidence {
+                predicate,
+                site: expression.site.clone(),
+                detail: EvidenceDetail::ExpressionDependencies {
+                    count: dependencies.len(),
+                },
+            }],
+        ))
+    }
+
     pub(in crate::fixups) fn statement_expression(
         &self,
         statement: &StatementRef,
@@ -682,6 +698,152 @@ impl<'snapshot> QueryContext<'snapshot> {
         let mut path = statement.path.0.clone();
         path.push(PathSegment::Expr(index));
         self.expression(&expression_site(statement.item_index, &path))
+    }
+
+    pub(in crate::fixups) fn statement_initializer(
+        &self,
+        statement: &StatementRef,
+    ) -> QueryResult<Option<ExpressionRef>> {
+        let mut statement_proof = self.statement(statement)?;
+        let Stmt::Let { init, .. } = &statement_proof.value.stmt else {
+            return Err(Rejection::new(
+                Predicate::Expression,
+                Some(statement_evidence_site(statement)),
+                RejectionReason::UnsupportedShape,
+                statement_proof.evidence,
+            ));
+        };
+        if init.is_none() {
+            return Ok(Proof::new(None, statement_proof.evidence));
+        }
+        let mut initializer = self.statement_expression(statement, 0)?;
+        statement_proof.evidence.append(&mut initializer.evidence);
+        Ok(Proof::new(
+            Some(initializer.value),
+            statement_proof.evidence,
+        ))
+    }
+
+    pub(in crate::fixups) fn statement_is_movable_declaration(
+        &self,
+        statement: &StatementRef,
+    ) -> QueryResult<bool> {
+        let (indent, mut evidence) = self.statement(statement)?.into_parts();
+        if !matches!(indent.stmt, Stmt::Let { .. }) {
+            return Ok(Proof::new(false, evidence));
+        }
+        let (initializer, initializer_evidence) =
+            self.statement_initializer(statement)?.into_parts();
+        evidence.extend(initializer_evidence);
+        let Some(initializer) = initializer else {
+            return Ok(Proof::new(true, evidence));
+        };
+        let (effects, effect_evidence) = self.expression_effects(&initializer)?.into_parts();
+        evidence.extend(effect_evidence);
+        Ok(Proof::new(effects.purity == Purity::MovablePure, evidence))
+    }
+
+    pub(in crate::fixups) fn declaration_uses_in_statement(
+        &self,
+        declaration: &StatementRef,
+        statement: &StatementRef,
+    ) -> QueryResult<BindingUses> {
+        let (binding, mut evidence) = self.statement_binding(declaration)?.into_parts();
+        let (uses, uses_evidence) = self
+            .binding_uses_in_statement(&binding, statement)?
+            .into_parts();
+        evidence.extend(uses_evidence);
+        Ok(Proof::new(uses, evidence))
+    }
+
+    pub(in crate::fixups) fn statement_in_container(
+        &self,
+        container: &StatementContainerRef,
+        expression: &ExpressionRef,
+    ) -> QueryResult<StatementRef> {
+        let predicate = Predicate::Statement;
+        if container.item_index != expression.site.item_index {
+            return Err(Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let Some([PathSegment::Stmt(index), ..]) = expression
+            .site
+            .path
+            .0
+            .strip_prefix(container.path.0.as_slice())
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let mut path = container.path.0.clone();
+        path.push(PathSegment::Stmt(*index));
+        let statement = StatementRef {
+            item_index: container.item_index,
+            path: AstPath(path),
+        };
+        let proof = self.statement(&statement)?;
+        Ok(Proof::new(statement, proof.evidence))
+    }
+
+    pub(in crate::fixups) fn statements_between(
+        &self,
+        start: &StatementRef,
+        end: &StatementRef,
+    ) -> QueryResult<Vec<StatementRef>> {
+        let predicate = Predicate::Statement;
+        let Some(start_container) = start.container() else {
+            return Err(Rejection::new(
+                predicate,
+                Some(statement_evidence_site(start)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(end_container) = end.container() else {
+            return Err(Rejection::new(
+                predicate,
+                Some(statement_evidence_site(end)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let (Some(start_index), Some(end_index)) = (start.index(), end.index()) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(statement_evidence_site(start)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        if start_container != end_container || start_index >= end_index {
+            return Err(Rejection::new(
+                predicate,
+                Some(statement_evidence_site(start)),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
+        let mut evidence = self.statement(start)?.evidence;
+        evidence.extend(self.statement(end)?.evidence);
+        let statements = (start_index + 1..end_index)
+            .map(|index| {
+                let mut path = start_container.path.0.clone();
+                path.push(PathSegment::Stmt(index));
+                StatementRef {
+                    item_index: start.item_index,
+                    path: AstPath(path),
+                }
+            })
+            .collect();
+        Ok(Proof::new(statements, evidence))
     }
 
     pub(in crate::fixups) fn statement(
@@ -922,7 +1084,11 @@ impl<'snapshot> QueryContext<'snapshot> {
         })?;
         let fact = self
             .facts
-            .effect(function, EffectSubject::Expr, &expression.site.fact_path)
+            .effect(function, EffectSubject::Expr, &expression.site.path)
+            .or_else(|| {
+                self.facts
+                    .effect(function, EffectSubject::Expr, &expression.site.fact_path)
+            })
             .ok_or_else(|| {
                 Rejection::new(
                     predicate,
@@ -1198,9 +1364,41 @@ impl<'snapshot> QueryContext<'snapshot> {
             };
             if let Some(access) = access {
                 uses.push(BindingUse {
-                    expression: ExpressionRef { site },
+                    site: UseSiteRef::Expression(ExpressionRef { site }),
                     access,
                 });
+            }
+        }
+        if let Some(def_use) = self.facts.def_use(binding.id) {
+            for read in &def_use.reads {
+                let covered = uses.iter().any(|usage| {
+                    matches!(usage.access, BindingAccess::Read | BindingAccess::ReadWrite)
+                        && usage.expression().is_some_and(|expression| {
+                            walk::paths_overlap(
+                                &read.0,
+                                &coarse_def_use_path(&expression.site.fact_path).0,
+                            )
+                        })
+                });
+                if !covered && let Some(site) = self.use_site(binding.item_index, read) {
+                    merge_binding_use(&mut uses, site, BindingAccess::Read);
+                }
+            }
+            for write in &def_use.writes {
+                let covered = uses.iter().any(|usage| {
+                    matches!(
+                        usage.access,
+                        BindingAccess::Write | BindingAccess::ReadWrite
+                    ) && usage.expression().is_some_and(|expression| {
+                        walk::paths_overlap(
+                            &write.0,
+                            &coarse_def_use_path(&expression.site.fact_path).0,
+                        )
+                    })
+                });
+                if !covered && let Some(site) = self.use_site(binding.item_index, write) {
+                    merge_binding_use(&mut uses, site, BindingAccess::Write);
+                }
             }
         }
         let reads = uses
@@ -1227,6 +1425,43 @@ impl<'snapshot> QueryContext<'snapshot> {
                 detail: EvidenceDetail::BindingUses { reads, writes },
             }],
         ))
+    }
+
+    pub(in crate::fixups) fn binding_uses_in_statement(
+        &self,
+        binding: &BindingRef,
+        statement: &StatementRef,
+    ) -> QueryResult<BindingUses> {
+        let (mut uses, mut evidence) = self.binding_uses(binding)?.into_parts();
+        uses.uses.retain(|usage| match &usage.site {
+            UseSiteRef::Expression(expression) => {
+                expression.site.path.0.starts_with(&statement.path.0)
+            }
+            UseSiteRef::Statement(use_statement) => {
+                use_statement.path.0.starts_with(&statement.path.0)
+            }
+        });
+        let reads = uses
+            .uses
+            .iter()
+            .filter(|usage| matches!(usage.access, BindingAccess::Read | BindingAccess::ReadWrite))
+            .count();
+        let writes = uses
+            .uses
+            .iter()
+            .filter(|usage| {
+                matches!(
+                    usage.access,
+                    BindingAccess::Write | BindingAccess::ReadWrite
+                )
+            })
+            .count();
+        evidence.push(Evidence {
+            predicate: Predicate::BindingUses,
+            site: statement_evidence_site(statement),
+            detail: EvidenceDetail::BindingUses { reads, writes },
+        });
+        Ok(Proof::new(uses, evidence))
     }
 
     pub(in crate::fixups) fn assign_value_sites(&self) -> &BTreeSet<ExprSite> {
@@ -2421,7 +2656,11 @@ query_cache! {
         })?;
         let effect = self
             .facts
-            .effect(function, EffectSubject::Expr, &site.fact_path)
+            .effect(function, EffectSubject::Expr, &site.path)
+            .or_else(|| {
+                self.facts
+                    .effect(function, EffectSubject::Expr, &site.fact_path)
+            })
             .ok_or_else(|| {
                 Rejection::new(
                     predicate,
@@ -2679,63 +2918,6 @@ query_cache! {
                 body: rewritten,
                 arrays: context.arrays.len(),
                 buffers: context.buffers.len(),
-            },
-            evidence,
-        ))
-    }
-
-    fn zero_init_candidate(
-        &self,
-        definition: &DefinitionSite,
-        cross_effects: bool
-    ) -> QueryResult<ZeroInitPlan>;
-    key: (DefinitionLocation, bool) = (definition.location.clone(), cross_effects);
-    {
-        let predicate = Predicate::ZeroInit;
-        let site = definition_evidence_site(definition);
-        let Some(function) = self
-            .facts
-            .function_by_item_index(definition.location.item_index())
-        else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let Item::Fn(function_item) = &self.program.items[definition.location.item_index()]
-        else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let mut body = function_item.body.clone();
-        let Some(found) =
-            zero_init_apply(&mut body, function, self.facts, cross_effects, &mut Vec::new())
-        else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::ZeroInit {
-                moved_decl: found.moved_decl,
-            },
-        }];
-        Ok(Proof::new(
-            ZeroInitPlan {
-                body,
-                name: found.name,
-                moved_decl: found.moved_decl,
             },
             evidence,
         ))
@@ -3250,281 +3432,6 @@ fn expression_kind(expr: &Expr) -> ExpressionKind {
         Expr::Var(_) | Expr::Path(_) => ExpressionKind::Variable,
         _ => ExpressionKind::Other,
     }
-}
-
-struct ZeroInitFound {
-    name: String,
-    moved_decl: bool,
-}
-
-fn zero_init_apply(
-    body: &mut Vec<IndentStmt>,
-    function: FunctionId,
-    facts: &FixupFacts,
-    cross_effects: bool,
-    path: &mut Vec<PathSegment>,
-) -> Option<ZeroInitFound> {
-    for (index, indent) in body.iter_mut().enumerate() {
-        let mut found = None;
-        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            support_walk::nested_body_vecs_mut_with_path(
-                &mut indent.stmt,
-                path,
-                &mut |nested, path| {
-                    if found.is_none() {
-                        found = zero_init_apply(nested, function, facts, cross_effects, path);
-                    }
-                },
-            );
-        });
-        if found.is_some() {
-            return found;
-        }
-    }
-    for i in 0..body.len().saturating_sub(1) {
-        let decl_path = zero_init_stmt_path(path, i);
-        let Stmt::Let {
-            name,
-            mutable: true,
-            ty: Some(_),
-            init: Some(_),
-        } = &body[i].stmt
-        else {
-            continue;
-        };
-        let name = name.clone();
-        let Some(binding) =
-            facts.binding_by_local_path(function, &name, &AstPath(decl_path.clone()))
-        else {
-            continue;
-        };
-        if !zero_init_binding_is_zero(function, facts, binding, &decl_path) {
-            continue;
-        }
-        let Some((assign_index, moved_decl)) = zero_init_fold_target(
-            body,
-            i,
-            &name,
-            function,
-            facts,
-            binding,
-            cross_effects,
-            path,
-        ) else {
-            continue;
-        };
-        let Stmt::Assign { value, .. } = &body[assign_index].stmt else {
-            unreachable!();
-        };
-        let value = value.clone();
-        let found_name = name.clone();
-        if moved_decl {
-            let Stmt::Let { mutable, ty, .. } = &body[i].stmt else {
-                unreachable!();
-            };
-            let (mutable, ty) = (*mutable, ty.clone());
-            let depth = body[assign_index].depth;
-            body[assign_index] = IndentStmt {
-                depth,
-                stmt: Stmt::Let {
-                    name,
-                    mutable,
-                    ty,
-                    init: Some(value),
-                },
-            };
-            body.remove(i);
-        } else if let Stmt::Let { init, .. } = &mut body[i].stmt {
-            *init = Some(value);
-            body.remove(assign_index);
-        }
-        return Some(ZeroInitFound {
-            name: found_name,
-            moved_decl,
-        });
-    }
-    None
-}
-
-#[allow(clippy::too_many_arguments)]
-fn zero_init_fold_target(
-    body: &[IndentStmt],
-    decl_index: usize,
-    name: &str,
-    function: FunctionId,
-    facts: &FixupFacts,
-    binding: BindingId,
-    cross_effects: bool,
-    body_path: &[PathSegment],
-) -> Option<(usize, bool)> {
-    let touches = facts.binding_touches_in_body(binding, body_path);
-    let assign_index = touches
-        .iter()
-        .find(|touch| touch.writes && touch.index > decl_index)
-        .map(|touch| touch.index)?;
-    let Stmt::Assign { target, value } = &body[assign_index].stmt else {
-        return None;
-    };
-    if expr_ident(target) != Some(name) {
-        return None;
-    }
-    if !zero_init_is_ordinary_local_write(
-        function,
-        facts,
-        name,
-        &zero_init_stmt_path(body_path, assign_index),
-    ) {
-        return None;
-    }
-    let touches_at = |index: usize| {
-        touches
-            .iter()
-            .find(|touch| touch.index == index)
-            .is_some_and(|touch| touch.reads || touch.writes)
-    };
-    let assign_reads = touches
-        .iter()
-        .find(|touch| touch.index == assign_index)
-        .is_some_and(|touch| touch.reads);
-    if assign_reads {
-        return None;
-    }
-
-    let value_reads_nothing = zero_init_reads_nothing(value);
-    let mut direct = !zero_init_assignment_reads_intervening_binding(
-        body,
-        decl_index,
-        assign_index,
-        function,
-        facts,
-        body_path,
-    );
-    let mut moved = true;
-    for (index, indent) in body
-        .iter()
-        .enumerate()
-        .take(assign_index)
-        .skip(decl_index + 1)
-    {
-        let touched = touches_at(index);
-        let movable = !touched
-            && zero_init_movable_pure_stmt(
-                function,
-                facts,
-                &indent.stmt,
-                &zero_init_stmt_path(body_path, index),
-            );
-        let effect_free = !touched && value_reads_nothing;
-        if !(movable || (cross_effects && effect_free)) {
-            direct = false;
-        }
-        if touched {
-            moved = false;
-        }
-    }
-    if direct {
-        Some((assign_index, false))
-    } else if cross_effects && moved {
-        Some((assign_index, true))
-    } else {
-        None
-    }
-}
-
-fn zero_init_movable_pure_stmt(
-    function: FunctionId,
-    facts: &FixupFacts,
-    stmt: &Stmt,
-    path: &[PathSegment],
-) -> bool {
-    let Stmt::Let { init, .. } = stmt else {
-        return false;
-    };
-    init.is_none()
-        || facts
-            .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
-            .is_some_and(|fact| fact.purity == Purity::MovablePure)
-}
-
-fn zero_init_reads_nothing(expr: &Expr) -> bool {
-    match expr {
-        Expr::Value(_) | Expr::Str(_) | Expr::ByteStr(_) | Expr::CStr(_) | Expr::HexFloat(_) => {
-            true
-        }
-        Expr::Cast { expr, .. } => zero_init_reads_nothing(expr),
-        Expr::Unary { op, expr } => {
-            matches!(op, UnaryOp::Neg | UnaryOp::Not) && zero_init_reads_nothing(expr)
-        }
-        Expr::Binary { lhs, rhs, .. } => {
-            zero_init_reads_nothing(lhs) && zero_init_reads_nothing(rhs)
-        }
-        _ => false,
-    }
-}
-
-fn zero_init_assignment_reads_intervening_binding(
-    body: &[IndentStmt],
-    decl_index: usize,
-    assign_index: usize,
-    function: FunctionId,
-    facts: &FixupFacts,
-    body_path: &[PathSegment],
-) -> bool {
-    let assign_path = zero_init_stmt_path(body_path, assign_index);
-    body.iter()
-        .enumerate()
-        .take(assign_index)
-        .skip(decl_index + 1)
-        .any(|(index, indent)| {
-            let Stmt::Let { name, .. } = &indent.stmt else {
-                return false;
-            };
-            let path = zero_init_stmt_path(body_path, index);
-            facts
-                .binding_by_local_path(function, name, &AstPath(path))
-                .and_then(|binding| facts.def_use(binding))
-                .is_some_and(|def_use| {
-                    def_use
-                        .reads
-                        .iter()
-                        .any(|read| read.0.as_slice().starts_with(&assign_path))
-                })
-        })
-}
-
-fn zero_init_binding_is_zero(
-    function: FunctionId,
-    facts: &FixupFacts,
-    binding: BindingId,
-    path: &[PathSegment],
-) -> bool {
-    facts.has_value(
-        function,
-        ValueSubject::Binding(binding),
-        &AstPath(path.to_vec()),
-        &ConstValue::Zero,
-    )
-}
-
-fn zero_init_is_ordinary_local_write(
-    function: FunctionId,
-    facts: &FixupFacts,
-    name: &str,
-    path: &[PathSegment],
-) -> bool {
-    facts
-        .place(function, &AstPath(path.to_vec()))
-        .is_some_and(|fact| {
-            fact.access == PlaceAccess::Write
-                && fact.ordinary_slot
-                && matches!(&fact.kind, PlaceKind::Local { name: place } if place == name)
-        })
-}
-
-fn zero_init_stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
-    let mut path = body_path.to_vec();
-    path.push(PathSegment::Stmt(index));
-    path
 }
 
 fn index_definitions(
@@ -4405,6 +4312,28 @@ fn fact_path(path: &AstPath) -> AstPath {
         fact.remove(stmt + 2);
     }
     AstPath(fact)
+}
+
+fn coarse_def_use_path(path: &AstPath) -> AstPath {
+    AstPath(
+        path.0
+            .iter()
+            .filter(|segment| !matches!(segment, PathSegment::Expr(_)))
+            .cloned()
+            .collect(),
+    )
+}
+
+fn merge_binding_use(uses: &mut Vec<BindingUse>, site: UseSiteRef, access: BindingAccess) {
+    if let Some(existing) = uses.iter_mut().find(|usage| usage.site == site) {
+        existing.access = match (existing.access, access) {
+            (BindingAccess::Read, BindingAccess::Write)
+            | (BindingAccess::Write, BindingAccess::Read) => BindingAccess::ReadWrite,
+            (existing, _) => existing,
+        };
+    } else {
+        uses.push(BindingUse { site, access });
+    }
 }
 
 fn rust_value_type(value: &RustValue) -> Option<Type> {
