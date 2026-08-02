@@ -68,7 +68,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::LazySingletonDomain => "lazy_singleton_domain",
         Predicate::ReadPath => "read_path",
         Predicate::ArrayElementPointerOrigin => "array_element_pointer_origin",
-        Predicate::BufferCursor => "buffer_cursor",
+        Predicate::BufferPointerFields => "buffer_pointer_fields",
         Predicate::HeapOwnershipPlan => "heap_ownership_plan",
         Predicate::PtrLenSlice => "ptr_len_slice",
         Predicate::ValueGuard => "value_guard",
@@ -169,9 +169,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::ArrayElementPointerOrigin { origins } => {
             format!("origins={origins}")
         }
-        EvidenceDetail::BufferCursor { arrays, buffers } => {
-            format!("arrays={arrays};buffers={buffers}")
-        }
+        EvidenceDetail::BufferPointerFields { fields } => format!("fields={fields}"),
         EvidenceDetail::HeapOwnershipPlan { plans } => format!("plans={plans}"),
         EvidenceDetail::PtrLenSlice { plans } => format!("plans={plans}"),
         EvidenceDetail::StringBuffer { bytes } => format!("bytes={bytes}"),

@@ -65,7 +65,7 @@ pub(in crate::fixups) enum Predicate {
     LazySingletonDomain,
     ReadPath,
     ArrayElementPointerOrigin,
-    BufferCursor,
+    BufferPointerFields,
     HeapOwnershipPlan,
     PtrLenSlice,
     ValueGuard,
@@ -167,9 +167,8 @@ pub(in crate::fixups) enum EvidenceDetail {
     ArrayElementPointerOrigin {
         origins: usize,
     },
-    BufferCursor {
-        arrays: usize,
-        buffers: usize,
+    BufferPointerFields {
+        fields: usize,
     },
     HeapOwnershipPlan {
         plans: usize,

@@ -1,6 +1,8 @@
 use std::collections::BTreeMap;
 
-use crate::fixups::facts::{BindingId, BufferPointerFieldFact, FixupFacts, FunctionId};
+use crate::fixups::facts::{
+    AstPath, BindingId, BufferPointerFieldFact, FixupFacts, FunctionId, PathSegment, Site,
+};
 use crate::rust_ast::{Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -46,7 +48,7 @@ fn collect_function(
     }
 
     let mut out = Vec::new();
-    for indent in body {
+    for (index, indent) in body.iter().enumerate() {
         let Stmt::Assign { target, value } = &indent.stmt else {
             continue;
         };
@@ -63,7 +65,10 @@ fn collect_function(
             continue;
         };
         out.push(BufferPointerFieldFact {
-            function,
+            site: Site {
+                function,
+                path: AstPath(vec![PathSegment::Stmt(index)]),
+            },
             buffer: buffer_local.binding,
             array: array.binding,
             field: field.to_string(),

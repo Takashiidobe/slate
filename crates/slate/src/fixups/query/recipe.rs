@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::{HeapOwnershipKind, HeapResizeKind};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::query::{
-    BufferCursorPlan, ByteRepresentation, ByteSource, HeapOwnershipPlan, HeapOwnershipPlanSet,
+    ByteRepresentation, ByteSource, HeapOwnershipPlan, HeapOwnershipPlanSet,
     HeapOwnershipReallocPlan, NulPosition, PointerMutability, Predicate, QueryContext, Rejection,
     RejectionReason, StableExpr, default_value,
 };
@@ -115,10 +115,6 @@ pub(in crate::fixups) fn initialize_local(declaration: &Stmt, value: Expr) -> Op
     };
     *init = Some(value);
     Some(initialized)
-}
-
-pub(in crate::fixups) fn rewrite_buffer_cursor(plan: BufferCursorPlan) -> FunctionBodyRecipe {
-    FunctionBodyRecipe { body: plan.body }
 }
 
 pub(in crate::fixups) fn rewrite_heap_ownership(

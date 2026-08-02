@@ -5,7 +5,9 @@ use crate::fixups::facts::{
     AstPath, BindingId, ConstValue, EffectKind, HeapOwnershipKind, HeapResizeKind, PlaceAccess,
     PlaceKind, Purity,
 };
-use crate::rust_ast::{Expr, FnDef, IndentStmt, Type};
+use crate::rust_ast::{Expr, FnDef, Type};
+
+use super::item::StatementRef;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(in crate::fixups) struct Usage {
@@ -439,8 +441,16 @@ pub(in crate::fixups) enum Phase {
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct BufferCursorPlan {
-    pub(super) body: Vec<IndentStmt>,
-    pub(super) arrays: usize,
-    pub(super) buffers: usize,
+pub(in crate::fixups) struct BufferPointerField {
+    pub(in crate::fixups) buffer: BindingRef,
+    pub(in crate::fixups) array: BindingRef,
+    pub(in crate::fixups) assignment: StatementRef,
+    pub(in crate::fixups) field: String,
+    pub(in crate::fixups) index: usize,
+    pub(in crate::fixups) array_len: usize,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct BufferPointerFields {
+    pub(in crate::fixups) fields: Vec<BufferPointerField>,
 }
