@@ -277,6 +277,19 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
         }
     }
 
+    pub(in crate::fixups) fn require_at(
+        &self,
+        condition: bool,
+        predicate: Predicate,
+        site: &ExprSite,
+    ) -> Result<(), Rejection> {
+        if condition {
+            Ok(())
+        } else {
+            Err(self.reject_at(predicate, site, RejectionReason::Contradicted))
+        }
+    }
+
     pub(in crate::fixups) fn reject(&self) -> Rejection {
         Rejection::new(
             Predicate::ItemGuard,

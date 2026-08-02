@@ -2,8 +2,8 @@ use crate::fixups::facts::Purity;
 use crate::fixups::trace::Pass;
 
 use super::super::{
-    CallTarget, Definition, DefinitionKind, EditSet, Field, FnCall, QueryRule, StableExpr,
-    byte_position, known_index, memchr_fallback_body, pointer_at_or_null,
+    CallTarget, Definition, DefinitionKind, EditSet, Field, FnCall, Predicate, QueryRule,
+    StableExpr, byte_position, known_index, memchr_fallback_body, pointer_at_or_null,
 };
 
 pub(in crate::fixups) fn calls() -> QueryRule<FnCall> {
@@ -20,7 +20,7 @@ pub(in crate::fixups) fn calls() -> QueryRule<FnCall> {
         let [source, needle, count] = case.call_args(call);
         let source = case.fact(|query| query.byte_source(&source))?;
         let needle_value = case.fact(|query| query.const_u8(&needle))?;
-        case.require(needle_value == 0)?;
+        case.require_at(needle_value == 0, Predicate::ConstantU8, &needle)?;
         let needle_ref = case.fact(|query| query.expression(&needle))?;
         let needle_effects = case.fact(|query| query.expression_effects(&needle_ref))?;
         case.require(needle_effects.purity == Purity::MovablePure)?;
