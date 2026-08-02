@@ -128,7 +128,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 30. `heap_ownership` - `malloc`/`calloc`/`realloc`/`free` to `Box`/`Vec` - once, per function (`run_once_items`).
 31. `dead_locals` - remove locals with no live, effectful use - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`).
 32. `printf_format` - `printf`-family calls to `println!`/`print!` - once, program-wide (`run_once_program`), since the pass also prunes or extends extern declarations and wraps any remaining raw calls.
-33. `c_strings` - mark/simplify recognized C-string literals - once, per function (`run_once_items`).
+33. `c_strings` - mark/simplify recognized C-string literals - once, program-wide through a query expression plan.
 34. `stdio` - `fopen`/`fputs`/`fclose` sequences to `File`/`OpenOptions` owners - once, per function (`run_once_items`).
 35. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls - once, per function (`run_once_items`) through the distinct `MemchrPreludeCalls` body pass.
 36. `nullable_pointer` - recover `Option<*T>` null-check idioms - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`); runs directly after its only producers - the two `string_libc` runs and `memchr_prelude::fixup_calls`, the sole places that emit the `<index>.map_or(null_mut(), |i| ptr.add(i) as *T)` shape it rewrites. Despite the name, it has no relationship to the pointer-provenance cluster (`slice_index`/`slice_loop`/`array_element_pointer_origin`/`buffer_cursor`): those match constant-index pointer arithmetic, this matches dynamic-index `Option`-wrapped search results, and the two never touch the same bindings.

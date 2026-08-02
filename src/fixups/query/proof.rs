@@ -65,6 +65,7 @@ pub(in crate::fixups) enum Predicate {
     ItemGuard,
     LazySingletonDomain,
     AtomicPromotionDomain,
+    CStringLiteral,
     ReadPath,
     ArrayElementPointerOrigin,
     BufferPointerFields,
@@ -175,6 +176,9 @@ pub(in crate::fixups) enum EvidenceDetail {
     AtomicPromotionDomain {
         locals: usize,
         globals: usize,
+    },
+    CStringLiteral {
+        bytes: usize,
     },
     ArrayElementPointerOrigin {
         origins: usize,

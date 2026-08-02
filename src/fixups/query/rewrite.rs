@@ -67,6 +67,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::ItemGuard => "item_guard",
         Predicate::LazySingletonDomain => "lazy_singleton_domain",
         Predicate::AtomicPromotionDomain => "atomic_promotion_domain",
+        Predicate::CStringLiteral => "c_string_literal",
         Predicate::ReadPath => "read_path",
         Predicate::ArrayElementPointerOrigin => "array_element_pointer_origin",
         Predicate::BufferPointerFields => "buffer_pointer_fields",
@@ -174,6 +175,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::AtomicPromotionDomain { locals, globals } => {
             format!("locals={locals};globals={globals}")
         }
+        EvidenceDetail::CStringLiteral { bytes } => format!("bytes={bytes}"),
         EvidenceDetail::ArrayElementPointerOrigin { origins } => {
             format!("origins={origins}")
         }
