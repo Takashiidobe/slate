@@ -3,7 +3,10 @@ use crate::rust_ast::{Expr, IndentStmt, Label, Stmt, Type};
 
 use super::field::Field;
 use super::item::{Matcher, QueryDomain, QueryItem, StatementMatch};
-use super::{CallTarget, DefinitionGroup, DefinitionKind, ResolvedValue, StatementRange, Usage};
+use super::{
+    BindingCategory, CallTarget, DefinitionGroup, DefinitionKind, ResolvedValue, StatementRange,
+    Usage,
+};
 
 #[derive(Default)]
 pub(in crate::fixups) struct FnCall<Cx = ()> {
@@ -38,6 +41,66 @@ impl Matcher for Definition {
             && self.name.matches(&definition.name, &())
             && self.group.matches(&definition.group, &()))
         .then(|| (*definition).clone())
+    }
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct Function {
+    pub(in crate::fixups) name: Field<String>,
+    pub(in crate::fixups) arity: Field<usize>,
+    pub(in crate::fixups) returns: Field<Option<Type>>,
+}
+
+impl Matcher for Function {
+    type Capture = super::FunctionRef;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::Function
+    }
+
+    fn matches(
+        &self,
+        _query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::Function(function) = item else {
+            return None;
+        };
+        (self.name.matches(&function.function.name, &())
+            && self.arity.matches(&function.function.params.len(), &())
+            && self.returns.matches(&function.function.ret, &()))
+        .then(|| function.clone())
+    }
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct Binding {
+    pub(in crate::fixups) kind: Field<BindingCategory>,
+    pub(in crate::fixups) name: Field<String>,
+    pub(in crate::fixups) ty: Field<Option<Type>>,
+    pub(in crate::fixups) value: Value,
+}
+
+impl Matcher for Binding {
+    type Capture = super::BindingRef;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::Binding
+    }
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::Binding(binding) = item else {
+            return None;
+        };
+        (self.kind.matches(&binding.kind, &())
+            && self.name.matches(&binding.name, &())
+            && self.ty.matches(&binding.ty, &())
+            && self.value.matches(&query.binding_value(binding), &()))
+        .then(|| binding.clone())
     }
 }
 

@@ -67,3 +67,10 @@ capture to each ordered case, and accepts a shared anchored `EditSet` result.
 matcher. Statement adjacency is one matcher rather than a separate rule and
 planning API. Other item kinds can join the same enumeration and matcher trait
 without adding another rule engine.
+
+`Function` and `Binding` matchers select owned handles containing their stable
+fact identities. Parameter bindings expose their index, type, function, and
+def-use facts. Removing an unused parameter produces one edit set containing a
+function-signature anchor and every direct call-expression anchor, so argument
+removal participates in ordinary overlap and missing-target checks instead of
+being hidden in a whole-program rewrite.

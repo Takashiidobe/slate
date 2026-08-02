@@ -2,7 +2,7 @@ use std::collections::BTreeSet;
 use std::marker::PhantomData;
 
 use crate::fixups::facts::{AstPath, BindingId, HeapOwnershipKind, HeapResizeKind, Purity};
-use crate::rust_ast::{Expr, IndentStmt, Type};
+use crate::rust_ast::{Expr, FnDef, IndentStmt, Type};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(in crate::fixups) struct Usage {
@@ -20,9 +20,33 @@ pub(in crate::fixups) struct ResolvedValue {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct BindingRef {
     pub(in crate::fixups) item_index: usize,
+    pub(in crate::fixups) function_name: String,
     pub(in crate::fixups) name: String,
     pub(in crate::fixups) definition: AstPath,
+    pub(in crate::fixups) kind: BindingCategory,
+    pub(in crate::fixups) ty: Option<Type>,
     pub(super) id: BindingId,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(in crate::fixups) enum BindingCategory {
+    Parameter { index: usize },
+    Local,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct FunctionRef {
+    pub(in crate::fixups) item_index: usize,
+    pub(in crate::fixups) function: FnDef,
+    pub(super) id: crate::fixups::facts::FunctionId,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct ParameterRemoval {
+    pub(in crate::fixups) binding: BindingRef,
+    pub(in crate::fixups) function: FunctionRef,
+    pub(in crate::fixups) index: usize,
+    pub(in crate::fixups) calls: Vec<ExprSite>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -103,24 +127,6 @@ pub(in crate::fixups) struct ZeroGroupUsers {
 #[derive(Debug, Clone)]
 pub(in crate::fixups) struct UnusedTypeDefinitionSet {
     pub(super) doomed: BTreeSet<usize>,
-}
-
-#[derive(Debug, Clone)]
-pub(in crate::fixups) struct ParamSite {
-    pub(super) function_item_index: usize,
-    pub(super) function_name: String,
-    pub(super) param_index: usize,
-    pub(super) param_name: String,
-    pub(super) param_ty: Type,
-}
-
-#[derive(Debug, Clone)]
-pub(in crate::fixups) struct UnusedParamPlan {
-    pub(super) function_item_index: usize,
-    pub(super) function_name: String,
-    pub(super) param_index: usize,
-    pub(super) param_name: String,
-    pub(super) param_ty: String,
 }
 
 #[derive(Debug, Clone)]

@@ -5,15 +5,14 @@ use super::plan::{EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlannedEdit, To
 use super::program_recipe::{ItemAnchor, PreparedProgram};
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    AnonymousStructSet, CaseRejection, Evidence, LazySingletonSet, ParamSite, ProgramRecipe,
-    PtrLenPlanSet, QueryContext, Rejection, RuleCaseIdentity, RuleIdentity, UnusedParamPlan, Usage,
+    AnonymousStructSet, CaseRejection, Evidence, LazySingletonSet, ProgramRecipe, PtrLenPlanSet,
+    QueryContext, Rejection, RuleCaseIdentity, RuleIdentity,
 };
 
 enum ProgramRuleSelector {
     AnonymousStructs,
     LazySingletons,
     PtrLen,
-    UnusedParams,
 }
 
 type ProgramCaseFn = for<'case, 'snapshot> fn(
@@ -56,14 +55,6 @@ impl ProgramRule {
         }
     }
 
-    pub(in crate::fixups) fn unused_params(pass: Pass, rule: impl Into<String>) -> Self {
-        Self {
-            identity: RuleIdentity::new(pass, rule),
-            selector: ProgramRuleSelector::UnusedParams,
-            cases: Vec::new(),
-        }
-    }
-
     pub(in crate::fixups) fn case(mut self, name: impl Into<String>, apply: ProgramCaseFn) -> Self {
         self.cases.push(DeclarativeProgramCase {
             name: name.into(),
@@ -77,7 +68,6 @@ impl ProgramRule {
             ProgramRuleSelector::AnonymousStructs => query.has_anonymous_structs(),
             ProgramRuleSelector::LazySingletons => query.has_lazy_singletons(),
             ProgramRuleSelector::PtrLen => query.has_ptr_len_slices(),
-            ProgramRuleSelector::UnusedParams => true,
         }
     }
 }
@@ -100,32 +90,8 @@ impl ProgramCaseContext<'_, '_> {
         self.prove(self.query.ptr_len_slices())
     }
 
-    pub(in crate::fixups) fn all_params(&self) -> Vec<ParamSite> {
-        self.query.all_params()
-    }
-
-    pub(in crate::fixups) fn param_usage(&self, param: &ParamSite) -> Usage {
-        self.query.param_usage(param)
-    }
-
     pub(in crate::fixups) fn snapshot_program(&self) -> &Program {
         self.query.snapshot_program()
-    }
-
-    pub(in crate::fixups) fn note_unused_param(&mut self, plan: &UnusedParamPlan) {
-        self.evidence.push(Evidence {
-            predicate: super::Predicate::UnusedParam,
-            site: super::ExprSite {
-                item_index: plan.function_item_index,
-                path: Default::default(),
-                fact_path: Default::default(),
-            },
-            detail: super::EvidenceDetail::UnusedParam {
-                function: plan.function_name.clone(),
-                param: plan.param_name.clone(),
-                param_index: plan.param_index,
-            },
-        });
     }
 
     fn prove<T>(&mut self, result: super::QueryResult<T>) -> Result<T, Rejection> {

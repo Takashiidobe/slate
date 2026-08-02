@@ -7,26 +7,31 @@ use crate::fixups::trace::{
     Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact, function_path_location,
     path_location,
 };
-use crate::rust_ast::{ExternDecl, IndentStmt, Item, Program};
+use crate::rust_ast::{Expr, ExternDecl, IndentStmt, Item, Program};
 
 use super::plan::{
     EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit, TouchedItems,
 };
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    BufferCursorPlan, CaseRejection, DefinitionKind, DefinitionLocation, DefinitionSite, Evidence,
-    FunctionBodyRecipe, HeapOwnershipPlanSet, InlineTempPlan, Phase, Predicate, QueryContext,
-    Rejection, RejectionReason, RuleCaseIdentity, RuleIdentity, StatementRange, ZeroInitPlan,
+    BindingRef, BufferCursorPlan, CaseRejection, DefinitionKind, DefinitionLocation,
+    DefinitionSite, Evidence, ExprSite, FunctionBodyRecipe, FunctionRef, HeapOwnershipPlanSet,
+    InlineTempPlan, Phase, Predicate, QueryContext, Rejection, RejectionReason, RuleCaseIdentity,
+    RuleIdentity, StatementRange, ZeroInitPlan,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(in crate::fixups) enum QueryDomain {
+    Binding,
     Definition,
+    Function,
     Statement,
 }
 
 pub(in crate::fixups) enum QueryItem<'snapshot> {
+    Binding(BindingRef),
     Definition(&'snapshot DefinitionSite),
+    Function(FunctionRef),
     Statement {
         site: StatementRef,
         tail: &'snapshot [IndentStmt],
@@ -35,7 +40,17 @@ pub(in crate::fixups) enum QueryItem<'snapshot> {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(in crate::fixups) enum Anchor {
+    Binding {
+        item_index: usize,
+        path: AstPath,
+        name: String,
+    },
     Definition(DefinitionLocation),
+    Expression(ExprSite),
+    Function {
+        item_index: usize,
+        name: String,
+    },
     Statements(StatementRange),
 }
 
@@ -105,6 +120,25 @@ pub(in crate::fixups) trait MatchCapture: Clone {
 impl MatchCapture for DefinitionSite {
     fn anchor(&self) -> Anchor {
         Anchor::Definition(self.location.clone())
+    }
+}
+
+impl MatchCapture for FunctionRef {
+    fn anchor(&self) -> Anchor {
+        Anchor::Function {
+            item_index: self.item_index,
+            name: self.function.name.clone(),
+        }
+    }
+}
+
+impl MatchCapture for BindingRef {
+    fn anchor(&self) -> Anchor {
+        Anchor::Binding {
+            item_index: self.item_index,
+            path: self.definition.clone(),
+            name: self.name.clone(),
+        }
     }
 }
 
@@ -245,6 +279,13 @@ impl ItemCaseContext<'_, '_> {
         )
     }
 
+    pub(in crate::fixups) fn removable_parameter(
+        &mut self,
+        binding: &BindingRef,
+    ) -> Result<super::ParameterRemoval, Rejection> {
+        self.prove(super::parameter::removable_parameter(self.query, binding))
+    }
+
     pub(in crate::fixups) fn def_use(
         &mut self,
         binding: &super::BindingRef,
@@ -307,6 +348,16 @@ pub(in crate::fixups) enum AnchoredEdit {
         target: DefinitionSite,
         body: Vec<IndentStmt>,
     },
+    RemoveCallArgument {
+        target: ExprSite,
+        index: usize,
+        expected_arity: usize,
+    },
+    RemoveFunctionParameter {
+        target: FunctionRef,
+        index: usize,
+        name: String,
+    },
     ReplaceStatements {
         target: StatementRange,
         replacement: Vec<IndentStmt>,
@@ -319,6 +370,28 @@ pub(in crate::fixups) struct EditSet {
 }
 
 impl EditSet {
+    pub(in crate::fixups) fn remove_parameter(removal: super::ParameterRemoval) -> Self {
+        let expected_arity = removal.function.function.params.len();
+        let mut edits = removal
+            .calls
+            .into_iter()
+            .map(|target| AnchoredEdit::RemoveCallArgument {
+                target,
+                index: removal.index,
+                expected_arity,
+            })
+            .collect::<Vec<_>>();
+        edits.push(AnchoredEdit::RemoveFunctionParameter {
+            target: removal.function,
+            index: removal.index,
+            name: removal.binding.name,
+        });
+        Self {
+            edits,
+            evidence: Vec::new(),
+        }
+    }
+
     pub(in crate::fixups) fn delete_definition(target: DefinitionSite) -> Self {
         Self {
             edits: vec![AnchoredEdit::DeleteDefinition { target }],
@@ -368,6 +441,13 @@ impl EditTarget for EditSet {
                 | AnchoredEdit::ReplaceFunctionBody { target, .. } => {
                     Anchor::Definition(target.location.clone())
                 }
+                AnchoredEdit::RemoveCallArgument { target, .. } => {
+                    Anchor::Expression(target.clone())
+                }
+                AnchoredEdit::RemoveFunctionParameter { target, .. } => Anchor::Function {
+                    item_index: target.item_index,
+                    name: target.function.name.clone(),
+                },
                 AnchoredEdit::ReplaceStatements { target, .. } => {
                     Anchor::Statements(target.clone())
                 }
@@ -388,13 +468,67 @@ impl PlanSite for EditSetSite {
 
 fn anchors_overlap(left: &Anchor, right: &Anchor) -> bool {
     match (left, right) {
+        (Anchor::Expression(left), Anchor::Expression(right)) => expression_overlap(left, right),
         (Anchor::Statements(left), Anchor::Statements(right)) => left.overlaps(right),
         (Anchor::Definition(left), Anchor::Definition(right)) => definitions_overlap(left, right),
         (Anchor::Definition(definition), Anchor::Statements(statements))
         | (Anchor::Statements(statements), Anchor::Definition(definition)) => {
             definition.item_index() == statements.item_index
         }
+        (Anchor::Function { item_index, .. }, Anchor::Definition(definition))
+        | (Anchor::Definition(definition), Anchor::Function { item_index, .. }) => {
+            *item_index == definition.item_index()
+        }
+        (Anchor::Function { item_index, .. }, Anchor::Statements(statements))
+        | (Anchor::Statements(statements), Anchor::Function { item_index, .. }) => {
+            *item_index == statements.item_index
+        }
+        (Anchor::Expression(expression), Anchor::Statements(statements))
+        | (Anchor::Statements(statements), Anchor::Expression(expression)) => {
+            expression.item_index == statements.item_index
+                && expression_within_statements(expression, statements)
+        }
+        (Anchor::Expression(expression), Anchor::Definition(definition))
+        | (Anchor::Definition(definition), Anchor::Expression(expression)) => {
+            expression.item_index == definition.item_index()
+        }
+        (Anchor::Expression(expression), Anchor::Function { item_index, .. })
+        | (Anchor::Function { item_index, .. }, Anchor::Expression(expression)) => {
+            expression.item_index == *item_index
+        }
+        (Anchor::Binding { item_index, .. }, other)
+        | (other, Anchor::Binding { item_index, .. }) => {
+            anchor_item_index(other) == Some(*item_index)
+        }
+        (
+            Anchor::Function {
+                item_index: left, ..
+            },
+            Anchor::Function {
+                item_index: right, ..
+            },
+        ) => left == right,
     }
+}
+
+fn anchor_item_index(anchor: &Anchor) -> Option<usize> {
+    match anchor {
+        Anchor::Binding { item_index, .. }
+        | Anchor::Expression(ExprSite { item_index, .. })
+        | Anchor::Function { item_index, .. }
+        | Anchor::Statements(StatementRange { item_index, .. }) => Some(*item_index),
+        Anchor::Definition(definition) => Some(definition.item_index()),
+    }
+}
+
+fn expression_overlap(left: &ExprSite, right: &ExprSite) -> bool {
+    left.item_index == right.item_index
+        && (left.path.0.starts_with(&right.path.0) || right.path.0.starts_with(&left.path.0))
+}
+
+fn expression_within_statements(expression: &ExprSite, statements: &StatementRange) -> bool {
+    expression.path.0.starts_with(&statements.path.0)
+        && matches!(expression.path.0.get(statements.path.0.len()), Some(PathSegment::Stmt(index)) if (statements.start..statements.end).contains(index))
 }
 
 fn definitions_overlap(left: &DefinitionLocation, right: &DefinitionLocation) -> bool {
@@ -507,6 +641,20 @@ fn query_items<'query>(
     if domain == QueryDomain::Definition {
         return query.all_definitions().map(QueryItem::Definition).collect();
     }
+    if domain == QueryDomain::Function {
+        return query
+            .all_functions()
+            .into_iter()
+            .map(QueryItem::Function)
+            .collect();
+    }
+    if domain == QueryDomain::Binding {
+        return query
+            .all_bindings()
+            .into_iter()
+            .map(QueryItem::Binding)
+            .collect();
+    }
     let mut items = Vec::new();
     for (item_index, item) in query.snapshot_program().items.iter().enumerate() {
         if let Item::Fn(function) = item {
@@ -561,6 +709,8 @@ impl ItemPlan {
             }
         }
         let mut statement_edits = BTreeMap::new();
+        let mut call_edits = BTreeMap::new();
+        let mut parameter_edits = Vec::new();
         let mut definition_edits = Vec::new();
         for planned_edit in self.plan.edits {
             let PlannedEdit {
@@ -584,6 +734,37 @@ impl ItemPlan {
                             identity: identity.clone(),
                             target,
                             action: DefinitionAction::ReplaceBody(body),
+                            evidence: edit.evidence.clone(),
+                            rejected_cases: rejected_cases.clone(),
+                        });
+                    }
+                    AnchoredEdit::RemoveCallArgument {
+                        target,
+                        index,
+                        expected_arity,
+                    } => {
+                        call_edits.insert(
+                            (target.item_index, target.path.clone()),
+                            PlannedCallEdit {
+                                identity: identity.clone(),
+                                target,
+                                index,
+                                expected_arity,
+                                evidence: edit.evidence.clone(),
+                                rejected_cases: rejected_cases.clone(),
+                            },
+                        );
+                    }
+                    AnchoredEdit::RemoveFunctionParameter {
+                        target,
+                        index,
+                        name,
+                    } => {
+                        parameter_edits.push(PlannedParameterEdit {
+                            identity: identity.clone(),
+                            target,
+                            index,
+                            name,
                             evidence: edit.evidence.clone(),
                             rejected_cases: rejected_cases.clone(),
                         });
@@ -634,6 +815,21 @@ impl ItemPlan {
                 target: EditSetSite(vec![Anchor::Statements(edit.target)]),
             });
         }
+        applied += apply_call_edits(
+            program,
+            call_edits,
+            facts,
+            logger,
+            &mut diagnostics,
+            &mut touched,
+        );
+        applied += apply_parameter_edits(
+            program,
+            parameter_edits,
+            logger,
+            &mut diagnostics,
+            &mut touched,
+        );
         applied += apply_definition_edits(
             program,
             definition_edits,
@@ -648,6 +844,165 @@ impl ItemPlan {
             diagnostics,
             touched,
         }
+    }
+}
+
+struct PlannedCallEdit {
+    identity: RuleCaseIdentity,
+    target: ExprSite,
+    index: usize,
+    expected_arity: usize,
+    evidence: Vec<Evidence>,
+    rejected_cases: Vec<CaseRejection>,
+}
+
+struct PlannedParameterEdit {
+    identity: RuleCaseIdentity,
+    target: FunctionRef,
+    index: usize,
+    name: String,
+    evidence: Vec<Evidence>,
+    rejected_cases: Vec<CaseRejection>,
+}
+
+fn apply_call_edits(
+    program: &mut Program,
+    mut edits: BTreeMap<(usize, AstPath), PlannedCallEdit>,
+    facts: &FixupFacts,
+    logger: &mut dyn TraceLogger,
+    diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
+    touched: &mut TouchedItems,
+) -> usize {
+    let mut applied = 0;
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        let Item::Fn(function) = item else {
+            continue;
+        };
+        if !edits
+            .keys()
+            .any(|(target_item, _)| *target_item == item_index)
+        {
+            continue;
+        }
+        mut_walk::body_exprs_mut_with_path(
+            &mut function.body,
+            &mut Vec::new(),
+            &mut |expr, path| {
+                let site = ExprSite {
+                    item_index,
+                    path: AstPath(path.to_vec()),
+                    fact_path: AstPath(path.to_vec()),
+                };
+                let Some(edit) = edits.remove(&(item_index, site.path.clone())) else {
+                    return true;
+                };
+                let before = expr.render();
+                let Expr::Call { args, .. } = expr else {
+                    diagnostics.push(missing_call(edit));
+                    return true;
+                };
+                if args.len() != edit.expected_arity || edit.index >= args.len() {
+                    diagnostics.push(missing_call(edit));
+                    return true;
+                }
+                args.remove(edit.index);
+                let after = expr.render();
+                log_item_edit(
+                    logger,
+                    &edit.identity,
+                    &edit.evidence,
+                    &edit.rejected_cases,
+                    TraceChange {
+                        location: facts
+                            .function_by_item_index(item_index)
+                            .map(|function| function_path_location(facts, function, &site.path.0))
+                            .unwrap_or_else(|| path_location(&site.path.0)),
+                        label: "expr",
+                        before,
+                        after,
+                    },
+                );
+                applied += 1;
+                touched.in_place.push(item_index);
+                true
+            },
+        );
+    }
+    diagnostics.extend(edits.into_values().map(missing_call));
+    applied
+}
+
+fn missing_call(edit: PlannedCallEdit) -> PlanDiagnostic<EditSetSite> {
+    PlanDiagnostic::MissingTarget {
+        contender: edit.identity,
+        target: EditSetSite(vec![Anchor::Expression(edit.target)]),
+    }
+}
+
+fn apply_parameter_edits(
+    program: &mut Program,
+    edits: Vec<PlannedParameterEdit>,
+    logger: &mut dyn TraceLogger,
+    diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
+    touched: &mut TouchedItems,
+) -> usize {
+    let mut applied = 0;
+    for edit in edits {
+        let Some(item) = program.items.get_mut(edit.target.item_index) else {
+            diagnostics.push(missing_parameter(edit));
+            continue;
+        };
+        let Item::Fn(function) = unwrap_cfg_mut(item) else {
+            diagnostics.push(missing_parameter(edit));
+            continue;
+        };
+        if function.name != edit.target.function.name
+            || !function
+                .params
+                .get(edit.index)
+                .is_some_and(|parameter| parameter.name == edit.name)
+        {
+            diagnostics.push(missing_parameter(edit));
+            continue;
+        }
+        let before = item_snippet(&Item::Fn(function.clone()));
+        function.params.remove(edit.index);
+        let after = item_snippet(&Item::Fn(function.clone()));
+        log_item_edit(
+            logger,
+            &edit.identity,
+            &edit.evidence,
+            &edit.rejected_cases,
+            TraceChange {
+                location: TraceLocation {
+                    function: Some(function.name.clone()),
+                    ..TraceLocation::default()
+                },
+                label: "function",
+                before,
+                after,
+            },
+        );
+        applied += 1;
+        touched.in_place.push(edit.target.item_index);
+    }
+    applied
+}
+
+fn missing_parameter(edit: PlannedParameterEdit) -> PlanDiagnostic<EditSetSite> {
+    PlanDiagnostic::MissingTarget {
+        contender: edit.identity,
+        target: EditSetSite(vec![Anchor::Function {
+            item_index: edit.target.item_index,
+            name: edit.target.function.name,
+        }]),
+    }
+}
+
+fn unwrap_cfg_mut(item: &mut Item) -> &mut Item {
+    match item {
+        Item::Cfg { item, .. } => unwrap_cfg_mut(item),
+        _ => item,
     }
 }
 
@@ -963,6 +1318,48 @@ fn log_definition_edit(
         after: after
             .map(|after| vec![TraceSnippet::new("definition", after)])
             .unwrap_or_default(),
+        facts,
+    });
+}
+
+struct TraceChange {
+    location: TraceLocation,
+    label: &'static str,
+    before: String,
+    after: String,
+}
+
+fn log_item_edit(
+    logger: &mut dyn TraceLogger,
+    identity: &RuleCaseIdentity,
+    evidence: &[Evidence],
+    rejected_cases: &[CaseRejection],
+    change: TraceChange,
+) {
+    if !logger.is_enabled() {
+        return;
+    }
+    let mut facts = vec![
+        fact("query_rule", identity.rule.name.clone()),
+        fact("query_case", identity.case.clone()),
+    ];
+    facts.extend(evidence.iter().map(evidence_trace_fact));
+    facts.extend(rejected_cases.iter().map(|rejected| {
+        fact(
+            format!("rejected_case.{}", rejected.case),
+            format!(
+                "{}:{}",
+                predicate_name(rejected.rejection.predicate),
+                rejection_name(rejected.rejection.reason)
+            ),
+        )
+    }));
+    logger.rewrite(RewriteEvent {
+        pass: identity.rule.pass,
+        kind: identity.rule.name.clone(),
+        location: change.location,
+        before: vec![TraceSnippet::new(change.label, change.before)],
+        after: vec![TraceSnippet::new(change.label, change.after)],
         facts,
     });
 }

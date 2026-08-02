@@ -2117,8 +2117,10 @@ fn unused_params_are_removed_but_used_ones_survive() {
 
     assert!(rust.contains("fn add(a: i32) -> i32"));
     assert!(rust.contains("fn get_used(a: i32, b: i32) -> i32"));
+    assert!(rust.contains("fn remove_two(a: i32) -> i32"));
     assert!(rust.contains("add(5)"));
     assert!(rust.contains("get_used(1, 2)"));
+    assert!(rust.contains("remove_two(3)"));
     assert!(!rust.contains("add(5, 10)"));
 
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))

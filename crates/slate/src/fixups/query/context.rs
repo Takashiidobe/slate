@@ -21,14 +21,14 @@ use crate::rust_ast::{
 use super::item::StatementRef;
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
-    BindingDefUse, BindingRef, BufferCursorPlan, ByteExtent, ByteRepresentation, ByteSource,
-    ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, Evidence, EvidenceDetail, ExprSite, ExternFn, HeapOwnershipPlan,
+    BindingCategory, BindingDefUse, BindingRef, BufferCursorPlan, ByteExtent, ByteRepresentation,
+    ByteSource, ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
+    DefinitionSite, Evidence, EvidenceDetail, ExprSite, ExternFn, FunctionRef, HeapOwnershipPlan,
     HeapOwnershipPlanSet, HeapOwnershipReallocPlan, InlineTempPlan, LazySingletonPlan,
-    LazySingletonSet, NulPosition, NullaryMethodCall, ParamSite, Phase, PointerMutability,
-    Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, Rejection, RejectionReason,
-    ResolvedValue, StableExpr, StatementRange, UnusedTypeDefinitionSet, Usage, ValueSite,
-    ZeroGroupUsers, ZeroInitPlan, ZeroUsers,
+    LazySingletonSet, NulPosition, NullaryMethodCall, Phase, PointerMutability, Predicate, Proof,
+    PtrLenPlan, PtrLenPlanSet, QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr,
+    StatementRange, UnusedTypeDefinitionSet, Usage, ValueSite, ZeroGroupUsers, ZeroInitPlan,
+    ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -156,6 +156,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.calls.values().flatten()
     }
 
+    pub(in crate::fixups) fn symbol_use_count(&self, name: &str) -> usize {
+        self.symbol_uses.get(name).map_or(0, Vec::len)
+    }
+
     pub(in crate::fixups) fn call_arg_types(&self, call: &CallRecord) -> Vec<Option<Type>> {
         let Some(function) = self.facts.function_by_item_index(call.site.item_index) else {
             return vec![None; call.args.len()];
@@ -224,8 +228,15 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(
             BindingRef {
                 item_index,
+                function_name: self
+                    .facts
+                    .function_name(function)
+                    .unwrap_or_default()
+                    .to_string(),
                 name: name.to_string(),
                 definition: definition.clone(),
+                kind: BindingCategory::Local,
+                ty: self.facts.binding_type_ast(id).cloned(),
                 id,
             },
             evidence,
@@ -264,6 +275,17 @@ impl<'snapshot> QueryContext<'snapshot> {
             },
             evidence,
         ))
+    }
+
+    pub(in crate::fixups) fn binding_value(&self, binding: &BindingRef) -> ResolvedValue {
+        ResolvedValue {
+            ty: binding.ty.clone(),
+            usage: self.facts.def_use(binding.id).map(|fact| Usage {
+                reads: fact.reads.len(),
+                writes: fact.writes.len(),
+            }),
+            purity: None,
+        }
     }
 
     fn resolved_value_at(
@@ -647,46 +669,48 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.definitions.values().flatten()
     }
 
-    pub(in crate::fixups) fn all_params(&self) -> Vec<ParamSite> {
-        let mut out = Vec::new();
-        for (item_index, item) in self.program.items.iter().enumerate() {
-            let Item::Fn(f) = unwrap_cfg(item) else {
-                continue;
-            };
-            for (param_index, param) in f.params.iter().enumerate() {
-                out.push(ParamSite {
-                    function_item_index: item_index,
-                    function_name: f.name.clone(),
-                    param_index,
-                    param_name: param.name.clone(),
-                    param_ty: param.ty.clone(),
-                });
-            }
-        }
-        out
+    pub(in crate::fixups) fn all_functions(&self) -> Vec<FunctionRef> {
+        self.facts
+            .functions
+            .iter()
+            .filter_map(|fact| {
+                let Item::Fn(function) = unwrap_cfg(self.program.items.get(fact.item_index)?)
+                else {
+                    return None;
+                };
+                Some(FunctionRef {
+                    item_index: fact.item_index,
+                    function: function.clone(),
+                    id: fact.id,
+                })
+            })
+            .collect()
     }
 
-    pub(in crate::fixups) fn param_usage(&self, param: &ParamSite) -> Usage {
-        let no_uses = Usage {
-            reads: 0,
-            writes: 0,
-        };
-        let Some(function) = self.facts.function_by_item_index(param.function_item_index) else {
-            return no_uses;
-        };
-        let Some(binding) = self
-            .facts
-            .binding_by_param_index(function, param.param_index)
-        else {
-            return no_uses;
-        };
+    pub(in crate::fixups) fn all_bindings(&self) -> Vec<BindingRef> {
         self.facts
-            .def_use(binding)
-            .map(|fact| Usage {
-                reads: fact.reads.len(),
-                writes: fact.writes.len(),
+            .bindings
+            .iter()
+            .filter_map(|binding| {
+                let item_index = self.facts.function_item_index(binding.function)?;
+                Some(BindingRef {
+                    item_index,
+                    function_name: self
+                        .facts
+                        .function_name(binding.function)
+                        .unwrap_or_default()
+                        .to_string(),
+                    name: binding.name.clone(),
+                    definition: binding.path.clone(),
+                    kind: match binding.kind {
+                        BindingKind::Param { index } => BindingCategory::Parameter { index },
+                        BindingKind::Local => BindingCategory::Local,
+                    },
+                    ty: self.facts.binding_type_ast(binding.id).cloned(),
+                    id: binding.id,
+                })
             })
-            .unwrap_or(no_uses)
+            .collect()
     }
 
     fn unused_item_candidates(&self) -> BTreeMap<usize, UnusedItemCandidate> {
