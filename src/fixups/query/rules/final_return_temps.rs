@@ -22,7 +22,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
         }),
     )
     .case("temp_return", |case, matched| {
-        let [temp_stmt, return_stmt] = matched.stmts();
+        let [temp_stmt, return_stmt] = case.statements(matched)?;
         let Stmt::Let {
             name,
             init: Some(init),

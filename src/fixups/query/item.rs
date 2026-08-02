@@ -23,20 +23,29 @@ use super::{
 pub(in crate::fixups) enum QueryDomain {
     Binding,
     Definition,
+    EnumVariant,
     Expression,
+    Field,
     Function,
+    MatchArm,
+    Parameter,
     Statement,
+    StatementContainer,
+    TypeUse,
 }
 
 pub(in crate::fixups) enum QueryItem<'snapshot> {
     Binding(BindingRef),
     Definition(&'snapshot DefinitionSite),
+    EnumVariant(super::EnumVariantRef),
     Expression(ExpressionRef),
+    Field(super::FieldRef),
     Function(FunctionRef),
-    Statement {
-        site: StatementRef,
-        tail: &'snapshot [IndentStmt],
-    },
+    MatchArm(super::MatchArmRef),
+    Parameter(super::ParameterRef),
+    Statement(StatementRef),
+    StatementContainer(super::StatementContainerRef),
+    TypeUse(super::TypeUseRef),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -93,25 +102,20 @@ pub(in crate::fixups) fn same_statement_container(declaration: &AstPath, other: 
 #[derive(Clone)]
 pub(in crate::fixups) struct StatementMatch {
     target: StatementRange,
-    statements: Vec<IndentStmt>,
+    width: usize,
 }
 
 impl StatementMatch {
-    pub(in crate::fixups) fn new(target: StatementRange, statements: Vec<IndentStmt>) -> Self {
-        Self { target, statements }
+    pub(in crate::fixups) fn new(target: StatementRange, width: usize) -> Self {
+        Self { target, width }
     }
 
     pub(in crate::fixups) fn target(&self) -> &StatementRange {
         &self.target
     }
 
-    pub(in crate::fixups) fn stmts<const N: usize>(&self) -> [&IndentStmt; N] {
-        assert_eq!(N, self.statements.len());
-        std::array::from_fn(|index| &self.statements[index])
-    }
-
     pub(in crate::fixups) fn statement(&self, offset: usize) -> StatementRef {
-        assert!(offset < self.statements.len());
+        assert!(offset < self.width);
         let mut path = self.target.path.0.clone();
         path.push(PathSegment::Stmt(self.target.start + offset));
         StatementRef {
@@ -162,7 +166,7 @@ impl MatchCapture for FunctionRef {
     fn anchor(&self) -> Anchor {
         Anchor::Function {
             item_index: self.item_index,
-            name: self.function.name.clone(),
+            name: self.name.clone(),
         }
     }
 }
@@ -173,6 +177,60 @@ impl MatchCapture for BindingRef {
             item_index: self.item_index,
             path: self.definition.clone(),
             name: self.name.clone(),
+        }
+    }
+}
+
+impl MatchCapture for super::ParameterRef {
+    fn anchor(&self) -> Anchor {
+        self.binding.anchor()
+    }
+}
+
+impl MatchCapture for super::StatementContainerRef {
+    fn anchor(&self) -> Anchor {
+        Anchor::Statements(StatementRange {
+            item_index: self.item_index,
+            path: self.path.clone(),
+            start: 0,
+            end: 0,
+        })
+    }
+}
+
+impl MatchCapture for super::MatchArmRef {
+    fn anchor(&self) -> Anchor {
+        Anchor::Statements(StatementRange {
+            item_index: self.statement.item_index,
+            path: {
+                let mut path = self.statement.path.0.clone();
+                path.push(PathSegment::MatchArm(self.index));
+                AstPath(path)
+            },
+            start: 0,
+            end: 0,
+        })
+    }
+}
+
+impl MatchCapture for super::FieldRef {
+    fn anchor(&self) -> Anchor {
+        Anchor::Definition(DefinitionLocation::Item(self.item_index))
+    }
+}
+
+impl MatchCapture for super::EnumVariantRef {
+    fn anchor(&self) -> Anchor {
+        Anchor::Definition(DefinitionLocation::Item(self.item_index))
+    }
+}
+
+impl MatchCapture for super::TypeUseRef {
+    fn anchor(&self) -> Anchor {
+        match self {
+            super::TypeUseRef::FunctionReturn(function) => function.anchor(),
+            super::TypeUseRef::Parameter(parameter) => parameter.anchor(),
+            super::TypeUseRef::Field(field) => field.anchor(),
         }
     }
 }
@@ -258,6 +316,19 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
         std::array::from_fn(|index| call.args[index].clone())
     }
 
+    pub(in crate::fixups) fn statements<const N: usize>(
+        &self,
+        matched: &StatementMatch,
+    ) -> Result<[IndentStmt; N], Rejection> {
+        if N != matched.width {
+            return Err(self.reject());
+        }
+        let statements = statement_container(self.query.snapshot_program(), &matched.target)
+            .and_then(|body| body.get(matched.target.start..matched.target.end))
+            .ok_or_else(|| self.reject())?;
+        Ok(std::array::from_fn(|index| statements[index].clone()))
+    }
+
     pub(in crate::fixups) fn lower_expr(
         &mut self,
         recipe: ExprRecipe<'snapshot>,
@@ -282,6 +353,20 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
             .into_iter()
             .find(|function| function.item_index == definition.location.item_index())
             .ok_or_else(|| self.reject())
+    }
+
+    pub(in crate::fixups) fn replace_function_body(
+        &self,
+        target: FunctionRef,
+        body: FunctionBodyRecipe,
+    ) -> Result<EditSet, Rejection> {
+        let mut replacement = self
+            .query
+            .function_def(&target)
+            .cloned()
+            .ok_or_else(|| self.reject())?;
+        replacement.body = body.lower();
+        Ok(EditSet::replace_function(target, replacement))
     }
 
     pub(in crate::fixups) fn require(&self, condition: bool) -> Result<(), Rejection> {
@@ -439,11 +524,9 @@ impl EditSet {
                 replacement,
             })
             .collect::<Vec<_>>();
-        let mut replacement = removal.function.function.clone();
-        replacement.params.remove(removal.index);
         edits.push(AnchoredEdit::Function {
             target: removal.function,
-            replacement,
+            replacement: removal.replacement,
         });
         Self {
             edits,
@@ -479,12 +562,10 @@ impl EditSet {
         Self::replace_definition(target, Some(DefinitionReplacement::ExternDecl(replacement)))
     }
 
-    pub(in crate::fixups) fn replace_function_body(
+    pub(in crate::fixups) fn replace_function(
         target: FunctionRef,
-        body: FunctionBodyRecipe,
+        replacement: crate::rust_ast::FnDef,
     ) -> Self {
-        let mut replacement = target.function.clone();
-        replacement.body = body.lower();
         Self {
             edits: vec![AnchoredEdit::Function {
                 target,
@@ -540,7 +621,7 @@ impl EditTarget for EditSet {
                 AnchoredEdit::Expression { target, .. } => Anchor::Expression(target.clone()),
                 AnchoredEdit::Function { target, .. } => Anchor::Function {
                     item_index: target.item_index,
-                    name: target.function.name.clone(),
+                    name: target.name.clone(),
                 },
                 AnchoredEdit::Statements { target, .. } => Anchor::Statements(target.clone()),
                 AnchoredEdit::Statement { target, .. } => Anchor::Statements(target.clone()),
@@ -774,6 +855,13 @@ fn query_items<'query>(
             .map(QueryItem::Binding)
             .collect();
     }
+    if domain == QueryDomain::Parameter {
+        return query
+            .all_parameters()
+            .into_iter()
+            .map(QueryItem::Parameter)
+            .collect();
+    }
     if domain == QueryDomain::Expression {
         return query
             .expression_sites()
@@ -781,13 +869,136 @@ fn query_items<'query>(
             .map(|site| QueryItem::Expression(ExpressionRef { site }))
             .collect();
     }
+    if domain == QueryDomain::Field {
+        let mut fields = Vec::new();
+        for (item_index, item) in query.snapshot_program().items.iter().enumerate() {
+            let count = match unwrap_cfg(item) {
+                Item::Record(record) => record.fields.len(),
+                Item::Struct(definition) => match &definition.fields {
+                    crate::rust_ast::StructFields::Named(fields) => fields.len(),
+                    crate::rust_ast::StructFields::Tuple(fields) => fields.len(),
+                },
+                _ => 0,
+            };
+            fields.extend(
+                (0..count).map(|index| QueryItem::Field(super::FieldRef { item_index, index })),
+            );
+        }
+        return fields;
+    }
+    if domain == QueryDomain::EnumVariant {
+        let mut variants = Vec::new();
+        for (item_index, item) in query.snapshot_program().items.iter().enumerate() {
+            let Item::Enum(definition) = unwrap_cfg(item) else {
+                continue;
+            };
+            variants.extend(
+                (0..definition.variants.len()).map(|index| {
+                    QueryItem::EnumVariant(super::EnumVariantRef { item_index, index })
+                }),
+            );
+        }
+        return variants;
+    }
+    if domain == QueryDomain::TypeUse {
+        let mut uses = query
+            .all_functions()
+            .into_iter()
+            .filter(|function| {
+                query
+                    .function_def(function)
+                    .is_some_and(|definition| definition.ret.is_some())
+            })
+            .map(|function| QueryItem::TypeUse(super::TypeUseRef::FunctionReturn(function)))
+            .collect::<Vec<_>>();
+        uses.extend(
+            query
+                .all_parameters()
+                .into_iter()
+                .map(|parameter| QueryItem::TypeUse(super::TypeUseRef::Parameter(parameter))),
+        );
+        for (item_index, item) in query.snapshot_program().items.iter().enumerate() {
+            let count = match unwrap_cfg(item) {
+                Item::Record(record) => record.fields.len(),
+                Item::Struct(definition) => match &definition.fields {
+                    crate::rust_ast::StructFields::Named(fields) => fields.len(),
+                    crate::rust_ast::StructFields::Tuple(fields) => fields.len(),
+                },
+                _ => 0,
+            };
+            uses.extend((0..count).map(|index| {
+                QueryItem::TypeUse(super::TypeUseRef::Field(super::FieldRef {
+                    item_index,
+                    index,
+                }))
+            }));
+        }
+        return uses;
+    }
     let mut items = Vec::new();
     for (item_index, item) in query.snapshot_program().items.iter().enumerate() {
-        if let Item::Fn(function) = item {
+        let Item::Fn(function) = unwrap_cfg(item) else {
+            continue;
+        };
+        if domain == QueryDomain::Statement {
             collect_statement_items(item_index, &function.body, &mut Vec::new(), &mut items);
+        } else if domain == QueryDomain::StatementContainer {
+            collect_statement_containers(item_index, &function.body, &mut Vec::new(), &mut items);
+        } else if domain == QueryDomain::MatchArm {
+            collect_match_arms(item_index, &function.body, &mut Vec::new(), &mut items);
         }
     }
     items
+}
+
+fn collect_statement_containers<'snapshot>(
+    item_index: usize,
+    body: &'snapshot [IndentStmt],
+    path: &mut Vec<PathSegment>,
+    out: &mut Vec<QueryItem<'snapshot>>,
+) {
+    out.push(QueryItem::StatementContainer(
+        super::StatementContainerRef {
+            item_index,
+            path: AstPath(path.clone()),
+        },
+    ));
+    for (index, indent) in body.iter().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_with_path(&indent.stmt, path, &mut |nested, path| {
+                collect_statement_containers(item_index, nested, path, out);
+            });
+        });
+    }
+}
+
+fn collect_match_arms<'snapshot>(
+    item_index: usize,
+    body: &'snapshot [IndentStmt],
+    path: &mut Vec<PathSegment>,
+    out: &mut Vec<QueryItem<'snapshot>>,
+) {
+    for (index, indent) in body.iter().enumerate() {
+        let mut statement_path = path.clone();
+        statement_path.push(PathSegment::Stmt(index));
+        if let crate::rust_ast::Stmt::Match { arms, .. } = &indent.stmt {
+            let statement = StatementRef {
+                item_index,
+                path: AstPath(statement_path),
+            };
+            out.extend((0..arms.len()).map(|index| {
+                QueryItem::MatchArm(super::MatchArmRef {
+                    statement: statement.clone(),
+                    index,
+                })
+            }));
+        }
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_with_path(&indent.stmt, path, &mut |nested, path| {
+                collect_match_arms(item_index, nested, path, out);
+            });
+        });
+    }
 }
 
 fn collect_statement_items<'snapshot>(
@@ -799,13 +1010,10 @@ fn collect_statement_items<'snapshot>(
     for start in 0..body.len() {
         let mut statement_path = path.clone();
         statement_path.push(PathSegment::Stmt(start));
-        out.push(QueryItem::Statement {
-            site: StatementRef {
-                item_index,
-                path: AstPath(statement_path),
-            },
-            tail: &body[start..],
-        });
+        out.push(QueryItem::Statement(StatementRef {
+            item_index,
+            path: AstPath(statement_path),
+        }));
     }
     for (index, indent) in body.iter().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
@@ -1054,7 +1262,7 @@ fn edit_anchor(edit: &AnchoredEdit) -> Anchor {
         }
         AnchoredEdit::Function { target, .. } => Anchor::Function {
             item_index: target.item_index,
-            name: target.function.name.clone(),
+            name: target.name.clone(),
         },
         AnchoredEdit::InsertItems {
             index,
@@ -1097,7 +1305,7 @@ fn anchored_edit_exists(program: &Program, edit: &AnchoredEdit) -> bool {
                 let Item::Fn(function) = unwrap_cfg(item) else {
                     return false;
                 };
-                function.name == target.function.name
+                function.name == target.name
             })
         }
         AnchoredEdit::InsertItems {
@@ -1143,29 +1351,42 @@ fn expression_matches(
 }
 
 fn statement_range_exists(program: &Program, target: &StatementRange) -> bool {
-    let Some(Item::Fn(function)) = program.items.get(target.item_index) else {
-        return false;
-    };
-    body_range_exists(&function.body, &mut Vec::new(), target)
+    statement_container(program, target)
+        .is_some_and(|body| target.start < target.end && target.end <= body.len())
 }
 
-fn body_range_exists(
-    body: &[IndentStmt],
-    path: &mut Vec<PathSegment>,
+fn statement_container<'program>(
+    program: &'program Program,
     target: &StatementRange,
-) -> bool {
-    if path.as_slice() == target.path.0 {
-        return target.start < target.end && target.end <= body.len();
+) -> Option<&'program [IndentStmt]> {
+    let Item::Fn(function) = program.items.get(target.item_index)? else {
+        return None;
+    };
+    body_container(&function.body, &mut Vec::new(), &target.path)
+}
+
+fn body_container<'body>(
+    body: &'body [IndentStmt],
+    path: &mut Vec<PathSegment>,
+    target: &AstPath,
+) -> Option<&'body [IndentStmt]> {
+    if path.as_slice() == target.0 {
+        return Some(body);
     }
-    let mut found = false;
     for (index, indent) in body.iter().enumerate() {
+        let mut found = None;
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
             walk::nested_body_vecs_with_path(&indent.stmt, path, &mut |nested, path| {
-                found |= body_range_exists(nested, path, target);
+                if found.is_none() {
+                    found = body_container(nested, path, target);
+                }
             });
         });
+        if found.is_some() {
+            return found;
+        }
     }
-    found
+    None
 }
 
 struct PlannedExpressionEdit {
@@ -1263,7 +1484,7 @@ fn apply_function_edits(
             diagnostics.push(missing_function(edit));
             continue;
         };
-        if function.name != edit.target.function.name {
+        if function.name != edit.target.name {
             diagnostics.push(missing_function(edit));
             continue;
         }
@@ -1296,7 +1517,7 @@ fn missing_function(edit: PlannedFunctionEdit) -> PlanDiagnostic<EditSetSite> {
         contender: edit.identity,
         target: EditSetSite(vec![Anchor::Function {
             item_index: edit.target.item_index,
-            name: edit.target.function.name,
+            name: edit.target.name,
         }]),
     }
 }

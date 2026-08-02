@@ -46,17 +46,62 @@ pub(in crate::fixups) enum BindingCategory {
     Local,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct FunctionRef {
     pub(in crate::fixups) item_index: usize,
-    pub(in crate::fixups) function: FnDef,
+    pub(in crate::fixups) name: String,
     pub(super) id: crate::fixups::facts::FunctionId,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct ParameterRef {
+    pub(in crate::fixups) binding: BindingRef,
+    pub(in crate::fixups) index: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(in crate::fixups) struct StatementContainerRef {
+    pub(in crate::fixups) item_index: usize,
+    pub(in crate::fixups) path: AstPath,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(in crate::fixups) struct MatchArmRef {
+    pub(in crate::fixups) statement: super::item::StatementRef,
+    pub(in crate::fixups) index: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(in crate::fixups) struct FieldRef {
+    pub(in crate::fixups) item_index: usize,
+    pub(in crate::fixups) index: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(in crate::fixups) struct EnumVariantRef {
+    pub(in crate::fixups) item_index: usize,
+    pub(in crate::fixups) index: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) enum TypeUseRef {
+    FunctionReturn(FunctionRef),
+    Parameter(ParameterRef),
+    Field(FieldRef),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(in crate::fixups) enum TypeUseKind {
+    FunctionReturn,
+    Parameter,
+    Field,
 }
 
 #[derive(Debug, Clone)]
 pub(in crate::fixups) struct ParameterRemoval {
     pub(in crate::fixups) binding: BindingRef,
     pub(in crate::fixups) function: FunctionRef,
+    pub(in crate::fixups) replacement: FnDef,
     pub(in crate::fixups) index: usize,
     pub(in crate::fixups) calls: Vec<(ExprSite, Expr)>,
 }
@@ -71,6 +116,26 @@ pub(in crate::fixups) struct BindingDefUse {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct ExpressionRef {
     pub(in crate::fixups) site: ExprSite,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(in crate::fixups) enum ExpressionRole {
+    AssignmentTarget,
+    AssignmentValue,
+    Call,
+    CallArgument(usize),
+    CallCallee,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(in crate::fixups) enum ExpressionKind {
+    Call,
+    Cast,
+    Field,
+    Index,
+    Literal,
+    Variable,
+    Other,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -23,13 +23,15 @@ use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
     BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse, BindingUses,
     BufferCursorPlan, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
-    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, Evidence,
-    EvidenceDetail, ExprSite, ExpressionEffects, ExpressionPlace, ExpressionRef, ExpressionValues,
-    ExternFn, FunctionRef, HeapOwnershipPlan, HeapOwnershipPlanSet, HeapOwnershipReallocPlan,
-    InlineTempPlan, ItemReferences, LazySingletonPlan, LazySingletonSet, NulPosition,
-    NullaryMethodCall, Phase, PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet,
-    QueryResult, ReferenceDomain, Rejection, RejectionReason, ResolvedValue, StableExpr,
-    StatementRange, Usage, ValueSite, ZeroGroupUsers, ZeroInitPlan, ZeroUsers,
+    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, EnumVariantRef,
+    Evidence, EvidenceDetail, ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace,
+    ExpressionRef, ExpressionRole, ExpressionValues, ExternFn, FieldRef, FunctionRef,
+    HeapOwnershipPlan, HeapOwnershipPlanSet, HeapOwnershipReallocPlan, InlineTempPlan,
+    ItemReferences, LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition,
+    NullaryMethodCall, ParameterRef, Phase, PointerMutability, Predicate, Proof, PtrLenPlan,
+    PtrLenPlanSet, QueryResult, ReferenceDomain, Rejection, RejectionReason, ResolvedValue,
+    StableExpr, StatementContainerRef, StatementRange, TypeUseRef, Usage, ValueSite,
+    ZeroGroupUsers, ZeroInitPlan, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -87,6 +89,11 @@ pub(in crate::fixups) struct QueryContext<'snapshot> {
     program: &'snapshot Program,
     facts: &'snapshot FixupFacts,
     calls: BTreeMap<(CallTarget, usize), Vec<CallRecord>>,
+    calls_by_site: BTreeMap<ExprSite, CallRecord>,
+    expression_sites: Vec<ExprSite>,
+    expression_parents: BTreeMap<ExprSite, ExprSite>,
+    assignment_values: BTreeSet<ExprSite>,
+    expression_roles: BTreeMap<ExprSite, BTreeSet<ExpressionRole>>,
     definitions: BTreeMap<DefinitionSelector, Vec<DefinitionSite>>,
     symbol_uses: BTreeMap<String, Vec<usize>>,
     use_domain_complete: bool,
@@ -99,6 +106,11 @@ impl<'snapshot> QueryContext<'snapshot> {
         facts: &'snapshot FixupFacts,
     ) -> Self {
         let mut calls: BTreeMap<(CallTarget, usize), Vec<CallRecord>> = BTreeMap::new();
+        let mut calls_by_site = BTreeMap::new();
+        let mut expression_sites = Vec::new();
+        let mut assignment_values = BTreeSet::new();
+        let mut assignment_targets = BTreeSet::new();
+        let mut assignment_role_values = BTreeSet::new();
         let mut definitions = BTreeMap::<DefinitionSelector, Vec<DefinitionSite>>::new();
         let mut symbol_uses = BTreeMap::<String, Vec<usize>>::new();
         let mut use_domain_complete = true;
@@ -107,8 +119,17 @@ impl<'snapshot> QueryContext<'snapshot> {
             use_domain_complete &= item_use_domain_complete(item);
             index_item_uses(item, item_index, &mut symbol_uses);
             if let Item::Fn(function) = item {
+                collect_assign_value_sites(
+                    item_index,
+                    &function.body,
+                    &mut Vec::new(),
+                    &mut assignment_targets,
+                    &mut assignment_role_values,
+                    &mut assignment_values,
+                );
                 walk::body_exprs_with_path(&function.body, &mut Vec::new(), &mut |expr, path| {
                     let site = expression_site(item_index, path);
+                    expression_sites.push(site.clone());
                     let Expr::Call {
                         func,
                         args,
@@ -129,23 +150,78 @@ impl<'snapshot> QueryContext<'snapshot> {
                             arity: args.len(),
                         },
                     }];
+                    let record = CallRecord {
+                        trivial_unsafe_site: trivial_unsafe_site(program, &site),
+                        site,
+                        target: target.clone(),
+                        args: arg_sites,
+                        evidence,
+                    };
+                    calls_by_site.insert(record.site.clone(), record.clone());
+                    if let Some(wrapper) = &record.trivial_unsafe_site {
+                        calls_by_site.insert(wrapper.clone(), record.clone());
+                    }
                     calls
                         .entry((target.clone(), args.len()))
                         .or_default()
-                        .push(CallRecord {
-                            trivial_unsafe_site: trivial_unsafe_site(program, &site),
-                            site,
-                            target,
-                            args: arg_sites,
-                            evidence,
-                        });
+                        .push(record);
                 });
+            }
+        }
+        let expression_set = expression_sites.iter().cloned().collect::<BTreeSet<_>>();
+        let expression_parents = expression_sites
+            .iter()
+            .filter_map(|site| {
+                (1..site.path.0.len()).rev().find_map(|length| {
+                    let parent = ExprSite {
+                        item_index: site.item_index,
+                        path: AstPath(site.path.0[..length].to_vec()),
+                        fact_path: AstPath(site.fact_path.0[..length].to_vec()),
+                    };
+                    expression_set
+                        .contains(&parent)
+                        .then(|| (site.clone(), parent))
+                })
+            })
+            .collect();
+        let mut expression_roles = BTreeMap::<ExprSite, BTreeSet<ExpressionRole>>::new();
+        for site in assignment_targets {
+            expression_roles
+                .entry(site)
+                .or_default()
+                .insert(ExpressionRole::AssignmentTarget);
+        }
+        for site in assignment_role_values {
+            expression_roles
+                .entry(site)
+                .or_default()
+                .insert(ExpressionRole::AssignmentValue);
+        }
+        for call in calls_by_site.values() {
+            expression_roles
+                .entry(call.site.clone())
+                .or_default()
+                .insert(ExpressionRole::Call);
+            expression_roles
+                .entry(child_site(&call.site, 0))
+                .or_default()
+                .insert(ExpressionRole::CallCallee);
+            for (index, argument) in call.args.iter().enumerate() {
+                expression_roles
+                    .entry(argument.clone())
+                    .or_default()
+                    .insert(ExpressionRole::CallArgument(index));
             }
         }
         Self {
             program,
             facts,
             calls,
+            calls_by_site,
+            expression_sites,
+            expression_parents,
+            assignment_values,
+            expression_roles,
             definitions,
             symbol_uses,
             use_domain_complete,
@@ -388,16 +464,47 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 
     pub(in crate::fixups) fn expression_sites(&self) -> Vec<ExprSite> {
-        let mut sites = Vec::new();
-        for (item_index, item) in self.program.items.iter().enumerate() {
-            let Item::Fn(function) = item else {
-                continue;
-            };
-            walk::body_exprs_with_path(&function.body, &mut Vec::new(), &mut |_, path| {
-                sites.push(expression_site(item_index, path));
-            });
+        self.expression_sites.clone()
+    }
+
+    pub(in crate::fixups) fn expression_roles(
+        &self,
+        expression: &ExpressionRef,
+    ) -> BTreeSet<ExpressionRole> {
+        self.expression_roles
+            .get(&expression.site)
+            .cloned()
+            .unwrap_or_default()
+    }
+
+    pub(in crate::fixups) fn expression_kind(
+        &self,
+        expression: &ExpressionRef,
+    ) -> Option<ExpressionKind> {
+        self.expr(&expression.site).map(expression_kind)
+    }
+
+    pub(in crate::fixups) fn parent_expression_kind(
+        &self,
+        expression: &ExpressionRef,
+    ) -> Option<ExpressionKind> {
+        let parent = self.expression_parents.get(&expression.site)?;
+        self.expr(parent).map(expression_kind)
+    }
+
+    pub(in crate::fixups) fn ancestor_expression_kinds(
+        &self,
+        expression: &ExpressionRef,
+    ) -> Vec<ExpressionKind> {
+        let mut kinds = Vec::new();
+        let mut site = &expression.site;
+        while let Some(parent) = self.expression_parents.get(site) {
+            if let Some(kind) = self.expr(parent).map(expression_kind) {
+                kinds.push(kind);
+            }
+            site = parent;
         }
-        sites
+        kinds
     }
 
     pub(in crate::fixups) fn expression(&self, site: &ExprSite) -> QueryResult<ExpressionRef> {
@@ -436,14 +543,9 @@ impl<'snapshot> QueryContext<'snapshot> {
     ) -> QueryResult<ExpressionRef> {
         let predicate = Predicate::ParentExpression;
         let parent = self
-            .expression_sites()
-            .into_iter()
-            .filter(|site| site.item_index == expression.site.item_index)
-            .filter(|site| {
-                site.path.0.len() < expression.site.path.0.len()
-                    && expression.site.path.0.starts_with(&site.path.0)
-            })
-            .max_by_key(|site| site.path.0.len())
+            .expression_parents
+            .get(&expression.site)
+            .cloned()
             .ok_or_else(|| {
                 Rejection::new(
                     predicate,
@@ -469,20 +571,14 @@ impl<'snapshot> QueryContext<'snapshot> {
         expression: &ExpressionRef,
     ) -> QueryResult<CallRecord> {
         let predicate = Predicate::Call;
-        let call = self
-            .all_calls()
-            .find(|call| {
-                call.site == expression.site
-                    || call.trivial_unsafe_site.as_ref() == Some(&expression.site)
-            })
-            .ok_or_else(|| {
-                Rejection::new(
-                    predicate,
-                    Some(expression.site.clone()),
-                    RejectionReason::MissingEvidence,
-                    Vec::new(),
-                )
-            })?;
+        let call = self.calls_by_site.get(&expression.site).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
         Ok(Proof::new(call.clone(), call.evidence.clone()))
     }
 
@@ -848,15 +944,8 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn assign_value_sites(&self) -> Vec<ExprSite> {
-        let mut sites = Vec::new();
-        for (item_index, item) in self.program.items.iter().enumerate() {
-            let Item::Fn(function) = item else {
-                continue;
-            };
-            collect_assign_value_sites(item_index, &function.body, &mut Vec::new(), &mut sites);
-        }
-        sites
+    pub(in crate::fixups) fn assign_value_sites(&self) -> &BTreeSet<ExprSite> {
+        &self.assignment_values
     }
 
     /// The recorded from/to types of the cast Clang's CIR observed at `site`,
@@ -1142,7 +1231,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 };
                 Some(FunctionRef {
                     item_index: fact.item_index,
-                    function: function.clone(),
+                    name: function.name.clone(),
                     id: fact.id,
                 })
             })
@@ -1173,6 +1262,108 @@ impl<'snapshot> QueryContext<'snapshot> {
                 })
             })
             .collect()
+    }
+
+    pub(in crate::fixups) fn function_def(
+        &self,
+        function: &FunctionRef,
+    ) -> Option<&'snapshot FnDef> {
+        let Item::Fn(definition) = unwrap_cfg(self.program.items.get(function.item_index)?) else {
+            return None;
+        };
+        (definition.name == function.name).then_some(definition)
+    }
+
+    pub(in crate::fixups) fn statement_tail(
+        &self,
+        statement: &StatementRef,
+    ) -> Option<&'snapshot [IndentStmt]> {
+        let (PathSegment::Stmt(index), container_path) = statement.path.0.split_last()? else {
+            return None;
+        };
+        let Item::Fn(function) = unwrap_cfg(self.program.items.get(statement.item_index)?) else {
+            return None;
+        };
+        statement_container_at(&function.body, container_path)?.get(*index..)
+    }
+
+    pub(in crate::fixups) fn all_parameters(&self) -> Vec<ParameterRef> {
+        self.all_bindings()
+            .into_iter()
+            .filter_map(|binding| {
+                let BindingCategory::Parameter { index } = binding.kind else {
+                    return None;
+                };
+                Some(ParameterRef { binding, index })
+            })
+            .collect()
+    }
+
+    pub(in crate::fixups) fn parameter_def(
+        &self,
+        parameter: &ParameterRef,
+    ) -> Option<&'snapshot FnParam> {
+        let Item::Fn(function) = unwrap_cfg(self.program.items.get(parameter.binding.item_index)?)
+        else {
+            return None;
+        };
+        let definition = function.params.get(parameter.index)?;
+        (definition.name == parameter.binding.name).then_some(definition)
+    }
+
+    pub(in crate::fixups) fn statement_container(
+        &self,
+        container: &StatementContainerRef,
+    ) -> Option<&'snapshot [IndentStmt]> {
+        let Item::Fn(function) = unwrap_cfg(self.program.items.get(container.item_index)?) else {
+            return None;
+        };
+        statement_container_at(&function.body, &container.path.0)
+    }
+
+    pub(in crate::fixups) fn match_arm(&self, arm: &MatchArmRef) -> Option<&'snapshot MatchArm> {
+        let statement = self.statement_tail(&arm.statement)?.first()?;
+        let Stmt::Match { arms, .. } = &statement.stmt else {
+            return None;
+        };
+        arms.get(arm.index)
+    }
+
+    pub(in crate::fixups) fn field(
+        &self,
+        field: &FieldRef,
+    ) -> Option<(Option<&'snapshot str>, &'snapshot Type)> {
+        match unwrap_cfg(self.program.items.get(field.item_index)?) {
+            Item::Record(record) => record
+                .fields
+                .get(field.index)
+                .map(|field| (Some(field.name.as_str()), &field.ty)),
+            Item::Struct(definition) => match &definition.fields {
+                StructFields::Named(fields) => fields
+                    .get(field.index)
+                    .map(|(name, ty)| (Some(name.as_str()), ty)),
+                StructFields::Tuple(fields) => fields.get(field.index).map(|ty| (None, ty)),
+            },
+            _ => None,
+        }
+    }
+
+    pub(in crate::fixups) fn enum_variant(
+        &self,
+        variant: &EnumVariantRef,
+    ) -> Option<&'snapshot crate::rust_ast::EnumConst> {
+        let Item::Enum(definition) = unwrap_cfg(self.program.items.get(variant.item_index)?) else {
+            return None;
+        };
+        definition.variants.get(variant.index)
+    }
+
+    pub(in crate::fixups) fn type_use(&self, type_use: &TypeUseRef) -> Option<&'snapshot Type> {
+        match type_use {
+            TypeUseRef::FunctionReturn(function) => self.function_def(function)?.ret.as_ref(),
+            TypeUseRef::Parameter(parameter) => Some(&self.parameter_def(parameter)?.ty),
+            TypeUseRef::Field(field) => Some(self.field(field)?.1),
+        }
     }
 
     pub(in crate::fixups) fn definitions_in_group(
@@ -1263,6 +1454,51 @@ impl<'snapshot> QueryContext<'snapshot> {
             ));
         }
         Ok(values.into_iter().collect())
+    }
+}
+
+fn statement_container_at<'body>(
+    body: &'body [IndentStmt],
+    path: &[PathSegment],
+) -> Option<&'body [IndentStmt]> {
+    let [PathSegment::Stmt(index), rest @ ..] = path else {
+        return path.is_empty().then_some(body);
+    };
+    let stmt = &body.get(*index)?.stmt;
+    match (stmt, rest) {
+        (
+            Stmt::If { then_body, .. } | Stmt::LetIf { then_body, .. },
+            [PathSegment::Then, rest @ ..],
+        ) => statement_container_at(then_body, rest),
+        (
+            Stmt::If { else_body, .. } | Stmt::LetIf { else_body, .. },
+            [PathSegment::Else, rest @ ..],
+        ) => statement_container_at(else_body, rest),
+        (Stmt::Loop { body, .. }, [PathSegment::LoopBody, rest @ ..]) => {
+            statement_container_at(body, rest)
+        }
+        (Stmt::For { body, .. }, [PathSegment::ForBody, rest @ ..]) => {
+            statement_container_at(body, rest)
+        }
+        (Stmt::Scope { body }, [PathSegment::ScopeBody, rest @ ..]) => {
+            statement_container_at(body, rest)
+        }
+        (Stmt::LabeledBlock { body, .. }, [PathSegment::LabeledBody, rest @ ..]) => {
+            statement_container_at(body, rest)
+        }
+        (Stmt::Unsafe { body }, [PathSegment::UnsafeBody, rest @ ..]) => {
+            statement_container_at(&body.stmts, rest)
+        }
+        (Stmt::While { body, .. }, [PathSegment::WhileBody, rest @ ..]) => {
+            statement_container_at(&body.stmts, rest)
+        }
+        (Stmt::Block(body), [PathSegment::BlockBody, rest @ ..]) => {
+            statement_container_at(&body.stmts, rest)
+        }
+        (Stmt::Match { arms, .. }, [PathSegment::MatchArm(index), rest @ ..]) => {
+            statement_container_at(&arms.get(*index)?.body, rest)
+        }
+        _ => None,
     }
 }
 
@@ -2699,19 +2935,54 @@ fn collect_assign_value_sites(
     item_index: usize,
     body: &[IndentStmt],
     path: &mut Vec<PathSegment>,
-    out: &mut Vec<ExprSite>,
+    targets: &mut BTreeSet<ExprSite>,
+    role_values: &mut BTreeSet<ExprSite>,
+    assignment_values: &mut BTreeSet<ExprSite>,
 ) {
     for (index, indent) in body.iter().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            if matches!(&indent.stmt, Stmt::Assign { .. }) {
+            if matches!(
+                &indent.stmt,
+                Stmt::Assign { .. } | Stmt::CompoundAssign { .. }
+            ) {
+                let mut target_path = path.clone();
+                target_path.push(PathSegment::Expr(0));
+                targets.insert(expression_site(item_index, &target_path));
                 let mut value_path = path.clone();
                 value_path.push(PathSegment::Expr(1));
-                out.push(expression_site(item_index, &value_path));
+                let value_site = expression_site(item_index, &value_path);
+                role_values.insert(value_site.clone());
+                if matches!(&indent.stmt, Stmt::Assign { .. }) {
+                    assignment_values.insert(value_site);
+                }
             }
             walk::nested_body_vecs_with_path(&indent.stmt, path, &mut |nested, path| {
-                collect_assign_value_sites(item_index, nested, path, out);
+                collect_assign_value_sites(
+                    item_index,
+                    nested,
+                    path,
+                    targets,
+                    role_values,
+                    assignment_values,
+                );
             });
         });
+    }
+}
+
+fn expression_kind(expr: &Expr) -> ExpressionKind {
+    match expr {
+        Expr::Call { .. } | Expr::MethodCall { .. } | Expr::MethodCallGeneric { .. } => {
+            ExpressionKind::Call
+        }
+        Expr::Cast { .. } | Expr::Transmute { .. } => ExpressionKind::Cast,
+        Expr::Field { .. } | Expr::TupleField { .. } => ExpressionKind::Field,
+        Expr::Index { .. } => ExpressionKind::Index,
+        Expr::Value(_) | Expr::Str(_) | Expr::HexFloat(_) | Expr::ByteStr(_) | Expr::CStr(_) => {
+            ExpressionKind::Literal
+        }
+        Expr::Var(_) | Expr::Path(_) => ExpressionKind::Variable,
+        _ => ExpressionKind::Other,
     }
 }
 

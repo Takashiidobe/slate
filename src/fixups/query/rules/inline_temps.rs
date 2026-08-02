@@ -1,8 +1,6 @@
 use crate::fixups::trace::Pass;
 
-use super::super::{
-    Definition, DefinitionKind, EditSet, Field, Phase, QueryRule, rewrite_inline_temp,
-};
+use super::super::{Definition, DefinitionKind, Field, Phase, QueryRule, rewrite_inline_temp};
 
 fn function_matcher() -> Definition {
     Definition {
@@ -18,10 +16,7 @@ pub(in crate::fixups) fn early() -> QueryRule<Definition> {
             let plan = case.fact(|query| query.inline_temp_candidate(definition, Phase::Early))?;
             let body = case.function_body(definition);
             let function = case.function(definition)?;
-            Ok(EditSet::replace_function_body(
-                function,
-                rewrite_inline_temp(body, plan),
-            ))
+            case.replace_function_body(function, rewrite_inline_temp(body, plan))
         },
     )
 }
@@ -33,10 +28,7 @@ pub(in crate::fixups) fn late() -> QueryRule<Definition> {
             let plan = case.fact(|query| query.inline_temp_candidate(definition, Phase::Late))?;
             let body = case.function_body(definition);
             let function = case.function(definition)?;
-            Ok(EditSet::replace_function_body(
-                function,
-                rewrite_inline_temp(body, plan),
-            ))
+            case.replace_function_body(function, rewrite_inline_temp(body, plan))
         },
     )
 }
