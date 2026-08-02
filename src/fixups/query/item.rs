@@ -29,6 +29,7 @@ pub(in crate::fixups) enum QueryDomain {
     Function,
     MatchArm,
     Parameter,
+    Program,
     Statement,
     StatementContainer,
     TypeUse,
@@ -43,6 +44,7 @@ pub(in crate::fixups) enum QueryItem<'snapshot> {
     Function(FunctionRef),
     MatchArm(super::MatchArmRef),
     Parameter(super::ParameterRef),
+    Program(super::ProgramRef),
     Statement(StatementRef),
     StatementContainer(super::StatementContainerRef),
     TypeUse(super::TypeUseRef),
@@ -63,6 +65,9 @@ pub(in crate::fixups) enum Anchor {
     },
     Items {
         index: usize,
+        expected_len: usize,
+    },
+    Program {
         expected_len: usize,
     },
     Statements(StatementRange),
@@ -167,6 +172,14 @@ impl MatchCapture for FunctionRef {
         Anchor::Function {
             item_index: self.item_index,
             name: self.name.clone(),
+        }
+    }
+}
+
+impl MatchCapture for super::ProgramRef {
+    fn anchor(&self) -> Anchor {
+        Anchor::Program {
+            expected_len: self.expected_len,
         }
     }
 }
@@ -408,6 +421,11 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
 
 #[allow(clippy::large_enum_variant)]
 pub(in crate::fixups) enum AnchoredEdit {
+    Program {
+        target: super::ProgramRef,
+        replacement: Program,
+        touched: TouchedItems,
+    },
     Definition {
         target: DefinitionSite,
         replacement: Option<DefinitionReplacement>,
@@ -460,6 +478,21 @@ impl EditSet {
             edits: vec![AnchoredEdit::Expression {
                 target,
                 replacement,
+            }],
+            evidence: Vec::new(),
+        }
+    }
+
+    pub(in crate::fixups) fn replace_program(
+        target: super::ProgramRef,
+        replacement: Program,
+        touched: TouchedItems,
+    ) -> Self {
+        Self {
+            edits: vec![AnchoredEdit::Program {
+                target,
+                replacement,
+                touched,
             }],
             evidence: Vec::new(),
         }
@@ -597,6 +630,9 @@ impl EditTarget for EditSet {
             .edits
             .iter()
             .map(|edit| match edit {
+                AnchoredEdit::Program { target, .. } => Anchor::Program {
+                    expected_len: target.expected_len,
+                },
                 AnchoredEdit::Definition { target, .. } => {
                     Anchor::Definition(target.location.clone())
                 }
@@ -646,6 +682,9 @@ impl PlanSite for EditSetSite {
 }
 
 fn anchors_overlap(left: &Anchor, right: &Anchor) -> bool {
+    if matches!(left, Anchor::Program { .. }) || matches!(right, Anchor::Program { .. }) {
+        return true;
+    }
     match (left, right) {
         (Anchor::Expression(left), Anchor::Expression(right)) => expression_overlap(left, right),
         (Anchor::Statements(left), Anchor::Statements(right)) => left.overlaps(right),
@@ -689,6 +728,7 @@ fn anchors_overlap(left: &Anchor, right: &Anchor) -> bool {
                 item_index: right, ..
             },
         ) => left == right,
+        (Anchor::Program { .. }, _) | (_, Anchor::Program { .. }) => unreachable!(),
     }
 }
 
@@ -699,7 +739,7 @@ fn anchor_item_index(anchor: &Anchor) -> Option<usize> {
         | Anchor::Function { item_index, .. }
         | Anchor::Statements(StatementRange { item_index, .. }) => Some(*item_index),
         Anchor::Definition(definition) => Some(definition.item_index()),
-        Anchor::Items { .. } => None,
+        Anchor::Items { .. } | Anchor::Program { .. } => None,
     }
 }
 
@@ -850,6 +890,11 @@ fn query_items<'query>(
             .into_iter()
             .map(|site| QueryItem::Expression(ExpressionRef { site }))
             .collect();
+    }
+    if domain == QueryDomain::Program {
+        return vec![QueryItem::Program(super::ProgramRef {
+            expected_len: query.snapshot_program().items.len(),
+        })];
     }
     if domain == QueryDomain::Field {
         let mut fields = Vec::new();
@@ -1045,6 +1090,7 @@ impl ItemPlan {
         let mut function_edits = Vec::new();
         let mut definition_edits = Vec::new();
         let mut item_insertions = Vec::new();
+        let mut program_edits = Vec::new();
         for planned_edit in accepted {
             let PlannedEdit {
                 identity,
@@ -1053,6 +1099,18 @@ impl ItemPlan {
             } = planned_edit;
             for anchored in edit.edits {
                 match anchored {
+                    AnchoredEdit::Program {
+                        target,
+                        replacement,
+                        touched,
+                    } => program_edits.push(PlannedProgramEdit {
+                        identity: identity.clone(),
+                        target,
+                        replacement,
+                        touched,
+                        evidence: edit.evidence.clone(),
+                        rejected_cases: rejected_cases.clone(),
+                    }),
                     AnchoredEdit::Definition {
                         target,
                         replacement,
@@ -1144,6 +1202,13 @@ impl ItemPlan {
         let mut updated = program.clone();
         let mut applied_edits = 0;
         let mut touched = TouchedItems::none();
+        applied_edits += apply_program_edits(
+            &mut updated,
+            program_edits,
+            logger,
+            &mut diagnostics,
+            &mut touched,
+        );
         applied_edits += apply_expression_edits(
             &mut updated,
             expression_edits,
@@ -1237,6 +1302,9 @@ fn missing_targets(program: &Program, edit_set: &EditSet) -> Vec<Anchor> {
 
 fn edit_anchor(edit: &AnchoredEdit) -> Anchor {
     match edit {
+        AnchoredEdit::Program { target, .. } => Anchor::Program {
+            expected_len: target.expected_len,
+        },
         AnchoredEdit::Definition { target, .. } => Anchor::Definition(target.location.clone()),
         AnchoredEdit::Expression { target, .. } => Anchor::Expression(target.clone()),
         AnchoredEdit::Statement { target, .. } | AnchoredEdit::Statements { target, .. } => {
@@ -1259,6 +1327,7 @@ fn edit_anchor(edit: &AnchoredEdit) -> Anchor {
 
 fn anchored_edit_exists(program: &Program, edit: &AnchoredEdit) -> bool {
     match edit {
+        AnchoredEdit::Program { target, .. } => target.expected_len == program.items.len(),
         AnchoredEdit::Definition {
             target,
             replacement,
@@ -1369,6 +1438,60 @@ fn body_container<'body>(
         }
     }
     None
+}
+
+struct PlannedProgramEdit {
+    identity: RuleCaseIdentity,
+    target: super::ProgramRef,
+    replacement: Program,
+    touched: TouchedItems,
+    evidence: Vec<Evidence>,
+    rejected_cases: Vec<CaseRejection>,
+}
+
+fn apply_program_edits(
+    program: &mut Program,
+    edits: Vec<PlannedProgramEdit>,
+    logger: &mut dyn TraceLogger,
+    diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
+    touched: &mut TouchedItems,
+) -> usize {
+    let mut applied = 0;
+    for edit in edits {
+        if edit.target.expected_len != program.items.len() {
+            diagnostics.push(PlanDiagnostic::MissingTarget {
+                contender: edit.identity,
+                target: EditSetSite(vec![Anchor::Program {
+                    expected_len: edit.target.expected_len,
+                }]),
+            });
+            continue;
+        }
+        let before = program.emit();
+        let after = edit.replacement.emit();
+        log_item_edit(
+            logger,
+            &edit.identity,
+            &edit.evidence,
+            &edit.rejected_cases,
+            TraceChange {
+                location: TraceLocation {
+                    function: Some("program".into()),
+                    ast_path: Some("program".into()),
+                    ..TraceLocation::default()
+                },
+                label: "program",
+                before: before.trim_end().to_owned(),
+                after: after.trim_end().to_owned(),
+            },
+        );
+        *program = edit.replacement;
+        touched.in_place.extend(edit.touched.in_place);
+        touched.removed.extend(edit.touched.removed);
+        touched.unbounded |= edit.touched.unbounded;
+        applied += 1;
+    }
+    applied
 }
 
 struct PlannedExpressionEdit {
@@ -2114,5 +2237,48 @@ mod tests {
         assert_eq!(program.emit(), "fn test() {\n    2;\n    4;\n}\n");
         assert_eq!(report.applied, 1);
         assert_eq!(report.touched.in_place, vec![0]);
+    }
+
+    #[test]
+    fn whole_program_edit_uses_shared_atomic_application() {
+        let mut program = Program {
+            items: vec![function(vec![statement(1)])],
+        };
+        let replacement = Program {
+            items: vec![function(vec![statement(2)])],
+        };
+        let edit = EditSet::replace_program(
+            super::super::ProgramRef { expected_len: 1 },
+            replacement,
+            TouchedItems::unbounded(),
+        );
+        let plan = item_plan(edit);
+        let facts = facts::analyze(&program).facts;
+
+        let report = plan.apply(&mut program, &facts, &mut NoopLogger);
+
+        assert_eq!(program.emit(), "fn test() {\n    2;\n}\n");
+        assert_eq!(report.applied, 1);
+        assert!(report.touched.unbounded);
+    }
+
+    #[test]
+    fn whole_program_edit_overlaps_nested_edits() {
+        let mut edit = EditSet::replace_program(
+            super::super::ProgramRef { expected_len: 1 },
+            Program {
+                items: vec![function(vec![statement(2)])],
+            },
+            TouchedItems::unbounded(),
+        );
+        edit.push_replace_expression(expression_site(0), Expr::Value(RustValue::I64(3)));
+
+        let plan = item_plan(edit);
+
+        assert!(plan.plan.edits.is_empty());
+        assert!(matches!(
+            plan.plan.diagnostics.as_slice(),
+            [PlanDiagnostic::OverlappingTargets { .. }]
+        ));
     }
 }

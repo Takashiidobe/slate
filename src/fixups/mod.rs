@@ -240,11 +240,11 @@ fn apply_with_logger(
     step!(program, Pass::AnonymousStructs, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::ProgramPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::anonymous_structs::program());
             builder.finish()
         };
-        let report = plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -365,11 +365,11 @@ fn apply_with_logger(
     step!(program, Pass::LazySingleton, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::ProgramPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::lazy_singleton::program());
             builder.finish()
         };
-        let report = plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -405,11 +405,11 @@ fn apply_with_logger(
     step!(program, Pass::PtrLen, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::ProgramPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::ptr_len::program());
             builder.finish()
         };
-        let report = plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);

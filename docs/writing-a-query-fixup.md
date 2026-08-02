@@ -249,22 +249,31 @@ after the final pass that can remove a user.
 
 ## Program rules
 
-Use `ProgramRule` for one proof-gated transformation that must update definitions,
-types, and expressions together. `ProgramPlanBuilder` prepares the entire result
-from one immutable AST and facts snapshot, validates its definition anchors, and
-applies it atomically:
+Use `QueryRule<WholeProgram>` only for a transformation that must update
+definitions, types, and expressions together. It produces the same `EditSet` as
+every other query rule, so program replacement participates in the shared
+conflict checks, snapshot validation, tracing, and atomic application:
 
 ```rust
-ProgramRule::anonymous_structs(Pass::AnonymousStructs, "rewrite_anonymous_structs")
-    .case("complete_domain", |case| {
-        let structs = case.anonymous_structs()?;
-        Ok(rewrite_anonymous_structs(structs))
+QueryRule::new(
+    Pass::AnonymousStructs,
+    "rewrite_anonymous_structs",
+    WholeProgram::when(|query| query.has_anonymous_structs()),
+)
+    .case("complete_domain", |case, program| {
+        let structs = case.fact(|query| query.anonymous_structs())?;
+        let rewrite = case.fact(|query| rewrite_anonymous_structs(query, structs))?;
+        Ok(EditSet::replace_program(
+            program.clone(),
+            rewrite.replacement,
+            rewrite.touched,
+        ))
     })
 ```
 
-Keep traversal and coordinated AST construction in a typed program recipe. The
-rule should only select the program domain, prove it complete, and choose that
-recipe.
+Keep traversal and coordinated AST construction in a typed helper. The rule
+should only select the program domain, prove it complete, construct the
+replacement, and return the shared anchored edit.
 
 ## Files and tests
 

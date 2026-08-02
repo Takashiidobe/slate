@@ -7,7 +7,7 @@ use super::field::Field;
 use super::item::{Matcher, QueryDomain, QueryItem, StatementMatch};
 use super::{
     BindingCategory, CallTarget, DefinitionGroup, DefinitionKind, EnumVariantRef, ExpressionKind,
-    ExpressionRef, ExpressionRole, FieldRef, MatchArmRef, ParameterRef, ResolvedValue,
+    ExpressionRef, ExpressionRole, FieldRef, MatchArmRef, ParameterRef, ProgramRef, ResolvedValue,
     StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef, Usage,
 };
 
@@ -68,6 +68,37 @@ impl Matcher for AssignmentValue {
             .assign_value_sites()
             .contains(&expression.site)
             .then(|| expression.clone())
+    }
+}
+
+pub(in crate::fixups) struct WholeProgram {
+    candidate: for<'snapshot> fn(&super::QueryContext<'snapshot>) -> bool,
+}
+
+impl WholeProgram {
+    pub(in crate::fixups) fn when(
+        candidate: for<'snapshot> fn(&super::QueryContext<'snapshot>) -> bool,
+    ) -> Self {
+        Self { candidate }
+    }
+}
+
+impl Matcher for WholeProgram {
+    type Capture = ProgramRef;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::Program
+    }
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::Program(program) = item else {
+            return None;
+        };
+        (self.candidate)(query).then(|| program.clone())
     }
 }
 
