@@ -67,7 +67,6 @@ pub(in crate::fixups) enum Predicate {
     BufferCursor,
     HeapOwnershipPlan,
     PtrLenSlice,
-    InlineTemp,
     ValueGuard,
     StringBuffer,
     StringUse,
@@ -174,9 +173,6 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     PtrLenSlice {
         plans: usize,
-    },
-    InlineTemp {
-        name: String,
     },
     StringBuffer {
         bytes: usize,

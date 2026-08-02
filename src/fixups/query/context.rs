@@ -4,12 +4,12 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, CastFact, ConstValue, CountedLoopFact, EffectKind,
-    EffectSubject, FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind,
-    HeapReadSafety, NulTermination, PathSegment, PlaceAccess, PlaceKind, PtrLenSliceFact, Purity,
-    StringBufferFact, StringBufferKind, StringRecoveryCandidate, ValueSubject,
+    AstPath, BindingId, BindingKind, CastFact, ConstValue, CountedLoopFact, EffectSubject,
+    FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind, HeapReadSafety,
+    NulTermination, PathSegment, PlaceAccess, PlaceKind, PtrLenSliceFact, Purity, StringBufferFact,
+    StringBufferKind, StringRecoveryCandidate, ValueSubject,
 };
-use crate::fixups::idents::{expr_ident, expr_ident_count, stmt_ident_count};
+use crate::fixups::idents::{expr_ident, stmt_ident_count};
 use crate::fixups::support::walk as support_walk;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
@@ -27,8 +27,8 @@ use super::{
     DefinitionUsers, EnumVariantRef, Evidence, EvidenceDetail, ExprSite, ExpressionEffects,
     ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole, ExpressionValues, ExternFn,
     FieldRef, FunctionRef, HeapOwnershipPlan, HeapOwnershipPlanSet, HeapOwnershipReallocPlan,
-    InlineTempPlan, ItemReferences, LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition,
-    NullaryMethodCall, ParameterRef, Phase, PointerMutability, Predicate, Proof, PtrLenPlan,
+    ItemReferences, LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition,
+    NullaryMethodCall, ParameterRef, PointerMutability, Predicate, Proof, PtrLenPlan,
     PtrLenPlanSet, QueryResult, ReferenceDomain, Rejection, RejectionReason, ResolvedValue,
     StableExpr, StatementContainerRef, StatementRange, TypeUseRef, Usage, UseSiteRef, ValueSite,
     ZeroInitPlan,
@@ -378,6 +378,63 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
+    pub(in crate::fixups) fn binding_initializer(
+        &self,
+        binding: &BindingRef,
+    ) -> QueryResult<ExpressionRef> {
+        let statement = StatementRef {
+            item_index: binding.item_index,
+            path: binding.definition.clone(),
+        };
+        let mut statement_proof = self.statement(&statement)?;
+        if !matches!(
+            &statement_proof.value.stmt,
+            Stmt::Let {
+                mutable: false,
+                init: Some(_),
+                ..
+            }
+        ) {
+            return Err(Rejection::new(
+                Predicate::Expression,
+                Some(statement_evidence_site(&statement)),
+                RejectionReason::UnsupportedShape,
+                statement_proof.evidence,
+            ));
+        }
+        let mut path = binding.definition.0.clone();
+        path.push(PathSegment::Expr(0));
+        let mut initializer = self.expression(&expression_site(binding.item_index, &path))?;
+        statement_proof.evidence.append(&mut initializer.evidence);
+        Ok(Proof::new(initializer.value, statement_proof.evidence))
+    }
+
+    pub(in crate::fixups) fn enclosing_statement(
+        &self,
+        expression: &ExpressionRef,
+    ) -> QueryResult<StatementRef> {
+        let Some(index) = expression
+            .site
+            .path
+            .0
+            .iter()
+            .rposition(|segment| matches!(segment, PathSegment::Stmt(_)))
+        else {
+            return Err(Rejection::new(
+                Predicate::Statement,
+                Some(expression.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let statement = StatementRef {
+            item_index: expression.site.item_index,
+            path: AstPath(expression.site.path.0[..=index].to_vec()),
+        };
+        let proof = self.statement(&statement)?;
+        Ok(Proof::new(statement, proof.evidence))
+    }
+
     fn use_site(&self, item_index: usize, path: &AstPath) -> Option<UseSiteRef> {
         if matches!(path.0.last(), Some(PathSegment::Stmt(_))) {
             let statement = StatementRef {
@@ -711,6 +768,36 @@ impl<'snapshot> QueryContext<'snapshot> {
             vec![Evidence {
                 predicate,
                 site,
+                detail: EvidenceDetail::ExpressionEffects {
+                    purity: fact.purity,
+                    effects: fact.effects.len(),
+                },
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn observed_statement_effects(
+        &self,
+        statement: &StatementRef,
+    ) -> QueryResult<Option<ExpressionEffects>> {
+        let Some(function) = self.facts.function_by_item_index(statement.item_index) else {
+            return Ok(Proof::new(None, Vec::new()));
+        };
+        let Some(fact) = self
+            .facts
+            .effect(function, EffectSubject::Stmt, &statement.path)
+        else {
+            return Ok(Proof::new(None, Vec::new()));
+        };
+        let effects = ExpressionEffects {
+            purity: fact.purity,
+            effects: fact.effects.clone(),
+        };
+        Ok(Proof::new(
+            Some(effects),
+            vec![Evidence {
+                predicate: Predicate::ExpressionEffects,
+                site: statement_evidence_site(statement),
                 detail: EvidenceDetail::ExpressionEffects {
                     purity: fact.purity,
                     effects: fact.effects.len(),
@@ -2533,59 +2620,6 @@ query_cache! {
         Ok(Proof::new(PtrLenPlanSet { plans }, evidence))
     }
 
-    fn inline_temp_candidate(
-        &self,
-        definition: &DefinitionSite,
-        phase: Phase
-    ) -> QueryResult<InlineTempPlan>;
-    key: (DefinitionLocation, Phase) = (definition.location.clone(), phase);
-    {
-        let predicate = Predicate::InlineTemp;
-        let site = definition_evidence_site(definition);
-        let Some(function) = self
-            .facts
-            .function_by_item_index(definition.location.item_index())
-        else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let Item::Fn(function_item) = &self.program.items[definition.location.item_index()]
-        else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let Some(plan) = find_inline_temp_candidate(
-            &function_item.body,
-            &mut Vec::new(),
-            function,
-            self.facts,
-            phase,
-        ) else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::InlineTemp {
-                name: plan.name.clone(),
-            },
-        }];
-        Ok(Proof::new(plan, evidence))
-    }
-
     fn buffer_cursor_rewrite(&self, definition: &DefinitionSite) -> QueryResult<BufferCursorPlan>;
     key: DefinitionLocation = definition.location.clone();
     {
@@ -4092,7 +4126,7 @@ fn unused_item_collect_type_refs(ty: &Type, refs: &mut BTreeSet<String>) {
 
 fn trivial_unsafe_site(program: &Program, call: &ExprSite) -> Option<ExprSite> {
     let path = &call.path.0;
-    if !path.ends_with(&[PathSegment::BlockBody, PathSegment::BlockTail]) {
+    if !path.ends_with(&[PathSegment::UnsafeBody, PathSegment::BlockTail]) {
         return None;
     }
     let parent = expression_site(call.item_index, &path[..path.len() - 2]);
@@ -4319,393 +4353,6 @@ fn stmt_index(path: &AstPath) -> Option<usize> {
 
 fn previous_stmt_index(path: &AstPath) -> Option<usize> {
     stmt_index(path).and_then(|index| index.checked_sub(1))
-}
-
-#[derive(Clone, Copy)]
-struct TempCandidate<'a> {
-    binding: BindingId,
-    init: &'a Expr,
-    ty: Option<&'a Type>,
-}
-
-#[derive(Clone, Copy)]
-struct InlineEnv<'a> {
-    function: FunctionId,
-    facts: &'a FixupFacts,
-    body_path: &'a [PathSegment],
-    phase: Phase,
-}
-
-fn find_inline_temp_candidate(
-    body: &[IndentStmt],
-    path: &mut Vec<PathSegment>,
-    function: FunctionId,
-    facts: &FixupFacts,
-    phase: Phase,
-) -> Option<InlineTempPlan> {
-    for (index, indent) in body.iter().enumerate() {
-        let mut found = None;
-        support_walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            support_walk::nested_body_vecs_with_path(&indent.stmt, path, &mut |nested, path| {
-                if found.is_none() {
-                    found = find_inline_temp_candidate(nested, path, function, facts, phase);
-                }
-            });
-        });
-        if found.is_some() {
-            return found;
-        }
-    }
-    for (index, indent) in body.iter().enumerate() {
-        let mut def_path = path.clone();
-        def_path.push(PathSegment::Stmt(index));
-        let Stmt::Let {
-            name,
-            mutable: false,
-            init: Some(init),
-            ty,
-            ..
-        } = &indent.stmt
-        else {
-            continue;
-        };
-        if !is_temp_name(name) {
-            continue;
-        }
-        let Some(binding) = facts.binding_by_local_path(function, name, &AstPath(def_path.clone()))
-        else {
-            continue;
-        };
-        if let Some(plan) = eligible_inline_temp(
-            body,
-            index,
-            TempCandidate {
-                binding,
-                init,
-                ty: ty.as_ref(),
-            },
-            InlineEnv {
-                function,
-                facts,
-                body_path: path,
-                phase,
-            },
-            name,
-        ) {
-            return Some(plan);
-        }
-    }
-    None
-}
-
-fn eligible_inline_temp(
-    body: &[IndentStmt],
-    def_index: usize,
-    temp: TempCandidate<'_>,
-    env: InlineEnv<'_>,
-    name: &str,
-) -> Option<InlineTempPlan> {
-    let fact = env.facts.temp_chains.iter().find(|fact| {
-        fact.function == env.function
-            && fact.binding == temp.binding
-            && fact.producer_path == AstPath(inline_stmt_path(env.body_path, def_index))
-    })?;
-    let use_index = direct_stmt_index(env.body_path, &fact.consumer_path)?;
-    if use_index <= def_index || use_index >= body.len() {
-        return None;
-    }
-    let use_path = inline_stmt_path(env.body_path, use_index);
-    let allowed_receiver = is_option_receiver_use(&body[use_index].stmt, name, temp.ty);
-    let producer_path = inline_stmt_path(env.body_path, def_index);
-    if env.phase == Phase::Early
-        && is_effectful_expr(env.function, env.facts, &producer_path)
-        && !early_effectful_consumer(&body[use_index].stmt, name)
-    {
-        return None;
-    }
-    let allowed_arg = is_allowed_argument_use(ArgumentUse {
-        stmt: &body[use_index].stmt,
-        name,
-        init: temp.init,
-        ty: temp.ty,
-        producer_path: &producer_path,
-        adjacent: use_index == def_index + 1,
-        env,
-    });
-    if (stmt_contains_call(env.function, env.facts, &use_path) && !allowed_receiver && !allowed_arg)
-        || (is_receiver_use(&body[use_index].stmt, name) && !allowed_receiver)
-    {
-        return None;
-    }
-    Some(InlineTempPlan {
-        name: name.to_string(),
-        init: temp.init.clone(),
-        def_path: AstPath(producer_path),
-        use_path: AstPath(use_path),
-    })
-}
-
-fn stmt_contains_call(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
-    facts
-        .effect(function, EffectSubject::Stmt, &AstPath(path.to_vec()))
-        .is_some_and(|fact| {
-            fact.effects.contains(&EffectKind::ReadOnlyCall)
-                || fact.effects.contains(&EffectKind::UnknownCall)
-                || fact.effects.contains(&EffectKind::MethodCall)
-                || fact.effects.contains(&EffectKind::MacroExpansion)
-        })
-}
-
-fn is_receiver_use(stmt: &Stmt, name: &str) -> bool {
-    support_walk::stmt_expr_any(stmt, &mut |expr| {
-        let receiver = match expr {
-            Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => Some(&**recv),
-            Expr::Field { base, .. } | Expr::TupleField { base, .. } => Some(&**base),
-            _ => None,
-        };
-        matches!(receiver, Some(Expr::Var(v)) if v.as_str() == name)
-    })
-}
-
-fn is_option_receiver_use(stmt: &Stmt, name: &str, ty: Option<&Type>) -> bool {
-    if !ty.is_some_and(is_option_like_type) {
-        return false;
-    }
-    support_walk::stmt_expr_any(stmt, &mut |expr| {
-        matches!(
-            expr,
-            Expr::MethodCall { recv, method, args }
-                if matches!(method.as_str(), "is_some" | "is_none" | "unwrap")
-                    && args.is_empty()
-                    && matches!(&**recv, Expr::Var(v) if v.as_str() == name)
-        )
-    })
-}
-
-fn is_option_like_type(ty: &Type) -> bool {
-    match ty {
-        Type::FnPtr { .. } => true,
-        Type::Generic { name, .. } => name == "Option",
-        Type::Custom(name) => name.starts_with("Option<"),
-        _ => false,
-    }
-}
-
-fn early_effectful_consumer(stmt: &Stmt, name: &str) -> bool {
-    match stmt {
-        Stmt::Assign { target, value } => {
-            matches!(target, Expr::Var(target) if target.as_str() == "__retval")
-                && matches!(value, Expr::Var(value) if value.as_str() == name)
-        }
-        Stmt::Return(Some(expr)) => matches!(expr, Expr::Var(value) if value.as_str() == name),
-        _ => false,
-    }
-}
-
-struct ArgumentUse<'a> {
-    stmt: &'a Stmt,
-    name: &'a str,
-    init: &'a Expr,
-    ty: Option<&'a Type>,
-    producer_path: &'a [PathSegment],
-    adjacent: bool,
-    env: InlineEnv<'a>,
-}
-
-fn is_allowed_argument_use(arg: ArgumentUse<'_>) -> bool {
-    if arg.env.phase == Phase::Early {
-        return false;
-    }
-    if is_effectful_expr(arg.env.function, arg.env.facts, arg.producer_path) {
-        return arg.adjacent && simple_macro_arg_use(arg.stmt, arg.name);
-    }
-    if method_arg_use(arg.stmt, arg.name) && contains_integer_literal(arg.init) {
-        return false;
-    }
-    type_stable_arg_init(arg.init, arg.ty) && call_or_macro_arg_use(arg.stmt, arg.name)
-}
-
-fn is_effectful_expr(function: FunctionId, facts: &FixupFacts, path: &[PathSegment]) -> bool {
-    facts
-        .effect(function, EffectSubject::Expr, &AstPath(path.to_vec()))
-        .is_some_and(|fact| {
-            fact.effects.iter().any(|effect| {
-                matches!(
-                    effect,
-                    EffectKind::UnknownCall
-                        | EffectKind::MethodCall
-                        | EffectKind::MacroExpansion
-                        | EffectKind::UnknownSideEffect
-                        | EffectKind::VolatileRead
-                        | EffectKind::VolatileWrite
-                        | EffectKind::AtomicWrite
-                        | EffectKind::MemoryWrite
-                )
-            })
-        })
-}
-
-fn type_stable_arg_init(init: &Expr, ty: Option<&Type>) -> bool {
-    match init {
-        Expr::Var(_) | Expr::Cast { .. } => true,
-        Expr::Unary { .. } => ty.is_some(),
-        Expr::Binary { .. } => ty.is_some() && !contains_integer_literal(init),
-        Expr::Index { .. } => ty.is_some(),
-        Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => block
-            .tail
-            .as_deref()
-            .is_some_and(|tail| type_stable_arg_init(tail, ty)),
-        Expr::Value(RustValue::I64(_)) => matches!(ty, Some(Type::Prim(Prim::I32))),
-        Expr::Value(RustValue::Bool(_)) => true,
-        _ => false,
-    }
-}
-
-fn contains_integer_literal(expr: &Expr) -> bool {
-    match expr {
-        Expr::Value(RustValue::I64(_) | RustValue::I128(_) | RustValue::Usize(_)) => true,
-        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => contains_integer_literal(expr),
-        Expr::Binary { lhs, rhs, .. } => {
-            contains_integer_literal(lhs) || contains_integer_literal(rhs)
-        }
-        Expr::Index { base, .. } => contains_integer_literal(base),
-        _ => false,
-    }
-}
-
-fn call_or_macro_arg_use(stmt: &Stmt, name: &str) -> bool {
-    match stmt {
-        Stmt::Let { init, .. } => init
-            .as_ref()
-            .is_some_and(|expr| call_or_macro_arg_use_expr(expr, name)),
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            call_or_macro_arg_use_expr(target, name) || call_or_macro_arg_use_expr(value, name)
-        }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => call_or_macro_arg_use_expr(expr, name),
-        _ => false,
-    }
-}
-
-fn method_arg_use(stmt: &Stmt, name: &str) -> bool {
-    match stmt {
-        Stmt::Let { init, .. } => init
-            .as_ref()
-            .is_some_and(|expr| method_arg_use_expr(expr, name)),
-        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            method_arg_use_expr(target, name) || method_arg_use_expr(value, name)
-        }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => method_arg_use_expr(expr, name),
-        _ => false,
-    }
-}
-
-fn method_arg_use_expr(expr: &Expr, name: &str) -> bool {
-    match expr {
-        Expr::MethodCall { args, .. } | Expr::MethodCallGeneric { args, .. } => {
-            args.iter().any(|arg| expr_ident_count(arg, name) > 0)
-        }
-        Expr::Block(block) | Expr::Unsafe(block) => block
-            .tail
-            .as_deref()
-            .is_some_and(|tail| method_arg_use_expr(tail, name)),
-        Expr::Cast { expr, .. } => method_arg_use_expr(expr, name),
-        _ => false,
-    }
-}
-
-fn call_or_macro_arg_use_expr(expr: &Expr, name: &str) -> bool {
-    match expr {
-        Expr::Call { args, .. } | Expr::Macro { args, .. } => {
-            args.iter().any(|arg| call_arg_uses_name(arg, name))
-        }
-        Expr::MethodCall { args, .. } | Expr::MethodCallGeneric { args, .. } => {
-            args.iter().any(|arg| expr_ident_count(arg, name) > 0)
-        }
-        Expr::Block(block) | Expr::Unsafe(block) => block
-            .tail
-            .as_deref()
-            .is_some_and(|tail| call_or_macro_arg_use_expr(tail, name)),
-        Expr::Cast { expr, .. } => call_or_macro_arg_use_expr(expr, name),
-        _ => false,
-    }
-}
-
-fn call_arg_uses_name(expr: &Expr, name: &str) -> bool {
-    match expr {
-        Expr::Var(var) => var.as_str() == name,
-        Expr::Cast { expr, .. } => call_arg_uses_name(expr, name),
-        Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => block
-            .tail
-            .as_deref()
-            .is_some_and(|tail| call_arg_uses_name(tail, name)),
-        _ => false,
-    }
-}
-
-fn simple_macro_arg_use(stmt: &Stmt, name: &str) -> bool {
-    match stmt {
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => simple_macro_arg_use_expr(expr, name),
-        _ => false,
-    }
-}
-
-fn simple_macro_arg_use_expr(expr: &Expr, name: &str) -> bool {
-    match expr {
-        Expr::Macro { args, .. } => {
-            args.iter().any(|arg| simple_macro_arg_uses_name(arg, name))
-                && args
-                    .iter()
-                    .all(|arg| simple_macro_arg_uses_name(arg, name) || is_obviously_pure_expr(arg))
-        }
-        Expr::Block(block) | Expr::Unsafe(block) => block
-            .tail
-            .as_deref()
-            .is_some_and(|tail| simple_macro_arg_use_expr(tail, name)),
-        _ => false,
-    }
-}
-
-fn simple_macro_arg_uses_name(expr: &Expr, name: &str) -> bool {
-    match expr {
-        Expr::Var(var) => var.as_str() == name,
-        Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => {
-            simple_macro_arg_uses_name(expr, name)
-        }
-        _ => false,
-    }
-}
-
-fn is_obviously_pure_expr(expr: &Expr) -> bool {
-    match expr {
-        Expr::Value(_)
-        | Expr::Str(_)
-        | Expr::ByteStr(_)
-        | Expr::CStr(_)
-        | Expr::HexFloat(_)
-        | Expr::Var(_)
-        | Expr::Path(_) => true,
-        Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => is_obviously_pure_expr(expr),
-        _ => false,
-    }
-}
-
-fn is_temp_name(name: &str) -> bool {
-    name.strip_prefix("_v")
-        .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|b| b.is_ascii_digit()))
-}
-
-fn inline_stmt_path(body_path: &[PathSegment], index: usize) -> Vec<PathSegment> {
-    let mut path = body_path.to_vec();
-    path.push(PathSegment::Stmt(index));
-    path
-}
-
-fn direct_stmt_index(body_path: &[PathSegment], read: &AstPath) -> Option<usize> {
-    let rest = read.0.strip_prefix(body_path)?;
-    match rest {
-        [PathSegment::Stmt(index), ..] => Some(*index),
-        _ => None,
-    }
 }
 
 fn definition_evidence_site(definition: &DefinitionSite) -> ExprSite {

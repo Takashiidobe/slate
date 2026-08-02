@@ -27,7 +27,6 @@ pub(super) mod slice_index;
 pub(super) mod string_params;
 pub(super) mod strings;
 pub(super) mod switch;
-pub(super) mod temp_chains;
 pub(super) mod va_list;
 pub(super) mod values;
 pub(super) mod walk;
@@ -80,7 +79,6 @@ pub(super) struct FixupFacts {
     pub(super) loop_shape_rejections: Vec<LoopShapeRejectionFact>,
     pub(super) retval_collapses: Vec<RetvalCollapseFact>,
     pub(super) switch_dispatches: Vec<SwitchDispatchFact>,
-    pub(super) temp_chains: Vec<TempChainFact>,
     pub(super) va_list_aliases: Vec<VaListAliasFact>,
     pub(super) relations: Vec<FactRelation>,
 }
@@ -252,15 +250,6 @@ pub(super) struct SwitchCaseFact {
     pub(super) is_default: bool,
     pub(super) body: Vec<IndentStmt>,
     pub(super) falls_through: bool,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) struct TempChainFact {
-    pub(super) function: FunctionId,
-    pub(super) binding: BindingId,
-    pub(super) producer_path: AstPath,
-    pub(super) consumer_path: AstPath,
-    pub(super) dependencies: Vec<BindingId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1119,6 +1108,16 @@ pub(super) enum PathSegment {
     Expr(usize),
 }
 
+fn def_use_query_path(path: &AstPath) -> AstPath {
+    AstPath(
+        path.0
+            .iter()
+            .filter(|segment| !matches!(segment, PathSegment::Expr(_)))
+            .cloned()
+            .collect(),
+    )
+}
+
 impl FixupFacts {
     pub(super) fn function_by_item_index(&self, item_index: usize) -> Option<FunctionId> {
         self.functions
@@ -1301,6 +1300,7 @@ impl FixupFacts {
         name: &str,
         path: &AstPath,
     ) -> Option<BindingId> {
+        let path = def_use_query_path(path);
         self.def_use
             .iter()
             .find(|fact| {
@@ -1323,6 +1323,7 @@ impl FixupFacts {
         name: &str,
         path: &AstPath,
     ) -> Vec<BindingId> {
+        let path = def_use_query_path(path);
         self.def_use
             .iter()
             .filter(|fact| {
@@ -1346,6 +1347,7 @@ impl FixupFacts {
         name: &str,
         path: &AstPath,
     ) -> Vec<BindingId> {
+        let path = def_use_query_path(path);
         self.def_use
             .iter()
             .filter(|fact| {
@@ -1677,7 +1679,6 @@ pub(super) fn analyze(program: &Program) -> AnalyzedProgram<'_> {
     control_flow::collect_facts(program, &mut facts);
     places::collect_facts(program, &mut facts);
     retval::collect_facts(program, &mut facts);
-    temp_chains::collect_facts(program, &mut facts);
     values::collect_facts(program, &mut facts);
     calls::collect_facts(program, &mut facts);
     casts::collect_facts(program, &mut facts);

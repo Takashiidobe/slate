@@ -70,7 +70,6 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::BufferCursor => "buffer_cursor",
         Predicate::HeapOwnershipPlan => "heap_ownership_plan",
         Predicate::PtrLenSlice => "ptr_len_slice",
-        Predicate::InlineTemp => "inline_temp",
         Predicate::ValueGuard => "value_guard",
         Predicate::StringBuffer => "string_buffer",
         Predicate::StringUse => "string_use",
@@ -174,7 +173,6 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         }
         EvidenceDetail::HeapOwnershipPlan { plans } => format!("plans={plans}"),
         EvidenceDetail::PtrLenSlice { plans } => format!("plans={plans}"),
-        EvidenceDetail::InlineTemp { name } => format!("temp={name}"),
         EvidenceDetail::StringBuffer { bytes } => format!("bytes={bytes}"),
         EvidenceDetail::StringUse { allowed } => format!("allowed={allowed}"),
         EvidenceDetail::AllExprs { count } => format!("count={count}"),

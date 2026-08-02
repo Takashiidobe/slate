@@ -442,11 +442,3 @@ pub(in crate::fixups) struct BufferCursorPlan {
     pub(super) arrays: usize,
     pub(super) buffers: usize,
 }
-
-#[derive(Debug, Clone)]
-pub(in crate::fixups) struct InlineTempPlan {
-    pub(super) name: String,
-    pub(super) init: Expr,
-    pub(super) def_path: AstPath,
-    pub(super) use_path: AstPath,
-}

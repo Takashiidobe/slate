@@ -268,6 +268,7 @@ pub(in crate::fixups) struct QueryRule<M: Matcher> {
     identity: RuleIdentity,
     matcher: M,
     cases: Vec<DeclarativeItemCase<M::Capture>>,
+    ordered_non_overlapping: bool,
 }
 
 impl<M: Matcher> QueryRule<M> {
@@ -276,6 +277,7 @@ impl<M: Matcher> QueryRule<M> {
             identity: RuleIdentity::new(pass, rule),
             matcher,
             cases: Vec::new(),
+            ordered_non_overlapping: false,
         }
     }
 
@@ -288,6 +290,11 @@ impl<M: Matcher> QueryRule<M> {
             name: name.into(),
             apply,
         });
+        self
+    }
+
+    pub(in crate::fixups) fn ordered_non_overlapping(mut self) -> Self {
+        self.ordered_non_overlapping = true;
         self
     }
 }
@@ -806,6 +813,7 @@ impl ItemPlanBuilder {
         rule: &QueryRule<M>,
     ) -> &mut Self {
         let identity = rule.identity.clone();
+        let mut selected_sites = Vec::<EditSetSite>::new();
         for item in query_items(query, rule.matcher.domain()) {
             let Some(capture) = rule.matcher.matches(query, &item) else {
                 continue;
@@ -837,6 +845,15 @@ impl ItemPlanBuilder {
                 }
             }
             if let Some(selected) = selected {
+                let site = selected.edit.site();
+                if rule.ordered_non_overlapping
+                    && selected_sites
+                        .iter()
+                        .any(|selected| selected.overlaps(&site))
+                {
+                    continue;
+                }
+                selected_sites.push(site);
                 self.builder.propose(selected);
             } else if !rejected_cases.is_empty() {
                 self.builder.diagnose(PlanDiagnostic::CandidateRejected {
