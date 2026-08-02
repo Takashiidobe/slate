@@ -1684,6 +1684,34 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(fact.clone(), evidence))
     }
 
+    pub(in crate::fixups) fn c_string_literal(&self, site: &ExprSite) -> QueryResult<Vec<u8>> {
+        let predicate = Predicate::CStringLiteral;
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(fact) = self.facts.c_string_literal(function, &site.path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let evidence = vec![Evidence {
+            predicate,
+            site: site.clone(),
+            detail: EvidenceDetail::CStringLiteral {
+                bytes: fact.bytes.len(),
+            },
+        }];
+        Ok(Proof::new(fact.bytes.clone(), evidence))
+    }
+
     /// The `index`th direct child expression site of `site`.
     pub(in crate::fixups) fn child(&self, site: &ExprSite, index: usize) -> ExprSite {
         child_site(site, index)
