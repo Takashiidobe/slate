@@ -763,9 +763,13 @@ fn apply_with_logger(
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::AtomicLocals, {
-        run_once_program(&mut program, |program| {
-            rewrite::atomic_locals::AtomicLocals::new(&facts, logger).fixup(program)
-        });
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::atomic_locals::rewrite());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::LateInlineTemps, {

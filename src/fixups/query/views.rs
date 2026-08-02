@@ -5,9 +5,28 @@ use crate::fixups::facts::{
     AstPath, BindingId, ConstValue, EffectKind, HeapAllocationKind, HeapExtent, HeapInitKind,
     HeapReadSafety, HeapResizeKind, HeapUseKind, PlaceAccess, PlaceKind, Purity,
 };
-use crate::rust_ast::{Expr, Type};
+use crate::rust_ast::{AtomicType, Expr, Type};
 
 use super::item::StatementRef;
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct AtomicPromotionSet {
+    pub(super) locals: Vec<AtomicLocalPromotion>,
+    pub(super) globals: Vec<AtomicGlobalPromotion>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct AtomicLocalPromotion {
+    pub(super) function_item_index: usize,
+    pub(super) name: String,
+    pub(super) ty: AtomicType,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct AtomicGlobalPromotion {
+    pub(super) name: String,
+    pub(super) ty: AtomicType,
+}
 
 #[derive(Debug, Clone)]
 pub(in crate::fixups) struct AtomicCompareExchangeChain {

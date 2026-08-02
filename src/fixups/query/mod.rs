@@ -26,7 +26,7 @@ pub(in crate::fixups) use patterns::{
 };
 pub(in crate::fixups) use plan::TouchedItems;
 pub(in crate::fixups) use program_recipe::{
-    rewrite_anonymous_structs, rewrite_lazy_singletons, rewrite_ptr_len,
+    rewrite_anonymous_structs, rewrite_atomic_locals, rewrite_lazy_singletons, rewrite_ptr_len,
 };
 pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
@@ -38,16 +38,16 @@ pub(in crate::fixups) use recipe::{
 };
 pub(in crate::fixups) use rewrite::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 use views::{
-    AnonymousStructField, AnonymousStructPlan, ArrayElementPointerOrigin, LazySingletonPlan,
-    PtrLenPlan,
+    AnonymousStructField, AnonymousStructPlan, ArrayElementPointerOrigin, AtomicGlobalPromotion,
+    AtomicLocalPromotion, LazySingletonPlan, PtrLenPlan,
 };
 pub(in crate::fixups) use views::{
-    AnonymousStructSet, AtomicCompareExchangeChain, BindingAccess, BindingCategory, BindingDefUse,
-    BindingRef, BindingUse, BindingUses, BufferPointerField, BufferPointerFields, ByteExtent,
-    ByteRepresentation, ByteSource, ByteView, DefinitionGroup, DefinitionGroupUsers,
-    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, DefinitionUsers,
-    DispatchRegion, EnumVariantRef, ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace,
-    ExpressionRef, ExpressionRole, ExpressionValues, FieldRef, FunctionCallDomain,
+    AnonymousStructSet, AtomicCompareExchangeChain, AtomicPromotionSet, BindingAccess,
+    BindingCategory, BindingDefUse, BindingRef, BindingUse, BindingUses, BufferPointerField,
+    BufferPointerFields, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
+    DefinitionGroupUsers, DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite,
+    DefinitionUsers, DispatchRegion, EnumVariantRef, ExprSite, ExpressionEffects, ExpressionKind,
+    ExpressionPlace, ExpressionRef, ExpressionRole, ExpressionValues, FieldRef, FunctionCallDomain,
     FunctionReachability, FunctionRef, HeapOwnership, HeapOwnershipFacts, HeapReallocation,
     HeapUse, ItemReferences, LazySingletonSet, MatchArmRef, NulPosition, ParameterRef, Phase,
     PointerMutability, ProgramRef, PtrLenPlanSet, ReferenceDomain, ResolvedValue, StableExpr,

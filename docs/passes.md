@@ -138,7 +138,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 40. `dead_locals` - remove locals made dead by pointer-copy recovery - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`).
 41. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing - once, per function through a query definition plan with fresh facts.
 42. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops - once, per function through a query definition plan, reusing the same facts snapshot as `array_element_pointer_origin`.
-43. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage - once, program-wide (`run_once_program`), because the same pass rewrites both static items and function bodies.
+43. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage - once, program-wide through a query program plan, because the same pass rewrites both static items and function bodies.
 44. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`, same round cap as step 3).
 45. `zero_init` (`cross_effects = true`) - same query-driven fusion as step 6, now allowed to cross intervening effects - to fixpoint with facts refreshed before every round.
 46. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange` - to fixpoint, per function, with facts refreshed before every program round (`to_fixpoint_items_with_facts`).

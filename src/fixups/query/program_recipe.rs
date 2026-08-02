@@ -1,17 +1,18 @@
 use std::collections::BTreeMap;
 
+use crate::fixups::facts::atomic_locals::place_local_target;
 use crate::fixups::facts::{FixupFacts, FunctionId};
 use crate::fixups::support::walk;
 use crate::rust_ast::{
-    Attr, Derive, Expr, FnDef, Ident, ImplItem, IndentStmt, Item, Program, Repr, Stmt, StructDef,
-    StructFields, Type, UnaryOp,
+    AtomicPlace, AtomicType, Attr, Derive, Expr, FnDef, Ident, ImplItem, IndentStmt, Item, Program,
+    Repr, Stmt, StructDef, StructFields, Type, UnaryOp,
 };
 
 use super::plan::TouchedItems;
 use super::{
-    AnonymousStructPlan, AnonymousStructSet, ExprSite, LazySingletonPlan, LazySingletonSet,
-    Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryContext, QueryResult, Rejection,
-    RejectionReason,
+    AnonymousStructPlan, AnonymousStructSet, AtomicPromotionSet, ExprSite, LazySingletonPlan,
+    LazySingletonSet, Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryContext, QueryResult,
+    Rejection, RejectionReason,
 };
 
 pub(in crate::fixups) struct ProgramReplacement {
@@ -44,6 +45,205 @@ pub(in crate::fixups) fn rewrite_anonymous_structs(
         },
         Vec::new(),
     ))
+}
+
+pub(in crate::fixups) fn rewrite_atomic_locals(
+    query: &QueryContext<'_>,
+    promotions: AtomicPromotionSet,
+) -> QueryResult<ProgramReplacement> {
+    let site = promotions.locals.first().map(|plan| ExprSite {
+        item_index: plan.function_item_index,
+        path: Default::default(),
+        fact_path: Default::default(),
+    });
+    let mut replacement = query.snapshot_program().clone();
+    if !apply_atomic_locals(&mut replacement, &promotions) {
+        return Err(Rejection::new(
+            Predicate::AtomicPromotionDomain,
+            site,
+            RejectionReason::Contradicted,
+            Vec::new(),
+        ));
+    }
+    Ok(Proof::new(
+        ProgramReplacement {
+            replacement,
+            touched: TouchedItems::unbounded(),
+        },
+        Vec::new(),
+    ))
+}
+
+fn apply_atomic_locals(program: &mut Program, promotions: &AtomicPromotionSet) -> bool {
+    let mut changed = false;
+    let promoted_globals: BTreeMap<String, AtomicType> = promotions
+        .globals
+        .iter()
+        .map(|plan| (plan.name.clone(), plan.ty))
+        .collect();
+    rewrite_atomic_statics(&mut program.items, &promoted_globals, &mut changed);
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        let Item::Fn(f) = item else {
+            continue;
+        };
+        let mut promoted: BTreeMap<String, AtomicType> = promotions
+            .locals
+            .iter()
+            .filter(|plan| plan.function_item_index == item_index)
+            .map(|plan| (plan.name.clone(), plan.ty))
+            .collect();
+        for (name, ty) in &promoted_globals {
+            promoted.entry(name.clone()).or_insert(*ty);
+        }
+        if promoted.is_empty() {
+            continue;
+        }
+        rewrite_atomic_decls(&mut f.body, &promoted, &mut changed);
+        walk::body_exprs_mut_with(&mut f.body, &mut |expr| {
+            rewrite_atomic_expr(expr, &promoted, &mut changed);
+            true
+        });
+    }
+    changed
+}
+
+fn rewrite_atomic_statics(
+    items: &mut [Item],
+    promoted: &BTreeMap<String, AtomicType>,
+    changed: &mut bool,
+) {
+    for item in items {
+        match item {
+            Item::Static {
+                mutable,
+                name,
+                ty,
+                init,
+                ..
+            } => {
+                if let Some(atomic_ty) = promoted.get(name) {
+                    *mutable = false;
+                    *ty = Type::Custom(atomic_type_path(*atomic_ty).into());
+                    *init = Expr::AtomicNew {
+                        ty: *atomic_ty,
+                        value: Box::new(init.clone()),
+                    };
+                    *changed = true;
+                }
+            }
+            Item::Cfg { item, .. } => {
+                rewrite_atomic_statics(std::slice::from_mut(item.as_mut()), promoted, changed);
+            }
+            _ => {}
+        }
+    }
+}
+
+fn rewrite_atomic_decls(
+    body: &mut [IndentStmt],
+    promoted: &BTreeMap<String, AtomicType>,
+    changed: &mut bool,
+) {
+    for indent in body.iter_mut() {
+        match &mut indent.stmt {
+            Stmt::Let {
+                name,
+                mutable: mutable @ true,
+                ty,
+                init: Some(init),
+            } => {
+                if let Some(atomic_ty) = promoted.get(name) {
+                    *mutable = false;
+                    *ty = None;
+                    *init = Expr::AtomicNew {
+                        ty: *atomic_ty,
+                        value: Box::new(init.clone()),
+                    };
+                    *changed = true;
+                }
+            }
+            Stmt::If {
+                then_body,
+                else_body,
+                ..
+            }
+            | Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            } => {
+                rewrite_atomic_decls(then_body, promoted, changed);
+                rewrite_atomic_decls(else_body, promoted, changed);
+            }
+            Stmt::Loop { body, .. }
+            | Stmt::For { body, .. }
+            | Stmt::Scope { body }
+            | Stmt::LabeledBlock { body, .. } => rewrite_atomic_decls(body, promoted, changed),
+            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                rewrite_atomic_decls(&mut body.stmts, promoted, changed)
+            }
+            Stmt::Match { arms, .. } => {
+                for arm in arms {
+                    rewrite_atomic_decls(&mut arm.body, promoted, changed);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn rewrite_atomic_expr(
+    expr: &mut Expr,
+    promoted: &BTreeMap<String, AtomicType>,
+    changed: &mut bool,
+) {
+    if let Expr::Unsafe(block) = expr
+        && block.stmts.is_empty()
+        && let Some(tail) = &mut block.tail
+        && promote_atomic_place(tail, promoted)
+    {
+        *expr = std::mem::replace(tail.as_mut(), Expr::Todo(String::new()));
+        *changed = true;
+        return;
+    }
+    if promote_atomic_place(expr, promoted) {
+        *changed = true;
+    }
+}
+
+fn promote_atomic_place(expr: &mut Expr, promoted: &BTreeMap<String, AtomicType>) -> bool {
+    let (place, ty) = match expr {
+        Expr::AtomicLoad { place, ty, .. }
+        | Expr::AtomicStore { place, ty, .. }
+        | Expr::AtomicFetch { place, ty, .. }
+        | Expr::AtomicSwap { place, ty, .. }
+        | Expr::AtomicCompareExchange { place, ty, .. } => (place, *ty),
+        _ => return false,
+    };
+    let Some((local, local_ty)) = place_local_target(place, promoted) else {
+        return false;
+    };
+    if local_ty != ty {
+        return false;
+    }
+    *place = AtomicPlace::Local(local);
+    true
+}
+
+fn atomic_type_path(ty: AtomicType) -> &'static str {
+    match ty {
+        AtomicType::I8 => "std::sync::atomic::AtomicI8",
+        AtomicType::U8 => "std::sync::atomic::AtomicU8",
+        AtomicType::I16 => "std::sync::atomic::AtomicI16",
+        AtomicType::U16 => "std::sync::atomic::AtomicU16",
+        AtomicType::I32 => "std::sync::atomic::AtomicI32",
+        AtomicType::U32 => "std::sync::atomic::AtomicU32",
+        AtomicType::I64 => "std::sync::atomic::AtomicI64",
+        AtomicType::U64 => "std::sync::atomic::AtomicU64",
+        AtomicType::Isize => "std::sync::atomic::AtomicIsize",
+        AtomicType::Usize => "std::sync::atomic::AtomicUsize",
+        AtomicType::Bool => "std::sync::atomic::AtomicBool",
+    }
 }
 
 pub(in crate::fixups) fn rewrite_lazy_singletons(

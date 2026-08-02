@@ -66,6 +66,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::CountedLoop => "counted_loop",
         Predicate::ItemGuard => "item_guard",
         Predicate::LazySingletonDomain => "lazy_singleton_domain",
+        Predicate::AtomicPromotionDomain => "atomic_promotion_domain",
         Predicate::ReadPath => "read_path",
         Predicate::ArrayElementPointerOrigin => "array_element_pointer_origin",
         Predicate::BufferPointerFields => "buffer_pointer_fields",
@@ -169,6 +170,9 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         } => format!("start={start:?};step={step:?};index_use={index_use:?}"),
         EvidenceDetail::LazySingletonDomain { singletons } => {
             format!("singletons={singletons}")
+        }
+        EvidenceDetail::AtomicPromotionDomain { locals, globals } => {
+            format!("locals={locals};globals={globals}")
         }
         EvidenceDetail::ArrayElementPointerOrigin { origins } => {
             format!("origins={origins}")
