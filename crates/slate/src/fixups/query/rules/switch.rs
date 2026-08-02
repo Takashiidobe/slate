@@ -6,11 +6,11 @@ use super::super::{
     EditSet, ItemCaseContext, QueryRule, Rejection, StatementRef, StatementSequence,
 };
 
-pub(in crate::fixups) fn flat() -> QueryRule<StatementSequence> {
+pub(in crate::fixups) fn flat() -> QueryRule<StatementSequence<3>> {
     QueryRule::new(
         Pass::Switch,
         "collapse_switch_dispatch",
-        StatementSequence::new(3),
+        StatementSequence::new(),
     )
     .case("known_dispatch", rewrite_flat)
     .ordered_non_overlapping()
@@ -18,7 +18,7 @@ pub(in crate::fixups) fn flat() -> QueryRule<StatementSequence> {
 
 fn rewrite_flat(
     case: &mut ItemCaseContext<'_, '_>,
-    matched: &StatementMatch,
+    matched: &StatementMatch<3>,
 ) -> Result<EditSet, Rejection> {
     let statements: [StatementRef; 3] = std::array::from_fn(|offset| matched.statement(offset));
     let (dispatch, target, depth) = case.fact(|query| query.switch_dispatch_flat(&statements))?;

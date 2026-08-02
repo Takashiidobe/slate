@@ -5,11 +5,11 @@ use super::super::{
     BindingAccess, EditSet, Field, Local, QueryRule, StatementSequence, Usage, Value,
 };
 
-pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
+pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence<2>> {
     QueryRule::new(
         Pass::FinalReturnTemps,
         "inline_final_return_temp",
-        StatementSequence::new(2).starting_with(Local {
+        StatementSequence::new().starting_with(Local {
             mutable: Field::eq(false),
             value: Value {
                 usage: Field::eq(Some(Usage {

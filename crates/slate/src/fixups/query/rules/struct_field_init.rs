@@ -9,11 +9,11 @@ use super::super::{
     EditSet, Field, ItemCaseContext, Local, QueryRule, Rejection, StatementSequence,
 };
 
-pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
+pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence<1>> {
     QueryRule::new(
         Pass::StructFieldInit,
         "fold_struct_field_initializers",
-        StatementSequence::new(1).starting_with(Local {
+        StatementSequence::new().starting_with(Local {
             mutable: Field::eq(true),
             ..Default::default()
         }),
@@ -24,7 +24,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
 
 fn rewrite_region(
     case: &mut ItemCaseContext<'_, '_>,
-    matched: &StatementMatch,
+    matched: &StatementMatch<1>,
 ) -> Result<EditSet, Rejection> {
     let declaration_ref = matched.statement(0);
     let [mut declaration] = case.statements(matched)?;

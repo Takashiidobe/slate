@@ -4,11 +4,11 @@ use crate::rust_ast::{IndentStmt, Stmt};
 use super::super::item::StatementMatch;
 use super::super::{EditSet, ItemCaseContext, QueryRule, Rejection, StatementSequence};
 
-pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
+pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence<1>> {
     QueryRule::new(
         Pass::PtrCopy,
         "rewrite_pointer_copy",
-        StatementSequence::new(1),
+        StatementSequence::new(),
     )
     .case("copy_plan", rewrite_case)
     .ordered_non_overlapping()
@@ -16,7 +16,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
 
 fn rewrite_case(
     case: &mut ItemCaseContext<'_, '_>,
-    matched: &StatementMatch,
+    matched: &StatementMatch<1>,
 ) -> Result<EditSet, Rejection> {
     let [stmt] = case.statements(matched)?;
     let statement = matched.statement(0);

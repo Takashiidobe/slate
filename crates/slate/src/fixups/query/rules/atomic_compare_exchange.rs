@@ -6,11 +6,11 @@ use super::super::{
     Rejection, StatementRef, StatementSequence, collapse_atomic_compare_exchange,
 };
 
-pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
+pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence<6>> {
     QueryRule::new(
         Pass::AtomicCompareExchange,
         "collapse_compare_exchange_chain",
-        StatementSequence::new(6).starting_with(Local {
+        StatementSequence::new().starting_with(Local {
             mutable: Field::eq(false),
             ..Default::default()
         }),
@@ -21,7 +21,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
 
 fn rewrite_chain(
     case: &mut ItemCaseContext<'_, '_>,
-    matched: &StatementMatch,
+    matched: &StatementMatch<6>,
 ) -> Result<EditSet, Rejection> {
     let statements: [StatementRef; 6] = std::array::from_fn(|offset| matched.statement(offset));
     let shape = case.fact(|query| query.atomic_compare_exchange_shape(&statements))?;

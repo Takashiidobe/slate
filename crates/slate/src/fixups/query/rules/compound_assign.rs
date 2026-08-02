@@ -59,11 +59,11 @@ fn direct_case(
     Ok(edits)
 }
 
-pub(in crate::fixups) fn temp_backed() -> QueryRule<StatementSequence> {
+pub(in crate::fixups) fn temp_backed() -> QueryRule<StatementSequence<2>> {
     QueryRule::new(
         Pass::CompoundAssign,
         "recover_temp_backed_compound_assign",
-        StatementSequence::new(2),
+        StatementSequence::new(),
     )
     .case("post_update", post_update_case)
     .case("pre_update", pre_update_case)
@@ -72,7 +72,7 @@ pub(in crate::fixups) fn temp_backed() -> QueryRule<StatementSequence> {
 
 fn post_update_case(
     case: &mut ItemCaseContext<'_, '_>,
-    matched: &StatementMatch,
+    matched: &StatementMatch<2>,
 ) -> Result<EditSet, Rejection> {
     let [temp_stmt, assign_stmt] = case.statements(matched)?;
     let Stmt::Let {
@@ -116,7 +116,7 @@ fn post_update_case(
 
 fn pre_update_case(
     case: &mut ItemCaseContext<'_, '_>,
-    matched: &StatementMatch,
+    matched: &StatementMatch<2>,
 ) -> Result<EditSet, Rejection> {
     let [let_stmt, assign_stmt] = case.statements(matched)?;
     let Stmt::Let {

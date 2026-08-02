@@ -4,11 +4,11 @@ use crate::rust_ast::{Expr, IndentStmt, RustValue, Stmt};
 
 use super::super::{EditSet, LetStmtPattern, LoopStmtPattern, QueryRule, StatementSequence};
 
-pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
+pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence<2>> {
     QueryRule::new(
         Pass::RangeLoop,
         "rewrite_counted_loop_to_range",
-        StatementSequence::new(2),
+        StatementSequence::new(),
     )
     .case("zero_step_one", |case, matched| {
         let [index_stmt, loop_stmt] = case.statements(matched)?;

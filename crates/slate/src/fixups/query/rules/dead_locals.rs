@@ -3,11 +3,11 @@ use crate::rust_ast::{Expr, Stmt};
 
 use super::super::{EditSet, Field, Local, QueryRule, StatementSequence, Usage, Value};
 
-pub(in crate::fixups) fn rewrite(pass: Pass) -> QueryRule<StatementSequence> {
+pub(in crate::fixups) fn rewrite(pass: Pass) -> QueryRule<StatementSequence<1>> {
     QueryRule::new(
         pass,
         "remove_dead_local",
-        StatementSequence::new(1).starting_with(Local {
+        StatementSequence::new().starting_with(Local {
             value: Value {
                 usage: Field::eq(Some(Usage {
                     reads: 0,
