@@ -18,17 +18,18 @@ use crate::rust_ast::{
 use super::item::StatementRef;
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
-    BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse, BindingUses,
-    BufferPointerField, BufferPointerFields, ByteExtent, ByteRepresentation, ByteSource, ByteView,
-    DefinitionGroup, DefinitionGroupUsers, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, DefinitionUsers, DispatchRegion, EnumVariantRef, Evidence, EvidenceDetail,
-    ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
-    ExpressionValues, ExternFn, FieldRef, FunctionCallDomain, FunctionReachability, FunctionRef,
-    HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences,
-    LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition, NullaryMethodCall, ParameterRef,
-    PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, ReferenceDomain,
-    Rejection, RejectionReason, ResolvedValue, StableExpr, StatementContainerRef, StatementRange,
-    TypeUseRef, Usage, UseSiteRef, ValueSite,
+    AtomicCompareExchangeChain, BindingAccess, BindingCategory, BindingDefUse, BindingRef,
+    BindingUse, BindingUses, BufferPointerField, BufferPointerFields, ByteExtent,
+    ByteRepresentation, ByteSource, ByteView, DefinitionGroup, DefinitionGroupUsers,
+    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, DefinitionUsers,
+    DispatchRegion, EnumVariantRef, Evidence, EvidenceDetail, ExprSite, ExpressionEffects,
+    ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole, ExpressionValues, ExternFn,
+    FieldRef, FunctionCallDomain, FunctionReachability, FunctionRef, HeapOwnership,
+    HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences, LazySingletonPlan,
+    LazySingletonSet, MatchArmRef, NulPosition, NullaryMethodCall, ParameterRef, PointerMutability,
+    Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, ReferenceDomain, Rejection,
+    RejectionReason, ResolvedValue, StableExpr, StatementContainerRef, StatementRange, TypeUseRef,
+    Usage, UseSiteRef, ValueSite,
 };
 
 macro_rules! query_cache {
@@ -942,6 +943,53 @@ impl<'snapshot> QueryContext<'snapshot> {
             },
             evidence,
         ))
+    }
+
+    pub(in crate::fixups) fn atomic_compare_exchange_shape(
+        &self,
+        statements: &[StatementRef; 6],
+    ) -> QueryResult<AtomicCompareExchangeChain> {
+        let predicate = Predicate::StatementRegion;
+        let site = statement_evidence_site(&statements[0]);
+        let indices = statements
+            .iter()
+            .map(StatementRef::index)
+            .collect::<Option<Vec<_>>>()
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        if !indices.windows(2).all(|pair| pair[1] == pair[0] + 1) {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
+
+        let (_, mut evidence) = self
+            .statement_range(&statements[0], &statements[5])?
+            .into_parts();
+        let mut body = Vec::with_capacity(statements.len());
+        for statement in statements {
+            let (indent, mut statement_evidence) = self.statement(statement)?.into_parts();
+            body.push(indent.clone());
+            evidence.append(&mut statement_evidence);
+        }
+        let Some(chain) = super::atomic::compare_exchange_chain(&body) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::UnsupportedShape,
+                evidence,
+            ));
+        };
+        Ok(Proof::new(chain, evidence))
     }
 
     pub(in crate::fixups) fn statement(

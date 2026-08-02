@@ -1,4 +1,3 @@
-pub(super) mod atomic_compare_exchange;
 pub(super) mod atomic_locals;
 pub(super) mod c_strings;
 pub(super) mod call_args;

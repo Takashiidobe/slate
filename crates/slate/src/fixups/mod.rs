@@ -794,19 +794,15 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::AtomicCompareExchange, {
-        to_fixpoint_items_with_facts(
-            &mut program,
-            FixpointLimit::Unlimited,
-            |item_index, f, facts| {
-                let Some(function) = facts.function_by_item_index(item_index) else {
-                    return false;
-                };
-                let mut fixup = rewrite::atomic_compare_exchange::AtomicCompareExchange::new(
-                    function, facts, logger,
-                );
-                run_once(&mut f.body, &mut fixup)
-            },
-        );
+        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
+            let plan = {
+                let query = query::QueryContext::new(program, facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::atomic_compare_exchange::rewrite());
+                builder.finish()
+            };
+            plan.apply(program, facts, logger).changed
+        });
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);

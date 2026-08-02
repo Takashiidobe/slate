@@ -1,5 +1,6 @@
 pub(in crate::fixups) mod anonymous_structs;
 pub(in crate::fixups) mod array_element_pointer_origin;
+pub(in crate::fixups) mod atomic_compare_exchange;
 pub(in crate::fixups) mod buffer_cursor;
 pub(in crate::fixups) mod constant_index_casts;
 pub(in crate::fixups) mod dead_locals;
