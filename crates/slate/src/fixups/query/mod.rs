@@ -15,7 +15,7 @@ use context::default_value;
 pub(in crate::fixups) use context::{CallRecord, CallTarget, QueryContext};
 pub(in crate::fixups) use field::Field;
 pub(in crate::fixups) use item::{
-    EditSet, ItemCaseContext, ItemPlanBuilder, QueryRule, same_statement_container,
+    EditSet, ItemCaseContext, ItemPlanBuilder, QueryRule, StatementRef, same_statement_container,
 };
 #[allow(unused_imports)]
 pub(in crate::fixups) use patterns::{
@@ -31,13 +31,14 @@ pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
 };
 pub(in crate::fixups) use recipe::{
-    ExprRecipe, FunctionBodyRecipe, byte_position, initialize_local, known_index,
-    memchr_fallback_body, pointer_at_or_null, process_exit, rewrite_heap_ownership,
+    ExprRecipe, FunctionBodyRecipe, HeapOwnershipPlan, HeapOwnershipReallocPlan, byte_position,
+    initialize_local, known_index, memchr_fallback_body, pointer_at_or_null, process_exit,
+    rewrite_heap_ownership,
 };
 pub(in crate::fixups) use rewrite::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 use views::{
-    AnonymousStructField, AnonymousStructPlan, ArrayElementPointerOrigin, HeapOwnershipPlan,
-    HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan,
+    AnonymousStructField, AnonymousStructPlan, ArrayElementPointerOrigin, LazySingletonPlan,
+    PtrLenPlan,
 };
 pub(in crate::fixups) use views::{
     AnonymousStructSet, BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse,
@@ -45,8 +46,9 @@ pub(in crate::fixups) use views::{
     ByteSource, ByteView, DefinitionGroup, DefinitionGroupUsers, DefinitionKind,
     DefinitionLocation, DefinitionSelector, DefinitionSite, DefinitionUsers, EnumVariantRef,
     ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
-    ExpressionValues, FieldRef, FunctionRef, HeapOwnershipPlanSet, ItemReferences,
-    LazySingletonSet, MatchArmRef, NulPosition, ParameterRef, ParameterRemoval, Phase,
-    PointerMutability, ProgramRef, PtrLenPlanSet, ReferenceDomain, ResolvedValue, StableExpr,
-    StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef, Usage, UseSiteRef, ValueSite,
+    ExpressionValues, FieldRef, FunctionRef, HeapOwnership, HeapOwnershipFacts, HeapReallocation,
+    HeapUse, ItemReferences, LazySingletonSet, MatchArmRef, NulPosition, ParameterRef,
+    ParameterRemoval, Phase, PointerMutability, ProgramRef, PtrLenPlanSet, ReferenceDomain,
+    ResolvedValue, StableExpr, StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef,
+    Usage, UseSiteRef, ValueSite,
 };

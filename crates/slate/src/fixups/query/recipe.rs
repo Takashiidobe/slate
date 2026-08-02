@@ -3,9 +3,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::{HeapOwnershipKind, HeapResizeKind};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::query::{
-    ByteRepresentation, ByteSource, HeapOwnershipPlan, HeapOwnershipPlanSet,
-    HeapOwnershipReallocPlan, NulPosition, PointerMutability, Predicate, QueryContext, Rejection,
-    RejectionReason, StableExpr, default_value,
+    ByteRepresentation, ByteSource, NulPosition, PointerMutability, Predicate, QueryContext,
+    Rejection, RejectionReason, StableExpr, default_value,
 };
 use crate::fixups::support::walk;
 use crate::function_identity::{Known, known_call};
@@ -119,11 +118,37 @@ pub(in crate::fixups) fn initialize_local(declaration: &Stmt, value: Expr) -> Op
 
 pub(in crate::fixups) fn rewrite_heap_ownership(
     body: Vec<IndentStmt>,
-    plans: HeapOwnershipPlanSet,
+    plans: Vec<HeapOwnershipPlan>,
 ) -> FunctionBodyRecipe {
     let mut body = body;
-    rewrite_owned_body_stmts(&mut body, &plans.plans);
+    rewrite_owned_body_stmts(&mut body, &plans);
     FunctionBodyRecipe { body }
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct HeapOwnershipPlan {
+    pub(in crate::fixups) pointer_name: String,
+    pub(in crate::fixups) kind: HeapOwnershipKind,
+    pub(in crate::fixups) pointer_stmt: Option<usize>,
+    pub(in crate::fixups) size_stmt: Option<usize>,
+    pub(in crate::fixups) allocation_stmt: Option<usize>,
+    pub(in crate::fixups) assign_stmt: Option<usize>,
+    pub(in crate::fixups) free_temp_stmt: Option<usize>,
+    pub(in crate::fixups) free_stmt: Option<usize>,
+    pub(in crate::fixups) reallocs: Vec<HeapOwnershipReallocPlan>,
+    pub(in crate::fixups) elem_ty: Type,
+    pub(in crate::fixups) init: Expr,
+    pub(in crate::fixups) count: Option<Expr>,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct HeapOwnershipReallocPlan {
+    pub(in crate::fixups) source_temp_stmt: Option<usize>,
+    pub(in crate::fixups) size_stmt: Option<usize>,
+    pub(in crate::fixups) allocation_stmt: Option<usize>,
+    pub(in crate::fixups) assign_stmt: Option<usize>,
+    pub(in crate::fixups) resize: HeapResizeKind,
+    pub(in crate::fixups) count: Expr,
 }
 
 struct OwnedHeapPlan {

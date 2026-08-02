@@ -592,6 +592,7 @@ pub(super) struct HeapOwnershipFact {
     pub(super) allocation_temp: BindingId,
     pub(super) size_temp: Option<BindingId>,
     pub(super) free_temp: Option<BindingId>,
+    pub(super) aliases: Vec<BindingId>,
     pub(super) pointer_path: AstPath,
     pub(super) allocation_path: AstPath,
     pub(super) assign_path: AstPath,
@@ -603,7 +604,6 @@ pub(super) struct HeapOwnershipFact {
     pub(super) read_safety: HeapReadSafety,
     pub(super) uses: Vec<HeapUseFact>,
     pub(super) reallocations: Vec<HeapReallocFact>,
-    pub(super) kind: HeapOwnershipKind,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
