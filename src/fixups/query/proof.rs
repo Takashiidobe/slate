@@ -40,6 +40,7 @@ pub(in crate::fixups) enum Predicate {
     BindingUses,
     DefUse,
     Expression,
+    ExpressionDependencies,
     ExpressionEffects,
     ExpressionPlace,
     ExpressionType,
@@ -72,7 +73,6 @@ pub(in crate::fixups) enum Predicate {
     StringUse,
     AllExprs,
     Cast,
-    ZeroInit,
     UnusedParam,
 }
 
@@ -100,6 +100,9 @@ pub(in crate::fixups) enum EvidenceDetail {
         writes: usize,
     },
     Expression,
+    ExpressionDependencies {
+        count: usize,
+    },
     Statement,
     ExpressionEffects {
         purity: Purity,
@@ -185,9 +188,6 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     Cast {
         to: Type,
-    },
-    ZeroInit {
-        moved_decl: bool,
     },
     UnusedParam {
         function: String,

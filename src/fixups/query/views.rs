@@ -173,8 +173,17 @@ pub(in crate::fixups) enum BindingAccess {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct BindingUse {
-    pub(in crate::fixups) expression: ExpressionRef,
+    pub(in crate::fixups) site: UseSiteRef,
     pub(in crate::fixups) access: BindingAccess,
+}
+
+impl BindingUse {
+    pub(in crate::fixups) fn expression(&self) -> Option<&ExpressionRef> {
+        match &self.site {
+            UseSiteRef::Expression(expression) => Some(expression),
+            UseSiteRef::Statement(_) => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -427,13 +436,6 @@ pub(super) struct PtrLenPlan {
 pub(in crate::fixups) enum Phase {
     Early,
     Late,
-}
-
-#[derive(Debug, Clone)]
-pub(in crate::fixups) struct ZeroInitPlan {
-    pub(super) body: Vec<IndentStmt>,
-    pub(super) name: String,
-    pub(super) moved_decl: bool,
 }
 
 #[derive(Debug, Clone)]

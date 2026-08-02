@@ -109,16 +109,16 @@ Missing or ambiguous evidence must reject the case. Claims such as “all users�
 or “all callers” need an explicitly complete domain; an empty observed set is
 not enough by itself.
 
-For a rewrite that needs to know whether a definition safely reaches some
-later statement in the same block - "is everything between these two points
-safe to cross" - use `FixupFacts::binding_touches_in_body(binding, body_path)`
-rather than writing a new per-pass fact collector to re-derive read/write
-positions. It returns every direct-child statement index of a body that reads
-or writes a binding, ordered, so a rule can find the next write after a point
-and fold over the statements in between with its own crossability rule (e.g.
-`zero_init`'s `direct`/`relaxed`/`moved` cases in `src/fixups/query/context.rs`)
-instead of re-walking the AST for it. This is shared, engine-level
-infrastructure - extend it in place rather than adding a parallel one-off.
+For a rewrite that needs to know whether a definition safely reaches a later
+statement in the same block, compose the shared navigation and dependency
+queries. `statement_in_container` maps an exact expression use to the direct
+statement in a selected container, `statements_between` returns stable handles
+for the intervening range, and `binding_uses_in_statement` restricts exact
+def-use observations to one statement. `expression_dependencies` and
+`expression_effects` separate value dependencies from movement safety, while
+`statement_is_movable_declaration` handles declaration initializers. Keep only
+the pass's crossing policy in the rule instead of adding a pass-local walker or
+candidate planner.
 
 ## Definition items
 

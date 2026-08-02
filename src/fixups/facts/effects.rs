@@ -132,7 +132,7 @@ impl Collector {
         match stmt {
             Stmt::Let { init, .. } => {
                 if let Some(init) = init {
-                    effects.extend(self.expr(init, path));
+                    effects.extend(self.root_expr(init, path, 0));
                 }
             }
             Stmt::LetIf {
@@ -143,34 +143,38 @@ impl Collector {
                 else_value,
                 ..
             } => {
-                effects.extend(self.expr(cond, path));
+                effects.extend(self.root_expr(cond, path, 0));
                 walk::with_path_segment(path, PathSegment::Then, |path| {
                     effects.extend(self.body(then_body, path));
-                    effects.extend(self.expr(then_value, path));
+                    effects.extend(self.root_expr(then_value, path, 0));
                 });
                 walk::with_path_segment(path, PathSegment::Else, |path| {
                     effects.extend(self.body(else_body, path));
-                    effects.extend(self.expr(else_value, path));
+                    effects.extend(self.root_expr(else_value, path, 0));
                 });
             }
             Stmt::Assign { target, value } => {
                 effects.insert(EffectKind::MemoryWrite);
-                effects.extend(self.expr(target, path));
-                effects.extend(self.expr(value, path));
+                effects.extend(self.root_expr(target, path, 0));
+                effects.extend(self.root_expr(value, path, 1));
             }
             Stmt::CompoundAssign { target, value, .. } => {
                 effects.insert(EffectKind::MemoryWrite);
-                effects.extend(self.expr(target, path));
-                effects.extend(self.expr(value, path));
+                effects.extend(self.root_expr(target, path, 0));
+                effects.extend(self.root_expr(value, path, 1));
             }
             Stmt::InlineAsm(asm) => {
                 effects.insert(EffectKind::MacroExpansion);
+                let mut index = 0;
                 for operand in &asm.operands {
-                    operand.visit_exprs(&mut |expr| effects.extend(self.expr(expr, path)));
+                    operand.visit_exprs(&mut |expr| {
+                        effects.extend(self.root_expr(expr, path, index));
+                        index += 1;
+                    });
                 }
             }
             Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
-                effects.extend(self.expr(expr, path));
+                effects.extend(self.root_expr(expr, path, 0));
             }
             Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
             Stmt::If {
@@ -178,7 +182,7 @@ impl Collector {
                 then_body,
                 else_body,
             } => {
-                effects.extend(self.expr(cond, path));
+                effects.extend(self.root_expr(cond, path, 0));
                 walk::with_path_segment(path, PathSegment::Then, |path| {
                     effects.extend(self.body(then_body, path));
                 });
@@ -192,7 +196,7 @@ impl Collector {
                 });
             }
             Stmt::For { iter, body, .. } => {
-                effects.extend(self.expr(iter, path));
+                effects.extend(self.root_expr(iter, path, 0));
                 walk::with_path_segment(path, PathSegment::ForBody, |path| {
                     effects.extend(self.body(body, path));
                 });
@@ -213,7 +217,7 @@ impl Collector {
                 });
             }
             Stmt::While { cond, body } => {
-                effects.extend(self.expr(cond, path));
+                effects.extend(self.root_expr(cond, path, 0));
                 walk::with_path_segment(path, PathSegment::WhileBody, |path| {
                     effects.extend(self.block(body, path));
                 });
@@ -224,7 +228,7 @@ impl Collector {
                 });
             }
             Stmt::Match { expr, arms } => {
-                effects.extend(self.expr(expr, path));
+                effects.extend(self.root_expr(expr, path, 0));
                 for (index, arm) in arms.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
                         effects.extend(self.body(&arm.body, path));
@@ -248,6 +252,25 @@ impl Collector {
 
     fn expr(&mut self, expr: &Expr, path: &mut Vec<PathSegment>) -> BTreeSet<EffectKind> {
         let effects = self.expr_inner(expr, path);
+        self.effects.push(EffectFact {
+            site: Site {
+                function: self.function,
+                path: AstPath(path.clone()),
+            },
+            subject: EffectSubject::Expr,
+            purity: purity_for_expr(expr, &effects),
+            effects: effects.clone(),
+        });
+        effects
+    }
+
+    fn root_expr(
+        &mut self,
+        expr: &Expr,
+        path: &mut Vec<PathSegment>,
+        index: usize,
+    ) -> BTreeSet<EffectKind> {
+        let effects = self.child_expr(expr, path, index);
         self.effects.push(EffectFact {
             site: Site {
                 function: self.function,

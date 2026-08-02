@@ -1,4 +1,4 @@
-use crate::fixups::facts::{AstPath, EffectKind, PathSegment, Purity};
+use crate::fixups::facts::{EffectKind, Purity};
 use crate::fixups::idents::{expr_ident, expr_ident_count};
 use crate::fixups::support::walk;
 use crate::fixups::trace::Pass;
@@ -6,8 +6,8 @@ use crate::rust_ast::{Expr, Prim, RustValue, Stmt, Type};
 
 use super::super::item::StatementRef;
 use super::super::{
-    Binding, BindingAccess, BindingCategory, BindingRef, EditSet, ExpressionEffects, ExpressionRef,
-    Field, ItemCaseContext, Phase, Predicate, QueryRule, Rejection,
+    Binding, BindingAccess, BindingCategory, BindingRef, EditSet, ExpressionEffects, Field,
+    ItemCaseContext, Phase, Predicate, QueryRule, Rejection,
 };
 
 fn matcher() -> Binding {
@@ -61,16 +61,26 @@ fn apply(
         Predicate::BindingUses,
         &initializer.site,
     )?;
-    let use_expression = reads[0].expression.clone();
+    let use_expression = reads[0]
+        .expression()
+        .cloned()
+        .ok_or_else(|| case.reject())?;
     let _ = case.fact(|query| query.enclosing_statement(&use_expression))?;
 
     let producer = StatementRef {
         item_index: binding.item_index,
         path: binding.definition.clone(),
     };
-    let consumer = direct_consumer(&producer, &use_expression).ok_or_else(|| case.reject())?;
-    let producer_index = statement_index(&producer.path).ok_or_else(|| case.reject())?;
-    let consumer_index = statement_index(&consumer.path).ok_or_else(|| case.reject())?;
+    let producer_statement = case.fact(|query| query.statement(&producer))?;
+    case.require(matches!(
+        producer_statement.stmt,
+        Stmt::Let { mutable: false, .. }
+    ))?;
+    let producer_container = producer.container().ok_or_else(|| case.reject())?;
+    let consumer =
+        case.fact(|query| query.statement_in_container(&producer_container, &use_expression))?;
+    let producer_index = producer.index().ok_or_else(|| case.reject())?;
+    let consumer_index = consumer.index().ok_or_else(|| case.reject())?;
     case.require(consumer_index > producer_index)?;
     let adjacent = consumer_index == producer_index + 1;
 
@@ -88,9 +98,7 @@ fn apply(
         .ok_or_else(|| case.reject())?;
 
     if producer_effects.purity == Purity::MovablePure {
-        for statement in
-            intervening_statements(&producer, &consumer).ok_or_else(|| case.reject())?
-        {
+        for statement in case.fact(|query| query.statements_between(&producer, &consumer))? {
             let indent = case.fact(|query| query.statement(&statement))?;
             let Stmt::Let {
                 name,
@@ -142,55 +150,6 @@ fn apply(
     edits.push_replace_expression(use_expression.site, init);
     edits.push_replace_statement(binding.item_index, binding.definition.clone(), None);
     Ok(edits)
-}
-
-fn direct_consumer(producer: &StatementRef, expression: &ExpressionRef) -> Option<StatementRef> {
-    let (PathSegment::Stmt(_), parent) = producer.path.0.split_last()? else {
-        return None;
-    };
-    let [PathSegment::Stmt(index), ..] = expression.site.path.0.strip_prefix(parent)? else {
-        return None;
-    };
-    let mut path = parent.to_vec();
-    path.push(PathSegment::Stmt(*index));
-    Some(StatementRef {
-        item_index: producer.item_index,
-        path: AstPath(path),
-    })
-}
-
-fn statement_index(path: &AstPath) -> Option<usize> {
-    match path.0.last()? {
-        PathSegment::Stmt(index) => Some(*index),
-        _ => None,
-    }
-}
-
-fn intervening_statements(
-    producer: &StatementRef,
-    consumer: &StatementRef,
-) -> Option<Vec<StatementRef>> {
-    let (PathSegment::Stmt(producer_index), producer_parent) = producer.path.0.split_last()? else {
-        return None;
-    };
-    let (PathSegment::Stmt(consumer_index), consumer_parent) = consumer.path.0.split_last()? else {
-        return None;
-    };
-    if producer.item_index != consumer.item_index || producer_parent != consumer_parent {
-        return None;
-    }
-    Some(
-        (producer_index + 1..*consumer_index)
-            .map(|index| {
-                let mut path = producer_parent.to_vec();
-                path.push(PathSegment::Stmt(index));
-                StatementRef {
-                    item_index: producer.item_index,
-                    path: AstPath(path),
-                }
-            })
-            .collect(),
-    )
 }
 
 fn is_atomic_result(expr: &Expr, effects: &ExpressionEffects) -> bool {

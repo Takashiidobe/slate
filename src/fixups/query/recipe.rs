@@ -5,7 +5,7 @@ use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::query::{
     BufferCursorPlan, ByteRepresentation, ByteSource, HeapOwnershipPlan, HeapOwnershipPlanSet,
     HeapOwnershipReallocPlan, NulPosition, PointerMutability, Predicate, QueryContext, Rejection,
-    RejectionReason, StableExpr, ZeroInitPlan, default_value,
+    RejectionReason, StableExpr, default_value,
 };
 use crate::fixups::support::walk;
 use crate::function_identity::{Known, known_call};
@@ -108,8 +108,13 @@ impl FunctionBodyRecipe {
     }
 }
 
-pub(in crate::fixups) fn rewrite_zero_init(plan: ZeroInitPlan) -> FunctionBodyRecipe {
-    FunctionBodyRecipe { body: plan.body }
+pub(in crate::fixups) fn initialize_local(declaration: &Stmt, value: Expr) -> Option<Stmt> {
+    let mut initialized = declaration.clone();
+    let Stmt::Let { init, .. } = &mut initialized else {
+        return None;
+    };
+    *init = Some(value);
+    Some(initialized)
 }
 
 pub(in crate::fixups) fn rewrite_buffer_cursor(plan: BufferCursorPlan) -> FunctionBodyRecipe {

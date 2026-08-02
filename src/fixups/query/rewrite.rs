@@ -45,6 +45,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::BindingUses => "binding_uses",
         Predicate::DefUse => "def_use",
         Predicate::Expression => "expression",
+        Predicate::ExpressionDependencies => "expression_dependencies",
         Predicate::ExpressionEffects => "expression_effects",
         Predicate::ExpressionPlace => "expression_place",
         Predicate::ExpressionType => "expression_type",
@@ -75,7 +76,6 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::StringUse => "string_use",
         Predicate::AllExprs => "all_exprs",
         Predicate::Cast => "cast",
-        Predicate::ZeroInit => "zero_init",
         Predicate::ReferenceDomain => "reference_domain",
         Predicate::Statement => "statement",
         Predicate::UnusedParam => "unused_param",
@@ -112,6 +112,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             format!("reads={reads},writes={writes}")
         }
         EvidenceDetail::Expression => "resolved=true".into(),
+        EvidenceDetail::ExpressionDependencies { count } => format!("count={count}"),
         EvidenceDetail::Statement => "resolved=true".into(),
         EvidenceDetail::ExpressionEffects { purity, effects } => {
             format!("purity={purity:?};effects={effects}")
@@ -177,7 +178,6 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::StringUse { allowed } => format!("allowed={allowed}"),
         EvidenceDetail::AllExprs { count } => format!("count={count}"),
         EvidenceDetail::Cast { to } => format!("to={to:?}"),
-        EvidenceDetail::ZeroInit { moved_decl } => format!("moved_decl={moved_decl}"),
         EvidenceDetail::ReferenceDomain { definitions, items } => {
             format!("definitions={definitions}, items={items}")
         }
