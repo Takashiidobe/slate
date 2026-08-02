@@ -16,7 +16,7 @@ pub(in crate::fixups) fn direct() -> QueryRule<Definition> {
         function_matcher(),
     )
     .case("direct", |case, definition| {
-        let plan = case.zero_init_candidate(definition, false)?;
+        let plan = case.fact(|query| query.zero_init_candidate(definition, false))?;
         Ok(EditSet::replace_function_body(
             definition.clone(),
             rewrite_zero_init(plan),
@@ -31,7 +31,7 @@ pub(in crate::fixups) fn deferred() -> QueryRule<Definition> {
         function_matcher(),
     )
     .case("deferred", |case, definition| {
-        let plan = case.zero_init_candidate(definition, true)?;
+        let plan = case.fact(|query| query.zero_init_candidate(definition, true))?;
         Ok(EditSet::replace_function_body(
             definition.clone(),
             rewrite_zero_init(plan),

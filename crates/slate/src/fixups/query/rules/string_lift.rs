@@ -19,7 +19,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
         },
     )
     .case("borrowed_str", |case, binding| {
-        let buffer = case.string_buffer(binding)?;
+        let buffer = case.fact(|query| query.string_buffer(&binding.value_site()))?;
         let bytes = buffer.bytes.clone().ok_or_else(|| case.reject())?;
         let text = String::from_utf8(bytes).map_err(|_| case.reject())?;
         lift(
@@ -32,7 +32,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
         )
     })
     .case("borrowed_bytes", |case, binding| {
-        let buffer = case.string_buffer(binding)?;
+        let buffer = case.fact(|query| query.string_buffer(&binding.value_site()))?;
         let bytes = buffer.bytes.clone().ok_or_else(|| case.reject())?;
         lift(
             case,
@@ -55,7 +55,7 @@ pub(in crate::fixups) fn rewrite_c_strings() -> QueryRule<Binding> {
         },
     )
     .case("borrowed_cstr", |case, binding| {
-        let buffer = case.string_buffer(binding)?;
+        let buffer = case.fact(|query| query.string_buffer(&binding.value_site()))?;
         case.require(buffer.ascii_only && !buffer.interior_nul)?;
         let bytes = buffer.bytes.clone().ok_or_else(|| case.reject())?;
         lift(
@@ -82,13 +82,16 @@ fn lift(
         StringBufferProvenance::AssignedLiteral { assignment } => Some(assignment.clone()),
         _ => None,
     };
-    let uses = case.value_uses(binding)?;
-    let pointer_views = case.string_pointer_view_sites(binding)?;
+    let uses = case.fact(|query| query.value_uses(&binding.value_site(), &binding.name))?;
+    let pointer_views =
+        case.fact(|query| query.string_pointer_view_sites(&binding.value_site(), &binding.name))?;
     for site in uses.iter().chain(pointer_views.iter()) {
         if site.path == def_path || assignment_path.as_ref() == Some(&site.path) {
             continue;
         }
-        let allowed = case.string_use_allows_lift(binding, site, recovery)?;
+        let allowed = case.fact(|query| {
+            query.string_use_allows_lift(&binding.value_site(), &binding.name, site, recovery)
+        })?;
         case.require(allowed)?;
     }
     let mut edits = EditSet::new();
@@ -108,7 +111,7 @@ fn lift(
         edits.push_replace_statement(binding.item_index, assignment.clone(), None);
     }
     let mut skip_prefix: Option<Vec<PathSegment>> = None;
-    for site in case.all_exprs(binding)? {
+    for site in case.fact(|query| query.all_exprs(binding.item_index))? {
         if skip_prefix
             .as_ref()
             .is_some_and(|prefix| site.path.0.starts_with(prefix.as_slice()))

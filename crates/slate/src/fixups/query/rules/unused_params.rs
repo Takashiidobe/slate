@@ -14,7 +14,8 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
         },
     )
     .case("unreachable_param", |case, binding| {
-        let removal = case.removable_parameter(binding)?;
+        let removal =
+            case.fact(|query| super::super::parameter::removable_parameter(query, binding))?;
         Ok(EditSet::remove_parameter(removal))
     })
 }

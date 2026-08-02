@@ -42,7 +42,14 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
     match predicate {
         Predicate::Call => "call",
         Predicate::Binding => "binding",
+        Predicate::BindingUses => "binding_uses",
         Predicate::DefUse => "def_use",
+        Predicate::Expression => "expression",
+        Predicate::ExpressionEffects => "expression_effects",
+        Predicate::ExpressionPlace => "expression_place",
+        Predicate::ExpressionType => "expression_type",
+        Predicate::ExpressionValues => "expression_values",
+        Predicate::ParentExpression => "parent_expression",
         Predicate::AnonymousStructDomain => "anonymous_struct_domain",
         Predicate::ByteSource => "byte_source",
         Predicate::ConstantU8 => "constant_u8",
@@ -70,7 +77,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::AllExprs => "all_exprs",
         Predicate::Cast => "cast",
         Predicate::ZeroInit => "zero_init",
-        Predicate::UnusedTypeDefinition => "unused_type_definition",
+        Predicate::ReferenceDomain => "reference_domain",
         Predicate::UnusedParam => "unused_param",
     }
 }
@@ -98,9 +105,23 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             complete,
         } => format!("records={records};facts={facts};conflicts={conflicts};complete={complete}"),
         EvidenceDetail::Binding { name } => format!("binding={name}"),
+        EvidenceDetail::BindingUses { reads, writes } => {
+            format!("reads={reads},writes={writes}")
+        }
         EvidenceDetail::DefUse { reads, writes } => {
             format!("reads={reads},writes={writes}")
         }
+        EvidenceDetail::Expression => "resolved=true".into(),
+        EvidenceDetail::ExpressionEffects { purity, effects } => {
+            format!("purity={purity:?};effects={effects}")
+        }
+        EvidenceDetail::ExpressionPlace {
+            access,
+            ordinary_slot,
+        } => format!("access={access:?};ordinary_slot={ordinary_slot}"),
+        EvidenceDetail::ExpressionType { ty } => format!("type={ty:?}"),
+        EvidenceDetail::ExpressionValues { count } => format!("count={count}"),
+        EvidenceDetail::ParentExpression => "resolved=true".into(),
         EvidenceDetail::PointerView {
             representation,
             mutability,
@@ -157,7 +178,9 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::AllExprs { count } => format!("count={count}"),
         EvidenceDetail::Cast { to } => format!("to={to:?}"),
         EvidenceDetail::ZeroInit { moved_decl } => format!("moved_decl={moved_decl}"),
-        EvidenceDetail::UnusedTypeDefinition { doomed } => format!("doomed={doomed}"),
+        EvidenceDetail::ReferenceDomain { definitions, items } => {
+            format!("definitions={definitions}, items={items}")
+        }
         EvidenceDetail::UnusedParam {
             function,
             param,

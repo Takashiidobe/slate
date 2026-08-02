@@ -2,10 +2,10 @@ use crate::fixups::facts::Purity;
 use crate::rust_ast::{Expr, IndentStmt, Label, Stmt, Type};
 
 use super::field::Field;
-use super::item::{ExpressionRef, Matcher, QueryDomain, QueryItem, StatementMatch};
+use super::item::{Matcher, QueryDomain, QueryItem, StatementMatch};
 use super::{
-    BindingCategory, CallTarget, DefinitionGroup, DefinitionKind, ResolvedValue, StatementRange,
-    Usage,
+    BindingCategory, CallTarget, DefinitionGroup, DefinitionKind, ExpressionRef, ResolvedValue,
+    StatementRange, Usage,
 };
 
 #[derive(Default)]
@@ -31,14 +31,14 @@ impl Matcher for FnCall {
             return None;
         };
         query
-            .all_calls()
-            .find(|call| call.site == expression.site)
+            .expression_call(expression)
+            .ok()
+            .map(|proof| proof.value)
             .filter(|call| {
                 self.target.matches(&call.target, &())
                     && self.arity.matches(&call.args.len(), &())
                     && self.arg_types.matches(&query.call_arg_types(call), &())
             })
-            .cloned()
     }
 }
 

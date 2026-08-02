@@ -1,7 +1,10 @@
 use std::collections::BTreeSet;
 use std::marker::PhantomData;
 
-use crate::fixups::facts::{AstPath, BindingId, HeapOwnershipKind, HeapResizeKind, Purity};
+use crate::fixups::facts::{
+    AstPath, BindingId, ConstValue, EffectKind, HeapOwnershipKind, HeapResizeKind, PlaceAccess,
+    PlaceKind, Purity,
+};
 use crate::rust_ast::{Expr, FnDef, IndentStmt, Type};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -26,6 +29,15 @@ pub(in crate::fixups) struct BindingRef {
     pub(in crate::fixups) kind: BindingCategory,
     pub(in crate::fixups) ty: Option<Type>,
     pub(super) id: BindingId,
+}
+
+impl BindingRef {
+    pub(in crate::fixups) fn value_site(&self) -> ValueSite {
+        ValueSite {
+            item_index: self.item_index,
+            path: self.definition.clone(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -54,6 +66,50 @@ pub(in crate::fixups) struct BindingDefUse {
     pub(in crate::fixups) binding: BindingRef,
     pub(in crate::fixups) reads: Vec<AstPath>,
     pub(in crate::fixups) writes: Vec<AstPath>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct ExpressionRef {
+    pub(in crate::fixups) site: ExprSite,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct ExpressionEffects {
+    pub(in crate::fixups) purity: Purity,
+    pub(in crate::fixups) effects: BTreeSet<EffectKind>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct ExpressionPlace {
+    pub(in crate::fixups) access: PlaceAccess,
+    pub(in crate::fixups) kind: PlaceKind,
+    pub(in crate::fixups) readable: bool,
+    pub(in crate::fixups) assignable: bool,
+    pub(in crate::fixups) ordinary_slot: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(in crate::fixups) enum BindingAccess {
+    Read,
+    Write,
+    ReadWrite,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct BindingUse {
+    pub(in crate::fixups) expression: ExpressionRef,
+    pub(in crate::fixups) access: BindingAccess,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct BindingUses {
+    pub(in crate::fixups) binding: BindingRef,
+    pub(in crate::fixups) uses: Vec<BindingUse>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct ExpressionValues {
+    pub(in crate::fixups) values: Vec<ConstValue>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -124,9 +180,16 @@ pub(in crate::fixups) struct ZeroGroupUsers {
     pub(in crate::fixups) group: DefinitionGroup,
 }
 
-#[derive(Debug, Clone)]
-pub(in crate::fixups) struct UnusedTypeDefinitionSet {
-    pub(super) doomed: BTreeSet<usize>,
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct ItemReferences {
+    pub(in crate::fixups) item_index: usize,
+    pub(in crate::fixups) symbols: BTreeSet<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct ReferenceDomain {
+    pub(in crate::fixups) definitions: Vec<DefinitionSite>,
+    pub(in crate::fixups) items: Vec<ItemReferences>,
 }
 
 #[derive(Debug, Clone)]

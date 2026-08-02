@@ -16,7 +16,7 @@ use context::default_value;
 pub(in crate::fixups) use context::{CallRecord, CallTarget, QueryContext};
 pub(in crate::fixups) use field::Field;
 pub(in crate::fixups) use item::{
-    EditSet, ExpressionRef, ItemCaseContext, ItemPlanBuilder, QueryRule, same_statement_container,
+    EditSet, ItemCaseContext, ItemPlanBuilder, QueryRule, same_statement_container,
 };
 pub(in crate::fixups) use patterns::{
     AssignmentValue, Binding, Definition, ExternFn, FnCall, LetStmtPattern, Local, LoopStmtPattern,
@@ -38,13 +38,14 @@ pub(in crate::fixups) use recipe::{
 pub(in crate::fixups) use rewrite::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 use views::{
     AnonymousStructField, AnonymousStructPlan, ArrayElementPointerOrigin, BufferCursorPlan,
-    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan,
-    UnusedTypeDefinitionSet, ZeroInitPlan,
+    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan, ZeroInitPlan,
 };
 pub(in crate::fixups) use views::{
-    AnonymousStructSet, BindingCategory, BindingDefUse, BindingRef, ByteExtent, ByteRepresentation,
-    ByteSource, ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, ExprSite, FunctionRef, HeapOwnershipPlanSet, InlineTempPlan, LazySingletonSet,
-    NulPosition, ParameterRemoval, Phase, PointerMutability, PtrLenPlanSet, ResolvedValue,
+    AnonymousStructSet, BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse,
+    BindingUses, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
+    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite,
+    ExpressionEffects, ExpressionPlace, ExpressionRef, ExpressionValues, FunctionRef,
+    HeapOwnershipPlanSet, InlineTempPlan, ItemReferences, LazySingletonSet, NulPosition,
+    ParameterRemoval, Phase, PointerMutability, PtrLenPlanSet, ReferenceDomain, ResolvedValue,
     StableExpr, StatementRange, Usage, ValueSite, ZeroGroupUsers, ZeroUsers,
 };

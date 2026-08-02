@@ -1317,6 +1317,52 @@ impl FixupFacts {
             .map(|fact| fact.binding)
     }
 
+    pub(super) fn bindings_read_under(
+        &self,
+        function: FunctionId,
+        name: &str,
+        path: &AstPath,
+    ) -> Vec<BindingId> {
+        self.def_use
+            .iter()
+            .filter(|fact| {
+                fact.function == function
+                    && self
+                        .bindings
+                        .iter()
+                        .any(|binding| binding.id == fact.binding && binding.name == name)
+                    && fact
+                        .reads
+                        .iter()
+                        .any(|read| walk::paths_overlap(&read.0, &path.0))
+            })
+            .map(|fact| fact.binding)
+            .collect()
+    }
+
+    pub(super) fn bindings_written_under(
+        &self,
+        function: FunctionId,
+        name: &str,
+        path: &AstPath,
+    ) -> Vec<BindingId> {
+        self.def_use
+            .iter()
+            .filter(|fact| {
+                fact.function == function
+                    && self
+                        .bindings
+                        .iter()
+                        .any(|binding| binding.id == fact.binding && binding.name == name)
+                    && fact
+                        .writes
+                        .iter()
+                        .any(|write| walk::paths_overlap(&write.0, &path.0))
+            })
+            .map(|fact| fact.binding)
+            .collect()
+    }
+
     pub(super) fn local_binding_at(
         &self,
         function: FunctionId,

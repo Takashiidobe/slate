@@ -27,7 +27,8 @@ pub(in crate::fixups) fn rewrite(pass: Pass) -> QueryRule<StatementSequence> {
             return Err(case.reject());
         };
         if !discardable_known_method(init) {
-            case.no_effects(&matched.statement(0))?;
+            let statement = matched.statement(0);
+            case.fact(|query| query.no_effects(&statement))?;
         }
         Ok(EditSet::replace_statements(
             matched.target().clone(),

@@ -19,7 +19,8 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
             return Err(case.reject());
         };
         case.require(loop_body.len() >= 2)?;
-        let fact = case.counted_loop(&matched.statement(1))?;
+        let statement = matched.statement(1);
+        let fact = case.fact(|query| query.counted_loop(&statement))?;
         case.require(fact.start == CountedLoopStart::Zero)?;
         case.require(fact.step == CountedLoopStep::One)?;
         let pat = match fact.index_use {
