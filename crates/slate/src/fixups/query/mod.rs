@@ -6,6 +6,7 @@ mod item;
 mod nullable_pointer;
 mod patterns;
 mod plan;
+mod printf;
 mod program_recipe;
 mod proof;
 mod recipe;
@@ -30,8 +31,10 @@ pub(in crate::fixups) use patterns::{
     StatementContainer, StatementSequence, TypeUse, Value, WholeProgram,
 };
 pub(in crate::fixups) use plan::TouchedItems;
+use printf::printf_macro;
 pub(in crate::fixups) use program_recipe::{
-    rewrite_anonymous_structs, rewrite_atomic_locals, rewrite_lazy_singletons, rewrite_ptr_len,
+    rewrite_anonymous_structs, rewrite_atomic_locals, rewrite_lazy_singletons,
+    rewrite_printf_fallback, rewrite_ptr_len,
 };
 pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,

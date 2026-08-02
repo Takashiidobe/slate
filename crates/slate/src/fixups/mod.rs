@@ -593,9 +593,21 @@ fn apply_with_logger(
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::PrintfFormat, {
-        run_once_program(&mut program, |program| {
-            rewrite::printf_format::PrintfFormat::new(&facts, logger).fixup(program)
-        });
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::printf_format::rewrite());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
+        let facts = incremental.resolve(&program);
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::printf_format::fallback());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::StringParams, {
