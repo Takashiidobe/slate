@@ -208,9 +208,14 @@ fn apply_with_logger(
     let mut program = program.clone();
     let mut incremental = IncrementalFacts::new(facts);
     step!(program, Pass::Goto, {
-        to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, function| {
-            let mut fixup = rewrite::goto::Goto::new(function.name.clone(), logger);
-            run_once(&mut function.body, &mut fixup)
+        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
+            let plan = {
+                let query = query::QueryContext::new(program, facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::goto::rewrite());
+                builder.finish()
+            };
+            plan.apply(program, facts, logger).changed
         });
         incremental.mark_everything_dirty();
     });

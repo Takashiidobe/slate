@@ -279,6 +279,20 @@ items unbounded because insertion renumbers every later item.
 Recompute facts before the next fact-dependent query. Place definition deletion
 after the final pass that can remove a user.
 
+## Lowering-like rules
+
+Control-flow recovery and other lowering-like rewrites use the same query and
+edit protocol. Expose a semantic region view with stable statement anchors,
+then pass that view to a typed recipe that constructs replacement AST. Keep CFG
+analysis and structural emission in the recipe; the query rule only selects the
+region, requests the lowering, and returns one transactional `EditSet` for all
+affected anchors.
+
+Use multiple statement edits when a region is not contiguous. For example, a
+dispatch rewrite can replace its loop and delete an earlier state declaration
+in one edit set. Do not widen the replacement range across unrelated statements
+or move the lowering algorithm into matcher predicates.
+
 ## Program rules
 
 Use `QueryRule<WholeProgram>` only for a transformation that must update
@@ -315,8 +329,9 @@ replacement, and return the shared anchored edit.
 - Register the plan and fresh-fact boundary in `src/fixups/mod.rs`.
 
 Test query rewrites through C fixtures, not unit tests under
-`src/fixups/query/`. Cover accepted cases, important rejected fallbacks, and
-debug evidence in `tests/differential.rs`, then run:
+`src/fixups/query/`. Cover accepted cases and important rejected fallbacks by
+asserting the translated source in `tests/differential.rs`; diagnostic metadata
+is not part of rewrite correctness. Then run:
 
 ```bash
 SLATE_DIFF_FIXTURE=<name> cargo nextest r --release \
