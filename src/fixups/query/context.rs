@@ -386,6 +386,19 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(sites, evidence))
     }
 
+    pub(in crate::fixups) fn expression_sites(&self) -> Vec<ExprSite> {
+        let mut sites = Vec::new();
+        for (item_index, item) in self.program.items.iter().enumerate() {
+            let Item::Fn(function) = item else {
+                continue;
+            };
+            walk::body_exprs_with_path(&function.body, &mut Vec::new(), &mut |_, path| {
+                sites.push(expression_site(item_index, path));
+            });
+        }
+        sites
+    }
+
     pub(in crate::fixups) fn assign_value_sites(&self) -> Vec<ExprSite> {
         let mut sites = Vec::new();
         for (item_index, item) in self.program.items.iter().enumerate() {

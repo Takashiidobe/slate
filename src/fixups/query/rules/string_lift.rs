@@ -4,47 +4,63 @@ use crate::fixups::facts::{
 use crate::fixups::trace::Pass;
 use crate::rust_ast::{Expr, Prim, Stmt, Type};
 
-use super::super::{Local, Rejection, ValueCaseContext, ValueEdit, ValueRule, same_container};
+use super::super::{
+    Binding, BindingCategory, BindingRef, EditSet, Field, ItemCaseContext, QueryRule, Rejection,
+    same_statement_container,
+};
 
-pub(in crate::fixups) fn rewrite() -> ValueRule {
-    ValueRule::new(Pass::StringLift, "lift_string_buffer", Local::default())
-        .case("borrowed_str", |case| {
-            let buffer = case.string_buffer()?;
-            let bytes = buffer.bytes.clone().ok_or_else(|| case.reject())?;
-            let text = String::from_utf8(bytes).map_err(|_| case.reject())?;
-            lift(
-                case,
-                &buffer,
-                StringRecoveryCandidate::BorrowedStr,
-                str_ref_type(),
-                Expr::Str(text),
-            )
-        })
-        .case("borrowed_bytes", |case| {
-            let buffer = case.string_buffer()?;
-            let bytes = buffer.bytes.clone().ok_or_else(|| case.reject())?;
-            lift(
-                case,
-                &buffer,
-                StringRecoveryCandidate::BorrowedBytes,
-                byte_slice_ref_type(),
-                Expr::ByteStr(bytes),
-            )
-        })
+pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
+    QueryRule::new(
+        Pass::StringLift,
+        "lift_string_buffer",
+        Binding {
+            kind: Field::eq(BindingCategory::Local),
+            ..Default::default()
+        },
+    )
+    .case("borrowed_str", |case, binding| {
+        let buffer = case.string_buffer(binding)?;
+        let bytes = buffer.bytes.clone().ok_or_else(|| case.reject())?;
+        let text = String::from_utf8(bytes).map_err(|_| case.reject())?;
+        lift(
+            case,
+            binding,
+            &buffer,
+            StringRecoveryCandidate::BorrowedStr,
+            str_ref_type(),
+            Expr::Str(text),
+        )
+    })
+    .case("borrowed_bytes", |case, binding| {
+        let buffer = case.string_buffer(binding)?;
+        let bytes = buffer.bytes.clone().ok_or_else(|| case.reject())?;
+        lift(
+            case,
+            binding,
+            &buffer,
+            StringRecoveryCandidate::BorrowedBytes,
+            byte_slice_ref_type(),
+            Expr::ByteStr(bytes),
+        )
+    })
 }
 
-pub(in crate::fixups) fn rewrite_c_strings() -> ValueRule {
-    ValueRule::new(
+pub(in crate::fixups) fn rewrite_c_strings() -> QueryRule<Binding> {
+    QueryRule::new(
         Pass::StringLiftFixupCStrings,
         "lift_string_buffer",
-        Local::default(),
+        Binding {
+            kind: Field::eq(BindingCategory::Local),
+            ..Default::default()
+        },
     )
-    .case("borrowed_cstr", |case| {
-        let buffer = case.string_buffer()?;
+    .case("borrowed_cstr", |case, binding| {
+        let buffer = case.string_buffer(binding)?;
         case.require(buffer.ascii_only && !buffer.interior_nul)?;
         let bytes = buffer.bytes.clone().ok_or_else(|| case.reject())?;
         lift(
             case,
+            binding,
             &buffer,
             StringRecoveryCandidate::BorrowedCStr,
             cstr_ref_type(),
@@ -54,42 +70,45 @@ pub(in crate::fixups) fn rewrite_c_strings() -> ValueRule {
 }
 
 fn lift(
-    case: &mut ValueCaseContext<'_, '_>,
+    case: &mut ItemCaseContext<'_, '_>,
+    binding: &BindingRef,
     buffer: &StringBufferFact,
     recovery: StringRecoveryCandidate,
     ty: Type,
     expr: Expr,
-) -> Result<Vec<ValueEdit>, Rejection> {
-    let def_path = case.site();
+) -> Result<EditSet, Rejection> {
+    let def_path = binding.definition.clone();
     let assignment_path = match &buffer.provenance {
         StringBufferProvenance::AssignedLiteral { assignment } => Some(assignment.clone()),
         _ => None,
     };
-    let uses = case.uses()?;
-    let pointer_views = case.string_pointer_view_sites()?;
+    let uses = case.value_uses(binding)?;
+    let pointer_views = case.string_pointer_view_sites(binding)?;
     for site in uses.iter().chain(pointer_views.iter()) {
         if site.path == def_path || assignment_path.as_ref() == Some(&site.path) {
             continue;
         }
-        let allowed = case.use_allows_string_lift(site, recovery)?;
+        let allowed = case.string_use_allows_lift(binding, site, recovery)?;
         case.require(allowed)?;
     }
-    let mut edits = vec![ValueEdit::replace_stmt(
+    let mut edits = EditSet::new();
+    edits.push_replace_statement(
+        binding.item_index,
         def_path.clone(),
-        Stmt::Let {
-            name: case.name().to_string(),
+        Some(Stmt::Let {
+            name: binding.name.clone(),
             mutable: false,
             ty: Some(ty),
             init: Some(expr),
-        },
-    )];
+        }),
+    );
     if let Some(assignment) = &assignment_path
-        && same_container(&def_path, assignment)
+        && same_statement_container(&def_path, assignment)
     {
-        edits.push(ValueEdit::remove_stmt(assignment.clone()));
+        edits.push_replace_statement(binding.item_index, assignment.clone(), None);
     }
     let mut skip_prefix: Option<Vec<PathSegment>> = None;
-    for site in case.exprs()? {
+    for site in case.all_exprs(binding)? {
         if skip_prefix
             .as_ref()
             .is_some_and(|prefix| site.path.0.starts_with(prefix.as_slice()))
@@ -98,10 +117,10 @@ fn lift(
         }
         if let Some(rewritten) = case
             .expr(&site)
-            .and_then(|expr| rewrite_pointer_view_expr(expr, case.name()))
+            .and_then(|expr| rewrite_pointer_view_expr(expr, &binding.name))
         {
             skip_prefix = Some(site.path.0.clone());
-            edits.push(ValueEdit::replace_expr(site, rewritten));
+            edits.push_replace_expression(site, rewritten);
         }
     }
     Ok(edits)

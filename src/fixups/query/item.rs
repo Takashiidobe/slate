@@ -1,7 +1,9 @@
 use std::collections::BTreeMap;
 
 use crate::fixups::facts::walk;
-use crate::fixups::facts::{AstPath, FixupFacts, PathSegment};
+use crate::fixups::facts::{
+    AstPath, FixupFacts, PathSegment, StringBufferFact, StringRecoveryCandidate,
+};
 use crate::fixups::support::walk as mut_walk;
 use crate::fixups::trace::{
     Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact, function_path_location,
@@ -14,16 +16,18 @@ use super::plan::{
 };
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    BindingRef, BufferCursorPlan, CaseRejection, DefinitionKind, DefinitionLocation,
-    DefinitionSite, Evidence, ExprSite, FunctionBodyRecipe, FunctionRef, HeapOwnershipPlanSet,
-    InlineTempPlan, Phase, Predicate, QueryContext, Rejection, RejectionReason, RuleCaseIdentity,
-    RuleIdentity, StatementRange, ZeroInitPlan,
+    ArrayElementPointerOrigin, BindingRef, BufferCursorPlan, ByteSource, CallRecord, CaseRejection,
+    DefinitionKind, DefinitionLocation, DefinitionSite, Evidence, ExprRecipe, ExprSite, ExternFn,
+    FunctionBodyRecipe, FunctionRef, HeapOwnershipPlanSet, InlineTempPlan, NulPosition, Phase,
+    Predicate, QueryContext, Rejection, RejectionReason, RuleCaseIdentity, RuleIdentity,
+    StableExpr, StatementRange, ValueSite, ZeroInitPlan,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(in crate::fixups) enum QueryDomain {
     Binding,
     Definition,
+    Expression,
     Function,
     Statement,
 }
@@ -31,11 +35,17 @@ pub(in crate::fixups) enum QueryDomain {
 pub(in crate::fixups) enum QueryItem<'snapshot> {
     Binding(BindingRef),
     Definition(&'snapshot DefinitionSite),
+    Expression(ExpressionRef),
     Function(FunctionRef),
     Statement {
         site: StatementRef,
         tail: &'snapshot [IndentStmt],
     },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct ExpressionRef {
+    pub(in crate::fixups) site: ExprSite,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -73,6 +83,16 @@ impl StatementRef {
             end: index + 1,
         }
     }
+}
+
+pub(in crate::fixups) fn same_statement_container(declaration: &AstPath, other: &AstPath) -> bool {
+    let Some((PathSegment::Stmt(_), declaration_parent)) = declaration.0.split_last() else {
+        return false;
+    };
+    let Some((PathSegment::Stmt(_), other_parent)) = other.0.split_last() else {
+        return false;
+    };
+    declaration_parent == other_parent
 }
 
 #[derive(Clone)]
@@ -115,11 +135,31 @@ pub(in crate::fixups) trait Matcher {
 
 pub(in crate::fixups) trait MatchCapture: Clone {
     fn anchor(&self) -> Anchor;
+
+    fn evidence(&self) -> Vec<Evidence> {
+        Vec::new()
+    }
 }
 
 impl MatchCapture for DefinitionSite {
     fn anchor(&self) -> Anchor {
         Anchor::Definition(self.location.clone())
+    }
+}
+
+impl MatchCapture for ExpressionRef {
+    fn anchor(&self) -> Anchor {
+        Anchor::Expression(self.site.clone())
+    }
+}
+
+impl MatchCapture for CallRecord {
+    fn anchor(&self) -> Anchor {
+        Anchor::Expression(self.site.clone())
+    }
+
+    fn evidence(&self) -> Vec<Evidence> {
+        self.evidence.clone()
     }
 }
 
@@ -191,7 +231,172 @@ pub(in crate::fixups) struct ItemCaseContext<'case, 'snapshot> {
     evidence: Vec<Evidence>,
 }
 
-impl ItemCaseContext<'_, '_> {
+impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
+    pub(in crate::fixups) fn expr(&self, site: &ExprSite) -> Option<&Expr> {
+        self.query.expr(site)
+    }
+
+    pub(in crate::fixups) fn child(&self, site: &ExprSite, index: usize) -> ExprSite {
+        self.query.child(site, index)
+    }
+
+    pub(in crate::fixups) fn cast_at(
+        &mut self,
+        site: &ExprSite,
+    ) -> Result<crate::fixups::facts::CastFact, Rejection> {
+        self.prove(self.query.cast_at(site))
+    }
+
+    pub(in crate::fixups) fn call_args<const N: usize>(&self, call: &CallRecord) -> [ExprSite; N] {
+        assert_eq!(N, call.args.len());
+        std::array::from_fn(|index| call.args[index].clone())
+    }
+
+    pub(in crate::fixups) fn byte_source(
+        &mut self,
+        site: &ExprSite,
+    ) -> Result<ByteSource<'snapshot>, Rejection> {
+        self.prove(self.query.byte_source(site))
+    }
+
+    pub(in crate::fixups) fn u8_eq(
+        &mut self,
+        site: &ExprSite,
+        expected: u8,
+    ) -> Result<(), Rejection> {
+        let actual = self.prove(self.query.const_u8(site))?;
+        self.require_at(actual == expected, Predicate::ConstantU8, site)
+    }
+
+    pub(in crate::fixups) fn pure(&mut self, site: &ExprSite) -> Result<StableExpr, Rejection> {
+        self.prove(self.query.pure(site))
+    }
+
+    pub(in crate::fixups) fn extern_fn(&mut self, matcher: &ExternFn) -> Result<(), Rejection> {
+        self.prove(self.query.extern_fn(matcher))
+    }
+
+    pub(in crate::fixups) fn full_byte_view(
+        &mut self,
+        source: &ByteSource<'snapshot>,
+        count: &ExprSite,
+    ) -> Result<(), Rejection> {
+        self.prove(self.query.full_byte_view(source, count))
+            .map(drop)
+    }
+
+    pub(in crate::fixups) fn first_nul(
+        &mut self,
+        source: &ByteSource<'snapshot>,
+    ) -> Result<NulPosition, Rejection> {
+        self.prove(self.query.first_nul(source))
+    }
+
+    pub(in crate::fixups) fn prefix_contains(
+        &mut self,
+        count: &ExprSite,
+        nul: NulPosition,
+    ) -> Result<(), Rejection> {
+        self.prove(self.query.prefix_contains(count, nul))
+    }
+
+    pub(in crate::fixups) fn lower_expr(
+        &mut self,
+        recipe: ExprRecipe<'snapshot>,
+        site: &ExprSite,
+    ) -> Result<Expr, Rejection> {
+        match recipe.lower(self.query, site) {
+            Ok(expr) => Ok(expr),
+            Err(mut rejection) => {
+                let mut evidence = self.evidence.clone();
+                evidence.append(&mut rejection.evidence);
+                rejection.evidence = evidence;
+                Err(rejection)
+            }
+        }
+    }
+
+    fn value_site(binding: &BindingRef) -> ValueSite {
+        ValueSite {
+            item_index: binding.item_index,
+            path: binding.definition.clone(),
+        }
+    }
+
+    pub(in crate::fixups) fn string_buffer(
+        &mut self,
+        binding: &BindingRef,
+    ) -> Result<StringBufferFact, Rejection> {
+        self.prove(self.query.string_buffer(&Self::value_site(binding)))
+    }
+
+    pub(in crate::fixups) fn all_exprs(
+        &mut self,
+        binding: &BindingRef,
+    ) -> Result<Vec<ExprSite>, Rejection> {
+        self.prove(self.query.all_exprs(binding.item_index))
+    }
+
+    pub(in crate::fixups) fn value_uses(
+        &mut self,
+        binding: &BindingRef,
+    ) -> Result<Vec<ExprSite>, Rejection> {
+        self.prove(
+            self.query
+                .value_uses(&Self::value_site(binding), &binding.name),
+        )
+    }
+
+    pub(in crate::fixups) fn string_pointer_view_sites(
+        &mut self,
+        binding: &BindingRef,
+    ) -> Result<Vec<ExprSite>, Rejection> {
+        self.prove(
+            self.query
+                .string_pointer_view_sites(&Self::value_site(binding), &binding.name),
+        )
+    }
+
+    pub(in crate::fixups) fn string_use_allows_lift(
+        &mut self,
+        binding: &BindingRef,
+        site: &ExprSite,
+        recovery: StringRecoveryCandidate,
+    ) -> Result<bool, Rejection> {
+        self.prove(self.query.string_use_allows_lift(
+            &Self::value_site(binding),
+            &binding.name,
+            site,
+            recovery,
+        ))
+    }
+
+    pub(in crate::fixups) fn pointer_origin(
+        &mut self,
+        binding: &BindingRef,
+        name: &str,
+    ) -> Result<ArrayElementPointerOrigin, Rejection> {
+        self.prove(self.query.pointer_origin(&Self::value_site(binding), name))
+    }
+
+    fn require_at(
+        &self,
+        condition: bool,
+        predicate: Predicate,
+        site: &ExprSite,
+    ) -> Result<(), Rejection> {
+        if condition {
+            Ok(())
+        } else {
+            Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::Contradicted,
+                self.evidence.clone(),
+            ))
+        }
+    }
+
     pub(in crate::fixups) fn zero_users(
         &mut self,
         definition: &DefinitionSite,
@@ -324,6 +529,15 @@ impl ItemCaseContext<'_, '_> {
         )
     }
 
+    pub(in crate::fixups) fn reject_at(
+        &self,
+        predicate: Predicate,
+        site: &ExprSite,
+        reason: RejectionReason,
+    ) -> Rejection {
+        Rejection::new(predicate, Some(site.clone()), reason, self.evidence.clone())
+    }
+
     fn prove<T>(&mut self, result: super::QueryResult<T>) -> Result<T, Rejection> {
         match result {
             Ok(proof) => {
@@ -340,6 +554,7 @@ impl ItemCaseContext<'_, '_> {
     }
 }
 
+#[allow(clippy::large_enum_variant)]
 pub(in crate::fixups) enum AnchoredEdit {
     DeleteDefinition {
         target: DefinitionSite,
@@ -347,6 +562,14 @@ pub(in crate::fixups) enum AnchoredEdit {
     ReplaceFunctionBody {
         target: DefinitionSite,
         body: Vec<IndentStmt>,
+    },
+    ReplaceExpression {
+        target: ExprSite,
+        replacement: Expr,
+    },
+    ReplaceStatement {
+        target: StatementRange,
+        replacement: Option<crate::rust_ast::Stmt>,
     },
     RemoveCallArgument {
         target: ExprSite,
@@ -370,6 +593,55 @@ pub(in crate::fixups) struct EditSet {
 }
 
 impl EditSet {
+    pub(in crate::fixups) fn new() -> Self {
+        Self {
+            edits: Vec::new(),
+            evidence: Vec::new(),
+        }
+    }
+
+    pub(in crate::fixups) fn replace_expression(target: ExprSite, replacement: Expr) -> Self {
+        Self {
+            edits: vec![AnchoredEdit::ReplaceExpression {
+                target,
+                replacement,
+            }],
+            evidence: Vec::new(),
+        }
+    }
+
+    pub(in crate::fixups) fn push_replace_expression(
+        &mut self,
+        target: ExprSite,
+        replacement: Expr,
+    ) {
+        self.edits.push(AnchoredEdit::ReplaceExpression {
+            target,
+            replacement,
+        });
+    }
+
+    pub(in crate::fixups) fn push_replace_statement(
+        &mut self,
+        item_index: usize,
+        path: AstPath,
+        replacement: Option<crate::rust_ast::Stmt>,
+    ) {
+        let mut container = path.0;
+        let Some(PathSegment::Stmt(index)) = container.pop() else {
+            unreachable!()
+        };
+        self.edits.push(AnchoredEdit::ReplaceStatement {
+            target: StatementRange {
+                item_index,
+                path: AstPath(container),
+                start: index,
+                end: index + 1,
+            },
+            replacement,
+        });
+    }
+
     pub(in crate::fixups) fn remove_parameter(removal: super::ParameterRemoval) -> Self {
         let expected_arity = removal.function.function.params.len();
         let mut edits = removal
@@ -444,6 +716,9 @@ impl EditTarget for EditSet {
                 AnchoredEdit::RemoveCallArgument { target, .. } => {
                     Anchor::Expression(target.clone())
                 }
+                AnchoredEdit::ReplaceExpression { target, .. } => {
+                    Anchor::Expression(target.clone())
+                }
                 AnchoredEdit::RemoveFunctionParameter { target, .. } => Anchor::Function {
                     item_index: target.item_index,
                     name: target.function.name.clone(),
@@ -451,6 +726,7 @@ impl EditTarget for EditSet {
                 AnchoredEdit::ReplaceStatements { target, .. } => {
                     Anchor::Statements(target.clone())
                 }
+                AnchoredEdit::ReplaceStatement { target, .. } => Anchor::Statements(target.clone()),
             })
             .collect::<Vec<_>>();
         sites.sort();
@@ -593,7 +869,7 @@ impl ItemPlanBuilder {
             for case in &rule.cases {
                 let mut context = ItemCaseContext {
                     query,
-                    evidence: Vec::new(),
+                    evidence: capture.evidence(),
                 };
                 match (case.apply)(&mut context, &capture) {
                     Ok(mut edit) => {
@@ -655,6 +931,13 @@ fn query_items<'query>(
             .map(QueryItem::Binding)
             .collect();
     }
+    if domain == QueryDomain::Expression {
+        return query
+            .expression_sites()
+            .into_iter()
+            .map(|site| QueryItem::Expression(ExpressionRef { site }))
+            .collect();
+    }
     let mut items = Vec::new();
     for (item_index, item) in query.snapshot_program().items.iter().enumerate() {
         if let Item::Fn(function) = item {
@@ -710,6 +993,7 @@ impl ItemPlan {
         }
         let mut statement_edits = BTreeMap::new();
         let mut call_edits = BTreeMap::new();
+        let mut expression_edits = BTreeMap::new();
         let mut parameter_edits = Vec::new();
         let mut definition_edits = Vec::new();
         for planned_edit in self.plan.edits {
@@ -755,6 +1039,21 @@ impl ItemPlan {
                             },
                         );
                     }
+                    AnchoredEdit::ReplaceExpression {
+                        target,
+                        replacement,
+                    } => {
+                        expression_edits.insert(
+                            (target.item_index, target.path.clone()),
+                            PlannedExpressionEdit {
+                                identity: identity.clone(),
+                                target,
+                                replacement,
+                                evidence: edit.evidence.clone(),
+                                rejected_cases: rejected_cases.clone(),
+                            },
+                        );
+                    }
                     AnchoredEdit::RemoveFunctionParameter {
                         target,
                         index,
@@ -779,6 +1078,25 @@ impl ItemPlan {
                                 identity: identity.clone(),
                                 target,
                                 replacement,
+                                preserve_depth: false,
+                                evidence: edit.evidence.clone(),
+                                rejected_cases: rejected_cases.clone(),
+                            },
+                        );
+                    }
+                    AnchoredEdit::ReplaceStatement {
+                        target,
+                        replacement,
+                    } => {
+                        statement_edits.insert(
+                            target.clone(),
+                            PlannedStatementEdit {
+                                identity: identity.clone(),
+                                target,
+                                replacement: replacement
+                                    .map(|stmt| vec![IndentStmt { depth: 0, stmt }])
+                                    .unwrap_or_default(),
+                                preserve_depth: true,
                                 evidence: edit.evidence.clone(),
                                 rejected_cases: rejected_cases.clone(),
                             },
@@ -787,7 +1105,25 @@ impl ItemPlan {
                 }
             }
         }
-        let (mut applied, mut touched, missing_statements) = {
+        let mut applied = 0;
+        let mut touched = TouchedItems::none();
+        applied += apply_call_edits(
+            program,
+            call_edits,
+            facts,
+            logger,
+            &mut diagnostics,
+            &mut touched,
+        );
+        applied += apply_expression_edits(
+            program,
+            expression_edits,
+            facts,
+            logger,
+            &mut diagnostics,
+            &mut touched,
+        );
+        let (statement_applied, statement_touched, missing_statements) = {
             let mut state = ApplyState {
                 edits: statement_edits,
                 applied: 0,
@@ -809,20 +1145,16 @@ impl ItemPlan {
             }
             (state.applied, state.touched, state.edits)
         };
+        applied += statement_applied;
+        touched.in_place.extend(statement_touched.in_place);
+        touched.removed.extend(statement_touched.removed);
+        touched.unbounded |= statement_touched.unbounded;
         for (_, edit) in missing_statements {
             diagnostics.push(PlanDiagnostic::MissingTarget {
                 contender: edit.identity,
                 target: EditSetSite(vec![Anchor::Statements(edit.target)]),
             });
         }
-        applied += apply_call_edits(
-            program,
-            call_edits,
-            facts,
-            logger,
-            &mut diagnostics,
-            &mut touched,
-        );
         applied += apply_parameter_edits(
             program,
             parameter_edits,
@@ -854,6 +1186,76 @@ struct PlannedCallEdit {
     expected_arity: usize,
     evidence: Vec<Evidence>,
     rejected_cases: Vec<CaseRejection>,
+}
+
+struct PlannedExpressionEdit {
+    identity: RuleCaseIdentity,
+    target: ExprSite,
+    replacement: Expr,
+    evidence: Vec<Evidence>,
+    rejected_cases: Vec<CaseRejection>,
+}
+
+fn apply_expression_edits(
+    program: &mut Program,
+    mut edits: BTreeMap<(usize, AstPath), PlannedExpressionEdit>,
+    facts: &FixupFacts,
+    logger: &mut dyn TraceLogger,
+    diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
+    touched: &mut TouchedItems,
+) -> usize {
+    let mut applied = 0;
+    for (item_index, item) in program.items.iter_mut().enumerate() {
+        let Item::Fn(function) = item else {
+            continue;
+        };
+        if !edits
+            .keys()
+            .any(|(target_item, _)| *target_item == item_index)
+        {
+            continue;
+        }
+        mut_walk::body_exprs_mut_with_path(
+            &mut function.body,
+            &mut Vec::new(),
+            &mut |expr, path| {
+                let key = (item_index, AstPath(path.to_vec()));
+                let Some(edit) = edits.remove(&key) else {
+                    return true;
+                };
+                let before = std::mem::replace(expr, edit.replacement);
+                log_item_edit(
+                    logger,
+                    &edit.identity,
+                    &edit.evidence,
+                    &edit.rejected_cases,
+                    TraceChange {
+                        location: facts
+                            .function_by_item_index(item_index)
+                            .map(|function| {
+                                function_path_location(facts, function, &edit.target.path.0)
+                            })
+                            .unwrap_or_else(|| path_location(&edit.target.path.0)),
+                        label: "expr",
+                        before: before.render(),
+                        after: expr.render(),
+                    },
+                );
+                applied += 1;
+                touched.in_place.push(item_index);
+                false
+            },
+        );
+    }
+    diagnostics.extend(
+        edits
+            .into_values()
+            .map(|edit| PlanDiagnostic::MissingTarget {
+                contender: edit.identity,
+                target: EditSetSite(vec![Anchor::Expression(edit.target)]),
+            }),
+    );
+    applied
 }
 
 struct PlannedParameterEdit {
@@ -1113,6 +1515,7 @@ struct PlannedStatementEdit {
     identity: RuleCaseIdentity,
     target: StatementRange,
     replacement: Vec<IndentStmt>,
+    preserve_depth: bool,
     evidence: Vec<Evidence>,
     rejected_cases: Vec<CaseRejection>,
 }
@@ -1159,6 +1562,10 @@ fn apply_body(
             continue;
         }
         let before = body[edit.target.start..edit.target.end].to_vec();
+        let mut replacement = edit.replacement;
+        if edit.preserve_depth && replacement.len() == 1 {
+            replacement[0].depth = before[0].depth;
+        }
         if state.logger.is_enabled() {
             state.logger.rewrite(rewrite_event(
                 &edit.identity,
@@ -1166,11 +1573,11 @@ fn apply_body(
                 &edit.evidence,
                 &edit.rejected_cases,
                 &before,
-                &edit.replacement,
+                &replacement,
                 state.facts,
             ));
         }
-        body.splice(edit.target.start..edit.target.end, edit.replacement);
+        body.splice(edit.target.start..edit.target.end, replacement);
         state.applied += 1;
         state.touched.in_place.push(item_index);
     }
