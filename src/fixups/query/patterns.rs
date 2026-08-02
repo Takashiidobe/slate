@@ -34,6 +34,7 @@ impl Matcher for FnCall {
             .expression_call(expression)
             .ok()
             .map(|proof| proof.value)
+            .filter(|call| call.site == expression.site)
             .filter(|call| {
                 self.target.matches(&call.target, &())
                     && self.arity.matches(&call.args.len(), &())

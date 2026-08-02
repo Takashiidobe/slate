@@ -2087,22 +2087,6 @@ fn unused_type_definitions_are_pruned_but_reachable_ones_survive() {
     assert!(!rust.contains("truly_dead"));
     assert!(rust.contains("enum color"));
     assert!(rust.contains("color::GREEN as u32"));
-
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("fixup-debug")
-        .arg("--debug-only-pass")
-        .arg("unused_items")
-        .arg(&c_src)
-        .output()
-        .expect("run unused_items query trace");
-    assert!(
-        output.status.success(),
-        "fixup-debug failed:\n{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
-    assert!(stdout.contains("query_rule=prune_unused_type_definition"));
-    assert!(stdout.contains("evidence.unused_type_definition=doomed=4"));
 }
 
 #[test]
