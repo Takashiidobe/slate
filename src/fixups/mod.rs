@@ -62,6 +62,9 @@ fn splice_incremental_facts(
             updated.splice_function(program, function);
         }
     }
+    if !touched.in_place.is_empty() || !touched.removed.is_empty() {
+        facts::casts::collect_facts(program, &mut updated);
+    }
     updated
 }
 
@@ -309,9 +312,15 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::ConstantIndexCasts, {
-        let mut fixup = rewrite::constant_index_casts::ConstantIndexCasts::new(logger);
-        run_once_items(&mut program, |_, f| run_once(&mut f.body, &mut fixup));
-        incremental.mark_everything_dirty();
+        let facts = incremental.resolve(&program);
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::constant_index_casts::rewrite());
+            builder.finish()
+        };
+        let report = plan.apply(&mut program, &facts, logger);
+        incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::UnnecessaryCasts, {
