@@ -3,9 +3,10 @@ use std::collections::BTreeMap;
 use crate::fixups::facts::atomic_locals::place_local_target;
 use crate::fixups::facts::{FixupFacts, FunctionId};
 use crate::fixups::support::walk;
+use crate::function_identity::{CallBinding, Known, known_call};
 use crate::rust_ast::{
-    AtomicPlace, AtomicType, Attr, Derive, Expr, FnDef, Ident, ImplItem, IndentStmt, Item, Program,
-    Repr, Stmt, StructDef, StructFields, Type, UnaryOp,
+    AtomicPlace, AtomicType, Attr, Block, Derive, Expr, ExternDecl, ExternFnDecl, FnDef, FnParam,
+    Ident, ImplItem, IndentStmt, Item, Program, Repr, Stmt, StructDef, StructFields, Type, UnaryOp,
 };
 
 use super::plan::TouchedItems;
@@ -284,6 +285,366 @@ pub(in crate::fixups) fn rewrite_lazy_singletons(
         },
         Vec::new(),
     ))
+}
+
+pub(in crate::fixups) fn rewrite_printf_fallback(
+    query: &QueryContext<'_>,
+) -> QueryResult<ProgramReplacement> {
+    let mut replacement = query.snapshot_program().clone();
+    if !apply_printf_fallback(&mut replacement) {
+        return Err(Rejection::new(
+            Predicate::PrintfCall,
+            None,
+            RejectionReason::Contradicted,
+            Vec::new(),
+        ));
+    }
+    Ok(Proof::new(
+        ProgramReplacement {
+            replacement,
+            touched: TouchedItems::unbounded(),
+        },
+        Vec::new(),
+    ))
+}
+
+fn apply_printf_fallback(program: &mut Program) -> bool {
+    if program_has_printf_call(program) {
+        let mut changed = ensure_stdout_and_fflush_externs(program);
+        changed |= wrap_remaining_raw_printf_calls(program);
+        changed
+    } else {
+        prune_printf_extern(program)
+    }
+}
+
+fn ensure_stdout_and_fflush_externs(program: &mut Program) -> bool {
+    let has_stdout = program.items.iter().any(|item| {
+        matches!(item, Item::ExternBlock { decls, .. } if decls.iter().any(|decl| matches!(decl, ExternDecl::Static { name, .. } if name == "stdout")))
+    });
+    let has_fflush = program.items.iter().any(|item| {
+        matches!(item, Item::ExternBlock { decls, .. } if decls.iter().any(|decl| matches!(decl, ExternDecl::Fn(f) if f.name == "fflush")))
+    });
+    if has_stdout && has_fflush {
+        return false;
+    }
+    let mut new_decls = Vec::new();
+    if !has_stdout {
+        new_decls.push(stdout_static_decl());
+    }
+    if !has_fflush {
+        new_decls.push(fflush_fn_decl());
+    }
+    if let Some(Item::ExternBlock { decls, .. }) = program
+        .items
+        .iter_mut()
+        .find(|item| matches!(item, Item::ExternBlock { abi, .. } if abi == "C"))
+    {
+        decls.extend(new_decls);
+    } else {
+        program.items.insert(
+            0,
+            Item::ExternBlock {
+                abi: "C".into(),
+                decls: new_decls,
+            },
+        );
+    }
+    true
+}
+
+fn stdout_static_decl() -> ExternDecl {
+    ExternDecl::Static {
+        attrs: Vec::new(),
+        mutable: true,
+        name: "stdout".into(),
+        ty: Type::parse("*mut libc::FILE"),
+    }
+}
+
+fn fflush_fn_decl() -> ExternDecl {
+    ExternDecl::Fn(ExternFnDecl {
+        identity: crate::function_identity::FunctionIdentity::Unknown,
+        name: "fflush".into(),
+        params: vec![FnParam {
+            name: "_0".into(),
+            mutable: false,
+            ty: Type::parse("*mut libc::FILE"),
+            metadata: Default::default(),
+        }],
+        variadic: false,
+        ret: Some(Type::parse("i32")),
+        metadata: Default::default(),
+    })
+}
+
+fn wrap_remaining_raw_printf_calls(program: &mut Program) -> bool {
+    let mut changed = false;
+    for item in &mut program.items {
+        if let Item::Fn(f) = item {
+            changed |= wrap_raw_printf_in_body(&mut f.body);
+        }
+    }
+    changed
+}
+
+fn wrap_raw_printf_in_body(body: &mut Vec<IndentStmt>) -> bool {
+    let mut changed = false;
+    let mut index = 0;
+    while index < body.len() {
+        let mut path = Vec::new();
+        walk::nested_body_vecs_mut_with_path(&mut body[index].stmt, &mut path, &mut |body, _| {
+            changed |= wrap_raw_printf_in_body(body);
+        });
+        if is_raw_printf_call_stmt(&body[index].stmt) {
+            let depth = body[index].depth;
+            body.insert(
+                index + 1,
+                IndentStmt {
+                    depth,
+                    stmt: fflush_after_stmt(),
+                },
+            );
+            body.insert(
+                index,
+                IndentStmt {
+                    depth,
+                    stmt: flush_before_stmt(),
+                },
+            );
+            changed = true;
+            index += 3;
+        } else {
+            index += 1;
+        }
+    }
+    changed
+}
+
+fn peel_empty_unsafe(expr: &Expr) -> &Expr {
+    if let Expr::Unsafe(block) = expr
+        && block.stmts.is_empty()
+        && let Some(tail) = &block.tail
+    {
+        return tail;
+    }
+    expr
+}
+
+fn is_raw_printf_call_stmt(stmt: &Stmt) -> bool {
+    let Stmt::Expr(expr) = stmt else {
+        return false;
+    };
+    known_call(peel_empty_unsafe(expr)) == Some(Known::Printf)
+}
+
+fn flush_before_stmt() -> Stmt {
+    Stmt::Expr(Expr::MethodCall {
+        recv: Box::new(Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Var("std::io::Write::flush".into())),
+            args: vec![Expr::Ref {
+                mutable: true,
+                expr: Box::new(Expr::Call {
+                    binding: CallBinding::Generated,
+                    func: Box::new(Expr::Var("std::io::stdout".into())),
+                    args: Vec::new(),
+                }),
+            }],
+        }),
+        method: "unwrap".into(),
+        args: Vec::new(),
+    })
+}
+
+fn fflush_after_stmt() -> Stmt {
+    Stmt::Expr(Expr::Unsafe(Box::new(Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Var("fflush".into())),
+            args: vec![Expr::Cast {
+                expr: Box::new(Expr::Unsafe(Box::new(Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Var("stdout".into()))),
+                }))),
+                ty: Type::parse("*mut libc::FILE"),
+            }],
+        })),
+    })))
+}
+
+fn prune_printf_extern(program: &mut Program) -> bool {
+    let before_items = program.items.len();
+    let before_decls = program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            Item::ExternBlock { decls, .. } => Some(decls.len()),
+            _ => None,
+        })
+        .sum::<usize>();
+    program.items.retain_mut(|item| match item {
+        Item::ExternBlock { decls, .. } => {
+            decls.retain(|decl| {
+                !matches!(decl, ExternDecl::Fn(f) if crate::function_identity::known_declaration(f.identity, &f.name) == Some(Known::Printf))
+            });
+            !decls.is_empty()
+        }
+        _ => true,
+    });
+    let after_decls = program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            Item::ExternBlock { decls, .. } => Some(decls.len()),
+            _ => None,
+        })
+        .sum::<usize>();
+    program.items.len() != before_items || after_decls != before_decls
+}
+
+fn program_has_printf_call(program: &Program) -> bool {
+    program.items.iter().any(|item| match item {
+        Item::Fn(f) => body_has_printf_call(&f.body),
+        _ => false,
+    })
+}
+
+fn body_has_printf_call(body: &[IndentStmt]) -> bool {
+    body.iter().any(|indent| stmt_has_printf_call(&indent.stmt))
+}
+
+fn block_has_printf_call(block: &Block) -> bool {
+    body_has_printf_call(&block.stmts) || block.tail.as_deref().is_some_and(expr_has_printf_call)
+}
+
+fn stmt_has_printf_call(stmt: &Stmt) -> bool {
+    match stmt {
+        Stmt::Let { init, .. } => init.as_ref().is_some_and(expr_has_printf_call),
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            expr_has_printf_call(cond)
+                || body_has_printf_call(then_body)
+                || expr_has_printf_call(then_value)
+                || body_has_printf_call(else_body)
+                || expr_has_printf_call(else_value)
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            expr_has_printf_call(target) || expr_has_printf_call(value)
+        }
+        Stmt::Expr(expr) => expr_has_printf_call(expr),
+        Stmt::Return(expr) => expr.as_ref().is_some_and(expr_has_printf_call),
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            block_has_printf_call(body)
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            expr_has_printf_call(cond)
+                || body_has_printf_call(then_body)
+                || body_has_printf_call(else_body)
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            body_has_printf_call(body)
+        }
+        Stmt::For { iter, body, .. } => expr_has_printf_call(iter) || body_has_printf_call(body),
+        Stmt::Match { expr, arms } => {
+            expr_has_printf_call(expr) || arms.iter().any(|arm| body_has_printf_call(&arm.body))
+        }
+        Stmt::InlineAsm(_) | Stmt::Break(_) | Stmt::Continue(_) => false,
+    }
+}
+
+fn expr_has_printf_call(expr: &Expr) -> bool {
+    match expr {
+        Expr::Call { func, args, .. } => {
+            known_call(expr) == Some(Known::Printf)
+                || expr_has_printf_call(func)
+                || args.iter().any(expr_has_printf_call)
+        }
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => expr_has_printf_call(expr),
+        Expr::Binary { lhs, rhs, .. } => expr_has_printf_call(lhs) || expr_has_printf_call(rhs),
+        Expr::Range { start, end } => expr_has_printf_call(start) || expr_has_printf_call(end),
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            expr_has_printf_call(recv) || args.iter().any(expr_has_printf_call)
+        }
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } => expr_has_printf_call(base),
+        Expr::ArrayPtr { array, .. } => expr_has_printf_call(array),
+        Expr::Index { base, index } => expr_has_printf_call(base) || expr_has_printf_call(index),
+        Expr::StructLit { fields, .. } => {
+            fields.iter().any(|(_, value)| expr_has_printf_call(value))
+        }
+        Expr::TupleStructLit { fields, .. } => fields.iter().any(expr_has_printf_call),
+        Expr::ArrayLit(elems) => elems.iter().any(expr_has_printf_call),
+        Expr::ArrayRepeat { elem, .. } => expr_has_printf_call(elem),
+        Expr::VecLit(elems) => elems.iter().any(expr_has_printf_call),
+        Expr::VecRepeat { elem, len } => expr_has_printf_call(elem) || expr_has_printf_call(len),
+        Expr::Macro { args, .. } => args.iter().any(expr_has_printf_call),
+        Expr::Closure { body, .. } => expr_has_printf_call(body),
+        Expr::Match { expr, arms } => {
+            expr_has_printf_call(expr) || arms.iter().any(|arm| expr_has_printf_call(&arm.value))
+        }
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            expr_has_printf_call(cond)
+                || expr_has_printf_call(then_expr)
+                || expr_has_printf_call(else_expr)
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => block_has_printf_call(block),
+        Expr::CopyNonoverlapping { src, dst, .. } => {
+            expr_has_printf_call(src) || expr_has_printf_call(dst)
+        }
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => expr_has_printf_call(src) || expr_has_printf_call(dst) || expr_has_printf_call(count),
+        Expr::WriteBytes { dst, val, count } => {
+            expr_has_printf_call(dst) || expr_has_printf_call(val) || expr_has_printf_call(count)
+        }
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            place.ptr_expr().is_some_and(expr_has_printf_call)
+        }
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            place.ptr_expr().is_some_and(expr_has_printf_call) || expr_has_printf_call(value)
+        }
+        Expr::AtomicNew { value, .. } => expr_has_printf_call(value),
+        Expr::AtomicCompareExchange {
+            place,
+            expected,
+            desired,
+            ..
+        } => {
+            place.ptr_expr().is_some_and(expr_has_printf_call)
+                || expr_has_printf_call(expected)
+                || expr_has_printf_call(desired)
+        }
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::CStr(_)
+        | Expr::Var(_)
+        | Expr::Path(_)
+        | Expr::AtomicFence { .. }
+        | Expr::Todo(_) => false,
+    }
 }
 
 pub(in crate::fixups) fn rewrite_ptr_len(

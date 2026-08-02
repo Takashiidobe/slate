@@ -6,10 +6,10 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, CallArgPinning, CallCallee, CastFact, ConstValue,
     CountedLoopFact, EffectSubject, FixupFacts, FunctionId, NulTermination, PathSegment,
-    PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringRecoveryCandidate,
-    ValueSubject,
+    PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind,
+    StringRecoveryCandidate, ValueSubject,
 };
-use crate::function_identity::{CallBinding, FunctionIdentity, Known};
+use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_declaration};
 use crate::rust_ast::{
     Attr, Block, Expr, ExternDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem, IndentStmt,
     Item, MatchArm, Method, Pattern, Prim, Program, RecordDef, RustValue, Stmt, StructDef,
@@ -1787,6 +1787,47 @@ impl<'snapshot> QueryContext<'snapshot> {
             },
         }];
         Ok(Proof::new((arg.pinning, arg.variadic), evidence))
+    }
+
+    pub(in crate::fixups) fn printf_call_at(&self, site: &ExprSite) -> QueryResult<PrintfCallFact> {
+        let predicate = Predicate::PrintfCall;
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(fact) = self
+            .facts
+            .printf_call(function, &site.fact_path)
+            .or_else(|| self.facts.printf_call(function, &site.path))
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let evidence = vec![Evidence {
+            predicate,
+            site: site.clone(),
+            detail: EvidenceDetail::PrintfCall {
+                args: fact.arg_paths.len(),
+                known_format: fact.format.is_some(),
+            },
+        }];
+        Ok(Proof::new(fact.clone(), evidence))
+    }
+
+    pub(in crate::fixups) fn has_printf_extern(&self) -> bool {
+        self.program.items.iter().any(|item| {
+            matches!(item, Item::ExternBlock { decls, .. } if decls.iter().any(|decl| {
+                matches!(decl, ExternDecl::Fn(f) if known_declaration(f.identity, &f.name) == Some(Known::Printf))
+            }))
+        })
     }
 
     pub(in crate::fixups) fn c_string_literal(&self, site: &ExprSite) -> QueryResult<Vec<u8>> {

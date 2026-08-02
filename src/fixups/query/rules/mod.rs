@@ -22,6 +22,7 @@ pub(in crate::fixups) mod libc_exit;
 pub(in crate::fixups) mod main_zero_exit;
 pub(in crate::fixups) mod memchr;
 pub(in crate::fixups) mod nullable_pointer;
+pub(in crate::fixups) mod printf_format;
 pub(in crate::fixups) mod ptr_len;
 pub(in crate::fixups) mod range_loop;
 pub(in crate::fixups) mod string_lift;

@@ -69,6 +69,7 @@ pub(in crate::fixups) enum Predicate {
     ArgumentPosition,
     Callsite,
     CallArgumentPinning,
+    PrintfCall,
     ReadPath,
     ArrayElementPointerOrigin,
     BufferPointerFields,
@@ -192,6 +193,10 @@ pub(in crate::fixups) enum EvidenceDetail {
     CallArgumentPinning {
         pinning: CallArgPinning,
         variadic: bool,
+    },
+    PrintfCall {
+        args: usize,
+        known_format: bool,
     },
     ArrayElementPointerOrigin {
         origins: usize,
