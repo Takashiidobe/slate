@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Item, Pattern, Program, Stmt, Type};
+use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Item, Program, Stmt, Type};
 
 pub(super) mod anonymous_structs;
 pub(super) mod array_element_pointer_origin;
@@ -26,7 +26,6 @@ pub(super) mod retval;
 pub(super) mod slice_index;
 pub(super) mod string_params;
 pub(super) mod strings;
-pub(super) mod switch;
 pub(super) mod va_list;
 pub(super) mod values;
 pub(super) mod walk;
@@ -78,7 +77,6 @@ pub(super) struct FixupFacts {
     pub(super) loop_shapes: Vec<LoopShapeFact>,
     pub(super) loop_shape_rejections: Vec<LoopShapeRejectionFact>,
     pub(super) retval_collapses: Vec<RetvalCollapseFact>,
-    pub(super) switch_dispatches: Vec<SwitchDispatchFact>,
     pub(super) va_list_aliases: Vec<VaListAliasFact>,
     pub(super) relations: Vec<FactRelation>,
 }
@@ -231,25 +229,6 @@ pub(super) struct RetvalCollapseFact {
     pub(super) return_path: AstPath,
     pub(super) value_path: AstPath,
     pub(super) remove_paths: Vec<AstPath>,
-}
-
-#[derive(Debug, Clone)]
-pub(super) struct SwitchDispatchFact {
-    pub(super) function: FunctionId,
-    pub(super) path: AstPath,
-    pub(super) selector: Expr,
-    pub(super) switch_label: String,
-    pub(super) consumed: usize,
-    pub(super) fallthrough_free: bool,
-    pub(super) cases: Vec<SwitchCaseFact>,
-}
-
-#[derive(Debug, Clone)]
-pub(super) struct SwitchCaseFact {
-    pub(super) patterns: Vec<Pattern>,
-    pub(super) is_default: bool,
-    pub(super) body: Vec<IndentStmt>,
-    pub(super) falls_through: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1697,7 +1676,6 @@ pub(super) fn analyze(program: &Program) -> AnalyzedProgram<'_> {
     slice_index::collect_facts(program, &mut facts);
     counted_loop::collect_facts(program, &mut facts);
     loop_shapes::collect_facts(program, &mut facts);
-    switch::collect_facts(program, &mut facts);
     va_list::collect_facts(program, &mut facts);
     AnalyzedProgram { program, facts }
 }

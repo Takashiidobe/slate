@@ -72,6 +72,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::Callsite => "callsite",
         Predicate::CallArgumentPinning => "call_argument_pinning",
         Predicate::PrintfCall => "printf_call",
+        Predicate::SwitchDispatch => "switch_dispatch",
         Predicate::ReadPath => "read_path",
         Predicate::ArrayElementPointerOrigin => "array_element_pointer_origin",
         Predicate::BufferPointerFields => "buffer_pointer_fields",
@@ -188,6 +189,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::PrintfCall { args, known_format } => {
             format!("args={args};known_format={known_format}")
         }
+        EvidenceDetail::SwitchDispatch { cases } => format!("cases={cases}"),
         EvidenceDetail::ArrayElementPointerOrigin { origins } => {
             format!("origins={origins}")
         }

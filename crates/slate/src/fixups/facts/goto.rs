@@ -9,7 +9,7 @@ use crate::rust_ast::{
     AsmOperand, Expr, ExprMatchArm, IndentStmt, MatchArm, Pattern, RustValue, Stmt,
 };
 
-pub(super) type LoweredSwitchParts<'a> = (
+pub(in crate::fixups) type LoweredSwitchParts<'a> = (
     &'a str,
     &'a Expr,
     &'a str,
@@ -626,7 +626,10 @@ fn lowered_switch_scope_parts(stmt: &Stmt) -> Option<LoweredSwitchParts<'_>> {
     )
 }
 
-fn lowered_switch_flat_parts(body: &[IndentStmt], i: usize) -> Option<LoweredSwitchParts<'_>> {
+pub(in crate::fixups) fn lowered_switch_flat_parts(
+    body: &[IndentStmt],
+    i: usize,
+) -> Option<LoweredSwitchParts<'_>> {
     let [
         IndentStmt {
             stmt:

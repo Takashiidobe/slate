@@ -97,7 +97,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 "Once" means it runs exactly one time per `apply` call.
 
 1. `goto` - restructure the goto dispatch loop into structured control flow - to fixpoint, per function (`to_fixpoint_items`).
-2. `switch` - collapse a fallthrough-free switch dispatch loop into a direct `match` over the selector expression - once, per function.
+2. `switch` - collapse a fallthrough-free switch dispatch loop into a direct `match` over the selector expression - once, program-wide, through a single query statement-sequence plan (`collapse_switch_dispatch`, matched at any nesting depth via the generic 3-statement `StatementSequence` window); when the matched triple is the sole content of an immediately enclosing scope block, the rule widens its edit to replace that whole scope statement instead, matching the pre-migration scope-unwrapping behavior.
 3. `early_inline_temps` - inline single-use pure temps, early variant - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`), capped at 5 rounds for very large functions (`> 2_000` statements) so pathological cases don't spin.
 4. `anonymous_structs` - query the complete anonymous-record domain and atomically hoist its definitions, types, literals, and field accesses into named tuple structs - once.
 5. `param_spills` - fold a parameter's stack spill into its binding - once, per function.

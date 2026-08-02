@@ -28,6 +28,7 @@ pub(in crate::fixups) mod range_loop;
 pub(in crate::fixups) mod string_lift;
 pub(in crate::fixups) mod struct_field_init;
 pub(in crate::fixups) mod support;
+pub(in crate::fixups) mod switch;
 pub(in crate::fixups) mod unnecessary_casts;
 pub(in crate::fixups) mod unused_items;
 pub(in crate::fixups) mod unused_params;

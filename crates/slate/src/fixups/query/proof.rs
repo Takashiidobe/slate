@@ -70,6 +70,7 @@ pub(in crate::fixups) enum Predicate {
     Callsite,
     CallArgumentPinning,
     PrintfCall,
+    SwitchDispatch,
     ReadPath,
     ArrayElementPointerOrigin,
     BufferPointerFields,
@@ -197,6 +198,9 @@ pub(in crate::fixups) enum EvidenceDetail {
     PrintfCall {
         args: usize,
         known_format: bool,
+    },
+    SwitchDispatch {
+        cases: usize,
     },
     ArrayElementPointerOrigin {
         origins: usize,

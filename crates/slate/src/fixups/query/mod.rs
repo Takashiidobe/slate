@@ -12,6 +12,7 @@ mod proof;
 mod recipe;
 mod rewrite;
 pub(in crate::fixups) mod rules;
+mod switch;
 mod views;
 
 use context::default_value;
@@ -60,5 +61,6 @@ pub(in crate::fixups) use views::{
     FunctionReachability, FunctionRef, HeapOwnership, HeapOwnershipFacts, HeapReallocation,
     HeapUse, ItemReferences, LazySingletonSet, MatchArmRef, NulPosition, ParameterRef, Phase,
     PointerMutability, ProgramRef, PtrLenPlanSet, ReferenceDomain, ResolvedValue, StableExpr,
-    StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef, Usage, UseSiteRef, ValueSite,
+    StatementContainerRef, StatementRange, SwitchDispatch, TypeUseKind, TypeUseRef, Usage,
+    UseSiteRef, ValueSite,
 };
