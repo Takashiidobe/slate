@@ -5,7 +5,7 @@ use crate::fixups::facts::{
     AstPath, BindingId, ConstValue, EffectKind, HeapAllocationKind, HeapExtent, HeapInitKind,
     HeapReadSafety, HeapResizeKind, HeapUseKind, PlaceAccess, PlaceKind, Purity,
 };
-use crate::rust_ast::{AtomicType, Expr, Type};
+use crate::rust_ast::{AtomicType, Expr, IndentStmt, Pattern, Type};
 
 use super::item::StatementRef;
 
@@ -45,6 +45,21 @@ pub(in crate::fixups) struct DispatchRegion {
     pub(in crate::fixups) dispatch_loop: StatementRef,
     pub(super) depth: usize,
     pub(super) dispatch: crate::fixups::facts::goto::DispatchLoop,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct SwitchDispatch {
+    pub(super) selector: Expr,
+    pub(super) switch_label: String,
+    pub(super) cases: Vec<SwitchCase>,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct SwitchCase {
+    pub(super) patterns: Vec<Pattern>,
+    pub(super) is_default: bool,
+    pub(super) body: Vec<IndentStmt>,
+    pub(super) falls_through: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

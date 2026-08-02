@@ -17,6 +17,7 @@ use crate::rust_ast::{
 };
 
 use super::item::StatementRef;
+use super::switch;
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
     AtomicCompareExchangeChain, AtomicGlobalPromotion, AtomicLocalPromotion, AtomicPromotionSet,
@@ -30,7 +31,7 @@ use super::{
     LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition, NullaryMethodCall, ParameterRef,
     PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, ReferenceDomain,
     Rejection, RejectionReason, ResolvedValue, StableExpr, StatementContainerRef, StatementRange,
-    TypeUseRef, Usage, UseSiteRef, ValueSite,
+    SwitchDispatch, TypeUseRef, Usage, UseSiteRef, ValueSite,
 };
 
 macro_rules! query_cache {
@@ -2438,6 +2439,66 @@ impl<'snapshot> QueryContext<'snapshot> {
             },
         });
         Ok(Proof::new(regions, evidence))
+    }
+
+    pub(in crate::fixups) fn switch_dispatch_flat(
+        &self,
+        statements: &[StatementRef; 3],
+    ) -> QueryResult<(SwitchDispatch, StatementRange, usize)> {
+        let predicate = Predicate::SwitchDispatch;
+        let site = statement_evidence_site(&statements[0]);
+        let mut evidence = Vec::new();
+        let mut body = Vec::with_capacity(statements.len());
+        for statement in statements {
+            let (indent, mut statement_evidence) = self.statement(statement)?.into_parts();
+            body.push(indent.clone());
+            evidence.append(&mut statement_evidence);
+        }
+        let Some(dispatch) = switch::flat_dispatch(&body).filter(switch::is_eligible) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::UnsupportedShape,
+                evidence,
+            ));
+        };
+        let mut target = statements[0].range();
+        target.end = target.start + body.len();
+        let mut depth = body[0].depth;
+        if let Some((scope_ref, scope_indent)) = self.enclosing_lone_scope(&target) {
+            target = scope_ref.range();
+            depth = scope_indent.depth;
+        }
+        evidence.push(Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::SwitchDispatch {
+                cases: dispatch.cases.len(),
+            },
+        });
+        Ok(Proof::new((dispatch, target, depth), evidence))
+    }
+
+    fn enclosing_lone_scope(
+        &self,
+        target: &StatementRange,
+    ) -> Option<(StatementRef, &'snapshot IndentStmt)> {
+        if target.start != 0 {
+            return None;
+        }
+        let (last, prefix) = target.path.0.split_last()?;
+        if !matches!(last, PathSegment::ScopeBody) {
+            return None;
+        }
+        let scope_ref = StatementRef {
+            item_index: target.item_index,
+            path: AstPath(prefix.to_vec()),
+        };
+        let indent = self.statement_tail(&scope_ref)?.first()?;
+        let Stmt::Scope { body } = &indent.stmt else {
+            return None;
+        };
+        (body.len() == target.end - target.start).then_some((scope_ref, indent))
     }
 
     pub(in crate::fixups) fn function_bindings(
