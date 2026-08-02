@@ -488,12 +488,13 @@ fn apply_with_logger(
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::VaList, {
-        run_once_items(&mut program, |item_index, f| {
-            let Some(function) = facts.function_by_item_index(item_index) else {
-                return false;
-            };
-            rewrite::va_list::VaList::new(function, &facts, logger).fixup(f)
-        });
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::va_list::rewrite());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);

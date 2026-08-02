@@ -18,6 +18,7 @@ use crate::rust_ast::{
 
 use super::item::StatementRef;
 use super::switch;
+use super::va_list;
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
     AtomicCompareExchangeChain, AtomicGlobalPromotion, AtomicLocalPromotion, AtomicPromotionSet,
@@ -31,7 +32,7 @@ use super::{
     LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition, NullaryMethodCall, ParameterRef,
     PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, ReferenceDomain,
     Rejection, RejectionReason, ResolvedValue, StableExpr, StatementContainerRef, StatementRange,
-    SwitchDispatch, TypeUseRef, Usage, UseSiteRef, ValueSite,
+    SwitchDispatch, TypeUseRef, Usage, UseSiteRef, VaListAlias, ValueSite,
 };
 
 macro_rules! query_cache {
@@ -434,9 +435,20 @@ impl<'snapshot> QueryContext<'snapshot> {
         let expression = ExpressionRef {
             site: expression_site(item_index, &path.0),
         };
-        self.expr(&expression.site)
+        if self.expr(&expression.site).is_some() {
+            return Some(UseSiteRef::Expression(expression));
+        }
+        let index = path
+            .0
+            .iter()
+            .rposition(|segment| matches!(segment, PathSegment::Stmt(_)))?;
+        let statement = StatementRef {
+            item_index,
+            path: AstPath(path.0[..=index].to_vec()),
+        };
+        self.statement_tail(&statement)
             .is_some()
-            .then_some(UseSiteRef::Expression(expression))
+            .then_some(UseSiteRef::Statement(statement))
     }
 
     pub(in crate::fixups) fn binding_value(&self, binding: &BindingRef) -> ResolvedValue {
@@ -2499,6 +2511,115 @@ impl<'snapshot> QueryContext<'snapshot> {
             return None;
         };
         (body.len() == target.end - target.start).then_some((scope_ref, indent))
+    }
+
+    pub(in crate::fixups) fn va_list_alias(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<VaListAlias> {
+        let predicate = Predicate::VaListAlias;
+        let site = expression_site(function.item_index, &[]);
+        let missing = || {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        };
+
+        let variadic_params: Vec<ParameterRef> = self
+            .all_parameters()
+            .into_iter()
+            .filter(|parameter| {
+                parameter.binding.item_index == function.item_index
+                    && self
+                        .parameter_def(parameter)
+                        .is_some_and(|def| matches!(def.ty, Type::Variadic))
+            })
+            .collect();
+        let [param] = variadic_params.as_slice() else {
+            return Err(missing());
+        };
+        let (param_def_use, mut evidence) = self.binding_def_use(&param.binding)?.into_parts();
+        let [param_read] = param_def_use.reads.as_slice() else {
+            return Err(missing());
+        };
+        let UseSiteRef::Statement(param_read) = param_read else {
+            return Err(missing());
+        };
+        if !param_def_use.writes.is_empty() {
+            return Err(missing());
+        }
+
+        let (bindings, binding_evidence) = self.function_bindings(function)?.into_parts();
+        evidence.extend(binding_evidence);
+        let mut candidates = Vec::new();
+        for local in bindings
+            .iter()
+            .filter(|binding| matches!(binding.kind, BindingCategory::Local))
+            .filter(|binding| binding.ty.as_ref() == Some(&Type::VaList))
+        {
+            let decl_ref = StatementRef {
+                item_index: function.item_index,
+                path: local.definition.clone(),
+            };
+            let Some(decl) = self.statement_tail(&decl_ref).and_then(|tail| tail.first()) else {
+                continue;
+            };
+            if !matches!(&decl.stmt, Stmt::Let { init: None, .. }) {
+                continue;
+            }
+            let Ok(local_def_use) = self.binding_def_use(local) else {
+                continue;
+            };
+            let [write] = local_def_use.value.writes.as_slice() else {
+                continue;
+            };
+            let UseSiteRef::Statement(assign_ref) = write else {
+                continue;
+            };
+            if assign_ref != param_read {
+                continue;
+            }
+            let Some(assign) = self
+                .statement_tail(assign_ref)
+                .and_then(|tail| tail.first())
+            else {
+                continue;
+            };
+            let Stmt::Assign { value, .. } = &assign.stmt else {
+                continue;
+            };
+            if !va_list::is_clone_of(value, &param.binding.name) {
+                continue;
+            }
+            if bindings.iter().any(|other| {
+                matches!(other.kind, BindingCategory::Parameter { .. })
+                    && other.id != param.binding.id
+                    && other.name == local.name
+            }) {
+                continue;
+            }
+            candidates.push(VaListAlias {
+                param_index: param.index,
+                local_name: local.name.clone(),
+                local_decl: local.definition.clone(),
+                clone_assign: assign_ref.path.clone(),
+            });
+        }
+
+        let [alias] = candidates.as_slice() else {
+            return Err(missing());
+        };
+        evidence.push(Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::VaListAlias {
+                param_index: alias.param_index,
+            },
+        });
+        Ok(Proof::new(alias.clone(), evidence))
     }
 
     pub(in crate::fixups) fn function_bindings(
