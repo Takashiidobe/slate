@@ -1,6 +1,7 @@
 mod context;
 mod field;
 mod item;
+mod parameter;
 mod patterns;
 mod plan;
 mod program;
@@ -18,14 +19,13 @@ pub(in crate::fixups) use context::{CallRecord, CallTarget, QueryContext};
 pub(in crate::fixups) use field::Field;
 pub(in crate::fixups) use item::{EditSet, ItemPlanBuilder, QueryRule};
 pub(in crate::fixups) use patterns::{
-    Definition, ExternFn, FnCall, LetStmtPattern, Local, LoopStmtPattern, NullaryMethodCall,
-    StatementSequence, Value,
+    Binding, Definition, ExternFn, FnCall, LetStmtPattern, Local, LoopStmtPattern,
+    NullaryMethodCall, StatementSequence, Value,
 };
 pub(in crate::fixups) use plan::TouchedItems;
 pub(in crate::fixups) use program::{ProgramPlanBuilder, ProgramRule};
 pub(in crate::fixups) use program_recipe::{
     ProgramRecipe, rewrite_anonymous_structs, rewrite_lazy_singletons, rewrite_ptr_len,
-    rewrite_unused_param,
 };
 pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
@@ -45,13 +45,13 @@ pub(in crate::fixups) use value::{
 };
 use views::{
     AnonymousStructField, AnonymousStructPlan, ArrayElementPointerOrigin, BufferCursorPlan,
-    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, ParamSite, PtrLenPlan,
-    UnusedParamPlan, UnusedTypeDefinitionSet, ZeroInitPlan,
+    HeapOwnershipPlan, HeapOwnershipReallocPlan, LazySingletonPlan, PtrLenPlan,
+    UnusedTypeDefinitionSet, ZeroInitPlan,
 };
 pub(in crate::fixups) use views::{
-    AnonymousStructSet, BindingDefUse, BindingRef, ByteExtent, ByteRepresentation, ByteSource,
-    ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, ExprSite, HeapOwnershipPlanSet, InlineTempPlan, LazySingletonSet, NulPosition,
-    Phase, PointerMutability, PtrLenPlanSet, ResolvedValue, StableExpr, StatementRange, Usage,
-    ValueSite, ZeroGroupUsers, ZeroUsers,
+    AnonymousStructSet, BindingCategory, BindingDefUse, BindingRef, ByteExtent, ByteRepresentation,
+    ByteSource, ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
+    DefinitionSite, ExprSite, FunctionRef, HeapOwnershipPlanSet, InlineTempPlan, LazySingletonSet,
+    NulPosition, ParameterRemoval, Phase, PointerMutability, PtrLenPlanSet, ResolvedValue,
+    StableExpr, StatementRange, Usage, ValueSite, ZeroGroupUsers, ZeroUsers,
 };

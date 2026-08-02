@@ -11,7 +11,6 @@ use super::plan::TouchedItems;
 use super::{
     AnonymousStructPlan, AnonymousStructSet, ExprSite, LazySingletonPlan, LazySingletonSet,
     Predicate, PtrLenPlan, PtrLenPlanSet, QueryContext, Rejection, RejectionReason,
-    UnusedParamPlan,
 };
 
 pub(in crate::fixups) struct ProgramRecipe {
@@ -22,7 +21,6 @@ enum ProgramRecipeKind {
     AnonymousStructs(AnonymousStructSet),
     LazySingletons(LazySingletonSet),
     PtrLen(PtrLenPlanSet),
-    UnusedParam(UnusedParamPlan),
 }
 
 pub(in crate::fixups) fn rewrite_anonymous_structs(structs: AnonymousStructSet) -> ProgramRecipe {
@@ -40,12 +38,6 @@ pub(in crate::fixups) fn rewrite_lazy_singletons(singletons: LazySingletonSet) -
 pub(in crate::fixups) fn rewrite_ptr_len(plans: PtrLenPlanSet) -> ProgramRecipe {
     ProgramRecipe {
         kind: ProgramRecipeKind::PtrLen(plans),
-    }
-}
-
-pub(in crate::fixups) fn rewrite_unused_param(plan: UnusedParamPlan) -> ProgramRecipe {
-    ProgramRecipe {
-        kind: ProgramRecipeKind::UnusedParam(plan),
     }
 }
 
@@ -186,90 +178,6 @@ impl ProgramRecipe {
                     touched: TouchedItems::unbounded(),
                 })
             }
-            ProgramRecipeKind::UnusedParam(plan) => {
-                let anchors = vec![(
-                    plan.function_item_index,
-                    ItemAnchor::Fn(plan.function_name.clone()),
-                )];
-                let site = ExprSite {
-                    item_index: plan.function_item_index,
-                    path: Default::default(),
-                    fact_path: Default::default(),
-                };
-                let mut replacement = query.snapshot_program().clone();
-                if !apply_unused_param(&mut replacement, &plan) {
-                    return Err(Rejection::new(
-                        Predicate::UnusedParam,
-                        Some(site),
-                        RejectionReason::Contradicted,
-                        Vec::new(),
-                    ));
-                }
-                Ok(PreparedProgram {
-                    replacement,
-                    anchors,
-                    touched: TouchedItems::unbounded(),
-                })
-            }
-        }
-    }
-}
-
-fn apply_unused_param(program: &mut Program, plan: &UnusedParamPlan) -> bool {
-    let mut removed = false;
-    unused_param_each_item_mut(&mut program.items, &mut |item| {
-        if let Item::Fn(f) = item
-            && f.name == plan.function_name
-            && plan.param_index < f.params.len()
-        {
-            f.params.remove(plan.param_index);
-            removed = true;
-        }
-    });
-    if !removed {
-        return false;
-    }
-    unused_param_each_item_mut(&mut program.items, &mut |item| {
-        let visit = &mut |e: &mut Expr| {
-            if let Expr::Call { func, args, .. } = e
-                && unused_param_is_named_callee(func, &plan.function_name)
-                && plan.param_index < args.len()
-            {
-                args.remove(plan.param_index);
-            }
-            true
-        };
-        match item {
-            Item::Fn(f) => walk::body_exprs_mut_with(&mut f.body, visit),
-            Item::Static { init, .. } => walk::exprs_mut_with(init, visit),
-            Item::Impl(block) => {
-                for it in &mut block.items {
-                    if let ImplItem::Method(m) = it {
-                        walk::exprs_mut_with(&mut m.body, visit);
-                    }
-                }
-            }
-            _ => {}
-        }
-    });
-    true
-}
-
-fn unused_param_is_named_callee(expr: &Expr, name: &str) -> bool {
-    match expr {
-        Expr::Var(n) => n.as_str() == name,
-        Expr::Path(path) => path.segments.len() == 1 && path.segments[0].as_str() == name,
-        _ => false,
-    }
-}
-
-fn unused_param_each_item_mut(items: &mut [Item], f: &mut impl FnMut(&mut Item)) {
-    for item in items {
-        match item {
-            Item::Cfg { item, .. } => {
-                unused_param_each_item_mut(std::slice::from_mut(item.as_mut()), f)
-            }
-            other => f(other),
         }
     }
 }

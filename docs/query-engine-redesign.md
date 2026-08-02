@@ -39,8 +39,7 @@ statement-window, and program candidate systems:
 enum QueryItem<'program> {
     Definition(DefinitionRef<'program>),
     Function(FunctionRef<'program>),
-    Parameter(BindingRef<'program>),
-    Local(BindingRef<'program>),
+    Binding(BindingRef<'program>),
     Statement(StmtRef<'program>),
     Expression(ExprRef<'program>),
 }
@@ -61,13 +60,13 @@ common interface and return typed captures:
 
 ```rust
 trait Matcher {
-    type Match;
+    type Capture;
 
     fn matches(
         &self,
-        item: QueryItem<'_>,
-        context: &MatchContext<'_>,
-    ) -> Option<Self::Match>;
+        query: &QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture>;
 }
 ```
 
