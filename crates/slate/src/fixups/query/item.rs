@@ -497,6 +497,21 @@ impl PlanSite for EditSetSite {
             .iter()
             .any(|left| other.0.iter().any(|right| anchors_overlap(left, right)))
     }
+
+    fn internal_overlaps(&self) -> Vec<(Self, Self)> {
+        let mut overlaps = Vec::new();
+        for first in 0..self.0.len() {
+            for second in first + 1..self.0.len() {
+                if anchors_overlap(&self.0[first], &self.0[second]) {
+                    overlaps.push((
+                        Self(vec![self.0[first].clone()]),
+                        Self(vec![self.0[second].clone()]),
+                    ));
+                }
+            }
+        }
+        overlaps
+    }
 }
 
 fn anchors_overlap(left: &Anchor, right: &Anchor) -> bool {
@@ -748,12 +763,28 @@ impl ItemPlan {
                 log_diagnostic(logger, diagnostic);
             }
         }
+        let mut accepted = Vec::new();
+        for planned_edit in self.plan.edits {
+            let missing = missing_targets(program, &planned_edit.edit);
+            if missing.is_empty() && !planned_edit.edit.edits.is_empty() {
+                accepted.push(planned_edit);
+            } else {
+                diagnostics.extend(missing.into_iter().map(|target| {
+                    PlanDiagnostic::MissingTarget {
+                        contender: planned_edit.identity.clone(),
+                        target: EditSetSite(vec![target]),
+                    }
+                }));
+            }
+        }
+        let accepted_sets = accepted.len();
+        let expected_edits: usize = accepted.iter().map(|edit| edit.edit.edits.len()).sum();
         let mut statement_edits = BTreeMap::new();
         let mut call_edits = BTreeMap::new();
         let mut expression_edits = BTreeMap::new();
         let mut parameter_edits = Vec::new();
         let mut definition_edits = Vec::new();
-        for planned_edit in self.plan.edits {
+        for planned_edit in accepted {
             let PlannedEdit {
                 identity,
                 edit,
@@ -862,18 +893,19 @@ impl ItemPlan {
                 }
             }
         }
-        let mut applied = 0;
+        let mut updated = program.clone();
+        let mut applied_edits = 0;
         let mut touched = TouchedItems::none();
-        applied += apply_call_edits(
-            program,
+        applied_edits += apply_call_edits(
+            &mut updated,
             call_edits,
             facts,
             logger,
             &mut diagnostics,
             &mut touched,
         );
-        applied += apply_expression_edits(
-            program,
+        applied_edits += apply_expression_edits(
+            &mut updated,
             expression_edits,
             facts,
             logger,
@@ -888,7 +920,7 @@ impl ItemPlan {
                 facts,
                 logger,
             };
-            for (item_index, item) in program.items.iter_mut().enumerate() {
+            for (item_index, item) in updated.items.iter_mut().enumerate() {
                 let Item::Fn(function) = item else {
                     continue;
                 };
@@ -902,7 +934,7 @@ impl ItemPlan {
             }
             (state.applied, state.touched, state.edits)
         };
-        applied += statement_applied;
+        applied_edits += statement_applied;
         touched.in_place.extend(statement_touched.in_place);
         touched.removed.extend(statement_touched.removed);
         touched.unbounded |= statement_touched.unbounded;
@@ -912,20 +944,31 @@ impl ItemPlan {
                 target: EditSetSite(vec![Anchor::Statements(edit.target)]),
             });
         }
-        applied += apply_parameter_edits(
-            program,
+        applied_edits += apply_parameter_edits(
+            &mut updated,
             parameter_edits,
             logger,
             &mut diagnostics,
             &mut touched,
         );
-        applied += apply_definition_edits(
-            program,
+        applied_edits += apply_definition_edits(
+            &mut updated,
             definition_edits,
             logger,
             &mut diagnostics,
             &mut touched,
         );
+        touched.in_place.sort_unstable();
+        touched.in_place.dedup();
+        touched.removed.sort_unstable();
+        touched.removed.dedup();
+        let applied = if applied_edits == expected_edits {
+            *program = updated;
+            accepted_sets
+        } else {
+            touched = TouchedItems::none();
+            0
+        };
         ItemApplyReport {
             changed: applied != 0,
             planned,
@@ -934,6 +977,127 @@ impl ItemPlan {
             touched,
         }
     }
+}
+
+fn missing_targets(program: &Program, edit_set: &EditSet) -> Vec<Anchor> {
+    edit_set
+        .edits
+        .iter()
+        .filter(|edit| !anchored_edit_exists(program, edit))
+        .map(edit_anchor)
+        .collect()
+}
+
+fn edit_anchor(edit: &AnchoredEdit) -> Anchor {
+    match edit {
+        AnchoredEdit::DeleteDefinition { target }
+        | AnchoredEdit::ReplaceFunctionBody { target, .. } => {
+            Anchor::Definition(target.location.clone())
+        }
+        AnchoredEdit::ReplaceExpression { target, .. }
+        | AnchoredEdit::RemoveCallArgument { target, .. } => Anchor::Expression(target.clone()),
+        AnchoredEdit::ReplaceStatement { target, .. }
+        | AnchoredEdit::ReplaceStatements { target, .. } => Anchor::Statements(target.clone()),
+        AnchoredEdit::RemoveFunctionParameter { target, .. } => Anchor::Function {
+            item_index: target.item_index,
+            name: target.function.name.clone(),
+        },
+    }
+}
+
+fn anchored_edit_exists(program: &Program, edit: &AnchoredEdit) -> bool {
+    match edit {
+        AnchoredEdit::DeleteDefinition { target }
+        | AnchoredEdit::ReplaceFunctionBody { target, .. } => definition_exists(program, target),
+        AnchoredEdit::ReplaceExpression { target, .. } => {
+            expression_matches(program, target, |_| true)
+        }
+        AnchoredEdit::RemoveCallArgument {
+            target,
+            index,
+            expected_arity,
+        } => expression_matches(
+            program,
+            target,
+            |expr| matches!(expr, Expr::Call { args, .. } if args.len() == *expected_arity && *index < args.len()),
+        ),
+        AnchoredEdit::ReplaceStatement { target, .. }
+        | AnchoredEdit::ReplaceStatements { target, .. } => statement_range_exists(program, target),
+        AnchoredEdit::RemoveFunctionParameter {
+            target,
+            index,
+            name,
+        } => program.items.get(target.item_index).is_some_and(|item| {
+            let Item::Fn(function) = unwrap_cfg(item) else {
+                return false;
+            };
+            function.name == target.function.name
+                && function
+                    .params
+                    .get(*index)
+                    .is_some_and(|parameter| parameter.name == *name)
+        }),
+    }
+}
+
+fn definition_exists(program: &Program, definition: &DefinitionSite) -> bool {
+    let Some(item) = program.items.get(definition.location.item_index()) else {
+        return false;
+    };
+    match definition.location {
+        DefinitionLocation::Item(_) => definition_matches(item, definition),
+        DefinitionLocation::ExternDecl { decl_index, .. } => {
+            let Item::ExternBlock { decls, .. } = unwrap_cfg(item) else {
+                return false;
+            };
+            decls
+                .get(decl_index)
+                .is_some_and(|decl| extern_definition_matches(decl, definition))
+        }
+    }
+}
+
+fn expression_matches(
+    program: &Program,
+    target: &ExprSite,
+    predicate: impl Fn(&Expr) -> bool,
+) -> bool {
+    let Some(Item::Fn(function)) = program.items.get(target.item_index) else {
+        return false;
+    };
+    let mut matched = false;
+    walk::body_exprs_with_path(&function.body, &mut Vec::new(), &mut |expr, path| {
+        if path.as_slice() == target.path.0 && predicate(expr) {
+            matched = true;
+        }
+    });
+    matched
+}
+
+fn statement_range_exists(program: &Program, target: &StatementRange) -> bool {
+    let Some(Item::Fn(function)) = program.items.get(target.item_index) else {
+        return false;
+    };
+    body_range_exists(&function.body, &mut Vec::new(), target)
+}
+
+fn body_range_exists(
+    body: &[IndentStmt],
+    path: &mut Vec<PathSegment>,
+    target: &StatementRange,
+) -> bool {
+    if path.as_slice() == target.path.0 {
+        return target.start < target.end && target.end <= body.len();
+    }
+    let mut found = false;
+    for (index, indent) in body.iter().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_with_path(&indent.stmt, path, &mut |nested, path| {
+                found |= body_range_exists(nested, path, target);
+            });
+        });
+    }
+    found
 }
 
 struct PlannedCallEdit {
@@ -1561,4 +1725,141 @@ fn log_diagnostic(logger: &mut dyn TraceLogger, diagnostic: &PlanDiagnostic<Edit
         after: Vec::new(),
         facts,
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::fixups::facts;
+    use crate::fixups::trace::NoopLogger;
+    use crate::rust_ast::{FnDef, FunctionMetadata, RustValue, Stmt, Visibility};
+
+    fn function(body: Vec<IndentStmt>) -> Item {
+        Item::Fn(FnDef {
+            attrs: Vec::new(),
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: "test".into(),
+            params: Vec::new(),
+            ret: None,
+            body,
+            metadata: FunctionMetadata::default(),
+        })
+    }
+
+    fn statement(value: i64) -> IndentStmt {
+        IndentStmt {
+            depth: 1,
+            stmt: Stmt::Expr(Expr::Value(RustValue::I64(value))),
+        }
+    }
+
+    fn expression_site(statement: usize) -> ExprSite {
+        let path = AstPath(vec![PathSegment::Stmt(statement), PathSegment::Expr(0)]);
+        ExprSite {
+            item_index: 0,
+            path: path.clone(),
+            fact_path: path,
+        }
+    }
+
+    fn identity() -> RuleCaseIdentity {
+        RuleCaseIdentity {
+            rule: RuleIdentity::new(Pass::StringLift, "test_rule"),
+            case: "test_case".into(),
+        }
+    }
+
+    fn item_plan(edit: EditSet) -> ItemPlan {
+        item_plan_from(vec![edit])
+    }
+
+    fn item_plan_from(edits: Vec<EditSet>) -> ItemPlan {
+        let mut builder = PlanBuilder::new();
+        for edit in edits {
+            builder.propose(PlannedEdit {
+                identity: identity(),
+                edit,
+                rejected_cases: Vec::new(),
+            });
+        }
+        ItemPlan {
+            plan: builder.finish(),
+        }
+    }
+
+    #[test]
+    fn internal_duplicate_targets_are_rejected() {
+        let target = expression_site(0);
+        let mut edit = EditSet::replace_expression(target.clone(), Expr::Value(RustValue::I64(1)));
+        edit.push_replace_expression(target, Expr::Value(RustValue::I64(2)));
+
+        let plan = item_plan(edit);
+
+        assert!(plan.plan.edits.is_empty());
+        assert!(matches!(
+            plan.plan.diagnostics.as_slice(),
+            [PlanDiagnostic::OverlappingTargets { .. }]
+        ));
+    }
+
+    #[test]
+    fn internal_overlapping_targets_are_rejected() {
+        let mut edit = EditSet::new();
+        edit.push_replace_statement(0, AstPath(vec![PathSegment::Stmt(0)]), None);
+        edit.push_replace_expression(expression_site(0), Expr::Value(RustValue::I64(2)));
+
+        let plan = item_plan(edit);
+
+        assert!(plan.plan.edits.is_empty());
+        assert!(matches!(
+            plan.plan.diagnostics.as_slice(),
+            [PlanDiagnostic::OverlappingTargets { .. }]
+        ));
+    }
+
+    #[test]
+    fn missing_target_rejects_the_complete_edit_set() {
+        let mut program = Program {
+            items: vec![function(vec![statement(1), statement(2)])],
+        };
+        let before = program.emit();
+        let mut edit =
+            EditSet::replace_expression(expression_site(0), Expr::Value(RustValue::I64(2)));
+        edit.push_replace_statement(0, AstPath(vec![PathSegment::Stmt(4)]), None);
+        let valid = EditSet::replace_expression(expression_site(1), Expr::Value(RustValue::I64(3)));
+        let plan = item_plan_from(vec![edit, valid]);
+        let facts = facts::analyze(&program).facts;
+
+        let report = plan.apply(&mut program, &facts, &mut NoopLogger);
+
+        assert_ne!(program.emit(), before);
+        assert_eq!(program.emit(), "fn test() {\n    1;\n    3;\n}\n");
+        assert!(report.changed);
+        assert_eq!(report.applied, 1);
+        assert_eq!(report.touched.in_place, vec![0]);
+        assert!(matches!(
+            report.diagnostics.last(),
+            Some(PlanDiagnostic::MissingTarget { .. })
+        ));
+    }
+
+    #[test]
+    fn mixed_edits_use_snapshot_paths_and_report_one_atomic_application() {
+        let mut program = Program {
+            items: vec![function(vec![statement(1), statement(2), statement(3)])],
+        };
+        let mut edit = EditSet::new();
+        edit.push_replace_statement(0, AstPath(vec![PathSegment::Stmt(0)]), None);
+        edit.push_replace_expression(expression_site(2), Expr::Value(RustValue::I64(4)));
+        let plan = item_plan(edit);
+        let facts = facts::analyze(&program).facts;
+
+        let report = plan.apply(&mut program, &facts, &mut NoopLogger);
+
+        assert_eq!(program.emit(), "fn test() {\n    2;\n    4;\n}\n");
+        assert_eq!(report.applied, 1);
+        assert_eq!(report.touched.in_place, vec![0]);
+    }
 }

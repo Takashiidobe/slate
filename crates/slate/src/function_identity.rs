@@ -341,9 +341,26 @@ pub fn classify_function<'a>(
 }
 
 fn valid_function_type(canonical_type: &str) -> bool {
-    canonical_type
-        .split_once('(')
-        .is_some_and(|(ret, params)| !ret.trim().is_empty() && params.trim_end().ends_with(')'))
+    let Some((ret, params)) = canonical_type.split_once('(') else {
+        return false;
+    };
+    if ret.trim().is_empty() {
+        return false;
+    }
+    let mut depth = 1;
+    for character in params.chars() {
+        match character {
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth == 0 {
+                    return true;
+                }
+            }
+            _ => {}
+        }
+    }
+    false
 }
 
 pub fn known_call(expr: &crate::rust_ast::Expr) -> Option<Known> {
@@ -359,5 +376,23 @@ pub fn known_declaration(identity: FunctionIdentity, name: &str) -> Option<Known
     match identity {
         FunctionIdentity::Known(known) if known.matches_symbol(name) => Some(known),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn classifies_trusted_functions_with_trailing_type_attributes() {
+        assert_eq!(
+            classify_function(
+                "exit",
+                ["stdlib.h"],
+                "void (int) __attribute__((noreturn))",
+                Provenance::TrustedHeader,
+            ),
+            FunctionIdentity::Known(Known::Exit)
+        );
     }
 }

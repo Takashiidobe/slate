@@ -220,6 +220,14 @@ matcher-driven rule, including expression, binding, definition, function, and
 statement matches. Add several rules to one builder only when they intentionally
 share a snapshot; overlapping edit sets are rejected across item kinds.
 
+One accepted `EditSet` is transactional. Every anchor is validated against the
+unchanged input before mutation, and a missing or stale anchor rejects that
+complete set while independent valid sets may still apply. Duplicate or
+overlapping anchors inside a set are rejected during planning. Statement ranges
+use snapshot coordinates and are applied from higher indexes to lower indexes;
+item removals follow the same rule, so earlier removals cannot shift a later
+target. Reports count applied edit sets and deduplicate touched items.
+
 Recompute facts before the next fact-dependent query. Place definition deletion
 after the final pass that can remove a user.
 

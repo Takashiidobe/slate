@@ -4,6 +4,10 @@ use super::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 
 pub(super) trait PlanSite: Clone + Ord {
     fn overlaps(&self, other: &Self) -> bool;
+
+    fn internal_overlaps(&self) -> Vec<(Self, Self)> {
+        Vec::new()
+    }
 }
 
 impl PlanSite for () {
@@ -79,10 +83,17 @@ impl<E: EditTarget> PlanBuilder<E> {
         let mut diagnostics = self.diagnostics;
         let mut grouped = BTreeMap::<E::Site, Vec<PlannedEdit<E>>>::new();
         for proposal in self.proposals {
-            grouped
-                .entry(proposal.edit.site())
-                .or_default()
-                .push(proposal);
+            let site = proposal.edit.site();
+            let internal_overlaps = site.internal_overlaps();
+            if internal_overlaps.is_empty() {
+                grouped.entry(site).or_default().push(proposal);
+            } else {
+                diagnostics.extend(
+                    internal_overlaps.into_iter().map(|(first, second)| {
+                        PlanDiagnostic::OverlappingTargets { first, second }
+                    }),
+                );
+            }
         }
         let mut edits = Vec::new();
         for (target, mut contenders) in grouped {
