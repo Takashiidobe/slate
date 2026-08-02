@@ -26,7 +26,6 @@ pub(super) mod retval;
 pub(super) mod slice_index;
 pub(super) mod string_params;
 pub(super) mod strings;
-pub(super) mod va_list;
 pub(super) mod values;
 pub(super) mod walk;
 
@@ -77,7 +76,6 @@ pub(super) struct FixupFacts {
     pub(super) loop_shapes: Vec<LoopShapeFact>,
     pub(super) loop_shape_rejections: Vec<LoopShapeRejectionFact>,
     pub(super) retval_collapses: Vec<RetvalCollapseFact>,
-    pub(super) va_list_aliases: Vec<VaListAliasFact>,
     pub(super) relations: Vec<FactRelation>,
 }
 
@@ -229,15 +227,6 @@ pub(super) struct RetvalCollapseFact {
     pub(super) return_path: AstPath,
     pub(super) value_path: AstPath,
     pub(super) remove_paths: Vec<AstPath>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) struct VaListAliasFact {
-    pub(super) function: FunctionId,
-    pub(super) param: BindingId,
-    pub(super) local: BindingId,
-    pub(super) local_decl_path: AstPath,
-    pub(super) clone_assign_path: AstPath,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1676,7 +1665,6 @@ pub(super) fn analyze(program: &Program) -> AnalyzedProgram<'_> {
     slice_index::collect_facts(program, &mut facts);
     counted_loop::collect_facts(program, &mut facts);
     loop_shapes::collect_facts(program, &mut facts);
-    va_list::collect_facts(program, &mut facts);
     AnalyzedProgram { program, facts }
 }
 

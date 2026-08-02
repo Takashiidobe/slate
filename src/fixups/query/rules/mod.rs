@@ -32,4 +32,5 @@ pub(in crate::fixups) mod switch;
 pub(in crate::fixups) mod unnecessary_casts;
 pub(in crate::fixups) mod unused_items;
 pub(in crate::fixups) mod unused_params;
+pub(in crate::fixups) mod va_list;
 pub(in crate::fixups) mod zero_init;

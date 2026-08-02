@@ -55,6 +55,14 @@ pub(in crate::fixups) struct SwitchDispatch {
 }
 
 #[derive(Debug, Clone)]
+pub(in crate::fixups) struct VaListAlias {
+    pub(super) param_index: usize,
+    pub(super) local_name: String,
+    pub(super) local_decl: AstPath,
+    pub(super) clone_assign: AstPath,
+}
+
+#[derive(Debug, Clone)]
 pub(in crate::fixups) struct SwitchCase {
     pub(super) patterns: Vec<Pattern>,
     pub(super) is_default: bool,
