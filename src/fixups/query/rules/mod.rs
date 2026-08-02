@@ -9,6 +9,7 @@ pub(in crate::fixups) mod compound_assign;
 pub(in crate::fixups) mod constant_conditions;
 pub(in crate::fixups) mod constant_index_casts;
 pub(in crate::fixups) mod dead_locals;
+pub(in crate::fixups) mod drop_call_results;
 pub(in crate::fixups) mod externs;
 pub(in crate::fixups) mod final_return_temps;
 pub(in crate::fixups) mod goto;

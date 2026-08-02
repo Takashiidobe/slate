@@ -1,4 +1,3 @@
-pub(super) mod drop_call_results;
 pub(super) mod final_returns;
 pub(super) mod for_continue;
 pub(super) mod main_zero_exit;

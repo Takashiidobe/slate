@@ -112,7 +112,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 14. `retval` - collapse a return-slot store into the final return/exit - once, per function (`run_once_items`).
 15. `final_return_temps` - collapse a return-value temp into the final `return` - to fixpoint with facts refreshed before every round (`to_fixpoint_items_with_facts`).
 16. `lazy_singleton` - recover the "static flag guards a static payload" lazy-init idiom into `std::sync::OnceLock::get_or_init` - once, program-wide (`run_once_program`).
-17. `drop_call_results` - turn `let _v = call();` into `call();` when unused - once, per function (`run_once_items`).
+17. `drop_call_results` - turn `let _v = call();` into `call();` when unused - once, program-wide, through a query binding plan.
 18. `string_lift` - lift NUL-terminated buffers to `CStr`/`str`/byte slices - once, per function (`run_once_items`).
 19. `string_params` - turn a C-string pointer parameter into `&str` - program-wide to fixpoint with facts refreshed before every round (`to_fixpoint_program_with_facts`); re-run twice later in the sequence after `string_copy` and `printf_format`, since each can create a new liftable parameter.
 20. `ptr_len` - pair a pointer+length parameter into a slice parameter - once, program-wide (`run_once_program`).
