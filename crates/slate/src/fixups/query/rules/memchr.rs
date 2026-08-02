@@ -62,9 +62,10 @@ pub(in crate::fixups) fn helper() -> QueryRule<Definition> {
         case.fact(|query| query.zero_users(definition))?;
         Ok(EditSet::delete_definition(definition.clone()))
     })
-    .case("retained", |_, definition| {
+    .case("retained", |case, definition| {
+        let function = case.function(definition)?;
         Ok(EditSet::replace_function_body(
-            definition.clone(),
+            function,
             memchr_fallback_body(),
         ))
     })

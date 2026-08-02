@@ -52,6 +52,10 @@ pub(in crate::fixups) enum Anchor {
         item_index: usize,
         name: String,
     },
+    Items {
+        index: usize,
+        expected_len: usize,
+    },
     Statements(StatementRange),
 }
 
@@ -269,6 +273,17 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
         }
     }
 
+    pub(in crate::fixups) fn function(
+        &self,
+        definition: &DefinitionSite,
+    ) -> Result<FunctionRef, Rejection> {
+        self.query
+            .all_functions()
+            .into_iter()
+            .find(|function| function.item_index == definition.location.item_index())
+            .ok_or_else(|| self.reject())
+    }
+
     pub(in crate::fixups) fn require(&self, condition: bool) -> Result<(), Rejection> {
         if condition {
             Ok(())
@@ -326,35 +341,38 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
 
 #[allow(clippy::large_enum_variant)]
 pub(in crate::fixups) enum AnchoredEdit {
-    DeleteDefinition {
+    Definition {
         target: DefinitionSite,
+        replacement: Option<DefinitionReplacement>,
     },
-    ReplaceFunctionBody {
-        target: DefinitionSite,
-        body: Vec<IndentStmt>,
+    Function {
+        target: FunctionRef,
+        replacement: crate::rust_ast::FnDef,
     },
-    ReplaceExpression {
+    Expression {
         target: ExprSite,
         replacement: Expr,
     },
-    ReplaceStatement {
+    Statement {
         target: StatementRange,
         replacement: Option<crate::rust_ast::Stmt>,
     },
-    RemoveCallArgument {
-        target: ExprSite,
-        index: usize,
-        expected_arity: usize,
-    },
-    RemoveFunctionParameter {
-        target: FunctionRef,
-        index: usize,
-        name: String,
-    },
-    ReplaceStatements {
+    Statements {
         target: StatementRange,
         replacement: Vec<IndentStmt>,
     },
+    InsertItems {
+        index: usize,
+        expected_len: usize,
+        items: Vec<Item>,
+    },
+}
+
+#[derive(Clone)]
+#[allow(clippy::large_enum_variant)]
+pub(in crate::fixups) enum DefinitionReplacement {
+    Item(Item),
+    ExternDecl(ExternDecl),
 }
 
 pub(in crate::fixups) struct EditSet {
@@ -372,7 +390,7 @@ impl EditSet {
 
     pub(in crate::fixups) fn replace_expression(target: ExprSite, replacement: Expr) -> Self {
         Self {
-            edits: vec![AnchoredEdit::ReplaceExpression {
+            edits: vec![AnchoredEdit::Expression {
                 target,
                 replacement,
             }],
@@ -385,7 +403,7 @@ impl EditSet {
         target: ExprSite,
         replacement: Expr,
     ) {
-        self.edits.push(AnchoredEdit::ReplaceExpression {
+        self.edits.push(AnchoredEdit::Expression {
             target,
             replacement,
         });
@@ -401,7 +419,7 @@ impl EditSet {
         let Some(PathSegment::Stmt(index)) = container.pop() else {
             unreachable!()
         };
-        self.edits.push(AnchoredEdit::ReplaceStatement {
+        self.edits.push(AnchoredEdit::Statement {
             target: StatementRange {
                 item_index,
                 path: AstPath(container),
@@ -413,20 +431,19 @@ impl EditSet {
     }
 
     pub(in crate::fixups) fn remove_parameter(removal: super::ParameterRemoval) -> Self {
-        let expected_arity = removal.function.function.params.len();
         let mut edits = removal
             .calls
             .into_iter()
-            .map(|target| AnchoredEdit::RemoveCallArgument {
+            .map(|(target, replacement)| AnchoredEdit::Expression {
                 target,
-                index: removal.index,
-                expected_arity,
+                replacement,
             })
             .collect::<Vec<_>>();
-        edits.push(AnchoredEdit::RemoveFunctionParameter {
+        let mut replacement = removal.function.function.clone();
+        replacement.params.remove(removal.index);
+        edits.push(AnchoredEdit::Function {
             target: removal.function,
-            index: removal.index,
-            name: removal.binding.name,
+            replacement,
         });
         Self {
             edits,
@@ -435,20 +452,43 @@ impl EditSet {
     }
 
     pub(in crate::fixups) fn delete_definition(target: DefinitionSite) -> Self {
+        Self::replace_definition(target, None)
+    }
+
+    pub(in crate::fixups) fn replace_definition(
+        target: DefinitionSite,
+        replacement: Option<DefinitionReplacement>,
+    ) -> Self {
         Self {
-            edits: vec![AnchoredEdit::DeleteDefinition { target }],
+            edits: vec![AnchoredEdit::Definition {
+                target,
+                replacement,
+            }],
             evidence: Vec::new(),
         }
     }
 
-    pub(in crate::fixups) fn replace_function_body(
+    pub(in crate::fixups) fn replace_item(target: DefinitionSite, replacement: Item) -> Self {
+        Self::replace_definition(target, Some(DefinitionReplacement::Item(replacement)))
+    }
+
+    pub(in crate::fixups) fn replace_extern_decl(
         target: DefinitionSite,
+        replacement: ExternDecl,
+    ) -> Self {
+        Self::replace_definition(target, Some(DefinitionReplacement::ExternDecl(replacement)))
+    }
+
+    pub(in crate::fixups) fn replace_function_body(
+        target: FunctionRef,
         body: FunctionBodyRecipe,
     ) -> Self {
+        let mut replacement = target.function.clone();
+        replacement.body = body.lower();
         Self {
-            edits: vec![AnchoredEdit::ReplaceFunctionBody {
+            edits: vec![AnchoredEdit::Function {
                 target,
-                body: body.lower(),
+                replacement,
             }],
             evidence: Vec::new(),
         }
@@ -459,9 +499,24 @@ impl EditSet {
         replacement: Vec<IndentStmt>,
     ) -> Self {
         Self {
-            edits: vec![AnchoredEdit::ReplaceStatements {
+            edits: vec![AnchoredEdit::Statements {
                 target,
                 replacement,
+            }],
+            evidence: Vec::new(),
+        }
+    }
+
+    pub(in crate::fixups) fn insert_items(
+        index: usize,
+        expected_len: usize,
+        items: Vec<Item>,
+    ) -> Self {
+        Self {
+            edits: vec![AnchoredEdit::InsertItems {
+                index,
+                expected_len,
+                items,
             }],
             evidence: Vec::new(),
         }
@@ -479,24 +534,24 @@ impl EditTarget for EditSet {
             .edits
             .iter()
             .map(|edit| match edit {
-                AnchoredEdit::DeleteDefinition { target }
-                | AnchoredEdit::ReplaceFunctionBody { target, .. } => {
+                AnchoredEdit::Definition { target, .. } => {
                     Anchor::Definition(target.location.clone())
                 }
-                AnchoredEdit::RemoveCallArgument { target, .. } => {
-                    Anchor::Expression(target.clone())
-                }
-                AnchoredEdit::ReplaceExpression { target, .. } => {
-                    Anchor::Expression(target.clone())
-                }
-                AnchoredEdit::RemoveFunctionParameter { target, .. } => Anchor::Function {
+                AnchoredEdit::Expression { target, .. } => Anchor::Expression(target.clone()),
+                AnchoredEdit::Function { target, .. } => Anchor::Function {
                     item_index: target.item_index,
                     name: target.function.name.clone(),
                 },
-                AnchoredEdit::ReplaceStatements { target, .. } => {
-                    Anchor::Statements(target.clone())
-                }
-                AnchoredEdit::ReplaceStatement { target, .. } => Anchor::Statements(target.clone()),
+                AnchoredEdit::Statements { target, .. } => Anchor::Statements(target.clone()),
+                AnchoredEdit::Statement { target, .. } => Anchor::Statements(target.clone()),
+                AnchoredEdit::InsertItems {
+                    index,
+                    expected_len,
+                    ..
+                } => Anchor::Items {
+                    index: *index,
+                    expected_len: *expected_len,
+                },
             })
             .collect::<Vec<_>>();
         sites.sort();
@@ -557,6 +612,8 @@ fn anchors_overlap(left: &Anchor, right: &Anchor) -> bool {
         | (Anchor::Function { item_index, .. }, Anchor::Expression(expression)) => {
             expression.item_index == *item_index
         }
+        (Anchor::Items { index: left, .. }, Anchor::Items { index: right, .. }) => left == right,
+        (Anchor::Items { .. }, _) | (_, Anchor::Items { .. }) => false,
         (Anchor::Binding { item_index, .. }, other)
         | (other, Anchor::Binding { item_index, .. }) => {
             anchor_item_index(other) == Some(*item_index)
@@ -579,6 +636,7 @@ fn anchor_item_index(anchor: &Anchor) -> Option<usize> {
         | Anchor::Function { item_index, .. }
         | Anchor::Statements(StatementRange { item_index, .. }) => Some(*item_index),
         Anchor::Definition(definition) => Some(definition.item_index()),
+        Anchor::Items { .. } => None,
     }
 }
 
@@ -793,10 +851,10 @@ impl ItemPlan {
         let accepted_sets = accepted.len();
         let expected_edits: usize = accepted.iter().map(|edit| edit.edit.edits.len()).sum();
         let mut statement_edits = BTreeMap::new();
-        let mut call_edits = BTreeMap::new();
         let mut expression_edits = BTreeMap::new();
-        let mut parameter_edits = Vec::new();
+        let mut function_edits = Vec::new();
         let mut definition_edits = Vec::new();
+        let mut item_insertions = Vec::new();
         for planned_edit in accepted {
             let PlannedEdit {
                 identity,
@@ -805,42 +863,31 @@ impl ItemPlan {
             } = planned_edit;
             for anchored in edit.edits {
                 match anchored {
-                    AnchoredEdit::DeleteDefinition { target } => {
-                        definition_edits.push(PlannedDefinitionEdit {
-                            identity: identity.clone(),
-                            target,
-                            action: DefinitionAction::Delete,
-                            evidence: edit.evidence.clone(),
-                            rejected_cases: rejected_cases.clone(),
-                        });
-                    }
-                    AnchoredEdit::ReplaceFunctionBody { target, body } => {
-                        definition_edits.push(PlannedDefinitionEdit {
-                            identity: identity.clone(),
-                            target,
-                            action: DefinitionAction::ReplaceBody(body),
-                            evidence: edit.evidence.clone(),
-                            rejected_cases: rejected_cases.clone(),
-                        });
-                    }
-                    AnchoredEdit::RemoveCallArgument {
+                    AnchoredEdit::Definition {
                         target,
-                        index,
-                        expected_arity,
+                        replacement,
                     } => {
-                        call_edits.insert(
-                            (target.item_index, target.path.clone()),
-                            PlannedCallEdit {
-                                identity: identity.clone(),
-                                target,
-                                index,
-                                expected_arity,
-                                evidence: edit.evidence.clone(),
-                                rejected_cases: rejected_cases.clone(),
-                            },
-                        );
+                        definition_edits.push(PlannedDefinitionEdit {
+                            identity: identity.clone(),
+                            target,
+                            replacement,
+                            evidence: edit.evidence.clone(),
+                            rejected_cases: rejected_cases.clone(),
+                        });
                     }
-                    AnchoredEdit::ReplaceExpression {
+                    AnchoredEdit::Function {
+                        target,
+                        replacement,
+                    } => {
+                        function_edits.push(PlannedFunctionEdit {
+                            identity: identity.clone(),
+                            target,
+                            replacement,
+                            evidence: edit.evidence.clone(),
+                            rejected_cases: rejected_cases.clone(),
+                        });
+                    }
+                    AnchoredEdit::Expression {
                         target,
                         replacement,
                     } => {
@@ -855,21 +902,7 @@ impl ItemPlan {
                             },
                         );
                     }
-                    AnchoredEdit::RemoveFunctionParameter {
-                        target,
-                        index,
-                        name,
-                    } => {
-                        parameter_edits.push(PlannedParameterEdit {
-                            identity: identity.clone(),
-                            target,
-                            index,
-                            name,
-                            evidence: edit.evidence.clone(),
-                            rejected_cases: rejected_cases.clone(),
-                        });
-                    }
-                    AnchoredEdit::ReplaceStatements {
+                    AnchoredEdit::Statements {
                         target,
                         replacement,
                     } => {
@@ -885,7 +918,7 @@ impl ItemPlan {
                             },
                         );
                     }
-                    AnchoredEdit::ReplaceStatement {
+                    AnchoredEdit::Statement {
                         target,
                         replacement,
                     } => {
@@ -903,20 +936,24 @@ impl ItemPlan {
                             },
                         );
                     }
+                    AnchoredEdit::InsertItems {
+                        index,
+                        expected_len,
+                        items,
+                    } => item_insertions.push(PlannedItemInsertion {
+                        identity: identity.clone(),
+                        index,
+                        expected_len,
+                        items,
+                        evidence: edit.evidence.clone(),
+                        rejected_cases: rejected_cases.clone(),
+                    }),
                 }
             }
         }
         let mut updated = program.clone();
         let mut applied_edits = 0;
         let mut touched = TouchedItems::none();
-        applied_edits += apply_call_edits(
-            &mut updated,
-            call_edits,
-            facts,
-            logger,
-            &mut diagnostics,
-            &mut touched,
-        );
         applied_edits += apply_expression_edits(
             &mut updated,
             expression_edits,
@@ -957,9 +994,9 @@ impl ItemPlan {
                 target: EditSetSite(vec![Anchor::Statements(edit.target)]),
             });
         }
-        applied_edits += apply_parameter_edits(
+        applied_edits += apply_function_edits(
             &mut updated,
-            parameter_edits,
+            function_edits,
             logger,
             &mut diagnostics,
             &mut touched,
@@ -967,6 +1004,13 @@ impl ItemPlan {
         applied_edits += apply_definition_edits(
             &mut updated,
             definition_edits,
+            logger,
+            &mut diagnostics,
+            &mut touched,
+        );
+        applied_edits += apply_item_insertions(
+            &mut updated,
+            item_insertions,
             logger,
             &mut diagnostics,
             &mut touched,
@@ -1003,53 +1047,64 @@ fn missing_targets(program: &Program, edit_set: &EditSet) -> Vec<Anchor> {
 
 fn edit_anchor(edit: &AnchoredEdit) -> Anchor {
     match edit {
-        AnchoredEdit::DeleteDefinition { target }
-        | AnchoredEdit::ReplaceFunctionBody { target, .. } => {
-            Anchor::Definition(target.location.clone())
+        AnchoredEdit::Definition { target, .. } => Anchor::Definition(target.location.clone()),
+        AnchoredEdit::Expression { target, .. } => Anchor::Expression(target.clone()),
+        AnchoredEdit::Statement { target, .. } | AnchoredEdit::Statements { target, .. } => {
+            Anchor::Statements(target.clone())
         }
-        AnchoredEdit::ReplaceExpression { target, .. }
-        | AnchoredEdit::RemoveCallArgument { target, .. } => Anchor::Expression(target.clone()),
-        AnchoredEdit::ReplaceStatement { target, .. }
-        | AnchoredEdit::ReplaceStatements { target, .. } => Anchor::Statements(target.clone()),
-        AnchoredEdit::RemoveFunctionParameter { target, .. } => Anchor::Function {
+        AnchoredEdit::Function { target, .. } => Anchor::Function {
             item_index: target.item_index,
             name: target.function.name.clone(),
+        },
+        AnchoredEdit::InsertItems {
+            index,
+            expected_len,
+            ..
+        } => Anchor::Items {
+            index: *index,
+            expected_len: *expected_len,
         },
     }
 }
 
 fn anchored_edit_exists(program: &Program, edit: &AnchoredEdit) -> bool {
     match edit {
-        AnchoredEdit::DeleteDefinition { target }
-        | AnchoredEdit::ReplaceFunctionBody { target, .. } => definition_exists(program, target),
-        AnchoredEdit::ReplaceExpression { target, .. } => {
-            expression_matches(program, target, |_| true)
+        AnchoredEdit::Definition {
+            target,
+            replacement,
+        } => {
+            definition_exists(program, target)
+                && matches!(
+                    (&target.location, replacement),
+                    (DefinitionLocation::Item(_), None)
+                        | (
+                            DefinitionLocation::Item(_),
+                            Some(DefinitionReplacement::Item(_))
+                        )
+                        | (DefinitionLocation::ExternDecl { .. }, None)
+                        | (
+                            DefinitionLocation::ExternDecl { .. },
+                            Some(DefinitionReplacement::ExternDecl(_))
+                        )
+                )
         }
-        AnchoredEdit::RemoveCallArgument {
-            target,
+        AnchoredEdit::Expression { target, .. } => expression_matches(program, target, |_| true),
+        AnchoredEdit::Statement { target, .. } | AnchoredEdit::Statements { target, .. } => {
+            statement_range_exists(program, target)
+        }
+        AnchoredEdit::Function { target, .. } => {
+            program.items.get(target.item_index).is_some_and(|item| {
+                let Item::Fn(function) = unwrap_cfg(item) else {
+                    return false;
+                };
+                function.name == target.function.name
+            })
+        }
+        AnchoredEdit::InsertItems {
             index,
-            expected_arity,
-        } => expression_matches(
-            program,
-            target,
-            |expr| matches!(expr, Expr::Call { args, .. } if args.len() == *expected_arity && *index < args.len()),
-        ),
-        AnchoredEdit::ReplaceStatement { target, .. }
-        | AnchoredEdit::ReplaceStatements { target, .. } => statement_range_exists(program, target),
-        AnchoredEdit::RemoveFunctionParameter {
-            target,
-            index,
-            name,
-        } => program.items.get(target.item_index).is_some_and(|item| {
-            let Item::Fn(function) = unwrap_cfg(item) else {
-                return false;
-            };
-            function.name == target.function.name
-                && function
-                    .params
-                    .get(*index)
-                    .is_some_and(|parameter| parameter.name == *name)
-        }),
+            expected_len,
+            items,
+        } => *expected_len == program.items.len() && *index <= *expected_len && !items.is_empty(),
     }
 }
 
@@ -1111,15 +1166,6 @@ fn body_range_exists(
         });
     }
     found
-}
-
-struct PlannedCallEdit {
-    identity: RuleCaseIdentity,
-    target: ExprSite,
-    index: usize,
-    expected_arity: usize,
-    evidence: Vec<Evidence>,
-    rejected_cases: Vec<CaseRejection>,
 }
 
 struct PlannedExpressionEdit {
@@ -1192,92 +1238,17 @@ fn apply_expression_edits(
     applied
 }
 
-struct PlannedParameterEdit {
+struct PlannedFunctionEdit {
     identity: RuleCaseIdentity,
     target: FunctionRef,
-    index: usize,
-    name: String,
+    replacement: crate::rust_ast::FnDef,
     evidence: Vec<Evidence>,
     rejected_cases: Vec<CaseRejection>,
 }
 
-fn apply_call_edits(
+fn apply_function_edits(
     program: &mut Program,
-    mut edits: BTreeMap<(usize, AstPath), PlannedCallEdit>,
-    facts: &FixupFacts,
-    logger: &mut dyn TraceLogger,
-    diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
-    touched: &mut TouchedItems,
-) -> usize {
-    let mut applied = 0;
-    for (item_index, item) in program.items.iter_mut().enumerate() {
-        let Item::Fn(function) = item else {
-            continue;
-        };
-        if !edits
-            .keys()
-            .any(|(target_item, _)| *target_item == item_index)
-        {
-            continue;
-        }
-        mut_walk::body_exprs_mut_with_path(
-            &mut function.body,
-            &mut Vec::new(),
-            &mut |expr, path| {
-                let site = ExprSite {
-                    item_index,
-                    path: AstPath(path.to_vec()),
-                    fact_path: AstPath(path.to_vec()),
-                };
-                let Some(edit) = edits.remove(&(item_index, site.path.clone())) else {
-                    return true;
-                };
-                let before = expr.render();
-                let Expr::Call { args, .. } = expr else {
-                    diagnostics.push(missing_call(edit));
-                    return true;
-                };
-                if args.len() != edit.expected_arity || edit.index >= args.len() {
-                    diagnostics.push(missing_call(edit));
-                    return true;
-                }
-                args.remove(edit.index);
-                let after = expr.render();
-                log_item_edit(
-                    logger,
-                    &edit.identity,
-                    &edit.evidence,
-                    &edit.rejected_cases,
-                    TraceChange {
-                        location: facts
-                            .function_by_item_index(item_index)
-                            .map(|function| function_path_location(facts, function, &site.path.0))
-                            .unwrap_or_else(|| path_location(&site.path.0)),
-                        label: "expr",
-                        before,
-                        after,
-                    },
-                );
-                applied += 1;
-                touched.in_place.push(item_index);
-                true
-            },
-        );
-    }
-    diagnostics.extend(edits.into_values().map(missing_call));
-    applied
-}
-
-fn missing_call(edit: PlannedCallEdit) -> PlanDiagnostic<EditSetSite> {
-    PlanDiagnostic::MissingTarget {
-        contender: edit.identity,
-        target: EditSetSite(vec![Anchor::Expression(edit.target)]),
-    }
-}
-
-fn apply_parameter_edits(
-    program: &mut Program,
-    edits: Vec<PlannedParameterEdit>,
+    edits: Vec<PlannedFunctionEdit>,
     logger: &mut dyn TraceLogger,
     diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
     touched: &mut TouchedItems,
@@ -1285,24 +1256,19 @@ fn apply_parameter_edits(
     let mut applied = 0;
     for edit in edits {
         let Some(item) = program.items.get_mut(edit.target.item_index) else {
-            diagnostics.push(missing_parameter(edit));
+            diagnostics.push(missing_function(edit));
             continue;
         };
         let Item::Fn(function) = unwrap_cfg_mut(item) else {
-            diagnostics.push(missing_parameter(edit));
+            diagnostics.push(missing_function(edit));
             continue;
         };
-        if function.name != edit.target.function.name
-            || !function
-                .params
-                .get(edit.index)
-                .is_some_and(|parameter| parameter.name == edit.name)
-        {
-            diagnostics.push(missing_parameter(edit));
+        if function.name != edit.target.function.name {
+            diagnostics.push(missing_function(edit));
             continue;
         }
         let before = item_snippet(&Item::Fn(function.clone()));
-        function.params.remove(edit.index);
+        *function = edit.replacement;
         let after = item_snippet(&Item::Fn(function.clone()));
         log_item_edit(
             logger,
@@ -1325,7 +1291,7 @@ fn apply_parameter_edits(
     applied
 }
 
-fn missing_parameter(edit: PlannedParameterEdit) -> PlanDiagnostic<EditSetSite> {
+fn missing_function(edit: PlannedFunctionEdit) -> PlanDiagnostic<EditSetSite> {
     PlanDiagnostic::MissingTarget {
         contender: edit.identity,
         target: EditSetSite(vec![Anchor::Function {
@@ -1342,15 +1308,10 @@ fn unwrap_cfg_mut(item: &mut Item) -> &mut Item {
     }
 }
 
-enum DefinitionAction {
-    Delete,
-    ReplaceBody(Vec<IndentStmt>),
-}
-
 struct PlannedDefinitionEdit {
     identity: RuleCaseIdentity,
     target: DefinitionSite,
-    action: DefinitionAction,
+    replacement: Option<DefinitionReplacement>,
     evidence: Vec<Evidence>,
     rejected_cases: Vec<CaseRejection>,
 }
@@ -1386,21 +1347,19 @@ fn apply_definition_edits(
                 continue;
             }
             let before = item_snippet(&program.items[item_index]);
-            match &edit.action {
-                DefinitionAction::Delete => {
+            match &edit.replacement {
+                None => {
                     program.items.remove(item_index);
                     log_definition_edit(logger, &edit, before, None);
                     touched.removed.push(item_index);
                 }
-                DefinitionAction::ReplaceBody(body) => {
-                    let Item::Fn(function) = &mut program.items[item_index] else {
-                        unreachable!()
-                    };
-                    function.body = body.clone();
+                Some(DefinitionReplacement::Item(replacement)) => {
+                    program.items[item_index] = replacement.clone();
                     let after = item_snippet(&program.items[item_index]);
                     log_definition_edit(logger, &edit, before, Some(after));
                     touched.in_place.push(item_index);
                 }
+                Some(DefinitionReplacement::ExternDecl(_)) => unreachable!(),
             }
             applied += 1;
             continue;
@@ -1409,29 +1368,38 @@ fn apply_definition_edits(
             diagnostics.extend(edits.into_iter().map(missing_definition));
             continue;
         };
-        let mut any_removed = false;
+        let mut any_changed = false;
         for edit in edits {
             let DefinitionLocation::ExternDecl { decl_index, .. } = edit.target.location else {
                 unreachable!()
             };
-            if !matches!(&edit.action, DefinitionAction::Delete)
-                || !decls
-                    .get(decl_index)
-                    .is_some_and(|decl| extern_definition_matches(decl, &edit.target))
+            if !decls
+                .get(decl_index)
+                .is_some_and(|decl| extern_definition_matches(decl, &edit.target))
             {
                 diagnostics.push(missing_definition(edit));
                 continue;
             }
             let before = extern_decl_snippet(abi, &decls[decl_index]);
-            decls.remove(decl_index);
-            log_definition_edit(logger, &edit, before, None);
+            let after = match &edit.replacement {
+                None => {
+                    decls.remove(decl_index);
+                    None
+                }
+                Some(DefinitionReplacement::ExternDecl(replacement)) => {
+                    decls[decl_index] = replacement.clone();
+                    Some(extern_decl_snippet(abi, &decls[decl_index]))
+                }
+                Some(DefinitionReplacement::Item(_)) => unreachable!(),
+            };
+            log_definition_edit(logger, &edit, before, after);
             applied += 1;
-            any_removed = true;
+            any_changed = true;
         }
         if decls.is_empty() {
             program.items.remove(item_index);
             touched.removed.push(item_index);
-        } else if any_removed {
+        } else if any_changed {
             touched.in_place.push(item_index);
         }
     }
@@ -1622,6 +1590,75 @@ fn extern_decl_snippet(abi: &str, decl: &ExternDecl) -> String {
         abi: abi.to_owned(),
         decls: vec![decl.clone()],
     })
+}
+
+struct PlannedItemInsertion {
+    identity: RuleCaseIdentity,
+    index: usize,
+    expected_len: usize,
+    items: Vec<Item>,
+    evidence: Vec<Evidence>,
+    rejected_cases: Vec<CaseRejection>,
+}
+
+fn apply_item_insertions(
+    program: &mut Program,
+    mut edits: Vec<PlannedItemInsertion>,
+    logger: &mut dyn TraceLogger,
+    diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
+    touched: &mut TouchedItems,
+) -> usize {
+    edits.sort_by_key(|edit| std::cmp::Reverse(edit.index));
+    let removed = touched.removed.clone();
+    let mut applied = 0;
+    let mut inserted = 0;
+    for edit in edits {
+        if edit.expected_len < removed.len()
+            || program.items.len() != edit.expected_len - removed.len() + inserted
+        {
+            diagnostics.push(missing_item_insertion(edit));
+            continue;
+        }
+        let adjusted = edit.index - removed.iter().filter(|index| **index < edit.index).count();
+        if adjusted > program.items.len() {
+            diagnostics.push(missing_item_insertion(edit));
+            continue;
+        }
+        let after = edit
+            .items
+            .iter()
+            .map(item_snippet)
+            .collect::<Vec<_>>()
+            .join("\n");
+        let inserted_now = edit.items.len();
+        program.items.splice(adjusted..adjusted, edit.items);
+        log_item_edit(
+            logger,
+            &edit.identity,
+            &edit.evidence,
+            &edit.rejected_cases,
+            TraceChange {
+                location: TraceLocation::default(),
+                label: "items",
+                before: String::new(),
+                after,
+            },
+        );
+        applied += 1;
+        inserted += inserted_now;
+        touched.unbounded = true;
+    }
+    applied
+}
+
+fn missing_item_insertion(edit: PlannedItemInsertion) -> PlanDiagnostic<EditSetSite> {
+    PlanDiagnostic::MissingTarget {
+        contender: edit.identity,
+        target: EditSetSite(vec![Anchor::Items {
+            index: edit.index,
+            expected_len: edit.expected_len,
+        }]),
+    }
 }
 
 fn log_definition_edit(

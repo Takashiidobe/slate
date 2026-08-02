@@ -58,7 +58,7 @@ pub(in crate::fixups) struct ParameterRemoval {
     pub(in crate::fixups) binding: BindingRef,
     pub(in crate::fixups) function: FunctionRef,
     pub(in crate::fixups) index: usize,
-    pub(in crate::fixups) calls: Vec<ExprSite>,
+    pub(in crate::fixups) calls: Vec<(ExprSite, Expr)>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

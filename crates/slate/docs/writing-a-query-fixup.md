@@ -228,6 +228,18 @@ use snapshot coordinates and are applied from higher indexes to lower indexes;
 item removals follow the same rule, so earlier removals cannot shift a later
 target. Reports count applied edit sets and deduplicate touched items.
 
+The fundamental edits replace a typed expression, statement range, complete
+function, or complete definition. Signature, parameter, and body changes clone
+the matched `FunctionRef`, update the typed `FnDef`, and replace that function.
+Argument-list changes replace the anchored call expression. Binding declarations,
+initializers, nested blocks, and match arms use statement-range replacement;
+record fields and enum variants replace their enclosing definition. Definition
+deletion is definition replacement with no successor. Convenience constructors
+compose these operations and do not add pass-specific planner actions.
+Top-level insertion uses `EditSet::insert_items` with the immutable snapshot's
+item count, applies in reverse source order after removals, and marks touched
+items unbounded because insertion renumbers every later item.
+
 Recompute facts before the next fact-dependent query. Place definition deletion
 after the final pass that can remove a user.
 
