@@ -1186,7 +1186,7 @@ impl FixupFacts {
     /// Removes whole `Program::items` entries and shifts every later
     /// `FunctionFact.item_index` to match, reflecting one or more
     /// `Program::items` removals from a single edit (e.g. definition `QueryRule`
-    /// deletions, or `ProgramRule`'s lazy-singleton guard-flag cleanup).
+    /// deletions, or a whole-program lazy-singleton guard-flag cleanup).
     /// `item_indices` must be the *original* positions, as they were
     /// before any of them were removed - order doesn't matter, this sorts
     /// descending internally so an earlier removal's renumbering can't

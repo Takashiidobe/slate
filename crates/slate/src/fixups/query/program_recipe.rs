@@ -10,176 +10,114 @@ use crate::rust_ast::{
 use super::plan::TouchedItems;
 use super::{
     AnonymousStructPlan, AnonymousStructSet, ExprSite, LazySingletonPlan, LazySingletonSet,
-    Predicate, PtrLenPlan, PtrLenPlanSet, QueryContext, Rejection, RejectionReason,
+    Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryContext, QueryResult, Rejection,
+    RejectionReason,
 };
 
-pub(in crate::fixups) struct ProgramRecipe {
-    kind: ProgramRecipeKind,
+pub(in crate::fixups) struct ProgramReplacement {
+    pub(in crate::fixups) replacement: Program,
+    pub(in crate::fixups) touched: TouchedItems,
 }
 
-enum ProgramRecipeKind {
-    AnonymousStructs(AnonymousStructSet),
-    LazySingletons(LazySingletonSet),
-    PtrLen(PtrLenPlanSet),
-}
-
-pub(in crate::fixups) fn rewrite_anonymous_structs(structs: AnonymousStructSet) -> ProgramRecipe {
-    ProgramRecipe {
-        kind: ProgramRecipeKind::AnonymousStructs(structs),
+pub(in crate::fixups) fn rewrite_anonymous_structs(
+    query: &QueryContext<'_>,
+    structs: AnonymousStructSet,
+) -> QueryResult<ProgramReplacement> {
+    let site = structs.structs.first().map(|plan| ExprSite {
+        item_index: plan.item_index,
+        path: Default::default(),
+        fact_path: Default::default(),
+    });
+    let mut replacement = query.snapshot_program().clone();
+    if !apply_anonymous_structs(&mut replacement, query.snapshot_facts(), structs.structs) {
+        return Err(Rejection::new(
+            Predicate::AnonymousStructDomain,
+            site,
+            RejectionReason::Contradicted,
+            Vec::new(),
+        ));
     }
+    Ok(Proof::new(
+        ProgramReplacement {
+            replacement,
+            touched: TouchedItems::unbounded(),
+        },
+        Vec::new(),
+    ))
 }
 
-pub(in crate::fixups) fn rewrite_lazy_singletons(singletons: LazySingletonSet) -> ProgramRecipe {
-    ProgramRecipe {
-        kind: ProgramRecipeKind::LazySingletons(singletons),
+pub(in crate::fixups) fn rewrite_lazy_singletons(
+    query: &QueryContext<'_>,
+    set: LazySingletonSet,
+) -> QueryResult<ProgramReplacement> {
+    let site = set.singletons.first().map(|plan| ExprSite {
+        item_index: plan.function_item_index,
+        path: Default::default(),
+        fact_path: Default::default(),
+    });
+    let mut replacement = query.snapshot_program().clone();
+    if !apply_lazy_singletons(&mut replacement, &set.singletons) {
+        return Err(Rejection::new(
+            Predicate::LazySingletonDomain,
+            site,
+            RejectionReason::Contradicted,
+            Vec::new(),
+        ));
     }
+    let touched = TouchedItems {
+        in_place: set
+            .singletons
+            .iter()
+            .flat_map(|plan| [plan.function_item_index, plan.payload_item_index])
+            .collect(),
+        removed: set
+            .singletons
+            .iter()
+            .map(|plan| plan.flag_item_index)
+            .collect(),
+        unbounded: false,
+    };
+    Ok(Proof::new(
+        ProgramReplacement {
+            replacement,
+            touched,
+        },
+        Vec::new(),
+    ))
 }
 
-pub(in crate::fixups) fn rewrite_ptr_len(plans: PtrLenPlanSet) -> ProgramRecipe {
-    ProgramRecipe {
-        kind: ProgramRecipeKind::PtrLen(plans),
+pub(in crate::fixups) fn rewrite_ptr_len(
+    query: &QueryContext<'_>,
+    set: PtrLenPlanSet,
+) -> QueryResult<ProgramReplacement> {
+    let site = set.plans.first().map(|plan| ExprSite {
+        item_index: plan.item_index,
+        path: Default::default(),
+        fact_path: Default::default(),
+    });
+    let mut grouped = BTreeMap::<String, Vec<PtrLenPlan>>::new();
+    for plan in set.plans {
+        grouped
+            .entry(plan.function_name.clone())
+            .or_default()
+            .push(plan);
     }
-}
-
-pub(super) enum ItemAnchor {
-    Record(String),
-    Static(String),
-    Fn(String),
-}
-
-pub(super) struct PreparedProgram {
-    pub(super) replacement: Program,
-    pub(super) anchors: Vec<(usize, ItemAnchor)>,
-    pub(super) touched: TouchedItems,
-}
-
-impl ProgramRecipe {
-    pub(super) fn lower(self, query: &QueryContext<'_>) -> Result<PreparedProgram, Rejection> {
-        match self.kind {
-            ProgramRecipeKind::AnonymousStructs(structs) => {
-                let anchors = structs
-                    .structs
-                    .iter()
-                    .map(|plan| {
-                        (
-                            plan.item_index,
-                            ItemAnchor::Record(plan.original_name.clone()),
-                        )
-                    })
-                    .collect();
-                let site = structs.structs.first().map(|plan| ExprSite {
-                    item_index: plan.item_index,
-                    path: Default::default(),
-                    fact_path: Default::default(),
-                });
-                let mut replacement = query.snapshot_program().clone();
-                if !apply_anonymous_structs(
-                    &mut replacement,
-                    query.snapshot_facts(),
-                    structs.structs,
-                ) {
-                    return Err(Rejection::new(
-                        Predicate::AnonymousStructDomain,
-                        site,
-                        RejectionReason::Contradicted,
-                        Vec::new(),
-                    ));
-                }
-                Ok(PreparedProgram {
-                    replacement,
-                    anchors,
-                    touched: TouchedItems::unbounded(),
-                })
-            }
-            ProgramRecipeKind::LazySingletons(set) => {
-                let anchors = set
-                    .singletons
-                    .iter()
-                    .flat_map(|plan| {
-                        [
-                            (
-                                plan.function_item_index,
-                                ItemAnchor::Fn(plan.function_name.clone()),
-                            ),
-                            (
-                                plan.payload_item_index,
-                                ItemAnchor::Static(plan.payload_name.clone()),
-                            ),
-                            (
-                                plan.flag_item_index,
-                                ItemAnchor::Static(plan.flag_name.clone()),
-                            ),
-                        ]
-                    })
-                    .collect();
-                let site = set.singletons.first().map(|plan| ExprSite {
-                    item_index: plan.function_item_index,
-                    path: Default::default(),
-                    fact_path: Default::default(),
-                });
-                let mut replacement = query.snapshot_program().clone();
-                if !apply_lazy_singletons(&mut replacement, &set.singletons) {
-                    return Err(Rejection::new(
-                        Predicate::LazySingletonDomain,
-                        site,
-                        RejectionReason::Contradicted,
-                        Vec::new(),
-                    ));
-                }
-                let touched = TouchedItems {
-                    in_place: set
-                        .singletons
-                        .iter()
-                        .flat_map(|plan| [plan.function_item_index, plan.payload_item_index])
-                        .collect(),
-                    removed: set
-                        .singletons
-                        .iter()
-                        .map(|plan| plan.flag_item_index)
-                        .collect(),
-                    unbounded: false,
-                };
-                Ok(PreparedProgram {
-                    replacement,
-                    anchors,
-                    touched,
-                })
-            }
-            ProgramRecipeKind::PtrLen(set) => {
-                let anchors = set
-                    .plans
-                    .iter()
-                    .map(|plan| (plan.item_index, ItemAnchor::Fn(plan.function_name.clone())))
-                    .collect();
-                let site = set.plans.first().map(|plan| ExprSite {
-                    item_index: plan.item_index,
-                    path: Default::default(),
-                    fact_path: Default::default(),
-                });
-                let mut grouped = BTreeMap::<String, Vec<PtrLenPlan>>::new();
-                for plan in set.plans {
-                    grouped
-                        .entry(plan.function_name.clone())
-                        .or_default()
-                        .push(plan);
-                }
-                let mut replacement = query.snapshot_program().clone();
-                if !apply_ptr_len(&mut replacement, &grouped) {
-                    return Err(Rejection::new(
-                        Predicate::PtrLenSlice,
-                        site,
-                        RejectionReason::Contradicted,
-                        Vec::new(),
-                    ));
-                }
-                Ok(PreparedProgram {
-                    replacement,
-                    anchors,
-                    touched: TouchedItems::unbounded(),
-                })
-            }
-        }
+    let mut replacement = query.snapshot_program().clone();
+    if !apply_ptr_len(&mut replacement, &grouped) {
+        return Err(Rejection::new(
+            Predicate::PtrLenSlice,
+            site,
+            RejectionReason::Contradicted,
+            Vec::new(),
+        ));
     }
+    Ok(Proof::new(
+        ProgramReplacement {
+            replacement,
+            touched: TouchedItems::unbounded(),
+        },
+        Vec::new(),
+    ))
 }
 
 fn apply_anonymous_structs(

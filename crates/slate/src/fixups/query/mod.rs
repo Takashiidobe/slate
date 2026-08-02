@@ -4,7 +4,6 @@ mod item;
 mod parameter;
 mod patterns;
 mod plan;
-mod program;
 mod program_recipe;
 mod proof;
 mod recipe;
@@ -22,12 +21,11 @@ pub(in crate::fixups) use item::{
 pub(in crate::fixups) use patterns::{
     AssignmentValue, Binding, Definition, EnumVariant, ExprPattern, ExternFn, FnCall,
     LetStmtPattern, Local, LoopStmtPattern, MatchArm, NullaryMethodCall, Parameter, RecordField,
-    StatementContainer, StatementSequence, TypeUse, Value,
+    StatementContainer, StatementSequence, TypeUse, Value, WholeProgram,
 };
 pub(in crate::fixups) use plan::TouchedItems;
-pub(in crate::fixups) use program::{ProgramPlanBuilder, ProgramRule};
 pub(in crate::fixups) use program_recipe::{
-    ProgramRecipe, rewrite_anonymous_structs, rewrite_lazy_singletons, rewrite_ptr_len,
+    rewrite_anonymous_structs, rewrite_lazy_singletons, rewrite_ptr_len,
 };
 pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
@@ -49,7 +47,7 @@ pub(in crate::fixups) use views::{
     DefinitionUsers, EnumVariantRef, ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace,
     ExpressionRef, ExpressionRole, ExpressionValues, FieldRef, FunctionRef, HeapOwnershipPlanSet,
     InlineTempPlan, ItemReferences, LazySingletonSet, MatchArmRef, NulPosition, ParameterRef,
-    ParameterRemoval, Phase, PointerMutability, PtrLenPlanSet, ReferenceDomain, ResolvedValue,
-    StableExpr, StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef, Usage, UseSiteRef,
-    ValueSite,
+    ParameterRemoval, Phase, PointerMutability, ProgramRef, PtrLenPlanSet, ReferenceDomain,
+    ResolvedValue, StableExpr, StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef,
+    Usage, UseSiteRef, ValueSite,
 };

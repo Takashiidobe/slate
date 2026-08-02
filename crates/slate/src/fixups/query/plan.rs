@@ -10,12 +10,6 @@ pub(super) trait PlanSite: Clone + Ord {
     }
 }
 
-impl PlanSite for () {
-    fn overlaps(&self, _other: &Self) -> bool {
-        true
-    }
-}
-
 pub(super) trait EditTarget {
     type Site: PlanSite;
 

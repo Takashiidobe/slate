@@ -54,6 +54,11 @@ pub(in crate::fixups) struct FunctionRef {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct ProgramRef {
+    pub(in crate::fixups) expected_len: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct ParameterRef {
     pub(in crate::fixups) binding: BindingRef,
     pub(in crate::fixups) index: usize,
