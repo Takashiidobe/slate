@@ -1,4 +1,3 @@
-pub(super) mod ptr_copy;
 pub(super) mod remove_mut;
 pub(super) mod retval;
 pub(super) mod singleton_scopes;
