@@ -49,6 +49,7 @@ pub(in crate::fixups) enum Predicate {
     ParentExpression,
     ReferenceDomain,
     Statement,
+    StatementRegion,
     AnonymousStructDomain,
     ByteSource,
     ConstantU8,
@@ -107,6 +108,9 @@ pub(in crate::fixups) enum EvidenceDetail {
         count: usize,
     },
     Statement,
+    StatementRegion {
+        statements: usize,
+    },
     ExpressionEffects {
         purity: Purity,
         effects: usize,

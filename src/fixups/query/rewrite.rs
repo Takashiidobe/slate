@@ -78,6 +78,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::Cast => "cast",
         Predicate::ReferenceDomain => "reference_domain",
         Predicate::Statement => "statement",
+        Predicate::StatementRegion => "statement_region",
         Predicate::DirectCalls => "direct_calls",
         Predicate::FunctionReachability => "function_reachability",
         Predicate::FunctionCallDomain => "function_call_domain",
@@ -181,6 +182,9 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::Cast { to } => format!("to={to:?}"),
         EvidenceDetail::ReferenceDomain { definitions, items } => {
             format!("definitions={definitions}, items={items}")
+        }
+        EvidenceDetail::StatementRegion { statements } => {
+            format!("statements={statements}")
         }
         EvidenceDetail::DirectCalls {
             function,

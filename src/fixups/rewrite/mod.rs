@@ -24,7 +24,6 @@ pub(super) mod stdio;
 pub(super) mod string_copy;
 pub(super) mod string_libc;
 pub(super) mod string_params;
-pub(super) mod struct_field_init;
 pub(super) mod switch;
 pub(super) mod va_list;
 pub(super) mod var_aliases;
