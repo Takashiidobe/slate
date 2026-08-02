@@ -74,6 +74,8 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::PrintfCall => "printf_call",
         Predicate::SwitchDispatch => "switch_dispatch",
         Predicate::VaListAlias => "va_list_alias",
+        Predicate::BindingRequiresMut => "binding_requires_mut",
+        Predicate::BorrowAliasReasons => "borrow_alias_reasons",
         Predicate::ReadPath => "read_path",
         Predicate::ArrayElementPointerOrigin => "array_element_pointer_origin",
         Predicate::BufferPointerFields => "buffer_pointer_fields",
@@ -87,6 +89,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::ReferenceDomain => "reference_domain",
         Predicate::Statement => "statement",
         Predicate::StatementRegion => "statement_region",
+        Predicate::StatementReachable => "statement_reachable",
         Predicate::DirectCalls => "direct_calls",
         Predicate::FunctionReachability => "function_reachability",
         Predicate::FunctionCallDomain => "function_call_domain",
@@ -191,6 +194,10 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             format!("args={args};known_format={known_format}")
         }
         EvidenceDetail::SwitchDispatch { cases } => format!("cases={cases}"),
+        EvidenceDetail::BindingRequiresMut { required } => format!("required={required}"),
+        EvidenceDetail::BorrowAliasReasons { tracked, reasons } => {
+            format!("tracked={tracked};reasons={reasons}")
+        }
         EvidenceDetail::VaListAlias { param_index } => format!("param_index={param_index}"),
         EvidenceDetail::ArrayElementPointerOrigin { origins } => {
             format!("origins={origins}")
@@ -208,6 +215,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::StatementRegion { statements } => {
             format!("statements={statements}")
         }
+        EvidenceDetail::StatementReachable { reachable } => format!("reachable={reachable}"),
         EvidenceDetail::DirectCalls {
             function,
             calls,
