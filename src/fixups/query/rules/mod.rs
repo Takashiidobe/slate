@@ -31,6 +31,7 @@ pub(in crate::fixups) mod remove_mut;
 pub(in crate::fixups) mod retval;
 pub(in crate::fixups) mod singleton_scopes;
 pub(in crate::fixups) mod slice_index;
+pub(in crate::fixups) mod slice_loop;
 pub(in crate::fixups) mod string_lift;
 pub(in crate::fixups) mod struct_field_init;
 pub(in crate::fixups) mod support;

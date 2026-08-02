@@ -31,8 +31,8 @@ use super::{
     HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences,
     LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition, NullaryMethodCall, ParameterRef,
     PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, ReferenceDomain,
-    Rejection, RejectionReason, ResolvedValue, StableExpr, StatementContainerRef, StatementRange,
-    SwitchDispatch, TypeUseRef, Usage, UseSiteRef, VaListAlias, ValueSite,
+    Rejection, RejectionReason, ResolvedValue, SliceLoopFact, StableExpr, StatementContainerRef,
+    StatementRange, SwitchDispatch, TypeUseRef, Usage, UseSiteRef, VaListAlias, ValueSite,
 };
 
 macro_rules! query_cache {
@@ -3593,6 +3593,72 @@ query_cache! {
                     start: fact.start,
                     step: fact.step,
                     index_use: fact.index_use,
+                },
+            }],
+        ))
+    }
+
+    fn counted_slice_loop(&self, statement: &StatementRef) -> QueryResult<SliceLoopFact>;
+    key: StatementRef = statement.clone();
+    {
+        let predicate = Predicate::CountedSliceLoop;
+        let evidence_site = statement_evidence_site(statement);
+        let function = self.facts.function_by_item_index(statement.item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(evidence_site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let Some(fact) = self
+            .facts
+            .counted_slice_loops
+            .iter()
+            .find(|fact| fact.site.function == function && fact.site.loop_path == statement.path)
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let bindings = self.all_bindings();
+        let Some(index) = bindings.iter().find(|binding| binding.id == fact.index).cloned()
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::IncompleteDomain,
+                Vec::new(),
+            ));
+        };
+        let Some(slice) = bindings.iter().find(|binding| binding.id == fact.slice).cloned()
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::IncompleteDomain,
+                Vec::new(),
+            ));
+        };
+        Ok(Proof::new(
+            SliceLoopFact {
+                index,
+                slice,
+                start: fact.start,
+                bound: fact.bound,
+                step: fact.step,
+                index_use: fact.index_use,
+                access: fact.access,
+            },
+            vec![Evidence {
+                predicate,
+                site: evidence_site,
+                detail: EvidenceDetail::CountedSliceLoop {
+                    index_use: fact.index_use,
+                    access: fact.access,
                 },
             }],
         ))

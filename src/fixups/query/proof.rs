@@ -1,5 +1,6 @@
 use crate::fixups::facts::{
     CallArgPinning, CountedLoopIndexUse, CountedLoopStart, CountedLoopStep, PlaceAccess, Purity,
+    SliceLoopAccess,
 };
 use crate::rust_ast::Type;
 
@@ -63,6 +64,7 @@ pub(in crate::fixups) enum Predicate {
     ZeroUsers,
     ZeroGroupUsers,
     CountedLoop,
+    CountedSliceLoop,
     ItemGuard,
     LazySingletonDomain,
     AtomicPromotionDomain,
@@ -181,6 +183,10 @@ pub(in crate::fixups) enum EvidenceDetail {
         start: CountedLoopStart,
         step: CountedLoopStep,
         index_use: CountedLoopIndexUse,
+    },
+    CountedSliceLoop {
+        index_use: CountedLoopIndexUse,
+        access: SliceLoopAccess,
     },
     LazySingletonDomain {
         singletons: usize,
