@@ -120,6 +120,13 @@ def-use observations to one statement. `expression_dependencies` and
 the pass's crossing policy in the rule instead of adding a pass-local walker or
 candidate planner.
 
+For fixed-array cursor recovery, `buffer_pointer_fields` returns each proven
+buffer-field origin with stable buffer and array bindings, the exact assignment
+statement, field name, constant index, and array bound. Compose it with
+`function_bindings`, `binding_uses`, `statement`, and `statement_expression` so
+alias and unresolved-use rejection stays complete while the rule owns the
+indexing and pointer-difference policy.
+
 ## Definition items
 
 Definitions are `QueryItem`s selected by the reusable `Definition` matcher. The

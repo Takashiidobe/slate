@@ -172,7 +172,7 @@ pub(super) struct AnonymousStructFieldFact {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct BufferPointerFieldFact {
-    pub(super) function: FunctionId,
+    pub(super) site: Site,
     pub(super) buffer: BindingId,
     pub(super) array: BindingId,
     pub(super) field: String,

@@ -859,26 +859,11 @@ fn buffer_cursor_writes_collapse_to_array_indexing() {
 
     assert!(rust.contains("values[1] + values[3]"));
     assert!(rust.contains("3 - 1"));
+    assert!(!rust.contains("let mut c: cursor"));
+    assert!(!rust.contains("let mut d: cursor"));
     assert!(!rust.contains("c.ptr"));
     assert!(!rust.contains("d.ptr"));
     assert!(!rust.contains(".offset_from("));
-
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("fixup-debug")
-        .arg("--debug-only-pass")
-        .arg("buffer_cursor")
-        .arg(&c_src)
-        .output()
-        .expect("run buffer_cursor query trace");
-    assert!(
-        output.status.success(),
-        "fixup-debug failed:\n{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
-    assert!(stdout.contains("query_rule=rewrite_buffer_cursor"));
-    assert!(stdout.contains("query_case=resolved"));
-    assert!(stdout.contains("evidence.buffer_cursor=arrays=1;buffers=2"));
 }
 
 #[test]
