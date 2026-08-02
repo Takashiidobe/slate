@@ -293,11 +293,23 @@ fn apply_with_logger(
         }
     });
     step!(program, Pass::SingletonScopes, {
-        to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
-            let mut fixup = rewrite::singleton_scopes::SingletonScopes::new(f.name.clone(), logger);
-            run_once(&mut f.body, &mut fixup)
-        });
-        incremental.mark_everything_dirty();
+        loop {
+            let facts = incremental.resolve(&program);
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(
+                    &query,
+                    &query::rules::singleton_scopes::rewrite(Pass::SingletonScopes),
+                );
+                builder.finish()
+            };
+            let report = plan.apply(&mut program, &facts, logger);
+            incremental.mark_touched(&report.touched);
+            if !report.changed {
+                break;
+            }
+        }
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::CompoundAssign, {
@@ -324,11 +336,23 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::SingletonScopes, {
-        to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
-            let mut fixup = rewrite::singleton_scopes::SingletonScopes::new(f.name.clone(), logger);
-            run_once(&mut f.body, &mut fixup)
-        });
-        incremental.mark_everything_dirty();
+        loop {
+            let facts = incremental.resolve(&program);
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(
+                    &query,
+                    &query::rules::singleton_scopes::rewrite(Pass::SingletonScopes),
+                );
+                builder.finish()
+            };
+            let report = plan.apply(&mut program, &facts, logger);
+            incremental.mark_touched(&report.touched);
+            if !report.changed {
+                break;
+            }
+        }
     });
     step!(program, Pass::ConstantIndexCasts, {
         let facts = incremental.resolve(&program);
@@ -1026,26 +1050,15 @@ fn to_fixpoint_items_with_facts(
 fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceLogger) {
     loop {
         let facts::AnalyzedProgram { facts, .. } = facts::analyze(program);
-        let mut changed = false;
-        for item in &mut program.items {
-            if let Item::Fn(f) = item {
-                changed |= rewrite::singleton_scopes::SingletonScopes::with_pass(
-                    pass,
-                    f.name.clone(),
-                    logger,
-                )
-                .fixup(&mut f.body);
-            }
-        }
         let plan = {
             let query = query::QueryContext::new(program, &facts);
             let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::singleton_scopes::rewrite(pass));
             builder.add_rule(&query, &query::rules::dead_locals::rewrite(pass));
             builder.finish()
         };
         let report = plan.apply(program, &facts, logger);
-        changed |= report.changed;
-        if !changed {
+        if !report.changed {
             break;
         }
     }

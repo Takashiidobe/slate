@@ -1,4 +1,3 @@
-pub(super) mod singleton_scopes;
 pub(super) mod slice_index;
 pub(super) mod slice_loop;
 pub(super) mod slice_reduce;
