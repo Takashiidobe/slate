@@ -120,14 +120,13 @@ pub(in crate::fixups) fn same_statement_container(declaration: &AstPath, other: 
 }
 
 #[derive(Clone)]
-pub(in crate::fixups) struct StatementMatch {
+pub(in crate::fixups) struct StatementMatch<const N: usize> {
     target: StatementRange,
-    width: usize,
 }
 
-impl StatementMatch {
-    pub(in crate::fixups) fn new(target: StatementRange, width: usize) -> Self {
-        Self { target, width }
+impl<const N: usize> StatementMatch<N> {
+    pub(in crate::fixups) fn new(target: StatementRange) -> Self {
+        Self { target }
     }
 
     pub(in crate::fixups) fn target(&self) -> &StatementRange {
@@ -135,7 +134,7 @@ impl StatementMatch {
     }
 
     pub(in crate::fixups) fn statement(&self, offset: usize) -> StatementRef {
-        assert!(offset < self.width);
+        assert!(offset < N);
         let mut path = self.target.path.0.clone();
         path.push(PathSegment::Stmt(self.target.start + offset));
         StatementRef {
@@ -263,7 +262,7 @@ impl MatchCapture for super::TypeUseRef {
     }
 }
 
-impl MatchCapture for StatementMatch {
+impl<const N: usize> MatchCapture for StatementMatch<N> {
     fn anchor(&self) -> Anchor {
         Anchor::Statements(self.target.clone())
     }
@@ -353,11 +352,8 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
 
     pub(in crate::fixups) fn statements<const N: usize>(
         &self,
-        matched: &StatementMatch,
+        matched: &StatementMatch<N>,
     ) -> Result<[IndentStmt; N], Rejection> {
-        if N != matched.width {
-            return Err(self.reject());
-        }
         let statements = statement_container(self.query.snapshot_program(), &matched.target)
             .and_then(|body| body.get(matched.target.start..matched.target.end))
             .ok_or_else(|| self.reject())?;

@@ -4,11 +4,11 @@ use crate::rust_ast::{BinOp, Expr, IndentStmt, Label, RustValue, Stmt, UnaryOp};
 use super::super::item::StatementMatch;
 use super::super::{EditSet, ItemCaseContext, QueryRule, Rejection, StatementSequence};
 
-pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
+pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence<1>> {
     QueryRule::new(
         Pass::ForContinue,
         "rewrite_continue_block",
-        StatementSequence::new(1),
+        StatementSequence::new(),
     )
     .case("synthetic_loop_label", rewrite_loop_case)
     .ordered_non_overlapping()
@@ -16,7 +16,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
 
 fn rewrite_loop_case(
     case: &mut ItemCaseContext<'_, '_>,
-    matched: &StatementMatch,
+    matched: &StatementMatch<1>,
 ) -> Result<EditSet, Rejection> {
     let [stmt] = case.statements(matched)?;
     let Stmt::Loop { label, mut body } = stmt.stmt else {

@@ -455,15 +455,14 @@ pub(in crate::fixups) struct Local<Cx = ()> {
     pub(in crate::fixups) value: Value<Cx>,
 }
 
-pub(in crate::fixups) struct StatementSequence {
-    width: usize,
+pub(in crate::fixups) struct StatementSequence<const N: usize> {
     first: Option<Local>,
 }
 
-impl StatementSequence {
-    pub(in crate::fixups) fn new(width: usize) -> Self {
-        assert!(width > 0);
-        Self { width, first: None }
+impl<const N: usize> StatementSequence<N> {
+    pub(in crate::fixups) fn new() -> Self {
+        assert!(N > 0);
+        Self { first: None }
     }
 
     pub(in crate::fixups) fn starting_with(mut self, local: Local) -> Self {
@@ -472,8 +471,8 @@ impl StatementSequence {
     }
 }
 
-impl Matcher for StatementSequence {
-    type Capture = StatementMatch;
+impl<const N: usize> Matcher for StatementSequence<N> {
+    type Capture = StatementMatch<N>;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::Statement
@@ -488,12 +487,12 @@ impl Matcher for StatementSequence {
             return None;
         };
         let tail = query.statement_tail(site)?;
-        let statements = tail.get(..self.width)?;
+        let statements = tail.get(..N)?;
         let target = StatementRange {
             item_index: site.item_index,
             path: site.range().path,
             start: site.range().start,
-            end: site.range().start + self.width,
+            end: site.range().start + N,
         };
         if let Some(local) = &self.first {
             let Stmt::Let { name, mutable, .. } = &statements[0].stmt else {
@@ -506,7 +505,7 @@ impl Matcher for StatementSequence {
                 return None;
             }
         }
-        Some(StatementMatch::new(target, statements.len()))
+        Some(StatementMatch::new(target))
     }
 }
 

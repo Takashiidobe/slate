@@ -4,11 +4,11 @@ use crate::rust_ast::{BinOp, Expr, IndentStmt, RustValue, Stmt};
 use super::super::item::StatementMatch;
 use super::super::{EditSet, ItemCaseContext, QueryRule, Rejection, StatementSequence};
 
-pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
+pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence<1>> {
     QueryRule::new(
         Pass::ConstantConditions,
         "fold_constant_condition",
-        StatementSequence::new(1),
+        StatementSequence::new(),
     )
     .case("scoped_false_if", scoped_false_if_case)
     .case("direct_if", direct_if_case)
@@ -17,7 +17,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
 
 fn direct_if_case(
     case: &mut ItemCaseContext<'_, '_>,
-    matched: &StatementMatch,
+    matched: &StatementMatch<1>,
 ) -> Result<EditSet, Rejection> {
     let [stmt] = case.statements(matched)?;
     let Stmt::If {
@@ -42,7 +42,7 @@ fn direct_if_case(
 
 fn scoped_false_if_case(
     case: &mut ItemCaseContext<'_, '_>,
-    matched: &StatementMatch,
+    matched: &StatementMatch<1>,
 ) -> Result<EditSet, Rejection> {
     let [stmt] = case.statements(matched)?;
     case.require(scoped_constant_false_if(&stmt.stmt))?;
