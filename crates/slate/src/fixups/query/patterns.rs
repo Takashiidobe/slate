@@ -2,7 +2,8 @@ use crate::fixups::facts::Purity;
 use crate::rust_ast::{Expr, IndentStmt, Label, Stmt, Type};
 
 use super::field::Field;
-use super::{CallTarget, DefinitionGroup, DefinitionKind, ResolvedValue, Usage};
+use super::item::{Matcher, QueryItem, StatementMatch};
+use super::{CallTarget, DefinitionGroup, DefinitionKind, ResolvedValue, StatementRange, Usage};
 
 #[derive(Default)]
 pub(in crate::fixups) struct FnCall<Cx = ()> {
@@ -38,6 +39,54 @@ pub(in crate::fixups) struct Local<Cx = ()> {
     pub(in crate::fixups) name: Field<String, Cx>,
     pub(in crate::fixups) mutable: Field<bool, Cx>,
     pub(in crate::fixups) value: Value<Cx>,
+}
+
+pub(in crate::fixups) struct StatementSequence {
+    width: usize,
+    first: Option<Local>,
+}
+
+impl StatementSequence {
+    pub(in crate::fixups) fn new(width: usize) -> Self {
+        assert!(width > 0);
+        Self { width, first: None }
+    }
+
+    pub(in crate::fixups) fn starting_with(mut self, local: Local) -> Self {
+        self.first = Some(local);
+        self
+    }
+}
+
+impl Matcher for StatementSequence {
+    type Capture = StatementMatch;
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::Statement { site, tail } = item;
+        let statements = tail.get(..self.width)?;
+        let target = StatementRange {
+            item_index: site.item_index,
+            path: site.range().path,
+            start: site.range().start,
+            end: site.range().start + self.width,
+        };
+        if let Some(local) = &self.first {
+            let Stmt::Let { name, mutable, .. } = &statements[0].stmt else {
+                return None;
+            };
+            if !local.name.matches(name, &())
+                || !local.mutable.matches(mutable, &())
+                || !local.value.matches(&query.local_value(&target, name), &())
+            {
+                return None;
+            }
+        }
+        Some(StatementMatch::new(target, statements.to_vec()))
+    }
 }
 
 #[derive(Default)]

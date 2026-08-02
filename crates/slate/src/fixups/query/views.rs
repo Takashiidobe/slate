@@ -190,10 +190,8 @@ pub(in crate::fixups) struct StableExpr {
     pub(in crate::fixups) site: ExprSite,
 }
 
-/// A run of `[start, end)` adjacent statements inside the `Vec<IndentStmt>`
-/// reached by `path` (the container itself, not any one statement in it).
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(in crate::fixups) struct StmtWindowSite {
+pub(in crate::fixups) struct StatementRange {
     pub(in crate::fixups) item_index: usize,
     pub(in crate::fixups) path: AstPath,
     pub(in crate::fixups) start: usize,

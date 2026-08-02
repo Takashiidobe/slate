@@ -38,20 +38,20 @@ pub(in crate::fixups) struct Value<Cx = ()> {
 }
 ```
 
-`Local<Cx> { name, mutable, value: Value<Cx> }` plugs into
-`StmtWindowRule::matching_local(matcher)` — when set, candidate selection
-requires the window's first statement to be a `Stmt::Let` matching it,
-before any case runs. `dead_locals`'s `usage: eq(Usage{0,0})` and
+`Local<Cx> { name, mutable, value: Value<Cx> }` composes with
+`StatementSequence::starting_with(matcher)`. Candidate selection requires the
+first statement to be a `Stmt::Let` matching it before any case runs.
+`dead_locals`'s `usage: eq(Usage{0,0})` and
 `final_return_temps`'s `usage: eq(Usage{reads:1,writes:0})` moved out of
 case-level predicate calls into the matcher this way.
 
 Not everything folds into the matcher — keep it there only when it's a
 *structural or fact property of the candidate itself*, not a relationship
-between parts of the window or an either/or with a pure-AST fallback:
+between captures or an either/or with a pure-AST fallback:
 `final_return_temps` still resolves the sole read's exact path
-(`case.read_path`) and compares it against the return statement's own path
-(`case.stmt_path`), since "the read is at *this* location" is a
-window-shape relationship, not a binding property. `dead_locals` still
+through `case.def_use` and compares it against `matched.statement(1).path`,
+since "the read is at *this* location" is a relationship between matched
+items, not a binding property. `dead_locals` still
 branches on `discardable_known_method(init)` OR `case.no_effects()` in the
 case body, since collapsing a structural-check/fact-fallback OR into one
 `Field` would just re-bundle what got taken apart.
@@ -61,8 +61,11 @@ the natural extension — same resolver, per-arg-position matcher) — no rule
 currently needs argument-level usage/purity matching, so it's not built
 until one does.
 
-## Scope boundary
+## Shared item engine
 
-Hand-written matcher structs per item kind, not a generic/derived
-mechanism — revisit a `Matchable` derive only once hand-written structs are
-repetitive across 3+ item kinds, not before.
+`QueryRule<M: Matcher>` now iterates `QueryItem`s, gives the matcher's typed
+capture to each ordered case, and accepts a shared anchored `EditSet` result.
+`ItemPlanBuilder` handles conflicts and application independently of the
+matcher. Statement adjacency is one matcher rather than a separate rule and
+planning API. Other item kinds can join the same enumeration and matcher trait
+without adding another rule engine.

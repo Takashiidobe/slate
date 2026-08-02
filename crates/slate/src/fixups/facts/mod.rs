@@ -1147,7 +1147,7 @@ impl FixupFacts {
     /// current body, without touching any other function's facts or
     /// shifting any `item_index`. Only valid when `function` kept its
     /// `item_index` and is still an `Item::Fn` there - i.e. after a
-    /// `CallRule`/`StmtWindowRule` edit, or a `DefinitionRule`
+    /// `CallRule`/`QueryRule` edit, or a `DefinitionRule`
     /// `ReplaceBody` edit. For an edit that deleted or inserted a whole
     /// `Program::items` entry, use `remove_items` instead.
     ///

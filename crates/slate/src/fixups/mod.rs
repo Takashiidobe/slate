@@ -354,7 +354,7 @@ fn apply_with_logger(
     step!(program, Pass::FinalReturnTemps, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::StmtWindowPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::final_return_temps::rewrite());
             builder.finish()
         };
@@ -450,7 +450,7 @@ fn apply_with_logger(
         if !skip.contains(Pass::RangeLoop) {
             let plan = {
                 let query = query::QueryContext::new(&program, &facts);
-                let mut builder = query::StmtWindowPlanBuilder::new();
+                let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(&query, &query::rules::range_loop::rewrite());
                 builder.finish()
             };
@@ -544,7 +544,7 @@ fn apply_with_logger(
             let facts = incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &facts);
-                let mut builder = query::StmtWindowPlanBuilder::new();
+                let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(
                     &query,
                     &query::rules::dead_locals::rewrite(Pass::DeadLocals),
@@ -700,7 +700,7 @@ fn apply_with_logger(
             let facts = incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &facts);
-                let mut builder = query::StmtWindowPlanBuilder::new();
+                let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(
                     &query,
                     &query::rules::dead_locals::rewrite(Pass::DeadLocals),
@@ -992,7 +992,7 @@ fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceL
         }
         let plan = {
             let query = query::QueryContext::new(program, &facts);
-            let mut builder = query::StmtWindowPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::dead_locals::rewrite(pass));
             builder.finish()
         };
