@@ -34,6 +34,8 @@ pub(in crate::fixups) struct Evidence {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(in crate::fixups) enum Predicate {
     Call,
+    Binding,
+    DefUse,
     AnonymousStructDomain,
     ByteSource,
     ConstantU8,
@@ -79,6 +81,10 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     Binding {
         name: String,
+    },
+    DefUse {
+        reads: usize,
+        writes: usize,
     },
     PointerView {
         representation: ByteRepresentation,

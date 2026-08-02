@@ -151,17 +151,27 @@ impl<'snapshot> StmtWindowCaseContext<'_, 'snapshot> {
         AstPath(path)
     }
 
+    pub(in crate::fixups) fn local_binding(
+        &mut self,
+        name: &str,
+    ) -> Result<super::BindingRef, Rejection> {
+        self.prove(
+            self.query
+                .binding_at(self.candidate.site.item_index, &self.stmt_path(0), name),
+        )
+    }
+
+    pub(in crate::fixups) fn def_use(
+        &mut self,
+        binding: &super::BindingRef,
+    ) -> Result<super::BindingDefUse, Rejection> {
+        self.prove(self.query.binding_def_use(binding))
+    }
+
     pub(in crate::fixups) fn counted_loop(
         &mut self,
     ) -> Result<crate::fixups::facts::CountedLoopFact, Rejection> {
         self.prove(self.query.counted_loop(&self.candidate.site))
-    }
-
-    pub(in crate::fixups) fn read_path(
-        &mut self,
-        name: &str,
-    ) -> Result<crate::fixups::facts::AstPath, Rejection> {
-        self.prove(self.query.read_path(&self.candidate.site, name))
     }
 
     pub(in crate::fixups) fn no_effects(&mut self) -> Result<(), Rejection> {

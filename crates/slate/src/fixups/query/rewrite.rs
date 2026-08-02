@@ -362,6 +362,8 @@ pub(super) fn evidence_trace_fact(evidence: &Evidence) -> TraceFact {
 pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
     match predicate {
         Predicate::Call => "call",
+        Predicate::Binding => "binding",
+        Predicate::DefUse => "def_use",
         Predicate::AnonymousStructDomain => "anonymous_struct_domain",
         Predicate::ByteSource => "byte_source",
         Predicate::ConstantU8 => "constant_u8",
@@ -417,6 +419,9 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             complete,
         } => format!("records={records};facts={facts};conflicts={conflicts};complete={complete}"),
         EvidenceDetail::Binding { name } => format!("binding={name}"),
+        EvidenceDetail::DefUse { reads, writes } => {
+            format!("reads={reads},writes={writes}")
+        }
         EvidenceDetail::PointerView {
             representation,
             mutability,

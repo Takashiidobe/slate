@@ -20,14 +20,14 @@ use crate::rust_ast::{
 
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
-    BufferCursorPlan, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
-    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, Evidence,
-    EvidenceDetail, ExprSite, ExternFn, HeapOwnershipPlan, HeapOwnershipPlanSet,
-    HeapOwnershipReallocPlan, InlineTempPlan, LazySingletonPlan, LazySingletonSet, NulPosition,
-    NullaryMethodCall, ParamSite, Phase, PointerMutability, Predicate, Proof, PtrLenPlan,
-    PtrLenPlanSet, QueryResult, Rejection, RejectionReason, ResolvedValue, StableExpr,
-    StmtWindowSite, UnusedTypeDefinitionSet, Usage, ValueSite, ZeroGroupUsers, ZeroInitPlan,
-    ZeroUsers,
+    BindingDefUse, BindingRef, BufferCursorPlan, ByteExtent, ByteRepresentation, ByteSource,
+    ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
+    DefinitionSite, Evidence, EvidenceDetail, ExprSite, ExternFn, HeapOwnershipPlan,
+    HeapOwnershipPlanSet, HeapOwnershipReallocPlan, InlineTempPlan, LazySingletonPlan,
+    LazySingletonSet, NulPosition, NullaryMethodCall, ParamSite, Phase, PointerMutability,
+    Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, Rejection, RejectionReason,
+    ResolvedValue, StableExpr, StmtWindowSite, UnusedTypeDefinitionSet, Usage, ValueSite,
+    ZeroGroupUsers, ZeroInitPlan, ZeroUsers,
 };
 
 macro_rules! query_cache {
@@ -181,6 +181,88 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn value_local(&self, site: &ValueSite, name: &str) -> ResolvedValue {
         self.resolved_value_at(site.item_index, &site.path, name)
+    }
+
+    pub(in crate::fixups) fn binding_at(
+        &self,
+        item_index: usize,
+        definition: &AstPath,
+        name: &str,
+    ) -> QueryResult<BindingRef> {
+        let predicate = Predicate::Binding;
+        let site = expression_site(item_index, &definition.0);
+        let function = self
+            .facts
+            .function_by_item_index(item_index)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        let id = self
+            .facts
+            .binding_by_local_path(function, name, definition)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::Binding {
+                name: name.to_string(),
+            },
+        }];
+        Ok(Proof::new(
+            BindingRef {
+                item_index,
+                name: name.to_string(),
+                definition: definition.clone(),
+                id,
+            },
+            evidence,
+        ))
+    }
+
+    pub(in crate::fixups) fn binding_def_use(
+        &self,
+        binding: &BindingRef,
+    ) -> QueryResult<BindingDefUse> {
+        let predicate = Predicate::DefUse;
+        let site = expression_site(binding.item_index, &binding.definition.0);
+        let fact = self.facts.def_use(binding.id).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let reads = fact.reads.clone();
+        let writes = fact.writes.clone();
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::DefUse {
+                reads: reads.len(),
+                writes: writes.len(),
+            },
+        }];
+        Ok(Proof::new(
+            BindingDefUse {
+                binding: binding.clone(),
+                reads,
+                writes,
+            },
+            evidence,
+        ))
     }
 
     fn resolved_value_at(
@@ -1344,58 +1426,6 @@ query_cache! {
                     start: fact.start,
                     step: fact.step,
                     index_use: fact.index_use,
-                },
-            }],
-        ))
-    }
-
-    fn read_path(&self, window: &StmtWindowSite, name: &str) -> QueryResult<AstPath>;
-    key: (StmtWindowSite, String) = (window.clone(), name.to_string());
-    {
-        let predicate = Predicate::ReadPath;
-        let evidence_site = stmt_window_evidence_site(window, window.start);
-        let function = self.facts.function_by_item_index(window.item_index).ok_or_else(|| {
-            Rejection::new(
-                predicate,
-                Some(evidence_site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            )
-        })?;
-        let mut def_path = window.path.0.clone();
-        def_path.push(PathSegment::Stmt(window.start));
-        let def_path = AstPath(def_path);
-        let Some(binding) = self.facts.binding_by_local_path(function, name, &def_path) else {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let Some(uses) = self.facts.def_use(binding) else {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let [read] = uses.reads.as_slice() else {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::Ambiguous,
-                Vec::new(),
-            ));
-        };
-        Ok(Proof::new(
-            read.clone(),
-            vec![Evidence {
-                predicate,
-                site: evidence_site,
-                detail: EvidenceDetail::Binding {
-                    name: name.to_string(),
                 },
             }],
         ))
