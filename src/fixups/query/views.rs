@@ -10,6 +10,17 @@ use crate::rust_ast::{Expr, Type};
 use super::item::StatementRef;
 
 #[derive(Debug, Clone)]
+pub(in crate::fixups) struct AtomicCompareExchangeChain {
+    pub(super) compare_exchange: Expr,
+    pub(super) expected_name: String,
+    pub(super) final_name: String,
+    pub(super) mutable: bool,
+    pub(super) ty: Option<Type>,
+    pub(super) needs_cast: bool,
+    pub(super) depth: usize,
+}
+
+#[derive(Debug, Clone)]
 pub(in crate::fixups) struct DispatchRegion {
     pub(in crate::fixups) state_declaration: StatementRef,
     pub(in crate::fixups) dispatch_loop: StatementRef,

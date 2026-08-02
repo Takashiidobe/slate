@@ -1,3 +1,4 @@
+mod atomic;
 mod context;
 mod control_flow;
 mod field;
@@ -32,8 +33,8 @@ pub(in crate::fixups) use proof::{
 };
 pub(in crate::fixups) use recipe::{
     ExprRecipe, FunctionBodyRecipe, HeapOwnershipPlan, HeapOwnershipReallocPlan, byte_position,
-    initialize_local, known_index, memchr_fallback_body, pointer_at_or_null, process_exit,
-    rewrite_heap_ownership,
+    collapse_atomic_compare_exchange, initialize_local, known_index, memchr_fallback_body,
+    pointer_at_or_null, process_exit, rewrite_heap_ownership,
 };
 pub(in crate::fixups) use rewrite::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 use views::{
@@ -41,14 +42,14 @@ use views::{
     PtrLenPlan,
 };
 pub(in crate::fixups) use views::{
-    AnonymousStructSet, BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse,
-    BindingUses, BufferPointerField, BufferPointerFields, ByteExtent, ByteRepresentation,
-    ByteSource, ByteView, DefinitionGroup, DefinitionGroupUsers, DefinitionKind,
-    DefinitionLocation, DefinitionSelector, DefinitionSite, DefinitionUsers, DispatchRegion,
-    EnumVariantRef, ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef,
-    ExpressionRole, ExpressionValues, FieldRef, FunctionCallDomain, FunctionReachability,
-    FunctionRef, HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences,
-    LazySingletonSet, MatchArmRef, NulPosition, ParameterRef, Phase, PointerMutability, ProgramRef,
-    PtrLenPlanSet, ReferenceDomain, ResolvedValue, StableExpr, StatementContainerRef,
-    StatementRange, TypeUseKind, TypeUseRef, Usage, UseSiteRef, ValueSite,
+    AnonymousStructSet, AtomicCompareExchangeChain, BindingAccess, BindingCategory, BindingDefUse,
+    BindingRef, BindingUse, BindingUses, BufferPointerField, BufferPointerFields, ByteExtent,
+    ByteRepresentation, ByteSource, ByteView, DefinitionGroup, DefinitionGroupUsers,
+    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, DefinitionUsers,
+    DispatchRegion, EnumVariantRef, ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace,
+    ExpressionRef, ExpressionRole, ExpressionValues, FieldRef, FunctionCallDomain,
+    FunctionReachability, FunctionRef, HeapOwnership, HeapOwnershipFacts, HeapReallocation,
+    HeapUse, ItemReferences, LazySingletonSet, MatchArmRef, NulPosition, ParameterRef, Phase,
+    PointerMutability, ProgramRef, PtrLenPlanSet, ReferenceDomain, ResolvedValue, StableExpr,
+    StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef, Usage, UseSiteRef, ValueSite,
 };

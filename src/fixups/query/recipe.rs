@@ -3,8 +3,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::{HeapOwnershipKind, HeapResizeKind};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::query::{
-    ByteRepresentation, ByteSource, NulPosition, PointerMutability, Predicate, QueryContext,
-    Rejection, RejectionReason, StableExpr, default_value,
+    AtomicCompareExchangeChain, ByteRepresentation, ByteSource, NulPosition, PointerMutability,
+    Predicate, QueryContext, Rejection, RejectionReason, StableExpr, default_value,
 };
 use crate::fixups::support::walk;
 use crate::function_identity::{Known, known_call};
@@ -32,6 +32,54 @@ pub(in crate::fixups) enum SearchIndex {
 
 pub(in crate::fixups) struct FunctionBodyRecipe {
     body: Vec<IndentStmt>,
+}
+
+pub(in crate::fixups) fn collapse_atomic_compare_exchange(
+    chain: AtomicCompareExchangeChain,
+) -> IndentStmt {
+    let mut init = Expr::Match {
+        expr: Box::new(chain.compare_exchange),
+        arms: vec![
+            ExprMatchArm {
+                pattern: Pattern::TupleStruct {
+                    name: "Ok".into(),
+                    fields: vec![Pattern::Wildcard],
+                },
+                value: Expr::Value(RustValue::Bool(true)),
+            },
+            ExprMatchArm {
+                pattern: Pattern::TupleStruct {
+                    name: "Err".into(),
+                    fields: vec![Pattern::Binding("v".into())],
+                },
+                value: Expr::Block(Box::new(Block {
+                    stmts: vec![IndentStmt {
+                        depth: 0,
+                        stmt: Stmt::Assign {
+                            target: Expr::Var(chain.expected_name.into()),
+                            value: Expr::Var("v".into()),
+                        },
+                    }],
+                    tail: Some(Box::new(Expr::Value(RustValue::Bool(false)))),
+                })),
+            },
+        ],
+    };
+    if chain.needs_cast {
+        init = Expr::Cast {
+            expr: Box::new(init),
+            ty: Type::Prim(Prim::I32),
+        };
+    }
+    IndentStmt {
+        depth: chain.depth,
+        stmt: Stmt::Let {
+            name: chain.final_name,
+            mutable: chain.mutable,
+            ty: chain.ty,
+            init: Some(init),
+        },
+    }
 }
 
 pub(in crate::fixups) fn pointer_at_or_null(
