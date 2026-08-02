@@ -1,4 +1,5 @@
 mod context;
+mod control_flow;
 mod field;
 mod item;
 mod patterns;
@@ -43,11 +44,11 @@ pub(in crate::fixups) use views::{
     AnonymousStructSet, BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse,
     BindingUses, BufferPointerField, BufferPointerFields, ByteExtent, ByteRepresentation,
     ByteSource, ByteView, DefinitionGroup, DefinitionGroupUsers, DefinitionKind,
-    DefinitionLocation, DefinitionSelector, DefinitionSite, DefinitionUsers, EnumVariantRef,
-    ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
-    ExpressionValues, FieldRef, FunctionCallDomain, FunctionReachability, FunctionRef,
-    HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences, LazySingletonSet,
-    MatchArmRef, NulPosition, ParameterRef, Phase, PointerMutability, ProgramRef, PtrLenPlanSet,
-    ReferenceDomain, ResolvedValue, StableExpr, StatementContainerRef, StatementRange, TypeUseKind,
-    TypeUseRef, Usage, UseSiteRef, ValueSite,
+    DefinitionLocation, DefinitionSelector, DefinitionSite, DefinitionUsers, DispatchRegion,
+    EnumVariantRef, ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef,
+    ExpressionRole, ExpressionValues, FieldRef, FunctionCallDomain, FunctionReachability,
+    FunctionRef, HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences,
+    LazySingletonSet, MatchArmRef, NulPosition, ParameterRef, Phase, PointerMutability, ProgramRef,
+    PtrLenPlanSet, ReferenceDomain, ResolvedValue, StableExpr, StatementContainerRef,
+    StatementRange, TypeUseKind, TypeUseRef, Usage, UseSiteRef, ValueSite,
 };

@@ -9,6 +9,14 @@ use crate::rust_ast::{Expr, Type};
 
 use super::item::StatementRef;
 
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct DispatchRegion {
+    pub(in crate::fixups) state_declaration: StatementRef,
+    pub(in crate::fixups) dispatch_loop: StatementRef,
+    pub(super) depth: usize,
+    pub(super) dispatch: crate::fixups::facts::goto::DispatchLoop,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(in crate::fixups) struct Usage {
     pub(in crate::fixups) reads: usize,

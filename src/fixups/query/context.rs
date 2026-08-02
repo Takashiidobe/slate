@@ -21,8 +21,8 @@ use super::{
     BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse, BindingUses,
     BufferPointerField, BufferPointerFields, ByteExtent, ByteRepresentation, ByteSource, ByteView,
     DefinitionGroup, DefinitionGroupUsers, DefinitionKind, DefinitionLocation, DefinitionSelector,
-    DefinitionSite, DefinitionUsers, EnumVariantRef, Evidence, EvidenceDetail, ExprSite,
-    ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
+    DefinitionSite, DefinitionUsers, DispatchRegion, EnumVariantRef, Evidence, EvidenceDetail,
+    ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
     ExpressionValues, ExternFn, FieldRef, FunctionCallDomain, FunctionReachability, FunctionRef,
     HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences,
     LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition, NullaryMethodCall, ParameterRef,
@@ -2182,6 +2182,36 @@ impl<'snapshot> QueryContext<'snapshot> {
                 },
             }],
         ))
+    }
+
+    pub(in crate::fixups) fn dispatch_regions(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<Vec<DispatchRegion>> {
+        let (definition, mut evidence) = self.function_snapshot(function)?.into_parts();
+        let regions = crate::fixups::facts::goto::recognize_dispatch_loops(&definition.body)
+            .into_iter()
+            .map(|dispatch| DispatchRegion {
+                state_declaration: StatementRef {
+                    item_index: function.item_index,
+                    path: AstPath(vec![PathSegment::Stmt(dispatch.let_index)]),
+                },
+                dispatch_loop: StatementRef {
+                    item_index: function.item_index,
+                    path: AstPath(vec![PathSegment::Stmt(dispatch.loop_index)]),
+                },
+                depth: definition.body[dispatch.loop_index].depth,
+                dispatch,
+            })
+            .collect::<Vec<_>>();
+        evidence.push(Evidence {
+            predicate: Predicate::StatementRegion,
+            site: expression_site(function.item_index, &[]),
+            detail: EvidenceDetail::StatementRegion {
+                statements: regions.len() * 2,
+            },
+        });
+        Ok(Proof::new(regions, evidence))
     }
 
     pub(in crate::fixups) fn function_bindings(

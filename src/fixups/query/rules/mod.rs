@@ -5,6 +5,7 @@ pub(in crate::fixups) mod constant_index_casts;
 pub(in crate::fixups) mod dead_locals;
 pub(in crate::fixups) mod externs;
 pub(in crate::fixups) mod final_return_temps;
+pub(in crate::fixups) mod goto;
 pub(in crate::fixups) mod heap_ownership;
 pub(in crate::fixups) mod inline_temps;
 pub(in crate::fixups) mod lazy_singleton;
