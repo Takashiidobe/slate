@@ -22,7 +22,6 @@ pub(super) mod loop_shapes;
 pub(super) mod places;
 pub(super) mod printf;
 pub(super) mod ptr_len;
-pub(super) mod slice_index;
 pub(super) mod string_params;
 pub(super) mod strings;
 pub(super) mod values;
@@ -67,9 +66,6 @@ pub(super) struct FixupFacts {
     pub(super) atomic_locals: Vec<AtomicLocalFact>,
     pub(super) atomic_globals: Vec<AtomicGlobalFact>,
     pub(super) lazy_init_singletons: Vec<LazyInitSingletonFact>,
-    pub(super) slice_pointer_views: Vec<SlicePointerViewFact>,
-    pub(super) slice_index_ranges: Vec<SliceIndexRangeFact>,
-    pub(super) slice_pointer_indexes: Vec<SlicePointerIndexFact>,
     pub(super) counted_loops: Vec<CountedLoopFact>,
     pub(super) counted_slice_loops: Vec<CountedSliceLoopFact>,
     pub(super) loop_shapes: Vec<LoopShapeFact>,
@@ -743,35 +739,6 @@ pub(super) struct ArrayElementPointerOriginFact {
     pub(super) mutable: bool,
 }
 
-#[derive(Debug, Clone)]
-pub(super) struct SlicePointerViewFact {
-    pub(super) site: Site,
-    pub(super) pointer: BindingId,
-    pub(super) slice: BindingId,
-    pub(super) mutable: bool,
-    pub(super) elem_ty: Type,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) struct SliceIndexRangeFact {
-    pub(super) function: FunctionId,
-    pub(super) index: BindingId,
-    pub(super) slice: BindingId,
-    pub(super) lower: IndexLowerBound,
-    pub(super) upper: IndexUpperBound,
-    pub(super) loop_path: AstPath,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) struct SlicePointerIndexFact {
-    pub(super) site: Site,
-    pub(super) pointer: BindingId,
-    pub(super) slice: BindingId,
-    pub(super) offset_index: BindingId,
-    pub(super) ranged_index: BindingId,
-    pub(super) unit: PointerOffsetUnit,
-}
-
 /// Identifies a specific loop and its body across the several loop-shape
 /// facts, which all key off the same `(function, loop_id, loop_path,
 /// body_path)` tuple recorded once per canonical-loop candidate.
@@ -874,22 +841,6 @@ pub(super) enum LoopShapeRejection {
     MissingMutation,
     MultipleMutations,
     UnsupportedControlFlow,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum IndexLowerBound {
-    Zero,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum IndexUpperBound {
-    SliceLen,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum PointerOffsetUnit {
-    Elements,
-    Bytes,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1651,7 +1602,6 @@ pub(super) fn analyze(program: &Program) -> AnalyzedProgram<'_> {
     atomic_locals::collect_facts(program, &mut facts);
     lazy_singleton::collect_facts(program, &mut facts);
     buffer_cursor::collect_facts(program, &mut facts);
-    slice_index::collect_facts(program, &mut facts);
     counted_loop::collect_facts(program, &mut facts);
     loop_shapes::collect_facts(program, &mut facts);
     AnalyzedProgram { program, facts }
