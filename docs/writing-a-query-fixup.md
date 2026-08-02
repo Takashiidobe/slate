@@ -127,6 +127,13 @@ statement, field name, constant index, and array bound. Compose it with
 alias and unresolved-use rejection stays complete while the rule owns the
 indexing and pointer-difference policy.
 
+For owned heap lifetimes, `heap_ownership_facts` exposes owner, allocation,
+size, alias, free, and reallocation bindings together with exact lifecycle and
+use statements. Allocation kind, extent, initialization, read safety, and
+resize direction remain independent observations. The rule decides Box/Vec
+eligibility and constructs the private recipe plan; the query never returns a
+rewrite plan or rewritten body.
+
 ## Definition items
 
 Definitions are `QueryItem`s selected by the reusable `Definition` matcher. The

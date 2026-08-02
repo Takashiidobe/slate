@@ -2,8 +2,8 @@ use std::collections::BTreeSet;
 use std::marker::PhantomData;
 
 use crate::fixups::facts::{
-    AstPath, BindingId, ConstValue, EffectKind, HeapOwnershipKind, HeapResizeKind, PlaceAccess,
-    PlaceKind, Purity,
+    AstPath, BindingId, ConstValue, EffectKind, HeapAllocationKind, HeapExtent, HeapInitKind,
+    HeapReadSafety, HeapResizeKind, HeapUseKind, PlaceAccess, PlaceKind, Purity,
 };
 use crate::rust_ast::{Expr, FnDef, Type};
 
@@ -382,8 +382,8 @@ pub(super) struct LazySingletonPlan {
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct HeapOwnershipPlanSet {
-    pub(super) plans: Vec<HeapOwnershipPlan>,
+pub(in crate::fixups) struct HeapOwnershipFacts {
+    pub(in crate::fixups) owners: Vec<HeapOwnership>,
 }
 
 #[derive(Debug, Clone)]
@@ -394,29 +394,41 @@ pub(in crate::fixups) struct ArrayElementPointerOrigin {
 }
 
 #[derive(Debug, Clone)]
-pub(super) struct HeapOwnershipPlan {
-    pub(super) pointer_name: String,
-    pub(super) kind: HeapOwnershipKind,
-    pub(super) pointer_stmt: Option<usize>,
-    pub(super) size_stmt: Option<usize>,
-    pub(super) allocation_stmt: Option<usize>,
-    pub(super) assign_stmt: Option<usize>,
-    pub(super) free_temp_stmt: Option<usize>,
-    pub(super) free_stmt: Option<usize>,
-    pub(super) reallocs: Vec<HeapOwnershipReallocPlan>,
-    pub(super) elem_ty: Type,
-    pub(super) init: Expr,
-    pub(super) count: Option<Expr>,
+pub(in crate::fixups) struct HeapOwnership {
+    pub(in crate::fixups) pointer: BindingRef,
+    pub(in crate::fixups) allocation_temp: BindingRef,
+    pub(in crate::fixups) size_temp: Option<BindingRef>,
+    pub(in crate::fixups) free_temp: Option<BindingRef>,
+    pub(in crate::fixups) aliases: Vec<BindingRef>,
+    pub(in crate::fixups) pointer_statement: StatementRef,
+    pub(in crate::fixups) allocation_statement: StatementRef,
+    pub(in crate::fixups) assignment_statement: StatementRef,
+    pub(in crate::fixups) free_statement: StatementRef,
+    pub(in crate::fixups) elem_ty: Type,
+    pub(in crate::fixups) allocation: HeapAllocationKind,
+    pub(in crate::fixups) extent: HeapExtent,
+    pub(in crate::fixups) init: HeapInitKind,
+    pub(in crate::fixups) read_safety: HeapReadSafety,
+    pub(in crate::fixups) uses: Vec<HeapUse>,
+    pub(in crate::fixups) reallocations: Vec<HeapReallocation>,
 }
 
 #[derive(Debug, Clone)]
-pub(super) struct HeapOwnershipReallocPlan {
-    pub(super) source_temp_stmt: Option<usize>,
-    pub(super) size_stmt: Option<usize>,
-    pub(super) allocation_stmt: Option<usize>,
-    pub(super) assign_stmt: Option<usize>,
-    pub(super) resize: HeapResizeKind,
-    pub(super) count: Expr,
+pub(in crate::fixups) struct HeapUse {
+    pub(in crate::fixups) statement: StatementRef,
+    pub(in crate::fixups) kind: HeapUseKind,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct HeapReallocation {
+    pub(in crate::fixups) source_temp: Option<BindingRef>,
+    pub(in crate::fixups) allocation_temp: BindingRef,
+    pub(in crate::fixups) size_temp: Option<BindingRef>,
+    pub(in crate::fixups) allocation_statement: StatementRef,
+    pub(in crate::fixups) assignment_statement: StatementRef,
+    pub(in crate::fixups) new_extent: HeapExtent,
+    pub(in crate::fixups) init: HeapInitKind,
+    pub(in crate::fixups) resize: HeapResizeKind,
 }
 
 #[derive(Debug, Clone)]

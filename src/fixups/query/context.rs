@@ -5,9 +5,8 @@ use std::marker::PhantomData;
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, CastFact, ConstValue, CountedLoopFact, EffectSubject,
-    FixupFacts, FunctionId, HeapExtent, HeapOwnershipFact, HeapOwnershipKind, HeapReadSafety,
-    NulTermination, PathSegment, PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind,
-    StringRecoveryCandidate, ValueSubject,
+    FixupFacts, FunctionId, NulTermination, PathSegment, PtrLenSliceFact, Purity, StringBufferFact,
+    StringBufferKind, StringRecoveryCandidate, ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
@@ -24,8 +23,8 @@ use super::{
     DefinitionGroup, DefinitionGroupUsers, DefinitionKind, DefinitionLocation, DefinitionSelector,
     DefinitionSite, DefinitionUsers, EnumVariantRef, Evidence, EvidenceDetail, ExprSite,
     ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
-    ExpressionValues, ExternFn, FieldRef, FunctionRef, HeapOwnershipPlan, HeapOwnershipPlanSet,
-    HeapOwnershipReallocPlan, ItemReferences, LazySingletonPlan, LazySingletonSet, MatchArmRef,
+    ExpressionValues, ExternFn, FieldRef, FunctionRef, HeapOwnership, HeapOwnershipFacts,
+    HeapReallocation, HeapUse, ItemReferences, LazySingletonPlan, LazySingletonSet, MatchArmRef,
     NulPosition, NullaryMethodCall, ParameterRef, PointerMutability, Predicate, Proof, PtrLenPlan,
     PtrLenPlanSet, QueryResult, ReferenceDomain, Rejection, RejectionReason, ResolvedValue,
     StableExpr, StatementContainerRef, StatementRange, TypeUseRef, Usage, UseSiteRef, ValueSite,
@@ -2802,24 +2801,132 @@ query_cache! {
         Ok(Proof::new(LazySingletonSet { singletons }, evidence))
     }
 
-    fn heap_ownership_plans(&self, definition: &DefinitionSite) -> QueryResult<HeapOwnershipPlanSet>;
-    key: DefinitionLocation = definition.location.clone();
+    fn heap_ownership_facts(&self, function: &FunctionRef) -> QueryResult<HeapOwnershipFacts>;
+    key: FunctionId = function.id;
     {
-        let predicate = Predicate::HeapOwnershipPlan;
-        let site = definition_evidence_site(definition);
-        let Some(function) = self
-            .facts
-            .function_by_item_index(definition.location.item_index())
-        else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
+        let predicate = Predicate::HeapOwnershipFacts;
+        let site = expression_site(function.item_index, &[]);
+        let bindings = self.all_bindings();
+        let binding = |id| bindings.iter().find(|binding| binding.id == id).cloned();
+        let statement = |path: &AstPath| StatementRef {
+            item_index: function.item_index,
+            path: path.clone(),
         };
-        let plans = heap_ownership_plans_for_function(self.facts, function);
-        if plans.is_empty() {
+        let mut owners = Vec::new();
+        for fact in self
+            .facts
+            .heap_ownership
+            .iter()
+            .filter(|fact| fact.function == function.id)
+        {
+            let Some(pointer) = binding(fact.pointer) else {
+                return Err(Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            let Some(allocation_temp) = binding(fact.allocation_temp) else {
+                return Err(Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            let size_temp = match fact.size_temp {
+                Some(id) => Some(binding(id).ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?),
+                None => None,
+            };
+            let free_temp = match fact.free_temp {
+                Some(id) => Some(binding(id).ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?),
+                None => None,
+            };
+            let aliases = fact
+                .aliases
+                .iter()
+                .map(|id| binding(*id))
+                .collect::<Option<Vec<_>>>()
+                .ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?;
+            let reallocations = fact
+                .reallocations
+                .iter()
+                .map(|realloc| {
+                    Some(HeapReallocation {
+                        source_temp: match realloc.source_temp {
+                            Some(id) => Some(binding(id)?),
+                            None => None,
+                        },
+                        allocation_temp: binding(realloc.allocation_temp)?,
+                        size_temp: match realloc.size_temp {
+                            Some(id) => Some(binding(id)?),
+                            None => None,
+                        },
+                        allocation_statement: statement(&realloc.allocation_path),
+                        assignment_statement: statement(&realloc.assign_path),
+                        new_extent: realloc.new_extent.clone(),
+                        init: realloc.init,
+                        resize: realloc.resize,
+                    })
+                })
+                .collect::<Option<Vec<_>>>()
+                .ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?;
+            owners.push(HeapOwnership {
+                pointer,
+                allocation_temp,
+                size_temp,
+                free_temp,
+                aliases,
+                pointer_statement: statement(&fact.pointer_path),
+                allocation_statement: statement(&fact.allocation_path),
+                assignment_statement: statement(&fact.assign_path),
+                free_statement: statement(&fact.free_path),
+                elem_ty: fact.elem_ty.clone(),
+                allocation: fact.allocation.clone(),
+                extent: fact.extent.clone(),
+                init: fact.init,
+                read_safety: fact.read_safety,
+                uses: fact
+                    .uses
+                    .iter()
+                    .map(|usage| HeapUse {
+                        statement: statement(&usage.path),
+                        kind: usage.kind.clone(),
+                    })
+                    .collect(),
+                reallocations,
+            });
+        }
+        if owners.is_empty() {
             return Err(Rejection::new(
                 predicate,
                 Some(site),
@@ -2830,9 +2937,11 @@ query_cache! {
         let evidence = vec![Evidence {
             predicate,
             site,
-            detail: EvidenceDetail::HeapOwnershipPlan { plans: plans.len() },
+            detail: EvidenceDetail::HeapOwnershipFacts {
+                owners: owners.len(),
+            },
         }];
-        Ok(Proof::new(HeapOwnershipPlanSet { plans }, evidence))
+        Ok(Proof::new(HeapOwnershipFacts { owners }, evidence))
     }
 
     fn ptr_len_slices(&self) -> QueryResult<PtrLenPlanSet>;
@@ -3760,91 +3869,6 @@ fn ptr_len_plans_from_facts(facts: &FixupFacts) -> Vec<PtrLenPlan> {
     plans
 }
 
-fn heap_ownership_plans_for_function(
-    facts: &FixupFacts,
-    function: FunctionId,
-) -> Vec<HeapOwnershipPlan> {
-    let mut plans = Vec::new();
-    for fact in &facts.heap_ownership {
-        if fact.function != function {
-            continue;
-        }
-        let kind = fact.kind;
-        if kind == HeapOwnershipKind::VecBuffer
-            && fact.read_safety == HeapReadSafety::MayReadUninitialized
-        {
-            continue;
-        }
-        let Some(pointer_name) = facts.binding_name(fact.pointer) else {
-            continue;
-        };
-        let Some(init) = init_for_fact(fact) else {
-            continue;
-        };
-        let count = count_for_extent(&fact.extent);
-        if kind == HeapOwnershipKind::VecBuffer && count.is_none() {
-            continue;
-        }
-        let reallocs = fact
-            .reallocations
-            .iter()
-            .map(|realloc| {
-                Some(HeapOwnershipReallocPlan {
-                    source_temp_stmt: previous_stmt_index(&realloc.allocation_path)
-                        .and_then(|index| index.checked_sub(1)),
-                    size_stmt: previous_stmt_index(&realloc.allocation_path),
-                    allocation_stmt: stmt_index(&realloc.allocation_path),
-                    assign_stmt: stmt_index(&realloc.assign_path),
-                    resize: realloc.resize,
-                    count: count_for_extent(&realloc.new_extent)?,
-                })
-            })
-            .collect::<Option<Vec<_>>>();
-        let Some(reallocs) = reallocs else {
-            continue;
-        };
-        plans.push(HeapOwnershipPlan {
-            pointer_name: pointer_name.to_string(),
-            kind,
-            pointer_stmt: stmt_index(&fact.pointer_path),
-            size_stmt: fact
-                .size_temp
-                .and_then(|_| previous_stmt_index(&fact.allocation_path)),
-            allocation_stmt: stmt_index(&fact.allocation_path),
-            assign_stmt: stmt_index(&fact.assign_path),
-            free_temp_stmt: fact
-                .free_temp
-                .and_then(|_| previous_stmt_index(&fact.free_path)),
-            free_stmt: stmt_index(&fact.free_path),
-            reallocs,
-            elem_ty: fact.elem_ty.clone(),
-            init,
-            count,
-        });
-    }
-    plans
-}
-
-fn init_for_fact(fact: &HeapOwnershipFact) -> Option<Expr> {
-    match fact.kind {
-        HeapOwnershipKind::ScalarBox => Some(default_value(&fact.elem_ty)),
-        HeapOwnershipKind::VecBuffer => match fact.read_safety {
-            HeapReadSafety::ZeroInitialized | HeapReadSafety::ReadsAfterWrites => {
-                Some(default_value(&fact.elem_ty))
-            }
-            HeapReadSafety::MayReadUninitialized => None,
-        },
-    }
-}
-
-fn count_for_extent(extent: &HeapExtent) -> Option<Expr> {
-    match extent {
-        HeapExtent::Scalar => Some(Expr::Value(RustValue::I64(1))),
-        HeapExtent::Elements { count } => Some(count.clone()),
-        HeapExtent::Unknown => None,
-    }
-}
-
 pub(super) fn default_value(ty: &Type) -> Expr {
     match ty {
         Type::Prim(Prim::Bool) => Expr::Value(RustValue::Bool(false)),
@@ -3853,17 +3877,6 @@ pub(super) fn default_value(ty: &Type) -> Expr {
         Type::Ptr { .. } => Expr::Value(RustValue::NullPtr),
         _ => Expr::Value(RustValue::I64(0)),
     }
-}
-
-fn stmt_index(path: &AstPath) -> Option<usize> {
-    match path.0.as_slice() {
-        [PathSegment::Stmt(index)] => Some(*index),
-        _ => None,
-    }
-}
-
-fn previous_stmt_index(path: &AstPath) -> Option<usize> {
-    stmt_index(path).and_then(|index| index.checked_sub(1))
 }
 
 fn definition_evidence_site(definition: &DefinitionSite) -> ExprSite {

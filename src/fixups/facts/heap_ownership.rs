@@ -1,8 +1,8 @@
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, FixupFacts, FunctionId, HeapAllocationKind, HeapExtent, HeapInitKind,
-    HeapOwnershipFact, HeapOwnershipKind, HeapReadSafety, HeapReallocFact, HeapResizeKind,
-    HeapUseFact, HeapUseKind, PathSegment,
+    HeapOwnershipFact, HeapReadSafety, HeapReallocFact, HeapResizeKind, HeapUseFact, HeapUseKind,
+    PathSegment,
 };
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
@@ -13,6 +13,7 @@ use std::collections::BTreeSet;
 type OwnedHeapUses = (
     usize,
     Option<BindingId>,
+    Vec<BindingId>,
     Vec<HeapUseFact>,
     Vec<HeapReallocFact>,
     HeapReadSafety,
@@ -46,15 +47,13 @@ fn collect_body(function: FunctionId, body: &[IndentStmt], facts: &mut FixupFact
         else {
             continue;
         };
-        let Some(kind) = kind_for_extent(&candidate.extent) else {
-            continue;
-        };
         facts.heap_ownership.push(HeapOwnershipFact {
             function,
             pointer,
             allocation_temp: candidate.allocation_temp,
             size_temp: candidate.size_temp,
             free_temp: candidate.free_temp,
+            aliases: candidate.aliases,
             pointer_path,
             allocation_path: AstPath(vec![PathSegment::Stmt(candidate.allocation_index)]),
             assign_path: AstPath(vec![PathSegment::Stmt(candidate.assign_index)]),
@@ -66,7 +65,6 @@ fn collect_body(function: FunctionId, body: &[IndentStmt], facts: &mut FixupFact
             read_safety: candidate.read_safety,
             uses: candidate.uses,
             reallocations: candidate.reallocations,
-            kind,
         });
     }
 }
@@ -78,6 +76,7 @@ struct Candidate {
     allocation_temp: BindingId,
     size_temp: Option<BindingId>,
     free_temp: Option<BindingId>,
+    aliases: Vec<BindingId>,
     allocation: HeapAllocationKind,
     extent: HeapExtent,
     init: HeapInitKind,
@@ -130,6 +129,7 @@ fn find_allocation(
                 allocation_temp,
                 size_temp,
                 free_temp: None,
+                aliases: Vec::new(),
                 allocation: allocation_call.kind,
                 extent: allocation_call.extent.clone(),
                 init: allocation_call.init,
@@ -138,10 +138,11 @@ fn find_allocation(
                 uses: Vec::new(),
                 reallocations: Vec::new(),
             };
-            let (free_index, free_temp, uses, reallocations, read_safety) =
+            let (free_index, free_temp, aliases, uses, reallocations, read_safety) =
                 heap_uses_are_owned(function, body, facts, pointer_name, &candidate)?;
             candidate.free_index = free_index;
             candidate.free_temp = free_temp;
+            candidate.aliases = aliases;
             candidate.uses = uses;
             candidate.reallocations = reallocations;
             candidate.read_safety = read_safety;
@@ -433,6 +434,7 @@ fn heap_uses_are_owned(
     candidate: &Candidate,
 ) -> Option<OwnedHeapUses> {
     let mut aliases = BTreeSet::from([pointer_name.to_string()]);
+    let mut alias_bindings = Vec::new();
     let mut free: Option<(usize, Option<BindingId>)> = None;
     let mut uses = Vec::new();
     let mut reallocations = Vec::new();
@@ -462,7 +464,13 @@ fn heap_uses_are_owned(
             continue;
         }
         if let Some(alias) = pointer_alias_temp_from_any(&indent.stmt, &aliases) {
+            let binding = facts.binding_by_local_path(
+                function,
+                alias,
+                &AstPath(vec![PathSegment::Stmt(index)]),
+            )?;
             aliases.insert(alias.to_string());
+            alias_bindings.push(binding);
             index += 1;
             continue;
         }
@@ -525,7 +533,14 @@ fn heap_uses_are_owned(
     } else {
         HeapReadSafety::ReadsAfterWrites
     };
-    Some((free_index, free_temp, uses, reallocations, read_safety))
+    Some((
+        free_index,
+        free_temp,
+        alias_bindings,
+        uses,
+        reallocations,
+        read_safety,
+    ))
 }
 
 fn pointer_alias_temp_from_any<'a>(stmt: &'a Stmt, names: &BTreeSet<String>) -> Option<&'a str> {
@@ -777,12 +792,4 @@ fn expr_mentions_any(expr: &Expr, names: &BTreeSet<String>) -> bool {
         expr,
         &mut |expr| matches!(expr, Expr::Var(name) if names.contains(name.as_str())),
     )
-}
-
-fn kind_for_extent(extent: &HeapExtent) -> Option<HeapOwnershipKind> {
-    match extent {
-        HeapExtent::Scalar => Some(HeapOwnershipKind::ScalarBox),
-        HeapExtent::Elements { .. } => Some(HeapOwnershipKind::VecBuffer),
-        HeapExtent::Unknown => None,
-    }
 }
