@@ -1,21 +1,17 @@
 use crate::fixups::trace::Pass;
 
-use super::super::{Binding, BindingCategory, EditSet, Field, QueryRule};
+use super::super::{EditSet, Parameter, QueryRule};
 
-pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
+pub(in crate::fixups) fn rewrite() -> QueryRule<Parameter> {
     QueryRule::new(
         Pass::UnusedParams,
         "remove_unused_param",
-        Binding {
-            kind: Field::predicate(|kind: &BindingCategory, _| {
-                matches!(kind, BindingCategory::Parameter { .. })
-            }),
-            ..Default::default()
-        },
+        Parameter::default(),
     )
-    .case("unreachable_param", |case, binding| {
-        let removal =
-            case.fact(|query| super::super::parameter::removable_parameter(query, binding))?;
+    .case("unreachable_param", |case, parameter| {
+        let removal = case.fact(|query| {
+            super::super::parameter::removable_parameter(query, &parameter.binding)
+        })?;
         Ok(EditSet::remove_parameter(removal))
     })
 }

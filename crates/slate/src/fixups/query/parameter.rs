@@ -35,20 +35,23 @@ pub(super) fn removable_parameter(
     else {
         return Err(reject(predicate, site));
     };
-    if function.function.name == "main"
-        || function.function.abi.is_some()
-        || function.function.attrs.iter().any(is_exported)
-        || index >= function.function.params.len()
+    let Some(function_def) = query.function_def(&function) else {
+        return Err(reject(predicate, site));
+    };
+    if function_def.name == "main"
+        || function_def.abi.is_some()
+        || function_def.attrs.iter().any(is_exported)
+        || index >= function_def.params.len()
     {
         return Err(reject(predicate, site));
     }
     let calls = query
         .all_calls()
-        .filter(|call| {
-            matches!(&call.target, CallTarget::Direct(name) if name == &function.function.name)
-        })
+        .filter(
+            |call| matches!(&call.target, CallTarget::Direct(name) if name == &function_def.name),
+        )
         .collect::<Vec<_>>();
-    if query.symbol_use_count(&function.function.name) != calls.len() {
+    if query.symbol_use_count(&function_def.name) != calls.len() {
         return Err(reject(predicate, site));
     }
     if query.all_bindings().into_iter().any(|other| {
@@ -72,7 +75,7 @@ pub(super) fn removable_parameter(
     }
     let mut call_sites = Vec::new();
     for call in calls {
-        if call.args.len() != function.function.params.len()
+        if call.args.len() != function_def.params.len()
             || !call
                 .args
                 .get(index)
@@ -104,10 +107,13 @@ pub(super) fn removable_parameter(
             param_index: index,
         },
     });
+    let mut replacement = function_def.clone();
+    replacement.params.remove(index);
     Ok(Proof::new(
         ParameterRemoval {
             binding: binding.clone(),
             function,
+            replacement,
             index,
             calls: call_sites,
         },

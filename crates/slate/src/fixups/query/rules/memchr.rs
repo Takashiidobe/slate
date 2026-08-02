@@ -64,9 +64,6 @@ pub(in crate::fixups) fn helper() -> QueryRule<Definition> {
     })
     .case("retained", |case, definition| {
         let function = case.function(definition)?;
-        Ok(EditSet::replace_function_body(
-            function,
-            memchr_fallback_body(),
-        ))
+        case.replace_function_body(function, memchr_fallback_body())
     })
 }

@@ -1,11 +1,14 @@
-use crate::fixups::facts::Purity;
+use std::collections::BTreeSet;
+
+use crate::fixups::facts::{PlaceAccess, Purity};
 use crate::rust_ast::{Expr, IndentStmt, Label, Stmt, Type};
 
 use super::field::Field;
 use super::item::{Matcher, QueryDomain, QueryItem, StatementMatch};
 use super::{
-    BindingCategory, CallTarget, DefinitionGroup, DefinitionKind, ExpressionRef, ResolvedValue,
-    StatementRange, Usage,
+    BindingCategory, CallTarget, DefinitionGroup, DefinitionKind, EnumVariantRef, ExpressionKind,
+    ExpressionRef, ExpressionRole, FieldRef, MatchArmRef, ParameterRef, ResolvedValue,
+    StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef, Usage,
 };
 
 #[derive(Default)]
@@ -69,6 +72,47 @@ impl Matcher for AssignmentValue {
 }
 
 #[derive(Default)]
+pub(in crate::fixups) struct ExprPattern {
+    pub(in crate::fixups) kind: Field<ExpressionKind>,
+    pub(in crate::fixups) roles: Field<BTreeSet<ExpressionRole>>,
+    pub(in crate::fixups) parent: Field<Option<ExpressionKind>>,
+    pub(in crate::fixups) ancestors: Field<Vec<ExpressionKind>>,
+    pub(in crate::fixups) access: Field<Option<PlaceAccess>>,
+}
+
+impl Matcher for ExprPattern {
+    type Capture = ExpressionRef;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::Expression
+    }
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::Expression(expression) = item else {
+            return None;
+        };
+        let access = query
+            .expression_place(expression)
+            .ok()
+            .map(|proof| proof.value.access);
+        (self.kind.matches(&query.expression_kind(expression)?, &())
+            && self.roles.matches(&query.expression_roles(expression), &())
+            && self
+                .parent
+                .matches(&query.parent_expression_kind(expression), &())
+            && self
+                .ancestors
+                .matches(&query.ancestor_expression_kinds(expression), &())
+            && self.access.matches(&access, &()))
+        .then(|| expression.clone())
+    }
+}
+
+#[derive(Default)]
 pub(in crate::fixups) struct Definition<Cx = ()> {
     pub(in crate::fixups) kind: Field<DefinitionKind, Cx>,
     pub(in crate::fixups) name: Field<String, Cx>,
@@ -101,7 +145,10 @@ impl Matcher for Definition {
 pub(in crate::fixups) struct Function {
     pub(in crate::fixups) name: Field<String>,
     pub(in crate::fixups) arity: Field<usize>,
+    pub(in crate::fixups) parameter_names: Field<Vec<String>>,
+    pub(in crate::fixups) parameter_types: Field<Vec<Type>>,
     pub(in crate::fixups) returns: Field<Option<Type>>,
+    pub(in crate::fixups) body_len: Field<usize>,
 }
 
 impl Matcher for Function {
@@ -113,16 +160,214 @@ impl Matcher for Function {
 
     fn matches(
         &self,
-        _query: &super::QueryContext<'_>,
+        query: &super::QueryContext<'_>,
         item: &QueryItem<'_>,
     ) -> Option<Self::Capture> {
         let QueryItem::Function(function) = item else {
             return None;
         };
-        (self.name.matches(&function.function.name, &())
-            && self.arity.matches(&function.function.params.len(), &())
-            && self.returns.matches(&function.function.ret, &()))
+        let definition = query.function_def(function)?;
+        (self.name.matches(&definition.name, &())
+            && self.arity.matches(&definition.params.len(), &())
+            && self.parameter_names.matches(
+                &definition
+                    .params
+                    .iter()
+                    .map(|parameter| parameter.name.clone())
+                    .collect(),
+                &(),
+            )
+            && self.parameter_types.matches(
+                &definition
+                    .params
+                    .iter()
+                    .map(|parameter| parameter.ty.clone())
+                    .collect(),
+                &(),
+            )
+            && self.returns.matches(&definition.ret, &())
+            && self.body_len.matches(&definition.body.len(), &()))
         .then(|| function.clone())
+    }
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct Parameter {
+    pub(in crate::fixups) index: Field<usize>,
+    pub(in crate::fixups) name: Field<String>,
+    pub(in crate::fixups) mutable: Field<bool>,
+    pub(in crate::fixups) ty: Field<Type>,
+    pub(in crate::fixups) value: Value,
+}
+
+impl Matcher for Parameter {
+    type Capture = ParameterRef;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::Parameter
+    }
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::Parameter(parameter) = item else {
+            return None;
+        };
+        let definition = query.parameter_def(parameter)?;
+        (self.index.matches(&parameter.index, &())
+            && self.name.matches(&definition.name, &())
+            && self.mutable.matches(&definition.mutable, &())
+            && self.ty.matches(&definition.ty, &())
+            && self
+                .value
+                .matches(&query.binding_value(&parameter.binding), &()))
+        .then(|| parameter.clone())
+    }
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct StatementContainer {
+    pub(in crate::fixups) len: Field<usize>,
+}
+
+impl Matcher for StatementContainer {
+    type Capture = StatementContainerRef;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::StatementContainer
+    }
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::StatementContainer(container) = item else {
+            return None;
+        };
+        self.len
+            .matches(&query.statement_container(container)?.len(), &())
+            .then(|| container.clone())
+    }
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct MatchArm {
+    pub(in crate::fixups) index: Field<usize>,
+    pub(in crate::fixups) body_len: Field<usize>,
+}
+
+impl Matcher for MatchArm {
+    type Capture = MatchArmRef;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::MatchArm
+    }
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::MatchArm(arm) = item else {
+            return None;
+        };
+        let definition = query.match_arm(arm)?;
+        (self.index.matches(&arm.index, &()) && self.body_len.matches(&definition.body.len(), &()))
+            .then(|| arm.clone())
+    }
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct RecordField {
+    pub(in crate::fixups) index: Field<usize>,
+    pub(in crate::fixups) name: Field<Option<String>>,
+    pub(in crate::fixups) ty: Field<Type>,
+}
+
+impl Matcher for RecordField {
+    type Capture = FieldRef;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::Field
+    }
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::Field(field) = item else {
+            return None;
+        };
+        let (name, ty) = query.field(field)?;
+        (self.index.matches(&field.index, &())
+            && self.name.matches(&name.map(str::to_string), &())
+            && self.ty.matches(ty, &()))
+        .then(|| field.clone())
+    }
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct EnumVariant {
+    pub(in crate::fixups) index: Field<usize>,
+    pub(in crate::fixups) name: Field<String>,
+    pub(in crate::fixups) value: Field<i64>,
+}
+
+impl Matcher for EnumVariant {
+    type Capture = EnumVariantRef;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::EnumVariant
+    }
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::EnumVariant(variant) = item else {
+            return None;
+        };
+        let definition = query.enum_variant(variant)?;
+        (self.index.matches(&variant.index, &())
+            && self.name.matches(&definition.name, &())
+            && self.value.matches(&definition.value, &()))
+        .then(|| variant.clone())
+    }
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct TypeUse {
+    pub(in crate::fixups) kind: Field<TypeUseKind>,
+    pub(in crate::fixups) ty: Field<Type>,
+}
+
+impl Matcher for TypeUse {
+    type Capture = TypeUseRef;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::TypeUse
+    }
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::TypeUse(type_use) = item else {
+            return None;
+        };
+        let kind = match type_use {
+            TypeUseRef::FunctionReturn(_) => TypeUseKind::FunctionReturn,
+            TypeUseRef::Parameter(_) => TypeUseKind::Parameter,
+            TypeUseRef::Field(_) => TypeUseKind::Field,
+        };
+        (self.kind.matches(&kind, &()) && self.ty.matches(query.type_use(type_use)?, &()))
+            .then(|| type_use.clone())
     }
 }
 
@@ -208,9 +453,10 @@ impl Matcher for StatementSequence {
         query: &super::QueryContext<'_>,
         item: &QueryItem<'_>,
     ) -> Option<Self::Capture> {
-        let QueryItem::Statement { site, tail } = item else {
+        let QueryItem::Statement(site) = item else {
             return None;
         };
+        let tail = query.statement_tail(site)?;
         let statements = tail.get(..self.width)?;
         let target = StatementRange {
             item_index: site.item_index,
@@ -229,7 +475,7 @@ impl Matcher for StatementSequence {
                 return None;
             }
         }
-        Some(StatementMatch::new(target, statements.to_vec()))
+        Some(StatementMatch::new(target, statements.len()))
     }
 }
 

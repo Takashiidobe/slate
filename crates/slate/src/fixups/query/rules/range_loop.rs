@@ -11,7 +11,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
         StatementSequence::new(2),
     )
     .case("zero_step_one", |case, matched| {
-        let [index_stmt, loop_stmt] = matched.stmts();
+        let [index_stmt, loop_stmt] = case.statements(matched)?;
         let Some(index_name) = LetStmtPattern::any().matches(&index_stmt.stmt, &()) else {
             return Err(case.reject());
         };

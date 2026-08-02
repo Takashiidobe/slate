@@ -19,7 +19,7 @@ pub(in crate::fixups) fn rewrite(pass: Pass) -> QueryRule<StatementSequence> {
         }),
     )
     .case("dead_local", |case, matched| {
-        let [stmt] = matched.stmts();
+        let [stmt] = case.statements(matched)?;
         let Stmt::Let {
             init: Some(init), ..
         } = &stmt.stmt

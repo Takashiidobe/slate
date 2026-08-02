@@ -18,9 +18,11 @@ pub(in crate::fixups) use field::Field;
 pub(in crate::fixups) use item::{
     EditSet, ItemCaseContext, ItemPlanBuilder, QueryRule, same_statement_container,
 };
+#[allow(unused_imports)]
 pub(in crate::fixups) use patterns::{
-    AssignmentValue, Binding, Definition, ExternFn, FnCall, LetStmtPattern, Local, LoopStmtPattern,
-    NullaryMethodCall, StatementSequence, Value,
+    AssignmentValue, Binding, Definition, EnumVariant, ExprPattern, ExternFn, FnCall,
+    LetStmtPattern, Local, LoopStmtPattern, MatchArm, NullaryMethodCall, Parameter, RecordField,
+    StatementContainer, StatementSequence, TypeUse, Value,
 };
 pub(in crate::fixups) use plan::TouchedItems;
 pub(in crate::fixups) use program::{ProgramPlanBuilder, ProgramRule};
@@ -43,9 +45,11 @@ use views::{
 pub(in crate::fixups) use views::{
     AnonymousStructSet, BindingAccess, BindingCategory, BindingDefUse, BindingRef, BindingUse,
     BindingUses, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
-    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite,
-    ExpressionEffects, ExpressionPlace, ExpressionRef, ExpressionValues, FunctionRef,
-    HeapOwnershipPlanSet, InlineTempPlan, ItemReferences, LazySingletonSet, NulPosition,
-    ParameterRemoval, Phase, PointerMutability, PtrLenPlanSet, ReferenceDomain, ResolvedValue,
-    StableExpr, StatementRange, Usage, ValueSite, ZeroGroupUsers, ZeroUsers,
+    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, EnumVariantRef,
+    ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
+    ExpressionValues, FieldRef, FunctionRef, HeapOwnershipPlanSet, InlineTempPlan, ItemReferences,
+    LazySingletonSet, MatchArmRef, NulPosition, ParameterRef, ParameterRemoval, Phase,
+    PointerMutability, PtrLenPlanSet, ReferenceDomain, ResolvedValue, StableExpr,
+    StatementContainerRef, StatementRange, TypeUseKind, TypeUseRef, Usage, ValueSite,
+    ZeroGroupUsers, ZeroUsers,
 };
