@@ -19,6 +19,7 @@ pub(in crate::fixups) mod heap_ownership;
 pub(in crate::fixups) mod inline_temps;
 pub(in crate::fixups) mod lazy_singleton;
 pub(in crate::fixups) mod libc_exit;
+pub(in crate::fixups) mod main_zero_exit;
 pub(in crate::fixups) mod memchr;
 pub(in crate::fixups) mod ptr_len;
 pub(in crate::fixups) mod range_loop;

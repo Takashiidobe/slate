@@ -891,13 +891,14 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::MainZeroExit, {
-        for item in &mut program.items {
-            if let Item::Fn(f) = item {
-                let mut fixup =
-                    rewrite::main_zero_exit::MainZeroExit::new(f.name == "main", logger);
-                run_once(&mut f.body, &mut fixup);
-            }
-        }
+        let facts = incremental.resolve(&program);
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::main_zero_exit::rewrite());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);

@@ -149,7 +149,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 51. `unused_items` - remove dead top-level struct/record/enum definitions, via mark-and-sweep reachability over a query definition plan - once, program-wide.
 52. `unused_params` - drop a function parameter that's never read in its body and rewrite every direct call site to match, once the function's only references are direct-by-name calls whose argument at that slot is pure and whose type can't own a destructor - through a query program plan, to fixpoint.
 53. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function - once, program-wide, through a query function plan.
-54. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, per function.
+54. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main` - once, program-wide, through a query function plan.
 55. `prune_unused_definitions` - query the final complete definition-use domain and delete now-dead known libc `extern` declarations and generated support modules after all users have stabilized; empty extern containers are removed by the shared definition planner.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
