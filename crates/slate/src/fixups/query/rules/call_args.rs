@@ -101,7 +101,7 @@ fn inline_call_arg(
                 )
             });
         if !known_return {
-            let (pinning, variadic) =
+            let (pinning, variadic, _) =
                 case.fact(|query| query.call_argument_pinning(&use_expression.site))?;
             case.require(
                 pinning == CallArgPinning::DeclaredParam

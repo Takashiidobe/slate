@@ -4,10 +4,10 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, CallArgPinning, CallCallee, CastFact, ConstValue,
-    CountedLoopFact, EffectSubject, FixupFacts, FunctionId, NulTermination, PathSegment,
-    PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind,
-    StringRecoveryCandidate, ValueSubject,
+    AstPath, BindingId, BindingKind, BorrowAliasReason, CallArgPinning, CallCallee, CastFact,
+    ConstValue, ControlFlowSubject, CountedLoopFact, EffectSubject, FixupFacts, FunctionId,
+    NulTermination, PathSegment, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
+    StringBufferKind, StringRecoveryCandidate, ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_declaration};
 use crate::rust_ast::{
@@ -454,6 +454,34 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
+    pub(in crate::fixups) fn statement_reachable(
+        &self,
+        statement: &StatementRef,
+    ) -> QueryResult<bool> {
+        let predicate = Predicate::StatementReachable;
+        let site = statement_evidence_site(statement);
+        let Some(function) = self.facts.function_by_item_index(statement.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let reachable = self
+            .facts
+            .control_flow(function, ControlFlowSubject::Stmt, &statement.path)
+            .is_some_and(|fact| fact.reachable);
+        Ok(Proof::new(
+            reachable,
+            vec![Evidence {
+                predicate,
+                site,
+                detail: EvidenceDetail::StatementReachable { reachable },
+            }],
+        ))
+    }
+
     fn use_site(&self, item_index: usize, path: &AstPath) -> Option<UseSiteRef> {
         if matches!(path.0.last(), Some(PathSegment::Stmt(_))) {
             let statement = StatementRef {
@@ -493,6 +521,44 @@ impl<'snapshot> QueryContext<'snapshot> {
             }),
             purity: None,
         }
+    }
+
+    pub(in crate::fixups) fn binding_requires_mut(
+        &self,
+        binding: &BindingRef,
+    ) -> QueryResult<bool> {
+        let predicate = Predicate::BindingRequiresMut;
+        let required = self.facts.binding_requires_mut(binding.id);
+        Ok(Proof::new(
+            required,
+            vec![Evidence {
+                predicate,
+                site: expression_site(binding.item_index, &binding.definition.0),
+                detail: EvidenceDetail::BindingRequiresMut { required },
+            }],
+        ))
+    }
+
+    pub(in crate::fixups) fn borrow_alias_reasons(
+        &self,
+        binding: &BindingRef,
+    ) -> QueryResult<Option<BTreeSet<BorrowAliasReason>>> {
+        let predicate = Predicate::BorrowAliasReasons;
+        let reasons = self
+            .facts
+            .borrow_alias
+            .iter()
+            .find(|fact| fact.binding == binding.id)
+            .map(|fact| fact.reasons.clone());
+        let evidence = vec![Evidence {
+            predicate,
+            site: expression_site(binding.item_index, &binding.definition.0),
+            detail: EvidenceDetail::BorrowAliasReasons {
+                tracked: reasons.is_some(),
+                reasons: reasons.as_ref().map_or(0, BTreeSet::len),
+            },
+        }];
+        Ok(Proof::new(reasons, evidence))
     }
 
     pub(in crate::fixups) fn binding_type(&self, binding: &BindingRef) -> QueryResult<Type> {
@@ -1802,7 +1868,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn call_argument_pinning(
         &self,
         site: &ExprSite,
-    ) -> QueryResult<(CallArgPinning, bool)> {
+    ) -> QueryResult<(CallArgPinning, bool, Option<Type>)> {
         let predicate = Predicate::CallArgumentPinning;
         let Some(function) = self.facts.function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
@@ -1832,7 +1898,10 @@ impl<'snapshot> QueryContext<'snapshot> {
                 variadic: arg.variadic,
             },
         }];
-        Ok(Proof::new((arg.pinning, arg.variadic), evidence))
+        Ok(Proof::new(
+            (arg.pinning, arg.variadic, arg.declared_ty.clone()),
+            evidence,
+        ))
     }
 
     pub(in crate::fixups) fn printf_call_at(&self, site: &ExprSite) -> QueryResult<PrintfCallFact> {

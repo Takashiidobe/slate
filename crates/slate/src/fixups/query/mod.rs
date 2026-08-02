@@ -11,6 +11,8 @@ mod program_recipe;
 mod proof;
 mod ptr_copy;
 mod recipe;
+mod remove_mut;
+mod retval;
 mod rewrite;
 pub(in crate::fixups) mod rules;
 mod switch;

@@ -50,6 +50,7 @@ pub(in crate::fixups) enum Predicate {
     ReferenceDomain,
     Statement,
     StatementRegion,
+    StatementReachable,
     AnonymousStructDomain,
     ByteSource,
     ConstantU8,
@@ -72,6 +73,8 @@ pub(in crate::fixups) enum Predicate {
     PrintfCall,
     SwitchDispatch,
     VaListAlias,
+    BindingRequiresMut,
+    BorrowAliasReasons,
     ReadPath,
     ArrayElementPointerOrigin,
     BufferPointerFields,
@@ -118,6 +121,9 @@ pub(in crate::fixups) enum EvidenceDetail {
     Statement,
     StatementRegion {
         statements: usize,
+    },
+    StatementReachable {
+        reachable: bool,
     },
     ExpressionEffects {
         purity: Purity,
@@ -202,6 +208,13 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     SwitchDispatch {
         cases: usize,
+    },
+    BindingRequiresMut {
+        required: bool,
+    },
+    BorrowAliasReasons {
+        tracked: bool,
+        reasons: usize,
     },
     VaListAlias {
         param_index: usize,

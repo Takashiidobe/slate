@@ -27,6 +27,8 @@ pub(in crate::fixups) mod printf_format;
 pub(in crate::fixups) mod ptr_copy;
 pub(in crate::fixups) mod ptr_len;
 pub(in crate::fixups) mod range_loop;
+pub(in crate::fixups) mod remove_mut;
+pub(in crate::fixups) mod retval;
 pub(in crate::fixups) mod string_lift;
 pub(in crate::fixups) mod struct_field_init;
 pub(in crate::fixups) mod support;
