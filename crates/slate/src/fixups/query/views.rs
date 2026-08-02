@@ -2,8 +2,9 @@ use std::collections::BTreeSet;
 use std::marker::PhantomData;
 
 use crate::fixups::facts::{
-    AstPath, BindingId, ConstValue, EffectKind, HeapAllocationKind, HeapExtent, HeapInitKind,
-    HeapReadSafety, HeapResizeKind, HeapUseKind, PlaceAccess, PlaceKind, Purity,
+    AstPath, BindingId, ConstValue, CountedLoopBound, CountedLoopIndexUse, CountedLoopStart,
+    CountedLoopStep, EffectKind, HeapAllocationKind, HeapExtent, HeapInitKind, HeapReadSafety,
+    HeapResizeKind, HeapUseKind, PlaceAccess, PlaceKind, Purity, SliceLoopAccess,
 };
 use crate::rust_ast::{AtomicType, Expr, IndentStmt, Pattern, Type};
 
@@ -538,4 +539,15 @@ pub(in crate::fixups) struct BufferPointerField {
 #[derive(Debug, Clone)]
 pub(in crate::fixups) struct BufferPointerFields {
     pub(in crate::fixups) fields: Vec<BufferPointerField>,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct SliceLoopFact {
+    pub(in crate::fixups) index: BindingRef,
+    pub(in crate::fixups) slice: BindingRef,
+    pub(in crate::fixups) start: CountedLoopStart,
+    pub(in crate::fixups) bound: CountedLoopBound,
+    pub(in crate::fixups) step: CountedLoopStep,
+    pub(in crate::fixups) index_use: CountedLoopIndexUse,
+    pub(in crate::fixups) access: SliceLoopAccess,
 }

@@ -64,6 +64,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::ZeroUsers => "zero_users",
         Predicate::ZeroGroupUsers => "zero_group_users",
         Predicate::CountedLoop => "counted_loop",
+        Predicate::CountedSliceLoop => "counted_slice_loop",
         Predicate::ItemGuard => "item_guard",
         Predicate::LazySingletonDomain => "lazy_singleton_domain",
         Predicate::AtomicPromotionDomain => "atomic_promotion_domain",
@@ -178,6 +179,9 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             step,
             index_use,
         } => format!("start={start:?};step={step:?};index_use={index_use:?}"),
+        EvidenceDetail::CountedSliceLoop { index_use, access } => {
+            format!("index_use={index_use:?};access={access:?}")
+        }
         EvidenceDetail::LazySingletonDomain { singletons } => {
             format!("singletons={singletons}")
         }

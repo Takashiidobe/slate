@@ -472,16 +472,19 @@ fn apply_with_logger(
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::SliceLoop, {
-        if run_once_items(&mut program, |item_index, f| {
-            let Some(function) = facts.function_by_item_index(item_index) else {
-                return false;
-            };
-            let mut fixup = rewrite::slice_loop::SliceLoop::new(function, &facts, logger);
-            run_once(&mut f.body, &mut fixup)
-        }) {
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::slice_loop::rewrite());
+            builder.finish()
+        };
+        let report = plan.apply(&mut program, &facts, logger);
+        if report.changed {
             late_loop_cleanup(&mut program, Pass::SliceLoop, logger);
+            incremental.mark_everything_dirty();
+        } else {
+            incremental.mark_touched(&report.touched);
         }
-        incremental.mark_everything_dirty();
     });
     step!(program, Pass::SliceReduce, {
         if run_once_items(&mut program, |_, f| {
