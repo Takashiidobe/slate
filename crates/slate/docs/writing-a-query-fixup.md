@@ -80,8 +80,8 @@ When a rule needs a new precondition or capture:
 1. Add the semantic fact under `src/fixups/facts/` if it does not exist.
 2. Add a `QueryContext` method returning `QueryResult<T>`.
 3. Add its `Predicate` and stable `EvidenceDetail`.
-4. Add a small method to `CallCaseContext` or `DefinitionCaseContext` that
-   accumulates the proof.
+4. Add a small method to the rule case context that accepts the relevant stable
+   handle and accumulates the proof.
 5. Add trace formatting in `query/rewrite.rs`.
 6. Use the helper as one short precondition in the rule.
 
@@ -100,29 +100,39 @@ and fold over the statements in between with its own crossability rule (e.g.
 instead of re-walking the AST for it. This is shared, engine-level
 infrastructure - extend it in place rather than adding a parallel one-off.
 
-## Definition rules
+## Definition items
 
-Definition rules also use ordered cases. The memchr lifecycle deletes an unused
-helper and otherwise installs its idiomatic fallback body:
+Definitions are `QueryItem`s selected by the reusable `Definition` matcher. The
+memchr lifecycle deletes an unused helper and otherwise installs its idiomatic
+fallback body:
 
 ```rust
-pub(in crate::fixups) fn helper() -> DefinitionRule {
-    DefinitionRule::function(
+pub(in crate::fixups) fn helper() -> QueryRule<Definition> {
+    QueryRule::new(
         Pass::MemchrPrelude,
         "manage_memchr_helper",
-        "__slate_memchr",
+        Definition {
+            kind: Field::eq(DefinitionKind::Function),
+            name: Field::eq("__slate_memchr".into()),
+            ..Default::default()
+        },
     )
-    .case("unused", |case| {
-        case.zero_users()?;
-        Ok(delete_definition())
+    .case("unused", |case, definition| {
+        case.zero_users(definition)?;
+        Ok(EditSet::delete_definition(definition.clone()))
     })
-    .case("retained", |_| Ok(replace_body(memchr_fallback_body())))
+    .case("retained", |_, definition| {
+        Ok(EditSet::replace_function_body(
+            definition.clone(),
+            memchr_fallback_body(),
+        ))
+    })
 }
 ```
 
-Selectors include `function`, `extern_function`, `known_extern_functions`,
-`header`, and `support_module`. Actions are `delete_definition()` and
-`replace_body(...)`. Preconditions are:
+The matcher composes `kind`, `name`, and `group` fields. Edit actions are
+`EditSet::delete_definition(...)` and
+`EditSet::replace_function_body(...)`. Preconditions are:
 
 - `zero_users()` for every symbol exported by one definition;
 - `zero_group_users()` for every definition in a header or support group.
@@ -187,10 +197,10 @@ let plan = {
 plan.apply(&mut program, &facts, logger).changed
 ```
 
-Use `DefinitionPlanBuilder` and `plan.apply(&mut program, logger)` for definition
-rules, or `ItemPlanBuilder` and `plan.apply(&mut program, &facts, logger)` for
-matcher-driven item rules. Add several rules to one builder only when they
-intentionally share a snapshot; overlapping edit sets are rejected.
+Use `ItemPlanBuilder` and `plan.apply(&mut program, &facts, logger)` for
+matcher-driven item rules, including definition and statement matches. Add
+several rules to one builder only when they intentionally share a snapshot;
+overlapping edit sets are rejected across item kinds.
 
 Recompute facts before the next fact-dependent query. Place definition deletion
 after the final pass that can remove a user.

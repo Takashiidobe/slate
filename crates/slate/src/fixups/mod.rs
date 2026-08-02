@@ -228,11 +228,11 @@ fn apply_with_logger(
         to_fixpoint_program_with_facts(&mut program, limit, |program, facts| {
             let plan = {
                 let query = query::QueryContext::new(program, facts);
-                let mut builder = query::DefinitionPlanBuilder::new();
+                let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(&query, &query::rules::inline_temps::early());
                 builder.finish()
             };
-            plan.apply(program, logger).changed
+            plan.apply(program, facts, logger).changed
         });
         incremental.mark_everything_dirty();
     });
@@ -261,11 +261,11 @@ fn apply_with_logger(
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
             let plan = {
                 let query = query::QueryContext::new(program, facts);
-                let mut builder = query::DefinitionPlanBuilder::new();
+                let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(&query, &query::rules::zero_init::direct());
                 builder.finish()
             };
-            plan.apply(program, logger).changed
+            plan.apply(program, facts, logger).changed
         });
         incremental.mark_everything_dirty();
     });
@@ -532,11 +532,11 @@ fn apply_with_logger(
     step!(program, Pass::HeapOwnership, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::DefinitionPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::heap_ownership::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
     });
     step!(program, Pass::DeadLocals, {
@@ -667,11 +667,11 @@ fn apply_with_logger(
         let facts = incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::DefinitionPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::memchr::helper());
             builder.finish()
         };
-        let report = plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
         report.changed
     });
@@ -680,11 +680,11 @@ fn apply_with_logger(
         to_fixpoint_program_with_facts(&mut program, limit, |program, facts| {
             let plan = {
                 let query = query::QueryContext::new(program, facts);
-                let mut builder = query::DefinitionPlanBuilder::new();
+                let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(&query, &query::rules::inline_temps::late());
                 builder.finish()
             };
-            plan.apply(program, logger).changed
+            plan.apply(program, facts, logger).changed
         });
         incremental.mark_everything_dirty();
     });
@@ -732,11 +732,11 @@ fn apply_with_logger(
     step!(program, Pass::BufferCursor, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::DefinitionPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::buffer_cursor::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -751,11 +751,11 @@ fn apply_with_logger(
         to_fixpoint_program_with_facts(&mut program, limit, |program, facts| {
             let plan = {
                 let query = query::QueryContext::new(program, facts);
-                let mut builder = query::DefinitionPlanBuilder::new();
+                let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(&query, &query::rules::inline_temps::late());
                 builder.finish()
             };
-            plan.apply(program, logger).changed
+            plan.apply(program, facts, logger).changed
         });
         incremental.mark_everything_dirty();
     });
@@ -763,11 +763,11 @@ fn apply_with_logger(
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
             let plan = {
                 let query = query::QueryContext::new(program, facts);
-                let mut builder = query::DefinitionPlanBuilder::new();
+                let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(&query, &query::rules::zero_init::deferred());
                 builder.finish()
             };
-            plan.apply(program, logger).changed
+            plan.apply(program, facts, logger).changed
         });
         incremental.mark_everything_dirty();
     });
@@ -827,11 +827,11 @@ fn apply_with_logger(
         let facts = incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::DefinitionPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::unused_items::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
         report.changed
     });
@@ -878,12 +878,12 @@ fn apply_with_logger(
     step!(program, Pass::PruneUnusedDefinitions, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::DefinitionPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::externs::unused_known_declarations());
             builder.add_rule(&query, &query::rules::support::unused_numeric_parse());
             builder.finish()
         };
-        let report = plan.apply(&mut program, logger);
+        let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
         report.changed
     });

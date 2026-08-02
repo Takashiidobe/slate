@@ -1,6 +1,6 @@
 use crate::fixups::trace::Pass;
 
-use super::super::{Definition, DefinitionKind, DefinitionRule, Field, delete_definition};
+use super::super::{Definition, DefinitionKind, EditSet, Field, QueryRule};
 
 fn type_definition_matcher() -> Definition {
     Definition {
@@ -14,14 +14,14 @@ fn type_definition_matcher() -> Definition {
     }
 }
 
-pub(in crate::fixups) fn rewrite() -> DefinitionRule {
-    DefinitionRule::matches(
+pub(in crate::fixups) fn rewrite() -> QueryRule<Definition> {
+    QueryRule::new(
         Pass::UnusedItems,
         "prune_unused_type_definition",
         type_definition_matcher(),
     )
-    .case("unreachable", |case| {
-        case.unused_type_definition()?;
-        Ok(delete_definition())
+    .case("unreachable", |case, definition| {
+        case.unused_type_definition(definition)?;
+        Ok(EditSet::delete_definition(definition.clone()))
     })
 }
