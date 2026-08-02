@@ -1,6 +1,7 @@
 mod context;
 mod definition;
 mod field;
+mod item;
 mod patterns;
 mod plan;
 mod program;
@@ -10,7 +11,6 @@ mod recipe;
 mod rewrite;
 mod rule;
 pub(in crate::fixups) mod rules;
-mod stmt_window;
 mod value;
 mod views;
 
@@ -20,8 +20,10 @@ pub(in crate::fixups) use definition::{
     DefinitionPlanBuilder, DefinitionRule, delete_definition, replace_body,
 };
 pub(in crate::fixups) use field::Field;
+pub(in crate::fixups) use item::{EditSet, ItemPlanBuilder, QueryRule};
 pub(in crate::fixups) use patterns::{
-    Definition, ExternFn, FnCall, LetStmtPattern, Local, LoopStmtPattern, NullaryMethodCall, Value,
+    Definition, ExternFn, FnCall, LetStmtPattern, Local, LoopStmtPattern, NullaryMethodCall,
+    StatementSequence, Value,
 };
 pub(in crate::fixups) use plan::TouchedItems;
 pub(in crate::fixups) use program::{ProgramPlanBuilder, ProgramRule};
@@ -42,7 +44,6 @@ pub(in crate::fixups) use rewrite::{
     RuleIdentity, RuleResult,
 };
 pub(in crate::fixups) use rule::CallRule;
-pub(in crate::fixups) use stmt_window::{StmtWindowPlanBuilder, StmtWindowRule};
 pub(in crate::fixups) use value::{
     ValueCaseContext, ValueEdit, ValuePlanBuilder, ValueRule, same_container,
 };
@@ -55,6 +56,6 @@ pub(in crate::fixups) use views::{
     AnonymousStructSet, BindingDefUse, BindingRef, ByteExtent, ByteRepresentation, ByteSource,
     ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
     DefinitionSite, ExprSite, HeapOwnershipPlanSet, InlineTempPlan, LazySingletonSet, NulPosition,
-    Phase, PointerMutability, PtrLenPlanSet, ResolvedValue, StableExpr, StmtWindowSite, Usage,
+    Phase, PointerMutability, PtrLenPlanSet, ResolvedValue, StableExpr, StatementRange, Usage,
     ValueSite, ZeroGroupUsers, ZeroUsers,
 };

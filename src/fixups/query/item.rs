@@ -6,158 +6,134 @@ use crate::fixups::support::walk as mut_walk;
 use crate::fixups::trace::{
     Pass, RewriteEvent, TraceLogger, TraceSnippet, fact, function_path_location, path_location,
 };
-use crate::rust_ast::{IndentStmt, Item, Program, Stmt};
+use crate::rust_ast::{IndentStmt, Item, Program};
 
 use super::plan::{
     EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit, TouchedItems,
 };
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
-    CaseRejection, Evidence, Local, Predicate, QueryContext, Rejection, RejectionReason,
-    RuleCaseIdentity, RuleIdentity, StmtWindowSite,
+    CaseRejection, Evidence, Predicate, QueryContext, Rejection, RejectionReason, RuleCaseIdentity,
+    RuleIdentity, StatementRange,
 };
 
-type StmtWindowCaseFn = for<'case, 'snapshot> fn(
-    &mut StmtWindowCaseContext<'case, 'snapshot>,
-) -> Result<Vec<IndentStmt>, Rejection>;
-
-struct DeclarativeStmtWindowCase {
-    name: String,
-    apply: StmtWindowCaseFn,
+pub(in crate::fixups) enum QueryItem<'snapshot> {
+    Statement {
+        site: StatementRef,
+        tail: &'snapshot [IndentStmt],
+    },
 }
 
-pub(in crate::fixups) struct StmtWindowRule {
-    identity: RuleIdentity,
-    width: usize,
-    local: Option<Local>,
-    cases: Vec<DeclarativeStmtWindowCase>,
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(in crate::fixups) struct StatementRef {
+    pub(in crate::fixups) item_index: usize,
+    pub(in crate::fixups) path: AstPath,
 }
 
-impl StmtWindowRule {
-    pub(in crate::fixups) fn new(pass: Pass, rule: impl Into<String>, width: usize) -> Self {
-        assert!(
-            width > 0,
-            "a statement window must cover at least one statement"
-        );
-        Self {
-            identity: RuleIdentity::new(pass, rule),
-            width,
-            local: None,
-            cases: Vec::new(),
+impl StatementRef {
+    pub(in crate::fixups) fn range(&self) -> StatementRange {
+        let mut container = self.path.0.clone();
+        let Some(PathSegment::Stmt(index)) = container.pop() else {
+            unreachable!()
+        };
+        StatementRange {
+            item_index: self.item_index,
+            path: AstPath(container),
+            start: index,
+            end: index + 1,
         }
     }
+}
 
-    pub(in crate::fixups) fn matching_local(mut self, matcher: Local) -> Self {
-        self.local = Some(matcher);
-        self
+#[derive(Clone)]
+pub(in crate::fixups) struct StatementMatch {
+    target: StatementRange,
+    statements: Vec<IndentStmt>,
+}
+
+impl StatementMatch {
+    pub(in crate::fixups) fn new(target: StatementRange, statements: Vec<IndentStmt>) -> Self {
+        Self { target, statements }
+    }
+
+    pub(in crate::fixups) fn target(&self) -> &StatementRange {
+        &self.target
+    }
+
+    pub(in crate::fixups) fn stmts<const N: usize>(&self) -> [&IndentStmt; N] {
+        assert_eq!(N, self.statements.len());
+        std::array::from_fn(|index| &self.statements[index])
+    }
+
+    pub(in crate::fixups) fn statement(&self, offset: usize) -> StatementRef {
+        assert!(offset < self.statements.len());
+        let mut path = self.target.path.0.clone();
+        path.push(PathSegment::Stmt(self.target.start + offset));
+        StatementRef {
+            item_index: self.target.item_index,
+            path: AstPath(path),
+        }
+    }
+}
+
+pub(in crate::fixups) trait Matcher {
+    type Capture: Clone;
+
+    fn matches(&self, query: &QueryContext<'_>, item: &QueryItem<'_>) -> Option<Self::Capture>;
+}
+
+type ItemCaseFn<C> = for<'case, 'snapshot> fn(
+    &mut ItemCaseContext<'case, 'snapshot>,
+    &C,
+) -> Result<EditSet, Rejection>;
+
+struct DeclarativeItemCase<C> {
+    name: String,
+    apply: ItemCaseFn<C>,
+}
+
+pub(in crate::fixups) struct QueryRule<M: Matcher> {
+    identity: RuleIdentity,
+    matcher: M,
+    cases: Vec<DeclarativeItemCase<M::Capture>>,
+}
+
+impl<M: Matcher> QueryRule<M> {
+    pub(in crate::fixups) fn new(pass: Pass, rule: impl Into<String>, matcher: M) -> Self {
+        Self {
+            identity: RuleIdentity::new(pass, rule),
+            matcher,
+            cases: Vec::new(),
+        }
     }
 
     pub(in crate::fixups) fn case(
         mut self,
         name: impl Into<String>,
-        apply: StmtWindowCaseFn,
+        apply: ItemCaseFn<M::Capture>,
     ) -> Self {
-        self.cases.push(DeclarativeStmtWindowCase {
+        self.cases.push(DeclarativeItemCase {
             name: name.into(),
             apply,
         });
         self
     }
-
-    fn candidates<'snapshot>(
-        &self,
-        query: &QueryContext<'snapshot>,
-    ) -> Vec<StmtWindowCandidate<'snapshot>> {
-        let mut candidates = Vec::new();
-        for (item_index, item) in query.snapshot_program().items.iter().enumerate() {
-            if let Item::Fn(function) = item {
-                collect_windows(
-                    item_index,
-                    &function.body,
-                    &mut Vec::new(),
-                    self.width,
-                    &mut candidates,
-                );
-            }
-        }
-        let Some(local) = &self.local else {
-            return candidates;
-        };
-        candidates
-            .into_iter()
-            .filter(|candidate| {
-                let Stmt::Let { name, mutable, .. } = &candidate.window[0].stmt else {
-                    return false;
-                };
-                local.name.matches(name, &())
-                    && local.mutable.matches(mutable, &())
-                    && local
-                        .value
-                        .matches(&query.local_value(&candidate.site, name), &())
-            })
-            .collect()
-    }
 }
 
-fn collect_windows<'snapshot>(
-    item_index: usize,
-    body: &'snapshot [IndentStmt],
-    path: &mut Vec<PathSegment>,
-    width: usize,
-    out: &mut Vec<StmtWindowCandidate<'snapshot>>,
-) {
-    if let Some(window_count) = body.len().checked_sub(width - 1) {
-        for start in 0..window_count {
-            out.push(StmtWindowCandidate {
-                site: StmtWindowSite {
-                    item_index,
-                    path: AstPath(path.clone()),
-                    start,
-                    end: start + width,
-                },
-                window: &body[start..start + width],
-            });
-        }
-    }
-    for (index, indent) in body.iter().enumerate() {
-        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            walk::nested_body_vecs_with_path(&indent.stmt, path, &mut |nested, path| {
-                collect_windows(item_index, nested, path, width, out);
-            });
-        });
-    }
-}
-
-struct StmtWindowCandidate<'snapshot> {
-    site: StmtWindowSite,
-    window: &'snapshot [IndentStmt],
-}
-
-pub(in crate::fixups) struct StmtWindowCaseContext<'case, 'snapshot> {
+pub(in crate::fixups) struct ItemCaseContext<'case, 'snapshot> {
     query: &'case QueryContext<'snapshot>,
-    candidate: &'case StmtWindowCandidate<'snapshot>,
     evidence: Vec<Evidence>,
 }
 
-impl<'snapshot> StmtWindowCaseContext<'_, 'snapshot> {
-    pub(in crate::fixups) fn stmts<const N: usize>(&self) -> [&'snapshot IndentStmt; N] {
-        assert_eq!(N, self.candidate.window.len());
-        std::array::from_fn(|index| &self.candidate.window[index])
-    }
-
-    pub(in crate::fixups) fn stmt_path(&self, offset: usize) -> AstPath {
-        let mut path = self.candidate.site.path.0.clone();
-        path.push(PathSegment::Stmt(self.candidate.site.start + offset));
-        AstPath(path)
-    }
-
+impl ItemCaseContext<'_, '_> {
     pub(in crate::fixups) fn local_binding(
         &mut self,
+        statement: &StatementRef,
         name: &str,
     ) -> Result<super::BindingRef, Rejection> {
         self.prove(
             self.query
-                .binding_at(self.candidate.site.item_index, &self.stmt_path(0), name),
+                .binding_at(statement.item_index, &statement.path, name),
         )
     }
 
@@ -170,12 +146,16 @@ impl<'snapshot> StmtWindowCaseContext<'_, 'snapshot> {
 
     pub(in crate::fixups) fn counted_loop(
         &mut self,
+        statement: &StatementRef,
     ) -> Result<crate::fixups::facts::CountedLoopFact, Rejection> {
-        self.prove(self.query.counted_loop(&self.candidate.site))
+        self.prove(self.query.counted_loop(statement))
     }
 
-    pub(in crate::fixups) fn no_effects(&mut self) -> Result<(), Rejection> {
-        self.prove(self.query.no_effects(&self.candidate.site))
+    pub(in crate::fixups) fn no_effects(
+        &mut self,
+        statement: &StatementRef,
+    ) -> Result<(), Rejection> {
+        self.prove(self.query.no_effects(statement))
     }
 
     pub(in crate::fixups) fn require(&self, condition: bool) -> Result<(), Rejection> {
@@ -188,7 +168,7 @@ impl<'snapshot> StmtWindowCaseContext<'_, 'snapshot> {
 
     pub(in crate::fixups) fn reject(&self) -> Rejection {
         Rejection::new(
-            Predicate::StmtWindowGuard,
+            Predicate::ItemGuard,
             None,
             RejectionReason::UnsupportedShape,
             self.evidence.clone(),
@@ -211,21 +191,61 @@ impl<'snapshot> StmtWindowCaseContext<'_, 'snapshot> {
     }
 }
 
-struct StmtWindowEdit {
-    target: StmtWindowSite,
-    replacement: Vec<IndentStmt>,
+pub(in crate::fixups) enum AnchoredEdit {
+    ReplaceStatements {
+        target: StatementRange,
+        replacement: Vec<IndentStmt>,
+    },
+}
+
+pub(in crate::fixups) struct EditSet {
+    edits: Vec<AnchoredEdit>,
     evidence: Vec<Evidence>,
 }
 
-impl EditTarget for StmtWindowEdit {
-    type Site = StmtWindowSite;
-
-    fn site(&self) -> StmtWindowSite {
-        self.target.clone()
+impl EditSet {
+    pub(in crate::fixups) fn replace_statements(
+        target: StatementRange,
+        replacement: Vec<IndentStmt>,
+    ) -> Self {
+        Self {
+            edits: vec![AnchoredEdit::ReplaceStatements {
+                target,
+                replacement,
+            }],
+            evidence: Vec::new(),
+        }
     }
 }
 
-impl PlanSite for StmtWindowSite {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub(in crate::fixups) struct EditSetSite(Vec<StatementRange>);
+
+impl EditTarget for EditSet {
+    type Site = EditSetSite;
+
+    fn site(&self) -> Self::Site {
+        let mut sites = self
+            .edits
+            .iter()
+            .map(|edit| match edit {
+                AnchoredEdit::ReplaceStatements { target, .. } => target.clone(),
+            })
+            .collect::<Vec<_>>();
+        sites.sort();
+        EditSetSite(sites)
+    }
+}
+
+impl PlanSite for EditSetSite {
+    fn overlaps(&self, other: &Self) -> bool {
+        self.0
+            .iter()
+            .any(|left| other.0.iter().any(|right| left.overlaps(right)))
+    }
+}
+
+impl StatementRange {
     fn overlaps(&self, other: &Self) -> bool {
         if self.item_index != other.item_index {
             return false;
@@ -251,44 +271,43 @@ fn nested_within(rest: &[PathSegment], start: usize, end: usize) -> bool {
     matches!(rest.first(), Some(PathSegment::Stmt(index)) if (start..end).contains(index))
 }
 
-pub(in crate::fixups) struct StmtWindowPlanBuilder {
-    builder: PlanBuilder<StmtWindowEdit>,
+pub(in crate::fixups) struct ItemPlanBuilder {
+    builder: PlanBuilder<EditSet>,
 }
 
-impl StmtWindowPlanBuilder {
+impl ItemPlanBuilder {
     pub(in crate::fixups) fn new() -> Self {
         Self {
             builder: PlanBuilder::new(),
         }
     }
 
-    pub(in crate::fixups) fn add_rule(
+    pub(in crate::fixups) fn add_rule<M: Matcher>(
         &mut self,
         query: &QueryContext<'_>,
-        rule: &StmtWindowRule,
+        rule: &QueryRule<M>,
     ) -> &mut Self {
         let identity = rule.identity.clone();
-        for candidate in rule.candidates(query) {
+        for item in query_items(query) {
+            let Some(capture) = rule.matcher.matches(query, &item) else {
+                continue;
+            };
             let mut rejected_cases = Vec::new();
             let mut selected = None;
             for case in &rule.cases {
-                let mut context = StmtWindowCaseContext {
+                let mut context = ItemCaseContext {
                     query,
-                    candidate: &candidate,
                     evidence: Vec::new(),
                 };
-                match (case.apply)(&mut context) {
-                    Ok(replacement) => {
+                match (case.apply)(&mut context, &capture) {
+                    Ok(mut edit) => {
+                        edit.evidence.extend(context.evidence);
                         selected = Some(PlannedEdit {
                             identity: RuleCaseIdentity {
                                 rule: identity.clone(),
                                 case: case.name.clone(),
                             },
-                            edit: StmtWindowEdit {
-                                target: candidate.site.clone(),
-                                replacement,
-                                evidence: context.evidence,
-                            },
+                            edit,
                             rejected_cases: std::mem::take(&mut rejected_cases),
                         });
                         break;
@@ -304,7 +323,7 @@ impl StmtWindowPlanBuilder {
             } else if !rejected_cases.is_empty() {
                 self.builder.diagnose(PlanDiagnostic::CandidateRejected {
                     rule: identity.clone(),
-                    target: Some(candidate.site.clone()),
+                    target: None,
                     rejections: rejected_cases,
                 });
             }
@@ -312,32 +331,86 @@ impl StmtWindowPlanBuilder {
         self
     }
 
-    pub(in crate::fixups) fn finish(self) -> StmtWindowPlan {
-        StmtWindowPlan {
+    pub(in crate::fixups) fn finish(self) -> ItemPlan {
+        ItemPlan {
             plan: self.builder.finish(),
         }
     }
 }
 
-pub(in crate::fixups) struct StmtWindowPlan {
-    plan: Plan<StmtWindowEdit>,
+fn query_items<'snapshot>(query: &QueryContext<'snapshot>) -> Vec<QueryItem<'snapshot>> {
+    let mut items = Vec::new();
+    for (item_index, item) in query.snapshot_program().items.iter().enumerate() {
+        if let Item::Fn(function) = item {
+            collect_statement_items(item_index, &function.body, &mut Vec::new(), &mut items);
+        }
+    }
+    items
 }
 
-impl StmtWindowPlan {
+fn collect_statement_items<'snapshot>(
+    item_index: usize,
+    body: &'snapshot [IndentStmt],
+    path: &mut Vec<PathSegment>,
+    out: &mut Vec<QueryItem<'snapshot>>,
+) {
+    for start in 0..body.len() {
+        let mut statement_path = path.clone();
+        statement_path.push(PathSegment::Stmt(start));
+        out.push(QueryItem::Statement {
+            site: StatementRef {
+                item_index,
+                path: AstPath(statement_path),
+            },
+            tail: &body[start..],
+        });
+    }
+    for (index, indent) in body.iter().enumerate() {
+        walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
+            walk::nested_body_vecs_with_path(&indent.stmt, path, &mut |nested, path| {
+                collect_statement_items(item_index, nested, path, out);
+            });
+        });
+    }
+}
+
+pub(in crate::fixups) struct ItemPlan {
+    plan: Plan<EditSet>,
+}
+
+impl ItemPlan {
     pub(in crate::fixups) fn apply(
         self,
         program: &mut Program,
         facts: &FixupFacts,
         logger: &mut dyn TraceLogger,
-    ) -> StmtWindowApplyReport {
+    ) -> ItemApplyReport {
         let planned = self.plan.edits.len();
         let mut diagnostics = self.plan.diagnostics;
-        let edits = self
-            .plan
-            .edits
-            .into_iter()
-            .map(|edit| (edit.edit.target.clone(), edit))
-            .collect::<BTreeMap<_, _>>();
+        let mut edits = BTreeMap::new();
+        for planned_edit in self.plan.edits {
+            let PlannedEdit {
+                identity,
+                edit,
+                rejected_cases,
+            } = planned_edit;
+            for anchored in edit.edits {
+                let AnchoredEdit::ReplaceStatements {
+                    target,
+                    replacement,
+                } = anchored;
+                edits.insert(
+                    target.clone(),
+                    PlannedStatementEdit {
+                        identity: identity.clone(),
+                        target,
+                        replacement,
+                        evidence: edit.evidence.clone(),
+                        rejected_cases: rejected_cases.clone(),
+                    },
+                );
+            }
+        }
         let mut state = ApplyState {
             edits,
             applied: 0,
@@ -349,22 +422,21 @@ impl StmtWindowPlan {
             let Item::Fn(function) = item else {
                 continue;
             };
-            if !state
+            if state
                 .edits
                 .keys()
                 .any(|target| target.item_index == item_index)
             {
-                continue;
+                apply_body(item_index, &mut function.body, &mut Vec::new(), &mut state);
             }
-            apply_body(item_index, &mut function.body, &mut Vec::new(), &mut state);
         }
         for (_, edit) in state.edits {
             diagnostics.push(PlanDiagnostic::MissingTarget {
                 contender: edit.identity,
-                target: edit.edit.target,
+                target: EditSetSite(vec![edit.target]),
             });
         }
-        StmtWindowApplyReport {
+        ItemApplyReport {
             changed: state.applied != 0,
             planned,
             applied: state.applied,
@@ -374,11 +446,16 @@ impl StmtWindowPlan {
     }
 }
 
-/// The parts of `apply`'s state that stay the same across the whole
-/// recursive descent - bundled so `apply_body` doesn't need eight separate
-/// parameters just to thread them through.
+struct PlannedStatementEdit {
+    identity: RuleCaseIdentity,
+    target: StatementRange,
+    replacement: Vec<IndentStmt>,
+    evidence: Vec<Evidence>,
+    rejected_cases: Vec<CaseRejection>,
+}
+
 struct ApplyState<'a> {
-    edits: BTreeMap<StmtWindowSite, PlannedEdit<StmtWindowEdit>>,
+    edits: BTreeMap<StatementRange, PlannedStatementEdit>,
     applied: usize,
     touched: TouchedItems,
     facts: &'a FixupFacts,
@@ -415,49 +492,39 @@ fn apply_body(
             continue;
         };
         if site.end > body.len() {
-            state.edits.insert(site.clone(), edit);
+            state.edits.insert(site, edit);
             continue;
         }
-        let PlannedEdit {
-            identity,
-            edit:
-                StmtWindowEdit {
-                    target,
-                    replacement,
-                    evidence,
-                },
-            rejected_cases,
-        } = edit;
-        let before = body[target.start..target.end].to_vec();
+        let before = body[edit.target.start..edit.target.end].to_vec();
         if state.logger.is_enabled() {
             state.logger.rewrite(rewrite_event(
-                &identity,
-                &target,
-                &evidence,
-                &rejected_cases,
+                &edit.identity,
+                &edit.target,
+                &edit.evidence,
+                &edit.rejected_cases,
                 &before,
-                &replacement,
+                &edit.replacement,
                 state.facts,
             ));
         }
-        body.splice(target.start..target.end, replacement);
+        body.splice(edit.target.start..edit.target.end, edit.replacement);
         state.applied += 1;
         state.touched.in_place.push(item_index);
     }
 }
 
-pub(in crate::fixups) struct StmtWindowApplyReport {
+pub(in crate::fixups) struct ItemApplyReport {
     pub(in crate::fixups) changed: bool,
     pub(in crate::fixups) planned: usize,
     pub(in crate::fixups) applied: usize,
     #[allow(dead_code)]
-    pub(super) diagnostics: Vec<PlanDiagnostic<StmtWindowSite>>,
+    pub(super) diagnostics: Vec<PlanDiagnostic<EditSetSite>>,
     pub(in crate::fixups) touched: TouchedItems,
 }
 
 fn rewrite_event(
     identity: &RuleCaseIdentity,
-    target: &StmtWindowSite,
+    target: &StatementRange,
     evidence: &[Evidence],
     rejected_cases: &[CaseRejection],
     before: &[IndentStmt],

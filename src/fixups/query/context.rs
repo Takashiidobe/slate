@@ -18,6 +18,7 @@ use crate::rust_ast::{
     StructDef, StructFields, TraitBound, Type, UnaryOp, Visibility,
 };
 
+use super::item::StatementRef;
 use super::{
     AnonymousStructField, AnonymousStructPlan, AnonymousStructSet, ArrayElementPointerOrigin,
     BindingDefUse, BindingRef, BufferCursorPlan, ByteExtent, ByteRepresentation, ByteSource,
@@ -26,7 +27,7 @@ use super::{
     HeapOwnershipPlanSet, HeapOwnershipReallocPlan, InlineTempPlan, LazySingletonPlan,
     LazySingletonSet, NulPosition, NullaryMethodCall, ParamSite, Phase, PointerMutability,
     Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, Rejection, RejectionReason,
-    ResolvedValue, StableExpr, StmtWindowSite, UnusedTypeDefinitionSet, Usage, ValueSite,
+    ResolvedValue, StableExpr, StatementRange, UnusedTypeDefinitionSet, Usage, ValueSite,
     ZeroGroupUsers, ZeroInitPlan, ZeroUsers,
 };
 
@@ -171,7 +172,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn local_value(
         &self,
-        window: &StmtWindowSite,
+        window: &StatementRange,
         name: &str,
     ) -> ResolvedValue {
         let mut def_path = window.path.0.clone();
@@ -1388,12 +1389,12 @@ query_cache! {
         ))
     }
 
-    fn counted_loop(&self, window: &StmtWindowSite) -> QueryResult<CountedLoopFact>;
-    key: StmtWindowSite = window.clone();
+    fn counted_loop(&self, statement: &StatementRef) -> QueryResult<CountedLoopFact>;
+    key: StatementRef = statement.clone();
     {
         let predicate = Predicate::CountedLoop;
-        let evidence_site = stmt_window_evidence_site(window, window.start);
-        let function = self.facts.function_by_item_index(window.item_index).ok_or_else(|| {
+        let evidence_site = statement_evidence_site(statement);
+        let function = self.facts.function_by_item_index(statement.item_index).ok_or_else(|| {
             Rejection::new(
                 predicate,
                 Some(evidence_site.clone()),
@@ -1401,14 +1402,11 @@ query_cache! {
                 Vec::new(),
             )
         })?;
-        let mut loop_path = window.path.0.clone();
-        loop_path.push(PathSegment::Stmt(window.start + 1));
-        let loop_path = AstPath(loop_path);
         let Some(fact) = self
             .facts
             .counted_loops
             .iter()
-            .find(|fact| fact.site.function == function && fact.site.loop_path == loop_path)
+            .find(|fact| fact.site.function == function && fact.site.loop_path == statement.path)
         else {
             return Err(Rejection::new(
                 predicate,
@@ -1431,12 +1429,12 @@ query_cache! {
         ))
     }
 
-    fn no_effects(&self, window: &StmtWindowSite) -> QueryResult<()>;
-    key: StmtWindowSite = window.clone();
+    fn no_effects(&self, statement: &StatementRef) -> QueryResult<()>;
+    key: StatementRef = statement.clone();
     {
         let predicate = Predicate::NoEffects;
-        let evidence_site = stmt_window_evidence_site(window, window.start);
-        let function = self.facts.function_by_item_index(window.item_index).ok_or_else(|| {
+        let evidence_site = statement_evidence_site(statement);
+        let function = self.facts.function_by_item_index(statement.item_index).ok_or_else(|| {
             Rejection::new(
                 predicate,
                 Some(evidence_site.clone()),
@@ -1444,10 +1442,10 @@ query_cache! {
                 Vec::new(),
             )
         })?;
-        let mut def_path = window.path.0.clone();
-        def_path.push(PathSegment::Stmt(window.start));
-        let def_path = AstPath(def_path);
-        let Some(effect) = self.facts.effect(function, EffectSubject::Expr, &def_path) else {
+        let Some(effect) = self
+            .facts
+            .effect(function, EffectSubject::Expr, &statement.path)
+        else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -3779,13 +3777,8 @@ fn expression_site(item_index: usize, path: &[PathSegment]) -> ExprSite {
     }
 }
 
-/// An `ExprSite` pointing at one statement in a `StmtWindowSite`'s window,
-/// for `Evidence`/`Rejection` locations - `Evidence`/`Rejection` are shared
-/// by every rule kind and only know how to carry an `ExprSite`.
-fn stmt_window_evidence_site(window: &StmtWindowSite, stmt_index: usize) -> ExprSite {
-    let mut path = window.path.0.clone();
-    path.push(PathSegment::Stmt(stmt_index));
-    expression_site(window.item_index, &path)
+fn statement_evidence_site(statement: &StatementRef) -> ExprSite {
+    expression_site(statement.item_index, &statement.path.0)
 }
 
 fn child_site(parent: &ExprSite, index: usize) -> ExprSite {

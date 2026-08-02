@@ -376,7 +376,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::ZeroUsers => "zero_users",
         Predicate::ZeroGroupUsers => "zero_group_users",
         Predicate::CountedLoop => "counted_loop",
-        Predicate::StmtWindowGuard => "stmt_window_guard",
+        Predicate::ItemGuard => "item_guard",
         Predicate::LazySingletonDomain => "lazy_singleton_domain",
         Predicate::ReadPath => "read_path",
         Predicate::NoEffects => "no_effects",

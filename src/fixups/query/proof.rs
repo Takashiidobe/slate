@@ -48,7 +48,7 @@ pub(in crate::fixups) enum Predicate {
     ZeroUsers,
     ZeroGroupUsers,
     CountedLoop,
-    StmtWindowGuard,
+    ItemGuard,
     LazySingletonDomain,
     ReadPath,
     NoEffects,
