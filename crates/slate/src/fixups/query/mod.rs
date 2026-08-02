@@ -17,6 +17,7 @@ mod rewrite;
 pub(in crate::fixups) mod rules;
 mod switch;
 mod va_list;
+mod var_aliases;
 mod views;
 
 use context::default_value;

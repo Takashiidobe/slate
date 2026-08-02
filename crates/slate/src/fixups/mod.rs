@@ -14,7 +14,6 @@ mod test_support;
 use crate::fixups::trace::{CollectingLogger, NoopLogger, ProgramSummary, TraceLog, TraceLogger};
 use crate::rust_ast::{FnDef, IndentStmt, Item, Program};
 
-use crate::fixups::rewrite::var_aliases::VarAliases;
 pub use trace::Pass;
 
 #[derive(Debug, Clone, Default)]
@@ -865,11 +864,20 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::VarAliases, {
-        to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
-            let mut fixup = VarAliases::new(logger);
-            run_once(&mut f.body, &mut fixup)
-        });
-        incremental.mark_everything_dirty();
+        loop {
+            let facts = incremental.resolve(&program);
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::var_aliases::rewrite());
+                builder.finish()
+            };
+            let report = plan.apply(&mut program, &facts, logger);
+            incremental.mark_touched(&report.touched);
+            if !report.changed {
+                break;
+            }
+        }
     });
     step!(program, Pass::ConstantConditions, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
