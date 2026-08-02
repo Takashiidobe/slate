@@ -104,7 +104,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 6. `zero_init` (`cross_effects = false`) - fuse a zero-init `let` with the assignment that overwrites it - to fixpoint through a query definition plan, with facts refreshed before every round (`to_fixpoint_program_with_facts`).
 7. `struct_field_init` - fold field assignments into the preceding struct literal - to fixpoint (`to_fixpoint_items`).
 8. `singleton_scopes` - unwrap a one-statement `{ }` scope - to fixpoint (`to_fixpoint_items`).
-9. `compound_assign` - recover `a -= 5` - once, per function.
+9. `compound_assign` - recover `a -= 5` - once, program-wide, through a query expression plan (direct `target = target op rhs`) and a query statement-sequence plan (temp-backed pre/post-update shapes) sharing one snapshot.
 10. `for_continue` - invert synthetic continue-blocks - to fixpoint (`to_fixpoint_items`), then `singleton_scopes` again to fixpoint.
 11. `constant_index_casts` - drop redundant `as usize` on constant indices - once, per function (`run_once_items`).
 12. `unnecessary_casts` - drop casts a typed context already makes redundant - once, program-wide, through a query expression plan over every assignment's value.

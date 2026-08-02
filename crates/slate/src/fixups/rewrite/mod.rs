@@ -1,4 +1,3 @@
-pub(super) mod compound_assign;
 pub(super) mod constant_conditions;
 pub(super) mod drop_call_results;
 pub(super) mod final_returns;
