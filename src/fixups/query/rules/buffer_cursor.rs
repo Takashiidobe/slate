@@ -17,8 +17,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Definition> {
     )
     .case("resolved", |case, definition| {
         let plan = case.fact(|query| query.buffer_cursor_rewrite(definition))?;
+        let function = case.function(definition)?;
         Ok(EditSet::replace_function_body(
-            definition.clone(),
+            function,
             rewrite_buffer_cursor(plan),
         ))
     })

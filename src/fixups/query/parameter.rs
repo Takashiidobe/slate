@@ -81,7 +81,19 @@ pub(super) fn removable_parameter(
         {
             return Err(reject(predicate, site));
         }
-        call_sites.push(call.site.clone());
+        let mut replacement = query.expr(&call.site).cloned().ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(call.site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let Expr::Call { args, .. } = &mut replacement else {
+            return Err(reject(predicate, call.site.clone()));
+        };
+        args.remove(index);
+        call_sites.push((call.site.clone(), replacement));
     }
     evidence.push(Evidence {
         predicate,

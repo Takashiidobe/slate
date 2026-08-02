@@ -17,8 +17,9 @@ pub(in crate::fixups) fn early() -> QueryRule<Definition> {
         |case, definition| {
             let plan = case.fact(|query| query.inline_temp_candidate(definition, Phase::Early))?;
             let body = case.function_body(definition);
+            let function = case.function(definition)?;
             Ok(EditSet::replace_function_body(
-                definition.clone(),
+                function,
                 rewrite_inline_temp(body, plan),
             ))
         },
@@ -31,8 +32,9 @@ pub(in crate::fixups) fn late() -> QueryRule<Definition> {
         |case, definition| {
             let plan = case.fact(|query| query.inline_temp_candidate(definition, Phase::Late))?;
             let body = case.function_body(definition);
+            let function = case.function(definition)?;
             Ok(EditSet::replace_function_body(
-                definition.clone(),
+                function,
                 rewrite_inline_temp(body, plan),
             ))
         },
