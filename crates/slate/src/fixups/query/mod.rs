@@ -3,6 +3,7 @@ mod context;
 mod control_flow;
 mod field;
 mod item;
+mod nullable_pointer;
 mod patterns;
 mod plan;
 mod program_recipe;
@@ -18,6 +19,10 @@ pub(in crate::fixups) use field::Field;
 pub(in crate::fixups) use item::{
     EditSet, ItemCaseContext, ItemPlanBuilder, QueryRule, StatementRef, same_statement_container,
 };
+use nullable_pointer::{
+    find_distance_observation, null_comparison, nullable_pointer_option, preferred_option_name,
+    removable_alias_decl, supported_observation, transparent_alias_value,
+};
 #[allow(unused_imports)]
 pub(in crate::fixups) use patterns::{
     AssignmentValue, Binding, Definition, EnumVariant, ExprPattern, ExternFn, FnCall, Function,
@@ -32,9 +37,10 @@ pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
 };
 pub(in crate::fixups) use recipe::{
-    ExprRecipe, FunctionBodyRecipe, HeapOwnershipPlan, HeapOwnershipReallocPlan, byte_position,
-    collapse_atomic_compare_exchange, initialize_local, known_index, memchr_fallback_body,
-    pointer_at_or_null, process_exit, rewrite_heap_ownership,
+    ExprRecipe, FunctionBodyRecipe, HeapOwnershipPlan, HeapOwnershipReallocPlan,
+    NullablePointerAlias, NullablePointerPlan, byte_position, collapse_atomic_compare_exchange,
+    initialize_local, known_index, memchr_fallback_body, pointer_at_or_null, process_exit,
+    rewrite_heap_ownership, rewrite_nullable_pointer,
 };
 pub(in crate::fixups) use rewrite::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 use views::{

@@ -1,10 +1,11 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::fixups::facts::{HeapOwnershipKind, HeapResizeKind};
+use crate::fixups::facts::{HeapOwnershipKind, HeapResizeKind, PathSegment};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::query::{
     AtomicCompareExchangeChain, ByteRepresentation, ByteSource, NulPosition, PointerMutability,
     Predicate, QueryContext, Rejection, RejectionReason, StableExpr, default_value,
+    find_distance_observation, null_comparison,
 };
 use crate::fixups::support::walk;
 use crate::function_identity::{Known, known_call};
@@ -917,4 +918,182 @@ fn let_stmt(name: &str, ty: Option<Type>, init: Expr) -> Stmt {
         ty,
         init: Some(init),
     }
+}
+
+#[derive(Clone)]
+pub(in crate::fixups) struct NullablePointerPlan {
+    pub(in crate::fixups) container: Vec<PathSegment>,
+    pub(in crate::fixups) producer_index: usize,
+    pub(in crate::fixups) producer_name: String,
+    pub(in crate::fixups) option_name: String,
+    pub(in crate::fixups) option_expr: Expr,
+    pub(in crate::fixups) base_ptr: Option<Expr>,
+    pub(in crate::fixups) aliases: Vec<NullablePointerAlias>,
+}
+
+#[derive(Clone)]
+pub(in crate::fixups) struct NullablePointerAlias {
+    pub(in crate::fixups) name: String,
+    pub(in crate::fixups) remove_indices: Vec<usize>,
+}
+
+pub(in crate::fixups) fn rewrite_nullable_pointer(
+    mut body: Vec<IndentStmt>,
+    plan: NullablePointerPlan,
+) -> FunctionBodyRecipe {
+    if let Some(container) = nullable_pointer_container_mut(&mut body, &plan.container) {
+        apply_nullable_pointer_plan(container, &plan);
+    }
+    FunctionBodyRecipe { body }
+}
+
+fn nullable_pointer_container_mut<'a>(
+    body: &'a mut Vec<IndentStmt>,
+    path: &[PathSegment],
+) -> Option<&'a mut Vec<IndentStmt>> {
+    let [PathSegment::Stmt(index), rest @ ..] = path else {
+        return path.is_empty().then_some(body);
+    };
+    match (&mut body.get_mut(*index)?.stmt, rest) {
+        (
+            Stmt::If { then_body, .. } | Stmt::LetIf { then_body, .. },
+            [PathSegment::Then, rest @ ..],
+        ) => nullable_pointer_container_mut(then_body, rest),
+        (
+            Stmt::If { else_body, .. } | Stmt::LetIf { else_body, .. },
+            [PathSegment::Else, rest @ ..],
+        ) => nullable_pointer_container_mut(else_body, rest),
+        (Stmt::Loop { body, .. }, [PathSegment::LoopBody, rest @ ..]) => {
+            nullable_pointer_container_mut(body, rest)
+        }
+        (Stmt::For { body, .. }, [PathSegment::ForBody, rest @ ..]) => {
+            nullable_pointer_container_mut(body, rest)
+        }
+        (Stmt::Scope { body }, [PathSegment::ScopeBody, rest @ ..]) => {
+            nullable_pointer_container_mut(body, rest)
+        }
+        (Stmt::LabeledBlock { body, .. }, [PathSegment::LabeledBody, rest @ ..]) => {
+            nullable_pointer_container_mut(body, rest)
+        }
+        (Stmt::Unsafe { body }, [PathSegment::UnsafeBody, rest @ ..]) => {
+            nullable_pointer_container_mut(&mut body.stmts, rest)
+        }
+        (Stmt::While { body, .. }, [PathSegment::WhileBody, rest @ ..]) => {
+            nullable_pointer_container_mut(&mut body.stmts, rest)
+        }
+        (Stmt::Block(body), [PathSegment::BlockBody, rest @ ..]) => {
+            nullable_pointer_container_mut(&mut body.stmts, rest)
+        }
+        (Stmt::Match { arms, .. }, [PathSegment::MatchArm(index), rest @ ..]) => {
+            nullable_pointer_container_mut(&mut arms.get_mut(*index)?.body, rest)
+        }
+        _ => None,
+    }
+}
+
+fn apply_nullable_pointer_plan(body: &mut Vec<IndentStmt>, plan: &NullablePointerPlan) {
+    if let Stmt::Let { name, ty, init, .. } = &mut body[plan.producer_index].stmt {
+        *name = plan.option_name.as_str().into();
+        *ty = None;
+        *init = Some(plan.option_expr.clone());
+    }
+    for stmt in body.iter_mut() {
+        rewrite_nullable_pointer_observations(&mut stmt.stmt, plan);
+    }
+    let mut remove = Vec::new();
+    for alias in &plan.aliases {
+        remove.extend(alias.remove_indices.iter().copied());
+    }
+    remove.sort_unstable();
+    remove.dedup();
+    for index in remove.into_iter().rev() {
+        if index != plan.producer_index {
+            body.remove(index);
+        }
+    }
+}
+
+fn rewrite_nullable_pointer_observations(stmt: &mut Stmt, plan: &NullablePointerPlan) {
+    match stmt {
+        Stmt::Let {
+            init: Some(expr), ..
+        }
+        | Stmt::Assign { value: expr, .. }
+        | Stmt::Expr(expr)
+        | Stmt::Return(Some(expr)) => rewrite_nullable_pointer_expr(expr, plan),
+        _ => {}
+    }
+}
+
+fn rewrite_nullable_pointer_expr(expr: &mut Expr, plan: &NullablePointerPlan) {
+    if let Some(replacement) =
+        nullable_pointer_observation_replacement(expr, &plan.producer_name, plan)
+    {
+        *expr = replacement;
+        return;
+    }
+    if let Some(replacement) =
+        nullable_pointer_observation_replacement(expr, &plan.option_name, plan)
+    {
+        *expr = replacement;
+        return;
+    }
+    for alias in &plan.aliases {
+        if let Some(replacement) = nullable_pointer_observation_replacement(expr, &alias.name, plan)
+        {
+            *expr = replacement;
+            return;
+        }
+    }
+    match expr {
+        Expr::Binary { lhs, rhs, .. } => {
+            rewrite_nullable_pointer_expr(lhs, plan);
+            rewrite_nullable_pointer_expr(rhs, plan);
+        }
+        Expr::Cast { expr, .. }
+        | Expr::Unary { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. } => rewrite_nullable_pointer_expr(expr, plan),
+        Expr::Call { func, args, .. } => {
+            rewrite_nullable_pointer_expr(func, plan);
+            for arg in args {
+                rewrite_nullable_pointer_expr(arg, plan);
+            }
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            rewrite_nullable_pointer_expr(recv, plan);
+            for arg in args {
+                rewrite_nullable_pointer_expr(arg, plan);
+            }
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            if block.stmts.is_empty()
+                && let Some(tail) = &mut block.tail
+            {
+                rewrite_nullable_pointer_expr(tail, plan);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn nullable_pointer_observation_replacement(
+    expr: &Expr,
+    alias_name: &str,
+    plan: &NullablePointerPlan,
+) -> Option<Expr> {
+    if let Expr::Binary { op, lhs, rhs } = expr
+        && let Some(method_name) = null_comparison(op, lhs, rhs, alias_name)
+    {
+        return Some(method(var(&plan.option_name), method_name, Vec::new()));
+    }
+    let base_ptr = plan.base_ptr.as_ref()?;
+    let target_ty = find_distance_observation(expr, alias_name, base_ptr)?;
+    Some(match target_ty {
+        Some(ty) => Expr::Cast {
+            expr: Box::new(method(var(&plan.option_name), "unwrap", Vec::new())),
+            ty,
+        },
+        None => method(var(&plan.option_name), "unwrap", Vec::new()),
+    })
 }
