@@ -1,5 +1,5 @@
 use crate::fixups::facts::{
-    CountedLoopIndexUse, CountedLoopStart, CountedLoopStep, PlaceAccess, Purity,
+    CallArgPinning, CountedLoopIndexUse, CountedLoopStart, CountedLoopStep, PlaceAccess, Purity,
 };
 use crate::rust_ast::Type;
 
@@ -66,6 +66,9 @@ pub(in crate::fixups) enum Predicate {
     LazySingletonDomain,
     AtomicPromotionDomain,
     CStringLiteral,
+    ArgumentPosition,
+    Callsite,
+    CallArgumentPinning,
     ReadPath,
     ArrayElementPointerOrigin,
     BufferPointerFields,
@@ -179,6 +182,16 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     CStringLiteral {
         bytes: usize,
+    },
+    ArgumentPosition {
+        slot: usize,
+    },
+    Callsite {
+        direct: bool,
+    },
+    CallArgumentPinning {
+        pinning: CallArgPinning,
+        variadic: bool,
     },
     ArrayElementPointerOrigin {
         origins: usize,

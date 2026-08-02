@@ -4,9 +4,10 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, CastFact, ConstValue, CountedLoopFact, EffectSubject,
-    FixupFacts, FunctionId, NulTermination, PathSegment, PtrLenSliceFact, Purity, StringBufferFact,
-    StringBufferKind, StringRecoveryCandidate, ValueSubject,
+    AstPath, BindingId, BindingKind, CallArgPinning, CallCallee, CastFact, ConstValue,
+    CountedLoopFact, EffectSubject, FixupFacts, FunctionId, NulTermination, PathSegment,
+    PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringRecoveryCandidate,
+    ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
@@ -171,11 +172,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             .iter()
             .filter_map(|site| {
                 (1..site.path.0.len()).rev().find_map(|length| {
-                    let parent = ExprSite {
-                        item_index: site.item_index,
-                        path: AstPath(site.path.0[..length].to_vec()),
-                        fact_path: AstPath(site.fact_path.0[..length].to_vec()),
-                    };
+                    let parent = expression_site(site.item_index, &site.path.0[..length]);
                     expression_set
                         .contains(&parent)
                         .then(|| (site.clone(), parent))
@@ -1143,6 +1140,46 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
+    pub(in crate::fixups) fn argument_position(
+        &self,
+        expression: &ExpressionRef,
+    ) -> QueryResult<(ExpressionRef, usize)> {
+        let predicate = Predicate::ArgumentPosition;
+        let parent = self.parent_expression(expression)?;
+        if !matches!(self.expr(&parent.value.site), Some(Expr::Call { .. })) {
+            return Err(Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::UnsupportedShape,
+                parent.evidence.clone(),
+            ));
+        }
+        let Some(slot) = expression
+            .site
+            .path
+            .0
+            .last()
+            .and_then(|segment| match segment {
+                PathSegment::Expr(index) => index.checked_sub(1),
+                _ => None,
+            })
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(expression.site.clone()),
+                RejectionReason::UnsupportedShape,
+                parent.evidence.clone(),
+            ));
+        };
+        let mut evidence = parent.evidence.clone();
+        evidence.push(Evidence {
+            predicate,
+            site: expression.site.clone(),
+            detail: EvidenceDetail::ArgumentPosition { slot },
+        });
+        Ok(Proof::new((parent.value, slot), evidence))
+    }
+
     pub(in crate::fixups) fn ancestor_expressions(
         &self,
         expression: &ExpressionRef,
@@ -1682,6 +1719,74 @@ impl<'snapshot> QueryContext<'snapshot> {
             },
         }];
         Ok(Proof::new(fact.clone(), evidence))
+    }
+
+    pub(in crate::fixups) fn callsite_at(&self, site: &ExprSite) -> QueryResult<CallCallee> {
+        let predicate = Predicate::Callsite;
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(fact) = self
+            .facts
+            .callsite(function, &site.fact_path)
+            .or_else(|| self.facts.callsite(function, &site.path))
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let evidence = vec![Evidence {
+            predicate,
+            site: site.clone(),
+            detail: EvidenceDetail::Callsite {
+                direct: matches!(fact.callee, CallCallee::Direct { .. }),
+            },
+        }];
+        Ok(Proof::new(fact.callee.clone(), evidence))
+    }
+
+    pub(in crate::fixups) fn call_argument_pinning(
+        &self,
+        site: &ExprSite,
+    ) -> QueryResult<(CallArgPinning, bool)> {
+        let predicate = Predicate::CallArgumentPinning;
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some((_, arg)) = self
+            .facts
+            .call_arg_at(function, &site.fact_path)
+            .or_else(|| self.facts.call_arg_at(function, &site.path))
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let evidence = vec![Evidence {
+            predicate,
+            site: site.clone(),
+            detail: EvidenceDetail::CallArgumentPinning {
+                pinning: arg.pinning,
+                variadic: arg.variadic,
+            },
+        }];
+        Ok(Proof::new((arg.pinning, arg.variadic), evidence))
     }
 
     pub(in crate::fixups) fn c_string_literal(&self, site: &ExprSite) -> QueryResult<Vec<u8>> {
