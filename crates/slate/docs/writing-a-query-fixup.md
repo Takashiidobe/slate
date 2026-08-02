@@ -5,7 +5,7 @@ delete a definition, replace a function body, splice a run of adjacent
 statements, or replace the whole program. The query engine owns AST
 traversal, fact lookup, stable node locations, conflict detection, mutation,
 and tracing. The rule should contain only candidate selection, ordered
-preconditions, and a typed recipe.
+preconditions, and anchored typed edits.
 
 Read [writing-a-fixup.md](writing-a-fixup.md) first. Use a legacy pass under
 `src/fixups/rewrite/` only when the query planner still cannot represent the
@@ -13,60 +13,78 @@ change - for example a rewrite whose window width isn't fixed in advance, or
 one that needs to inspect mutated state left behind by an earlier statement
 in the same pass.
 
-## Call rules
+## Expression and call rules
 
-`CallRule` selects a call shape and tries its cases in order. The first accepted
-case wins; if every case rejects, the original call remains unchanged.
+Expressions are `QueryItem`s with stable AST and fact paths. `FnCall` selects
+calls from that common domain and captures a `CallRecord`. The first accepted
+case wins; if every case rejects, the original expression remains unchanged.
 
 ```rust
-pub(in crate::fixups) fn calls() -> CallRule {
-    CallRule::generated(
+pub(in crate::fixups) fn calls() -> QueryRule<FnCall> {
+    QueryRule::new(
         Pass::MemchrPreludeFixupCalls,
         "rewrite_memchr_call",
-        "__slate_memchr",
-        3,
+        FnCall {
+            target: Field::eq(CallTarget::Generated("__slate_memchr".into())),
+            arity: Field::eq(3),
+            ..Default::default()
+        },
     )
-    .case("known_nul", |case| {
-        let [source, needle, count] = case.args();
-        let source = case.byte_source(source)?;
-        case.u8_eq(needle, 0)?;
-        case.pure(needle)?;
+    .case("known_nul", |case, call| {
+        let [source, needle, count] = case.call_args(call);
+        let source = case.byte_source(&source)?;
+        case.u8_eq(&needle, 0)?;
+        case.pure(&needle)?;
         let nul = case.first_nul(&source)?;
-        case.prefix_contains(count, nul)?;
-        Ok(pointer_at_or_null(source, known_index(nul)))
+        case.prefix_contains(&count, nul)?;
+        let replacement = case.lower_expr(
+            pointer_at_or_null(source, known_index(nul)),
+            &call.site,
+        )?;
+        Ok(EditSet::replace_expression(call.site.clone(), replacement))
     })
-    .case("byte_position", |case| {
-        let [source, needle, count] = case.args();
-        let source = case.byte_source(source)?;
-        case.full_byte_view(&source, count)?;
-        let needle = case.pure(needle)?;
-        Ok(pointer_at_or_null(source, byte_position(needle)))
+    .case("byte_position", |case, call| {
+        let [source, needle, count] = case.call_args(call);
+        let source = case.byte_source(&source)?;
+        case.full_byte_view(&source, &count)?;
+        let needle = case.pure(&needle)?;
+        let replacement = case.lower_expr(
+            pointer_at_or_null(source, byte_position(needle)),
+            &call.site,
+        )?;
+        Ok(EditSet::replace_expression(call.site.clone(), replacement))
     })
 }
 ```
 
-The current `CallCaseContext` helpers are:
+The common item case context provides call fact helpers including:
 
-- `args()` binds fixed-arity arguments.
+- `call_args(call)` binds fixed-arity argument sites.
 - `byte_source(arg)` proves and captures a byte-oriented source.
 - `u8_eq(arg, value)` proves a constant byte value.
 - `pure(arg)` proves an expression can be moved and returns `StableExpr`.
 - `full_byte_view(source, count)` proves the count covers the full byte view.
 - `first_nul(source)` proves NUL termination and captures its position.
 - `prefix_contains(count, nul)` proves the searched prefix reaches that NUL.
-- `never_returning_extern()` proves the selected known call has a matching
-  extern declaration with the same arity and a `!` return type.
+- `extern_fn(pattern)` proves a matching extern declaration.
+- `lower_expr(recipe, site)` lowers a typed recipe using facts at the selected
+  expression.
 
 Use `?` for every precondition. The context automatically records accepted proof
 evidence and earlier case rejections for `fixup-debug`.
 
 ## Recipes
 
-A case returns a typed recipe, never rendered Rust. Keep detailed AST
-construction in `src/fixups/query/recipe.rs` so the rule stays short:
+A case returns an `EditSet`, never rendered Rust. Keep detailed AST construction
+in `src/fixups/query/recipe.rs` so the rule stays short, lower the recipe against
+the matched site, and anchor the result explicitly:
 
 ```rust
-Ok(pointer_at_or_null(source, byte_position(needle)))
+let replacement = case.lower_expr(
+    pointer_at_or_null(source, byte_position(needle)),
+    &call.site,
+)?;
+Ok(EditSet::replace_expression(call.site.clone(), replacement))
 ```
 
 A recipe should accept proof-backed values such as `ByteSource`, `StableExpr`,
@@ -190,17 +208,17 @@ apply it after the query context is dropped:
 let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
 let plan = {
     let query = query::QueryContext::new(&program, &facts);
-    let mut builder = query::ExprPlanBuilder::new();
+    let mut builder = query::ItemPlanBuilder::new();
     builder.add_rule(&query, &query::rules::memchr::calls());
     builder.finish()
 };
 plan.apply(&mut program, &facts, logger).changed
 ```
 
-Use `ItemPlanBuilder` and `plan.apply(&mut program, &facts, logger)` for
-matcher-driven item rules, including definition and statement matches. Add
-several rules to one builder only when they intentionally share a snapshot;
-overlapping edit sets are rejected across item kinds.
+Use `ItemPlanBuilder` and `plan.apply(&mut program, &facts, logger)` for every
+matcher-driven rule, including expression, binding, definition, function, and
+statement matches. Add several rules to one builder only when they intentionally
+share a snapshot; overlapping edit sets are rejected across item kinds.
 
 Recompute facts before the next fact-dependent query. Place definition deletion
 after the final pass that can remove a user.

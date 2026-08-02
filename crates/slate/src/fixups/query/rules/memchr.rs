@@ -1,12 +1,12 @@
 use crate::fixups::trace::Pass;
 
 use super::super::{
-    CallRule, CallTarget, Definition, DefinitionKind, EditSet, Field, FnCall, QueryRule,
-    byte_position, known_index, memchr_fallback_body, pointer_at_or_null,
+    CallTarget, Definition, DefinitionKind, EditSet, Field, FnCall, QueryRule, byte_position,
+    known_index, memchr_fallback_body, pointer_at_or_null,
 };
 
-pub(in crate::fixups) fn calls() -> CallRule {
-    CallRule::matches(
+pub(in crate::fixups) fn calls() -> QueryRule<FnCall> {
+    QueryRule::new(
         Pass::MemchrPreludeFixupCalls,
         "rewrite_memchr_call",
         FnCall {
@@ -15,21 +15,27 @@ pub(in crate::fixups) fn calls() -> CallRule {
             ..Default::default()
         },
     )
-    .case("known_nul", |case| {
-        let [source, needle, count] = case.args();
-        let source = case.byte_source(source)?;
-        case.u8_eq(needle, 0)?;
-        case.pure(needle)?;
+    .case("known_nul", |case, call| {
+        let [source, needle, count] = case.call_args(call);
+        let source = case.byte_source(&source)?;
+        case.u8_eq(&needle, 0)?;
+        case.pure(&needle)?;
         let nul = case.first_nul(&source)?;
-        case.prefix_contains(count, nul)?;
-        Ok(pointer_at_or_null(source, known_index(nul)))
+        case.prefix_contains(&count, nul)?;
+        let replacement =
+            case.lower_expr(pointer_at_or_null(source, known_index(nul)), &call.site)?;
+        Ok(EditSet::replace_expression(call.site.clone(), replacement))
     })
-    .case("byte_position", |case| {
-        let [source, needle, count] = case.args();
-        let source = case.byte_source(source)?;
-        case.full_byte_view(&source, count)?;
-        let needle = case.pure(needle)?;
-        Ok(pointer_at_or_null(source, byte_position(needle)))
+    .case("byte_position", |case, call| {
+        let [source, needle, count] = case.call_args(call);
+        let source = case.byte_source(&source)?;
+        case.full_byte_view(&source, &count)?;
+        let needle = case.pure(&needle)?;
+        let replacement = case.lower_expr(
+            pointer_at_or_null(source, byte_position(needle)),
+            &call.site,
+        )?;
+        Ok(EditSet::replace_expression(call.site.clone(), replacement))
     })
 }
 

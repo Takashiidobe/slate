@@ -317,7 +317,7 @@ fn apply_with_logger(
     step!(program, Pass::UnnecessaryCasts, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::ExprPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::unnecessary_casts::rewrite());
             builder.finish()
         };
@@ -388,7 +388,7 @@ fn apply_with_logger(
     step!(program, Pass::StringLift, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::ValuePlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::string_lift::rewrite());
             builder.finish()
         };
@@ -629,7 +629,7 @@ fn apply_with_logger(
         let facts = incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::ExprPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::memchr::calls());
             builder.finish()
         };
@@ -656,7 +656,7 @@ fn apply_with_logger(
     step!(program, Pass::StringLiftFixupCStrings, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::ValuePlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::string_lift::rewrite_c_strings());
             builder.finish()
         };
@@ -718,7 +718,7 @@ fn apply_with_logger(
     step!(program, Pass::ArrayElementPointerOrigin, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::ValuePlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(
                 &query,
                 &query::rules::array_element_pointer_origin::rewrite(),
@@ -815,7 +815,7 @@ fn apply_with_logger(
         let facts = incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
-            let mut builder = query::ExprPlanBuilder::new();
+            let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::libc_exit::calls());
             builder.finish()
         };

@@ -2,7 +2,7 @@ use crate::fixups::facts::Purity;
 use crate::rust_ast::{Expr, IndentStmt, Label, Stmt, Type};
 
 use super::field::Field;
-use super::item::{Matcher, QueryDomain, QueryItem, StatementMatch};
+use super::item::{ExpressionRef, Matcher, QueryDomain, QueryItem, StatementMatch};
 use super::{
     BindingCategory, CallTarget, DefinitionGroup, DefinitionKind, ResolvedValue, StatementRange,
     Usage,
@@ -13,6 +13,58 @@ pub(in crate::fixups) struct FnCall<Cx = ()> {
     pub(in crate::fixups) target: Field<CallTarget, Cx>,
     pub(in crate::fixups) arity: Field<usize, Cx>,
     pub(in crate::fixups) arg_types: Field<Vec<Option<Type>>, Cx>,
+}
+
+impl Matcher for FnCall {
+    type Capture = super::CallRecord;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::Expression
+    }
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::Expression(expression) = item else {
+            return None;
+        };
+        query
+            .all_calls()
+            .find(|call| call.site == expression.site)
+            .filter(|call| {
+                self.target.matches(&call.target, &())
+                    && self.arity.matches(&call.args.len(), &())
+                    && self.arg_types.matches(&query.call_arg_types(call), &())
+            })
+            .cloned()
+    }
+}
+
+#[derive(Default)]
+pub(in crate::fixups) struct AssignmentValue;
+
+impl Matcher for AssignmentValue {
+    type Capture = ExpressionRef;
+
+    fn domain(&self) -> QueryDomain {
+        QueryDomain::Expression
+    }
+
+    fn matches(
+        &self,
+        query: &super::QueryContext<'_>,
+        item: &QueryItem<'_>,
+    ) -> Option<Self::Capture> {
+        let QueryItem::Expression(expression) = item else {
+            return None;
+        };
+        query
+            .assign_value_sites()
+            .contains(&expression.site)
+            .then(|| expression.clone())
+    }
 }
 
 #[derive(Default)]
