@@ -508,8 +508,13 @@ pub(in crate::fixups) fn exprs_with_path(
                 exprs_with_path(else_expr, path, f);
             });
         }
-        Expr::Block(block) | Expr::Unsafe(block) => {
+        Expr::Block(block) => {
             with_path_segment(path, PathSegment::BlockBody, |path| {
+                block_exprs_with_path(block, path, f);
+            });
+        }
+        Expr::Unsafe(block) => {
+            with_path_segment(path, PathSegment::UnsafeBody, |path| {
                 block_exprs_with_path(block, path, f);
             });
         }
@@ -1422,7 +1427,8 @@ fn target_expr_at<'a>(expr: &'a Expr, path: &[PathSegment]) -> Option<&'a Expr> 
         (Expr::If { else_expr, .. }, [PathSegment::Expr(2), rest @ ..]) => {
             target_expr_at(else_expr, rest)
         }
-        (Expr::Block(block) | Expr::Unsafe(block), [PathSegment::BlockBody, rest @ ..]) => {
+        (Expr::Block(block), [PathSegment::BlockBody, rest @ ..])
+        | (Expr::Unsafe(block), [PathSegment::UnsafeBody, rest @ ..]) => {
             target_expr_in_block(block, rest)
         }
         (

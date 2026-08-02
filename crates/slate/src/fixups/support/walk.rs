@@ -927,8 +927,13 @@ pub(in crate::fixups) fn exprs_mut_with_path(
                 exprs_mut_with_path(else_expr, path, f);
             });
         }
-        Expr::Block(block) | Expr::Unsafe(block) => {
+        Expr::Block(block) => {
             with_path_segment(path, PathSegment::BlockBody, |path| {
+                block_exprs_mut_with_path(block, path, f);
+            });
+        }
+        Expr::Unsafe(block) => {
+            with_path_segment(path, PathSegment::UnsafeBody, |path| {
                 block_exprs_mut_with_path(block, path, f);
             });
         }
