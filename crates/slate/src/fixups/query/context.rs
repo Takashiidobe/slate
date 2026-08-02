@@ -421,6 +421,39 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(statement, proof.evidence))
     }
 
+    pub(in crate::fixups) fn enclosing_statements(
+        &self,
+        statement: &StatementRef,
+    ) -> QueryResult<&'snapshot [IndentStmt]> {
+        let predicate = Predicate::StatementRegion;
+        let Some(container) = statement.container() else {
+            return Err(Rejection::new(
+                predicate,
+                Some(statement_evidence_site(statement)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let body = self.statement_container(&container).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(statement_evidence_site(statement)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        Ok(Proof::new(
+            body,
+            vec![Evidence {
+                predicate,
+                site: statement_evidence_site(statement),
+                detail: EvidenceDetail::StatementRegion {
+                    statements: body.len(),
+                },
+            }],
+        ))
+    }
+
     fn use_site(&self, item_index: usize, path: &AstPath) -> Option<UseSiteRef> {
         if matches!(path.0.last(), Some(PathSegment::Stmt(_))) {
             let statement = StatementRef {

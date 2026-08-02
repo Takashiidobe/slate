@@ -9,6 +9,7 @@ mod plan;
 mod printf;
 mod program_recipe;
 mod proof;
+mod ptr_copy;
 mod recipe;
 mod rewrite;
 pub(in crate::fixups) mod rules;

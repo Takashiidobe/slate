@@ -723,10 +723,14 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::PtrCopy, {
-        to_fixpoint_items(&mut program, FixpointLimit::Unlimited, |_, f| {
-            let mut fixup = rewrite::ptr_copy::PtrCopy::new(&f.name, logger);
-            run_once(&mut f.body, &mut fixup)
-        });
+        let facts = incremental.resolve(&program);
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::ptr_copy::rewrite());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::DeadLocals, {

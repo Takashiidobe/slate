@@ -1,100 +1,9 @@
 use std::collections::BTreeMap;
 
-use crate::fixups::Fixup;
-use crate::fixups::facts::PathSegment;
-use crate::fixups::support::walk;
-use crate::fixups::trace::{
-    Pass as TracePass, RewriteEvent, TraceLogger, fact, named_path_location, path_fact,
-    stmt_snippet,
-};
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 
-pub(in crate::fixups) struct PtrCopy<'a> {
-    function_name: String,
-    logger: &'a mut dyn TraceLogger,
-}
-
-impl Fixup for PtrCopy<'_> {
-    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
-        self.fixup_at(body, &mut Vec::new())
-    }
-}
-
-impl<'a> PtrCopy<'a> {
-    pub(in crate::fixups) fn new(
-        function_name: impl Into<String>,
-        logger: &'a mut dyn TraceLogger,
-    ) -> Self {
-        Self {
-            function_name: function_name.into(),
-            logger,
-        }
-    }
-
-    fn fixup_at(&mut self, body: &mut [IndentStmt], path: &mut Vec<PathSegment>) -> bool {
-        let env = CopyEnv::from_body(body);
-        for index in 0..body.len() {
-            let mut changed = false;
-            walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-                walk::nested_body_vecs_mut_with_path(
-                    &mut body[index].stmt,
-                    path,
-                    &mut |body, path| {
-                        if !changed {
-                            changed = self.fixup_at(body, path);
-                        }
-                    },
-                );
-            });
-            if changed {
-                return true;
-            }
-
-            let before = self.logger.is_enabled().then(|| body[index].stmt.clone());
-            if let Some(plan) = copy_plan(&body[index].stmt, &env) {
-                body[index].stmt = Stmt::Expr(plan.expr);
-                if let Some(before) = before {
-                    self.log_rewrite(path, index, before, &body[index].stmt, plan.kind);
-                }
-                return true;
-            }
-        }
-        false
-    }
-
-    fn log_rewrite(
-        &mut self,
-        path: &[PathSegment],
-        index: usize,
-        before: Stmt,
-        after: &Stmt,
-        kind: CopyRewriteKind,
-    ) {
-        let mut stmt_path = path.to_vec();
-        stmt_path.push(PathSegment::Stmt(index));
-        self.logger.rewrite(RewriteEvent {
-            pass: TracePass::PtrCopy,
-            kind: "rewrite_pointer_copy".into(),
-            location: named_path_location(self.function_name.clone(), &stmt_path),
-            before: vec![stmt_snippet("copy", &before)],
-            after: vec![stmt_snippet("copy", after)],
-            facts: vec![
-                path_fact("stmt_path", &stmt_path),
-                fact(
-                    "rewrite",
-                    match kind {
-                        CopyRewriteKind::CopyWithin => "copy_within",
-                        CopyRewriteKind::CopyFromSlice => "copy_from_slice",
-                        CopyRewriteKind::FillZero => "fill_zero",
-                    },
-                ),
-            ],
-        });
-    }
-}
-
 #[derive(Clone)]
-struct CopyEnv {
+pub(super) struct CopyEnv {
     arrays: BTreeMap<String, ArrayInfo>,
     constants: BTreeMap<String, u64>,
 }
@@ -106,17 +15,8 @@ struct ArrayInfo {
     elem_size: u64,
 }
 
-#[derive(Clone)]
-struct CopyPlan {
-    expr: Expr,
-    kind: CopyRewriteKind,
-}
-
-#[derive(Clone, Copy)]
-enum CopyRewriteKind {
-    CopyWithin,
-    CopyFromSlice,
-    FillZero,
+pub(super) struct CopyPlan {
+    pub(super) expr: Expr,
 }
 
 #[derive(Clone)]
@@ -126,7 +26,7 @@ struct CopyEndpoint {
 }
 
 impl CopyEnv {
-    fn from_body(body: &[IndentStmt]) -> Self {
+    pub(super) fn from_body(body: &[IndentStmt]) -> Self {
         let mut env = Self {
             arrays: BTreeMap::new(),
             constants: BTreeMap::new(),
@@ -161,7 +61,7 @@ impl CopyEnv {
     }
 }
 
-fn copy_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
+pub(super) fn copy_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
     if let Some(plan) = write_bytes_plan(stmt, env) {
         return Some(plan);
     }
@@ -188,12 +88,10 @@ fn copy_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
     if src.base == dst.base {
         return Some(CopyPlan {
             expr: copy_within(&dst.base, src.start, src.start + len, dst.start),
-            kind: CopyRewriteKind::CopyWithin,
         });
     }
     Some(CopyPlan {
         expr: copy_from_slice(&dst.base, dst.start, len, &src.base, src.start),
-        kind: CopyRewriteKind::CopyFromSlice,
     })
 }
 
@@ -217,7 +115,6 @@ fn write_bytes_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
     }
     Some(CopyPlan {
         expr: fill_zero(&dst.base, dst.start, len, dst_info.len),
-        kind: CopyRewriteKind::FillZero,
     })
 }
 
