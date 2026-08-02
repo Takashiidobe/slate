@@ -190,6 +190,15 @@ pub(in crate::fixups) enum UseSiteRef {
     Statement(super::item::StatementRef),
 }
 
+impl UseSiteRef {
+    pub(in crate::fixups) fn path(&self) -> &AstPath {
+        match self {
+            UseSiteRef::Expression(expression) => &expression.site.path,
+            UseSiteRef::Statement(statement) => &statement.path,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct ExpressionRef {
     pub(in crate::fixups) site: ExprSite,
