@@ -52,9 +52,9 @@ use views::{
     UnusedParamPlan, UnusedTypeDefinitionSet, ZeroInitPlan,
 };
 pub(in crate::fixups) use views::{
-    AnonymousStructSet, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
-    DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite, ExprSite,
-    HeapOwnershipPlanSet, InlineTempPlan, LazySingletonSet, NulPosition, Phase, PointerMutability,
-    PtrLenPlanSet, ResolvedValue, StableExpr, StmtWindowSite, Usage, ValueSite, ZeroGroupUsers,
-    ZeroUsers,
+    AnonymousStructSet, BindingDefUse, BindingRef, ByteExtent, ByteRepresentation, ByteSource,
+    ByteView, DefinitionGroup, DefinitionKind, DefinitionLocation, DefinitionSelector,
+    DefinitionSite, ExprSite, HeapOwnershipPlanSet, InlineTempPlan, LazySingletonSet, NulPosition,
+    Phase, PointerMutability, PtrLenPlanSet, ResolvedValue, StableExpr, StmtWindowSite, Usage,
+    ValueSite, ZeroGroupUsers, ZeroUsers,
 };

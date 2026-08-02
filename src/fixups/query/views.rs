@@ -17,6 +17,21 @@ pub(in crate::fixups) struct ResolvedValue {
     pub(in crate::fixups) purity: Option<Purity>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct BindingRef {
+    pub(in crate::fixups) item_index: usize,
+    pub(in crate::fixups) name: String,
+    pub(in crate::fixups) definition: AstPath,
+    pub(super) id: BindingId,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct BindingDefUse {
+    pub(in crate::fixups) binding: BindingRef,
+    pub(in crate::fixups) reads: Vec<AstPath>,
+    pub(in crate::fixups) writes: Vec<AstPath>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(in crate::fixups) struct ExprSite {
     pub(in crate::fixups) item_index: usize,
