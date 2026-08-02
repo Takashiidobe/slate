@@ -109,8 +109,14 @@ pub(in crate::fixups) struct ParameterRemoval {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct BindingDefUse {
     pub(in crate::fixups) binding: BindingRef,
-    pub(in crate::fixups) reads: Vec<AstPath>,
-    pub(in crate::fixups) writes: Vec<AstPath>,
+    pub(in crate::fixups) reads: Vec<UseSiteRef>,
+    pub(in crate::fixups) writes: Vec<UseSiteRef>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) enum UseSiteRef {
+    Expression(ExpressionRef),
+    Statement(super::item::StatementRef),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -236,13 +242,17 @@ pub(in crate::fixups) struct DefinitionSite {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct ZeroUsers {
+pub(in crate::fixups) struct DefinitionUsers {
     pub(in crate::fixups) definition: DefinitionSite,
+    pub(in crate::fixups) users: usize,
+    pub(in crate::fixups) site: ExprSite,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct ZeroGroupUsers {
+pub(in crate::fixups) struct DefinitionGroupUsers {
     pub(in crate::fixups) group: DefinitionGroup,
+    pub(in crate::fixups) users: usize,
+    pub(in crate::fixups) site: ExprSite,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

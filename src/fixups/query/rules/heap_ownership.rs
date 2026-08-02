@@ -13,8 +13,11 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Definition> {
     )
     .case("owned_heap", |case, definition| {
         let plans = case.fact(|query| query.heap_ownership_plans(definition))?;
-        let body = case.function_body(definition);
-        let function = case.function(definition)?;
+        let function = case.fact(|query| query.definition_function(definition))?;
+        let body = case
+            .fact(|query| query.function_snapshot(&function))?
+            .body
+            .clone();
         case.replace_function_body(function, rewrite_heap_ownership(body, plans))
     })
 }

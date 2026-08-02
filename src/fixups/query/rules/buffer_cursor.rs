@@ -17,7 +17,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Definition> {
     )
     .case("resolved", |case, definition| {
         let plan = case.fact(|query| query.buffer_cursor_rewrite(definition))?;
-        let function = case.function(definition)?;
+        let function = case.fact(|query| query.definition_function(definition))?;
         case.replace_function_body(function, rewrite_buffer_cursor(plan))
     })
 }
