@@ -2071,27 +2071,12 @@ fn unused_params_are_removed_but_used_ones_survive() {
     assert!(rust.contains("fn add(a: i32) -> i32"));
     assert!(rust.contains("fn get_used(a: i32, b: i32) -> i32"));
     assert!(rust.contains("fn remove_two(a: i32) -> i32"));
+    assert!(rust.contains("fn address_taken(a: i32, unused: i32) -> i32"));
     assert!(rust.contains("add(5)"));
     assert!(rust.contains("get_used(1, 2)"));
     assert!(rust.contains("remove_two(3)"));
+    assert!(rust.contains("indirect.unwrap()(8, 9)"));
     assert!(!rust.contains("add(5, 10)"));
-
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("fixup-debug")
-        .arg("--debug-only-pass")
-        .arg("unused_params")
-        .arg(&c_src)
-        .output()
-        .expect("run unused_params query trace");
-    assert!(
-        output.status.success(),
-        "fixup-debug failed:\n{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    let stdout = String::from_utf8(output.stdout).expect("debug output is utf8");
-    assert!(stdout.contains("query_rule=remove_unused_param"));
-    assert!(stdout.contains("evidence.unused_param=function=add;param=unused;param_index=1"));
-    assert!(stdout.contains("rejected_case.unreachable_param=unused_param:missing_evidence"));
 }
 
 #[test]

@@ -552,25 +552,6 @@ impl EditSet {
         });
     }
 
-    pub(in crate::fixups) fn remove_parameter(removal: super::ParameterRemoval) -> Self {
-        let mut edits = removal
-            .calls
-            .into_iter()
-            .map(|(target, replacement)| AnchoredEdit::Expression {
-                target,
-                replacement,
-            })
-            .collect::<Vec<_>>();
-        edits.push(AnchoredEdit::Function {
-            target: removal.function,
-            replacement: removal.replacement,
-        });
-        Self {
-            edits,
-            evidence: Vec::new(),
-        }
-    }
-
     pub(in crate::fixups) fn delete_definition(target: DefinitionSite) -> Self {
         Self::replace_definition(target, None)
     }
