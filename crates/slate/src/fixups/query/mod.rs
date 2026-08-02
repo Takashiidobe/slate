@@ -15,6 +15,7 @@ mod remove_mut;
 mod retval;
 mod rewrite;
 pub(in crate::fixups) mod rules;
+mod slice_index;
 mod switch;
 mod va_list;
 mod var_aliases;
