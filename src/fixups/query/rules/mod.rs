@@ -34,6 +34,7 @@ pub(in crate::fixups) mod slice_index;
 pub(in crate::fixups) mod slice_loop;
 pub(in crate::fixups) mod stdio;
 pub(in crate::fixups) mod string_lift;
+pub(in crate::fixups) mod string_params;
 pub(in crate::fixups) mod struct_field_init;
 pub(in crate::fixups) mod support;
 pub(in crate::fixups) mod switch;
