@@ -16,6 +16,7 @@ mod retval;
 mod rewrite;
 pub(in crate::fixups) mod rules;
 mod slice_index;
+mod stdio;
 mod switch;
 mod va_list;
 mod var_aliases;
@@ -50,7 +51,7 @@ pub(in crate::fixups) use recipe::{
     ExprRecipe, FunctionBodyRecipe, HeapOwnershipPlan, HeapOwnershipReallocPlan,
     NullablePointerAlias, NullablePointerPlan, byte_position, collapse_atomic_compare_exchange,
     initialize_local, known_index, memchr_fallback_body, pointer_at_or_null, process_exit,
-    rewrite_heap_ownership, rewrite_nullable_pointer,
+    rewrite_file_ownership, rewrite_heap_ownership, rewrite_nullable_pointer,
 };
 pub(in crate::fixups) use rewrite::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 use views::{
@@ -63,10 +64,11 @@ pub(in crate::fixups) use views::{
     BufferPointerFields, ByteExtent, ByteRepresentation, ByteSource, ByteView, DefinitionGroup,
     DefinitionGroupUsers, DefinitionKind, DefinitionLocation, DefinitionSelector, DefinitionSite,
     DefinitionUsers, DispatchRegion, EnumVariantRef, ExprSite, ExpressionEffects, ExpressionKind,
-    ExpressionPlace, ExpressionRef, ExpressionRole, ExpressionValues, FieldRef, FunctionCallDomain,
-    FunctionReachability, FunctionRef, HeapOwnership, HeapOwnershipFacts, HeapReallocation,
-    HeapUse, ItemReferences, LazySingletonSet, MatchArmRef, NulPosition, ParameterRef, Phase,
-    PointerMutability, ProgramRef, PtrLenPlanSet, ReferenceDomain, ResolvedValue, SliceLoopFact,
-    StableExpr, StatementContainerRef, StatementRange, SwitchDispatch, TypeUseKind, TypeUseRef,
-    Usage, UseSiteRef, VaListAlias, ValueSite,
+    ExpressionPlace, ExpressionRef, ExpressionRole, ExpressionValues, FieldRef, FileOwnership,
+    FileOwnershipFacts, FileUse, FunctionCallDomain, FunctionReachability, FunctionRef,
+    HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences, LazySingletonSet,
+    MatchArmRef, NulPosition, ParameterRef, Phase, PointerMutability, ProgramRef, PtrLenPlanSet,
+    ReferenceDomain, ResolvedValue, SliceLoopFact, StableExpr, StatementContainerRef,
+    StatementRange, SwitchDispatch, TypeUseKind, TypeUseRef, Usage, UseSiteRef, VaListAlias,
+    ValueSite,
 };

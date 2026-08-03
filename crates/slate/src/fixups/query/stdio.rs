@@ -1,110 +1,19 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::fixups::Fixup;
 use crate::fixups::facts::file_ownership::{buf_ptr_var, match_gets_loop};
-use crate::fixups::facts::{
-    AstPath, FileOpenMode, FileOwnershipFact, FileUseKind, FixupFacts, FunctionId, PathSegment,
-};
-use crate::fixups::trace::{
-    Pass as TracePass, RewriteEvent, TraceLogger, fact, function_path_location, stmts_snippet,
-};
+use crate::fixups::facts::{AstPath, FileOpenMode, FileUseKind, PathSegment};
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{BinOp, Block, Expr, Ident, IndentStmt, RustValue, Stmt, Type};
 
-pub(in crate::fixups) struct Stdio<'a> {
-    function: FunctionId,
-    facts: &'a FixupFacts,
-    logger: &'a mut dyn TraceLogger,
+use super::FileOwnership;
+
+pub(in crate::fixups) struct Plan {
+    pub(super) replacements: BTreeMap<usize, Stmt>,
+    pub(super) remove: BTreeSet<usize>,
 }
 
-impl Fixup for Stdio<'_> {
-    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool {
-        let before = self.logger.is_enabled().then(|| body.clone());
-        let changed = fixup_body(body, self.function, self.facts);
-        if changed && let Some(before) = before {
-            let uses = self
-                .facts
-                .file_ownership
-                .iter()
-                .filter(|fact| fact.function == self.function)
-                .map(|fact| fact.uses.len())
-                .sum::<usize>();
-            self.logger.rewrite(RewriteEvent {
-                pass: TracePass::Stdio,
-                kind: "rewrite_stdio_file_ownership".into(),
-                location: function_path_location(self.facts, self.function, &[]),
-                before: vec![stmts_snippet("body", &before)],
-                after: vec![stmts_snippet("body", body)],
-                facts: vec![fact("file_uses", uses.to_string())],
-            });
-        }
-        changed
-    }
-}
-
-impl<'a> Stdio<'a> {
-    pub(in crate::fixups) fn new(
-        function: FunctionId,
-        facts: &'a FixupFacts,
-        logger: &'a mut dyn TraceLogger,
-    ) -> Self {
-        Self {
-            function,
-            facts,
-            logger,
-        }
-    }
-}
-
-fn fixup_body(body: &mut Vec<IndentStmt>, function: FunctionId, facts: &FixupFacts) -> bool {
-    let plans = facts
-        .file_ownership
-        .iter()
-        .filter(|fact| fact.function == function)
-        .filter_map(|fact| plan_for_fact(body, facts, fact))
-        .collect::<Vec<_>>();
-    if plans.is_empty() {
-        return false;
-    }
-
-    // Plans are computed against the original `body`'s indices; merging them into a
-    // single pass (rather than mutating `body` once per plan) avoids one plan's removals
-    // shifting the indices a later plan relies on.
-    let mut replacements = BTreeMap::new();
-    let mut remove = BTreeSet::new();
-    for plan in plans {
-        replacements.extend(plan.replacements);
-        remove.extend(plan.remove);
-    }
-
-    let new_body = body
-        .drain(..)
-        .enumerate()
-        .filter_map(|(index, indent)| {
-            if remove.contains(&index) {
-                return None;
-            }
-            match replacements.remove(&index) {
-                Some(stmt) => Some(IndentStmt { stmt, ..indent }),
-                None => Some(indent),
-            }
-        })
-        .collect();
-    *body = new_body;
-    true
-}
-
-struct Plan {
-    replacements: BTreeMap<usize, Stmt>,
-    remove: BTreeSet<usize>,
-}
-
-fn plan_for_fact(
-    body: &[IndentStmt],
-    facts: &FixupFacts,
-    fact: &FileOwnershipFact,
-) -> Option<Plan> {
-    if !fact.uses.iter().all(|use_| {
+pub(super) fn plan_for_owner(body: &[IndentStmt], owner: &FileOwnership) -> Option<Plan> {
+    if !owner.uses.iter().all(|use_| {
         matches!(
             use_.kind,
             FileUseKind::Puts
@@ -116,15 +25,15 @@ fn plan_for_fact(
     }) {
         return None;
     }
-    let handle = facts.binding_name(fact.handle)?;
-    let handle_index = stmt_index(&fact.handle_path)?;
-    let open_index = stmt_index(&fact.open_path)?;
-    let assign_index = stmt_index(&fact.assign_path)?;
+    let handle = owner.handle.name.as_str();
+    let handle_index = stmt_index(&owner.handle_statement.path)?;
+    let open_index = stmt_index(&owner.open_statement.path)?;
+    let assign_index = stmt_index(&owner.assign_statement.path)?;
     let guard_index = assign_index + 1;
     let path = fopen_path_literal(&body.get(open_index)?.stmt)?;
-    let mode = fact.mode?;
+    let mode = owner.mode?;
     let guard_body = open_failure_body(&body.get(guard_index)?.stmt)?;
-    let buffered = fact.uses.iter().any(|use_| use_.kind == FileUseKind::Gets);
+    let buffered = owner.uses.iter().any(|use_| use_.kind == FileUseKind::Gets);
 
     let mut replacements = BTreeMap::new();
     replacements.insert(
@@ -139,8 +48,8 @@ fn plan_for_fact(
 
     let mut remove = BTreeSet::from([handle_index, assign_index, guard_index]);
     let aliases = BTreeSet::from([handle.to_string()]);
-    for use_ in &fact.uses {
-        let use_index = stmt_index(&use_.path)?;
+    for use_ in &owner.uses {
+        let use_index = stmt_index(&use_.statement.path)?;
         match use_.kind {
             FileUseKind::Puts => {
                 let bytes = fputs_literal(&body.get(use_index)?.stmt)?;

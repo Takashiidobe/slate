@@ -174,6 +174,32 @@ pub(in crate::fixups) fn rewrite_heap_ownership(
     FunctionBodyRecipe { body }
 }
 
+pub(in crate::fixups) fn rewrite_file_ownership(
+    body: Vec<IndentStmt>,
+    plans: Vec<super::stdio::Plan>,
+) -> FunctionBodyRecipe {
+    let mut replacements = BTreeMap::new();
+    let mut remove = BTreeSet::new();
+    for plan in plans {
+        replacements.extend(plan.replacements);
+        remove.extend(plan.remove);
+    }
+    let body = body
+        .into_iter()
+        .enumerate()
+        .filter_map(|(index, indent)| {
+            if remove.contains(&index) {
+                return None;
+            }
+            match replacements.remove(&index) {
+                Some(stmt) => Some(IndentStmt { stmt, ..indent }),
+                None => Some(indent),
+            }
+        })
+        .collect();
+    FunctionBodyRecipe { body }
+}
+
 #[derive(Debug, Clone)]
 pub(in crate::fixups) struct HeapOwnershipPlan {
     pub(in crate::fixups) pointer_name: String,

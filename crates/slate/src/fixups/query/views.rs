@@ -3,8 +3,9 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::{
     AstPath, BindingId, ConstValue, CountedLoopBound, CountedLoopIndexUse, CountedLoopStart,
-    CountedLoopStep, EffectKind, HeapAllocationKind, HeapExtent, HeapInitKind, HeapReadSafety,
-    HeapResizeKind, HeapUseKind, PlaceAccess, PlaceKind, Purity, SliceLoopAccess,
+    CountedLoopStep, EffectKind, FileOpenMode, FileUseKind, HeapAllocationKind, HeapExtent,
+    HeapInitKind, HeapReadSafety, HeapResizeKind, HeapUseKind, PlaceAccess, PlaceKind, Purity,
+    SliceLoopAccess,
 };
 use crate::rust_ast::{AtomicType, Expr, IndentStmt, Pattern, Type};
 
@@ -539,6 +540,30 @@ pub(in crate::fixups) struct BufferPointerField {
 #[derive(Debug, Clone)]
 pub(in crate::fixups) struct BufferPointerFields {
     pub(in crate::fixups) fields: Vec<BufferPointerField>,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct FileOwnershipFacts {
+    pub(in crate::fixups) owners: Vec<FileOwnership>,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct FileOwnership {
+    pub(in crate::fixups) handle: BindingRef,
+    pub(in crate::fixups) open_temp: BindingRef,
+    pub(in crate::fixups) close_temp: Option<BindingRef>,
+    pub(in crate::fixups) handle_statement: StatementRef,
+    pub(in crate::fixups) open_statement: StatementRef,
+    pub(in crate::fixups) assign_statement: StatementRef,
+    pub(in crate::fixups) close_statement: StatementRef,
+    pub(in crate::fixups) mode: Option<FileOpenMode>,
+    pub(in crate::fixups) uses: Vec<FileUse>,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct FileUse {
+    pub(in crate::fixups) statement: StatementRef,
+    pub(in crate::fixups) kind: FileUseKind,
 }
 
 #[derive(Debug, Clone)]
