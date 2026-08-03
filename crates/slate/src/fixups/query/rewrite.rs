@@ -96,6 +96,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::FunctionReachability => "function_reachability",
         Predicate::FunctionCallDomain => "function_call_domain",
         Predicate::CallArgument => "call_argument",
+        Predicate::StringParamLift => "string_param_lift",
     }
 }
 
@@ -211,6 +212,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::HeapOwnershipFacts { owners } => format!("owners={owners}"),
         EvidenceDetail::FileOwnershipFacts { owners } => format!("owners={owners}"),
         EvidenceDetail::PtrLenSlice { plans } => format!("plans={plans}"),
+        EvidenceDetail::StringParamLift => "string_param_lift".into(),
         EvidenceDetail::StringBuffer { bytes } => format!("bytes={bytes}"),
         EvidenceDetail::StringUse { allowed } => format!("allowed={allowed}"),
         EvidenceDetail::AllExprs { count } => format!("count={count}"),

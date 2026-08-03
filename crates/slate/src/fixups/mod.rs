@@ -443,10 +443,20 @@ fn apply_with_logger(
         incremental.mark_touched(&report.touched);
     });
     step!(program, Pass::StringParams, {
-        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
-            rewrite::string_params::StringParams::new(facts, logger).fixup(program)
-        });
-        incremental.mark_everything_dirty();
+        loop {
+            let facts = incremental.resolve(&program);
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::string_params::rewrite());
+                builder.finish()
+            };
+            let report = plan.apply(&mut program, &facts, logger);
+            if !report.changed {
+                break;
+            }
+            incremental.mark_everything_dirty();
+        }
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::PtrLen, {
@@ -547,10 +557,20 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::StringParams, {
-        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
-            rewrite::string_params::StringParams::new(facts, logger).fixup(program)
-        });
-        incremental.mark_everything_dirty();
+        loop {
+            let facts = incremental.resolve(&program);
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::string_params::rewrite());
+                builder.finish()
+            };
+            let report = plan.apply(&mut program, &facts, logger);
+            if !report.changed {
+                break;
+            }
+            incremental.mark_everything_dirty();
+        }
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::RemoveMut, {
@@ -642,10 +662,20 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::StringParams, {
-        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
-            rewrite::string_params::StringParams::new(facts, logger).fixup(program)
-        });
-        incremental.mark_everything_dirty();
+        loop {
+            let facts = incremental.resolve(&program);
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::string_params::rewrite());
+                builder.finish()
+            };
+            let report = plan.apply(&mut program, &facts, logger);
+            if !report.changed {
+                break;
+            }
+            incremental.mark_everything_dirty();
+        }
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::RemoveMut, {

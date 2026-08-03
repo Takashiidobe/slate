@@ -4035,6 +4035,74 @@ query_cache! {
         Ok(Proof::new(PtrLenPlanSet { plans }, evidence))
     }
 
+    fn string_param_lift_indices(&self, function: &FunctionRef) -> QueryResult<Vec<usize>>;
+    key: FunctionId = function.id;
+    {
+        let predicate = Predicate::StringParamLift;
+        let site = expression_site(function.item_index, &[]);
+        let mut indices = self
+            .facts
+            .string_param_lifts
+            .iter()
+            .filter(|fact| fact.callee == function.id)
+            .map(|fact| fact.index)
+            .collect::<Vec<_>>();
+        indices.sort_unstable();
+        if indices.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::StringParamLift,
+        }];
+        Ok(Proof::new(indices, evidence))
+    }
+
+    fn calls_in(&self, function: &FunctionRef) -> QueryResult<Vec<CallRecord>>;
+    key: FunctionId = function.id;
+    {
+        let (_, evidence) = self.function_snapshot(function)?.into_parts();
+        let calls = self
+            .all_calls()
+            .filter(|call| call.site.item_index == function.item_index)
+            .cloned()
+            .collect::<Vec<_>>();
+        Ok(Proof::new(calls, evidence))
+    }
+
+    fn function_by_name(&self, name: &str) -> QueryResult<FunctionRef>;
+    key: String = name.to_string();
+    {
+        let predicate = Predicate::Function;
+        let site = expression_site(0, &[]);
+        let function = self
+            .all_functions()
+            .into_iter()
+            .find(|function| function.name == name)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::Function {
+                name: function.name.clone(),
+            },
+        }];
+        Ok(Proof::new(function, evidence))
+    }
+
     fn buffer_pointer_fields(&self, function: &FunctionRef) -> QueryResult<BufferPointerFields>;
     key: FunctionId = function.id;
     {

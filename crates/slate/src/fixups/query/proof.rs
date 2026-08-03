@@ -83,6 +83,7 @@ pub(in crate::fixups) enum Predicate {
     HeapOwnershipFacts,
     FileOwnershipFacts,
     PtrLenSlice,
+    StringParamLift,
     ValueGuard,
     StringBuffer,
     StringUse,
@@ -241,6 +242,7 @@ pub(in crate::fixups) enum EvidenceDetail {
     PtrLenSlice {
         plans: usize,
     },
+    StringParamLift,
     StringBuffer {
         bytes: usize,
     },
