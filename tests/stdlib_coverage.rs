@@ -20,17 +20,10 @@ struct UnsupportedProbe {
     bead: &'static str,
 }
 
-const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[
-    UnsupportedProbe {
-        probe: "complex/functions",
-        bead: "slate-nk3.25.2",
-    },
-    // setjmp/longjmp non-local control flow.
-    UnsupportedProbe {
-        probe: "setjmp/setjmp",
-        bead: "slate-nk3.19",
-    },
-];
+const KNOWN_UNSUPPORTED: &[UnsupportedProbe] = &[UnsupportedProbe {
+    probe: "complex/functions",
+    bead: "slate-nk3.25.2",
+}];
 
 fn stdlib_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/stdlib")

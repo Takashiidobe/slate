@@ -1922,7 +1922,8 @@ fn c11_library_callbacks_preserve_c_abi() {
     assert_eq!(rust.matches("Option<extern \"C\" fn").count(), 4);
     assert_eq!(rust.matches("extern \"C\" fn ").count(), 4);
     assert!(!rust.contains("Option<fn("));
-    assert!(rust.contains("struct __once_flag {\n    f0: i32,\n}"));
+    assert!(rust.contains("let mut control: i32 = 0;"));
+    assert!(rust.contains("call_once(std::ptr::addr_of_mut!(control) as *mut i32"));
 }
 
 #[test]
@@ -2212,16 +2213,9 @@ fn ctype_classify_calls_in_boolean_context_use_ascii_methods() {
     assert!(rust.contains(".is_ascii_graphic()"));
     assert!(rust.contains(".is_ascii_whitespace()"));
     assert!(rust.contains("!(") && rust.contains(").is_ascii_alphabetic()"));
-
-    // The vertical-tab gap between C's isspace and Rust's is_ascii_whitespace
-    // must be covered explicitly, not silently dropped.
     assert!(rust.contains("is_ascii_whitespace() || "));
     assert!(rust.contains("is_ascii_graphic() || "));
-
-    // A raw, directly-observed return value must never collapse to bool:
-    // C's classification functions return an unspecified nonzero value,
-    // not necessarily 1.
-    assert!(rust.contains("& 1024"));
+    assert!(rust.contains("println!(\"{}\", unsafe { isalpha("));
 }
 
 #[test]
@@ -2241,9 +2235,8 @@ fn ctype_classify_calls_stay_raw_when_locale_is_not_provably_c() {
     support::translate(&non_c, &non_c_generated)
         .expect("translate ctype_classify_setlocale_non_c fixture");
     let rust = std::fs::read_to_string(&non_c_generated).expect("read generated rust");
-    // isalpha requires the locale check and must stay raw under a non-"C" locale.
-    assert!(rust.contains("& 1024"));
-    // isdigit is locale-invariant per the C standard and must still rewrite.
+    assert!(!rust.contains("is_ascii_alphabetic"));
+    assert!(rust.contains("isalpha("));
     assert!(rust.contains(".is_ascii_digit()"));
 }
 
@@ -2257,7 +2250,7 @@ fn ctype_classify_stays_raw_for_a_parameter_without_a_provable_byte_type() {
         .expect("translate ctype_classify_param_unsupported fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated rust");
     assert!(!rust.contains("is_ascii_alphabetic"));
-    assert!(rust.contains("& 1024"));
+    assert!(rust.contains("isalpha("));
 }
 
 #[test]

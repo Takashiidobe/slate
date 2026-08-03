@@ -4782,8 +4782,18 @@ impl Interp {
             CallSummary::Remove => self.call_remove(args),
             CallSummary::Toupper => self.call_toupper(args),
             CallSummary::Tolower => self.call_tolower(args),
-            CallSummary::CtypeBLoc => Err(EffectError::unsupported(
-                Construct::LibcCall(CallSummary::CtypeBLoc),
+            CallSummary::IsAlpha
+            | CallSummary::IsDigit
+            | CallSummary::IsUpper
+            | CallSummary::IsLower
+            | CallSummary::IsAlnum
+            | CallSummary::IsXDigit
+            | CallSummary::IsPunct
+            | CallSummary::IsCntrl
+            | CallSummary::IsGraph
+            | CallSummary::IsPrint
+            | CallSummary::IsSpace => Err(EffectError::unsupported(
+                Construct::LibcCall(summary),
                 Found::Expr,
             )),
             CallSummary::Sin => self.call_math_unary(args, f64::sin),
