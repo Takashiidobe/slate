@@ -69,6 +69,6 @@ pub(in crate::fixups) use views::{
     HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences, LazySingletonSet,
     MatchArmRef, NulPosition, ParameterRef, Phase, PointerMutability, ProgramRef, PtrLenPlanSet,
     ReferenceDomain, ResolvedValue, SliceLoopFact, StableExpr, StatementContainerRef,
-    StatementRange, SwitchDispatch, TypeUseKind, TypeUseRef, Usage, UseSiteRef, VaListAlias,
-    ValueSite,
+    StatementRange, StringCopyAction, StringCopySite, SwitchDispatch, TypeUseKind, TypeUseRef,
+    Usage, UseSiteRef, VaListAlias, ValueSite,
 };

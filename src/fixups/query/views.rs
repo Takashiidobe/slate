@@ -576,3 +576,17 @@ pub(in crate::fixups) struct SliceLoopFact {
     pub(in crate::fixups) index_use: CountedLoopIndexUse,
     pub(in crate::fixups) access: SliceLoopAccess,
 }
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct StringCopySite {
+    pub(in crate::fixups) statement: StatementRef,
+    pub(in crate::fixups) action: StringCopyAction,
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) enum StringCopyAction {
+    AssignLiteral(String),
+    AssignOwned(BindingRef),
+    PushLiteral(String),
+    PushOwned(BindingRef),
+}
