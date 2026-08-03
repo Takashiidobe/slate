@@ -607,21 +607,6 @@ fn line_in_direct_branch(
     })
 }
 
-fn all_items_equal(entries: &[(Cfg, Item)]) -> bool {
-    let mut rendered = entries.iter().map(|(_, item)| render_item(item));
-    match rendered.next() {
-        None => true,
-        Some(first) => rendered.all(|item| item == first),
-    }
-}
-
-fn render_item(item: &Item) -> String {
-    Program {
-        items: vec![item.clone()],
-    }
-    .emit()
-}
-
 /// A stable identity for an item across configs, so the same logical item
 /// (e.g. `fn os_code`) is grouped even when its body differs per config.
 fn item_key(item: &Item) -> String {

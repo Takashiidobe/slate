@@ -37,7 +37,6 @@ struct Candidate {
     pointer: BindingId,
     base: BindingId,
     index: Expr,
-    mutable: bool,
     path: AstPath,
     kind: CandidateKind,
 }
@@ -51,7 +50,6 @@ enum CandidateKind {
 struct OriginSource {
     base_name: Ident,
     index: Expr,
-    mutable: bool,
 }
 
 impl<'a> Collector<'a> {
@@ -95,7 +93,6 @@ impl<'a> Collector<'a> {
                 pointer: candidate.pointer,
                 base: candidate.base,
                 index: candidate.index,
-                mutable: candidate.mutable,
             })
             .collect()
     }
@@ -225,7 +222,6 @@ impl<'a> Collector<'a> {
             pointer,
             base,
             index: source.index,
-            mutable: source.mutable,
             path: ast_path,
             kind: CandidateKind::LetInit,
         });
@@ -252,7 +248,6 @@ impl<'a> Collector<'a> {
             pointer,
             base,
             index: source.index,
-            mutable: source.mutable,
             path: ast_path,
             kind: CandidateKind::Assign,
         });
@@ -331,25 +326,23 @@ fn overwritten_init_origin_pointers(
 
 fn origin_source(expr: &Expr) -> Option<OriginSource> {
     match peel_casts(expr) {
-        Expr::AddrOf { mutable, expr } => indexed_array_origin(expr, *mutable),
+        Expr::AddrOf { expr, .. } => indexed_array_origin(expr),
         Expr::MethodCall { recv, method, args } if args.len() == 1 => {
-            let mutable = match method.as_str() {
-                "add" | "offset" => true,
-                _ => return None,
-            };
-            let (base_name, base_mutable) = array_pointer_source(recv)?;
+            if !matches!(method.as_str(), "add" | "offset") {
+                return None;
+            }
+            let base_name = array_pointer_source(recv)?;
             let index = integer_expr(&args[0])?;
             Some(OriginSource {
                 base_name: base_name.clone(),
                 index,
-                mutable: mutable || base_mutable,
             })
         }
         _ => None,
     }
 }
 
-fn indexed_array_origin(expr: &Expr, mutable: bool) -> Option<OriginSource> {
+fn indexed_array_origin(expr: &Expr) -> Option<OriginSource> {
     let Expr::Index { base, index } = expr else {
         return None;
     };
@@ -357,24 +350,17 @@ fn indexed_array_origin(expr: &Expr, mutable: bool) -> Option<OriginSource> {
     Some(OriginSource {
         base_name: base_name.clone(),
         index: integer_expr(index)?,
-        mutable,
     })
 }
 
-fn array_pointer_source(expr: &Expr) -> Option<(&Ident, bool)> {
+fn array_pointer_source(expr: &Expr) -> Option<&Ident> {
     match peel_casts(expr) {
-        Expr::ArrayPtr { array, mutable } => {
-            let name = array_base_name(array)?;
-            Some((name, *mutable))
-        }
+        Expr::ArrayPtr { array, .. } => array_base_name(array),
         Expr::MethodCall { recv, method, args } if args.is_empty() => {
-            let mutable = match method.as_str() {
-                "as_ptr" => false,
-                "as_mut_ptr" => true,
-                _ => return None,
-            };
-            let name = array_base_name(recv)?;
-            Some((name, mutable))
+            if !matches!(method.as_str(), "as_ptr" | "as_mut_ptr") {
+                return None;
+            }
+            array_base_name(recv)
         }
         _ => None,
     }

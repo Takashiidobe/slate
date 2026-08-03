@@ -21,6 +21,7 @@ pub(in crate::fixups) fn unused_known_declarations() -> QueryRule<Definition> {
     })
 }
 
+#[allow(dead_code)]
 pub(in crate::fixups) fn unused_header(header: impl Into<String>) -> QueryRule<Definition> {
     QueryRule::new(
         Pass::PruneUnusedDefinitions,

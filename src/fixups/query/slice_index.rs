@@ -399,7 +399,6 @@ fn is_supported_range_bound(
 }
 
 struct LoopSliceUse<'a> {
-    index_name: &'a str,
     slices: &'a BTreeSet<String>,
     pointer_aliases: BTreeMap<String, String>,
     index_aliases: Vec<String>,
@@ -409,7 +408,6 @@ struct LoopSliceUse<'a> {
 impl<'a> LoopSliceUse<'a> {
     fn new(index_name: &'a str, slices: &'a BTreeSet<String>) -> Self {
         Self {
-            index_name,
             slices,
             pointer_aliases: BTreeMap::new(),
             index_aliases: vec![index_name.to_string()],

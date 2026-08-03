@@ -463,48 +463,6 @@ fn stmt_allows_lift(
     })
 }
 
-fn body_allows_lift(
-    ctx: &LiftContext<'_>,
-    body: &[IndentStmt],
-    path: &[PathSegment],
-    binding: BindingId,
-    recovery: StringRecoveryCandidate,
-) -> bool {
-    body.iter().enumerate().all(|(index, indent)| {
-        stmt_allows_lift(
-            ctx,
-            &indent.stmt,
-            &stmt_path(path, index),
-            binding,
-            recovery,
-        )
-    })
-}
-
-fn block_allows_lift(
-    ctx: &LiftContext<'_>,
-    block: &Block,
-    path: &[PathSegment],
-    binding: BindingId,
-    recovery: StringRecoveryCandidate,
-) -> bool {
-    body_allows_lift(ctx, &block.stmts, path, binding, recovery)
-        && block.tail.as_deref().is_none_or(|_tail| {
-            let tail_path = child_path(path, PathSegment::BlockTail);
-            binding_uses_under(ctx.facts, ctx.function, binding, &tail_path)
-                .into_iter()
-                .all(|use_path| {
-                    use_allowed(
-                        ctx.function,
-                        &use_path,
-                        ctx.facts,
-                        binding,
-                        recovery,
-                        ctx.liftable,
-                    )
-                })
-        })
-}
 fn binding_uses_under(
     facts: &FixupFacts,
     function: FunctionId,
@@ -783,26 +741,6 @@ fn pointer_view_binding(
         .map(|view| view.source)
 }
 
-fn binding_for_expr(
-    function: FunctionId,
-    expr: &Expr,
-    path: &[PathSegment],
-    facts: &FixupFacts,
-) -> Option<BindingId> {
-    let Expr::Var(name) = expr else {
-        return None;
-    };
-    facts
-        .def_use
-        .iter()
-        .find(|def_use| {
-            def_use.function == function
-                && facts.binding_name(def_use.binding) == Some(name.as_str())
-                && def_use.reads.iter().any(|read| read.0 == path)
-        })
-        .map(|def_use| def_use.binding)
-}
-
 fn const_usize_temps(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, usize> {
     facts
         .values
@@ -916,12 +854,6 @@ fn simple_printf_conversion(bytes: &[u8], mut i: usize) -> Option<(usize, u8)> {
 fn stmt_path(path: &[PathSegment], index: usize) -> Vec<PathSegment> {
     let mut path = path.to_vec();
     path.push(PathSegment::Stmt(index));
-    path
-}
-
-fn child_path(path: &[PathSegment], segment: PathSegment) -> Vec<PathSegment> {
-    let mut path = path.to_vec();
-    path.push(segment);
     path
 }
 

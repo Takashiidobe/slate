@@ -6,6 +6,7 @@ pub struct Program {
 #[derive(Debug, Clone)]
 pub enum Item {
     Fn(FnDef),
+    #[allow(dead_code)]
     Comment(Comment),
     CrateAttrs(Vec<CrateAttr>),
     Mod {
@@ -107,6 +108,7 @@ impl Visibility {
 #[derive(Debug, Clone)]
 pub enum CrateAttr {
     Allow(Vec<Lint>),
+    #[allow(dead_code)]
     Deny(Vec<Lint>),
     Feature(Feature),
 }
@@ -285,6 +287,7 @@ pub struct Method {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SelfKind {
+    #[allow(dead_code)]
     None,
     Value,
     Ref,
@@ -345,7 +348,6 @@ pub struct ExternFnDecl {
     pub params: Vec<FnParam>,
     pub variadic: bool,
     pub ret: Option<Type>,
-    pub metadata: FunctionMetadata,
 }
 
 #[derive(Debug, Clone)]
@@ -358,7 +360,6 @@ pub struct FnDef {
     pub params: Vec<FnParam>,
     pub ret: Option<Type>,
     pub body: Vec<IndentStmt>,
-    pub metadata: FunctionMetadata,
 }
 
 #[derive(Debug, Clone)]
@@ -366,43 +367,6 @@ pub struct FnParam {
     pub name: String,
     pub mutable: bool,
     pub ty: Type,
-    pub metadata: ParameterMetadata,
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct FunctionMetadata {
-    pub returns_nonnull: bool,
-    pub returned_value: ValueMetadata,
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct ParameterMetadata {
-    pub nonnull: bool,
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct ValueMetadata {
-    pub allocation: Option<AllocationMetadata>,
-    pub assumed_alignment: Option<AssumedAlignment>,
-}
-
-#[derive(Debug, Clone)]
-pub struct AllocationMetadata {
-    pub fresh: bool,
-    pub size: Option<AllocationSize>,
-    pub alignment_argument: Option<usize>,
-}
-
-#[derive(Debug, Clone)]
-pub enum AllocationSize {
-    Argument(usize),
-    Product(usize, usize),
-}
-
-#[derive(Debug, Clone)]
-pub struct AssumedAlignment {
-    pub bytes: u64,
-    pub offset: u64,
 }
 
 #[derive(Debug, Clone)]
@@ -429,9 +393,16 @@ pub enum Pattern {
     Binding(Ident),
     I64(i64),
     I128(i128),
+    #[allow(dead_code)]
     U128(u128),
-    InclusiveRange { start: i128, end: i128 },
-    TupleStruct { name: Ident, fields: Vec<Pattern> },
+    InclusiveRange {
+        start: i128,
+        end: i128,
+    },
+    TupleStruct {
+        name: Ident,
+        fields: Vec<Pattern>,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -455,6 +426,7 @@ impl AtomicPlace {
         }
     }
 
+    #[allow(dead_code)]
     pub fn local(&self) -> Option<&Ident> {
         match self {
             AtomicPlace::Ptr(_) => None,
@@ -514,6 +486,7 @@ pub enum AsmDialect {
 #[derive(Debug, Clone)]
 pub enum AsmReg {
     Class(String),
+    #[allow(dead_code)]
     Explicit(String),
 }
 
@@ -645,6 +618,7 @@ pub enum Stmt {
         cond: Expr,
         body: Block,
     },
+    #[allow(dead_code)]
     Block(Block),
 }
 
@@ -799,6 +773,7 @@ pub enum Expr {
         elem: Box<Expr>,
         len: usize,
     },
+    #[allow(dead_code)]
     VecLit(Vec<Expr>),
     VecRepeat {
         elem: Box<Expr>,
@@ -835,6 +810,7 @@ pub enum Expr {
         mutable: bool,
         expr: Box<Expr>,
     },
+    #[allow(dead_code)]
     AtomicRef {
         ty: AtomicType,
         place: AtomicPlace,

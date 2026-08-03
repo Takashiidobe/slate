@@ -63,6 +63,7 @@ pub(in crate::fixups) enum Predicate {
     MovablePure,
     ExternFn,
     ZeroUsers,
+    #[allow(dead_code)]
     ZeroGroupUsers,
     CountedLoop,
     CountedSliceLoop,
@@ -182,6 +183,7 @@ pub(in crate::fixups) enum EvidenceDetail {
         users: usize,
         complete: bool,
     },
+    #[allow(dead_code)]
     GroupUseDomain {
         group: DefinitionGroup,
         definitions: usize,

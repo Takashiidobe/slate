@@ -189,7 +189,6 @@ fn observed_allocs(trace: &EffectTrace) -> BTreeSet<AllocId> {
                     observe_value(value.clone(), &mut observed);
                 }
             }
-            Effect::Return(value) => observe_value(value.clone(), &mut observed),
             Effect::AtomicLoad { value, .. } | Effect::AtomicStore { value, .. } => {
                 observe_value(value.clone(), &mut observed);
             }
@@ -244,7 +243,6 @@ fn observe_value(value: Value, observed: &mut BTreeSet<AllocId>) {
         | Value::Function(_)
         | Value::File(_)
         | Value::Atomic(_)
-        | Value::BlockLabel(_)
         | Value::Null
         | Value::Bytes(_)
         | Value::Option(None) => {}
@@ -323,9 +321,9 @@ fn effect_allocs(effect: &Effect) -> Vec<AllocId> {
                 value_allocs(value.clone(), &mut allocs);
             }
         }
-        Effect::Return(value)
-        | Effect::AtomicLoad { value, .. }
-        | Effect::AtomicStore { value, .. } => value_allocs(value.clone(), &mut allocs),
+        Effect::AtomicLoad { value, .. } | Effect::AtomicStore { value, .. } => {
+            value_allocs(value.clone(), &mut allocs)
+        }
         Effect::AtomicRmw {
             operand, old, new, ..
         } => {
@@ -372,7 +370,6 @@ fn value_allocs(value: Value, allocs: &mut Vec<AllocId>) {
         | Value::Function(_)
         | Value::File(_)
         | Value::Atomic(_)
-        | Value::BlockLabel(_)
         | Value::Null
         | Value::Bytes(_)
         | Value::Option(None) => {}
@@ -413,7 +410,6 @@ fn remap_effect(
                 .map(|value| remap_value(value, alloc_map))
                 .collect(),
         }),
-        Effect::Return(value) => Ok(Effect::Return(remap_value(value, alloc_map))),
         Effect::AtomicLoad {
             atomic,
             ordering,

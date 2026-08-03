@@ -370,11 +370,9 @@ fn fflush_fn_decl() -> ExternDecl {
             name: "_0".into(),
             mutable: false,
             ty: Type::parse("*mut libc::FILE"),
-            metadata: Default::default(),
         }],
         variadic: false,
         ret: Some(Type::parse("i32")),
-        metadata: Default::default(),
     })
 }
 

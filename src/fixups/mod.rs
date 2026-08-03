@@ -7,11 +7,8 @@ mod runtime;
 mod support;
 pub mod trace;
 
-#[cfg(test)]
-mod test_support;
-
 use crate::fixups::trace::{CollectingLogger, NoopLogger, ProgramSummary, TraceLog, TraceLogger};
-use crate::rust_ast::{FnDef, Item, Program};
+use crate::rust_ast::Program;
 
 pub use trace::Pass;
 
@@ -114,15 +111,6 @@ impl IncrementalFacts {
         }
         self.facts.clone()
     }
-}
-
-pub fn debug(program: Program) -> String {
-    let (_, log) = debug_log_with(program, DebugOptions::default());
-    log.render_human()
-}
-
-pub fn debug_log(program: Program) -> (Program, TraceLog) {
-    debug_log_with(program, DebugOptions::default())
 }
 
 pub fn debug_with(program: Program, options: DebugOptions) -> String {
@@ -1012,10 +1000,6 @@ fn apply_with_logger(
     program.clone()
 }
 
-fn to_fixpoint_program(program: &mut Program, mut fixup: impl FnMut(&mut Program) -> bool) {
-    while fixup(program) {}
-}
-
 fn to_fixpoint_program_with_facts(
     program: &mut Program,
     limit: FixpointLimit,
@@ -1031,16 +1015,6 @@ fn to_fixpoint_program_with_facts(
     }
 }
 
-fn run_once_items(program: &mut Program, mut fixup: impl FnMut(usize, &mut FnDef) -> bool) -> bool {
-    let mut changed = false;
-    for (item_index, item) in program.items.iter_mut().enumerate() {
-        if let Item::Fn(f) = item {
-            changed |= fixup(item_index, f);
-        }
-    }
-    changed
-}
-
 #[derive(Clone, Copy)]
 enum FixpointLimit {
     Unlimited,
@@ -1052,35 +1026,6 @@ impl FixpointLimit {
         match self {
             Self::Unlimited => true,
             Self::Rounds(limit) => completed_rounds < limit,
-        }
-    }
-}
-
-fn to_fixpoint_items(
-    program: &mut Program,
-    limit: FixpointLimit,
-    mut fixup: impl FnMut(usize, &mut FnDef) -> bool,
-) {
-    let mut completed_rounds = 0;
-    while limit.permits(completed_rounds) {
-        completed_rounds += 1;
-        if !run_once_items(program, &mut fixup) {
-            break;
-        }
-    }
-}
-
-fn to_fixpoint_items_with_facts(
-    program: &mut Program,
-    limit: FixpointLimit,
-    mut fixup: impl FnMut(usize, &mut FnDef, &facts::FixupFacts) -> bool,
-) {
-    let mut completed_rounds = 0;
-    while limit.permits(completed_rounds) {
-        let facts::AnalyzedProgram { facts, .. } = facts::analyze(program);
-        completed_rounds += 1;
-        if !run_once_items(program, |item_index, f| fixup(item_index, f, &facts)) {
-            break;
         }
     }
 }

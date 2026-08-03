@@ -252,10 +252,6 @@ impl DirectiveRecord {
         message
     }
 
-    pub fn is_pack_pragma(&self) -> bool {
-        self.name == DirectiveName::Pragma && is_pack_pragma(&self.raw_payload)
-    }
-
     pub fn is_clang_resolved_pragma(&self) -> bool {
         self.name == DirectiveName::Pragma
             && (is_pack_pragma(&self.raw_payload)

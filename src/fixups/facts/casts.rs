@@ -1,9 +1,8 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingKind, CastFact, CastKind, CastRequirement, FixupFacts, FunctionId, PathSegment,
-    Site,
+    AstPath, BindingKind, CastFact, FixupFacts, FunctionId, PathSegment, Site,
 };
 use crate::rust_ast::{
     AtomicType, Block, Expr, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type,
@@ -220,7 +219,7 @@ impl<'a> Collector<'a> {
                 let from = walk::with_path_segment(path, PathSegment::Expr(0), |path| {
                     self.expr(inner, path)
                 });
-                self.record_cast(inner, from.clone(), ty.clone(), path);
+                self.record_cast(from.clone(), ty.clone(), path);
                 Some(ty.clone())
             }
             Expr::Value(value) => literal_type(value),
@@ -495,24 +494,7 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn record_cast(
-        &mut self,
-        cast_expr: &Expr,
-        from: Option<Type>,
-        to: Type,
-        path: &[PathSegment],
-    ) {
-        let mut reasons = BTreeSet::new();
-        let abi_required = self.cast_is_abi_pinned(path, &to);
-        if abi_required {
-            reasons.insert(CastRequirement::Abi);
-        }
-        let kind = classify_cast(cast_expr, from.as_ref(), &to, &mut reasons);
-        let required = !reasons.is_empty();
-        let removable_candidate = matches!(
-            kind,
-            CastKind::NoOp | CastKind::ReferenceCoercion | CastKind::SliceCoercion
-        ) && !abi_required;
+    fn record_cast(&mut self, from: Option<Type>, to: Type, path: &[PathSegment]) {
         self.casts.push(CastFact {
             site: Site {
                 function: self.function,
@@ -520,28 +502,7 @@ impl<'a> Collector<'a> {
             },
             from,
             to,
-            kind,
-            required,
-            reasons,
-            removable_candidate,
         });
-    }
-
-    fn cast_is_abi_pinned(&self, path: &[PathSegment], to: &Type) -> bool {
-        let path = AstPath(path.to_vec());
-        self.facts
-            .callsites
-            .iter()
-            .filter(|callsite| callsite.site.function == self.function)
-            .flat_map(|callsite| callsite.args.iter())
-            .any(|arg| {
-                arg.path == path
-                    && (arg
-                        .declared_ty
-                        .as_ref()
-                        .is_some_and(|declared| same_type(declared, to))
-                        || arg.variadic)
-            })
     }
 
     fn call_ret_ty(&self, path: &[PathSegment]) -> Option<Type> {
@@ -584,79 +545,6 @@ impl<'a> Collector<'a> {
     }
 }
 
-fn classify_cast(
-    expr: &Expr,
-    from: Option<&Type>,
-    to: &Type,
-    reasons: &mut BTreeSet<CastRequirement>,
-) -> CastKind {
-    if is_numeric_literal(expr) && is_numeric_type(to) {
-        reasons.insert(CastRequirement::Inference);
-        return CastKind::LiteralInferenceGuard;
-    }
-    let Some(from) = from else {
-        reasons.insert(CastRequirement::UnknownSource);
-        return CastKind::Unknown;
-    };
-    if same_type(from, to) {
-        return CastKind::NoOp;
-    }
-    match (from, to) {
-        (Type::Prim(from), Type::Prim(to)) => classify_prim_cast(*from, *to, reasons),
-        (Type::Ptr { .. }, Type::Ptr { .. })
-        | (Type::Ptr { .. }, Type::Prim(_))
-        | (Type::Prim(_), Type::Ptr { .. }) => {
-            reasons.insert(CastRequirement::Semantics);
-            CastKind::PointerCast
-        }
-        (Type::Ref { .. }, Type::Ref { .. }) => {
-            reasons.insert(CastRequirement::RustCoercion);
-            CastKind::ReferenceCoercion
-        }
-        (Type::Ref { inner, .. }, Type::Slice(_)) if matches!(&**inner, Type::Array { .. }) => {
-            reasons.insert(CastRequirement::RustCoercion);
-            CastKind::SliceCoercion
-        }
-        (Type::Array { .. }, Type::Slice(_)) => {
-            reasons.insert(CastRequirement::RustCoercion);
-            CastKind::SliceCoercion
-        }
-        _ => {
-            reasons.insert(CastRequirement::Semantics);
-            CastKind::Semantic
-        }
-    }
-}
-
-fn classify_prim_cast(from: Prim, to: Prim, reasons: &mut BTreeSet<CastRequirement>) -> CastKind {
-    if from == to {
-        return CastKind::NoOp;
-    }
-    if is_integer_prim(from) && is_integer_prim(to) {
-        reasons.insert(CastRequirement::Semantics);
-        return match (
-            prim_bits(from) == prim_bits(to),
-            prim_signed(from) == prim_signed(to),
-        ) {
-            (true, false) => CastKind::IntegerSignChange,
-            (false, true) => CastKind::IntegerWidthChange,
-            (false, false) => CastKind::IntegerSignAndWidthChange,
-            (true, true) => CastKind::IntegerSameShape,
-        };
-    }
-    if is_float_prim(from) && is_float_prim(to) {
-        reasons.insert(CastRequirement::Semantics);
-        return CastKind::FloatWidthChange;
-    }
-    if (is_integer_prim(from) && is_float_prim(to)) || (is_float_prim(from) && is_integer_prim(to))
-    {
-        reasons.insert(CastRequirement::Semantics);
-        return CastKind::FloatInteger;
-    }
-    reasons.insert(CastRequirement::Semantics);
-    CastKind::Semantic
-}
-
 fn literal_type(value: &RustValue) -> Option<Type> {
     match value {
         RustValue::I64(_) => Some(Type::Prim(Prim::I64)),
@@ -669,75 +557,12 @@ fn literal_type(value: &RustValue) -> Option<Type> {
     }
 }
 
-fn is_numeric_literal(expr: &Expr) -> bool {
-    matches!(
-        expr,
-        Expr::Value(
-            RustValue::I64(_)
-                | RustValue::Usize(_)
-                | RustValue::I128(_)
-                | RustValue::U128(_)
-                | RustValue::Float(_),
-        )
-    )
-}
-
-fn same_type(lhs: &Type, rhs: &Type) -> bool {
-    lhs.render() == rhs.render()
-}
-
 fn array_elem_ty(ty: Option<Type>) -> Option<Type> {
     match ty {
         Some(Type::Array { elem, .. }) | Some(Type::Slice(elem)) => Some(*elem),
         Some(Type::Ref { inner, .. }) => array_elem_ty(Some(*inner)),
         _ => None,
     }
-}
-
-fn is_numeric_type(ty: &Type) -> bool {
-    matches!(ty, Type::Prim(prim) if is_integer_prim(*prim) || is_float_prim(*prim))
-}
-
-fn is_integer_prim(prim: Prim) -> bool {
-    matches!(
-        prim,
-        Prim::I8
-            | Prim::I16
-            | Prim::I32
-            | Prim::I64
-            | Prim::I128
-            | Prim::Isize
-            | Prim::U8
-            | Prim::U16
-            | Prim::U32
-            | Prim::U64
-            | Prim::U128
-            | Prim::Usize
-    )
-}
-
-fn is_float_prim(prim: Prim) -> bool {
-    matches!(prim, Prim::F32 | Prim::F64 | Prim::F128)
-}
-
-fn prim_signed(prim: Prim) -> Option<bool> {
-    Some(match prim {
-        Prim::I8 | Prim::I16 | Prim::I32 | Prim::I64 | Prim::I128 | Prim::Isize => true,
-        Prim::U8 | Prim::U16 | Prim::U32 | Prim::U64 | Prim::U128 | Prim::Usize => false,
-        _ => return None,
-    })
-}
-
-fn prim_bits(prim: Prim) -> Option<u16> {
-    Some(match prim {
-        Prim::I8 | Prim::U8 => 8,
-        Prim::I16 | Prim::U16 => 16,
-        Prim::I32 | Prim::U32 | Prim::F32 => 32,
-        Prim::I64 | Prim::U64 | Prim::F64 => 64,
-        Prim::I128 | Prim::U128 | Prim::F128 => 128,
-        Prim::Isize | Prim::Usize => usize::BITS as u16,
-        _ => return None,
-    })
 }
 
 fn atomic_rust_type(ty: AtomicType) -> Type {

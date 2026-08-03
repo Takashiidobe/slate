@@ -5,13 +5,12 @@ use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use crate::rust_ast::{
-    Abi, AllocationMetadata, AllocationSize, AsmDialect, AsmOperand, AsmReg, AssumedAlignment,
-    AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType, Attr as RustAttr, BinOp, CLibType, Cfg,
-    CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
-    FnDef, FnParam, FunctionMetadata, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt,
-    InlineAsm, Item, Label, Lint, MatchArm, Method, ParameterMetadata, Path, Pattern, Prim,
-    Program, RecordDef, RecordField, Repr, RustValue, SelfKind, StdTrait, Stmt, StructDef,
-    StructFields, TraitBound, Type, UnaryOp, UsedKind, ValueMetadata, Visibility,
+    Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
+    Attr as RustAttr, BinOp, CLibType, Cfg, CrateAttr, Derive, EnumConst, EnumDef, Expr,
+    ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam, GenericParam, Ident,
+    ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint, MatchArm, Method, Path, Pattern,
+    Prim, Program, RecordDef, RecordField, Repr, RustValue, SelfKind, StdTrait, Stmt, StructDef,
+    StructFields, TraitBound, Type, UnaryOp, UsedKind, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -361,55 +360,8 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .iter()
             .map(|function| (function.name.clone(), function.asm_gotos.clone()))
             .collect(),
-        nonnull_static_params: c
-            .functions
-            .iter()
-            .map(|function| {
-                (
-                    function.name.clone(),
-                    function.nonnull_static_params.clone(),
-                )
-            })
-            .collect(),
-        returned_value_metadata: c
-            .function_allocation_attributes
-            .iter()
-            .map(|(name, attributes)| {
-                (
-                    name.clone(),
-                    returned_value_metadata_from_attributes(attributes),
-                )
-            })
-            .collect(),
     };
     lowerer.lower_module(cir, c)
-}
-
-fn returned_value_metadata_from_attributes(
-    attributes: &crate::c_ast::FunctionAllocationAttributes,
-) -> ValueMetadata {
-    let size = match attributes.size_arguments.as_slice() {
-        [index] => Some(AllocationSize::Argument(*index)),
-        [left, right] => Some(AllocationSize::Product(*left, *right)),
-        _ => None,
-    };
-    let allocation = (attributes.fresh
-        || size.is_some()
-        || attributes.alignment_argument.is_some())
-    .then_some(AllocationMetadata {
-        fresh: attributes.fresh,
-        size,
-        alignment_argument: attributes.alignment_argument,
-    });
-    ValueMetadata {
-        allocation,
-        assumed_alignment: attributes.assumed_alignment.as_ref().map(|alignment| {
-            AssumedAlignment {
-                bytes: alignment.bytes,
-                offset: alignment.offset,
-            }
-        }),
-    }
 }
 
 pub fn lower_shared_types(
@@ -700,8 +652,6 @@ struct Lowerer<'a> {
     dtor_calls: Vec<String>,
     generated_alloca_frames: Vec<StructDef>,
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
-    nonnull_static_params: BTreeMap<String, BTreeSet<usize>>,
-    returned_value_metadata: BTreeMap<String, ValueMetadata>,
     macro_consts: BTreeMap<String, Vec<MacroConst>>,
     enum_consts: BTreeMap<String, Vec<EnumConstRef>>,
     asm_gotos: BTreeMap<String, Vec<crate::c_ast::AsmGoto>>,
@@ -899,9 +849,7 @@ impl<'a> Lowerer<'a> {
         items.extend(self.standard_record_defs());
 
         let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
-            self.ctx
-                .diagnostics
-                .error("lower: no builtin.module op", None);
+            self.ctx.diagnostics.error("lower: no builtin.module op");
             return Program { items };
         };
 
@@ -1045,7 +993,7 @@ impl<'a> Lowerer<'a> {
                         continue;
                     };
                     let function_type = attr_str(op, "function_type").unwrap_or("");
-                    let (decl, params, ret) = self.extern_fn_signature(name, function_type, op);
+                    let (decl, params, ret) = self.extern_fn_signature(name, function_type);
                     if decl.variadic {
                         self.uses_c_variadic.set(true);
                     }
@@ -1063,14 +1011,11 @@ impl<'a> Lowerer<'a> {
                     && emitted_weak_targets.insert(target.clone())
                 {
                     let function_type = attr_str(op, "function_type").unwrap_or("");
-                    let (decl, params, ret) = self.extern_fn_signature(&target, function_type, op);
+                    let (decl, params, ret) = self.extern_fn_signature(&target, function_type);
                     if decl.variadic {
-                        self.ctx.diagnostics.error(
-                            format!(
-                                "lower: variadic weakref alias `{name}` to external target `{target}`"
-                            ),
-                            None,
-                        );
+                        self.ctx.diagnostics.error(format!(
+                            "lower: variadic weakref alias `{name}` to external target `{target}`"
+                        ));
                     } else {
                         self.externs.insert(target.clone(), params);
                         self.extern_returns.insert(target.clone(), ret);
@@ -1108,7 +1053,7 @@ impl<'a> Lowerer<'a> {
                 continue;
             }
             let function_type = attr_str(op, "function_type").unwrap_or("");
-            let (mut decl, params, ret) = self.extern_fn_signature(name, function_type, op);
+            let (mut decl, params, ret) = self.extern_fn_signature(name, function_type);
             if attr_bool(op, "noreturn") {
                 decl.ret = Some(Type::Never);
             }
@@ -1126,7 +1071,6 @@ impl<'a> Lowerer<'a> {
                                 mutable: true,
                                 inner: Box::new(Type::Prim(Prim::I8)),
                             },
-                            metadata: ParameterMetadata::default(),
                         },
                         FnParam {
                             name: "_1".into(),
@@ -1138,7 +1082,6 @@ impl<'a> Lowerer<'a> {
                                     inner: Box::new(Type::Prim(Prim::I8)),
                                 }),
                             },
-                            metadata: ParameterMetadata::default(),
                         },
                         FnParam {
                             name: "_2".into(),
@@ -1147,12 +1090,10 @@ impl<'a> Lowerer<'a> {
                                 mutable: true,
                                 inner: Box::new(Type::Prim(Prim::F64)),
                             },
-                            metadata: ParameterMetadata::default(),
                         },
                     ],
                     variadic: false,
                     ret: None,
-                    metadata: FunctionMetadata::default(),
                 }));
             } else {
                 extern_decls.push(ExternDecl::Fn(decl));
@@ -1294,9 +1235,7 @@ impl<'a> Lowerer<'a> {
             self.ctx.diagnostics.error(
                 format!(
                     "lower: unsupported global alias `{name}` to `{target}`; Rust has no faithful static alias representation"
-                ),
-                op.loc.clone(),
-            );
+                ));
             return;
         }
         let rust_name = sanitize_ident(name).into_string();
@@ -1521,20 +1460,18 @@ impl<'a> Lowerer<'a> {
                 && !region_ops(candidate).is_empty()
         });
         if target_op.is_none() {
-            self.ctx.diagnostics.error(
-                format!("lower: unsupported function alias `{name}` to external target `{target}`"),
-                op.loc.clone(),
-            );
+            self.ctx.diagnostics.error(format!(
+                "lower: unsupported function alias `{name}` to external target `{target}`"
+            ));
             return None;
         }
 
         let function_type = attr_str(op, "function_type").unwrap_or("");
-        let (decl, _, _) = self.extern_fn_signature(name, function_type, op);
+        let (decl, _, _) = self.extern_fn_signature(name, function_type);
         if decl.variadic {
-            self.ctx.diagnostics.error(
-                format!("lower: unsupported variadic function alias `{name}` to `{target}`"),
-                op.loc.clone(),
-            );
+            self.ctx.diagnostics.error(format!(
+                "lower: unsupported variadic function alias `{name}` to `{target}`"
+            ));
             return None;
         }
 
@@ -1587,7 +1524,6 @@ impl<'a> Lowerer<'a> {
             params: decl.params,
             ret: decl.ret,
             body: vec![IndentStmt { depth: 1, stmt }],
-            metadata: decl.metadata,
         }))
     }
 
@@ -1600,9 +1536,7 @@ impl<'a> Lowerer<'a> {
             self.ctx.diagnostics.warn(
                 format!(
                     "lower: protected visibility on `{name}` has no faithful Rust representation; falling back to default exported visibility"
-                ),
-                op.loc.clone(),
-            );
+                ));
         }
     }
 
@@ -1688,12 +1622,6 @@ impl<'a> Lowerer<'a> {
         let is_main = name == "main";
         let is_variadic = !is_main && function_type_is_variadic(function_type);
 
-        let arg_nonnull = arg_attrs_nonnull(op);
-        let source_nonnull = self
-            .nonnull_static_params
-            .get(name)
-            .cloned()
-            .unwrap_or_default();
         let mut params = entry
             .args
             .iter()
@@ -1704,9 +1632,6 @@ impl<'a> Lowerer<'a> {
                     name: arg.clone(),
                     mutable: false,
                     ty: self.rust_type(ty),
-                    metadata: ParameterMetadata {
-                        nonnull: arg_nonnull.contains(&i) || source_nonnull.contains(&i),
-                    },
                 }
             })
             .collect::<Vec<_>>();
@@ -1717,7 +1642,6 @@ impl<'a> Lowerer<'a> {
                 name: param.clone(),
                 mutable: true,
                 ty: Type::Variadic,
-                metadata: ParameterMetadata::default(),
             });
             Some(param)
         } else {
@@ -1761,9 +1685,7 @@ impl<'a> Lowerer<'a> {
             self.ctx.diagnostics.warn(
                 format!(
                     "lower: __attribute__((noreturn)) on `{name}` does not structurally prove divergence; keeping its declared return type"
-                ),
-                op.loc.clone(),
-            );
+                ));
         }
         let ret = if diverges { Some(Type::Never) } else { ret };
 
@@ -1861,14 +1783,6 @@ impl<'a> Lowerer<'a> {
             params,
             ret,
             body: f.body,
-            metadata: FunctionMetadata {
-                returns_nonnull: op_returns_nonnull(op),
-                returned_value: self
-                    .returned_value_metadata
-                    .get(name)
-                    .cloned()
-                    .unwrap_or_default(),
-            },
         }))
     }
 
@@ -1980,7 +1894,6 @@ impl<'a> Lowerer<'a> {
         &self,
         name: &str,
         function_type: &str,
-        op: &Op,
     ) -> (ExternFnDecl, Vec<Type>, Option<String>) {
         let inner = function_type
             .strip_prefix("!cir.func<")
@@ -1992,7 +1905,6 @@ impl<'a> Lowerer<'a> {
         };
         let params_str = params_str.trim_start_matches('(').trim_end_matches(')');
 
-        let arg_nonnull = arg_attrs_nonnull(op);
         let mut params = Vec::new();
         let mut param_types = Vec::new();
         let mut variadic = false;
@@ -2010,9 +1922,6 @@ impl<'a> Lowerer<'a> {
                     name: format!("_{i}"),
                     mutable: false,
                     ty: ty.clone(),
-                    metadata: ParameterMetadata {
-                        nonnull: arg_nonnull.contains(&i),
-                    },
                 });
                 param_types.push(ty);
             }
@@ -2033,14 +1942,6 @@ impl<'a> Lowerer<'a> {
             params,
             variadic,
             ret: ret_ast,
-            metadata: FunctionMetadata {
-                returns_nonnull: op_returns_nonnull(op),
-                returned_value: self
-                    .returned_value_metadata
-                    .get(name)
-                    .cloned()
-                    .unwrap_or_default(),
-            },
         };
         (decl, param_types, ret_ty)
     }
@@ -2820,7 +2721,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.parent
                     .ctx
                     .diagnostics
-                    .warn(format!("lower: unsupported CIR op {name}"), op.loc.clone());
+                    .warn(format!("lower: unsupported CIR op {name}"));
                 self.emit_todo(name);
             }
         }
@@ -4291,10 +4192,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             && !asm_template_has_placeholders(raw)
         {
             let Ok(template) = String::from_utf8(decode_cir_string(raw)) else {
-                self.parent.ctx.diagnostics.error(
-                    "lower: inline assembly template is not valid UTF-8",
-                    op.loc.clone(),
-                );
+                self.parent
+                    .ctx
+                    .diagnostics
+                    .error("lower: inline assembly template is not valid UTF-8");
                 return;
             };
             self.push_stmt(Self::unsafe_stmt(Stmt::Expr(asm_macro_expr(
@@ -4327,10 +4228,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return false;
         };
         let Ok(template) = String::from_utf8(decode_cir_string(raw_template)) else {
-            self.parent.ctx.diagnostics.error(
-                "lower: inline assembly template is not valid UTF-8",
-                op.loc.clone(),
-            );
+            self.parent
+                .ctx
+                .diagnostics
+                .error("lower: inline assembly template is not valid UTF-8");
             return true;
         };
         let label_count = asm_template_label_count(&template);
@@ -4338,10 +4239,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             None
         } else {
             let Some(asm_goto) = self.asm_gotos.pop_front() else {
-                self.parent.ctx.diagnostics.error(
-                    "lower: asm goto labels are missing from the Clang AST",
-                    op.loc.clone(),
-                );
+                self.parent
+                    .ctx
+                    .diagnostics
+                    .error("lower: asm goto labels are missing from the Clang AST");
                 return true;
             };
             Some(asm_goto)
@@ -4350,10 +4251,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .as_ref()
             .is_some_and(|asm_goto| asm_goto.labels.len() != label_count)
         {
-            self.parent.ctx.diagnostics.error(
-                "lower: asm goto label count differs between CIR and the Clang AST",
-                op.loc.clone(),
-            );
+            self.parent
+                .ctx
+                .diagnostics
+                .error("lower: asm goto label count differs between CIR and the Clang AST");
             return true;
         }
         let Some(raw_constraints) = attr_str(op, "constraints") else {
@@ -4455,10 +4356,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .iter()
                     .any(|result| !self.asm_output_places.contains_key(result)))
         {
-            self.parent.ctx.diagnostics.error(
-                "lower: asm goto output does not have a direct CIR destination",
-                op.loc.clone(),
-            );
+            self.parent
+                .ctx
+                .diagnostics
+                .error("lower: asm goto output does not have a direct CIR destination");
             return true;
         }
         for (output_index, constraint) in constraints[..output_count].iter().enumerate() {
@@ -4522,18 +4423,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if let Some(asm_goto) = asm_goto {
             let Some(dispatch) = self.dispatch.as_ref() else {
-                self.parent.ctx.diagnostics.error(
-                    "lower: asm goto requires dispatch control flow",
-                    op.loc.clone(),
-                );
+                self.parent
+                    .ctx
+                    .diagnostics
+                    .error("lower: asm goto requires dispatch control flow");
                 return true;
             };
             for label in asm_goto.labels {
                 let Some(state) = dispatch.label_to_state.get(&label).copied() else {
-                    self.parent.ctx.diagnostics.error(
-                        format!("lower: asm goto target `{label}` is missing from CIR"),
-                        op.loc.clone(),
-                    );
+                    self.parent.ctx.diagnostics.error(format!(
+                        "lower: asm goto target `{label}` is missing from CIR"
+                    ));
                     return true;
                 };
                 operands.push(AsmOperand::Label {
@@ -6521,12 +6421,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         name: format!("_{i}"),
                         mutable: false,
                         ty: ty.clone(),
-                        metadata: ParameterMetadata::default(),
                     })
                     .collect(),
                 variadic: false,
                 ret: Some(Type::Prim(Prim::I32)),
-                metadata: FunctionMetadata::default(),
             });
         let call_args = args
             .iter()
@@ -7958,18 +7856,14 @@ fn collect_lifecycle_hooks(
             diagnostics.warn(
                 format!(
                     "lower: __attribute__((constructor/destructor)) on `{name}` with a non-void(void) signature is not supported; hook dropped"
-                ),
-                op.loc.clone(),
-            );
+                ));
             continue;
         }
         if !has_main {
             diagnostics.warn(
                 format!(
                     "lower: __attribute__((constructor/destructor)) on `{name}` needs a `main` in this translation unit to splice into; hook dropped"
-                ),
-                op.loc.clone(),
-            );
+                ));
             continue;
         }
         if is_ctor {
@@ -8124,27 +8018,20 @@ fn lower_module_asm(module_op: &Op, diagnostics: &mut crate::ctx::Diagnostics) -
         match String::from_utf8(decode_cir_string(raw)) {
             Ok(template) if !template.is_empty() => templates.push(template),
             Ok(_) => {}
-            Err(_) => diagnostics.error(
-                "lower: file-scope assembly template is not valid UTF-8",
-                module_op.loc.clone(),
-            ),
+            Err(_) => diagnostics.error("lower: file-scope assembly template is not valid UTF-8"),
         }
     }
     if templates.is_empty() {
         return Vec::new();
     }
     let Some(triple) = attr_str(module_op, "cir.triple") else {
-        diagnostics.error(
-            "lower: file-scope assembly has no CIR target triple",
-            module_op.loc.clone(),
-        );
+        diagnostics.error("lower: file-scope assembly has no CIR target triple");
         return Vec::new();
     };
     let Some(target_arch) = rust_target_arch(triple) else {
-        diagnostics.error(
-            format!("lower: unsupported file-scope assembly target `{triple}`"),
-            module_op.loc.clone(),
-        );
+        diagnostics.error(format!(
+            "lower: unsupported file-scope assembly target `{triple}`"
+        ));
         return Vec::new();
     };
     let dialect = matches!(target_arch, "x86" | "x86_64").then_some(AsmDialect::Att);
@@ -8172,17 +8059,11 @@ fn lower_weak_alias_asm(
         return Vec::new();
     }
     let Some(triple) = attr_str(module_op, "cir.triple") else {
-        diagnostics.error(
-            "lower: weak aliases require a CIR target triple",
-            module_op.loc.clone(),
-        );
+        diagnostics.error("lower: weak aliases require a CIR target triple");
         return Vec::new();
     };
     let Some(target_arch) = rust_target_arch(triple) else {
-        diagnostics.error(
-            format!("lower: unsupported weak alias target `{triple}`"),
-            module_op.loc.clone(),
-        );
+        diagnostics.error(format!("lower: unsupported weak alias target `{triple}`"));
         return Vec::new();
     };
     let dialect = matches!(target_arch, "x86" | "x86_64").then_some(AsmDialect::Att);
@@ -8454,28 +8335,6 @@ fn aggregate_member_index(op: &Op) -> Option<usize> {
 
 fn attr_bool(op: &Op, key: &str) -> bool {
     op.attrs.contains_key(key)
-}
-
-fn attr_dict_array_nonnull_indices(op: &Op, key: &str) -> BTreeSet<usize> {
-    let Some(Attr::Array(entries)) = op.attrs.get(key) else {
-        return BTreeSet::new();
-    };
-    entries
-        .iter()
-        .enumerate()
-        .filter_map(|(i, entry)| match entry {
-            Attr::Dict(dict) if dict.contains_key("llvm.nonnull") => Some(i),
-            _ => None,
-        })
-        .collect()
-}
-
-fn arg_attrs_nonnull(op: &Op) -> BTreeSet<usize> {
-    attr_dict_array_nonnull_indices(op, "arg_attrs")
-}
-
-fn op_returns_nonnull(op: &Op) -> bool {
-    !attr_dict_array_nonnull_indices(op, "res_attrs").is_empty()
 }
 
 /// Alloca results for clang-generated temps (`.atomictmp`, `atomic-temp`,
@@ -8898,7 +8757,6 @@ fn long_double_binary(trait_: StdTrait, op: BinOp) -> Item {
         name: "o".into(),
         mutable: false,
         ty: long_double_ty(),
-        metadata: ParameterMetadata::default(),
     };
     long_double_op_impl(trait_, vec![o], arg)
 }
@@ -8964,8 +8822,6 @@ fn long_double_shim_type_tag(ty: &Type) -> String {
     }
 }
 
-const COMPLEX_TY: &str = "Complex<";
-
 // clang lowers complex `*`/`/` to the libgcc runtime (__mul?c3/__div?c3), reached
 // directly for `/` and via a NaN-recovery branch for `*`. We call the same symbols
 // so results are bit-identical; #[repr(C)] {re, im} matches the return ABI.
@@ -9003,7 +8859,6 @@ fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
             name: "o".into(),
             mutable: false,
             ty: complex_ty(Type::TyVar("T".into())),
-            metadata: ParameterMetadata::default(),
         }],
         ret: Some(complex_ty(Type::TyVar("T".into()))),
         body: Expr::StructLit {
@@ -9036,7 +8891,6 @@ fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
         name: n.into(),
         mutable: false,
         ty: Type::Prim(prim),
-        metadata: ParameterMetadata::default(),
     };
     ExternDecl::Fn(ExternFnDecl {
         identity: crate::function_identity::FunctionIdentity::Unknown,
@@ -9044,7 +8898,6 @@ fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
         params: vec![param("a"), param("b"), param("c"), param("d")],
         variadic: false,
         ret: Some(complex_ty(Type::Prim(prim))),
-        metadata: FunctionMetadata::default(),
     })
 }
 
@@ -9199,24 +9052,20 @@ fn memchr_prelude() -> Item {
                 name: "s".into(),
                 mutable: false,
                 ty: void_ptr(false),
-                metadata: ParameterMetadata::default(),
             },
             FnParam {
                 name: "c".into(),
                 mutable: false,
                 ty: Type::Prim(Prim::I32),
-                metadata: ParameterMetadata::default(),
             },
             FnParam {
                 name: "n".into(),
                 mutable: false,
                 ty: Type::Prim(Prim::Usize),
-                metadata: ParameterMetadata::default(),
             },
         ],
         ret: Some(void_ptr(true)),
         body,
-        metadata: FunctionMetadata::default(),
     })
 }
 
@@ -10303,16 +10152,6 @@ fn sanitize_ident(s: &str) -> Ident {
         out = format!("r#{out}");
     }
     Ident::from(out)
-}
-
-fn is_rust_ident(s: &str) -> bool {
-    let s = s.strip_prefix("r#").unwrap_or(s);
-    let bytes = s.as_bytes();
-    !bytes.is_empty()
-        && (bytes[0] == b'_' || bytes[0].is_ascii_alphabetic())
-        && bytes
-            .iter()
-            .all(|b| *b == b'_' || b.is_ascii_alphanumeric())
 }
 
 fn is_rust_keyword(s: &str) -> bool {

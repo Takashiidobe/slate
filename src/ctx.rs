@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Severity {
     Warning,
@@ -10,7 +8,6 @@ pub enum Severity {
 pub struct Diagnostic {
     pub severity: Severity,
     pub message: String,
-    pub loc: Option<String>,
 }
 
 #[derive(Debug, Default)]
@@ -19,19 +16,17 @@ pub struct Diagnostics {
 }
 
 impl Diagnostics {
-    pub fn warn(&mut self, message: impl Into<String>, loc: Option<String>) {
+    pub fn warn(&mut self, message: impl Into<String>) {
         self.items.push(Diagnostic {
             severity: Severity::Warning,
             message: message.into(),
-            loc,
         });
     }
 
-    pub fn error(&mut self, message: impl Into<String>, loc: Option<String>) {
+    pub fn error(&mut self, message: impl Into<String>) {
         self.items.push(Diagnostic {
             severity: Severity::Error,
             message: message.into(),
-            loc,
         });
     }
 
@@ -40,19 +35,7 @@ impl Diagnostics {
     }
 }
 
-#[derive(Debug, Clone)]
-pub enum Symbol {
-    ConstStr(Vec<u8>),
-    Func { ty: String },
-}
-
-#[derive(Debug, Default)]
-pub struct SymbolTable {
-    pub globals: BTreeMap<String, Symbol>,
-}
-
 #[derive(Debug, Default)]
 pub struct Ctx {
     pub diagnostics: Diagnostics,
-    pub symbols: SymbolTable,
 }

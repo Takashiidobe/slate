@@ -8,7 +8,6 @@ use crate::function_identity::{CallBinding, FunctionIdentity, Provenance, classi
 
 thread_local! {
     static TYPEDEFS: RefCell<HashMap<String, String>> = RefCell::new(HashMap::new());
-    static ENUM_SIGNED: RefCell<HashMap<String, bool>> = RefCell::new(HashMap::new());
     static ENUM_TYPEDEFS: RefCell<HashMap<String, String>> = RefCell::new(HashMap::new());
     static CALL_FACTS: RefCell<HashMap<usize, CallFact>> = RefCell::new(HashMap::new());
 }
@@ -20,7 +19,6 @@ pub struct Unit {
     pub anonymous_header_records: Vec<Record>,
     pub functions: Vec<Function>,
     pub weak_refs: Vec<WeakRefAttribute>,
-    pub function_allocation_attributes: HashMap<String, FunctionAllocationAttributes>,
     call_bindings: HashMap<Loc, CallBinding>,
 }
 
@@ -43,7 +41,6 @@ pub enum RecordKind {
 #[derive(Debug, Clone)]
 pub struct Enum {
     pub name: String,
-    pub tag: Option<String>,
     pub comments: Vec<String>,
     pub variants: Vec<EnumVariant>,
 }
@@ -58,13 +55,9 @@ pub struct EnumVariant {
 #[derive(Debug, Clone)]
 pub struct Function {
     pub name: String,
-    pub params: Vec<Decl>,
-    pub ret: CType,
     pub body: Option<Vec<Stmt>>,
     pub loc: Option<Loc>,
-    pub raw: Option<Value>,
     pub layout_queries: Vec<LayoutQuery>,
-    pub nonnull_static_params: BTreeSet<usize>,
     pub macro_consts: Vec<MacroConst>,
     pub enum_consts: Vec<EnumConstRef>,
     pub asm_gotos: Vec<AsmGoto>,
@@ -93,20 +86,6 @@ pub struct AsmGoto {
 pub struct WeakRefAttribute {
     pub name: String,
     pub target: String,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
-pub struct FunctionAllocationAttributes {
-    pub fresh: bool,
-    pub size_arguments: Vec<usize>,
-    pub alignment_argument: Option<usize>,
-    pub assumed_alignment: Option<AssumedAlignmentAttribute>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct AssumedAlignmentAttribute {
-    pub bytes: u64,
-    pub offset: u64,
 }
 
 #[derive(Debug, Clone)]
@@ -139,7 +118,7 @@ pub enum LayoutQuery {
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
-    Decl(Decl, Option<Expr>),
+    Decl(Option<Expr>),
     Expr(Expr),
     Return(Option<Expr>),
     For {
@@ -161,20 +140,17 @@ pub enum Stmt {
 
 #[derive(Debug, Clone)]
 pub enum Expr {
-    Int(i64),
-    Str(String),
+    Int,
+    Str,
     Ident(String),
     Unary {
-        op: String,
         expr: Box<Expr>,
     },
     Binary {
-        op: String,
         lhs: Box<Expr>,
         rhs: Box<Expr>,
     },
     Call {
-        name: String,
         args: Vec<Expr>,
         binding: CallBinding,
         loc: Option<Loc>,
@@ -208,7 +184,7 @@ impl Unit {
 fn collect_call_bindings_in_stmts(stmts: &[Stmt], out: &mut HashMap<Loc, CallBinding>) {
     for stmt in stmts {
         match stmt {
-            Stmt::Decl(_, init) => init
+            Stmt::Decl(init) => init
                 .iter()
                 .for_each(|expr| collect_call_bindings_in_expr(expr, out)),
             Stmt::Expr(expr) => collect_call_bindings_in_expr(expr, out),
@@ -269,7 +245,7 @@ fn collect_call_bindings_in_expr(expr: &Expr, out: &mut HashMap<Loc, CallBinding
             collect_call_bindings_in_expr(target, out);
             collect_call_bindings_in_expr(value, out);
         }
-        Expr::Int(_) | Expr::Str(_) | Expr::Ident(_) => {}
+        Expr::Int | Expr::Str | Expr::Ident(_) => {}
     }
 }
 
@@ -476,14 +452,6 @@ pub fn parse_file_with_project_records(src: &Path, project_root: &Path) -> Resul
     )
 }
 
-pub fn parse(src: &str) -> Result<Unit, String> {
-    parse_json(src, "")
-}
-
-pub fn parse_json(json: &str, source_file: &str) -> Result<Unit, String> {
-    parse_json_with_record_roots(json, source_file, &[], PluginEvents::default())
-}
-
 fn parse_json_with_record_roots(
     json: &str,
     source_file: &str,
@@ -495,9 +463,6 @@ fn parse_json_with_record_roots(
     let mut typedefs = HashMap::new();
     collect_typedefs(&root, &mut typedefs);
     TYPEDEFS.with(|table| *table.borrow_mut() = typedefs);
-    let mut enum_signed = HashMap::new();
-    collect_enum_signedness(&root, &mut enum_signed);
-    ENUM_SIGNED.with(|table| *table.borrow_mut() = enum_signed);
     let mut enum_typedefs = HashMap::new();
     collect_enum_typedefs(&root, &mut enum_typedefs);
     ENUM_TYPEDEFS.with(|table| *table.borrow_mut() = enum_typedefs.clone());
@@ -508,7 +473,6 @@ fn parse_json_with_record_roots(
     let mut anonymous_header_records = Vec::new();
     let mut functions = Vec::new();
     let mut weak_refs = Vec::new();
-    let mut function_allocation_attributes = HashMap::new();
     collect_enums(&root, source_file, record_roots, &enum_typedefs, &mut enums);
     collect_records(
         &root,
@@ -540,12 +504,6 @@ fn parse_json_with_record_roots(
         &enum_const_ids,
         &mut functions,
     );
-    collect_function_allocation_attributes(
-        &root,
-        source_file,
-        source_text.as_deref(),
-        &mut function_allocation_attributes,
-    );
     collect_weak_ref_attributes(&root, source_file, &mut weak_refs);
     Ok(Unit {
         enums,
@@ -553,7 +511,6 @@ fn parse_json_with_record_roots(
         anonymous_header_records,
         functions,
         weak_refs,
-        function_allocation_attributes,
         call_bindings,
     })
 }
@@ -568,21 +525,6 @@ fn collect_typedefs(node: &Value, out: &mut HashMap<String, String>) {
     }
     for child in children(node) {
         collect_typedefs(child, out);
-    }
-}
-
-fn collect_enum_signedness(node: &Value, out: &mut HashMap<String, bool>) {
-    if kind(node) == Some("EnumDecl")
-        && let Some(name) = node.get("name").and_then(Value::as_str)
-    {
-        let signed = children(node).iter().any(|child| {
-            kind(child) == Some("EnumConstantDecl")
-                && enum_constant_value(child).is_some_and(|v| v < 0)
-        });
-        out.entry(name.to_string()).or_insert(signed);
-    }
-    for child in children(node) {
-        collect_enum_signedness(child, out);
     }
 }
 
@@ -707,111 +649,6 @@ fn collect_functions(
             out,
         );
     }
-}
-
-fn collect_function_allocation_attributes(
-    node: &Value,
-    source_file: &str,
-    source_text: Option<&str>,
-    out: &mut HashMap<String, FunctionAllocationAttributes>,
-) {
-    if kind(node) == Some("FunctionDecl")
-        && is_source_node(node, source_file)
-        && let Some(name) = node.get("name").and_then(Value::as_str)
-    {
-        let mut attributes = FunctionAllocationAttributes::default();
-        for child in children(node) {
-            match kind(child) {
-                Some("RestrictAttr")
-                    if attribute_text(child, source_text).is_some_and(|text| {
-                        text.split_once('(')
-                            .map_or(text, |(name, _)| name)
-                            .trim()
-                            .trim_matches('_')
-                            == "malloc"
-                    }) =>
-                {
-                    attributes.fresh = true;
-                }
-                Some("AllocSizeAttr") => {
-                    attributes.size_arguments = attribute_indices(child, source_text);
-                }
-                Some("AllocAlignAttr") => {
-                    attributes.alignment_argument =
-                        attribute_indices(child, source_text).into_iter().next();
-                }
-                Some("AssumeAlignedAttr") => {
-                    let values = attribute_integer_values(child);
-                    if let Some(bytes) = values.first().copied() {
-                        attributes.assumed_alignment = Some(AssumedAlignmentAttribute {
-                            bytes,
-                            offset: values.get(1).copied().unwrap_or(0),
-                        });
-                    }
-                }
-                _ => {}
-            }
-        }
-        if attributes != FunctionAllocationAttributes::default() {
-            let existing = out.entry(name.to_string()).or_default();
-            existing.fresh |= attributes.fresh;
-            if !attributes.size_arguments.is_empty() {
-                existing.size_arguments = attributes.size_arguments;
-            }
-            if attributes.alignment_argument.is_some() {
-                existing.alignment_argument = attributes.alignment_argument;
-            }
-            if attributes.assumed_alignment.is_some() {
-                existing.assumed_alignment = attributes.assumed_alignment;
-            }
-        }
-    }
-    for child in children(node) {
-        collect_function_allocation_attributes(child, source_file, source_text, out);
-    }
-}
-
-fn attribute_text<'a>(node: &Value, source_text: Option<&'a str>) -> Option<&'a str> {
-    let source = source_text?;
-    let begin = expansion_offset(node)?;
-    let end = expansion_end_after_token(node)?;
-    source.get(begin..end)
-}
-
-fn expansion_end_after_token(node: &Value) -> Option<usize> {
-    let end = node.get("range")?.get("end")?;
-    let location = end.get("expansionLoc").unwrap_or(end);
-    let offset = location.get("offset")?.as_u64()? as usize;
-    let token_len = location
-        .get("tokLen")
-        .or_else(|| end.get("tokLen"))
-        .and_then(Value::as_u64)? as usize;
-    offset.checked_add(token_len)
-}
-
-fn attribute_indices(node: &Value, source_text: Option<&str>) -> Vec<usize> {
-    let Some(text) = attribute_text(node, source_text) else {
-        return Vec::new();
-    };
-    let Some((_, arguments)) = text.split_once('(') else {
-        return Vec::new();
-    };
-    let Some(arguments) = arguments.rsplit_once(')').map(|(arguments, _)| arguments) else {
-        return Vec::new();
-    };
-    arguments
-        .split(',')
-        .filter_map(|argument| argument.trim().parse::<usize>().ok())
-        .filter_map(|index| index.checked_sub(1))
-        .collect()
-}
-
-fn attribute_integer_values(node: &Value) -> Vec<u64> {
-    children(node)
-        .iter()
-        .filter_map(|child| child.get("value").and_then(Value::as_str))
-        .filter_map(|value| value.parse().ok())
-        .collect()
 }
 
 fn collect_weak_ref_attributes(node: &Value, source_file: &str, out: &mut Vec<WeakRefAttribute>) {
@@ -1095,7 +932,6 @@ fn extract_enum(node: &Value, enum_typedefs: &HashMap<String, String>) -> Option
     }
     Some(Enum {
         name,
-        tag,
         comments: attached_comment(node),
         variants,
     })
@@ -1117,33 +953,6 @@ fn extract_function(
     enum_const_ids: &HashMap<String, (String, String, i64)>,
 ) -> Option<Function> {
     let name = node.get("name")?.as_str()?.to_string();
-    let fn_qual_type = qual_type(node).unwrap_or("int ()");
-    let (ret, _) = parse_function_decl_qual_type(fn_qual_type);
-    let param_nodes: Vec<_> = children(node)
-        .iter()
-        .filter(|child| kind(child) == Some("ParmVarDecl"))
-        .copied()
-        .collect();
-    let params = param_nodes
-        .iter()
-        .filter_map(|child| {
-            Some(Decl {
-                name: child.get("name")?.as_str()?.to_string(),
-                comments: attached_comment(child),
-                ty: parse_c_type(qual_type(child).unwrap_or("int")),
-                bit_width: None,
-            })
-        })
-        .collect();
-    let nonnull_static_params = param_nodes
-        .iter()
-        .enumerate()
-        .filter_map(|(i, child)| {
-            let source = source_text?;
-            let offset = expansion_offset(child)?;
-            param_is_static_array(source, offset).then_some(i)
-        })
-        .collect();
     let body = children(node)
         .iter()
         .find(|child| kind(child) == Some("CompoundStmt"))
@@ -1151,37 +960,13 @@ fn extract_function(
 
     Some(Function {
         name,
-        params,
-        ret,
         body,
         loc: loc(node),
-        raw: Some(node.clone()),
         layout_queries: collect_layout_queries(node, source_text),
-        nonnull_static_params,
         macro_consts: collect_macro_consts(node, source_text, macro_events),
         enum_consts: collect_enum_const_refs(node, source_text, enum_const_ids),
         asm_gotos: collect_asm_gotos(node, source_text),
     })
-}
-
-fn param_is_static_array(source: &str, offset: usize) -> bool {
-    let Some(rest) = source.get(offset..) else {
-        return false;
-    };
-    let mut paren_depth = 0i32;
-    for (i, ch) in rest.char_indices() {
-        match ch {
-            '(' => paren_depth += 1,
-            ')' if paren_depth == 0 => return false,
-            ')' => paren_depth -= 1,
-            ',' if paren_depth == 0 => return false,
-            '[' if paren_depth == 0 => {
-                return rest[i + 1..].trim_start().starts_with("static");
-            }
-            _ => {}
-        }
-    }
-    false
 }
 
 fn collect_layout_queries(node: &Value, source_text: Option<&str>) -> Vec<LayoutQuery> {
@@ -1470,18 +1255,9 @@ fn parse_decl_stmt(node: &Value) -> Option<Stmt> {
     let decl = kids
         .into_iter()
         .find(|child| kind(child) == Some("VarDecl"))?;
-    let name = decl.get("name")?.as_str()?.to_string();
-    let ty = parse_c_type(qual_type(decl).unwrap_or("int"));
+    decl.get("name")?.as_str()?;
     let init = children(decl).first().and_then(|child| parse_expr(child));
-    Some(Stmt::Decl(
-        Decl {
-            name,
-            comments: attached_comment(decl),
-            ty,
-            bit_width: None,
-        },
-        init,
-    ))
+    Some(Stmt::Decl(init))
 }
 
 fn parse_for_stmt(node: &Value) -> Option<Stmt> {
@@ -1527,21 +1303,17 @@ fn parse_expr(node: &Value) -> Option<Expr> {
         "IntegerLiteral" => node
             .get("value")
             .and_then(Value::as_str)
-            .and_then(|s| s.parse().ok())
-            .map(Expr::Int),
-        "StringLiteral" => node
-            .get("value")
-            .and_then(Value::as_str)
-            .map(|s| Expr::Str(s.to_string())),
+            .and_then(|s| s.parse::<i64>().ok())
+            .map(|_| Expr::Int),
+        "StringLiteral" => node.get("value").and_then(Value::as_str).map(|_| Expr::Str),
         "DeclRefExpr" => decl_ref_name(node).map(Expr::Ident),
         "ImplicitCastExpr" | "ParenExpr" | "ExprWithCleanups" => {
             children(node).first().and_then(|child| parse_expr(child))
         }
         "UnaryOperator" => {
-            let op = node.get("opcode")?.as_str()?.to_string();
+            node.get("opcode")?.as_str()?;
             let expr = children(node).first().and_then(|child| parse_expr(child))?;
             Some(Expr::Unary {
-                op,
                 expr: Box::new(expr),
             })
         }
@@ -1554,7 +1326,6 @@ fn parse_expr(node: &Value) -> Option<Expr> {
                 Some(Expr::Assign {
                     target: Box::new(lhs.clone()),
                     value: Box::new(Expr::Binary {
-                        op: op.trim_end_matches('=').to_string(),
                         lhs: Box::new(lhs),
                         rhs: Box::new(rhs),
                     }),
@@ -1566,7 +1337,6 @@ fn parse_expr(node: &Value) -> Option<Expr> {
                 })
             } else {
                 Some(Expr::Binary {
-                    op,
                     lhs: Box::new(lhs),
                     rhs: Box::new(rhs),
                 })
@@ -1591,30 +1361,10 @@ fn parse_expr(node: &Value) -> Option<Expr> {
                 .map(|fact| fact.binding.clone())
                 .unwrap_or_else(|| CallBinding::direct_unknown(None));
             let loc = fact.and_then(|fact| fact.loc).or_else(|| loc(node));
-            Some(Expr::Call {
-                name,
-                args,
-                binding,
-                loc,
-            })
+            Some(Expr::Call { args, binding, loc })
         }
         _ => children(node).first().and_then(|child| parse_expr(child)),
     }
-}
-
-fn parse_function_decl_qual_type(s: &str) -> (CType, Vec<CType>) {
-    let Some((ret, params)) = s.split_once('(') else {
-        return (parse_c_type(s), Vec::new());
-    };
-    let params = params.strip_suffix(')').unwrap_or(params).trim();
-    let params = if params.is_empty() || params == "void" {
-        Vec::new()
-    } else {
-        split_c_type_list(params)
-            .map(|param| parse_c_type(param.trim()))
-            .collect()
-    };
-    (parse_c_type(ret.trim()), params)
 }
 
 fn parse_c_type(s: &str) -> CType {
@@ -1683,10 +1433,6 @@ fn lookup_typedef(name: &str) -> Option<String> {
         let underlying = table.borrow().get(name)?.clone();
         (underlying != name).then_some(underlying)
     })
-}
-
-fn enum_is_signed(name: &str) -> bool {
-    ENUM_SIGNED.with(|table| table.borrow().get(name).copied().unwrap_or(false))
 }
 
 fn enum_rust_name(name: &str) -> String {

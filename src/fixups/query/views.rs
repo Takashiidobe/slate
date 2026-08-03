@@ -52,7 +52,6 @@ pub(in crate::fixups) struct DispatchRegion {
 #[derive(Debug, Clone)]
 pub(in crate::fixups) struct SwitchDispatch {
     pub(super) selector: Expr,
-    pub(super) switch_label: String,
     pub(super) cases: Vec<SwitchCase>,
 }
 
@@ -173,6 +172,7 @@ pub(in crate::fixups) enum TypeUseRef {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[allow(dead_code)]
 pub(in crate::fixups) enum TypeUseKind {
     FunctionReturn,
     Parameter,
@@ -447,7 +447,6 @@ pub(in crate::fixups) struct LazySingletonSet {
 #[derive(Debug, Clone)]
 pub(super) struct LazySingletonPlan {
     pub(super) function_item_index: usize,
-    pub(super) function_name: String,
     pub(super) payload_item_index: usize,
     pub(super) payload_name: String,
     pub(super) payload_ty: Type,
@@ -532,8 +531,6 @@ pub(in crate::fixups) struct BufferPointerField {
     pub(in crate::fixups) buffer: BindingRef,
     pub(in crate::fixups) array: BindingRef,
     pub(in crate::fixups) assignment: StatementRef,
-    pub(in crate::fixups) field: String,
-    pub(in crate::fixups) index: usize,
     pub(in crate::fixups) array_len: usize,
 }
 
@@ -550,12 +547,9 @@ pub(in crate::fixups) struct FileOwnershipFacts {
 #[derive(Debug, Clone)]
 pub(in crate::fixups) struct FileOwnership {
     pub(in crate::fixups) handle: BindingRef,
-    pub(in crate::fixups) open_temp: BindingRef,
-    pub(in crate::fixups) close_temp: Option<BindingRef>,
     pub(in crate::fixups) handle_statement: StatementRef,
     pub(in crate::fixups) open_statement: StatementRef,
     pub(in crate::fixups) assign_statement: StatementRef,
-    pub(in crate::fixups) close_statement: StatementRef,
     pub(in crate::fixups) mode: Option<FileOpenMode>,
     pub(in crate::fixups) uses: Vec<FileUse>,
 }
