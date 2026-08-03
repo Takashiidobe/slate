@@ -2215,6 +2215,35 @@ fn value_swaps_use_std_mem_swap_only_when_tmp_is_fully_dead_and_a_ne_b() {
 }
 
 #[test]
+fn slice_swaps_use_slice_swap_only_when_tmp_is_fully_dead_and_i_ne_j() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-slice-swap");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("slice_swap_fixup.c");
+    let generated = tmp.join("slice_swap_fixup.generated.rs");
+    support::translate(&c_src, &generated).expect("translate slice_swap_fixup fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated slice_swap rust");
+
+    let pairwise = &rust[rust.find("fn pairwise_swap(").expect("find pairwise_swap")
+        ..rust.find("fn pairwise_swap_tmp_reused").unwrap()];
+    assert!(pairwise.contains("items.swap(i as usize, j as usize);"));
+
+    let tmp_reused = &rust[rust
+        .find("fn pairwise_swap_tmp_reused")
+        .expect("find tmp_reused")
+        ..rust.find("fn nested_self_swap").unwrap()];
+    assert!(!tmp_reused.contains(".swap("));
+    assert!(tmp_reused.contains("let tmp: i32 = items[(i as usize)];"));
+    assert!(tmp_reused.contains("items[(i as usize)] = items[(j as usize)];"));
+    assert!(tmp_reused.contains("items[(j as usize)] = tmp;"));
+
+    let self_swap = &rust[rust
+        .find("fn nested_self_swap")
+        .expect("find nested_self_swap")..];
+    assert!(!self_swap.contains(".swap("));
+    assert!(self_swap.contains("items[(j as usize)] = items[(j as usize)];"));
+}
+
+#[test]
 fn memchr_calls_rewrite_only_with_proven_extent_and_nul_range() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memchr-helper");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

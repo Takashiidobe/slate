@@ -138,6 +138,10 @@ aliasing analysis (and the AST's original `T[]` vs `T*` distinction) permits.
 This is the first rung that materially needs the **AST oracle** and real
 analysis; it is where "safe Rust" actually begins.
 
+- **slice-swap**: `let tmp = a[i]; a[i] = a[j]; a[j] = tmp;` over an
+  already-lifted slice → `a.swap(i, j)`, only when `tmp` has no other
+  reads/writes in the function and the two indices are distinct bindings.
+
 ## Rung 4 — ownership
 
 `malloc`/`calloc`/`free` → `Box`/`Vec`; `realloc` → `Vec` growth; C strings →
