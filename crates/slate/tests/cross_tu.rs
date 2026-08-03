@@ -256,6 +256,57 @@ fn uart_library_preserves_exported_volatile_io() {
 }
 
 #[test]
+fn library_crate_links_generated_c_abi_shim_for_long_double_libc_call() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.library")
+        .join("c23_strfrom");
+    let work = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/cross-tu")
+        .join("c23-strfrom-library");
+    let crate_dir = work.join("crate");
+    let _ = std::fs::remove_dir_all(&work);
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--lib"])
+        .arg(&dir)
+        .arg(&crate_dir)
+        .env("SLATE_CLANG_ARGS", "-std=c23")
+        .output()
+        .expect("run slate translate-project --lib");
+    assert!(
+        output.status.success(),
+        "translate-project --lib failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    assert!(crate_dir.join("build.rs").is_file());
+    let shim_c =
+        std::fs::read_to_string(crate_dir.join("src/slate_shims.c")).expect("read slate_shims.c");
+    assert!(shim_c.contains("strfroml"));
+    assert!(shim_c.contains("(long double)"));
+    let manifest = std::fs::read_to_string(crate_dir.join("Cargo.toml")).expect("read manifest");
+    assert!(manifest.contains("[build-dependencies]"));
+    assert!(manifest.contains("cc = \"1\""));
+
+    let strfrom_rs =
+        std::fs::read_to_string(crate_dir.join("src/strfrom.rs")).expect("read strfrom.rs");
+    assert!(strfrom_rs.contains("fn __slate_strfroml__pi8_u64_pi8_ld("));
+    assert!(strfrom_rs.contains("unsafe { __slate_strfroml__pi8_u64_pi8_ld("));
+
+    let run_tests = std::process::Command::new("cargo")
+        .args(["test", "--quiet", "--tests", "--manifest-path"])
+        .arg(crate_dir.join("Cargo.toml"))
+        .output()
+        .expect("cargo run generated tests");
+    assert!(
+        run_tests.status.success(),
+        "generated integration test should run and pass (verifies the C shim actually links \
+         and strfroml formats correctly):\n{}",
+        String::from_utf8_lossy(&run_tests.stderr)
+    );
+}
+
+#[test]
 fn cross_tu_functions() {
     let rs_dir = build_and_diff("cross_tu");
 

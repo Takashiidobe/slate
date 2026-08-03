@@ -1119,7 +1119,7 @@ fn macro_cfg(macro_name: &str) -> Option<Cfg> {
     known_cfg(macro_name).or_else(|| feature_cfg(macro_name))
 }
 
-pub(crate) fn pred_to_cfg(expr: &PredExpr) -> Option<Cfg> {
+pub fn pred_to_cfg(expr: &PredExpr) -> Option<Cfg> {
     match expr {
         PredExpr::Constant(true) => Some(Cfg::All(Vec::new())),
         PredExpr::Constant(false) => Some(Cfg::Any(Vec::new())),

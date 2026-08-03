@@ -11,7 +11,7 @@ pub use error::{ArgShapeKind, BindingKind, Construct, EffectError, Found, ValueK
 pub(crate) type EResult<T> = Result<T, EffectError>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum CallSummary {
+pub enum CallSummary {
     Malloc,
     Calloc,
     Realloc,

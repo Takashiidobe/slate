@@ -1,17 +1,7 @@
-mod c_ast;
-mod cir;
-mod codegen;
-mod ctx;
-mod directive_translate;
-mod effects;
-mod fixups;
-mod function_identity;
-mod lower;
-mod macros;
-mod preprocess;
-mod rust_ast;
-
-use crate::effects::interp::interpret_program_main;
+use slate::effects::interp::interpret_program_main;
+use slate::{
+    api, c_ast, c_shim, cir, ctx, directive_translate, effects, fixups, lower, preprocess, rust_ast,
+};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
@@ -99,117 +89,20 @@ fn emit_cir(path: &Path) -> Result<String, String> {
     cir::emit_generic(path)
 }
 
-/// The V0 spine: emit-cir -> parse-cir + load Clang AST -> lower -> print.
 fn translate(path: &Path) -> Result<String, String> {
-    let (_, program) = lowered_program(path)?;
-    if std::env::var("SLATE_RAW_LOWER").is_ok() {
-        return Ok(program.emit());
-    }
-    Ok(fixups::apply_with(program, &skip_set_from_env()?).emit())
+    api::translate(path)
 }
 
 fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), String> {
-    let source =
-        std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-    let pp = preprocess::record_file(&source, &[])?;
-    reject_active_unsupported(&pp, "translate")?;
-    let diagnostics: Vec<_> = pp
-        .directives
-        .iter()
-        .filter(|directive| {
-            matches!(
-                directive.name,
-                preprocess::DirectiveName::Error | preprocess::DirectiveName::Warning
-            )
-        })
-        .collect();
-    for directive in &diagnostics {
-        if let (Some(condition), None) = (&directive.condition, directive.active) {
-            return Err(format!(
-                "translate: cannot determine whether #{} at line {} is active because predicate `{}` cannot be evaluated",
-                directive.name.as_str(),
-                directive.line_start,
-                preprocess::predicate_text(condition)
-            ));
-        }
-    }
-    let input = preprocess::clang_input(path, &source, &diagnostics)?;
-    let cir_text = cir::emit::emit_generic_with_args(path, input.extra_args())?;
-    let module = cir::parse_module(&cir_text)?;
-    let unit = c_ast::parse_file_with_args(path, input.extra_args())?;
-
-    let mut ctx = ctx::Ctx::default();
-    let mut program = lower::lower(&module, &unit, &mut ctx);
-    for d in &ctx.diagnostics.items {
-        eprintln!("{:?}: {}", d.severity, d.message);
-    }
-    if ctx.diagnostics.has_errors() {
-        return Err("lowering failed".into());
-    }
-    let index = program
-        .items
-        .iter()
-        .take_while(|item| matches!(item, rust_ast::Item::CrateAttrs(_)))
-        .count();
-    program.items.splice(
-        index..index,
-        diagnostics
-            .into_iter()
-            .filter(|directive| directive.active == Some(true))
-            .enumerate()
-            .flat_map(|(index, directive)| {
-                if directive.name == preprocess::DirectiveName::Error {
-                    vec![rust_ast::Item::Macro {
-                        name: "compile_error".into(),
-                        args: vec![rust_ast::Expr::Str(directive.raw_payload.clone())],
-                    }]
-                } else {
-                    directive_translate::warning_items(
-                        &directive.raw_payload,
-                        index,
-                        None,
-                        directive_translate::WarningBackend::Standalone,
-                    )
-                }
-            }),
-    );
-
-    Ok((module, program))
+    api::lowered_program(path)
 }
 
 fn reject_active_unsupported(pp: &preprocess::Preprocessing, context: &str) -> Result<(), String> {
-    for directive in pp.directives.iter().filter(|directive| {
-        directive.disposition() == preprocess::DirectiveDisposition::UnsupportedSemantic
-    }) {
-        if directive.is_clang_resolved_pragma() {
-            continue;
-        }
-        match directive.active {
-            Some(false) => {}
-            Some(true) => return Err(format!("{context}: {}", directive.unsupported_message())),
-            None => {
-                let condition = directive.condition.as_ref().ok_or_else(|| {
-                    format!(
-                        "{context}: cannot determine whether {} is active",
-                        directive.unsupported_message()
-                    )
-                })?;
-                return Err(format!(
-                    "{context}: cannot determine whether {} is active because predicate `{}` cannot be evaluated",
-                    directive.unsupported_message(),
-                    preprocess::predicate_text(condition)
-                ));
-            }
-        }
-    }
-    Ok(())
+    api::reject_active_unsupported(pp, context)
 }
 
 fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), String> {
-    let source =
-        std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-    let pp = preprocess::record_file(&source, &[])?;
-    reject_active_unsupported(&pp, context)
+    api::reject_active_unsupported_file(path, context)
 }
 
 fn compare_traces(
@@ -320,18 +213,6 @@ fn parse_debug_pass(flag: &str, name: &str) -> Result<fixups::Pass, String> {
     })
 }
 
-/// `SLATE_SKIP_PASS=<name>` disables one named fixup pass, for
-/// translation-validation regression testing (slate-4us epic): comparing a
-/// fixture's translated output with and without a given pass active.
-fn skip_set_from_env() -> Result<fixups::SkipSet, String> {
-    match std::env::var("SLATE_SKIP_PASS") {
-        Ok(name) if !name.trim().is_empty() => fixups::Pass::parse(name.trim())
-            .map(fixups::SkipSet::skip)
-            .ok_or_else(|| format!("unknown SLATE_SKIP_PASS: {name}")),
-        _ => Ok(fixups::SkipSet::none()),
-    }
-}
-
 fn collect_c_modules(dir: &Path) -> Result<Vec<(String, PathBuf)>, String> {
     let mut modules = Vec::new();
     for entry in std::fs::read_dir(dir).map_err(|e| format!("read {}: {e}", dir.display()))? {
@@ -413,7 +294,12 @@ fn package_name(crate_dir: &Path) -> String {
     }
 }
 
-fn lib_crate_manifest(package: &str, tests: &[String], slate_support: bool) -> String {
+fn lib_crate_manifest(
+    package: &str,
+    tests: &[String],
+    slate_support: bool,
+    c_shims: bool,
+) -> String {
     let test_targets: String = tests
         .iter()
         .map(|test| {
@@ -432,6 +318,11 @@ harness = false
     } else {
         ""
     };
+    let build_section = if c_shims {
+        "\n[build-dependencies]\ncc = \"1\"\n"
+    } else {
+        ""
+    };
     format!(
         r#"[package]
 name = "{package}"
@@ -442,7 +333,7 @@ edition = "2024"
 libc = "0.2"
 aligned = {{ path = "aligned" }}
 {support_dependency}
-
+{build_section}
 [profile.dev]
 overflow-checks = false
 {test_targets}"#
@@ -454,10 +345,11 @@ fn write_lib_crate_manifest(
     package: &str,
     tests: &[String],
     slate_support: bool,
+    c_shims: bool,
 ) -> Result<(), String> {
     std::fs::write(
         crate_dir.join("Cargo.toml"),
-        lib_crate_manifest(package, tests, slate_support),
+        lib_crate_manifest(package, tests, slate_support, c_shims),
     )
     .map_err(|e| format!("write {}: {e}", crate_dir.join("Cargo.toml").display()))
 }
@@ -481,7 +373,7 @@ fn init_lib_crate(crate_dir: &Path) -> Result<(), String> {
         }
     }
 
-    write_lib_crate_manifest(crate_dir, &package, &[], false)?;
+    write_lib_crate_manifest(crate_dir, &package, &[], false, false)?;
     write_aligned_support(crate_dir)?;
     let main_rs = crate_dir.join("src/main.rs");
     if main_rs.exists() {
@@ -559,6 +451,21 @@ pub fn warning(input: TokenStream) -> TokenStream {
 "#,
     )
     .map_err(|e| format!("write {}: {e}", src_dir.join("lib.rs").display()))
+}
+
+fn write_c_shims(crate_dir: &Path, shims: &[rust_ast::ExternFnDecl]) -> Result<(), String> {
+    std::fs::write(
+        crate_dir.join("build.rs"),
+        r#"fn main() {
+    println!("cargo:rerun-if-changed=src/slate_shims.c");
+    cc::Build::new().file("src/slate_shims.c").compile("slate_shims");
+}
+"#,
+    )
+    .map_err(|e| format!("write {}: {e}", crate_dir.join("build.rs").display()))?;
+    let shim_path = crate_dir.join("src/slate_shims.c");
+    std::fs::write(&shim_path, c_shim::render_shim_c_source(shims))
+        .map_err(|e| format!("write {}: {e}", shim_path.display()))
 }
 
 fn project_warning_items(
@@ -686,6 +593,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         emit_pub: true,
     };
 
+    let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
     let mut written = Vec::new();
     for (stem, path, module, unit, warning_items) in loaded_modules {
         let mut ctx = ctx::Ctx::default();
@@ -695,6 +603,11 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         }
         if ctx.diagnostics.has_errors() {
             return Err(format!("lowering failed for {}", path.display()));
+        }
+        for shim in &program.shims {
+            shims
+                .entry(shim.name.clone())
+                .or_insert_with(|| shim.clone());
         }
         directive_translate::insert_directive_items(&mut program, warning_items);
         let output = crate_src.join(stem).with_extension("rs");
@@ -772,6 +685,11 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             if ctx.diagnostics.has_errors() {
                 return Err(format!("lowering failed for {}", path.display()));
             }
+            for shim in &program.shims {
+                shims
+                    .entry(shim.name.clone())
+                    .or_insert_with(|| shim.clone());
+            }
             directive_translate::insert_directive_items(&mut program, warning_items);
             let output = crate_tests.join(&stem).with_extension("rs");
             std::fs::write(&output, fixups::apply(program).emit())
@@ -783,11 +701,16 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     if uses_slate_support {
         write_slate_support(crate_dir)?;
     }
+    let shims: Vec<rust_ast::ExternFnDecl> = shims.into_values().collect();
+    if !shims.is_empty() {
+        write_c_shims(crate_dir, &shims)?;
+    }
     write_lib_crate_manifest(
         crate_dir,
         &package_name(crate_dir),
         &test_modules,
         uses_slate_support,
+        !shims.is_empty(),
     )?;
 
     Ok(written
