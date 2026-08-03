@@ -40,7 +40,17 @@ pub enum Known {
     Remove,
     ToUpper,
     ToLower,
-    CtypeBLoc,
+    IsAlpha,
+    IsDigit,
+    IsUpper,
+    IsLower,
+    IsAlnum,
+    IsXDigit,
+    IsPunct,
+    IsCntrl,
+    IsGraph,
+    IsPrint,
+    IsSpace,
     Sin,
     Cos,
     Tan,
@@ -103,7 +113,17 @@ impl Known {
             Self::Remove => "remove",
             Self::ToUpper => "toupper",
             Self::ToLower => "tolower",
-            Self::CtypeBLoc => "__ctype_b_loc",
+            Self::IsAlpha => "isalpha",
+            Self::IsDigit => "isdigit",
+            Self::IsUpper => "isupper",
+            Self::IsLower => "islower",
+            Self::IsAlnum => "isalnum",
+            Self::IsXDigit => "isxdigit",
+            Self::IsPunct => "ispunct",
+            Self::IsCntrl => "iscntrl",
+            Self::IsGraph => "isgraph",
+            Self::IsPrint => "isprint",
+            Self::IsSpace => "isspace",
             Self::Sin => "sin",
             Self::Cos => "cos",
             Self::Tan => "tan",
@@ -176,7 +196,19 @@ impl Known {
             | Self::FClose
             | Self::FFlush
             | Self::Remove => "stdio.h",
-            Self::ToUpper | Self::ToLower | Self::CtypeBLoc => "ctype.h",
+            Self::ToUpper
+            | Self::ToLower
+            | Self::IsAlpha
+            | Self::IsDigit
+            | Self::IsUpper
+            | Self::IsLower
+            | Self::IsAlnum
+            | Self::IsXDigit
+            | Self::IsPunct
+            | Self::IsCntrl
+            | Self::IsGraph
+            | Self::IsPrint
+            | Self::IsSpace => "ctype.h",
             Self::Sin
             | Self::Cos
             | Self::Tan
@@ -236,7 +268,17 @@ impl Known {
             "remove" => (Self::Remove, "stdio.h"),
             "toupper" => (Self::ToUpper, "ctype.h"),
             "tolower" => (Self::ToLower, "ctype.h"),
-            "__ctype_b_loc" => (Self::CtypeBLoc, "ctype.h"),
+            "isalpha" => (Self::IsAlpha, "ctype.h"),
+            "isdigit" => (Self::IsDigit, "ctype.h"),
+            "isupper" => (Self::IsUpper, "ctype.h"),
+            "islower" => (Self::IsLower, "ctype.h"),
+            "isalnum" => (Self::IsAlnum, "ctype.h"),
+            "isxdigit" => (Self::IsXDigit, "ctype.h"),
+            "ispunct" => (Self::IsPunct, "ctype.h"),
+            "iscntrl" => (Self::IsCntrl, "ctype.h"),
+            "isgraph" => (Self::IsGraph, "ctype.h"),
+            "isprint" => (Self::IsPrint, "ctype.h"),
+            "isspace" => (Self::IsSpace, "ctype.h"),
             "sin" => (Self::Sin, "math.h"),
             "cos" => (Self::Cos, "math.h"),
             "tan" => (Self::Tan, "math.h"),

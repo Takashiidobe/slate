@@ -170,8 +170,9 @@ default.
 
 ## Rung 7 — `ctype.h` case conversion and classification
 
-`toupper`/`tolower` are recognized by `Known` function identity (a genuine call
-in this toolchain's glibc, not a macro) and rewritten to an ASCII-range check:
+`toupper`/`tolower` are recognized by `Known` function identity (libc-shim
+declares them as plain functions, not macros) and rewritten to an ASCII-range
+check:
 
 ```rust
 // before:                       // after:
@@ -184,18 +185,17 @@ becomes locale-defined) and the call stays on rung 0.
 
 The `is*` classification family (`isalpha`, `isdigit`, `isupper`, `islower`,
 `isalnum`, `isxdigit`, `ispunct`, `iscntrl`, `isgraph`, `isspace`, `isprint`)
-is a harder case: glibc expands them as macros into a `__ctype_b_loc()`
-table-lookup-and-bitmask chain, so there is no `isalpha` call to match at all —
-the rewrite recognizes the whole chain (a call to `__ctype_b_loc`, a double
-pointer deref through an offset, and a bitmask test) by walking backward
-through single-use temporaries, then rewrites the **comparison against
-zero** that consumes the bitmask (`mask_expr != 0`, `!isalpha(c)`, ...) to the
-matching `char`/byte method:
+is recognized by `Known` function identity the same way `toupper`/`tolower`
+are (libc-shim's `ctype.h` declares them as plain functions, not macros), so
+there is a genuine call to match. The rewrite resolves the call through any
+single-use `let` binding, then rewrites the **comparison against zero** that
+consumes the return value (`call != 0`, `!isalpha(c)`, ...) to the matching
+`char`/byte method:
 
 ```rust
 // before:                                    // after:
-let _v5 = unsafe { *_v4.offset(...) };        if (c as u8).is_ascii_alphabetic() { ... }
-if (_v5 as i32) & 1024 != 0 { ... }
+let _v5 = unsafe { isalpha(c as i32) };       if (c as u8).is_ascii_alphabetic() { ... }
+if _v5 != 0 { ... }
 ```
 
 Two correctness constraints narrow this rung:

@@ -36,12 +36,9 @@ typedef union {
   long long __align;
 } cnd_t;
 
-typedef struct {
-  int __data;
-} once_flag;
+typedef int once_flag;
 
-#define ONCE_FLAG_INIT \
-  { 0 }
+#define ONCE_FLAG_INIT 0
 
 int thrd_create(thrd_t *thr, thrd_start_t func, void *arg);
 int thrd_equal(thrd_t lhs, thrd_t rhs);

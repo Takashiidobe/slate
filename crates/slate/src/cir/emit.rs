@@ -4,10 +4,12 @@
 //! Tool paths default to the local CIR-enabled build and are overridable:
 //!   SLATE_CLANG    (default ~/llvm-project/build-cir/bin/clang)
 //!   SLATE_CIR_OPT  (default ~/llvm-project/build-cir/bin/cir-opt)
-//!   SLATE_LIBC_SHIM (unset by default; a directory makes SLATE_CLANG parse
-//!                    with -nostdlibinc -isystem <dir> instead of system libc
-//!                    headers, while keeping clang's own builtin freestanding
-//!                    headers such as stddef.h/stdint.h/stdatomic.h)
+//!   SLATE_LIBC_SHIM (defaults to the repo's libc-shim/include; a directory
+//!                    overrides it; an empty value disables the shim and
+//!                    falls back to system libc headers. SLATE_CLANG parses
+//!                    with -nostdlibinc -isystem <dir> against whichever
+//!                    directory is active, while keeping clang's own builtin
+//!                    freestanding headers such as stddef.h/stdint.h/stdatomic.h)
 
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -29,20 +31,12 @@ fn cir_opt() -> String {
 
 pub fn libc_shim_dir() -> Option<String> {
     match std::env::var("SLATE_LIBC_SHIM") {
-        Ok(dir) if !dir.trim().is_empty() => Some(dir),
-        _ => None,
+        Ok(dir) if dir.trim().is_empty() => None,
+        Ok(dir) => Some(dir),
+        Err(_) => Some(format!("{}/libc-shim/include", env!("CARGO_MANIFEST_DIR"))),
     }
 }
 
-/// `-nostdlibinc` plus `-isystem <dir>` when `SLATE_LIBC_SHIM` names a
-/// directory, so SLATE_CLANG parses against Slate's own header declarations
-/// instead of the host's system libc, while still keeping clang's own
-/// builtin freestanding headers (stddef.h, stdint.h, stdarg.h, limits.h,
-/// float.h, stdalign.h, stdatomic.h, the intrinsics headers, ...) available —
-/// those are compiler-owned and target-derived, not glibc, so there is
-/// nothing to gain by reimplementing them. Opt-in and unset by default until
-/// the shim under `libc-shim/include` covers enough of the supported subset
-/// to replace the system libc headers outright (see slate-k89h.2).
 fn libc_shim_args() -> Vec<String> {
     match libc_shim_dir() {
         Some(dir) => vec!["-nostdlibinc".into(), "-isystem".into(), dir],
