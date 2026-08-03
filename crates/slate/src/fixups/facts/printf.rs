@@ -1,7 +1,7 @@
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, FixupFacts, FunctionId, NulTermination, PathSegment, PrintfArgFact,
-    PrintfCallFact, Site, StringBufferProvenance, StringLibcFunction,
+    AstPath, FixupFacts, FunctionId, NulTermination, PathSegment, PrintfArgFact, PrintfCallFact,
+    Site, StringBufferProvenance, StringBufferRejection,
 };
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{Block, Expr, FnParam, IndentStmt, Item, Program, RustValue, Stmt, Type};
@@ -475,10 +475,13 @@ fn proven_local_c_string_arg(
         .string_pointer_view(function, &AstPath(path.to_vec()))
         .map(|view| view.source)?;
     let buffer = facts.string_buffer(source)?;
-    if matches!(
-        buffer.provenance,
-        StringBufferProvenance::ZeroInitialized | StringBufferProvenance::Unknown
-    ) || mutated_by_string_libc(function, facts, source)
+    if buffer
+        .rejections
+        .contains(&StringBufferRejection::EscapedToCall)
+        || matches!(
+            buffer.provenance,
+            StringBufferProvenance::ZeroInitialized | StringBufferProvenance::Unknown
+        )
     {
         return None;
     }
@@ -486,20 +489,6 @@ fn proven_local_c_string_arg(
         return None;
     }
     String::from_utf8(buffer.bytes.clone()?).ok()
-}
-
-fn mutated_by_string_libc(function: FunctionId, facts: &FixupFacts, source: BindingId) -> bool {
-    facts.string_libc_uses.iter().any(|use_fact| {
-        use_fact.site.function == function
-            && matches!(
-                use_fact.callee,
-                StringLibcFunction::StrCpy
-                    | StringLibcFunction::StrNCpy
-                    | StringLibcFunction::StrCat
-                    | StringLibcFunction::StrNCat
-            )
-            && use_fact.pointer_args.first() == Some(&source)
-    })
 }
 
 fn pointer_view_source(expr: &Expr) -> Option<&str> {

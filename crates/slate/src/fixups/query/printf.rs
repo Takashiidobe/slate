@@ -1,4 +1,4 @@
-use crate::fixups::facts::PrintfArgFact;
+use crate::fixups::facts::{GENERATED_C_STRING_READ_CALLEE, PrintfArgFact};
 use crate::rust_ast::{BinOp, Block, Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 
 pub(in crate::fixups) fn printf_macro(
@@ -775,6 +775,34 @@ fn format_macro(name: &str, args: Vec<Expr>) -> Expr {
     }
 }
 
+fn runtime_c_string_arg(arg: &Expr) -> Expr {
+    Expr::MethodCall {
+        recv: Box::new(Expr::Unsafe(Box::new(Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Var(GENERATED_C_STRING_READ_CALLEE.into())),
+                args: vec![Expr::Cast {
+                    expr: Box::new(arg.clone()),
+                    ty: Type::parse("*const i8"),
+                }],
+            })),
+        }))),
+        method: "to_string_lossy".into(),
+        args: Vec::new(),
+    }
+}
+
+fn char_from_int_arg(arg: &Expr) -> Expr {
+    Expr::Cast {
+        expr: Box::new(Expr::Cast {
+            expr: Box::new(arg.clone()),
+            ty: Type::Prim(Prim::U8),
+        }),
+        ty: Type::Custom("char".into()),
+    }
+}
+
 fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> Option<Expr> {
     match kind {
         ConversionKind::Integer(IntegerArg::Value) => Some(arg.clone()),
@@ -787,9 +815,16 @@ fn printf_macro_arg(arg: &Expr, kind: ConversionKind, fact: &PrintfArgFact) -> O
         ConversionKind::Integer(IntegerArg::Narrow { signed, width }) => {
             Some(narrow_integer_arg(arg, signed, width))
         }
-        ConversionKind::String(StringArg::Value) => printf_string_arg(arg, fact),
+        ConversionKind::String(StringArg::Value) => {
+            Some(printf_string_arg(arg, fact).unwrap_or_else(|| runtime_c_string_arg(arg)))
+        }
         ConversionKind::String(StringArg::Sized(format)) => sized_printf_string_arg(fact, format),
-        ConversionKind::Char(CharArg::Value) => fact.const_char.clone().map(Expr::Str),
+        ConversionKind::Char(CharArg::Value) => Some(
+            fact.const_char
+                .clone()
+                .map(Expr::Str)
+                .unwrap_or_else(|| char_from_int_arg(arg)),
+        ),
         ConversionKind::Char(CharArg::Sized(format)) => sized_printf_char_arg(fact, format),
         ConversionKind::Float => Some(arg.clone()),
         ConversionKind::Exponent(format) => Some(exponent_arg(arg, format)),

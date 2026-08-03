@@ -3,13 +3,13 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AsciiNumericSign, AsciiNumericStringFact, AstPath, BindingId, BindingKind, CallCallee,
-    CallSignatureSource, ConstValue, FixupFacts, FunctionId, NulTermination, PathSegment, Site,
-    StringBufferFact, StringBufferKind, StringBufferProvenance, StringBufferRejection,
-    StringCopyRewrite, StringCopyRewriteFact, StringLibcFunction, StringLibcUseFact,
-    StringLiftPlanFact, StringPointerViewFact, StringPointerViewKind, StringRecoveryCandidate,
-    ValueSubject,
+    CallSignatureSource, ConstValue, FixupFacts, FunctionId, GENERATED_C_STRING_READ_CALLEE,
+    NulTermination, PathSegment, Site, StringBufferFact, StringBufferKind, StringBufferProvenance,
+    StringBufferRejection, StringCopyRewrite, StringCopyRewriteFact, StringLibcFunction,
+    StringLibcUseFact, StringLiftPlanFact, StringPointerViewFact, StringPointerViewKind,
+    StringRecoveryCandidate, ValueSubject,
 };
-use crate::function_identity::Known;
+use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
     Block, Expr, FnDef, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
@@ -1175,6 +1175,11 @@ impl<'a> Collector<'a> {
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(end, path));
             }
             Expr::Call { func, args, .. } => {
+                let is_safe_read = known_call(expr) == Some(Known::Printf)
+                    || matches!(&**func, Expr::Var(name) if name.as_str() == GENERATED_C_STRING_READ_CALLEE);
+                if !is_safe_read {
+                    self.mark_escaped_to_call(args);
+                }
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(func, path));
                 for (index, arg) in args.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
@@ -1501,6 +1506,22 @@ impl<'a> Collector<'a> {
         }
     }
 
+    fn mark_escaped_to_call(&mut self, args: &[Expr]) {
+        for arg in args {
+            let Some((source, ..)) = self.pointer_view(arg) else {
+                continue;
+            };
+            let Some(binding) = self.binding_for_name(source) else {
+                continue;
+            };
+            if let Some(summary) = self.summaries.get_mut(&binding) {
+                summary
+                    .rejections
+                    .insert(StringBufferRejection::EscapedToCall);
+            }
+        }
+    }
+
     fn pointer_view<'b>(&self, expr: &'b Expr) -> Option<(&'b str, StringPointerViewKind, bool)> {
         match expr {
             Expr::MethodCall { recv, method, args } if args.is_empty() => {
@@ -1600,7 +1621,11 @@ impl BufferSummary {
     }
 
     fn candidates(&self) -> BTreeSet<StringRecoveryCandidate> {
-        if !self.rejections.is_empty() {
+        if self
+            .rejections
+            .iter()
+            .any(|reason| *reason != StringBufferRejection::EscapedToCall)
+        {
             return BTreeSet::new();
         }
         match self.kind {
