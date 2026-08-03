@@ -332,6 +332,18 @@ fn cross_tu_functions() {
 }
 
 #[test]
+fn ctype_libc_fixup_stays_off_when_a_sibling_tu_changes_locale() {
+    let rs_dir = build_and_diff("ctype_locale");
+
+    // locale_setup.c's non-"C" setlocale call is invisible to main.c's own
+    // Program, so the ctype fixup must stay disabled project-wide rather than
+    // idiomizing toupper/tolower as if the C locale were guaranteed.
+    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
+    assert!(main_rs.contains("unsafe { toupper("));
+    assert!(main_rs.contains("unsafe { tolower("));
+}
+
+#[test]
 fn public_pointer_deref_functions_are_unsafe() {
     let rs_dir = build_and_diff("unsafe_public");
 

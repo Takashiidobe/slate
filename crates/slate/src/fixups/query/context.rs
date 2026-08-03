@@ -1952,6 +1952,37 @@ impl<'snapshot> QueryContext<'snapshot> {
         })
     }
 
+    fn has_setlocale_extern(&self) -> bool {
+        self.program.items.iter().any(|item| {
+            matches!(item, Item::ExternBlock { decls, .. } if decls.iter().any(|decl| {
+                matches!(decl, ExternDecl::Fn(f) if f.name == "setlocale")
+            }))
+        })
+    }
+
+    pub(in crate::fixups) fn setlocale_calls_stay_c(&self) -> bool {
+        if !self.has_setlocale_extern() {
+            return true;
+        }
+        let mut stable = true;
+        for item in &self.program.items {
+            let Item::Fn(f) = unwrap_cfg(item) else {
+                continue;
+            };
+            let mut locals = BTreeMap::new();
+            collect_let_initializers(&f.body, &mut locals);
+            walk::body_exprs(&f.body, &mut |expr| {
+                if let Expr::Call { func, args, .. } = expr
+                    && matches!(func.as_ref(), Expr::Var(name) if name.as_str() == "setlocale")
+                    && !args.get(1).is_some_and(|arg| locale_arg_is_c(arg, &locals))
+                {
+                    stable = false;
+                }
+            });
+        }
+        stable
+    }
+
     pub(in crate::fixups) fn c_string_literal(&self, site: &ExprSite) -> QueryResult<Vec<u8>> {
         let predicate = Predicate::CStringLiteral;
         let Some(function) = self.facts.function_by_item_index(site.item_index) else {
@@ -4633,6 +4664,76 @@ fn unwrap_cfg(item: &Item) -> &Item {
         Item::Cfg { item, .. } => unwrap_cfg(item),
         _ => item,
     }
+}
+
+fn collect_let_initializers<'a>(body: &'a [IndentStmt], out: &mut BTreeMap<&'a str, &'a Expr>) {
+    for indent in body {
+        match &indent.stmt {
+            Stmt::Let {
+                name,
+                init: Some(init),
+                ..
+            } => {
+                out.insert(name.as_str(), init);
+            }
+            Stmt::If {
+                then_body,
+                else_body,
+                ..
+            }
+            | Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            } => {
+                collect_let_initializers(then_body, out);
+                collect_let_initializers(else_body, out);
+            }
+            Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+                collect_let_initializers(body, out);
+            }
+            Stmt::For { body, .. } => collect_let_initializers(body, out),
+            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                collect_let_initializers(&body.stmts, out);
+            }
+            Stmt::Match { arms, .. } => {
+                for arm in arms {
+                    collect_let_initializers(&arm.body, out);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn locale_arg_is_c(expr: &Expr, locals: &BTreeMap<&str, &Expr>) -> bool {
+    match expr {
+        Expr::Cast { expr, .. } | Expr::Ref { expr, .. } | Expr::AddrOf { expr, .. } => {
+            locale_arg_is_c(expr, locals)
+        }
+        Expr::Var(name) => locals
+            .get(name.as_str())
+            .is_some_and(|init| locale_arg_is_c(init, locals)),
+        Expr::Call { func, args, .. } => {
+            args.is_empty()
+                && matches!(
+                    func.as_ref(),
+                    Expr::Path(path) if path.segments.len() == 3
+                        && path.segments[0].as_str() == "std"
+                        && path.segments[1].as_str() == "ptr"
+                        && path.segments[2].as_str() == "null_mut"
+                )
+        }
+        Expr::MethodCall { recv, method, args } => {
+            method == "as_ptr" && args.is_empty() && is_c_locale_string(recv)
+        }
+        _ => false,
+    }
+}
+
+fn is_c_locale_string(expr: &Expr) -> bool {
+    matches!(expr, Expr::CStr(bytes) if bytes == b"C" || bytes == b"POSIX")
+        || matches!(expr, Expr::ByteStr(bytes) if bytes == b"C\0" || bytes == b"POSIX\0")
 }
 
 fn unused_item_refs(item: &Item) -> BTreeSet<String> {
