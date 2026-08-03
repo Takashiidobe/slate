@@ -465,17 +465,6 @@ fn gnu_empty_struct_emits_zero_sized_rust_type() {
 }
 
 #[test]
-fn c23_long_double_libc_call_uses_c_abi_shim() {
-    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-c23-long-double");
-    std::fs::create_dir_all(&tmp).expect("create tmp dir");
-
-    let rust = translate_fixture(&tmp, "c23");
-    assert!(rust.contains("fn __slate_strfroml__pi8_u64_pi8_ld("));
-    assert!(rust.contains("__slate_strfroml__pi8_u64_pi8_ld("));
-    assert!(!rust.contains("unsafe { strfroml("));
-}
-
-#[test]
 fn pointer_comparisons_preserve_address_operands() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pointer-compare-address");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

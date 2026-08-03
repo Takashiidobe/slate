@@ -406,6 +406,7 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
 fn run_clang_ast_dump(src: &Path, extra_args: &[String]) -> Result<(String, PluginEvents), String> {
     let out = Command::new(clang())
         .args([
+            "-std=c23",
             "-Xclang",
             "-ast-dump=json",
             "-fsyntax-only",

@@ -1,6 +1,7 @@
 #[derive(Debug, Default, Clone)]
 pub struct Program {
     pub items: Vec<Item>,
+    pub shims: Vec<ExternFnDecl>,
 }
 
 #[derive(Debug, Clone)]

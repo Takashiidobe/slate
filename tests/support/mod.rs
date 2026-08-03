@@ -29,6 +29,13 @@ fn c23_clang_args() -> String {
     format!("{existing} -std=c23").trim().to_string()
 }
 
+fn ensure_c23_clang_args() {
+    static ONCE: std::sync::Once = std::sync::Once::new();
+    ONCE.call_once(|| {
+        unsafe { std::env::set_var("SLATE_CLANG_ARGS", c23_clang_args()) };
+    });
+}
+
 fn aligned_path() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/aligned")
 }
@@ -728,19 +735,9 @@ pub fn run_with_config(bin: &Path, config: &RunConfig, cwd: &Path) -> Result<Run
 }
 
 pub fn translate(c_src: &Path, rs_out: &Path) -> Result<(), String> {
-    let o = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .arg("translate")
-        .arg(c_src)
-        .env("SLATE_CLANG_ARGS", c23_clang_args())
-        .output()
-        .map_err(|e| format!("spawn slate translate: {e}"))?;
-    if !o.status.success() {
-        return Err(format!(
-            "translate failed:\n{}",
-            String::from_utf8_lossy(&o.stderr)
-        ));
-    }
-    write_if_changed(rs_out, &o.stdout)
+    ensure_c23_clang_args();
+    let rust = slate::api::translate(c_src)?;
+    write_if_changed(rs_out, rust.as_bytes())
         .map(|_| ())
         .map_err(|e| format!("write {}: {e}", rs_out.display()))
 }

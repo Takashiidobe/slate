@@ -385,7 +385,10 @@ pub fn lower_shared_types(
             .flat_map(|record| lower_record_def(record, Visibility::Pub, Visibility::Pub, true)),
     )
     .collect();
-    Program { items }
+    Program {
+        items,
+        ..Program::default()
+    }
 }
 
 fn lower_enum_def(enm: &crate::c_ast::Enum, vis: Visibility) -> Option<EnumDef> {
@@ -850,7 +853,10 @@ impl<'a> Lowerer<'a> {
 
         let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
             self.ctx.diagnostics.error("lower: no builtin.module op");
-            return Program { items };
+            return Program {
+                items,
+                ..Program::default()
+            };
         };
 
         let ops = region_ops(module_op);
@@ -1060,41 +1066,43 @@ impl<'a> Lowerer<'a> {
             self.externs.insert(name.to_string(), params);
             self.extern_returns.insert(name.to_string(), ret.clone());
             if name == "strtold" && ret.as_deref() == Some(LONG_DOUBLE_TY) {
-                extern_decls.push(ExternDecl::Fn(ExternFnDecl {
-                    identity: crate::function_identity::FunctionIdentity::Unknown,
-                    name: "__slate_strtold".into(),
-                    params: vec![
-                        FnParam {
-                            name: "_0".into(),
-                            mutable: false,
-                            ty: Type::Ptr {
-                                mutable: true,
-                                inner: Box::new(Type::Prim(Prim::I8)),
-                            },
-                        },
-                        FnParam {
-                            name: "_1".into(),
-                            mutable: false,
-                            ty: Type::Ptr {
-                                mutable: true,
-                                inner: Box::new(Type::Ptr {
+                self.long_double_shims
+                    .entry("__slate_strtold".into())
+                    .or_insert_with(|| ExternFnDecl {
+                        identity: crate::function_identity::FunctionIdentity::Unknown,
+                        name: "__slate_strtold".into(),
+                        params: vec![
+                            FnParam {
+                                name: "_0".into(),
+                                mutable: false,
+                                ty: Type::Ptr {
                                     mutable: true,
                                     inner: Box::new(Type::Prim(Prim::I8)),
-                                }),
+                                },
                             },
-                        },
-                        FnParam {
-                            name: "_2".into(),
-                            mutable: false,
-                            ty: Type::Ptr {
-                                mutable: true,
-                                inner: Box::new(Type::Prim(Prim::F64)),
+                            FnParam {
+                                name: "_1".into(),
+                                mutable: false,
+                                ty: Type::Ptr {
+                                    mutable: true,
+                                    inner: Box::new(Type::Ptr {
+                                        mutable: true,
+                                        inner: Box::new(Type::Prim(Prim::I8)),
+                                    }),
+                                },
                             },
-                        },
-                    ],
-                    variadic: false,
-                    ret: None,
-                }));
+                            FnParam {
+                                name: "_2".into(),
+                                mutable: false,
+                                ty: Type::Ptr {
+                                    mutable: true,
+                                    inner: Box::new(Type::Prim(Prim::F64)),
+                                },
+                            },
+                        ],
+                        variadic: false,
+                        ret: None,
+                    });
             } else {
                 extern_decls.push(ExternDecl::Fn(decl));
             }
@@ -1221,7 +1229,10 @@ impl<'a> Lowerer<'a> {
             insert_crate_feature(&mut items, *feature);
         }
 
-        Program { items }
+        Program {
+            items,
+            shims: self.long_double_shims.values().cloned().collect(),
+        }
     }
 
     fn collect_global(&mut self, op: &Op) {
