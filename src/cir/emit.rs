@@ -27,6 +27,13 @@ fn cir_opt() -> String {
         .unwrap_or_else(|_| format!("{}/llvm-project/build-cir/bin/cir-opt", home()))
 }
 
+pub fn libc_shim_dir() -> Option<String> {
+    match std::env::var("SLATE_LIBC_SHIM") {
+        Ok(dir) if !dir.trim().is_empty() => Some(dir),
+        _ => None,
+    }
+}
+
 /// `-nostdlibinc` plus `-isystem <dir>` when `SLATE_LIBC_SHIM` names a
 /// directory, so SLATE_CLANG parses against Slate's own header declarations
 /// instead of the host's system libc, while still keeping clang's own
@@ -37,12 +44,27 @@ fn cir_opt() -> String {
 /// the shim under `libc-shim/include` covers enough of the supported subset
 /// to replace the system libc headers outright (see slate-k89h.2).
 fn libc_shim_args() -> Vec<String> {
-    match std::env::var("SLATE_LIBC_SHIM") {
-        Ok(dir) if !dir.trim().is_empty() => {
-            vec!["-nostdlibinc".into(), "-isystem".into(), dir]
-        }
-        _ => Vec::new(),
+    match libc_shim_dir() {
+        Some(dir) => vec!["-nostdlibinc".into(), "-isystem".into(), dir],
+        None => Vec::new(),
     }
+}
+
+pub fn clang_resource_dir_include() -> Option<String> {
+    static RESOURCE_DIR: std::sync::OnceLock<Option<String>> = std::sync::OnceLock::new();
+    RESOURCE_DIR
+        .get_or_init(|| {
+            let out = Command::new(clang())
+                .arg("-print-resource-dir")
+                .output()
+                .ok()?;
+            if !out.status.success() {
+                return None;
+            }
+            let dir = String::from_utf8_lossy(&out.stdout).trim().to_string();
+            (!dir.is_empty()).then(|| format!("{dir}/include"))
+        })
+        .clone()
 }
 
 pub fn target_args() -> Vec<String> {

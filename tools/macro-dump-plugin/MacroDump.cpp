@@ -7,7 +7,9 @@
 #include "clang/Lex/PPCallbacks.h"
 #include "clang/Lex/Preprocessor.h"
 #include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/STLExtras.h"
 #include "llvm/Support/JSON.h"
+#include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <memory>
@@ -15,6 +17,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 using namespace clang;
 
@@ -36,10 +39,33 @@ std::string fileIdentity(FileEntryRef File) {
   return std::to_string(ID.getDevice()) + ":" + std::to_string(ID.getFile());
 }
 
+bool isUnderRoot(StringRef Path, StringRef Root) {
+  StringRef NormalizedRoot = Root;
+  while (NormalizedRoot.size() > 1 &&
+        llvm::sys::path::is_separator(NormalizedRoot.back()))
+    NormalizedRoot = NormalizedRoot.drop_back();
+  if (NormalizedRoot.empty() || !Path.starts_with(NormalizedRoot))
+    return false;
+  StringRef Rest = Path.drop_front(NormalizedRoot.size());
+  return Rest.empty() || llvm::sys::path::is_separator(Rest.front());
+}
+
 class ProvenanceState {
+  std::vector<std::string> TrustedRoots;
   llvm::DenseMap<const FileEntry *, std::set<HeaderEvidence>> TrustedHeaders;
 
 public:
+  explicit ProvenanceState(std::vector<std::string> TrustedRoots)
+      : TrustedRoots(std::move(TrustedRoots)) {}
+
+  bool isTrustedPath(StringRef ResolvedPath) const {
+    if (TrustedRoots.empty())
+      return true;
+    return llvm::any_of(TrustedRoots, [&](const std::string &Root) {
+      return isUnderRoot(ResolvedPath, Root);
+    });
+  }
+
   void recordTrustedHeader(FileEntryRef File, StringRef Written) {
     TrustedHeaders[&File.getFileEntry()].insert(
         {Written.str(), File.getName().str(), fileIdentity(File)});
@@ -125,7 +151,8 @@ public:
     }
     llvm::errs() << "INCLUDE_PROVENANCE " << llvm::json::Value(std::move(Event))
                  << "\n";
-    if (File && IsAngled && SrcMgr::isSystem(FileType))
+    if (File && IsAngled && SrcMgr::isSystem(FileType) &&
+        State->isTrustedPath(File->getName()))
       State->recordTrustedHeader(*File, FileName);
   }
 };
@@ -285,17 +312,24 @@ public:
 };
 
 class MacroDumpAction : public PluginASTAction {
+  std::vector<std::string> TrustedRoots;
+
 protected:
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                                  StringRef) override {
-    auto State = std::make_shared<ProvenanceState>();
+    auto State = std::make_shared<ProvenanceState>(TrustedRoots);
     CI.getPreprocessor().addPPCallbacks(
         std::make_unique<MacroDumpCallbacks>(CI.getSourceManager(), State));
     return std::make_unique<ProvenanceConsumer>(CI.getSourceManager(), State);
   }
 
   bool ParseArgs(const CompilerInstance &,
-                 const std::vector<std::string> &) override {
+                 const std::vector<std::string> &Args) override {
+    for (StringRef Arg : Args) {
+      StringRef Root = Arg;
+      if (Root.consume_front("-trusted-root="))
+        TrustedRoots.push_back(Root.str());
+    }
     return true;
   }
 
