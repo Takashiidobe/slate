@@ -1652,7 +1652,7 @@ fn project_exit_definition_is_not_rewritten_as_libc_exit() {
 
     support::translate(&c_src, &generated).expect("translate function_provenance fixture");
     let rust = std::fs::read_to_string(&generated).expect("read function_provenance Rust");
-    assert!(rust.contains("fn exit(status: i32) -> ()"));
+    assert!(rust.contains("fn exit(status: i32) {"));
     assert!(rust.contains("    exit(0);"));
 }
 
@@ -2193,6 +2193,28 @@ fn ctype_libc_calls_stay_raw_when_locale_is_not_provably_c() {
 }
 
 #[test]
+fn value_swaps_use_std_mem_swap_only_when_tmp_is_fully_dead_and_a_ne_b() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-swap");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("swap_fixup.c");
+    let generated = tmp.join("swap_fixup.generated.rs");
+    support::translate(&c_src, &generated).expect("translate swap_fixup fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated swap rust");
+
+    assert!(rust.contains("std::mem::swap(&mut a, &mut b);"));
+
+    let tmp_reused = &rust[rust.find("fn tmp_reused").expect("find tmp_reused")..];
+    assert!(!tmp_reused.contains("std::mem::swap"));
+    assert!(tmp_reused.contains("let tmp: i32 = a;"));
+    assert!(tmp_reused.contains("a = b;"));
+    assert!(tmp_reused.contains("b = tmp;"));
+
+    let self_swap = &rust[rust.find("fn self_swap").expect("find self_swap")..];
+    assert!(!self_swap.contains("std::mem::swap"));
+    assert!(self_swap.contains("a = a;"));
+}
+
+#[test]
 fn memchr_calls_rewrite_only_with_proven_extent_and_nul_range() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memchr-helper");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
@@ -2457,7 +2479,7 @@ fn ptr_len_pairs_use_slice_params_for_full_array_calls() {
     let rust = std::fs::read_to_string(&generated).expect("read generated ptr_len_slice rust");
 
     assert!(rust.contains("fn sum(items: &[i32], len: i32) -> i32"));
-    assert!(rust.contains("fn bump(mut items: &mut [i32], len: i32) -> ()"));
+    assert!(rust.contains("fn bump(mut items: &mut [i32], len: i32) {"));
     assert!(!rust.contains("let len: i32 = items.len() as i32;"));
     assert!(rust.contains("total += items[(i as usize)];"));
     assert!(rust.contains("items[(i as usize)] = items[(i as usize)] + 1;"));

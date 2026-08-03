@@ -1426,6 +1426,10 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
 }
 
 impl Type {
+    pub fn is_unit(&self) -> bool {
+        matches!(self, Type::Unit)
+    }
+
     pub fn aligned_inner(&self) -> Option<&Type> {
         match self {
             Type::Generic { name, args } if name == "aligned::Aligned" && args.len() == 2 => {
