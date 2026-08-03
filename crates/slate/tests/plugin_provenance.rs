@@ -367,6 +367,52 @@ fn carries_trusted_root_through_an_internal_header() {
 }
 
 #[test]
+fn rejects_system_header_outside_configured_trusted_root() {
+    let case = Case::new(
+        "#include <string.h>\n__SIZE_TYPE__ f(const char *s) { return strlen(s); }\n",
+        &[("string.h", "__SIZE_TYPE__ strlen(const char *s);\n")],
+    );
+    let include_dir = case.dir.to_str().expect("UTF-8 case path");
+    let events = case.events_with_args(&[
+        "-isystem",
+        include_dir,
+        "-Xclang",
+        "-plugin-arg-macro-dump",
+        "-Xclang",
+        "-trusted-root=/nonexistent-slate-trusted-root",
+    ]);
+    let event = by_name(events, "strlen")
+        .into_iter()
+        .next()
+        .expect("strlen event");
+    assert_eq!(provenance(&event), "unknown");
+    assert!(reasons(&event).contains(&"no_trusted_header"));
+}
+
+#[test]
+fn accepts_system_header_under_configured_trusted_root() {
+    let case = Case::new(
+        "#include <string.h>\n__SIZE_TYPE__ f(const char *s) { return strlen(s); }\n",
+        &[("string.h", "__SIZE_TYPE__ strlen(const char *s);\n")],
+    );
+    let include_dir = case.dir.to_str().expect("UTF-8 case path");
+    let events = case.events_with_args(&[
+        "-isystem",
+        include_dir,
+        "-Xclang",
+        "-plugin-arg-macro-dump",
+        "-Xclang",
+        &format!("-trusted-root={include_dir}"),
+    ]);
+    let event = by_name(events, "strlen")
+        .into_iter()
+        .next()
+        .expect("strlen event");
+    assert_eq!(provenance(&event), "trusted_header");
+    assert!(reasons(&event).is_empty());
+}
+
+#[test]
 fn rejects_macro_generated_project_declaration() {
     let case = Case::new(
         "#include \"strings.h\"\nint f(const char *s) { return (int)strlen(s); }\n",

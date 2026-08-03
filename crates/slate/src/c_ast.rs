@@ -404,15 +404,32 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
 }
 
 fn run_clang_ast_dump(src: &Path, extra_args: &[String]) -> Result<(String, PluginEvents), String> {
-    let out = Command::new(clang())
-        .args([
-            "-std=c23",
-            "-Xclang",
-            "-ast-dump=json",
-            "-fsyntax-only",
-            "-fparse-all-comments",
-        ])
-        .arg(format!("-fplugin={}", macro_dump_plugin()))
+    let mut cmd = Command::new(clang());
+    cmd.args([
+        "-std=c23",
+        "-Xclang",
+        "-ast-dump=json",
+        "-fsyntax-only",
+        "-fparse-all-comments",
+    ])
+    .arg(format!("-fplugin={}", macro_dump_plugin()));
+    if let Some(shim_dir) = crate::cir::emit::libc_shim_dir() {
+        for root in [
+            Some(shim_dir),
+            crate::cir::emit::clang_resource_dir_include(),
+        ]
+        .into_iter()
+        .flatten()
+        {
+            cmd.args([
+                "-Xclang",
+                "-plugin-arg-macro-dump",
+                "-Xclang",
+                &format!("-trusted-root={root}"),
+            ]);
+        }
+    }
+    let out = cmd
         .args(crate::cir::emit::target_args())
         .args(extra_args)
         .arg(src)
