@@ -65,10 +65,11 @@ impl Collector {
                 init: Some(init),
                 ..
             } => self.collect_let(name, ty.as_ref(), init, path),
-            Stmt::Loop { .. } => {}
+            Stmt::Loop { body, .. } => self.collect_counted_loops(body),
             Stmt::For { pat, iter, body } => {
                 self.collect_for_range(pat, iter, body);
                 self.collect_expr_offsets(path, iter);
+                self.collect_counted_loops(body);
             }
             Stmt::While { cond, .. } => self.collect_expr_offsets(path, cond),
             Stmt::Unsafe { .. } | Stmt::Block(_) => {}

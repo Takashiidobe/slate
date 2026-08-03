@@ -907,6 +907,17 @@ fn apply_with_logger(
         });
         incremental.mark_everything_dirty();
     });
+    let facts = incremental.resolve(&program);
+    step!(program, Pass::SliceSwap, {
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::slice_swap::rewrite());
+            builder.finish()
+        };
+        let report = plan.apply(&mut program, &facts, logger);
+        incremental.mark_touched(&report.touched);
+    });
     step!(program, Pass::AtomicCompareExchange, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
             let plan = {
