@@ -7,7 +7,7 @@ use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, BorrowAliasReason, CallArgPinning, CallCallee, CastFact,
     ConstValue, ControlFlowSubject, CountedLoopFact, EffectSubject, FixupFacts, FunctionId,
     NulTermination, PathSegment, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
-    StringBufferKind, StringRecoveryCandidate, ValueSubject,
+    StringBufferKind, StringCopyRewrite, StringRecoveryCandidate, ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_declaration};
 use crate::rust_ast::{
@@ -32,8 +32,8 @@ use super::{
     HeapReallocation, HeapUse, ItemReferences, LazySingletonPlan, LazySingletonSet, MatchArmRef,
     NulPosition, NullaryMethodCall, ParameterRef, PointerMutability, Predicate, Proof, PtrLenPlan,
     PtrLenPlanSet, QueryResult, ReferenceDomain, Rejection, RejectionReason, ResolvedValue,
-    SliceLoopFact, StableExpr, StatementContainerRef, StatementRange, SwitchDispatch, TypeUseRef,
-    Usage, UseSiteRef, VaListAlias, ValueSite,
+    SliceLoopFact, StableExpr, StatementContainerRef, StatementRange, StringCopyAction,
+    StringCopySite, SwitchDispatch, TypeUseRef, Usage, UseSiteRef, VaListAlias, ValueSite,
 };
 
 macro_rules! query_cache {
@@ -2129,6 +2129,82 @@ impl<'snapshot> QueryContext<'snapshot> {
             detail: EvidenceDetail::StringUse { allowed },
         }];
         Ok(Proof::new(allowed, evidence))
+    }
+
+    pub(in crate::fixups) fn string_copy_rewrite_sites(
+        &self,
+        site: &ValueSite,
+        name: &str,
+    ) -> QueryResult<Vec<StringCopySite>> {
+        let predicate = Predicate::ReadPath;
+        let evidence_site = expression_site(site.item_index, &site.path.0);
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(binding) = self.facts.binding_by_local_path(function, name, &site.path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(evidence_site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let bindings = self.all_bindings();
+        let mut sites = Vec::new();
+        for fact in self
+            .facts
+            .string_copy_rewrites
+            .iter()
+            .filter(|fact| fact.site.function == function && fact.dst == binding)
+        {
+            let resolve = |source: BindingId| bindings.iter().find(|b| b.id == source).cloned();
+            let action = match &fact.rewrite {
+                StringCopyRewrite::AssignLiteral(text) => {
+                    StringCopyAction::AssignLiteral(text.clone())
+                }
+                StringCopyRewrite::AssignOwned(source) => {
+                    StringCopyAction::AssignOwned(resolve(*source).ok_or_else(|| {
+                        Rejection::new(
+                            predicate,
+                            Some(evidence_site.clone()),
+                            RejectionReason::IncompleteDomain,
+                            Vec::new(),
+                        )
+                    })?)
+                }
+                StringCopyRewrite::PushLiteral(text) => StringCopyAction::PushLiteral(text.clone()),
+                StringCopyRewrite::PushOwned(source) => {
+                    StringCopyAction::PushOwned(resolve(*source).ok_or_else(|| {
+                        Rejection::new(
+                            predicate,
+                            Some(evidence_site.clone()),
+                            RejectionReason::IncompleteDomain,
+                            Vec::new(),
+                        )
+                    })?)
+                }
+            };
+            sites.push(StringCopySite {
+                statement: StatementRef {
+                    item_index: site.item_index,
+                    path: fact.site.path.clone(),
+                },
+                action,
+            });
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site: evidence_site,
+            detail: EvidenceDetail::Binding {
+                name: name.to_string(),
+            },
+        }];
+        Ok(Proof::new(sites, evidence))
     }
 
     pub(in crate::fixups) fn pointer_origin(

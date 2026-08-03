@@ -33,6 +33,7 @@ pub(in crate::fixups) mod singleton_scopes;
 pub(in crate::fixups) mod slice_index;
 pub(in crate::fixups) mod slice_loop;
 pub(in crate::fixups) mod stdio;
+pub(in crate::fixups) mod string_copy;
 pub(in crate::fixups) mod string_lift;
 pub(in crate::fixups) mod string_params;
 pub(in crate::fixups) mod struct_field_init;
