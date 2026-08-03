@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::fixups::facts::file_ownership::{buf_ptr_var, match_gets_loop};
+use crate::fixups::facts::file_ownership::{buf_ptr_var, match_gets_call, match_gets_loop};
 use crate::fixups::facts::{AstPath, FileOpenMode, FileUseKind, PathSegment};
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{BinOp, Block, Expr, Ident, IndentStmt, RustValue, Stmt, Type, UnaryOp};
@@ -68,16 +68,19 @@ pub(super) fn plan_for_owner(body: &[IndentStmt], owner: &FileOwnership) -> Opti
                     remove.insert(use_index - 1);
                 }
             }
-            FileUseKind::Gets => {
-                let Stmt::Loop {
+            FileUseKind::Gets => match &body.get(use_index)?.stmt {
+                Stmt::Loop {
                     body: loop_body, ..
-                } = &body.get(use_index)?.stmt
-                else {
-                    return None;
-                };
-                let gets = match_gets_loop(loop_body, &aliases)?;
-                replacements.insert(use_index, gets_loop_stmt(handle, &gets));
-            }
+                } => {
+                    let gets = match_gets_loop(loop_body, &aliases)?;
+                    replacements.insert(use_index, gets_loop_stmt(handle, &gets));
+                }
+                Stmt::Expr(_) => {
+                    let gets = match_gets_call(body, use_index)?;
+                    replacements.insert(use_index, gets_call_stmt(handle, &gets));
+                }
+                _ => return None,
+            },
             FileUseKind::Read => {
                 let (result, args) = read_write_call(&body.get(use_index)?.stmt, Known::FRead)?;
                 let buf_name = buf_ptr_var(&args[0])?;
@@ -250,6 +253,81 @@ fn gets_loop_stmt(
         },
     ];
     Stmt::Loop { label: None, body }
+}
+
+fn gets_call_stmt(
+    handle: &str,
+    gets: &crate::fixups::facts::file_ownership::GetsLoopMatch,
+) -> Stmt {
+    let buf_name = gets.buf_name.as_str();
+    let line_name = "__slate_line";
+    let body = vec![
+        IndentStmt {
+            depth: 0,
+            stmt: Stmt::Let {
+                name: line_name.to_string(),
+                mutable: true,
+                ty: Some(Type::Generic {
+                    name: "Vec".into(),
+                    args: vec![Type::Prim(crate::rust_ast::Prim::U8)],
+                }),
+                init: Some(Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var("Vec::new".into())),
+                    args: Vec::new(),
+                }),
+            },
+        },
+        IndentStmt {
+            depth: 0,
+            stmt: Stmt::Expr(read_until_call(handle, line_name, gets.buf_len)),
+        },
+        IndentStmt {
+            depth: 0,
+            stmt: Stmt::For {
+                pat: "__slate_i".to_string(),
+                iter: Expr::Range {
+                    start: Box::new(Expr::Value(RustValue::Usize(0))),
+                    end: Box::new(Expr::MethodCall {
+                        recv: Box::new(Expr::Var(line_name.into())),
+                        method: "len".into(),
+                        args: Vec::new(),
+                    }),
+                },
+                body: vec![IndentStmt {
+                    depth: 0,
+                    stmt: Stmt::Assign {
+                        target: Expr::Index {
+                            base: Box::new(Expr::Var(buf_name.into())),
+                            index: Box::new(Expr::Var("__slate_i".into())),
+                        },
+                        value: Expr::Cast {
+                            expr: Box::new(Expr::Index {
+                                base: Box::new(Expr::Var(line_name.into())),
+                                index: Box::new(Expr::Var("__slate_i".into())),
+                            }),
+                            ty: Type::parse("i8"),
+                        },
+                    },
+                }],
+            },
+        },
+        IndentStmt {
+            depth: 0,
+            stmt: Stmt::Assign {
+                target: Expr::Index {
+                    base: Box::new(Expr::Var(buf_name.into())),
+                    index: Box::new(Expr::MethodCall {
+                        recv: Box::new(Expr::Var(line_name.into())),
+                        method: "len".into(),
+                        args: Vec::new(),
+                    }),
+                },
+                value: Expr::Value(RustValue::I64(0)),
+            },
+        },
+    ];
+    Stmt::Scope { body }
 }
 
 fn read_until_call(handle: &str, buf_name: &str, buf_len: i64) -> Expr {

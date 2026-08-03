@@ -1464,14 +1464,17 @@ fn literal_fopen_fputs_fclose_owner_uses_open_options() {
     );
     assert!(rust.contains("std::io::Write::write_all(&mut f, b\"owned\\n\").unwrap();"));
     assert!(!rust.contains("unsafe { fputs((c\"owned\\n\""));
-    assert!(rust.contains("unsafe { fgets("));
+    assert!(!rust.contains("unsafe { fgets("));
+    assert!(!rust.contains("unsafe { fclose("));
+    assert!(rust.contains("std::io::BufRead::read_until("));
+    assert!(rust.contains("unsafe { fputs(buf.as_mut_ptr()"));
 
     let drop_index = rust
         .find("drop(f);")
         .expect("close before the later reopen must become an explicit drop");
     let reopen_index = rust
-        .find("fopen((c\"slate_stdio_file_write.tmp\".as_ptr()")
-        .expect("generated rust should reopen the same path");
+        .find("std::io::BufReader::new(std::fs::OpenOptions::new().read(true).open(\"slate_stdio_file_write.tmp\")")
+        .expect("generated rust should reopen the same path with OpenOptions");
     assert!(
         drop_index < reopen_index,
         "explicit drop must precede the reopen of the same path"

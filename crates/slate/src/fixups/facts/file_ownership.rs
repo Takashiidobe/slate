@@ -531,6 +531,24 @@ pub(in crate::fixups) fn match_gets_loop(
     Some(GetsLoopMatch { buf_name, buf_len })
 }
 
+pub(in crate::fixups) fn match_gets_call(
+    body: &[IndentStmt],
+    use_index: usize,
+) -> Option<GetsLoopMatch> {
+    let Stmt::Expr(expr) = &body[use_index].stmt else {
+        return None;
+    };
+    let Expr::Call { args, .. } = unsafe_tail(expr)? else {
+        return None;
+    };
+    if args.len() != 3 {
+        return None;
+    }
+    let buf_name = buf_ptr_var(&args[0])?;
+    let buf_len = resolve_static_len(body, use_index, &args[1])?;
+    Some(GetsLoopMatch { buf_name, buf_len })
+}
+
 fn strip_cast(expr: &Expr) -> &Expr {
     match expr {
         Expr::Cast { expr: inner, .. } => strip_cast(inner),
