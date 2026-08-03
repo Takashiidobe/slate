@@ -595,11 +595,16 @@ fn apply_with_logger(
         runtime::ensure_numeric_parse(&mut program);
         incremental.mark_everything_dirty();
     });
+    let facts = incremental.resolve(&program);
     step!(program, Pass::SortSearch, {
-        run_once_program(&mut program, |program| {
-            rewrite::sort_search::SortSearch::new(logger).fixup(program)
-        });
-        incremental.mark_everything_dirty();
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::sort_search::program());
+            builder.finish()
+        };
+        let report = plan.apply(&mut program, &facts, logger);
+        incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::HeapOwnership, {
@@ -1009,10 +1014,6 @@ pub trait Fixup {
 
 fn run_once(body: &mut Vec<IndentStmt>, fixup: &mut impl Fixup) -> bool {
     fixup.fixup(body)
-}
-
-fn run_once_program(program: &mut Program, mut fixup: impl FnMut(&mut Program) -> bool) -> bool {
-    fixup(program)
 }
 
 fn to_fixpoint_program(program: &mut Program, mut fixup: impl FnMut(&mut Program) -> bool) {

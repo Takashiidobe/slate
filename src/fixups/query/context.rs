@@ -2386,8 +2386,12 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 
     pub(in crate::fixups) fn has_sort_search_calls(&self) -> bool {
-        self.all_calls()
-            .any(|call| matches!(call.target, CallTarget::Known(Known::Qsort | Known::Bsearch)))
+        self.all_calls().any(|call| {
+            matches!(
+                call.target,
+                CallTarget::Known(Known::Qsort | Known::Bsearch)
+            )
+        })
     }
 
     pub(in crate::fixups) fn has_atomic_promotions(&self) -> bool {
