@@ -360,6 +360,15 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
         Ok(std::array::from_fn(|index| statements[index].clone()))
     }
 
+    pub(in crate::fixups) fn preceding_statements<const N: usize>(
+        &self,
+        matched: &StatementMatch<N>,
+    ) -> Result<&'snapshot [IndentStmt], Rejection> {
+        statement_container(self.query.snapshot_program(), &matched.target)
+            .and_then(|body| body.get(..matched.target.start))
+            .ok_or_else(|| self.reject())
+    }
+
     pub(in crate::fixups) fn lower_expr(
         &mut self,
         recipe: ExprRecipe<'snapshot>,

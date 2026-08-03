@@ -32,6 +32,7 @@ pub(in crate::fixups) mod retval;
 pub(in crate::fixups) mod singleton_scopes;
 pub(in crate::fixups) mod slice_index;
 pub(in crate::fixups) mod slice_loop;
+pub(in crate::fixups) mod slice_reduce;
 pub(in crate::fixups) mod sort_search;
 pub(in crate::fixups) mod stdio;
 pub(in crate::fixups) mod string_copy;
