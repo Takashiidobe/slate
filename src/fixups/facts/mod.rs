@@ -27,6 +27,8 @@ pub(super) mod strings;
 pub(super) mod values;
 pub(super) mod walk;
 
+pub(super) const GENERATED_C_STRING_READ_CALLEE: &str = "std::ffi::CStr::from_ptr";
+
 #[derive(Debug, Clone)]
 pub(super) struct AnalyzedProgram<'a> {
     pub(super) program: &'a Program,
@@ -396,6 +398,7 @@ pub(super) enum StringBufferRejection {
     Mutated,
     UnsupportedInitializer,
     Unterminated,
+    EscapedToCall,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

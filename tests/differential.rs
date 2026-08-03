@@ -1712,7 +1712,8 @@ fn call_lowering_preserves_function_pointer_and_extern_shapes() {
         std::fs::read_to_string(&extern_generated).expect("read generated extern rust");
     assert!(extern_rust.contains("unsafe { toupper("));
     assert!(extern_rust.contains(" as i32) }"));
-    assert!(extern_rust.contains("unsafe { printf("));
+    assert!(!extern_rust.contains("unsafe { printf("));
+    assert!(extern_rust.contains("as u8) as char"));
 }
 
 #[test]
