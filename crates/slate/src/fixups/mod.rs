@@ -605,6 +605,7 @@ fn apply_with_logger(
                 let query = query::QueryContext::new(&program, &facts);
                 let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(&query, &query::rules::ctype_libc::calls());
+                builder.add_rule(&query, &query::rules::ctype_libc::classify());
                 builder.finish()
             };
             plan.apply(&mut program, &facts, logger);
@@ -728,6 +729,7 @@ fn apply_with_logger(
                 let query = query::QueryContext::new(&program, &facts);
                 let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(&query, &query::rules::ctype_libc::calls());
+                builder.add_rule(&query, &query::rules::ctype_libc::classify());
                 builder.finish()
             };
             plan.apply(&mut program, &facts, logger);

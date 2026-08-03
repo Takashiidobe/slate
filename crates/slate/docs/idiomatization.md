@@ -168,6 +168,54 @@ Final polish: recover meaningful identifier names and re-attach comments from th
 C **source text** (the third source), which neither CIR nor the AST preserves by
 default.
 
+## Rung 7 — `ctype.h` case conversion and classification
+
+`toupper`/`tolower` are recognized by `Known` function identity (a genuine call
+in this toolchain's glibc, not a macro) and rewritten to an ASCII-range check:
+
+```rust
+// before:                       // after:
+unsafe { toupper(c) }            if (c as i32) >= 97 && (c as i32) <= 122 { c + -32 } else { c }
+```
+
+Both are gated on `setlocale_calls_stay_c`: if any reachable `setlocale` call
+could switch `LC_CTYPE` away from `"C"`, the rewrite is unsound (case mapping
+becomes locale-defined) and the call stays on rung 0.
+
+The `is*` classification family (`isalpha`, `isdigit`, `isupper`, `islower`,
+`isalnum`, `isxdigit`, `ispunct`, `iscntrl`, `isgraph`, `isspace`, `isprint`)
+is a harder case: glibc expands them as macros into a `__ctype_b_loc()`
+table-lookup-and-bitmask chain, so there is no `isalpha` call to match at all —
+the rewrite recognizes the whole chain (a call to `__ctype_b_loc`, a double
+pointer deref through an offset, and a bitmask test) by walking backward
+through single-use temporaries, then rewrites the **comparison against
+zero** that consumes the bitmask (`mask_expr != 0`, `!isalpha(c)`, ...) to the
+matching `char`/byte method:
+
+```rust
+// before:                                    // after:
+let _v5 = unsafe { *_v4.offset(...) };        if (c as u8).is_ascii_alphabetic() { ... }
+if (_v5 as i32) & 1024 != 0 { ... }
+```
+
+Two correctness constraints narrow this rung:
+
+- **Never collapse the raw return value to `bool`.** C's classification
+  functions return an unspecified *nonzero* value (often the mask bit itself,
+  not `1`), so `printf("%d", isalpha(c))` must stay on rung 0 — only a
+  provable `== 0`/`!= 0` (or negated) comparison is eligible.
+- **`isspace`/`isprint` need a compound expression, not a 1:1 method.** Rust's
+  `is_ascii_whitespace` (the WHATWG definition) omits vertical tab (`0x0B`),
+  which C's `isspace` includes in the `"C"` locale; `is_ascii_graphic` excludes
+  space, which `isprint` includes. Both rewrite to
+  `is_ascii_*() || byte == extra` rather than a bare method call.
+
+Only `isdigit`/`isxdigit` are locale-invariant per the C standard; every other
+classification function reuses the same `setlocale_calls_stay_c` gate as
+`toupper`/`tolower`. The argument must also resolve to a locally-declared
+`i8`/`u8` binding — a parameter or wider int (which could carry `EOF`) stays on
+rung 0, since the byte cast would silently reinterpret an out-of-range value.
+
 ---
 
 Each rung narrows the gap between "compiles and behaves like the C" and "reads

@@ -40,6 +40,7 @@ pub enum Known {
     Remove,
     ToUpper,
     ToLower,
+    CtypeBLoc,
     Sin,
     Cos,
     Tan,
@@ -102,6 +103,7 @@ impl Known {
             Self::Remove => "remove",
             Self::ToUpper => "toupper",
             Self::ToLower => "tolower",
+            Self::CtypeBLoc => "__ctype_b_loc",
             Self::Sin => "sin",
             Self::Cos => "cos",
             Self::Tan => "tan",
@@ -174,7 +176,7 @@ impl Known {
             | Self::FClose
             | Self::FFlush
             | Self::Remove => "stdio.h",
-            Self::ToUpper | Self::ToLower => "ctype.h",
+            Self::ToUpper | Self::ToLower | Self::CtypeBLoc => "ctype.h",
             Self::Sin
             | Self::Cos
             | Self::Tan
@@ -234,6 +236,7 @@ impl Known {
             "remove" => (Self::Remove, "stdio.h"),
             "toupper" => (Self::ToUpper, "ctype.h"),
             "tolower" => (Self::ToLower, "ctype.h"),
+            "__ctype_b_loc" => (Self::CtypeBLoc, "ctype.h"),
             "sin" => (Self::Sin, "math.h"),
             "cos" => (Self::Cos, "math.h"),
             "tan" => (Self::Tan, "math.h"),

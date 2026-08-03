@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 use super::support::*;
 use crate::effects::{
     AllocId, ArgShapeKind, AtomicId, BindingKind, CallSummary, Construct, EResult, Effect,
-    EffectError, EffectTrace, FileId, IntWidth, Location, OptionValue, Value, ValueKind,
+    EffectError, EffectTrace, FileId, Found, IntWidth, Location, OptionValue, Value, ValueKind,
     call_summary,
 };
 use crate::rust_ast::{
@@ -4782,6 +4782,10 @@ impl Interp {
             CallSummary::Remove => self.call_remove(args),
             CallSummary::Toupper => self.call_toupper(args),
             CallSummary::Tolower => self.call_tolower(args),
+            CallSummary::CtypeBLoc => Err(EffectError::unsupported(
+                Construct::LibcCall(CallSummary::CtypeBLoc),
+                Found::Expr,
+            )),
             CallSummary::Sin => self.call_math_unary(args, f64::sin),
             CallSummary::Cos => self.call_math_unary(args, f64::cos),
             CallSummary::Tan => self.call_math_unary(args, f64::tan),
