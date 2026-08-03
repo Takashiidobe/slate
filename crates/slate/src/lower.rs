@@ -2289,8 +2289,8 @@ impl<'a> Lowerer<'a> {
 
 fn clib_record_type(name: &str) -> Option<CLibType> {
     Some(match name {
-        "_IO_FILE" => CLibType::File,
-        "__mbstate_t" | "mbstate_t" => CLibType::MbState,
+        "FILE" | "_IO_FILE" => CLibType::File,
+        "mbstate_t" | "__mbstate_t" => CLibType::MbState,
         "pthread" => CLibType::Pthread,
         "pthread_attr_t" => CLibType::PthreadAttr,
         "timespec" => CLibType::Timespec,

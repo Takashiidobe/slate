@@ -5,7 +5,9 @@
 //!   SLATE_CLANG    (default ~/llvm-project/build-cir/bin/clang)
 //!   SLATE_CIR_OPT  (default ~/llvm-project/build-cir/bin/cir-opt)
 //!   SLATE_LIBC_SHIM (unset by default; a directory makes SLATE_CLANG parse
-//!                    with -nostdinc -isystem <dir> instead of system libc headers)
+//!                    with -nostdlibinc -isystem <dir> instead of system libc
+//!                    headers, while keeping clang's own builtin freestanding
+//!                    headers such as stddef.h/stdint.h/stdatomic.h)
 
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -25,15 +27,19 @@ fn cir_opt() -> String {
         .unwrap_or_else(|_| format!("{}/llvm-project/build-cir/bin/cir-opt", home()))
 }
 
-/// `-nostdinc` plus `-isystem <dir>` when `SLATE_LIBC_SHIM` names a directory,
-/// so SLATE_CLANG parses against Slate's own header declarations instead of
-/// the host's system libc. Opt-in and unset by default until the shim under
-/// `libc-shim/include` covers enough of the supported subset to replace the
-/// system headers outright (see slate-k89h.2).
+/// `-nostdlibinc` plus `-isystem <dir>` when `SLATE_LIBC_SHIM` names a
+/// directory, so SLATE_CLANG parses against Slate's own header declarations
+/// instead of the host's system libc, while still keeping clang's own
+/// builtin freestanding headers (stddef.h, stdint.h, stdarg.h, limits.h,
+/// float.h, stdalign.h, stdatomic.h, the intrinsics headers, ...) available —
+/// those are compiler-owned and target-derived, not glibc, so there is
+/// nothing to gain by reimplementing them. Opt-in and unset by default until
+/// the shim under `libc-shim/include` covers enough of the supported subset
+/// to replace the system libc headers outright (see slate-k89h.2).
 fn libc_shim_args() -> Vec<String> {
     match std::env::var("SLATE_LIBC_SHIM") {
         Ok(dir) if !dir.trim().is_empty() => {
-            vec!["-nostdinc".into(), "-isystem".into(), dir]
+            vec!["-nostdlibinc".into(), "-isystem".into(), dir]
         }
         _ => Vec::new(),
     }

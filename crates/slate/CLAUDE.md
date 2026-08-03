@@ -82,7 +82,7 @@ default to a local build and are overridable via environment variables:
 | `SLATE_ALIVE_TV`                    | `~/alive2/build/alive-tv`              | translation-validate a fixup pass's before/after IR |
 | `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                      | shared target triple / extra clang flags            |
 | `SLATE_MACRO_DUMP_PLUGIN`           | `<SLATE_CLANG build>/lib/SlateMacroDump.so` | macro invocations plus include/function provenance, keyed by physical source offset |
-| `SLATE_LIBC_SHIM`                   | unset (system headers)                 | when set to a directory, SLATE_CLANG parses with `-nostdinc -isystem <dir>` against `libc-shim/include` instead of the host's system libc headers |
+| `SLATE_LIBC_SHIM`                   | unset (system headers)                 | when set to a directory, SLATE_CLANG parses with `-nostdlibinc -isystem <dir>` against `libc-shim/include` instead of the host's system libc headers (clang's own builtin freestanding headers — stddef.h, stdint.h, stdatomic.h, etc. — stay available) |
 
 `c_ast.rs` always loads `SLATE_CLANG` with `-fplugin=$SLATE_MACRO_DUMP_PLUGIN`, so
 that plugin must be built against the same clang tree `SLATE_CLANG` points at
