@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::file_ownership::{buf_ptr_var, match_gets_loop};
 use crate::fixups::facts::{AstPath, FileOpenMode, FileUseKind, PathSegment};
 use crate::function_identity::{Known, known_call};
-use crate::rust_ast::{BinOp, Block, Expr, Ident, IndentStmt, RustValue, Stmt, Type};
+use crate::rust_ast::{BinOp, Block, Expr, Ident, IndentStmt, RustValue, Stmt, Type, UnaryOp};
 
 use super::FileOwnership;
 
@@ -30,7 +30,7 @@ pub(super) fn plan_for_owner(body: &[IndentStmt], owner: &FileOwnership) -> Opti
     let open_index = stmt_index(&owner.open_statement.path)?;
     let assign_index = stmt_index(&owner.assign_statement.path)?;
     let guard_index = assign_index + 1;
-    let path = fopen_path_literal(&body.get(open_index)?.stmt)?;
+    let path = fopen_path_literal(body, open_index)?;
     let mode = owner.mode?;
     let guard_body = open_failure_body(&body.get(guard_index)?.stmt)?;
     let buffered = owner.uses.iter().any(|use_| use_.kind == FileUseKind::Gets);
@@ -556,7 +556,8 @@ fn open_failure_body(stmt: &Stmt) -> Option<Vec<IndentStmt>> {
     }
 }
 
-fn fopen_path_literal(stmt: &Stmt) -> Option<String> {
+fn fopen_path_literal(body: &[IndentStmt], open_index: usize) -> Option<String> {
+    let stmt = &body.get(open_index)?.stmt;
     let Stmt::Let {
         init: Some(init), ..
     } = stmt
@@ -570,8 +571,97 @@ fn fopen_path_literal(stmt: &Stmt) -> Option<String> {
     if known_call(call) != Some(Known::FOpen) || args.len() != 2 {
         return None;
     }
-    let bytes = c_string_arg(&args[0])?;
+    let bytes =
+        c_string_arg(&args[0]).or_else(|| local_c_string_arg(body, open_index, &args[0]))?;
     String::from_utf8(bytes).ok()
+}
+
+fn local_c_string_arg(body: &[IndentStmt], before_index: usize, expr: &Expr) -> Option<Vec<u8>> {
+    let var = ptr_source_var(expr)?;
+    resolve_local_c_string(body, before_index, &var)
+}
+
+fn ptr_source_var(expr: &Expr) -> Option<String> {
+    match expr {
+        Expr::Cast { expr, .. } => ptr_source_var(expr),
+        Expr::ArrayPtr { array, .. } => match array.as_ref() {
+            Expr::Var(name) => Some(name.as_str().to_string()),
+            other => ptr_source_var(other),
+        },
+        Expr::MethodCall { recv, method, args }
+            if args.is_empty() && (method == "as_ptr" || method == "as_mut_ptr") =>
+        {
+            match recv.as_ref() {
+                Expr::Var(name) => Some(name.as_str().to_string()),
+                other => ptr_source_var(other),
+            }
+        }
+        _ => None,
+    }
+}
+
+fn resolve_local_c_string(body: &[IndentStmt], before_index: usize, var: &str) -> Option<Vec<u8>> {
+    for idx in (0..before_index).rev() {
+        let stmt = &body[idx].stmt;
+        if let Stmt::Assign { target, value } = stmt
+            && is_deref_of_var(target, var)
+        {
+            let Expr::ArrayLit(elems) = value else {
+                return None;
+            };
+            return array_lit_c_string(elems);
+        }
+        if stmt_may_write_var(stmt, var) {
+            return None;
+        }
+    }
+    None
+}
+
+fn is_deref_of_var(expr: &Expr, var: &str) -> bool {
+    matches!(
+        expr,
+        Expr::Unary { op: UnaryOp::Deref, expr } if matches!(expr.as_ref(), Expr::Var(name) if name.as_str() == var)
+    )
+}
+
+fn array_lit_c_string(elems: &[Expr]) -> Option<Vec<u8>> {
+    let mut bytes = Vec::with_capacity(elems.len());
+    for elem in elems {
+        let Expr::Value(RustValue::I64(n)) = elem else {
+            return None;
+        };
+        bytes.push(n.rem_euclid(256) as u8);
+    }
+    let nul_at = bytes.iter().position(|&b| b == 0)?;
+    if nul_at != bytes.len() - 1 {
+        return None;
+    }
+    bytes.truncate(nul_at);
+    Some(bytes)
+}
+
+fn stmt_may_write_var(stmt: &Stmt, var: &str) -> bool {
+    match stmt {
+        Stmt::Assign { target, .. } | Stmt::CompoundAssign { target, .. } => {
+            expr_targets_var(target, var)
+        }
+        Stmt::Let { name, .. } => name == var,
+        _ => false,
+    }
+}
+
+fn expr_targets_var(expr: &Expr, var: &str) -> bool {
+    match expr {
+        Expr::Var(name) => name.as_str() == var,
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr,
+        } => expr_targets_var(expr, var),
+        Expr::Index { base, .. } => expr_targets_var(base, var),
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } => expr_targets_var(base, var),
+        _ => false,
+    }
 }
 
 fn fputs_literal(stmt: &Stmt) -> Option<Vec<u8>> {
