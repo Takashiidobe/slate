@@ -588,6 +588,19 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
+    step!(program, Pass::CTypeLibc, {
+        if !skip.contains(Pass::CTypeLibc) {
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::ctype_libc::calls());
+                builder.finish()
+            };
+            plan.apply(&mut program, &facts, logger);
+            incremental.mark_everything_dirty();
+        }
+    });
+    let facts = incremental.resolve(&program);
     step!(program, Pass::SortSearch, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
@@ -696,6 +709,19 @@ fn apply_with_logger(
         plan.apply(&mut program, &facts, logger);
         runtime::ensure_numeric_parse(&mut program);
         incremental.mark_everything_dirty();
+    });
+    let facts = incremental.resolve(&program);
+    step!(program, Pass::CTypeLibc, {
+        if !skip.contains(Pass::CTypeLibc) {
+            let plan = {
+                let query = query::QueryContext::new(&program, &facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::ctype_libc::calls());
+                builder.finish()
+            };
+            plan.apply(&mut program, &facts, logger);
+            incremental.mark_everything_dirty();
+        }
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::CStrings, {

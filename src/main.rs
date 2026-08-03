@@ -532,6 +532,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     let mut shared_enums = BTreeMap::new();
     let mut referenced_record_types = BTreeSet::new();
     let mut uses_slate_support = false;
+    let mut has_setlocale = false;
     for (stem, path) in &modules {
         let source =
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
@@ -552,6 +553,9 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         }
         unsafe_functions.extend(lower::unsafe_defined_functions(&module));
         crate_features.extend(lower::required_features(&module));
+        has_setlocale |= lower::declared_functions(&module)
+            .iter()
+            .any(|name| name == "setlocale");
         let unit = c_ast::parse_file_with_project_records(path, project_dir)?;
         for enm in &unit.enums {
             shared_enums
@@ -593,6 +597,21 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         emit_pub: true,
     };
 
+    let tests_dir = project_dir.join("tests");
+    if tests_dir.is_dir() {
+        for (_, path) in collect_c_modules(&tests_dir)? {
+            let module = cir::parse_module(&cir::emit_generic(&path)?)?;
+            has_setlocale |= lower::declared_functions(&module)
+                .iter()
+                .any(|name| name == "setlocale");
+        }
+    }
+    let fixup_skip = if has_setlocale {
+        fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
+    } else {
+        fixups::SkipSet::none()
+    };
+
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
     let mut written = Vec::new();
     for (stem, path, module, unit, warning_items) in loaded_modules {
@@ -611,7 +630,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         }
         directive_translate::insert_directive_items(&mut program, warning_items);
         let output = crate_src.join(stem).with_extension("rs");
-        std::fs::write(&output, fixups::apply(program).emit())
+        std::fs::write(&output, fixups::apply_with(program, &fixup_skip).emit())
             .map_err(|e| format!("write {}: {e}", output.display()))?;
         written.push(output);
     }
@@ -644,7 +663,6 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         .map_err(|e| format!("write {}: {e}", lib_rs_path.display()))?;
     written.push(lib_rs_path);
 
-    let tests_dir = project_dir.join("tests");
     let mut test_modules = Vec::new();
     if tests_dir.is_dir() {
         let crate_tests = crate_dir.join("tests");
@@ -692,7 +710,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
             }
             directive_translate::insert_directive_items(&mut program, warning_items);
             let output = crate_tests.join(&stem).with_extension("rs");
-            std::fs::write(&output, fixups::apply(program).emit())
+            std::fs::write(&output, fixups::apply_with(program, &fixup_skip).emit())
                 .map_err(|e| format!("write {}: {e}", output.display()))?;
             written.push(output);
             test_modules.push(stem);
@@ -732,6 +750,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
     let mut unsafe_functions = BTreeSet::new();
     let mut crate_features = BTreeSet::new();
     let mut root: Option<String> = None;
+    let mut has_setlocale = false;
     for (stem, path) in &modules {
         reject_active_unsupported_file(path, "translate-project")?;
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
@@ -747,7 +766,15 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
         }
         unsafe_functions.extend(lower::unsafe_defined_functions(&module));
         crate_features.extend(lower::required_features(&module));
+        has_setlocale |= lower::declared_functions(&module)
+            .iter()
+            .any(|name| name == "setlocale");
     }
+    let fixup_skip = if has_setlocale {
+        fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
+    } else {
+        fixups::SkipSet::none()
+    };
     let root = root.ok_or("translate-project: no unit defines main")?;
     let siblings: Vec<String> = modules
         .iter()
@@ -807,7 +834,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
             stem.clone()
         };
         let output = out_dir.join(file).with_extension("rs");
-        std::fs::write(&output, fixups::apply(program).emit())
+        std::fs::write(&output, fixups::apply_with(program, &fixup_skip).emit())
             .map_err(|e| format!("write {}: {e}", output.display()))?;
         written.push(output);
     }

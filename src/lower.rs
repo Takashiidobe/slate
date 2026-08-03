@@ -153,6 +153,17 @@ pub fn defined_functions(module: &Module) -> Vec<String> {
         .collect()
 }
 
+pub fn declared_functions(module: &Module) -> Vec<String> {
+    let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
+        return Vec::new();
+    };
+    region_ops(module_op)
+        .iter()
+        .filter(|op| op.kind() == CirOpKind::Func && region_ops(op).is_empty())
+        .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
+        .collect()
+}
+
 pub fn defined_globals(module: &Module) -> Vec<String> {
     let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
         return Vec::new();

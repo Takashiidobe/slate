@@ -2154,6 +2154,45 @@ fn string_libc_calls_use_lifted_string_operations() {
 }
 
 #[test]
+fn ctype_libc_calls_use_ascii_range_classification() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-ctype-libc");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("ctype_libc_fixup.c");
+    let generated = tmp.join("ctype_libc_fixup.generated.rs");
+    support::translate(&c_src, &generated).expect("translate ctype_libc_fixup fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated ctype_libc rust");
+
+    assert!(rust.contains("(lower as i32) >= 97 && (lower as i32) <= 122"));
+    assert!(rust.contains("(upper as i32) >= 65 && (upper as i32) <= 90"));
+    assert!(!rust.contains("fn toupper("));
+    assert!(!rust.contains("fn tolower("));
+    assert!(!rust.contains("unsafe { toupper("));
+    assert!(!rust.contains("unsafe { tolower("));
+}
+
+#[test]
+fn ctype_libc_calls_stay_raw_when_locale_is_not_provably_c() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-ctype-libc-locale");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_only = fixtures_dir().join("ctype_libc_setlocale_c.c");
+    let c_only_generated = tmp.join("ctype_libc_setlocale_c.generated.rs");
+    support::translate(&c_only, &c_only_generated)
+        .expect("translate ctype_libc_setlocale_c fixture");
+    let rust = std::fs::read_to_string(&c_only_generated).expect("read generated rust");
+    assert!(!rust.contains("fn toupper("));
+    assert!(!rust.contains("fn tolower("));
+
+    let non_c = fixtures_dir().join("ctype_libc_setlocale_non_c.c");
+    let non_c_generated = tmp.join("ctype_libc_setlocale_non_c.generated.rs");
+    support::translate(&non_c, &non_c_generated)
+        .expect("translate ctype_libc_setlocale_non_c fixture");
+    let rust = std::fs::read_to_string(&non_c_generated).expect("read generated rust");
+    assert!(rust.contains("unsafe { toupper("));
+    assert!(rust.contains("unsafe { tolower("));
+}
+
+#[test]
 fn memchr_calls_rewrite_only_with_proven_extent_and_nul_range() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memchr-helper");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
