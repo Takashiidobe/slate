@@ -3,7 +3,6 @@
 pub(crate) mod facts;
 mod idents;
 mod query;
-mod rewrite;
 mod runtime;
 mod support;
 pub mod trace;
@@ -12,7 +11,7 @@ pub mod trace;
 mod test_support;
 
 use crate::fixups::trace::{CollectingLogger, NoopLogger, ProgramSummary, TraceLog, TraceLogger};
-use crate::rust_ast::{FnDef, IndentStmt, Item, Program};
+use crate::rust_ast::{FnDef, Item, Program};
 
 pub use trace::Pass;
 
@@ -496,11 +495,16 @@ fn apply_with_logger(
             incremental.mark_touched(&report.touched);
         }
     });
+    let facts = incremental.resolve(&program);
     step!(program, Pass::SliceReduce, {
-        if run_once_items(&mut program, |_, f| {
-            let mut fixup = rewrite::slice_reduce::SliceReduce::new(f.name.clone(), logger);
-            run_once(&mut f.body, &mut fixup)
-        }) {
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::slice_reduce::rewrite());
+            builder.finish()
+        };
+        let report = plan.apply(&mut program, &facts, logger);
+        if report.changed {
             late_loop_cleanup(&mut program, Pass::SliceReduce, logger);
         }
         incremental.mark_everything_dirty();
@@ -1006,14 +1010,6 @@ fn apply_with_logger(
     });
     let _ = debug_done;
     program.clone()
-}
-
-pub trait Fixup {
-    fn fixup(&mut self, body: &mut Vec<IndentStmt>) -> bool;
-}
-
-fn run_once(body: &mut Vec<IndentStmt>, fixup: &mut impl Fixup) -> bool {
-    fixup.fixup(body)
 }
 
 fn to_fixpoint_program(program: &mut Program, mut fixup: impl FnMut(&mut Program) -> bool) {
