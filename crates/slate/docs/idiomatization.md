@@ -116,6 +116,9 @@ Pure readability, no semantic risk:
 - **dead-let**: drop `let mut x = 0;` that is overwritten before any read.
 - **param/alloca fusion**: `fn f(arg0){ let mut a = arg0; …a… }` → use the param
   directly.
+- **temp-swap**: `let tmp = a; a = b; b = tmp;` over plain local bindings →
+  `std::mem::swap(&mut a, &mut b)`, only when `tmp` has no other reads/writes
+  in the function and `a`/`b` are distinct bindings.
 
 ```rust
 // before:               // after:

@@ -245,7 +245,9 @@ impl<W: Write> Codegen<W> {
             self.ty(&p.ty)?;
         }
         self.out.write_char(')')?;
-        if let Some(ret) = &f.ret {
+        if let Some(ret) = &f.ret
+            && !ret.is_unit()
+        {
             self.out.write_str(" -> ")?;
             self.ty(ret)?;
         }
@@ -525,7 +527,9 @@ impl<W: Write> Codegen<W> {
             self.ty(&p.ty)?;
         }
         self.out.write_char(')')?;
-        if let Some(ret) = &m.ret {
+        if let Some(ret) = &m.ret
+            && !ret.is_unit()
+        {
             self.out.write_str(" -> ")?;
             self.ty(ret)?;
         }
@@ -552,7 +556,9 @@ impl<W: Write> Codegen<W> {
                     self.out.write_str("...")?;
                 }
                 self.out.write_char(')')?;
-                if let Some(ret) = &f.ret {
+                if let Some(ret) = &f.ret
+                    && !ret.is_unit()
+                {
                     self.out.write_str(" -> ")?;
                     self.ty(ret)?;
                 }
@@ -1348,8 +1354,11 @@ impl<W: Write> Codegen<W> {
                     }
                     self.ty(p)?;
                 }
-                self.out.write_str(") -> ")?;
-                self.ty(ret)?;
+                self.out.write_char(')')?;
+                if !ret.is_unit() {
+                    self.out.write_str(" -> ")?;
+                    self.ty(ret)?;
+                }
                 self.out.write_char('>')
             }
             Type::Unit => self.out.write_str("()"),
