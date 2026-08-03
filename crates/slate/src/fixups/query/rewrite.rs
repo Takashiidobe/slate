@@ -53,6 +53,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::Function => "function",
         Predicate::ParentExpression => "parent_expression",
         Predicate::AnonymousStructDomain => "anonymous_struct_domain",
+        Predicate::SortSearchDomain => "sort_search_domain",
         Predicate::ByteSource => "byte_source",
         Predicate::ConstantU8 => "constant_u8",
         Predicate::ConstantUsize => "constant_usize",
@@ -86,6 +87,8 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::ValueGuard => "value_guard",
         Predicate::StringBuffer => "string_buffer",
         Predicate::StringUse => "string_use",
+        Predicate::StringLibcUse => "string_libc_use",
+        Predicate::AsciiNumericSign => "ascii_numeric_sign",
         Predicate::AllExprs => "all_exprs",
         Predicate::Cast => "cast",
         Predicate::ReferenceDomain => "reference_domain",
@@ -122,6 +125,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             conflicts,
             complete,
         } => format!("records={records};facts={facts};conflicts={conflicts};complete={complete}"),
+        EvidenceDetail::SortSearchDomain { comparators } => format!("comparators={comparators}"),
         EvidenceDetail::Binding { name } => format!("binding={name}"),
         EvidenceDetail::BindingUses { reads, writes } => {
             format!("reads={reads},writes={writes}")
@@ -160,6 +164,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
             format!("count={count};nul={nul}")
         }
         EvidenceDetail::MovablePure => "movable_pure".into(),
+        EvidenceDetail::ValueGuard => "value_guard".into(),
         EvidenceDetail::ExternFnDeclaration {
             name,
             arity,
@@ -215,6 +220,8 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::StringParamLift => "string_param_lift".into(),
         EvidenceDetail::StringBuffer { bytes } => format!("bytes={bytes}"),
         EvidenceDetail::StringUse { allowed } => format!("allowed={allowed}"),
+        EvidenceDetail::StringLibcUse { callee } => format!("callee={callee:?}"),
+        EvidenceDetail::AsciiNumericSign { sign } => format!("sign={sign:?}"),
         EvidenceDetail::AllExprs { count } => format!("count={count}"),
         EvidenceDetail::Cast { to } => format!("to={to:?}"),
         EvidenceDetail::ReferenceDomain { definitions, items } => {

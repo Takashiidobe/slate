@@ -16,6 +16,7 @@ mod retval;
 mod rewrite;
 pub(in crate::fixups) mod rules;
 mod slice_index;
+mod sort_search;
 mod stdio;
 mod switch;
 mod va_list;
@@ -42,7 +43,7 @@ pub(in crate::fixups) use plan::TouchedItems;
 use printf::printf_macro;
 pub(in crate::fixups) use program_recipe::{
     rewrite_anonymous_structs, rewrite_atomic_locals, rewrite_lazy_singletons,
-    rewrite_printf_fallback, rewrite_ptr_len,
+    rewrite_printf_fallback, rewrite_ptr_len, rewrite_sort_search,
 };
 pub(in crate::fixups) use proof::{
     Evidence, EvidenceDetail, Predicate, Proof, QueryResult, Rejection, RejectionReason,
@@ -69,6 +70,6 @@ pub(in crate::fixups) use views::{
     HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences, LazySingletonSet,
     MatchArmRef, NulPosition, ParameterRef, Phase, PointerMutability, ProgramRef, PtrLenPlanSet,
     ReferenceDomain, ResolvedValue, SliceLoopFact, StableExpr, StatementContainerRef,
-    StatementRange, StringCopyAction, StringCopySite, SwitchDispatch, TypeUseKind, TypeUseRef,
-    Usage, UseSiteRef, VaListAlias, ValueSite,
+    StatementRange, StringCopyAction, StringCopySite, StringLibcUse, SwitchDispatch, TypeUseKind,
+    TypeUseRef, Usage, UseSiteRef, VaListAlias, ValueSite,
 };

@@ -11,9 +11,9 @@ use crate::rust_ast::{
 
 use super::plan::TouchedItems;
 use super::{
-    AnonymousStructPlan, AnonymousStructSet, AtomicPromotionSet, ExprSite, LazySingletonPlan,
-    LazySingletonSet, Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryContext, QueryResult,
-    Rejection, RejectionReason,
+    AnonymousStructPlan, AnonymousStructSet, AtomicPromotionSet, Evidence, EvidenceDetail,
+    ExprSite, LazySingletonPlan, LazySingletonSet, Predicate, Proof, PtrLenPlan, PtrLenPlanSet,
+    QueryContext, QueryResult, Rejection, RejectionReason,
 };
 
 pub(in crate::fixups) struct ProgramReplacement {
@@ -678,6 +678,37 @@ pub(in crate::fixups) fn rewrite_ptr_len(
             touched: TouchedItems::unbounded(),
         },
         Vec::new(),
+    ))
+}
+
+pub(in crate::fixups) fn rewrite_sort_search(
+    query: &QueryContext<'_>,
+) -> QueryResult<ProgramReplacement> {
+    let predicate = Predicate::SortSearchDomain;
+    let mut replacement = query.snapshot_program().clone();
+    let Some(comparators) = super::sort_search::rewrite_program(&mut replacement) else {
+        return Err(Rejection::new(
+            predicate,
+            None,
+            RejectionReason::Contradicted,
+            Vec::new(),
+        ));
+    };
+    let evidence = vec![Evidence {
+        predicate,
+        site: ExprSite {
+            item_index: 0,
+            path: Default::default(),
+            fact_path: Default::default(),
+        },
+        detail: EvidenceDetail::SortSearchDomain { comparators },
+    }];
+    Ok(Proof::new(
+        ProgramReplacement {
+            replacement,
+            touched: TouchedItems::unbounded(),
+        },
+        evidence,
     ))
 }
 

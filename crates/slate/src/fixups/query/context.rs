@@ -4,10 +4,10 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, BorrowAliasReason, CallArgPinning, CallCallee, CastFact,
-    ConstValue, ControlFlowSubject, CountedLoopFact, EffectSubject, FixupFacts, FunctionId,
-    NulTermination, PathSegment, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
-    StringBufferKind, StringCopyRewrite, StringRecoveryCandidate, ValueSubject,
+    AsciiNumericSign, AstPath, BindingId, BindingKind, BorrowAliasReason, CallArgPinning,
+    CallCallee, CastFact, ConstValue, ControlFlowSubject, CountedLoopFact, EffectSubject,
+    FixupFacts, FunctionId, NulTermination, PathSegment, PrintfCallFact, PtrLenSliceFact, Purity,
+    StringBufferFact, StringBufferKind, StringCopyRewrite, StringRecoveryCandidate, ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_declaration};
 use crate::rust_ast::{
@@ -33,7 +33,8 @@ use super::{
     NulPosition, NullaryMethodCall, ParameterRef, PointerMutability, Predicate, Proof, PtrLenPlan,
     PtrLenPlanSet, QueryResult, ReferenceDomain, Rejection, RejectionReason, ResolvedValue,
     SliceLoopFact, StableExpr, StatementContainerRef, StatementRange, StringCopyAction,
-    StringCopySite, SwitchDispatch, TypeUseRef, Usage, UseSiteRef, VaListAlias, ValueSite,
+    StringCopySite, StringLibcUse, SwitchDispatch, TypeUseRef, Usage, UseSiteRef, VaListAlias,
+    ValueSite,
 };
 
 macro_rules! query_cache {
@@ -2207,6 +2208,115 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(sites, evidence))
     }
 
+    pub(in crate::fixups) fn string_libc_use(&self, site: &ExprSite) -> QueryResult<StringLibcUse> {
+        let predicate = Predicate::StringLibcUse;
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(usage) = self.facts.string_libc_use(function, &site.fact_path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let bindings = self.all_bindings();
+        let mut pointer_args = Vec::new();
+        for &binding_id in &usage.pointer_args {
+            let Some(binding) = bindings.iter().find(|b| b.id == binding_id).cloned() else {
+                return Err(Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            pointer_args.push(binding);
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site: site.clone(),
+            detail: EvidenceDetail::StringLibcUse {
+                callee: usage.callee,
+            },
+        }];
+        Ok(Proof::new(
+            StringLibcUse {
+                callee: usage.callee,
+                pointer_args,
+            },
+            evidence,
+        ))
+    }
+
+    pub(in crate::fixups) fn ascii_numeric_sign(
+        &self,
+        binding: &BindingRef,
+    ) -> QueryResult<AsciiNumericSign> {
+        let predicate = Predicate::AsciiNumericSign;
+        let site = expression_site(binding.item_index, &binding.definition.0);
+        let Some(sign) = self
+            .facts
+            .ascii_numeric_string(binding.id)
+            .map(|fact| fact.sign)
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::AsciiNumericSign { sign },
+        }];
+        Ok(Proof::new(sign, evidence))
+    }
+
+    /// Whether every observed assignment to `binding` is the constant zero (or an
+    /// equivalent null pointer) - tracked per-binding rather than per-expression,
+    /// since a binding can be read back at many call sites downstream of its one
+    /// assignment.
+    pub(in crate::fixups) fn binding_constant_zero(&self, binding: &BindingRef) -> QueryResult<()> {
+        let predicate = Predicate::ValueGuard;
+        let site = expression_site(binding.item_index, &binding.definition.0);
+        let Some(function) = self.facts.function_by_item_index(binding.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let is_zero = self.facts.values.iter().any(|value| {
+            value.site.function == function
+                && value.subject == ValueSubject::Binding(binding.id)
+                && value.value == ConstValue::Zero
+        });
+        if !is_zero {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::ValueGuard,
+        }];
+        Ok(Proof::new((), evidence))
+    }
+
     pub(in crate::fixups) fn pointer_origin(
         &self,
         site: &ValueSite,
@@ -2273,6 +2383,11 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn has_ptr_len_slices(&self) -> bool {
         !self.facts.ptr_len_slices.is_empty()
+    }
+
+    pub(in crate::fixups) fn has_sort_search_calls(&self) -> bool {
+        self.all_calls()
+            .any(|call| matches!(call.target, CallTarget::Known(Known::Qsort | Known::Bsearch)))
     }
 
     pub(in crate::fixups) fn has_atomic_promotions(&self) -> bool {

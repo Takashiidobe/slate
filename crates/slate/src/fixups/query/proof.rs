@@ -1,6 +1,6 @@
 use crate::fixups::facts::{
-    CallArgPinning, CountedLoopIndexUse, CountedLoopStart, CountedLoopStep, PlaceAccess, Purity,
-    SliceLoopAccess,
+    AsciiNumericSign, CallArgPinning, CountedLoopIndexUse, CountedLoopStart, CountedLoopStep,
+    PlaceAccess, Purity, SliceLoopAccess, StringLibcFunction,
 };
 use crate::rust_ast::Type;
 
@@ -53,6 +53,7 @@ pub(in crate::fixups) enum Predicate {
     StatementRegion,
     StatementReachable,
     AnonymousStructDomain,
+    SortSearchDomain,
     ByteSource,
     ConstantU8,
     ConstantUsize,
@@ -87,6 +88,8 @@ pub(in crate::fixups) enum Predicate {
     ValueGuard,
     StringBuffer,
     StringUse,
+    StringLibcUse,
+    AsciiNumericSign,
     AllExprs,
     Cast,
     DirectCalls,
@@ -106,6 +109,9 @@ pub(in crate::fixups) enum EvidenceDetail {
         facts: usize,
         conflicts: usize,
         complete: bool,
+    },
+    SortSearchDomain {
+        comparators: usize,
     },
     Binding {
         name: String,
@@ -165,6 +171,7 @@ pub(in crate::fixups) enum EvidenceDetail {
         nul: usize,
     },
     MovablePure,
+    ValueGuard,
     ExternFnDeclaration {
         name: String,
         arity: usize,
@@ -248,6 +255,12 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     StringUse {
         allowed: bool,
+    },
+    StringLibcUse {
+        callee: StringLibcFunction,
+    },
+    AsciiNumericSign {
+        sign: AsciiNumericSign,
     },
     AllExprs {
         count: usize,
