@@ -2193,6 +2193,74 @@ fn ctype_libc_calls_stay_raw_when_locale_is_not_provably_c() {
 }
 
 #[test]
+fn ctype_classify_calls_in_boolean_context_use_ascii_methods() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-ctype-classify");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("ctype_classify_fixup.c");
+    let generated = tmp.join("ctype_classify_fixup.generated.rs");
+    support::translate(&c_src, &generated).expect("translate ctype_classify_fixup fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated ctype_classify rust");
+
+    assert!(rust.contains(".is_ascii_alphabetic()"));
+    assert!(rust.contains(".is_ascii_digit()"));
+    assert!(rust.contains(".is_ascii_uppercase()"));
+    assert!(rust.contains(".is_ascii_lowercase()"));
+    assert!(rust.contains(".is_ascii_alphanumeric()"));
+    assert!(rust.contains(".is_ascii_hexdigit()"));
+    assert!(rust.contains(".is_ascii_punctuation()"));
+    assert!(rust.contains(".is_ascii_control()"));
+    assert!(rust.contains(".is_ascii_graphic()"));
+    assert!(rust.contains(".is_ascii_whitespace()"));
+    assert!(rust.contains("!(") && rust.contains(").is_ascii_alphabetic()"));
+
+    // The vertical-tab gap between C's isspace and Rust's is_ascii_whitespace
+    // must be covered explicitly, not silently dropped.
+    assert!(rust.contains("is_ascii_whitespace() || "));
+    assert!(rust.contains("is_ascii_graphic() || "));
+
+    // A raw, directly-observed return value must never collapse to bool:
+    // C's classification functions return an unspecified nonzero value,
+    // not necessarily 1.
+    assert!(rust.contains("& 1024"));
+}
+
+#[test]
+fn ctype_classify_calls_stay_raw_when_locale_is_not_provably_c() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-ctype-classify-locale");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_only = fixtures_dir().join("ctype_classify_setlocale_c.c");
+    let c_only_generated = tmp.join("ctype_classify_setlocale_c.generated.rs");
+    support::translate(&c_only, &c_only_generated)
+        .expect("translate ctype_classify_setlocale_c fixture");
+    let rust = std::fs::read_to_string(&c_only_generated).expect("read generated rust");
+    assert!(rust.contains(".is_ascii_alphabetic()"));
+
+    let non_c = fixtures_dir().join("ctype_classify_setlocale_non_c.c");
+    let non_c_generated = tmp.join("ctype_classify_setlocale_non_c.generated.rs");
+    support::translate(&non_c, &non_c_generated)
+        .expect("translate ctype_classify_setlocale_non_c fixture");
+    let rust = std::fs::read_to_string(&non_c_generated).expect("read generated rust");
+    // isalpha requires the locale check and must stay raw under a non-"C" locale.
+    assert!(rust.contains("& 1024"));
+    // isdigit is locale-invariant per the C standard and must still rewrite.
+    assert!(rust.contains(".is_ascii_digit()"));
+}
+
+#[test]
+fn ctype_classify_stays_raw_for_a_parameter_without_a_provable_byte_type() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-ctype-classify-param");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("ctype_classify_param_unsupported.c");
+    let generated = tmp.join("ctype_classify_param_unsupported.generated.rs");
+    support::translate(&c_src, &generated)
+        .expect("translate ctype_classify_param_unsupported fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated rust");
+    assert!(!rust.contains("is_ascii_alphabetic"));
+    assert!(rust.contains("& 1024"));
+}
+
+#[test]
 fn value_swaps_use_std_mem_swap_only_when_tmp_is_fully_dead_and_a_ne_b() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-swap");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
