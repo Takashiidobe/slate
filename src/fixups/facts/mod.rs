@@ -961,21 +961,6 @@ impl FixupFacts {
             .map(|fact| fact.name.as_str())
     }
 
-    /// Re-derives one function's entries in the incrementally-maintained
-    /// fact kinds (bindings, binding types, loops, effects, values, string
-    /// buffers/pointer views/libc uses, counted (slice) loops) from its
-    /// current body, without touching any other function's facts or
-    /// shifting any `item_index`. Only valid when `function` kept its
-    /// `item_index` and is still an `Item::Fn` there - i.e. after a
-    /// in-place `QueryRule` edit. For an edit that deleted or inserted a whole
-    /// `Program::items` entry, use `remove_items` instead.
-    ///
-    /// The other ~30 fact kinds this doesn't maintain are allowed to go
-    /// stale between splices: nothing in the currently-migrated query
-    /// passes reads them, and a full `facts::analyze` already runs before
-    /// any pass that does (every legacy `rewrite::*` pass still gets a
-    /// fresh analysis exactly as before this - see matcher-plan.md
-    /// section 5).
     pub(super) fn splice_function(&mut self, program: &Program, function: FunctionId) {
         let Some(item_index) = self.function_item_index(function) else {
             return;
@@ -1003,14 +988,6 @@ impl FixupFacts {
         counted_loop::collect_for_function(function, f, self);
     }
 
-    /// Removes whole `Program::items` entries and shifts every later
-    /// `FunctionFact.item_index` to match, reflecting one or more
-    /// `Program::items` removals from a single edit (e.g. definition `QueryRule`
-    /// deletions, or a whole-program lazy-singleton guard-flag cleanup).
-    /// `item_indices` must be the *original* positions, as they were
-    /// before any of them were removed - order doesn't matter, this sorts
-    /// descending internally so an earlier removal's renumbering can't
-    /// invalidate a later one's target index.
     pub(super) fn remove_items(&mut self, item_indices: &[usize]) {
         let mut sorted = item_indices.to_vec();
         sorted.sort_unstable();
