@@ -81,6 +81,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::ArrayElementPointerOrigin => "array_element_pointer_origin",
         Predicate::BufferPointerFields => "buffer_pointer_fields",
         Predicate::HeapOwnershipFacts => "heap_ownership_facts",
+        Predicate::FileOwnershipFacts => "file_ownership_facts",
         Predicate::PtrLenSlice => "ptr_len_slice",
         Predicate::ValueGuard => "value_guard",
         Predicate::StringBuffer => "string_buffer",
@@ -208,6 +209,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         }
         EvidenceDetail::BufferPointerFields { fields } => format!("fields={fields}"),
         EvidenceDetail::HeapOwnershipFacts { owners } => format!("owners={owners}"),
+        EvidenceDetail::FileOwnershipFacts { owners } => format!("owners={owners}"),
         EvidenceDetail::PtrLenSlice { plans } => format!("plans={plans}"),
         EvidenceDetail::StringBuffer { bytes } => format!("bytes={bytes}"),
         EvidenceDetail::StringUse { allowed } => format!("allowed={allowed}"),

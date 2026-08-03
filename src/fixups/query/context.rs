@@ -27,12 +27,13 @@ use super::{
     DefinitionGroup, DefinitionGroupUsers, DefinitionKind, DefinitionLocation, DefinitionSelector,
     DefinitionSite, DefinitionUsers, DispatchRegion, EnumVariantRef, Evidence, EvidenceDetail,
     ExprSite, ExpressionEffects, ExpressionKind, ExpressionPlace, ExpressionRef, ExpressionRole,
-    ExpressionValues, ExternFn, FieldRef, FunctionCallDomain, FunctionReachability, FunctionRef,
-    HeapOwnership, HeapOwnershipFacts, HeapReallocation, HeapUse, ItemReferences,
-    LazySingletonPlan, LazySingletonSet, MatchArmRef, NulPosition, NullaryMethodCall, ParameterRef,
-    PointerMutability, Predicate, Proof, PtrLenPlan, PtrLenPlanSet, QueryResult, ReferenceDomain,
-    Rejection, RejectionReason, ResolvedValue, SliceLoopFact, StableExpr, StatementContainerRef,
-    StatementRange, SwitchDispatch, TypeUseRef, Usage, UseSiteRef, VaListAlias, ValueSite,
+    ExpressionValues, ExternFn, FieldRef, FileOwnership, FileOwnershipFacts, FileUse,
+    FunctionCallDomain, FunctionReachability, FunctionRef, HeapOwnership, HeapOwnershipFacts,
+    HeapReallocation, HeapUse, ItemReferences, LazySingletonPlan, LazySingletonSet, MatchArmRef,
+    NulPosition, NullaryMethodCall, ParameterRef, PointerMutability, Predicate, Proof, PtrLenPlan,
+    PtrLenPlanSet, QueryResult, ReferenceDomain, Rejection, RejectionReason, ResolvedValue,
+    SliceLoopFact, StableExpr, StatementContainerRef, StatementRange, SwitchDispatch, TypeUseRef,
+    Usage, UseSiteRef, VaListAlias, ValueSite,
 };
 
 macro_rules! query_cache {
@@ -3928,6 +3929,88 @@ query_cache! {
             },
         }];
         Ok(Proof::new(HeapOwnershipFacts { owners }, evidence))
+    }
+
+    fn file_ownership_facts(&self, function: &FunctionRef) -> QueryResult<FileOwnershipFacts>;
+    key: FunctionId = function.id;
+    {
+        let predicate = Predicate::FileOwnershipFacts;
+        let site = expression_site(function.item_index, &[]);
+        let bindings = self.all_bindings();
+        let binding = |id| bindings.iter().find(|binding| binding.id == id).cloned();
+        let statement = |path: &AstPath| StatementRef {
+            item_index: function.item_index,
+            path: path.clone(),
+        };
+        let mut owners = Vec::new();
+        for fact in self
+            .facts
+            .file_ownership
+            .iter()
+            .filter(|fact| fact.function == function.id)
+        {
+            let Some(handle) = binding(fact.handle) else {
+                return Err(Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            let Some(open_temp) = binding(fact.open_temp) else {
+                return Err(Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            let close_temp = match fact.close_temp {
+                Some(id) => Some(binding(id).ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?),
+                None => None,
+            };
+            owners.push(FileOwnership {
+                handle,
+                open_temp,
+                close_temp,
+                handle_statement: statement(&fact.handle_path),
+                open_statement: statement(&fact.open_path),
+                assign_statement: statement(&fact.assign_path),
+                close_statement: statement(&fact.close_path),
+                mode: fact.mode,
+                uses: fact
+                    .uses
+                    .iter()
+                    .map(|usage| FileUse {
+                        statement: statement(&usage.path),
+                        kind: usage.kind,
+                    })
+                    .collect(),
+            });
+        }
+        if owners.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::FileOwnershipFacts {
+                owners: owners.len(),
+            },
+        }];
+        Ok(Proof::new(FileOwnershipFacts { owners }, evidence))
     }
 
     fn ptr_len_slices(&self) -> QueryResult<PtrLenPlanSet>;

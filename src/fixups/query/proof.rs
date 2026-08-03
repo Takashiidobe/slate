@@ -81,6 +81,7 @@ pub(in crate::fixups) enum Predicate {
     ArrayElementPointerOrigin,
     BufferPointerFields,
     HeapOwnershipFacts,
+    FileOwnershipFacts,
     PtrLenSlice,
     ValueGuard,
     StringBuffer,
@@ -232,6 +233,9 @@ pub(in crate::fixups) enum EvidenceDetail {
         fields: usize,
     },
     HeapOwnershipFacts {
+        owners: usize,
+    },
+    FileOwnershipFacts {
         owners: usize,
     },
     PtrLenSlice {
