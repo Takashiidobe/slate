@@ -585,13 +585,13 @@ fn apply_with_logger(
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::StringLibc, {
-        run_once_items(&mut program, |item_index, f| {
-            let Some(function) = facts.function_by_item_index(item_index) else {
-                return false;
-            };
-            let mut fixup = rewrite::string_libc::StringLibc::new(function, &facts, logger);
-            run_once(&mut f.body, &mut fixup)
-        });
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::string_libc::calls());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
         runtime::ensure_numeric_parse(&mut program);
         incremental.mark_everything_dirty();
     });
@@ -690,13 +690,13 @@ fn apply_with_logger(
     });
     let facts = incremental.resolve(&program);
     step!(program, Pass::StringLibc, {
-        run_once_items(&mut program, |item_index, f| {
-            let Some(function) = facts.function_by_item_index(item_index) else {
-                return false;
-            };
-            let mut fixup = rewrite::string_libc::StringLibc::new(function, &facts, logger);
-            run_once(&mut f.body, &mut fixup)
-        });
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::string_libc::calls());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
         runtime::ensure_numeric_parse(&mut program);
         incremental.mark_everything_dirty();
     });

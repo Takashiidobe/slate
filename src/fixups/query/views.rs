@@ -5,7 +5,7 @@ use crate::fixups::facts::{
     AstPath, BindingId, ConstValue, CountedLoopBound, CountedLoopIndexUse, CountedLoopStart,
     CountedLoopStep, EffectKind, FileOpenMode, FileUseKind, HeapAllocationKind, HeapExtent,
     HeapInitKind, HeapReadSafety, HeapResizeKind, HeapUseKind, PlaceAccess, PlaceKind, Purity,
-    SliceLoopAccess,
+    SliceLoopAccess, StringLibcFunction,
 };
 use crate::rust_ast::{AtomicType, Expr, IndentStmt, Pattern, Type};
 
@@ -589,4 +589,10 @@ pub(in crate::fixups) enum StringCopyAction {
     AssignOwned(BindingRef),
     PushLiteral(String),
     PushOwned(BindingRef),
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct StringLibcUse {
+    pub(in crate::fixups) callee: StringLibcFunction,
+    pub(in crate::fixups) pointer_args: Vec<BindingRef>,
 }
