@@ -38,15 +38,20 @@ pub(in crate::fixups) enum QueryDomain {
 pub(in crate::fixups) enum QueryItem<'snapshot> {
     Binding(BindingRef),
     Definition(&'snapshot DefinitionSite),
+    #[allow(dead_code)]
     EnumVariant(super::EnumVariantRef),
     Expression(ExpressionRef),
+    #[allow(dead_code)]
     Field(super::FieldRef),
     Function(FunctionRef),
+    #[allow(dead_code)]
     MatchArm(super::MatchArmRef),
     Parameter(super::ParameterRef),
     Program(super::ProgramRef),
     Statement(StatementRef),
+    #[allow(dead_code)]
     StatementContainer(super::StatementContainerRef),
+    #[allow(dead_code)]
     TypeUse(super::TypeUseRef),
 }
 
@@ -473,6 +478,7 @@ pub(in crate::fixups) enum AnchoredEdit {
         target: StatementRange,
         replacement: Vec<IndentStmt>,
     },
+    #[allow(dead_code)]
     InsertItems {
         index: usize,
         expected_len: usize,
@@ -483,7 +489,9 @@ pub(in crate::fixups) enum AnchoredEdit {
 #[derive(Clone)]
 #[allow(clippy::large_enum_variant)]
 pub(in crate::fixups) enum DefinitionReplacement {
+    #[allow(dead_code)]
     Item(Item),
+    #[allow(dead_code)]
     ExternDecl(ExternDecl),
 }
 
@@ -574,10 +582,12 @@ impl EditSet {
         }
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn replace_item(target: DefinitionSite, replacement: Item) -> Self {
         Self::replace_definition(target, Some(DefinitionReplacement::Item(replacement)))
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn replace_extern_decl(
         target: DefinitionSite,
         replacement: ExternDecl,
@@ -611,6 +621,7 @@ impl EditSet {
         }
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn insert_items(
         index: usize,
         expected_len: usize,
@@ -1831,7 +1842,9 @@ fn apply_body(
 
 pub(in crate::fixups) struct ItemApplyReport {
     pub(in crate::fixups) changed: bool,
+    #[allow(dead_code)]
     pub(in crate::fixups) planned: usize,
+    #[allow(dead_code)]
     pub(in crate::fixups) applied: usize,
     #[allow(dead_code)]
     pub(super) diagnostics: Vec<PlanDiagnostic<EditSetSite>>,
@@ -2126,7 +2139,7 @@ mod tests {
     use super::*;
     use crate::fixups::facts;
     use crate::fixups::trace::NoopLogger;
-    use crate::rust_ast::{FnDef, FunctionMetadata, RustValue, Stmt, Visibility};
+    use crate::rust_ast::{FnDef, RustValue, Stmt, Visibility};
 
     fn function(body: Vec<IndentStmt>) -> Item {
         Item::Fn(FnDef {
@@ -2138,7 +2151,6 @@ mod tests {
             params: Vec::new(),
             ret: None,
             body,
-            metadata: FunctionMetadata::default(),
         })
     }
 

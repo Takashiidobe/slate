@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 use super::support::*;
 use crate::effects::{
     AllocId, ArgShapeKind, AtomicId, BindingKind, CallSummary, Construct, EResult, Effect,
-    EffectError, EffectTrace, FileId, IntWidth, Location, OptionValue, ParamSeed, Value, ValueKind,
+    EffectError, EffectTrace, FileId, IntWidth, Location, OptionValue, Value, ValueKind,
     call_summary,
 };
 use crate::rust_ast::{
@@ -12,17 +12,6 @@ use crate::rust_ast::{
     ExternDecl, FnDef, IndentStmt, Item, Label, Path, Pattern, Prim, Program, Repr, Stmt,
     StructDef, StructFields, Type, UnaryOp,
 };
-
-pub fn interpret(f: &FnDef) -> EResult<EffectTrace> {
-    interpret_with_params(f, &[])
-}
-
-pub fn interpret_with_params(f: &FnDef, params: &[(&str, ParamSeed)]) -> EResult<EffectTrace> {
-    let mut interp = Interp::default();
-    interp.seed_params(params)?;
-    let _ = interp.run(&f.body)?;
-    Ok(interp.trace)
-}
 
 pub fn interpret_program_main(program: &Program) -> EResult<EffectTrace> {
     let mut interp = Interp::default();
@@ -319,51 +308,6 @@ impl Interp {
         self.heap.insert(loc, value.clone());
         self.trace.push(Effect::Alloc { alloc, size });
         self.trace.push(Effect::Write { loc, value });
-        Ok(())
-    }
-
-    fn seed_params(&mut self, params: &[(&str, ParamSeed)]) -> EResult<()> {
-        for (name, seed) in params {
-            match seed {
-                ParamSeed::Scalar(v) => {
-                    self.scalars.insert(name.to_string(), v.clone());
-                }
-                ParamSeed::Buffer(elems) => self.seed_buffer(name, elems)?,
-            }
-        }
-        Ok(())
-    }
-
-    fn seed_buffer(&mut self, name: &str, elems: &[Value]) -> EResult<()> {
-        let alloc = AllocId(self.next_alloc);
-        self.next_alloc += 1;
-        let (elem_width, elem_signed, elem_size) = match elems.first() {
-            None => (IntWidth::W32, true, 4),
-            Some(elem @ Value::Int { width, signed, .. }) => {
-                (*width, *signed, int_byte_size(elem)?)
-            }
-            Some(other) => {
-                return Err(EffectError::type_mismatch(ValueKind::Int, other.clone()));
-            }
-        };
-        for (index, elem) in elems.iter().enumerate() {
-            let loc = Location {
-                alloc,
-                byte_offset: index as u64 * elem_size,
-            };
-            self.heap.insert(loc, elem.clone());
-        }
-        self.vecs.insert(
-            name.to_string(),
-            VecBinding {
-                alloc,
-                elem_width,
-                elem_signed,
-                elem_size,
-                len: elems.len() as u64,
-                owned: false,
-            },
-        );
         Ok(())
     }
 
@@ -7767,14 +7711,9 @@ fn local_value_size(value: &Value) -> EResult<u64> {
         Value::Ref(_) | Value::Function(_) | Value::Null | Value::File(_) | Value::Atomic(_) => {
             Ok(8)
         }
-        Value::AtomicResult { .. }
-        | Value::Tuple(_)
-        | Value::BlockLabel(_)
-        | Value::Option(_)
-        | Value::Bytes(_) => Err(EffectError::unsupported(
-            Construct::AddrOfExpr,
-            value.clone(),
-        )),
+        Value::AtomicResult { .. } | Value::Tuple(_) | Value::Option(_) | Value::Bytes(_) => Err(
+            EffectError::unsupported(Construct::AddrOfExpr, value.clone()),
+        ),
     }
 }
 

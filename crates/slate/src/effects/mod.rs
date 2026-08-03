@@ -178,7 +178,6 @@ pub enum Value {
         value: OptionValue,
     },
     Tuple(Vec<Value>),
-    BlockLabel(&'static str),
     Null,
     Option(Option<OptionValue>),
     Bytes(Vec<u8>),
@@ -194,12 +193,6 @@ pub enum OptionValue {
     Bool(bool),
     Ref(Location),
     Function(String),
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum ParamSeed {
-    Scalar(Value),
-    Buffer(Vec<Value>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -271,7 +264,6 @@ pub enum Effect {
         name: String,
         args: Vec<Value>,
     },
-    Return(Value),
     Exit(i32),
 }
 

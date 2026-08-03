@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 mod c_ast;
 mod cir;
 mod codegen;

@@ -50,7 +50,6 @@ pub enum Construct {
     OpenOptionsMethod,
     OpenOptionsChain,
     OpenOptionsMode,
-    CStringExpr,
     ArrayPointerArg,
     SomeComparator,
     ComparatorArg,
@@ -86,7 +85,6 @@ pub enum Construct {
     PushStr,
     PathExpr,
     FieldArrayIndex,
-    DerefFieldBase,
     FieldBase,
     PointerFieldBase,
     TraceFreeEval,
@@ -95,26 +93,22 @@ pub enum Construct {
     AddrOfMacro,
     OffsetOfMacro,
     UnaryOperand,
-    IndexBase,
     TupleFieldName,
     PointerOffsetMethod,
     OffsetFromMethod,
     OverflowingMethodArg,
-    TupleFieldValue,
     LibcCall(CallSummary),
     ReadUntilArgs,
     ReadTakeArgs,
     ParseStringMethod,
     ParseTargetType,
     UnwrapOrArg,
-    UnwrapOrValue,
     SortByArg,
     SortByClosureParams,
     BinarySearchByArg,
     BinarySearchByClosureParams,
     MapOrArgs,
     MapOrClosureParams,
-    MapOrValue,
     CompareMethodArg,
     ReadComparable,
     IterPositionArgs,
@@ -126,12 +120,9 @@ pub enum Construct {
     FoldArgs,
     FoldClosure,
     FoldClosureParams,
-    SortArrayCollection,
-    StrtoEndPointer,
     UnsupportedExpr,
     AtomicMethodArgs,
     AtomicMethod,
-    IntegerMethodReceiver,
     IntegerMethodArg,
     OnceLockReceiver,
     OnceLockInitArgs,
@@ -192,7 +183,6 @@ pub enum ValueKind {
     Atomic,
     AtomicResult,
     Tuple,
-    BlockLabel,
     Null,
     Option,
     Bytes,
@@ -210,7 +200,6 @@ impl fmt::Display for ValueKind {
             ValueKind::Atomic => "atomic",
             ValueKind::AtomicResult => "atomic result",
             ValueKind::Tuple => "tuple",
-            ValueKind::BlockLabel => "block label",
             ValueKind::Null => "null",
             ValueKind::Option => "option",
             ValueKind::Bytes => "bytes",
@@ -231,7 +220,6 @@ impl From<&Value> for ValueKind {
             Value::Atomic(_) => ValueKind::Atomic,
             Value::AtomicResult { .. } => ValueKind::AtomicResult,
             Value::Tuple(_) => ValueKind::Tuple,
-            Value::BlockLabel(_) => ValueKind::BlockLabel,
             Value::Null => ValueKind::Null,
             Value::Option(_) => ValueKind::Option,
             Value::Bytes(_) => ValueKind::Bytes,
@@ -243,88 +231,82 @@ impl From<&Value> for ValueKind {
 /// pattern-match on it instead of re-parsing a rendered string.
 #[derive(Debug, Clone)]
 pub enum Found {
-    Expr(Expr),
-    Type(Type),
-    Value(Value),
-    Path(Path),
-    BinOp(BinOp),
-    UnaryOp(UnaryOp),
-    AtomicRmwOp(AtomicRmwOp),
-    Str(String),
-    OptStr(Option<String>),
-    OpenOptionsFlags {
-        read: bool,
-        write: bool,
-        append: bool,
-        create: bool,
-        truncate: bool,
-    },
-    Offset(u64),
+    Expr,
+    Type,
+    Value,
+    Path,
+    BinOp,
+    UnaryOp,
+    AtomicRmwOp,
+    Str,
+    OptStr,
+    OpenOptionsFlags,
+    Offset,
 }
 
 impl From<Expr> for Found {
-    fn from(expr: Expr) -> Self {
-        Found::Expr(expr)
+    fn from(_expr: Expr) -> Self {
+        Found::Expr
     }
 }
 
 impl From<Type> for Found {
-    fn from(ty: Type) -> Self {
-        Found::Type(ty)
+    fn from(_ty: Type) -> Self {
+        Found::Type
     }
 }
 
 impl From<Value> for Found {
-    fn from(value: Value) -> Self {
-        Found::Value(value)
+    fn from(_value: Value) -> Self {
+        Found::Value
     }
 }
 
 impl From<Path> for Found {
-    fn from(path: Path) -> Self {
-        Found::Path(path)
+    fn from(_path: Path) -> Self {
+        Found::Path
     }
 }
 
 impl From<BinOp> for Found {
-    fn from(op: BinOp) -> Self {
-        Found::BinOp(op)
+    fn from(_op: BinOp) -> Self {
+        Found::BinOp
     }
 }
 
 impl From<UnaryOp> for Found {
-    fn from(op: UnaryOp) -> Self {
-        Found::UnaryOp(op)
+    fn from(_op: UnaryOp) -> Self {
+        Found::UnaryOp
     }
 }
 
 impl From<AtomicRmwOp> for Found {
-    fn from(op: AtomicRmwOp) -> Self {
-        Found::AtomicRmwOp(op)
+    fn from(_op: AtomicRmwOp) -> Self {
+        Found::AtomicRmwOp
     }
 }
 
 impl From<String> for Found {
-    fn from(s: String) -> Self {
-        Found::Str(s)
+    fn from(_s: String) -> Self {
+        Found::Str
     }
 }
 
 impl From<&str> for Found {
-    fn from(s: &str) -> Self {
-        Found::Str(s.to_string())
+    fn from(_s: &str) -> Self {
+        Found::Str
     }
 }
 
 impl From<Option<String>> for Found {
-    fn from(s: Option<String>) -> Self {
-        Found::OptStr(s)
+    fn from(_s: Option<String>) -> Self {
+        Found::OptStr
     }
 }
 
 impl From<u64> for Found {
-    fn from(offset: u64) -> Self {
-        Found::Offset(offset)
+    fn from(_offset: u64) -> Self {
+        Found::Offset
     }
 }
 

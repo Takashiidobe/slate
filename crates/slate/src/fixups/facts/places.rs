@@ -25,10 +25,6 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
     facts.places = all;
 }
 
-pub(super) fn is_simple_local_slot(expr: &Expr) -> bool {
-    matches!(classify_place(expr), PlaceKind::Local { .. })
-}
-
 struct Collector {
     function: FunctionId,
     places: Vec<PlaceFact>,

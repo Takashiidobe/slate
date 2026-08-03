@@ -1,4 +1,4 @@
-use crate::fixups::facts::{AstPath, BindingId, DefUseFact, FixupFacts, FunctionId, PathSegment};
+use crate::fixups::facts::{FixupFacts, FunctionId, PathSegment};
 use crate::rust_ast::{Block, IndentStmt, Item, Program, Stmt};
 use std::fmt::Write;
 
@@ -275,17 +275,6 @@ pub(in crate::fixups) fn path_location(path: &[PathSegment]) -> TraceLocation {
     }
 }
 
-pub(in crate::fixups) fn named_path_location(
-    function: impl Into<String>,
-    path: &[PathSegment],
-) -> TraceLocation {
-    TraceLocation {
-        function: Some(function.into()),
-        ast_path: Some(path_to_string(path)),
-        ..TraceLocation::default()
-    }
-}
-
 pub(in crate::fixups) fn function_path_location(
     facts: &FixupFacts,
     function: FunctionId,
@@ -298,54 +287,8 @@ pub(in crate::fixups) fn function_path_location(
     }
 }
 
-pub(in crate::fixups) fn stmt_snippet(label: impl Into<String>, stmt: &Stmt) -> TraceSnippet {
-    TraceSnippet::new(label, stmt.render().trim_end())
-}
-
-pub(in crate::fixups) fn stmts_snippet(
-    label: impl Into<String>,
-    stmts: &[IndentStmt],
-) -> TraceSnippet {
-    TraceSnippet::new(
-        label,
-        stmts
-            .iter()
-            .map(|stmt| stmt.stmt.render())
-            .collect::<Vec<_>>()
-            .join("")
-            .trim_end(),
-    )
-}
-
 pub(in crate::fixups) fn fact(key: impl Into<String>, value: impl Into<String>) -> TraceFact {
     TraceFact::new(key, value)
-}
-
-pub(in crate::fixups) fn binding_facts(facts: &FixupFacts, binding: BindingId) -> Vec<TraceFact> {
-    let mut out = vec![fact("binding_id", format!("{binding:?}"))];
-    if let Some(name) = facts.binding_name(binding) {
-        out.push(fact("binding_name", name));
-    }
-    if let Some(def_use) = facts.def_use(binding) {
-        out.extend(def_use_facts(def_use));
-    }
-    out
-}
-
-pub(in crate::fixups) fn path_fact(key: impl Into<String>, path: &[PathSegment]) -> TraceFact {
-    fact(key, path_to_string(path))
-}
-
-pub(in crate::fixups) fn ast_path_fact(key: impl Into<String>, path: &AstPath) -> TraceFact {
-    fact(key, path_to_string(&path.0))
-}
-
-fn def_use_facts(def_use: &DefUseFact) -> Vec<TraceFact> {
-    vec![
-        fact("reads", def_use.reads.len().to_string()),
-        fact("writes", def_use.writes.len().to_string()),
-        ast_path_fact("definition", &def_use.definition),
-    ]
 }
 
 fn path_to_string(path: &[PathSegment]) -> String {

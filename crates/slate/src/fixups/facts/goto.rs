@@ -21,7 +21,6 @@ pub(in crate::fixups) type LoweredSwitchParts<'a> = (
 
 #[derive(Debug, Clone)]
 pub(crate) struct CfgNode {
-    pub(crate) labels: Vec<String>,
     pub(crate) successors: Vec<CfgEdge>,
 }
 
@@ -35,17 +34,6 @@ pub(crate) struct CfgEdge {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum CfgEdgeKind {
     Goto,
-    Branch,
-    Fallthrough,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) enum CfgUnsupported {
-    UnknownLabel(String),
-    UnknownBlock(String),
-    DynamicBranch,
-    IndirectBranch,
-    IrreducibleCycle(Vec<usize>),
 }
 
 #[derive(Debug, Clone)]
@@ -53,8 +41,6 @@ pub(crate) struct NaturalLoop {
     pub(crate) header: usize,
     pub(crate) latch: usize,
     pub(crate) nodes: BTreeSet<usize>,
-    pub(crate) entries: Vec<CfgEdge>,
-    pub(crate) exits: Vec<CfgEdge>,
 }
 
 pub(crate) fn dominators(entry: usize, nodes: &[CfgNode]) -> Vec<BTreeSet<usize>> {
@@ -121,25 +107,10 @@ pub(crate) fn natural_loop(backedge: &CfgEdge, nodes: &[CfgNode]) -> NaturalLoop
             }
         }
     }
-    let mut entries = Vec::new();
-    let mut exits = Vec::new();
-    for node in nodes {
-        for edge in &node.successors {
-            let from_in_loop = loop_nodes.contains(&edge.from);
-            let to_in_loop = loop_nodes.contains(&edge.to);
-            if !from_in_loop && to_in_loop {
-                entries.push(edge.clone());
-            } else if from_in_loop && !to_in_loop {
-                exits.push(edge.clone());
-            }
-        }
-    }
     NaturalLoop {
         header: backedge.to,
         latch: backedge.from,
         nodes: loop_nodes,
-        entries,
-        exits,
     }
 }
 
@@ -235,12 +206,10 @@ pub(crate) fn cycle_entry_targets(cycle: &[usize], nodes: &[CfgNode]) -> BTreeSe
 #[derive(Debug, Clone)]
 pub(crate) struct DispatchLoop {
     pub(crate) state_var: String,
-    pub(crate) loop_label: String,
     pub(crate) let_index: usize,
     pub(crate) loop_index: usize,
     pub(crate) entry: usize,
     pub(crate) states: Vec<DispatchState>,
-    pub(crate) fallback: Vec<IndentStmt>,
     /// A state is assigned a non-constant value (e.g. computed goto jump table);
     /// the region must stay a dispatch loop.
     pub(crate) dynamic: bool,
@@ -286,11 +255,6 @@ pub(crate) struct SwitchFlowArm {
 }
 
 impl DispatchLoop {
-    /// `Goto` target `t` lands on the wildcard fallback rather than a real state.
-    pub(crate) fn is_exit(&self, target: usize) -> bool {
-        target >= self.states.len()
-    }
-
     pub(crate) fn cfg_nodes(&self) -> Vec<CfgNode> {
         self.states
             .iter()
@@ -305,10 +269,7 @@ impl DispatchLoop {
                         kind: CfgEdgeKind::Goto,
                     })
                     .collect();
-                CfgNode {
-                    labels: Vec::new(),
-                    successors,
-                }
+                CfgNode { successors }
             })
             .collect()
     }
@@ -396,12 +357,10 @@ pub(crate) fn recognize_dispatch_loops(stmts: &[IndentStmt]) -> Vec<DispatchLoop
         };
         found.push(DispatchLoop {
             state_var,
-            loop_label,
             let_index,
             loop_index,
             entry: 0,
             states: dispatch.0,
-            fallback: dispatch.1,
             dynamic: dispatch.2,
         });
     }

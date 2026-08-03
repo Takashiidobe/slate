@@ -200,46 +200,14 @@ pub(super) fn open_options_mode(expr: &Expr) -> EResult<String> {
         (true, true, false, false, false) => "r+",
         (true, true, false, true, true) => "w+",
         (true, false, true, true, false) => "a+",
-        (read, write, append, create, truncate) => {
+        _ => {
             return Err(EffectError::unsupported(
                 Construct::OpenOptionsMode,
-                Found::OpenOptionsFlags {
-                    read,
-                    write,
-                    append,
-                    create,
-                    truncate,
-                },
+                Found::OpenOptionsFlags,
             ));
         }
     }
     .to_string())
-}
-
-pub(super) fn c_string_expr(expr: &Expr) -> EResult<String> {
-    Ok(String::from_utf8_lossy(&c_string_expr_bytes(expr)?).into_owned())
-}
-
-pub(super) fn c_string_expr_bytes(expr: &Expr) -> EResult<Vec<u8>> {
-    let bytes = match expr {
-        Expr::Cast { expr, .. } => return c_string_expr_bytes(expr),
-        Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
-            return c_string_expr_bytes(recv);
-        }
-        Expr::ByteStr(bytes) => bytes.clone(),
-        Expr::CStr(bytes) => {
-            let mut bytes = bytes.clone();
-            bytes.push(0);
-            bytes
-        }
-        other => {
-            return Err(EffectError::unsupported(
-                Construct::CStringExpr,
-                other.clone(),
-            ));
-        }
-    };
-    Ok(bytes.into_iter().take_while(|byte| *byte != 0).collect())
 }
 
 pub(super) fn array_pointer_name(expr: &Expr) -> EResult<&str> {

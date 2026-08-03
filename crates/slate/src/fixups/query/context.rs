@@ -260,6 +260,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.resolved_value_at(window.item_index, &AstPath(def_path), name)
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn value_local(&self, site: &ValueSite, name: &str) -> ResolvedValue {
         self.resolved_value_at(site.item_index, &site.path, name)
     }
@@ -584,6 +585,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn binding_usage(&self, binding: &BindingRef) -> QueryResult<Usage> {
         let proof = self.binding_def_use(binding)?;
         let usage = Usage {
@@ -593,6 +595,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(usage, proof.evidence))
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn binding_resolved_value(
         &self,
         binding: &BindingRef,
@@ -1294,6 +1297,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new((parent.value, slot), evidence))
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn ancestor_expressions(
         &self,
         expression: &ExpressionRef,
@@ -1453,6 +1457,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn expression_type(
         &self,
         expression: &ExpressionRef,
@@ -2995,6 +3000,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         statement_container_at(&function.body, &container.path.0)
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn match_arm(&self, arm: &MatchArmRef) -> Option<&'snapshot MatchArm> {
         let statement = self.statement_tail(&arm.statement)?.first()?;
         let Stmt::Match { arms, .. } = &statement.stmt else {
@@ -3003,6 +3009,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         arms.get(arm.index)
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn field(
         &self,
         field: &FieldRef,
@@ -3022,6 +3029,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn enum_variant(
         &self,
         variant: &EnumVariantRef,
@@ -3032,6 +3040,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         definition.variants.get(variant.index)
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn type_use(&self, type_use: &TypeUseRef) -> Option<&'snapshot Type> {
         match type_use {
             TypeUseRef::FunctionReturn(function) => self.function_def(function)?.ret.as_ref(),
@@ -3040,6 +3049,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
+    #[allow(dead_code)]
     pub(in crate::fixups) fn definitions_in_group(
         &self,
         group: &DefinitionGroup,
@@ -3914,7 +3924,6 @@ query_cache! {
             };
             singletons.push(LazySingletonPlan {
                 function_item_index,
-                function_name: function_name.to_string(),
                 payload_item_index,
                 payload_name: singleton.payload_name.clone(),
                 payload_ty: singleton.payload_ty.clone(),
@@ -4152,7 +4161,7 @@ query_cache! {
                     Vec::new(),
                 ));
             };
-            let Some(open_temp) = binding(fact.open_temp) else {
+            if binding(fact.open_temp).is_none() {
                 return Err(Rejection::new(
                     predicate,
                     Some(site.clone()),
@@ -4160,25 +4169,21 @@ query_cache! {
                     Vec::new(),
                 ));
             };
-            let close_temp = match fact.close_temp {
-                Some(id) => Some(binding(id).ok_or_else(|| {
-                    Rejection::new(
-                        predicate,
-                        Some(site.clone()),
-                        RejectionReason::IncompleteDomain,
-                        Vec::new(),
-                    )
-                })?),
-                None => None,
-            };
+            if let Some(id) = fact.close_temp
+                && binding(id).is_none()
+            {
+                return Err(Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            }
             owners.push(FileOwnership {
                 handle,
-                open_temp,
-                close_temp,
                 handle_statement: statement(&fact.handle_path),
                 open_statement: statement(&fact.open_path),
                 assign_statement: statement(&fact.assign_path),
-                close_statement: statement(&fact.close_path),
                 mode: fact.mode,
                 uses: fact
                     .uses
@@ -4318,8 +4323,6 @@ query_cache! {
                         item_index: function.item_index,
                         path: fact.site.path.clone(),
                     },
-                    field: fact.field.clone(),
-                    index: fact.index,
                     array_len,
                 })
             })
@@ -4731,12 +4734,6 @@ fn unused_item_trait_bound_refs(bound: &TraitBound, refs: &mut BTreeSet<String>)
     }
 }
 
-fn unused_item_struct_refs(def: &StructDef) -> BTreeSet<String> {
-    let mut refs = BTreeSet::new();
-    unused_item_collect_struct_refs(def, &mut refs);
-    refs
-}
-
 fn unused_item_collect_struct_refs(def: &StructDef, refs: &mut BTreeSet<String>) {
     for param in &def.generics {
         unused_item_generic_param_refs(param, refs);
@@ -4753,12 +4750,6 @@ fn unused_item_collect_struct_refs(def: &StructDef, refs: &mut BTreeSet<String>)
             }
         }
     }
-}
-
-fn unused_item_record_refs(def: &RecordDef) -> BTreeSet<String> {
-    let mut refs = BTreeSet::new();
-    unused_item_collect_record_refs(def, &mut refs);
-    refs
 }
 
 fn unused_item_collect_record_refs(def: &RecordDef, refs: &mut BTreeSet<String>) {

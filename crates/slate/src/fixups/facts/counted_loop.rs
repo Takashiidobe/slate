@@ -188,9 +188,8 @@ impl<'a> Collector<'a> {
         index_path.push(body_segment.clone());
         index_path.push(PathSegment::Stmt(index_stmt));
         let index_path = AstPath(index_path);
-        let index =
-            self.facts
-                .binding_by_local_path(self.function, index_name.as_str(), &index_path)?;
+        self.facts
+            .binding_by_local_path(self.function, index_name.as_str(), &index_path)?;
         let bound = self.range_bound(range.bound, index_name.as_str())?;
 
         let mut loop_path = parent_path.to_vec();
@@ -218,7 +217,6 @@ impl<'a> Collector<'a> {
                 loop_path,
                 body_path,
             },
-            index,
             bound,
             start: CountedLoopStart::Zero,
             step: CountedLoopStep::One,

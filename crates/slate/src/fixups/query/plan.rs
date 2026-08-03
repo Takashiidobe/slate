@@ -23,6 +23,7 @@ pub(super) enum PlanDiagnostic<S> {
         target: Option<S>,
         rejections: Vec<CaseRejection>,
     },
+    #[allow(dead_code)]
     TargetMismatch {
         contender: RuleCaseIdentity,
         candidate: S,

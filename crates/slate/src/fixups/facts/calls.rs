@@ -1,12 +1,12 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, CallArgFact, CallArgPinning, CallCallee, CallParamFact,
-    CallSignatureFact, CallSignatureSource, CallsiteFact, FixupFacts, FunctionId, LibcCallSemantic,
-    PathSegment, SignatureId, Site,
+    CallSignatureFact, CallSignatureSource, CallsiteFact, FixupFacts, FunctionId, PathSegment,
+    SignatureId, Site,
 };
-use crate::function_identity::{FunctionIdentity, Known};
+use crate::function_identity::FunctionIdentity;
 use crate::rust_ast::{
     Block, Expr, ExternDecl, FnParam, IndentStmt, Item, Pattern, Program, Stmt, Type,
 };
@@ -53,7 +53,6 @@ fn collect_signatures(program: &Program, facts: &FixupFacts) -> Vec<CallSignatur
                     params_from_fn_params(&f.params),
                     false,
                     f.ret.clone(),
-                    f.metadata.returns_nonnull,
                 );
             }
             Item::ExternBlock { decls, .. } => {
@@ -71,7 +70,6 @@ fn collect_signatures(program: &Program, facts: &FixupFacts) -> Vec<CallSignatur
                         params_from_fn_params(&f.params),
                         f.variadic,
                         f.ret.clone(),
-                        f.metadata.returns_nonnull,
                     );
                 }
             }
@@ -100,7 +98,6 @@ fn collect_cfg_signature(
                     params_from_fn_params(&f.params),
                     false,
                     f.ret.clone(),
-                    f.metadata.returns_nonnull,
                 );
             }
         }
@@ -119,7 +116,6 @@ fn collect_cfg_signature(
                     params_from_fn_params(&f.params),
                     f.variadic,
                     f.ret.clone(),
-                    f.metadata.returns_nonnull,
                 );
             }
         }
@@ -135,30 +131,23 @@ fn push_signature(
     params: Vec<CallParamFact>,
     variadic: bool,
     ret: Option<Type>,
-    returns_nonnull: bool,
 ) {
     let id = SignatureId(signatures.len());
     signatures.push(CallSignatureFact {
         id,
-        semantics: BTreeSet::new(),
         name,
         source,
         params,
         variadic,
         ret,
-        returns_nonnull,
     });
 }
 
 fn params_from_fn_params(params: &[FnParam]) -> Vec<CallParamFact> {
     params
         .iter()
-        .enumerate()
-        .map(|(index, param)| CallParamFact {
-            index,
-            name: param.name.clone(),
+        .map(|param| CallParamFact {
             ty: param.ty.clone(),
-            nonnull: param.metadata.nonnull,
         })
         .collect()
 }
@@ -225,7 +214,7 @@ impl<'a> Collector<'a> {
         self.body(&block.stmts, path, false);
         if let Some(tail) = &block.tail {
             walk::with_path_segment(path, PathSegment::BlockTail, |path| {
-                self.expr(tail, path, None);
+                self.expr(tail, path);
             });
         }
         self.scopes.pop();
@@ -234,9 +223,8 @@ impl<'a> Collector<'a> {
     fn stmt(&mut self, stmt: &Stmt, path: &mut Vec<PathSegment>) {
         match stmt {
             Stmt::Let { name, init, .. } => {
-                let result_binding = self.local_binding(name, path);
                 if let Some(init) = init {
-                    self.expr(init, path, result_binding);
+                    self.expr(init, path);
                 }
                 self.define_local(name, path);
             }
@@ -249,35 +237,35 @@ impl<'a> Collector<'a> {
                 else_value,
                 ..
             } => {
-                self.expr(cond, path, None);
+                self.expr(cond, path);
                 walk::with_path_segment(path, PathSegment::Then, |path| {
                     self.scopes.push(BTreeMap::new());
                     self.body(then_body, path, false);
-                    self.expr(then_value, path, None);
+                    self.expr(then_value, path);
                     self.scopes.pop();
                 });
                 walk::with_path_segment(path, PathSegment::Else, |path| {
                     self.scopes.push(BTreeMap::new());
                     self.body(else_body, path, false);
-                    self.expr(else_value, path, None);
+                    self.expr(else_value, path);
                     self.scopes.pop();
                 });
                 self.define_local(name, path);
             }
             Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-                self.expr(target, path, None);
+                self.expr(target, path);
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    self.expr(value, path, None);
+                    self.expr(value, path);
                 });
             }
-            Stmt::Expr(expr) | Stmt::Return(Some(expr)) => self.expr(expr, path, None),
+            Stmt::Expr(expr) | Stmt::Return(Some(expr)) => self.expr(expr, path),
             Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
             Stmt::If {
                 cond,
                 then_body,
                 else_body,
             } => {
-                self.expr(cond, path, None);
+                self.expr(cond, path);
                 walk::with_path_segment(path, PathSegment::Then, |path| {
                     self.body(then_body, path, true)
                 });
@@ -291,7 +279,7 @@ impl<'a> Collector<'a> {
                 });
             }
             Stmt::For { pat, iter, body } => {
-                self.expr(iter, path, None);
+                self.expr(iter, path);
                 let binding = self.local_binding(pat, path);
                 walk::with_path_segment(path, PathSegment::ForBody, |path| {
                     self.scopes.push(BTreeMap::new());
@@ -316,7 +304,7 @@ impl<'a> Collector<'a> {
                 });
             }
             Stmt::While { cond, body } => {
-                self.expr(cond, path, None);
+                self.expr(cond, path);
                 walk::with_path_segment(path, PathSegment::WhileBody, |path| {
                     self.block(body, path)
                 });
@@ -327,7 +315,7 @@ impl<'a> Collector<'a> {
                 });
             }
             Stmt::Match { expr, arms } => {
-                self.expr(expr, path, None);
+                self.expr(expr, path);
                 for (index, arm) in arms.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
                         self.scopes.push(BTreeMap::new());
@@ -341,31 +329,22 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn expr(
-        &mut self,
-        expr: &Expr,
-        path: &mut Vec<PathSegment>,
-        result_binding: Option<BindingId>,
-    ) {
+    fn expr(&mut self, expr: &Expr, path: &mut Vec<PathSegment>) {
         match expr {
             Expr::Call { func, args, .. } => {
-                self.record_call(expr, args, path, result_binding);
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(func, path, None)
-                });
+                self.record_call(expr, args, path);
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(func, path));
                 for (index, arg) in args.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
-                        self.expr(arg, path, None)
+                        self.expr(arg, path)
                     });
                 }
             }
             Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(recv, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(recv, path));
                 for (index, arg) in args.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
-                        self.expr(arg, path, None)
+                        self.expr(arg, path)
                     });
                 }
             }
@@ -383,82 +362,58 @@ impl<'a> Collector<'a> {
             | Expr::Ref { expr, .. }
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(expr, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(expr, path));
             }
             Expr::Binary { lhs, rhs, .. } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(lhs, path, None)
-                });
-                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    self.expr(rhs, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(lhs, path));
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(rhs, path));
             }
             Expr::Range { start, end } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(start, path, None)
-                });
-                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    self.expr(end, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(start, path));
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(end, path));
             }
             Expr::Field { base, .. }
             | Expr::TupleField { base, .. }
             | Expr::ArrayPtr { array: base, .. } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(base, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(base, path));
             }
             Expr::Index { base, index } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(base, path, None)
-                });
-                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    self.expr(index, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(base, path));
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(index, path));
             }
             Expr::StructLit { fields, .. } => {
                 for (index, (_, value)) in fields.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index), |path| {
-                        self.expr(value, path, None)
+                        self.expr(value, path)
                     });
                 }
             }
             Expr::TupleStructLit { fields, .. } => {
                 for (index, value) in fields.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index), |path| {
-                        self.expr(value, path, None)
+                        self.expr(value, path)
                     });
                 }
             }
             Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => {
                 for (index, elem) in elems.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index), |path| {
-                        self.expr(elem, path, None)
+                        self.expr(elem, path)
                     });
                 }
             }
             Expr::ArrayRepeat { elem, .. } | Expr::Closure { body: elem, .. } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(elem, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(elem, path));
             }
             Expr::VecRepeat { elem, len } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(elem, path, None)
-                });
-                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    self.expr(len, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(elem, path));
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(len, path));
             }
             Expr::Match { expr, arms } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(expr, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(expr, path));
                 for (index, arm) in arms.iter().enumerate() {
                     walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
-                        self.expr(&arm.value, path, None)
+                        self.expr(&arm.value, path)
                     });
                 }
             }
@@ -467,14 +422,12 @@ impl<'a> Collector<'a> {
                 then_expr,
                 else_expr,
             } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(cond, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(cond, path));
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    self.expr(then_expr, path, None)
+                    self.expr(then_expr, path)
                 });
                 walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                    self.expr(else_expr, path, None)
+                    self.expr(else_expr, path)
                 });
             }
             Expr::Block(block) => {
@@ -490,7 +443,7 @@ impl<'a> Collector<'a> {
             Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
                 if let Some(ptr) = place.ptr_expr() {
                     walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                        self.expr(ptr, path, None)
+                        self.expr(ptr, path)
                     });
                 }
             }
@@ -499,17 +452,13 @@ impl<'a> Collector<'a> {
             | Expr::AtomicSwap { place, value, .. } => {
                 if let Some(ptr) = place.ptr_expr() {
                     walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                        self.expr(ptr, path, None)
+                        self.expr(ptr, path)
                     });
                 }
-                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    self.expr(value, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(value, path));
             }
             Expr::AtomicNew { value, .. } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(value, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(value, path));
             }
             Expr::AtomicCompareExchange {
                 place,
@@ -519,58 +468,36 @@ impl<'a> Collector<'a> {
             } => {
                 if let Some(ptr) = place.ptr_expr() {
                     walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                        self.expr(ptr, path, None)
+                        self.expr(ptr, path)
                     });
                 }
                 walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    self.expr(expected, path, None)
+                    self.expr(expected, path)
                 });
                 walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                    self.expr(desired, path, None)
+                    self.expr(desired, path)
                 });
             }
             Expr::CopyNonoverlapping { src, dst, .. } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(src, path, None)
-                });
-                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    self.expr(dst, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(src, path));
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(dst, path));
             }
             Expr::PtrCopy {
                 src, dst, count, ..
             } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(src, path, None)
-                });
-                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    self.expr(dst, path, None)
-                });
-                walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                    self.expr(count, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(src, path));
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(dst, path));
+                walk::with_path_segment(path, PathSegment::Expr(2), |path| self.expr(count, path));
             }
             Expr::WriteBytes { dst, val, count } => {
-                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    self.expr(dst, path, None)
-                });
-                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                    self.expr(val, path, None)
-                });
-                walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                    self.expr(count, path, None)
-                });
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| self.expr(dst, path));
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| self.expr(val, path));
+                walk::with_path_segment(path, PathSegment::Expr(2), |path| self.expr(count, path));
             }
         }
     }
 
-    fn record_call(
-        &mut self,
-        expr: &Expr,
-        args: &[Expr],
-        path: &[PathSegment],
-        result_binding: Option<BindingId>,
-    ) {
+    fn record_call(&mut self, expr: &Expr, args: &[Expr], path: &[PathSegment]) {
         let (callee, signature) = match expr {
             Expr::Call { func, binding, .. } => match &**func {
                 Expr::Var(name) => {
@@ -628,10 +555,6 @@ impl<'a> Collector<'a> {
                 }
             })
             .collect();
-        let semantics = match &callee {
-            CallCallee::Direct { identity, .. } => libc_semantics(*identity),
-            CallCallee::Indirect => BTreeSet::new(),
-        };
         self.callsites.push(CallsiteFact {
             site: Site {
                 function: self.function,
@@ -639,10 +562,7 @@ impl<'a> Collector<'a> {
             },
             callee,
             args: arg_facts,
-            variadic_boundary,
             ret: signature.and_then(|signature| signature.ret.clone()),
-            result_binding,
-            semantics,
         });
     }
 
@@ -675,28 +595,5 @@ impl<'a> Collector<'a> {
         if let Some(scope) = self.scopes.last_mut() {
             scope.insert(name, binding);
         }
-    }
-}
-
-fn libc_semantics(identity: FunctionIdentity) -> BTreeSet<LibcCallSemantic> {
-    match identity {
-        FunctionIdentity::Known(Known::Printf) => BTreeSet::from([LibcCallSemantic::Printf]),
-        FunctionIdentity::Known(Known::StrLen) => BTreeSet::from([LibcCallSemantic::StrLen]),
-        FunctionIdentity::Known(Known::StrCmp) => BTreeSet::from([LibcCallSemantic::StrCmp]),
-        FunctionIdentity::Known(Known::StrNCmp) => BTreeSet::from([LibcCallSemantic::StrNCmp]),
-        FunctionIdentity::Known(Known::MemCmp) => BTreeSet::from([LibcCallSemantic::MemCmp]),
-        FunctionIdentity::Known(Known::StrCpy) => BTreeSet::from([LibcCallSemantic::StrCpy]),
-        FunctionIdentity::Known(Known::StrNCpy) => BTreeSet::from([LibcCallSemantic::StrNCpy]),
-        FunctionIdentity::Known(Known::StrCat) => BTreeSet::from([LibcCallSemantic::StrCat]),
-        FunctionIdentity::Known(Known::StrNCat) => BTreeSet::from([LibcCallSemantic::StrNCat]),
-        FunctionIdentity::Known(Known::MemCpy) => BTreeSet::from([LibcCallSemantic::MemCpy]),
-        FunctionIdentity::Known(Known::MemSet) => BTreeSet::from([LibcCallSemantic::MemSet]),
-        FunctionIdentity::Known(Known::FOpen) => BTreeSet::from([LibcCallSemantic::FOpen]),
-        FunctionIdentity::Known(Known::FRead) => BTreeSet::from([LibcCallSemantic::FRead]),
-        FunctionIdentity::Known(Known::FWrite) => BTreeSet::from([LibcCallSemantic::FWrite]),
-        FunctionIdentity::Known(Known::FGets) => BTreeSet::from([LibcCallSemantic::FGets]),
-        FunctionIdentity::Known(Known::FPuts) => BTreeSet::from([LibcCallSemantic::FPuts]),
-        FunctionIdentity::Known(Known::FClose) => BTreeSet::from([LibcCallSemantic::FClose]),
-        _ => BTreeSet::new(),
     }
 }

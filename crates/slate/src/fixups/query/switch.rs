@@ -59,7 +59,6 @@ fn build(parts: LoweredSwitchParts<'_>) -> Option<SwitchDispatch> {
 
     Some(SwitchDispatch {
         selector: selector_expr.clone(),
-        switch_label: switch_label.to_string(),
         cases,
     })
 }

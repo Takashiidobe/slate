@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
 use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Item, Program, Stmt, Type};
 
@@ -70,7 +70,6 @@ pub(super) struct FixupFacts {
     pub(super) counted_slice_loops: Vec<CountedSliceLoopFact>,
     pub(super) loop_shapes: Vec<LoopShapeFact>,
     pub(super) loop_shape_rejections: Vec<LoopShapeRejectionFact>,
-    pub(super) relations: Vec<FactRelation>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -208,13 +207,6 @@ pub(super) struct DefUseFact {
     pub(super) last_use: Option<AstPath>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) struct BindingTouch {
-    pub(super) index: usize,
-    pub(super) reads: bool,
-    pub(super) writes: bool,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct EffectFact {
     pub(super) site: Site,
@@ -240,10 +232,6 @@ pub(super) struct CastFact {
     pub(super) site: Site,
     pub(super) from: Option<Type>,
     pub(super) to: Type,
-    pub(super) kind: CastKind,
-    pub(super) required: bool,
-    pub(super) reasons: BTreeSet<CastRequirement>,
-    pub(super) removable_candidate: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -271,8 +259,6 @@ pub(super) struct CallSignatureFact {
     pub(super) params: Vec<CallParamFact>,
     pub(super) variadic: bool,
     pub(super) ret: Option<Type>,
-    pub(super) returns_nonnull: bool,
-    pub(super) semantics: BTreeSet<LibcCallSemantic>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -286,10 +272,7 @@ pub(super) enum CallSignatureSource {
 
 #[derive(Debug, Clone)]
 pub(super) struct CallParamFact {
-    pub(super) index: usize,
-    pub(super) name: String,
     pub(super) ty: Type,
-    pub(super) nonnull: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -297,10 +280,7 @@ pub(super) struct CallsiteFact {
     pub(super) site: Site,
     pub(super) callee: CallCallee,
     pub(super) args: Vec<CallArgFact>,
-    pub(super) variadic_boundary: Option<usize>,
     pub(super) ret: Option<Type>,
-    pub(super) result_binding: Option<BindingId>,
-    pub(super) semantics: BTreeSet<LibcCallSemantic>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -327,27 +307,6 @@ pub(super) enum CallArgPinning {
     DeclaredParam,
     VariadicUnpinned,
     UnknownCallee,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub(super) enum LibcCallSemantic {
-    Printf,
-    StrLen,
-    StrCmp,
-    StrNCmp,
-    MemCmp,
-    StrCpy,
-    StrNCpy,
-    StrCat,
-    StrNCat,
-    MemCpy,
-    MemSet,
-    FOpen,
-    FRead,
-    FWrite,
-    FGets,
-    FPuts,
-    FClose,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -736,7 +695,6 @@ pub(super) struct ArrayElementPointerOriginFact {
     pub(super) pointer: BindingId,
     pub(super) base: BindingId,
     pub(super) index: Expr,
-    pub(super) mutable: bool,
 }
 
 /// Identifies a specific loop and its body across the several loop-shape
@@ -753,7 +711,6 @@ pub(super) struct LoopSite {
 #[derive(Debug, Clone)]
 pub(super) struct CountedLoopFact {
     pub(super) site: LoopSite,
-    pub(super) index: BindingId,
     pub(super) bound: Expr,
     pub(super) start: CountedLoopStart,
     pub(super) step: CountedLoopStep,
@@ -835,7 +792,6 @@ pub(super) enum LoopShapeKindTag {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) enum LoopShapeRejection {
-    AmbiguousBody,
     MissingCollection,
     MissingInduction,
     MissingMutation,
@@ -890,32 +846,6 @@ pub(super) enum ControlFlowExit {
     Return,
     Break(Option<String>),
     Continue(Option<String>),
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum CastKind {
-    NoOp,
-    IntegerSignChange,
-    IntegerWidthChange,
-    IntegerSignAndWidthChange,
-    IntegerSameShape,
-    FloatWidthChange,
-    FloatInteger,
-    PointerCast,
-    ReferenceCoercion,
-    SliceCoercion,
-    LiteralInferenceGuard,
-    Semantic,
-    Unknown,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub(super) enum CastRequirement {
-    Abi,
-    Semantics,
-    Inference,
-    RustCoercion,
-    UnknownSource,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -977,24 +907,6 @@ pub(super) enum LoopKind {
     Loop,
     While,
     For,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) struct FactRelation {
-    pub(super) kind: RelationKind,
-    pub(super) members: Vec<SemanticId>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) enum RelationKind {
-    Supersedes,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum SemanticId {
-    Function(FunctionId),
-    Binding(BindingId),
-    Loop(LoopId),
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -1327,35 +1239,6 @@ impl FixupFacts {
         self.def_use.iter().find(|fact| fact.binding == binding)
     }
 
-    pub(super) fn binding_touches_in_body(
-        &self,
-        binding: BindingId,
-        body_path: &[PathSegment],
-    ) -> Vec<BindingTouch> {
-        let Some(def_use) = self.def_use(binding) else {
-            return Vec::new();
-        };
-        let mut by_index = BTreeMap::<usize, (bool, bool)>::new();
-        for path in &def_use.reads {
-            if let Some(index) = direct_child_stmt_index(body_path, &path.0) {
-                by_index.entry(index).or_default().0 = true;
-            }
-        }
-        for path in &def_use.writes {
-            if let Some(index) = direct_child_stmt_index(body_path, &path.0) {
-                by_index.entry(index).or_default().1 = true;
-            }
-        }
-        by_index
-            .into_iter()
-            .map(|(index, (reads, writes))| BindingTouch {
-                index,
-                reads,
-                writes,
-            })
-            .collect()
-    }
-
     pub(super) fn effect(
         &self,
         function: FunctionId,
@@ -1382,32 +1265,6 @@ impl FixupFacts {
         self.places
             .iter()
             .find(|fact| fact.site.function == function && &fact.site.path == path)
-    }
-
-    pub(super) fn value(
-        &self,
-        function: FunctionId,
-        subject: ValueSubject,
-        path: &AstPath,
-    ) -> Option<&ValueFact> {
-        self.values.iter().find(|fact| {
-            fact.site.function == function && fact.subject == subject && &fact.site.path == path
-        })
-    }
-
-    pub(super) fn has_value(
-        &self,
-        function: FunctionId,
-        subject: ValueSubject,
-        path: &AstPath,
-        value: &ConstValue,
-    ) -> bool {
-        self.values.iter().any(|fact| {
-            fact.site.function == function
-                && fact.subject == subject
-                && &fact.site.path == path
-                && &fact.value == value
-        })
     }
 
     pub(super) fn values_at(
@@ -1521,26 +1378,6 @@ impl FixupFacts {
             .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
-    pub(super) fn string_lift_plan(
-        &self,
-        function: FunctionId,
-        binding: BindingId,
-    ) -> Option<&StringLiftPlanFact> {
-        self.string_lift_plans
-            .iter()
-            .find(|fact| fact.site.function == function && fact.binding == binding)
-    }
-
-    pub(super) fn string_copy_rewrite(
-        &self,
-        function: FunctionId,
-        path: &AstPath,
-    ) -> Option<&StringCopyRewriteFact> {
-        self.string_copy_rewrites
-            .iter()
-            .find(|fact| fact.site.function == function && &fact.site.path == path)
-    }
-
     pub(super) fn c_string_literal(
         &self,
         function: FunctionId,
@@ -1559,22 +1396,6 @@ impl FixupFacts {
         self.printf_calls
             .iter()
             .find(|fact| fact.site.function == function && &fact.site.path == path)
-    }
-
-    pub(super) fn file_ownership(&self, handle: BindingId) -> Option<&FileOwnershipFact> {
-        self.file_ownership
-            .iter()
-            .find(|fact| fact.handle == handle)
-    }
-}
-
-fn direct_child_stmt_index(body_path: &[PathSegment], path: &[PathSegment]) -> Option<usize> {
-    if !path.starts_with(body_path) {
-        return None;
-    }
-    match path.get(body_path.len()) {
-        Some(PathSegment::Stmt(index)) => Some(*index),
-        _ => None,
     }
 }
 
