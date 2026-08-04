@@ -3,7 +3,7 @@ use crate::rust_ast::{Expr, Stmt};
 use super::array_env::{CopyEnv, count_value, endpoint, range, slice_index, uint};
 
 pub(super) struct CopyPlan {
-    pub(super) expr: Expr,
+    pub(super) stmt: Stmt,
 }
 
 pub(super) fn copy_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
@@ -29,11 +29,70 @@ pub(super) fn copy_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
     }
     if src.base == dst.base {
         return Some(CopyPlan {
-            expr: copy_within(&dst.base, src.start, src.start + len, dst.start),
+            stmt: Stmt::Expr(copy_within(
+                &dst.base,
+                src.start,
+                src.start + len,
+                dst.start,
+            )),
         });
     }
     Some(CopyPlan {
-        expr: copy_from_slice(&dst.base, dst.start, len, &src.base, src.start),
+        stmt: Stmt::Expr(copy_from_slice(
+            &dst.base, dst.start, len, &src.base, src.start,
+        )),
+    })
+}
+
+pub(super) fn memcpy_call_plan(
+    dst: &Expr,
+    src: &Expr,
+    count: &Expr,
+    env: &CopyEnv,
+) -> Option<CopyPlan> {
+    let src_ep = endpoint(src)?;
+    let dst_ep = endpoint(dst)?;
+    if src_ep.base == dst_ep.base {
+        return None;
+    }
+    let src_info = env.arrays.get(&src_ep.base)?;
+    let dst_info = env.arrays.get(&dst_ep.base)?;
+    if !dst_info.mutable
+        || src_info.elem_size != dst_info.elem_size
+        || src_info.byte_signed != dst_info.byte_signed
+    {
+        return None;
+    }
+    let count_bytes = count_value(count, env)?;
+    let elem_size = src_info.elem_size;
+    if count_bytes % elem_size != 0 {
+        return None;
+    }
+    let len = count_bytes / elem_size;
+    if len == 0 {
+        return None;
+    }
+    if src_ep.start.checked_add(len)? > src_info.len
+        || dst_ep.start.checked_add(len)? > dst_info.len
+    {
+        return None;
+    }
+    if src_ep.start == 0 && dst_ep.start == 0 && len == src_info.len && len == dst_info.len {
+        return Some(CopyPlan {
+            stmt: Stmt::Assign {
+                target: Expr::Var(dst_ep.base.clone().into()),
+                value: Expr::Var(src_ep.base.clone().into()),
+            },
+        });
+    }
+    Some(CopyPlan {
+        stmt: Stmt::Expr(copy_from_slice(
+            &dst_ep.base,
+            dst_ep.start,
+            len,
+            &src_ep.base,
+            src_ep.start,
+        )),
     })
 }
 

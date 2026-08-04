@@ -134,7 +134,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 36. `nullable_pointer` - recover `Option<*T>` null-check idioms over dynamic-index search results.
 37. `string_lift::fixup_c_strings` then `memchr_prelude` - a second, narrower string-lift pass followed by the memchr helper's lifecycle (deleted if unused, otherwise given its idiomatic fallback body).
 38. `late_inline_temps` - inline single-use pure temps (late variant).
-39. `ptr_copy` - recover a raw `std::ptr::copy` intrinsic call into `copy_within`/`copy_from_slice`.
+39. `ptr_copy` - recover a raw `std::ptr::copy`/`memcpy` call between provably distinct, in-bounds local buffers into `copy_within`, `dst = src`, or `dst[..n].copy_from_slice(&src[..n])`, when the result is unused.
 40. `mem_set` - recover a raw `memset`/`bzero`/`std::ptr::write_bytes` call into `[..].fill(value)` when its destination, fill value, and length are all provable and its result is unused.
 41. `dead_locals` - remove locals made dead by pointer-copy recovery.
 42. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing.
