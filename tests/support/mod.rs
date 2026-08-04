@@ -40,6 +40,28 @@ fn aligned_path() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/aligned")
 }
 
+fn generated_crate_manifest(name: &str) -> String {
+    format!(
+        r#"[package]
+name = "{name}"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+libc = "0.2"
+aligned = {{ path = "{}" }}
+
+[build-dependencies]
+cc = "1"
+
+[profile.dev]
+overflow-checks = false
+panic = "abort"
+"#,
+        aligned_path().display()
+    )
+}
+
 pub fn test_jobs() -> usize {
     std::env::var("SLATE_TEST_JOBS")
         .ok()
@@ -171,24 +193,7 @@ pub fn compile_rs_project(
         .map_err(|e| format!("create {}: {e}", project.display()))?;
     std::fs::write(
         project.join("Cargo.toml"),
-        format!(
-            r#"[package]
-name = "{package}"
-version = "0.0.0"
-edition = "2024"
-
-[dependencies]
-libc = "0.2"
-aligned = {{ path = "{}" }}
-
-[build-dependencies]
-cc = "1"
-
-[profile.dev]
-overflow-checks = false
-"#,
-            aligned_path().display()
-        ),
+        generated_crate_manifest(package),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
 
@@ -231,24 +236,7 @@ pub fn compile_rs_cargo(src: &Path, work_dir: &Path, package: &str) -> Result<Pa
         .map_err(|e| format!("create {}: {e}", project.display()))?;
     std::fs::write(
         project.join("Cargo.toml"),
-        format!(
-            r#"[package]
-name = "{package}"
-version = "0.0.0"
-edition = "2024"
-
-[dependencies]
-libc = "0.2"
-aligned = {{ path = "{}" }}
-
-[build-dependencies]
-cc = "1"
-
-[profile.dev]
-overflow-checks = false
-"#,
-            aligned_path().display()
-        ),
+        generated_crate_manifest(package),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
     std::fs::copy(src, project.join("src/main.rs"))
@@ -387,29 +375,7 @@ fn build_batch(cases: &[RustCase], project: &Path, bin_dir: &Path) -> Result<(),
     std::fs::create_dir_all(bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
         project.join("Cargo.toml"),
-        format!(
-            r#"[package]
-name = "slate_batch"
-version = "0.0.0"
-edition = "2024"
-
-[dependencies]
-libc = "0.2"
-aligned = {{ path = "{}" }}
-
-[build-dependencies]
-cc = "1"
-
-# clang compiles the C side at -O0, where signed overflow wraps two's-complement
-# (and unsigned wrap is defined). Disable Rust's overflow checks so both sides
-# wrap identically instead of panicking. Division by zero / INT_MIN by -1 still
-# trap on both sides, so the generator keeps divisors to nonzero constants.
-[profile.dev]
-overflow-checks = false
-"#,
-            aligned_path().display()
-        )
-        .as_bytes(),
+        generated_crate_manifest("slate_batch").as_bytes(),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
 
@@ -468,25 +434,7 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<S
     std::fs::create_dir_all(&bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
         project.join("Cargo.toml"),
-        format!(
-            r#"[package]
-name = "slate_multi_batch"
-version = "0.0.0"
-edition = "2024"
-
-[dependencies]
-libc = "0.2"
-aligned = {{ path = "{}" }}
-
-[build-dependencies]
-cc = "1"
-
-[profile.dev]
-overflow-checks = false
-"#,
-            aligned_path().display()
-        )
-        .as_bytes(),
+        generated_crate_manifest("slate_multi_batch").as_bytes(),
     )
     .map_err(|e| format!("write Cargo.toml: {e}"))?;
 

@@ -979,6 +979,18 @@ fn apply_with_logger(
         plan.apply(&mut program, &facts, logger);
         incremental.mark_everything_dirty();
     });
+    step!(program, Pass::AssertRecovery, {
+        to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
+            let plan = {
+                let query = query::QueryContext::new(program, facts);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(&query, &query::rules::assert_recovery::rewrite());
+                builder.finish()
+            };
+            plan.apply(program, facts, logger).changed
+        });
+        incremental.mark_everything_dirty();
+    });
     step!(program, Pass::VarAliases, {
         loop {
             let facts = incremental.resolve(&program);

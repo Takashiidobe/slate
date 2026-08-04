@@ -56,8 +56,9 @@ pub(in crate::fixups) use proof::{
 pub(in crate::fixups) use recipe::{
     ExprRecipe, FunctionBodyRecipe, HeapOwnershipPlan, HeapOwnershipReallocPlan,
     NullablePointerAlias, NullablePointerPlan, byte_position, collapse_atomic_compare_exchange,
-    initialize_local, known_index, memchr_fallback_body, pointer_at_or_null, process_exit,
-    rewrite_file_ownership, rewrite_heap_ownership, rewrite_nullable_pointer,
+    initialize_local, known_index, memchr_fallback_body, pointer_at_or_null,
+    preserve_assert_result, process_exit, recover_assert, rewrite_file_ownership,
+    rewrite_heap_ownership, rewrite_nullable_pointer,
 };
 pub(in crate::fixups) use rewrite::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 use views::{
