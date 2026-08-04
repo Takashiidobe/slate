@@ -259,7 +259,8 @@ impl DirectiveRecord {
                 || is_weak_pragma(&self.raw_payload)
                 || is_redefine_extname_pragma(&self.raw_payload)
                 || is_macro_state_pragma(&self.raw_payload)
-                || is_poison_pragma(&self.raw_payload))
+                || is_poison_pragma(&self.raw_payload)
+                || is_cx_limited_range_pragma(&self.raw_payload))
     }
 
     pub fn is_poison_pragma(&self) -> bool {
@@ -373,6 +374,16 @@ fn is_poison_pragma(payload: &str) -> bool {
 
 fn pack_alignment(value: &str) -> bool {
     !value.is_empty() && value.bytes().all(|byte| byte.is_ascii_digit())
+}
+
+fn is_cx_limited_range_pragma(payload: &str) -> bool {
+    let Some(rest) = payload.trim().strip_prefix("STDC CX_LIMITED_RANGE") else {
+        return false;
+    };
+    if !rest.starts_with(char::is_whitespace) {
+        return false;
+    }
+    matches!(rest.trim(), "ON" | "OFF" | "DEFAULT")
 }
 
 fn c_identifier(value: &str) -> bool {
