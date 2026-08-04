@@ -181,12 +181,6 @@ pub fn insert_directive_items(program: &mut Program, items: Vec<Item>) {
     program.items.splice(index..index, items);
 }
 
-/// Derive the whole-item cfg matrix from the recorded conditional regions
-/// (slate-lq0.2). Returns `None` when the source has no conditional regions.
-///
-/// Refuses, with a diagnostic, anything that cannot be stitched as whole Rust
-/// items: fragment cuts inside a function/record body, predicates that do not
-/// map to a known Rust `cfg`, or a plan that exceeds the bounded variant cap.
 fn plan_configs(source: &str) -> Result<Option<CfgPlan>, String> {
     let pp = preprocess::record(source, &BTreeMap::new());
     if pp.chains.is_empty() {
@@ -275,7 +269,6 @@ fn plan_configs(source: &str) -> Result<Option<CfgPlan>, String> {
     Ok(Some(CfgPlan { pp, configs }))
 }
 
-/// Every macro named by a `defined(...)` atom anywhere in the chain.
 fn chain_atoms(branches: &[Branch]) -> BTreeSet<String> {
     let mut atoms = BTreeSet::new();
     for branch in branches {
@@ -300,8 +293,6 @@ fn collect_atoms(expr: &PredExpr, out: &mut BTreeSet<String>) {
     }
 }
 
-/// Macros to `-D` for a branch: positive `defined(...)` atoms outside negation.
-/// `#else` defines nothing (every chain atom is undefined).
 fn branch_defines(branch: &Branch) -> BTreeSet<String> {
     if branch.kind == DirectiveKind::Else {
         return BTreeSet::new();
@@ -328,8 +319,6 @@ fn collect_positive_atoms(expr: &PredExpr, positive: bool, out: &mut BTreeSet<St
     }
 }
 
-/// Pin every chain atom: `-D` those in `defines`, `-U` the rest, so the active
-/// branch is fully determined by this configuration.
 fn pin_args(chain_atoms: &BTreeSet<String>, defines: &BTreeSet<String>) -> Vec<String> {
     chain_atoms
         .iter()
@@ -398,9 +387,6 @@ fn selected_cfg(pp: &Preprocessing, selected: &[(usize, usize)]) -> Cfg {
     }
 }
 
-/// Confirm, via the oracle, that `defines` makes the requested branch active in
-/// every selected chain — guards against the define-atoms heuristic being wrong
-/// for negated or interdependent predicates.
 fn selects_only(source: &str, selected: &[(usize, usize)], defines: &BTreeSet<String>) -> bool {
     let macros: BTreeMap<String, String> = defines
         .iter()
@@ -419,9 +405,6 @@ fn selects_only(source: &str, selected: &[(usize, usize)], defines: &BTreeSet<St
     })
 }
 
-/// Brace depth at the start of each 1-based source line (index `line - 1`),
-/// ignoring braces inside comments, string/char literals, and on preprocessor
-/// lines.
 fn line_start_depths(source: &str) -> Vec<i32> {
     let mut depths = Vec::new();
     let mut depth = 0i32;
@@ -529,10 +512,6 @@ fn item_lines(unit: &c_ast::Unit) -> BTreeMap<String, usize> {
     lines
 }
 
-/// Stitch the per-config programs into one: items that are identical across
-/// every config in which they appear are emitted once; items that differ are
-/// emitted once per config, each wrapped in its `#[cfg(..)]` gate. Item identity
-/// is [`item_key`]; first-seen order is preserved.
 fn merge_variants(baseline: &Translation, variants: &[Variant], pp: &Preprocessing) -> Program {
     let mut gated = Vec::new();
     let mut emitted = BTreeSet::new();
@@ -610,8 +589,6 @@ fn line_in_direct_branch(
     })
 }
 
-/// A stable identity for an item across configs, so the same logical item
-/// (e.g. `fn os_code`) is grouped even when its body differs per config.
 fn item_key(item: &Item) -> String {
     match item {
         Item::CrateAttrs(_) => "crate-attrs".into(),

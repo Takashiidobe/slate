@@ -1,10 +1,15 @@
-use crate::fixups::facts::Purity;
 use crate::fixups::trace::Pass;
+use crate::{fixups::facts::Purity, rust_ast::ExprMatchArm};
 
 use super::super::{
     CallTarget, Definition, DefinitionKind, EditSet, Field, FnCall, Predicate, QueryRule,
-    StableExpr, byte_position, known_index, memchr_fallback_body, pointer_at_or_null,
+    StableExpr, byte_position, known_index, pointer_at_or_null,
 };
+use crate::fixups::query::FunctionBodyRecipe;
+use crate::fixups::query::recipe::{
+    call, cast, indent, let_stmt, method, null_mut, path, ptr, unsafe_expr, var, void_ptr,
+};
+use crate::rust_ast::{BinOp, Expr, Ident, Pattern, Prim, Stmt, Type, UnaryOp};
 
 pub(in crate::fixups) fn calls() -> QueryRule<FnCall> {
     QueryRule::new(
@@ -67,4 +72,66 @@ pub(in crate::fixups) fn helper() -> QueryRule<Definition> {
         let function = case.fact(|query| query.definition_function(definition))?;
         case.replace_function_body(function, memchr_fallback_body())
     })
+}
+
+pub(crate) fn memchr_fallback_body() -> FunctionBodyRecipe {
+    FunctionBodyRecipe {
+        body: vec![
+            indent(let_stmt(
+                "b",
+                Some(Type::Prim(Prim::U8)),
+                cast(var("c"), Type::Prim(Prim::U8)),
+            )),
+            indent(let_stmt(
+                "bytes",
+                Some(ptr(false, Type::Prim(Prim::U8))),
+                cast(var("s"), ptr(false, Type::Prim(Prim::U8))),
+            )),
+            indent(let_stmt(
+                "haystack",
+                None,
+                unsafe_expr(call(
+                    path(["std", "slice", "from_raw_parts"]),
+                    vec![var("bytes"), var("n")],
+                )),
+            )),
+            indent(Stmt::Return(Some(Expr::Match {
+                expr: Box::new(helper_position()),
+                arms: vec![
+                    ExprMatchArm {
+                        pattern: Pattern::TupleStruct {
+                            name: Ident::from("Some"),
+                            fields: vec![Pattern::Binding(Ident::from("i"))],
+                        },
+                        value: unsafe_expr(cast(
+                            method(var("bytes"), "add", vec![var("i")]),
+                            void_ptr(true),
+                        )),
+                    },
+                    ExprMatchArm {
+                        pattern: Pattern::Binding(Ident::from("None")),
+                        value: null_mut(),
+                    },
+                ],
+            }))),
+        ],
+    }
+}
+
+fn helper_position() -> Expr {
+    method(
+        method(var("haystack"), "iter", Vec::new()),
+        "position",
+        vec![Expr::Closure {
+            params: vec![Ident::from("x")],
+            body: Box::new(Expr::Binary {
+                op: BinOp::Eq,
+                lhs: Box::new(Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(var("x")),
+                }),
+                rhs: Box::new(var("b")),
+            }),
+        }],
+    )
 }

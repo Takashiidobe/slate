@@ -1,4 +1,4 @@
-use crate::function_identity::FunctionIdentity;
+use crate::function_identity::{CallBinding, FunctionIdentity};
 
 #[derive(Debug, Default, Clone)]
 pub struct Program {
@@ -734,7 +734,7 @@ pub enum Expr {
     Call {
         func: Box<Expr>,
         args: Vec<Expr>,
-        binding: crate::function_identity::CallBinding,
+        binding: CallBinding,
     },
     MethodCall {
         recv: Box<Expr>,

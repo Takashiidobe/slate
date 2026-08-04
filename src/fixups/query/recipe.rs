@@ -31,10 +31,6 @@ pub(in crate::fixups) enum SearchIndex {
     Position(StableExpr),
 }
 
-pub(in crate::fixups) struct FunctionBodyRecipe {
-    body: Vec<IndentStmt>,
-}
-
 pub(in crate::fixups) fn recover_assert(cond: Expr, depth: usize) -> IndentStmt {
     IndentStmt {
         depth,
@@ -131,50 +127,6 @@ pub(in crate::fixups) fn known_index(position: NulPosition) -> SearchIndex {
 
 pub(in crate::fixups) fn byte_position(needle: StableExpr) -> SearchIndex {
     SearchIndex::Position(needle)
-}
-
-pub(in crate::fixups) fn memchr_fallback_body() -> FunctionBodyRecipe {
-    FunctionBodyRecipe {
-        body: vec![
-            indent(let_stmt(
-                "b",
-                Some(Type::Prim(Prim::U8)),
-                cast(var("c"), Type::Prim(Prim::U8)),
-            )),
-            indent(let_stmt(
-                "bytes",
-                Some(ptr(false, Type::Prim(Prim::U8))),
-                cast(var("s"), ptr(false, Type::Prim(Prim::U8))),
-            )),
-            indent(let_stmt(
-                "haystack",
-                None,
-                unsafe_expr(call(
-                    path(["std", "slice", "from_raw_parts"]),
-                    vec![var("bytes"), var("n")],
-                )),
-            )),
-            indent(Stmt::Return(Some(Expr::Match {
-                expr: Box::new(helper_position()),
-                arms: vec![
-                    ExprMatchArm {
-                        pattern: Pattern::TupleStruct {
-                            name: Ident::from("Some"),
-                            fields: vec![Pattern::Binding(Ident::from("i"))],
-                        },
-                        value: unsafe_expr(cast(
-                            method(var("bytes"), "add", vec![var("i")]),
-                            void_ptr(true),
-                        )),
-                    },
-                    ExprMatchArm {
-                        pattern: Pattern::Binding(Ident::from("None")),
-                        value: null_mut(),
-                    },
-                ],
-            }))),
-        ],
-    }
 }
 
 impl FunctionBodyRecipe {
@@ -889,15 +841,15 @@ fn some(expr: Expr) -> Expr {
     call(var("Some"), vec![expr])
 }
 
-fn var(name: &str) -> Expr {
+pub(crate) fn var(name: &str) -> Expr {
     Expr::Var(Ident::from(name))
 }
 
-fn path<const N: usize>(parts: [&str; N]) -> Expr {
+pub(crate) fn path<const N: usize>(parts: [&str; N]) -> Expr {
     Expr::Path(crate::rust_ast::Path::new(parts.map(Ident::from)))
 }
 
-fn call(func: Expr, args: Vec<Expr>) -> Expr {
+pub(crate) fn call(func: Expr, args: Vec<Expr>) -> Expr {
     Expr::Call {
         binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(func),
@@ -905,7 +857,7 @@ fn call(func: Expr, args: Vec<Expr>) -> Expr {
     }
 }
 
-fn method(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
+pub(crate) fn method(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
     Expr::MethodCall {
         recv: Box::new(recv),
         method: method.into(),
@@ -913,58 +865,40 @@ fn method(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
     }
 }
 
-fn cast(expr: Expr, ty: Type) -> Expr {
+pub(crate) fn cast(expr: Expr, ty: Type) -> Expr {
     Expr::Cast {
         expr: Box::new(expr),
         ty,
     }
 }
 
-fn unsafe_expr(value: Expr) -> Expr {
+pub(crate) fn unsafe_expr(value: Expr) -> Expr {
     Expr::Unsafe(Box::new(Block {
         stmts: Vec::new(),
         tail: Some(Box::new(value)),
     }))
 }
 
-fn ptr(mutable: bool, inner: Type) -> Type {
+pub(crate) fn ptr(mutable: bool, inner: Type) -> Type {
     Type::Ptr {
         mutable,
         inner: Box::new(inner),
     }
 }
 
-fn void_ptr(mutable: bool) -> Type {
+pub(crate) fn void_ptr(mutable: bool) -> Type {
     ptr(mutable, Type::CLib(CLibType::Void))
 }
 
-fn null_mut() -> Expr {
+pub(crate) fn null_mut() -> Expr {
     call(path(["std", "ptr", "null_mut"]), Vec::new())
 }
 
-fn helper_position() -> Expr {
-    method(
-        method(var("haystack"), "iter", Vec::new()),
-        "position",
-        vec![Expr::Closure {
-            params: vec![Ident::from("x")],
-            body: Box::new(Expr::Binary {
-                op: BinOp::Eq,
-                lhs: Box::new(Expr::Unary {
-                    op: UnaryOp::Deref,
-                    expr: Box::new(var("x")),
-                }),
-                rhs: Box::new(var("b")),
-            }),
-        }],
-    )
-}
-
-fn indent(stmt: Stmt) -> IndentStmt {
+pub(crate) fn indent(stmt: Stmt) -> IndentStmt {
     IndentStmt { depth: 1, stmt }
 }
 
-fn let_stmt(name: &str, ty: Option<Type>, init: Expr) -> Stmt {
+pub(crate) fn let_stmt(name: &str, ty: Option<Type>, init: Expr) -> Stmt {
     Stmt::Let {
         name: name.into(),
         mutable: false,
@@ -982,6 +916,10 @@ pub(in crate::fixups) struct NullablePointerPlan {
     pub(in crate::fixups) option_expr: Expr,
     pub(in crate::fixups) base_ptr: Option<Expr>,
     pub(in crate::fixups) aliases: Vec<NullablePointerAlias>,
+}
+
+pub(crate) struct FunctionBodyRecipe {
+    pub(crate) body: Vec<IndentStmt>,
 }
 
 #[derive(Clone)]

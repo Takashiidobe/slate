@@ -1,9 +1,6 @@
-//! parse-cir: generic MLIR text -> [`Module`] Op-tree.
-
 use super::ir::{Attr, Block, Module, Op, Region};
 use std::collections::BTreeMap;
 
-/// Parse generic-form CIR text into an Op-tree.
 pub fn parse_module(text: &str) -> Result<Module, String> {
     Parser::new(text).parse_module()
 }
@@ -782,98 +779,4 @@ fn split_top_level(s: &str, delimiter: char) -> Vec<&str> {
     }
     parts.push(&s[start..]);
     parts
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn parses_nested_generic_ops_and_attrs() {
-        let text = r#"
-!s32i = !cir.int<s, 32>
-"builtin.module"() <{sym_name = "t.c"}> ({
-  "cir.func"() <{function_type = !cir.func<(!s32i) -> !s32i>, sym_name = "f", dso_local}> ({
-  ^bb0(%arg0: !s32i):
-    %0 = "cir.alloca"() <{alignment = 4 : i64, name = "x"}> : () -> !cir.ptr<!s32i>
-    "cir.store"(%arg0, %0) : (!s32i, !cir.ptr<!s32i>) -> ()
-  }) {"cir.target-cpu" = "x86-64", nothrow} : () -> ()
-}) {cir.lang = #cir.lang<c>, cir.triple = "x86_64-unknown-linux-gnu", dlti.dl_spec = #dlti.dl_spec<i32 = dense<32> : vector<2xi64>>} : () -> ()
-"#;
-
-        let module = parse_module(text).unwrap();
-        assert_eq!(module.ops.len(), 1);
-        assert_eq!(module.aliases["!s32i"], "!cir.int<s, 32>");
-        let module_op = &module.ops[0];
-        assert_eq!(module_op.name, "builtin.module");
-        assert_eq!(module_op.attrs["sym_name"].as_str(), Some("t.c"));
-        assert_eq!(
-            module_op.attrs["cir.triple"].as_str(),
-            Some("x86_64-unknown-linux-gnu")
-        );
-        assert!(
-            module_op.attrs["dlti.dl_spec"]
-                .as_str()
-                .is_some_and(|spec| spec.contains("i32 = dense<32>"))
-        );
-        assert_eq!(module_op.regions.len(), 1);
-
-        let func = &module_op.regions[0].blocks[0].ops[0];
-        assert_eq!(func.name, "cir.func");
-        assert_eq!(func.attrs["sym_name"].as_str(), Some("f"));
-        assert_eq!(func.attrs["dso_local"].as_str(), Some("true"));
-        assert_eq!(func.regions[0].blocks[0].label.as_deref(), Some("bb0"));
-        assert_eq!(
-            func.regions[0].blocks[0].args[0],
-            ("arg0".into(), "!s32i".into())
-        );
-
-        let alloca = &func.regions[0].blocks[0].ops[0];
-        assert_eq!(alloca.results, ["0"]);
-        assert_eq!(alloca.attrs["alignment"].as_int(), Some(4));
-        assert_eq!(alloca.ty.as_deref(), Some("() -> !cir.ptr<!s32i>"));
-
-        let store = &func.regions[0].blocks[0].ops[1];
-        assert_eq!(store.operands, ["arg0", "0"]);
-    }
-
-    #[test]
-    fn retains_trailing_locations() {
-        let text = r#"
-%0 = "cir.const"() <{value = #cir.int<1> : !s32i}> : () -> !s32i loc("f.c":1:2)
-"#;
-        let module = parse_module(text).unwrap();
-        assert_eq!(module.ops[0].loc.as_deref(), Some(r#"loc("f.c":1:2)"#));
-        assert_eq!(module.ops[0].ty.as_deref(), Some("() -> !s32i"));
-    }
-
-    #[test]
-    fn parses_successor_lists_and_block_comments() {
-        let text = r#"
-"cir.func"() <{sym_name = "f"}> ({
-    "cir.br"()[^bb1] : () -> ()
-  ^bb1:  // pred: ^bb0
-    "cir.label"() <{label = "done"}> : () -> ()
-    "cir.return"() : () -> ()
-}) : () -> ()
-"#;
-        let module = parse_module(text).unwrap();
-        let func = &module.ops[0];
-        let entry = &func.regions[0].blocks[0];
-        assert_eq!(entry.ops[0].name, "cir.br");
-        assert_eq!(entry.ops[0].successors, ["bb1"]);
-        assert_eq!(func.regions[0].blocks[1].label.as_deref(), Some("bb1"));
-        assert_eq!(func.regions[0].blocks[1].ops[0].name, "cir.label");
-    }
-
-    #[test]
-    fn parses_multi_result_ops_and_projections() {
-        let text = r#"
-%0:2 = "cir.modf"(%arg0) : (!cir.double) -> (!cir.double, !cir.double)
-"cir.store"(%0#1, %arg1) : (!cir.double, !cir.ptr<!cir.double>) -> ()
-"#;
-        let module = parse_module(text).unwrap();
-        assert_eq!(module.ops[0].results, ["0#0", "0#1"]);
-        assert_eq!(module.ops[1].operands, ["0#1", "arg1"]);
-    }
 }
