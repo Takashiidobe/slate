@@ -1,23 +1,44 @@
 use crate::fixups::facts::{GENERATED_C_STRING_READ_CALLEE, PrintfArgFact};
 use crate::rust_ast::{BinOp, Block, Expr, IndentStmt, Prim, RustValue, Stmt, Type};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(in crate::fixups) enum PrintfStream {
+    Stdout,
+    Stderr,
+}
+
+impl PrintfStream {
+    fn macro_names(self) -> (&'static str, &'static str) {
+        match self {
+            PrintfStream::Stdout => ("println", "print"),
+            PrintfStream::Stderr => ("eprintln", "eprint"),
+        }
+    }
+
+    pub(in crate::fixups) fn plain_macro_name(self) -> &'static str {
+        self.macro_names().1
+    }
+}
+
 pub(in crate::fixups) fn printf_macro(
     format: &[u8],
     args: &[Expr],
     arg_facts: &[PrintfArgFact],
+    stream: PrintfStream,
 ) -> Option<Expr> {
     let parsed = parse_printf_format(format)?;
     if parsed.conversions.len() != args.len() {
         return None;
     }
+    let (line_macro, plain_macro) = stream.macro_names();
     let mut macro_args = Vec::new();
     let name = if parsed.trailing_newline {
         if parsed.format.is_empty() && args.is_empty() {
-            return Some(format_macro("println", vec![]));
+            return Some(format_macro(line_macro, vec![]));
         }
-        "println"
+        line_macro
     } else {
-        "print"
+        plain_macro
     };
     macro_args.push(Expr::Str(parsed.format));
     for ((arg, conversion), arg_fact) in args

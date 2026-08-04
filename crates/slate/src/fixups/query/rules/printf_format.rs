@@ -1,11 +1,11 @@
 use crate::fixups::trace::Pass;
 use crate::function_identity::Known;
-use crate::rust_ast::Stmt;
+use crate::rust_ast::{Expr, Stmt};
 
 use super::super::{
-    BindingAccess, CallRecord, CallTarget, EditSet, ExpressionRef, Field, FnCall, ItemCaseContext,
-    Predicate, QueryRule, Rejection, RejectionReason, WholeProgram, printf_macro,
-    rewrite_printf_fallback,
+    BindingAccess, CallRecord, CallTarget, EditSet, ExprSite, ExpressionRef, Field, FnCall,
+    ItemCaseContext, Predicate, PrintfStream, QueryRule, Rejection, RejectionReason, WholeProgram,
+    printf_macro, rewrite_printf_fallback,
 };
 
 pub(in crate::fixups) fn rewrite() -> QueryRule<FnCall> {
@@ -45,18 +45,27 @@ fn rewrite_printf_call(
             RejectionReason::UnsupportedShape,
         )
     })?;
-    let macro_call = printf_macro(format, &rest, &fact.arg_facts).ok_or_else(|| {
-        case.reject_at(
-            Predicate::PrintfCall,
-            &call.site,
-            RejectionReason::UnsupportedShape,
-        )
-    })?;
+    let macro_call = printf_macro(format, &rest, &fact.arg_facts, PrintfStream::Stdout)
+        .ok_or_else(|| {
+            case.reject_at(
+                Predicate::PrintfCall,
+                &call.site,
+                RejectionReason::UnsupportedShape,
+            )
+        })?;
 
     let target = call
         .trivial_unsafe_site
         .clone()
         .unwrap_or_else(|| call.site.clone());
+    replace_int_returning_call(case, target, macro_call)
+}
+
+pub(in crate::fixups) fn replace_int_returning_call(
+    case: &mut ItemCaseContext<'_, '_>,
+    target: ExprSite,
+    replacement: Expr,
+) -> Result<EditSet, Rejection> {
     let statement = case.fact(|query| {
         query.enclosing_statement(&ExpressionRef {
             site: target.clone(),
@@ -67,7 +76,7 @@ fn rewrite_printf_call(
     let indent = case.fact(|query| query.statement(&statement))?;
 
     match &indent.stmt {
-        Stmt::Expr(_) => Ok(EditSet::replace_expression(target, macro_call)),
+        Stmt::Expr(_) => Ok(EditSet::replace_expression(target, replacement)),
         Stmt::Let { mutable: false, .. } => {
             let binding = case.fact(|query| query.statement_binding(&statement))?;
             let uses = case.fact(|query| query.binding_uses(&binding))?;
@@ -79,7 +88,7 @@ fn rewrite_printf_call(
             edits.push_replace_statement(
                 statement.item_index,
                 statement.path.clone(),
-                Some(Stmt::Expr(macro_call)),
+                Some(Stmt::Expr(replacement)),
             );
             Ok(edits)
         }

@@ -683,6 +683,18 @@ fn apply_with_logger(
         plan.apply(&mut program, &facts, logger);
         incremental.mark_everything_dirty();
     });
+    let facts = incremental.resolve(&program);
+    step!(program, Pass::PrintfStream, {
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::printf_stream::fprintf_calls());
+            builder.add_rule(&query, &query::rules::printf_stream::fputs_calls());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
+        incremental.mark_everything_dirty();
+    });
     step!(program, Pass::StringParams, {
         loop {
             let facts = incremental.resolve(&program);

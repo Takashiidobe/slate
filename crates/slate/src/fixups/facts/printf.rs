@@ -185,12 +185,13 @@ fn visit_expr(
     facts: &FixupFacts,
 ) {
     if let Expr::Call { args, .. } = expr
-        && known_call(expr) == Some(Known::Printf)
+        && let Some(known @ (Known::Printf | Known::FPrintf)) = known_call(expr)
     {
+        let format_index = if known == Known::FPrintf { 1 } else { 0 };
         let arg_facts = args
             .iter()
             .enumerate()
-            .skip(1)
+            .skip(format_index + 1)
             .map(|(index, arg)| {
                 let mut arg_path = path.to_vec();
                 arg_path.push(PathSegment::Expr(index + 1));
@@ -213,8 +214,8 @@ fn visit_expr(
                 function,
                 path: AstPath(path.to_vec()),
             },
-            format: args.first().and_then(const_c_string),
-            arg_paths: (1..args.len())
+            format: args.get(format_index).and_then(const_c_string),
+            arg_paths: (format_index + 1..args.len())
                 .map(|index| {
                     let mut arg_path = path.to_vec();
                     arg_path.push(PathSegment::Expr(index + 1));
