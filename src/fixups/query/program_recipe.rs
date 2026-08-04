@@ -1214,6 +1214,39 @@ fn rewrite_ptr_len_body_pointer_param(body: &mut [IndentStmt], name: &str, mutab
         }
         true
     });
+    changed |= fix_ptr_len_let_pointer_mutability(body, name, mutable);
+    changed
+}
+
+fn fix_ptr_len_let_pointer_mutability(body: &mut [IndentStmt], name: &str, mutable: bool) -> bool {
+    let mut changed = false;
+    let expected_method = if mutable { "as_mut_ptr" } else { "as_ptr" };
+    for indent in body.iter_mut() {
+        if let Stmt::Let {
+            ty:
+                Some(Type::Ptr {
+                    mutable: ty_mutable,
+                    ..
+                }),
+            init: Some(Expr::MethodCall { recv, method, args }),
+            ..
+        } = &mut indent.stmt
+            && args.is_empty()
+            && method.as_str() == expected_method
+            && matches!(&**recv, Expr::Var(var) if var.as_str() == name)
+            && *ty_mutable != mutable
+        {
+            *ty_mutable = mutable;
+            changed = true;
+        }
+        walk::nested_body_vecs_mut_with_path(
+            &mut indent.stmt,
+            &mut Vec::new(),
+            &mut |nested, _| {
+                changed |= fix_ptr_len_let_pointer_mutability(nested, name, mutable);
+            },
+        );
+    }
     changed
 }
 
