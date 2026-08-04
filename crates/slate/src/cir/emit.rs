@@ -66,6 +66,9 @@ pub fn target_args() -> Vec<String> {
     if let Ok(target) = std::env::var("SLATE_TARGET")
         && !target.trim().is_empty()
     {
+        if target.contains("musl") {
+            args.push("-D__SLATE_LIBC_MUSL=1".into());
+        }
         args.push("-target".into());
         args.push(target);
     }
