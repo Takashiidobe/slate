@@ -2619,7 +2619,7 @@ fn numeric_parse_calls_use_runtime_parse_support() {
     assert!(rust.contains("__slate_runtime::parse_i64(large)"));
     assert!(rust.contains("__slate_runtime::parse_u64(empty)"));
     assert!(rust.contains("__slate_runtime::parse_f64(flt)"));
-    assert!(rust.contains("unsafe { strtol(") || rust.contains("unsafe { __isoc23_strtol("));
+    assert!(rust.contains("unsafe { strtol("));
     assert!(!rust.contains("fn atoi("));
     assert!(!rust.contains("fn atol("));
     assert!(!rust.contains("fn strtoul("));
