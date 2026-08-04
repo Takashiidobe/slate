@@ -1,12 +1,13 @@
 use std::collections::BTreeMap;
 
-use crate::fixups::facts::{HeapExtent, HeapOwnershipKind};
+use crate::fixups::facts::{AllocProvenance, HeapExtent, HeapOwnershipKind};
 use crate::fixups::trace::Pass;
 
 use super::super::{
     EditSet, Function, FunctionRef, InterproceduralAllocCalleePlan,
     InterproceduralAllocCallerInput, InterproceduralAllocCallerPlan, ItemCaseContext, QueryRule,
     Rejection, rewrite_interprocedural_alloc_callee, rewrite_interprocedural_alloc_caller,
+    rewrite_interprocedural_alloc_wrapper,
 };
 
 pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
@@ -17,12 +18,22 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
     )
     .case("eligible_allocator", |case, function| {
         let summary = case.fact(|query| query.callee_alloc_summary(function))?;
+        let AllocProvenance::Direct {
+            elem_ty,
+            extent,
+            return_path,
+            alloc_source_path,
+            ..
+        } = summary.provenance.clone()
+        else {
+            return Err(case.reject());
+        };
         let eligibility = case.fact(|query| query.interprocedural_alloc_eligibility(function))?;
         case.require(eligibility.eligible)?;
         let callers = case.fact(|query| query.interprocedural_alloc_callers(function))?;
         case.require(!callers.is_empty())?;
 
-        let (kind, count) = match &summary.extent {
+        let (kind, count) = match &extent {
             HeapExtent::Scalar => (HeapOwnershipKind::ScalarBox, None),
             HeapExtent::Elements { count } => (HeapOwnershipKind::VecBuffer, Some(count.clone())),
             HeapExtent::Unknown => return Err(case.reject()),
@@ -32,18 +43,25 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
             .fact(|query| query.function_snapshot(function))?
             .clone();
         let callee_plan = InterproceduralAllocCalleePlan {
-            elem_ty: summary.elem_ty.clone(),
+            elem_ty: elem_ty.clone(),
             kind,
             count,
-            return_path: summary.return_path.clone(),
-            alloc_source_path: summary.alloc_source_path.clone(),
+            return_path,
+            alloc_source_path,
         };
         let new_callee = rewrite_interprocedural_alloc_callee(callee_fndef, &callee_plan);
         let mut edits = EditSet::replace_function(function.clone(), new_callee);
 
-        for (caller_ref, plans) in
-            group_callers_by_function(case, &callers, kind, &summary.elem_ty)?
-        {
+        let chain = case.fact(|query| query.interprocedural_alloc_chain(function))?;
+        for wrapper_ref in &chain {
+            let wrapper_fndef = case
+                .fact(|query| query.function_snapshot(wrapper_ref))?
+                .clone();
+            let new_wrapper = rewrite_interprocedural_alloc_wrapper(wrapper_fndef, kind, &elem_ty);
+            edits.extend(EditSet::replace_function(wrapper_ref.clone(), new_wrapper));
+        }
+
+        for (caller_ref, plans) in group_callers_by_function(case, &callers, kind, &elem_ty)? {
             let caller_fndef = case
                 .fact(|query| query.function_snapshot(&caller_ref))?
                 .clone();

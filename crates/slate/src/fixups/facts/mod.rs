@@ -619,15 +619,25 @@ pub(super) enum HeapOwnershipKind {
 }
 
 #[derive(Debug, Clone)]
+pub(super) enum AllocProvenance {
+    Direct {
+        elem_ty: Type,
+        allocation: HeapAllocationKind,
+        extent: HeapExtent,
+        init: HeapInitKind,
+        return_path: AstPath,
+        alloc_source_path: AstPath,
+    },
+    PassThrough {
+        callees: Vec<String>,
+    },
+}
+
+#[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub(super) struct CalleeAllocSummaryFact {
     pub(super) function: FunctionId,
-    pub(super) elem_ty: Type,
-    pub(super) allocation: HeapAllocationKind,
-    pub(super) extent: HeapExtent,
-    pub(super) init: HeapInitKind,
-    pub(super) return_path: AstPath,
-    pub(super) alloc_source_path: AstPath,
+    pub(super) provenance: AllocProvenance,
 }
 
 #[derive(Debug, Clone)]
@@ -639,6 +649,7 @@ pub(super) struct InterproceduralAllocEligibilityFact {
     pub(super) extent: HeapExtent,
     pub(super) init: HeapInitKind,
     pub(super) eligible: bool,
+    pub(super) chain: Vec<FunctionId>,
 }
 
 #[derive(Debug, Clone)]

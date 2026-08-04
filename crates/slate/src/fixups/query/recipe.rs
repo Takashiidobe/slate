@@ -1505,6 +1505,15 @@ pub(in crate::fixups) fn rewrite_interprocedural_alloc_callee(
     fndef
 }
 
+pub(in crate::fixups) fn rewrite_interprocedural_alloc_wrapper(
+    mut fndef: FnDef,
+    kind: HeapOwnershipKind,
+    elem_ty: &Type,
+) -> FnDef {
+    fndef.ret = Some(owned_type(kind, elem_ty));
+    fndef
+}
+
 pub(in crate::fixups) fn rewrite_interprocedural_alloc_caller(
     body: Vec<IndentStmt>,
     plans: &[InterproceduralAllocCallerPlan],
