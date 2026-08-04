@@ -6,10 +6,10 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AsciiNumericSign, AstPath, BindingId, BindingKind, BorrowAliasReason, CallArgPinning,
     CallCallee, CalleeAllocSummaryFact, CastFact, ConstValue, ControlFlowSubject, CountedLoopFact,
-    EffectSubject, FixupFacts, FunctionId, NulTermination, NullCheckProof, OptionBoxAssignKind,
-    PathSegment, PointerComparisonKind, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
-    StringBufferKind, StringCopyRewrite, StringRecoveryCandidate, StructFieldOwnershipFact,
-    ValueSubject,
+    EffectSubject, FixupFacts, FunctionId, InterproceduralAllocEligibilityFact, NulTermination,
+    NullCheckProof, OptionBoxAssignKind, PathSegment, PointerComparisonKind, PrintfCallFact,
+    PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
+    StringRecoveryCandidate, StructFieldOwnershipFact, ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
@@ -4470,6 +4470,37 @@ query_cache! {
             },
         }];
         Ok(Proof::new(summary, evidence))
+    }
+
+    #[allow(dead_code)]
+    fn interprocedural_alloc_eligibility(&self, function: &FunctionRef) -> QueryResult<InterproceduralAllocEligibilityFact>;
+    key: FunctionId = function.id;
+    {
+        let predicate = Predicate::InterproceduralAllocEligibility;
+        let site = expression_site(function.item_index, &[]);
+        let Some(fact) = self
+            .facts
+            .interprocedural_alloc_eligibility
+            .iter()
+            .find(|fact| fact.function == function.id)
+            .cloned()
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::InterproceduralAllocEligibility {
+                function: function.name.clone(),
+                eligible: fact.eligible,
+            },
+        }];
+        Ok(Proof::new(fact, evidence))
     }
 
     fn option_box_local_candidates(&self, function: &FunctionRef) -> QueryResult<Vec<OptionBoxLocalPlanInput>>;

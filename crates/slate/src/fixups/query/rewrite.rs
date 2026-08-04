@@ -96,6 +96,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::PointerComparisonKind => "pointer_comparison_kind",
         Predicate::StructFieldOwnership => "struct_field_ownership",
         Predicate::CalleeAllocSummary => "callee_alloc_summary",
+        Predicate::InterproceduralAllocEligibility => "interprocedural_alloc_eligibility",
         Predicate::OptionBoxLocalCandidates => "option_box_local_candidates",
         Predicate::OptionBoxComparisons => "option_box_comparisons",
         Predicate::ReferenceDomain => "reference_domain",
@@ -236,6 +237,9 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::PointerComparisonKind { kind } => format!("kind={kind:?}"),
         EvidenceDetail::StructFieldOwnership { fields } => format!("fields={fields}"),
         EvidenceDetail::CalleeAllocSummary { function } => format!("function={function}"),
+        EvidenceDetail::InterproceduralAllocEligibility { function, eligible } => {
+            format!("function={function}, eligible={eligible}")
+        }
         EvidenceDetail::OptionBoxLocalCandidates { count } => format!("count={count}"),
         EvidenceDetail::OptionBoxComparisons { count } => format!("count={count}"),
         EvidenceDetail::ReferenceDomain { definitions, items } => {

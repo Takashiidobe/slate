@@ -10,7 +10,7 @@ use crate::rust_ast::{
 };
 use std::collections::BTreeSet;
 
-type OwnedHeapUses = (
+pub(super) type OwnedHeapUses = (
     usize,
     Option<BindingId>,
     Vec<BindingId>,
@@ -69,21 +69,21 @@ fn collect_body(function: FunctionId, body: &[IndentStmt], facts: &mut FixupFact
     }
 }
 
-struct Candidate {
-    allocation_index: usize,
-    assign_index: usize,
-    free_index: usize,
-    allocation_temp: BindingId,
-    size_temp: Option<BindingId>,
-    free_temp: Option<BindingId>,
-    aliases: Vec<BindingId>,
-    allocation: HeapAllocationKind,
-    extent: HeapExtent,
-    init: HeapInitKind,
-    elem_ty: Type,
-    read_safety: HeapReadSafety,
-    uses: Vec<HeapUseFact>,
-    reallocations: Vec<HeapReallocFact>,
+pub(super) struct Candidate {
+    pub(super) allocation_index: usize,
+    pub(super) assign_index: usize,
+    pub(super) free_index: usize,
+    pub(super) allocation_temp: BindingId,
+    pub(super) size_temp: Option<BindingId>,
+    pub(super) free_temp: Option<BindingId>,
+    pub(super) aliases: Vec<BindingId>,
+    pub(super) allocation: HeapAllocationKind,
+    pub(super) extent: HeapExtent,
+    pub(super) init: HeapInitKind,
+    pub(super) elem_ty: Type,
+    pub(super) read_safety: HeapReadSafety,
+    pub(super) uses: Vec<HeapUseFact>,
+    pub(super) reallocations: Vec<HeapReallocFact>,
 }
 
 fn find_allocation(
@@ -152,7 +152,7 @@ fn find_allocation(
     None
 }
 
-fn null_pointer_decl(stmt: &Stmt) -> Option<(&str, Type)> {
+pub(super) fn null_pointer_decl(stmt: &Stmt) -> Option<(&str, Type)> {
     let Stmt::Let {
         name,
         ty: Some(Type::Ptr {
@@ -370,7 +370,11 @@ fn type_size_bytes(ty: &Type) -> Option<i64> {
     }
 }
 
-fn assigns_allocated_pointer(stmt: &Stmt, pointer_name: &str, allocation_name: &str) -> bool {
+pub(super) fn assigns_allocated_pointer(
+    stmt: &Stmt,
+    pointer_name: &str,
+    allocation_name: &str,
+) -> bool {
     let Stmt::Assign { target, value } = stmt else {
         return false;
     };
@@ -426,7 +430,7 @@ fn block_tail_free_arg(block: &Block) -> Option<&Expr> {
     }
 }
 
-fn heap_uses_are_owned(
+pub(super) fn heap_uses_are_owned(
     function: FunctionId,
     body: &[IndentStmt],
     facts: &FixupFacts,
