@@ -111,7 +111,10 @@ when a def-use/effects proof shows errno is still fresh at the call site,
 otherwise it stays a raw `perror` call. `qsort`/`bsearch` become
 `.sort_by()`/`.binary_search_by()`. `printf`-family
 calls with a constant, fully-supported format string become `println!`/
-`print!`; anything else stays `libc::printf`. C11 UTF-16/UTF-32 conversion
+`print!`; anything else stays `libc::printf`. `fprintf`/`fputs` targeting a
+source-provably `stdout`/`stderr` stream become
+`println!`/`print!`/`eprintln!`/`eprint!` the same way; any other `FILE*`
+stays on the libc path. C11 UTF-16/UTF-32 conversion
 functions use the platform `libc::mbstate_t` ABI.
 
 ### Atomics and concurrency builtins

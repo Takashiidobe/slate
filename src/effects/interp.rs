@@ -4777,6 +4777,7 @@ impl Interp {
             CallSummary::Fclose => self.call_fclose(args),
             CallSummary::Fflush => self.call_fflush(args),
             CallSummary::Printf => self.call_printf(args),
+            CallSummary::FPrintf => self.call_fprintf(args),
             CallSummary::Exit => self.call_exit(args),
             CallSummary::Puts => self.call_puts(args),
             CallSummary::Remove => self.call_remove(args),
@@ -5684,9 +5685,32 @@ impl Interp {
                 ArgShapeKind::FormatString,
             ));
         };
+        let values = self.resolve_printf_args(fmt_expr, rest)?;
+        self.trace.push(Effect::Call {
+            name: "printf".to_string(),
+            args: values,
+        });
+        Ok(int32(0))
+    }
+
+    fn call_fprintf(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [_stream, fmt_expr, rest @ ..] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::FPrintf),
+                ArgShapeKind::FormatString,
+            ));
+        };
+        let values = self.resolve_printf_args(fmt_expr, rest)?;
+        self.trace.push(Effect::Call {
+            name: "fprintf".to_string(),
+            args: values,
+        });
+        Ok(int32(0))
+    }
+
+    fn resolve_printf_args(&mut self, fmt_expr: &Expr, rest: &[Expr]) -> EResult<Vec<Value>> {
         let specs = c_format_specs(&c_format_bytes(fmt_expr)?);
-        let values = rest
-            .iter()
+        rest.iter()
             .enumerate()
             .map(|(index, arg)| {
                 let value = self.eval(arg)?;
@@ -5805,12 +5829,7 @@ impl Interp {
                     _ => Ok(value),
                 }
             })
-            .collect::<EResult<Vec<_>>>()?;
-        self.trace.push(Effect::Call {
-            name: "printf".to_string(),
-            args: values,
-        });
-        Ok(int32(0))
+            .collect::<EResult<Vec<_>>>()
     }
 
     fn call_puts(&mut self, args: &[Expr]) -> EResult<Value> {

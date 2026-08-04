@@ -30,6 +30,7 @@ pub(in crate::fixups) mod nullable_pointer;
 pub(in crate::fixups) mod param_spills;
 pub(in crate::fixups) mod perror;
 pub(in crate::fixups) mod printf_format;
+pub(in crate::fixups) mod printf_stream;
 pub(in crate::fixups) mod ptr_copy;
 pub(in crate::fixups) mod ptr_len;
 pub(in crate::fixups) mod range_loop;
