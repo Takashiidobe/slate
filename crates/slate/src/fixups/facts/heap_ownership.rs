@@ -11,7 +11,7 @@ use crate::rust_ast::{
 use std::collections::BTreeSet;
 
 pub(super) type OwnedHeapUses = (
-    usize,
+    Option<usize>,
     Option<BindingId>,
     Vec<BindingId>,
     Vec<HeapUseFact>,
@@ -140,7 +140,7 @@ fn find_allocation(
             };
             let (free_index, free_temp, aliases, uses, reallocations, read_safety) =
                 heap_uses_are_owned(function, body, facts, pointer_name, &candidate)?;
-            candidate.free_index = free_index;
+            candidate.free_index = free_index?;
             candidate.free_temp = free_temp;
             candidate.aliases = aliases;
             candidate.uses = uses;
@@ -538,7 +538,13 @@ pub(super) fn heap_uses_are_owned(
         }
         index += 1;
     }
-    let (free_index, free_temp) = free?;
+    if free.is_none() {
+        return None;
+    }
+    let (free_index, free_temp) = match free {
+        Some((index, temp)) => (Some(index), temp),
+        None => (None, None),
+    };
     let read_safety = if candidate.init == HeapInitKind::Zeroed {
         HeapReadSafety::ZeroInitialized
     } else if may_read_uninit {

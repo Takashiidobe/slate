@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::heap_ownership;
 use crate::fixups::facts::{
     AstPath, FixupFacts, FunctionId, HeapAllocationKind, HeapExtent, HeapInitKind, HeapReadSafety,
-    InterproceduralAllocEligibilityFact, PathSegment,
+    InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, PathSegment,
 };
 use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, Stmt, Type};
 
@@ -17,6 +17,7 @@ struct ResolvedSummary {
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.interprocedural_alloc_eligibility.clear();
+    facts.interprocedural_alloc_callers.clear();
 
     let mut fn_defs: BTreeMap<String, (FunctionId, &FnDef)> = BTreeMap::new();
     for (item_index, item) in program.items.iter().enumerate() {
@@ -53,13 +54,33 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
     }
 
     let mut all = Vec::new();
+    let mut all_callers = Vec::new();
     for (callee_name, summary) in &resolved {
         let Some((function, _)) = fn_defs.get(callee_name) else {
             continue;
         };
-        let eligible = fn_defs.values().all(|(caller_id, caller_def)| {
-            caller_calls_are_eligible(*caller_id, caller_def, callee_name, &resolved, facts)
-        });
+        let mut eligible = true;
+        let mut callers = Vec::new();
+        for (caller_id, caller_def) in fn_defs.values() {
+            let (ok, mut found) =
+                caller_calls_for_callee(*caller_id, caller_def, callee_name, &resolved, facts);
+            eligible &= ok;
+            callers.append(&mut found);
+        }
+        if eligible {
+            all_callers.extend(
+                callers
+                    .into_iter()
+                    .map(|caller| InterproceduralAllocCallerFact {
+                        callee: *function,
+                        caller: caller.caller,
+                        pointer_name: caller.pointer_name,
+                        decl_path: caller.decl_path,
+                        call_temp_path: caller.call_temp_path,
+                        free_path: caller.free_path,
+                    }),
+            );
+        }
         all.push(InterproceduralAllocEligibilityFact {
             function: *function,
             elem_ty: summary.elem_ty.clone(),
@@ -70,6 +91,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         });
     }
     facts.interprocedural_alloc_eligibility = all;
+    facts.interprocedural_alloc_callers = all_callers;
 }
 
 fn resolve_summary(
@@ -101,14 +123,23 @@ fn resolve_summary(
     resolve_summary(callee_name.as_str(), fn_defs, base_summaries, visited)
 }
 
-fn caller_calls_are_eligible(
+struct CallerRewritePlan {
+    caller: FunctionId,
+    pointer_name: String,
+    decl_path: AstPath,
+    call_temp_path: AstPath,
+    free_path: Option<AstPath>,
+}
+
+fn caller_calls_for_callee(
     caller_id: FunctionId,
     caller_def: &FnDef,
     callee_name: &str,
     resolved: &BTreeMap<String, ResolvedSummary>,
     facts: &FixupFacts,
-) -> bool {
+) -> (bool, Vec<CallerRewritePlan>) {
     let mut ok = true;
+    let mut plans = Vec::new();
     let mut index = 0;
     while index < caller_def.body.len() {
         let Some((pointer_name, _elem_ty)) =
@@ -117,7 +148,7 @@ fn caller_calls_are_eligible(
             index += 1;
             continue;
         };
-        let Some((found_callee, eligible)) = find_call_allocation(
+        let Some(outcome) = find_call_allocation(
             caller_id,
             &caller_def.body,
             facts,
@@ -128,12 +159,24 @@ fn caller_calls_are_eligible(
             index += 1;
             continue;
         };
-        if found_callee == callee_name && !eligible {
-            ok = false;
+        if outcome.callee_name == callee_name {
+            if outcome.eligible {
+                plans.push(CallerRewritePlan {
+                    caller: caller_id,
+                    pointer_name: pointer_name.to_string(),
+                    decl_path: AstPath(vec![PathSegment::Stmt(index)]),
+                    call_temp_path: AstPath(vec![PathSegment::Stmt(outcome.call_temp_index)]),
+                    free_path: outcome
+                        .free_index
+                        .map(|free_index| AstPath(vec![PathSegment::Stmt(free_index)])),
+                });
+            } else {
+                ok = false;
+            }
         }
         index += 1;
     }
-    ok
+    (ok, plans)
 }
 
 struct CallAllocation {
@@ -168,6 +211,13 @@ fn call_allocation_temp(
     })
 }
 
+struct CallAllocationOutcome {
+    callee_name: String,
+    eligible: bool,
+    call_temp_index: usize,
+    free_index: Option<usize>,
+}
+
 fn find_call_allocation(
     function: FunctionId,
     body: &[IndentStmt],
@@ -175,7 +225,7 @@ fn find_call_allocation(
     start: usize,
     pointer_name: &str,
     resolved: &BTreeMap<String, ResolvedSummary>,
-) -> Option<(String, bool)> {
+) -> Option<CallAllocationOutcome> {
     for allocation_index in start..body.len() {
         let Some(call_alloc) = call_allocation_temp(&body[allocation_index].stmt, resolved) else {
             continue;
@@ -210,15 +260,32 @@ fn find_call_allocation(
                 uses: Vec::new(),
                 reallocations: Vec::new(),
             };
-            let eligible = heap_ownership::heap_uses_are_owned(
+            let outcome = heap_ownership::heap_uses_are_owned(
                 function,
                 body,
                 facts,
                 pointer_name,
                 &candidate,
-            )
-            .is_some();
-            return Some((call_alloc.callee_name, eligible));
+            );
+            let (eligible, free_index) = match outcome {
+                Some((free_index, _, _, _, _, read_safety)) => {
+                    let extent_ok = match &call_alloc.summary.extent {
+                        HeapExtent::Scalar => true,
+                        HeapExtent::Elements { .. } => {
+                            read_safety != HeapReadSafety::MayReadUninitialized
+                        }
+                        HeapExtent::Unknown => false,
+                    };
+                    (extent_ok, free_index)
+                }
+                None => (false, None),
+            };
+            return Some(CallAllocationOutcome {
+                callee_name: call_alloc.callee_name,
+                eligible,
+                call_temp_index: allocation_index,
+                free_index,
+            });
         }
     }
     None

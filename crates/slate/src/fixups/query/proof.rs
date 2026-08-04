@@ -106,6 +106,7 @@ pub(in crate::fixups) enum Predicate {
     CalleeAllocSummary,
     #[allow(dead_code)]
     InterproceduralAllocEligibility,
+    InterproceduralAllocCallers,
     OptionBoxLocalCandidates,
     OptionBoxComparisons,
     DirectCalls,
@@ -309,6 +310,10 @@ pub(in crate::fixups) enum EvidenceDetail {
     InterproceduralAllocEligibility {
         function: String,
         eligible: bool,
+    },
+    InterproceduralAllocCallers {
+        function: String,
+        callers: usize,
     },
     OptionBoxLocalCandidates {
         count: usize,

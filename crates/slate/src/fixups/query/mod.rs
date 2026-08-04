@@ -30,7 +30,7 @@ mod views;
 
 use context::default_value;
 pub(in crate::fixups) use context::{
-    CallRecord, CallTarget, OptionBoxLocalPlanInput, QueryContext,
+    CallRecord, CallTarget, InterproceduralAllocCallerInput, OptionBoxLocalPlanInput, QueryContext,
 };
 pub(in crate::fixups) use field::Field;
 pub(in crate::fixups) use item::{
@@ -55,11 +55,12 @@ pub(in crate::fixups) use proof::{
 };
 pub(in crate::fixups) use recipe::{
     ExprRecipe, FunctionBodyRecipe, HeapOwnershipPlan, HeapOwnershipReallocPlan,
-    NullablePointerAlias, NullablePointerPlan, OptionBoxComparisonPlan, OptionBoxLocalPlan,
-    byte_position, collapse_atomic_compare_exchange, initialize_local, known_index,
-    pointer_at_or_null, preserve_assert_result, process_exit, recover_assert,
-    rewrite_file_ownership, rewrite_heap_ownership, rewrite_nullable_pointer,
-    rewrite_option_box_locals,
+    InterproceduralAllocCalleePlan, InterproceduralAllocCallerPlan, NullablePointerAlias,
+    NullablePointerPlan, OptionBoxComparisonPlan, OptionBoxLocalPlan, byte_position,
+    collapse_atomic_compare_exchange, initialize_local, known_index, pointer_at_or_null,
+    preserve_assert_result, process_exit, recover_assert, rewrite_file_ownership,
+    rewrite_heap_ownership, rewrite_interprocedural_alloc_callee,
+    rewrite_interprocedural_alloc_caller, rewrite_nullable_pointer, rewrite_option_box_locals,
 };
 pub(in crate::fixups) use rewrite::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 use views::{

@@ -2767,6 +2767,44 @@ fn heap_owner_bails_out_when_a_use_follows_the_free_call() {
 }
 
 #[test]
+fn interprocedural_alloc_promotes_callee_return_and_caller_binding() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-interproc-alloc");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("interprocedural_alloc_promotion.c");
+    let generated = tmp.join("interprocedural_alloc_promotion.generated.rs");
+    support::translate(&c_src, &generated)
+        .expect("translate interprocedural_alloc_promotion fixture");
+    let rust = std::fs::read_to_string(&generated)
+        .expect("read generated interprocedural_alloc_promotion rust");
+
+    assert!(rust.contains("fn alloc() -> Vec<i32>"));
+    assert!(rust.contains("vec![0; 10usize]"));
+    assert!(rust.contains("let mut x: Vec<i32>"));
+    assert!(rust.contains("x[0] = 10;"));
+    assert!(rust.contains("println!(\"{}\", x[0]);"));
+    assert!(!rust.contains("*mut i32"));
+    assert!(!rust.contains("unsafe"));
+    assert!(!rust.contains("fn malloc("));
+}
+
+#[test]
+fn interprocedural_alloc_promotion_bails_out_on_pointer_arithmetic() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-interproc-alloc-arith");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("interprocedural_alloc_promotion_arith_bailout.c");
+    let generated = tmp.join("interprocedural_alloc_promotion_arith_bailout.generated.rs");
+    support::translate(&c_src, &generated)
+        .expect("translate interprocedural_alloc_promotion_arith_bailout fixture");
+    let rust = std::fs::read_to_string(&generated)
+        .expect("read generated interprocedural_alloc_promotion_arith_bailout rust");
+
+    assert!(rust.contains("fn alloc() -> *mut i32"));
+    assert!(!rust.contains("Vec<i32>"));
+    assert!(rust.contains("fn free("));
+    assert!(rust.contains("unsafe { free("));
+}
+
+#[test]
 fn heap_malloc_buffer_uses_vec_drop() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-heap-vec-malloc");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

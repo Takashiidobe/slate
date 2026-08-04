@@ -12,7 +12,7 @@ use crate::fixups::query::{
 use crate::fixups::support::walk;
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
-    BinOp, Block, CLibType, Expr, ExprMatchArm, Ident, IndentStmt, MatchArm, Pattern, Prim,
+    BinOp, Block, CLibType, Expr, ExprMatchArm, FnDef, Ident, IndentStmt, MatchArm, Pattern, Prim,
     RustValue, Stmt, Type, UnaryOp,
 };
 
@@ -222,6 +222,16 @@ impl OwnedHeap {
             plans: plans
                 .iter()
                 .map(|plan| (plan.pointer_name.clone(), OwnedHeapPlan { kind: plan.kind }))
+                .collect(),
+            aliases: BTreeMap::new(),
+        }
+    }
+
+    fn from_owners(owners: impl IntoIterator<Item = (String, HeapOwnershipKind)>) -> Self {
+        Self {
+            plans: owners
+                .into_iter()
+                .map(|(name, kind)| (name, OwnedHeapPlan { kind }))
                 .collect(),
             aliases: BTreeMap::new(),
         }
@@ -1463,4 +1473,122 @@ fn nested_body_vec_mut<'a>(
         (Stmt::Block(body), PathSegment::BlockBody) => Some(&mut body.stmts),
         _ => None,
     }
+}
+
+pub(in crate::fixups) struct InterproceduralAllocCalleePlan {
+    pub(in crate::fixups) elem_ty: Type,
+    pub(in crate::fixups) kind: HeapOwnershipKind,
+    pub(in crate::fixups) count: Option<Expr>,
+    pub(in crate::fixups) return_path: AstPath,
+    pub(in crate::fixups) alloc_source_path: AstPath,
+}
+
+pub(in crate::fixups) struct InterproceduralAllocCallerPlan {
+    pub(in crate::fixups) pointer_name: String,
+    pub(in crate::fixups) kind: HeapOwnershipKind,
+    pub(in crate::fixups) elem_ty: Type,
+    pub(in crate::fixups) decl_path: AstPath,
+    pub(in crate::fixups) call_temp_path: AstPath,
+    pub(in crate::fixups) free_path: Option<AstPath>,
+}
+
+pub(in crate::fixups) fn rewrite_interprocedural_alloc_callee(
+    mut fndef: FnDef,
+    plan: &InterproceduralAllocCalleePlan,
+) -> FnDef {
+    fndef.ret = Some(owned_type(plan.kind, &plan.elem_ty));
+    if let Some(Stmt::Return(Some(expr))) = with_stmt_at_path(&mut fndef.body, &plan.return_path.0)
+    {
+        *expr = owned_init_expr(plan.kind, &plan.elem_ty, plan.count.as_ref());
+    }
+    remove_stmt_at_path(&mut fndef.body, &plan.alloc_source_path.0);
+    fndef
+}
+
+pub(in crate::fixups) fn rewrite_interprocedural_alloc_caller(
+    body: Vec<IndentStmt>,
+    plans: &[InterproceduralAllocCallerPlan],
+) -> FunctionBodyRecipe {
+    let mut body = body;
+    for plan in plans {
+        if let Some(stmt) = with_stmt_at_path(&mut body, &plan.decl_path.0) {
+            retype_placeholder_decl(stmt, plan.kind, &plan.elem_ty);
+        }
+        if let Some(stmt) = with_stmt_at_path(&mut body, &plan.call_temp_path.0) {
+            retype_call_temp_decl(stmt, plan.kind, &plan.elem_ty);
+        }
+    }
+
+    let mut owned = OwnedHeap::from_owners(
+        plans
+            .iter()
+            .map(|plan| (plan.pointer_name.clone(), plan.kind)),
+    );
+    let mut remove = BTreeSet::new();
+    for (index, indent) in body.iter_mut().enumerate() {
+        if let Some((alias, owner)) = owned_alias(&indent.stmt, &owned) {
+            owned.aliases.insert(alias, owner);
+            remove.insert(index);
+            continue;
+        }
+        rewrite_owned_stmt(&mut indent.stmt, &owned);
+    }
+    for plan in plans {
+        if let Some(free_path) = &plan.free_path
+            && let [PathSegment::Stmt(index)] = free_path.0.as_slice()
+        {
+            remove.insert(*index);
+        }
+    }
+    for index in remove.into_iter().rev() {
+        if index < body.len() {
+            body.remove(index);
+        }
+    }
+    FunctionBodyRecipe { body }
+}
+
+fn owned_init_expr(kind: HeapOwnershipKind, elem_ty: &Type, count: Option<&Expr>) -> Expr {
+    match kind {
+        HeapOwnershipKind::ScalarBox => box_new(elem_ty),
+        HeapOwnershipKind::VecBuffer => Expr::VecRepeat {
+            elem: Box::new(default_value(elem_ty)),
+            len: Box::new(usize_expr(
+                count.cloned().unwrap_or(Expr::Value(RustValue::Usize(0))),
+            )),
+        },
+    }
+}
+
+fn owned_type(kind: HeapOwnershipKind, elem_ty: &Type) -> Type {
+    let name = match kind {
+        HeapOwnershipKind::ScalarBox => "Box",
+        HeapOwnershipKind::VecBuffer => "Vec",
+    };
+    Type::Generic {
+        name: name.into(),
+        args: vec![elem_ty.clone()],
+    }
+}
+
+fn retype_placeholder_decl(stmt: &mut Stmt, kind: HeapOwnershipKind, elem_ty: &Type) {
+    let Stmt::Let {
+        mutable, ty, init, ..
+    } = stmt
+    else {
+        return;
+    };
+    *mutable = true;
+    *ty = Some(owned_type(kind, elem_ty));
+    *init = Some(match kind {
+        HeapOwnershipKind::ScalarBox => box_new(elem_ty),
+        HeapOwnershipKind::VecBuffer => Expr::VecLit(Vec::new()),
+    });
+}
+
+fn retype_call_temp_decl(stmt: &mut Stmt, kind: HeapOwnershipKind, elem_ty: &Type) {
+    let Stmt::Let { ty, .. } = stmt else {
+        return;
+    };
+    *ty = Some(owned_type(kind, elem_ty));
 }
