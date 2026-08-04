@@ -146,14 +146,15 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 48. `zero_init` (`cross_effects = true`) - re-run the zero-init fusion, now allowed to cross intervening effects.
 49. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange`.
 50. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery.
-51. `var_aliases` - inline a `let b = a;` alias into its single later use.
-52. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches.
-53. `libc_exit` - rewrite known direct `libc::exit` calls to `std::process::exit`.
-54. `unused_items` - remove dead top-level struct/record/enum definitions.
-55. `unused_params` - drop a function parameter that's never read and rewrite every direct call site to match.
-56. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function.
-57. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main`.
-58. `prune_unused_definitions` - delete now-dead known libc `extern` declarations and generated support modules.
+51. `assert_recovery` - recover `assert!(cond)` from the shim `assert()` macro's lowered `if cond { .. } else { abort(); .. }` guard, preserving the guard's result binding if it's still read elsewhere.
+52. `var_aliases` - inline a `let b = a;` alias into its single later use (including the temp `assert_recovery` may leave behind).
+53. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches.
+54. `libc_exit` - rewrite known direct `libc::exit` calls to `std::process::exit`.
+55. `unused_items` - remove dead top-level struct/record/enum definitions.
+56. `unused_params` - drop a function parameter that's never read and rewrite every direct call site to match.
+57. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function.
+58. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main`.
+59. `prune_unused_definitions` - delete now-dead known libc `extern` declarations and generated support modules.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
 because later groups can create new opportunities for earlier ones; re-running

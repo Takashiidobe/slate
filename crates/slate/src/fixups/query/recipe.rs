@@ -35,6 +35,33 @@ pub(in crate::fixups) struct FunctionBodyRecipe {
     body: Vec<IndentStmt>,
 }
 
+pub(in crate::fixups) fn recover_assert(cond: Expr, depth: usize) -> IndentStmt {
+    IndentStmt {
+        depth,
+        stmt: Stmt::Expr(Expr::Macro {
+            name: "assert".into(),
+            args: vec![cond],
+        }),
+    }
+}
+
+pub(in crate::fixups) fn preserve_assert_result(
+    name: String,
+    ty: Option<Type>,
+    init: Expr,
+    depth: usize,
+) -> IndentStmt {
+    IndentStmt {
+        depth,
+        stmt: Stmt::Let {
+            name,
+            mutable: false,
+            ty,
+            init: Some(init),
+        },
+    }
+}
+
 pub(in crate::fixups) fn collapse_atomic_compare_exchange(
     chain: AtomicCompareExchangeChain,
 ) -> IndentStmt {
