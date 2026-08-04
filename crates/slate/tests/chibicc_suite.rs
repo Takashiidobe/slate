@@ -119,7 +119,6 @@ fn run_bucket(bucket: &str) -> Vec<(String, Result<(), String>)> {
 }
 
 #[test]
-#[ignore = "tracked by slate-5kii (vla_param pointer-mutability mismatch)"]
 fn chibicc_supported_tests_match_c() {
     let results = run_bucket("supported");
     let failures: Vec<String> = results
