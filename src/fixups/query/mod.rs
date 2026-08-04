@@ -60,7 +60,8 @@ pub(in crate::fixups) use recipe::{
     collapse_atomic_compare_exchange, initialize_local, known_index, pointer_at_or_null,
     preserve_assert_result, process_exit, recover_assert, rewrite_file_ownership,
     rewrite_heap_ownership, rewrite_interprocedural_alloc_callee,
-    rewrite_interprocedural_alloc_caller, rewrite_nullable_pointer, rewrite_option_box_locals,
+    rewrite_interprocedural_alloc_caller, rewrite_interprocedural_alloc_wrapper,
+    rewrite_nullable_pointer, rewrite_option_box_locals,
 };
 pub(in crate::fixups) use rewrite::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 use views::{

@@ -538,9 +538,7 @@ pub(super) fn heap_uses_are_owned(
         }
         index += 1;
     }
-    if free.is_none() {
-        return None;
-    }
+    free.as_ref()?;
     let (free_index, free_temp) = match free {
         Some((index, temp)) => (Some(index), temp),
         None => (None, None),

@@ -4512,6 +4512,49 @@ query_cache! {
         Ok(Proof::new(fact, evidence))
     }
 
+    fn interprocedural_alloc_chain(&self, function: &FunctionRef) -> QueryResult<Vec<FunctionRef>>;
+    key: FunctionId = function.id;
+    {
+        let predicate = Predicate::InterproceduralAllocEligibility;
+        let site = expression_site(function.item_index, &[]);
+        let Some(fact) = self
+            .facts
+            .interprocedural_alloc_eligibility
+            .iter()
+            .find(|fact| fact.function == function.id)
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let functions = self.all_functions();
+        let mut chain = Vec::new();
+        for member in &fact.chain {
+            let Some(member_ref) = functions.iter().find(|candidate| candidate.id == *member).cloned()
+            else {
+                return Err(Rejection::new(
+                    predicate,
+                    Some(site),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            chain.push(member_ref);
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::InterproceduralAllocEligibility {
+                function: function.name.clone(),
+                eligible: fact.eligible,
+            },
+        }];
+        Ok(Proof::new(chain, evidence))
+    }
+
     fn interprocedural_alloc_callers(&self, function: &FunctionRef) -> QueryResult<Vec<InterproceduralAllocCallerInput>>;
     key: FunctionId = function.id;
     {

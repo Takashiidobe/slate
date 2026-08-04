@@ -2,8 +2,9 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::heap_ownership;
 use crate::fixups::facts::{
-    AstPath, FixupFacts, FunctionId, HeapAllocationKind, HeapExtent, HeapInitKind, HeapReadSafety,
-    InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, PathSegment,
+    AllocProvenance, AstPath, CalleeAllocSummaryFact, FixupFacts, FunctionId, HeapAllocationKind,
+    HeapExtent, HeapInitKind, HeapReadSafety, InterproceduralAllocCallerFact,
+    InterproceduralAllocEligibilityFact, PathSegment,
 };
 use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, Stmt, Type};
 
@@ -19,7 +20,8 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
     facts.interprocedural_alloc_eligibility.clear();
     facts.interprocedural_alloc_callers.clear();
 
-    let mut fn_defs: BTreeMap<String, (FunctionId, &FnDef)> = BTreeMap::new();
+    let mut fn_defs: BTreeMap<FunctionId, (String, &FnDef)> = BTreeMap::new();
+    let mut by_name: BTreeMap<String, FunctionId> = BTreeMap::new();
     for (item_index, item) in program.items.iter().enumerate() {
         let Item::Fn(f) = item else {
             continue;
@@ -27,52 +29,79 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        fn_defs.insert(f.name.clone(), (function, f));
+        fn_defs.insert(function, (f.name.clone(), f));
+        by_name.insert(f.name.clone(), function);
     }
 
-    let mut base_summaries: BTreeMap<String, ResolvedSummary> = BTreeMap::new();
-    for summary in &facts.callee_alloc_summaries {
-        if let Some((name, _)) = fn_defs.iter().find(|(_, (id, _))| *id == summary.function) {
-            base_summaries.insert(
-                name.clone(),
-                ResolvedSummary {
-                    elem_ty: summary.elem_ty.clone(),
-                    allocation: summary.allocation.clone(),
-                    extent: summary.extent.clone(),
-                    init: summary.init,
-                },
-            );
-        }
-    }
+    let by_function: BTreeMap<FunctionId, &CalleeAllocSummaryFact> = facts
+        .callee_alloc_summaries
+        .iter()
+        .map(|fact| (fact.function, fact))
+        .collect();
 
-    let mut resolved: BTreeMap<String, ResolvedSummary> = BTreeMap::new();
-    for name in fn_defs.keys() {
-        let mut visited = BTreeSet::new();
-        if let Some(summary) = resolve_summary(name, &fn_defs, &base_summaries, &mut visited) {
-            resolved.insert(name.clone(), summary);
+    // Resolve every function that has a provenance fact to its ultimate (root, summary),
+    // walking Direct/PassThrough links -- the chain itself falls out as a by-product below,
+    // rather than needing its own separately-tracked fact.
+    let mut memo: BTreeMap<FunctionId, Option<(ResolvedSummary, FunctionId)>> = BTreeMap::new();
+    for function in by_function.keys() {
+        resolve_root(
+            *function,
+            &by_function,
+            &by_name,
+            &mut memo,
+            &mut BTreeSet::new(),
+        );
+    }
+    let resolved: BTreeMap<FunctionId, (ResolvedSummary, FunctionId)> = memo
+        .into_iter()
+        .filter_map(|(function, outcome)| outcome.map(|outcome| (function, outcome)))
+        .collect();
+
+    let mut chain_of: BTreeMap<FunctionId, Vec<FunctionId>> = BTreeMap::new();
+    for (function, (_, root)) in &resolved {
+        if function != root {
+            chain_of.entry(*root).or_default().push(*function);
         }
     }
 
     let mut all = Vec::new();
     let mut all_callers = Vec::new();
-    for (callee_name, summary) in &resolved {
-        let Some((function, _)) = fn_defs.get(callee_name) else {
+    for (root, (summary, resolved_root)) in &resolved {
+        if root != resolved_root {
             continue;
-        };
+        }
+        let chain = chain_of.get(root).cloned().unwrap_or_default();
+        let mut members: Vec<String> = chain
+            .iter()
+            .filter_map(|id| fn_defs.get(id).map(|(name, _)| name.clone()))
+            .collect();
+        if let Some((name, _)) = fn_defs.get(root) {
+            members.push(name.clone());
+        }
+
         let mut eligible = true;
         let mut callers = Vec::new();
-        for (caller_id, caller_def) in fn_defs.values() {
-            let (ok, mut found) =
-                caller_calls_for_callee(*caller_id, caller_def, callee_name, &resolved, facts);
-            eligible &= ok;
-            callers.append(&mut found);
+        for member_name in &members {
+            for (caller_id, (_, caller_def)) in &fn_defs {
+                let (ok, mut found) = caller_calls_for_callee(
+                    *caller_id,
+                    caller_def,
+                    member_name,
+                    &resolved,
+                    &by_name,
+                    facts,
+                );
+                eligible &= ok;
+                callers.append(&mut found);
+            }
         }
+
         if eligible {
             all_callers.extend(
                 callers
                     .into_iter()
                     .map(|caller| InterproceduralAllocCallerFact {
-                        callee: *function,
+                        callee: *root,
                         caller: caller.caller,
                         pointer_name: caller.pointer_name,
                         decl_path: caller.decl_path,
@@ -82,45 +111,65 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
             );
         }
         all.push(InterproceduralAllocEligibilityFact {
-            function: *function,
+            function: *root,
             elem_ty: summary.elem_ty.clone(),
             allocation: summary.allocation.clone(),
             extent: summary.extent.clone(),
             init: summary.init,
             eligible,
+            chain,
         });
     }
     facts.interprocedural_alloc_eligibility = all;
     facts.interprocedural_alloc_callers = all_callers;
 }
 
-fn resolve_summary(
-    name: &str,
-    fn_defs: &BTreeMap<String, (FunctionId, &FnDef)>,
-    base_summaries: &BTreeMap<String, ResolvedSummary>,
-    visited: &mut BTreeSet<String>,
-) -> Option<ResolvedSummary> {
-    if !visited.insert(name.to_string()) {
+fn resolve_root(
+    function: FunctionId,
+    by_function: &BTreeMap<FunctionId, &CalleeAllocSummaryFact>,
+    by_name: &BTreeMap<String, FunctionId>,
+    memo: &mut BTreeMap<FunctionId, Option<(ResolvedSummary, FunctionId)>>,
+    visited: &mut BTreeSet<FunctionId>,
+) -> Option<(ResolvedSummary, FunctionId)> {
+    if let Some(cached) = memo.get(&function) {
+        return cached.clone();
+    }
+    if !visited.insert(function) {
         return None;
     }
-    if let Some(summary) = base_summaries.get(name) {
-        return Some(summary.clone());
-    }
-    let (_, f) = fn_defs.get(name)?;
-    let Some(Type::Ptr { .. }) = &f.ret else {
-        return None;
+    let fact = by_function.get(&function)?;
+    let result = match &fact.provenance {
+        AllocProvenance::Direct {
+            elem_ty,
+            allocation,
+            extent,
+            init,
+            ..
+        } => Some((
+            ResolvedSummary {
+                elem_ty: elem_ty.clone(),
+                allocation: allocation.clone(),
+                extent: extent.clone(),
+                init: *init,
+            },
+            function,
+        )),
+        AllocProvenance::PassThrough { callees } => {
+            let mut agreed: Option<(ResolvedSummary, FunctionId)> = None;
+            for callee_name in callees {
+                let callee = *by_name.get(callee_name.as_str())?;
+                let resolved = resolve_root(callee, by_function, by_name, memo, visited)?;
+                match &agreed {
+                    None => agreed = Some(resolved),
+                    Some((_, existing_root)) if resolved.1 == *existing_root => {}
+                    Some(_) => return None,
+                }
+            }
+            agreed
+        }
     };
-    if count_returns(&f.body) != 1 {
-        return None;
-    }
-    let (_, return_expr) = top_level_return(&f.body)?;
-    let Expr::Call { func, .. } = peel_casts(return_expr) else {
-        return None;
-    };
-    let Expr::Var(callee_name) = func.as_ref() else {
-        return None;
-    };
-    resolve_summary(callee_name.as_str(), fn_defs, base_summaries, visited)
+    memo.insert(function, result.clone());
+    result
 }
 
 struct CallerRewritePlan {
@@ -135,7 +184,8 @@ fn caller_calls_for_callee(
     caller_id: FunctionId,
     caller_def: &FnDef,
     callee_name: &str,
-    resolved: &BTreeMap<String, ResolvedSummary>,
+    resolved: &BTreeMap<FunctionId, (ResolvedSummary, FunctionId)>,
+    by_name: &BTreeMap<String, FunctionId>,
     facts: &FixupFacts,
 ) -> (bool, Vec<CallerRewritePlan>) {
     let mut ok = true;
@@ -155,6 +205,7 @@ fn caller_calls_for_callee(
             index + 1,
             pointer_name,
             resolved,
+            by_name,
         ) else {
             index += 1;
             continue;
@@ -187,7 +238,8 @@ struct CallAllocation {
 
 fn call_allocation_temp(
     stmt: &Stmt,
-    resolved: &BTreeMap<String, ResolvedSummary>,
+    resolved: &BTreeMap<FunctionId, (ResolvedSummary, FunctionId)>,
+    by_name: &BTreeMap<String, FunctionId>,
 ) -> Option<CallAllocation> {
     let Stmt::Let {
         name,
@@ -203,7 +255,8 @@ fn call_allocation_temp(
     let Expr::Var(callee_name) = func.as_ref() else {
         return None;
     };
-    let summary = resolved.get(callee_name.as_str())?.clone();
+    let callee_id = *by_name.get(callee_name.as_str())?;
+    let (summary, _) = resolved.get(&callee_id)?.clone();
     Some(CallAllocation {
         temp_name: name.clone(),
         callee_name: callee_name.as_str().to_string(),
@@ -224,10 +277,13 @@ fn find_call_allocation(
     facts: &FixupFacts,
     start: usize,
     pointer_name: &str,
-    resolved: &BTreeMap<String, ResolvedSummary>,
+    resolved: &BTreeMap<FunctionId, (ResolvedSummary, FunctionId)>,
+    by_name: &BTreeMap<String, FunctionId>,
 ) -> Option<CallAllocationOutcome> {
     for allocation_index in start..body.len() {
-        let Some(call_alloc) = call_allocation_temp(&body[allocation_index].stmt, resolved) else {
+        let Some(call_alloc) =
+            call_allocation_temp(&body[allocation_index].stmt, resolved, by_name)
+        else {
             continue;
         };
         let allocation_path = AstPath(vec![PathSegment::Stmt(allocation_index)]);
@@ -289,37 +345,4 @@ fn find_call_allocation(
         }
     }
     None
-}
-
-fn count_returns(body: &[IndentStmt]) -> usize {
-    let mut count = 0;
-    for indent in body {
-        if matches!(&indent.stmt, Stmt::Return(Some(_))) {
-            count += 1;
-        }
-        crate::fixups::facts::walk::nested_bodies_with_path(
-            &indent.stmt,
-            &mut Vec::new(),
-            &mut |nested, _| {
-                count += count_returns(nested);
-            },
-        );
-    }
-    count
-}
-
-fn top_level_return(body: &[IndentStmt]) -> Option<(usize, &Expr)> {
-    body.iter()
-        .enumerate()
-        .find_map(|(index, indent)| match &indent.stmt {
-            Stmt::Return(Some(expr)) => Some((index, expr)),
-            _ => None,
-        })
-}
-
-fn peel_casts(expr: &Expr) -> &Expr {
-    match expr {
-        Expr::Cast { expr, .. } => peel_casts(expr),
-        _ => expr,
-    }
 }
