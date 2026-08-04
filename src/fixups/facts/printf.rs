@@ -185,9 +185,14 @@ fn visit_expr(
     facts: &FixupFacts,
 ) {
     if let Expr::Call { args, .. } = expr
-        && let Some(known @ (Known::Printf | Known::FPrintf)) = known_call(expr)
+        && let Some(known @ (Known::Printf | Known::FPrintf | Known::SPrintf | Known::SNPrintf)) =
+            known_call(expr)
     {
-        let format_index = if known == Known::FPrintf { 1 } else { 0 };
+        let format_index = match known {
+            Known::FPrintf | Known::SPrintf => 1,
+            Known::SNPrintf => 2,
+            _ => 0,
+        };
         let arg_facts = args
             .iter()
             .enumerate()

@@ -565,6 +565,11 @@ impl EditSet {
         });
     }
 
+    pub(in crate::fixups) fn extend(&mut self, other: EditSet) {
+        self.edits.extend(other.edits);
+        self.evidence.extend(other.evidence);
+    }
+
     pub(in crate::fixups) fn delete_definition(target: DefinitionSite) -> Self {
         Self::replace_definition(target, None)
     }

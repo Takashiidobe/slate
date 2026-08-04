@@ -29,6 +29,8 @@ pub enum Known {
     StrTod,
     Printf,
     FPrintf,
+    SPrintf,
+    SNPrintf,
     Exit,
     Puts,
     FOpen,
@@ -104,6 +106,8 @@ impl Known {
             Self::StrTod => "strtod",
             Self::Printf => "printf",
             Self::FPrintf => "fprintf",
+            Self::SPrintf => "sprintf",
+            Self::SNPrintf => "snprintf",
             Self::Exit => "exit",
             Self::Puts => "puts",
             Self::FOpen => "fopen",
@@ -192,6 +196,8 @@ impl Known {
             | Self::StrCSpn => "string.h",
             Self::Printf
             | Self::FPrintf
+            | Self::SPrintf
+            | Self::SNPrintf
             | Self::Puts
             | Self::FOpen
             | Self::FPuts
@@ -263,6 +269,8 @@ impl Known {
             "strtod" | "__isoc23_strtod" => (Self::StrTod, "stdlib.h"),
             "printf" => (Self::Printf, "stdio.h"),
             "fprintf" => (Self::FPrintf, "stdio.h"),
+            "sprintf" => (Self::SPrintf, "stdio.h"),
+            "snprintf" => (Self::SNPrintf, "stdio.h"),
             "exit" => (Self::Exit, "stdlib.h"),
             "puts" => (Self::Puts, "stdio.h"),
             "fopen" => (Self::FOpen, "stdio.h"),

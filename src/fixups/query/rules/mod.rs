@@ -42,6 +42,7 @@ pub(in crate::fixups) mod slice_loop;
 pub(in crate::fixups) mod slice_reduce;
 pub(in crate::fixups) mod slice_swap;
 pub(in crate::fixups) mod sort_search;
+pub(in crate::fixups) mod sprintf_format;
 pub(in crate::fixups) mod stdio;
 pub(in crate::fixups) mod string_copy;
 pub(in crate::fixups) mod string_libc;

@@ -4778,6 +4778,8 @@ impl Interp {
             CallSummary::Fflush => self.call_fflush(args),
             CallSummary::Printf => self.call_printf(args),
             CallSummary::FPrintf => self.call_fprintf(args),
+            CallSummary::SPrintf => self.call_sprintf(args),
+            CallSummary::SNPrintf => self.call_snprintf(args),
             CallSummary::Exit => self.call_exit(args),
             CallSummary::Puts => self.call_puts(args),
             CallSummary::Remove => self.call_remove(args),
@@ -5703,6 +5705,36 @@ impl Interp {
         let values = self.resolve_printf_args(fmt_expr, rest)?;
         self.trace.push(Effect::Call {
             name: "fprintf".to_string(),
+            args: values,
+        });
+        Ok(int32(0))
+    }
+
+    fn call_sprintf(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [_dst, fmt_expr, rest @ ..] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::SPrintf),
+                ArgShapeKind::FormatString,
+            ));
+        };
+        let values = self.resolve_printf_args(fmt_expr, rest)?;
+        self.trace.push(Effect::Call {
+            name: "sprintf".to_string(),
+            args: values,
+        });
+        Ok(int32(0))
+    }
+
+    fn call_snprintf(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [_dst, _size, fmt_expr, rest @ ..] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::SNPrintf),
+                ArgShapeKind::FormatString,
+            ));
+        };
+        let values = self.resolve_printf_args(fmt_expr, rest)?;
+        self.trace.push(Effect::Call {
+            name: "snprintf".to_string(),
             args: values,
         });
         Ok(int32(0))

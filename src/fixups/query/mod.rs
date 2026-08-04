@@ -45,7 +45,7 @@ pub(in crate::fixups) use patterns::{
     StatementContainer, StatementSequence, TypeUse, Value, WholeProgram,
 };
 pub(in crate::fixups) use plan::TouchedItems;
-use printf::{PrintfStream, printf_macro};
+use printf::{PrintfStream, printf_macro, sprintf_format_expr, sprintf_worst_case_len};
 pub(in crate::fixups) use program_recipe::{
     rewrite_anonymous_structs, rewrite_atomic_locals, rewrite_lazy_singletons,
     rewrite_printf_fallback, rewrite_ptr_len, rewrite_sort_search,

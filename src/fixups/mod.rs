@@ -386,6 +386,17 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
+    step!(program, Pass::SprintfFormat, {
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::sprintf_format::calls());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
+        incremental.mark_everything_dirty();
+    });
+    let facts = incremental.resolve(&program);
     step!(program, Pass::Retval, {
         let plan = {
             let query = query::QueryContext::new(&program, &facts);
