@@ -28,8 +28,7 @@ __attribute__((target("avx2"))) static int gnu_avx2_intrinsics(void) {
   return values[0] + values[7];
 }
 
-__attribute__((target("bmi2"))) static unsigned int
-gnu_bmi2_intrinsics(void) {
+__attribute__((target("bmi2"))) static unsigned int gnu_bmi2_intrinsics(void) {
   return _pdep_u32(5u, 0x55u);
 }
 

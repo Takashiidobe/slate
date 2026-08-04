@@ -4,7 +4,7 @@
 typedef int sig_atomic_t;
 typedef void (*__slate_sighandler_t)(int);
 
-#define SIG_ERR ((__slate_sighandler_t)-1)
+#define SIG_ERR ((__slate_sighandler_t) - 1)
 #define SIG_DFL ((__slate_sighandler_t)0)
 #define SIG_IGN ((__slate_sighandler_t)1)
 

@@ -56,17 +56,15 @@ float strtof(const char *restrict nptr, char **restrict endptr);
 long double strtold(const char *restrict nptr, char **restrict endptr);
 int strfromd(char *restrict s, size_t n, const char *restrict format,
              double fp);
-int strfromf(char *restrict s, size_t n, const char *restrict format,
-             float fp);
+int strfromf(char *restrict s, size_t n, const char *restrict format, float fp);
 int strfroml(char *restrict s, size_t n, const char *restrict format,
              long double fp);
 long strtol(const char *restrict nptr, char **restrict endptr, int base);
 unsigned long strtoul(const char *restrict nptr, char **restrict endptr,
-                       int base);
-long long strtoll(const char *restrict nptr, char **restrict endptr,
-                   int base);
-unsigned long long strtoull(const char *restrict nptr,
-                             char **restrict endptr, int base);
+                      int base);
+long long strtoll(const char *restrict nptr, char **restrict endptr, int base);
+unsigned long long strtoull(const char *restrict nptr, char **restrict endptr,
+                            int base);
 
 int rand(void);
 void srand(unsigned int seed);
@@ -78,8 +76,7 @@ void qsort(void *base, size_t nmemb, size_t size,
 void *bsearch(const void *key, const void *base, size_t nmemb, size_t size,
               int (*compar)(const void *, const void *));
 
-size_t mbstowcs(wchar_t *restrict dst, const char *restrict src,
-                 size_t len);
+size_t mbstowcs(wchar_t *restrict dst, const char *restrict src, size_t len);
 size_t wcstombs(char *restrict dst, const wchar_t *restrict src, size_t len);
 
 #endif

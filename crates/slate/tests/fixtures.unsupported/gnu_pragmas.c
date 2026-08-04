@@ -2,7 +2,6 @@
 #include <stdio.h>
 
 #include "gnu_pragmas_once.h"
-#include "gnu_pragmas_once.h"
 
 #pragma message("GNU pragma message probe")
 #pragma GCC warning "GNU pragma warning probe"
@@ -23,22 +22,16 @@ struct GNUPragmaPacked {
 #pragma pack(pop)
 
 #pragma GCC visibility push(hidden)
-int gnu_pragma_hidden(int value) {
-  return value + 13;
-}
+int gnu_pragma_hidden(int value) { return value + 13; }
 #pragma GCC visibility pop
 
-int gnu_pragma_weak_target(void) {
-  return 17;
-}
+int gnu_pragma_weak_target(void) { return 17; }
 
 #pragma weak gnu_pragma_weak_alias = gnu_pragma_weak_target
 extern int gnu_pragma_weak_alias(void);
 
 #pragma redefine_extname gnu_pragma_renamed gnu_pragma_actual
-int gnu_pragma_renamed(void) {
-  return 19;
-}
+int gnu_pragma_renamed(void) { return 19; }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
@@ -54,8 +47,8 @@ int main(void) {
   struct GNUPragmaPacked packed = {29, 31};
   printf("%d %d %d %d %d %d %d %d\n", GNU_PRAGMA_ONCE_VALUE,
          gnu_pragma_inner_macro, gnu_pragma_outer_macro, (int)sizeof(packed),
-         (int)offsetof(struct GNUPragmaPacked, value),
-         gnu_pragma_hidden(37), gnu_pragma_weak_alias(),
+         (int)offsetof(struct GNUPragmaPacked, value), gnu_pragma_hidden(37),
+         gnu_pragma_weak_alias(),
          gnu_pragma_renamed() + gnu_pragma_diagnostic() + packed.tag +
              (int)packed.value);
   return 0;

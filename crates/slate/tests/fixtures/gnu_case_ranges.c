@@ -27,9 +27,9 @@ static int classify_direct(int value) {
 }
 
 int main(void) {
-  printf("%d %d %d %d %d %d %d %d %d %d %d %d\n", classify(1),
-         classify(2), classify(4), classify(5), classify(7), classify(8),
-         classify(9), classify(10), classify(11), classify(12),
-         classify_direct(-1), classify_direct(3));
+  printf("%d %d %d %d %d %d %d %d %d %d %d %d\n", classify(1), classify(2),
+         classify(4), classify(5), classify(7), classify(8), classify(9),
+         classify(10), classify(11), classify(12), classify_direct(-1),
+         classify_direct(3));
   return 0;
 }

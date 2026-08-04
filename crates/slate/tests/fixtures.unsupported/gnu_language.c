@@ -28,9 +28,7 @@ union GNUCast {
 
 enum GNUForward;
 
-enum GNUForward {
-  GNU_FORWARD_VALUE = 23
-};
+enum GNUForward { GNU_FORWARD_VALUE = 23 };
 
 static int gnu_statement_expression(int input) {
   return ({
@@ -100,16 +98,17 @@ static int gnu_syntax(void) {
   };
   struct GNUOldInitializer old_record = {first : 13, second : 17};
   int macro_total =
-      GNU_NAMED_SUM(43, 47) + GNU_COMMA_OPTION(53) +
-      GNU_COMMA_OPTION(59, 61);
-  int initializer_total =
-      range_values[0] + range_values[1] + range_values[3] + range_values[5] +
-      old_array[1] + old_record.first + old_record.second;
+      GNU_NAMED_SUM(43, 47) + GNU_COMMA_OPTION(53) + GNU_COMMA_OPTION(59, 61);
+  int initializer_total = range_values[0] + range_values[1] + range_values[3] +
+                          range_values[5] + old_array[1] + old_record.first +
+                          old_record.second;
   int spelling_total =
-      __extension__({ __const__ int value = 67; value; }) +
-      (__alignof__(long) >= __alignof__(int)) + ('\e' == 27) +
-      (raw[0] == 'g') + (raw[3] == '\\') + (raw[4] == 'n') +
-      (int)_Countof(range_values) +
+      __extension__({
+        __const__ int value = 67;
+        value;
+      }) +
+      (__alignof__(long) >= __alignof__(int)) + ('\e' == 27) + (raw[0] == 'g') +
+      (raw[3] == '\\') + (raw[4] == 'n') + (int)_Countof(range_values) +
       (int)__builtin_offsetof(struct GNUOldInitializer, second);
   return gnu$dollar + omitted + side_effect + inferred + same_type +
          macro_total + initializer_total + spelling_total;
@@ -118,8 +117,7 @@ static int gnu_syntax(void) {
 static int gnu_aggregate_types(void) {
   union GNUCast cast_value = (union GNUCast)71;
   enum GNUForward forward = GNU_FORWARD_VALUE;
-  return (int)sizeof(struct GNUZeroArray) +
-         (int)sizeof(struct GNUEmpty) +
+  return (int)sizeof(struct GNUZeroArray) + (int)sizeof(struct GNUEmpty) +
          (int)sizeof(union GNUFlexibleUnion) +
          (int)sizeof(struct GNUOnlyFlexible) + cast_value.integer + forward;
 }
@@ -128,16 +126,15 @@ static int gnu_pointer_semantics(void) {
   unsigned char values[8] = {};
   void *begin = values;
   void *middle = begin + 3;
-  return (middle - begin == 3) + (middle == values + 3) +
-         (sizeof(void) == 1) + gnu_function_pointer();
+  return (middle - begin == 3) + (middle == values + 3) + (sizeof(void) == 1) +
+         gnu_function_pointer();
 }
 
 static int gnu_numeric_types(void) {
   __int128 wide_integer = ((__int128)1 << 100) + 73;
   __complex__ int integer_complex = 5 + 7i;
   __float128 wide_float = 3.25Q;
-  int complex_total =
-      __real__ integer_complex + __imag__ integer_complex;
+  int complex_total = __real__ integer_complex + __imag__ integer_complex;
   return (int)(wide_integer >> 100) + (int)(wide_integer & 127) +
          complex_total + (int)(wide_float * 4);
 }
@@ -147,7 +144,6 @@ int main(void) {
          gnu_local_label(5), gnu_computed_goto(0) + gnu_computed_goto(1),
          gnu_case_range(3) + gnu_case_range(7) + gnu_case_range(9),
          gnu_syntax(), gnu_aggregate_types(),
-         gnu_pointer_semantics() + gnu_numeric_types() +
-             gnu_function_name());
+         gnu_pointer_semantics() + gnu_numeric_types() + gnu_function_name());
   return 0;
 }

@@ -11,7 +11,7 @@
 #undef __need_wint_t
 #undef __need_NULL
 
-#define WEOF ((wint_t)-1)
+#define WEOF ((wint_t) - 1)
 
 wchar_t *wcschr(const wchar_t *s, wchar_t c);
 int wcscmp(const wchar_t *s1, const wchar_t *s2);

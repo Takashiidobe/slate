@@ -38,10 +38,7 @@ static int gnu_extended_asm(int input) {
           : [value] "+r"(early)
           : [amount] "i"(4)
           : "cc");
-  __asm__ volatile("incl %[slot]"
-                   : [slot] "+m"(memory)
-                   :
-                   : "cc", "memory");
+  __asm__ volatile("incl %[slot]" : [slot] "+m"(memory) : : "cc", "memory");
   __asm__("testl %[value], %[value]"
           : "=@ccz"(zero)
           : [value] "r"(input)

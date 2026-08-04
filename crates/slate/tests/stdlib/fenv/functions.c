@@ -11,8 +11,8 @@ int main(void) {
 
   printf("version %ld\n", __STDC_VERSION_FENV_H__);
   printf("fexcept_t %zu\n", sizeof(fexcept_t));
-  printf("exceptions %d %d %d %d %d %d\n", FE_DIVBYZERO, FE_INEXACT,
-         FE_INVALID, FE_OVERFLOW, FE_UNDERFLOW, FE_ALL_EXCEPT);
+  printf("exceptions %d %d %d %d %d %d\n", FE_DIVBYZERO, FE_INEXACT, FE_INVALID,
+         FE_OVERFLOW, FE_UNDERFLOW, FE_ALL_EXCEPT);
   printf("rounding %d %d %d %d\n", FE_DOWNWARD, FE_TONEAREST, FE_TOWARDZERO,
          FE_UPWARD);
 
@@ -23,23 +23,18 @@ int main(void) {
   printf("fetestexcept clear %d\n", fetestexcept(FE_ALL_EXCEPT));
   printf("feraiseexcept %d\n", feraiseexcept(FE_INVALID | FE_INEXACT));
   printf("fetestexcept raised %d\n",
-         fetestexcept(FE_INVALID | FE_INEXACT) ==
-             (FE_INVALID | FE_INEXACT));
-  printf("fegetexceptflag %d\n",
-         fegetexceptflag(&saved_flags, FE_ALL_EXCEPT));
+         fetestexcept(FE_INVALID | FE_INEXACT) == (FE_INVALID | FE_INEXACT));
+  printf("fegetexceptflag %d\n", fegetexceptflag(&saved_flags, FE_ALL_EXCEPT));
   printf("fetestexceptflag %d\n",
          fetestexceptflag(&saved_flags, FE_ALL_EXCEPT) ==
              (FE_INVALID | FE_INEXACT));
   printf("feclearexcept saved %d\n", feclearexcept(FE_ALL_EXCEPT));
-  printf("fesetexceptflag %d\n",
-         fesetexceptflag(&saved_flags, FE_ALL_EXCEPT));
+  printf("fesetexceptflag %d\n", fesetexceptflag(&saved_flags, FE_ALL_EXCEPT));
   printf("fesetexceptflag flags %d\n",
-         fetestexcept(FE_INVALID | FE_INEXACT) ==
-             (FE_INVALID | FE_INEXACT));
+         fetestexcept(FE_INVALID | FE_INEXACT) == (FE_INVALID | FE_INEXACT));
   printf("feclearexcept set %d\n", feclearexcept(FE_ALL_EXCEPT));
   printf("fesetexcept %d\n", fesetexcept(FE_OVERFLOW));
-  printf("fesetexcept flags %d\n",
-         fetestexcept(FE_ALL_EXCEPT) == FE_OVERFLOW);
+  printf("fesetexcept flags %d\n", fetestexcept(FE_ALL_EXCEPT) == FE_OVERFLOW);
   printf("feclearexcept finish %d\n", feclearexcept(FE_ALL_EXCEPT));
 
   print_rounding_mode("FE_DOWNWARD", FE_DOWNWARD);

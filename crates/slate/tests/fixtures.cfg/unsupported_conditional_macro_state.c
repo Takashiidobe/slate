@@ -12,6 +12,4 @@ static int value_after_endif = MACRO_STATE_VALUE;
 #pragma pop_macro("MACRO_STATE_VALUE")
 #endif
 
-int main(void) {
-  return value_after_endif == MACRO_STATE_VALUE ? 0 : 1;
-}
+int main(void) { return value_after_endif == MACRO_STATE_VALUE ? 0 : 1; }

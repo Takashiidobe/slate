@@ -22,17 +22,16 @@ static int gnu_builtin_addresses(void) {
   void *extracted = __builtin_extract_return_addr(return_address);
   void *restored = __builtin_frob_return_addr(extracted);
   void *frame_address = __builtin_frame_address(0);
-  return (return_address != NULL) + (extracted != NULL) +
-         (restored != NULL) + (frame_address != NULL);
+  return (return_address != NULL) + (extracted != NULL) + (restored != NULL) +
+         (frame_address != NULL);
 }
 
 static int gnu_builtin_compile_time(void) {
   int volatile runtime = 3;
   int selected = __builtin_choose_expr(
       __builtin_types_compatible_p(int, signed int), 19, 23);
-  int type_total =
-      __builtin_types_compatible_p(int, int) +
-      __builtin_types_compatible_p(int, long);
+  int type_total = __builtin_types_compatible_p(int, int) +
+                   __builtin_types_compatible_p(int, long);
   return __builtin_constant_p(5) + __builtin_constant_p(runtime) + selected +
          type_total;
 }

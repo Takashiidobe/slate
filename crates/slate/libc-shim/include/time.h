@@ -39,10 +39,10 @@ time_t mktime(struct tm *tm);
 struct tm *gmtime(const time_t *timer);
 struct tm *gmtime_r(const time_t *restrict timer, struct tm *restrict result);
 struct tm *localtime_r(const time_t *restrict timer,
-                        struct tm *restrict result);
+                       struct tm *restrict result);
 char *asctime(const struct tm *tm);
-size_t strftime(char *restrict s, size_t maxsize,
-                 const char *restrict format, const struct tm *restrict tm);
+size_t strftime(char *restrict s, size_t maxsize, const char *restrict format,
+                const struct tm *restrict tm);
 int timespec_get(struct timespec *ts, int base);
 
 #endif

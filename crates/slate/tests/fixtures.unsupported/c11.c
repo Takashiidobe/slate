@@ -4,11 +4,11 @@
 #include <errno.h>
 #include <float.h>
 #include <limits.h>
+#include <stdalign.h>
+#include <stdatomic.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdalign.h>
-#include <stdatomic.h>
 #include <stdnoreturn.h>
 #include <string.h>
 #include <threads.h>
@@ -78,12 +78,11 @@ static int c11_evaluation_total;
 static volatile int c11_never_flag;
 static int c11_once_total;
 
-_Static_assert(_Alignof(struct C11OverAligned) >= 32,
-               "over-aligned structure");
+_Static_assert(_Alignof(struct C11OverAligned) >= 32, "over-aligned structure");
 _Static_assert(sizeof(char16_t) >= 2, "UTF-16 code unit");
 _Static_assert(sizeof(char32_t) >= 4, "UTF-32 code unit");
 
-#define C11_TYPE_KIND(value)                                                 \
+#define C11_TYPE_KIND(value)                                                   \
   _Generic((value), int: 11, double: 22, char *: 33, default: 44)
 
 static struct C11Temporary c11_make_temporary(int base) {
@@ -166,15 +165,13 @@ int main(void) {
 
   _Static_assert(sizeof(utf8_text) == 3, "UTF-8 literal size");
 
-  alignment_total =
-      (int)_Alignof(int) + (int)_Alignof(struct C11OverAligned) +
-      (((uintptr_t)c11_aligned_buffer % 64U) == 0U) +
-      (((uintptr_t)&aligned_object % 32U) == 0U);
+  alignment_total = (int)_Alignof(int) + (int)_Alignof(struct C11OverAligned) +
+                    (((uintptr_t)c11_aligned_buffer % 64U) == 0U) +
+                    (((uintptr_t)&aligned_object % 32U) == 0U);
 
-  unicode_total =
-      (unsigned char)utf8_text[0] + (unsigned char)utf8_text[1] +
-      utf16_text[0] + (int)utf32_text[0] + utf16_character +
-      (int)utf32_character;
+  unicode_total = (unsigned char)utf8_text[0] + (unsigned char)utf8_text[1] +
+                  utf16_text[0] + (int)utf32_text[0] + utf16_character +
+                  (int)utf32_character;
 
   generic_total =
       C11_TYPE_KIND(1) + C11_TYPE_KIND(1.0) + C11_TYPE_KIND((char *)0);
@@ -185,14 +182,14 @@ int main(void) {
   anonymous_total = anonymous.integer + anonymous.x + anonymous.y;
 
   c11_evaluation_total = 0;
-  evaluation_total = c11_evaluation_step(2) + c11_evaluation_step(3) +
-                     c11_evaluation_total;
+  evaluation_total =
+      c11_evaluation_step(2) + c11_evaluation_step(3) + c11_evaluation_total;
 
   temporary_total = c11_make_temporary(43).values[1];
   static_assert_total = 1;
-  optional_total =
-      C11_ANALYZABLE_VALUE + C11_LIB_EXT1_VALUE + C11_ATOMICS_VALUE +
-      C11_COMPLEX_VALUE + C11_THREADS_VALUE + C11_VLA_VALUE;
+  optional_total = C11_ANALYZABLE_VALUE + C11_LIB_EXT1_VALUE +
+                   C11_ATOMICS_VALUE + C11_COMPLEX_VALUE + C11_THREADS_VALUE +
+                   C11_VLA_VALUE;
 
   atomic_init(&c11_atomic_total, 5);
   c11_thread_local_value = 17;
@@ -201,9 +198,9 @@ int main(void) {
   thread_joined =
       thread_created == thrd_success ? thrd_join(thread, &thread_result) : -1;
   atomic_total = atomic_load_explicit(&c11_atomic_total, memory_order_seq_cst);
-  thread_total =
-      (thread_created == thrd_success) + (thread_joined == thrd_success) +
-      thread_result + c11_thread_local_value + (errno == 0);
+  thread_total = (thread_created == thrd_success) +
+                 (thread_joined == thrd_success) + thread_result +
+                 c11_thread_local_value + (errno == 0);
 
   concurrency_total = 0;
   if (mtx_init(&mutex, mtx_plain) == thrd_success) {
@@ -222,8 +219,7 @@ int main(void) {
   concurrency_total += c11_once_total;
   if (tss_create(&thread_key, NULL) == thrd_success) {
     concurrency_total += 1;
-    concurrency_total +=
-        tss_set(thread_key, &thread_increment) == thrd_success;
+    concurrency_total += tss_set(thread_key, &thread_increment) == thrd_success;
     concurrency_total += tss_get(thread_key) == &thread_increment;
     tss_delete(thread_key);
   }
@@ -231,12 +227,12 @@ int main(void) {
 
   converted16 = 0;
   converted32 = 0;
-  conversion_total =
-      (int)mbrtoc16(&converted16, "A", 1, &utf16_state) +
-      (int)c16rtomb(multibyte16, u'A', &utf16_state) +
-      (int)mbrtoc32(&converted32, "B", 1, &utf32_state) +
-      (int)c32rtomb(multibyte32, U'B', &utf32_state) + converted16 +
-      (int)converted32 + multibyte16[0] + multibyte32[0];
+  conversion_total = (int)mbrtoc16(&converted16, "A", 1, &utf16_state) +
+                     (int)c16rtomb(multibyte16, u'A', &utf16_state) +
+                     (int)mbrtoc32(&converted32, "B", 1, &utf32_state) +
+                     (int)c32rtomb(multibyte32, U'B', &utf32_state) +
+                     converted16 + (int)converted32 + multibyte16[0] +
+                     multibyte32[0];
 
   aligned_memory = aligned_alloc(64, 64);
   alignment_total +=
@@ -257,20 +253,18 @@ int main(void) {
   }
   remove("slate-c11-exclusive.tmp");
 
-  timespec_total =
-      timespec_get(&current_time, TIME_UTC) == TIME_UTC &&
-      current_time.tv_nsec >= 0 && current_time.tv_nsec < 1000000000L;
+  timespec_total = timespec_get(&current_time, TIME_UTC) == TIME_UTC &&
+                   current_time.tv_nsec >= 0 &&
+                   current_time.tv_nsec < 1000000000L;
 
   complex_value = CMPLX(2.0, 3.0);
-  complex_total =
-      (creal(complex_value) == 2.0) + (cimag(complex_value) == 3.0);
+  complex_total = (creal(complex_value) == 2.0) + (cimag(complex_value) == 3.0);
 
-  limits_total =
-      (FLT_DECIMAL_DIG >= 6) + (DBL_DECIMAL_DIG >= 10) +
-      (LDBL_DECIMAL_DIG >= 10) + (FLT_TRUE_MIN > 0.0F) +
-      (DBL_TRUE_MIN > 0.0) + (LDBL_TRUE_MIN > 0.0L) +
-      (FLT_HAS_SUBNORM >= -1) + (DBL_HAS_SUBNORM >= -1) +
-      (LDBL_HAS_SUBNORM >= -1);
+  limits_total = (FLT_DECIMAL_DIG >= 6) + (DBL_DECIMAL_DIG >= 10) +
+                 (LDBL_DECIMAL_DIG >= 10) + (FLT_TRUE_MIN > 0.0F) +
+                 (DBL_TRUE_MIN > 0.0) + (LDBL_TRUE_MIN > 0.0L) +
+                 (FLT_HAS_SUBNORM >= -1) + (DBL_HAS_SUBNORM >= -1) +
+                 (LDBL_HAS_SUBNORM >= -1);
 
 #ifdef __STDC_LIB_EXT1__
   bounds_total =
@@ -284,16 +278,16 @@ int main(void) {
     c11_never_return(99);
   }
 
-  printf(
-      "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
-      alignment_total, unicode_total, generic_total, anonymous_total,
-      evaluation_total, temporary_total, static_assert_total, optional_total,
-      atomic_total, thread_total, concurrency_total, conversion_total,
-      quick_total, exclusive_total, timespec_total, complex_total, limits_total,
+  printf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+         alignment_total, unicode_total, generic_total, anonymous_total,
+         evaluation_total, temporary_total, static_assert_total, optional_total,
+         atomic_total, thread_total, concurrency_total, conversion_total,
+         quick_total, exclusive_total, timespec_total, complex_total,
+         limits_total,
 #ifdef __STDC_LIB_EXT1__
-      bounds_total
+         bounds_total
 #else
-      0
+         0
 #endif
   );
   putchar('\n');

@@ -18,8 +18,7 @@ int main(void) {
   int worker_result = 0;
   shared_value = 17;
   int created = thrd_create(&thread, worker, &next);
-  int joined =
-      created == thrd_success ? thrd_join(thread, &worker_result) : -1;
+  int joined = created == thrd_success ? thrd_join(thread, &worker_result) : -1;
   printf("%d %d %d %d\n", worker_result, shared_value, created, joined);
   return 0;
 }

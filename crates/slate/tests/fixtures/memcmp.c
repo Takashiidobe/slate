@@ -21,6 +21,7 @@ int main(void) {
   int n = get_count();
   int dyn_result = memcmp(dyn_a, dyn_b, n) == 0;
 
-  printf("%d %d %d %d\n", equal_result, unequal_result, partial_result, dyn_result);
+  printf("%d %d %d %d\n", equal_result, unequal_result, partial_result,
+         dyn_result);
   return 0;
 }
