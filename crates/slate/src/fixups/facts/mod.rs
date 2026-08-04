@@ -19,6 +19,7 @@ pub(crate) mod goto;
 pub(super) mod heap_ownership;
 pub(super) mod lazy_singleton;
 pub(super) mod loop_shapes;
+pub(super) mod null_check_dominance;
 pub(super) mod places;
 pub(super) mod printf;
 pub(super) mod ptr_len;
@@ -45,6 +46,7 @@ pub(super) struct FixupFacts {
     pub(super) def_use: Vec<DefUseFact>,
     pub(super) effects: Vec<EffectFact>,
     pub(super) control_flow: Vec<ControlFlowFact>,
+    pub(super) null_check_dominance: Vec<NullCheckDominanceFact>,
     pub(super) casts: Vec<CastFact>,
     pub(super) places: Vec<PlaceFact>,
     pub(super) values: Vec<ValueFact>,
@@ -234,6 +236,22 @@ pub(super) struct CastFact {
     pub(super) site: Site,
     pub(super) from: Option<Type>,
     pub(super) to: Type,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct NullCheckDominanceFact {
+    pub(super) function: FunctionId,
+    pub(super) binding: BindingId,
+    pub(super) deref_site: Site,
+    pub(super) guard_site: Option<Site>,
+    pub(super) proof: NullCheckProof,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum NullCheckProof {
+    StructuredGuard,
+    GuardClauseExit,
+    ConstructionNonNull,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1358,6 +1376,17 @@ impl FixupFacts {
             .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
+    #[allow(dead_code)]
+    pub(super) fn null_check_dominance_at(
+        &self,
+        function: FunctionId,
+        deref_path: &AstPath,
+    ) -> Option<&NullCheckDominanceFact> {
+        self.null_check_dominance.iter().find(|fact| {
+            fact.deref_site.function == function && &fact.deref_site.path == deref_path
+        })
+    }
+
     pub(super) fn c_string_literal(
         &self,
         function: FunctionId,
@@ -1387,6 +1416,7 @@ pub(super) fn analyze(program: &Program) -> AnalyzedProgram<'_> {
     def_use::collect_facts(program, &mut facts);
     effects::collect_facts(program, &mut facts);
     control_flow::collect_facts(program, &mut facts);
+    null_check_dominance::collect_facts(program, &mut facts);
     places::collect_facts(program, &mut facts);
     values::collect_facts(program, &mut facts);
     calls::collect_facts(program, &mut facts);
