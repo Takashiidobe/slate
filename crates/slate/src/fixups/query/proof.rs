@@ -1,6 +1,7 @@
 use crate::fixups::facts::{
     AsciiNumericSign, CallArgPinning, CountedLoopIndexUse, CountedLoopStart, CountedLoopStep,
-    NullCheckProof, PlaceAccess, Purity, SliceLoopAccess, StringLibcFunction,
+    NullCheckProof, PlaceAccess, PointerComparisonKind, Purity, SliceLoopAccess,
+    StringLibcFunction,
 };
 use crate::rust_ast::Type;
 
@@ -95,6 +96,14 @@ pub(in crate::fixups) enum Predicate {
     Cast,
     #[allow(dead_code)]
     NullCheckDominance,
+    #[allow(dead_code)]
+    PointerOptionSafety,
+    #[allow(dead_code)]
+    PointerComparisonKind,
+    #[allow(dead_code)]
+    StructFieldOwnership,
+    OptionBoxLocalCandidates,
+    OptionBoxComparisons,
     DirectCalls,
     FunctionReachability,
     FunctionCallDomain,
@@ -275,6 +284,24 @@ pub(in crate::fixups) enum EvidenceDetail {
     #[allow(dead_code)]
     NullCheckDominance {
         proof: NullCheckProof,
+    },
+    #[allow(dead_code)]
+    PointerOptionSafety {
+        eligible: bool,
+    },
+    #[allow(dead_code)]
+    PointerComparisonKind {
+        kind: PointerComparisonKind,
+    },
+    #[allow(dead_code)]
+    StructFieldOwnership {
+        fields: usize,
+    },
+    OptionBoxLocalCandidates {
+        count: usize,
+    },
+    OptionBoxComparisons {
+        count: usize,
     },
     DirectCalls {
         function: String,

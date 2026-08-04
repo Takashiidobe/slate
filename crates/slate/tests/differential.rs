@@ -2826,3 +2826,63 @@ fn string_copy_calls_use_lifted_string_operations() {
         assert!(!rust.contains(&format!("unsafe {{ {name}(")));
     }
 }
+
+#[test]
+fn guarded_nullable_local_recovers_option_box() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-option-box-guarded");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("option_box_local_guarded.c");
+    let generated = tmp.join("option_box_local_guarded.generated.rs");
+    support::translate(&c_src, &generated).expect("translate option_box_local_guarded fixture");
+    let rust =
+        std::fs::read_to_string(&generated).expect("read generated option_box_local_guarded rust");
+
+    assert!(rust.contains("let mut p: Option<Box<i32>> = None;"));
+    assert!(rust.contains("p = Some(Box::<i32>::new(0));"));
+    assert!(rust.contains("match p.take() {"));
+    assert!(!rust.contains("fn free("));
+    assert!(!rust.contains("unsafe { free("));
+    assert!(!rust.contains("std::ptr::null_mut()"));
+    assert!(!rust.contains("fn malloc("));
+    assert!(!rust.contains("unsafe { malloc("));
+    assert!(rust.contains("*p = 41;"));
+    assert!(rust.contains("let v: i32 = *p;"));
+    assert!(!rust.contains("unsafe"));
+}
+
+#[test]
+fn identity_comparison_between_option_box_locals_uses_ptr_eq() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-option-box-identity");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("option_box_local_identity.c");
+    let generated = tmp.join("option_box_local_identity.generated.rs");
+    support::translate(&c_src, &generated).expect("translate option_box_local_identity fixture");
+    let rust =
+        std::fs::read_to_string(&generated).expect("read generated option_box_local_identity rust");
+
+    assert!(rust.contains("let mut p: Option<Box<i32>> = None;"));
+    assert!(rust.contains("let mut q: Option<Box<i32>> = None;"));
+    assert!(rust.contains("std::ptr::eq("));
+    assert!(rust.contains(".as_deref().map_or(std::ptr::null(),"));
+    assert!(!rust.contains("p == q"));
+    assert!(!rust.contains("fn malloc("));
+    assert!(!rust.contains("unsafe"));
+}
+
+#[test]
+fn pointer_arithmetic_bails_out_of_option_box_recovery() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-option-box-arith");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("option_box_local_arith_bailout.c");
+    let generated = tmp.join("option_box_local_arith_bailout.generated.rs");
+    support::translate(&c_src, &generated)
+        .expect("translate option_box_local_arith_bailout fixture");
+    let rust = std::fs::read_to_string(&generated)
+        .expect("read generated option_box_local_arith_bailout rust");
+
+    assert!(rust.contains("let mut p: *mut i32 = std::ptr::null_mut();"));
+    assert!(rust.contains("if p != std::ptr::null_mut()"));
+    assert!(rust.contains(".add(1)"));
+    assert!(rust.contains("fn free("));
+    assert!(!rust.contains("Option<Box"));
+}

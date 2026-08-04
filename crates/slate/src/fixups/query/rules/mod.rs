@@ -27,6 +27,7 @@ pub(in crate::fixups) mod mem_move;
 pub(in crate::fixups) mod mem_set;
 pub(in crate::fixups) mod memchr;
 pub(in crate::fixups) mod nullable_pointer;
+pub(in crate::fixups) mod option_box_locals;
 pub(in crate::fixups) mod param_spills;
 pub(in crate::fixups) mod perror;
 pub(in crate::fixups) mod printf_format;
