@@ -6,9 +6,10 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AsciiNumericSign, AstPath, BindingId, BindingKind, BorrowAliasReason, CallArgPinning,
     CallCallee, CastFact, ConstValue, ControlFlowSubject, CountedLoopFact, EffectSubject,
-    FixupFacts, FunctionId, NulTermination, NullCheckProof, PathSegment, PrintfCallFact,
-    PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
-    StringRecoveryCandidate, ValueSubject,
+    FixupFacts, FunctionId, NulTermination, NullCheckProof, OptionBoxAssignKind, PathSegment,
+    PointerComparisonKind, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
+    StringBufferKind, StringCopyRewrite, StringRecoveryCandidate, StructFieldOwnershipFact,
+    ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
@@ -40,17 +41,19 @@ use super::{
 
 macro_rules! query_cache {
     ($(
+        $(#[$attr:meta])*
         fn $name:ident(& $slf:tt $(, $arg:ident : $arg_ty:ty)*) -> QueryResult<$ret:ty>;
         key: $key_ty:ty = $key:expr;
         $body:block
     )*) => {
         #[derive(Default)]
         struct QueryCache<'snapshot> {
-            $($name: RefCell<HashMap<$key_ty, QueryResult<$ret>>>,)*
+            $($(#[$attr])* $name: RefCell<HashMap<$key_ty, QueryResult<$ret>>>,)*
         }
 
         impl<'snapshot> QueryContext<'snapshot> {
             $(
+                $(#[$attr])*
                 pub(in crate::fixups) fn $name(&$slf, $($arg: $arg_ty),*) -> QueryResult<$ret> {
                     cached(&$slf.cache.$name, $key, || $body)
                 }
@@ -78,6 +81,36 @@ pub(in crate::fixups) enum CallTarget {
     Generated(String),
     Direct(String),
     Indirect,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct NullCheckDominance {
+    pub(in crate::fixups) proof: NullCheckProof,
+    pub(in crate::fixups) guard_stmt: Option<StatementRef>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct OptionBoxLocalPlanInput {
+    pub(in crate::fixups) binding: BindingRef,
+    pub(in crate::fixups) elem_ty: Type,
+    pub(in crate::fixups) decl_stmt: StatementRef,
+    pub(in crate::fixups) assignments: Vec<OptionBoxAssignmentInput>,
+    pub(in crate::fixups) deref_sites: Vec<ExprSite>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct OptionBoxAssignmentInput {
+    pub(in crate::fixups) stmt: StatementRef,
+    pub(in crate::fixups) kind: OptionBoxAssignKind,
+    pub(in crate::fixups) alloc_source: Option<StatementRef>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct OptionBoxComparisonInput {
+    pub(in crate::fixups) if_stmt: StatementRef,
+    pub(in crate::fixups) lhs: String,
+    pub(in crate::fixups) rhs: String,
+    pub(in crate::fixups) negate: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1841,12 +1874,11 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(fact.clone(), evidence))
     }
 
-    #[allow(dead_code)]
     pub(in crate::fixups) fn null_check_dominates(
         &self,
         binding: &BindingRef,
         deref_site: &ExprSite,
-    ) -> QueryResult<NullCheckProof> {
+    ) -> QueryResult<NullCheckDominance> {
         let predicate = Predicate::NullCheckDominance;
         let Some(function) = self.facts.function_by_item_index(deref_site.item_index) else {
             return Err(Rejection::new(
@@ -1879,12 +1911,98 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         }
+        let guard_stmt = fact.guard_site.as_ref().map(|site| StatementRef {
+            item_index: deref_site.item_index,
+            path: site.path.clone(),
+        });
+        let result = NullCheckDominance {
+            proof: fact.proof,
+            guard_stmt,
+        };
         let evidence = vec![Evidence {
             predicate,
             site: deref_site.clone(),
             detail: EvidenceDetail::NullCheckDominance { proof: fact.proof },
         }];
-        Ok(Proof::new(fact.proof, evidence))
+        Ok(Proof::new(result, evidence))
+    }
+
+    pub(in crate::fixups) fn pointer_option_eligible(
+        &self,
+        binding: &BindingRef,
+    ) -> QueryResult<()> {
+        let predicate = Predicate::PointerOptionSafety;
+        let Some(function) = self.facts.function_by_item_index(binding.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(expression_site(binding.item_index, &binding.definition.0)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(resolved) =
+            self.facts
+                .binding_by_local_path(function, binding.name.as_str(), &binding.definition)
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(expression_site(binding.item_index, &binding.definition.0)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(fact) = self.facts.pointer_option_safety_of(function, resolved) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(expression_site(binding.item_index, &binding.definition.0)),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        if !fact.eligible {
+            return Err(Rejection::new(
+                predicate,
+                Some(expression_site(binding.item_index, &binding.definition.0)),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site: expression_site(binding.item_index, &binding.definition.0),
+            detail: EvidenceDetail::PointerOptionSafety { eligible: true },
+        }];
+        Ok(Proof::new((), evidence))
+    }
+
+    #[allow(dead_code)]
+    pub(in crate::fixups) fn pointer_comparison_kind(
+        &self,
+        site: &ExprSite,
+    ) -> QueryResult<PointerComparisonKind> {
+        let predicate = Predicate::PointerComparisonKind;
+        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(fact) = self.facts.pointer_comparison_at(function, &site.path) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let evidence = vec![Evidence {
+            predicate,
+            site: site.clone(),
+            detail: EvidenceDetail::PointerComparisonKind { kind: fact.kind },
+        }];
+        Ok(Proof::new(fact.kind, evidence))
     }
 
     pub(in crate::fixups) fn callsite_at(&self, site: &ExprSite) -> QueryResult<CallCallee> {
@@ -4306,6 +4424,126 @@ query_cache! {
             detail: EvidenceDetail::PtrLenSlice { plans: plans.len() },
         }];
         Ok(Proof::new(PtrLenPlanSet { plans }, evidence))
+    }
+
+    #[allow(dead_code)]
+    fn struct_field_ownership_facts(&self) -> QueryResult<Vec<StructFieldOwnershipFact>>;
+    key: () = ();
+    {
+        let predicate = Predicate::StructFieldOwnership;
+        let fields = self.facts.struct_field_ownership.clone();
+        let evidence = vec![Evidence {
+            predicate,
+            site: expression_site(0, &[]),
+            detail: EvidenceDetail::StructFieldOwnership {
+                fields: fields.len(),
+            },
+        }];
+        Ok(Proof::new(fields, evidence))
+    }
+
+    fn option_box_local_candidates(&self, function: &FunctionRef) -> QueryResult<Vec<OptionBoxLocalPlanInput>>;
+    key: FunctionId = function.id;
+    {
+        let predicate = Predicate::OptionBoxLocalCandidates;
+        let site = expression_site(function.item_index, &[]);
+        let bindings = self.all_bindings();
+        let mut inputs = Vec::new();
+        for candidate in self
+            .facts
+            .option_box_locals
+            .iter()
+            .filter(|candidate| candidate.function == function.id)
+        {
+            let Some(binding) = bindings
+                .iter()
+                .find(|binding| binding.id == candidate.binding)
+                .cloned()
+            else {
+                return Err(Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            let assignments = candidate
+                .assignments
+                .iter()
+                .map(|assignment| OptionBoxAssignmentInput {
+                    stmt: StatementRef {
+                        item_index: function.item_index,
+                        path: assignment.path.clone(),
+                    },
+                    kind: assignment.kind,
+                    alloc_source: assignment.alloc_source.as_ref().map(|path| StatementRef {
+                        item_index: function.item_index,
+                        path: path.clone(),
+                    }),
+                })
+                .collect();
+            let deref_sites = candidate
+                .deref_paths
+                .iter()
+                .map(|path| expression_site(function.item_index, &path.0))
+                .collect();
+            inputs.push(OptionBoxLocalPlanInput {
+                binding,
+                elem_ty: candidate.elem_ty.clone(),
+                decl_stmt: StatementRef {
+                    item_index: function.item_index,
+                    path: candidate.decl_path.clone(),
+                },
+                assignments,
+                deref_sites,
+            });
+        }
+        if inputs.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::OptionBoxLocalCandidates {
+                count: inputs.len(),
+            },
+        }];
+        Ok(Proof::new(inputs, evidence))
+    }
+
+    fn option_box_comparisons(&self, function: &FunctionRef) -> QueryResult<Vec<OptionBoxComparisonInput>>;
+    key: FunctionId = function.id;
+    {
+        let predicate = Predicate::OptionBoxComparisons;
+        let site = expression_site(function.item_index, &[]);
+        let inputs: Vec<OptionBoxComparisonInput> = self
+            .facts
+            .option_box_comparisons
+            .iter()
+            .filter(|comparison| comparison.function == function.id)
+            .map(|comparison| OptionBoxComparisonInput {
+                if_stmt: StatementRef {
+                    item_index: function.item_index,
+                    path: comparison.if_stmt_path.clone(),
+                },
+                lhs: comparison.lhs.clone(),
+                rhs: comparison.rhs.clone(),
+                negate: comparison.negate,
+            })
+            .collect();
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::OptionBoxComparisons {
+                count: inputs.len(),
+            },
+        }];
+        Ok(Proof::new(inputs, evidence))
     }
 
     fn string_param_lift_indices(&self, function: &FunctionRef) -> QueryResult<Vec<usize>>;

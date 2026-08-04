@@ -78,7 +78,9 @@ impl<'a> Collector<'a> {
         match stmt {
             Stmt::Let { name, init, .. } => {
                 if let Some(init) = init {
-                    self.expr(init, path, proven);
+                    walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                        self.expr(init, path, proven);
+                    });
                     self.bool_defs.insert(name.clone(), init.clone());
                     self.update_construction_proof(name.as_str(), init, proven);
                 } else {
@@ -94,39 +96,59 @@ impl<'a> Collector<'a> {
                 else_value,
                 ..
             } => {
-                self.expr(cond, path, proven);
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    self.expr(cond, path, proven);
+                });
                 let mut then_proven = proven.clone();
                 walk::with_path_segment(path, PathSegment::Then, |path| {
                     self.body(then_body, path, &mut then_proven);
-                    self.expr(then_value, path, &then_proven);
+                    walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                        self.expr(then_value, path, &then_proven);
+                    });
                 });
                 let mut else_proven = proven.clone();
                 walk::with_path_segment(path, PathSegment::Else, |path| {
                     self.body(else_body, path, &mut else_proven);
-                    self.expr(else_value, path, &else_proven);
+                    walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                        self.expr(else_value, path, &else_proven);
+                    });
                 });
                 proven.entries.remove(name.as_str());
             }
             Stmt::Assign { target, value } => {
-                self.expr(value, path, proven);
-                self.expr(target, path, proven);
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    self.expr(target, path, proven);
+                });
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                    self.expr(value, path, proven);
+                });
                 if let Expr::Var(name) = target {
                     self.update_construction_proof(name.as_str(), value, proven);
                 }
             }
             Stmt::CompoundAssign { target, value, .. } => {
-                self.expr(target, path, proven);
-                self.expr(value, path, proven);
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    self.expr(target, path, proven);
+                });
+                walk::with_path_segment(path, PathSegment::Expr(1), |path| {
+                    self.expr(value, path, proven);
+                });
             }
             Stmt::InlineAsm(_) => {}
-            Stmt::Expr(expr) | Stmt::Return(Some(expr)) => self.expr(expr, path, proven),
+            Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    self.expr(expr, path, proven);
+                });
+            }
             Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
             Stmt::If {
                 cond,
                 then_body,
                 else_body,
             } => {
-                self.expr(cond, path, proven);
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    self.expr(cond, path, proven);
+                });
                 self.if_stmt(cond, then_body, else_body, path, proven);
             }
             Stmt::Loop { body, .. } => {
@@ -136,7 +158,9 @@ impl<'a> Collector<'a> {
                 });
             }
             Stmt::For { iter, body, .. } => {
-                self.expr(iter, path, proven);
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    self.expr(iter, path, proven);
+                });
                 let mut inner = proven.clone();
                 walk::with_path_segment(path, PathSegment::ForBody, |path| {
                     self.body(body, path, &mut inner);
@@ -159,7 +183,9 @@ impl<'a> Collector<'a> {
                 });
             }
             Stmt::While { cond, body } => {
-                self.expr(cond, path, proven);
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    self.expr(cond, path, proven);
+                });
                 let mut inner = proven.clone();
                 walk::with_path_segment(path, PathSegment::WhileBody, |path| {
                     self.block(body, path, &mut inner);
@@ -171,7 +197,9 @@ impl<'a> Collector<'a> {
                 });
             }
             Stmt::Match { expr, arms } => {
-                self.expr(expr, path, proven);
+                walk::with_path_segment(path, PathSegment::Expr(0), |path| {
+                    self.expr(expr, path, proven);
+                });
                 for (index, arm) in arms.iter().enumerate() {
                     let mut inner = proven.clone();
                     walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
@@ -510,12 +538,12 @@ fn null_check_shape(bool_defs: &BTreeMap<String, Expr>, cond: &Expr) -> Option<(
             op: BinOp::Ne,
             lhs,
             rhs,
-        } => pointer_against_null(lhs, rhs).map(|name| (name, true)),
+        } => pointer_against_null(bool_defs, lhs, rhs).map(|name| (name, true)),
         Expr::Binary {
             op: BinOp::Eq,
             lhs,
             rhs,
-        } => pointer_against_null(lhs, rhs).map(|name| (name, false)),
+        } => pointer_against_null(bool_defs, lhs, rhs).map(|name| (name, false)),
         Expr::Unary {
             op: UnaryOp::Not,
             expr: inner,
@@ -524,16 +552,34 @@ fn null_check_shape(bool_defs: &BTreeMap<String, Expr>, cond: &Expr) -> Option<(
     }
 }
 
-fn pointer_against_null(lhs: &Expr, rhs: &Expr) -> Option<String> {
+fn resolve_pointer_alias<'e>(
+    bool_defs: &'e BTreeMap<String, Expr>,
+    name: &'e str,
+    depth: u32,
+) -> &'e str {
+    if depth == 0 {
+        return name;
+    }
+    match bool_defs.get(name).map(peel_casts) {
+        Some(Expr::Var(next)) => resolve_pointer_alias(bool_defs, next.as_str(), depth - 1),
+        _ => name,
+    }
+}
+
+fn pointer_against_null(
+    bool_defs: &BTreeMap<String, Expr>,
+    lhs: &Expr,
+    rhs: &Expr,
+) -> Option<String> {
     if let Expr::Var(name) = peel_casts(lhs)
         && is_null_expr(rhs)
     {
-        return Some(name.as_str().to_string());
+        return Some(resolve_pointer_alias(bool_defs, name.as_str(), 4).to_string());
     }
     if let Expr::Var(name) = peel_casts(rhs)
         && is_null_expr(lhs)
     {
-        return Some(name.as_str().to_string());
+        return Some(resolve_pointer_alias(bool_defs, name.as_str(), 4).to_string());
     }
     None
 }

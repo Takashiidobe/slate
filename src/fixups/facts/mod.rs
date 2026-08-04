@@ -20,11 +20,14 @@ pub(super) mod heap_ownership;
 pub(super) mod lazy_singleton;
 pub(super) mod loop_shapes;
 pub(super) mod null_check_dominance;
+pub(super) mod option_box_locals;
 pub(super) mod places;
+pub(super) mod pointer_option_safety;
 pub(super) mod printf;
 pub(super) mod ptr_len;
 pub(super) mod string_params;
 pub(super) mod strings;
+pub(super) mod struct_field_ownership;
 pub(super) mod values;
 pub(super) mod walk;
 
@@ -47,6 +50,11 @@ pub(super) struct FixupFacts {
     pub(super) effects: Vec<EffectFact>,
     pub(super) control_flow: Vec<ControlFlowFact>,
     pub(super) null_check_dominance: Vec<NullCheckDominanceFact>,
+    pub(super) pointer_option_safety: Vec<PointerOptionSafetyFact>,
+    pub(super) pointer_comparisons: Vec<PointerComparisonFact>,
+    pub(super) struct_field_ownership: Vec<StructFieldOwnershipFact>,
+    pub(super) option_box_locals: Vec<OptionBoxLocalCandidate>,
+    pub(super) option_box_comparisons: Vec<OptionBoxComparison>,
     pub(super) casts: Vec<CastFact>,
     pub(super) places: Vec<PlaceFact>,
     pub(super) values: Vec<ValueFact>,
@@ -252,6 +260,65 @@ pub(super) enum NullCheckProof {
     StructuredGuard,
     GuardClauseExit,
     ConstructionNonNull,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct PointerOptionSafetyFact {
+    pub(super) function: FunctionId,
+    pub(super) binding: BindingId,
+    pub(super) eligible: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct PointerComparisonFact {
+    pub(super) site: Site,
+    pub(super) kind: PointerComparisonKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum PointerComparisonKind {
+    NullCompare,
+    IdentityCompare,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct StructFieldOwnershipFact {
+    pub(super) record_name: String,
+    pub(super) field_name: String,
+    pub(super) tree_eligible: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct OptionBoxLocalCandidate {
+    pub(super) function: FunctionId,
+    pub(super) binding: BindingId,
+    pub(super) name: String,
+    pub(super) elem_ty: Type,
+    pub(super) decl_path: AstPath,
+    pub(super) assignments: Vec<OptionBoxAssignment>,
+    pub(super) deref_paths: Vec<AstPath>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct OptionBoxAssignment {
+    pub(super) path: AstPath,
+    pub(super) kind: OptionBoxAssignKind,
+    pub(super) alloc_source: Option<AstPath>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum OptionBoxAssignKind {
+    Null,
+    Alloc,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct OptionBoxComparison {
+    pub(super) function: FunctionId,
+    pub(super) if_stmt_path: AstPath,
+    pub(super) lhs: String,
+    pub(super) rhs: String,
+    pub(super) negate: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1383,8 +1450,31 @@ impl FixupFacts {
         deref_path: &AstPath,
     ) -> Option<&NullCheckDominanceFact> {
         self.null_check_dominance.iter().find(|fact| {
-            fact.deref_site.function == function && &fact.deref_site.path == deref_path
+            fact.deref_site.function == function
+                && walk::paths_overlap(&fact.deref_site.path.0, &deref_path.0)
         })
+    }
+
+    #[allow(dead_code)]
+    pub(super) fn pointer_option_safety_of(
+        &self,
+        function: FunctionId,
+        binding: BindingId,
+    ) -> Option<&PointerOptionSafetyFact> {
+        self.pointer_option_safety
+            .iter()
+            .find(|fact| fact.function == function && fact.binding == binding)
+    }
+
+    #[allow(dead_code)]
+    pub(super) fn pointer_comparison_at(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&PointerComparisonFact> {
+        self.pointer_comparisons
+            .iter()
+            .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
     pub(super) fn c_string_literal(
@@ -1417,6 +1507,8 @@ pub(super) fn analyze(program: &Program) -> AnalyzedProgram<'_> {
     effects::collect_facts(program, &mut facts);
     control_flow::collect_facts(program, &mut facts);
     null_check_dominance::collect_facts(program, &mut facts);
+    pointer_option_safety::collect_facts(program, &mut facts);
+    struct_field_ownership::collect_facts(program, &mut facts);
     places::collect_facts(program, &mut facts);
     values::collect_facts(program, &mut facts);
     calls::collect_facts(program, &mut facts);
@@ -1424,6 +1516,7 @@ pub(super) fn analyze(program: &Program) -> AnalyzedProgram<'_> {
     strings::collect_facts(program, &mut facts);
     string_params::collect_facts(program, &mut facts);
     heap_ownership::collect_facts(program, &mut facts);
+    option_box_locals::collect_facts(program, &mut facts);
     printf::collect_facts(program, &mut facts);
     strings::collect_rewrite_facts(program, &mut facts);
     c_strings::collect_facts(program, &mut facts);

@@ -92,6 +92,11 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::AllExprs => "all_exprs",
         Predicate::Cast => "cast",
         Predicate::NullCheckDominance => "null_check_dominance",
+        Predicate::PointerOptionSafety => "pointer_option_safety",
+        Predicate::PointerComparisonKind => "pointer_comparison_kind",
+        Predicate::StructFieldOwnership => "struct_field_ownership",
+        Predicate::OptionBoxLocalCandidates => "option_box_local_candidates",
+        Predicate::OptionBoxComparisons => "option_box_comparisons",
         Predicate::ReferenceDomain => "reference_domain",
         Predicate::Statement => "statement",
         Predicate::StatementRegion => "statement_region",
@@ -226,6 +231,11 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::AllExprs { count } => format!("count={count}"),
         EvidenceDetail::Cast { to } => format!("to={to:?}"),
         EvidenceDetail::NullCheckDominance { proof } => format!("proof={proof:?}"),
+        EvidenceDetail::PointerOptionSafety { eligible } => format!("eligible={eligible}"),
+        EvidenceDetail::PointerComparisonKind { kind } => format!("kind={kind:?}"),
+        EvidenceDetail::StructFieldOwnership { fields } => format!("fields={fields}"),
+        EvidenceDetail::OptionBoxLocalCandidates { count } => format!("count={count}"),
+        EvidenceDetail::OptionBoxComparisons { count } => format!("count={count}"),
         EvidenceDetail::ReferenceDomain { definitions, items } => {
             format!("definitions={definitions}, items={items}")
         }

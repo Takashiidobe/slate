@@ -1,6 +1,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::fixups::facts::{HeapOwnershipKind, HeapResizeKind, PathSegment};
+use crate::fixups::facts::{
+    AstPath, HeapOwnershipKind, HeapResizeKind, OptionBoxAssignKind, PathSegment,
+};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::fixups::query::{
     AtomicCompareExchangeChain, ByteRepresentation, ByteSource, NulPosition, PointerMutability,
@@ -10,8 +12,8 @@ use crate::fixups::query::{
 use crate::fixups::support::walk;
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
-    BinOp, Block, CLibType, Expr, ExprMatchArm, Ident, IndentStmt, Pattern, Prim, RustValue, Stmt,
-    Type, UnaryOp,
+    BinOp, Block, CLibType, Expr, ExprMatchArm, Ident, IndentStmt, MatchArm, Pattern, Prim,
+    RustValue, Stmt, Type, UnaryOp,
 };
 
 pub(in crate::fixups) struct ExprRecipe<'snapshot> {
@@ -1087,4 +1089,378 @@ fn nullable_pointer_observation_replacement(
         },
         None => method(var(&plan.option_name), "unwrap", Vec::new()),
     })
+}
+
+#[derive(Debug, Clone)]
+pub(in crate::fixups) struct OptionBoxLocalPlan {
+    pub(in crate::fixups) name: String,
+    pub(in crate::fixups) elem_ty: Type,
+    pub(in crate::fixups) decl_path: AstPath,
+    pub(in crate::fixups) assignments: Vec<(AstPath, OptionBoxAssignKind, Option<AstPath>)>,
+    pub(in crate::fixups) guard_path: AstPath,
+}
+
+pub(in crate::fixups) struct OptionBoxComparisonPlan {
+    pub(in crate::fixups) if_stmt_path: AstPath,
+    pub(in crate::fixups) lhs: String,
+    pub(in crate::fixups) rhs: String,
+    pub(in crate::fixups) negate: bool,
+    pub(in crate::fixups) elem_ty: Type,
+}
+
+pub(in crate::fixups) fn rewrite_option_box_locals(
+    body: Vec<IndentStmt>,
+    plans: Vec<OptionBoxLocalPlan>,
+    comparisons: Vec<OptionBoxComparisonPlan>,
+) -> FunctionBodyRecipe {
+    let mut body = body;
+    let mut alloc_sources = Vec::new();
+    for plan in &plans {
+        rewrite_option_box_decl(&mut body, plan);
+        for (path, kind, alloc_source) in &plan.assignments {
+            rewrite_option_box_assignment(&mut body, path, *kind, &plan.elem_ty);
+            alloc_sources.extend(alloc_source.clone());
+        }
+        rewrite_option_box_guard(&mut body, plan);
+    }
+    for comparison in &comparisons {
+        rewrite_option_box_comparison(&mut body, comparison);
+    }
+    alloc_sources.sort_by(|a: &AstPath, b: &AstPath| b.cmp(a));
+    for source in &alloc_sources {
+        remove_stmt_at_path(&mut body, &source.0);
+    }
+    FunctionBodyRecipe { body }
+}
+
+fn rewrite_option_box_comparison(body: &mut [IndentStmt], plan: &OptionBoxComparisonPlan) {
+    let Some(stmt) = with_stmt_at_path(body, &plan.if_stmt_path.0) else {
+        return;
+    };
+    let Stmt::If { cond, .. } = stmt else {
+        return;
+    };
+    *cond = option_box_ptr_eq(&plan.elem_ty, &plan.lhs, &plan.rhs, plan.negate);
+}
+
+fn option_box_ptr_eq(elem_ty: &Type, lhs_name: &str, rhs_name: &str, negate: bool) -> Expr {
+    let eq_call = call(
+        path(["std", "ptr", "eq"]),
+        vec![
+            option_as_const_ptr(elem_ty, lhs_name),
+            option_as_const_ptr(elem_ty, rhs_name),
+        ],
+    );
+    if negate {
+        Expr::Unary {
+            op: UnaryOp::Not,
+            expr: Box::new(eq_call),
+        }
+    } else {
+        eq_call
+    }
+}
+
+fn option_as_const_ptr(elem_ty: &Type, name: &str) -> Expr {
+    method(
+        method(var(name), "as_deref", Vec::new()),
+        "map_or",
+        vec![
+            call(path(["std", "ptr", "null"]), Vec::new()),
+            Expr::Closure {
+                params: vec![Ident::from("__slate_ref")],
+                body: Box::new(cast(var("__slate_ref"), ptr(false, elem_ty.clone()))),
+            },
+        ],
+    )
+}
+
+fn option_box_type(elem_ty: &Type) -> Type {
+    Type::Generic {
+        name: "Option".into(),
+        args: vec![Type::Generic {
+            name: "Box".into(),
+            args: vec![elem_ty.clone()],
+        }],
+    }
+}
+
+fn rewrite_option_box_decl(body: &mut [IndentStmt], plan: &OptionBoxLocalPlan) {
+    let Some(stmt) = with_stmt_at_path(body, &plan.decl_path.0) else {
+        return;
+    };
+    let Stmt::Let {
+        mutable, ty, init, ..
+    } = stmt
+    else {
+        return;
+    };
+    *mutable = true;
+    *ty = Some(option_box_type(&plan.elem_ty));
+    *init = Some(Expr::Value(RustValue::None));
+}
+
+fn rewrite_option_box_assignment(
+    body: &mut [IndentStmt],
+    path: &AstPath,
+    kind: OptionBoxAssignKind,
+    elem_ty: &Type,
+) {
+    let Some(stmt) = with_stmt_at_path(body, &path.0) else {
+        return;
+    };
+    let Stmt::Assign { value, .. } = stmt else {
+        return;
+    };
+    *value = match kind {
+        OptionBoxAssignKind::Null => Expr::Value(RustValue::None),
+        OptionBoxAssignKind::Alloc => some(box_new(elem_ty)),
+    };
+}
+
+fn rewrite_option_box_guard(body: &mut [IndentStmt], plan: &OptionBoxLocalPlan) {
+    let Some(stmt) = with_stmt_at_path(body, &plan.guard_path.0) else {
+        return;
+    };
+    let Stmt::If {
+        then_body,
+        else_body,
+        ..
+    } = stmt
+    else {
+        return;
+    };
+    let mut then_body = std::mem::take(then_body);
+    strip_trailing_free(&mut then_body, &plan.name);
+    strip_redundant_unsafe(&mut then_body, &plan.name);
+    let mut rebind_depth = then_body.first().map_or(1, |indent| indent.depth);
+    if rebind_depth == 0 {
+        rebind_depth = 1;
+    }
+    let mut new_then_body = vec![IndentStmt {
+        depth: rebind_depth,
+        stmt: Stmt::Let {
+            name: plan.name.clone(),
+            mutable: true,
+            ty: None,
+            init: Some(Expr::Var(plan.name.clone().into())),
+        },
+    }];
+    new_then_body.extend(then_body);
+    let else_body = std::mem::take(else_body);
+    *stmt = Stmt::Match {
+        expr: method(var(&plan.name), "take", Vec::new()),
+        arms: vec![
+            MatchArm {
+                pattern: Pattern::TupleStruct {
+                    name: "Some".into(),
+                    fields: vec![Pattern::Binding(plan.name.clone().into())],
+                },
+                body: new_then_body,
+            },
+            MatchArm {
+                pattern: Pattern::Wildcard,
+                body: else_body,
+            },
+        ],
+    };
+}
+
+fn strip_redundant_unsafe(body: &mut Vec<IndentStmt>, name: &str) {
+    let mut index = 0;
+    while index < body.len() {
+        if let Stmt::Unsafe { body: block } = &body[index].stmt
+            && block_is_safe_once_converted(block, name)
+        {
+            let depth = body[index].depth;
+            let removed = body.remove(index);
+            let Stmt::Unsafe { body: block } = removed.stmt else {
+                unreachable!()
+            };
+            let mut inner = block.stmts;
+            if let Some(tail) = block.tail {
+                inner.push(IndentStmt {
+                    depth,
+                    stmt: Stmt::Expr(*tail),
+                });
+            }
+            for item in &mut inner {
+                item.depth = depth;
+            }
+            let inserted = inner.len();
+            body.splice(index..index, inner);
+            index += inserted;
+            continue;
+        }
+        strip_redundant_unsafe_exprs(&mut body[index].stmt, name);
+        walk::nested_body_vecs_mut_with_path(
+            &mut body[index].stmt,
+            &mut Vec::new(),
+            &mut |nested, _| {
+                strip_redundant_unsafe(nested, name);
+            },
+        );
+        index += 1;
+    }
+}
+
+fn strip_redundant_unsafe_exprs(stmt: &mut Stmt, name: &str) {
+    walk::stmt_exprs_mut_with(stmt, &mut |expr| {
+        if let Expr::Unsafe(block) = expr
+            && block_is_safe_once_converted(block, name)
+        {
+            let mut block = std::mem::replace(
+                &mut **block,
+                Block {
+                    stmts: Vec::new(),
+                    tail: None,
+                },
+            );
+            *expr = if block.stmts.is_empty() && block.tail.is_some() {
+                *block.tail.take().unwrap()
+            } else {
+                Expr::Block(Box::new(block))
+            };
+        }
+        true
+    });
+}
+
+fn block_is_safe_once_converted(block: &Block, name: &str) -> bool {
+    let has_unsafe_construct =
+        walk::body_expr_any(&block.stmts, &mut |expr| still_needs_unsafe(expr, name))
+            || block.tail.as_deref().is_some_and(|tail| {
+                walk::expr_any(tail, &mut |expr| still_needs_unsafe(expr, name))
+            });
+    !has_unsafe_construct
+}
+
+fn still_needs_unsafe(expr: &Expr, name: &str) -> bool {
+    match expr {
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr: inner,
+        } => !matches!(peel_wrappers(inner), Expr::Var(n) if n.as_str() == name),
+        Expr::Call { .. } | Expr::MethodCall { .. } | Expr::Unsafe(_) => true,
+        _ => false,
+    }
+}
+
+fn strip_trailing_free(body: &mut Vec<IndentStmt>, name: &str) -> bool {
+    let Some(last) = body.last() else {
+        return false;
+    };
+    let aliases = local_pointer_aliases(body);
+    let is_free = matches!(&last.stmt, Stmt::Expr(expr) if is_free_call(expr, name, &aliases));
+    if is_free {
+        body.pop();
+    }
+    is_free
+}
+
+fn is_free_call(expr: &Expr, name: &str, aliases: &BTreeMap<String, String>) -> bool {
+    let Expr::Call { args, .. } = peel_wrappers(expr) else {
+        return false;
+    };
+    if known_call(peel_wrappers(expr)) != Some(Known::Free) || args.len() != 1 {
+        return false;
+    }
+    matches!(peel_wrappers(&args[0]), Expr::Var(arg_name) if resolve_local_alias(aliases, arg_name.as_str(), 4) == name)
+}
+
+fn local_pointer_aliases(body: &[IndentStmt]) -> BTreeMap<String, String> {
+    let mut aliases = BTreeMap::new();
+    for indent in body {
+        if let Stmt::Let {
+            name,
+            init: Some(init),
+            ..
+        } = &indent.stmt
+            && let Expr::Var(target) = peel_wrappers(init)
+        {
+            aliases.insert(name.clone(), target.as_str().to_string());
+        }
+    }
+    aliases
+}
+
+fn resolve_local_alias<'a>(
+    aliases: &'a BTreeMap<String, String>,
+    name: &'a str,
+    depth: u32,
+) -> &'a str {
+    if depth == 0 {
+        return name;
+    }
+    match aliases.get(name) {
+        Some(next) => resolve_local_alias(aliases, next.as_str(), depth - 1),
+        None => name,
+    }
+}
+
+fn peel_wrappers(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr, .. } => peel_wrappers(expr),
+        Expr::Unsafe(block) | Expr::Block(block) if block.stmts.is_empty() => {
+            match block.tail.as_deref() {
+                Some(inner) => peel_wrappers(inner),
+                None => expr,
+            }
+        }
+        _ => expr,
+    }
+}
+
+fn with_stmt_at_path<'a>(body: &'a mut [IndentStmt], path: &[PathSegment]) -> Option<&'a mut Stmt> {
+    let [PathSegment::Stmt(index), rest @ ..] = path else {
+        return None;
+    };
+    let indent = body.get_mut(*index)?;
+    if rest.is_empty() {
+        return Some(&mut indent.stmt);
+    }
+    let (segment, deeper) = rest.split_first()?;
+    let nested = nested_body_vec_mut(&mut indent.stmt, segment)?;
+    with_stmt_at_path(nested, deeper)
+}
+
+fn remove_stmt_at_path(body: &mut Vec<IndentStmt>, path: &[PathSegment]) -> bool {
+    let [PathSegment::Stmt(index), rest @ ..] = path else {
+        return false;
+    };
+    if rest.is_empty() {
+        if *index < body.len() {
+            body.remove(*index);
+            return true;
+        }
+        return false;
+    }
+    let Some(indent) = body.get_mut(*index) else {
+        return false;
+    };
+    let Some((segment, deeper)) = rest.split_first() else {
+        return false;
+    };
+    let Some(nested) = nested_body_vec_mut(&mut indent.stmt, segment) else {
+        return false;
+    };
+    remove_stmt_at_path(nested, deeper)
+}
+
+fn nested_body_vec_mut<'a>(
+    stmt: &'a mut Stmt,
+    segment: &PathSegment,
+) -> Option<&'a mut Vec<IndentStmt>> {
+    match (stmt, segment) {
+        (Stmt::Scope { body }, PathSegment::ScopeBody) => Some(body),
+        (Stmt::If { then_body, .. }, PathSegment::Then) => Some(then_body),
+        (Stmt::If { else_body, .. }, PathSegment::Else) => Some(else_body),
+        (Stmt::Loop { body, .. }, PathSegment::LoopBody) => Some(body),
+        (Stmt::For { body, .. }, PathSegment::ForBody) => Some(body),
+        (Stmt::LabeledBlock { body, .. }, PathSegment::LabeledBody) => Some(body),
+        (Stmt::Unsafe { body }, PathSegment::UnsafeBody) => Some(&mut body.stmts),
+        (Stmt::While { body, .. }, PathSegment::WhileBody) => Some(&mut body.stmts),
+        (Stmt::Block(body), PathSegment::BlockBody) => Some(&mut body.stmts),
+        _ => None,
+    }
 }
