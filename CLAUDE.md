@@ -1,6 +1,7 @@
 # Instructions for AI Agents
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:970c3bf2 -->
+
 ## Beads Issue Tracker
 
 This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
@@ -38,6 +39,7 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 2. **Run quality gates** (if code changed) - Tests, linters, builds
 3. **Update issue status** - Close finished work, update in-progress items
 4. **Handle git/sync by active profile**:
+
    ```bash
    # Conservative/minimal/default: report status and proposed commands; wait for approval.
    git status
@@ -48,9 +50,11 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
    git push
    git status
    ```
+
 5. **Hand off** - Summarize changes, validation, issue status, and any blocked sync/commit/push step
 
 **Critical rules:**
+
 - Explicit user or orchestrator instructions override this Beads block.
 - Do not commit or push without clear authority from the active profile or the current user request.
 - If a required sync or push is blocked, stop and report the exact command and error.
@@ -73,16 +77,16 @@ that subset.
 Nothing works without a **CIR-enabled Clang** (`CLANG_ENABLE_CIR=ON`). Tool paths
 default to a local build and are overridable via environment variables:
 
-| Var                                 | Default                                | Role                                                |
-| ----------------------------------- | -------------------------------------- | --------------------------------------------------- |
-| `SLATE_CLANG`                       | `~/llvm-project/build-cir/bin/clang`   | emit CIR + Clang AST JSON                           |
-| `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt` | CIR → MLIR generic form                             |
-| `SLATE_CC`                          | `clang` (from `PATH`)                  | compile the C side of differential tests            |
-| `SLATE_CARGO`                       | `cargo`                                | compile the generated Rust                          |
-| `SLATE_ALIVE_TV`                    | `~/alive2/build/alive-tv`              | translation-validate a fixup pass's before/after IR |
-| `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                      | shared target triple / extra clang flags            |
-| `SLATE_MACRO_DUMP_PLUGIN`           | `<SLATE_CLANG build>/lib/SlateMacroDump.so` | macro invocations plus include/function provenance, keyed by physical source offset |
-| `SLATE_LIBC_SHIM`                   | `libc-shim/include`                    | directory SLATE_CLANG parses with `-nostdlibinc -isystem <dir>` instead of the host's system libc headers (clang's own builtin freestanding headers — stddef.h, stdint.h, stdatomic.h, etc. — stay available); set to a different directory to override, or to an empty value to fall back to system headers |
+| Var                                 | Default                                     | Role                                                                                                                                                                                                                                                                                                         |
+| ----------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `SLATE_CLANG`                       | `~/llvm-project/build-cir/bin/clang`        | emit CIR + Clang AST JSON                                                                                                                                                                                                                                                                                    |
+| `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt`      | CIR → MLIR generic form                                                                                                                                                                                                                                                                                      |
+| `SLATE_CC`                          | `clang` (from `PATH`)                       | compile the C side of differential tests                                                                                                                                                                                                                                                                     |
+| `SLATE_CARGO`                       | `cargo`                                     | compile the generated Rust                                                                                                                                                                                                                                                                                   |
+| `SLATE_ALIVE_TV`                    | `~/alive2/build/alive-tv`                   | translation-validate a fixup pass's before/after IR                                                                                                                                                                                                                                                          |
+| `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                           | shared target triple / extra clang flags                                                                                                                                                                                                                                                                     |
+| `SLATE_MACRO_DUMP_PLUGIN`           | `<SLATE_CLANG build>/lib/SlateMacroDump.so` | macro invocations plus include/function provenance, keyed by physical source offset                                                                                                                                                                                                                          |
+| `SLATE_LIBC_SHIM`                   | `libc-shim/include`                         | directory SLATE_CLANG parses with `-nostdlibinc -isystem <dir>` instead of the host's system libc headers (clang's own builtin freestanding headers — stddef.h, stdint.h, stdatomic.h, etc. — stay available); set to a different directory to override, or to an empty value to fall back to system headers |
 
 `c_ast.rs` always loads `SLATE_CLANG` with `-fplugin=$SLATE_MACRO_DUMP_PLUGIN`, so
 that plugin must be built against the same clang tree `SLATE_CLANG` points at
