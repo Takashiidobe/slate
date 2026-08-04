@@ -5,9 +5,9 @@ use std::marker::PhantomData;
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AsciiNumericSign, AstPath, BindingId, BindingKind, BorrowAliasReason, CallArgPinning,
-    CallCallee, CastFact, ConstValue, ControlFlowSubject, CountedLoopFact, EffectSubject,
-    FixupFacts, FunctionId, NulTermination, NullCheckProof, OptionBoxAssignKind, PathSegment,
-    PointerComparisonKind, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
+    CallCallee, CalleeAllocSummaryFact, CastFact, ConstValue, ControlFlowSubject, CountedLoopFact,
+    EffectSubject, FixupFacts, FunctionId, NulTermination, NullCheckProof, OptionBoxAssignKind,
+    PathSegment, PointerComparisonKind, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
     StringBufferKind, StringCopyRewrite, StringRecoveryCandidate, StructFieldOwnershipFact,
     ValueSubject,
 };
@@ -4440,6 +4440,36 @@ query_cache! {
             },
         }];
         Ok(Proof::new(fields, evidence))
+    }
+
+    #[allow(dead_code)]
+    fn callee_alloc_summary(&self, function: &FunctionRef) -> QueryResult<CalleeAllocSummaryFact>;
+    key: FunctionId = function.id;
+    {
+        let predicate = Predicate::CalleeAllocSummary;
+        let site = expression_site(function.item_index, &[]);
+        let Some(summary) = self
+            .facts
+            .callee_alloc_summaries
+            .iter()
+            .find(|summary| summary.function == function.id)
+            .cloned()
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::CalleeAllocSummary {
+                function: function.name.clone(),
+            },
+        }];
+        Ok(Proof::new(summary, evidence))
     }
 
     fn option_box_local_candidates(&self, function: &FunctionRef) -> QueryResult<Vec<OptionBoxLocalPlanInput>>;

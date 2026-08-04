@@ -168,15 +168,15 @@ fn null_pointer_decl(stmt: &Stmt) -> Option<(&str, Type)> {
     Some((name.as_str(), (**inner).clone()))
 }
 
-struct AllocationCall {
-    name: String,
+pub(super) struct AllocationCall {
+    pub(super) name: String,
     size_name: Option<String>,
-    kind: HeapAllocationKind,
-    extent: HeapExtent,
-    init: HeapInitKind,
+    pub(super) kind: HeapAllocationKind,
+    pub(super) extent: HeapExtent,
+    pub(super) init: HeapInitKind,
 }
 
-fn allocation_temp(
+pub(super) fn allocation_temp(
     stmt: &Stmt,
     body: &[IndentStmt],
     index: usize,
