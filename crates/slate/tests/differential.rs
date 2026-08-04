@@ -858,6 +858,23 @@ fn memmove_recovers_copy_within_when_provable_and_falls_back_otherwise() {
 }
 
 #[test]
+fn memcmp_recovers_slice_equality_when_provable_and_falls_back_otherwise() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memcmp");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let memcmp_c = fixtures_dir().join("memcmp.c");
+    let memcmp_generated = tmp.join("memcmp.generated.rs");
+    support::translate(&memcmp_c, &memcmp_generated).expect("translate memcmp fixture");
+    let memcmp = std::fs::read_to_string(&memcmp_generated).expect("read generated memcmp rust");
+
+    assert!(memcmp.contains("(equal_a == equal_b) as i32"));
+    assert!(memcmp.contains("(unequal_a == unequal_b) as i32"));
+    assert!(memcmp.contains("(partial_a[(0..4)] == partial_b[(0..4)]) as i32"));
+    assert!(memcmp.contains("unsafe { memcmp("));
+    assert!(memcmp.contains("dyn_a.as_mut_ptr()"));
+}
+
+#[test]
 fn address_of_array_elements_use_safe_indexes() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-array-element-pointer");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

@@ -21,6 +21,7 @@ pub(in crate::fixups) mod inline_temps;
 pub(in crate::fixups) mod lazy_singleton;
 pub(in crate::fixups) mod libc_exit;
 pub(in crate::fixups) mod main_zero_exit;
+pub(in crate::fixups) mod mem_cmp;
 pub(in crate::fixups) mod mem_move;
 pub(in crate::fixups) mod mem_set;
 pub(in crate::fixups) mod memchr;

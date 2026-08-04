@@ -23,6 +23,18 @@ pub(super) struct CopyEndpoint {
 }
 
 impl CopyEnv {
+    pub(super) fn new() -> Self {
+        Self {
+            arrays: BTreeMap::new(),
+            constants: BTreeMap::new(),
+        }
+    }
+
+    pub(super) fn extend(&mut self, other: Self) {
+        self.arrays.extend(other.arrays);
+        self.constants.extend(other.constants);
+    }
+
     pub(super) fn from_body(body: &[IndentStmt]) -> Self {
         let mut env = Self {
             arrays: BTreeMap::new(),

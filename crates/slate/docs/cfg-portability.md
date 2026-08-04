@@ -44,15 +44,15 @@ Slate records non-conditional directives even when they do not become Rust
 syntax. Their disposition determines whether Clang supplies the semantics,
 whether no output is required, or whether translation must stop.
 
-| Directive | Disposition | Behavior |
-| --- | --- | --- |
-| `#define`, `#undef` | consumed by Clang | The selected macro environment is reflected in the Clang AST and CIR. Macro invocation recovery remains on the macro-dump plugin path; Slate does not create Rust externs for macros. |
-| `#include`, `#include_next`, `#import` | consumed by Clang | Header declarations, types, constants, and expansions reach lowering through Clang. The directive itself is not reproduced in Rust. |
-| `#line` | consumed by Clang | Presumed filenames and line values affect Clang constants such as `__LINE__`. Physical source lines and offsets remain the keys for Slate's AST/CIR/directive joins. |
-| `#embed` | consumed by Clang | Forms accepted by the configured Clang, including standard `limit`, `prefix`, `suffix`, and `if_empty` parameters, lower from CIR. Missing files and unsupported parameters are Clang translation errors. |
-| `#pragma once` | no output | Include-once behavior is consumed while Clang preprocesses headers. No Rust syntax is required. |
-| `#ident`, `#sccs` | no output | Compiler/object metadata has no generated Rust source form and does not affect program execution. |
-| null directive (`#`) | no output | The directive has no effect. |
+| Directive                              | Disposition       | Behavior                                                                                                                                                                                                  |
+| -------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `#define`, `#undef`                    | consumed by Clang | The selected macro environment is reflected in the Clang AST and CIR. Macro invocation recovery remains on the macro-dump plugin path; Slate does not create Rust externs for macros.                     |
+| `#include`, `#include_next`, `#import` | consumed by Clang | Header declarations, types, constants, and expansions reach lowering through Clang. The directive itself is not reproduced in Rust.                                                                       |
+| `#line`                                | consumed by Clang | Presumed filenames and line values affect Clang constants such as `__LINE__`. Physical source lines and offsets remain the keys for Slate's AST/CIR/directive joins.                                      |
+| `#embed`                               | consumed by Clang | Forms accepted by the configured Clang, including standard `limit`, `prefix`, `suffix`, and `if_empty` parameters, lower from CIR. Missing files and unsupported parameters are Clang translation errors. |
+| `#pragma once`                         | no output         | Include-once behavior is consumed while Clang preprocesses headers. No Rust syntax is required.                                                                                                           |
+| `#ident`, `#sccs`                      | no output         | Compiler/object metadata has no generated Rust source form and does not affect program execution.                                                                                                         |
+| null directive (`#`)                   | no output         | The directive has no effect.                                                                                                                                                                              |
 
 Unknown directives and directives classified as unsupported semantic operations
 do not disappear silently. An active instance stops single-config translation.
@@ -72,18 +72,18 @@ aliases, external-name remapping, macro stack state, and poisoned identifiers
 are recovered or enforced by Clang. Every other pragma remains unsupported
 until its effect is recovered.
 
-| Family | Examples | Current disposition | Follow-up |
-| --- | --- | --- | --- |
-| Include guard | `once` | no output | supported |
-| Diagnostic controls | `GCC diagnostic`, `clang diagnostic`, MSVC `warning(...)` | diagnostic only | warning handling is covered by `slate-9msj.7` |
-| Standard floating point | `STDC FENV_ACCESS`, `STDC FP_CONTRACT`, `STDC CX_LIMITED_RANGE` | unsupported semantic | `slate-9msj.10` |
-| Record packing | `pack(push, n)`, `pack(pop)`, `pack(n)` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.7` |
-| Symbol visibility | `GCC visibility push(...)`, `GCC visibility pop` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.8` |
-| Weak and renamed symbols | `weak alias = target`, `redefine_extname source target` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.9` |
-| Macro stack | `push_macro("NAME")`, `pop_macro("NAME")` | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.6` |
-| Poisoned identifiers | `GCC poison name` | Clang-consumed; later uses surface the Clang frontend error and unused poison emits no Rust | `slate-3f8g.2.6` |
-| Vendor code generation controls | GCC/Clang section, optimize, and target pragmas; MSVC segment and optimization controls | unsupported semantic | `slate-9msj.12` |
-| Unknown vendor pragmas | any other pragma outside the allowlist | unsupported semantic | add a focused ticket before extending the allowlist |
+| Family                          | Examples                                                                                | Current disposition                                                                                        | Follow-up                                           |
+| ------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Include guard                   | `once`                                                                                  | no output                                                                                                  | supported                                           |
+| Diagnostic controls             | `GCC diagnostic`, `clang diagnostic`, MSVC `warning(...)`                               | diagnostic only                                                                                            | warning handling is covered by `slate-9msj.7`       |
+| Standard floating point         | `STDC FENV_ACCESS`, `STDC FP_CONTRACT`, `STDC CX_LIMITED_RANGE`                         | unsupported semantic                                                                                       | `slate-9msj.10`                                     |
+| Record packing                  | `pack(push, n)`, `pack(pop)`, `pack(n)`                                                 | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.7`                                    |
+| Symbol visibility               | `GCC visibility push(...)`, `GCC visibility pop`                                        | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.8`                                    |
+| Weak and renamed symbols        | `weak alias = target`, `redefine_extname source target`                                 | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.9`                                    |
+| Macro stack                     | `push_macro("NAME")`, `pop_macro("NAME")`                                               | Clang-consumed in single-config translation; conditional use remains unsupported in `translate-directives` | `slate-3f8g.2.6`                                    |
+| Poisoned identifiers            | `GCC poison name`                                                                       | Clang-consumed; later uses surface the Clang frontend error and unused poison emits no Rust                | `slate-3f8g.2.6`                                    |
+| Vendor code generation controls | GCC/Clang section, optimize, and target pragmas; MSVC segment and optimization controls | unsupported semantic                                                                                       | `slate-9msj.12`                                     |
+| Unknown vendor pragmas          | any other pragma outside the allowlist                                                  | unsupported semantic                                                                                       | add a focused ticket before extending the allowlist |
 
 Clang resolves the pack stack into a maximum field alignment on each affected
 record. Slate emits `repr(C, packed)` or `repr(C, packed(n))` from that
