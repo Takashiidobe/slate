@@ -23,14 +23,35 @@ enum {
 
 enum { mtx_plain = 0, mtx_recursive = 1, mtx_timed = 2 };
 
-/* Opaque storage sized/aligned to match the real glibc mtx_t and cnd_t
-   (which are themselves pthread_mutex_t/pthread_cond_t-sized unions)
-   since the real mtx_ and cnd_ symbols read and write them directly. */
+/* Opaque storage sized/aligned to match the real (glibc or musl) mtx_t,
+   since the real mtx_ symbols read and write it directly. Verified by
+   cross-compiling a sizeof probe against real glibc/musl headers for
+   x86_64, i686, aarch64, armhf, riscv32, and riscv64: every 32-bit target
+   needs 24 bytes; every 64-bit target needs 40 bytes except glibc's
+   aarch64, which needs 48. __SLATE_LIBC_MUSL is not a compiler- or libc-
+   provided macro (clang predefines nothing that distinguishes glibc from
+   musl, and neither libc's own headers are included here) — Slate's own
+   driver code defines it from SLATE_TARGET's "musl" component, see
+   target_args() in src/cir/emit.rs. */
+#if defined(__aarch64__) && !defined(__SLATE_LIBC_MUSL)
+typedef union {
+  char __size[48];
+  long __align;
+} mtx_t;
+#elif defined(__LP64__)
 typedef union {
   char __size[40];
   long __align;
 } mtx_t;
+#else
+typedef union {
+  char __size[24];
+  long __align;
+} mtx_t;
+#endif
 
+/* cnd_t is 48 bytes on every target checked above, so it needs no
+   arch-conditional sizing. */
 typedef union {
   char __size[48];
   long long __align;
