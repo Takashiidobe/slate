@@ -1,6 +1,10 @@
 #ifndef _SLATE_PTHREAD_H
 #define _SLATE_PTHREAD_H
 
+#define __need_NULL
+#include <stddef.h>
+#undef __need_NULL
+
 typedef unsigned long pthread_t;
 
 /* Opaque storage sized/aligned to match the real (glibc or musl)
