@@ -106,7 +106,10 @@ strings become native Rust equivalents, `strcpy`/`strcat`-only fixed buffers
 become owned `String`, and a C-string pointer parameter can become `&str`.
 `malloc`/`calloc`/`realloc`/`free` locals become owned `Box<T>`/`Vec<T>`.
 `fopen`/`fputs`/`fclose` sequences become `File`/`OpenOptions` owners.
-`qsort`/`bsearch` become `.sort_by()`/`.binary_search_by()`. `printf`-family
+`perror(msg)` becomes `eprintln!("{msg}: {}", std::io::Error::last_os_error())`
+when a def-use/effects proof shows errno is still fresh at the call site,
+otherwise it stays a raw `perror` call. `qsort`/`bsearch` become
+`.sort_by()`/`.binary_search_by()`. `printf`-family
 calls with a constant, fully-supported format string become `println!`/
 `print!`; anything else stays `libc::printf`. C11 UTF-16/UTF-32 conversion
 functions use the platform `libc::mbstate_t` ABI.

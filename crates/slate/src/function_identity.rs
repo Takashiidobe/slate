@@ -38,6 +38,7 @@ pub enum Known {
     FClose,
     FFlush,
     Remove,
+    Perror,
     ToUpper,
     ToLower,
     IsAlpha,
@@ -111,6 +112,7 @@ impl Known {
             Self::FClose => "fclose",
             Self::FFlush => "fflush",
             Self::Remove => "remove",
+            Self::Perror => "perror",
             Self::ToUpper => "toupper",
             Self::ToLower => "tolower",
             Self::IsAlpha => "isalpha",
@@ -195,7 +197,8 @@ impl Known {
             | Self::FWrite
             | Self::FClose
             | Self::FFlush
-            | Self::Remove => "stdio.h",
+            | Self::Remove
+            | Self::Perror => "stdio.h",
             Self::ToUpper
             | Self::ToLower
             | Self::IsAlpha
@@ -266,6 +269,7 @@ impl Known {
             "fclose" => (Self::FClose, "stdio.h"),
             "fflush" => (Self::FFlush, "stdio.h"),
             "remove" => (Self::Remove, "stdio.h"),
+            "perror" => (Self::Perror, "stdio.h"),
             "toupper" => (Self::ToUpper, "ctype.h"),
             "tolower" => (Self::ToLower, "ctype.h"),
             "isalpha" => (Self::IsAlpha, "ctype.h"),
