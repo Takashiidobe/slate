@@ -556,7 +556,6 @@ fn generated_weak_symbols_lose_to_strong_external_definitions() {
 }
 
 #[test]
-#[ignore = "tracked by slate-8h8f"]
 fn gnu_symbol_pragmas_preserve_cross_tu_linkage() {
     let rs_dir = build_and_diff("gnu_symbol_pragmas");
     let symbols_rs = std::fs::read_to_string(rs_dir.join("symbols.rs")).expect("read symbols.rs");

@@ -336,6 +336,7 @@ aligned = {{ path = "aligned" }}
 {build_section}
 [profile.dev]
 overflow-checks = false
+codegen-units = 256
 {test_targets}"#
     )
 }
