@@ -57,6 +57,7 @@ cc = "1"
 [profile.dev]
 overflow-checks = false
 panic = "abort"
+codegen-units = 256
 "#,
         aligned_path().display()
     )
