@@ -114,6 +114,15 @@ pub(in crate::fixups) struct OptionBoxComparisonInput {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct InterproceduralAllocCallerInput {
+    pub(in crate::fixups) caller: FunctionRef,
+    pub(in crate::fixups) pointer_name: String,
+    pub(in crate::fixups) decl_stmt: StatementRef,
+    pub(in crate::fixups) call_temp_stmt: StatementRef,
+    pub(in crate::fixups) free_stmt: Option<StatementRef>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct CallRecord {
     pub(in crate::fixups) site: ExprSite,
     pub(in crate::fixups) trivial_unsafe_site: Option<ExprSite>,
@@ -4501,6 +4510,59 @@ query_cache! {
             },
         }];
         Ok(Proof::new(fact, evidence))
+    }
+
+    fn interprocedural_alloc_callers(&self, function: &FunctionRef) -> QueryResult<Vec<InterproceduralAllocCallerInput>>;
+    key: FunctionId = function.id;
+    {
+        let predicate = Predicate::InterproceduralAllocCallers;
+        let site = expression_site(function.item_index, &[]);
+        let functions = self.all_functions();
+        let mut inputs = Vec::new();
+        for caller_fact in self
+            .facts
+            .interprocedural_alloc_callers
+            .iter()
+            .filter(|caller| caller.callee == function.id)
+        {
+            let Some(caller_ref) = functions
+                .iter()
+                .find(|candidate| candidate.id == caller_fact.caller)
+                .cloned()
+            else {
+                return Err(Rejection::new(
+                    predicate,
+                    Some(site),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            inputs.push(InterproceduralAllocCallerInput {
+                pointer_name: caller_fact.pointer_name.clone(),
+                decl_stmt: StatementRef {
+                    item_index: caller_ref.item_index,
+                    path: caller_fact.decl_path.clone(),
+                },
+                call_temp_stmt: StatementRef {
+                    item_index: caller_ref.item_index,
+                    path: caller_fact.call_temp_path.clone(),
+                },
+                free_stmt: caller_fact.free_path.as_ref().map(|path| StatementRef {
+                    item_index: caller_ref.item_index,
+                    path: path.clone(),
+                }),
+                caller: caller_ref,
+            });
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::InterproceduralAllocCallers {
+                function: function.name.clone(),
+                callers: inputs.len(),
+            },
+        }];
+        Ok(Proof::new(inputs, evidence))
     }
 
     fn option_box_local_candidates(&self, function: &FunctionRef) -> QueryResult<Vec<OptionBoxLocalPlanInput>>;

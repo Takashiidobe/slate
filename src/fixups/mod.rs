@@ -656,6 +656,20 @@ fn apply_with_logger(
         let report = plan.apply(&mut program, &facts, logger);
         incremental.mark_touched(&report.touched);
     });
+    let facts = incremental.resolve(&program);
+    step!(program, Pass::InterproceduralAllocPromotion, {
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(
+                &query,
+                &query::rules::interprocedural_alloc_promotion::rewrite(),
+            );
+            builder.finish()
+        };
+        let report = plan.apply(&mut program, &facts, logger);
+        incremental.mark_touched(&report.touched);
+    });
     step!(program, Pass::DeadLocals, {
         loop {
             let facts = incremental.resolve(&program);

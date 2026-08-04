@@ -43,6 +43,7 @@ fn summarize_function(function: FunctionId, f: &FnDef) -> Option<CalleeAllocSumm
         extent: call.extent,
         init: call.init,
         return_path: AstPath(vec![PathSegment::Stmt(return_index)]),
+        alloc_source_path: AstPath(vec![PathSegment::Stmt(alloc_index)]),
     })
 }
 

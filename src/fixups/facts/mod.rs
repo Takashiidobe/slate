@@ -74,6 +74,7 @@ pub(super) struct FixupFacts {
     pub(super) heap_ownership: Vec<HeapOwnershipFact>,
     pub(super) callee_alloc_summaries: Vec<CalleeAllocSummaryFact>,
     pub(super) interprocedural_alloc_eligibility: Vec<InterproceduralAllocEligibilityFact>,
+    pub(super) interprocedural_alloc_callers: Vec<InterproceduralAllocCallerFact>,
     pub(super) printf_calls: Vec<PrintfCallFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) array_element_pointer_origins: Vec<ArrayElementPointerOriginFact>,
@@ -626,6 +627,7 @@ pub(super) struct CalleeAllocSummaryFact {
     pub(super) extent: HeapExtent,
     pub(super) init: HeapInitKind,
     pub(super) return_path: AstPath,
+    pub(super) alloc_source_path: AstPath,
 }
 
 #[derive(Debug, Clone)]
@@ -637,6 +639,17 @@ pub(super) struct InterproceduralAllocEligibilityFact {
     pub(super) extent: HeapExtent,
     pub(super) init: HeapInitKind,
     pub(super) eligible: bool,
+}
+
+#[derive(Debug, Clone)]
+#[allow(dead_code)]
+pub(super) struct InterproceduralAllocCallerFact {
+    pub(super) callee: FunctionId,
+    pub(super) caller: FunctionId,
+    pub(super) pointer_name: String,
+    pub(super) decl_path: AstPath,
+    pub(super) call_temp_path: AstPath,
+    pub(super) free_path: Option<AstPath>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
