@@ -18,6 +18,7 @@ pub(super) mod effects;
 pub(super) mod file_ownership;
 pub(crate) mod goto;
 pub(super) mod heap_ownership;
+pub(super) mod interprocedural_alloc_eligibility;
 pub(super) mod lazy_singleton;
 pub(super) mod loop_shapes;
 pub(super) mod null_check_dominance;
@@ -72,6 +73,7 @@ pub(super) struct FixupFacts {
     pub(super) file_ownership: Vec<FileOwnershipFact>,
     pub(super) heap_ownership: Vec<HeapOwnershipFact>,
     pub(super) callee_alloc_summaries: Vec<CalleeAllocSummaryFact>,
+    pub(super) interprocedural_alloc_eligibility: Vec<InterproceduralAllocEligibilityFact>,
     pub(super) printf_calls: Vec<PrintfCallFact>,
     pub(super) ptr_len_slices: Vec<PtrLenSliceFact>,
     pub(super) array_element_pointer_origins: Vec<ArrayElementPointerOriginFact>,
@@ -624,6 +626,17 @@ pub(super) struct CalleeAllocSummaryFact {
     pub(super) extent: HeapExtent,
     pub(super) init: HeapInitKind,
     pub(super) return_path: AstPath,
+}
+
+#[derive(Debug, Clone)]
+#[allow(dead_code)]
+pub(super) struct InterproceduralAllocEligibilityFact {
+    pub(super) function: FunctionId,
+    pub(super) elem_ty: Type,
+    pub(super) allocation: HeapAllocationKind,
+    pub(super) extent: HeapExtent,
+    pub(super) init: HeapInitKind,
+    pub(super) eligible: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1530,6 +1543,7 @@ pub(super) fn analyze(program: &Program) -> AnalyzedProgram<'_> {
     string_params::collect_facts(program, &mut facts);
     heap_ownership::collect_facts(program, &mut facts);
     callee_alloc_summary::collect_facts(program, &mut facts);
+    interprocedural_alloc_eligibility::collect_facts(program, &mut facts);
     option_box_locals::collect_facts(program, &mut facts);
     printf::collect_facts(program, &mut facts);
     strings::collect_rewrite_facts(program, &mut facts);

@@ -104,6 +104,8 @@ pub(in crate::fixups) enum Predicate {
     StructFieldOwnership,
     #[allow(dead_code)]
     CalleeAllocSummary,
+    #[allow(dead_code)]
+    InterproceduralAllocEligibility,
     OptionBoxLocalCandidates,
     OptionBoxComparisons,
     DirectCalls,
@@ -302,6 +304,11 @@ pub(in crate::fixups) enum EvidenceDetail {
     #[allow(dead_code)]
     CalleeAllocSummary {
         function: String,
+    },
+    #[allow(dead_code)]
+    InterproceduralAllocEligibility {
+        function: String,
+        eligible: bool,
     },
     OptionBoxLocalCandidates {
         count: usize,
