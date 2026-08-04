@@ -38,11 +38,9 @@ use nullable_pointer::{
     find_distance_observation, null_comparison, nullable_pointer_option, preferred_option_name,
     removable_alias_decl, supported_observation, transparent_alias_value,
 };
-#[allow(unused_imports)]
 pub(in crate::fixups) use patterns::{
-    AssignmentValue, Binding, Definition, EnumVariant, ExprPattern, ExternFn, FnCall, Function,
-    LetStmtPattern, Local, LoopStmtPattern, MatchArm, NullaryMethodCall, Parameter, RecordField,
-    StatementContainer, StatementSequence, TypeUse, Value, WholeProgram,
+    AssignmentValue, Binding, Definition, ExprPattern, ExternFn, FnCall, Function, LetStmtPattern,
+    Local, LoopStmtPattern, NullaryMethodCall, Parameter, StatementSequence, Value, WholeProgram,
 };
 pub(in crate::fixups) use plan::TouchedItems;
 use printf::{PrintfStream, printf_macro, sprintf_format_expr, sprintf_worst_case_len};
@@ -56,9 +54,8 @@ pub(in crate::fixups) use proof::{
 pub(in crate::fixups) use recipe::{
     ExprRecipe, FunctionBodyRecipe, HeapOwnershipPlan, HeapOwnershipReallocPlan,
     NullablePointerAlias, NullablePointerPlan, byte_position, collapse_atomic_compare_exchange,
-    initialize_local, known_index, memchr_fallback_body, pointer_at_or_null,
-    preserve_assert_result, process_exit, recover_assert, rewrite_file_ownership,
-    rewrite_heap_ownership, rewrite_nullable_pointer,
+    initialize_local, known_index, pointer_at_or_null, preserve_assert_result, process_exit,
+    recover_assert, rewrite_file_ownership, rewrite_heap_ownership, rewrite_nullable_pointer,
 };
 pub(in crate::fixups) use rewrite::{CaseRejection, RuleCaseIdentity, RuleIdentity};
 use views::{

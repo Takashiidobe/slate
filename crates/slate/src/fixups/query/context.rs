@@ -2011,7 +2011,6 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(fact.bytes.clone(), evidence))
     }
 
-    /// The `index`th direct child expression site of `site`.
     pub(in crate::fixups) fn child(&self, site: &ExprSite, index: usize) -> ExprSite {
         child_site(site, index)
     }
@@ -2317,10 +2316,6 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(sign, evidence))
     }
 
-    /// Whether every observed assignment to `binding` is the constant zero (or an
-    /// equivalent null pointer) - tracked per-binding rather than per-expression,
-    /// since a binding can be read back at many call sites downstream of its one
-    /// assignment.
     pub(in crate::fixups) fn binding_constant_zero(&self, binding: &BindingRef) -> QueryResult<()> {
         let predicate = Predicate::ValueGuard;
         let site = expression_site(binding.item_index, &binding.definition.0);
