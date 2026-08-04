@@ -152,16 +152,6 @@ impl Known {
         }
     }
 
-    pub fn matches_symbol(self, name: &str) -> bool {
-        name == self.symbol()
-            || matches!(
-                (self, name),
-                (Self::StrTol, "__isoc23_strtol")
-                    | (Self::StrToul, "__isoc23_strtoul")
-                    | (Self::StrTod, "__isoc23_strtod")
-            )
-    }
-
     pub fn header(self) -> &'static str {
         match self {
             Self::Malloc
@@ -264,9 +254,9 @@ impl Known {
             "strcspn" => (Self::StrCSpn, "string.h"),
             "atoi" => (Self::Atoi, "stdlib.h"),
             "atol" => (Self::Atol, "stdlib.h"),
-            "strtol" | "__isoc23_strtol" => (Self::StrTol, "stdlib.h"),
-            "strtoul" | "__isoc23_strtoul" => (Self::StrToul, "stdlib.h"),
-            "strtod" | "__isoc23_strtod" => (Self::StrTod, "stdlib.h"),
+            "strtol" => (Self::StrTol, "stdlib.h"),
+            "strtoul" => (Self::StrToul, "stdlib.h"),
+            "strtod" => (Self::StrTod, "stdlib.h"),
             "printf" => (Self::Printf, "stdio.h"),
             "fprintf" => (Self::FPrintf, "stdio.h"),
             "sprintf" => (Self::SPrintf, "stdio.h"),
@@ -425,35 +415,8 @@ fn valid_function_type(canonical_type: &str) -> bool {
 }
 
 pub fn known_call(expr: &crate::rust_ast::Expr) -> Option<Known> {
-    let crate::rust_ast::Expr::Call { func, binding, .. } = expr else {
+    let crate::rust_ast::Expr::Call { binding, .. } = expr else {
         return None;
     };
-    let known = binding.known()?;
-    matches!(&**func, crate::rust_ast::Expr::Var(name) if known.matches_symbol(name.as_str()))
-        .then_some(known)
-}
-
-pub fn known_declaration(identity: FunctionIdentity, name: &str) -> Option<Known> {
-    match identity {
-        FunctionIdentity::Known(known) if known.matches_symbol(name) => Some(known),
-        _ => None,
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn classifies_trusted_functions_with_trailing_type_attributes() {
-        assert_eq!(
-            classify_function(
-                "exit",
-                ["stdlib.h"],
-                "void (int) __attribute__((noreturn))",
-                Provenance::TrustedHeader,
-            ),
-            FunctionIdentity::Known(Known::Exit)
-        );
-    }
+    binding.known()
 }

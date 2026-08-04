@@ -1781,7 +1781,7 @@ fn libc_function(expr: &Expr) -> Option<StringLibcFunction> {
         return None;
     };
     let known = binding.known()?;
-    if !known.matches_symbol(name.as_str()) {
+    if known.symbol() != name.as_str() {
         return None;
     }
     Some(match known {

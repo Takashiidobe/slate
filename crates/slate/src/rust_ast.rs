@@ -1,3 +1,5 @@
+use crate::function_identity::FunctionIdentity;
+
 #[derive(Debug, Default, Clone)]
 pub struct Program {
     pub items: Vec<Item>,
@@ -345,7 +347,7 @@ pub enum ExternDecl {
 #[derive(Debug, Clone)]
 pub struct ExternFnDecl {
     pub name: String,
-    pub identity: crate::function_identity::FunctionIdentity,
+    pub identity: FunctionIdentity,
     pub params: Vec<FnParam>,
     pub variadic: bool,
     pub ret: Option<Type>,

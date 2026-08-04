@@ -1955,12 +1955,10 @@ impl<'a> Lowerer<'a> {
         let ret_ty = ret_ast.as_ref().map(Type::render);
         let decl = ExternFnDecl {
             name: name.into(),
-            identity: self
+            identity: *self
                 .known_functions
-                .get(canonical_c23_libc_symbol(name))
-                .copied()
-                .or_else(|| c23_redirected_function(name))
-                .unwrap_or(FunctionIdentity::Unknown),
+                .get(name)
+                .unwrap_or(&FunctionIdentity::Unknown),
             params,
             variadic,
             ret: ret_ast,
@@ -6191,15 +6189,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         if binding.known().is_none()
             && let Some(callee) = direct_callee.as_deref()
-            && let Some(identity @ FunctionIdentity::Known(_)) = self
-                .parent
-                .known_functions
-                .get(canonical_c23_libc_symbol(callee))
-                .copied()
-                .or_else(|| c23_redirected_function(callee))
+            && let Some(identity @ FunctionIdentity::Known(_)) =
+                self.parent.known_functions.get(callee)
         {
             binding = crate::function_identity::CallBinding::Direct {
-                identity,
+                identity: *identity,
                 canonical_type: match binding {
                     crate::function_identity::CallBinding::Direct { canonical_type, .. } => {
                         canonical_type
@@ -9092,24 +9086,6 @@ fn memchr_prelude() -> Item {
 
 fn rust_type(cir_ty: &str) -> Type {
     rust_type_with_aliases(cir_ty, &BTreeMap::new())
-}
-
-fn canonical_c23_libc_symbol(name: &str) -> &str {
-    match name {
-        "__isoc23_strtol" => "strtol",
-        "__isoc23_strtoul" => "strtoul",
-        "__isoc23_strtod" => "strtod",
-        _ => name,
-    }
-}
-
-fn c23_redirected_function(name: &str) -> Option<FunctionIdentity> {
-    Some(FunctionIdentity::Known(match name {
-        "__isoc23_strtol" => crate::function_identity::Known::StrTol,
-        "__isoc23_strtoul" => crate::function_identity::Known::StrToul,
-        "__isoc23_strtod" => crate::function_identity::Known::StrTod,
-        _ => return None,
-    }))
 }
 
 // True if the region contains a `cir.continue` that targets the enclosing loop,

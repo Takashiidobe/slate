@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use crate::fixups::facts::atomic_locals::place_local_target;
 use crate::fixups::facts::{FixupFacts, FunctionId};
 use crate::fixups::support::walk;
-use crate::function_identity::{CallBinding, Known, known_call};
+use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_call};
 use crate::rust_ast::{
     AtomicPlace, AtomicType, Attr, Block, Derive, Expr, ExternDecl, ExternFnDecl, FnDef, FnParam,
     Ident, ImplItem, IndentStmt, Item, Program, Repr, Stmt, StructDef, StructFields, Type, UnaryOp,
@@ -485,7 +485,7 @@ fn prune_printf_extern(program: &mut Program) -> bool {
     program.items.retain_mut(|item| match item {
         Item::ExternBlock { decls, .. } => {
             decls.retain(|decl| {
-                !matches!(decl, ExternDecl::Fn(f) if crate::function_identity::known_declaration(f.identity, &f.name) == Some(Known::Printf))
+                !matches!(decl, ExternDecl::Fn(f) if f.identity == FunctionIdentity::Known(Known::Printf))
             });
             !decls.is_empty()
         }

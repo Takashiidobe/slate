@@ -9,7 +9,7 @@ use crate::fixups::facts::{
     FixupFacts, FunctionId, NulTermination, PathSegment, PrintfCallFact, PtrLenSliceFact, Purity,
     StringBufferFact, StringBufferKind, StringCopyRewrite, StringRecoveryCandidate, ValueSubject,
 };
-use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_declaration};
+use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
     Attr, Block, Expr, ExternDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem, IndentStmt,
     Item, MatchArm, Method, Pattern, Prim, Program, RecordDef, RustValue, Stmt, StructDef,
@@ -1947,7 +1947,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn has_printf_extern(&self) -> bool {
         self.program.items.iter().any(|item| {
             matches!(item, Item::ExternBlock { decls, .. } if decls.iter().any(|decl| {
-                matches!(decl, ExternDecl::Fn(f) if known_declaration(f.identity, &f.name) == Some(Known::Printf))
+                matches!(decl, ExternDecl::Fn(f) if f.identity == FunctionIdentity::Known(Known::Printf))
             }))
         })
     }
@@ -5401,7 +5401,7 @@ fn call_target(func: &Expr, binding: &CallBinding) -> CallTarget {
         CallBinding::Direct {
             identity: FunctionIdentity::Known(known),
             ..
-        } if name.is_some_and(|name| known.matches_symbol(name)) => CallTarget::Known(*known),
+        } => CallTarget::Known(*known),
         CallBinding::Direct { .. } => name
             .map(|name| CallTarget::Direct(name.to_string()))
             .unwrap_or(CallTarget::Indirect),
