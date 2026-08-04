@@ -9487,7 +9487,10 @@ fn collect_anon_record_info(
                         .and_then(cir_ptr_pointee)
                         .and_then(|pointee| anon_alias_key(pointee, aliases)),
                     op.attrs.get("index_attr").and_then(Attr::as_int),
-                    op.attrs.get("name").and_then(Attr::as_str),
+                    op.attrs
+                        .get("name")
+                        .and_then(Attr::as_str)
+                        .filter(|name| !name.is_empty()),
                 ) {
                     field_names.insert((key, index), name.to_string());
                 }
@@ -9606,7 +9609,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
                     field_names
                         .get(&(key.clone(), i as i64))
                         .cloned()
-                        .unwrap_or_else(|| format!("f{i}"))
+                        .unwrap_or_else(|| format!("__slate_anon_{i}"))
                 },
                 comments: Vec::new(),
                 ty: cir_type_to_ctype(field_ty, &module.aliases),
