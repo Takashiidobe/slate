@@ -330,7 +330,7 @@ impl CirOpKind {
             "cir.goto" => CirOpKind::Goto,
             "cir.if" => CirOpKind::If,
             "cir.inc" => CirOpKind::Inc,
-            "cir.indirect_br" => CirOpKind::IndirectBr,
+            "cir.indirect_br" | "cir.indirect_goto" => CirOpKind::IndirectBr,
             "cir.insert_member" => CirOpKind::InsertMember,
             "cir.is_constant" => CirOpKind::IsConstant,
             "cir.is_fp_class" => CirOpKind::IsFpClass,

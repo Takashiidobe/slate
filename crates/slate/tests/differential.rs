@@ -1931,7 +1931,7 @@ fn switch_and_dispatch_use_block_match_arms() {
         .expect("translate computed goto fixture");
     let computed_goto_rust = std::fs::read_to_string(&computed_goto_generated)
         .expect("read generated computed goto rust");
-    assert!(computed_goto_rust.contains("__state0 = [2, 3, 4]"));
+    assert!(computed_goto_rust.contains("__state0 = [1, 2, 3]"));
     assert!(computed_goto_rust.contains("continue '__dispatch0;"));
     assert!(computed_goto_rust.contains("match __state0 {"));
 }
