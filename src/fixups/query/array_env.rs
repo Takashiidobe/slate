@@ -106,6 +106,10 @@ pub(super) fn endpoint(expr: &Expr) -> Option<CopyEndpoint> {
 pub(super) fn peel_casts(expr: &Expr) -> &Expr {
     match expr {
         Expr::Cast { expr, .. } => peel_casts(expr),
+        Expr::Unsafe(block) if block.stmts.is_empty() => match block.tail.as_deref() {
+            Some(inner) => peel_casts(inner),
+            None => expr,
+        },
         _ => expr,
     }
 }
