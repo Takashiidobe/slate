@@ -2750,6 +2750,23 @@ fn scalar_heap_owner_folds_first_store_after_non_reading_statements() {
 }
 
 #[test]
+fn heap_owner_bails_out_when_a_use_follows_the_free_call() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-heap-box-uaf");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+    let c_src = fixtures_dir().join("heap_box_use_after_free_bailout.c");
+    let generated = tmp.join("heap_box_use_after_free_bailout.generated.rs");
+    support::translate(&c_src, &generated)
+        .expect("translate heap_box_use_after_free_bailout fixture");
+    let rust = std::fs::read_to_string(&generated)
+        .expect("read generated heap_box_use_after_free_bailout rust");
+
+    assert!(!rust.contains("Box<i32>"));
+    assert!(rust.contains("let mut x: *mut i32"));
+    assert!(rust.contains("fn free("));
+    assert!(rust.contains("unsafe { free("));
+}
+
+#[test]
 fn heap_malloc_buffer_uses_vec_drop() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-heap-vec-malloc");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
