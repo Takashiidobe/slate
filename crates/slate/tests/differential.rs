@@ -808,6 +808,23 @@ fn pointer_arithmetic_uses_clearer_safe_offset_forms() {
 }
 
 #[test]
+fn memset_recovers_fill_when_provable_and_falls_back_otherwise() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memset");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let memset_c = fixtures_dir().join("memset.c");
+    let memset_generated = tmp.join("memset.generated.rs");
+    support::translate(&memset_c, &memset_generated).expect("translate memset fixture");
+    let memset = std::fs::read_to_string(&memset_generated).expect("read generated memset rust");
+
+    assert!(memset.contains("zero_buf.fill(0);"));
+    assert!(memset.contains("value_buf.fill(65);"));
+    assert!(memset.contains("partial_buf[(0..4)].fill(9);"));
+    assert!(memset.contains("unsafe { memset("));
+    assert!(memset.contains("dynamic_buf.as_mut_ptr()"));
+}
+
+#[test]
 fn address_of_array_elements_use_safe_indexes() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-array-element-pointer");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

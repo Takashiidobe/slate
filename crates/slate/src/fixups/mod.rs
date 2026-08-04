@@ -829,6 +829,18 @@ fn apply_with_logger(
         plan.apply(&mut program, &facts, logger);
         incremental.mark_everything_dirty();
     });
+    step!(program, Pass::MemSet, {
+        let facts = incremental.resolve(&program);
+        let plan = {
+            let query = query::QueryContext::new(&program, &facts);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::mem_set::rewrite());
+            builder.add_rule(&query, &query::rules::mem_set::calls());
+            builder.finish()
+        };
+        plan.apply(&mut program, &facts, logger);
+        incremental.mark_everything_dirty();
+    });
     step!(program, Pass::DeadLocals, {
         loop {
             let facts = incremental.resolve(&program);
