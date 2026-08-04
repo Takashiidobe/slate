@@ -21,7 +21,7 @@ fn rewrite_case(
     let [stmt] = case.statements(matched)?;
     let statement = matched.statement(0);
     let body = case.fact(|query| query.enclosing_statements(&statement))?;
-    let env = super::super::ptr_copy::CopyEnv::from_body(body);
+    let env = super::super::array_env::CopyEnv::from_body(body);
     let plan = super::super::ptr_copy::copy_plan(&stmt.stmt, &env).ok_or_else(|| case.reject())?;
     Ok(EditSet::replace_statements(
         matched.target().clone(),
