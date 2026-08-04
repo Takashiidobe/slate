@@ -102,6 +102,8 @@ pub(in crate::fixups) enum Predicate {
     PointerComparisonKind,
     #[allow(dead_code)]
     StructFieldOwnership,
+    #[allow(dead_code)]
+    CalleeAllocSummary,
     OptionBoxLocalCandidates,
     OptionBoxComparisons,
     DirectCalls,
@@ -296,6 +298,10 @@ pub(in crate::fixups) enum EvidenceDetail {
     #[allow(dead_code)]
     StructFieldOwnership {
         fields: usize,
+    },
+    #[allow(dead_code)]
+    CalleeAllocSummary {
+        function: String,
     },
     OptionBoxLocalCandidates {
         count: usize,
