@@ -2148,12 +2148,16 @@ mod tests {
     use crate::rust_ast::{FnDef, RustValue, Stmt, Visibility};
 
     fn function(body: Vec<IndentStmt>) -> Item {
+        named_function("test", body)
+    }
+
+    fn named_function(name: &str, body: Vec<IndentStmt>) -> Item {
         Item::Fn(FnDef {
             attrs: Vec::new(),
             vis: Visibility::Private,
             unsafe_: false,
             abi: None,
-            name: "test".into(),
+            name: name.into(),
             params: Vec::new(),
             ret: None,
             body,
@@ -2275,6 +2279,95 @@ mod tests {
         assert_eq!(program.emit(), "fn test() {\n    2;\n    4;\n}\n");
         assert_eq!(report.applied, 1);
         assert_eq!(report.touched.in_place, vec![0]);
+    }
+
+    fn function_ref(facts: &facts::FixupFacts, item_index: usize, name: &str) -> FunctionRef {
+        FunctionRef {
+            item_index,
+            name: name.into(),
+            id: facts.function_by_item_index(item_index).unwrap(),
+        }
+    }
+
+    #[test]
+    fn function_edit_and_statement_edit_in_a_different_item_apply_atomically() {
+        let mut program = Program {
+            items: vec![
+                named_function("caller", vec![statement(1)]),
+                named_function("callee", vec![statement(2)]),
+            ],
+            ..Program::default()
+        };
+        let facts = facts::analyze(&program).facts;
+        let target = function_ref(&facts, 1, "callee");
+        let replacement = FnDef {
+            attrs: Vec::new(),
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: "callee".into(),
+            params: Vec::new(),
+            ret: None,
+            body: vec![statement(3)],
+        };
+        let mut edit = EditSet::replace_function(target, replacement);
+        edit.push_replace_statement(
+            0,
+            AstPath(vec![PathSegment::Stmt(0)]),
+            Some(statement(4).stmt),
+        );
+        let plan = item_plan(edit);
+
+        let report = plan.apply(&mut program, &facts, &mut NoopLogger);
+
+        assert_eq!(
+            program.emit(),
+            "fn caller() {\n    4;\n}\n\nfn callee() {\n    3;\n}\n"
+        );
+        assert_eq!(report.applied, 1);
+        assert_eq!(report.touched.in_place, vec![0, 1]);
+    }
+
+    #[test]
+    fn stale_anchor_in_one_item_rejects_the_whole_multi_item_set() {
+        let mut program = Program {
+            items: vec![
+                named_function("caller", vec![statement(1)]),
+                named_function("callee", vec![statement(2)]),
+            ],
+            ..Program::default()
+        };
+        let before = program.emit();
+        let facts = facts::analyze(&program).facts;
+        let target = function_ref(&facts, 1, "callee");
+        let replacement = FnDef {
+            attrs: Vec::new(),
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: "callee".into(),
+            params: Vec::new(),
+            ret: None,
+            body: vec![statement(3)],
+        };
+        let mut edit = EditSet::replace_function(target, replacement);
+        // Stale: item 0 only has one statement (index 0), so index 4 can't exist.
+        edit.push_replace_statement(
+            0,
+            AstPath(vec![PathSegment::Stmt(4)]),
+            Some(statement(4).stmt),
+        );
+        let plan = item_plan(edit);
+
+        let report = plan.apply(&mut program, &facts, &mut NoopLogger);
+
+        assert_eq!(program.emit(), before);
+        assert_eq!(report.applied, 0);
+        assert!(!report.changed);
+        assert!(matches!(
+            report.diagnostics.last(),
+            Some(PlanDiagnostic::MissingTarget { .. })
+        ));
     }
 
     #[test]
