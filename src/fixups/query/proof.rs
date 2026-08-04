@@ -1,6 +1,6 @@
 use crate::fixups::facts::{
     AsciiNumericSign, CallArgPinning, CountedLoopIndexUse, CountedLoopStart, CountedLoopStep,
-    PlaceAccess, Purity, SliceLoopAccess, StringLibcFunction,
+    NullCheckProof, PlaceAccess, Purity, SliceLoopAccess, StringLibcFunction,
 };
 use crate::rust_ast::Type;
 
@@ -93,6 +93,8 @@ pub(in crate::fixups) enum Predicate {
     AsciiNumericSign,
     AllExprs,
     Cast,
+    #[allow(dead_code)]
+    NullCheckDominance,
     DirectCalls,
     FunctionReachability,
     FunctionCallDomain,
@@ -269,6 +271,10 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
     Cast {
         to: Type,
+    },
+    #[allow(dead_code)]
+    NullCheckDominance {
+        proof: NullCheckProof,
     },
     DirectCalls {
         function: String,

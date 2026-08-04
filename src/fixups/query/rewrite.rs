@@ -91,6 +91,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::AsciiNumericSign => "ascii_numeric_sign",
         Predicate::AllExprs => "all_exprs",
         Predicate::Cast => "cast",
+        Predicate::NullCheckDominance => "null_check_dominance",
         Predicate::ReferenceDomain => "reference_domain",
         Predicate::Statement => "statement",
         Predicate::StatementRegion => "statement_region",
@@ -224,6 +225,7 @@ fn evidence_detail(detail: &EvidenceDetail) -> String {
         EvidenceDetail::AsciiNumericSign { sign } => format!("sign={sign:?}"),
         EvidenceDetail::AllExprs { count } => format!("count={count}"),
         EvidenceDetail::Cast { to } => format!("to={to:?}"),
+        EvidenceDetail::NullCheckDominance { proof } => format!("proof={proof:?}"),
         EvidenceDetail::ReferenceDomain { definitions, items } => {
             format!("definitions={definitions}, items={items}")
         }

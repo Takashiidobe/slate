@@ -6,8 +6,9 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AsciiNumericSign, AstPath, BindingId, BindingKind, BorrowAliasReason, CallArgPinning,
     CallCallee, CastFact, ConstValue, ControlFlowSubject, CountedLoopFact, EffectSubject,
-    FixupFacts, FunctionId, NulTermination, PathSegment, PrintfCallFact, PtrLenSliceFact, Purity,
-    StringBufferFact, StringBufferKind, StringCopyRewrite, StringRecoveryCandidate, ValueSubject,
+    FixupFacts, FunctionId, NulTermination, NullCheckProof, PathSegment, PrintfCallFact,
+    PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
+    StringRecoveryCandidate, ValueSubject,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
@@ -1838,6 +1839,52 @@ impl<'snapshot> QueryContext<'snapshot> {
             },
         }];
         Ok(Proof::new(fact.clone(), evidence))
+    }
+
+    #[allow(dead_code)]
+    pub(in crate::fixups) fn null_check_dominates(
+        &self,
+        binding: &BindingRef,
+        deref_site: &ExprSite,
+    ) -> QueryResult<NullCheckProof> {
+        let predicate = Predicate::NullCheckDominance;
+        let Some(function) = self.facts.function_by_item_index(deref_site.item_index) else {
+            return Err(Rejection::new(
+                predicate,
+                Some(deref_site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let Some(fact) = self
+            .facts
+            .null_check_dominance_at(function, &deref_site.path)
+        else {
+            return Err(Rejection::new(
+                predicate,
+                Some(deref_site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        };
+        let matches_binding = self
+            .facts
+            .binding_name(fact.binding)
+            .is_some_and(|name| name == binding.name);
+        if !matches_binding {
+            return Err(Rejection::new(
+                predicate,
+                Some(deref_site.clone()),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site: deref_site.clone(),
+            detail: EvidenceDetail::NullCheckDominance { proof: fact.proof },
+        }];
+        Ok(Proof::new(fact.proof, evidence))
     }
 
     pub(in crate::fixups) fn callsite_at(&self, site: &ExprSite) -> QueryResult<CallCallee> {
