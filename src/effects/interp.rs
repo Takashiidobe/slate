@@ -4780,6 +4780,7 @@ impl Interp {
             CallSummary::Exit => self.call_exit(args),
             CallSummary::Puts => self.call_puts(args),
             CallSummary::Remove => self.call_remove(args),
+            CallSummary::Perror => self.call_perror(args),
             CallSummary::Toupper => self.call_toupper(args),
             CallSummary::Tolower => self.call_tolower(args),
             CallSummary::IsAlpha
@@ -5822,6 +5823,21 @@ impl Interp {
         let loc = self.eval_ref(arg)?;
         self.trace.push(Effect::Call {
             name: "puts".to_string(),
+            args: vec![Value::Ref(loc)],
+        });
+        Ok(int32(0))
+    }
+
+    fn call_perror(&mut self, args: &[Expr]) -> EResult<Value> {
+        let [arg] = args else {
+            return Err(EffectError::arg_shape(
+                Construct::LibcCall(CallSummary::Perror),
+                ArgShapeKind::OneArgument,
+            ));
+        };
+        let loc = self.eval_ref(arg)?;
+        self.trace.push(Effect::Call {
+            name: "perror".to_string(),
             args: vec![Value::Ref(loc)],
         });
         Ok(int32(0))

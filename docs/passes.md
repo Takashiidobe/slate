@@ -130,31 +130,32 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 32. `printf_format` - rewrite `printf`-family calls to `println!`/`print!`.
 33. `c_strings` - mark/simplify recognized C-string literals.
 34. `stdio` - rewrite `fopen`/`fputs`/`fclose` sequences (plus `fgets`-echo loops and `fread`/`fwrite`) to `File`/`OpenOptions` owners.
-35. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls.
-36. `nullable_pointer` - recover `Option<*T>` null-check idioms over dynamic-index search results.
-37. `string_lift::fixup_c_strings` then `memchr_prelude` - a second, narrower string-lift pass followed by the memchr helper's lifecycle (deleted if unused, otherwise given its idiomatic fallback body).
-38. `late_inline_temps` - inline single-use pure temps (late variant).
-39. `ptr_copy` - recover a raw `std::ptr::copy`/`memcpy`/non-overlapping-`memmove` call between provably distinct, in-bounds local buffers into `dst = src` or `dst[..n].copy_from_slice(&src[..n])`, when the result is unused.
-40. `mem_move` - recover a raw `std::ptr::copy`/`memmove` call within a single local buffer into `buf.copy_within(src_range, dst_start)`, when the offsets, length, and result are provable/unused.
-41. `mem_set` - recover a raw `memset`/`bzero`/`std::ptr::write_bytes` call into `[..].fill(value)` when its destination, fill value, and length are all provable and its result is unused.
-42. `mem_cmp` - recover a `memcmp(a, b, n)` compared against `0` with `==`/`!=` into `a[..n] == b[..n]` (or `a == b` for full-length compares), when the buffers, length, and comparison shape are all provable.
-43. `dead_locals` - remove locals made dead by pointer-copy recovery.
-44. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing.
-45. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops.
-46. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage.
-47. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites.
-48. `zero_init` (`cross_effects = true`) - re-run the zero-init fusion, now allowed to cross intervening effects.
-49. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange`.
-50. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery.
-51. `assert_recovery` - recover `assert!(cond)` from the shim `assert()` macro's lowered `if cond { .. } else { abort(); .. }` guard, preserving the guard's result binding if it's still read elsewhere.
-52. `var_aliases` - inline a `let b = a;` alias into its single later use (including the temp `assert_recovery` may leave behind).
-53. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches.
-54. `libc_exit` - rewrite known direct `libc::exit` calls to `std::process::exit`.
-55. `unused_items` - remove dead top-level struct/record/enum definitions.
-56. `unused_params` - drop a function parameter that's never read and rewrite every direct call site to match.
-57. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function.
-58. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main`.
-59. `prune_unused_definitions` - delete now-dead known libc `extern` declarations and generated support modules.
+35. `perror` - rewrite `perror(msg)` to `eprintln!("{msg}: {}", std::io::Error::last_os_error())` when a def-use/effects proof shows nothing between the guarding call and `perror` could have overwritten errno.
+36. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls.
+37. `nullable_pointer` - recover `Option<*T>` null-check idioms over dynamic-index search results.
+38. `string_lift::fixup_c_strings` then `memchr_prelude` - a second, narrower string-lift pass followed by the memchr helper's lifecycle (deleted if unused, otherwise given its idiomatic fallback body).
+39. `late_inline_temps` - inline single-use pure temps (late variant).
+40. `ptr_copy` - recover a raw `std::ptr::copy`/`memcpy`/non-overlapping-`memmove` call between provably distinct, in-bounds local buffers into `dst = src` or `dst[..n].copy_from_slice(&src[..n])`, when the result is unused.
+41. `mem_move` - recover a raw `std::ptr::copy`/`memmove` call within a single local buffer into `buf.copy_within(src_range, dst_start)`, when the offsets, length, and result are provable/unused.
+42. `mem_set` - recover a raw `memset`/`bzero`/`std::ptr::write_bytes` call into `[..].fill(value)` when its destination, fill value, and length are all provable and its result is unused.
+43. `mem_cmp` - recover a `memcmp(a, b, n)` compared against `0` with `==`/`!=` into `a[..n] == b[..n]` (or `a == b` for full-length compares), when the buffers, length, and comparison shape are all provable.
+44. `dead_locals` - remove locals made dead by pointer-copy recovery.
+45. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing.
+46. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops.
+47. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage.
+48. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites.
+49. `zero_init` (`cross_effects = true`) - re-run the zero-init fusion, now allowed to cross intervening effects.
+50. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange`.
+51. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery.
+52. `assert_recovery` - recover `assert!(cond)` from the shim `assert()` macro's lowered `if cond { .. } else { abort(); .. }` guard, preserving the guard's result binding if it's still read elsewhere.
+53. `var_aliases` - inline a `let b = a;` alias into its single later use (including the temp `assert_recovery` may leave behind).
+54. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches.
+55. `libc_exit` - rewrite known direct `libc::exit` calls to `std::process::exit`.
+56. `unused_items` - remove dead top-level struct/record/enum definitions.
+57. `unused_params` - drop a function parameter that's never read and rewrite every direct call site to match.
+58. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function.
+59. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main`.
+60. `prune_unused_definitions` - delete now-dead known libc `extern` declarations and generated support modules.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
 because later groups can create new opportunities for earlier ones; re-running
