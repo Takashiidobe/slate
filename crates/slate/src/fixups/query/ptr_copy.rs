@@ -10,6 +10,9 @@ pub(super) fn copy_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
     let copy = ptr_copy_stmt(stmt)?;
     let src = endpoint(copy.src)?;
     let dst = endpoint(copy.dst)?;
+    if src.base == dst.base {
+        return None;
+    }
     let src_info = env.arrays.get(&src.base)?;
     let dst_info = env.arrays.get(&dst.base)?;
     if !dst_info.mutable || src_info.elem_size != dst_info.elem_size {
@@ -26,16 +29,6 @@ pub(super) fn copy_plan(stmt: &Stmt, env: &CopyEnv) -> Option<CopyPlan> {
     }
     if src.start.checked_add(len)? > src_info.len || dst.start.checked_add(len)? > dst_info.len {
         return None;
-    }
-    if src.base == dst.base {
-        return Some(CopyPlan {
-            stmt: Stmt::Expr(copy_within(
-                &dst.base,
-                src.start,
-                src.start + len,
-                dst.start,
-            )),
-        });
     }
     Some(CopyPlan {
         stmt: Stmt::Expr(copy_from_slice(
@@ -96,13 +89,13 @@ pub(super) fn memcpy_call_plan(
     })
 }
 
-struct PtrCopyExpr<'a> {
-    src: &'a Expr,
-    dst: &'a Expr,
-    count: &'a Expr,
+pub(super) struct PtrCopyExpr<'a> {
+    pub(super) src: &'a Expr,
+    pub(super) dst: &'a Expr,
+    pub(super) count: &'a Expr,
 }
 
-fn ptr_copy_stmt(stmt: &Stmt) -> Option<PtrCopyExpr<'_>> {
+pub(super) fn ptr_copy_stmt(stmt: &Stmt) -> Option<PtrCopyExpr<'_>> {
     let Stmt::Expr(expr) = stmt else {
         return None;
     };
@@ -123,7 +116,7 @@ fn ptr_copy_stmt(stmt: &Stmt) -> Option<PtrCopyExpr<'_>> {
     }
 }
 
-fn copy_within(base: &str, src_start: u64, src_end: u64, dst_start: u64) -> Expr {
+pub(super) fn copy_within(base: &str, src_start: u64, src_end: u64, dst_start: u64) -> Expr {
     Expr::MethodCall {
         recv: Box::new(Expr::Var(base.into())),
         method: "copy_within".into(),

@@ -842,6 +842,22 @@ fn memcpy_recovers_slice_ops_when_provable_and_falls_back_otherwise() {
 }
 
 #[test]
+fn memmove_recovers_copy_within_when_provable_and_falls_back_otherwise() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memmove");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let memmove_c = fixtures_dir().join("memmove.c");
+    let memmove_generated = tmp.join("memmove.generated.rs");
+    support::translate(&memmove_c, &memmove_generated).expect("translate memmove fixture");
+    let memmove = std::fs::read_to_string(&memmove_generated).expect("read generated memmove rust");
+
+    assert!(memmove.contains("forward_buf.copy_within(0..5, 1);"));
+    assert!(memmove.contains("backward_buf.copy_within(1..6, 0);"));
+    assert!(memmove.contains("unsafe { memmove("));
+    assert!(memmove.contains("dyn_buf.as_mut_ptr()"));
+}
+
+#[test]
 fn address_of_array_elements_use_safe_indexes() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-array-element-pointer");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

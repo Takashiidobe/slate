@@ -10,13 +10,9 @@ use super::super::{
 };
 
 pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence<1>> {
-    QueryRule::new(
-        Pass::PtrCopy,
-        "rewrite_pointer_copy",
-        StatementSequence::new(),
-    )
-    .case("copy_plan", rewrite_case)
-    .ordered_non_overlapping()
+    QueryRule::new(Pass::MemMove, "rewrite_mem_move", StatementSequence::new())
+        .case("mem_move_plan", rewrite_case)
+        .ordered_non_overlapping()
 }
 
 fn rewrite_case(
@@ -27,7 +23,8 @@ fn rewrite_case(
     let statement = matched.statement(0);
     let body = case.fact(|query| query.enclosing_statements(&statement))?;
     let env = super::super::array_env::CopyEnv::from_body(body);
-    let plan = super::super::ptr_copy::copy_plan(&stmt.stmt, &env).ok_or_else(|| case.reject())?;
+    let plan =
+        super::super::mem_move::mem_move_plan(&stmt.stmt, &env).ok_or_else(|| case.reject())?;
     Ok(EditSet::replace_statements(
         matched.target().clone(),
         vec![IndentStmt {
@@ -38,8 +35,8 @@ fn rewrite_case(
 }
 
 pub(in crate::fixups) fn calls() -> QueryRule<FnCall> {
-    QueryRule::new(Pass::PtrCopy, "rewrite_memcpy_call", FnCall::default())
-        .case("memcpy_call", call_case)
+    QueryRule::new(Pass::MemMove, "rewrite_mem_move_call", FnCall::default())
+        .case("mem_move_call", call_case)
 }
 
 fn edit_target(call: &CallRecord) -> ExprSite {
@@ -49,10 +46,7 @@ fn edit_target(call: &CallRecord) -> ExprSite {
 }
 
 fn call_case(case: &mut ItemCaseContext<'_, '_>, call: &CallRecord) -> Result<EditSet, Rejection> {
-    case.require(matches!(
-        call.target,
-        CallTarget::Known(Known::MemCpy | Known::MemMove)
-    ))?;
+    case.require(matches!(call.target, CallTarget::Known(Known::MemMove)))?;
     case.require(call.args.len() == 3)?;
     let dst = case
         .expr(&call.args[0])
@@ -81,7 +75,7 @@ fn call_case(case: &mut ItemCaseContext<'_, '_>, call: &CallRecord) -> Result<Ed
     let depth = indent_stmt.depth;
     let body = case.fact(|query| query.enclosing_statements(&statement))?;
     let env = super::super::array_env::CopyEnv::from_body(body);
-    let plan = super::super::ptr_copy::memcpy_call_plan(&dst, &src, &count, &env)
+    let plan = super::super::mem_move::plan_from_parts(&dst, &src, &count, &env)
         .ok_or_else(|| case.reject())?;
     Ok(EditSet::replace_statements(
         statement.range(),

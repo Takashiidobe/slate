@@ -5,6 +5,7 @@ mod control_flow;
 mod ctype_classify;
 mod field;
 mod item;
+mod mem_move;
 mod mem_set;
 mod nullable_pointer;
 mod patterns;
