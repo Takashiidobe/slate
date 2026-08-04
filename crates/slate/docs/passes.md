@@ -109,54 +109,55 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 11. `constant_index_casts` - drop redundant `as usize` on constant indices.
 12. `unnecessary_casts` - drop casts a typed context already makes redundant.
 13. `call_args` - inline single-use call-argument temps.
-14. `retval` - collapse a return-slot store into the final return/exit.
-15. `final_return_temps` - collapse a return-value temp into the final `return`.
-16. `lazy_singleton` - recover the "static flag guards a static payload" lazy-init idiom into `std::sync::OnceLock::get_or_init`.
-17. `drop_call_results` - turn `let _v = call();` into `call();` when unused.
-18. `string_lift` - lift NUL-terminated buffers to `CStr`/`str`/byte slices.
-19. `string_params` - turn a C-string pointer parameter into `&str` (re-run after `string_copy` and `printf_format` since each can expose a new liftable parameter).
-20. `ptr_len` - pair a pointer+length parameter into a slice parameter.
-21. `slice_index` - rewrite pointer-offset derefs into `slice[i]` once the param is a slice.
-22. `slice_loop` - recover `for x in slice.iter()`/`.iter_mut()`, or `for (i, x) in ....enumerate()` when the body also reads the index directly.
-23. `slice_reduce` - fold a slice-iterator accumulator loop into `.sum()`/`.product()`/`.fold()`.
-24. `range_loop` - recover `for i in 0..bound` for the remaining counted loops.
-25. `va_list` - remove redundant `va_list` clone/alias bookkeeping.
-26. `remove_mut` - drop `mut` where facts prove no mutation (re-run after later passes that can make a binding provably immutable).
-27. `string_copy` - turn `strcpy`/`strcat`-only buffers into an owned `String`.
-28. `string_libc` - rewrite `strlen`/`strcmp`-family calls on lifted strings to native Rust.
-29. `sort_search` - rewrite `qsort`/`bsearch` to `.sort_by()`/`.binary_search_by()`.
-30. `heap_ownership` - rewrite `malloc`/`calloc`/`realloc`/`free` to `Box`/`Vec`.
-31. `dead_locals` - remove locals with no live, effectful use.
-32. `printf_format` - rewrite `printf`-family calls to `println!`/`print!`.
-33. `printf_stream` - rewrite `fprintf`/`fputs` targeting a source-provably `stdout`/`stderr` stream to `println!`/`print!`/`eprintln!`/`eprint!`, reusing the printf conversion-spec mapping; any other `FILE*` stays on the existing libc path.
-34. `c_strings` - mark/simplify recognized C-string literals.
-35. `stdio` - rewrite `fopen`/`fputs`/`fclose` sequences (plus `fgets`-echo loops and `fread`/`fwrite`) to `File`/`OpenOptions` owners.
-36. `perror` - rewrite `perror(msg)` to `eprintln!("{msg}: {}", std::io::Error::last_os_error())` when a def-use/effects proof shows nothing between the guarding call and `perror` could have overwritten errno.
-37. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls.
-38. `nullable_pointer` - recover `Option<*T>` null-check idioms over dynamic-index search results.
-39. `string_lift::fixup_c_strings` then `memchr_prelude` - a second, narrower string-lift pass followed by the memchr helper's lifecycle (deleted if unused, otherwise given its idiomatic fallback body).
-40. `late_inline_temps` - inline single-use pure temps (late variant).
-41. `ptr_copy` - recover a raw `std::ptr::copy`/`memcpy`/non-overlapping-`memmove` call between provably distinct, in-bounds local buffers into `dst = src` or `dst[..n].copy_from_slice(&src[..n])`, when the result is unused.
-42. `mem_move` - recover a raw `std::ptr::copy`/`memmove` call within a single local buffer into `buf.copy_within(src_range, dst_start)`, when the offsets, length, and result are provable/unused.
-43. `mem_set` - recover a raw `memset`/`bzero`/`std::ptr::write_bytes` call into `[..].fill(value)` when its destination, fill value, and length are all provable and its result is unused.
-44. `mem_cmp` - recover a `memcmp(a, b, n)` compared against `0` with `==`/`!=` into `a[..n] == b[..n]` (or `a == b` for full-length compares), when the buffers, length, and comparison shape are all provable.
-45. `dead_locals` - remove locals made dead by pointer-copy recovery.
-46. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing.
-47. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops.
-48. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage.
-49. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites.
-50. `zero_init` (`cross_effects = true`) - re-run the zero-init fusion, now allowed to cross intervening effects.
-51. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange`.
-52. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery.
-53. `assert_recovery` - recover `assert!(cond)` from the shim `assert()` macro's lowered `if cond { .. } else { abort(); .. }` guard, preserving the guard's result binding if it's still read elsewhere.
-54. `var_aliases` - inline a `let b = a;` alias into its single later use (including the temp `assert_recovery` may leave behind).
-55. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches.
-56. `libc_exit` - rewrite known direct `libc::exit` calls to `std::process::exit`.
-57. `unused_items` - remove dead top-level struct/record/enum definitions.
-58. `unused_params` - drop a function parameter that's never read and rewrite every direct call site to match.
-59. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function.
-60. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main`.
-61. `prune_unused_definitions` - delete now-dead known libc `extern` declarations and generated support modules.
+14. `sprintf_format` - recover `sprintf`/`snprintf` into a fixed local buffer as `let buf = format!(...)`, reusing the printf conversion-spec parser, only when a static worst-case bound on the formatted output provably fits the buffer (or `snprintf`'s `size` argument); reconciles known-safe downstream consumers (`puts`, `printf`, `fprintf`) and leaves everything else (non-constant format, unprovable bound, buffer reused/mutated afterward) on the raw libc path. Runs before `string_lift` so it sees the buffer before that pass can misjudge it as read-only.
+15. `retval` - collapse a return-slot store into the final return/exit.
+16. `final_return_temps` - collapse a return-value temp into the final `return`.
+17. `lazy_singleton` - recover the "static flag guards a static payload" lazy-init idiom into `std::sync::OnceLock::get_or_init`.
+18. `drop_call_results` - turn `let _v = call();` into `call();` when unused.
+19. `string_lift` - lift NUL-terminated buffers to `CStr`/`str`/byte slices.
+20. `string_params` - turn a C-string pointer parameter into `&str` (re-run after `string_copy` and `printf_format` since each can expose a new liftable parameter).
+21. `ptr_len` - pair a pointer+length parameter into a slice parameter.
+22. `slice_index` - rewrite pointer-offset derefs into `slice[i]` once the param is a slice.
+23. `slice_loop` - recover `for x in slice.iter()`/`.iter_mut()`, or `for (i, x) in ....enumerate()` when the body also reads the index directly.
+24. `slice_reduce` - fold a slice-iterator accumulator loop into `.sum()`/`.product()`/`.fold()`.
+25. `range_loop` - recover `for i in 0..bound` for the remaining counted loops.
+26. `va_list` - remove redundant `va_list` clone/alias bookkeeping.
+27. `remove_mut` - drop `mut` where facts prove no mutation (re-run after later passes that can make a binding provably immutable).
+28. `string_copy` - turn `strcpy`/`strcat`-only buffers into an owned `String`.
+29. `string_libc` - rewrite `strlen`/`strcmp`-family calls on lifted strings to native Rust.
+30. `sort_search` - rewrite `qsort`/`bsearch` to `.sort_by()`/`.binary_search_by()`.
+31. `heap_ownership` - rewrite `malloc`/`calloc`/`realloc`/`free` to `Box`/`Vec`.
+32. `dead_locals` - remove locals with no live, effectful use.
+33. `printf_format` - rewrite `printf`-family calls to `println!`/`print!`.
+34. `printf_stream` - rewrite `fprintf`/`fputs` targeting a source-provably `stdout`/`stderr` stream to `println!`/`print!`/`eprintln!`/`eprint!`, reusing the printf conversion-spec mapping; any other `FILE*` stays on the existing libc path.
+35. `c_strings` - mark/simplify recognized C-string literals.
+36. `stdio` - rewrite `fopen`/`fputs`/`fclose` sequences (plus `fgets`-echo loops and `fread`/`fwrite`) to `File`/`OpenOptions` owners.
+37. `perror` - rewrite `perror(msg)` to `eprintln!("{msg}: {}", std::io::Error::last_os_error())` when a def-use/effects proof shows nothing between the guarding call and `perror` could have overwritten errno.
+38. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls.
+39. `nullable_pointer` - recover `Option<*T>` null-check idioms over dynamic-index search results.
+40. `string_lift::fixup_c_strings` then `memchr_prelude` - a second, narrower string-lift pass followed by the memchr helper's lifecycle (deleted if unused, otherwise given its idiomatic fallback body).
+41. `late_inline_temps` - inline single-use pure temps (late variant).
+42. `ptr_copy` - recover a raw `std::ptr::copy`/`memcpy`/non-overlapping-`memmove` call between provably distinct, in-bounds local buffers into `dst = src` or `dst[..n].copy_from_slice(&src[..n])`, when the result is unused.
+43. `mem_move` - recover a raw `std::ptr::copy`/`memmove` call within a single local buffer into `buf.copy_within(src_range, dst_start)`, when the offsets, length, and result are provable/unused.
+44. `mem_set` - recover a raw `memset`/`bzero`/`std::ptr::write_bytes` call into `[..].fill(value)` when its destination, fill value, and length are all provable and its result is unused.
+45. `mem_cmp` - recover a `memcmp(a, b, n)` compared against `0` with `==`/`!=` into `a[..n] == b[..n]` (or `a == b` for full-length compares), when the buffers, length, and comparison shape are all provable.
+46. `dead_locals` - remove locals made dead by pointer-copy recovery.
+47. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing.
+48. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops.
+49. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage.
+50. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites.
+51. `zero_init` (`cross_effects = true`) - re-run the zero-init fusion, now allowed to cross intervening effects.
+52. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange`.
+53. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery.
+54. `assert_recovery` - recover `assert!(cond)` from the shim `assert()` macro's lowered `if cond { .. } else { abort(); .. }` guard, preserving the guard's result binding if it's still read elsewhere.
+55. `var_aliases` - inline a `let b = a;` alias into its single later use (including the temp `assert_recovery` may leave behind).
+56. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches.
+57. `libc_exit` - rewrite known direct `libc::exit` calls to `std::process::exit`.
+58. `unused_items` - remove dead top-level struct/record/enum definitions.
+59. `unused_params` - drop a function parameter that's never read and rewrite every direct call site to match.
+60. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function.
+61. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main`.
+62. `prune_unused_definitions` - delete now-dead known libc `extern` declarations and generated support modules.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
 because later groups can create new opportunities for earlier ones; re-running

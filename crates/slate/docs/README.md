@@ -104,6 +104,12 @@ NUL-terminated char-array/pointer buffers get lifted to `CStr`/`str`/byte-slice
 values where provenance is provable, `strlen`/`strcmp`-family calls on lifted
 strings become native Rust equivalents, `strcpy`/`strcat`-only fixed buffers
 become owned `String`, and a C-string pointer parameter can become `&str`.
+`sprintf`/`snprintf` filling a fixed local buffer with a constant format
+string become `let buf = format!(...)`, provided a static worst-case bound
+on the output provably fits the buffer (or `snprintf`'s `size` argument);
+downstream `puts`/`printf`/`fprintf` consumers of that buffer are reconciled
+to use the `String` directly, otherwise (non-constant format, unprovable
+bound, or the buffer mutated afterward) it stays the raw libc call.
 `malloc`/`calloc`/`realloc`/`free` locals become owned `Box<T>`/`Vec<T>`.
 `fopen`/`fputs`/`fclose` sequences become `File`/`OpenOptions` owners.
 `perror(msg)` becomes `eprintln!("{msg}: {}", std::io::Error::last_os_error())`

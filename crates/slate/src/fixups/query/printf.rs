@@ -51,6 +51,80 @@ pub(in crate::fixups) fn printf_macro(
     Some(format_macro(name, macro_args))
 }
 
+pub(in crate::fixups) fn sprintf_format_expr(
+    format: &[u8],
+    args: &[Expr],
+    arg_facts: &[PrintfArgFact],
+) -> Option<Expr> {
+    let parsed = parse_printf_format(format)?;
+    if parsed.conversions.len() != args.len() {
+        return None;
+    }
+    let mut text = parsed.format;
+    if parsed.trailing_newline {
+        text.push('\n');
+    }
+    let mut macro_args = vec![Expr::Str(text)];
+    for ((arg, conversion), arg_fact) in args
+        .iter()
+        .zip(parsed.conversions.iter())
+        .zip(arg_facts.iter())
+    {
+        macro_args.push(printf_macro_arg(arg, conversion.kind, arg_fact)?);
+    }
+    Some(format_macro("format", macro_args))
+}
+
+const INTEGER_MAX_DIGITS: usize = 24;
+const POINTER_MAX_DIGITS: usize = 20;
+
+pub(in crate::fixups) fn sprintf_worst_case_len(
+    format: &[u8],
+    arg_facts: &[PrintfArgFact],
+) -> Option<usize> {
+    let parsed = parse_printf_format(format)?;
+    if parsed.conversions.len() != arg_facts.len() {
+        return None;
+    }
+    let mut total = parsed.format.len();
+    if parsed.trailing_newline {
+        total += 1;
+    }
+    for (conversion, arg_fact) in parsed.conversions.iter().zip(arg_facts.iter()) {
+        total += conversion_max_len(conversion.kind, arg_fact)?;
+    }
+    Some(total)
+}
+
+fn conversion_max_len(kind: ConversionKind, arg_fact: &PrintfArgFact) -> Option<usize> {
+    match kind {
+        ConversionKind::Integer(int_arg) => Some(integer_max_len(int_arg)),
+        ConversionKind::Char(CharArg::Value) => Some(1),
+        ConversionKind::Char(CharArg::Sized(fmt)) => Some(fmt.width.max(1)),
+        ConversionKind::String(StringArg::Value) => {
+            arg_fact.const_string.as_ref().map(|value| value.len())
+        }
+        ConversionKind::String(StringArg::Sized(fmt)) => match fmt.precision {
+            Some(precision) => Some(precision.max(fmt.width.unwrap_or(0))),
+            None => arg_fact
+                .const_string
+                .as_ref()
+                .map(|value| value.len().max(fmt.width.unwrap_or(0))),
+        },
+        ConversionKind::Pointer => Some(POINTER_MAX_DIGITS),
+        ConversionKind::Float | ConversionKind::Exponent(_) | ConversionKind::General(_) => None,
+    }
+}
+
+fn integer_max_len(arg: IntegerArg) -> usize {
+    let requested = match arg {
+        IntegerArg::Value | IntegerArg::Narrow { .. } => 0,
+        IntegerArg::Alternate(fmt) => fmt.width.unwrap_or(0),
+        IntegerArg::Precision(fmt) => fmt.width.unwrap_or(0).max(fmt.precision),
+    };
+    INTEGER_MAX_DIGITS.max(requested)
+}
+
 struct ParsedFormat {
     format: String,
     conversions: Vec<Conversion>,
