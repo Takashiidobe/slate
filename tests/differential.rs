@@ -825,6 +825,23 @@ fn memset_recovers_fill_when_provable_and_falls_back_otherwise() {
 }
 
 #[test]
+fn memcpy_recovers_slice_ops_when_provable_and_falls_back_otherwise() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memcpy");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let memcpy_c = fixtures_dir().join("memcpy.c");
+    let memcpy_generated = tmp.join("memcpy.generated.rs");
+    support::translate(&memcpy_c, &memcpy_generated).expect("translate memcpy fixture");
+    let memcpy = std::fs::read_to_string(&memcpy_generated).expect("read generated memcpy rust");
+
+    assert!(memcpy.contains("full_dst = full_src;"));
+    assert!(memcpy.contains("partial_dst[(0..4)].copy_from_slice(&partial_src[(0..4)]);"));
+    assert!(memcpy.contains("unsafe { memcpy("));
+    assert!(memcpy.contains("alias_buf.as_mut_ptr()"));
+    assert!(memcpy.contains("dyn_dst.as_mut_ptr()"));
+}
+
+#[test]
 fn address_of_array_elements_use_safe_indexes() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-array-element-pointer");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

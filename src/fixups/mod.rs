@@ -824,6 +824,7 @@ fn apply_with_logger(
             let query = query::QueryContext::new(&program, &facts);
             let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::ptr_copy::rewrite());
+            builder.add_rule(&query, &query::rules::ptr_copy::calls());
             builder.finish()
         };
         plan.apply(&mut program, &facts, logger);
