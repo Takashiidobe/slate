@@ -19,9 +19,8 @@ int main(void) {
   printf("feholdexcept flags %d\n", fetestexcept(FE_ALL_EXCEPT));
   printf("feraiseexcept held %d\n", feraiseexcept(FE_OVERFLOW));
   printf("feupdateenv %d\n", feupdateenv(&held_environment));
-  printf("feupdateenv flags %d\n",
-         fetestexcept(FE_DIVBYZERO | FE_OVERFLOW) ==
-             (FE_DIVBYZERO | FE_OVERFLOW));
+  printf("feupdateenv flags %d\n", fetestexcept(FE_DIVBYZERO | FE_OVERFLOW) ==
+                                       (FE_DIVBYZERO | FE_OVERFLOW));
 
   printf("fesetenv default %d\n", fesetenv(FE_DFL_ENV));
   printf("default environment %d %d\n", fegetround() == FE_TONEAREST,

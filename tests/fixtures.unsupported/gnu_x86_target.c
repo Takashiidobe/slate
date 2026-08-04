@@ -10,8 +10,7 @@ static int gnu_cpu_queries(void) {
          4 * !!__builtin_cpu_supports("avx") +
          8 * !!__builtin_cpu_supports("avx2") +
          16 * !!__builtin_cpu_supports("bmi2") +
-         32 * !!__builtin_cpu_is("intel") +
-         64 * !!__builtin_cpu_is("amd");
+         32 * !!__builtin_cpu_is("intel") + 64 * !!__builtin_cpu_is("amd");
 }
 
 static int gnu_cpuid_query(void) {

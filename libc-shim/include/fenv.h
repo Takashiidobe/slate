@@ -8,7 +8,8 @@
 #define FE_OVERFLOW 0x08
 #define FE_UNDERFLOW 0x10
 #define FE_INEXACT 0x20
-#define FE_ALL_EXCEPT (FE_INEXACT | FE_DIVBYZERO | FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)
+#define FE_ALL_EXCEPT                                                          \
+  (FE_INEXACT | FE_DIVBYZERO | FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID)
 
 #define FE_TONEAREST 0
 #define FE_DOWNWARD 0x400

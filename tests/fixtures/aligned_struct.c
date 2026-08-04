@@ -6,9 +6,7 @@ struct __attribute__((aligned(16))) Aligned {
   int b;
 };
 
-static int next_value(void) {
-  return 9;
-}
+static int next_value(void) { return 9; }
 
 static int effectful_case(void) {
   struct Aligned effectful;
@@ -34,9 +32,7 @@ static int dependent_case(void) {
 
 static int counter;
 
-static void touch(void) {
-  counter++;
-}
+static void touch(void) { counter++; }
 
 static int interrupted_case(void) {
   struct Aligned interrupted;
@@ -54,6 +50,7 @@ int main(void) {
   printf("%zu %zu\n", sizeof(struct Aligned), _Alignof(struct Aligned));
   printf("%zu %zu\n", offsetof(struct Aligned, a), offsetof(struct Aligned, b));
   printf("%d %x\n", s.a, s.b);
-  printf("%d %d %d %d\n", effectful_case(), repeated_case(), dependent_case(), interrupted_case());
+  printf("%d %d %d %d\n", effectful_case(), repeated_case(), dependent_case(),
+         interrupted_case());
   return 0;
 }

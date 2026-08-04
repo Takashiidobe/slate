@@ -1,5 +1,5 @@
-#include <float.h>
 #include <fenv.h>
+#include <float.h>
 #include <limits.h>
 #include <math.h>
 #include <stdatomic.h>
@@ -17,8 +17,7 @@ static int c23_stdbit(void) {
   unsigned int value = 0b10110000u;
   return (int)(stdc_leading_zeros(value) + stdc_leading_ones(value) +
                stdc_trailing_zeros(value) + stdc_trailing_ones(value) +
-               stdc_first_leading_zero(value) +
-               stdc_first_leading_one(value) +
+               stdc_first_leading_zero(value) + stdc_first_leading_one(value) +
                stdc_first_trailing_zero(value) +
                stdc_first_trailing_one(value) + stdc_count_zeros(value) +
                stdc_count_ones(value) + stdc_has_single_bit(64u) +
@@ -112,32 +111,30 @@ static int c23_io(void) {
 }
 
 static int c23_limits(void) {
-  int integer_widths =
-      BOOL_WIDTH + CHAR_WIDTH + SCHAR_WIDTH + UCHAR_WIDTH + SHRT_WIDTH +
-      USHRT_WIDTH + INT_WIDTH + UINT_WIDTH + LONG_WIDTH + ULONG_WIDTH +
-      LLONG_WIDTH + ULLONG_WIDTH + SIZE_WIDTH + PTRDIFF_WIDTH;
-  int floating_limits =
-      (FLT_TRUE_MIN > 0.0f) + (DBL_TRUE_MIN > 0.0) +
-      (LDBL_TRUE_MIN > 0.0L) + (FLT_NORM_MAX <= FLT_MAX) +
-      (DBL_NORM_MAX <= DBL_MAX) + (LDBL_NORM_MAX <= LDBL_MAX) +
-      (FLT_HAS_SUBNORM >= -1) + (DBL_HAS_SUBNORM >= -1) +
-      (LDBL_HAS_SUBNORM >= -1) + (sizeof(FLT_SNAN) == sizeof(float)) +
-      (sizeof(DBL_SNAN) == sizeof(double)) +
-      (sizeof(LDBL_SNAN) == sizeof(long double));
-  int header_versions =
-      (__STDC_VERSION_FENV_H__ == 202311L) +
-      (__STDC_VERSION_MATH_H__ == 202311L) +
-      (__STDC_VERSION_STDINT_H__ == 202311L) +
-      (__STDC_VERSION_STDLIB_H__ == 202311L) +
-      (__STDC_VERSION_TIME_H__ == 202311L) +
-      (__STDC_VERSION_STDCKDINT_H__ == 202311L) +
-      (__STDC_VERSION_STDBIT_H__ == 202311L);
+  int integer_widths = BOOL_WIDTH + CHAR_WIDTH + SCHAR_WIDTH + UCHAR_WIDTH +
+                       SHRT_WIDTH + USHRT_WIDTH + INT_WIDTH + UINT_WIDTH +
+                       LONG_WIDTH + ULONG_WIDTH + LLONG_WIDTH + ULLONG_WIDTH +
+                       SIZE_WIDTH + PTRDIFF_WIDTH;
+  int floating_limits = (FLT_TRUE_MIN > 0.0f) + (DBL_TRUE_MIN > 0.0) +
+                        (LDBL_TRUE_MIN > 0.0L) + (FLT_NORM_MAX <= FLT_MAX) +
+                        (DBL_NORM_MAX <= DBL_MAX) +
+                        (LDBL_NORM_MAX <= LDBL_MAX) + (FLT_HAS_SUBNORM >= -1) +
+                        (DBL_HAS_SUBNORM >= -1) + (LDBL_HAS_SUBNORM >= -1) +
+                        (sizeof(FLT_SNAN) == sizeof(float)) +
+                        (sizeof(DBL_SNAN) == sizeof(double)) +
+                        (sizeof(LDBL_SNAN) == sizeof(long double));
+  int header_versions = (__STDC_VERSION_FENV_H__ == 202311L) +
+                        (__STDC_VERSION_MATH_H__ == 202311L) +
+                        (__STDC_VERSION_STDINT_H__ == 202311L) +
+                        (__STDC_VERSION_STDLIB_H__ == 202311L) +
+                        (__STDC_VERSION_TIME_H__ == 202311L) +
+                        (__STDC_VERSION_STDCKDINT_H__ == 202311L) +
+                        (__STDC_VERSION_STDBIT_H__ == 202311L);
   return integer_widths + floating_limits + header_versions;
 }
 
 int main(void) {
-  printf("%d %d %d %d %d %d\n", c23_stdbit(),
-         c23_checked_arithmetic(), c23_utf8(), c23_memory(), c23_time(),
-         c23_io() + c23_limits());
+  printf("%d %d %d %d %d %d\n", c23_stdbit(), c23_checked_arithmetic(),
+         c23_utf8(), c23_memory(), c23_time(), c23_io() + c23_limits());
   return 0;
 }

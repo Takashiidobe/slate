@@ -48,17 +48,17 @@ static int gnu_builtin_overflow(void) {
   unsigned int unsigned_result;
   long long long_result;
   int total = 0;
-  total += !__builtin_add_overflow(20, 22, &signed_result) &&
-           signed_result == 42;
+  total +=
+      !__builtin_add_overflow(20, 22, &signed_result) && signed_result == 42;
   total += __builtin_add_overflow(INT_MAX, 1, &signed_result);
   total += !__builtin_sub_overflow(50U, 8U, &unsigned_result) &&
            unsigned_result == 42U;
   total += __builtin_sub_overflow(0U, 1U, &unsigned_result);
-  total += !__builtin_mul_overflow(6LL, 7LL, &long_result) &&
-           long_result == 42LL;
+  total +=
+      !__builtin_mul_overflow(6LL, 7LL, &long_result) && long_result == 42LL;
   total += __builtin_mul_overflow(LLONG_MAX, 2LL, &long_result);
-  total += !__builtin_sadd_overflow(17, 25, &signed_result) &&
-           signed_result == 42;
+  total +=
+      !__builtin_sadd_overflow(17, 25, &signed_result) && signed_result == 42;
   total += !__builtin_uadd_overflow(19U, 23U, &unsigned_result) &&
            unsigned_result == 42U;
   total += __builtin_saddll_overflow(LLONG_MAX, 1LL, &long_result);
@@ -100,8 +100,7 @@ static int gnu_builtin_floating(void) {
 }
 
 int main(void) {
-  printf("%d %llu %d %d\n", gnu_builtin_bits(),
-         gnu_builtin_reordering(), gnu_builtin_overflow(),
-         gnu_builtin_floating());
+  printf("%d %llu %d %d\n", gnu_builtin_bits(), gnu_builtin_reordering(),
+         gnu_builtin_overflow(), gnu_builtin_floating());
   return 0;
 }

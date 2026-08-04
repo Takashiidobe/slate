@@ -84,7 +84,7 @@ int cnd_signal(cnd_t *cond);
 int cnd_broadcast(cnd_t *cond);
 int cnd_wait(cnd_t *cond, mtx_t *mutex);
 int cnd_timedwait(cnd_t *restrict cond, mtx_t *restrict mutex,
-                   const struct timespec *restrict ts);
+                  const struct timespec *restrict ts);
 void cnd_destroy(cnd_t *cond);
 
 int tss_create(tss_t *key, tss_dtor_t dtor);

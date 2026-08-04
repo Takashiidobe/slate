@@ -19,9 +19,9 @@ int main(void) {
       (unsigned char *)__builtin_memchr(offset_base, needle, 2);
   const unsigned char *const_hit =
       (const unsigned char *)__builtin_memchr(cbuf, 7, sizeof cbuf);
-  printf("%ld %d %d %ld %d %d %ld %ld %ld\n", (long)(hit - buf),
-         miss == 0, zero == 0, (long)(nul_after - word), nul_equal == 0,
-         nul_before == 0, (long)(partial - buf), (long)(offset - offset_base),
+  printf("%ld %d %d %ld %d %d %ld %ld %ld\n", (long)(hit - buf), miss == 0,
+         zero == 0, (long)(nul_after - word), nul_equal == 0, nul_before == 0,
+         (long)(partial - buf), (long)(offset - offset_base),
          (long)(const_hit - cbuf));
   return 0;
 }

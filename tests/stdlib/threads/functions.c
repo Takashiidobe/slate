@@ -67,16 +67,14 @@ int main(void) {
   struct timespec duration = {.tv_sec = 0, .tv_nsec = 0};
   struct timespec remaining = {.tv_sec = 0, .tv_nsec = 0};
 
-  printf("constants %d %d %d %d %d %d %d %d %d\n", thrd_success,
-         thrd_timedout, thrd_busy, thrd_nomem, thrd_error, mtx_plain,
-         mtx_recursive, mtx_timed, TSS_DTOR_ITERATIONS);
-  printf("thrd_equal %d\n",
-         thrd_equal(thrd_current(), thrd_current()) ? 1 : 0);
+  printf("constants %d %d %d %d %d %d %d %d %d\n", thrd_success, thrd_timedout,
+         thrd_busy, thrd_nomem, thrd_error, mtx_plain, mtx_recursive, mtx_timed,
+         TSS_DTOR_ITERATIONS);
+  printf("thrd_equal %d\n", thrd_equal(thrd_current(), thrd_current()) ? 1 : 0);
   printf("tss_create %d\n", tss_create(&storage_key, destroy_storage));
   printf("mtx_init plain %d\n", mtx_init(&signal_mutex, mtx_plain));
   printf("cnd_init %d\n", cnd_init(&signal_condition));
-  int create_status =
-      thrd_create(&signaling_thread, signaling_worker, &state);
+  int create_status = thrd_create(&signaling_thread, signaling_worker, &state);
   printf("thrd_create signaling %d\n", create_status);
   printf("mtx_lock wait %d\n", mtx_lock(&signal_mutex));
   while (!ready && wait_status == thrd_success)
@@ -85,9 +83,9 @@ int main(void) {
   printf("mtx_unlock wait %d\n", mtx_unlock(&signal_mutex));
   printf("thrd_join signaling %d\n",
          thrd_join(signaling_thread, &thread_result));
-  printf("worker %d %d %d %d %d %d\n", state.tss_set_status,
-         state.tss_matches, state.lock_status, state.signal_status,
-         state.unlock_status, thread_result);
+  printf("worker %d %d %d %d %d %d\n", state.tss_set_status, state.tss_matches,
+         state.lock_status, state.signal_status, state.unlock_status,
+         thread_result);
   printf("call_once %d\n", once_calls);
   printf("tss_destructor %d\n", destructor_calls);
   printf("cnd_broadcast %d\n", cnd_broadcast(&signal_condition));
@@ -111,13 +109,11 @@ int main(void) {
   printf("mtx_destroy try 1\n");
 
   mtx_t recursive_mutex;
-  printf("mtx_init recursive %d\n",
-         mtx_init(&recursive_mutex, mtx_recursive));
+  printf("mtx_init recursive %d\n", mtx_init(&recursive_mutex, mtx_recursive));
   printf("mtx_lock recursive first %d\n", mtx_lock(&recursive_mutex));
   printf("mtx_lock recursive second %d\n", mtx_lock(&recursive_mutex));
   printf("mtx_unlock recursive first %d\n", mtx_unlock(&recursive_mutex));
-  printf("mtx_unlock recursive second %d\n",
-         mtx_unlock(&recursive_mutex));
+  printf("mtx_unlock recursive second %d\n", mtx_unlock(&recursive_mutex));
   mtx_destroy(&recursive_mutex);
   printf("mtx_destroy recursive 1\n");
 

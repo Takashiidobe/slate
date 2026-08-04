@@ -3,8 +3,7 @@
 
 _Static_assert(__STDC_VERSION_COMPLEX_H__ == 202311L,
                "C23 complex header version");
-_Static_assert(__STDC_IEC_559_COMPLEX__ == 1,
-               "IEC 60559 complex arithmetic");
+_Static_assert(__STDC_IEC_559_COMPLEX__ == 1, "IEC 60559 complex arithmetic");
 
 static void print_float_complex(const char *name, float complex value) {
   printf("%s %.9f %.9f\n", name, crealf(value), cimagf(value));
@@ -31,19 +30,19 @@ static void print_long_double(const char *name, long double value) {
   printf("%s %.12Lf\n", name, value);
 }
 
-#define PRINT_COMPLEX_UNARY(name)                                           \
-  print_float_complex(#name "f", name##f(zf));                             \
-  print_double_complex(#name, name(zd));                                    \
+#define PRINT_COMPLEX_UNARY(name)                                              \
+  print_float_complex(#name "f", name##f(zf));                                 \
+  print_double_complex(#name, name(zd));                                       \
   print_long_double_complex(#name "l", name##l(zl))
 
-#define PRINT_COMPLEX_BINARY(name)                                          \
-  print_float_complex(#name "f", name##f(zf, ef));                         \
-  print_double_complex(#name, name(zd, ed));                               \
+#define PRINT_COMPLEX_BINARY(name)                                             \
+  print_float_complex(#name "f", name##f(zf, ef));                             \
+  print_double_complex(#name, name(zd, ed));                                   \
   print_long_double_complex(#name "l", name##l(zl, el))
 
-#define PRINT_SCALAR_UNARY(name)                                            \
-  print_float(#name "f", name##f(zf));                                     \
-  print_double(#name, name(zd));                                            \
+#define PRINT_SCALAR_UNARY(name)                                               \
+  print_float(#name "f", name##f(zf));                                         \
+  print_double(#name, name(zd));                                               \
   print_long_double(#name "l", name##l(zl))
 
 int main(void) {

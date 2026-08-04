@@ -67,14 +67,9 @@ static const unsigned char c23_embedded[] = {
 #embed "c23_embed.bin" limit(3)
 };
 
-enum C23Fixed : unsigned short {
-  C23_FIXED_FIRST = 31,
-  C23_FIXED_SECOND = 37
-};
+enum C23Fixed : unsigned short { C23_FIXED_FIRST = 31, C23_FIXED_SECOND = 37 };
 
-enum C23Wide {
-  C23_WIDE_VALUE = 0x1ffffffff
-};
+enum C23Wide { C23_WIDE_VALUE = 0x1ffffffff };
 
 struct C23Empty {
   int first;
@@ -104,9 +99,7 @@ static volatile int c23_never_flag;
 
 constexpr int c23_file_constant = 59;
 
-static int c23_unnamed_parameter(int, int value) {
-  return value;
-}
+static int c23_unnamed_parameter(int, int value) { return value; }
 
 static int c23_label_declaration(int value) {
   goto c23_label;
@@ -186,26 +179,22 @@ int main(void) {
   language_total =
       c23_file_constant + local_constant + inferred_value + same_type_value +
       unqualified_value + (int)signed_precise + (int)unsigned_precise +
-      binary_value + aligned_value + alignof(int) + \u03b1 +
-      utf8_character + (unsigned char)utf8_text[0] +
-      (unsigned char)utf8_text[1] + empty_struct.first + empty_array[0] +
-      qualified_array[0] + qualified_array[2] + fixed_value +
-      (int)(wide_value == C23_WIDE_VALUE) + static_compound_value +
-      C23_OPTIONAL(7) + C23_OPTIONAL(11, 13);
+      binary_value + aligned_value + alignof(int) + \u03b1 + utf8_character +
+      (unsigned char)utf8_text[0] + (unsigned char)utf8_text[1] +
+      empty_struct.first + empty_array[0] + qualified_array[0] +
+      qualified_array[2] + fixed_value + (int)(wide_value == C23_WIDE_VALUE) +
+      static_compound_value + C23_OPTIONAL(7) + C23_OPTIONAL(11, 13);
 
   attribute_total = c23_nodiscard_value();
-  preprocessor_total =
-      C23_ELIFDEF_VALUE + C23_ELIFNDEF_VALUE + C23_HAS_INCLUDE_VALUE +
-      C23_HAS_EMBED_VALUE + C23_REPRODUCIBLE_VALUE +
-      C23_UNSEQUENCED_VALUE + C23_DECIMAL_VALUE +
-      C23_STORAGE_COMPOUND_VALUE + c23_embedded[0] + c23_embedded[1] +
-      c23_embedded[2];
-  type_total =
-      (null_value == nullptr) + (null_pointer == nullptr) + boolean_value +
-      !false_value + c23_thread_value;
-  control_total =
-      c23_unnamed_parameter(89, 97) + c23_label_declaration(101) +
-      c23_switch_fallthrough(1) + c23_relaxed_variadic(103, 107);
+  preprocessor_total = C23_ELIFDEF_VALUE + C23_ELIFNDEF_VALUE +
+                       C23_HAS_INCLUDE_VALUE + C23_HAS_EMBED_VALUE +
+                       C23_REPRODUCIBLE_VALUE + C23_UNSEQUENCED_VALUE +
+                       C23_DECIMAL_VALUE + C23_STORAGE_COMPOUND_VALUE +
+                       c23_embedded[0] + c23_embedded[1] + c23_embedded[2];
+  type_total = (null_value == nullptr) + (null_pointer == nullptr) +
+               boolean_value + !false_value + c23_thread_value;
+  control_total = c23_unnamed_parameter(89, 97) + c23_label_declaration(101) +
+                  c23_switch_fallthrough(1) + c23_relaxed_variadic(103, 107);
   removal_total = (__STDC_VERSION__ == 202311L);
 
   if (c23_never_flag) {

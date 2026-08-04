@@ -25,9 +25,8 @@ static int gnu_builtin_memory(void) {
   __builtin___memset_chk(second + 16, 9, 4, sizeof(second) - 16);
   return (end == first + 8) + (__builtin_memcmp(first, source, 16) == 0) +
          (__builtin_bcmp(first, source, 16) == 0) +
-         (__builtin_memchr(first, 'h', 16) == first + 7) +
-         (third[2] == 'a') + (third[9] == 'h') + second[0] + second[1] +
-         second[16] + second[19];
+         (__builtin_memchr(first, 'h', 16) == first + 7) + (third[2] == 'a') +
+         (third[9] == 'h') + second[0] + second[1] + second[16] + second[19];
 }
 
 static int gnu_builtin_strings(void) {

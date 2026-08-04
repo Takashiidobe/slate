@@ -16,7 +16,8 @@ int strcoll(const char *s1, const char *s2);
 char *strcpy(char *restrict dst, const char *restrict src);
 size_t strcspn(const char *s, const char *reject);
 char *strerror(int errnum);
-int strerror_r(int errnum, char *buf, size_t buflen) __asm__("__xpg_strerror_r");
+int strerror_r(int errnum, char *buf,
+               size_t buflen) __asm__("__xpg_strerror_r");
 size_t strlen(const char *s);
 char *strncat(char *restrict dst, const char *restrict src, size_t n);
 int strncmp(const char *s1, const char *s2, size_t n);

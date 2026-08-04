@@ -16,11 +16,7 @@
 #define C89_CONDITIONAL_VALUE 0
 #endif
 
-enum C89Color {
-  C89_RED = 3,
-  C89_GREEN = 5,
-  C89_BLUE = 7
-};
+enum C89Color { C89_RED = 3, C89_GREEN = 5, C89_BLUE = 7 };
 
 struct C89Point {
   int x;
@@ -48,9 +44,7 @@ static int C89_JOIN(c89_joined_, value) = 23;
 static int c89_add(int left, int right);
 static void c89_store(void *destination, const void *source);
 
-static int c89_add(int left, int right) {
-  return left + right;
-}
+static int c89_add(int left, int right) { return left + right; }
 
 static void c89_store(void *destination, const void *source) {
   int *output;
@@ -194,16 +188,15 @@ int main(void) {
   standard_macro = 0;
 #endif
 
-  printf(
-      "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d "
-      "%d %d %d %d %d %d %d %d %d\n",
-      c89_external_value, c89_const_global, c89_volatile_global,
-      c89_joined_value, C89_CONDITIONAL_VALUE, standard_macro, signed_value,
-      (int)unsigned_value, (int)signed_character, (int)float_value,
-      (int)double_value, (int)long_double_value, (int)wide_character, color,
-      point.x + point.y, bits.low, bits.high, number.integer,
-      const_pointer[0] + const_pointer[3], copied_value,
-      operation(53, 6), arithmetic, bitwise, logical, conditional, comma_value,
-      string_length, static_calls, variadic_total + control_total);
+  printf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d "
+         "%d %d %d %d %d %d %d %d %d\n",
+         c89_external_value, c89_const_global, c89_volatile_global,
+         c89_joined_value, C89_CONDITIONAL_VALUE, standard_macro, signed_value,
+         (int)unsigned_value, (int)signed_character, (int)float_value,
+         (int)double_value, (int)long_double_value, (int)wide_character, color,
+         point.x + point.y, bits.low, bits.high, number.integer,
+         const_pointer[0] + const_pointer[3], copied_value, operation(53, 6),
+         arithmetic, bitwise, logical, conditional, comma_value, string_length,
+         static_calls, variadic_total + control_total);
   return 0;
 }

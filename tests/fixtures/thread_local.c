@@ -22,8 +22,7 @@ int main(void) {
   int main_before = update_values(17, 19);
   int worker_result = 0;
   int created = thrd_create(&thread, worker, values);
-  int joined =
-      created == thrd_success ? thrd_join(thread, &worker_result) : -1;
+  int joined = created == thrd_success ? thrd_join(thread, &worker_result) : -1;
   int main_after = update_values(23, 29);
   printf("%d %d %d %d %d\n", main_before, worker_result, main_after, created,
          joined);

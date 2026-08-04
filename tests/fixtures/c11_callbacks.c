@@ -4,9 +4,7 @@
 
 static int once_total;
 
-static int thread_worker(void *argument) {
-  return *(int *)argument + 1;
-}
+static int thread_worker(void *argument) { return *(int *)argument + 1; }
 
 static void once_handler(void) { once_total += 1; }
 

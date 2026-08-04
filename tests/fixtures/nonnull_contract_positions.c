@@ -1,12 +1,12 @@
 #include <stdio.h>
 
-__attribute__((nonnull(1, 3)))
-static int combine(int *left, int scale, int *right, int *optional) {
+__attribute__((nonnull(1, 3))) static int combine(int *left, int scale,
+                                                  int *right, int *optional) {
   return *left + scale * *right + (optional ? *optional : 0);
 }
 
-__attribute__((nonnull))
-static int difference(int *left, int scale, int *right) {
+__attribute__((nonnull)) static int difference(int *left, int scale,
+                                               int *right) {
   return *left - scale * *right;
 }
 

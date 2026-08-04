@@ -25,9 +25,7 @@ static int gnu_compare_entries(const void *left, const void *right) {
   return (a > b) - (a < b);
 }
 
-static void gnu_free_entry(void *entry) {
-  free(entry);
-}
+static void gnu_free_entry(void *entry) { free(entry); }
 
 static error_t gnu_parse_option(int key, char *argument,
                                 struct argp_state *state) {
@@ -88,9 +86,8 @@ static int gnu_argp_extensions(void) {
   char option[] = "--number=5";
   char item[] = "item";
   char *arguments[] = {program, option, item, NULL};
-  int result =
-      argp_parse(&parser, 3, arguments, ARGP_NO_EXIT | ARGP_NO_HELP, NULL,
-                 &parsed);
+  int result = argp_parse(&parser, 3, arguments, ARGP_NO_EXIT | ARGP_NO_HELP,
+                          NULL, &parsed);
   return (result == 0) + parsed.number * 10 + parsed.positional;
 }
 
