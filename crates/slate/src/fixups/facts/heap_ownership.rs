@@ -459,11 +459,17 @@ fn heap_uses_are_owned(
             &aliases,
             candidate,
         ) {
+            if free.is_some() {
+                return None;
+            }
             reallocations.push(realloc.fact);
             index = realloc.next_index;
             continue;
         }
         if let Some(alias) = pointer_alias_temp_from_any(&indent.stmt, &aliases) {
+            if free.is_some() {
+                return None;
+            }
             let binding = facts.binding_by_local_path(
                 function,
                 alias,
@@ -488,6 +494,9 @@ fn heap_uses_are_owned(
             continue;
         }
         if let Some(use_kind) = heap_use(&indent.stmt, &aliases) {
+            if free.is_some() {
+                return None;
+            }
             match &use_kind {
                 HeapUseKind::ScalarWrite => {
                     written.insert(None);
