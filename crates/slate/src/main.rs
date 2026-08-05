@@ -19,7 +19,7 @@ fn usage() -> ExitCode {
     eprintln!(
         "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
     );
-    eprintln!("  translate   C -> Rust");
+    eprintln!("  translate   [clang args...] <file.c>  C -> Rust");
     eprintln!("  translate-directives   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
     eprintln!("  translate-project  <dir> <out_dir>  cross-TU C dir -> Rust modules");
@@ -43,8 +43,10 @@ fn main() -> ExitCode {
             None => usage(),
         },
         Some("fixup-debug") => run(fixup_debug(&args[2..])),
-        Some("translate") => match args.get(2) {
-            Some(path) => run(translate(Path::new(path))),
+        Some("translate") => match args[2..].split_last() {
+            Some((path, clang_args)) => {
+                run(translate_with_clang_args(Path::new(path), clang_args))
+            }
             None => usage(),
         },
         Some("translate-directives") => match args.get(2) {
@@ -91,6 +93,10 @@ fn emit_cir(path: &Path) -> Result<String, String> {
 
 fn translate(path: &Path) -> Result<String, String> {
     api::translate(path)
+}
+
+fn translate_with_clang_args(path: &Path, clang_args: &[String]) -> Result<String, String> {
+    api::translate_with_args(path, clang_args)
 }
 
 fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), String> {

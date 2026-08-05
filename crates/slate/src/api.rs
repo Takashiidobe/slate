@@ -2,7 +2,11 @@ use crate::{c_ast, cir, ctx, directive_translate, fixups, lower, preprocess, rus
 use std::path::Path;
 
 pub fn translate(path: &Path) -> Result<String, String> {
-    let (_, program) = lowered_program(path)?;
+    translate_with_args(path, &[])
+}
+
+pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String, String> {
+    let (_, program) = lowered_program_with_args(path, extra_args)?;
     if std::env::var("SLATE_RAW_LOWER").is_ok() {
         return Ok(program.emit());
     }
@@ -10,9 +14,16 @@ pub fn translate(path: &Path) -> Result<String, String> {
 }
 
 pub fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), String> {
+    lowered_program_with_args(path, &[])
+}
+
+pub fn lowered_program_with_args(
+    path: &Path,
+    extra_args: &[String],
+) -> Result<(cir::ir::Module, rust_ast::Program), String> {
     let source =
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-    let pp = preprocess::record_file(&source, &[])?;
+    let pp = preprocess::record_file(&source, extra_args)?;
     reject_active_unsupported(&pp, "translate")?;
     let diagnostics: Vec<_> = pp
         .directives
@@ -35,9 +46,14 @@ pub fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Progra
         }
     }
     let input = preprocess::clang_input(path, &source, &diagnostics)?;
-    let cir_text = cir::emit::emit_generic_with_args(path, input.extra_args())?;
+    let all_args: Vec<String> = extra_args
+        .iter()
+        .cloned()
+        .chain(input.extra_args().iter().cloned())
+        .collect();
+    let cir_text = cir::emit::emit_generic_with_args(path, &all_args)?;
     let module = cir::parse_module(&cir_text)?;
-    let unit = c_ast::parse_file_with_args(path, input.extra_args())?;
+    let unit = c_ast::parse_file_with_args(path, &all_args)?;
 
     let mut ctx = ctx::Ctx::default();
     let mut program = lower::lower(&module, &unit, &mut ctx);
