@@ -15,7 +15,8 @@ typedef struct {
   } __value;
 } __mbstate_t;
 
-typedef long __off_t;
+#define __NEED_off_t
+#include <bits/types.h>
 
 typedef struct __fpos_t {
   __off_t __pos;
@@ -24,8 +25,6 @@ typedef struct __fpos_t {
 
 typedef struct FILE FILE;
 typedef __fpos_t fpos_t;
-
-typedef long off_t;
 
 #define EOF (-1)
 #define SEEK_SET 0
