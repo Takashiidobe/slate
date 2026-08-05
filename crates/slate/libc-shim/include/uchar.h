@@ -5,12 +5,11 @@
 #include <stddef.h>
 #undef __need_size_t
 
-typedef __CHAR16_TYPE__ char16_t;
-typedef __CHAR32_TYPE__ char32_t;
+#include <stdint.h>
 
-/* Opaque conversion state, sized/aligned to match the real glibc
-   __mbstate_t (an int tag plus a 4-byte value union) since the real
-   mbrtoc16/mbrtoc32/c16rtomb/c32rtomb symbols read and write it. */
+typedef uint_least16_t char16_t;
+typedef uint_least32_t char32_t;
+
 typedef struct {
   int __count;
   union {
@@ -19,11 +18,10 @@ typedef struct {
   } __value;
 } mbstate_t;
 
-size_t mbrtoc16(char16_t *restrict pc16, const char *restrict s, size_t n,
-                mbstate_t *restrict ps);
-size_t c16rtomb(char *restrict s, char16_t c16, mbstate_t *restrict ps);
-size_t mbrtoc32(char32_t *restrict pc32, const char *restrict s, size_t n,
-                mbstate_t *restrict ps);
-size_t c32rtomb(char *restrict s, char32_t c32, mbstate_t *restrict ps);
+size_t mbrtoc16(char16_t *restrict, const char *, size_t n,
+                const mbstate_t *ps);
+size_t c16rtomb(char *, char16_t, const mbstate_t *);
+size_t mbrtoc32(char32_t *, const char *, size_t n, const mbstate_t *);
+size_t c32rtomb(char *, char32_t, mbstate_t *);
 
 #endif
