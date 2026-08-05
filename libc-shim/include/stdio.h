@@ -1,6 +1,8 @@
 #ifndef _SLATE_STDIO_H
 #define _SLATE_STDIO_H
 
+#define _SLATE_LIBC 1
+
 #define __need_size_t
 #define __need_NULL
 #include <stddef.h>
