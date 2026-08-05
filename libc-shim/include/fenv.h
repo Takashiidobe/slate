@@ -35,7 +35,9 @@ typedef struct {
   unsigned int __data_offset;
   unsigned short __data_selector;
   unsigned short __glibc_reserved5;
+#ifdef __x86_64__
   unsigned int __mxcsr;
+#endif
 } fenv_t;
 
 #define FE_DFL_ENV ((const fenv_t *)-1)
