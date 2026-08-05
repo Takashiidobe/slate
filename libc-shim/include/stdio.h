@@ -25,7 +25,7 @@ typedef struct __fpos_t {
 typedef struct FILE FILE;
 typedef __fpos_t fpos_t;
 
-typedef int off_t;
+typedef long off_t;
 
 #define EOF (-1)
 #define SEEK_SET 0

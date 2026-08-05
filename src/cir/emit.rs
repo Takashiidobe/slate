@@ -39,7 +39,14 @@ pub fn libc_shim_dir() -> Option<String> {
 
 fn libc_shim_args() -> Vec<String> {
     match libc_shim_dir() {
-        Some(dir) => vec!["-nostdlibinc".into(), "-isystem".into(), dir],
+        Some(dir) => {
+            let mut args = vec!["-nostdlibinc".into(), "-isystem".into(), dir];
+            for fallback in system_fallback_include_dirs() {
+                args.push("-idirafter".into());
+                args.push(fallback);
+            }
+            args
+        }
         None => Vec::new(),
     }
 }
@@ -59,6 +66,41 @@ pub fn clang_resource_dir_include() -> Option<String> {
             (!dir.is_empty()).then(|| format!("{dir}/include"))
         })
         .clone()
+}
+
+fn system_fallback_include_dirs() -> Vec<String> {
+    static DIRS: std::sync::OnceLock<Vec<String>> = std::sync::OnceLock::new();
+    DIRS.get_or_init(|| {
+        let Ok(out) = Command::new(clang())
+            .args(["-E", "-Wp,-v", "-x", "c", "/dev/null"])
+            .output()
+        else {
+            return Vec::new();
+        };
+        let resource_dir_include = clang_resource_dir_include();
+        let stderr = String::from_utf8_lossy(&out.stderr);
+        let mut dirs = Vec::new();
+        let mut in_list = false;
+        for line in stderr.lines() {
+            if line.starts_with("#include <...> search starts here") {
+                in_list = true;
+                continue;
+            }
+            if !in_list {
+                continue;
+            }
+            if line.starts_with("End of search list") {
+                break;
+            }
+            let dir = line.trim();
+            if dir.is_empty() || Some(dir) == resource_dir_include.as_deref() {
+                continue;
+            }
+            dirs.push(dir.to_string());
+        }
+        dirs
+    })
+    .clone()
 }
 
 pub fn target_args() -> Vec<String> {
