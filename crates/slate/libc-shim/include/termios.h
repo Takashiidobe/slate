@@ -1,6 +1,7 @@
 #ifndef _SLATE_TERMIOS_H
 #define _SLATE_TERMIOS_H
 
+#include <features.h>
 #include <bits/termios.h>
 
 speed_t cfgetospeed(const struct termios *);

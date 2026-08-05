@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_TYPES_H
 #define _SLATE_BITS_TYPES_H
 
+#if !defined(_SLATE_LIBC)
+#  error "Never include <bits/types.h> directly; include a standard header like <sys/types.h> or <unistd.h> instead."
+#endif
+
 typedef unsigned int __mode_t;
 typedef int __pid_t;
 typedef unsigned int __uid_t;
