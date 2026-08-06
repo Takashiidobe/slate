@@ -53,6 +53,35 @@ typedef unsigned long long __fsblkcnt_t;
 typedef unsigned long long __fsfilcnt_t;
 #endif
 
+struct __locale_map;
+
+struct __locale_struct {
+  const struct __locale_map *cat[6];
+};
+
+typedef struct {
+  int __count;
+  union {
+    int __wch;
+    char __wchb[4];
+  } __value;
+} __mbstate_t;
+
+typedef struct __fpos_t {
+  __off_t __pos;
+  __mbstate_t __state;
+} __fpos_t;
+
+#if defined(__NEED_FILE) && !defined(__DEFINED_FILE)
+typedef struct FILE FILE;
+#define __DEFINED_FILE
+#endif
+
+#if defined(__NEED_fpos_t) && !defined(__DEFINED_fpos_t)
+typedef __fpos_t fpos_t;
+#define __DEFINED_fpos_t
+#endif
+
 #if defined(__NEED_size_t) && !defined(__DEFINED_size_t)
 typedef __size_t size_t;
 #define __DEFINED_size_t
@@ -198,6 +227,11 @@ typedef __socklen_t socklen_t;
 #define __DEFINED_socklen_t
 #endif
 
+#if defined(__NEED_locale_t) && !defined(__defined_locale_t)
+typedef struct __locale_struct *locale_t;
+#define __DEFINED_locale_t
+#endif
+
 #undef __NEED_size_t
 #undef __NEED_ssize_t
 #undef __NEED_off_t
@@ -227,5 +261,6 @@ typedef __socklen_t socklen_t;
 #undef __NEED_caddr_t
 #undef __NEED_sa_family_t
 #undef __NEED_socklen_t
+#undef __NEED_locale_t
 
 #endif

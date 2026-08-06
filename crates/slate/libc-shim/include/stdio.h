@@ -3,30 +3,12 @@
 
 #define _SLATE_LIBC 1
 
-#define __need_size_t
-#define __need_NULL
-#include <stddef.h>
-#undef __need_size_t
-#undef __need_NULL
-
-typedef struct {
-  int __count;
-  union {
-    int __wch;
-    char __wchb[4];
-  } __value;
-} __mbstate_t;
-
+#define __NEED_size_t
+#define __NEED_NULL
 #define __NEED_off_t
+#define __NEED_FILE
+#define __NEED_fpos_t
 #include <bits/types.h>
-
-typedef struct __fpos_t {
-  __off_t __pos;
-  __mbstate_t __state;
-} __fpos_t;
-
-typedef struct FILE FILE;
-typedef __fpos_t fpos_t;
 
 #define EOF (-1)
 #define SEEK_SET 0
