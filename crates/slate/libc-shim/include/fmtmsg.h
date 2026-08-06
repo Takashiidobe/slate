@@ -1,27 +1,29 @@
 #ifndef _SLATE_FMTMSG_H
 #define _SLATE_FMTMSG_H
 
-#define MM_HARD 1
-#define MM_SOFT 2
-#define MM_FIRM 4
+enum {
+  MM_HARD = 1,
+  MM_SOFT = 2,
+  MM_FIRM = 4,
 
-#define MM_APPL  8
-#define MM_UTIL  16
-#define MM_OPSYS 32
-
-#define MM_RECOVER 64
-#define MM_NRECOV  128
-
-#define MM_PRINT   256
-#define MM_CONSOLE 512
+  MM_APPL    = 8,
+  MM_UTIL    = 16,
+  MM_OPSYS   = 32,
+  MM_RECOVER = 64,
+  MM_NRECOV  = 128,
+  MM_PRINT   = 256,
+  MM_CONSOLE = 512,
+};
 
 #define MM_NULLMC 0L
 
-#define MM_HALT    1
-#define MM_ERROR   2
-#define MM_WARNING 3
-#define MM_INFO    4
-#define MM_NOSEV   0
+enum {
+  MM_NOSEV   = 0,
+  MM_HALT    = 1,
+  MM_ERROR   = 2,
+  MM_WARNING = 3,
+  MM_INFO    = 4,
+};
 
 #define MM_OK    0
 #define MM_NOTOK (-1)
