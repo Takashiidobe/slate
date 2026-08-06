@@ -180,7 +180,7 @@ typedef unsigned long __pthread_t;
 #endif /* _SLATE_BITS_TYPES_H */
 
 #if defined(__NEED_NULL) && !defined(__DEFINED_NULL)
-typedef __NULL NULL;
+#define NULL __NULL
 #define __DEFINED_NULL
 #endif
 #undef __NEED_NULL
