@@ -1,11 +1,11 @@
 typedef __SIZE_TYPE__ size_t;
-typedef void FILE;
+typedef void          FILE;
 typedef unsigned long pthread_t;
 
 #include "function_provenance/string.h"
 #include "function_provenance/strings.h"
 
-static int project_state;
+static int   project_state;
 static void *malloc(size_t size) { return size ? (void *)16 : 0; }
 static void *calloc(size_t count, size_t size) {
   return count && size ? (void *)16 : 0;
@@ -13,7 +13,7 @@ static void *calloc(size_t count, size_t size) {
 static void *realloc(void *ptr, size_t size) {
   return ptr && size ? (void *)16 : 0;
 }
-static void free(void *ptr) { project_state = ptr ? 77 : 0; }
+static void  free(void *ptr) { project_state = ptr ? 77 : 0; }
 static void *memcpy(void *dst, const void *src, size_t count) {
   return count && src ? dst : 0;
 }
@@ -27,9 +27,9 @@ static void *memchr(const void *ptr, int value, size_t count) {
   return ptr && value && count ? (void *)24 : 0;
 }
 static size_t strlen(const char *s) { return s ? 5 : 0; }
-static char *strcpy(char *dst, const char *src) { return src ? dst : 0; }
-static char *strcat(char *dst, const char *src) { return src ? dst : 0; }
-static char *strncpy(char *dst, const char *src, size_t count) {
+static char  *strcpy(char *dst, const char *src) { return src ? dst : 0; }
+static char  *strcat(char *dst, const char *src) { return src ? dst : 0; }
+static char  *strncpy(char *dst, const char *src, size_t count) {
   return src && count ? dst : 0;
 }
 static char *strncat(char *dst, const char *src, size_t count) {
@@ -62,7 +62,7 @@ static size_t strspn(const char *s, const char *accept) {
 static size_t strcspn(const char *s, const char *reject) {
   return s && reject ? 32 : 0;
 }
-static int atoi(const char *s) { return s ? 41 : 0; }
+static int  atoi(const char *s) { return s ? 41 : 0; }
 static long atol(const char *s) { return s ? 42 : 0; }
 static long strtol(const char *s, char **end, int base) {
   return s && end && base ? 43 : 0;
@@ -73,12 +73,12 @@ static unsigned long strtoul(const char *s, char **end, int base) {
 static double strtod(const char *s, char **end) {
   return s && end ? 45.0 : 0.0;
 }
-static int printf(const char *format) { return format ? 51 : 0; }
-static int puts(const char *s) { return s ? 52 : 0; }
+static int   printf(const char *format) { return format ? 51 : 0; }
+static int   puts(const char *s) { return s ? 52 : 0; }
 static FILE *fopen(const char *path, const char *mode) {
   return path && mode ? (FILE *)48 : 0;
 }
-static int fputs(const char *s, FILE *stream) { return s && stream ? 54 : 0; }
+static int   fputs(const char *s, FILE *stream) { return s && stream ? 54 : 0; }
 static char *fgets(char *s, int count, FILE *stream) {
   return s && count && stream ? (char *)40 : 0;
 }
@@ -88,11 +88,11 @@ static size_t fread(void *ptr, size_t size, size_t count, FILE *stream) {
 static size_t fwrite(const void *ptr, size_t size, size_t count, FILE *stream) {
   return ptr && size && count && stream ? 57 : 0;
 }
-static int fclose(FILE *stream) { return stream ? 58 : 0; }
-static int fflush(FILE *stream) { return stream ? 59 : 0; }
-static int remove(const char *path) { return path ? 60 : 0; }
-static int toupper(int value) { return value ? 61 : 0; }
-static int tolower(int value) { return value ? 62 : 0; }
+static int    fclose(FILE *stream) { return stream ? 58 : 0; }
+static int    fflush(FILE *stream) { return stream ? 59 : 0; }
+static int    remove(const char *path) { return path ? 60 : 0; }
+static int    toupper(int value) { return value ? 61 : 0; }
+static int    tolower(int value) { return value ? 62 : 0; }
 static double sin(double value) { return value ? 63.0 : 0.0; }
 static double cos(double value) { return value ? 64.0 : 0.0; }
 static double tan(double value) { return value ? 65.0 : 0.0; }
@@ -104,10 +104,10 @@ static double sqrt(double value) { return value ? 70.0 : 0.0; }
 static double exp(double value) { return value ? 71.0 : 0.0; }
 static double exp2(double value) { return value ? 72.0 : 0.0; }
 static double fmod(double lhs, double rhs) { return lhs && rhs ? 73.0 : 0.0; }
-static long lround(double value) { return value ? 74 : 0; }
+static long   lround(double value) { return value ? 74 : 0; }
 static long long llround(double value) { return value ? 75 : 0; }
-static int pthread_create(pthread_t *thread, const void *attr,
-                          void *(*start)(void *), void *arg) {
+static int       pthread_create(pthread_t *thread, const void *attr,
+                                void *(*start)(void *), void *arg) {
   return thread && !attr && start && arg ? 78 : 0;
 }
 static int pthread_join(pthread_t thread, void **result) {
@@ -118,8 +118,8 @@ static int compare(const void *lhs, const void *rhs) {
   return lhs == rhs ? 0 : 1;
 }
 static void *start(void *arg) { return arg; }
-static void qsort(void *base, size_t count, size_t size,
-                  int (*callback)(const void *, const void *)) {
+static void  qsort(void *base, size_t count, size_t size,
+                   int (*callback)(const void *, const void *)) {
   project_state = base && count && size && callback ? 76 : 0;
 }
 static void *bsearch(const void *key, const void *base, size_t count,
@@ -136,16 +136,16 @@ static void exit(int status) { project_state = status + 80; }
   } while (0)
 
 int main(void) {
-  char a[8] = "a";
-  char b[8] = "b";
-  char *end = a;
-  volatile size_t count = 1;
-  volatile int number = 1;
-  volatile double real = 1.0;
-  FILE *stream;
-  void *ptr;
-  pthread_t thread = 1;
-  size_t (*strlen_call)(const char *) = strlen;
+  char            a[8]   = "a";
+  char            b[8]   = "b";
+  char           *end    = a;
+  volatile size_t count  = 1;
+  volatile int    number = 1;
+  volatile double real   = 1.0;
+  FILE           *stream;
+  void           *ptr;
+  pthread_t       thread                       = 1;
+  size_t          (*strlen_call)(const char *) = strlen;
 
   ptr = malloc(count);
   CHECK(ptr, (void *)16, 2);

@@ -3,7 +3,7 @@
 
 static int cache_prefetch_probe(int x) {
   char bytes[16] = {0};
-  bytes[0] = (char)x;
+  bytes[0]       = (char)x;
   __builtin___clear_cache(bytes, bytes + sizeof(bytes));
   __builtin_prefetch(bytes + 1, 0, 3);
   return bytes[0] + 1;

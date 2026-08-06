@@ -3,14 +3,14 @@
 int main() {
   ASSERT(8, ({
            union {
-             int a;
+             int  a;
              char b[6];
            } x;
            sizeof(x);
          }));
   ASSERT(3, ({
            union {
-             int a;
+             int  a;
              char b[4];
            } x;
            x.a = 515;
@@ -18,7 +18,7 @@ int main() {
          }));
   ASSERT(2, ({
            union {
-             int a;
+             int  a;
              char b[4];
            } x;
            x.a = 515;
@@ -26,7 +26,7 @@ int main() {
          }));
   ASSERT(0, ({
            union {
-             int a;
+             int  a;
              char b[4];
            } x;
            x.a = 515;
@@ -34,7 +34,7 @@ int main() {
          }));
   ASSERT(0, ({
            union {
-             int a;
+             int  a;
              char b[4];
            } x;
            x.a = 515;
@@ -47,7 +47,7 @@ int main() {
            } x, y;
            x.a = 3;
            y.a = 5;
-           y = x;
+           y   = x;
            y.a;
          }));
   ASSERT(3, ({
@@ -58,7 +58,7 @@ int main() {
            } x, y;
            x.c.b = 3;
            y.c.b = 5;
-           y = x;
+           y     = x;
            y.c.b;
          }));
 

@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 static int address_probe(void) {
-  int value = 37;
+  int  value   = 37;
   int *address = __builtin_addressof(value);
   return (address == &value) + (*address == 37);
 }

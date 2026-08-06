@@ -1,6 +1,6 @@
 #include "test.h"
 
-float g40 = 1.5;
+float  g40 = 1.5;
 double g41 = 0.0 ? 55 : (0, 1 + 1 * 5.0 / 2 * (double)2 * (int)2.0);
 
 int main() {

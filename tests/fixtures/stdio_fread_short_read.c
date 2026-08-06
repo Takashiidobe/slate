@@ -15,8 +15,8 @@ int main(void) {
     puts("reopen-fail");
     return 0;
   }
-  char buf[16] = {0};
-  size_t n = fread(buf, 4, 4, g);
+  char   buf[16] = {0};
+  size_t n       = fread(buf, 4, 4, g);
   printf("%zu %s\n", n, buf);
   fclose(g);
   remove("slate_stdio_fread_short_read.tmp");

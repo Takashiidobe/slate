@@ -1,8 +1,8 @@
 #include <setjmp.h>
 #include <stdio.h>
 static jmp_buf buf;
-static void jump(int n) { longjmp(buf, n); }
-int main(void) {
+static void    jump(int n) { longjmp(buf, n); }
+int            main(void) {
   int r = setjmp(buf);
   if (r == 0) {
     printf("before\n");

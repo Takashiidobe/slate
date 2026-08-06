@@ -17,9 +17,9 @@ int main(void) {
     return 0;
   }
   char *buf = malloc(16);
-  buf[0] = 0;
-  size_t n = fread(buf, 1, 10, g);
-  buf[n] = 0;
+  buf[0]    = 0;
+  size_t n  = fread(buf, 1, 10, g);
+  buf[n]    = 0;
   printf("%zu %s\n", n, buf);
   free(buf);
   fclose(g);

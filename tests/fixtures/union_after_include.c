@@ -31,7 +31,7 @@ static int array_pick(int index) {
 }
 static int union_pick(int a, int b) {
   union FuzzPair p;
-  p.left = a;
+  p.left  = a;
   p.right = b;
   return p.left;
 }

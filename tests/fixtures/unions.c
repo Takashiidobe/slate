@@ -13,7 +13,7 @@ static int pick_left(int value) {
 
 static int overwrite(int a, int b) {
   union Pair p;
-  p.left = a;
+  p.left  = a;
   p.right = b;
   return p.left;
 }

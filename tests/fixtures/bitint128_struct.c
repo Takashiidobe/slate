@@ -8,11 +8,11 @@ struct W {
 
 int main(void) {
   struct W w;
-  w.tag = 1;
-  w.s = -5;
-  w.u = 12345678901234567890ULL;
-  w.s += 10;
-  w.u *= 2;
+  w.tag  = 1;
+  w.s    = -5;
+  w.u    = 12345678901234567890ULL;
+  w.s   += 10;
+  w.u   *= 2;
 
   printf("%zu\n", sizeof(struct W));
   printf("%lld\n", (long long)w.s);

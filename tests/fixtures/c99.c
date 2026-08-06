@@ -13,14 +13,14 @@ struct C99Pair {
 
 struct C99Flexible {
   size_t count;
-  int values[];
+  int    values[];
 };
 
 enum C99TrailingComma {
   C99_ENUM_VALUE = 17,
 };
 
-typedef const int C99ConstInt;
+typedef const int    C99ConstInt;
 typedef volatile int C99VolatileInt;
 typedef int *restrict C99RestrictedIntPointer;
 
@@ -62,12 +62,12 @@ static int c99_thirty_two_parameters(
 }
 
 int main(void) {
-  int \u03b1 = 7;
-  _Bool boolean_value = 4;
-  long long signed_long_long = -9000000000LL;
-  unsigned long long unsigned_long_long = 18000000000ULL;
-  float _Complex float_complex = 1.0f + 2.0f * I;
-  double _Complex double_complex = 3.0 + 4.0 * I;
+  int                \u03b1                = 7;
+  _Bool              boolean_value         = 4;
+  long long          signed_long_long      = -9000000000LL;
+  unsigned long long unsigned_long_long    = 18000000000ULL;
+  float _Complex float_complex             = 1.0f + 2.0f * I;
+  double _Complex double_complex           = 3.0 + 4.0 * I;
   long double _Complex long_double_complex = 5.0L + 6.0L * I;
   int enhanced_arithmetic =
       boolean_value + (signed_long_long == -9000000000LL) +
@@ -75,7 +75,7 @@ int main(void) {
       (float_complex == 1.0f + 2.0f * I) + (double_complex == 3.0 + 4.0 * I) +
       (long_double_complex == 5.0L + 6.0L * I);
 
-  int flexible_total = 0;
+  int                 flexible_total = 0;
   struct C99Flexible *flexible =
       malloc(sizeof(*flexible) + 3 * sizeof(flexible->values[0]));
   if (flexible == NULL) {
@@ -83,8 +83,8 @@ int main(void) {
   }
   flexible->count = 3;
   for (size_t index = 0; index < flexible->count; ++index) {
-    flexible->values[index] = (int)index + 1;
-    flexible_total += flexible->values[index];
+    flexible->values[index]  = (int)index + 1;
+    flexible_total          += flexible->values[index];
   }
   free(flexible);
 
@@ -95,28 +95,28 @@ int main(void) {
   }
   int vm_total = c99_vm_sum(length, &variable_length_array);
 
-  int initializer_seed = 19;
+  int            initializer_seed        = 19;
   struct C99Pair nonconstant_initializer = {initializer_seed,
                                             initializer_seed + 1};
-  struct C99Pair designated_initializer = {.second = 23, .first = 22};
-  int designated_array[4] = {[2] = 29, [0] = 27};
+  struct C99Pair designated_initializer  = {.second = 23, .first = 22};
+  int            designated_array[4]     = {[2] = 29, [0] = 27};
 
-  C99ConstInt const_value = 31;
-  const C99ConstInt idempotent_const_value = const_value;
-  C99VolatileInt volatile_value = 37;
-  volatile C99VolatileInt idempotent_volatile_value = volatile_value;
-  int restricted_value = 41;
+  C99ConstInt             const_value                 = 31;
+  const C99ConstInt       idempotent_const_value      = const_value;
+  C99VolatileInt          volatile_value              = 37;
+  volatile C99VolatileInt idempotent_volatile_value   = volatile_value;
+  int                     restricted_value            = 41;
   C99RestrictedIntPointer restrict restricted_pointer = &restricted_value;
 
-  double hexadecimal_float = 0x1.8p+1;
-  struct C99Pair compound_pair = (struct C99Pair){43, 47};
-  int compound_array_value = ((int[]){51, 53})[1];
-  int signed_quotient = -7 / 3;
-  int signed_remainder = -7 % 3;
+  double         hexadecimal_float    = 0x1.8p+1;
+  struct C99Pair compound_pair        = (struct C99Pair){43, 47};
+  int            compound_array_value = ((int[]){51, 53})[1];
+  int            signed_quotient      = -7 / 3;
+  int            signed_remainder     = -7 % 3;
 
-  int mixed_order = 59;
-  mixed_order += 2;
-  int declaration_after_statement = 61;
+  int mixed_order                  = 59;
+  mixed_order                     += 2;
+  int declaration_after_statement  = 61;
 
   int for_total = 0;
   for (int index = 0; index < 3; ++index) {
@@ -124,7 +124,7 @@ int main(void) {
   }
 
   int qualified_values[3] = {2, 3, 5};
-  int macro_total = C99_SUM3(7, 11, 13);
+  int macro_total         = C99_SUM3(7, 11, 13);
   int translation_limit_total =
       c99_thirty_two_parameters(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);

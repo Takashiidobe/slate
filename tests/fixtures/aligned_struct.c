@@ -3,7 +3,7 @@
 
 struct __attribute__((aligned(16))) Aligned {
   char a;
-  int b;
+  int  b;
 };
 
 static int next_value(void) { return 9; }

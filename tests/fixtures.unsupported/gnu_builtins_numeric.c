@@ -4,11 +4,11 @@
 #include <stdio.h>
 
 static int gnu_builtin_bits(void) {
-  int total = 0;
-  total += __builtin_ffs(16);
-  total += __builtin_ffsl(32L);
-  total += __builtin_ffsll(64LL);
-  total += __builtin_clz(1U) == (int)(sizeof(unsigned int) * CHAR_BIT - 1);
+  int total  = 0;
+  total     += __builtin_ffs(16);
+  total     += __builtin_ffsl(32L);
+  total     += __builtin_ffsll(64LL);
+  total     += __builtin_clz(1U) == (int)(sizeof(unsigned int) * CHAR_BIT - 1);
   total += __builtin_clzl(1UL) == (int)(sizeof(unsigned long) * CHAR_BIT - 1);
   total +=
       __builtin_clzll(1ULL) == (int)(sizeof(unsigned long long) * CHAR_BIT - 1);
@@ -28,26 +28,26 @@ static int gnu_builtin_bits(void) {
 }
 
 static unsigned long long gnu_builtin_reordering(void) {
-  unsigned long long total = 0;
-  total += __builtin_bswap16(0x1234U);
-  total += __builtin_bswap32(0x01020304U);
-  total += __builtin_bswap64(0x0102030405060708ULL);
-  total += __builtin_bitreverse8(0x12U);
-  total += __builtin_bitreverse16(0x1234U);
-  total += __builtin_bitreverse32(0x12345678U);
-  total += __builtin_bitreverse64(0x0123456789abcdefULL);
-  total += __builtin_rotateleft32(0x12345678U, 8);
-  total += __builtin_rotateright32(0x12345678U, 8);
-  total += __builtin_clzg(0U, 77);
-  total += __builtin_ctzg(0U, 79);
+  unsigned long long total  = 0;
+  total                    += __builtin_bswap16(0x1234U);
+  total                    += __builtin_bswap32(0x01020304U);
+  total                    += __builtin_bswap64(0x0102030405060708ULL);
+  total                    += __builtin_bitreverse8(0x12U);
+  total                    += __builtin_bitreverse16(0x1234U);
+  total                    += __builtin_bitreverse32(0x12345678U);
+  total                    += __builtin_bitreverse64(0x0123456789abcdefULL);
+  total                    += __builtin_rotateleft32(0x12345678U, 8);
+  total                    += __builtin_rotateright32(0x12345678U, 8);
+  total                    += __builtin_clzg(0U, 77);
+  total                    += __builtin_ctzg(0U, 79);
   return total;
 }
 
 static int gnu_builtin_overflow(void) {
-  int signed_result;
+  int          signed_result;
   unsigned int unsigned_result;
-  long long long_result;
-  int total = 0;
+  long long    long_result;
+  int          total = 0;
   total +=
       !__builtin_add_overflow(20, 22, &signed_result) && signed_result == 42;
   total += __builtin_add_overflow(INT_MAX, 1, &signed_result);
@@ -66,24 +66,24 @@ static int gnu_builtin_overflow(void) {
 }
 
 static int gnu_builtin_floating(void) {
-  double _Complex value = __builtin_complex(3.0, 4.0);
-  double _Complex conjugate = __builtin_conj(value);
-  int total = 0;
-  total += __builtin_abs(-5);
-  total += (int)__builtin_labs(-7L);
-  total += (int)__builtin_llabs(-11LL);
-  total += (int)__builtin_fabs(-13.0);
-  total += (int)__builtin_fabsf(-17.0F);
-  total += (int)__builtin_fabsl(-19.0L);
-  total += __builtin_isinf(__builtin_inf());
-  total += __builtin_isinf(__builtin_inff());
-  total += __builtin_isinf(__builtin_infl());
-  total += __builtin_isnan(__builtin_nan(""));
-  total += __builtin_isnan(__builtin_nanf(""));
-  total += __builtin_isnan(__builtin_nanl(""));
-  total += __builtin_isfinite(23.0);
-  total += __builtin_isnormal(29.0);
-  total += __builtin_signbit(-31.0);
+  double _Complex value      = __builtin_complex(3.0, 4.0);
+  double _Complex conjugate  = __builtin_conj(value);
+  int total                  = 0;
+  total                     += __builtin_abs(-5);
+  total                     += (int)__builtin_labs(-7L);
+  total                     += (int)__builtin_llabs(-11LL);
+  total                     += (int)__builtin_fabs(-13.0);
+  total                     += (int)__builtin_fabsf(-17.0F);
+  total                     += (int)__builtin_fabsl(-19.0L);
+  total                     += __builtin_isinf(__builtin_inf());
+  total                     += __builtin_isinf(__builtin_inff());
+  total                     += __builtin_isinf(__builtin_infl());
+  total                     += __builtin_isnan(__builtin_nan(""));
+  total                     += __builtin_isnan(__builtin_nanf(""));
+  total                     += __builtin_isnan(__builtin_nanl(""));
+  total                     += __builtin_isfinite(23.0);
+  total                     += __builtin_isnormal(29.0);
+  total                     += __builtin_signbit(-31.0);
   total += __builtin_fpclassify(FP_NAN, FP_INFINITE, FP_NORMAL, FP_SUBNORMAL,
                                 FP_ZERO, 0.0) == FP_ZERO;
   total += __builtin_isgreater(37.0, 31.0);

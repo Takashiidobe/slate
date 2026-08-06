@@ -27,22 +27,22 @@ static int c23_stdbit(void) {
 
 static int c23_checked_arithmetic(void) {
   int result;
-  int total = 0;
-  total += !ckd_add(&result, 20, 22) && result == 42;
-  total += !ckd_sub(&result, 50, 8) && result == 42;
-  total += !ckd_mul(&result, 6, 7) && result == 42;
-  total += ckd_add(&result, INT_MAX, 1);
+  int total  = 0;
+  total     += !ckd_add(&result, 20, 22) && result == 42;
+  total     += !ckd_sub(&result, 50, 8) && result == 42;
+  total     += !ckd_mul(&result, 6, 7) && result == 42;
+  total     += ckd_add(&result, INT_MAX, 1);
   return total;
 }
 
 static int c23_utf8(void) {
-  mbstate_t input_state = {};
-  mbstate_t output_state = {};
-  char8_t character = 0;
-  char output[MB_LEN_MAX] = {};
-  size_t input_size = mbrtoc8(&character, "A", 1, &input_state);
-  size_t output_size = c8rtomb(output, character, &output_state);
-  atomic_char8_t atomic_character = character;
+  mbstate_t      input_state        = {};
+  mbstate_t      output_state       = {};
+  char8_t        character          = 0;
+  char           output[MB_LEN_MAX] = {};
+  size_t         input_size         = mbrtoc8(&character, "A", 1, &input_state);
+  size_t         output_size        = c8rtomb(output, character, &output_state);
+  atomic_char8_t atomic_character   = character;
   atomic_store(&atomic_character, u8'B');
   return (input_size == 1) + (output_size == 1) + (output[0] == 'A') +
          (atomic_load(&atomic_character) == u8'B') +
@@ -50,33 +50,33 @@ static int c23_utf8(void) {
 }
 
 static int c23_memory(void) {
-  char source[] = "abcdef";
-  char destination[8] = {};
-  char secret[] = "secret";
+  char  source[]       = "abcdef";
+  char  destination[8] = {};
+  char  secret[]       = "secret";
   char *first_copy;
   char *second_copy;
-  void *stop = memccpy(destination, source, 'c', 6);
-  int total = stop == destination + 3 && destination[2] == 'c';
+  void *stop  = memccpy(destination, source, 'c', 6);
+  int   total = stop == destination + 3 && destination[2] == 'c';
   memset_explicit(secret, 0, sizeof(secret));
-  total += secret[0] == 0 && secret[5] == 0;
-  first_copy = strdup("c23");
-  second_copy = strndup("library", 3);
-  total += first_copy != nullptr && strcmp(first_copy, "c23") == 0;
-  total += second_copy != nullptr && strcmp(second_copy, "lib") == 0;
+  total       += secret[0] == 0 && secret[5] == 0;
+  first_copy   = strdup("c23");
+  second_copy  = strndup("library", 3);
+  total       += first_copy != nullptr && strcmp(first_copy, "c23") == 0;
+  total       += second_copy != nullptr && strcmp(second_copy, "lib") == 0;
   free(first_copy);
   free(second_copy);
   return total;
 }
 
 static int c23_time(void) {
-  time_t timestamp = 0;
-  struct tm utc = {};
-  struct tm local = {};
-  struct timespec resolution = {};
-  char month[32] = {};
-  wchar_t wide_month[32] = {};
-  int total = gmtime_r(&timestamp, &utc) == &utc;
-  total += localtime_r(&timestamp, &local) == &local;
+  time_t          timestamp       = 0;
+  struct tm       utc             = {};
+  struct tm       local           = {};
+  struct timespec resolution      = {};
+  char            month[32]       = {};
+  wchar_t         wide_month[32]  = {};
+  int             total           = gmtime_r(&timestamp, &utc) == &utc;
+  total                          += localtime_r(&timestamp, &local) == &local;
   total += timespec_getres(&resolution, TIME_UTC) == TIME_UTC;
   total += resolution.tv_sec > 0 || resolution.tv_nsec > 0;
   total += timegm(&utc) == 0;
@@ -88,13 +88,13 @@ static int c23_time(void) {
 }
 
 static int c23_io(void) {
-  char output[64] = {};
-  char float_output[16] = {};
-  char double_output[16] = {};
-  char long_double_output[16] = {};
-  unsigned int binary_value = 0;
-  uint16_t exact_value = 0;
-  uint_fast16_t fast_value = 0;
+  char          output[64]             = {};
+  char          float_output[16]       = {};
+  char          double_output[16]      = {};
+  char          long_double_output[16] = {};
+  unsigned int  binary_value           = 0;
+  uint16_t      exact_value            = 0;
+  uint_fast16_t fast_value             = 0;
   int written = snprintf(output, sizeof(output), "%b %w16u %wf16u", 13u,
                          (uint16_t)21, (uint_fast16_t)34);
   int scanned = sscanf("1011 55 89", "%b %w16u %wf16u", &binary_value,
@@ -111,10 +111,10 @@ static int c23_io(void) {
 }
 
 static int c23_limits(void) {
-  int integer_widths = BOOL_WIDTH + CHAR_WIDTH + SCHAR_WIDTH + UCHAR_WIDTH +
-                       SHRT_WIDTH + USHRT_WIDTH + INT_WIDTH + UINT_WIDTH +
-                       LONG_WIDTH + ULONG_WIDTH + LLONG_WIDTH + ULLONG_WIDTH +
-                       SIZE_WIDTH + PTRDIFF_WIDTH;
+  int integer_widths  = BOOL_WIDTH + CHAR_WIDTH + SCHAR_WIDTH + UCHAR_WIDTH +
+                        SHRT_WIDTH + USHRT_WIDTH + INT_WIDTH + UINT_WIDTH +
+                        LONG_WIDTH + ULONG_WIDTH + LLONG_WIDTH + ULLONG_WIDTH +
+                        SIZE_WIDTH + PTRDIFF_WIDTH;
   int floating_limits = (FLT_TRUE_MIN > 0.0f) + (DBL_TRUE_MIN > 0.0) +
                         (LDBL_TRUE_MIN > 0.0L) + (FLT_NORM_MAX <= FLT_MAX) +
                         (DBL_NORM_MAX <= DBL_MAX) +

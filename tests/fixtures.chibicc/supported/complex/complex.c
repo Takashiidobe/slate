@@ -12,13 +12,13 @@ int main() {
   ASSERT(16, _Alignof(long double _Complex));
 
   // Variable declaration and storage
-  float _Complex fc = 0;
-  double _Complex dc = 0;
+  float _Complex fc        = 0;
+  double _Complex dc       = 0;
   long double _Complex ldc = 0;
 
   // Basic addition - cast results to int for testing
-  double _Complex z1 = 1.0 + 2.0 * 1.0i;
-  double _Complex z2 = 3.0 + 4.0 * 1.0i;
+  double _Complex z1  = 1.0 + 2.0 * 1.0i;
+  double _Complex z2  = 3.0 + 4.0 * 1.0i;
   double _Complex sum = z1 + z2;
   ASSERT(4, (int)__real__ sum);
   ASSERT(6, (int)__imag__ sum);
@@ -40,8 +40,8 @@ int main() {
   ASSERT(0, (int)__imag__ quot);
 
   // Float complex
-  float _Complex fc1 = 1.0f + 2.0f * 1.0fi;
-  float _Complex fc2 = 3.0f + 4.0f * 1.0fi;
+  float _Complex fc1  = 1.0f + 2.0f * 1.0fi;
+  float _Complex fc2  = 3.0f + 4.0f * 1.0fi;
   float _Complex fsum = fc1 + fc2;
   ASSERT(4, (int)__real__ fsum);
   ASSERT(6, (int)__imag__ fsum);

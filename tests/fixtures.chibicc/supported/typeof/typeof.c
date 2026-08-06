@@ -10,12 +10,12 @@ int main() {
            x;
          }));
   ASSERT(4, ({
-           int x;
+           int       x;
            typeof(x) y;
            sizeof(y);
          }));
   ASSERT(8, ({
-           int x;
+           int        x;
            typeof(&x) y;
            sizeof(y);
          }));

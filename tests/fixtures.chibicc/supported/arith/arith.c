@@ -34,40 +34,40 @@ int main() {
   ASSERT(0, 1073741824 * 100 / 100);
 
   ASSERT(7, ({
-           int i = 2;
-           i += 5;
+           int i  = 2;
+           i     += 5;
            i;
          }));
   ASSERT(7, ({
-           int i = 2;
-           i += 5;
+           int i  = 2;
+           i     += 5;
          }));
   ASSERT(3, ({
-           int i = 5;
-           i -= 2;
+           int i  = 5;
+           i     -= 2;
            i;
          }));
   ASSERT(3, ({
-           int i = 5;
-           i -= 2;
+           int i  = 5;
+           i     -= 2;
          }));
   ASSERT(6, ({
-           int i = 3;
-           i *= 2;
+           int i  = 3;
+           i     *= 2;
            i;
          }));
   ASSERT(6, ({
-           int i = 3;
-           i *= 2;
+           int i  = 3;
+           i     *= 2;
          }));
   ASSERT(3, ({
-           int i = 6;
-           i /= 2;
+           int i  = 6;
+           i     /= 2;
            i;
          }));
   ASSERT(3, ({
-           int i = 6;
-           i /= 2;
+           int i  = 6;
+           i     /= 2;
          }));
 
   ASSERT(3, ({
@@ -76,17 +76,17 @@ int main() {
          }));
   ASSERT(2, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            ++*p;
          }));
   ASSERT(0, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            --*p;
          }));
@@ -111,53 +111,53 @@ int main() {
          }));
   ASSERT(1, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            *p++;
          }));
   ASSERT(1, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            *p--;
          }));
 
   ASSERT(0, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            (*p++)--;
            a[0];
          }));
   ASSERT(0, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            (*(p--))--;
            a[1];
          }));
   ASSERT(2, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            (*p)--;
            a[2];
          }));
   ASSERT(2, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            (*p)--;
            p++;
@@ -166,36 +166,36 @@ int main() {
 
   ASSERT(0, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            (*p++)--;
            a[0];
          }));
   ASSERT(0, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            (*p++)--;
            a[1];
          }));
   ASSERT(2, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            (*p++)--;
            a[2];
          }));
   ASSERT(2, ({
            int a[3];
-           a[0] = 0;
-           a[1] = 1;
-           a[2] = 2;
+           a[0]   = 0;
+           a[1]   = 1;
+           a[2]   = 2;
            int *p = a + 1;
            (*p++)--;
            *p;
@@ -215,13 +215,13 @@ int main() {
   ASSERT(5, 17 % 6);
   ASSERT(5, ((long)17) % 6);
   ASSERT(2, ({
-           int i = 10;
-           i %= 4;
+           int i  = 10;
+           i     %= 4;
            i;
          }));
   ASSERT(2, ({
-           long i = 10;
-           i %= 4;
+           long i  = 10;
+           i      %= 4;
            i;
          }));
 
@@ -238,18 +238,18 @@ int main() {
   ASSERT(0b110100, 0b111000 ^ 0b001100);
 
   ASSERT(2, ({
-           int i = 6;
-           i &= 3;
+           int i  = 6;
+           i     &= 3;
            i;
          }));
   ASSERT(7, ({
-           int i = 6;
-           i |= 3;
+           int i  = 6;
+           i     |= 3;
            i;
          }));
   ASSERT(10, ({
-           int i = 15;
-           i ^= 5;
+           int i  = 15;
+           i     ^= 5;
            i;
          }));
 
@@ -259,23 +259,23 @@ int main() {
   ASSERT(2, 5 >> 1);
   ASSERT(-1, -1 >> 1);
   ASSERT(1, ({
-           int i = 1;
-           i <<= 0;
+           int i   = 1;
+           i     <<= 0;
            i;
          }));
   ASSERT(8, ({
-           int i = 1;
-           i <<= 3;
+           int i   = 1;
+           i     <<= 3;
            i;
          }));
   ASSERT(10, ({
-           int i = 5;
-           i <<= 1;
+           int i   = 5;
+           i     <<= 1;
            i;
          }));
   ASSERT(2, ({
-           int i = 5;
-           i >>= 1;
+           int i   = 5;
+           i     >>= 1;
            i;
          }));
   ASSERT(-1, -1);
@@ -284,8 +284,8 @@ int main() {
     i;
   }));
   ASSERT(-1, ({
-    int i = -1;
-    i >>= 1;
+    int i   = -1;
+    i     >>= 1;
     i;
   }));
 
@@ -303,22 +303,22 @@ int main() {
   1 ? -2 : (void)-1;
 
   ASSERT(20, ({
-           int x;
+           int  x;
            int *p = &x;
            p + 20 - p;
          }));
   ASSERT(1, ({
-           int x;
+           int  x;
            int *p = &x;
            p + 20 - p > 0;
          }));
   ASSERT(-20, ({
-    int x;
+    int  x;
     int *p = &x;
     p - 20 - p;
   }));
   ASSERT(1, ({
-           int x;
+           int  x;
            int *p = &x;
            p - 20 - p < 0;
          }));

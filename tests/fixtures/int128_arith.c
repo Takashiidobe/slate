@@ -13,13 +13,13 @@ static void print128(unsigned __int128 v) {
 }
 
 int main(void) {
-  __int128 a = (__int128)9000000000000000000LL;
-  __int128 b = (__int128)9000000000000000000LL;
+  __int128 a   = (__int128)9000000000000000000LL;
+  __int128 b   = (__int128)9000000000000000000LL;
   __int128 sum = add128(a, b);
   print128((unsigned __int128)sum);
 
-  unsigned __int128 x = (unsigned __int128)1000000000000ULL;
-  unsigned __int128 y = (unsigned __int128)1000000000000ULL;
+  unsigned __int128 x    = (unsigned __int128)1000000000000ULL;
+  unsigned __int128 y    = (unsigned __int128)1000000000000ULL;
   unsigned __int128 prod = mul128(x, y);
   print128(prod);
 

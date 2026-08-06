@@ -17,18 +17,18 @@ static int gnu_pragma_outer_macro = GNU_PRAGMA_MACRO;
 #pragma pack(push, 1)
 struct GNUPragmaPacked {
   unsigned char tag;
-  unsigned int value;
+  unsigned int  value;
 };
 #pragma pack(pop)
 
 #pragma GCC visibility push(hidden)
-int gnu_pragma_hidden(int value) { return value + 13; }
+int                    gnu_pragma_hidden(int value) { return value + 13; }
 #pragma GCC visibility pop
 
 int gnu_pragma_weak_target(void) { return 17; }
 
 #pragma weak gnu_pragma_weak_alias = gnu_pragma_weak_target
-extern int gnu_pragma_weak_alias(void);
+extern int   gnu_pragma_weak_alias(void);
 
 #pragma redefine_extname gnu_pragma_renamed gnu_pragma_actual
 int gnu_pragma_renamed(void) { return 19; }

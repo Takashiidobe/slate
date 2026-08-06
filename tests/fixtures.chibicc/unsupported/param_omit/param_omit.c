@@ -1,8 +1,8 @@
 #include "test.h"
 
 // Function declarations with omitted parameter names
-int add(int, int);
-int mul(int, int);
+int   add(int, int);
+int   mul(int, int);
 void *memcpy(void *, const void *, unsigned long);
 
 // Function definitions (parameter names are required)

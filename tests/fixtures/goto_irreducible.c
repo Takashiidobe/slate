@@ -2,7 +2,7 @@
 
 int main() {
   volatile int choose_b = 0;
-  int x = 0;
+  int          x        = 0;
   if (choose_b)
     goto b;
 a:

@@ -1,7 +1,7 @@
 #include "test.h"
 #include <threads.h>
 
-static int counter = 0;
+static int   counter = 0;
 static mtx_t mutex;
 
 int thread_func(void *arg) {
@@ -14,7 +14,7 @@ int thread_func(void *arg) {
 
 int main() {
   thrd_t t1, t2;
-  int arg1 = 10, arg2 = 20;
+  int    arg1 = 10, arg2 = 20;
 
   ASSERT(thrd_success, mtx_init(&mutex, mtx_plain));
 

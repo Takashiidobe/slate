@@ -19,18 +19,18 @@
 static int gnu_environment_extensions(void) {
   char *directory;
   char *canonical;
-  char current[4096];
-  int total = 0;
+  char  current[4096];
+  int   total = 0;
 
   total += setenv("SLATE_GNU_LIBC_VALUE", "ready", 1) == 0;
   total += strcmp(secure_getenv("SLATE_GNU_LIBC_VALUE"), "ready") == 0;
   total += unsetenv("SLATE_GNU_LIBC_VALUE") == 0;
 
-  directory = get_current_dir_name();
-  canonical = canonicalize_file_name(".");
-  total += getcwd(current, sizeof(current)) != NULL;
-  total += directory != NULL && strcmp(directory, current) == 0;
-  total += canonical != NULL && strcmp(canonical, current) == 0;
+  directory  = get_current_dir_name();
+  canonical  = canonicalize_file_name(".");
+  total     += getcwd(current, sizeof(current)) != NULL;
+  total     += directory != NULL && strcmp(directory, current) == 0;
+  total     += canonical != NULL && strcmp(canonical, current) == 0;
   free(directory);
   free(canonical);
   return total;
@@ -39,31 +39,31 @@ static int gnu_environment_extensions(void) {
 static int gnu_time_extensions(void) {
   struct tm epoch = {};
   struct tm local = {};
-  time_t timestamp;
-  int total = 0;
+  time_t    timestamp;
+  int       total = 0;
 
-  epoch.tm_year = 70;
-  epoch.tm_mon = 0;
-  epoch.tm_mday = 1;
-  timestamp = timegm(&epoch);
-  total += timestamp == 0;
+  epoch.tm_year  = 70;
+  epoch.tm_mon   = 0;
+  epoch.tm_mday  = 1;
+  timestamp      = timegm(&epoch);
+  total         += timestamp == 0;
 
-  local.tm_year = 70;
-  local.tm_mon = 0;
-  local.tm_mday = 2;
-  total += timelocal(&local) != (time_t)-1;
+  local.tm_year  = 70;
+  local.tm_mon   = 0;
+  local.tm_mday  = 2;
+  total         += timelocal(&local) != (time_t)-1;
   return total;
 }
 
 static int gnu_pattern_extensions(void) {
-  regex_t expression = {};
-  glob_t paths = {};
+  regex_t     expression = {};
+  glob_t      paths      = {};
   const char *error;
-  int total = 0;
+  int         total = 0;
 
   total += fnmatch("file-+(one|two).c", "file-two.c", FNM_EXTMATCH) == 0;
   re_set_syntax(RE_SYNTAX_POSIX_EXTENDED);
-  error = re_compile_pattern("sl(a|e)te", 9, &expression);
+  error  = re_compile_pattern("sl(a|e)te", 9, &expression);
   total += error == NULL;
   total += re_match(&expression, "slate", 5, 0, NULL) == 5;
   regfree(&expression);
@@ -78,10 +78,10 @@ static int gnu_pattern_extensions(void) {
 
 static int gnu_runtime_extensions(void) {
   unsigned char random_bytes[8];
-  void *frames[8];
-  Dl_info information = {};
-  long page_size = sysconf(_SC_PAGESIZE);
-  int total = 0;
+  void         *frames[8];
+  Dl_info       information = {};
+  long          page_size   = sysconf(_SC_PAGESIZE);
+  int           total       = 0;
 
   total += getauxval(AT_PAGESZ) == (unsigned long)page_size;
   total += gettid() == (pid_t)syscall(SYS_gettid);

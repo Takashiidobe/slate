@@ -1,7 +1,7 @@
 #include "test.h"
 
 typedef struct Tree {
-  int val;
+  int          val;
   struct Tree *lhs;
   struct Tree *rhs;
 } Tree;
@@ -13,7 +13,7 @@ int main() {
   ASSERT(2, ((int[]){0, 1, 2})[2]);
   ASSERT('a', ((struct {
                 char a;
-                int b;
+                int  b;
               }){'a', 3})
                   .a);
   ASSERT(3, ({

@@ -5,8 +5,8 @@ int *alloc(void) { return malloc(sizeof(int) * 10); }
 
 int main(void) {
   int *x = NULL;
-  x = alloc();
-  x[0] = 10;
+  x      = alloc();
+  x[0]   = 10;
   printf("%d\n", x[0]);
   free(x);
   return 0;

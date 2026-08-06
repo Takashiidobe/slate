@@ -2,8 +2,8 @@
 
 struct {
   char a;
-  int b : 5;
-  int c : 10;
+  int  b : 5;
+  int  c : 10;
 } g45 = {1, 2, 3}, g46 = {};
 
 int main() {
@@ -12,10 +12,10 @@ int main() {
 
   struct bit1 {
     short a;
-    char b;
-    int c : 2;
-    int d : 3;
-    int e : 3;
+    char  b;
+    int   c : 2;
+    int   d : 3;
+    int   e : 3;
   };
 
   ASSERT(4, sizeof(struct bit1));
@@ -64,12 +64,12 @@ int main() {
          }));
   ASSERT(8, sizeof(struct {
            int a : 3;
-           int : 0;
+           int   : 0;
            int c : 5;
          }));
   ASSERT(4, sizeof(struct {
            int a : 3;
-           int : 0;
+           int   : 0;
          }));
 
   printf("OK\n");

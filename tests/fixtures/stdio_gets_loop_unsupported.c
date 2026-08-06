@@ -18,7 +18,7 @@ int main(void) {
     return 0;
   }
   char line[64];
-  int count = 0;
+  int  count = 0;
   while (fgets(line, sizeof line, g) != NULL) {
     count += (int)strlen(line);
   }

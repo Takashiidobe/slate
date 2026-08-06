@@ -6,12 +6,12 @@ struct totally_unused {
 };
 
 struct linked_a {
-  int x;
+  int              x;
   struct linked_b *link;
 };
 
 struct linked_b {
-  int y;
+  int              y;
   struct linked_a *link;
 };
 

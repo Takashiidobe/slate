@@ -3,13 +3,13 @@
 #include <threads.h>
 #include <time.h>
 
-static once_flag once_control = ONCE_FLAG_INIT;
-static mtx_t signal_mutex;
-static cnd_t signal_condition;
-static tss_t storage_key;
-static int ready;
-static int once_calls;
-static int destructor_calls;
+static once_flag   once_control = ONCE_FLAG_INIT;
+static mtx_t       signal_mutex;
+static cnd_t       signal_condition;
+static tss_t       storage_key;
+static int         ready;
+static int         once_calls;
+static int         destructor_calls;
 static _Atomic int detached_done;
 
 struct worker_state {
@@ -33,11 +33,11 @@ static int signaling_worker(void *argument) {
   call_once(&once_control, initialize_once);
   call_once(&once_control, initialize_once);
   state->tss_set_status = tss_set(storage_key, &state->value);
-  state->tss_matches = tss_get(storage_key) == &state->value;
-  state->lock_status = mtx_lock(&signal_mutex);
-  ready = 1;
-  state->signal_status = cnd_signal(&signal_condition);
-  state->unlock_status = mtx_unlock(&signal_mutex);
+  state->tss_matches    = tss_get(storage_key) == &state->value;
+  state->lock_status    = mtx_lock(&signal_mutex);
+  ready                 = 1;
+  state->signal_status  = cnd_signal(&signal_condition);
+  state->unlock_status  = mtx_unlock(&signal_mutex);
   thrd_yield();
   return 17;
 }
@@ -55,17 +55,17 @@ static int detached_worker(void *argument) {
 
 int main(void) {
   struct worker_state state = {.value = 7};
-  thrd_t signaling_thread;
-  thrd_t exiting_thread;
-  thrd_t detached_thread;
-  int thread_result = 0;
-  int exit_result = 0;
-  int exit_value = 29;
-  int detached_value = 31;
-  int wait_status = thrd_success;
-  struct timespec deadline;
-  struct timespec duration = {.tv_sec = 0, .tv_nsec = 0};
-  struct timespec remaining = {.tv_sec = 0, .tv_nsec = 0};
+  thrd_t              signaling_thread;
+  thrd_t              exiting_thread;
+  thrd_t              detached_thread;
+  int                 thread_result  = 0;
+  int                 exit_result    = 0;
+  int                 exit_value     = 29;
+  int                 detached_value = 31;
+  int                 wait_status    = thrd_success;
+  struct timespec     deadline;
+  struct timespec     duration  = {.tv_sec = 0, .tv_nsec = 0};
+  struct timespec     remaining = {.tv_sec = 0, .tv_nsec = 0};
 
   printf("constants %d %d %d %d %d %d %d %d %d\n", thrd_success, thrd_timedout,
          thrd_busy, thrd_nomem, thrd_error, mtx_plain, mtx_recursive, mtx_timed,

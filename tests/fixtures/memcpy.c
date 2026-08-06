@@ -17,7 +17,7 @@ int main(void) {
 
   unsigned char dyn_src[8] = {1, 1, 1, 1, 1, 1, 1, 1};
   unsigned char dyn_dst[8] = {0};
-  int n = get_count();
+  int           n          = get_count();
   memcpy(dyn_dst, dyn_src, n);
 
   for (int i = 0; i < 8; i++)

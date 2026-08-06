@@ -18,8 +18,8 @@ int sum2(int x, ...) {
   va_start(ap, x);
 
   for (;;) {
-    double y = va_arg(ap, double);
-    x += y;
+    double y  = va_arg(ap, double);
+    x        += y;
 
     int z = va_arg(ap, int);
     if (z == 0)

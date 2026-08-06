@@ -10,7 +10,7 @@ int text_len(char *s) { return (int)strlen(s); }
 
 int main(void) {
   char digits[] = "42";
-  char word[] = "hello";
+  char word[]   = "hello";
   printf("%d %d\n", forward_num(digits), text_len(word));
   return 0;
 }

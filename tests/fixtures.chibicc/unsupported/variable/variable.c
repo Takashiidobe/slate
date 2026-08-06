@@ -1,6 +1,6 @@
 #include "test.h"
 
-int g1, g2[4];
+int        g1, g2[4];
 static int g3 = 3;
 
 int main() {
@@ -40,7 +40,7 @@ int main() {
          }));
   ASSERT(8, ({
            int foo123 = 3;
-           int bar = 5;
+           int bar    = 5;
            foo123 + bar;
          }));
 
@@ -179,17 +179,17 @@ int main() {
          }));
 
   ASSERT(7, ({
-           int x;
-           int y;
-           char z;
+           int   x;
+           int   y;
+           char  z;
            char *a = &y;
            char *b = &z;
            b - a;
          }));
   ASSERT(1, ({
-           int x;
-           char y;
-           int z;
+           int   x;
+           char  y;
+           int   z;
            char *a = &y;
            char *b = &z;
            b - a;
@@ -230,15 +230,15 @@ int main() {
          }));
   ASSERT(3, ({
            char *x[3];
-           char y;
+           char  y;
            x[0] = &y;
-           y = 3;
+           y    = 3;
            x[0][0];
          }));
   ASSERT(4, ({
            char x[3];
            char (*y)[3] = x;
-           y[0][0] = 4;
+           y[0][0]      = 4;
            y[0][0];
          }));
 

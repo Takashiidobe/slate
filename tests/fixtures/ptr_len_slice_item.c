@@ -3,8 +3,8 @@
 static int sum_items(int *items, int len) {
   int total = 0;
   for (int i = 0; i < len; i++) {
-    int item = items[i];
-    total += item;
+    int item  = items[i];
+    total    += item;
   }
   return total;
 }

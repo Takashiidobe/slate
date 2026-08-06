@@ -10,11 +10,11 @@ int main(void) {
   b.data[0] = 10;
   b.data[1] = 20;
   b.data[2] = 30;
-  b.len = 3;
+  b.len     = 3;
   printf("%d\n", b.data[1] + b.len);
 
   struct Buf init = {{1, 2, 3}, 3};
-  int sum = 0;
+  int        sum  = 0;
   for (int i = 0; i < init.len; i++) {
     sum += init.data[i];
   }

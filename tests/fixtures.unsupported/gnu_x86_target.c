@@ -19,7 +19,7 @@ static int gnu_cpuid_query(void) {
   unsigned int ecx;
   unsigned int edx;
   unsigned int maximum = __get_cpuid_max(0, NULL);
-  int total = maximum > 0;
+  int          total   = maximum > 0;
 
   if (__get_cpuid(0, &eax, &ebx, &ecx, &edx)) {
     total += eax == maximum;
@@ -31,11 +31,11 @@ static int gnu_cpuid_query(void) {
 }
 
 static int gnu_instruction_builtins(void) {
-  unsigned int auxiliary = 0;
+  unsigned int       auxiliary = 0;
   unsigned long long first;
   unsigned long long second;
-  int value = 0;
-  int total = 0;
+  int                value = 0;
+  int                total = 0;
 
   __builtin_ia32_pause();
   __builtin_ia32_lfence();

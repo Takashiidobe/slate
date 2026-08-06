@@ -11,7 +11,7 @@ int main(void) {
   int lower = 'q';
   int digit = '5';
   int punct = '!';
-  int eof = EOF;
+  int eof   = EOF;
 
   printf("%d %d %d %d %d\n", toupper(lower), toupper(digit), toupper(punct),
          toupper(upper), toupper(eof));

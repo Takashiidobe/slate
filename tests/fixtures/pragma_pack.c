@@ -3,31 +3,31 @@
 
 struct NaturalBefore {
   unsigned char tag;
-  unsigned int value;
+  unsigned int  value;
 };
 
 #pragma pack(push, 2)
 struct PackedTwo {
   unsigned char tag;
-  unsigned int value;
+  unsigned int  value;
 };
 
 #pragma pack(push, 1)
 struct PackedOne {
   unsigned char tag;
-  unsigned int value;
+  unsigned int  value;
 };
 #pragma pack(pop)
 
 struct PackedTwoAgain {
   unsigned char tag;
-  unsigned int value;
+  unsigned int  value;
 };
 #pragma pack(pop)
 
 struct NaturalAfter {
   unsigned char tag;
-  unsigned int value;
+  unsigned int  value;
 };
 
 int main(void) {

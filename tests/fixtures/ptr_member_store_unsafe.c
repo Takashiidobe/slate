@@ -7,15 +7,15 @@ struct inner {
 
 struct outer {
   struct inner buf;
-  int error;
+  int          error;
 };
 
 static void bump(int *p) { *p = *p + 10; }
 
 static void init(struct outer *o) {
   o->buf.start = 1;
-  o->buf.end = 2;
-  o->error = 0;
+  o->buf.end   = 2;
+  o->error     = 0;
   bump(&o->buf.start);
 }
 

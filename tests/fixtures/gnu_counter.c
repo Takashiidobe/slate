@@ -1,10 +1,10 @@
 #include <stdio.h>
 
-#define NEXT_COUNTER() __COUNTER__
+#define NEXT_COUNTER()     __COUNTER__
 #define COUNTER_PAIR(a, b) ((a) * 10 + (b))
 
 static int direct_zero = __COUNTER__;
-static int macro_one = NEXT_COUNTER();
+static int macro_one   = NEXT_COUNTER();
 
 #if 0
 static int ignored = __COUNTER__;

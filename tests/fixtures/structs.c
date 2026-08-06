@@ -7,16 +7,16 @@ struct Pair {
 
 static int sum_pair(int a, int b) {
   struct Pair p;
-  p.left = a;
+  p.left  = a;
   p.right = b;
   return p.left + p.right;
 }
 
 static int overwrite_left(int a, int b) {
   struct Pair p;
-  p.left = a;
+  p.left  = a;
   p.right = b;
-  p.left = p.right + 2;
+  p.left  = p.right + 2;
   return p.left;
 }
 

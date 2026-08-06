@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-static const int global_bias = 3;
+static const int   global_bias    = 3;
 static _Atomic int atomic_counter = 4;
 
 static int add_const_param(const int value) {
@@ -18,7 +18,7 @@ static int add_atomic_value(_Atomic int value) {
 }
 
 int main(void) {
-  int left = 7;
+  int left  = 7;
   int right = 11;
   printf("%d\n", add_const_param(2));
   printf("%d\n", add_restrict_pointers(&left, &right));

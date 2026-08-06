@@ -1,9 +1,9 @@
 __float128 add(__float128 a, __float128 b) { return a + b; }
 
 int main(void) {
-  __float128 one = 1.0Q;
+  __float128 one  = 1.0Q;
   __float128 tiny = 0x1p-100Q;
-  __float128 sum = add(one, tiny);
+  __float128 sum  = add(one, tiny);
   if (sum == one)
     return 1;
   if (sum - one != tiny)

@@ -3,7 +3,7 @@
 
 struct __attribute__((packed)) Packed {
   char a;
-  int b;
+  int  b;
   char c;
 };
 

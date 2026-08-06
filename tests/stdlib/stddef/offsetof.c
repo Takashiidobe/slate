@@ -1,8 +1,8 @@
 #include <stddef.h>
 #include <stdio.h>
 struct S {
-  char a;
-  int b;
+  char   a;
+  int    b;
   double c;
 };
 int main(void) {

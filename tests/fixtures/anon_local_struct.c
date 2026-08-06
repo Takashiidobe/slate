@@ -12,11 +12,11 @@ int main(void) {
     int y;
   } point = {3, 4};
 
-  int storage[4];
+  int      storage[4];
   buffer_t buf = {0, 0, 0};
-  buf.start = storage;
-  buf.pointer = storage;
-  buf.end = storage + 4;
+  buf.start    = storage;
+  buf.pointer  = storage;
+  buf.end      = storage + 4;
 
   *buf.pointer = point.x + point.y;
   buf.pointer++;

@@ -11,7 +11,7 @@ __attribute__((nonnull)) static int difference(int *left, int scale,
 }
 
 int main(void) {
-  int left = 11;
+  int left  = 11;
   int right = 3;
   printf("%d %d\n", combine(&left, 2, &right, NULL),
          difference(&left, 2, &right));

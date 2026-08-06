@@ -2,9 +2,9 @@
 
 int main(void) {
   struct {
-    int code;
+    int         code;
     const char *message;
-    double confidence;
+    double      confidence;
   } error_log[] = {
       {404, "Not Found", 0.99},
       {500, "Internal Server Error", 0.85},

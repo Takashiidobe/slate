@@ -2,12 +2,12 @@
 #include <stdio.h>
 
 int main(void) {
-  volatile double real = 0.5;
+  volatile double real      = 0.5;
   volatile double imaginary = -0.25;
-  double complex a = __builtin_complex(real, imaginary);
-  double complex b = __builtin_complex(real, -imaginary);
-  double complex product;
-  double complex quotient;
+  double complex  a         = __builtin_complex(real, imaginary);
+  double complex  b         = __builtin_complex(real, -imaginary);
+  double complex  product;
+  double complex  quotient;
 
   {
 #pragma STDC CX_LIMITED_RANGE ON

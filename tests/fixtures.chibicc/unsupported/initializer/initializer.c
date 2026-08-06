@@ -1,50 +1,50 @@
 #include "test.h"
 
-char g3 = 3;
-short g4 = 4;
-int g5 = 5;
-long g6 = 6;
-int g9[3] = {0, 1, 2};
+char  g3    = 3;
+short g4    = 4;
+int   g5    = 5;
+long  g6    = 6;
+int   g9[3] = {0, 1, 2};
 struct {
   char a;
-  int b;
+  int  b;
 } g11[2] = {{1, 2}, {3, 4}};
 struct {
   int a[2];
 } g12[2] = {{{1, 2}}};
 union {
-  int a;
+  int  a;
   char b[8];
-} g13[2] = {0x01020304, 0x05060708};
-char g17[] = "foobar";
-char g18[10] = "foobar";
-char g19[3] = "foobar";
-char *g20 = g17 + 0;
-char *g21 = g17 + 3;
-char *g22 = &g17 - 3;
-char *g23[] = {g17 + 0, g17 + 3, g17 - 3};
-int g24 = 3;
-int *g25 = &g24;
-int g26[3] = {1, 2, 3};
-int *g27 = g26 + 1;
-int *g28 = &g11[1].a;
-long g29 = (long)(long)g26;
+} g13[2]      = {0x01020304, 0x05060708};
+char  g17[]   = "foobar";
+char  g18[10] = "foobar";
+char  g19[3]  = "foobar";
+char *g20     = g17 + 0;
+char *g21     = g17 + 3;
+char *g22     = &g17 - 3;
+char *g23[]   = {g17 + 0, g17 + 3, g17 - 3};
+int   g24     = 3;
+int  *g25     = &g24;
+int   g26[3]  = {1, 2, 3};
+int  *g27     = g26 + 1;
+int  *g28     = &g11[1].a;
+long  g29     = (long)(long)g26;
 struct {
   struct {
     int a[3];
   } a;
-} g30 = {{{1, 2, 3}}};
+} g30    = {{{1, 2, 3}}};
 int *g31 = g30.a.a;
 struct {
   int a[2];
 } g40[2] = {{1, 2}, 3, 4};
 struct {
   int a[2];
-} g41[2] = {1, 2, 3, 4};
-char g43[][4] = {'f', 'o', 'o', 0, 'b', 'a', 'r', 0};
-char *g44 = {"foo"};
+} g41[2]       = {1, 2, 3, 4};
+char  g43[][4] = {'f', 'o', 'o', 0, 'b', 'a', 'r', 0};
+char *g44      = {"foo"};
 union {
-  int a;
+  int  a;
   char b[4];
 } g50 = {.b[2] = 0x12};
 union {
@@ -52,8 +52,8 @@ union {
 } g51[2] = {};
 
 typedef char T60[];
-T60 g60 = {1, 2, 3};
-T60 g61 = {1, 2, 3, 4, 5, 6};
+T60          g60 = {1, 2, 3};
+T60          g61 = {1, 2, 3, 4, 5, 6};
 
 typedef struct {
   char a, b[];
@@ -162,26 +162,26 @@ int main() {
 
   ASSERT(4, ({
            typedef char T[];
-           T x = "foo";
-           T y = "x";
+           T            x = "foo";
+           T            y = "x";
            sizeof(x);
          }));
   ASSERT(2, ({
            typedef char T[];
-           T x = "foo";
-           T y = "x";
+           T            x = "foo";
+           T            y = "x";
            sizeof(y);
          }));
   ASSERT(2, ({
            typedef char T[];
-           T x = "x";
-           T y = "foo";
+           T            x = "x";
+           T            y = "foo";
            sizeof(x);
          }));
   ASSERT(4, ({
            typedef char T[];
-           T x = "x";
-           T y = "foo";
+           T            x = "x";
+           T            y = "foo";
            sizeof(y);
          }));
 
@@ -316,14 +316,14 @@ int main() {
 
   ASSERT(4, ({
            union {
-             int a;
+             int  a;
              char b[4];
            } x = {0x01020304};
            x.b[0];
          }));
   ASSERT(3, ({
            union {
-             int a;
+             int  a;
              char b[4];
            } x = {0x01020304};
            x.b[1];
@@ -447,7 +447,7 @@ int main() {
          }));
   ASSERT(1, ({
            union {
-             int a;
+             int  a;
              char b;
            } x = {
                1,
@@ -699,7 +699,7 @@ int main() {
            typedef struct {
              int a, b;
            } T;
-           T x = {1, 2};
+           T x   = {1, 2};
            T y[] = {x};
            y[0].a;
          }));
@@ -707,7 +707,7 @@ int main() {
            typedef struct {
              int a, b;
            } T;
-           T x = {1, 2};
+           T x   = {1, 2};
            T y[] = {x};
            y[0].b;
          }));
@@ -715,7 +715,7 @@ int main() {
            typedef struct {
              int a, b;
            } T;
-           T x = {1, 2};
+           T x   = {1, 2};
            T y[] = {x, [0].b = 3};
            y[0].a;
          }));
@@ -723,7 +723,7 @@ int main() {
            typedef struct {
              int a, b;
            } T;
-           T x = {1, 2};
+           T x   = {1, 2};
            T y[] = {x, [0].b = 3};
            y[0].b;
          }));
@@ -734,14 +734,14 @@ int main() {
   ASSERT(0x00ff, ({
            union {
              unsigned short a;
-             char b[2];
+             char           b[2];
            } x = {.b[0] = 0xff};
            x.a;
          }));
   ASSERT(0xff00, ({
            union {
              unsigned short a;
-             char b[2];
+             char           b[2];
            } x = {.b[1] = 0xff};
            x.a;
          }));

@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 static int sum_fixed(void) {
-  int a[5] = {1, 2, 3, 4, 5};
+  int a[5]  = {1, 2, 3, 4, 5};
   int total = 0;
   for (int i = 0; i < 5; i++) {
     total += a[i];

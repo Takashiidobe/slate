@@ -2,7 +2,7 @@
 
 static int sum_do_while(int n) {
   int total = 0;
-  int i = 1;
+  int i     = 1;
   do {
     total += i;
     i++;
@@ -20,7 +20,7 @@ static int runs_once_when_false(void) {
 
 static int continue_checks_condition(int n) {
   int total = 0;
-  int i = 0;
+  int i     = 0;
   do {
     i++;
     if (i % 2 == 0) {

@@ -7,7 +7,7 @@ struct Pair {
 
 struct Nested {
   struct Pair inner;
-  int tag;
+  int         tag;
 };
 
 struct WithArray {
@@ -29,9 +29,9 @@ static int nested_total(struct Nested n) {
 static int array_value(struct WithArray w) { return w.data[1] + w.marker; }
 
 int main(void) {
-  struct Pair p = {2, 3};
-  struct Pair q = replace_left(p, 7);
-  struct Nested n = {{4, 5}, 6};
+  struct Pair      p = {2, 3};
+  struct Pair      q = replace_left(p, 7);
+  struct Nested    n = {{4, 5}, 6};
   struct WithArray w = {{8, 9, 10}, 11};
   printf("%d\n", take_pair(p));
   printf("%d\n", take_pair(q));

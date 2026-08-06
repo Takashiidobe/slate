@@ -15,8 +15,8 @@ int *c(void) { return b(); }
 
 int main(void) {
   int *x = NULL;
-  x = c();
-  x[0] = 10;
+  x      = c();
+  x[0]   = 10;
   printf("%d\n", x[0]);
   free(x);
   return 0;

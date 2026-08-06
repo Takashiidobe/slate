@@ -3,17 +3,17 @@
 #include <stdio.h>
 
 #define GNU_NAMED_SUM(first, rest...) ((first) + (rest))
-#define GNU_COMMA_OPTION(first, ...) ((first), ##__VA_ARGS__)
+#define GNU_COMMA_OPTION(first, ...)  ((first), ##__VA_ARGS__)
 
 struct GNUZeroArray {
-  int count;
+  int           count;
   unsigned char data[0];
 };
 
 struct GNUEmpty {};
 
 union GNUFlexibleUnion {
-  int value;
+  int           value;
   unsigned char data[];
 };
 
@@ -22,7 +22,7 @@ struct GNUOnlyFlexible {
 };
 
 union GNUCast {
-  int integer;
+  int    integer;
   double real;
 };
 
@@ -84,20 +84,20 @@ static int gnu_function_pointer(void) {
 }
 
 static int gnu_syntax(void) {
-  int gnu$dollar = 29;
-  int side_effect = 0;
-  int omitted = ++side_effect ?: 31;
-  __auto_type inferred = 37;
-  __typeof__(inferred) same_type = 41;
-  const char *raw = R"tag(gnu\n)tag";
-  int range_values[6] = {[1 ... 3] = 5, [5] = 7};
-  int old_array[3] = {[1] 11};
+  int                  gnu$dollar      = 29;
+  int                  side_effect     = 0;
+  int                  omitted         = ++side_effect ?: 31;
+  __auto_type          inferred        = 37;
+  __typeof__(inferred) same_type       = 41;
+  const char          *raw             = R"tag(gnu\n)tag";
+  int                  range_values[6] = {[1 ... 3] = 5, [5] = 7};
+  int                  old_array[3]    = {[1] 11};
   struct GNUOldInitializer {
     int first;
     int second;
   };
   struct GNUOldInitializer old_record = {first : 13, second : 17};
-  int macro_total =
+  int                      macro_total =
       GNU_NAMED_SUM(43, 47) + GNU_COMMA_OPTION(53) + GNU_COMMA_OPTION(59, 61);
   int initializer_total = range_values[0] + range_values[1] + range_values[3] +
                           range_values[5] + old_array[1] + old_record.first +
@@ -115,8 +115,8 @@ static int gnu_syntax(void) {
 }
 
 static int gnu_aggregate_types(void) {
-  union GNUCast cast_value = (union GNUCast)71;
-  enum GNUForward forward = GNU_FORWARD_VALUE;
+  union GNUCast   cast_value = (union GNUCast)71;
+  enum GNUForward forward    = GNU_FORWARD_VALUE;
   return (int)sizeof(struct GNUZeroArray) + (int)sizeof(struct GNUEmpty) +
          (int)sizeof(union GNUFlexibleUnion) +
          (int)sizeof(struct GNUOnlyFlexible) + cast_value.integer + forward;
@@ -124,16 +124,16 @@ static int gnu_aggregate_types(void) {
 
 static int gnu_pointer_semantics(void) {
   unsigned char values[8] = {};
-  void *begin = values;
-  void *middle = begin + 3;
+  void         *begin     = values;
+  void         *middle    = begin + 3;
   return (middle - begin == 3) + (middle == values + 3) + (sizeof(void) == 1) +
          gnu_function_pointer();
 }
 
 static int gnu_numeric_types(void) {
-  __int128 wide_integer = ((__int128)1 << 100) + 73;
+  __int128        wide_integer    = ((__int128)1 << 100) + 73;
   __complex__ int integer_complex = 5 + 7i;
-  __float128 wide_float = 3.25Q;
+  __float128      wide_float      = 3.25Q;
   int complex_total = __real__ integer_complex + __imag__ integer_complex;
   return (int)(wide_integer >> 100) + (int)(wide_integer & 127) +
          complex_total + (int)(wide_float * 4);

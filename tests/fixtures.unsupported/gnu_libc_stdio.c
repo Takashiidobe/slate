@@ -6,9 +6,9 @@
 #include <string.h>
 
 struct GNUCookie {
-  char bytes[32];
+  char   bytes[32];
   size_t length;
-  int closed;
+  int    closed;
 };
 
 static ssize_t gnu_cookie_write(void *state, const char *buffer, size_t size) {
@@ -20,40 +20,40 @@ static ssize_t gnu_cookie_write(void *state, const char *buffer, size_t size) {
 
 static int gnu_cookie_close(void *state) {
   struct GNUCookie *cookie = state;
-  cookie->closed = 1;
+  cookie->closed           = 1;
   return 0;
 }
 
 static int gnu_allocating_stdio(void) {
-  char *formatted = NULL;
-  char *stream_data = NULL;
+  char  *formatted   = NULL;
+  char  *stream_data = NULL;
   size_t stream_size = 0;
-  FILE *stream;
-  int total = 0;
+  FILE  *stream;
+  int    total = 0;
 
   total += asprintf(&formatted, "%s:%d", "gnu", 23) == 6;
   total += strcmp(formatted, "gnu:23") == 0;
   free(formatted);
 
-  stream = open_memstream(&stream_data, &stream_size);
-  total += stream != NULL;
-  total += fprintf(stream, "%s-%d", "slate", 24) == 8;
-  total += __fwriting(stream) != 0;
-  total += __fpending(stream) > 0;
-  total += fflush(stream) == 0;
-  total += stream_size == 8;
-  total += strcmp(stream_data, "slate-24") == 0;
-  total += fclose(stream) == 0;
+  stream  = open_memstream(&stream_data, &stream_size);
+  total  += stream != NULL;
+  total  += fprintf(stream, "%s-%d", "slate", 24) == 8;
+  total  += __fwriting(stream) != 0;
+  total  += __fpending(stream) > 0;
+  total  += fflush(stream) == 0;
+  total  += stream_size == 8;
+  total  += strcmp(stream_data, "slate-24") == 0;
+  total  += fclose(stream) == 0;
   free(stream_data);
   return total;
 }
 
 static int gnu_memory_stdio(void) {
-  char source[] = "alpha|beta\n";
-  char *line = NULL;
+  char   source[] = "alpha|beta\n";
+  char  *line     = NULL;
   size_t capacity = 0;
-  FILE *stream = fmemopen(source, strlen(source), "r");
-  int total = 0;
+  FILE  *stream   = fmemopen(source, strlen(source), "r");
+  int    total    = 0;
 
   total += stream != NULL;
   total += getdelim(&line, &capacity, '|', stream) == 6;
@@ -68,25 +68,25 @@ static int gnu_memory_stdio(void) {
 }
 
 static int gnu_cookie_stdio(void) {
-  struct GNUCookie cookie = {};
+  struct GNUCookie      cookie    = {};
   cookie_io_functions_t functions = {};
-  FILE *stream;
-  int total = 0;
+  FILE                 *stream;
+  int                   total = 0;
 
-  functions.write = gnu_cookie_write;
-  functions.close = gnu_cookie_close;
-  stream = fopencookie(&cookie, "w", functions);
-  total += stream != NULL;
-  total += fprintf(stream, "%s:%d", "cookie", 7) == 8;
-  total += fclose(stream) == 0;
-  total += cookie.closed == 1;
-  total += cookie.length == 8;
-  total += memcmp(cookie.bytes, "cookie:7", 8) == 0;
+  functions.write  = gnu_cookie_write;
+  functions.close  = gnu_cookie_close;
+  stream           = fopencookie(&cookie, "w", functions);
+  total           += stream != NULL;
+  total           += fprintf(stream, "%s:%d", "cookie", 7) == 8;
+  total           += fclose(stream) == 0;
+  total           += cookie.closed == 1;
+  total           += cookie.length == 8;
+  total           += memcmp(cookie.bytes, "cookie:7", 8) == 0;
   return total;
 }
 
 static int gnu_printf_introspection(void) {
-  int types[4] = {};
+  int    types[4]  = {};
   size_t arguments = parse_printf_format("%2$d %1$s", 4, types);
   return arguments == 2 && (types[0] & ~PA_FLAG_MASK) == PA_STRING &&
          (types[1] & ~PA_FLAG_MASK) == PA_INT;

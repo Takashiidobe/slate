@@ -3,7 +3,7 @@
 
 struct __attribute__((packed, aligned(4))) PackedAligned {
   char a;
-  int b;
+  int  b;
 };
 
 int main(void) {

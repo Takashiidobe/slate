@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 union Value {
-  int i;
+  int   i;
   float f;
 };
 

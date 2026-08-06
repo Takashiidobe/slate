@@ -2,7 +2,7 @@
 
 static int volatile_local(int value) {
   volatile int slot = value;
-  slot = slot + 3;
+  slot              = slot + 3;
   return slot;
 }
 

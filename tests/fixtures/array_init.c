@@ -1,10 +1,10 @@
 #include <stdio.h>
 
 int main(void) {
-  int a[5] = {1, 2, 3, 4, 5};
-  int partial[4] = {7, 8};
-  char s[6] = "hello";
-  char padded[8] = "hi";
+  int  a[5]       = {1, 2, 3, 4, 5};
+  int  partial[4] = {7, 8};
+  char s[6]       = "hello";
+  char padded[8]  = "hi";
 
   int sum = 0;
   for (int i = 0; i < 5; i++) {

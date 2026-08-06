@@ -12,12 +12,12 @@ void assert(int expected, int actual, char *code) {
 }
 
 static int static_fn() { return 5; }
-int ext1 = 5;
-int *ext2 = &ext1;
-int ext3 = 7;
-int ext_fn1(int x) { return x; }
-int ext_fn2(int x) { return x; }
-int common_ext2 = 3;
+int        ext1 = 5;
+int       *ext2 = &ext1;
+int        ext3 = 7;
+int        ext_fn1(int x) { return x; }
+int        ext_fn2(int x) { return x; }
+int        common_ext2 = 3;
 static int common_local;
 
 int false_fn() { return 512; }
@@ -61,13 +61,13 @@ double add10_double(double x1, double x2, double x3, double x4, double x5,
 }
 
 typedef struct {
-  int a, b;
+  int   a, b;
   short c;
-  char d;
+  char  d;
 } Ty4;
 typedef struct {
-  int a;
-  float b;
+  int    a;
+  float  b;
   double c;
 } Ty5;
 typedef struct {
