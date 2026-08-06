@@ -72,11 +72,33 @@
 #define __inline
 #endif
 
-#if __STDC_VERSION__ >= 201112L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __noreturn [[noreturn]]
+#elif __STDC_VERSION__ >= 201112L
+#include <stdnoreturn.h>
+#define __noreturn noreturn
 #elif defined(__GNUC__)
-#define _Noreturn __attribute__((__noreturn__))
+#define __noreturn __attribute__((__noreturn__))
 #else
-#define _Noreturn
+#define __noreturn
+#endif
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __deprecated(...) [[deprecated(__VA_ARGS__)]]
+#elif defined(__GNUC__) || defined(__clang__)
+#define __deprecated(...) __attribute__((deprecated(__VA_ARGS__)))
+#elif defined(_MSC_VER)
+#define __deprecated(...) __declspec(deprecated)
+#else
+#define __deprecated(...)
+#endif
+
+#ifndef __macro_warn
+#if defined(__GNUC__) || defined(__clang__)
+#define __macro_warn(msg) _Pragma(#msg)
+#else
+#define __macro_warn(msg)
+#endif
 #endif
 
 #define __REDIR(x, y) __typeof__(x) x __asm__(#y)
