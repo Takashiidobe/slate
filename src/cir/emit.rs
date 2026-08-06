@@ -111,6 +111,9 @@ pub fn target_args() -> Vec<String> {
         if target.contains("musl") {
             args.push("-D__SLATE_LIBC_MUSL=1".into());
         }
+        if target.contains("gnu") {
+            args.push("-D__SLATE_LIBC_GNU=1".into());
+        }
         args.push("-target".into());
         args.push(target);
     }
