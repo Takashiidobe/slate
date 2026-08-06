@@ -21,6 +21,7 @@
 #define __NEED_gid_t
 #define __NEED_off_t
 #define __NEED_pid_t
+#define __NEED_intptr_t
 #include <bits/types.h>
 
 int   pipe(int[2]);
@@ -57,9 +58,9 @@ int     truncate(const char *, off_t);
 int     ftruncate(int, off_t);
 
 #define F_OK 0
-#define R_OK 4
 #define W_OK 2
 #define X_OK 1
+#define R_OK 4
 
 int access(const char *, int);
 int faccessat(int, const char *, int, int);
