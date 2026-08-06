@@ -22,7 +22,7 @@
 #define INT_MAX    0x7fffffff
 #define UINT_MAX   0xffffffffU
 #define LONG_MIN   (-LONG_MAX - 1)
-#define LONG_MAX   __LONG_MAX
+#define LONG_MAX   __LONG_MAX__
 #define ULONG_MAX  (2UL * LONG_MAX + 1)
 #define LLONG_MIN  (-LLONG_MAX - 1)
 #define LLONG_MAX  0x7fffffffffffffffLL

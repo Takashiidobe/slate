@@ -201,7 +201,15 @@ typedef volatile int __pthread_spinlock_t;
 
 typedef unsigned int __pthread_key_t;
 
+typedef __builtin_va_list __va_list;
+
 #endif /* _SLATE_BITS_TYPES_H */
+
+#if defined(__NEED_va_list) && !defined(__DEFINED_va_list)
+#define va_list __va_list
+#define __DEFINED_va_list
+#endif
+#undef __NEED_va_list
 
 #if defined(__NEED_NULL) && !defined(__DEFINED_NULL)
 #define NULL __NULL
@@ -251,7 +259,8 @@ typedef __pthread_once_t pthread_once_t;
 #endif
 #undef __NEED_pthread_once_t
 
-#if defined(__NEED_pthread_mutexattr_t) && !defined(__DEFINED_pthread_mutexattr_t)
+#if defined(__NEED_pthread_mutexattr_t) &&                                     \
+    !defined(__DEFINED_pthread_mutexattr_t)
 typedef __pthread_mutexattr_t pthread_mutexattr_t;
 #define __DEFINED_pthread_mutexattr_t
 #endif
@@ -263,13 +272,15 @@ typedef __pthread_condattr_t pthread_condattr_t;
 #endif
 #undef __NEED_pthread_condattr_t
 
-#if defined(__NEED_pthread_rwlockattr_t) && !defined(__DEFINED_pthread_rwlockattr_t)
+#if defined(__NEED_pthread_rwlockattr_t) &&                                    \
+    !defined(__DEFINED_pthread_rwlockattr_t)
 typedef __pthread_rwlockattr_t pthread_rwlockattr_t;
 #define __DEFINED_pthread_rwlockattr_t
 #endif
 #undef __NEED_pthread_rwlockattr_t
 
-#if defined(__NEED_pthread_barrierattr_t) && !defined(__DEFINED_pthread_barrierattr_t)
+#if defined(__NEED_pthread_barrierattr_t) &&                                   \
+    !defined(__DEFINED_pthread_barrierattr_t)
 typedef __pthread_barrierattr_t pthread_barrierattr_t;
 #define __DEFINED_pthread_barrierattr_t
 #endif

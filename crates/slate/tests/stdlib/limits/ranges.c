@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include <limits.h>
 #include <stdio.h>
 int main(void) {
