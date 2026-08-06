@@ -47,10 +47,18 @@ char *strerror(int);
 #include <strings.h>
 #endif
 
+#if defined(_GNU_SOURCE)
+char *strerror_r(int, char *, size_t);
+#elif defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L ||                \
+    defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600 ||                          \
+    defined(_POSIX_SOURCE) || defined(_BSD_SOURCE)
+int __xpg_strerror_r(int, char *, size_t);
+#define strerror_r __xpg_strerror_r
+#endif
+
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 char  *strtok_r(char *__restrict, const char *__restrict, char **__restrict);
-int    strerror_r(int, char *, size_t);
 char  *stpcpy(char *__restrict, const char *__restrict);
 char  *stpncpy(char *__restrict, const char *__restrict, size_t);
 size_t strnlen(const char *, size_t);
@@ -75,7 +83,7 @@ void   explicit_bzero(void *, size_t);
 #endif
 
 #ifdef _GNU_SOURCE
-#define strdupa(x) strcpy(alloca(strlen(x) + 1), x)
+char *strdupa(const char *x);
 int   strverscmp(const char *, const char *);
 char *strchrnul(const char *, int);
 char *strcasestr(const char *, const char *);
