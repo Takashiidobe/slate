@@ -22,6 +22,7 @@ typedef int                __daddr_t;
 typedef char              *__caddr_t;
 typedef unsigned char      __sa_family_t;
 typedef unsigned int       __socklen_t;
+typedef long               __regoff_t;
 
 typedef signed char    __int8_t;
 typedef unsigned char  __uint8_t;
@@ -116,6 +117,21 @@ typedef struct __fpos_t {
   __off_t     __pos;
   __mbstate_t __state;
 } __fpos_t;
+
+struct timespec {
+  __time_t tv_sec;
+  long     tv_nsec;
+};
+
+#if defined(__NEED_regoff_t) && !defined(__DEFINED_regoff_t)
+typedef __regoff_t regoff_t;
+#define __DEFINED_regoff_t
+#endif
+
+#if defined(__NEED_struct_timespec) && !defined(__DEFINED_struct_timespec)
+typedef struct __timespec struct timespec;
+#define __DEFINED_struct_timespec
+#endif
 
 #if defined(__NEED_FILE) && !defined(__DEFINED_FILE)
 typedef struct FILE FILE;

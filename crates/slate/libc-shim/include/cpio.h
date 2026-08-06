@@ -1,1 +1,35 @@
-#error "<cpio.h> is not yet defined"
+#ifndef _SLATE_CPIO_H
+#define _SLATE_CPIO_H
+
+#define MAGIC "070707"
+
+enum {
+  C_IRUSR = 000400,
+  C_IWUSR = 000200,
+  C_IXUSR = 000100,
+  C_IRGRP = 000040,
+  C_IWGRP = 000020,
+  C_IXGRP = 000010,
+  C_IROTH = 000004,
+  C_IWOTH = 000002,
+  C_IXOTH = 000001,
+};
+
+enum {
+  C_ISUID = 004000,
+  C_ISGID = 002000,
+  C_ISVTX = 001000,
+};
+
+enum {
+  C_ISBLK  = 060000,
+  C_ISCHR  = 020000,
+  C_ISDIR  = 040000,
+  C_ISFIFO = 010000,
+  C_ISSOCK = 0140000,
+  C_ISLNK  = 0120000,
+  C_ISCTG  = 0110000,
+  C_ISREG  = 0100000,
+};
+
+#endif
