@@ -1,1 +1,20 @@
-#error "<fnmatch.h> is not yet defined"
+#ifndef _SLATE_FNMATCH_H
+#define _SLATE_FNMATCH_H
+
+enum {
+  FNM_PATHNAME    = 0x1,
+  FNM_FILE_NAME   = FNM_PATHNAME,
+  FNM_NOESCAPE    = 0x2,
+  FNM_PERIOD      = 0x4,
+  FNM_LEADING_DIR = 0x8,
+  FNM_CASEFOLD    = 0x10,
+};
+
+enum {
+  FNM_NOMATCH = 1,
+  FNM_NOSYS   = -1,
+};
+
+int fnmatch(const char *, const char *, int);
+
+#endif

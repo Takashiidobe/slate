@@ -36,6 +36,10 @@ typedef __WCHAR_TYPE__ __wchar_t;
 typedef int __wchar_t;
 #endif
 
+typedef struct {
+  unsigned long __bits[128 / sizeof(unsigned long)];
+} __sigset_t;
+
 typedef const int    *__wctrans_t;
 typedef unsigned long __wctype_t;
 
@@ -133,10 +137,15 @@ typedef struct __fpos_t {
   __mbstate_t __state;
 } __fpos_t;
 
-struct timespec {
+struct __timespec {
   __time_t tv_sec;
   long     tv_nsec;
-};
+} __timespec;
+
+#if defined(__NEED_sigset_t) && !defined(__DEFINED_sigset_t)
+typedef __sigset_t sigset_t;
+#define __DEFINED_sigset_t
+#endif
 
 #if defined(__NEED_wchar_t) && !defined(__DEFINED_wchar_t)
 typedef __wchar_t wchar_t;
@@ -169,7 +178,7 @@ typedef __regoff_t regoff_t;
 #endif
 
 #if defined(__NEED_struct_timespec) && !defined(__DEFINED_struct_timespec)
-typedef struct __timespec struct timespec;
+typedef struct __timespec timespec;
 #define __DEFINED_struct_timespec
 #endif
 
