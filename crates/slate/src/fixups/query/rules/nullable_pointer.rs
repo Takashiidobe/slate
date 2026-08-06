@@ -247,7 +247,6 @@ fn collect_alias_chain(
     Some(aliases)
 }
 
-#[expect(clippy::type_complexity)]
 fn alias_edge(
     case: &mut ItemCaseContext<'_, '_>,
     function: &FunctionRef,

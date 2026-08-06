@@ -94,17 +94,13 @@ pub(in crate::fixups) enum Predicate {
     AsciiNumericSign,
     AllExprs,
     Cast,
-    #[expect(dead_code)]
     NullCheckDominance,
-    #[expect(dead_code)]
     PointerOptionSafety,
     #[expect(dead_code)]
     PointerComparisonKind,
     #[expect(dead_code)]
     StructFieldOwnership,
-    #[expect(dead_code)]
     CalleeAllocSummary,
-    #[expect(dead_code)]
     InterproceduralAllocEligibility,
     InterproceduralAllocCallers,
     OptionBoxLocalCandidates,
@@ -286,11 +282,9 @@ pub(in crate::fixups) enum EvidenceDetail {
     Cast {
         to: Type,
     },
-    #[expect(dead_code)]
     NullCheckDominance {
         proof: NullCheckProof,
     },
-    #[expect(dead_code)]
     PointerOptionSafety {
         eligible: bool,
     },
@@ -302,11 +296,9 @@ pub(in crate::fixups) enum EvidenceDetail {
     StructFieldOwnership {
         fields: usize,
     },
-    #[expect(dead_code)]
     CalleeAllocSummary {
         function: String,
     },
-    #[expect(dead_code)]
     InterproceduralAllocEligibility {
         function: String,
         eligible: bool,
