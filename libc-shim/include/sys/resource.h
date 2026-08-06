@@ -2,15 +2,14 @@
 #define _SLATE_SYS_RESOURCE_H
 
 #include <features.h>
-#include <sys/time.h>
 
 #define __NEED_id_t
 #ifdef _GNU_SOURCE
 #define __NEED_pid_t
 #endif
-
-#include <bits/resource.h>
 #include <bits/types.h>
+
+#include <sys/time.h>
 
 typedef unsigned long long rlim_t;
 

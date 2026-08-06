@@ -105,6 +105,28 @@
 #endif
 #endif
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#if defined(__GNUC__) || defined(__clang__)
+#define __packed [[gnu::packed]]
+#else
+#define __packed
+#endif
+#elif defined(__GNUC__) || defined(__clang__)
+#define __packed __attribute__((packed))
+#else
+#define __packed
+#endif
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __const [[gnu::const]]
+#elif defined(__GNUC__) || defined(__clang__)
+#define __const __attribute__((const))
+#elif defined(_MSC_VER)
+#define __const __declspec(noalias)
+#else
+#define __const
+#endif
+
 #define __REDIR(x, y) __typeof__(x) x __asm__(#y)
 
 #endif /* _SLATE_FEATURES_H */

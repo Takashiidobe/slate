@@ -203,6 +203,11 @@ typedef unsigned int __pthread_key_t;
 
 typedef __builtin_va_list __va_list;
 
+struct {
+  __time_t tv_sec;
+  long     tv_nsec;
+} __timespec;
+
 #endif /* _SLATE_BITS_TYPES_H */
 
 #if defined(__NEED_va_list) && !defined(__DEFINED_va_list)
@@ -341,10 +346,7 @@ typedef __regoff_t regoff_t;
 #undef __NEED_regoff_t
 
 #if defined(__NEED_struct_timespec) && !defined(__DEFINED_struct_timespec)
-struct timespec {
-  __time_t tv_sec;
-  long     tv_nsec;
-};
+typedef struct __timespec struct timespec;
 #define __DEFINED_struct_timespec
 #endif
 #undef __NEED_struct_timespec
