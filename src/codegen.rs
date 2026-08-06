@@ -280,7 +280,7 @@ impl<W: Write> Codegen<W> {
         }
         self.attrs(&[Attr::Repr(repr)])?;
         if r.allow_non_camel_case {
-            self.out.write_str("#[allow(non_camel_case_types)]\n")?;
+            self.out.write_str("#[expect(non_camel_case_types)]\n")?;
         }
         self.out.write_str("#[derive(Clone, Copy)]\n")?;
         let kw = if r.is_union { "union" } else { "struct" };

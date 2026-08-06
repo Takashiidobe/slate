@@ -259,7 +259,7 @@ impl Matcher for Parameter {
 }
 
 #[derive(Default)]
-#[allow(dead_code)]
+#[expect(dead_code)]
 pub(in crate::fixups) struct StatementContainer {
     pub(in crate::fixups) len: Field<usize>,
 }
@@ -286,7 +286,7 @@ impl Matcher for StatementContainer {
 }
 
 #[derive(Default)]
-#[allow(dead_code)]
+#[expect(dead_code)]
 pub(in crate::fixups) struct MatchArm {
     pub(in crate::fixups) index: Field<usize>,
     pub(in crate::fixups) body_len: Field<usize>,
@@ -314,7 +314,7 @@ impl Matcher for MatchArm {
 }
 
 #[derive(Default)]
-#[allow(dead_code)]
+#[expect(dead_code)]
 pub(in crate::fixups) struct RecordField {
     pub(in crate::fixups) index: Field<usize>,
     pub(in crate::fixups) name: Field<Option<String>>,
@@ -345,7 +345,7 @@ impl Matcher for RecordField {
 }
 
 #[derive(Default)]
-#[allow(dead_code)]
+#[expect(dead_code)]
 pub(in crate::fixups) struct EnumVariant {
     pub(in crate::fixups) index: Field<usize>,
     pub(in crate::fixups) name: Field<String>,
@@ -376,7 +376,7 @@ impl Matcher for EnumVariant {
 }
 
 #[derive(Default)]
-#[allow(dead_code)]
+#[expect(dead_code)]
 pub(in crate::fixups) struct TypeUse {
     pub(in crate::fixups) kind: Field<TypeUseKind>,
     pub(in crate::fixups) ty: Field<Type>,

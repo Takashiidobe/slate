@@ -9,7 +9,7 @@ pub struct Program {
 #[derive(Debug, Clone)]
 pub enum Item {
     Fn(FnDef),
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     Comment(Comment),
     CrateAttrs(Vec<CrateAttr>),
     Mod {
@@ -111,7 +111,7 @@ impl Visibility {
 #[derive(Debug, Clone)]
 pub enum CrateAttr {
     Allow(Vec<Lint>),
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     Deny(Vec<Lint>),
     Feature(Feature),
 }
@@ -290,7 +290,7 @@ pub struct Method {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SelfKind {
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     None,
     Value,
     Ref,
@@ -396,7 +396,7 @@ pub enum Pattern {
     Binding(Ident),
     I64(i64),
     I128(i128),
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     U128(u128),
     InclusiveRange {
         start: i128,
@@ -429,7 +429,7 @@ impl AtomicPlace {
         }
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub fn local(&self) -> Option<&Ident> {
         match self {
             AtomicPlace::Ptr(_) => None,
@@ -489,7 +489,7 @@ pub enum AsmDialect {
 #[derive(Debug, Clone)]
 pub enum AsmReg {
     Class(String),
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     Explicit(String),
 }
 
@@ -557,7 +557,7 @@ pub struct InlineAsm {
 }
 
 #[derive(Debug, Clone)]
-#[allow(clippy::large_enum_variant)]
+#[expect(clippy::large_enum_variant)]
 pub enum Stmt {
     Let {
         name: String,
@@ -621,7 +621,7 @@ pub enum Stmt {
         cond: Expr,
         body: Block,
     },
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     Block(Block),
 }
 
@@ -776,7 +776,7 @@ pub enum Expr {
         elem: Box<Expr>,
         len: usize,
     },
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     VecLit(Vec<Expr>),
     VecRepeat {
         elem: Box<Expr>,
@@ -813,7 +813,7 @@ pub enum Expr {
         mutable: bool,
         expr: Box<Expr>,
     },
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     AtomicRef {
         ty: AtomicType,
         place: AtomicPlace,

@@ -634,14 +634,14 @@ pub(super) enum AllocProvenance {
 }
 
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
+#[expect(dead_code)]
 pub(super) struct CalleeAllocSummaryFact {
     pub(super) function: FunctionId,
     pub(super) provenance: AllocProvenance,
 }
 
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
+#[expect(dead_code)]
 pub(super) struct InterproceduralAllocEligibilityFact {
     pub(super) function: FunctionId,
     pub(super) elem_ty: Type,
@@ -653,7 +653,7 @@ pub(super) struct InterproceduralAllocEligibilityFact {
 }
 
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
+#[expect(dead_code)]
 pub(super) struct InterproceduralAllocCallerFact {
     pub(super) callee: FunctionId,
     pub(super) caller: FunctionId,
@@ -1493,7 +1493,7 @@ impl FixupFacts {
             .find(|fact| fact.site.function == function && &fact.site.path == path)
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(super) fn null_check_dominance_at(
         &self,
         function: FunctionId,
@@ -1505,7 +1505,7 @@ impl FixupFacts {
         })
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(super) fn pointer_option_safety_of(
         &self,
         function: FunctionId,
@@ -1516,7 +1516,7 @@ impl FixupFacts {
             .find(|fact| fact.function == function && fact.binding == binding)
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(super) fn pointer_comparison_at(
         &self,
         function: FunctionId,

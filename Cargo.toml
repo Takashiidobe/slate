@@ -25,3 +25,8 @@ debug-assertions = false
 overflow-checks = false
 incremental = false
 codegen-units = 16
+
+[lints.clippy]
+large_enum_variant = "allow"
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
