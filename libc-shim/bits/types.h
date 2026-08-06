@@ -24,6 +24,21 @@ typedef unsigned char      __sa_family_t;
 typedef unsigned int       __socklen_t;
 typedef long               __regoff_t;
 
+#ifdef __WINT_TYPE__
+typedef __WINT_TYPE__ __wint_t;
+#else
+typedef unsigned int __wint_t;
+#endif
+
+#ifdef __WCHAR_TYPE__
+typedef __WCHAR_TYPE__ __wchar_t;
+#else
+typedef int __wchar_t;
+#endif
+
+typedef const int    *__wctrans_t;
+typedef unsigned long __wctype_t;
+
 typedef signed char    __int8_t;
 typedef unsigned char  __uint8_t;
 typedef short          __int16_t;
@@ -122,6 +137,31 @@ struct timespec {
   __time_t tv_sec;
   long     tv_nsec;
 };
+
+#if defined(__NEED_wchar_t) && !defined(__DEFINED_wchar_t)
+typedef __wchar_t wchar_t;
+#define __DEFINED_wchar_t
+#endif
+
+#if defined(__NEED_wctrans_t) && !defined(__DEFINED_wctrans_t)
+typedef __wctrans_t wctrans_t;
+#define __DEFINED_wctrans_t
+#endif
+
+#if defined(__NEED_wctype_t) && !defined(__DEFINED_wctype_t)
+typedef __wctype_t wctype_t;
+#define __DEFINED_wctype_t
+#endif
+
+#if defined(__NEED_wint_t) && !defined(__DEFINED_wint_t)
+typedef __wint_t wint_t;
+#define __DEFINED_wint_t
+#endif
+
+#if defined(__NEED_wctrans_t) && !defined(__DEFINED_wctrans_t)
+typedef __wctrans_t wctrans_t;
+#define __DEFINED_wctrans_t
+#endif
 
 #if defined(__NEED_regoff_t) && !defined(__DEFINED_regoff_t)
 typedef __regoff_t regoff_t;
