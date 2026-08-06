@@ -25,7 +25,7 @@ enum {
   SIG_BLOCK   = 0,
   SIG_UNBLOCK = 1,
   SIG_SETMASK = 2,
-}
+};
 
 #define SI_ASYNCNL (-60)
 #define SI_TKILL   (-6)

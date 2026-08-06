@@ -14,7 +14,7 @@
 #define ElfW(type) Elf32_##type
 #endif
 
-#include <bits/link.h>
+typedef uint32_t ElfSymdx;
 
 struct dl_phdr_info {
   ElfW(Addr) dlpi_addr;

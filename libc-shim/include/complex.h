@@ -6,8 +6,20 @@
 
 #define complex _Complex
 
-#define _Complex_I __builtin_complex(0.0, 1.0)
-#define I          _Complex_I
+double      creal(double complex z);
+float       crealf(float complex z);
+long double creall(long double complex z);
+
+double      cimag(double complex z);
+float       cimagf(float complex z);
+long double cimagl(long double complex z);
+
+#ifdef __GNUC__
+#define _Complex_I (__extension__(0.0f + 1.0fi))
+#else
+#define _Complex_I (0.0f + 1.0fi)
+#endif
+#define I _Complex_I
 
 #define CMPLX(x, y)  __builtin_complex((double)(x), (double)(y))
 #define CMPLXF(x, y) __builtin_complex((float)(x), (float)(y))
