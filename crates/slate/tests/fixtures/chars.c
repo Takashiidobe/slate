@@ -6,10 +6,10 @@ static char add_char(char a, char b) {
 }
 
 int main(void) {
-  char x = 10;
-  unsigned char y = 200;
-  signed char z = -5;
-  char letter = 'A';
+  char          x      = 10;
+  unsigned char y      = 200;
+  signed char   z      = -5;
+  char          letter = 'A';
   printf("%d\n", add_char(x, z));
   printf("%d\n", y);
   printf("%c\n", letter);

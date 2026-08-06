@@ -5,7 +5,7 @@ int main(void) {
   char alpha = 'A';
   char digit = '5';
   char space = ' ';
-  char vtab = '\v';
+  char vtab  = '\v';
   char punct = '!';
 
   if (isalpha(alpha)) {

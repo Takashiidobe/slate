@@ -9,8 +9,8 @@ static int maybe_apply(int (*op)(int), int value) {
 
 int main(void) {
   int (*op)(int) = 0;
-  int total = maybe_apply(op, 4);
-  op = bump;
+  int total      = maybe_apply(op, 4);
+  op             = bump;
   if (op != 0) {
     total = total + maybe_apply(op, 5);
   }

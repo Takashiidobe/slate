@@ -11,7 +11,7 @@ int main(void) {
   memmove(backward_buf, backward_buf + 1, 5);
 
   unsigned char dyn_buf[8] = {1, 2, 3, 4, 5, 6, 7, 8};
-  int n = get_count();
+  int           n          = get_count();
   memmove(dyn_buf, dyn_buf + 1, n);
 
   for (int i = 0; i < 8; i++)

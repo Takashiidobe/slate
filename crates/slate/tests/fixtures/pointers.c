@@ -1,9 +1,9 @@
 #include <stdio.h>
 
 static int bump_through_pointer(int value) {
-  int local = value;
-  int *ptr = &local;
-  *ptr = *ptr + 3;
+  int  local = value;
+  int *ptr   = &local;
+  *ptr       = *ptr + 3;
   return local;
 }
 
@@ -13,8 +13,8 @@ static int add_into_pointer(int *slot, int amount) {
 }
 
 static int pick_with_pointer_arithmetic(int index) {
-  int values[4];
-  int *ptr = values;
+  int  values[4];
+  int *ptr  = values;
   values[0] = 4;
   values[1] = 8;
   values[2] = 12;

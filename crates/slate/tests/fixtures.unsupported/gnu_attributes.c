@@ -5,19 +5,19 @@
 
 struct __attribute__((packed)) GNUAttributePacked {
   unsigned char tag;
-  uint32_t value;
+  uint32_t      value;
 };
 
 struct __attribute__((aligned(32))) GNUAttributeAligned {
   unsigned char value;
 };
 
-typedef int GNUAttributeAliasInt __attribute__((may_alias));
+typedef int          GNUAttributeAliasInt __attribute__((may_alias));
 typedef unsigned int GNUAttributeByte __attribute__((mode(QI)));
 typedef unsigned int GNUAttributeVector __attribute__((vector_size(16)));
 
 typedef union {
-  int integer;
+  int          integer;
   unsigned int unsigned_integer;
 } GNUAttributeTransparent __attribute__((transparent_union));
 
@@ -122,18 +122,18 @@ static int gnu_attribute_transparent(GNUAttributeTransparent value) {
 
 static int gnu_attribute_cleanup_scope(void) {
   {
-    int value __attribute__((cleanup(gnu_attribute_cleanup))) = 53;
-    gnu_cleanup_total += 1;
+    int value __attribute__((cleanup(gnu_attribute_cleanup)))  = 53;
+    gnu_cleanup_total                                         += 1;
   }
   return gnu_cleanup_total;
 }
 
 static int gnu_attribute_layout(void) {
-  struct GNUAttributePacked packed = {1, 59};
-  struct GNUAttributeAligned aligned = {61};
-  GNUAttributeAliasInt alias_value = 67;
-  GNUAttributeByte byte_value = 255;
-  GNUAttributeVector vector_value = {2, 3, 5, 7};
+  struct GNUAttributePacked  packed       = {1, 59};
+  struct GNUAttributeAligned aligned      = {61};
+  GNUAttributeAliasInt       alias_value  = 67;
+  GNUAttributeByte           byte_value   = 255;
+  GNUAttributeVector         vector_value = {2, 3, 5, 7};
   return (int)sizeof(packed) + (int)offsetof(struct GNUAttributePacked, value) +
          (int)_Alignof(struct GNUAttributeAligned) + packed.tag +
          (int)packed.value + aligned.value + alias_value +
@@ -142,9 +142,9 @@ static int gnu_attribute_layout(void) {
 }
 
 int main(void) {
-  int value = 71;
+  int value          = 71;
   int volatile never = 0;
-  gnu_common_value = 73;
+  gnu_common_value   = 73;
   gnu_nocommon_value = 79;
   if (never) {
     gnu_attribute_noreturn();

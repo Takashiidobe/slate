@@ -2,7 +2,7 @@
 #include "test.h"
 
 char *main_filename1 = __FILE__;
-int main_line1 = __LINE__;
+int   main_line1     = __LINE__;
 #define LINE() __LINE__
 int main_line2 = LINE();
 

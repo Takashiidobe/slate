@@ -7,8 +7,8 @@ int main(void) {
     puts("open-fail");
     return 0;
   }
-  char buf[16] = "0123456789abcde";
-  size_t n = fwrite(buf, 1, 15, f);
+  char   buf[16] = "0123456789abcde";
+  size_t n       = fwrite(buf, 1, 15, f);
   printf("%zu\n", n);
   fclose(f);
   remove("slate_stdio_fwrite_return.tmp");

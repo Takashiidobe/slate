@@ -7,12 +7,12 @@ int main() {
   ASSERT(1, (long)1);
   ASSERT(0, (long)&*(int *)0);
   ASSERT(513, ({
-           int x = 512;
+           int x       = 512;
            *(char *)&x = 1;
            x;
          }));
   ASSERT(5, ({
-           int x = 5;
+           int  x = 5;
            long y = (long)&x;
            *(int *)y;
          }));
@@ -54,12 +54,12 @@ int main() {
 
   ASSERT(-1, ({
     typedef short T;
-    T x = 65535;
+    T             x = 65535;
     (int)x;
   }));
   ASSERT(65535, ({
            typedef unsigned short T;
-           T x = 65535;
+           T                      x = 65535;
            (int)x;
          }));
 

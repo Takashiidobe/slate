@@ -7,14 +7,14 @@
 #include <string.h>
 
 static int gnu_string_extensions(void) {
-  char destination[16] = {};
-  const char repeated[] = "abca";
-  char obscured[] = "gnu";
-  char tokens[] = "a::bc";
-  char *cursor = tokens;
-  char *token;
-  char *end = mempcpy(destination, "slate", 6);
-  int token_score = 0;
+  char       destination[16] = {};
+  const char repeated[]      = "abca";
+  char       obscured[]      = "gnu";
+  char       tokens[]        = "a::bc";
+  char      *cursor          = tokens;
+  char      *token;
+  char      *end         = mempcpy(destination, "slate", 6);
+  int        token_score = 0;
 
   while ((token = strsep(&cursor, ":")) != NULL) {
     token_score = token_score * 10 + (int)strlen(token);
@@ -35,11 +35,11 @@ static int gnu_string_extensions(void) {
 }
 
 static int gnu_argz_extensions(void) {
-  char *argz = NULL;
-  size_t length = 0;
-  char *arguments[6];
+  char        *argz   = NULL;
+  size_t       length = 0;
+  char        *arguments[6];
   unsigned int replacements = 0;
-  int total = 0;
+  int          total        = 0;
 
   total += argz_create_sep("one:two:three", ':', &argz, &length) == 0;
   total += argz_count(argz, length) == 3;
@@ -56,9 +56,9 @@ static int gnu_argz_extensions(void) {
 }
 
 static int gnu_envz_extensions(void) {
-  char *envz = NULL;
+  char  *envz   = NULL;
   size_t length = 0;
-  int total = 0;
+  int    total  = 0;
 
   total += envz_add(&envz, &length, "ALPHA", "one") == 0;
   total += envz_add(&envz, &length, "BETA", NULL) == 0;

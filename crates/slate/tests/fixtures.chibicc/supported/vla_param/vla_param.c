@@ -41,7 +41,7 @@ int dot_product(int n, int a[n], int b[n]) {
 void process_matrix(int rows, int cols, int mat[rows][cols]);
 
 int main() {
-  int arr5[] = {1, 2, 3, 4, 5};
+  int arr5[]  = {1, 2, 3, 4, 5};
   int arr10[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
   // Test basic VLA parameter

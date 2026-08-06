@@ -17,14 +17,14 @@ int main(void) {
   printf("%.*d\n", 3, 5);
 
   /* length modifiers */
-  short sh = 7;
+  short       sh = 7;
   signed char sc = 8;
-  long lo = 9L;
-  long long ll = 10LL;
-  intmax_t jm = 11;
-  size_t zu = 12u;
-  ssize_t zd = -12;
-  ptrdiff_t td = 13;
+  long        lo = 9L;
+  long long   ll = 10LL;
+  intmax_t    jm = 11;
+  size_t      zu = 12u;
+  ssize_t     zd = -12;
+  ptrdiff_t   td = 13;
   long double ld = 1.5L;
   printf("%hd|%hhd|%ld|%lld|%jd|%zu|%zd|%td|%Lf\n", sh, sc, lo, ll, jm, zu, zd,
          td, ld);

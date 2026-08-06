@@ -14,11 +14,11 @@ static void quick_handler(void) { once_total += 100; }
 
 int main(void) {
   thrd_t thread;
-  tss_t key;
-  int argument = 40;
-  int thread_result = 0;
-  int thread_created = thrd_create(&thread, thread_worker, &argument);
-  int thread_joined =
+  tss_t  key;
+  int    argument       = 40;
+  int    thread_result  = 0;
+  int    thread_created = thrd_create(&thread, thread_worker, &argument);
+  int    thread_joined =
       thread_created == thrd_success ? thrd_join(thread, &thread_result) : -1;
 
   once_flag control = ONCE_FLAG_INIT;

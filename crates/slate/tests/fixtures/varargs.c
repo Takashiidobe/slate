@@ -15,7 +15,7 @@ static int sum(int n, ...) {
 static int pick_second(int marker, ...) {
   va_list ap;
   va_start(ap, marker);
-  int first = va_arg(ap, int);
+  int first  = va_arg(ap, int);
   int second = va_arg(ap, int);
   va_end(ap);
   return marker + first * 10 + second;

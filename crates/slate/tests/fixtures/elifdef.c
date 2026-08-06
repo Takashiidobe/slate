@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int main(void) {
-  int elifdef_value = 0;
+  int elifdef_value  = 0;
   int elifndef_value = 0;
   int inactive_value = 0;
 

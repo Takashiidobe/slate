@@ -12,9 +12,9 @@ struct Pair {
 struct Pair pair = {3, 5};
 
 static int adjust(int by) {
-  counter += by;
-  zeroed += counter;
-  numbers[2] = zeroed - numbers[0];
+  counter    += by;
+  zeroed     += counter;
+  numbers[2]  = zeroed - numbers[0];
   pair.right += numbers[1];
   return pair.left + pair.right;
 }

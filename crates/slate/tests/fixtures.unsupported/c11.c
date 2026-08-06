@@ -54,7 +54,7 @@
 
 struct C11Anonymous {
   union {
-    int integer;
+    int    integer;
     double real;
   };
   struct {
@@ -72,11 +72,11 @@ struct C11Temporary {
 };
 
 _Alignas(64) static unsigned char c11_aligned_buffer[64];
-static _Atomic int c11_atomic_total;
+static _Atomic int       c11_atomic_total;
 static _Thread_local int c11_thread_local_value;
-static int c11_evaluation_total;
-static volatile int c11_never_flag;
-static int c11_once_total;
+static int               c11_evaluation_total;
+static volatile int      c11_never_flag;
+static int               c11_once_total;
 
 _Static_assert(_Alignof(struct C11OverAligned) >= 32, "over-aligned structure");
 _Static_assert(sizeof(char16_t) >= 2, "UTF-16 code unit");
@@ -96,9 +96,9 @@ static int c11_evaluation_step(int value) {
 }
 
 static int c11_thread_worker(void *argument) {
-  int increment = *(int *)argument;
+  int increment          = *(int *)argument;
   c11_thread_local_value = 29;
-  errno = ERANGE;
+  errno                  = ERANGE;
   atomic_fetch_add_explicit(&c11_atomic_total, increment, memory_order_seq_cst);
   return c11_thread_local_value + (errno == ERANGE);
 }
@@ -114,32 +114,32 @@ static noreturn void c11_never_return(int status) { quick_exit(status); }
 static FILE *c11_open_exclusive(const char *path) { return fopen(path, "wx"); }
 
 int main(void) {
-  static const char utf8_text[] = u8"\u03a9";
-  static const char16_t utf16_text[] = u"\u03a9";
-  static const char32_t utf32_text[] = U"\U0001f642";
-  char16_t utf16_character = u'\u03a9';
-  char32_t utf32_character = U'\U0001f642';
-  struct C11Anonymous anonymous = {0};
-  struct C11OverAligned aligned_object = {0};
-  mbstate_t utf16_state = {0};
-  mbstate_t utf32_state = {0};
-  char16_t converted16 = 0;
-  char32_t converted32 = 0;
-  char multibyte16[MB_LEN_MAX];
-  char multibyte32[MB_LEN_MAX];
-  struct timespec current_time = {0, 0};
-  thrd_t thread;
-  mtx_t mutex;
-  cnd_t condition;
-  once_flag once_control = ONCE_FLAG_INIT;
-  tss_t thread_key;
-  int thread_increment = 7;
-  int thread_result = 0;
-  int thread_created;
-  int thread_joined;
-  void *aligned_memory;
-  FILE *exclusive_first;
-  FILE *exclusive_second;
+  static const char     utf8_text[]     = u8"\u03a9";
+  static const char16_t utf16_text[]    = u"\u03a9";
+  static const char32_t utf32_text[]    = U"\U0001f642";
+  char16_t              utf16_character = u'\u03a9';
+  char32_t              utf32_character = U'\U0001f642';
+  struct C11Anonymous   anonymous       = {0};
+  struct C11OverAligned aligned_object  = {0};
+  mbstate_t             utf16_state     = {0};
+  mbstate_t             utf32_state     = {0};
+  char16_t              converted16     = 0;
+  char32_t              converted32     = 0;
+  char                  multibyte16[MB_LEN_MAX];
+  char                  multibyte32[MB_LEN_MAX];
+  struct timespec       current_time = {0, 0};
+  thrd_t                thread;
+  mtx_t                 mutex;
+  cnd_t                 condition;
+  once_flag             once_control = ONCE_FLAG_INIT;
+  tss_t                 thread_key;
+  int                   thread_increment = 7;
+  int                   thread_result    = 0;
+  int                   thread_created;
+  int                   thread_joined;
+  void                 *aligned_memory;
+  FILE                 *exclusive_first;
+  FILE                 *exclusive_second;
   double _Complex complex_value;
   int alignment_total;
   int unicode_total;
@@ -160,7 +160,7 @@ int main(void) {
   int limits_total;
 #ifdef __STDC_LIB_EXT1__
   char bounds_destination[4] = {0, 0, 0, 0};
-  int bounds_total;
+  int  bounds_total;
 #endif
 
   _Static_assert(sizeof(utf8_text) == 3, "UTF-8 literal size");
@@ -177,15 +177,15 @@ int main(void) {
       C11_TYPE_KIND(1) + C11_TYPE_KIND(1.0) + C11_TYPE_KIND((char *)0);
 
   anonymous.integer = 31;
-  anonymous.x = 37;
-  anonymous.y = 41;
-  anonymous_total = anonymous.integer + anonymous.x + anonymous.y;
+  anonymous.x       = 37;
+  anonymous.y       = 41;
+  anonymous_total   = anonymous.integer + anonymous.x + anonymous.y;
 
   c11_evaluation_total = 0;
   evaluation_total =
       c11_evaluation_step(2) + c11_evaluation_step(3) + c11_evaluation_total;
 
-  temporary_total = c11_make_temporary(43).values[1];
+  temporary_total     = c11_make_temporary(43).values[1];
   static_assert_total = 1;
   optional_total = C11_ANALYZABLE_VALUE + C11_LIB_EXT1_VALUE +
                    C11_ATOMICS_VALUE + C11_COMPLEX_VALUE + C11_THREADS_VALUE +
@@ -193,7 +193,7 @@ int main(void) {
 
   atomic_init(&c11_atomic_total, 5);
   c11_thread_local_value = 17;
-  errno = 0;
+  errno                  = 0;
   thread_created = thrd_create(&thread, c11_thread_worker, &thread_increment);
   thread_joined =
       thread_created == thrd_success ? thrd_join(thread, &thread_result) : -1;
@@ -225,8 +225,8 @@ int main(void) {
   }
   concurrency_total += TSS_DTOR_ITERATIONS >= 1;
 
-  converted16 = 0;
-  converted32 = 0;
+  converted16      = 0;
+  converted32      = 0;
   conversion_total = (int)mbrtoc16(&converted16, "A", 1, &utf16_state) +
                      (int)c16rtomb(multibyte16, u'A', &utf16_state) +
                      (int)mbrtoc32(&converted32, "B", 1, &utf32_state) +
@@ -242,9 +242,9 @@ int main(void) {
   quick_total = at_quick_exit(c11_quick_handler) == 0;
 
   remove("slate-c11-exclusive.tmp");
-  exclusive_first = c11_open_exclusive("slate-c11-exclusive.tmp");
+  exclusive_first  = c11_open_exclusive("slate-c11-exclusive.tmp");
   exclusive_second = c11_open_exclusive("slate-c11-exclusive.tmp");
-  exclusive_total = exclusive_first != NULL && exclusive_second == NULL;
+  exclusive_total  = exclusive_first != NULL && exclusive_second == NULL;
   if (exclusive_first != NULL) {
     fclose(exclusive_first);
   }

@@ -3,7 +3,7 @@
 
 _Thread_local int v1;
 _Thread_local int v2 = 5;
-int v3 = 7;
+int               v3 = 7;
 
 void *thread_main(void *unused) {
   ASSERT(0, v1);

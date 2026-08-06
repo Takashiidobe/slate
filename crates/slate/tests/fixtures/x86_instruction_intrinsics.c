@@ -4,8 +4,8 @@
 
 __attribute__((target("sse4.2"))) static unsigned long long crc32_probe(void) {
   unsigned int crc = _mm_crc32_u8(0u, 0x12u);
-  crc = _mm_crc32_u16(crc, 0x3456u);
-  crc = _mm_crc32_u32(crc, 0x789abcdeu);
+  crc              = _mm_crc32_u16(crc, 0x3456u);
+  crc              = _mm_crc32_u32(crc, 0x789abcdeu);
   return _mm_crc32_u64(crc, 0x123456789abcdef0ull);
 }
 

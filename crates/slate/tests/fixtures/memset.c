@@ -14,7 +14,7 @@ int main(void) {
   memset(partial_buf, 9, 4);
 
   unsigned char dynamic_buf[8] = {1, 2, 3, 4, 5, 6, 7, 8};
-  int n = get_count();
+  int           n              = get_count();
   memset(dynamic_buf, 9, n);
 
   for (int i = 0; i < 8; i++)

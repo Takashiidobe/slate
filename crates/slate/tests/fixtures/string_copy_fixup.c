@@ -2,9 +2,9 @@
 #include <string.h>
 
 int main(void) {
-  char copy[16] = {0};
-  char append[16] = "foo";
-  char trunc_copy[16] = {0};
+  char copy[16]         = {0};
+  char append[16]       = "foo";
+  char trunc_copy[16]   = {0};
   char trunc_append[16] = "pre";
 
   strcpy(copy, "abc");

@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 int main(void) {
-  int a = 20;
-  a -= 5;
+  int a  = 20;
+  a     -= 5;
   printf("%d\n", a);
   a *= 3;
   printf("%d\n", a);

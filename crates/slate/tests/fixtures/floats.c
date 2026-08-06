@@ -6,7 +6,7 @@ static double avg(double a, double b) {
 }
 
 int main(void) {
-  float x = 1.5f;
+  float  x = 1.5f;
   double y = 2.25;
   printf("%f\n", x + 0.5f);
   printf("%f\n", avg(3.0, 4.0));

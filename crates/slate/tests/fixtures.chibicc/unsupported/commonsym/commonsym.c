@@ -1,11 +1,11 @@
 #include "test.h"
 
-int x;
-int x = 5;
-int y = 7;
-int y;
-int common_ext1;
-int common_ext2;
+int        x;
+int        x = 5;
+int        y = 7;
+int        y;
+int        common_ext1;
+int        common_ext2;
 static int common_local;
 
 int main() {

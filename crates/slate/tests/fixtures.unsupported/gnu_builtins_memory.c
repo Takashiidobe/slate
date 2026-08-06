@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 static int gnu_builtin_stack(void) {
-  unsigned char *first = __builtin_alloca(16);
+  unsigned char *first   = __builtin_alloca(16);
   unsigned char *aligned = __builtin_alloca_with_align(16, 128);
   __builtin_memset(first, 3, 16);
   __builtin_memset(aligned, 5, 16);
@@ -12,10 +12,10 @@ static int gnu_builtin_stack(void) {
 
 static int gnu_builtin_memory(void) {
   unsigned char source[16] = "abcdefghijklmno";
-  unsigned char first[32] = {};
+  unsigned char first[32]  = {};
   unsigned char second[32] = {};
-  unsigned char third[32] = {};
-  void *end = __builtin_mempcpy(first, source, 8);
+  unsigned char third[32]  = {};
+  void         *end        = __builtin_mempcpy(first, source, 8);
   __builtin_memcpy_inline(second, source, 8);
   __builtin_memcpy(third, source, 16);
   __builtin_memmove(third + 2, third, 8);
@@ -30,9 +30,9 @@ static int gnu_builtin_memory(void) {
 }
 
 static int gnu_builtin_strings(void) {
-  char first[64] = {};
-  char second[64] = {};
-  char third[64] = {};
+  char  first[64]  = {};
+  char  second[64] = {};
+  char  third[64]  = {};
   char *end;
   __builtin_strcpy(first, "gnu");
   end = __builtin_stpcpy(first + 3, "builtins");

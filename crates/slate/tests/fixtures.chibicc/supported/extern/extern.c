@@ -1,6 +1,6 @@
 #include "test.h"
 
-extern int ext1;
+extern int  ext1;
 extern int *ext2;
 
 inline int inline_fn(void) { return 3; }

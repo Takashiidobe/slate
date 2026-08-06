@@ -3,7 +3,7 @@ enum Mode {
   /** disable processing */
   MODE_OFF = 0,
   /// enable processing
-  MODE_ON = 1,
+  MODE_ON  = 1,
 };
 
 /** stores a selected mode */

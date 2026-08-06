@@ -18,12 +18,12 @@ static int cmp_item(const void *a, const void *b) {
 
 int main(void) {
   int nums[5] = {4, 1, 5, 3, 2};
-  int key = 3;
+  int key     = 3;
   qsort(nums, 5, sizeof(int), cmp_int);
   int *hit = bsearch(&key, nums, 5, sizeof(int), cmp_int);
 
   struct Item items[4] = {{3, 30}, {1, 10}, {4, 40}, {2, 20}};
-  struct Item needle = {4, 0};
+  struct Item needle   = {4, 0};
   qsort(items, 4, sizeof(struct Item), cmp_item);
   struct Item *found =
       bsearch(&needle, items, 4, sizeof(struct Item), cmp_item);

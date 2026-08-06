@@ -1,7 +1,7 @@
 #include <stdalign.h>
 #include <stdio.h>
 struct S {
-  char a;
+  char   a;
   double b;
 };
 int main(void) {

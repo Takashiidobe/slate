@@ -3,8 +3,8 @@
 static int weighted_sum(int *items, int len) {
   int total = 0;
   for (int i = 0; i < len; i++) {
-    int item = items[i];
-    total += item * i;
+    int item  = items[i];
+    total    += item * i;
   }
   return total;
 }

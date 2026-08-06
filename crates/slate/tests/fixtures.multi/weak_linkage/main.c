@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int fallback_value(void);
+int        fallback_value(void);
 extern int weak_global;
 
 int main(void) {

@@ -3,7 +3,7 @@
 
 struct FlexibleArray {
   size_t count;
-  int values[];
+  int    values[];
 };
 
 int main(void) {

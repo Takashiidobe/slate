@@ -2,14 +2,14 @@
 
 struct Bits {
   unsigned a : 3;
-  int b : 5;
+  int      b : 5;
   unsigned c : 1;
   unsigned d : 12;
 };
 
 struct Wide {
   unsigned long long x : 40;
-  long long y : 40;
+  long long          y : 40;
 };
 
 int main(void) {

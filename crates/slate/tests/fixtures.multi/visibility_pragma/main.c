@@ -4,12 +4,12 @@ int visible_before(void) { return 3; }
 int visible_before_global = 5;
 
 #pragma GCC visibility push(hidden)
-int hidden_outer(void) { return 7; }
-int hidden_outer_global = 11;
+int                    hidden_outer(void) { return 7; }
+int                    hidden_outer_global = 11;
 
 #pragma GCC visibility push(default)
-int visible_inner(void) { return 13; }
-int visible_inner_global = 17;
+int                    visible_inner(void) { return 13; }
+int                    visible_inner_global = 17;
 #pragma GCC visibility pop
 
 int hidden_again(void) { return 19; }

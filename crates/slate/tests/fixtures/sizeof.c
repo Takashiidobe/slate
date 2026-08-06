@@ -6,7 +6,7 @@ struct Pair {
 };
 
 union Slot {
-  int value;
+  int          value;
   unsigned int raw;
 };
 

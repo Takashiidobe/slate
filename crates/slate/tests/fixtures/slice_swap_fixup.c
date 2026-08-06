@@ -4,7 +4,7 @@ static void pairwise_swap(int *items, int len) {
   for (int i = 0; i < len; i++) {
     for (int j = 0; j < len; j++) {
       if (items[i] > items[j]) {
-        int tmp = items[i];
+        int tmp  = items[i];
         items[i] = items[j];
         items[j] = tmp;
       }
@@ -16,7 +16,7 @@ static void pairwise_swap_tmp_reused(int *items, int len) {
   for (int i = 0; i < len; i++) {
     for (int j = 0; j < len; j++) {
       if (items[i] > items[j]) {
-        int tmp = items[i];
+        int tmp  = items[i];
         items[i] = items[j];
         items[j] = tmp;
         printf("tmp=%d\n", tmp);
@@ -29,7 +29,7 @@ static void nested_self_swap(int *items, int len) {
   for (int i = 0; i < len; i++) {
     for (int j = 0; j < len; j++) {
       if (items[i] > 0) {
-        int tmp = items[j];
+        int tmp  = items[j];
         items[j] = items[j];
         items[j] = tmp;
       }

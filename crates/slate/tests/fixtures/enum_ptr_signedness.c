@@ -8,10 +8,10 @@ struct palette {
 };
 
 int main(void) {
-  color_t data[3] = {RED, GREEN, BLUE};
+  color_t        data[3] = {RED, GREEN, BLUE};
   struct palette p;
-  p.start = data;
-  p.top = data + 3;
+  p.start   = data;
+  p.top     = data + 3;
   color_t c = *(p.start + 1);
   printf("%d\n", (int)c);
   printf("%d\n", (int)(p.top - p.start));

@@ -2,9 +2,9 @@
 #include <stddef.h>
 
 typedef struct {
-  int a;
-  char b;
-  int c;
+  int    a;
+  char   b;
+  int    c;
   double d;
 } T;
 

@@ -1,9 +1,9 @@
 #include <stdio.h>
 
 int main(void) {
-  int ri = 0;
-  unsigned int ru = 0;
-  long long rll = 0;
+  int          ri  = 0;
+  unsigned int ru  = 0;
+  long long    rll = 0;
 
   int add_i = __builtin_add_overflow(2147483647, 1, &ri);
   printf("%d %d\n", add_i, ri);

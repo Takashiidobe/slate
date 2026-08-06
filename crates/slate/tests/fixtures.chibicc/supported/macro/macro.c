@@ -118,7 +118,7 @@ int main() {
   ASSERT(23, M1 * 5);
 
 #define ASSERT_ assert(
-#define if 5
+#define if   5
 #define five "5"
 #define END )
   ASSERT_ 5, if, five END;

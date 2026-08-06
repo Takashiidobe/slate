@@ -51,20 +51,20 @@ void ret_none() { return; }
 
 _Bool true_fn();
 _Bool false_fn();
-char char_fn();
+char  char_fn();
 short short_fn();
 
-unsigned char uchar_fn();
+unsigned char  uchar_fn();
 unsigned short ushort_fn();
 
-char schar_fn();
+char  schar_fn();
 short sshort_fn();
 
 int add_all(int n, ...);
 
 typedef struct {
-  int gp_offset;
-  int fp_offset;
+  int   gp_offset;
+  int   fp_offset;
   void *overflow_arg_area;
   void *reg_save_area;
 } __va_elem;
@@ -82,7 +82,7 @@ char *fmt(char *buf, char *fmt, ...) {
 }
 
 double add_double(double x, double y);
-float add_float(float x, float y);
+float  add_float(float x, float y);
 
 float add_float3(float x, float y, float z) { return x + y + z; }
 
@@ -96,10 +96,10 @@ char *func_fn(void) { return __func__; }
 
 char *function_fn(void) { return __FUNCTION__; }
 
-int add10_int(int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8,
-              int x9, int x10);
-float add10_float(float x1, float x2, float x3, float x4, float x5, float x6,
-                  float x7, float x8, float x9, float x10);
+int    add10_int(int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8,
+                 int x9, int x10);
+float  add10_float(float x1, float x2, float x3, float x4, float x5, float x6,
+                   float x7, float x8, float x9, float x10);
 double add10_double(double x1, double x2, double x3, double x4, double x5,
                     double x6, double x7, double x8, double x9, double x10);
 
@@ -119,13 +119,13 @@ int many_args3(int a, double b, int c, int d, double e, int f, double g, int h,
 }
 
 typedef struct {
-  int a, b;
+  int   a, b;
   short c;
-  char d;
+  char  d;
 } Ty4;
 typedef struct {
-  int a;
-  float b;
+  int    a;
+  float  b;
   double c;
 } Ty5;
 typedef struct {
@@ -171,9 +171,9 @@ typedef struct {
   unsigned char a[20];
 } Ty21;
 
-Ty4 struct_test24(void);
-Ty5 struct_test25(void);
-Ty6 struct_test26(void);
+Ty4  struct_test24(void);
+Ty5  struct_test25(void);
+Ty6  struct_test26(void);
 Ty20 struct_test27(void);
 Ty21 struct_test28(void);
 

@@ -95,7 +95,7 @@ static void c23_never_return(void) {
 }
 
 static thread_local int c23_thread_value = 53;
-static volatile int c23_never_flag;
+static volatile int     c23_never_flag;
 
 constexpr int c23_file_constant = 59;
 
@@ -130,44 +130,44 @@ static int c23_switch_fallthrough(int value) {
 
 static int c23_relaxed_variadic(...) {
   va_list arguments;
-  int first;
-  int second;
+  int     first;
+  int     second;
   va_start(arguments);
-  first = va_arg(arguments, int);
+  first  = va_arg(arguments, int);
   second = va_arg(arguments, int);
   va_end(arguments);
   return first + second;
 }
 
 int main(void) {
-  constexpr int local_constant = 61;
-  alignas(32) int aligned_value = 3;
-  auto inferred_value = 67;
-  typeof(inferred_value) same_type_value = 71;
-  const int qualified_value = 73;
+  constexpr int          local_constant            = 61;
+  alignas(32) int        aligned_value             = 3;
+  auto                   inferred_value            = 67;
+  typeof(inferred_value) same_type_value           = 71;
+  const int              qualified_value           = 73;
   typeof_unqual(qualified_value) unqualified_value = 79;
-  int \u03b1 = 5;
-  signed _BitInt(17) signed_precise = -12345;
-  unsigned _BitInt(17) unsigned_precise = 100000uwb;
-  int binary_value = 0b1010'0101;
-  char8_t utf8_character = u8'Z';
-  static const char8_t utf8_text[] = u8"\u03a9";
-  struct C23Empty empty_struct = {};
-  int empty_array[3] = {};
-  const C23Array qualified_array = {2, 3, 5};
-  enum C23Fixed fixed_value = C23_FIXED_SECOND;
-  enum C23Wide wide_value = C23_WIDE_VALUE;
-  nullptr_t null_value = nullptr;
-  int *null_pointer = nullptr;
-  bool boolean_value = true;
-  bool false_value = false;
-  int static_compound_value = 83;
-  int language_total;
-  int attribute_total;
-  int preprocessor_total;
-  int type_total;
-  int control_total;
-  int removal_total;
+  int \u03b1                                       = 5;
+  signed _BitInt(17) signed_precise                = -12345;
+  unsigned _BitInt(17) unsigned_precise            = 100000uwb;
+  int                  binary_value                = 0b1010'0101;
+  char8_t              utf8_character              = u8'Z';
+  static const char8_t utf8_text[]                 = u8"\u03a9";
+  struct C23Empty      empty_struct                = {};
+  int                  empty_array[3]              = {};
+  const C23Array       qualified_array             = {2, 3, 5};
+  enum C23Fixed        fixed_value                 = C23_FIXED_SECOND;
+  enum C23Wide         wide_value                  = C23_WIDE_VALUE;
+  nullptr_t            null_value                  = nullptr;
+  int                 *null_pointer                = nullptr;
+  bool                 boolean_value               = true;
+  bool                 false_value                 = false;
+  int                  static_compound_value       = 83;
+  int                  language_total;
+  int                  attribute_total;
+  int                  preprocessor_total;
+  int                  type_total;
+  int                  control_total;
+  int                  removal_total;
 #ifdef __STDC_IEC_60559_DFP__
   _Decimal32 decimal_value = 1.5df;
 #endif
@@ -185,14 +185,14 @@ int main(void) {
       qualified_array[2] + fixed_value + (int)(wide_value == C23_WIDE_VALUE) +
       static_compound_value + C23_OPTIONAL(7) + C23_OPTIONAL(11, 13);
 
-  attribute_total = c23_nodiscard_value();
+  attribute_total    = c23_nodiscard_value();
   preprocessor_total = C23_ELIFDEF_VALUE + C23_ELIFNDEF_VALUE +
                        C23_HAS_INCLUDE_VALUE + C23_HAS_EMBED_VALUE +
                        C23_REPRODUCIBLE_VALUE + C23_UNSEQUENCED_VALUE +
                        C23_DECIMAL_VALUE + C23_STORAGE_COMPOUND_VALUE +
                        c23_embedded[0] + c23_embedded[1] + c23_embedded[2];
-  type_total = (null_value == nullptr) + (null_pointer == nullptr) +
-               boolean_value + !false_value + c23_thread_value;
+  type_total         = (null_value == nullptr) + (null_pointer == nullptr) +
+                       boolean_value + !false_value + c23_thread_value;
   control_total = c23_unnamed_parameter(89, 97) + c23_label_declaration(101) +
                   c23_switch_fallthrough(1) + c23_relaxed_variadic(103, 107);
   removal_total = (__STDC_VERSION__ == 202311L);

@@ -1,6 +1,6 @@
 #define _GNU_SOURCE
 #define obstack_chunk_alloc malloc
-#define obstack_chunk_free free
+#define obstack_chunk_free  free
 #include <malloc.h>
 #include <obstack.h>
 #include <stdint.h>
@@ -10,12 +10,12 @@
 #include <unistd.h>
 
 static int gnu_allocation_extensions(void) {
-  int *values = reallocarray(NULL, 4, sizeof(*values));
-  void *aligned = memalign(64, 80);
-  void *page = valloc(1);
-  void *rounded = pvalloc(1);
-  long page_size = sysconf(_SC_PAGESIZE);
-  int total = 0;
+  int  *values    = reallocarray(NULL, 4, sizeof(*values));
+  void *aligned   = memalign(64, 80);
+  void *page      = valloc(1);
+  void *rounded   = pvalloc(1);
+  long  page_size = sysconf(_SC_PAGESIZE);
+  int   total     = 0;
 
   for (int index = 0; index < 4; ++index) {
     values[index] = index + 1;
@@ -37,16 +37,16 @@ static int gnu_allocation_extensions(void) {
 
 static int gnu_obstack_extensions(void) {
   struct obstack storage;
-  char *first;
-  char *second;
-  int total = 0;
+  char          *first;
+  char          *second;
+  int            total = 0;
 
   obstack_init(&storage);
-  first = obstack_copy0(&storage, "gnu", 3);
-  second = obstack_copy0(&storage, "libc", 4);
-  total += strcmp(first, "gnu") == 0;
-  total += strcmp(second, "libc") == 0;
-  total += obstack_object_size(&storage) == 0;
+  first   = obstack_copy0(&storage, "gnu", 3);
+  second  = obstack_copy0(&storage, "libc", 4);
+  total  += strcmp(first, "gnu") == 0;
+  total  += strcmp(second, "libc") == 0;
+  total  += obstack_object_size(&storage) == 0;
   obstack_free(&storage, NULL);
   return total;
 }

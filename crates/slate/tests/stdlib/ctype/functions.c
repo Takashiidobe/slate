@@ -2,19 +2,19 @@
 #include <stdio.h>
 
 int main(void) {
-  volatile int upper = 'A';
-  volatile int lower = 'a';
-  volatile int digit = '7';
-  volatile int hex = 'F';
-  volatile int nonhex = 'g';
-  volatile int blank = ' ';
-  volatile int tab = '\t';
-  volatile int newline = '\n';
+  volatile int upper       = 'A';
+  volatile int lower       = 'a';
+  volatile int digit       = '7';
+  volatile int hex         = 'F';
+  volatile int nonhex      = 'g';
+  volatile int blank       = ' ';
+  volatile int tab         = '\t';
+  volatile int newline     = '\n';
   volatile int punctuation = '!';
-  volatile int nul = 0;
-  volatile int del = 127;
-  volatile int high = 255;
-  volatile int eof = EOF;
+  volatile int nul         = 0;
+  volatile int del         = 127;
+  volatile int high        = 255;
+  volatile int eof         = EOF;
 
   printf("isalnum %d %d %d\n", isalnum(upper) ? 1 : 0, isalnum(digit) ? 1 : 0,
          isalnum(punctuation) ? 1 : 0);

@@ -1,23 +1,23 @@
 #include <stdio.h>
 
 struct Mixed {
-  char tag;
+  char          tag;
   unsigned char code;
-  float ratio;
-  double total;
+  float         ratio;
+  double        total;
 };
 
 union Scalar {
-  char tag;
+  char          tag;
   unsigned char code;
-  float ratio;
-  double total;
+  float         ratio;
+  double        total;
 };
 
 static int struct_values(void) {
   struct Mixed m;
-  m.tag = 'A';
-  m.code = 200;
+  m.tag   = 'A';
+  m.code  = 200;
   m.ratio = 1.5f;
   m.total = 2.25;
   printf("%c\n", m.tag);

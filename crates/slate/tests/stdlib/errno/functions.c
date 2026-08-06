@@ -6,16 +6,16 @@
 static _Atomic int worker_ready;
 static _Atomic int worker_release;
 static _Atomic int worker_done;
-static int worker_errno_before;
-static int worker_errno_after;
+static int         worker_errno_before;
+static int         worker_errno_after;
 
 static void print_error(const char *name, int value) {
   printf("%s %d\n", name, value);
 }
 
 static int errno_worker(void *argument) {
-  int result = *(int *)argument;
-  errno = EILSEQ;
+  int result          = *(int *)argument;
+  errno               = EILSEQ;
   worker_errno_before = errno == EILSEQ;
   atomic_store(&worker_ready, 1);
   while (!atomic_load(&worker_release))
@@ -159,16 +159,16 @@ int main(void) {
   print_error("EHWPOISON", EHWPOISON);
   print_error("ENOTSUP", ENOTSUP);
 
-  errno = 0;
+  errno     = 0;
   int *slot = &errno;
   printf("zero %d\n", errno == 0);
   *slot = EDOM;
   printf("modifiable %d\n", errno == EDOM);
 
   thrd_t worker;
-  int worker_result = 23;
-  int joined_result = 0;
-  int create_status = thrd_create(&worker, errno_worker, &worker_result);
+  int    worker_result = 23;
+  int    joined_result = 0;
+  int    create_status = thrd_create(&worker, errno_worker, &worker_result);
   while (!atomic_load(&worker_ready))
     ;
   errno = ERANGE;
@@ -176,7 +176,7 @@ int main(void) {
   while (!atomic_load(&worker_done))
     ;
   int main_errno_after = errno == ERANGE;
-  int join_status = thrd_join(worker, &joined_result);
+  int join_status      = thrd_join(worker, &joined_result);
   printf("thread %d %d %d %d %d %d\n", create_status == thrd_success,
          worker_errno_before, worker_errno_after, main_errno_after,
          join_status == thrd_success, joined_result == worker_result);

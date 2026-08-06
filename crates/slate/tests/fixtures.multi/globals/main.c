@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 extern int counter;
-void bump(int by);
+void       bump(int by);
 
 int main(void) {
   bump(3);

@@ -1,9 +1,9 @@
 #include <stdio.h>
 
 int main(void) {
-  int a = 5;
-  int neg = -5;
-  unsigned int u = 5u;
+  int          a   = 5;
+  int          neg = -5;
+  unsigned int u   = 5u;
   unsigned int hex = 255u;
   printf("%.3d %.3d\n", a, neg);
   printf("%8.3d|%-8.3d|%+.3d\n", a, neg, a);

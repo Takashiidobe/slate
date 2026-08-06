@@ -22,7 +22,7 @@ int main() {
   ASSERT(1, ({
            struct {
              char a;
-             int b;
+             int  b;
              char c;
            } x;
            x.a = 1;
@@ -33,7 +33,7 @@ int main() {
   ASSERT(2, ({
            struct {
              char a;
-             int b;
+             int  b;
              char c;
            } x;
            x.b = 1;
@@ -44,7 +44,7 @@ int main() {
   ASSERT(3, ({
            struct {
              char a;
-             int b;
+             int  b;
              char c;
            } x;
            x.a = 1;
@@ -59,7 +59,7 @@ int main() {
              char b;
            } x[3];
            char *p = x;
-           p[0] = 0;
+           p[0]    = 0;
            x[0].a;
          }));
   ASSERT(1, ({
@@ -68,7 +68,7 @@ int main() {
              char b;
            } x[3];
            char *p = x;
-           p[1] = 1;
+           p[1]    = 1;
            x[0].b;
          }));
   ASSERT(2, ({
@@ -77,7 +77,7 @@ int main() {
              char b;
            } x[3];
            char *p = x;
-           p[2] = 2;
+           p[2]    = 2;
            x[1].a;
          }));
   ASSERT(3, ({
@@ -86,7 +86,7 @@ int main() {
              char b;
            } x[3];
            char *p = x;
-           p[3] = 3;
+           p[3]    = 3;
            x[1].b;
          }));
 
@@ -96,7 +96,7 @@ int main() {
              char b[5];
            } x;
            char *p = &x;
-           x.a[0] = 6;
+           x.a[0]  = 6;
            p[0];
          }));
   ASSERT(7, ({
@@ -105,7 +105,7 @@ int main() {
              char b[5];
            } x;
            char *p = &x;
-           x.b[0] = 7;
+           x.b[0]  = 7;
            p[3];
          }));
 
@@ -171,13 +171,13 @@ int main() {
   ASSERT(8, ({
            struct {
              char a;
-             int b;
+             int  b;
            } x;
            sizeof(x);
          }));
   ASSERT(8, ({
            struct {
-             int a;
+             int  a;
              char b;
            } x;
            sizeof(x);
@@ -215,7 +215,7 @@ int main() {
            struct t {
              int x;
            };
-           int t = 1;
+           int      t = 1;
            struct t y;
            y.x = 2;
            t + y.x;
@@ -226,7 +226,7 @@ int main() {
              char a;
            } x;
            struct t *y = &x;
-           x.a = 3;
+           x.a         = 3;
            y->a;
          }));
   ASSERT(3, ({
@@ -234,7 +234,7 @@ int main() {
              char a;
            } x;
            struct t *y = &x;
-           y->a = 3;
+           y->a        = 3;
            x.a;
          }));
 
@@ -243,7 +243,7 @@ int main() {
              int a, b;
            } x, y;
            x.a = 3;
-           y = x;
+           y   = x;
            y.a;
          }));
   ASSERT(7, ({
@@ -252,9 +252,9 @@ int main() {
            };
            struct t x;
            x.a = 7;
-           struct t y;
+           struct t  y;
            struct t *z = &y;
-           *z = x;
+           *z          = x;
            y.a;
          }));
   ASSERT(7, ({
@@ -272,7 +272,7 @@ int main() {
              char a, b;
            } x, y;
            x.a = 5;
-           y = x;
+           y   = x;
            y.a;
          }));
 
@@ -281,7 +281,7 @@ int main() {
              int a, b;
            } x, y;
            x.a = 3;
-           y = x;
+           y   = x;
            y.a;
          }));
   ASSERT(7, ({
@@ -290,9 +290,9 @@ int main() {
            };
            struct t x;
            x.a = 7;
-           struct t y;
+           struct t  y;
            struct t *z = &y;
-           *z = x;
+           *z          = x;
            y.a;
          }));
   ASSERT(7, ({
@@ -310,7 +310,7 @@ int main() {
              char a, b;
            } x, y;
            x.a = 5;
-           y = x;
+           y   = x;
            y.a;
          }));
 
@@ -340,7 +340,7 @@ int main() {
          }));
   ASSERT(4, ({
            struct {
-             char a;
+             char  a;
              short b;
            } x;
            sizeof(x);
@@ -360,10 +360,10 @@ int main() {
   ASSERT(1, ({
            struct T {
              struct T *next;
-             int x;
+             int       x;
            } a;
            struct T b;
-           b.x = 1;
+           b.x    = 1;
            a.next = &b;
            a.next->x;
          }));

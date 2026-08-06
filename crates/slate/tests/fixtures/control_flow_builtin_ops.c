@@ -29,10 +29,10 @@ static int guarded_unreachable(int x) {
 
 int main(void) {
   volatile int input = 5;
-  int a = likely_nonzero(input);
-  int b = assume_true(input);
-  int c = guarded_trap(input);
-  int d = guarded_unreachable(input);
+  int          a     = likely_nonzero(input);
+  int          b     = assume_true(input);
+  int          c     = guarded_trap(input);
+  int          d     = guarded_unreachable(input);
   printf("%d %d %d %d\n", a, b, c, d);
   return 0;
 }

@@ -6,7 +6,7 @@ typedef int;
 int main() {
   ASSERT(1, ({
            typedef int t;
-           t x = 1;
+           t           x = 1;
            x;
          }));
   ASSERT(1, ({
@@ -19,7 +19,7 @@ int main() {
          }));
   ASSERT(1, ({
            typedef int t;
-           t t = 1;
+           t           t = 1;
            t;
          }));
   ASSERT(2, ({

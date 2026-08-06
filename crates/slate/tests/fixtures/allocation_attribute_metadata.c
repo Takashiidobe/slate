@@ -21,8 +21,8 @@ offset_aligned(void *pointer) {
 int main(void) {
   int *values = allocate(3 * sizeof(int), _Alignof(int));
   int *zeroed = allocate_array(2, sizeof(int));
-  values[0] = 7;
-  values[1] = 9;
+  values[0]   = 7;
+  values[1]   = 9;
   int *second = offset_aligned(values);
   printf("%d %d %d\n", values[0], *second, zeroed[1]);
   free(zeroed);

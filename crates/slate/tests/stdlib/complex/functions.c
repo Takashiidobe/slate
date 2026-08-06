@@ -13,7 +13,7 @@ static void print_double_complex(const char *name, double complex value) {
   printf("%s %.12f %.12f\n", name, creal(value), cimag(value));
 }
 
-static void print_long_double_complex(const char *name,
+static void print_long_double_complex(const char         *name,
                                       long double complex value) {
   printf("%s %.12Lf %.12Lf\n", name, creall(value), cimagl(value));
 }
@@ -46,24 +46,24 @@ static void print_long_double(const char *name, long double value) {
   print_long_double(#name "l", name##l(zl))
 
 int main(void) {
-  volatile float rf = 0.5f;
-  volatile float if_ = -0.25f;
-  volatile double rd = 0.5;
-  volatile double id = -0.25;
-  volatile long double rl = 0.5L;
-  volatile long double il = -0.25L;
-  volatile float ref = 1.25f;
-  volatile float ief = 0.5f;
-  volatile double red = 1.25;
-  volatile double ied = 0.5;
+  volatile float       rf  = 0.5f;
+  volatile float       if_ = -0.25f;
+  volatile double      rd  = 0.5;
+  volatile double      id  = -0.25;
+  volatile long double rl  = 0.5L;
+  volatile long double il  = -0.25L;
+  volatile float       ref = 1.25f;
+  volatile float       ief = 0.5f;
+  volatile double      red = 1.25;
+  volatile double      ied = 0.5;
   volatile long double rel = 1.25L;
   volatile long double iel = 0.5L;
 
-  float complex zf = rf + if_ * I;
-  double complex zd = rd + id * _Complex_I;
+  float complex       zf = rf + if_ * I;
+  double complex      zd = rd + id * _Complex_I;
   long double complex zl = rl + il * I;
-  float complex ef = ref + ief * I;
-  double complex ed = red + ied * I;
+  float complex       ef = ref + ief * I;
+  double complex      ed = red + ied * I;
   long double complex el = rel + iel * I;
 
   print_float_complex("CMPLXF", CMPLXF(rf, if_));

@@ -7,7 +7,7 @@ int compute(int flag) {
     p = malloc(sizeof(int));
   }
   if (p) {
-    *p = 41;
+    *p    = 41;
     int v = *p;
     printf("%d\n", v);
     free(p);

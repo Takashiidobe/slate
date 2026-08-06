@@ -12,9 +12,9 @@ int main(void) {
   }
   fputs("R", f);
   fclose(f);
-  int renamed = rename(a, b);
-  FILE *g = fopen(b, "r");
-  int c = g ? fgetc(g) : '?';
+  int   renamed = rename(a, b);
+  FILE *g       = fopen(b, "r");
+  int   c       = g ? fgetc(g) : '?';
   if (g) {
     fclose(g);
   }

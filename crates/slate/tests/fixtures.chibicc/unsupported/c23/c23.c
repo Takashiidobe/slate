@@ -5,8 +5,8 @@
   }
 }
 [[deprecated("use new_func")]] int old_func(void) { return 9; }
-[[deprecated]] int old_func2(void) { return 10; }
-int add_unnamed(int, int) { return 5; }
+[[deprecated]] int                 old_func2(void) { return 10; }
+int                                add_unnamed(int, int) { return 5; }
 
 int main(void) {
   bool t = true;
@@ -26,8 +26,8 @@ int main(void) {
   int hex = 0xFF'FF;
   ASSERT(1000000, dec);
   ASSERT(65535, hex);
-  int base = 7;
-  typeof(base) t1 = base + 1;
+  int          base      = 7;
+  typeof(base) t1        = base + 1;
   typeof_unqual(base) t2 = t1;
   ASSERT(8, t1);
   ASSERT(8, t2);
@@ -103,7 +103,7 @@ int main(void) {
   ASSERT(1, s);
   ASSERT(1, (int)sizeof(s));
   constexpr int size = 4;
-  int arr[size];
+  int           arr[size];
   ASSERT(4, (int)(sizeof(arr) / sizeof(arr[0])));
 
   // _BitInt tests
