@@ -105,18 +105,28 @@ fn system_fallback_include_dirs() -> Vec<String> {
 
 pub fn target_args() -> Vec<String> {
     let mut args = libc_shim_args();
-    if let Ok(target) = std::env::var("SLATE_TARGET")
-        && !target.trim().is_empty()
-    {
-        if target.contains("musl") {
-            args.push("-D__SLATE_LIBC_MUSL=1".into());
-        }
-        if target.contains("gnu") {
-            args.push("-D__SLATE_LIBC_GNU=1".into());
-        }
+
+    let slate_target = std::env::var("SLATE_TARGET")
+        .ok()
+        .filter(|t| !t.trim().is_empty());
+
+    let libc_flavor = match &slate_target {
+        Some(t) if t.contains("musl") => "musl",
+        Some(t) if t.contains("gnu") => "gnu",
+        _ => env!("SLATE_TARGET_ENV"),
+    };
+
+    if libc_flavor == "musl" {
+        args.push("-D__SLATE_LIBC_MUSL=1".into());
+    } else if libc_flavor == "gnu" {
+        args.push("-D__SLATE_LIBC_GNU=1".into());
+    }
+
+    if let Some(target) = slate_target {
         args.push("-target".into());
         args.push(target);
     }
+
     if let Ok(extra) = std::env::var("SLATE_CLANG_ARGS") {
         args.extend(extra.split_whitespace().map(str::to_string));
     }

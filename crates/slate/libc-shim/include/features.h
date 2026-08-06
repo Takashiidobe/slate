@@ -56,6 +56,10 @@
 #define _XOPEN_SOURCE 700
 #endif
 
+#ifdef __SLATE_LIBC_GLIBC
+#include <bits/glibc.h>
+#endif
+
 #if __STDC_VERSION__ >= 199901L
 #define __restrict restrict
 #elif !defined(__GNUC__)

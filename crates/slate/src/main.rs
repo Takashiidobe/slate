@@ -44,9 +44,7 @@ fn main() -> ExitCode {
         },
         Some("fixup-debug") => run(fixup_debug(&args[2..])),
         Some("translate") => match args[2..].split_last() {
-            Some((path, clang_args)) => {
-                run(translate_with_clang_args(Path::new(path), clang_args))
-            }
+            Some((path, clang_args)) => run(translate_with_clang_args(Path::new(path), clang_args)),
             None => usage(),
         },
         Some("translate-directives") => match args.get(2) {

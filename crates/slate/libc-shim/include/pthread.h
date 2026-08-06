@@ -17,6 +17,7 @@
 #define __NEED_pthread_barrierattr_t
 #define __NEED_pthread_key_t
 #define __NEED_pthread_spinlock_t
+#define __NEED_clockid_t
 #include <bits/types.h>
 
 #include <sched.h>
