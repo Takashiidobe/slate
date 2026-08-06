@@ -10,58 +10,58 @@
 #include <bits/types.h>
 
 struct aiocb {
-  int aio_fildes, aio_lio_opcode, aio_reqprio;
-  volatile void *aio_buf;
-  size_t aio_nbytes;
+  int             aio_fildes, aio_lio_opcode, aio_reqprio;
+  volatile void  *aio_buf;
+  size_t          aio_nbytes;
   struct sigevent aio_sigevent;
-  void *__td;
-  int __lock[2];
-  volatile int __err;
-  ssize_t __ret;
-  off_t aio_offset;
-  void *__next, *__prev;
-  char __dummy4[32 - 2 * sizeof(void *)];
+  void           *__td;
+  int             __lock[2];
+  volatile int    __err;
+  ssize_t         __ret;
+  off_t           aio_offset;
+  void           *__next, *__prev;
+  char            __dummy4[32 - 2 * sizeof(void *)];
 };
 
 enum {
-  AIO_CANCELED = 0,
+  AIO_CANCELED    = 0,
   AIO_NOTCANCELED = 1,
-  AIO_ALLDONE = 2,
+  AIO_ALLDONE     = 2,
 };
 
 enum {
-  LIO_READ = 0,
+  LIO_READ  = 0,
   LIO_WRITE = 1,
-  LIO_NOP = 2,
+  LIO_NOP   = 2,
 };
 
 enum {
-  LIO_WAIT = 0,
+  LIO_WAIT   = 0,
   LIO_NOWAIT = 1,
 };
 
-int aio_read(struct aiocb *);
-int aio_write(struct aiocb *);
-int aio_error(const struct aiocb *);
+int     aio_read(struct aiocb *);
+int     aio_write(struct aiocb *);
+int     aio_error(const struct aiocb *);
 ssize_t aio_return(struct aiocb *);
-int aio_cancel(int, struct aiocb *);
-int aio_suspend(const struct aiocb *const[], int, const struct timespec *);
-int aio_fsync(int, struct aiocb *);
+int     aio_cancel(int, struct aiocb *);
+int     aio_suspend(const struct aiocb *const[], int, const struct timespec *);
+int     aio_fsync(int, struct aiocb *);
 
 int lio_listio(int, struct aiocb *__restrict const *__restrict, int,
                struct sigevent *__restrict);
 
 #if defined(_LARGEFILE64_SOURCE)
-#define aiocb64 aiocb
-#define aio_read64 aio_read
-#define aio_write64 aio_write
-#define aio_error64 aio_error
-#define aio_return64 aio_return
-#define aio_cancel64 aio_cancel
+#define aiocb64       aiocb
+#define aio_read64    aio_read
+#define aio_write64   aio_write
+#define aio_error64   aio_error
+#define aio_return64  aio_return
+#define aio_cancel64  aio_cancel
 #define aio_suspend64 aio_suspend
-#define aio_fsync64 aio_fsync
-#define lio_listio64 lio_listio
-#define off64_t off_t
+#define aio_fsync64   aio_fsync
+#define lio_listio64  lio_listio
+#define off64_t       off_t
 #endif
 
 #if _REDIR_TIME64

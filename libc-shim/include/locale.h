@@ -1,13 +1,13 @@
 #ifndef _SLATE_LOCALE_H
 #define _SLATE_LOCALE_H
 
-#define LC_CTYPE 0
-#define LC_NUMERIC 1
-#define LC_TIME 2
-#define LC_COLLATE 3
+#define LC_CTYPE    0
+#define LC_NUMERIC  1
+#define LC_TIME     2
+#define LC_COLLATE  3
 #define LC_MONETARY 4
 #define LC_MESSAGES 5
-#define LC_ALL 6
+#define LC_ALL      6
 
 /* Field order/types must match the real glibc struct lconv exactly:
    localeconv() returns a pointer into glibc's own static instance. */
@@ -23,23 +23,23 @@ struct lconv {
   char *mon_grouping;
   char *positive_sign;
   char *negative_sign;
-  char int_frac_digits;
-  char frac_digits;
-  char p_cs_precedes;
-  char p_sep_by_space;
-  char n_cs_precedes;
-  char n_sep_by_space;
-  char p_sign_posn;
-  char n_sign_posn;
-  char int_p_cs_precedes;
-  char int_p_sep_by_space;
-  char int_n_cs_precedes;
-  char int_n_sep_by_space;
-  char int_p_sign_posn;
-  char int_n_sign_posn;
+  char  int_frac_digits;
+  char  frac_digits;
+  char  p_cs_precedes;
+  char  p_sep_by_space;
+  char  n_cs_precedes;
+  char  n_sep_by_space;
+  char  p_sign_posn;
+  char  n_sign_posn;
+  char  int_p_cs_precedes;
+  char  int_p_sep_by_space;
+  char  int_n_cs_precedes;
+  char  int_n_sep_by_space;
+  char  int_p_sign_posn;
+  char  int_n_sign_posn;
 };
 
-char *setlocale(int category, const char *locale);
+char         *setlocale(int category, const char *locale);
 struct lconv *localeconv(void);
 
 #endif

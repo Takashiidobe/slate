@@ -3,18 +3,18 @@
 
 #include <sys/types.h>
 
-typedef unsigned int socklen_t;
+typedef unsigned int  socklen_t;
 typedef unsigned char sa_family_t;
 
 struct sockaddr {
   sa_family_t sa_family;
-  char sa_data[14];
+  char        sa_data[14];
 };
 
 struct sockaddr_storage {
-  sa_family_t ss_family;
+  sa_family_t   ss_family;
   unsigned long __ss_align;
-  char __padding[128 - 2 * sizeof(unsigned long)];
+  char          __padding[128 - 2 * sizeof(unsigned long)];
 };
 
 int socket(int, int, int);

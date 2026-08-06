@@ -6,51 +6,96 @@
     "Never include <bits/types.h> directly; include a standard header like <sys/types.h> or <unistd.h> instead."
 #endif
 
-typedef unsigned int __mode_t;
-typedef int __pid_t;
-typedef unsigned int __uid_t;
-typedef unsigned int __gid_t;
+typedef unsigned int       __mode_t;
+typedef int                __pid_t;
+typedef unsigned int       __uid_t;
+typedef unsigned int       __gid_t;
 typedef unsigned long long __dev_t;
-typedef unsigned int __nlink_t;
-typedef unsigned int __useconds_t;
-typedef int __clockid_t;
-typedef void *__timer_t;
-typedef long __clock_t;
-typedef int __key_t;
-typedef int __id_t;
-typedef int __daddr_t;
-typedef char *__caddr_t;
-typedef unsigned char __sa_family_t;
-typedef unsigned int __socklen_t;
+typedef unsigned int       __nlink_t;
+typedef unsigned int       __useconds_t;
+typedef int                __clockid_t;
+typedef void              *__timer_t;
+typedef long               __clock_t;
+typedef int                __key_t;
+typedef int                __id_t;
+typedef int                __daddr_t;
+typedef char              *__caddr_t;
+typedef unsigned char      __sa_family_t;
+typedef unsigned int       __socklen_t;
+
+typedef signed char    __int8_t;
+typedef unsigned char  __uint8_t;
+typedef short          __int16_t;
+typedef unsigned short __uint16_t;
+typedef int            __int32_t;
+typedef unsigned int   __uint32_t;
+
+typedef signed char    __int_least8_t;
+typedef unsigned char  __uint_least8_t;
+typedef short          __int_least16_t;
+typedef unsigned short __uint_least16_t;
+typedef int            __int_least32_t;
+typedef unsigned int   __uint_least32_t;
+
+typedef signed char   __int_fast8_t;
+typedef unsigned char __uint_fast8_t;
 
 #if defined(__LP64__)
 typedef unsigned long __size_t;
-typedef long __ssize_t;
-typedef long __off_t;
-typedef long __off64_t;
-typedef long __time_t;
-typedef long __suseconds_t;
+typedef long          __ssize_t;
+typedef long          __off_t;
+typedef long          __off64_t;
+typedef long          __time_t;
+typedef long          __suseconds_t;
 typedef unsigned long __ino_t;
 typedef unsigned long __ino64_t;
-typedef long __blksize_t;
-typedef long __blkcnt_t;
-typedef long __blkcnt64_t;
+typedef long          __blksize_t;
+typedef long          __blkcnt_t;
+typedef long          __blkcnt64_t;
 typedef unsigned long __fsblkcnt_t;
 typedef unsigned long __fsfilcnt_t;
+typedef long          __int64_t;
+typedef unsigned long __uint64_t;
+typedef long          __int_least64_t;
+typedef unsigned long __uint_least64_t;
+typedef long          __int_fast16_t;
+typedef unsigned long __uint_fast16_t;
+typedef long          __int_fast32_t;
+typedef unsigned long __uint_fast32_t;
+typedef long          __int_fast64_t;
+typedef unsigned long __uint_fast64_t;
+typedef long          __intptr_t;
+typedef unsigned long __uintptr_t;
+typedef long          __intmax_t;
+typedef unsigned long __uintmax_t;
 #else
-typedef unsigned int __size_t;
-typedef int __ssize_t;
-typedef long long __off_t;
-typedef long long __off64_t;
-typedef long __time_t;
-typedef long __suseconds_t;
+typedef unsigned int       __size_t;
+typedef int                __ssize_t;
+typedef long long          __off_t;
+typedef long long          __off64_t;
+typedef long               __time_t;
+typedef long               __suseconds_t;
 typedef unsigned long long __ino_t;
 typedef unsigned long long __ino64_t;
-typedef long __blksize_t;
-typedef long long __blkcnt_t;
-typedef long long __blkcnt64_t;
+typedef long               __blksize_t;
+typedef long long          __blkcnt_t;
+typedef long long          __blkcnt64_t;
 typedef unsigned long long __fsblkcnt_t;
 typedef unsigned long long __fsfilcnt_t;
+typedef long long          __int64_t;
+typedef unsigned long long __uint64_t;
+typedef long long          __int_least64_t;
+typedef unsigned long long __uint_least64_t;
+typedef int                __int_fast16_t;
+typedef unsigned int       __uint_fast16_t;
+typedef int                __int_fast32_t;
+typedef unsigned int       __uint_fast32_t;
+typedef long long          __int_fast64_t;
+typedef unsigned long long __uint_fast64_t;
+typedef int                __intptr_t;
+typedef unsigned int       __uintptr_t;
+typedef long long          __intmax_t;
+typedef unsigned long long __uintmax_t;
 #endif
 
 struct __locale_map;
@@ -62,13 +107,13 @@ struct __locale_struct {
 typedef struct {
   int __count;
   union {
-    int __wch;
+    int  __wch;
     char __wchb[4];
   } __value;
 } __mbstate_t;
 
 typedef struct __fpos_t {
-  __off_t __pos;
+  __off_t     __pos;
   __mbstate_t __state;
 } __fpos_t;
 
@@ -227,9 +272,149 @@ typedef __socklen_t socklen_t;
 #define __DEFINED_socklen_t
 #endif
 
-#if defined(__NEED_locale_t) && !defined(__defined_locale_t)
+#if defined(__NEED_locale_t) && !defined(__DEFINED_locale_t)
 typedef struct __locale_struct *locale_t;
 #define __DEFINED_locale_t
+#endif
+
+#if defined(__NEED_int8_t) && !defined(__DEFINED_int8_t)
+typedef __int8_t int8_t;
+#define __DEFINED_int8_t
+#endif
+
+#if defined(__NEED_uint8_t) && !defined(__DEFINED_uint8_t)
+typedef __uint8_t uint8_t;
+#define __DEFINED_uint8_t
+#endif
+
+#if defined(__NEED_int16_t) && !defined(__DEFINED_int16_t)
+typedef __int16_t int16_t;
+#define __DEFINED_int16_t
+#endif
+
+#if defined(__NEED_uint16_t) && !defined(__DEFINED_uint16_t)
+typedef __uint16_t uint16_t;
+#define __DEFINED_uint16_t
+#endif
+
+#if defined(__NEED_int32_t) && !defined(__DEFINED_int32_t)
+typedef __int32_t int32_t;
+#define __DEFINED_int32_t
+#endif
+
+#if defined(__NEED_uint32_t) && !defined(__DEFINED_uint32_t)
+typedef __uint32_t uint32_t;
+#define __DEFINED_uint32_t
+#endif
+
+#if defined(__NEED_int64_t) && !defined(__DEFINED_int64_t)
+typedef __int64_t int64_t;
+#define __DEFINED_int64_t
+#endif
+
+#if defined(__NEED_uint64_t) && !defined(__DEFINED_uint64_t)
+typedef __uint64_t uint64_t;
+#define __DEFINED_uint64_t
+#endif
+
+#if defined(__NEED_int_least8_t) && !defined(__DEFINED_int_least8_t)
+typedef __int_least8_t int_least8_t;
+#define __DEFINED_int_least8_t
+#endif
+
+#if defined(__NEED_uint_least8_t) && !defined(__DEFINED_uint_least8_t)
+typedef __uint_least8_t uint_least8_t;
+#define __DEFINED_uint_least8_t
+#endif
+
+#if defined(__NEED_int_least16_t) && !defined(__DEFINED_int_least16_t)
+typedef __int_least16_t int_least16_t;
+#define __DEFINED_int_least16_t
+#endif
+
+#if defined(__NEED_uint_least16_t) && !defined(__DEFINED_uint_least16_t)
+typedef __uint_least16_t uint_least16_t;
+#define __DEFINED_uint_least16_t
+#endif
+
+#if defined(__NEED_int_least32_t) && !defined(__DEFINED_int_least32_t)
+typedef __int_least32_t int_least32_t;
+#define __DEFINED_int_least32_t
+#endif
+
+#if defined(__NEED_uint_least32_t) && !defined(__DEFINED_uint_least32_t)
+typedef __uint_least32_t uint_least32_t;
+#define __DEFINED_uint_least32_t
+#endif
+
+#if defined(__NEED_int_least64_t) && !defined(__DEFINED_int_least64_t)
+typedef __int_least64_t int_least64_t;
+#define __DEFINED_int_least64_t
+#endif
+
+#if defined(__NEED_uint_least64_t) && !defined(__DEFINED_uint_least64_t)
+typedef __uint_least64_t uint_least64_t;
+#define __DEFINED_uint_least64_t
+#endif
+
+#if defined(__NEED_int_fast8_t) && !defined(__DEFINED_int_fast8_t)
+typedef __int_fast8_t int_fast8_t;
+#define __DEFINED_int_fast8_t
+#endif
+
+#if defined(__NEED_uint_fast8_t) && !defined(__DEFINED_uint_fast8_t)
+typedef __uint_fast8_t uint_fast8_t;
+#define __DEFINED_uint_fast8_t
+#endif
+
+#if defined(__NEED_int_fast16_t) && !defined(__DEFINED_int_fast16_t)
+typedef __int_fast16_t int_fast16_t;
+#define __DEFINED_int_fast16_t
+#endif
+
+#if defined(__NEED_uint_fast16_t) && !defined(__DEFINED_uint_fast16_t)
+typedef __uint_fast16_t uint_fast16_t;
+#define __DEFINED_uint_fast16_t
+#endif
+
+#if defined(__NEED_int_fast32_t) && !defined(__DEFINED_int_fast32_t)
+typedef __int_fast32_t int_fast32_t;
+#define __DEFINED_int_fast32_t
+#endif
+
+#if defined(__NEED_uint_fast32_t) && !defined(__DEFINED_uint_fast32_t)
+typedef __uint_fast32_t uint_fast32_t;
+#define __DEFINED_uint_fast32_t
+#endif
+
+#if defined(__NEED_int_fast64_t) && !defined(__DEFINED_int_fast64_t)
+typedef __int_fast64_t int_fast64_t;
+#define __DEFINED_int_fast64_t
+#endif
+
+#if defined(__NEED_uint_fast64_t) && !defined(__DEFINED_uint_fast64_t)
+typedef __uint_fast64_t uint_fast64_t;
+#define __DEFINED_uint_fast64_t
+#endif
+
+#if defined(__NEED_intptr_t) && !defined(__DEFINED_intptr_t)
+typedef __intptr_t intptr_t;
+#define __DEFINED_intptr_t
+#endif
+
+#if defined(__NEED_uintptr_t) && !defined(__DEFINED_uintptr_t)
+typedef __uintptr_t uintptr_t;
+#define __DEFINED_uintptr_t
+#endif
+
+#if defined(__NEED_intmax_t) && !defined(__DEFINED_intmax_t)
+typedef __intmax_t intmax_t;
+#define __DEFINED_intmax_t
+#endif
+
+#if defined(__NEED_uintmax_t) && !defined(__DEFINED_uintmax_t)
+typedef __uintmax_t uintmax_t;
+#define __DEFINED_uintmax_t
 #endif
 
 #undef __NEED_size_t
@@ -262,5 +447,33 @@ typedef struct __locale_struct *locale_t;
 #undef __NEED_sa_family_t
 #undef __NEED_socklen_t
 #undef __NEED_locale_t
+#undef __NEED_int8_t
+#undef __NEED_uint8_t
+#undef __NEED_int16_t
+#undef __NEED_uint16_t
+#undef __NEED_int32_t
+#undef __NEED_uint32_t
+#undef __NEED_int64_t
+#undef __NEED_uint64_t
+#undef __NEED_int_least8_t
+#undef __NEED_uint_least8_t
+#undef __NEED_int_least16_t
+#undef __NEED_uint_least16_t
+#undef __NEED_int_least32_t
+#undef __NEED_uint_least32_t
+#undef __NEED_int_least64_t
+#undef __NEED_uint_least64_t
+#undef __NEED_int_fast8_t
+#undef __NEED_uint_fast8_t
+#undef __NEED_int_fast16_t
+#undef __NEED_uint_fast16_t
+#undef __NEED_int_fast32_t
+#undef __NEED_uint_fast32_t
+#undef __NEED_int_fast64_t
+#undef __NEED_uint_fast64_t
+#undef __NEED_intptr_t
+#undef __NEED_uintptr_t
+#undef __NEED_intmax_t
+#undef __NEED_uintmax_t
 
 #endif

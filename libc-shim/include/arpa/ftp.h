@@ -2,11 +2,11 @@
 #define _SLATE_ARPA_FTP_H
 
 enum {
-  PRELIM = 1,
-  COMPLETE = 2,
-  CONTINUE = 3,
+  PRELIM    = 1,
+  COMPLETE  = 2,
+  CONTINUE  = 3,
   TRANSIENT = 4,
-  ERROR = 5,
+  ERROR     = 5,
 };
 
 enum {
@@ -41,10 +41,10 @@ enum {
 };
 
 enum {
-  BLK_EOR = 0x80,
-  BLK_EOF = 0x40,
-  BLK_ERRORS = 0x20,
-  BLK_RESTART = 0x10,
+  BLK_EOR       = 0x80,
+  BLK_EOF       = 0x40,
+  BLK_ERRORS    = 0x20,
+  BLK_RESTART   = 0x10,
   BLK_BYTECOUNT = 2,
 };
 

@@ -11,7 +11,7 @@
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
-#define RAND_MAX 2147483647
+#define RAND_MAX     2147483647
 
 typedef struct {
   int quot;
@@ -32,30 +32,30 @@ _Noreturn void exit(int status);
 _Noreturn void _Exit(int status);
 _Noreturn void quick_exit(int status);
 _Noreturn void abort(void);
-int atexit(void (*func)(void));
-int at_quick_exit(void (*func)(void));
+int            atexit(void (*func)(void));
+int            at_quick_exit(void (*func)(void));
 
 void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
 void *aligned_alloc(size_t alignment, size_t size);
-void free(void *ptr);
+void  free(void *ptr);
 
-int abs(int j);
-long labs(long j);
+int       abs(int j);
+long      labs(long j);
 long long llabs(long long j);
-div_t div(int numer, int denom);
-ldiv_t ldiv(long numer, long denom);
-lldiv_t lldiv(long long numer, long long denom);
+div_t     div(int numer, int denom);
+ldiv_t    ldiv(long numer, long denom);
+lldiv_t   lldiv(long long numer, long long denom);
 
-int atoi(const char *nptr);
-long atol(const char *nptr);
-long long atoll(const char *nptr);
-double strtod(const char *restrict nptr, char **restrict endptr);
-float strtof(const char *restrict nptr, char **restrict endptr);
+int         atoi(const char *nptr);
+long        atol(const char *nptr);
+long long   atoll(const char *nptr);
+double      strtod(const char *restrict nptr, char **restrict endptr);
+float       strtof(const char *restrict nptr, char **restrict endptr);
 long double strtold(const char *restrict nptr, char **restrict endptr);
-int strfromd(char *restrict s, size_t n, const char *restrict format,
-             double fp);
+int         strfromd(char *restrict s, size_t n, const char *restrict format,
+                     double fp);
 int strfromf(char *restrict s, size_t n, const char *restrict format, float fp);
 int strfroml(char *restrict s, size_t n, const char *restrict format,
              long double fp);
@@ -66,13 +66,13 @@ long long strtoll(const char *restrict nptr, char **restrict endptr, int base);
 unsigned long long strtoull(const char *restrict nptr, char **restrict endptr,
                             int base);
 
-int rand(void);
+int  rand(void);
 void srand(unsigned int seed);
 
 char *getenv(const char *name);
 
-void qsort(void *base, size_t nmemb, size_t size,
-           int (*compar)(const void *, const void *));
+void  qsort(void *base, size_t nmemb, size_t size,
+            int (*compar)(const void *, const void *));
 void *bsearch(const void *key, const void *base, size_t nmemb, size_t size,
               int (*compar)(const void *, const void *));
 
