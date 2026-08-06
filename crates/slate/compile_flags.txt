@@ -1,3 +1,6 @@
 -nostdlibinc
 -isystem
 include
+-D__SLATE_ARCH_X86_64
+-D__SLATE_LIBC_GNU
+-D__SLATE_LITTLE_ENDIAN

@@ -110,16 +110,35 @@ pub fn target_args() -> Vec<String> {
         .ok()
         .filter(|t| !t.trim().is_empty());
 
-    let libc_flavor = match &slate_target {
+    let libc = match &slate_target {
         Some(t) if t.contains("musl") => "musl",
         Some(t) if t.contains("gnu") => "gnu",
         _ => env!("SLATE_TARGET_ENV"),
     };
 
-    if libc_flavor == "musl" {
+    let arch = match &slate_target {
+        Some(t) if t.contains("x86_64") => "x86_64",
+        Some(t) if t.contains("aarch64") => "aarch64",
+        _ => "unknown",
+    };
+
+    // need to grab big endian targets from toolchain later
+    args.push("-D__SLATE_LITTLE_ENDIAN=1".into());
+
+    if libc == "musl" {
         args.push("-D__SLATE_LIBC_MUSL=1".into());
-    } else if libc_flavor == "gnu" {
+    } else if libc == "gnu" {
         args.push("-D__SLATE_LIBC_GNU=1".into());
+    } else {
+        args.push("-D__SLATE_LIBC_GENERIC=1".into());
+    }
+
+    if arch == "x86_64" {
+        args.push("-D__SLATE_ARCH_X86_64=1".into());
+    } else if arch == "aarch64" {
+        args.push("-D__SLATE_ARCH_AARCH64=1".into());
+    } else {
+        args.push("-D__SLATE_ARCH_UNKNOWN=1".into());
     }
 
     if let Some(target) = slate_target {

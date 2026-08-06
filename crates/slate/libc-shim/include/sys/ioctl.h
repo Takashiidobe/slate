@@ -1,6 +1,8 @@
 #ifndef _SLATE_SYS_IOCTL_H
 #define _SLATE_SYS_IOCTL_H
 
+#include <features.h>
+
 #include <bits/ioctl.h>
 
 #define __NEED_struct_winsize
