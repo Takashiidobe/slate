@@ -1,6 +1,8 @@
 #ifndef _SLATE_SYS_TYPES_H
 #define _SLATE_SYS_TYPES_H
 
+#include <features.h>
+
 #define __NEED_mode_t
 #define __NEED_pid_t
 #define __NEED_ssize_t
@@ -16,7 +18,6 @@
 #define __NEED_blkcnt_t
 #define __NEED_useconds_t
 #define __NEED_size_t
-
 #include <bits/types.h>
 
 #endif
