@@ -172,7 +172,7 @@ pub(in crate::fixups) enum TypeUseRef {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[allow(dead_code)]
+#[expect(dead_code)]
 pub(in crate::fixups) enum TypeUseKind {
     FunctionReturn,
     Parameter,

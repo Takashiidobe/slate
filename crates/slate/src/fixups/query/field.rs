@@ -45,7 +45,7 @@ where
     T: PartialEq + PartialOrd + 'static,
     Cx: 'static,
 {
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn range<R>(range: R) -> Self
     where
         R: RangeBounds<T> + 'static,

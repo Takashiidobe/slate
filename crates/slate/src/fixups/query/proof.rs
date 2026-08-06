@@ -64,7 +64,7 @@ pub(in crate::fixups) enum Predicate {
     MovablePure,
     ExternFn,
     ZeroUsers,
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     ZeroGroupUsers,
     CountedLoop,
     CountedSliceLoop,
@@ -94,17 +94,17 @@ pub(in crate::fixups) enum Predicate {
     AsciiNumericSign,
     AllExprs,
     Cast,
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     NullCheckDominance,
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     PointerOptionSafety,
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     PointerComparisonKind,
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     StructFieldOwnership,
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     CalleeAllocSummary,
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     InterproceduralAllocEligibility,
     InterproceduralAllocCallers,
     OptionBoxLocalCandidates,
@@ -199,7 +199,7 @@ pub(in crate::fixups) enum EvidenceDetail {
         users: usize,
         complete: bool,
     },
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     GroupUseDomain {
         group: DefinitionGroup,
         definitions: usize,
@@ -286,27 +286,27 @@ pub(in crate::fixups) enum EvidenceDetail {
     Cast {
         to: Type,
     },
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     NullCheckDominance {
         proof: NullCheckProof,
     },
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     PointerOptionSafety {
         eligible: bool,
     },
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     PointerComparisonKind {
         kind: PointerComparisonKind,
     },
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     StructFieldOwnership {
         fields: usize,
     },
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     CalleeAllocSummary {
         function: String,
     },
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     InterproceduralAllocEligibility {
         function: String,
         eligible: bool,

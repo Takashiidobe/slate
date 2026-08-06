@@ -23,7 +23,7 @@ pub(super) enum PlanDiagnostic<S> {
         target: Option<S>,
         rejections: Vec<CaseRejection>,
     },
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     TargetMismatch {
         contender: RuleCaseIdentity,
         candidate: S,
@@ -172,7 +172,7 @@ impl TouchedItems {
         }
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn merge(&mut self, other: TouchedItems) {
         self.unbounded |= other.unbounded;
         self.in_place.extend(other.in_place);

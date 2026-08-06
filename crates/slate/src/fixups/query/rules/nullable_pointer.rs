@@ -181,7 +181,7 @@ struct AliasSource {
     binding: BindingRef,
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(clippy::too_many_arguments)]
 fn collect_alias_chain(
     case: &mut ItemCaseContext<'_, '_>,
     function: &FunctionRef,
@@ -247,7 +247,7 @@ fn collect_alias_chain(
     Some(aliases)
 }
 
-#[allow(clippy::type_complexity)]
+#[expect(clippy::type_complexity)]
 fn alias_edge(
     case: &mut ItemCaseContext<'_, '_>,
     function: &FunctionRef,

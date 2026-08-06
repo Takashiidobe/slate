@@ -2,7 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::{AllocId, AtomicId, Effect, EffectTrace, IntWidth, Location, OptionValue, Value};
 
-#[allow(clippy::large_enum_variant)]
+#[expect(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Divergence {
     Internal(String),

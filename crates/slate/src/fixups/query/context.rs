@@ -303,7 +303,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.resolved_value_at(window.item_index, &AstPath(def_path), name)
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn value_local(&self, site: &ValueSite, name: &str) -> ResolvedValue {
         self.resolved_value_at(site.item_index, &site.path, name)
     }
@@ -628,7 +628,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn binding_usage(&self, binding: &BindingRef) -> QueryResult<Usage> {
         let proof = self.binding_def_use(binding)?;
         let usage = Usage {
@@ -638,7 +638,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(usage, proof.evidence))
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn binding_resolved_value(
         &self,
         binding: &BindingRef,
@@ -1340,7 +1340,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new((parent.value, slot), evidence))
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn ancestor_expressions(
         &self,
         expression: &ExpressionRef,
@@ -1500,7 +1500,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn expression_type(
         &self,
         expression: &ExpressionRef,
@@ -1984,7 +1984,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new((), evidence))
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn pointer_comparison_kind(
         &self,
         site: &ExprSite,
@@ -3200,7 +3200,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         statement_container_at(&function.body, &container.path.0)
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn match_arm(&self, arm: &MatchArmRef) -> Option<&'snapshot MatchArm> {
         let statement = self.statement_tail(&arm.statement)?.first()?;
         let Stmt::Match { arms, .. } = &statement.stmt else {
@@ -3209,7 +3209,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         arms.get(arm.index)
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn field(
         &self,
         field: &FieldRef,
@@ -3229,7 +3229,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn enum_variant(
         &self,
         variant: &EnumVariantRef,
@@ -3240,7 +3240,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         definition.variants.get(variant.index)
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn type_use(&self, type_use: &TypeUseRef) -> Option<&'snapshot Type> {
         match type_use {
             TypeUseRef::FunctionReturn(function) => self.function_def(function)?.ret.as_ref(),
@@ -3249,7 +3249,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     pub(in crate::fixups) fn definitions_in_group(
         &self,
         group: &DefinitionGroup,
@@ -4435,7 +4435,7 @@ query_cache! {
         Ok(Proof::new(PtrLenPlanSet { plans }, evidence))
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     fn struct_field_ownership_facts(&self) -> QueryResult<Vec<StructFieldOwnershipFact>>;
     key: () = ();
     {
@@ -4451,7 +4451,7 @@ query_cache! {
         Ok(Proof::new(fields, evidence))
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     fn callee_alloc_summary(&self, function: &FunctionRef) -> QueryResult<CalleeAllocSummaryFact>;
     key: FunctionId = function.id;
     {
@@ -4481,7 +4481,7 @@ query_cache! {
         Ok(Proof::new(summary, evidence))
     }
 
-    #[allow(dead_code)]
+    #[expect(dead_code)]
     fn interprocedural_alloc_eligibility(&self, function: &FunctionRef) -> QueryResult<InterproceduralAllocEligibilityFact>;
     key: FunctionId = function.id;
     {
