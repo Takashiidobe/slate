@@ -5,6 +5,9 @@
 
 #include <sys/select.h>
 
+#define __NEED_struct_timeval
+#include <bits/types.h>
+
 int gettimeofday(struct timeval *__restrict, void *__restrict);
 
 enum {

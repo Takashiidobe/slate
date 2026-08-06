@@ -44,11 +44,7 @@ typedef union epoll_data {
 struct epoll_event {
   uint32_t     events;
   epoll_data_t data;
-}
-#ifdef __x86_64__
-__attribute__((__packed__))
-#endif
-;
+} __packed;
 
 struct epoll_params {
   uint32_t busy_poll_usecs;
