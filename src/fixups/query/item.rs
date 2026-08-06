@@ -38,20 +38,15 @@ pub(in crate::fixups) enum QueryDomain {
 pub(in crate::fixups) enum QueryItem<'snapshot> {
     Binding(BindingRef),
     Definition(&'snapshot DefinitionSite),
-    #[expect(dead_code)]
     EnumVariant(super::EnumVariantRef),
     Expression(ExpressionRef),
-    #[expect(dead_code)]
     Field(super::FieldRef),
     Function(FunctionRef),
-    #[expect(dead_code)]
     MatchArm(super::MatchArmRef),
     Parameter(super::ParameterRef),
     Program(super::ProgramRef),
     Statement(StatementRef),
-    #[expect(dead_code)]
     StatementContainer(super::StatementContainerRef),
-    #[expect(dead_code)]
     TypeUse(super::TypeUseRef),
 }
 
@@ -451,7 +446,6 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
     }
 }
 
-#[expect(clippy::large_enum_variant)]
 pub(in crate::fixups) enum AnchoredEdit {
     Program {
         target: super::ProgramRef,
@@ -478,7 +472,6 @@ pub(in crate::fixups) enum AnchoredEdit {
         target: StatementRange,
         replacement: Vec<IndentStmt>,
     },
-    #[expect(dead_code)]
     InsertItems {
         index: usize,
         expected_len: usize,
@@ -487,11 +480,8 @@ pub(in crate::fixups) enum AnchoredEdit {
 }
 
 #[derive(Clone)]
-#[expect(clippy::large_enum_variant)]
 pub(in crate::fixups) enum DefinitionReplacement {
-    #[expect(dead_code)]
     Item(Item),
-    #[expect(dead_code)]
     ExternDecl(ExternDecl),
 }
 
@@ -587,12 +577,10 @@ impl EditSet {
         }
     }
 
-    #[expect(dead_code)]
     pub(in crate::fixups) fn replace_item(target: DefinitionSite, replacement: Item) -> Self {
         Self::replace_definition(target, Some(DefinitionReplacement::Item(replacement)))
     }
 
-    #[expect(dead_code)]
     pub(in crate::fixups) fn replace_extern_decl(
         target: DefinitionSite,
         replacement: ExternDecl,
@@ -626,7 +614,6 @@ impl EditSet {
         }
     }
 
-    #[expect(dead_code)]
     pub(in crate::fixups) fn insert_items(
         index: usize,
         expected_len: usize,
@@ -1847,11 +1834,8 @@ fn apply_body(
 
 pub(in crate::fixups) struct ItemApplyReport {
     pub(in crate::fixups) changed: bool,
-    #[expect(dead_code)]
     pub(in crate::fixups) planned: usize,
-    #[expect(dead_code)]
     pub(in crate::fixups) applied: usize,
-    #[expect(dead_code)]
     pub(super) diagnostics: Vec<PlanDiagnostic<EditSetSite>>,
     pub(in crate::fixups) touched: TouchedItems,
 }
