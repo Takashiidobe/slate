@@ -1,6 +1,8 @@
 #ifndef _SLATE_FENV_H
 #define _SLATE_FENV_H
 
+#define __STDC_VERSION_FENV_H__ 202311L
+
 #include <features.h>
 
 #include <bits/fenv.h>
