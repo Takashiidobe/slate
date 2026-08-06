@@ -13,7 +13,7 @@
 
 struct sockaddr_un {
   sa_family_t sun_family;
-  char sun_path[108];
+  char        sun_path[108];
 };
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)

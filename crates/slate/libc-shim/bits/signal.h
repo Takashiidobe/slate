@@ -18,6 +18,7 @@
 #elif defined(__SLATE_ARCH_RISCV32)
 #include <bits/riscv32/signal.h>
 #else
+#include <bits/generic/signal.h>
 #endif
 
 #endif

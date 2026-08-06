@@ -1,7 +1,7 @@
 #ifndef _SLATE_AR_H
 #define _SLATE_AR_H
 
-#define ARMAG "!<arch>\n"
+#define ARMAG  "!<arch>\n"
 #define SARMAG 8
 #define ARFMAG "`\n"
 

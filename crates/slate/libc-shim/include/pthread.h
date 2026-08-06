@@ -72,27 +72,27 @@ enum {
 };
 
 enum {
-  PTHREAD_MUTEX_NORMAL = 0,
-  PTHREAD_MUTEX_DEFAULT = 0,
-  PTHREAD_MUTEX_RECURSIVE = 1,
+  PTHREAD_MUTEX_NORMAL     = 0,
+  PTHREAD_MUTEX_DEFAULT    = 0,
+  PTHREAD_MUTEX_RECURSIVE  = 1,
   PTHREAD_MUTEX_ERRORCHECK = 2,
 };
 
 #define PTHREAD_MUTEX_STALLED 0
-#define PTHREAD_MUTEX_ROBUST 1
+#define PTHREAD_MUTEX_ROBUST  1
 
-#define PTHREAD_PRIO_NONE 0
+#define PTHREAD_PRIO_NONE    0
 #define PTHREAD_PRIO_INHERIT 1
 #define PTHREAD_PRIO_PROTECT 2
 
-#define PTHREAD_INHERIT_SCHED 0
+#define PTHREAD_INHERIT_SCHED  0
 #define PTHREAD_EXPLICIT_SCHED 1
 
-#define PTHREAD_SCOPE_SYSTEM 0
+#define PTHREAD_SCOPE_SYSTEM  0
 #define PTHREAD_SCOPE_PROCESS 1
 
 #define PTHREAD_PROCESS_PRIVATE 0
-#define PTHREAD_PROCESS_SHARED 1
+#define PTHREAD_PROCESS_SHARED  1
 
 #define PTHREAD_MUTEX_INITIALIZER                                              \
   {                                                                            \
@@ -108,10 +108,10 @@ enum {
   }
 #define PTHREAD_ONCE_INIT 0
 
-#define PTHREAD_CANCEL_ENABLE 0
+#define PTHREAD_CANCEL_ENABLE  0
 #define PTHREAD_CANCEL_DISABLE 1
 
-#define PTHREAD_CANCEL_DEFERRED 0
+#define PTHREAD_CANCEL_DEFERRED     0
 #define PTHREAD_CANCEL_ASYNCHRONOUS 1
 
 #define PTHREAD_CANCELED ((void *)-1)
@@ -122,7 +122,7 @@ int pthread_create(pthread_t *__restrict, const pthread_attr_t *__restrict,
                    void *(*)(void *), void *__restrict);
 int pthread_detach(pthread_t);
 _Noreturn void pthread_exit(void *);
-int pthread_join(pthread_t, void **);
+int            pthread_join(pthread_t, void **);
 
 #ifdef __GNUC__
 __attribute__((const))
@@ -132,10 +132,10 @@ pthread_t pthread_self(void);
 int pthread_equal(pthread_t, pthread_t);
 #define pthread_equal(x, y) ((x) == (y))
 
-int pthread_setcancelstate(int, int *);
-int pthread_setcanceltype(int, int *);
+int  pthread_setcancelstate(int, int *);
+int  pthread_setcanceltype(int, int *);
 void pthread_testcancel(void);
-int pthread_cancel(pthread_t);
+int  pthread_cancel(pthread_t);
 
 int pthread_getschedparam(pthread_t, int *__restrict,
                           struct sched_param *__restrict);
@@ -193,10 +193,10 @@ int pthread_barrier_init(pthread_barrier_t *__restrict,
 int pthread_barrier_destroy(pthread_barrier_t *);
 int pthread_barrier_wait(pthread_barrier_t *);
 
-int pthread_key_create(pthread_key_t *, void (*)(void *));
-int pthread_key_delete(pthread_key_t);
+int   pthread_key_create(pthread_key_t *, void (*)(void *));
+int   pthread_key_delete(pthread_key_t);
 void *pthread_getspecific(pthread_key_t);
-int pthread_setspecific(pthread_key_t, const void *);
+int   pthread_setspecific(pthread_key_t, const void *);
 
 int pthread_attr_init(pthread_attr_t *);
 int pthread_attr_destroy(pthread_attr_t *);
@@ -272,8 +272,8 @@ int pthread_setconcurrency(int);
 int pthread_getcpuclockid(pthread_t, clockid_t *);
 
 struct __ptcb {
-  void (*__f)(void *);
-  void *__x;
+  void           (*__f)(void *);
+  void          *__x;
   struct __ptcb *__next;
 };
 
