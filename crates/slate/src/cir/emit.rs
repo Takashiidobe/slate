@@ -119,11 +119,20 @@ pub fn target_args() -> Vec<String> {
     let arch = match &slate_target {
         Some(t) if t.contains("x86_64") => "x86_64",
         Some(t) if t.contains("aarch64") => "aarch64",
-        _ => "unknown",
+        Some(_) => "unknown",
+        None => match env!("SLATE_TARGET_ARCH") {
+            "x86_64" => "x86_64",
+            "aarch64" => "aarch64",
+            _ => "unknown",
+        },
     };
 
-    // need to grab big endian targets from toolchain later
-    args.push("-D__SLATE_LITTLE_ENDIAN=1".into());
+    // need to grab big endian targets from an explicit SLATE_TARGET string later
+    if slate_target.is_none() && env!("SLATE_TARGET_ENDIAN") == "big" {
+        args.push("-D__SLATE_BIG_ENDIAN=1".into());
+    } else {
+        args.push("-D__SLATE_LITTLE_ENDIAN=1".into());
+    }
 
     if libc == "musl" {
         args.push("-D__SLATE_LIBC_MUSL=1".into());
