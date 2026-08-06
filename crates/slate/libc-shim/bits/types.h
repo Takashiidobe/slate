@@ -23,6 +23,7 @@ typedef char              *__caddr_t;
 typedef unsigned char      __sa_family_t;
 typedef unsigned int       __socklen_t;
 typedef long               __regoff_t;
+typedef int                __error_t;
 
 #ifdef __WINT_TYPE__
 typedef __WINT_TYPE__ __wint_t;
@@ -137,10 +138,83 @@ typedef struct __fpos_t {
   __mbstate_t __state;
 } __fpos_t;
 
-struct __timespec {
+struct {
   __time_t tv_sec;
   long     tv_nsec;
 } __timespec;
+
+typedef union {
+#if defined(__aarch64__) && !defined(__SLATE_LIBC_MUSL)
+  char __size[64];
+#elif defined(__LP64__)
+  char __size[56];
+#else
+  char __size[36];
+#endif
+  long __align;
+} __pthread_attr_t;
+
+struct {
+  char __size[40];
+} __pthread_mutex_t;
+
+struct {
+  char __size[48];
+} __pthread_cond_t;
+
+struct {
+  char __size[56];
+} __pthread_rwlock_t;
+
+struct {
+  char __size[32];
+} __pthread_barrier_t;
+
+struct {
+  char __size[32];
+} __pthread_once_t;
+
+typedef unsigned long __pthread_t;
+
+#if defined(__NEED_pthread_t) && !defined(__DEFINED_pthread_t)
+typedef __pthread_t pthread_t;
+#define __DEFINED_pthread_t
+#endif
+
+#if defined(__NEED_pthread_attr_t) && !defined(__DEFINED_pthread_attr_t)
+typedef struct __pthread_attr_t pthread_attr_t;
+#define __DEFINED_pthread_attr_t
+#endif
+
+#if defined(__NEED_pthread_mutex_t) && !defined(__DEFINED_pthread_mutex_t)
+typedef struct __pthread_mutex_t pthread_mutex_t;
+#define __DEFINED_pthread_mutex_t
+#endif
+
+#if defined(__NEED_pthread_cond_t) && !defined(__DEFINED_pthread_cond_t)
+typedef struct __pthread_cond_t pthread_cond_t;
+#define __DEFINED_pthread_cond_t
+#endif
+
+#if defined(__NEED_pthread_rwlock_t) && !defined(__DEFINED_pthread_rwlock_t)
+typedef struct __pthread_rwlock_t pthread_rwlock_t;
+#define __DEFINED_pthread_rwlock_t
+#endif
+
+#if defined(__NEED_pthread_barrier_t) && !defined(__DEFINED_pthread_barrier_t)
+typedef struct __pthread_barrier_t pthread_barrier_t;
+#define __DEFINED_pthread_barrier_t
+#endif
+
+#if defined(__NEED_pthread_once_t) && !defined(__DEFINED_pthread_once_t)
+typedef struct __pthread_once_t pthread_once_t;
+#define __DEFINED_pthread_once_t
+#endif
+
+#if defined(__NEED_error_t) && !defined(__DEFINED_error_t)
+typedef __error_t error_t;
+#define __DEFINED_error_t
+#endif
 
 #if defined(__NEED_sigset_t) && !defined(__DEFINED_sigset_t)
 typedef __sigset_t sigset_t;
@@ -178,7 +252,7 @@ typedef __regoff_t regoff_t;
 #endif
 
 #if defined(__NEED_struct_timespec) && !defined(__DEFINED_struct_timespec)
-typedef struct __timespec timespec;
+typedef struct __timespec struct timespec;
 #define __DEFINED_struct_timespec
 #endif
 
@@ -540,5 +614,8 @@ typedef __uintmax_t uintmax_t;
 #undef __NEED_uintptr_t
 #undef __NEED_intmax_t
 #undef __NEED_uintmax_t
+#undef __NEED_clock_t
+#undef __NEED_struct_timespec
+#undef __NEED_error_t
 
 #endif

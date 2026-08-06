@@ -1,67 +1,13 @@
 #ifndef _SLATE_PTHREAD_H
 #define _SLATE_PTHREAD_H
 
-#define __need_NULL
-#include <stddef.h>
-#undef __need_NULL
+#include <features.h>
 
-typedef unsigned long pthread_t;
-
-/* needs to be generic over musl, glibc, x86_64, x86_32, aarch64, arm32, riscv,
-risc32
-#define __SIZEOF_PTHREAD_MUTEXATTR_T 4
-#define __SIZEOF_PTHREAD_COND_T 48
-#define __SIZEOF_PTHREAD_CONDATTR_T 4
-#define __SIZEOF_PTHREAD_RWLOCKATTR_T 8
-#define __SIZEOF_PTHREAD_BARRIERATTR_T 4
-
-#ifdef __x86_64__
-#if __WORDSIZE == 64
-#define __SIZEOF_PTHREAD_MUTEX_T 40
-#define __SIZEOF_PTHREAD_ATTR_T 56
-#define __SIZEOF_PTHREAD_RWLOCK_T 56
-#define __SIZEOF_PTHREAD_BARRIER_T 32
-#else
-#define __SIZEOF_PTHREAD_MUTEX_T 32
-#define __SIZEOF_PTHREAD_ATTR_T 32
-#define __SIZEOF_PTHREAD_RWLOCK_T 44
-#define __SIZEOF_PTHREAD_BARRIER_T 20
-#endif
-#else
-#define __SIZEOF_PTHREAD_MUTEX_T 24
-#define __SIZEOF_PTHREAD_ATTR_T 36
-#define __SIZEOF_PTHREAD_RWLOCK_T 32
-#define __SIZEOF_PTHREAD_BARRIER_T 20
-#endif
-*/
-
-typedef union {
-#if defined(__aarch64__) && !defined(__SLATE_LIBC_MUSL)
-  char __size[64];
-#elif defined(__LP64__)
-  char __size[56];
-#else
-  char __size[36];
-#endif
-  long __align;
-} pthread_attr_t;
-
-typedef struct {
-  char __size[40];
-} pthread_mutex_t;
-typedef struct {
-  char __size[48];
-} pthread_cond_t;
-typedef struct {
-  char __size[56];
-} pthread_rwlock_t;
-typedef struct {
-  char __size[32];
-} pthread_barrier_t;
-
-int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
-                   void *(*start_routine)(void *), void *arg);
-int pthread_join(pthread_t thread, void **retval);
+#define __NEED_NULL
+#define __NEED_pthread_attr_t
+#define __NEED_pthread_t
+#define __NEED_pthread_once_t
+#include <bits/types.h>
 
 #include <sched.h>
 #include <time.h>
@@ -78,21 +24,23 @@ enum {
   PTHREAD_MUTEX_ERRORCHECK = 2,
 };
 
-#define PTHREAD_MUTEX_STALLED 0
-#define PTHREAD_MUTEX_ROBUST  1
+enum {
+  PTHREAD_MUTEX_STALLED = 0,
+  PTHREAD_MUTEX_ROBUST  = 1,
 
-#define PTHREAD_PRIO_NONE    0
-#define PTHREAD_PRIO_INHERIT 1
-#define PTHREAD_PRIO_PROTECT 2
+  PTHREAD_PRIO_NONE    = 0,
+  PTHREAD_PRIO_INHERIT = 1,
+  PTHREAD_PRIO_PROTECT = 2,
 
-#define PTHREAD_INHERIT_SCHED  0
-#define PTHREAD_EXPLICIT_SCHED 1
+  PTHREAD_INHERIT_SCHED  = 0,
+  PTHREAD_EXPLICIT_SCHED = 1,
 
-#define PTHREAD_SCOPE_SYSTEM  0
-#define PTHREAD_SCOPE_PROCESS 1
+  PTHREAD_SCOPE_SYSTEM  = 0,
+  PTHREAD_SCOPE_PROCESS = 1,
 
-#define PTHREAD_PROCESS_PRIVATE 0
-#define PTHREAD_PROCESS_SHARED  1
+  PTHREAD_PROCESS_PRIVATE = 0,
+  PTHREAD_PROCESS_SHARED  = 1,
+};
 
 #define PTHREAD_MUTEX_INITIALIZER                                              \
   {                                                                            \
@@ -130,7 +78,6 @@ __attribute__((const))
 pthread_t pthread_self(void);
 
 int pthread_equal(pthread_t, pthread_t);
-#define pthread_equal(x, y) ((x) == (y))
 
 int  pthread_setcancelstate(int, int *);
 int  pthread_setcanceltype(int, int *);
@@ -271,23 +218,8 @@ int pthread_setconcurrency(int);
 
 int pthread_getcpuclockid(pthread_t, clockid_t *);
 
-struct __ptcb {
-  void           (*__f)(void *);
-  void          *__x;
-  struct __ptcb *__next;
-};
-
-void _pthread_cleanup_push(struct __ptcb *, void (*)(void *), void *);
-void _pthread_cleanup_pop(struct __ptcb *, int);
-
-#define pthread_cleanup_push(f, x)                                             \
-  do {                                                                         \
-    struct __ptcb __cb;                                                        \
-    _pthread_cleanup_push(&__cb, f, x);
-#define pthread_cleanup_pop(r)                                                 \
-  _pthread_cleanup_pop(&__cb, (r));                                            \
-  }                                                                            \
-  while (0)
+void pthread_cleanup_push(void (*)(void *), void *);
+void pthread_cleanup_pop(int);
 
 #ifdef _GNU_SOURCE
 struct cpu_set_t;
