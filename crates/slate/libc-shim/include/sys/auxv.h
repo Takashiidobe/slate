@@ -1,1 +1,8 @@
-#error "<sys/auxv.h> is not yet defined"
+#ifndef _SYS_AUXV_H
+#define _SYS_AUXV_H
+
+#include <elf.h>
+
+unsigned long getauxval(unsigned long);
+
+#endif

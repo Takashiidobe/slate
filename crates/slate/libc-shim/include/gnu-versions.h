@@ -1,1 +1,1 @@
-#error "<gnu-versions.h> is not yet defined"
+#error "<gnu-versions.h> should not be used for libc compilation."

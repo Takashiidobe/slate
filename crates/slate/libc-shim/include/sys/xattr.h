@@ -1,6 +1,8 @@
 #ifndef _SLATE_SYS_XATTR_H
 #define _SLATE_SYS_XATTR_H
 
+#include <features.h>
+
 #define __NEED_ssize_t
 #define __NEED_size_t
 #include <bits/types.h>
@@ -22,5 +24,7 @@ int     fsetxattr(int, const char *, const void *, size_t, int);
 int     removexattr(const char *, const char *);
 int     lremovexattr(const char *, const char *);
 int     fremovexattr(int, const char *);
+
+enum { __UAPI_DEF_XATTR = 0 };
 
 #endif

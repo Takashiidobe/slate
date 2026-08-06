@@ -1,2 +1,2 @@
-#warning the correct include for <sys/termios.h> is <termios.h>
+#warning "redirecting <sys/termios.h> to <termios.h>"
 #include <termios.h>
