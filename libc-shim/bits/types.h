@@ -6,6 +6,12 @@
     "Never include <bits/types.h> directly; include a standard header like <sys/types.h> or <unistd.h> instead."
 #endif
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __NULL nullptr
+#else
+#define __NULL ((void *)0)
+#endif
+
 typedef unsigned int       __mode_t;
 typedef int                __pid_t;
 typedef unsigned int       __uid_t;
@@ -171,14 +177,13 @@ typedef struct {
 
 typedef unsigned long __pthread_t;
 
-typedef int __pthread_mutexattr_t;
-typedef int __pthread_condattr_t;
-typedef int __pthread_rwlockattr_t;
-typedef int __pthread_barrierattr_t;
-typedef unsigned int __pthread_key_t;
-typedef int __pthread_spinlock_t;
-
 #endif /* _SLATE_BITS_TYPES_H */
+
+#if defined(__NEED_NULL) && !defined(__DEFINED_NULL)
+typedef __NULL NULL;
+#define __DEFINED_NULL
+#endif
+#undef __NEED_NULL
 
 #if defined(__NEED_pthread_t) && !defined(__DEFINED_pthread_t)
 typedef __pthread_t pthread_t;
@@ -221,42 +226,6 @@ typedef __pthread_once_t pthread_once_t;
 #define __DEFINED_pthread_once_t
 #endif
 #undef __NEED_pthread_once_t
-
-#if defined(__NEED_pthread_mutexattr_t) && !defined(__DEFINED_pthread_mutexattr_t)
-typedef __pthread_mutexattr_t pthread_mutexattr_t;
-#define __DEFINED_pthread_mutexattr_t
-#endif
-#undef __NEED_pthread_mutexattr_t
-
-#if defined(__NEED_pthread_condattr_t) && !defined(__DEFINED_pthread_condattr_t)
-typedef __pthread_condattr_t pthread_condattr_t;
-#define __DEFINED_pthread_condattr_t
-#endif
-#undef __NEED_pthread_condattr_t
-
-#if defined(__NEED_pthread_rwlockattr_t) && !defined(__DEFINED_pthread_rwlockattr_t)
-typedef __pthread_rwlockattr_t pthread_rwlockattr_t;
-#define __DEFINED_pthread_rwlockattr_t
-#endif
-#undef __NEED_pthread_rwlockattr_t
-
-#if defined(__NEED_pthread_barrierattr_t) && !defined(__DEFINED_pthread_barrierattr_t)
-typedef __pthread_barrierattr_t pthread_barrierattr_t;
-#define __DEFINED_pthread_barrierattr_t
-#endif
-#undef __NEED_pthread_barrierattr_t
-
-#if defined(__NEED_pthread_key_t) && !defined(__DEFINED_pthread_key_t)
-typedef __pthread_key_t pthread_key_t;
-#define __DEFINED_pthread_key_t
-#endif
-#undef __NEED_pthread_key_t
-
-#if defined(__NEED_pthread_spinlock_t) && !defined(__DEFINED_pthread_spinlock_t)
-typedef __pthread_spinlock_t pthread_spinlock_t;
-#define __DEFINED_pthread_spinlock_t
-#endif
-#undef __NEED_pthread_spinlock_t
 
 #if defined(__NEED_error_t) && !defined(__DEFINED_error_t)
 typedef __error_t error_t;

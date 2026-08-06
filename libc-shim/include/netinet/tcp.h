@@ -3,6 +3,11 @@
 
 #include <features.h>
 
+#define __NEED_uint8_t
+#define __NEED_uint16_t
+#define __NEED_uint32_t
+#include <bits/types.h>
+
 enum {
   TCP_NODELAY              = 1,
   TCP_MAXSEG               = 2,

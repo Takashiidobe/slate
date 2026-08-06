@@ -84,6 +84,36 @@
 #endif
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __aligned(X) [[aligned(X)]]
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#define __aligned(X) _Alignas(X)
+#elif defined(__GNUC__) || defined(__clang__)
+#define __aligned(X) __attribute__((aligned(X)))
+#elif defined(_MSC_VER)
+#define __aligned(X) __declspec(align(X))
+#else
+#define __aligned(X)
+#endif
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __align_of(T) alignof(T)
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#define __align_of(T) _Alignof(T)
+#elif defined(__GNUC__) || defined(__clang__)
+#define __align_of(T) __alignof__(T)
+#elif defined(_MSC_VER)
+#define __align_of(T) __alignof(T)
+#else
+#define __align_of(T)                                                          \
+  offsetof(                                                                    \
+      struct {                                                                 \
+        char c;                                                                \
+        T    member;                                                           \
+      },                                                                       \
+      member)
+#endif
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 #define __deprecated(...) [[deprecated(__VA_ARGS__)]]
 #elif defined(__GNUC__) || defined(__clang__)
 #define __deprecated(...) __attribute__((deprecated(__VA_ARGS__)))

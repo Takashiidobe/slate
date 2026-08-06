@@ -1,1 +1,2 @@
-#error "<sys/dir.h> is not yet defined"
+#include <dirent.h>
+#define direct dirent

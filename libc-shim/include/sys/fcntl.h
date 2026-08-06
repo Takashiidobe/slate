@@ -1,1 +1,2 @@
-#error "<sys/fcntl.h> is not yet defined"
+#warning "redirecting incorrect #include <sys/fcntl.h> to <fcntl.h>"
+#include <fcntl.h>

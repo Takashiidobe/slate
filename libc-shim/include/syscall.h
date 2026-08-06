@@ -1,1 +1,1 @@
-#error "<syscall.h> is not yet defined"
+#include <sys/syscall.h>
