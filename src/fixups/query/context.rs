@@ -11,6 +11,7 @@ use crate::fixups::facts::{
     PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
     StringRecoveryCandidate, StructFieldOwnershipFact, ValueSubject,
 };
+use crate::fixups::salsa::SalsaFacts;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
     Attr, Block, Expr, ExternDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem, IndentStmt,
@@ -144,6 +145,7 @@ pub(in crate::fixups) struct QueryContext<'snapshot> {
     symbol_uses: BTreeMap<String, Vec<usize>>,
     use_domain_complete: bool,
     cache: QueryCache<'snapshot>,
+    salsa: Option<&'snapshot SalsaFacts>,
 }
 
 impl<'snapshot> QueryContext<'snapshot> {
@@ -268,7 +270,13 @@ impl<'snapshot> QueryContext<'snapshot> {
             symbol_uses,
             use_domain_complete,
             cache: QueryCache::default(),
+            salsa: None,
         }
+    }
+
+    pub(in crate::fixups) fn with_salsa(mut self, salsa: &'snapshot SalsaFacts) -> Self {
+        self.salsa = Some(salsa);
+        self
     }
 
     pub(in crate::fixups) fn all_calls(&self) -> impl Iterator<Item = &CallRecord> {
@@ -681,15 +689,19 @@ impl<'snapshot> QueryContext<'snapshot> {
         let binding = self.facts.binding_by_local_path(function, name, def_path);
         let ty = binding.and_then(|binding| self.facts.binding_type_ast(binding).cloned());
         let usage = binding
-            .and_then(|binding| self.facts.def_use(binding))
+            .and_then(|binding| match self.salsa {
+                Some(salsa) => salsa.def_use(function, binding),
+                None => self.facts.def_use(binding),
+            })
             .map(|uses| Usage {
                 reads: uses.reads.len(),
                 writes: uses.writes.len(),
             });
-        let purity = self
-            .facts
-            .effect(function, EffectSubject::Expr, def_path)
-            .map(|effect| effect.purity);
+        let purity = match self.salsa {
+            Some(salsa) => salsa.effect(function, EffectSubject::Expr, def_path),
+            None => self.facts.effect(function, EffectSubject::Expr, def_path),
+        }
+        .map(|effect| effect.purity);
         ResolvedValue { ty, usage, purity }
     }
 
