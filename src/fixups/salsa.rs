@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::fixups::facts::{
     self, AstPath, BindingFact, BindingId, DefUseFact, EffectFact, EffectSubject, FixupFacts,
-    FunctionFact, FunctionId,
+    FunctionFact, FunctionId, ValueFact,
 };
 use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{FnDef, Item, Program};
@@ -50,6 +50,18 @@ pub(in crate::fixups) fn effects_for_function(
     function: FunctionInput,
 ) -> Vec<EffectFact> {
     facts::effects::collect_for_function(*function.function(db), function.body(db))
+}
+
+#[salsa::tracked(returns(ref))]
+pub(in crate::fixups) fn values_for_function(
+    db: &dyn FixupDb,
+    function: FunctionInput,
+) -> Vec<ValueFact> {
+    let local_facts = FixupFacts {
+        bindings: function.bindings(db).clone(),
+        ..FixupFacts::default()
+    };
+    facts::values::collect_for_function(*function.function(db), function.body(db), &local_facts)
 }
 
 pub(in crate::fixups) struct SalsaFacts {
@@ -152,6 +164,13 @@ impl SalsaFacts {
         effects_for_function(&self.db, input)
             .iter()
             .find(|fact| fact.subject == subject && &fact.site.path == path)
+    }
+
+    pub(in crate::fixups) fn values_for(&self, function: FunctionId) -> &[ValueFact] {
+        let Some(&input) = self.functions.get(&function) else {
+            return &[];
+        };
+        values_for_function(&self.db, input)
     }
 }
 
