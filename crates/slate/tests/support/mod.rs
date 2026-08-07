@@ -65,6 +65,15 @@ codegen-units = 256
     )
 }
 
+fn test_target_dir_for_project(_project: &std::path::Path) -> std::path::PathBuf {
+    let td = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-cache");
+    if let Err(e) = std::fs::create_dir_all(&td) {
+        eprintln!("could not create test target dir {}: {}", td.display(), e);
+    }
+    unsafe { std::env::set_var("CARGO_TARGET_DIR", td.as_os_str()) }
+    td
+}
+
 pub fn test_jobs() -> usize {
     std::env::var("SLATE_TEST_JOBS")
         .ok()
@@ -212,7 +221,9 @@ pub fn compile_rs_project(
     }
     write_long_double_shim(&project)?;
 
-    let target_dir = project.join("target");
+    let target_dir = test_target_dir_for_project(&project);
+    std::fs::create_dir_all(&target_dir)
+        .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let o = Command::new(cargo())
         .args(["build", "--quiet", "--manifest-path"])
         .arg(project.join("Cargo.toml"))
@@ -246,7 +257,9 @@ pub fn compile_rs_cargo(src: &Path, work_dir: &Path, package: &str) -> Result<Pa
         .map_err(|e| format!("copy {} to cargo project: {e}", src.display()))?;
     write_long_double_shim(&project)?;
 
-    let target_dir = project.join("target");
+    let target_dir = test_target_dir_for_project(&project);
+    std::fs::create_dir_all(&target_dir)
+        .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let o = Command::new(cargo())
         .args(["build", "--quiet", "--manifest-path"])
         .arg(project.join("Cargo.toml"))
@@ -406,13 +419,16 @@ fn build_batch(cases: &[RustCase], project: &Path, bin_dir: &Path) -> Result<(),
     }
     write_long_double_shim(project)?;
 
+    let target_dir = test_target_dir_for_project(&project);
+    std::fs::create_dir_all(&target_dir)
+        .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let o = Command::new(cargo())
         .args(["build", "--quiet", "--manifest-path"])
         .arg(project.join("Cargo.toml"))
         .arg("--jobs")
         .arg(test_jobs().to_string())
         .arg("--target-dir")
-        .arg(project.join("target"))
+        .arg(&target_dir)
         .output()
         .map_err(|e| format!("spawn {}: {e}", cargo()))?;
     if o.status.success() {
@@ -429,7 +445,9 @@ pub struct MultiBinCase {
 }
 
 pub fn multi_bin_batch_path(project: &Path, name: &str) -> PathBuf {
-    project.join("target/debug").join(bin_name(name))
+    test_target_dir_for_project(project)
+        .join("debug")
+        .join(bin_name(name))
 }
 
 pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<String, String> {
@@ -480,13 +498,16 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<S
         let _ = std::fs::remove_file(multi_bin_batch_path(project, &case.name));
     }
 
+    let target_dir = test_target_dir_for_project(&project);
+    std::fs::create_dir_all(&target_dir)
+        .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let o = Command::new(cargo())
         .args(["build", "--quiet", "--keep-going", "--manifest-path"])
         .arg(project.join("Cargo.toml"))
         .arg("--jobs")
         .arg(test_jobs().to_string())
         .arg("--target-dir")
-        .arg(project.join("target"))
+        .arg(&target_dir)
         .output()
         .map_err(|e| format!("spawn {}: {e}", cargo()))?;
     Ok(String::from_utf8_lossy(&o.stderr).into_owned())

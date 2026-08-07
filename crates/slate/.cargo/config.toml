@@ -1,0 +1,5 @@
+[build]
+# Use a shared, stable target directory for test runs to keep incremental
+# artifacts bounded and cacheable. This avoids creating per-run target
+# trees that balloon disk usage.
+target-dir = "target/test-cache"
