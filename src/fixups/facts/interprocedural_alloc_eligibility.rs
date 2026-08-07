@@ -113,7 +113,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         all.push(InterproceduralAllocEligibilityFact {
             function: *root,
             elem_ty: summary.elem_ty.clone(),
-            allocation: summary.allocation.clone(),
+            allocation: summary.allocation,
             extent: summary.extent.clone(),
             init: summary.init,
             eligible,
@@ -148,7 +148,7 @@ fn resolve_root(
         } => Some((
             ResolvedSummary {
                 elem_ty: elem_ty.clone(),
-                allocation: allocation.clone(),
+                allocation: *allocation,
                 extent: extent.clone(),
                 init: *init,
             },
@@ -308,7 +308,7 @@ fn find_call_allocation(
                 size_temp: None,
                 free_temp: None,
                 aliases: Vec::new(),
-                allocation: call_alloc.summary.allocation.clone(),
+                allocation: call_alloc.summary.allocation,
                 extent: call_alloc.summary.extent.clone(),
                 init: call_alloc.summary.init,
                 elem_ty: call_alloc.summary.elem_ty.clone(),

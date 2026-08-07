@@ -271,7 +271,7 @@ pub(super) fn rust_value_to_value(rv: &RustValue) -> Value {
         RustValue::I128(v) => int32(*v),
         RustValue::U128(v) => int32(*v as i128),
         RustValue::Usize(v) => int32(*v as i128),
-        RustValue::Float(v) => Value::Float(*v),
+        RustValue::Float(v) => Value::Float(v.into_inner()),
         RustValue::Bool(b) => Value::Bool(*b),
         RustValue::None => Value::Option(None),
         RustValue::NullPtr => Value::Null,

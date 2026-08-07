@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 
 use crate::fixups::facts::{
-    self, AstPath, BindingFact, BindingId, DefUseFact, EffectFact, EffectSubject, FixupFacts,
-    FunctionFact, FunctionId, ValueFact,
+    self, AstPath, BindingFact, BindingId, BindingTypeFact, CountedLoopFact, CountedSliceLoopFact,
+    DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionFact, FunctionId, LoopFact,
+    ValueFact,
 };
 use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{FnDef, Item, Program};
@@ -30,6 +31,10 @@ pub(in crate::fixups) struct FunctionInput {
     pub(in crate::fixups) body: FnDef,
     #[returns(ref)]
     pub(in crate::fixups) bindings: Vec<BindingFact>,
+    #[returns(ref)]
+    pub(in crate::fixups) binding_types: Vec<BindingTypeFact>,
+    #[returns(ref)]
+    pub(in crate::fixups) loops: Vec<LoopFact>,
 }
 
 #[salsa::tracked(returns(ref))]
@@ -62,6 +67,37 @@ pub(in crate::fixups) fn values_for_function(
         ..FixupFacts::default()
     };
     facts::values::collect_for_function(*function.function(db), function.body(db), &local_facts)
+}
+
+#[salsa::tracked(returns(ref))]
+pub(in crate::fixups) fn strings_for_function(
+    db: &dyn FixupDb,
+    function: FunctionInput,
+) -> facts::strings::Collected {
+    let local_facts = FixupFacts {
+        bindings: function.bindings(db).clone(),
+        binding_types: function.binding_types(db).clone(),
+        ..FixupFacts::default()
+    };
+    facts::strings::collect_for_function(*function.function(db), function.body(db), &local_facts)
+}
+
+#[salsa::tracked(returns(ref))]
+pub(in crate::fixups) fn counted_loops_for_function(
+    db: &dyn FixupDb,
+    function: FunctionInput,
+) -> (Vec<CountedLoopFact>, Vec<CountedSliceLoopFact>) {
+    let mut local_facts = FixupFacts {
+        bindings: function.bindings(db).clone(),
+        loops: function.loops(db).clone(),
+        ..FixupFacts::default()
+    };
+    facts::counted_loop::collect_for_function(
+        *function.function(db),
+        function.body(db),
+        &mut local_facts,
+    );
+    (local_facts.counted_loops, local_facts.counted_slice_loops)
 }
 
 pub(in crate::fixups) struct SalsaFacts {
@@ -131,13 +167,38 @@ impl SalsaFacts {
             .filter(|binding| binding.function == function_fact.id)
             .cloned()
             .collect();
+        let binding_types: Vec<BindingTypeFact> = facts
+            .binding_types
+            .iter()
+            .filter(|binding_type| {
+                bindings
+                    .iter()
+                    .any(|binding| binding.id == binding_type.binding)
+            })
+            .cloned()
+            .collect();
+        let loops: Vec<LoopFact> = facts
+            .loops
+            .iter()
+            .filter(|loop_fact| loop_fact.function == function_fact.id)
+            .cloned()
+            .collect();
         match self.functions.get(&function_fact.id) {
             Some(&input) => {
                 input.set_body(&mut self.db).to(body.clone());
                 input.set_bindings(&mut self.db).to(bindings);
+                input.set_binding_types(&mut self.db).to(binding_types);
+                input.set_loops(&mut self.db).to(loops);
             }
             None => {
-                let input = FunctionInput::new(&self.db, function_fact.id, body.clone(), bindings);
+                let input = FunctionInput::new(
+                    &self.db,
+                    function_fact.id,
+                    body.clone(),
+                    bindings,
+                    binding_types,
+                    loops,
+                );
                 self.functions.insert(function_fact.id, input);
             }
         }
@@ -171,6 +232,76 @@ impl SalsaFacts {
             return &[];
         };
         values_for_function(&self.db, input)
+    }
+
+    pub(in crate::fixups) fn string_buffer_at(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&facts::StringBufferFact> {
+        let input = *self.functions.get(&function)?;
+        strings_for_function(&self.db, input)
+            .buffers
+            .iter()
+            .find(|buffer| &buffer.site.path == path)
+    }
+
+    pub(in crate::fixups) fn string_buffer(
+        &self,
+        binding: BindingId,
+    ) -> Option<&facts::StringBufferFact> {
+        self.functions.values().find_map(|&input| {
+            strings_for_function(&self.db, input)
+                .buffers
+                .iter()
+                .find(|buffer| buffer.binding == binding)
+        })
+    }
+
+    pub(in crate::fixups) fn string_pointer_views(
+        &self,
+        function: FunctionId,
+    ) -> &[facts::StringPointerViewFact] {
+        let Some(&input) = self.functions.get(&function) else {
+            return &[];
+        };
+        &strings_for_function(&self.db, input).pointer_views
+    }
+
+    pub(in crate::fixups) fn string_libc_use(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&facts::StringLibcUseFact> {
+        let input = *self.functions.get(&function)?;
+        strings_for_function(&self.db, input)
+            .libc_uses
+            .iter()
+            .find(|libc| &libc.site.path == path)
+    }
+
+    pub(in crate::fixups) fn counted_loop(
+        &self,
+        function: FunctionId,
+        loop_path: &AstPath,
+    ) -> Option<&CountedLoopFact> {
+        let input = *self.functions.get(&function)?;
+        counted_loops_for_function(&self.db, input)
+            .0
+            .iter()
+            .find(|fact| &fact.site.loop_path == loop_path)
+    }
+
+    pub(in crate::fixups) fn counted_slice_loop(
+        &self,
+        function: FunctionId,
+        loop_path: &AstPath,
+    ) -> Option<&CountedSliceLoopFact> {
+        let input = *self.functions.get(&function)?;
+        counted_loops_for_function(&self.db, input)
+            .1
+            .iter()
+            .find(|fact| &fact.site.loop_path == loop_path)
     }
 }
 

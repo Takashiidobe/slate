@@ -8,6 +8,7 @@ libc = "0.2"
 serde_json = "1"
 thiserror = "2.0.19"
 salsa = "0.28"
+ordered-float = "5.3.0"
 
 [[test]]
 name = "alive_regression"

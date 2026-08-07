@@ -308,19 +308,21 @@ impl Known {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum FunctionIdentity {
     Known(Known),
+    #[default]
     Unknown,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Provenance {
     TrustedHeader,
+    #[default]
     Unknown,
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum CallBinding {
     Direct {
         identity: FunctionIdentity,

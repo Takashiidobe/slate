@@ -2078,7 +2078,7 @@ impl<'a> Lowerer<'a> {
             Type::LongDouble => Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-                args: vec![Expr::Value(RustValue::Float(0.0))],
+                args: vec![Expr::Value(0.0f64.into())],
             },
             Type::Complex(inner) => {
                 let d = default_value_for_type(inner);
@@ -3322,7 +3322,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .unwrap_or_else(|| {
                     let value = parse_cir_fp_expr(raw)
                         .or_else(|| parse_cir_int(raw).map(int_value_expr))
-                        .unwrap_or(Expr::Value(RustValue::Float(0.0)));
+                        .unwrap_or(Expr::Value(0.0.into()));
                     Expr::Call {
                         binding: crate::function_identity::CallBinding::Generated,
                         func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
@@ -5114,7 +5114,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Expr::Binary {
                     op: BinOp::Eq,
                     lhs: Box::new(value.clone()),
-                    rhs: Box::new(Expr::Value(RustValue::Float(0.0))),
+                    rhs: Box::new(Expr::Value(0.0.into())),
                 },
                 Expr::MethodCall {
                     recv: Box::new(value.clone()),
@@ -5128,7 +5128,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Expr::Binary {
                     op: BinOp::Eq,
                     lhs: Box::new(value.clone()),
-                    rhs: Box::new(Expr::Value(RustValue::Float(0.0))),
+                    rhs: Box::new(Expr::Value(0.0.into())),
                 },
                 Expr::Unary {
                     op: UnaryOp::Not,
@@ -5988,7 +5988,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         base: Box::new(self.operand_expr(src)),
                         index: 0,
                     }),
-                    rhs: Box::new(Expr::Value(RustValue::Float(0.0))),
+                    rhs: Box::new(Expr::Value(0.0.into())),
                 })
             }
             _ if is_long_double(operand_ty) && !is_long_double(result_ty) => {
@@ -6263,7 +6263,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     name: name.clone(),
                     mutable: true,
                     ty: Some(Type::Prim(Prim::F64)),
-                    init: Some(Expr::Value(RustValue::Float(0.0))),
+                    init: Some(Expr::Value(0.0.into())),
                 });
                 let i8_ptr = Type::Ptr {
                     mutable: true,
@@ -9800,7 +9800,7 @@ fn zero_for_cir_type(ty: &str) -> Expr {
 fn default_value_for_type(ty: &Type) -> Expr {
     match ty {
         Type::Prim(Prim::Bool) => Expr::Value(RustValue::Bool(false)),
-        Type::Prim(Prim::F32 | Prim::F64) => Expr::Value(RustValue::Float(0.0)),
+        Type::Prim(Prim::F32 | Prim::F64) => Expr::Value(0.0.into()),
         Type::Prim(Prim::F128) => Expr::HexFloat("0.0f128".into()),
         Type::Ptr { .. } => Expr::Value(RustValue::NullPtr),
         Type::FnPtr { .. } => Expr::Value(RustValue::None),
@@ -9926,7 +9926,7 @@ fn parse_cir_f128_expr(s: &str) -> Option<Expr> {
 
 fn fp_literal_expr(fp: String) -> Expr {
     fp.parse::<f64>()
-        .map(|n| Expr::Value(RustValue::Float(n)))
+        .map(|n| Expr::Value(n.into()))
         .unwrap_or_else(|_| Expr::HexFloat(fp))
 }
 

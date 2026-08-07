@@ -1,6 +1,7 @@
 use std::collections::BTreeSet;
 
-use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Item, Program, Stmt, Type};
+use crate::rust_ast::{AtomicType, Block, Expr, FnDef, IndentStmt, Item, Program, Stmt, Type};
+use ordered_float::OrderedFloat;
 
 pub(super) mod anonymous_structs;
 pub(super) mod array_element_pointer_origin;
@@ -35,13 +36,13 @@ pub(super) mod walk;
 
 pub(super) const GENERATED_C_STRING_READ_CALLEE: &str = "std::ffi::CStr::from_ptr";
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct AnalyzedProgram<'a> {
     pub(super) program: &'a Program,
     pub(super) facts: FixupFacts,
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct FixupFacts {
     pub(super) functions: Vec<FunctionFact>,
     pub(super) bindings: Vec<BindingFact>,
@@ -101,23 +102,20 @@ pub(super) struct LoopId(pub(super) usize);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct SignatureId(pub(super) usize);
 
-/// Identifies where a fact was recorded: which function, and the AST path
-/// within it. Most per-expression/-statement facts key lookups off this same
-/// `(function, path)` pair.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct Site {
     pub(super) function: FunctionId,
     pub(super) path: AstPath,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct FunctionFact {
     pub(super) id: FunctionId,
     pub(super) name: String,
     pub(super) item_index: usize,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct BindingFact {
     pub(super) id: BindingId,
     pub(super) function: FunctionId,
@@ -126,35 +124,27 @@ pub(super) struct BindingFact {
     pub(super) path: AstPath,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct BindingTypeFact {
     pub(super) binding: BindingId,
     pub(super) ty: Type,
     pub(super) rendered: String,
 }
 
-/// A `let mut <name>: <int>` local whose every use is the pointer operand of
-/// an atomic op of width `ty`; safe to re-declare as native `AtomicN` storage.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct AtomicLocalFact {
     pub(super) function: FunctionId,
     pub(super) name: String,
-    pub(super) ty: crate::rust_ast::AtomicType,
+    pub(super) ty: AtomicType,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct AtomicGlobalFact {
     pub(super) name: String,
-    pub(super) ty: crate::rust_ast::AtomicType,
+    pub(super) ty: AtomicType,
 }
 
-/// A function whose entire body is the "static local guarded by an
-/// initialized flag" idiom: `flag_name` is a private int static written once
-/// (to a nonzero constant) and read once (as this guard's condition), and
-/// `payload_name` is a private static written only inside the same guard and
-/// read only by this function's trailing return. Safe to recover as
-/// `std::sync::OnceLock::get_or_init`.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct LazyInitSingletonFact {
     pub(super) function: FunctionId,
     pub(super) flag_name: String,
@@ -163,20 +153,20 @@ pub(super) struct LazyInitSingletonFact {
     pub(super) init_expr: Expr,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct AnonymousStructFact {
     pub(super) original_name: String,
     pub(super) generated_name: String,
     pub(super) fields: Vec<AnonymousStructFieldFact>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct AnonymousStructFieldFact {
     pub(super) name: String,
     pub(super) ty: Type,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct BufferPointerFieldFact {
     pub(super) site: Site,
     pub(super) buffer: BindingId,
@@ -185,13 +175,13 @@ pub(super) struct BufferPointerFieldFact {
     pub(super) index: usize,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum BindingKind {
     Param { index: usize },
     Local,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct LoopFact {
     pub(super) id: LoopId,
     pub(super) function: FunctionId,
@@ -199,7 +189,7 @@ pub(super) struct LoopFact {
     pub(super) path: AstPath,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct BorrowAliasFact {
     pub(super) function: FunctionId,
     pub(super) binding: BindingId,
@@ -208,13 +198,13 @@ pub(super) struct BorrowAliasFact {
     pub(super) uses: Vec<BorrowAliasUseFact>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct BorrowAliasUseFact {
     pub(super) kind: BorrowAliasUseKind,
     pub(super) path: AstPath,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct DefUseFact {
     pub(super) function: FunctionId,
     pub(super) binding: BindingId,
@@ -224,7 +214,7 @@ pub(super) struct DefUseFact {
     pub(super) last_use: Option<AstPath>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct EffectFact {
     pub(super) site: Site,
     pub(super) subject: EffectSubject,
@@ -232,7 +222,7 @@ pub(super) struct EffectFact {
     pub(super) effects: BTreeSet<EffectKind>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct ControlFlowFact {
     pub(super) site: Site,
     pub(super) subject: ControlFlowSubject,
@@ -244,14 +234,14 @@ pub(super) struct ControlFlowFact {
     pub(super) expression_eligible: bool,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CastFact {
     pub(super) site: Site,
     pub(super) from: Option<Type>,
     pub(super) to: Type,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct NullCheckDominanceFact {
     pub(super) function: FunctionId,
     pub(super) binding: BindingId,
@@ -260,40 +250,40 @@ pub(super) struct NullCheckDominanceFact {
     pub(super) proof: NullCheckProof,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum NullCheckProof {
     StructuredGuard,
     GuardClauseExit,
     ConstructionNonNull,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct PointerOptionSafetyFact {
     pub(super) function: FunctionId,
     pub(super) binding: BindingId,
     pub(super) eligible: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct PointerComparisonFact {
     pub(super) site: Site,
     pub(super) kind: PointerComparisonKind,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum PointerComparisonKind {
     NullCompare,
     IdentityCompare,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StructFieldOwnershipFact {
     pub(super) record_name: String,
     pub(super) field_name: String,
     pub(super) tree_eligible: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct OptionBoxLocalCandidate {
     pub(super) function: FunctionId,
     pub(super) binding: BindingId,
@@ -304,20 +294,20 @@ pub(super) struct OptionBoxLocalCandidate {
     pub(super) deref_paths: Vec<AstPath>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct OptionBoxAssignment {
     pub(super) path: AstPath,
     pub(super) kind: OptionBoxAssignKind,
     pub(super) alloc_source: Option<AstPath>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum OptionBoxAssignKind {
     Null,
     Alloc,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct OptionBoxComparison {
     pub(super) function: FunctionId,
     pub(super) if_stmt_path: AstPath,
@@ -326,7 +316,7 @@ pub(super) struct OptionBoxComparison {
     pub(super) negate: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct PlaceFact {
     pub(super) site: Site,
     pub(super) access: PlaceAccess,
@@ -336,14 +326,14 @@ pub(super) struct PlaceFact {
     pub(super) ordinary_slot: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct ValueFact {
     pub(super) site: Site,
     pub(super) subject: ValueSubject,
     pub(super) value: ConstValue,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CallSignatureFact {
     pub(super) id: SignatureId,
     pub(super) name: String,
@@ -353,7 +343,7 @@ pub(super) struct CallSignatureFact {
     pub(super) ret: Option<Type>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum CallSignatureSource {
     Function(FunctionId),
     Extern {
@@ -362,12 +352,12 @@ pub(super) enum CallSignatureSource {
     },
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CallParamFact {
     pub(super) ty: Type,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CallsiteFact {
     pub(super) site: Site,
     pub(super) callee: CallCallee,
@@ -375,7 +365,7 @@ pub(super) struct CallsiteFact {
     pub(super) ret: Option<Type>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum CallCallee {
     Direct {
         name: String,
@@ -385,7 +375,7 @@ pub(super) enum CallCallee {
     Indirect,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CallArgFact {
     pub(super) slot: usize,
     pub(super) path: AstPath,
@@ -394,20 +384,20 @@ pub(super) struct CallArgFact {
     pub(super) pinning: CallArgPinning,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum CallArgPinning {
     DeclaredParam,
     VariadicUnpinned,
     UnknownCallee,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum ValueSubject {
     Expr,
     Binding(BindingId),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum ConstValue {
     Integer(i128),
     Usize(usize),
@@ -419,7 +409,7 @@ pub(super) enum ConstValue {
     ArrayLength(usize),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringBufferFact {
     pub(super) site: Site,
     pub(super) binding: BindingId,
@@ -433,7 +423,7 @@ pub(super) struct StringBufferFact {
     pub(super) rejections: BTreeSet<StringBufferRejection>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct AsciiNumericStringFact {
     pub(super) site: Site,
     pub(super) binding: BindingId,
@@ -441,14 +431,15 @@ pub(super) struct AsciiNumericStringFact {
     pub(super) digits: usize,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum AsciiNumericSign {
+    #[default]
     None,
     Plus,
     Minus,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum StringBufferKind {
     CharArray,
     BorrowedStr,
@@ -457,7 +448,7 @@ pub(super) enum StringBufferKind {
     OwnedString,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum StringBufferProvenance {
     Literal,
     ZeroInitialized,
@@ -466,7 +457,7 @@ pub(super) enum StringBufferProvenance {
     Unknown,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum NulTermination {
     NotApplicable,
     Unterminated,
@@ -474,7 +465,7 @@ pub(super) enum NulTermination {
     AllZero,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum StringRecoveryCandidate {
     BorrowedStr,
     BorrowedCStr,
@@ -482,7 +473,7 @@ pub(super) enum StringRecoveryCandidate {
     OwnedString,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum StringBufferRejection {
     Indexed,
     Mutated,
@@ -491,7 +482,7 @@ pub(super) enum StringBufferRejection {
     EscapedToCall,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringPointerViewFact {
     pub(super) site: Site,
     pub(super) source: BindingId,
@@ -499,21 +490,21 @@ pub(super) struct StringPointerViewFact {
     pub(super) kind: StringPointerViewKind,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum StringPointerViewKind {
     As,
     AsMut,
     Array,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringLibcUseFact {
     pub(super) site: Site,
     pub(super) callee: StringLibcFunction,
     pub(super) pointer_args: Vec<BindingId>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringLiftPlanFact {
     pub(super) site: Site,
     pub(super) binding: BindingId,
@@ -521,28 +512,28 @@ pub(super) struct StringLiftPlanFact {
     pub(super) remove_assignment: Option<AstPath>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringParamLiftFact {
     pub(super) callee: FunctionId,
     pub(super) param: BindingId,
     pub(super) index: usize,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringCopyRewriteFact {
     pub(super) site: Site,
     pub(super) dst: BindingId,
     pub(super) rewrite: StringCopyRewrite,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CStringLiteralFact {
     pub(super) function: FunctionId,
     pub(super) receiver_path: AstPath,
     pub(super) bytes: Vec<u8>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct FileOwnershipFact {
     pub(super) function: FunctionId,
     pub(super) handle: BindingId,
@@ -558,7 +549,7 @@ pub(super) struct FileOwnershipFact {
     pub(super) uses: Vec<FileUseFact>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum FileOpenMode {
     Read,
     Write,
@@ -568,13 +559,13 @@ pub(super) enum FileOpenMode {
     AppendUpdate,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct FileUseFact {
     pub(super) path: AstPath,
     pub(super) kind: FileUseKind,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum FileUseKind {
     Read,
     Write,
@@ -583,7 +574,7 @@ pub(super) enum FileUseKind {
     Close,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum StringCopyRewrite {
     AssignLiteral(String),
     AssignOwned(BindingId),
@@ -591,7 +582,7 @@ pub(super) enum StringCopyRewrite {
     PushOwned(BindingId),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct HeapOwnershipFact {
     pub(super) function: FunctionId,
     pub(super) pointer: BindingId,
@@ -612,13 +603,13 @@ pub(super) struct HeapOwnershipFact {
     pub(super) reallocations: Vec<HeapReallocFact>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum HeapOwnershipKind {
     ScalarBox,
     VecBuffer,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum AllocProvenance {
     Direct {
         elem_ty: Type,
@@ -633,17 +624,13 @@ pub(super) enum AllocProvenance {
     },
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CalleeAllocSummaryFact {
     pub(super) function: FunctionId,
     pub(super) provenance: AllocProvenance,
 }
 
-#[derive(Debug, Clone)]
-#[expect(
-    dead_code,
-    reason = "query API surface not yet wired into a fixup rule"
-)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct InterproceduralAllocEligibilityFact {
     pub(super) function: FunctionId,
     pub(super) elem_ty: Type,
@@ -654,7 +641,7 @@ pub(super) struct InterproceduralAllocEligibilityFact {
     pub(super) chain: Vec<FunctionId>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct InterproceduralAllocCallerFact {
     pub(super) callee: FunctionId,
     pub(super) caller: FunctionId,
@@ -664,39 +651,39 @@ pub(super) struct InterproceduralAllocCallerFact {
     pub(super) free_path: Option<AstPath>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum HeapAllocationKind {
     Malloc,
     Calloc,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum HeapExtent {
     Scalar,
     Elements { count: Expr },
     Unknown,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum HeapInitKind {
     Uninitialized,
     Zeroed,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum HeapReadSafety {
     ZeroInitialized,
     ReadsAfterWrites,
     MayReadUninitialized,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct HeapUseFact {
     pub(super) path: AstPath,
     pub(super) kind: HeapUseKind,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum HeapUseKind {
     ScalarRead,
     ScalarWrite,
@@ -705,7 +692,7 @@ pub(super) enum HeapUseKind {
     Free,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct HeapReallocFact {
     pub(super) source_temp: Option<BindingId>,
     pub(super) allocation_temp: BindingId,
@@ -717,14 +704,14 @@ pub(super) struct HeapReallocFact {
     pub(super) resize: HeapResizeKind,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum HeapResizeKind {
     Grow,
     Shrink,
     SameOrUnknown,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct PrintfCallFact {
     pub(super) site: Site,
     pub(super) format: Option<Vec<u8>>,
@@ -732,17 +719,17 @@ pub(super) struct PrintfCallFact {
     pub(super) arg_facts: Vec<PrintfArgFact>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct PrintfArgFact {
     pub(super) path: AstPath,
     pub(super) const_string: Option<String>,
     pub(super) const_char: Option<String>,
-    pub(super) const_float: Option<f64>,
+    pub(super) const_float: Option<OrderedFloat<f64>>,
     pub(super) rust_string: bool,
     pub(super) pointer: bool,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum StringLibcFunction {
     StrLen,
     StrCmp,
@@ -766,7 +753,7 @@ pub(super) enum StringLibcFunction {
     Printf,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum PlaceKind {
     Local {
         name: String,
@@ -784,13 +771,13 @@ pub(super) enum PlaceKind {
     Unsupported,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum PlaceRoot {
     Local { name: String },
     Unsupported,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum PlaceProjection {
     Deref,
     Field(String),
@@ -798,27 +785,27 @@ pub(super) enum PlaceProjection {
     Index,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum PlaceAccess {
     Read,
     Write,
     ReadWrite,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum VolatileAccess {
     Read,
     Write,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum AtomicPlaceAccess {
     Read,
     Write,
     ReadWrite,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct PtrLenSliceFact {
     pub(super) caller: FunctionId,
     pub(super) callee: FunctionId,
@@ -828,7 +815,7 @@ pub(super) struct PtrLenSliceFact {
     pub(super) elem_ty: Type,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct ArrayElementPointerOriginFact {
     pub(super) site: Site,
     pub(super) pointer: BindingId,
@@ -836,10 +823,7 @@ pub(super) struct ArrayElementPointerOriginFact {
     pub(super) index: Expr,
 }
 
-/// Identifies a specific loop and its body across the several loop-shape
-/// facts, which all key off the same `(function, loop_id, loop_path,
-/// body_path)` tuple recorded once per canonical-loop candidate.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct LoopSite {
     pub(super) function: FunctionId,
     pub(super) loop_id: LoopId,
@@ -847,7 +831,7 @@ pub(super) struct LoopSite {
     pub(super) body_path: AstPath,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CountedLoopFact {
     pub(super) site: LoopSite,
     pub(super) bound: Expr,
@@ -856,7 +840,7 @@ pub(super) struct CountedLoopFact {
     pub(super) index_use: CountedLoopIndexUse,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CountedSliceLoopFact {
     pub(super) site: LoopSite,
     pub(super) index: BindingId,
@@ -868,7 +852,7 @@ pub(super) struct CountedSliceLoopFact {
     pub(super) access: SliceLoopAccess,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct LoopShapeFact {
     pub(super) site: LoopSite,
     pub(super) kind: LoopShapeKind,
@@ -878,7 +862,7 @@ pub(super) struct LoopShapeFact {
     pub(super) mutation_targets: Vec<BindingId>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum LoopShapeKind {
     Counted { access: SliceLoopAccess },
     Reduction { op: ReductionOp },
@@ -888,7 +872,7 @@ pub(super) enum LoopShapeKind {
     Sentinel { target: SentinelTarget },
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum ReductionOp {
     Add,
     Mul,
@@ -899,18 +883,18 @@ pub(super) enum ReductionOp {
     Or,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum SearchResult {
     BreaksOnMatch,
     AssignsFlag,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum SentinelTarget {
     IndexedCollection,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct LoopShapeRejectionFact {
     pub(super) function: FunctionId,
     pub(super) loop_id: LoopId,
@@ -919,7 +903,7 @@ pub(super) struct LoopShapeRejectionFact {
     pub(super) loop_path: AstPath,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum LoopShapeKindTag {
     Counted,
     Reduction,
@@ -929,7 +913,7 @@ pub(super) enum LoopShapeKindTag {
     Sentinel,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum LoopShapeRejection {
     MissingCollection,
     MissingInduction,
@@ -938,22 +922,22 @@ pub(super) enum LoopShapeRejection {
     UnsupportedControlFlow,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum CountedLoopStart {
     Zero,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum CountedLoopBound {
     SliceLen,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum CountedLoopStep {
     One,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum CountedLoopIndexUse {
     Unused,
     Other,
@@ -961,40 +945,40 @@ pub(super) enum CountedLoopIndexUse {
     SliceIndexAndValue,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum SliceLoopAccess {
     ReadOnly,
     Mutable,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum EffectSubject {
     Expr,
     Stmt,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum ControlFlowSubject {
     Body,
     Block,
     Stmt,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum ControlFlowExit {
     Return,
     Break(Option<String>),
     Continue(Option<String>),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum Purity {
     MovablePure,
     ReadOnly,
     Effectful,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum EffectKind {
     ReadOnlyCall,
     UnknownCall,
@@ -1008,14 +992,14 @@ pub(super) enum EffectKind {
     UnknownSideEffect,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum BorrowAliasState {
     ReadOnly,
     UniqueMutation,
     Escaped,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum BorrowAliasReason {
     Read,
     Assigned,
@@ -1028,7 +1012,7 @@ pub(super) enum BorrowAliasReason {
     AtomicAccess,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum BorrowAliasUseKind {
     Read,
     Assigned,
@@ -1041,7 +1025,7 @@ pub(super) enum BorrowAliasUseKind {
     AtomicAccess,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum LoopKind {
     Loop,
     While,
@@ -1051,7 +1035,7 @@ pub(super) enum LoopKind {
 #[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct AstPath(pub(super) Vec<PathSegment>);
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum PathSegment {
     Stmt(usize),
     Then,

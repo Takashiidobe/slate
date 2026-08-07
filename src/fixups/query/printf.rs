@@ -1347,7 +1347,7 @@ fn exponent_arg(arg: &Expr, format: ExponentFormat) -> Expr {
             cond: Box::new(Expr::Binary {
                 op: BinOp::Lt,
                 lhs: Box::new(tmp_expr),
-                rhs: Box::new(Expr::Value(RustValue::Float(0.0))),
+                rhs: Box::new(Expr::Value(0.0.into())),
             }),
             then_expr: Box::new(corrected_expr.clone()),
             else_expr: Box::new(format_macro(
@@ -1388,7 +1388,7 @@ fn exponent_arg(arg: &Expr, format: ExponentFormat) -> Expr {
 fn general_arg(format: GeneralFormat, fact: &PrintfArgFact) -> Option<Expr> {
     let value = fact.const_float?;
     let body = render_general_body(
-        value,
+        *value,
         format.precision,
         format.upper,
         format.plus,

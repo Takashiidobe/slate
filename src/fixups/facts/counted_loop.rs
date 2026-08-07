@@ -142,12 +142,12 @@ impl<'a> Collector<'a> {
     ) {
         for (index, pair) in body.windows(2).enumerate() {
             if let Some(candidate) =
-                self.counted_loop_candidate(pair, parent_path, body_segment.clone(), index)
+                self.counted_loop_candidate(pair, parent_path, body_segment, index)
             {
                 self.facts.counted_loops.push(candidate);
             }
             if let Some(candidate) =
-                self.slice_loop_candidate(pair, parent_path, body_segment.clone(), index)
+                self.slice_loop_candidate(pair, parent_path, body_segment, index)
             {
                 self.facts.counted_slice_loops.push(candidate);
             }
@@ -185,7 +185,7 @@ impl<'a> Collector<'a> {
         }
 
         let mut index_path = parent_path.to_vec();
-        index_path.push(body_segment.clone());
+        index_path.push(body_segment);
         index_path.push(PathSegment::Stmt(index_stmt));
         let index_path = AstPath(index_path);
         self.facts
@@ -251,7 +251,7 @@ impl<'a> Collector<'a> {
 
         let range = canonical_slice_loop_range(loop_body, index_name.as_str(), self)?;
         let mut index_path = parent_path.to_vec();
-        index_path.push(body_segment.clone());
+        index_path.push(body_segment);
         index_path.push(PathSegment::Stmt(index_stmt));
         let index_path = AstPath(index_path);
         let index =
@@ -259,7 +259,7 @@ impl<'a> Collector<'a> {
                 .binding_by_local_path(self.function, index_name.as_str(), &index_path)?;
 
         let mut loop_path = parent_path.to_vec();
-        loop_path.push(body_segment.clone());
+        loop_path.push(body_segment);
         loop_path.push(PathSegment::Stmt(index_stmt + 1));
         let loop_path = AstPath(loop_path);
         let loop_id = self.loop_by_path(&loop_path)?;
