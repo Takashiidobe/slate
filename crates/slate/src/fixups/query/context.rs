@@ -416,6 +416,13 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
+    fn cast_fact_at(&self, function: FunctionId, path: &AstPath) -> Option<&CastFact> {
+        match self.salsa {
+            Some(salsa) => salsa.cast_at(function, path),
+            None => self.facts.cast_at(function, path),
+        }
+    }
+
     pub(in crate::fixups) fn all_calls(&self) -> impl Iterator<Item = &CallRecord> {
         self.calls.values().flatten()
     }
@@ -2020,7 +2027,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(fact) = self.facts.cast_at(function, &site.path) else {
+        let Some(fact) = self.cast_fact_at(function, &site.path) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site.clone()),
