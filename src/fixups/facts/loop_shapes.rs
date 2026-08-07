@@ -109,8 +109,7 @@ impl<'a> Collector<'a> {
         body_segment: Option<PathSegment>,
     ) {
         for (index, pair) in body.windows(2).enumerate() {
-            let Some(candidate) =
-                self.canonical_loop(pair, parent_path, body_segment, index)
+            let Some(candidate) = self.canonical_loop(pair, parent_path, body_segment, index)
             else {
                 continue;
             };
