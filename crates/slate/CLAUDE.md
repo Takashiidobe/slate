@@ -40,16 +40,10 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 3. **Update issue status** - Close finished work, update in-progress items
 4. **Handle git/sync by active profile**:
 
-   ```bash
-   # Conservative/minimal/default: report status and proposed commands; wait for approval.
-   git status
-
-   # Team-maintainer opt-in only, unless current instructions forbid it:
-   git pull --rebase
-   bd dolt push
-   git push
-   git status
-   ```
+```bash
+# Conservative/minimal/default: report status and proposed commands; wait for approval.
+git status
+```
 
 5. **Hand off** - Summarize changes, validation, issue status, and any blocked sync/commit/push step
 
@@ -60,11 +54,11 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 - If a required sync or push is blocked, stop and report the exact command and error.
 <!-- END BEADS INTEGRATION -->
 
-## What Slate Is
+## Slate
 
-Slate translates C to Rust by lowering **ClangIR (CIR)** — Clang's MLIR-based IR
-— rather than LLVM IR, so it keeps structured control flow, integer signedness,
-and named locals. It is transpilation, not decompilation. Correctness is the only
+Slate translates C to Rust by lowering **ClangIR (CIR)** Clang's MLIR-based IR
+rather than LLVM IR, so it keeps structured control flow, integer signedness,
+and named locals. Correctness is the only
 bar and is checked by **differential testing**: compile and run both the C and
 the generated Rust, then require identical stdout and exit code.
 
@@ -96,7 +90,7 @@ before anything that parses C will run:
 SLATE_CLANG=~/llvm-project/build-cir/bin/clang ./tools/macro-dump-plugin/build.sh
 ```
 
-Rerun this after rebuilding `SLATE_CLANG` from source — the plugin links
+Rerun this after rebuilding `SLATE_CLANG` from source - the plugin links
 against that tree's headers and must be rebuilt in lockstep.
 
 ## Build & Test
@@ -108,7 +102,6 @@ cargo nextest r --release                   # unit + fixture differential
 cargo fmt                                   # required before finishing
 
 cargo run -- translate tests/fixtures/add.c # C -> Rust on stdout
-cargo run -- emit-cir   tests/fixtures/add.c # inspect the CIR the lowerer sees
 ```
 
 During feature development, isolate the new differential fixture:
@@ -126,7 +119,7 @@ completion. The user regenerates them manually when desired.
 ## Architecture Overview
 
 ```
-C ──emit──► CIR ──parse──► Op-tree ──lower──► Rust source
+C ──emit -> CIR -> parse -> Op-tree -> lower -> Rust source ->
 │  clang|cir-opt                      ▲
 └──ast-dump=json──────► Clang AST ────┘
 verified:  run(C).{stdout,exit} == run(Rust).{stdout,exit}
@@ -135,69 +128,28 @@ verified:  run(C).{stdout,exit} == run(Rust).{stdout,exit}
 CIR is the primary lowering input; the Clang AST is the source-fact oracle, and
 the two are joined by **source location**. `src/lower.rs` holds the `cir.*`
 handlers; `src/c_ast.rs` extracts source facts from Clang JSON; `src/cir/`
-parses the generic-form CIR op-tree. Do not add pass-scheduling machinery until a
-feature needs it.
+parses the generic-form CIR op-tree.
 
-Read these before making changes — they are the real playbook:
+**Read before making changes**
 
-- **[docs/adding-features.md](docs/adding-features.md)** — the workflow for
-  adding coverage (baseline language feature vs. Rust fixup). Start here when
-  adding a feature.
-- **[docs/writing-a-fixup.md](docs/writing-a-fixup.md)** — the AST-to-AST recipe
-  for a fixup pass (fixups are AST-to-AST only, never string rewrites). Read this
-  before writing or modifying anything under `src/fixups/`.
-- **[docs/writing-a-query-fixup.md](docs/writing-a-query-fixup.md)** — the
+- [docs/fixups.md](docs/fixups.md) — the
   preferred query-driven interface for supported expression and definition
   rewrites. Read this before writing or migrating a rewrite.
-- **[docs/effects.md](docs/effects.md)** — the Rust-to-Rust effects interpreter
-  workflow for validating that raw lowered Rust and fixuped Rust preserve the
-  same semantic effects. Read this before changing anything under `src/effects/`.
 - [docs/architecture.md](docs/architecture.md) — sources, the two IRs, the
   pipeline, and why CIR over LLVM IR.
 - [docs/passes.md](docs/passes.md) — the pass catalog: what runs, in what order.
-- [docs/idiomatization.md](docs/idiomatization.md) — the `unsafe`/`libc` →
-  idiomatic ladder.
-- [docs/fuzzing.md](docs/fuzzing.md) — the stateful C-subset generator behind
-  differential fuzzing (`tests/support/cgen.rs`).
-- [docs/cfg-portability.md](docs/cfg-portability.md) — single-config vs.
-  multi-config (`translate-directives`) translation and the supported preprocessor
-  predicate → Rust `cfg` mappings.
 - [docs/README.md](docs/README.md) — the supported-subset surface.
 
 ## Conventions & Patterns
 
-- **Every feature starts with a C fixture** in `tests/fixtures/` (C-only), driven
-  by
-  `cargo nextest r --release --test differential -E 'test(generated_differential)'`.
-- **Testing**: Feature testing is done with e2e fixture differential tests, not
-  unit tests.
+- **Never comment.**
+- **Every feature and fixup starts with a C fixture** in `tests/fixtures/` (C-only), driven
+  by `cargo nextest r --test differential -E 'test(generated_differential)'`.
+- **Testing**: Feature testing is done with e2e fixture differential tests, **never unit tests**.
 - **Transliterate first, idiomatize later.** Baseline Rust may be ugly:
   `#[repr(C)]`, raw pointers, explicit temps, `libc`, and `unsafe` are all
   acceptable. Make it correct first; recover idiom in separate, verified fixups.
-- **The lowerer emits structured AST, never rendered strings.** Everything in
-  `src/lower.rs` builds `src/rust_ast.rs` nodes (`Item`/`Stmt`/`Expr`);
-  into Rust source text is not allowed. Keep it as strongly typed as possible —
-  favor a new enum variant over a `String` bridge, so the compiler enforces
-  exhaustiveness and fixups can pattern-match the shape. If the AST cannot express
-  something, add the node to `rust_ast.rs` rather than emitting text. Same rule
-  for fixups — see [docs/writing-a-fixup.md](docs/writing-a-fixup.md).
-- **Correctness lives in baseline lowering, never in a fixup.** A fixup must be
-  optional in spirit — disabling it still leaves correct Rust.
-- **Effects validation compares Rust to Rust.** `compare-effects-rust-rust`
-  interprets raw lowered Rust and fixuped Rust; it is for checking
-  fixups are valid. It is diagnostic-only, not a required gate; run it only for
-  explicit effects work. The incomplete alive2 regression is likewise
-  diagnostic-only and ignored by default. The structured generator differential
-  is also diagnostic-only and ignored because it has not found useful failures;
-  it does not need improvement unless explicitly requested. See
-  [docs/effects.md](docs/effects.md) and [docs/fuzzing.md](docs/fuzzing.md).
-- **Use shared fixup walkers.** Fact collectors should use
-  `src/fixups/facts/walk.rs`; rewrite passes should use
-  `src/fixups/support/walk.rs`. Do not add pass-local recursive `exprs`,
-  `stmt_exprs`, or body walkers when the shared helper can cover the traversal;
-  extend the shared helper if a common traversal shape is missing.
 - **Keep the reference grammar current.** When you extend the supported subset,
   update `c.bnf`. The diagnostic structured generator does not need to grow with
   new features.
-- **Never comment.**
 - Run `cargo fmt`, `cargo clippy` and `cargo nextest r --release` before finishing.
