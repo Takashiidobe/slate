@@ -65,13 +65,32 @@ codegen-units = 256
     )
 }
 
-fn test_target_dir_for_project(_project: &std::path::Path) -> std::path::PathBuf {
-    let td = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-cache");
+fn test_cache_root() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-cache")
+}
+
+fn test_target_dir_for_project(project: &std::path::Path) -> std::path::PathBuf {
+    let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let key: String = project
+        .strip_prefix(manifest_dir)
+        .unwrap_or(project)
+        .to_string_lossy()
+        .chars()
+        .map(|c| if c.is_ascii_alphanumeric() { c } else { '-' })
+        .collect();
+    let td = test_cache_root().join(key);
     if let Err(e) = std::fs::create_dir_all(&td) {
         eprintln!("could not create test target dir {}: {}", td.display(), e);
     }
     unsafe { std::env::set_var("CARGO_TARGET_DIR", td.as_os_str()) }
     td
+}
+
+pub fn rs_project_bin_path(work_dir: &Path, package: &str) -> PathBuf {
+    let project = work_dir.join(format!("{package}_proj"));
+    test_target_dir_for_project(&project)
+        .join("debug")
+        .join(package)
 }
 
 pub fn test_jobs() -> usize {
@@ -329,7 +348,7 @@ pub fn compare_batch(cases: &[Case], work_dir: &Path) -> Vec<(String, Result<(),
         .collect();
 
     let batch_bins = build_batch(&rust_cases, &project, &bin_dir);
-    let target_dir = project.join("target");
+    let target_dir = test_target_dir_for_project(&project);
 
     parallel_map(cases, |case| {
         let result = (|| {
@@ -365,7 +384,7 @@ pub fn compile_rs_batch(cases: &[RustCase], work_dir: &Path) -> Vec<(String, Res
     let project = work_dir.join("batch_cargo");
     let bin_dir = project.join("src/bin");
     let batch = build_batch(cases, &project, &bin_dir);
-    let target_dir = project.join("target");
+    let target_dir = test_target_dir_for_project(&project);
     parallel_map(cases, |case| {
         let bn = bin_name(&case.name);
         let result = match &batch {

@@ -421,11 +421,7 @@ fn cross_tu_globals() {
     );
     assert_binary_sections(&work.join("c_bin"), &[".slate_data", ".slate_fn"]);
     assert_binary_sections(
-        &work
-            .join("globals_proj")
-            .join("target")
-            .join("debug")
-            .join("globals"),
+        &support::rs_project_bin_path(&work, "globals"),
         &[".slate_data", ".slate_fn"],
     );
 }
@@ -457,22 +453,9 @@ fn used_and_retain_attrs_preserve_dead_statics() {
     let symbols = &["used_only", "used_and_retained"];
     assert_binary_symbols(&work.join("c_bin"), symbols);
     assert_binary_lacks_symbols(&work.join("c_bin"), &["retain_only"]);
-    assert_binary_symbols(
-        &work
-            .join("used_retain_proj")
-            .join("target")
-            .join("debug")
-            .join("used_retain"),
-        symbols,
-    );
-    assert_binary_lacks_symbols(
-        &work
-            .join("used_retain_proj")
-            .join("target")
-            .join("debug")
-            .join("used_retain"),
-        &["retain_only"],
-    );
+    let rs_bin = support::rs_project_bin_path(&work, "used_retain");
+    assert_binary_symbols(&rs_bin, symbols);
+    assert_binary_lacks_symbols(&rs_bin, &["retain_only"]);
 }
 
 #[test]
