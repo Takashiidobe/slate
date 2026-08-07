@@ -299,6 +299,44 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
+    fn values_at(
+        &self,
+        function: FunctionId,
+        subject: ValueSubject,
+        path: &AstPath,
+    ) -> Vec<ConstValue> {
+        match self.salsa {
+            Some(salsa) => salsa
+                .values_for(function)
+                .iter()
+                .filter(|fact| fact.subject == subject && &fact.site.path == path)
+                .map(|fact| fact.value.clone())
+                .collect(),
+            None => self
+                .facts
+                .values_at(function, subject, path)
+                .cloned()
+                .collect(),
+        }
+    }
+
+    fn value_matches(
+        &self,
+        function: FunctionId,
+        subject: ValueSubject,
+        value: ConstValue,
+    ) -> bool {
+        match self.salsa {
+            Some(salsa) => salsa
+                .values_for(function)
+                .iter()
+                .any(|fact| fact.subject == subject && fact.value == value),
+            None => self.facts.values.iter().any(|fact| {
+                fact.site.function == function && fact.subject == subject && fact.value == value
+            }),
+        }
+    }
+
     pub(in crate::fixups) fn all_calls(&self) -> impl Iterator<Item = &CallRecord> {
         self.calls.values().flatten()
     }
@@ -1429,11 +1467,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             )
         })?;
-        let values = self
-            .facts
-            .values_at(function, ValueSubject::Expr, &expression.site.fact_path)
-            .cloned()
-            .collect::<Vec<_>>();
+        let values = self.values_at(function, ValueSubject::Expr, &expression.site.fact_path);
         if values.is_empty() {
             return Err(Rejection::new(
                 predicate,
@@ -2546,11 +2580,11 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let is_zero = self.facts.values.iter().any(|value| {
-            value.site.function == function
-                && value.subject == ValueSubject::Binding(binding.id)
-                && value.value == ConstValue::Zero
-        });
+        let is_zero = self.value_matches(
+            function,
+            ValueSubject::Binding(binding.id),
+            ConstValue::Zero,
+        );
         if !is_zero {
             return Err(Rejection::new(
                 predicate,
