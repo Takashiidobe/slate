@@ -7,12 +7,6 @@ traversal, fact lookup, stable node locations, conflict detection, mutation,
 and tracing. The rule should contain only candidate selection, ordered
 preconditions, and anchored typed edits.
 
-Read [writing-a-fixup.md](writing-a-fixup.md) first. Use a legacy pass under
-`src/fixups/rewrite/` only when the query planner still cannot represent the
-change - for example a rewrite whose window width isn't fixed in advance, or
-one that needs to inspect mutated state left behind by an earlier statement
-in the same pass.
-
 ## Expression and call rules
 
 Expressions are `QueryItem`s with stable AST and fact paths. `FnCall` selects

@@ -9,17 +9,15 @@ same information by re-walking the tree.
 
 This doc is a reference for what each collector proves and which rewrite pass
 (named as in passes.md's [pass sequence](passes.md#the-pass-sequence)) reads
-it. Read [writing-a-fixup.md](writing-a-fixup.md) first for the rule this
-layer exists to enforce: _"A rewrite should consume `FixupFacts` plus local
+it. _"A rewrite should consume `FixupFacts` plus local
 AST shape; if it needs information that is not already in `FixupFacts`, add a
 fact collector first."_
 
 ## Why a separate layer
 
-Fixups must stay conservative (see
-[writing-a-fixup.md#safety-stay-conservative](writing-a-fixup.md#safety-stay-conservative)):
+Fixups must stay conservative
 before moving, dropping, or folding code they need to know things the AST
-shape alone doesn't answer — "is this expression pure," "is this the last
+shape alone doesn't answer - "is this expression pure," "is this the last
 read of this binding," "does this pointer alias anything else," "did this
 buffer ever get indexed." Answering those per-pass, by hand, is exactly the
 kind of pass-local walker `writing-a-fixup.md` warns against. `FixupFacts`
@@ -27,15 +25,6 @@ computes each answer once, in one dedicated module, so every pass gets the
 same answer through the same query methods on `FixupFacts` (`def_use`,
 `effect`, `place`, `has_value`, `string_buffer`, ...; see the full list in
 `src/fixups/facts/mod.rs`).
-
-Facts are a **snapshot**, not a live index: `facts::analyze(program)` walks
-the whole `Program` once and returns `AnalyzedProgram { program, facts }`.
-Because a rewrite can invalidate facts a later pass needs (a fold can turn an
-effectful expression pure, a dead binding can vanish), `src/fixups::apply`
-re-runs `facts::analyze` after any pass whose output the next pass's facts
-must reflect — see the call sites of `facts::analyze` in
-`src/fixups/mod.rs`. There is no incremental update; the tradeoff is
-re-walking the tree rather than tracking invalidation.
 
 ## Addressing scheme
 
@@ -125,8 +114,7 @@ existing collector uses:
 3. Register the call in `facts::analyze` (`src/fixups/facts/mod.rs`), after
    any collector it depends on.
 4. Consume it from a rewrite pass through `&FixupFacts`, never by re-walking
-   the tree by hand — see
-   [writing-a-fixup.md](writing-a-fixup.md#reuse-the-shared-helpers).
+   the tree by hand.
 
 Keep collectors read-only and side-effect-free: `collect_facts` must not
 mutate `program`. If a pass needs the AST changed, that belongs in
