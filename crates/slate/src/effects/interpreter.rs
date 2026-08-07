@@ -2,7 +2,10 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::{AllocId, AtomicId, Effect, EffectTrace, IntWidth, Location, OptionValue, Value};
 
-#[expect(clippy::large_enum_variant)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "divergence payloads vary by kind and aren't hot enough to box"
+)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Divergence {
     Internal(String),

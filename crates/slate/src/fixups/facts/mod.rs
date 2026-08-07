@@ -640,6 +640,10 @@ pub(super) struct CalleeAllocSummaryFact {
 }
 
 #[derive(Debug, Clone)]
+#[expect(
+    dead_code,
+    reason = "query API surface not yet wired into a fixup rule"
+)]
 pub(super) struct InterproceduralAllocEligibilityFact {
     pub(super) function: FunctionId,
     pub(super) elem_ty: Type,
@@ -1511,6 +1515,10 @@ impl FixupFacts {
             .find(|fact| fact.function == function && fact.binding == binding)
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(super) fn pointer_comparison_at(
         &self,
         function: FunctionId,

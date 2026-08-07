@@ -303,6 +303,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.resolved_value_at(window.item_index, &AstPath(def_path), name)
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn value_local(&self, site: &ValueSite, name: &str) -> ResolvedValue {
         self.resolved_value_at(site.item_index, &site.path, name)
     }
@@ -627,6 +631,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn binding_usage(&self, binding: &BindingRef) -> QueryResult<Usage> {
         let proof = self.binding_def_use(binding)?;
         let usage = Usage {
@@ -636,6 +644,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(usage, proof.evidence))
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn binding_resolved_value(
         &self,
         binding: &BindingRef,
@@ -1337,6 +1349,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new((parent.value, slot), evidence))
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn ancestor_expressions(
         &self,
         expression: &ExpressionRef,
@@ -1496,6 +1512,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn expression_type(
         &self,
         expression: &ExpressionRef,
@@ -1979,6 +1999,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new((), evidence))
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn pointer_comparison_kind(
         &self,
         site: &ExprSite,
@@ -3194,6 +3218,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         statement_container_at(&function.body, &container.path.0)
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn match_arm(&self, arm: &MatchArmRef) -> Option<&'snapshot MatchArm> {
         let statement = self.statement_tail(&arm.statement)?.first()?;
         let Stmt::Match { arms, .. } = &statement.stmt else {
@@ -3202,6 +3230,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         arms.get(arm.index)
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn field(
         &self,
         field: &FieldRef,
@@ -3221,6 +3253,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn enum_variant(
         &self,
         variant: &EnumVariantRef,
@@ -3231,6 +3267,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         definition.variants.get(variant.index)
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn type_use(&self, type_use: &TypeUseRef) -> Option<&'snapshot Type> {
         match type_use {
             TypeUseRef::FunctionReturn(function) => self.function_def(function)?.ret.as_ref(),
@@ -3239,7 +3279,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
-    #[expect(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn definitions_in_group(
         &self,
         group: &DefinitionGroup,
@@ -4425,7 +4468,7 @@ query_cache! {
         Ok(Proof::new(PtrLenPlanSet { plans }, evidence))
     }
 
-    #[expect(dead_code)]
+    #[expect(dead_code, reason = "query API surface not yet wired into a fixup rule")]
     fn struct_field_ownership_facts(&self) -> QueryResult<Vec<StructFieldOwnershipFact>>;
     key: () = ();
     {
@@ -5811,6 +5854,10 @@ fn merge_binding_use(uses: &mut Vec<BindingUse>, site: UseSiteRef, access: Bindi
     }
 }
 
+#[expect(
+    dead_code,
+    reason = "query API surface not yet wired into a fixup rule"
+)]
 fn rust_value_type(value: &RustValue) -> Option<Type> {
     match value {
         RustValue::I64(_) => Some(Type::Prim(Prim::I64)),

@@ -1,5 +1,7 @@
-#![allow(dead_code)]
-
+#![allow(
+    dead_code,
+    reason = "test helper toolbox; helpers may sit unused between runs"
+)]
 pub mod alive;
 
 use std::collections::BTreeMap;

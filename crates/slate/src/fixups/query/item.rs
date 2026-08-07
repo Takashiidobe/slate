@@ -38,15 +38,35 @@ pub(in crate::fixups) enum QueryDomain {
 pub(in crate::fixups) enum QueryItem<'snapshot> {
     Binding(BindingRef),
     Definition(&'snapshot DefinitionSite),
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     EnumVariant(super::EnumVariantRef),
     Expression(ExpressionRef),
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     Field(super::FieldRef),
     Function(FunctionRef),
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     MatchArm(super::MatchArmRef),
     Parameter(super::ParameterRef),
     Program(super::ProgramRef),
     Statement(StatementRef),
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     StatementContainer(super::StatementContainerRef),
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     TypeUse(super::TypeUseRef),
 }
 
@@ -472,6 +492,10 @@ pub(in crate::fixups) enum AnchoredEdit {
         target: StatementRange,
         replacement: Vec<IndentStmt>,
     },
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     InsertItems {
         index: usize,
         expected_len: usize,
@@ -481,7 +505,15 @@ pub(in crate::fixups) enum AnchoredEdit {
 
 #[derive(Clone)]
 pub(in crate::fixups) enum DefinitionReplacement {
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     Item(Item),
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     ExternDecl(ExternDecl),
 }
 
@@ -577,10 +609,18 @@ impl EditSet {
         }
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn replace_item(target: DefinitionSite, replacement: Item) -> Self {
         Self::replace_definition(target, Some(DefinitionReplacement::Item(replacement)))
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn replace_extern_decl(
         target: DefinitionSite,
         replacement: ExternDecl,
@@ -614,6 +654,10 @@ impl EditSet {
         }
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn insert_items(
         index: usize,
         expected_len: usize,
@@ -1834,8 +1878,14 @@ fn apply_body(
 
 pub(in crate::fixups) struct ItemApplyReport {
     pub(in crate::fixups) changed: bool,
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) planned: usize,
+    #[cfg_attr(not(test), expect(dead_code, reason = "read only by tests"))]
     pub(in crate::fixups) applied: usize,
+    #[cfg_attr(not(test), expect(dead_code, reason = "read only by tests"))]
     pub(super) diagnostics: Vec<PlanDiagnostic<EditSetSite>>,
     pub(in crate::fixups) touched: TouchedItems,
 }

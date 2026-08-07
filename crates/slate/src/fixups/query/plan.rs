@@ -23,6 +23,10 @@ pub(super) enum PlanDiagnostic<S> {
         target: Option<S>,
         rejections: Vec<CaseRejection>,
     },
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     TargetMismatch {
         contender: RuleCaseIdentity,
         candidate: S,

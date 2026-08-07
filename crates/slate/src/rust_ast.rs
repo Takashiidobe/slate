@@ -545,7 +545,10 @@ pub struct InlineAsm {
 }
 
 #[derive(Debug, Clone)]
-#[expect(clippy::large_enum_variant)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "statement payloads vary by kind; boxed variants would add indirection on the hot lowering path"
+)]
 pub enum Stmt {
     Let {
         name: String,
