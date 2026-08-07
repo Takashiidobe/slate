@@ -4,8 +4,8 @@ pub(crate) mod facts;
 mod idents;
 mod query;
 mod runtime;
-mod support;
 mod salsa;
+mod support;
 pub mod trace;
 
 use crate::fixups::trace::{CollectingLogger, NoopLogger, ProgramSummary, TraceLog, TraceLogger};
@@ -193,6 +193,7 @@ fn apply_with_logger(
     let facts::AnalyzedProgram { program, facts } = facts::analyze(&input);
     let mut program = program.clone();
     let mut incremental = IncrementalFacts::new(facts);
+    let mut salsa_facts = salsa::SalsaFacts::new();
     step!(program, Pass::Goto, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, facts| {
             let plan = {
@@ -674,8 +675,9 @@ fn apply_with_logger(
     step!(program, Pass::DeadLocals, {
         loop {
             let facts = incremental.resolve(&program);
+            salsa_facts.sync(&program, &facts);
             let plan = {
-                let query = query::QueryContext::new(&program, &facts);
+                let query = query::QueryContext::new(&program, &facts).with_salsa(&salsa_facts);
                 let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(
                     &query,
@@ -928,8 +930,9 @@ fn apply_with_logger(
     step!(program, Pass::DeadLocals, {
         loop {
             let facts = incremental.resolve(&program);
+            salsa_facts.sync(&program, &facts);
             let plan = {
-                let query = query::QueryContext::new(&program, &facts);
+                let query = query::QueryContext::new(&program, &facts).with_salsa(&salsa_facts);
                 let mut builder = query::ItemPlanBuilder::new();
                 builder.add_rule(
                     &query,

@@ -249,7 +249,8 @@ fn ensure_libc_extern(work_dir: &Path) -> Result<LibcExtern, String> {
             .map_err(|e| format!("write src/lib.rs: {e}"))?;
     }
     let target_dir = super::test_target_dir_for_project(&project);
-    std::fs::create_dir_all(&target_dir).map_err(|e| format!("create {}: {e}", target_dir.display()))?;
+    std::fs::create_dir_all(&target_dir)
+        .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let o = Command::new(std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into()))
         .args(["build", "--quiet", "--manifest-path"])
         .arg(project.join("Cargo.toml"))

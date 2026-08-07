@@ -1,0 +1,316 @@
+# Salsa Migration
+
+Tracked by the `slate-kby1` epic. This doc is the technical plan; beads
+carries status. Scope, per the epic: only `src/fixups/facts/` (`FixupFacts`
+and its collectors) and `query::QueryContext`'s internals move to salsa.
+`EditSets`/`Plan<E: EditTarget>`/matchers/recipes — the whole rewriting layer
+described in [fixups.md](fixups.md) — stay exactly as they are. Rule-authoring
+ergonomics (`case.fact(|query| query.method(handle))`) don't change either;
+only what runs behind `QueryContext`'s methods does.
+
+## Why
+
+`facts::analyze(&Program)` (`src/fixups/facts/mod.rs`) walks the whole program
+through 26 collectors, in order, producing `FixupFacts` — a flat bag of ~45
+`Vec<...Fact>` fields, each scanned/filtered linearly by `FunctionId`/
+`BindingId` per query. It's called at roughly 20 sites in
+`fixups::apply_with_logger`, plus internally by every `to_fixpoint_*` loop.
+
+`slate-04q.75.56.9` already pushed back against full reanalysis with
+`IncrementalFacts`/`Dirty` (`fixups/mod.rs`): `Clean` / `Touched(TouchedItems)`
+/ `Everything`, where `TouchedItems` (`query/plan.rs`) comes from what a
+`plan.apply()` call actually edited. `resolve()` either no-ops, splices
+touched functions via `FixupFacts::splice_function`/`remove_items`, or falls
+back to full `facts::analyze`.
+
+The splice path's ceiling is narrow: `splice_function` only re-derives 7 of 26
+collector families for a touched function (bindings/loops, `borrow_alias`,
+`def_use`, `effects`, `values`, `strings` buffers/views/uses, `counted_loop`),
+then unconditionally reruns `casts` and `lazy_singleton` whole-program on top
+(`splice_incremental_facts`, `fixups/mod.rs`). Every other family — the
+interprocedural ones (`heap_ownership`, `string_params`, `ptr_len`,
+`calls`/`callsites`, `printf`, `file_ownership`, `anonymous_structs`, ...) and
+several local ones not yet ported (`places`, `control_flow`, `atomic_locals`,
+`buffer_cursor`, `array_element_pointer_origin`, `loop_shapes`,
+`null_check_dominance`, ...) — is invisible to `Touched`. Any pass that
+touches those, and every legacy (non-query-engine) `Fixup`-trait pass
+regardless of what it touches, calls `mark_everything_dirty()` and forces a
+full reanalyze at the next `resolve()`.
+
+Extending this by hand means auditing each of the remaining ~19 families for
+whether splicing is sound for it — exactly the scaling problem
+`slate-04q.75.56.9`'s own epic description names as the reason it stopped at
+two hand-picked collectors. Salsa replaces per-family manual soundness
+auditing with automatic dependency tracking: a tracked function's dependencies
+are whatever it actually read, not a hand-maintained list.
+
+## What salsa buys
+
+- **No per-family audit to add incrementality.** A tracked fn's dependency
+  edges come from what it reads at run time, not from someone reasoning
+  through `splice_function`'s 7-collector allowlist for an 8th.
+- **Backdating.** If a touched function's derived fact value is unchanged
+  (same `Eq` value, even though the function's source AST changed), salsa
+  stops propagating invalidation to that query's dependents. Splice-then-
+  reanalyze has no equivalent — a touched function's facts are always treated
+  as changed downstream.
+- **Real map/reduce for interprocedural facts.** `heap_ownership`-shaped
+  families become "recompute this function's local contribution; the
+  program-wide reduction only re-touches functions whose local contribution's
+  *value* changed" — not "rerun over everything," which is the honest
+  description of what `Everything`/full `facts::analyze` does today.
+- **No `mark_everything_dirty` cliff at legacy-pass boundaries.** Because
+  salsa resolves lazily at read time, a legacy pass that can't report a
+  precise touched set can still invalidate only the salsa inputs it actually
+  changed (see the `Everything`-case redesign in Phase 1 below) instead of
+  forcing every collector to rerun over the whole program.
+
+## Current architecture (baseline this replaces)
+
+- `FixupFacts` (`facts/mod.rs:45`): one `Vec<XFact>` field per collector
+  output; every fact carries a `Site { function: FunctionId, path: AstPath }`
+  or bare `FunctionId`/`BindingId`, scanned linearly by callers.
+- `FunctionId` (`facts/mod.rs:93`) is already the right stable key: assigned
+  once, in traversal order, the first time a function is seen
+  (`Collector::push_function`), and never reused or renumbered — only
+  `item_index` (the function's position in `Program::items`) shifts when
+  items are removed (`FixupFacts::remove_item`). That makes `FunctionId`
+  durable across `Program` revisions, which is exactly the property a
+  `#[salsa::input]` key needs.
+- `QueryContext<'snapshot>` (`query/context.rs:134`) is rebuilt fresh from
+  `&Program` + `&FixupFacts` per snapshot. The `query_cache!` macro
+  (`context.rs:42`) adds a hand-written `RefCell<HashMap<key, value>>` per
+  memoized semantic query (`byte_source`, `pure`, `first_nul`, ...) — but nothing
+  survives past one `QueryContext` instance, i.e. one snapshot.
+- `IncrementalFacts`/`Dirty` (`fixups/mod.rs:65`) is the current best-effort
+  incremental layer, described above.
+
+## What doesn't change
+
+- `EditSets`, `Plan<E: EditTarget>`, `ItemPlanBuilder`, conflict detection,
+  matchers (`patterns.rs`, `item.rs`), recipes (`recipe.rs`) — untouched.
+- Pass ordering and `fixup-debug` tracing (`docs/passes.md`) — unaffected.
+- The rule-authoring contract in `docs/fixups.md` — unaffected; only
+  `QueryContext`'s internals change, not its public method surface.
+
+## Target architecture
+
+### Identity and granularity
+
+Represent each function as one `#[salsa::input] struct FunctionInput { #[returns(ref)] body: FnDef }`,
+keyed outside salsa by the function's existing `FunctionId`. A plain Rust
+registry — `HashMap<FunctionId, FunctionInput>` — bridges `FunctionId` to the
+live salsa handle; this lives in a new struct (`SalsaFacts`, replacing
+`IncrementalFacts`), not inside salsa itself. Program-relative facts a
+function needs beyond its own body (e.g. `def_use` reading bindings) come from
+composing tracked fns, not from reaching into a global flat `Vec`.
+
+Salsa has no built-in "enumerate all live inputs of a kind" (confirmed against
+the vendored `salsa-0.28.2` source, `src/input.rs`). The standard workaround —
+used by every real salsa consumer, rust-analyzer included — is a second
+`#[salsa::input(singleton)] struct AllFunctions { #[returns(ref)] ids: Vec<FunctionId> }`
+that the bridge layer updates whenever the registry gains or loses an entry.
+Program-wide reductions read `all_functions(db)` first, then map/reduce over
+each id's `local_*` tracked fn.
+
+### Bridging `Program` <-> salsa inputs
+
+Replaces `IncrementalFacts::resolve`. Given the just-applied `TouchedItems`:
+
+1. **`in_place`**: look up each `item_index`'s `FunctionId` in the registry
+   (already known — no scan needed, unlike today's
+   `function_by_item_index`) and call `.set_body(&mut db).to(new_body)`.
+2. **`removed`**: drop the entry from the registry. Salsa has no explicit
+   "delete an input"; an unreferenced handle just stops being read. This
+   matches `function_by_item_index`'s existing `None`-on-miss semantics for
+   any stale caller.
+3. **New functions** (inserted items with no known `FunctionId`): mint the
+   next `FunctionId` from the existing monotonic counter and
+   `FunctionInput::new(&mut db, ...)`.
+4. **`unbounded`** (legacy pass, no reported touched set): diff every item in
+   the new `Program` against the registry's known content, driving the same
+   three operations above for whatever changed. This is strictly better than
+   today's `Everything`/full `facts::analyze`, because functions the legacy
+   pass didn't actually touch keep their existing `FunctionInput` untouched —
+   their downstream tracked fns are memo hits, not recomputed. No pass needs
+   to change to get this; it's purely a `resolve()`-side improvement, and
+   worth landing in Phase 1 rather than waiting on further pass migrations.
+
+### Fact families: two buckets
+
+Matches the "bucket-2 shaped" language `slate-kby1.1` already uses.
+
+**Bucket 1 — pure per-function, no cross-function reasoning.** `def_use`,
+`effects`, `control_flow`, `casts`, `places`, `values`, `atomic_locals`/
+`atomic_globals`, `c_strings`, `va_list` alias, `buffer_cursor`,
+`array_element_pointer_origin`, `counted_loop`, `loop_shapes`,
+`null_check_dominance`, `pointer_option_safety`/`pointer_comparisons`,
+`struct_field_ownership`, `option_box_locals`/comparisons, `borrow_alias`.
+Each becomes:
+
+```rust
+#[salsa::tracked]
+fn def_use_for_function(db: &dyn FixupDb, function: FunctionInput) -> Arc<Vec<DefUseFact>> {
+    def_use::collect_for_function(function.function(db), &function.body(db), /* ... */)
+}
+```
+
+`def_use` and `effects` already have a `collect_for_function` split from
+their whole-program `collect_facts` loop (used today by `splice_function`) —
+port those two first, per `slate-kby1.1`. The rest need the same split
+extracted from their `collect_facts` loop before they can become per-function
+tracked fns; `splice_function`'s existing 7-family allowlist is the field
+guide for which extractions are already known-safe.
+
+**Bucket 2 — program-wide reduction over local contributions.**
+`calls`/`call_signatures`/`callsites` (callsite resolution needs the full
+signature table), `heap_ownership` + `callee_alloc_summary` +
+`interprocedural_alloc_eligibility`/`callers`, `string_params` (fixpoint over
+the call graph), `ptr_len` (fixpoint), `file_ownership`, `lazy_singleton`
+(program-wide write-once/read-once check), `anonymous_structs` (cross-function
+shape dedup — inherently whole-program), `printf` (re-verify; likely local).
+Shape:
+
+```rust
+#[salsa::tracked]
+fn local_heap_ownership(db: &dyn FixupDb, function: FunctionInput) -> Arc<LocalHeapContribution> { /* ... */ }
+
+#[salsa::tracked]
+fn heap_ownership_program(db: &dyn FixupDb) -> Arc<Vec<HeapOwnershipFact>> {
+    all_functions(db).iter().map(|&f| local_heap_ownership(db, registry_lookup(f))).collect(/* reduce */)
+}
+```
+
+Editing one function only recomputes that function's `local_*`; the reduce
+step only re-touches functions whose `local_*` *value* changed — provided the
+per-function contribution type implements `Eq` so salsa can backdate it. Most
+`FixupFacts` structs already derive `PartialEq, Eq` (spot-checked
+`facts/mod.rs`); a few don't (e.g. `BindingTypeFact` at `facts/mod.rs:129`,
+which holds a `rust_ast::Type` — add `Eq` where missing and cheap. Note
+`Program`/`Item`/`FnDef` themselves (`rust_ast.rs`) don't derive `PartialEq`
+today; that's fine as designed here, since no salsa input field is typed as
+`Program`/`Item` directly — only cloned `FnDef` bodies are — but it does mean
+`FunctionInput::set_body` itself can't backdate (every edit signals "changed"
+even if semantically identical). Bucket-1/2 tracked fns downstream still
+backdate on their own `Eq` output types, so this is a minor, acceptable gap,
+not a blocker.
+
+**Fixpoint families** (`string_params`, `ptr_len`): keep as an explicit outer
+Rust loop in the bridge layer that calls the memoized `*_program` tracked fn
+repeatedly until its result stabilizes, rather than adopting salsa's native
+`CycleRecoveryStrategy::Fixpoint` (`cycle_fn`/`cycle_initial` on
+`#[salsa::tracked]`, confirmed present in the vendored `salsa-0.28.2`,
+`src/function.rs`) up front. The native mechanism is a sharper edge than
+"call a memoized query until equal, which is ~free on repeat calls once
+nothing changed." Revisit only if the outer-loop call count is a measured
+bottleneck.
+
+### `QueryContext` after migration
+
+Keeps its existing public method surface (`byte_source`, `pure`, `first_nul`,
+...) so no rule under `query/rules/` changes. Internally it stops holding
+`&FixupFacts`'s flat `Vec`s and instead holds `&dyn FixupDb` (or a concrete
+`&SalsaFacts`) plus `&Program`; each method body calls the matching tracked fn
+instead of linear-filtering a `Vec`. The `query_cache!` macro
+(`context.rs:42`) is deleted once every cached query is salsa-backed — salsa's
+memoization subsumes it, and today's cache is strictly worse (doesn't survive
+past one snapshot anyway).
+
+## Salsa API note (blocks Phase 0)
+
+`src/fixups/salsa.rs` today is 100% commented-out scratch code, and it mixes
+API generations: `#[salsa::database(ProgramInput, PrecomputedFactsInput)]` is
+old-style salsa — that macro shape doesn't exist in `salsa = "0.28"` (already
+in `Cargo.toml`, unused). Confirmed against the vendored source
+(`~/.cargo/registry/.../salsa-0.28.2`) and its `examples/lazy-input`: the
+actual 0.28 shape is
+
+```rust
+#[salsa::db]
+trait FixupDb: salsa::Database {}
+
+#[salsa::db]
+struct Database {
+    storage: salsa::Storage<Self>,
+}
+
+#[salsa::db]
+impl salsa::Database for Database {}
+#[salsa::db]
+impl FixupDb for Database {}
+```
+
+with `#[salsa::input(singleton)]` (that part of the scratch file is already
+correct — `singleton` is real, confirmed in `src/input/singleton.rs`) and
+`#[salsa::tracked(returns(copy) | returns(clone))]` for query functions.
+Rewrite `salsa.rs` against this real API before anything else in Phase 0.
+
+## Migration phases
+
+**Phase 0 — `slate-kby1.1`** (filed): stand up a real, compiling
+`salsa::Database` per the API note above. Migrate `def_use` + `effects` only.
+Wire one pass to read them through salsa. Benchmark fact-build cost
+before/after on a representative fixture. Land as coexistence: `QueryContext`
+gets a salsa-backed path for exactly these two families; everything else
+still reads legacy `FixupFacts` `Vec`s — same coexistence pattern `04q.75`
+used between the query engine and legacy `Fixup`-trait passes.
+
+**Phase 1 — bridge layer.** Build `SalsaFacts` (registry + `AllFunctions`
+singleton + `set_body` wiring, including the improved `unbounded`/diff case
+above) and have it own the two Phase-0 families end to end, replacing
+`IncrementalFacts`'s role for just those two. Don't delete
+`IncrementalFacts` yet — it still drives every other family.
+
+**Phase 2 — remaining bucket-1 families.** One family per beads child,
+mirroring `04q.75`'s per-pass migration children: extract a
+`collect_for_function` split (following the `def_use`/`effects` template)
+where one doesn't exist yet, port to a tracked fn, migrate the consuming
+pass(es), benchmark, full `nextest` gate per child.
+
+**Phase 3 — bucket-2 (interprocedural/map-reduce) families.**
+`AllFunctions` + `local_*`/`*_program` tracked-fn pairs per family; fixpoint
+families use the outer-loop-over-memoized-query pattern.
+
+**Phase 4 — retirement.** Once every `FixupFacts` field has a salsa-backed
+source: delete `facts::analyze`, `FixupFacts`'s flat `Vec` fields,
+`splice_function`/`remove_items`/`purge_function_facts`,
+`IncrementalFacts`/`Dirty`, and the `query_cache!` macro. Update
+`QueryContext`'s constructor and all ~20 call sites in `fixups/mod.rs`.
+Update `docs/fixups.md`, `docs/facts.md`, `docs/passes.md` to describe the
+salsa-backed flow — mirroring `04q.75`'s own closing acceptance criterion
+("closes only after ... docs ... describe the new workflow").
+
+## Open questions / risks
+
+- **Backdating payoff needs `Eq` on fact structs.** Mostly already true; audit
+  and patch the handful that aren't (see `BindingTypeFact` above) during
+  Phase 2/3 as each family migrates, not all at once up front.
+- **`#[salsa::input]` setters take `&mut db`** (`file.set_contents(&mut db).to(...)`
+  in the vendored example), which serializes cleanly with today's
+  single-threaded `apply_with_logger` loop. Not a real constraint now; note it
+  so a future parallel-pass idea doesn't silently assume otherwise.
+- **Registry entries for removed functions are dropped, not tombstoned.**
+  Matches `function_by_item_index`'s existing miss-returns-`None` behavior, so
+  no caller needs new handling for "function existed, now gone."
+  Reconsider only if something needs to distinguish "never existed" from
+  "existed, then removed."
+- **`printf` and `file_ownership`'s bucket assignment above is a first read**,
+  not a verified audit — confirm each collector's actual cross-function
+  dependencies (or lack of them) when its migration child is picked up, the
+  same way `slate-kby1.1` already flags `def_use`/`effects` specifically for
+  being *provably* bucket-1.
+
+## Suggested beads children under `slate-kby1`
+
+Not filed yet — for review alongside this doc:
+
+1. Fix `src/fixups/salsa.rs` against the real 0.28 API (blocks `kby1.1`).
+2. `slate-kby1.1` as already scoped (def_use + effects prototype + benchmark).
+3. Bridge layer (`SalsaFacts`, registry, `AllFunctions`, `TouchedItems`-driven
+   `set_body` wiring, improved `unbounded` diff case).
+4. One child per remaining bucket-1 family (~17 families).
+5. One child per bucket-2 family, fixpoint families called out separately
+   (~10 families, `string_params`/`ptr_len` as their own children given the
+   fixpoint-loop design needs its own review).
+6. Retirement: delete `facts::analyze`/`FixupFacts`/`IncrementalFacts`/
+   `query_cache!`, update docs.
