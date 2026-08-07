@@ -17,3 +17,9 @@ typedef struct {
 } fenv_t;
 
 #define FE_DFL_ENV ((const fenv_t *)-1)
+
+typedef struct {
+  unsigned int __fpcr;
+} femode_t;
+
+#define FE_DFL_MODE ((const femode_t *)-1L)
