@@ -181,7 +181,10 @@ struct AliasSource {
     binding: BindingRef,
 }
 
-#[expect(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "alias-edge analysis carries function, binding, and two site refs together"
+)]
 fn collect_alias_chain(
     case: &mut ItemCaseContext<'_, '_>,
     function: &FunctionRef,

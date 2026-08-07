@@ -2234,7 +2234,10 @@ impl Interp {
         Ok(())
     }
 
-    #[expect(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "interpreter state needs all of these per field write"
+    )]
     fn write_struct_fields(
         &mut self,
         alloc: AllocId,
@@ -2306,7 +2309,10 @@ impl Interp {
         Ok(offset)
     }
 
-    #[expect(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "interpreter state needs all of these per field-value write"
+    )]
     fn write_struct_field_value(
         &mut self,
         alloc: AllocId,

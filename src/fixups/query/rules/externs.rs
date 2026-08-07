@@ -21,7 +21,10 @@ pub(in crate::fixups) fn unused_known_declarations() -> QueryRule<Definition> {
     })
 }
 
-#[expect(dead_code)]
+#[expect(
+    dead_code,
+    reason = "query API surface not yet wired into a fixup rule"
+)]
 pub(in crate::fixups) fn unused_header(header: impl Into<String>) -> QueryRule<Definition> {
     QueryRule::new(
         Pass::PruneUnusedDefinitions,

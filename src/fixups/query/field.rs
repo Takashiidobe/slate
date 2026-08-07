@@ -45,7 +45,10 @@ where
     T: PartialEq + PartialOrd + 'static,
     Cx: 'static,
 {
-    #[expect(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn range<R>(range: R) -> Self
     where
         R: RangeBounds<T> + 'static,

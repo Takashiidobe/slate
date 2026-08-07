@@ -64,7 +64,10 @@ pub(in crate::fixups) enum Predicate {
     MovablePure,
     ExternFn,
     ZeroUsers,
-    #[expect(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     ZeroGroupUsers,
     CountedLoop,
     CountedSliceLoop,
@@ -96,9 +99,15 @@ pub(in crate::fixups) enum Predicate {
     Cast,
     NullCheckDominance,
     PointerOptionSafety,
-    #[expect(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     PointerComparisonKind,
-    #[expect(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     StructFieldOwnership,
     CalleeAllocSummary,
     InterproceduralAllocEligibility,
@@ -195,7 +204,10 @@ pub(in crate::fixups) enum EvidenceDetail {
         users: usize,
         complete: bool,
     },
-    #[expect(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     GroupUseDomain {
         group: DefinitionGroup,
         definitions: usize,
@@ -288,11 +300,17 @@ pub(in crate::fixups) enum EvidenceDetail {
     PointerOptionSafety {
         eligible: bool,
     },
-    #[expect(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     PointerComparisonKind {
         kind: PointerComparisonKind,
     },
-    #[expect(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     StructFieldOwnership {
         fields: usize,
     },

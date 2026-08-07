@@ -172,7 +172,10 @@ pub(in crate::fixups) enum TypeUseRef {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[expect(dead_code)]
+#[expect(
+    dead_code,
+    reason = "query API surface not yet wired into a fixup rule"
+)]
 pub(in crate::fixups) enum TypeUseKind {
     FunctionReturn,
     Parameter,

@@ -1,20 +1,14 @@
-#![allow(dead_code)]
-
-/// Never let a tracked value bound exceed this; well under `i32::MAX` so no
-/// addition can overflow.
+#![allow(
+    dead_code,
+    reason = "test helper toolbox; helpers may sit unused between runs"
+)]
 const VALUE_CAP: i64 = 1_000_000;
-/// Integer literals stay in `0..=CONST_MAX`.
 const CONST_MAX: i64 = 9;
-/// Function parameters are assumed to receive values in `0..=PARAM_MAX`.
 const PARAM_MAX: i64 = 20;
-/// Budget for a top-level declaration initializer.
 const DECL_BUDGET: i64 = 200;
-/// Budget for a loop step / compound-assignment right-hand side.
 const STEP_BUDGET: i64 = 6;
-/// Maximum expression tree depth.
 const MAX_DEPTH: usize = 3;
 
-/// Deterministic LCG. Same generator, same seed => byte-identical program.
 struct Rng {
     state: u64,
 }

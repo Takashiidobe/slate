@@ -9,6 +9,10 @@
 //! layout and ABI, not just its LLVM instructions; the pre-fixup baseline
 //! stays a close transliteration of the C (repr(C), raw pointers, libc), so
 //! its LLVM IR is directly comparable to clang's for the same function.
+#![allow(
+    dead_code,
+    reason = "test helper toolbox; helpers may sit unused between runs"
+)]
 
 use std::io::Read;
 use std::path::{Path, PathBuf};
