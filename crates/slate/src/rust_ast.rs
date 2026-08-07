@@ -1,12 +1,13 @@
 use crate::function_identity::{CallBinding, FunctionIdentity};
+use ordered_float::OrderedFloat;
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Program {
     pub items: Vec<Item>,
     pub shims: Vec<ExternFnDecl>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Item {
     Fn(FnDef),
     Comment(Comment),
@@ -50,19 +51,19 @@ pub enum Item {
     SupportModule(SupportModule),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct SupportModule {
     pub name: Ident,
     pub source: String,
     pub exports: Vec<Path>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Comment {
     pub lines: Vec<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Cfg {
     Flag(String),
     Opt { key: String, value: String },
@@ -77,7 +78,7 @@ impl Cfg {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct StructDef {
     pub attrs: Vec<Attr>,
     pub vis: Visibility,
@@ -86,14 +87,15 @@ pub struct StructDef {
     pub fields: StructFields,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum StructFields {
     Tuple(Vec<Type>),
     Named(Vec<(String, Type)>),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Visibility {
+    #[default]
     Private,
     Pub,
 }
@@ -107,14 +109,14 @@ impl Visibility {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum CrateAttr {
     Allow(Vec<Lint>),
     Deny(Vec<Lint>),
     Feature(Feature),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Lint {
     DeadCode,
     Unused,
@@ -125,7 +127,7 @@ pub enum Lint {
 }
 
 impl Lint {
-    pub fn spelling(self) -> &'static str {
+    pub fn spelling(&self) -> &'static str {
         match self {
             Lint::DeadCode => "dead_code",
             Lint::Unused => "unused",
@@ -137,7 +139,7 @@ impl Lint {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Feature {
     AsmGotoWithOutputs,
     Breakpoint,
@@ -162,7 +164,7 @@ impl Feature {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Attr {
     Allow(Vec<Lint>),
     Repr(Vec<Repr>),
@@ -176,14 +178,14 @@ pub enum Attr {
     Deprecated(String),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum UsedKind {
     Plain,
     Compiler,
     Linker,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Abi {
     C,
 }
@@ -196,14 +198,14 @@ impl Abi {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Repr {
     C,
     Align(u32),
     Packed(u32),
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Derive {
     Clone,
     Copy,
@@ -214,19 +216,19 @@ pub enum Derive {
     Hash,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct GenericParam {
     pub name: String,
     pub bounds: Vec<TraitBound>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct TraitBound {
     pub trait_: StdTrait,
     pub assoc: Vec<(String, Type)>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum StdTrait {
     Add,
     Sub,
@@ -263,7 +265,7 @@ impl StdTrait {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ImplBlock {
     pub generics: Vec<GenericParam>,
     pub trait_: Option<StdTrait>,
@@ -271,13 +273,13 @@ pub struct ImplBlock {
     pub items: Vec<ImplItem>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum ImplItem {
     AssocType { name: String, ty: Type },
     Method(Method),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Method {
     pub name: String,
     pub self_kind: SelfKind,
@@ -286,22 +288,23 @@ pub struct Method {
     pub body: Expr,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum SelfKind {
+    #[default]
     None,
     Value,
     Ref,
     RefMut,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct EnumConst {
     pub comments: Vec<Comment>,
     pub name: String,
     pub value: i64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct EnumDef {
     pub comments: Vec<Comment>,
     pub attrs: Vec<Attr>,
@@ -310,14 +313,14 @@ pub struct EnumDef {
     pub variants: Vec<EnumConst>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct RecordField {
     pub comments: Vec<Comment>,
     pub name: Ident,
     pub ty: Type,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct RecordDef {
     pub comments: Vec<Comment>,
     pub vis: Visibility,
@@ -330,7 +333,7 @@ pub struct RecordDef {
     pub align: Option<u32>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum ExternDecl {
     Fn(ExternFnDecl),
     Static {
@@ -341,7 +344,7 @@ pub enum ExternDecl {
     },
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ExternFnDecl {
     pub name: String,
     pub identity: FunctionIdentity,
@@ -350,7 +353,7 @@ pub struct ExternFnDecl {
     pub ret: Option<Type>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FnDef {
     pub attrs: Vec<Attr>,
     pub vis: Visibility,
@@ -362,32 +365,32 @@ pub struct FnDef {
     pub body: Vec<IndentStmt>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FnParam {
     pub name: String,
     pub mutable: bool,
     pub ty: Type,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct IndentStmt {
     pub depth: usize,
     pub stmt: Stmt,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct MatchArm {
     pub pattern: Pattern,
     pub body: Vec<IndentStmt>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ExprMatchArm {
     pub pattern: Pattern,
     pub value: Expr,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Pattern {
     Wildcard,
     Binding(Ident),
@@ -398,7 +401,7 @@ pub enum Pattern {
     TupleStruct { name: Ident, fields: Vec<Pattern> },
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AtomicPlace {
     Ptr(Box<Expr>),
     Local(Ident),
@@ -427,7 +430,7 @@ impl AtomicPlace {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AtomicType {
     I8,
     U8,
@@ -442,7 +445,7 @@ pub enum AtomicType {
     Bool,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AtomicOrdering {
     Relaxed,
     Acquire,
@@ -451,7 +454,7 @@ pub enum AtomicOrdering {
     SeqCst,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AtomicRmwOp {
     Add,
     Sub,
@@ -463,25 +466,25 @@ pub enum AtomicRmwOp {
     Min,
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Block {
     pub stmts: Vec<IndentStmt>,
     pub tail: Option<Box<Expr>>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AsmDialect {
     Att,
     Intel,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AsmReg {
     Class(String),
     Explicit(String),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AsmOperand {
     In {
         reg: AsmReg,
@@ -536,7 +539,7 @@ impl AsmOperand {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct InlineAsm {
     pub template: String,
     pub dialect: Option<AsmDialect>,
@@ -544,11 +547,11 @@ pub struct InlineAsm {
     pub raw: bool,
 }
 
-#[derive(Debug, Clone)]
 #[expect(
     clippy::large_enum_variant,
     reason = "statement payloads vary by kind; boxed variants would add indirection on the hot lowering path"
 )]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Stmt {
     Let {
         name: String,
@@ -615,16 +618,52 @@ pub enum Stmt {
     Block(Block),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum RustValue {
     I64(i64),
     Usize(usize),
     I128(i128),
     U128(u128),
-    Float(f64),
+    Float(OrderedFloat<f64>),
     Bool(bool),
     None,
     NullPtr,
+}
+
+impl From<i64> for RustValue {
+    fn from(value: i64) -> Self {
+        Self::I64(value)
+    }
+}
+
+impl From<usize> for RustValue {
+    fn from(value: usize) -> Self {
+        Self::Usize(value)
+    }
+}
+
+impl From<i128> for RustValue {
+    fn from(value: i128) -> Self {
+        Self::I128(value)
+    }
+}
+
+impl From<u128> for RustValue {
+    fn from(value: u128) -> Self {
+        Self::U128(value)
+    }
+}
+
+impl From<f64> for RustValue {
+    fn from(value: f64) -> Self {
+        Self::Float(OrderedFloat::from(value))
+    }
+}
+
+impl From<bool> for RustValue {
+    fn from(value: bool) -> Self {
+        Self::Bool(value)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -662,7 +701,7 @@ impl std::fmt::Display for Ident {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Path {
     pub segments: Vec<Ident>,
 }
@@ -700,7 +739,7 @@ impl From<&str> for Label {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Expr {
     Value(RustValue),
     Str(String),
@@ -870,7 +909,7 @@ pub enum Expr {
     Path(Path),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Type {
     Prim(Prim),
     Custom(String),
@@ -907,7 +946,7 @@ pub enum Type {
     Never,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum CLibType {
     Void,
     File,
@@ -928,7 +967,7 @@ impl CLibType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Prim {
     Bool,
     I8,
@@ -993,7 +1032,7 @@ impl Prim {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum BinOp {
     Add,
     Sub,
@@ -1059,7 +1098,7 @@ impl BinOp {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum UnaryOp {
     Neg,
     Not,

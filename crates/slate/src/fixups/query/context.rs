@@ -6,11 +6,11 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AsciiNumericSign, AstPath, BindingId, BindingKind, BorrowAliasReason, CallArgPinning,
     CallCallee, CalleeAllocSummaryFact, CastFact, ConstValue, ControlFlowSubject, CountedLoopFact,
-    DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionId,
+    CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionId,
     InterproceduralAllocEligibilityFact, NulTermination, NullCheckProof, OptionBoxAssignKind,
     PathSegment, PointerComparisonKind, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
-    StringBufferKind, StringCopyRewrite, StringRecoveryCandidate, StructFieldOwnershipFact,
-    ValueSubject,
+    StringBufferKind, StringCopyRewrite, StringLibcUseFact, StringPointerViewFact,
+    StringRecoveryCandidate, StructFieldOwnershipFact, ValueSubject,
 };
 use crate::fixups::salsa::SalsaFacts;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
@@ -334,6 +334,85 @@ impl<'snapshot> QueryContext<'snapshot> {
             None => self.facts.values.iter().any(|fact| {
                 fact.site.function == function && fact.subject == subject && fact.value == value
             }),
+        }
+    }
+
+    fn string_buffer_fact_at(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&StringBufferFact> {
+        match self.salsa {
+            Some(salsa) => salsa.string_buffer_at(function, path),
+            None => self.facts.string_buffer_at(function, path),
+        }
+    }
+
+    fn string_buffer_fact(&self, binding: BindingId) -> Option<&StringBufferFact> {
+        match self.salsa {
+            Some(salsa) => salsa.string_buffer(binding),
+            None => self.facts.string_buffer(binding),
+        }
+    }
+
+    fn string_pointer_view_facts(
+        &self,
+        function: FunctionId,
+        binding: BindingId,
+    ) -> Vec<&StringPointerViewFact> {
+        match self.salsa {
+            Some(salsa) => salsa
+                .string_pointer_views(function)
+                .iter()
+                .filter(|view| view.source == binding)
+                .collect(),
+            None => self
+                .facts
+                .string_pointer_views
+                .iter()
+                .filter(|view| view.site.function == function && view.source == binding)
+                .collect(),
+        }
+    }
+
+    fn string_libc_use_fact(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&StringLibcUseFact> {
+        match self.salsa {
+            Some(salsa) => salsa.string_libc_use(function, path),
+            None => self.facts.string_libc_use(function, path),
+        }
+    }
+
+    fn counted_loop_fact(
+        &self,
+        function: FunctionId,
+        loop_path: &AstPath,
+    ) -> Option<&CountedLoopFact> {
+        match self.salsa {
+            Some(salsa) => salsa.counted_loop(function, loop_path),
+            None => {
+                self.facts.counted_loops.iter().find(|fact| {
+                    fact.site.function == function && fact.site.loop_path == *loop_path
+                })
+            }
+        }
+    }
+
+    fn counted_slice_loop_fact(
+        &self,
+        function: FunctionId,
+        loop_path: &AstPath,
+    ) -> Option<&CountedSliceLoopFact> {
+        match self.salsa {
+            Some(salsa) => salsa.counted_slice_loop(function, loop_path),
+            None => {
+                self.facts.counted_slice_loops.iter().find(|fact| {
+                    fact.site.function == function && fact.site.loop_path == *loop_path
+                })
+            }
         }
     }
 
@@ -2282,7 +2361,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(buffer) = self.facts.string_buffer_at(function, &site.path) else {
+        let Some(buffer) = self.string_buffer_fact_at(function, &site.path) else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -2368,10 +2447,8 @@ impl<'snapshot> QueryContext<'snapshot> {
             ));
         };
         let sites = self
-            .facts
-            .string_pointer_views
-            .iter()
-            .filter(|view| view.site.function == function && view.source == binding)
+            .string_pointer_view_facts(function, binding)
+            .into_iter()
             .map(|view| expression_site(site.item_index, &view.site.path.0))
             .collect();
         let evidence = vec![Evidence {
@@ -2506,7 +2583,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(usage) = self.facts.string_libc_use(function, &site.fact_path) else {
+        let Some(usage) = self.string_libc_use_fact(function, &site.fact_path) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site.clone()),
@@ -3747,7 +3824,7 @@ query_cache! {
                 Vec::new(),
             )
         })?;
-        let buffer = self.facts.string_buffer(pointer.source);
+        let buffer = self.string_buffer_fact(pointer.source);
         let representation = buffer
             .map(|buffer| representation_for_buffer(buffer.kind))
             .or_else(|| representation_for_type(ty))
@@ -3918,7 +3995,7 @@ query_cache! {
     key: BindingId = source.binding;
     {
         let predicate = Predicate::FirstNul;
-        let Some(buffer) = self.facts.string_buffer(source.binding) else {
+        let Some(buffer) = self.string_buffer_fact(source.binding) else {
             return Err(Rejection::new(
                 predicate,
                 Some(source.site.clone()),
@@ -4067,12 +4144,7 @@ query_cache! {
                 Vec::new(),
             )
         })?;
-        let Some(fact) = self
-            .facts
-            .counted_loops
-            .iter()
-            .find(|fact| fact.site.function == function && fact.site.loop_path == statement.path)
-        else {
+        let Some(fact) = self.counted_loop_fact(function, &statement.path) else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -4107,12 +4179,7 @@ query_cache! {
                 Vec::new(),
             )
         })?;
-        let Some(fact) = self
-            .facts
-            .counted_slice_loops
-            .iter()
-            .find(|fact| fact.site.function == function && fact.site.loop_path == statement.path)
-        else {
+        let Some(fact) = self.counted_slice_loop_fact(function, &statement.path) else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -4392,7 +4459,7 @@ query_cache! {
                 assignment_statement: statement(&fact.assign_path),
                 free_statement: statement(&fact.free_path),
                 elem_ty: fact.elem_ty.clone(),
-                allocation: fact.allocation.clone(),
+                allocation: fact.allocation,
                 extent: fact.extent.clone(),
                 init: fact.init,
                 read_safety: fact.read_safety,
@@ -5830,7 +5897,7 @@ fn ptr_len_plans_from_facts(facts: &FixupFacts) -> Vec<PtrLenPlan> {
 pub(super) fn default_value(ty: &Type) -> Expr {
     match ty {
         Type::Prim(Prim::Bool) => Expr::Value(RustValue::Bool(false)),
-        Type::Prim(Prim::F32 | Prim::F64) => Expr::Value(RustValue::Float(0.0)),
+        Type::Prim(Prim::F32 | Prim::F64) => Expr::Value(RustValue::Float(0.0.into())),
         Type::Prim(Prim::F128) => Expr::HexFloat("0.0f128".into()),
         Type::Ptr { .. } => Expr::Value(RustValue::NullPtr),
         _ => Expr::Value(RustValue::I64(0)),

@@ -110,7 +110,7 @@ impl<'a> Collector<'a> {
     ) {
         for (index, pair) in body.windows(2).enumerate() {
             let Some(candidate) =
-                self.canonical_loop(pair, parent_path, body_segment.clone(), index)
+                self.canonical_loop(pair, parent_path, body_segment, index)
             else {
                 continue;
             };
@@ -170,7 +170,7 @@ impl<'a> Collector<'a> {
 
         let mut index_path = parent_path.to_vec();
         if let Some(segment) = &body_segment {
-            index_path.push(segment.clone());
+            index_path.push(*segment);
         }
         index_path.push(PathSegment::Stmt(index_stmt));
         let index_binding = self.facts.binding_by_local_path(
@@ -181,7 +181,7 @@ impl<'a> Collector<'a> {
 
         let mut loop_path = parent_path.to_vec();
         if let Some(segment) = &body_segment {
-            loop_path.push(segment.clone());
+            loop_path.push(*segment);
         }
         loop_path.push(PathSegment::Stmt(index_stmt + 1));
         let loop_path = AstPath(loop_path);

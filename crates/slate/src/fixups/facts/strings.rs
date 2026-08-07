@@ -894,6 +894,7 @@ fn assignment_index(def_path: &[PathSegment], assignment_path: &[PathSegment]) -
     }
 }
 
+#[derive(PartialEq, Eq)]
 pub(in crate::fixups) struct Collected {
     pub(in crate::fixups) buffers: Vec<StringBufferFact>,
     pub(in crate::fixups) pointer_views: Vec<StringPointerViewFact>,

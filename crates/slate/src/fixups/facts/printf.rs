@@ -5,6 +5,7 @@ use crate::fixups::facts::{
 };
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{Block, Expr, FnParam, IndentStmt, Item, Program, RustValue, Stmt, Type};
+use ordered_float::OrderedFloat;
 use std::collections::BTreeMap;
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -528,11 +529,11 @@ fn const_integer(expr: &Expr) -> Option<i64> {
     }
 }
 
-fn const_float_arg(arg: &Expr, env: &PrintfEnv) -> Option<f64> {
+fn const_float_arg(arg: &Expr, env: &PrintfEnv) -> Option<OrderedFloat<f64>> {
     const_float(env.resolve_const(arg))
 }
 
-fn const_float(expr: &Expr) -> Option<f64> {
+fn const_float(expr: &Expr) -> Option<OrderedFloat<f64>> {
     match expr {
         Expr::Value(RustValue::Float(n)) => Some(*n),
         Expr::Cast { expr, .. } => const_float(expr),
