@@ -6,10 +6,11 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AsciiNumericSign, AstPath, BindingId, BindingKind, BorrowAliasReason, CallArgPinning,
     CallCallee, CalleeAllocSummaryFact, CastFact, ConstValue, ControlFlowSubject, CountedLoopFact,
-    EffectSubject, FixupFacts, FunctionId, InterproceduralAllocEligibilityFact, NulTermination,
-    NullCheckProof, OptionBoxAssignKind, PathSegment, PointerComparisonKind, PrintfCallFact,
-    PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
-    StringRecoveryCandidate, StructFieldOwnershipFact, ValueSubject,
+    DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionId,
+    InterproceduralAllocEligibilityFact, NulTermination, NullCheckProof, OptionBoxAssignKind,
+    PathSegment, PointerComparisonKind, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
+    StringBufferKind, StringCopyRewrite, StringRecoveryCandidate, StructFieldOwnershipFact,
+    ValueSubject,
 };
 use crate::fixups::salsa::SalsaFacts;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
@@ -279,6 +280,25 @@ impl<'snapshot> QueryContext<'snapshot> {
         self
     }
 
+    fn def_use_fact(&self, function: FunctionId, binding: BindingId) -> Option<&DefUseFact> {
+        match self.salsa {
+            Some(salsa) => salsa.def_use(function, binding),
+            None => self.facts.def_use(binding),
+        }
+    }
+
+    fn effect_fact(
+        &self,
+        function: FunctionId,
+        subject: EffectSubject,
+        path: &AstPath,
+    ) -> Option<&EffectFact> {
+        match self.salsa {
+            Some(salsa) => salsa.effect(function, subject, path),
+            None => self.facts.effect(function, subject, path),
+        }
+    }
+
     pub(in crate::fixups) fn all_calls(&self) -> impl Iterator<Item = &CallRecord> {
         self.calls.values().flatten()
     }
@@ -380,14 +400,17 @@ impl<'snapshot> QueryContext<'snapshot> {
     ) -> QueryResult<BindingDefUse> {
         let predicate = Predicate::DefUse;
         let site = expression_site(binding.item_index, &binding.definition.0);
-        let fact = self.facts.def_use(binding.id).ok_or_else(|| {
-            Rejection::new(
-                predicate,
-                Some(site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            )
-        })?;
+        let function = self.facts.function_by_item_index(binding.item_index);
+        let fact = function
+            .and_then(|function| self.def_use_fact(function, binding.id))
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
         let reads = fact
             .reads
             .iter()
@@ -570,12 +593,17 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 
     pub(in crate::fixups) fn binding_value(&self, binding: &BindingRef) -> ResolvedValue {
-        ResolvedValue {
-            ty: binding.ty.clone(),
-            usage: self.facts.def_use(binding.id).map(|fact| Usage {
+        let usage = self
+            .facts
+            .function_by_item_index(binding.item_index)
+            .and_then(|function| self.def_use_fact(function, binding.id))
+            .map(|fact| Usage {
                 reads: fact.reads.len(),
                 writes: fact.writes.len(),
-            }),
+            });
+        ResolvedValue {
+            ty: binding.ty.clone(),
+            usage,
             purity: None,
         }
     }
@@ -689,19 +717,14 @@ impl<'snapshot> QueryContext<'snapshot> {
         let binding = self.facts.binding_by_local_path(function, name, def_path);
         let ty = binding.and_then(|binding| self.facts.binding_type_ast(binding).cloned());
         let usage = binding
-            .and_then(|binding| match self.salsa {
-                Some(salsa) => salsa.def_use(function, binding),
-                None => self.facts.def_use(binding),
-            })
+            .and_then(|binding| self.def_use_fact(function, binding))
             .map(|uses| Usage {
                 reads: uses.reads.len(),
                 writes: uses.writes.len(),
             });
-        let purity = match self.salsa {
-            Some(salsa) => salsa.effect(function, EffectSubject::Expr, def_path),
-            None => self.facts.effect(function, EffectSubject::Expr, def_path),
-        }
-        .map(|effect| effect.purity);
+        let purity = self
+            .effect_fact(function, EffectSubject::Expr, def_path)
+            .map(|effect| effect.purity);
         ResolvedValue { ty, usage, purity }
     }
 
@@ -1236,8 +1259,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 )
             })?;
         let fact = self
-            .facts
-            .effect(function, EffectSubject::Expr, &statement.path)
+            .effect_fact(function, EffectSubject::Expr, &statement.path)
             .ok_or_else(|| {
                 Rejection::new(
                     predicate,
@@ -1269,10 +1291,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         let Some(function) = self.facts.function_by_item_index(statement.item_index) else {
             return Ok(Proof::new(None, Vec::new()));
         };
-        let Some(fact) = self
-            .facts
-            .effect(function, EffectSubject::Stmt, &statement.path)
-        else {
+        let Some(fact) = self.effect_fact(function, EffectSubject::Stmt, &statement.path) else {
             return Ok(Proof::new(None, Vec::new()));
         };
         let effects = ExpressionEffects {
@@ -1451,12 +1470,8 @@ impl<'snapshot> QueryContext<'snapshot> {
             )
         })?;
         let fact = self
-            .facts
-            .effect(function, EffectSubject::Expr, &expression.site.path)
-            .or_else(|| {
-                self.facts
-                    .effect(function, EffectSubject::Expr, &expression.site.fact_path)
-            })
+            .effect_fact(function, EffectSubject::Expr, &expression.site.path)
+            .or_else(|| self.effect_fact(function, EffectSubject::Expr, &expression.site.fact_path))
             .ok_or_else(|| {
                 Rejection::new(
                     predicate,
@@ -1741,7 +1756,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 });
             }
         }
-        if let Some(def_use) = self.facts.def_use(binding.id) {
+        if let Some(def_use) = self.def_use_fact(function, binding.id) {
             for read in &def_use.reads {
                 let covered = uses.iter().any(|usage| {
                     matches!(usage.access, BindingAccess::Read | BindingAccess::ReadWrite)
@@ -3977,12 +3992,8 @@ query_cache! {
             )
         })?;
         let effect = self
-            .facts
-            .effect(function, EffectSubject::Expr, &site.path)
-            .or_else(|| {
-                self.facts
-                    .effect(function, EffectSubject::Expr, &site.fact_path)
-            })
+            .effect_fact(function, EffectSubject::Expr, &site.path)
+            .or_else(|| self.effect_fact(function, EffectSubject::Expr, &site.fact_path))
             .ok_or_else(|| {
                 Rejection::new(
                     predicate,

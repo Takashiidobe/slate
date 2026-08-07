@@ -438,7 +438,7 @@ fn build_batch(cases: &[RustCase], project: &Path, bin_dir: &Path) -> Result<(),
     }
     write_long_double_shim(project)?;
 
-    let target_dir = test_target_dir_for_project(&project);
+    let target_dir = test_target_dir_for_project(project);
     std::fs::create_dir_all(&target_dir)
         .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let o = Command::new(cargo())
@@ -517,7 +517,7 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<S
         let _ = std::fs::remove_file(multi_bin_batch_path(project, &case.name));
     }
 
-    let target_dir = test_target_dir_for_project(&project);
+    let target_dir = test_target_dir_for_project(project);
     std::fs::create_dir_all(&target_dir)
         .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let o = Command::new(cargo())
