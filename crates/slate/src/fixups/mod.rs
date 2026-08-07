@@ -5,6 +5,7 @@ mod idents;
 mod query;
 mod runtime;
 mod support;
+mod salsa;
 pub mod trace;
 
 use crate::fixups::trace::{CollectingLogger, NoopLogger, ProgramSummary, TraceLog, TraceLogger};
