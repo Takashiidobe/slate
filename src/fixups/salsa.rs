@@ -2,8 +2,9 @@ use std::collections::HashMap;
 
 use crate::fixups::facts::{
     self, AstPath, BindingFact, BindingId, DefUseFact, EffectFact, EffectSubject, FixupFacts,
-    FunctionId,
+    FunctionFact, FunctionId,
 };
+use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{FnDef, Item, Program};
 use salsa::Setter;
 
@@ -64,31 +65,70 @@ impl SalsaFacts {
         }
     }
 
-    pub(in crate::fixups) fn sync(&mut self, program: &Program, facts: &FixupFacts) {
+    pub(in crate::fixups) fn sync_all(&mut self, program: &Program, facts: &FixupFacts) {
         for function_fact in &facts.functions {
-            let Some(Item::Fn(body)) = program.items.get(function_fact.item_index) else {
-                continue;
-            };
-            let bindings: Vec<BindingFact> = facts
-                .bindings
-                .iter()
-                .filter(|binding| binding.function == function_fact.id)
-                .cloned()
-                .collect();
-            match self.functions.get(&function_fact.id) {
-                Some(&input) => {
-                    input.set_body(&mut self.db).to(body.clone());
-                    input.set_bindings(&mut self.db).to(bindings);
-                }
-                None => {
-                    let input =
-                        FunctionInput::new(&self.db, function_fact.id, body.clone(), bindings);
-                    self.functions.insert(function_fact.id, input);
-                }
-            }
+            self.sync_function(program, facts, function_fact);
         }
         self.functions
             .retain(|id, _| facts.functions.iter().any(|fact| fact.id == *id));
+    }
+
+    pub(in crate::fixups) fn sync_touched(
+        &mut self,
+        pre_edit_facts: &FixupFacts,
+        program: &Program,
+        touched: &TouchedItems,
+    ) {
+        let facts = pre_edit_facts;
+        if touched.unbounded {
+            self.sync_all(program, facts);
+            return;
+        }
+        for &item_index in &touched.in_place {
+            if let Some(function_fact) = facts
+                .functions
+                .iter()
+                .find(|fact| fact.item_index == item_index)
+            {
+                self.sync_function(program, facts, function_fact);
+            }
+        }
+        for &item_index in &touched.removed {
+            if let Some(function_fact) = facts
+                .functions
+                .iter()
+                .find(|fact| fact.item_index == item_index)
+            {
+                self.functions.remove(&function_fact.id);
+            }
+        }
+    }
+
+    fn sync_function(
+        &mut self,
+        program: &Program,
+        facts: &FixupFacts,
+        function_fact: &FunctionFact,
+    ) {
+        let Some(Item::Fn(body)) = program.items.get(function_fact.item_index) else {
+            return;
+        };
+        let bindings: Vec<BindingFact> = facts
+            .bindings
+            .iter()
+            .filter(|binding| binding.function == function_fact.id)
+            .cloned()
+            .collect();
+        match self.functions.get(&function_fact.id) {
+            Some(&input) => {
+                input.set_body(&mut self.db).to(body.clone());
+                input.set_bindings(&mut self.db).to(bindings);
+            }
+            None => {
+                let input = FunctionInput::new(&self.db, function_fact.id, body.clone(), bindings);
+                self.functions.insert(function_fact.id, input);
+            }
+        }
     }
 
     pub(in crate::fixups) fn def_use(
@@ -125,10 +165,9 @@ mod temp_bench {
     use std::path::Path;
     use std::time::Instant;
 
-    use salsa::Setter;
-
-    use super::{Database, FixupDb, SalsaFacts, def_use_for_function, effects_for_function};
+    use super::SalsaFacts;
     use crate::fixups::facts;
+    use crate::fixups::query::TouchedItems;
 
     #[test]
     fn timing() {
@@ -145,45 +184,40 @@ mod temp_bench {
 
         println!("functions in fixture: {}", facts.functions.len());
 
+        let read_all = |salsa_facts: &SalsaFacts| {
+            for function in &facts.functions {
+                for binding in facts.bindings.iter().filter(|b| b.function == function.id) {
+                    let _ = salsa_facts.def_use(function.id, binding.id);
+                }
+            }
+        };
+
         let salsa_cold_start = Instant::now();
         let mut salsa_facts = SalsaFacts::new();
-        salsa_facts.sync(&program, &facts);
-        for function in &facts.functions {
-            for binding in facts.bindings.iter().filter(|b| b.function == function.id) {
-                let _ = salsa_facts.def_use(function.id, binding.id);
-            }
-        }
+        salsa_facts.sync_all(&program, &facts);
+        read_all(&salsa_facts);
         let salsa_cold = salsa_cold_start.elapsed();
 
         let salsa_full_resync_start = Instant::now();
-        salsa_facts.sync(&program, &facts);
-        for function in &facts.functions {
-            for binding in facts.bindings.iter().filter(|b| b.function == function.id) {
-                let _ = salsa_facts.def_use(function.id, binding.id);
-            }
-        }
+        salsa_facts.sync_all(&program, &facts);
+        read_all(&salsa_facts);
         let salsa_full_resync = salsa_full_resync_start.elapsed();
 
         let touched_function = facts.functions.first().unwrap();
-        let touched_input = *salsa_facts.functions.get(&touched_function.id).unwrap();
-        let unchanged_body = touched_input.body(&salsa_facts.db).clone();
-        let db: &mut Database = &mut salsa_facts.db;
+        let touched = TouchedItems {
+            in_place: vec![touched_function.item_index],
+            removed: Vec::new(),
+            unbounded: false,
+        };
         let touched_start = Instant::now();
-        touched_input.set_body(db).to(unchanged_body);
-        for function in &facts.functions {
-            for binding in facts.bindings.iter().filter(|b| b.function == function.id) {
-                let _ = salsa_facts.def_use(function.id, binding.id);
-            }
-        }
+        salsa_facts.sync_touched(&facts, &program, &touched);
+        read_all(&salsa_facts);
         let touched_one = touched_start.elapsed();
 
         println!("legacy facts::analyze (cold):        {legacy_cold:?}");
         println!("legacy facts::analyze (repeat):       {legacy_repeat:?}");
-        println!("salsa cold (sync + read all):         {salsa_cold:?}");
+        println!("salsa cold (sync_all + read all):     {salsa_cold:?}");
         println!("salsa full unconditional re-sync:     {salsa_full_resync:?}");
-        println!("salsa 1-function touched, read all:   {touched_one:?}");
-        let _ = effects_for_function;
-        let _ = def_use_for_function;
-        let _: &dyn FixupDb = &salsa_facts.db;
+        println!("salsa sync_touched, 1 of N touched:   {touched_one:?}");
     }
 }

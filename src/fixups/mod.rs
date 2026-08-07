@@ -673,9 +673,13 @@ fn apply_with_logger(
         incremental.mark_touched(&report.touched);
     });
     step!(program, Pass::DeadLocals, {
+        let mut salsa_touched: Option<query::TouchedItems> = None;
         loop {
             let facts = incremental.resolve(&program);
-            salsa_facts.sync(&program, &facts);
+            match salsa_touched.take() {
+                Some(touched) => salsa_facts.sync_touched(&facts, &program, &touched),
+                None => salsa_facts.sync_all(&program, &facts),
+            }
             let plan = {
                 let query = query::QueryContext::new(&program, &facts).with_salsa(&salsa_facts);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -686,6 +690,7 @@ fn apply_with_logger(
                 builder.finish()
             };
             let report = plan.apply(&mut program, &facts, logger);
+            salsa_touched = Some(report.touched.clone());
             incremental.mark_touched(&report.touched);
             if !report.changed {
                 break;
@@ -928,9 +933,13 @@ fn apply_with_logger(
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::DeadLocals, {
+        let mut salsa_touched: Option<query::TouchedItems> = None;
         loop {
             let facts = incremental.resolve(&program);
-            salsa_facts.sync(&program, &facts);
+            match salsa_touched.take() {
+                Some(touched) => salsa_facts.sync_touched(&facts, &program, &touched),
+                None => salsa_facts.sync_all(&program, &facts),
+            }
             let plan = {
                 let query = query::QueryContext::new(&program, &facts).with_salsa(&salsa_facts);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -941,6 +950,7 @@ fn apply_with_logger(
                 builder.finish()
             };
             let report = plan.apply(&mut program, &facts, logger);
+            salsa_touched = Some(report.touched.clone());
             incremental.mark_touched(&report.touched);
             if !report.changed {
                 break;
