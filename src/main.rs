@@ -1,6 +1,7 @@
 use slate::effects::interp::interpret_program_main;
 use slate::{
-    api, c_ast, c_shim, cir, ctx, directive_translate, effects, fixups, lower, preprocess, rust_ast,
+    api, c_ast, c_shim, cir, codegen, ctx, directive_translate, effects, fixups, lower, preprocess,
+    rust_ast,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -274,6 +275,154 @@ fn collect_record_type_names(ty: &c_ast::CType, out: &mut BTreeSet<String>) {
 fn collect_record_field_type_names(record: &c_ast::Record, out: &mut BTreeSet<String>) {
     for field in &record.fields {
         collect_record_type_names(&field.ty, out);
+    }
+}
+
+struct TargetVariant {
+    cfg: rust_ast::Cfg,
+    clang_args: Vec<String>,
+}
+
+fn target_variants() -> Vec<TargetVariant> {
+    let all_arch_macros = [
+        "__SLATE_ARCH_X86_64",
+        "__SLATE_ARCH_X86",
+        "__SLATE_ARCH_AARCH64",
+        "__SLATE_ARCH_ARM",
+        "__SLATE_ARCH_RISCV64",
+        "__SLATE_ARCH_RISCV32",
+        "__SLATE_ARCH_UNKNOWN",
+    ];
+    let mut variants = Vec::new();
+    for (arch, triple, arch_macro) in [
+        ("x86_64", "x86_64-linux-gnu", "__SLATE_ARCH_X86_64"),
+        ("aarch64", "aarch64-linux-gnu", "__SLATE_ARCH_AARCH64"),
+        ("riscv64", "riscv64-linux-gnu", "__SLATE_ARCH_RISCV64"),
+    ] {
+        let mut args = vec!["-target".to_string(), triple.to_string()];
+        for macro_name in all_arch_macros {
+            args.push(format!("-U{macro_name}"));
+        }
+        args.push(format!("-D{arch_macro}=1"));
+        args.push("-U__SLATE_BIG_ENDIAN".to_string());
+        args.push("-D__SLATE_LITTLE_ENDIAN=1".to_string());
+        args.push("-U__SLATE_LIBC_MUSL".to_string());
+        args.push("-U__SLATE_LIBC_GENERIC".to_string());
+        args.push("-D__SLATE_LIBC_GNU=1".to_string());
+        variants.push(TargetVariant {
+            cfg: rust_ast::Cfg::Opt {
+                key: "target_arch".into(),
+                value: arch.into(),
+            },
+            clang_args: args,
+        });
+    }
+    variants
+}
+
+fn merge_target_programs(variants: &[(rust_ast::Cfg, rust_ast::Program)]) -> rust_ast::Program {
+    if variants.len() <= 1 {
+        return variants.first().map(|(_, p)| p.clone()).unwrap_or_default();
+    }
+    let baseline = &variants[0].1;
+
+    let mut items = Vec::new();
+    for item in &baseline.items {
+        if let rust_ast::Item::CrateAttrs(_) = item {
+            items.push(item.clone());
+        }
+    }
+
+    let skip_kinds = |item: &rust_ast::Item| {
+        matches!(
+            item,
+            rust_ast::Item::CrateAttrs(_) | rust_ast::Item::Comment(_)
+        )
+    };
+
+    let item_id = |item: &rust_ast::Item| {
+        (
+            directive_translate::item_key(item),
+            codegen::item_to_string(item),
+        )
+    };
+
+    let mut emitted: BTreeSet<(String, String)> = BTreeSet::new();
+    for item in &baseline.items {
+        if skip_kinds(item) {
+            continue;
+        }
+        let key = directive_translate::item_key(item);
+        let id = item_id(item);
+        let all_same = variants.iter().skip(1).all(|(_, prog)| {
+            prog.items
+                .iter()
+                .filter(|i| !skip_kinds(i))
+                .any(|i| item_id(i) == id)
+        });
+        if all_same {
+            if emitted.insert(id.clone()) {
+                items.push(item.clone());
+            }
+        } else {
+            // Collect all items with this key from every variant, grouped by
+            // rendered text so identical content across targets can be
+            // coalesced into a single cfg(any(...)) instead of duplicated.
+            // A target may produce multiple items with the same key (e.g.
+            // multiple extern blocks); preserve their relative order.
+            let mut groups: BTreeMap<String, (Vec<rust_ast::Cfg>, rust_ast::Item)> =
+                BTreeMap::new();
+            for (cfg, prog) in variants {
+                for variant_item in prog.items.iter().filter(|i| !skip_kinds(i)) {
+                    if directive_translate::item_key(variant_item) != key {
+                        continue;
+                    }
+                    let variant_id = item_id(variant_item);
+                    if emitted.contains(&variant_id) {
+                        continue;
+                    }
+                    let text = variant_id.1.clone();
+                    let entry = groups
+                        .entry(text)
+                        .or_insert_with(|| (Vec::new(), variant_item.clone()));
+                    entry.0.push(cfg.clone());
+                }
+            }
+            for (cfgs, item) in groups.into_values() {
+                let id = item_id(&item);
+                emitted.insert(id);
+                if cfgs.len() == variants.len() {
+                    items.push(item);
+                } else if cfgs.len() == 1 {
+                    items.push(rust_ast::Item::Cfg {
+                        cfg: cfgs.into_iter().next().unwrap(),
+                        item: Box::new(item),
+                    });
+                } else {
+                    items.push(rust_ast::Item::Cfg {
+                        cfg: rust_ast::Cfg::Any(cfgs),
+                        item: Box::new(item),
+                    });
+                }
+            }
+        }
+    }
+
+    for (cfg, prog) in variants.iter().skip(1) {
+        for item in prog.items.iter().filter(|i| !skip_kinds(i)) {
+            let id = item_id(item);
+            if emitted.insert(id) {
+                items.push(rust_ast::Item::Cfg {
+                    cfg: cfg.clone(),
+                    item: Box::new(item.clone()),
+                });
+            }
+        }
+    }
+
+    rust_ast::Program {
+        items,
+        shims: baseline.shims.clone(),
     }
 }
 
@@ -790,6 +939,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
     std::fs::create_dir_all(out_dir).map_err(|e| format!("create {}: {e}", out_dir.display()))?;
 
     // pass 2: lower each unit with project-wide knowledge and write its module.
+    let targets = target_variants();
     let mut written = Vec::new();
     for (stem, path) in &modules {
         let is_root = *stem == root;
@@ -814,16 +964,52 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
                 BTreeSet::new()
             },
         };
-        let module = cir::parse_module(&cir::emit_generic(path)?)?;
-        let unit = c_ast::parse_file(path)?;
-        let mut ctx = ctx::Ctx::default();
-        let mut program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
-        for d in &ctx.diagnostics.items {
-            eprintln!("{:?}: {}", d.severity, d.message);
+        let mut variant_programs = Vec::new();
+        for target in &targets {
+            let cir_text = match cir::emit_generic_with_args(path, &target.clang_args) {
+                Ok(text) => text,
+                Err(e) => {
+                    eprintln!(
+                        "translate-project: skipping target {:?} for {}: {e}",
+                        target.cfg,
+                        path.display()
+                    );
+                    continue;
+                }
+            };
+            let module = match cir::parse_module(&cir_text) {
+                Ok(m) => m,
+                Err(e) => {
+                    eprintln!(
+                        "translate-project: skipping target {:?} for {}: {e}",
+                        target.cfg,
+                        path.display()
+                    );
+                    continue;
+                }
+            };
+            let unit = match c_ast::parse_file_with_args(path, &target.clang_args) {
+                Ok(u) => u,
+                Err(e) => {
+                    eprintln!(
+                        "translate-project: skipping target {:?} for {}: {e}",
+                        target.cfg,
+                        path.display()
+                    );
+                    continue;
+                }
+            };
+            let mut ctx = ctx::Ctx::default();
+            let program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
+            for d in &ctx.diagnostics.items {
+                eprintln!("{:?}: {}", d.severity, d.message);
+            }
+            if ctx.diagnostics.has_errors() {
+                return Err(format!("lowering failed for {}", path.display()));
+            }
+            variant_programs.push((target.cfg.clone(), fixups::apply_with(program, &fixup_skip)));
         }
-        if ctx.diagnostics.has_errors() {
-            return Err(format!("lowering failed for {}", path.display()));
-        }
+        let mut program = merge_target_programs(&variant_programs);
         let source =
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
         let pp = preprocess::record_file(&source, &[])?;
@@ -839,7 +1025,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
             stem.clone()
         };
         let output = out_dir.join(file).with_extension("rs");
-        std::fs::write(&output, fixups::apply_with(program, &fixup_skip).emit())
+        std::fs::write(&output, program.emit())
             .map_err(|e| format!("write {}: {e}", output.display()))?;
         written.push(output);
     }

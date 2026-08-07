@@ -1375,6 +1375,12 @@ pub fn program_to_string(program: &Program) -> String {
     cg.into_inner()
 }
 
+pub fn item_to_string(item: &Item) -> String {
+    let mut cg = Codegen::new(String::new());
+    cg.item(item).expect("writing to a String never fails");
+    cg.into_inner()
+}
+
 pub fn expr_to_string(expr: &Expr) -> String {
     let mut cg = Codegen::new(String::new());
     cg.expr(expr).expect("writing to a String never fails");

@@ -589,7 +589,7 @@ fn line_in_direct_branch(
     })
 }
 
-fn item_key(item: &Item) -> String {
+pub fn item_key(item: &Item) -> String {
     match item {
         Item::CrateAttrs(_) => "crate-attrs".into(),
         Item::Comment(comment) => format!("comment:{}", comment.lines.join("\n")),
@@ -609,7 +609,11 @@ fn item_key(item: &Item) -> String {
         Item::Enum(e) => format!("enum:{}", e.name),
         Item::Record(r) => format!("record:{}", r.name),
         Item::Struct(s) => format!("struct:{}", s.name),
-        Item::Impl(im) => format!("impl:{}", im.self_ty.render()),
+        Item::Impl(im) => format!(
+            "impl:{}:{}",
+            im.trait_.map(|t| t.path()).unwrap_or(""),
+            im.self_ty.render()
+        ),
         Item::Macro { name, args } => format!(
             "macro:{name}:{}",
             args.iter().map(Expr::render).collect::<Vec<_>>().join(",")
