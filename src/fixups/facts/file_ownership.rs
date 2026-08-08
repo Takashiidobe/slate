@@ -11,7 +11,7 @@ use crate::rust_ast::{
 };
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.file_ownership.clear();
+    let mut all = Vec::new();
     for (item_index, item) in program.items.iter().enumerate() {
         let Item::Fn(f) = item else {
             continue;
@@ -19,11 +19,17 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        collect_body(function, &f.body, facts);
+        all.extend(collect_for_function(function, &f.body, facts));
     }
+    facts.file_ownership = all;
 }
 
-fn collect_body(function: FunctionId, body: &[IndentStmt], facts: &mut FixupFacts) {
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    body: &[IndentStmt],
+    facts: &FixupFacts,
+) -> Vec<FileOwnershipFact> {
+    let mut all = Vec::new();
     for (index, pair) in body.windows(2).enumerate() {
         let Some(handle_name) = null_file_decl(&pair[0].stmt) else {
             continue;
@@ -35,7 +41,7 @@ fn collect_body(function: FunctionId, body: &[IndentStmt], facts: &mut FixupFact
         let Some(open) = find_open(function, body, facts, index + 1, handle_name) else {
             continue;
         };
-        facts.file_ownership.push(FileOwnershipFact {
+        all.push(FileOwnershipFact {
             function,
             handle,
             open_temp: open.open_temp,
@@ -50,6 +56,7 @@ fn collect_body(function: FunctionId, body: &[IndentStmt], facts: &mut FixupFact
             uses: open.uses,
         });
     }
+    all
 }
 
 struct OpenCandidate {

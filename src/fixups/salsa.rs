@@ -5,11 +5,12 @@ use crate::fixups::facts::{
     BindingFact, BindingId, BindingTypeFact, BorrowAliasFact, BorrowAliasReason, BorrowAliasState,
     BufferPointerFieldFact, CallArgFact, CallSignatureFact, CalleeAllocSummaryFact, CallsiteFact,
     CastFact, ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact,
-    DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionFact, FunctionId, HeapOwnershipFact,
-    InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LazyInitSingletonFact,
-    LoopFact, NullCheckDominanceFact, OptionBoxComparison, OptionBoxLocalCandidate, PlaceFact,
-    PointerComparisonFact, PointerOptionSafetyFact, PtrLenSliceFact, SignatureId, StaticDeclFact,
-    StringParamLiftFact, StructFieldOwnershipFact, ValueFact,
+    DefUseFact, EffectFact, EffectSubject, FileOwnershipFact, FixupFacts, FunctionFact, FunctionId,
+    HeapOwnershipFact, InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact,
+    LazyInitSingletonFact, LoopFact, NullCheckDominanceFact, OptionBoxComparison,
+    OptionBoxLocalCandidate, PlaceFact, PointerComparisonFact, PointerOptionSafetyFact,
+    PtrLenSliceFact, SignatureId, StaticDeclFact, StringParamLiftFact, StructFieldOwnershipFact,
+    ValueFact,
 };
 use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{EnumDef, Expr, FnDef, Item, Program, RecordDef, StructDef};
@@ -264,6 +265,19 @@ impl FunctionInput {
             ..FixupFacts::default()
         };
         facts::heap_ownership::collect_for_function(
+            *self.function(db),
+            &self.body(db).body,
+            &local_facts,
+        )
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn file_ownership(self, db: &dyn FixupDb) -> Vec<FileOwnershipFact> {
+        let local_facts = FixupFacts {
+            bindings: self.bindings(db).clone(),
+            ..FixupFacts::default()
+        };
+        facts::file_ownership::collect_for_function(
             *self.function(db),
             &self.body(db).body,
             &local_facts,
@@ -945,6 +959,13 @@ impl SalsaFacts {
             return &[];
         };
         input.heap_ownership(&self.db)
+    }
+
+    pub(in crate::fixups) fn file_ownership(&self, function: FunctionId) -> &[FileOwnershipFact] {
+        let Some(&input) = self.functions.get(&function) else {
+            return &[];
+        };
+        input.file_ownership(&self.db)
     }
 
     pub(in crate::fixups) fn callee_alloc_summary(
