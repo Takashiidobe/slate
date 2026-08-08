@@ -13,7 +13,6 @@
 #define EXIT_FAILURE 1
 #define RAND_MAX     2147483647
 
-#if !defined(__SLATE_LIBC_MSVC)
 typedef struct {
   int quot;
   int rem;
@@ -28,7 +27,6 @@ typedef struct {
   long long quot;
   long long rem;
 } lldiv_t;
-#endif
 
 _Noreturn void exit(int status);
 _Noreturn void _Exit(int status);
@@ -46,11 +44,9 @@ void  free(void *ptr);
 int       abs(int j);
 long      labs(long j);
 long long llabs(long long j);
-#if !defined(__SLATE_LIBC_MSVC)
 div_t     div(int numer, int denom);
 ldiv_t    ldiv(long numer, long denom);
 lldiv_t   lldiv(long long numer, long long denom);
-#endif
 
 int         atoi(const char *nptr);
 long        atol(const char *nptr);

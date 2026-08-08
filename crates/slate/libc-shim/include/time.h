@@ -23,17 +23,19 @@
 #endif
 
 struct tm {
-  int         tm_sec;
-  int         tm_min;
-  int         tm_hour;
-  int         tm_mday;
-  int         tm_mon;
-  int         tm_year;
-  int         tm_wday;
-  int         tm_yday;
-  int         tm_isdst;
+  int tm_sec;
+  int tm_min;
+  int tm_hour;
+  int tm_mday;
+  int tm_mon;
+  int tm_year;
+  int tm_wday;
+  int tm_yday;
+  int tm_isdst;
+#if !defined(__SLATE_LIBC_MSVC)
   long        __tm_gmtoff;
   const char *__tm_zone;
+#endif
 };
 
 clock_t    clock(void);
@@ -48,7 +50,11 @@ char      *asctime(const struct tm *);
 char      *ctime(const time_t *);
 int        timespec_get(struct timespec *, int);
 
+#if defined(__SLATE_LIBC_MSVC)
+#include <bits/msvc/time.h>
+#else
 #define CLOCKS_PER_SEC 1000000L
+#endif
 
 #define TIME_UTC 1
 

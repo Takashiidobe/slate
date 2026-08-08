@@ -9,6 +9,8 @@ typedef __SIZE_TYPE__ size_t;
 typedef __WCHAR_TYPE__ wchar_t;
 typedef long double max_align_t;
 
+#include <bits/msvc/stddef.h>
+
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 #define NULL nullptr
 #else
