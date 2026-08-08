@@ -1,1 +1,14 @@
-#error "<sys/sendfile.h> is not yet defined"
+#ifndef _SYS_SENDFILE_H
+#define _SYS_SENDFILE_H
+
+#include <features.h>
+#include <unistd.h>
+
+ssize_t sendfile(int, int, off_t *, size_t);
+
+#if defined(_LARGEFILE64_SOURCE)
+#define sendfile64 sendfile
+#define off64_t    off_t
+#endif
+
+#endif
