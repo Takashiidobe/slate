@@ -44,12 +44,14 @@ off small, `Copy`, structural identifiers:
 - **`FunctionId` / `BindingId` / `LoopId` / `SignatureId`** — dense indices
   assigned once, in traversal order, by the base program walk
   (`facts::walk::BaseWalk` in `src/fixups/facts/walk.rs`; functions and their
-  parameter/local bindings, loop headers, call signatures). `BaseWalk` also
-  drives `SalsaFacts`'s incremental re-sync: an edited function gets its ids
-  re-derived in place (stable for every other function), so `FunctionId`
-  stays a valid `#[salsa::input]` key across `Program` revisions. Later
-  collectors look bindings up by `(function, name)` or `(function,
-  declaration path)` rather than re-minting IDs.
+  parameter/local bindings, loop headers, call signatures). `BaseWalk` is a
+  `#[salsa::tracked]` method on `ProgramInput` (`ProgramInput::base_walk` in
+  `src/fixups/salsa.rs`): every edit reruns it fresh from the whole `Program`,
+  and salsa backdates the result when the derived ids are unchanged, so a
+  `FunctionId` stays a valid interning key for `FunctionInput` across
+  `Program` revisions without any hand-written re-sync step. Later collectors
+  look bindings up by `(function, name)` or `(function, declaration path)`
+  rather than re-minting IDs.
 - **`AstPath` / `PathSegment`** — a route from a function body down to a
   specific statement or expression (`Stmt(2)`, `Then`, `LoopBody`,
   `MatchArm(0)`, `Expr(1)`, ...). A `Site { function, path }` is "this fact is
