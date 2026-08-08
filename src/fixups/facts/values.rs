@@ -12,10 +12,10 @@ use crate::rust_ast::{
 /// facts - the entry point `slate-04q.75.56.8` (incremental facts) needs to
 /// re-derive one function's values without a whole-program walk.
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
-) -> Vec<ValueFact> {
+    bindings: &[BindingFact<'db>],
+) -> Vec<ValueFact<'db>> {
     let mut collector = Collector::new(function, bindings);
     collector.enter_root_scope();
     collector.body(&f.body, &mut Vec::new(), false);
@@ -23,15 +23,15 @@ pub(in crate::fixups) fn collect_for_function(
 }
 
 struct Collector<'a> {
-    function: FunctionId,
-    bindings: &'a [BindingFact],
-    scopes: Vec<BTreeMap<String, Option<BindingId>>>,
-    values_by_binding: BTreeMap<BindingId, BTreeSet<ConstValue>>,
-    values: Vec<ValueFact>,
+    function: FunctionId<'db>,
+    bindings: &'a [BindingFact<'db>],
+    scopes: Vec<BTreeMap<String, Option<BindingId<'db>>>>,
+    values_by_binding: BTreeMap<BindingId<'db>, BTreeSet<ConstValue>>,
+    values: Vec<ValueFact<'db>>,
 }
 
 impl<'a> Collector<'a> {
-    fn new(function: FunctionId, bindings: &'a [BindingFact]) -> Self {
+    fn new(function: FunctionId<'db>, bindings: &'a [BindingFact<'db>]) -> Self {
         Self {
             function,
             bindings,
@@ -427,7 +427,7 @@ impl<'a> Collector<'a> {
         self.record_binding(binding, path, &values);
     }
 
-    fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId> {
+    fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId<'db>> {
         facts::binding_by_local_path(self.bindings, self.function, name, &AstPath(path.to_vec()))
     }
 
@@ -489,13 +489,13 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn bind(&mut self, name: String, binding: Option<BindingId>) {
+    fn bind(&mut self, name: String, binding: Option<BindingId<'db>>) {
         if let Some(scope) = self.scopes.last_mut() {
             scope.insert(name, binding);
         }
     }
 
-    fn binding_for_name(&self, name: &str) -> Option<BindingId> {
+    fn binding_for_name(&self, name: &str) -> Option<BindingId<'db>> {
         self.scopes
             .iter()
             .rev()
@@ -518,7 +518,7 @@ impl<'a> Collector<'a> {
 
     fn record_binding(
         &mut self,
-        binding: BindingId,
+        binding: BindingId<'db>,
         path: &[PathSegment],
         values: &BTreeSet<ConstValue>,
     ) {

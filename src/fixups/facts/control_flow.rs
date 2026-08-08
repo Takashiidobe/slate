@@ -6,9 +6,9 @@ use crate::fixups::facts::{
 };
 use crate::rust_ast::{Block, FnDef, IndentStmt, Label, Stmt};
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-) -> Vec<ControlFlowFact> {
+) -> Vec<ControlFlowFact<'db>> {
     let mut collector = Collector {
         function,
         facts: Vec::new(),
@@ -18,8 +18,8 @@ pub(in crate::fixups) fn collect_for_function(
 }
 
 struct Collector {
-    function: FunctionId,
-    facts: Vec<ControlFlowFact>,
+    function: FunctionId<'db>,
+    facts: Vec<ControlFlowFact<'db>>,
 }
 
 #[derive(Debug, Clone)]

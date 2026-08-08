@@ -72,7 +72,7 @@ pub(in crate::fixups) fn rewrite_c_strings() -> QueryRule<Binding> {
 fn lift(
     case: &mut ItemCaseContext<'_, '_>,
     binding: &BindingRef,
-    buffer: &StringBufferFact,
+    buffer: &StringBufferFact<'db>,
     recovery: StringRecoveryCandidate,
     ty: Type,
     expr: Expr,

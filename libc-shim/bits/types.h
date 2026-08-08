@@ -38,14 +38,16 @@ typedef unsigned int __wint_t;
 #endif
 
 #ifdef __WCHAR_TYPE__
-typedef __WCHAR_TYPE__ __wchar_t;
+typedef __WCHAR_TYPE__ __slate_wchar_t;
 #else
-typedef int __wchar_t;
+typedef int __slate_wchar_t;
 #endif
 
+#if !defined(__SLATE_LIBC_MSVC)
 typedef struct {
   unsigned long __bits[128 / sizeof(unsigned long)];
 } __sigset_t;
+#endif
 
 typedef const int    *__wctrans_t;
 typedef unsigned long __wctype_t;
@@ -67,7 +69,35 @@ typedef unsigned int   __uint_least32_t;
 typedef signed char   __int_fast8_t;
 typedef unsigned char __uint_fast8_t;
 
-#if defined(__LP64__)
+#if defined(__SLATE_LIBC_MSVC)
+typedef __SIZE_TYPE__          __size_t;
+typedef __PTRDIFF_TYPE__       __ssize_t;
+typedef long long              __off_t;
+typedef long long              __off64_t;
+typedef long long              __time_t;
+typedef long long              __suseconds_t;
+typedef unsigned long long     __ino_t;
+typedef unsigned long long     __ino64_t;
+typedef long                   __blksize_t;
+typedef long long              __blkcnt_t;
+typedef long long              __blkcnt64_t;
+typedef unsigned long long     __fsblkcnt_t;
+typedef unsigned long long     __fsfilcnt_t;
+typedef long long              __int64_t;
+typedef unsigned long long     __uint64_t;
+typedef long long              __int_least64_t;
+typedef unsigned long long     __uint_least64_t;
+typedef int                    __int_fast16_t;
+typedef unsigned int           __uint_fast16_t;
+typedef int                    __int_fast32_t;
+typedef unsigned int           __uint_fast32_t;
+typedef long long              __int_fast64_t;
+typedef unsigned long long     __uint_fast64_t;
+typedef __INTPTR_TYPE__        __intptr_t;
+typedef __UINTPTR_TYPE__       __uintptr_t;
+typedef long long              __intmax_t;
+typedef unsigned long long     __uintmax_t;
+#elif defined(__LP64__)
 typedef unsigned long __size_t;
 typedef long          __ssize_t;
 typedef long          __off_t;
@@ -125,6 +155,7 @@ typedef long long          __intmax_t;
 typedef unsigned long long __uintmax_t;
 #endif
 
+#if !defined(__SLATE_LIBC_MSVC)
 struct __locale_map;
 
 struct __locale_struct {
@@ -200,6 +231,7 @@ typedef union {
 typedef volatile int __pthread_spinlock_t;
 
 typedef unsigned int __pthread_key_t;
+#endif
 
 typedef __builtin_va_list __va_list;
 
@@ -311,7 +343,7 @@ typedef __sigset_t sigset_t;
 #undef __NEED_sigset_t
 
 #if defined(__NEED_wchar_t) && !defined(__DEFINED_wchar_t)
-typedef __wchar_t wchar_t;
+typedef __slate_wchar_t wchar_t;
 #define __DEFINED_wchar_t
 #endif
 #undef __NEED_wchar_t

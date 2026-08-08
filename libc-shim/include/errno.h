@@ -1,6 +1,14 @@
 #ifndef _SLATE_ERRNO_H
 #define _SLATE_ERRNO_H
 
+#if defined(__SLATE_LIBC_MSVC)
+int *_errno(void);
+#define errno (*_errno())
+
+#define EDOM   33
+#define EILSEQ 42
+#define ERANGE 34
+#else
 extern int *__errno_location(void);
 #define errno (*__errno_location())
 
@@ -140,5 +148,7 @@ enum {
   ERFKILL         = 132,
   EHWPOISON       = 133,
 };
+
+#endif
 
 #endif

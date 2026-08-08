@@ -11,8 +11,8 @@ use crate::rust_ast::{Expr, FnDef, Prim, Type, Visibility};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 struct Key {
-    function: FunctionId,
-    param: BindingId,
+    function: FunctionId<'db>,
+    param: BindingId<'db>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -22,41 +22,41 @@ pub(in crate::fixups) struct Candidate {
     index: usize,
 }
 pub(in crate::fixups) struct Snapshot<'a> {
-    pub(in crate::fixups) bindings: &'a [BindingFact],
-    pub(in crate::fixups) binding_types: &'a [BindingTypeFact],
-    pub(in crate::fixups) def_use: &'a [DefUseFact],
-    pub(in crate::fixups) callsites: &'a [CallsiteFact],
-    pub(in crate::fixups) string_buffers: &'a [StringBufferFact],
-    pub(in crate::fixups) string_libc_uses: &'a [StringLibcUseFact],
+    pub(in crate::fixups) bindings: &'a [BindingFact<'db>],
+    pub(in crate::fixups) binding_types: &'a [BindingTypeFact<'db>],
+    pub(in crate::fixups) def_use: &'a [DefUseFact<'db>],
+    pub(in crate::fixups) callsites: &'a [CallsiteFact<'db>],
+    pub(in crate::fixups) string_buffers: &'a [StringBufferFact<'db>],
+    pub(in crate::fixups) string_libc_uses: &'a [StringLibcUseFact<'db>],
 }
 
 impl<'a> Snapshot<'a> {
-    fn def_use(&self, binding: BindingId) -> Option<&DefUseFact> {
+    fn def_use(&self, binding: BindingId<'db>) -> Option<&DefUseFact<'db>> {
         facts::def_use_of(self.def_use, binding)
     }
 
-    fn binding_named(&self, function: FunctionId, name: &str) -> Option<BindingId> {
+    fn binding_named(&self, function: FunctionId<'db>, name: &str) -> Option<BindingId<'db>> {
         facts::binding_named(self.bindings, function, name)
     }
 
     fn binding_read_under(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         name: &str,
         path: &AstPath,
-    ) -> Option<BindingId> {
+    ) -> Option<BindingId<'db>> {
         facts::binding_read_under(self.def_use, self.bindings, function, name, path)
     }
 
-    fn binding_type(&self, binding: BindingId) -> Option<&str> {
+    fn binding_type(&self, binding: BindingId<'db>) -> Option<&str> {
         facts::binding_type(self.binding_types, binding)
     }
 
-    fn string_buffer(&self, binding: BindingId) -> Option<&StringBufferFact> {
+    fn string_buffer(&self, binding: BindingId<'db>) -> Option<&StringBufferFact<'db>> {
         facts::string_buffer(self.string_buffers, binding)
     }
 
-    fn local_binding_at(&self, function: FunctionId, path: &AstPath) -> Option<&BindingFact> {
+    fn local_binding_at(&self, function: FunctionId<'db>, path: &AstPath) -> Option<&BindingFact<'db>> {
         facts::local_binding_at(self.bindings, function, path)
     }
 }
@@ -65,7 +65,7 @@ pub(in crate::fixups) fn compute(
     bodies: &Bodies,
     facts: &Snapshot,
     candidates: Vec<Candidate>,
-) -> Vec<StringParamLiftFact> {
+) -> Vec<StringParamLiftFact<'db>> {
     let mut active = candidates
         .iter()
         .map(|candidate| candidate.key)
@@ -101,9 +101,9 @@ pub(in crate::fixups) fn compute(
 }
 
 pub(in crate::fixups) fn candidates_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
+    bindings: &[BindingFact<'db>],
 ) -> Vec<Candidate> {
     if f.name == "main" || f.unsafe_ || f.abi.is_some() || !matches!(f.vis, Visibility::Private) {
         return Vec::new();
@@ -131,7 +131,7 @@ pub(in crate::fixups) fn candidates_for_function(
 fn all_uses_allow_lift(
     candidate: &Candidate,
     facts: &Snapshot,
-    by_function: &BTreeMap<(FunctionId, usize), Key>,
+    by_function: &BTreeMap<(FunctionId<'db>, usize), Key>,
     active: &BTreeSet<Key>,
 ) -> bool {
     let mut aliases = BTreeSet::from([candidate.key.param]);
@@ -175,8 +175,8 @@ fn all_uses_allow_lift(
 }
 
 fn libc_use_allows(
-    function: FunctionId,
-    aliases: &BTreeSet<BindingId>,
+    function: FunctionId<'db>,
+    aliases: &BTreeSet<BindingId<'db>>,
     facts: &Snapshot,
     read: &AstPath,
     active: &BTreeSet<Key>,
@@ -192,10 +192,10 @@ fn libc_use_allows(
 }
 
 fn internal_call_allows(
-    function: FunctionId,
-    _aliases: &BTreeSet<BindingId>,
+    function: FunctionId<'db>,
+    _aliases: &BTreeSet<BindingId<'db>>,
     facts: &Snapshot,
-    by_function: &BTreeMap<(FunctionId, usize), Key>,
+    by_function: &BTreeMap<(FunctionId<'db>, usize), Key>,
     active: &BTreeSet<Key>,
     read: &AstPath,
 ) -> bool {
@@ -239,7 +239,7 @@ fn all_callers_prove_arg(
         })
 }
 
-fn direct_callee_function(callsite: &CallsiteFact) -> Option<FunctionId> {
+fn direct_callee_function(callsite: &CallsiteFact<'db>) -> Option<FunctionId<'db>> {
     let CallCallee::Direct {
         signature: Some(signature),
         ..
@@ -255,7 +255,7 @@ fn direct_callee_function(callsite: &CallsiteFact) -> Option<FunctionId> {
 
 fn expr_is_liftable_source(
     expr: &Expr,
-    function: FunctionId,
+    function: FunctionId<'db>,
     path: &AstPath,
     facts: &Snapshot,
     active: &BTreeSet<Key>,
@@ -272,7 +272,7 @@ fn expr_is_liftable_source(
 
 fn binding_is_liftable_source(
     facts: &Snapshot,
-    binding: BindingId,
+    binding: BindingId<'db>,
     active: &BTreeSet<Key>,
 ) -> bool {
     facts.string_buffer(binding).is_some_and(|buffer| {
@@ -295,7 +295,7 @@ fn binding_is_liftable_source(
 
 fn local_aliases_active_param(
     facts: &Snapshot,
-    binding: BindingId,
+    binding: BindingId<'db>,
     active: &BTreeSet<Key>,
 ) -> bool {
     let Some(local) = facts.bindings.iter().find(|fact| fact.id == binding) else {
@@ -312,7 +312,7 @@ fn local_aliases_active_param(
     })
 }
 
-fn direct_alias_at(function: FunctionId, facts: &Snapshot, path: &AstPath) -> Option<BindingId> {
+fn direct_alias_at(function: FunctionId<'db>, facts: &Snapshot, path: &AstPath) -> Option<BindingId<'db>> {
     let alias = facts.local_binding_at(function, path)?;
     let ty = facts.binding_type(alias.id).map(Type::parse)?;
     is_char_ptr(&ty).then_some(alias.id)

@@ -3,6 +3,10 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+#error "<sys/ioctl.h> is unavailable for the MSVC libc profile."
+#endif
+
 #include <bits/ioctl.h>
 
 #define __NEED_struct_winsize

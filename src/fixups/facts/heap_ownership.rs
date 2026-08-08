@@ -10,17 +10,17 @@ use std::collections::BTreeSet;
 
 pub(super) type OwnedHeapUses = (
     Option<usize>,
-    Option<BindingId>,
-    Vec<BindingId>,
+    Option<BindingId<'db>>,
+    Vec<BindingId<'db>>,
     Vec<HeapUseFact>,
-    Vec<HeapReallocFact>,
+    Vec<HeapReallocFact<'db>>,
     HeapReadSafety,
 );
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     body: &[IndentStmt],
-    bindings: &[BindingFact],
-) -> Vec<HeapOwnershipFact> {
+    bindings: &[BindingFact<'db>],
+) -> Vec<HeapOwnershipFact<'db>> {
     let mut out = Vec::new();
     for (index, pair) in body.windows(2).enumerate() {
         let Some((pointer_name, elem_ty)) = null_pointer_decl(&pair[0].stmt) else {
@@ -64,23 +64,23 @@ pub(super) struct Candidate {
     pub(super) allocation_index: usize,
     pub(super) assign_index: usize,
     pub(super) free_index: usize,
-    pub(super) allocation_temp: BindingId,
-    pub(super) size_temp: Option<BindingId>,
-    pub(super) free_temp: Option<BindingId>,
-    pub(super) aliases: Vec<BindingId>,
+    pub(super) allocation_temp: BindingId<'db>,
+    pub(super) size_temp: Option<BindingId<'db>>,
+    pub(super) free_temp: Option<BindingId<'db>>,
+    pub(super) aliases: Vec<BindingId<'db>>,
     pub(super) allocation: HeapAllocationKind,
     pub(super) extent: HeapExtent,
     pub(super) init: HeapInitKind,
     pub(super) elem_ty: Type,
     pub(super) read_safety: HeapReadSafety,
     pub(super) uses: Vec<HeapUseFact>,
-    pub(super) reallocations: Vec<HeapReallocFact>,
+    pub(super) reallocations: Vec<HeapReallocFact<'db>>,
 }
 
 fn find_allocation(
-    function: FunctionId,
+    function: FunctionId<'db>,
     body: &[IndentStmt],
-    bindings: &[BindingFact],
+    bindings: &[BindingFact<'db>],
     start: usize,
     pointer_name: &str,
     elem_ty: &Type,
@@ -279,12 +279,12 @@ fn temp_init_at<'a>(body: &'a [IndentStmt], index: usize, name: &str) -> Option<
 }
 
 fn temp_binding_before(
-    function: FunctionId,
-    bindings: &[BindingFact],
+    function: FunctionId<'db>,
+    bindings: &[BindingFact<'db>],
     body: &[IndentStmt],
     index: usize,
     name: Option<&str>,
-) -> Option<BindingId> {
+) -> Option<BindingId<'db>> {
     let name = name?;
     if index == 0 {
         return None;
@@ -431,15 +431,15 @@ fn block_tail_free_arg(block: &Block) -> Option<&Expr> {
 }
 
 pub(super) fn heap_uses_are_owned(
-    function: FunctionId,
+    function: FunctionId<'db>,
     body: &[IndentStmt],
-    bindings: &[BindingFact],
+    bindings: &[BindingFact<'db>],
     pointer_name: &str,
     candidate: &Candidate,
 ) -> Option<OwnedHeapUses> {
     let mut aliases = BTreeSet::from([pointer_name.to_string()]);
     let mut alias_bindings = Vec::new();
-    let mut free: Option<(usize, Option<BindingId>)> = None;
+    let mut free: Option<(usize, Option<BindingId<'db>>)> = None;
     let mut uses = Vec::new();
     let mut reallocations = Vec::new();
     let mut written = BTreeSet::new();
@@ -574,12 +574,12 @@ fn pointer_alias_temp_from_any<'a>(stmt: &'a Stmt, names: &BTreeSet<String>) -> 
 }
 
 fn free_temp_before(
-    function: FunctionId,
+    function: FunctionId<'db>,
     body: &[IndentStmt],
-    bindings: &[BindingFact],
+    bindings: &[BindingFact<'db>],
     index: usize,
     pointer_name: &str,
-) -> Option<BindingId> {
+) -> Option<BindingId<'db>> {
     let prev_index = index.checked_sub(1)?;
     let alias = pointer_alias_temp(&body.get(prev_index)?.stmt, pointer_name)?;
     facts::binding_by_local_path(
@@ -591,14 +591,14 @@ fn free_temp_before(
 }
 
 struct ReallocAt {
-    fact: HeapReallocFact,
+    fact: HeapReallocFact<'db>,
     next_index: usize,
 }
 
 fn realloc_at(
-    function: FunctionId,
+    function: FunctionId<'db>,
     body: &[IndentStmt],
-    bindings: &[BindingFact],
+    bindings: &[BindingFact<'db>],
     index: usize,
     pointer_name: &str,
     aliases: &BTreeSet<String>,

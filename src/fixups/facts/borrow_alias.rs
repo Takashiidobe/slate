@@ -7,19 +7,19 @@ use crate::fixups::facts::{
 };
 use crate::rust_ast::{AsmOperand, Block, Expr, FnDef, Ident, IndentStmt, Stmt, UnaryOp};
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
-) -> Vec<BorrowAliasFact> {
+    bindings: &[BindingFact<'db>],
+) -> Vec<BorrowAliasFact<'db>> {
     let mut collector = Collector::new(function, bindings);
     collector.body(&f.body, &mut Vec::new());
     collector.finish()
 }
 
 struct Collector<'a> {
-    function: FunctionId,
-    bindings: &'a [BindingFact],
-    by_binding: BTreeMap<BindingId, BindingSummary>,
+    function: FunctionId<'db>,
+    bindings: &'a [BindingFact<'db>],
+    by_binding: BTreeMap<BindingId<'db>, BindingSummary>,
 }
 
 #[derive(Default)]
@@ -29,7 +29,7 @@ struct BindingSummary {
 }
 
 impl<'a> Collector<'a> {
-    fn new(function: FunctionId, bindings: &'a [BindingFact]) -> Self {
+    fn new(function: FunctionId<'db>, bindings: &'a [BindingFact<'db>]) -> Self {
         Self {
             function,
             bindings,
@@ -37,7 +37,7 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn finish(self) -> Vec<BorrowAliasFact> {
+    fn finish(self) -> Vec<BorrowAliasFact<'db>> {
         self.bindings
             .iter()
             .filter(|binding| binding.function == self.function)
@@ -478,7 +478,7 @@ impl<'a> Collector<'a> {
         });
     }
 
-    fn binding_for_name(&self, name: &str) -> Option<BindingId> {
+    fn binding_for_name(&self, name: &str) -> Option<BindingId<'db>> {
         self.bindings
             .iter()
             .find(|binding| binding.function == self.function && binding.name == name)

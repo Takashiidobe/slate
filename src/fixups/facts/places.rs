@@ -4,7 +4,7 @@ use crate::fixups::facts::{
     PlaceProjection, PlaceRoot, Site, VolatileAccess,
 };
 use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Stmt, UnaryOp};
-pub(in crate::fixups) fn collect_for_function(function: FunctionId, f: &FnDef) -> Vec<PlaceFact> {
+pub(in crate::fixups) fn collect_for_function(function: FunctionId<'db>, f: &FnDef) -> Vec<PlaceFact<'db>> {
     let mut collector = Collector {
         function,
         places: Vec::new(),
@@ -14,8 +14,8 @@ pub(in crate::fixups) fn collect_for_function(function: FunctionId, f: &FnDef) -
 }
 
 struct Collector {
-    function: FunctionId,
-    places: Vec<PlaceFact>,
+    function: FunctionId<'db>,
+    places: Vec<PlaceFact<'db>>,
 }
 
 impl Collector {

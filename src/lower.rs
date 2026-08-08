@@ -2317,6 +2317,7 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
             _ => Prim::I32,
         }),
         CType::Float { bits: 32 } => Type::Prim(Prim::F32),
+        CType::Float { bits: 80 } if crate::cir::emit::uses_msvc_abi() => Type::Prim(Prim::F64),
         CType::Float { bits: 80 } => Type::LongDouble,
         CType::Float { bits: 128 } => Type::Prim(Prim::F128),
         CType::Float { .. } => Type::Prim(Prim::F64),
@@ -9156,6 +9157,8 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
         Type::Prim(Prim::F64)
     } else if ty == "!cir.f128" {
         Type::Prim(Prim::F128)
+    } else if is_long_double(ty) && crate::cir::emit::uses_msvc_abi() {
+        Type::Prim(Prim::F64)
     } else if is_long_double(ty) {
         Type::LongDouble
     } else if let Some(inner) = ty

@@ -8,10 +8,10 @@ use crate::fixups::facts::{
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Path, RustValue, Stmt, Type, UnaryOp};
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     body: &[IndentStmt],
-    bindings: &[BindingFact],
-) -> Vec<FileOwnershipFact> {
+    bindings: &[BindingFact<'db>],
+) -> Vec<FileOwnershipFact<'db>> {
     let mut all = Vec::new();
     for (index, pair) in body.windows(2).enumerate() {
         let Some(handle_name) = null_file_decl(&pair[0].stmt) else {
@@ -48,16 +48,16 @@ struct OpenCandidate {
     open_index: usize,
     assign_index: usize,
     close_index: usize,
-    open_temp: BindingId,
-    close_temp: Option<BindingId>,
+    open_temp: BindingId<'db>,
+    close_temp: Option<BindingId<'db>>,
     mode: Option<FileOpenMode>,
     uses: Vec<FileUseFact>,
 }
 
 fn find_open(
-    function: FunctionId,
+    function: FunctionId<'db>,
     body: &[IndentStmt],
-    bindings: &[BindingFact],
+    bindings: &[BindingFact<'db>],
     start: usize,
     handle_name: &str,
 ) -> Option<OpenCandidate> {
@@ -150,14 +150,14 @@ fn assigns_opened_handle(stmt: &Stmt, handle_name: &str, open_temp: &str) -> boo
 }
 
 fn file_uses_are_owned(
-    function: FunctionId,
+    function: FunctionId<'db>,
     body: &[IndentStmt],
-    bindings: &[BindingFact],
+    bindings: &[BindingFact<'db>],
     handle_name: &str,
     assign_index: usize,
-) -> Option<(usize, Option<BindingId>, Vec<FileUseFact>)> {
+) -> Option<(usize, Option<BindingId<'db>>, Vec<FileUseFact>)> {
     let mut aliases = BTreeSet::from([handle_name.to_string()]);
-    let mut close: Option<(usize, Option<BindingId>)> = None;
+    let mut close: Option<(usize, Option<BindingId<'db>>)> = None;
     let mut uses = Vec::new();
     let mut saw_null_guard = false;
     for (index, indent) in body.iter().enumerate() {
@@ -236,12 +236,12 @@ fn handle_alias_temp<'a>(stmt: &'a Stmt, names: &BTreeSet<String>) -> Option<&'a
 }
 
 fn close_temp_before(
-    function: FunctionId,
+    function: FunctionId<'db>,
     body: &[IndentStmt],
-    bindings: &[BindingFact],
+    bindings: &[BindingFact<'db>],
     index: usize,
     handle_name: &str,
-) -> Option<BindingId> {
+) -> Option<BindingId<'db>> {
     let prev_index = index.checked_sub(1)?;
     let alias = direct_handle_alias(&body.get(prev_index)?.stmt, handle_name)?;
     facts::binding_by_local_path(
