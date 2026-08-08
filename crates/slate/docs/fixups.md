@@ -230,18 +230,20 @@ including when one statement edit removes the container of another edit.
 
 ## Scheduling
 
-Build a plan from one immutable `Program` and a resolved `SalsaFacts`
-snapshot, then apply it after the query context is dropped:
+Set the current `ProgramInput`, build a plan from that immutable `Program` and
+its `SalsaFacts` snapshot, then apply it after the query context is dropped:
 
 ```rust
-incremental.resolve(&program);
+incremental.set_program(&program);
 let plan = {
     let query = query::QueryContext::new(&program, &incremental);
     let mut builder = query::ItemPlanBuilder::new();
     builder.add_rule(&query, &query::rules::memchr::calls());
     builder.finish()
 };
-plan.apply(&mut program, &incremental, logger).changed
+let changed = plan.apply(&mut program, &incremental, logger).changed;
+incremental.set_program(&program);
+changed
 ```
 
 Use `ItemPlanBuilder` and `plan.apply(&mut program, &incremental, logger)` for
@@ -271,10 +273,11 @@ Top-level insertion uses `EditSet::insert_items` with the immutable snapshot's
 item count, applies in reverse source order after removals, and marks touched
 items unbounded because insertion renumbers every later item.
 
-Mark the touched items (or `mark_everything_dirty()`) and call
-`incremental.resolve(&program)` before the next fact-dependent query, so
-salsa resyncs only the functions an edit actually touched. Place definition
-deletion after the final pass that can remove a user.
+Call `incremental.set_program(&program)` after applying edits. Tracked reads
+then derive from the current program directly, while salsa backdating stops
+invalidation when a derived value is unchanged. `ItemApplyReport::touched`
+remains diagnostic metadata and does not drive fact synchronization. Place
+definition deletion after the final pass that can remove a user.
 
 ## Lowering-like rules
 

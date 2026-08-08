@@ -161,10 +161,4 @@ impl TouchedItems {
             ..Self::default()
         }
     }
-
-    pub(in crate::fixups) fn merge(&mut self, other: TouchedItems) {
-        self.unbounded |= other.unbounded;
-        self.in_place.extend(other.in_place);
-        self.removed.extend(other.removed);
-    }
 }

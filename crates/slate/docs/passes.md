@@ -84,11 +84,10 @@ The fixups directory is split by concern:
   `fixup-debug` uses the collecting logger and renders pass summaries,
   rewrite events, snippets, and facts.
 
-`apply` is a straight-line sequence, not a scheduler: after each pass it marks
-the items that pass touched (or marks everything dirty, for passes that can't
-report a precise touched set) on the shared `SalsaFacts` incremental tracker,
-so the next fact-dependent pass's `incremental.resolve(&program)` resyncs only
-what actually needs it. Several passes re-run through
+`apply` is a straight-line sequence, not a scheduler: after each edit it sets
+the shared `SalsaFacts` program input. Subsequent fact reads derive lazily from
+that input, and salsa backdating prevents unchanged derived values from
+invalidating their dependents. Several passes re-run through
 `to_fixpoint_program_with_facts` since one fold can expose another. Order
 matters — see [fixups.md](fixups.md) for the rule-authoring contract and
 `src/fixups/mod.rs`'s `apply_with_logger` for how passes are sequenced.

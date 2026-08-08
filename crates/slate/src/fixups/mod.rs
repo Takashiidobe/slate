@@ -119,6 +119,7 @@ fn apply_with_logger(
 
     let mut program = input.clone();
     let mut incremental = salsa::SalsaFacts::new_empty();
+    incremental.set_program(&program);
     step!(program, Pass::Goto, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, salsa| {
             let plan = {
@@ -129,9 +130,9 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::Switch, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -140,7 +141,7 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::EarlyInlineTemps, {
         let limit = inline_temp_fixpoint_limit(&program);
@@ -153,9 +154,9 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::AnonymousStructs, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -163,10 +164,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::anonymous_structs::program());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::ParamSpills, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -175,7 +176,7 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::ZeroInit, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, salsa| {
@@ -187,11 +188,10 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::StructFieldInit, {
         loop {
-            incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &incremental);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -199,7 +199,7 @@ fn apply_with_logger(
                 builder.finish()
             };
             let report = plan.apply(&mut program, &incremental, logger);
-            incremental.mark_touched(&report.touched);
+            incremental.set_program(&program);
             if !report.changed {
                 break;
             }
@@ -207,7 +207,6 @@ fn apply_with_logger(
     });
     step!(program, Pass::SingletonScopes, {
         loop {
-            incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &incremental);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -218,13 +217,13 @@ fn apply_with_logger(
                 builder.finish()
             };
             let report = plan.apply(&mut program, &incremental, logger);
-            incremental.mark_touched(&report.touched);
+            incremental.set_program(&program);
             if !report.changed {
                 break;
             }
         }
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::CompoundAssign, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -234,9 +233,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::Swap, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -244,8 +243,8 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::swap::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
     step!(program, Pass::ForContinue, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, salsa| {
@@ -257,11 +256,10 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::SingletonScopes, {
         loop {
-            incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &incremental);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -272,24 +270,23 @@ fn apply_with_logger(
                 builder.finish()
             };
             let report = plan.apply(&mut program, &incremental, logger);
-            incremental.mark_touched(&report.touched);
+            incremental.set_program(&program);
             if !report.changed {
                 break;
             }
         }
     });
     step!(program, Pass::ConstantIndexCasts, {
-        incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
             builder.add_rule(&query, &query::rules::constant_index_casts::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::UnnecessaryCasts, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -297,8 +294,8 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::unnecessary_casts::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
     step!(program, Pass::CallArgs, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, salsa| {
@@ -310,9 +307,9 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::SprintfFormat, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -321,9 +318,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::Retval, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -331,10 +328,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::retval::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::FinalReturnTemps, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -342,10 +339,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::final_return_temps::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::LazySingleton, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -353,10 +350,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::lazy_singleton::program());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::DropCallResults, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -365,9 +362,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::StringLift, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -375,12 +372,11 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::string_lift::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
     step!(program, Pass::StringParams, {
         loop {
-            incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &incremental);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -391,10 +387,10 @@ fn apply_with_logger(
             if !report.changed {
                 break;
             }
-            incremental.mark_everything_dirty();
+            incremental.set_program(&program);
         }
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::PtrLen, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -402,10 +398,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::ptr_len::program());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::SliceIndex, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -413,10 +409,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::slice_index::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::SliceLoop, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -427,12 +423,12 @@ fn apply_with_logger(
         let report = plan.apply(&mut program, &incremental, logger);
         if report.changed {
             late_loop_cleanup(&mut program, Pass::SliceLoop, logger);
-            incremental.mark_everything_dirty();
+            incremental.set_program(&program);
         } else {
-            incremental.mark_touched(&report.touched);
+            incremental.set_program(&program);
         }
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::SliceReduce, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -444,9 +440,9 @@ fn apply_with_logger(
         if report.changed {
             late_loop_cleanup(&mut program, Pass::SliceReduce, logger);
         }
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::RangeLoop, {
         if !skip.contains(Pass::RangeLoop) {
             let plan = {
@@ -458,13 +454,13 @@ fn apply_with_logger(
             let report = plan.apply(&mut program, &incremental, logger);
             if report.changed {
                 late_loop_cleanup(&mut program, Pass::RangeLoop, logger);
-                incremental.mark_everything_dirty();
+                incremental.set_program(&program);
             } else {
-                incremental.mark_touched(&report.touched);
+                incremental.set_program(&program);
             }
         }
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::VaList, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -473,9 +469,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::RemoveMut, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -484,9 +480,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::StringCopy, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -495,11 +491,10 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::StringParams, {
         loop {
-            incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &incremental);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -510,10 +505,10 @@ fn apply_with_logger(
             if !report.changed {
                 break;
             }
-            incremental.mark_everything_dirty();
+            incremental.set_program(&program);
         }
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::RemoveMut, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -522,9 +517,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::StringLibc, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -534,9 +529,9 @@ fn apply_with_logger(
         };
         plan.apply(&mut program, &incremental, logger);
         runtime::ensure_numeric_parse(&mut program);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::CTypeLibc, {
         if !skip.contains(Pass::CTypeLibc) {
             let plan = {
@@ -547,10 +542,10 @@ fn apply_with_logger(
                 builder.finish()
             };
             plan.apply(&mut program, &incremental, logger);
-            incremental.mark_everything_dirty();
+            incremental.set_program(&program);
         }
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::SortSearch, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -558,10 +553,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::sort_search::program());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::HeapOwnership, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -569,10 +564,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::heap_ownership::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::OptionBoxLocals, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -580,10 +575,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::option_box_locals::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::InterproceduralAllocPromotion, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -594,12 +589,11 @@ fn apply_with_logger(
             );
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
     step!(program, Pass::DeadLocals, {
         loop {
-            incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &incremental);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -610,13 +604,13 @@ fn apply_with_logger(
                 builder.finish()
             };
             let report = plan.apply(&mut program, &incremental, logger);
-            incremental.mark_touched(&report.touched);
+            incremental.set_program(&program);
             if !report.changed {
                 break;
             }
         }
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::RemoveMut, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -625,9 +619,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::PrintfFormat, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -636,7 +630,7 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.resolve(&program);
+
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
@@ -644,9 +638,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::PrintfStream, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -656,11 +650,10 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::StringParams, {
         loop {
-            incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &incremental);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -671,10 +664,10 @@ fn apply_with_logger(
             if !report.changed {
                 break;
             }
-            incremental.mark_everything_dirty();
+            incremental.set_program(&program);
         }
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::RemoveMut, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -683,9 +676,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::StringLibc, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -695,9 +688,9 @@ fn apply_with_logger(
         };
         plan.apply(&mut program, &incremental, logger);
         runtime::ensure_numeric_parse(&mut program);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::CTypeLibc, {
         if !skip.contains(Pass::CTypeLibc) {
             let plan = {
@@ -708,10 +701,10 @@ fn apply_with_logger(
                 builder.finish()
             };
             plan.apply(&mut program, &incremental, logger);
-            incremental.mark_everything_dirty();
+            incremental.set_program(&program);
         }
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::CStrings, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -720,9 +713,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::Stdio, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -731,9 +724,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::Perror, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -742,10 +735,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::MemchrPreludeFixupCalls, {
-        incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
@@ -753,7 +745,7 @@ fn apply_with_logger(
             builder.finish()
         };
         let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        incremental.set_program(&program);
         report.changed
     });
     step!(program, Pass::NullablePointer, {
@@ -766,9 +758,9 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::StringLiftFixupCStrings, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -776,11 +768,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::string_lift::rewrite_c_strings());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
     step!(program, Pass::MemchrPrelude, {
-        incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
@@ -788,7 +779,7 @@ fn apply_with_logger(
             builder.finish()
         };
         let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        incremental.set_program(&program);
         report.changed
     });
     step!(program, Pass::LateInlineTemps, {
@@ -802,10 +793,9 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::PtrCopy, {
-        incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
@@ -814,10 +804,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::MemMove, {
-        incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
@@ -826,10 +815,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::MemSet, {
-        incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
@@ -838,10 +826,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::MemCmp, {
-        incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
@@ -849,11 +836,10 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::DeadLocals, {
         loop {
-            incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &incremental);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -864,13 +850,13 @@ fn apply_with_logger(
                 builder.finish()
             };
             let report = plan.apply(&mut program, &incremental, logger);
-            incremental.mark_touched(&report.touched);
+            incremental.set_program(&program);
             if !report.changed {
                 break;
             }
         }
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::ArrayElementPointerOrigin, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -881,10 +867,10 @@ fn apply_with_logger(
             );
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::BufferCursor, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -892,10 +878,10 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::buffer_cursor::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::AtomicLocals, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -904,7 +890,7 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::LateInlineTemps, {
         let limit = inline_temp_fixpoint_limit(&program);
@@ -917,7 +903,7 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::ZeroInit, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, salsa| {
@@ -929,9 +915,9 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::SliceSwap, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -939,8 +925,8 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::slice_swap::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
     });
     step!(program, Pass::AtomicCompareExchange, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, salsa| {
@@ -952,9 +938,9 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::RemoveMut, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -963,7 +949,7 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::AssertRecovery, {
         to_fixpoint_program_with_facts(&mut program, FixpointLimit::Unlimited, |program, salsa| {
@@ -975,11 +961,10 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::VarAliases, {
         loop {
-            incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &incremental);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -987,7 +972,7 @@ fn apply_with_logger(
                 builder.finish()
             };
             let report = plan.apply(&mut program, &incremental, logger);
-            incremental.mark_touched(&report.touched);
+            incremental.set_program(&program);
             if !report.changed {
                 break;
             }
@@ -1003,10 +988,9 @@ fn apply_with_logger(
             };
             plan.apply(program, salsa, logger).changed
         });
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::LibcExit, {
-        incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
@@ -1014,11 +998,10 @@ fn apply_with_logger(
             builder.finish()
         };
         let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        incremental.set_program(&program);
         report.changed
     });
     step!(program, Pass::UnusedItems, {
-        incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
@@ -1026,12 +1009,11 @@ fn apply_with_logger(
             builder.finish()
         };
         let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        incremental.set_program(&program);
         report.changed
     });
     step!(program, Pass::UnusedParams, {
         loop {
-            incremental.resolve(&program);
             let plan = {
                 let query = query::QueryContext::new(&program, &incremental);
                 let mut builder = query::ItemPlanBuilder::new();
@@ -1039,14 +1021,13 @@ fn apply_with_logger(
                 builder.finish()
             };
             let report = plan.apply(&mut program, &incremental, logger);
-            incremental.mark_touched(&report.touched);
+            incremental.set_program(&program);
             if !report.changed {
                 break;
             }
         }
     });
     step!(program, Pass::FinalReturns, {
-        incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
@@ -1054,10 +1035,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
     step!(program, Pass::MainZeroExit, {
-        incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
             let mut builder = query::ItemPlanBuilder::new();
@@ -1065,9 +1045,9 @@ fn apply_with_logger(
             builder.finish()
         };
         plan.apply(&mut program, &incremental, logger);
-        incremental.mark_everything_dirty();
+        incremental.set_program(&program);
     });
-    incremental.resolve(&program);
+
     step!(program, Pass::PruneUnusedDefinitions, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);
@@ -1077,7 +1057,7 @@ fn apply_with_logger(
             builder.finish()
         };
         let report = plan.apply(&mut program, &incremental, logger);
-        incremental.mark_touched(&report.touched);
+        incremental.set_program(&program);
         report.changed
     });
     let _ = debug_done;
@@ -1092,8 +1072,7 @@ fn to_fixpoint_program_with_facts(
     let mut completed_rounds = 0;
     while limit.permits(completed_rounds) {
         let mut round_salsa = salsa::SalsaFacts::new_empty();
-        round_salsa.mark_everything_dirty();
-        round_salsa.resolve(program);
+        round_salsa.set_program(program);
         completed_rounds += 1;
         if !fixup(program, &round_salsa) {
             break;
@@ -1119,8 +1098,7 @@ impl FixpointLimit {
 fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceLogger) {
     loop {
         let mut round_salsa = salsa::SalsaFacts::new_empty();
-        round_salsa.mark_everything_dirty();
-        round_salsa.resolve(program);
+        round_salsa.set_program(program);
         let plan = {
             let query = query::QueryContext::new(program, &round_salsa);
             let mut builder = query::ItemPlanBuilder::new();
