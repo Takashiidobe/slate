@@ -285,23 +285,19 @@ impl FunctionInput {
 
     #[salsa::tracked(returns(ref))]
     fn ptr_len_candidates(self, db: &dyn FixupDb) -> Vec<facts::ptr_len::Candidate> {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            ..FixupFacts::default()
-        };
-        facts::ptr_len::candidates_for_function(*self.function(db), self.body(db), &local_facts)
+        facts::ptr_len::candidates_for_function(
+            *self.function(db),
+            self.body(db),
+            self.bindings(db),
+        )
     }
 
     #[salsa::tracked(returns(ref))]
     fn string_param_candidates(self, db: &dyn FixupDb) -> Vec<facts::string_params::Candidate> {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            ..FixupFacts::default()
-        };
         facts::string_params::candidates_for_function(
             *self.function(db),
             self.body(db),
-            &local_facts,
+            self.bindings(db),
         )
     }
 
@@ -372,14 +368,10 @@ impl AllFunctions {
         let (signatures, by_name) = self.call_signature_table(db, definitions);
         let mut all = Vec::new();
         for &input in self.functions(db) {
-            let local_facts = FixupFacts {
-                bindings: input.bindings(db).clone(),
-                ..FixupFacts::default()
-            };
             all.extend(facts::calls::collect_callsites_for_function(
                 *input.function(db),
                 &input.body(db).body,
-                &local_facts,
+                input.bindings(db),
                 signatures,
                 by_name,
             ));
@@ -406,17 +398,20 @@ impl AllFunctions {
         let mut bindings = Vec::new();
         let mut binding_types = Vec::new();
         let mut def_use = Vec::new();
+        let mut function_by_name = BTreeMap::new();
         for &input in self.functions(db) {
             bindings.extend(input.bindings(db).iter().cloned());
             binding_types.extend(input.binding_types(db).iter().cloned());
             def_use.extend(input.def_use(db).iter().cloned());
+            function_by_name.insert(input.body(db).name.clone(), *input.function(db));
         }
-        let snapshot = FixupFacts {
-            bindings,
-            binding_types,
-            def_use,
-            callsites: self.callsites(db, definitions).clone(),
-            ..FixupFacts::default()
+        let callsites = self.callsites(db, definitions);
+        let snapshot = facts::ptr_len::Snapshot {
+            bindings: &bindings,
+            binding_types: &binding_types,
+            def_use: &def_use,
+            callsites,
+            function_by_name: &function_by_name,
         };
         facts::ptr_len::compute(&bodies, &snapshot, candidates)
     }
@@ -450,14 +445,14 @@ impl AllFunctions {
             string_buffers.extend(strings.buffers.iter().cloned());
             string_libc_uses.extend(strings.libc_uses.iter().cloned());
         }
-        let snapshot = FixupFacts {
-            bindings,
-            binding_types,
-            def_use,
-            string_buffers,
-            string_libc_uses,
-            callsites: self.callsites(db, definitions).clone(),
-            ..FixupFacts::default()
+        let callsites = self.callsites(db, definitions);
+        let snapshot = facts::string_params::Snapshot {
+            bindings: &bindings,
+            binding_types: &binding_types,
+            def_use: &def_use,
+            callsites,
+            string_buffers: &string_buffers,
+            string_libc_uses: &string_libc_uses,
         };
         facts::string_params::compute(&bodies, &snapshot, candidates)
     }

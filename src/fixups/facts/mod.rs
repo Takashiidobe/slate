@@ -1084,6 +1084,46 @@ pub(in crate::fixups) fn string_pointer_view<'a>(
         .find(|fact| fact.site.function == function && &fact.site.path == path)
 }
 
+/// The binding named `name` with a recorded read overlapping `path`, if
+/// any. `path` may be shallower than the recorded read (def_use records
+/// reads at whole-statement granularity) or deeper (e.g. a specific
+/// call-argument sub-expression), so both directions of containment
+/// count. The name filter matters because multiple differently-named
+/// bindings read within the same statement (e.g. two pointer arguments
+/// of one call) share that same coarse read path.
+pub(in crate::fixups) fn binding_read_under(
+    def_use: &[DefUseFact],
+    bindings: &[BindingFact],
+    function: FunctionId,
+    name: &str,
+    path: &AstPath,
+) -> Option<BindingId> {
+    let path = def_use_query_path(path);
+    def_use
+        .iter()
+        .find(|fact| {
+            fact.function == function
+                && bindings
+                    .iter()
+                    .any(|binding| binding.id == fact.binding && binding.name == name)
+                && fact
+                    .reads
+                    .iter()
+                    .any(|read| walk::paths_overlap(&read.0, &path.0))
+        })
+        .map(|fact| fact.binding)
+}
+
+pub(in crate::fixups) fn local_binding_at<'a>(
+    bindings: &'a [BindingFact],
+    function: FunctionId,
+    path: &AstPath,
+) -> Option<&'a BindingFact> {
+    bindings.iter().find(|binding| {
+        binding.function == function && binding.kind == BindingKind::Local && &binding.path == path
+    })
+}
+
 impl FixupFacts {
     pub(super) fn function_by_item_index(&self, item_index: usize) -> Option<FunctionId> {
         self.functions
@@ -1190,14 +1230,6 @@ impl FixupFacts {
             .retain(|loop_fact| loop_fact.site.function != function);
     }
 
-    pub(super) fn binding_by_param_index(
-        &self,
-        function: FunctionId,
-        index: usize,
-    ) -> Option<BindingId> {
-        binding_by_param_index(&self.bindings, function, index)
-    }
-
     pub(super) fn binding_by_local_path(
         &self,
         function: FunctionId,
@@ -1212,41 +1244,6 @@ impl FixupFacts {
             .iter()
             .find(|fact| fact.id == binding)
             .map(|fact| fact.name.as_str())
-    }
-
-    /// Most-recently-declared binding named `name` in `function`.
-    pub(super) fn binding_named(&self, function: FunctionId, name: &str) -> Option<BindingId> {
-        binding_named(&self.bindings, function, name)
-    }
-
-    /// The binding named `name` with a recorded read overlapping `path`, if
-    /// any. `path` may be shallower than the recorded read (def_use records
-    /// reads at whole-statement granularity) or deeper (e.g. a specific
-    /// call-argument sub-expression), so both directions of containment
-    /// count. The name filter matters because multiple differently-named
-    /// bindings read within the same statement (e.g. two pointer arguments
-    /// of one call) share that same coarse read path.
-    pub(super) fn binding_read_under(
-        &self,
-        function: FunctionId,
-        name: &str,
-        path: &AstPath,
-    ) -> Option<BindingId> {
-        let path = def_use_query_path(path);
-        self.def_use
-            .iter()
-            .find(|fact| {
-                fact.function == function
-                    && self
-                        .bindings
-                        .iter()
-                        .any(|binding| binding.id == fact.binding && binding.name == name)
-                    && fact
-                        .reads
-                        .iter()
-                        .any(|read| walk::paths_overlap(&read.0, &path.0))
-            })
-            .map(|fact| fact.binding)
     }
 
     pub(super) fn bindings_read_under(
@@ -1295,18 +1292,6 @@ impl FixupFacts {
             })
             .map(|fact| fact.binding)
             .collect()
-    }
-
-    pub(super) fn local_binding_at(
-        &self,
-        function: FunctionId,
-        path: &AstPath,
-    ) -> Option<&BindingFact> {
-        self.bindings.iter().find(|binding| {
-            binding.function == function
-                && binding.kind == BindingKind::Local
-                && &binding.path == path
-        })
     }
 
     pub(super) fn binding_type(&self, binding: BindingId) -> Option<&str> {

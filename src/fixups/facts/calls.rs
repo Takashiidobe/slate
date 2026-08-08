@@ -2,9 +2,9 @@ use std::collections::BTreeMap;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, CallArgFact, CallArgPinning, CallCallee, CallParamFact,
-    CallSignatureFact, CallSignatureSource, CallsiteFact, FixupFacts, FunctionId, PathSegment,
-    SignatureId, Site,
+    self, AstPath, BindingFact, BindingId, BindingKind, CallArgFact, CallArgPinning, CallCallee,
+    CallParamFact, CallSignatureFact, CallSignatureSource, CallsiteFact, FixupFacts, FunctionId,
+    PathSegment, SignatureId, Site,
 };
 use crate::function_identity::FunctionIdentity;
 use crate::rust_ast::{
@@ -31,7 +31,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         callsites.extend(collect_callsites_for_function(
             function,
             &f.body,
-            facts,
+            &facts.bindings,
             &signatures,
             &by_name,
         ));
@@ -44,11 +44,11 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn collect_callsites_for_function(
     function: FunctionId,
     f_body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
     signatures: &[CallSignatureFact],
     by_name: &BTreeMap<String, SignatureId>,
 ) -> Vec<CallsiteFact> {
-    let mut collector = Collector::new(function, facts, signatures, by_name);
+    let mut collector = Collector::new(function, bindings, signatures, by_name);
     collector.enter_root_scope();
     collector.body(f_body, &mut Vec::new(), false);
     collector.callsites
@@ -175,7 +175,7 @@ fn params_from_fn_params(params: &[FnParam]) -> Vec<CallParamFact> {
 
 struct Collector<'a> {
     function: FunctionId,
-    facts: &'a FixupFacts,
+    bindings: &'a [BindingFact],
     signatures: &'a [CallSignatureFact],
     by_name: &'a BTreeMap<String, SignatureId>,
     scopes: Vec<BTreeMap<String, Option<BindingId>>>,
@@ -185,13 +185,13 @@ struct Collector<'a> {
 impl<'a> Collector<'a> {
     fn new(
         function: FunctionId,
-        facts: &'a FixupFacts,
+        bindings: &'a [BindingFact],
         signatures: &'a [CallSignatureFact],
         by_name: &'a BTreeMap<String, SignatureId>,
     ) -> Self {
         Self {
             function,
-            facts,
+            bindings,
             signatures,
             by_name,
             scopes: Vec::new(),
@@ -202,7 +202,6 @@ impl<'a> Collector<'a> {
     fn enter_root_scope(&mut self) {
         self.scopes.push(BTreeMap::new());
         let params: Vec<_> = self
-            .facts
             .bindings
             .iter()
             .filter(|binding| binding.function == self.function)
@@ -595,8 +594,7 @@ impl<'a> Collector<'a> {
     }
 
     fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId> {
-        self.facts
-            .binding_by_local_path(self.function, name, &AstPath(path.to_vec()))
+        facts::binding_by_local_path(self.bindings, self.function, name, &AstPath(path.to_vec()))
     }
 
     fn shadow_pattern(&mut self, pattern: &Pattern) {
