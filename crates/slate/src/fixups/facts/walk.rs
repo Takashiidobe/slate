@@ -1019,14 +1019,14 @@ fn target_expr_at<'a>(expr: &'a Expr, path: &[PathSegment]) -> Option<&'a Expr> 
     }
 }
 
-pub(in crate::fixups) type Bodies<'a> = BTreeMap<FunctionId, &'a FnDef>;
+pub(in crate::fixups) type Bodies<'a> = BTreeMap<FunctionId<'db>, &'a FnDef>;
 
 #[derive(Debug, Default, Clone)]
 pub(in crate::fixups) struct BaseWalk {
-    pub(in crate::fixups) functions: Vec<FunctionFact>,
-    pub(in crate::fixups) bindings: Vec<BindingFact>,
-    pub(in crate::fixups) binding_types: Vec<BindingTypeFact>,
-    pub(in crate::fixups) loops: Vec<LoopFact>,
+    pub(in crate::fixups) functions: Vec<FunctionFact<'db>>,
+    pub(in crate::fixups) bindings: Vec<BindingFact<'db>>,
+    pub(in crate::fixups) binding_types: Vec<BindingTypeFact<'db>>,
+    pub(in crate::fixups) loops: Vec<LoopFact<'db>>,
 }
 
 impl BaseWalk {
@@ -1039,28 +1039,28 @@ impl BaseWalk {
     pub(in crate::fixups) fn function_by_item_index(
         &self,
         item_index: usize,
-    ) -> Option<FunctionId> {
+    ) -> Option<FunctionId<'db>> {
         self.functions
             .iter()
             .find(|function| function.item_index == item_index)
             .map(|function| function.id)
     }
 
-    pub(in crate::fixups) fn function_item_index(&self, function: FunctionId) -> Option<usize> {
+    pub(in crate::fixups) fn function_item_index(&self, function: FunctionId<'db>) -> Option<usize> {
         self.functions
             .iter()
             .find(|fact| fact.id == function)
             .map(|fact| fact.item_index)
     }
 
-    pub(in crate::fixups) fn function_name(&self, function: FunctionId) -> Option<&str> {
+    pub(in crate::fixups) fn function_name(&self, function: FunctionId<'db>) -> Option<&str> {
         self.functions
             .iter()
             .find(|fact| fact.id == function)
             .map(|fact| fact.name.as_str())
     }
 
-    pub(in crate::fixups) fn splice_function(&mut self, program: &Program, function: FunctionId) {
+    pub(in crate::fixups) fn splice_function(&mut self, program: &Program, function: FunctionId<'db>) {
         let Some(item_index) = self.function_item_index(function) else {
             return;
         };
@@ -1092,9 +1092,9 @@ impl BaseWalk {
         }
     }
 
-    fn purge_function(&mut self, function: FunctionId) {
+    fn purge_function(&mut self, function: FunctionId<'db>) {
         self.bindings.retain(|binding| binding.function != function);
-        let live_bindings: BTreeSet<BindingId> =
+        let live_bindings: BTreeSet<BindingId<'db>> =
             self.bindings.iter().map(|binding| binding.id).collect();
         self.binding_types
             .retain(|binding_type| live_bindings.contains(&binding_type.binding));
@@ -1152,12 +1152,12 @@ impl<'a> Collector<'a> {
     }
 
     /// Bindings, binding types, and loops for one function, given an
-    /// already-assigned `FunctionId` - independent of any other function's
+    /// already-assigned `FunctionId<'db>` - independent of any other function's
     /// facts. Incremental splicing needs to re-derive one function's
     /// bindings/loops in place without a whole-program walk; it must not
-    /// call `push_function`, which assigns a fresh `FunctionId` - only
+    /// call `push_function`, which assigns a fresh `FunctionId<'db>` - only
     /// `program()` does that, for a function seen for the first time.
-    fn function(&mut self, function: FunctionId, f: &FnDef) {
+    fn function(&mut self, function: FunctionId<'db>, f: &FnDef) {
         for (index, param) in f.params.iter().enumerate() {
             self.push_binding(
                 function,
@@ -1170,8 +1170,8 @@ impl<'a> Collector<'a> {
         self.body(function, &f.body, &mut Vec::new());
     }
 
-    fn push_function(&mut self, name: String, item_index: usize) -> FunctionId {
-        let id = FunctionId(self.base.functions.len());
+    fn push_function(&mut self, name: String, item_index: usize) -> FunctionId<'db> {
+        let id = FunctionId<'db>(self.base.functions.len());
         self.base.functions.push(FunctionFact {
             id,
             name,
@@ -1182,13 +1182,13 @@ impl<'a> Collector<'a> {
 
     fn push_binding(
         &mut self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         name: String,
         kind: BindingKind,
         path: AstPath,
         ty: Option<Type>,
-    ) -> BindingId {
-        let id = BindingId(self.next_binding);
+    ) -> BindingId<'db> {
+        let id = BindingId<'db>(self.next_binding);
         self.next_binding += 1;
         self.base.bindings.push(BindingFact {
             id,
@@ -1208,8 +1208,8 @@ impl<'a> Collector<'a> {
         id
     }
 
-    fn push_loop(&mut self, function: FunctionId, kind: LoopKind, path: AstPath) -> LoopId {
-        let id = LoopId(self.next_loop);
+    fn push_loop(&mut self, function: FunctionId<'db>, kind: LoopKind, path: AstPath) -> LoopId<'db> {
+        let id = LoopId<'db>(self.next_loop);
         self.next_loop += 1;
         self.base.loops.push(LoopFact {
             id,
@@ -1220,7 +1220,7 @@ impl<'a> Collector<'a> {
         id
     }
 
-    fn body(&mut self, function: FunctionId, body: &[IndentStmt], path: &mut Vec<PathSegment>) {
+    fn body(&mut self, function: FunctionId<'db>, body: &[IndentStmt], path: &mut Vec<PathSegment>) {
         for (index, indent) in body.iter().enumerate() {
             path.push(PathSegment::Stmt(index));
             self.stmt(function, &indent.stmt, path);
@@ -1228,11 +1228,11 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn block(&mut self, function: FunctionId, block: &Block, path: &mut Vec<PathSegment>) {
+    fn block(&mut self, function: FunctionId<'db>, block: &Block, path: &mut Vec<PathSegment>) {
         self.body(function, &block.stmts, path);
     }
 
-    fn stmt(&mut self, function: FunctionId, stmt: &Stmt, path: &mut Vec<PathSegment>) {
+    fn stmt(&mut self, function: FunctionId<'db>, stmt: &Stmt, path: &mut Vec<PathSegment>) {
         match stmt {
             Stmt::Let { name, ty, .. } => {
                 self.push_binding(
@@ -1341,7 +1341,7 @@ impl<'a> Collector<'a> {
 
 pub(in crate::fixups) fn expr_at_body_path<'a>(
     bodies: &Bodies<'a>,
-    function: FunctionId,
+    function: FunctionId<'db>,
     path: &AstPath,
 ) -> Option<&'a Expr> {
     let &f = bodies.get(&function)?;

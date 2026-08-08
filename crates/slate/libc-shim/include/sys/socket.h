@@ -3,6 +3,10 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+#error "<sys/socket.h> is unavailable for the MSVC libc profile."
+#endif
+
 #define __NEED_sa_family_t
 #define __NEED_size_t
 #define __NEED_ssize_t

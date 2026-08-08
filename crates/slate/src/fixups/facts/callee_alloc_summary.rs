@@ -5,9 +5,9 @@ use crate::fixups::facts::{
 };
 use crate::rust_ast::{Expr, FnDef, IndentStmt, Stmt, Type};
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-) -> Option<CalleeAllocSummaryFact> {
+) -> Option<CalleeAllocSummaryFact<'db>> {
     let Some(Type::Ptr { inner: elem_ty, .. }) = &f.ret else {
         return None;
     };

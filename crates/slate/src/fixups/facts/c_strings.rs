@@ -2,9 +2,9 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{AstPath, CStringLiteralFact, FunctionId, PathSegment};
 use crate::rust_ast::{Expr, FnDef, Prim, Type};
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-) -> Vec<CStringLiteralFact> {
+) -> Vec<CStringLiteralFact<'db>> {
     let mut out = Vec::new();
     walk::body_exprs_with_path(&f.body, &mut Vec::new(), &mut |expr, path| {
         if let Some(bytes) = c_string_literal_payload(expr) {

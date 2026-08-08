@@ -7,12 +7,12 @@ use crate::fixups::facts::{
 };
 use crate::rust_ast::{Block, Expr, FnDef, Ident, IndentStmt, RustValue, Stmt, Type};
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
-    def_use: &[DefUseFact],
-) -> Vec<ArrayElementPointerOriginFact> {
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
+    def_use: &[DefUseFact<'db>],
+) -> Vec<ArrayElementPointerOriginFact<'db>> {
     let mut collector = Collector::new(function, bindings, binding_types, def_use);
     collector.enter_scope();
     collector.body(&f.body, &mut Vec::new(), false);
@@ -21,18 +21,18 @@ pub(in crate::fixups) fn collect_for_function(
 }
 
 struct Collector<'a> {
-    function: FunctionId,
-    bindings: &'a [BindingFact],
-    binding_types: &'a [BindingTypeFact],
-    def_use: &'a [DefUseFact],
-    scopes: Vec<BTreeMap<String, BindingId>>,
+    function: FunctionId<'db>,
+    bindings: &'a [BindingFact<'db>],
+    binding_types: &'a [BindingTypeFact<'db>],
+    def_use: &'a [DefUseFact<'db>],
+    scopes: Vec<BTreeMap<String, BindingId<'db>>>,
     candidates: Vec<Candidate>,
 }
 
 #[derive(Clone)]
 struct Candidate {
-    pointer: BindingId,
-    base: BindingId,
+    pointer: BindingId<'db>,
+    base: BindingId<'db>,
     index: Expr,
     path: AstPath,
     kind: CandidateKind,
@@ -51,10 +51,10 @@ struct OriginSource {
 
 impl<'a> Collector<'a> {
     fn new(
-        function: FunctionId,
-        bindings: &'a [BindingFact],
-        binding_types: &'a [BindingTypeFact],
-        def_use: &'a [DefUseFact],
+        function: FunctionId<'db>,
+        bindings: &'a [BindingFact<'db>],
+        binding_types: &'a [BindingTypeFact<'db>],
+        def_use: &'a [DefUseFact<'db>],
     ) -> Self {
         Self {
             function,
@@ -74,7 +74,7 @@ impl<'a> Collector<'a> {
         self.scopes.pop();
     }
 
-    fn finish(self) -> Vec<ArrayElementPointerOriginFact> {
+    fn finish(self) -> Vec<ArrayElementPointerOriginFact<'db>> {
         let Self {
             function,
             def_use,
@@ -269,14 +269,14 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn array_binding(&self, name: &str) -> Option<BindingId> {
+    fn array_binding(&self, name: &str) -> Option<BindingId<'db>> {
         self.scopes
             .iter()
             .rev()
             .find_map(|scope| scope.get(name).copied())
     }
 
-    fn binding_written_at(&self, name: &str, path: &AstPath) -> Option<BindingId> {
+    fn binding_written_at(&self, name: &str, path: &AstPath) -> Option<BindingId<'db>> {
         self.bindings
             .iter()
             .filter(|binding| binding.function == self.function && binding.name == name)
@@ -287,7 +287,7 @@ impl<'a> Collector<'a> {
             .map(|binding| binding.id)
     }
 
-    fn binding_is_pointer(&self, binding: BindingId) -> bool {
+    fn binding_is_pointer(&self, binding: BindingId<'db>) -> bool {
         self.binding_types
             .iter()
             .find(|fact| fact.binding == binding)
@@ -295,7 +295,7 @@ impl<'a> Collector<'a> {
     }
 }
 
-fn pointer_write_shape_is_unambiguous(def_use_facts: &[DefUseFact], candidate: &Candidate) -> bool {
+fn pointer_write_shape_is_unambiguous(def_use_facts: &[DefUseFact<'db>], candidate: &Candidate) -> bool {
     let Some(def_use) = facts::def_use_of(def_use_facts, candidate.pointer) else {
         return false;
     };
@@ -308,9 +308,9 @@ fn pointer_write_shape_is_unambiguous(def_use_facts: &[DefUseFact], candidate: &
 }
 
 fn overwritten_init_origin_pointers(
-    def_use: &[DefUseFact],
+    def_use: &[DefUseFact<'db>],
     candidates: &[Candidate],
-) -> BTreeSet<BindingId> {
+) -> BTreeSet<BindingId<'db>> {
     candidates
         .iter()
         .filter(|candidate| matches!(candidate.kind, CandidateKind::LetInit))

@@ -7,12 +7,12 @@ use crate::fixups::facts::{
 };
 use crate::rust_ast::{BinOp, CLibType, Expr, FnDef, IndentStmt, RustValue, Stmt, Type};
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
     union_records: &BTreeSet<String>,
-) -> (Vec<PointerOptionSafetyFact>, Vec<PointerComparisonFact>) {
+) -> (Vec<PointerOptionSafetyFact<'db>>, Vec<PointerComparisonFact<'db>>) {
     let safety = collect_safety_for_function(function, f, bindings, binding_types, union_records);
     let mut comparisons = Vec::new();
     collect_comparisons_for_function(function, f, bindings, binding_types, &mut comparisons);
@@ -20,12 +20,12 @@ pub(in crate::fixups) fn collect_for_function(
 }
 
 fn collect_safety_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
     union_records: &BTreeSet<String>,
-) -> Vec<PointerOptionSafetyFact> {
+) -> Vec<PointerOptionSafetyFact<'db>> {
     let mut disqualified = BTreeSet::new();
 
     walk::body_exprs(&f.body, &mut |expr| {
@@ -79,9 +79,9 @@ fn check_arithmetic_and_casts(expr: &Expr, disqualified: &mut BTreeSet<String>) 
 
 fn walk_stmts_for_union_sourcing(
     body: &[IndentStmt],
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
-    function: FunctionId,
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
+    function: FunctionId<'db>,
     union_records: &BTreeSet<String>,
     disqualified: &mut BTreeSet<String>,
 ) {
@@ -99,9 +99,9 @@ fn walk_stmts_for_union_sourcing(
 
 fn walk_stmt_for_union_sourcing(
     stmt: &Stmt,
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
-    function: FunctionId,
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
+    function: FunctionId<'db>,
     union_records: &BTreeSet<String>,
     disqualified: &mut BTreeSet<String>,
 ) {
@@ -152,9 +152,9 @@ fn walk_stmt_for_union_sourcing(
 fn check_union_source(
     name: &str,
     source: &Expr,
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
-    function: FunctionId,
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
+    function: FunctionId<'db>,
     union_records: &BTreeSet<String>,
     disqualified: &mut BTreeSet<String>,
 ) {
@@ -167,9 +167,9 @@ fn check_union_source(
 
 fn is_union_typed(
     base: &Expr,
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
-    function: FunctionId,
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
+    function: FunctionId<'db>,
     union_records: &BTreeSet<String>,
 ) -> bool {
     let Expr::Var(name) = peel_casts(base) else {
@@ -222,9 +222,9 @@ fn is_null_expr(expr: &Expr) -> bool {
 }
 
 fn is_pointer_expr(
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
-    function: FunctionId,
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
+    function: FunctionId<'db>,
     expr: &Expr,
 ) -> bool {
     let Expr::Var(name) = peel_casts(expr) else {
@@ -236,9 +236,9 @@ fn is_pointer_expr(
 }
 
 fn comparison_kind(
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
-    function: FunctionId,
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
+    function: FunctionId<'db>,
     lhs: &Expr,
     rhs: &Expr,
 ) -> Option<PointerComparisonKind> {
@@ -264,11 +264,11 @@ fn comparison_kind(
 }
 
 fn collect_comparisons_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
-    out: &mut Vec<PointerComparisonFact>,
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
+    out: &mut Vec<PointerComparisonFact<'db>>,
 ) {
     let mut path: Vec<PathSegment> = Vec::new();
     walk::body_exprs_with_path(&f.body, &mut path, &mut |expr, path| {

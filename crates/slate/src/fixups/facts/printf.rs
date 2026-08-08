@@ -8,11 +8,11 @@ use crate::rust_ast::{Block, Expr, FnDef, FnParam, IndentStmt, RustValue, Stmt, 
 use ordered_float::OrderedFloat;
 use std::collections::BTreeMap;
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    string_buffers: &[StringBufferFact],
-    string_pointer_views: &[StringPointerViewFact],
-) -> Vec<PrintfCallFact> {
+    string_buffers: &[StringBufferFact<'db>],
+    string_pointer_views: &[StringPointerViewFact<'db>],
+) -> Vec<PrintfCallFact<'db>> {
     let mut calls = Vec::new();
     let mut env = PrintfEnv::from_params(&f.params);
     body(
@@ -28,13 +28,13 @@ pub(in crate::fixups) fn collect_for_function(
 }
 
 fn body(
-    function: FunctionId,
+    function: FunctionId<'db>,
     body: &[IndentStmt],
     env: &mut PrintfEnv,
     path: &mut Vec<PathSegment>,
-    calls: &mut Vec<PrintfCallFact>,
-    string_buffers: &[StringBufferFact],
-    string_pointer_views: &[StringPointerViewFact],
+    calls: &mut Vec<PrintfCallFact<'db>>,
+    string_buffers: &[StringBufferFact<'db>],
+    string_pointer_views: &[StringPointerViewFact<'db>],
 ) {
     for (index, indent) in body.iter().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
@@ -53,13 +53,13 @@ fn body(
 }
 
 fn visit_block(
-    function: FunctionId,
+    function: FunctionId<'db>,
     block: &Block,
     env: &PrintfEnv,
     path: &mut Vec<PathSegment>,
-    calls: &mut Vec<PrintfCallFact>,
-    string_buffers: &[StringBufferFact],
-    string_pointer_views: &[StringPointerViewFact],
+    calls: &mut Vec<PrintfCallFact<'db>>,
+    string_buffers: &[StringBufferFact<'db>],
+    string_pointer_views: &[StringPointerViewFact<'db>],
 ) {
     let mut block_env = env.clone();
     body(
@@ -87,13 +87,13 @@ fn visit_block(
 }
 
 fn stmt(
-    function: FunctionId,
+    function: FunctionId<'db>,
     stmt: &Stmt,
     env: &PrintfEnv,
     path: &mut Vec<PathSegment>,
-    calls: &mut Vec<PrintfCallFact>,
-    string_buffers: &[StringBufferFact],
-    string_pointer_views: &[StringPointerViewFact],
+    calls: &mut Vec<PrintfCallFact<'db>>,
+    string_buffers: &[StringBufferFact<'db>],
+    string_pointer_views: &[StringPointerViewFact<'db>],
 ) {
     match stmt {
         Stmt::Let { init, .. } => {
@@ -383,13 +383,13 @@ fn stmt(
 }
 
 fn visit_expr(
-    function: FunctionId,
+    function: FunctionId<'db>,
     expr: &Expr,
     env: &PrintfEnv,
     path: &mut Vec<PathSegment>,
-    calls: &mut Vec<PrintfCallFact>,
-    string_buffers: &[StringBufferFact],
-    string_pointer_views: &[StringPointerViewFact],
+    calls: &mut Vec<PrintfCallFact<'db>>,
+    string_buffers: &[StringBufferFact<'db>],
+    string_pointer_views: &[StringPointerViewFact<'db>],
 ) {
     if let Expr::Call { args, .. } = expr
         && let Some(known @ (Known::Printf | Known::FPrintf | Known::SPrintf | Known::SNPrintf)) =
@@ -1005,9 +1005,9 @@ fn const_c_string_arg(arg: &Expr, env: &PrintfEnv) -> Option<String> {
 }
 
 fn proven_local_c_string_arg(
-    function: FunctionId,
-    string_buffers: &[StringBufferFact],
-    string_pointer_views: &[StringPointerViewFact],
+    function: FunctionId<'db>,
+    string_buffers: &[StringBufferFact<'db>],
+    string_pointer_views: &[StringPointerViewFact<'db>],
     path: &[PathSegment],
 ) -> Option<String> {
     let source =

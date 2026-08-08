@@ -25,10 +25,10 @@ use crate::fixups::facts::{FunctionId, LazyInitSingletonFact, StaticDeclFact};
 use crate::fixups::idents::stmt_ident_count;
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Prim, RustValue, Stmt, Type, UnaryOp};
 pub(in crate::fixups) fn compute(
-    shapes: &BTreeMap<FunctionId, (String, String, Expr)>,
+    shapes: &BTreeMap<FunctionId<'db>, (String, String, Expr)>,
     bodies: &Bodies,
     statics: &[StaticDeclFact],
-) -> Vec<LazyInitSingletonFact> {
+) -> Vec<LazyInitSingletonFact<'db>> {
     let mut all = Vec::new();
     for (&function, (flag_name, payload_name, init_expr)) in shapes {
         let Some(payload_ty) = static_item_type(statics, payload_name) else {

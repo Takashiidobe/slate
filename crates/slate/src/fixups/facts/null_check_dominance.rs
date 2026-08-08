@@ -7,11 +7,11 @@ use crate::fixups::facts::{
 };
 use crate::rust_ast::{BinOp, Block, Expr, FnDef, IndentStmt, RustValue, Stmt, UnaryOp};
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
-    control_flow: &[ControlFlowFact],
-) -> Vec<NullCheckDominanceFact> {
+    bindings: &[BindingFact<'db>],
+    control_flow: &[ControlFlowFact<'db>],
+) -> Vec<NullCheckDominanceFact<'db>> {
     let mut collector = Collector {
         function,
         bindings,
@@ -31,16 +31,16 @@ struct Proven {
 
 #[derive(Clone)]
 struct ProvenEntry {
-    guard_site: Option<Site>,
+    guard_site: Option<Site<'db>>,
     proof: NullCheckProof,
 }
 
 struct Collector<'a> {
-    function: FunctionId,
-    bindings: &'a [BindingFact],
-    control_flow: &'a [ControlFlowFact],
+    function: FunctionId<'db>,
+    bindings: &'a [BindingFact<'db>],
+    control_flow: &'a [ControlFlowFact<'db>],
     bool_defs: BTreeMap<String, Expr>,
-    results: Vec<NullCheckDominanceFact>,
+    results: Vec<NullCheckDominanceFact<'db>>,
 }
 
 impl<'a> Collector<'a> {

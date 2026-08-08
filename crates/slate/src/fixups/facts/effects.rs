@@ -9,7 +9,7 @@ use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Stmt, UnaryOp};
 /// Effects for one function's body, independent of any other function's
 /// facts - the entry point `slate-04q.75.56.8` (incremental facts) needs to
 /// re-derive one function's effects without a whole-program walk.
-pub(in crate::fixups) fn collect_for_function(function: FunctionId, f: &FnDef) -> Vec<EffectFact> {
+pub(in crate::fixups) fn collect_for_function(function: FunctionId<'db>, f: &FnDef) -> Vec<EffectFact<'db>> {
     let mut collector = Collector {
         function,
         effects: Vec::new(),
@@ -85,8 +85,8 @@ fn is_pure_primitive_bit_method(method: &str) -> bool {
 }
 
 struct Collector {
-    function: FunctionId,
-    effects: Vec<EffectFact>,
+    function: FunctionId<'db>,
+    effects: Vec<EffectFact<'db>>,
 }
 
 impl Collector {

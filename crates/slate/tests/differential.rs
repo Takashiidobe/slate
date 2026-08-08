@@ -107,6 +107,36 @@ fn explicit_targets_define_slate_feature_macros() {
 }
 
 #[test]
+fn msvc_llp64_fixture_translates_with_target_abi_types() {
+    let fixture = fixtures_dir().join("msvc_llp64.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate", fixture.to_str().unwrap()])
+        .env("SLATE_TARGET", "x86_64-pc-windows-msvc")
+        .output()
+        .expect("translate MSVC LLP64 fixture");
+    assert!(
+        output.status.success(),
+        "MSVC translation failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
+    assert!(rust.contains("fn imported_msvc("));
+    assert!(rust.contains("_0: u64"));
+    assert!(rust.contains("_1: i64"));
+    assert!(rust.contains("_2: i64"));
+    assert!(rust.contains("_3: u64"));
+    assert!(rust.contains("_4: u16"));
+    assert!(rust.contains("_5: i32"));
+    assert!(rust.contains("_6: i64"));
+    assert!(rust.contains("_7: f64"));
+    assert!(rust.contains(") -> i64;"));
+    assert!(!rust.contains("pthread"));
+    assert!(!rust.contains("ioctl"));
+    assert!(!rust.contains("socket"));
+    assert!(!rust.contains("fork"));
+}
+
+#[test]
 fn function_alias_lowers_to_forwarding_wrapper() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-alias-function");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

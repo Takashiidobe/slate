@@ -217,7 +217,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             expression_roles
                 .entry(child_site(&call.site, 0))
                 .or_default()
-                .insert(ExpressionRole::CallCallee);
+                .insert(ExpressionRole::CallCallee<'db>);
             for (index, argument) in call.args.iter().enumerate() {
                 expression_roles
                     .entry(argument.clone())
@@ -244,23 +244,23 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.salsa
     }
 
-    fn def_use_fact(&self, function: FunctionId, binding: BindingId) -> Option<&DefUseFact> {
+    fn def_use_fact(&self, function: FunctionId<'db>, binding: BindingId<'db>) -> Option<&DefUseFact<'db>> {
         self.salsa().def_use(function, binding)
     }
 
     fn effect_fact(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         subject: EffectSubject,
         path: &AstPath,
-    ) -> Option<&EffectFact> {
+    ) -> Option<&EffectFact<'db>> {
         self.salsa().effect(function, subject, path)
     }
 
     fn values_at(
         &self,
-        function: FunctionId,
-        subject: ValueSubject,
+        function: FunctionId<'db>,
+        subject: ValueSubject<'db>,
         path: &AstPath,
     ) -> Vec<ConstValue> {
         self.salsa()
@@ -273,8 +273,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn value_matches(
         &self,
-        function: FunctionId,
-        subject: ValueSubject,
+        function: FunctionId<'db>,
+        subject: ValueSubject<'db>,
         value: ConstValue,
     ) -> bool {
         self.salsa()
@@ -285,21 +285,21 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn string_buffer_fact_at(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         path: &AstPath,
-    ) -> Option<&StringBufferFact> {
+    ) -> Option<&StringBufferFact<'db>> {
         self.salsa().string_buffer_at(function, path)
     }
 
-    fn string_buffer_fact(&self, binding: BindingId) -> Option<&StringBufferFact> {
+    fn string_buffer_fact(&self, binding: BindingId<'db>) -> Option<&StringBufferFact<'db>> {
         self.salsa().string_buffer(binding)
     }
 
     fn string_pointer_view_facts(
         &self,
-        function: FunctionId,
-        binding: BindingId,
-    ) -> Vec<&StringPointerViewFact> {
+        function: FunctionId<'db>,
+        binding: BindingId<'db>,
+    ) -> Vec<&StringPointerViewFact<'db>> {
         self.salsa()
             .string_pointer_views(function)
             .iter()
@@ -309,53 +309,53 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn string_libc_use_fact(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         path: &AstPath,
-    ) -> Option<&StringLibcUseFact> {
+    ) -> Option<&StringLibcUseFact<'db>> {
         self.salsa().string_libc_use(function, path)
     }
 
     fn counted_loop_fact(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         loop_path: &AstPath,
-    ) -> Option<&CountedLoopFact> {
+    ) -> Option<&CountedLoopFact<'db>> {
         self.salsa().counted_loop(function, loop_path)
     }
 
     fn counted_slice_loop_fact(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         loop_path: &AstPath,
-    ) -> Option<&CountedSliceLoopFact> {
+    ) -> Option<&CountedSliceLoopFact<'db>> {
         self.salsa().counted_slice_loop(function, loop_path)
     }
 
-    fn cast_fact_at(&self, function: FunctionId, path: &AstPath) -> Option<&CastFact> {
+    fn cast_fact_at(&self, function: FunctionId<'db>, path: &AstPath) -> Option<&CastFact<'db>> {
         self.salsa().cast_at(function, path)
     }
 
-    fn place_fact(&self, function: FunctionId, path: &AstPath) -> Option<&PlaceFact> {
+    fn place_fact(&self, function: FunctionId<'db>, path: &AstPath) -> Option<&PlaceFact<'db>> {
         self.salsa().place(function, path)
     }
 
     fn control_flow_fact(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         subject: ControlFlowSubject,
         path: &AstPath,
-    ) -> Option<&ControlFlowFact> {
+    ) -> Option<&ControlFlowFact<'db>> {
         self.salsa().control_flow(function, subject, path)
     }
 
-    fn binding_requires_mut_fact(&self, function: FunctionId, binding: BindingId) -> bool {
+    fn binding_requires_mut_fact(&self, function: FunctionId<'db>, binding: BindingId<'db>) -> bool {
         self.salsa().binding_requires_mut(function, binding)
     }
 
     fn borrow_alias_reasons_fact(
         &self,
-        function: FunctionId,
-        binding: BindingId,
+        function: FunctionId<'db>,
+        binding: BindingId<'db>,
     ) -> Option<BTreeSet<BorrowAliasReason>> {
         self.salsa()
             .borrow_alias_reasons(function, binding)
@@ -364,8 +364,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn array_element_pointer_origin_facts(
         &self,
-        function: FunctionId,
-    ) -> Vec<&ArrayElementPointerOriginFact> {
+        function: FunctionId<'db>,
+    ) -> Vec<&ArrayElementPointerOriginFact<'db>> {
         self.salsa()
             .array_element_pointer_origins(function)
             .iter()
@@ -374,49 +374,49 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn null_check_dominance_at(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         deref_path: &AstPath,
-    ) -> Option<&NullCheckDominanceFact> {
+    ) -> Option<&NullCheckDominanceFact<'db>> {
         self.salsa().null_check_dominance_at(function, deref_path)
     }
 
-    fn atomic_local_facts(&self) -> Vec<&AtomicLocalFact> {
+    fn atomic_local_facts(&self) -> Vec<&AtomicLocalFact<'db>> {
         self.salsa().atomic_locals().iter().collect()
     }
 
     fn option_box_local_candidate_facts(
         &self,
-        function: FunctionId,
-    ) -> Vec<&OptionBoxLocalCandidate> {
+        function: FunctionId<'db>,
+    ) -> Vec<&OptionBoxLocalCandidate<'db>> {
         self.salsa()
             .option_box_local_candidates(function)
             .iter()
             .collect()
     }
 
-    fn option_box_comparison_facts(&self, function: FunctionId) -> Vec<&OptionBoxComparison> {
+    fn option_box_comparison_facts(&self, function: FunctionId<'db>) -> Vec<&OptionBoxComparison<'db>> {
         self.salsa()
             .option_box_comparisons(function)
             .iter()
             .collect()
     }
 
-    fn buffer_pointer_field_facts(&self, function: FunctionId) -> Vec<&BufferPointerFieldFact> {
+    fn buffer_pointer_field_facts(&self, function: FunctionId<'db>) -> Vec<&BufferPointerFieldFact<'db>> {
         self.salsa()
             .buffer_pointer_fields(function)
             .iter()
             .collect()
     }
 
-    fn heap_ownership_fact_list(&self, function: FunctionId) -> Vec<&HeapOwnershipFact> {
+    fn heap_ownership_fact_list(&self, function: FunctionId<'db>) -> Vec<&HeapOwnershipFact<'db>> {
         self.salsa().heap_ownership(function).iter().collect()
     }
 
-    fn file_ownership_fact_list(&self, function: FunctionId) -> Vec<&FileOwnershipFact> {
+    fn file_ownership_fact_list(&self, function: FunctionId<'db>) -> Vec<&FileOwnershipFact<'db>> {
         self.salsa().file_ownership(function).iter().collect()
     }
 
-    fn printf_call_fact(&self, function: FunctionId, path: &AstPath) -> Option<PrintfCallFact> {
+    fn printf_call_fact(&self, function: FunctionId<'db>, path: &AstPath) -> Option<PrintfCallFact<'db>> {
         self.salsa()
             .printf_calls(function)
             .iter()
@@ -424,14 +424,14 @@ impl<'snapshot> QueryContext<'snapshot> {
             .cloned()
     }
 
-    fn callee_alloc_summary_fact(&self, function: FunctionId) -> Option<&CalleeAllocSummaryFact> {
+    fn callee_alloc_summary_fact(&self, function: FunctionId<'db>) -> Option<&CalleeAllocSummaryFact<'db>> {
         self.salsa().callee_alloc_summary(function)
     }
 
     fn interprocedural_alloc_eligibility_fact(
         &self,
-        function: FunctionId,
-    ) -> Option<InterproceduralAllocEligibilityFact> {
+        function: FunctionId<'db>,
+    ) -> Option<InterproceduralAllocEligibilityFact<'db>> {
         let (eligibility, _) = self.salsa().interprocedural_alloc();
         eligibility
             .iter()
@@ -441,8 +441,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn interprocedural_alloc_caller_facts(
         &self,
-        function: FunctionId,
-    ) -> Vec<InterproceduralAllocCallerFact> {
+        function: FunctionId<'db>,
+    ) -> Vec<InterproceduralAllocCallerFact<'db>> {
         let (_, callers) = self.salsa().interprocedural_alloc();
         callers
             .iter()
@@ -453,9 +453,9 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn pointer_option_safety_of(
         &self,
-        function: FunctionId,
-        binding: BindingId,
-    ) -> Option<&PointerOptionSafetyFact> {
+        function: FunctionId<'db>,
+        binding: BindingId<'db>,
+    ) -> Option<&PointerOptionSafetyFact<'db>> {
         self.salsa().pointer_option_safety_of(function, binding)
     }
 
@@ -465,9 +465,9 @@ impl<'snapshot> QueryContext<'snapshot> {
     )]
     fn pointer_comparison_at(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         path: &AstPath,
-    ) -> Option<&PointerComparisonFact> {
+    ) -> Option<&PointerComparisonFact<'db>> {
         self.salsa().pointer_comparison_at(function, path)
     }
 
@@ -479,23 +479,23 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.salsa().struct_field_ownership().iter().collect()
     }
 
-    fn callsite_fact(&self, function: FunctionId, path: &AstPath) -> Option<CallsiteFact> {
+    fn callsite_fact(&self, function: FunctionId<'db>, path: &AstPath) -> Option<CallsiteFact<'db>> {
         self.salsa().callsite(function, path)
     }
 
     fn call_arg_fact(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         path: &AstPath,
-    ) -> Option<(CallsiteFact, CallArgFact)> {
+    ) -> Option<(CallsiteFact<'db>, CallArgFact)> {
         self.salsa().call_arg_at(function, path)
     }
 
-    fn ptr_len_slice_facts(&self) -> &[PtrLenSliceFact] {
+    fn ptr_len_slice_facts(&self) -> &[PtrLenSliceFact<'db>] {
         self.salsa().ptr_len_slices()
     }
 
-    fn string_param_lift_facts(&self) -> &[StringParamLiftFact] {
+    fn string_param_lift_facts(&self) -> &[StringParamLiftFact<'db>] {
         self.salsa().string_param_lifts()
     }
 
@@ -503,25 +503,25 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.salsa().anonymous_structs()
     }
 
-    fn lazy_init_singleton_facts(&self) -> &[LazyInitSingletonFact] {
+    fn lazy_init_singleton_facts(&self) -> &[LazyInitSingletonFact<'db>] {
         self.salsa().lazy_init_singletons()
     }
 
     fn liftable_string_bindings_fact(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         recovery: StringRecoveryCandidate,
-    ) -> BTreeSet<BindingId> {
+    ) -> BTreeSet<BindingId<'db>> {
         self.salsa().liftable_string_bindings(function, recovery)
     }
 
     fn string_use_allowed_fact(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         use_path: &AstPath,
-        binding: BindingId,
+        binding: BindingId<'db>,
         recovery: StringRecoveryCandidate,
-        liftable: &BTreeSet<BindingId>,
+        liftable: &BTreeSet<BindingId<'db>>,
     ) -> bool {
         self.salsa()
             .string_use_allowed(function, use_path, binding, recovery, liftable)
@@ -533,13 +533,13 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn c_string_literal_fact(
         &self,
-        function: FunctionId,
+        function: FunctionId<'db>,
         receiver_path: &AstPath,
-    ) -> Option<&CStringLiteralFact> {
+    ) -> Option<&CStringLiteralFact<'db>> {
         self.salsa().c_string_literal(function, receiver_path)
     }
 
-    fn string_copy_rewrite_facts(&self, function: FunctionId) -> Vec<&StringCopyRewriteFact> {
+    fn string_copy_rewrite_facts(&self, function: FunctionId<'db>) -> Vec<&StringCopyRewriteFact<'db>> {
         self.salsa()
             .string_copy_rewrites(function)
             .iter()
@@ -2139,7 +2139,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     /// The recorded from/to types of the cast Clang's CIR observed at `site`,
     /// independent of any particular rewrite's shape - callers do their own
     /// structural matching before consulting this.
-    pub(in crate::fixups) fn cast_at(&self, site: &ExprSite) -> QueryResult<CastFact> {
+    pub(in crate::fixups) fn cast_at(&self, site: &ExprSite) -> QueryResult<CastFact<'db>> {
         let predicate = Predicate::Cast;
         let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
@@ -2299,7 +2299,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(fact.kind, evidence))
     }
 
-    pub(in crate::fixups) fn callsite_at(&self, site: &ExprSite) -> QueryResult<CallCallee> {
+    pub(in crate::fixups) fn callsite_at(&self, site: &ExprSite) -> QueryResult<CallCallee<'db>> {
         let predicate = Predicate::Callsite;
         let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
@@ -2368,7 +2368,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn printf_call_at(&self, site: &ExprSite) -> QueryResult<PrintfCallFact> {
+    pub(in crate::fixups) fn printf_call_at(&self, site: &ExprSite) -> QueryResult<PrintfCallFact<'db>> {
         let predicate = Predicate::PrintfCall;
         let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
@@ -2474,7 +2474,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn string_buffer(
         &self,
         site: &ValueSite,
-    ) -> QueryResult<StringBufferFact> {
+    ) -> QueryResult<StringBufferFact<'db>> {
         let predicate = Predicate::StringBuffer;
         let evidence_site = expression_site(site.item_index, &site.path.0);
         let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
@@ -2661,7 +2661,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             .into_iter()
             .filter(|fact| fact.dst == binding)
         {
-            let resolve = |source: BindingId| bindings.iter().find(|b| b.id == source).cloned();
+            let resolve = |source: BindingId<'db>| bindings.iter().find(|b| b.id == source).cloned();
             let action = match &fact.rewrite {
                 StringCopyRewrite::AssignLiteral(text) => {
                     StringCopyAction::AssignLiteral(text.clone())
@@ -3585,7 +3585,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             .sum()
     }
 
-    fn function(&self, site: &ExprSite) -> Option<FunctionId> {
+    fn function(&self, site: &ExprSite) -> Option<FunctionId<'db>> {
         self.program.items.get(site.item_index)?;
         self.salsa().function_by_item_index(site.item_index)
     }
@@ -4252,7 +4252,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn counted_loop(
         &self,
         statement: &StatementRef,
-    ) -> QueryResult<CountedLoopFact> {
+    ) -> QueryResult<CountedLoopFact<'db>> {
         let predicate = Predicate::CountedLoop;
         let evidence_site = statement_evidence_site(statement);
         let function = self
@@ -4746,7 +4746,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn callee_alloc_summary(
         &self,
         function: &FunctionRef,
-    ) -> QueryResult<CalleeAllocSummaryFact> {
+    ) -> QueryResult<CalleeAllocSummaryFact<'db>> {
         let predicate = Predicate::CalleeAllocSummary;
         let site = expression_site(function.item_index, &[]);
         let Some(summary) = self.callee_alloc_summary_fact(function.id).cloned() else {
@@ -4770,7 +4770,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn interprocedural_alloc_eligibility(
         &self,
         function: &FunctionRef,
-    ) -> QueryResult<InterproceduralAllocEligibilityFact> {
+    ) -> QueryResult<InterproceduralAllocEligibilityFact<'db>> {
         let predicate = Predicate::InterproceduralAllocEligibility;
         let site = expression_site(function.item_index, &[]);
         let Some(fact) = self.interprocedural_alloc_eligibility_fact(function.id) else {
@@ -5988,11 +5988,11 @@ fn qualified_path(path: &crate::rust_ast::Path) -> String {
 }
 
 fn ptr_len_plans_from_facts(
-    slices: &[PtrLenSliceFact],
-    functions: &[FunctionFact],
-    bindings: &[BindingFact],
+    slices: &[PtrLenSliceFact<'db>],
+    functions: &[FunctionFact<'db>],
+    bindings: &[BindingFact<'db>],
 ) -> Vec<PtrLenPlan> {
-    let mut grouped = BTreeMap::<(FunctionId, BindingId), Vec<&PtrLenSliceFact>>::new();
+    let mut grouped = BTreeMap::<(FunctionId<'db>, BindingId<'db>), Vec<&PtrLenSliceFact<'db>>>::new();
     for fact in slices {
         grouped
             .entry((fact.callee, fact.ptr_param))

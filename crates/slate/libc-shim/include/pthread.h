@@ -3,6 +3,10 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+#error "<pthread.h> is unavailable for the MSVC libc profile."
+#endif
+
 #define __NEED_NULL
 #define __NEED_pthread_attr_t
 #define __NEED_pthread_t

@@ -33,6 +33,32 @@ target environment and libc are not interchangeable: a GNU Linux target maps
 to `__SLATE_LIBC_GLIBC`, while a GNU Windows target maps to
 `__SLATE_LIBC_MINGW`.
 
+## Basic x86-64 MSVC profile
+
+`SLATE_TARGET=x86_64-pc-windows-msvc` selects the narrow MSVC profile. Its
+tracked public-header manifest is `libc-shim/msvc-basic-headers.txt` and covers
+`assert.h`, `ctype.h`, `errno.h`, `float.h`, `limits.h`, `stdarg.h`,
+`stddef.h`, `stdint.h`, `stdio.h`, `stdlib.h`, and `string.h`.
+
+The profile models LLP64: pointers, `size_t`, `ptrdiff_t`, `intptr_t`, and
+`uintptr_t` are 64-bit; `long` is 32-bit; `long long` is 64-bit; `wchar_t` is
+unsigned 16-bit; and `long double` has the same 64-bit representation and
+alignment as `double`. The header tests compare these facts with the ignored
+pinned xwin tree from [msvc-sysroot.md](msvc-sysroot.md) when it is present.
+
+The current CIR build cannot emit records or string literals directly with its
+MSVC backend. Slate therefore uses CIR's UEFI x86-64 frontend path internally
+for this profile while retaining the requested MSVC feature macros, LLP64 data
+model, COFF object model, and Windows x64 C calling convention. This is an
+internal lowering workaround; xwin remains the external declaration and layout
+oracle.
+
+This milestone does not expose pthreads, Unix process APIs, ioctl, or Unix
+sockets. Including `pthread.h`, `unistd.h`, `sys/ioctl.h`, or `sys/socket.h`
+fails explicitly. Wide-character hosted APIs, time, locale, signals, filesystem
+extensions, secure CRT extensions, Windows UM/WinRT APIs, library discovery,
+and linking are outside the basic profile and remain follow-up work.
+
 For safety across libcs:
 
 `strerror_r` is defined as such for our libc:

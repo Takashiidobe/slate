@@ -11,12 +11,12 @@ use crate::rust_ast::{
     Block, Expr, ExternDecl, ExternFnDecl, FnDef, FnParam, IndentStmt, Item, Pattern, Program, Stmt,
 };
 pub(in crate::fixups) fn collect_callsites_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f_body: &[IndentStmt],
-    bindings: &[BindingFact],
-    signatures: &[CallSignatureFact],
+    bindings: &[BindingFact<'db>],
+    signatures: &[CallSignatureFact<'db>],
     by_name: &BTreeMap<String, SignatureId>,
-) -> Vec<CallsiteFact> {
+) -> Vec<CallsiteFact<'db>> {
     let mut collector = Collector::new(function, bindings, signatures, by_name);
     collector.enter_root_scope();
     collector.body(f_body, &mut Vec::new(), false);
@@ -26,7 +26,7 @@ pub(in crate::fixups) fn collect_callsites_for_function(
 fn push_extern_signatures(
     item_index: usize,
     decls: &[ExternDecl],
-    signatures: &mut Vec<CallSignatureFact>,
+    signatures: &mut Vec<CallSignatureFact<'db>>,
 ) {
     for (decl_index, decl) in decls.iter().enumerate() {
         let ExternDecl::Fn(f) = decl else {
@@ -36,7 +36,7 @@ fn push_extern_signatures(
     }
 }
 
-pub(in crate::fixups) fn collect_extern_signatures(program: &Program) -> Vec<CallSignatureFact> {
+pub(in crate::fixups) fn collect_extern_signatures(program: &Program) -> Vec<CallSignatureFact<'db>> {
     let mut signatures = Vec::new();
     for (item_index, item) in program.items.iter().enumerate() {
         collect_extern_signatures_from_item(item, item_index, &mut signatures);
@@ -47,7 +47,7 @@ pub(in crate::fixups) fn collect_extern_signatures(program: &Program) -> Vec<Cal
 fn collect_extern_signatures_from_item(
     item: &Item,
     item_index: usize,
-    signatures: &mut Vec<CallSignatureFact>,
+    signatures: &mut Vec<CallSignatureFact<'db>>,
 ) {
     match item {
         Item::ExternBlock { decls, .. } => push_extern_signatures(item_index, decls, signatures),
@@ -57,9 +57,9 @@ fn collect_extern_signatures_from_item(
 }
 
 pub(in crate::fixups) fn local_call_signature(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-) -> CallSignatureFact {
+) -> CallSignatureFact<'db> {
     CallSignatureFact {
         id: SignatureId(0),
         name: f.name.clone(),
@@ -74,7 +74,7 @@ fn extern_call_signature(
     item_index: usize,
     decl_index: usize,
     f: &ExternFnDecl,
-) -> CallSignatureFact {
+) -> CallSignatureFact<'db> {
     CallSignatureFact {
         id: SignatureId(0),
         name: f.name.clone(),
@@ -88,7 +88,7 @@ fn extern_call_signature(
     }
 }
 
-fn push_signature(signatures: &mut Vec<CallSignatureFact>, mut fact: CallSignatureFact) {
+fn push_signature(signatures: &mut Vec<CallSignatureFact<'db>>, mut fact: CallSignatureFact<'db>) {
     fact.id = SignatureId(signatures.len());
     signatures.push(fact);
 }
@@ -103,19 +103,19 @@ fn params_from_fn_params(params: &[FnParam]) -> Vec<CallParamFact> {
 }
 
 struct Collector<'a> {
-    function: FunctionId,
-    bindings: &'a [BindingFact],
-    signatures: &'a [CallSignatureFact],
+    function: FunctionId<'db>,
+    bindings: &'a [BindingFact<'db>],
+    signatures: &'a [CallSignatureFact<'db>],
     by_name: &'a BTreeMap<String, SignatureId>,
-    scopes: Vec<BTreeMap<String, Option<BindingId>>>,
-    callsites: Vec<CallsiteFact>,
+    scopes: Vec<BTreeMap<String, Option<BindingId<'db>>>>,
+    callsites: Vec<CallsiteFact<'db>>,
 }
 
 impl<'a> Collector<'a> {
     fn new(
-        function: FunctionId,
-        bindings: &'a [BindingFact],
-        signatures: &'a [CallSignatureFact],
+        function: FunctionId<'db>,
+        bindings: &'a [BindingFact<'db>],
+        signatures: &'a [CallSignatureFact<'db>],
         by_name: &'a BTreeMap<String, SignatureId>,
     ) -> Self {
         Self {
@@ -522,7 +522,7 @@ impl<'a> Collector<'a> {
         self.bind(name.to_string(), self.local_binding(name, path));
     }
 
-    fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId> {
+    fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId<'db>> {
         facts::binding_by_local_path(self.bindings, self.function, name, &AstPath(path.to_vec()))
     }
 
@@ -542,7 +542,7 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn bind(&mut self, name: String, binding: Option<BindingId>) {
+    fn bind(&mut self, name: String, binding: Option<BindingId<'db>>) {
         if let Some(scope) = self.scopes.last_mut() {
             scope.insert(name, binding);
         }

@@ -38,13 +38,15 @@ pub fn libc_shim_dir() -> Option<String> {
     }
 }
 
-fn libc_shim_args() -> Vec<String> {
+fn libc_shim_args(target: &str) -> Vec<String> {
     match libc_shim_dir() {
         Some(dir) => {
             let mut args = vec!["-nostdlibinc".into(), "-isystem".into(), dir];
-            for fallback in system_fallback_include_dirs() {
-                args.push("-idirafter".into());
-                args.push(fallback);
+            if !target.ends_with("windows-msvc") {
+                for fallback in system_fallback_include_dirs() {
+                    args.push("-idirafter".into());
+                    args.push(fallback);
+                }
             }
             args
         }
@@ -202,6 +204,21 @@ fn object_name(triple: &Triple) -> &'static str {
     }
 }
 
+fn clang_target(target: &str) -> (&str, &'static [&'static str]) {
+    if target == "x86_64-pc-windows-msvc" {
+        (
+            "x86_64-unknown-uefi",
+            &[
+                "-fc++-abi=itanium",
+                "-fno-ms-extensions",
+                "-fwritable-strings",
+            ],
+        )
+    } else {
+        (target, &[])
+    }
+}
+
 fn target_features(target: &str) -> Result<TargetFeatures, String> {
     let triple = Triple::parse(target).map_err(|e| format!("invalid target `{target}`: {e}"))?;
     let arch = arch_name(triple.arch)?;
@@ -235,20 +252,28 @@ fn active_target() -> String {
         .unwrap_or_else(|| env!("SLATE_BUILD_TARGET").to_string())
 }
 
+pub fn uses_msvc_abi() -> bool {
+    active_target() == "x86_64-pc-windows-msvc"
+}
+
 pub fn target_override_args(target: &str) -> Result<Vec<String>, String> {
     let mut args = target_features(&active_target())?.undef_args();
     args.extend(target_features(target)?.define_args());
+    let (clang_target, abi_args) = clang_target(target);
     args.push("-target".into());
-    args.push(target.into());
+    args.push(clang_target.into());
+    args.extend(abi_args.iter().map(|arg| (*arg).into()));
     Ok(args)
 }
 
 pub fn target_args() -> Result<Vec<String>, String> {
-    let mut args = libc_shim_args();
     let target = active_target();
+    let mut args = libc_shim_args(&target);
     args.extend(target_features(&target)?.define_args());
+    let (clang_target, abi_args) = clang_target(&target);
     args.push("-target".into());
-    args.push(target);
+    args.push(clang_target.into());
+    args.extend(abi_args.iter().map(|arg| (*arg).into()));
 
     if let Ok(extra) = std::env::var("SLATE_CLANG_ARGS") {
         args.extend(extra.split_whitespace().map(str::to_string));

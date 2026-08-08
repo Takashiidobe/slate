@@ -7,12 +7,12 @@ use crate::fixups::facts::{
 use crate::rust_ast::{Expr, Ident, IndentStmt, RustValue, Stmt, Type};
 #[derive(Clone)]
 struct ArrayLocal {
-    binding: BindingId,
+    binding: BindingId<'db>,
 }
 
 #[derive(Clone)]
 struct BufferLocal {
-    binding: BindingId,
+    binding: BindingId<'db>,
 }
 
 #[derive(Clone)]
@@ -22,11 +22,11 @@ struct PointerSource {
 }
 
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     body: &[IndentStmt],
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
-) -> Vec<BufferPointerFieldFact> {
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
+) -> Vec<BufferPointerFieldFact<'db>> {
     let arrays = array_locals(function, bindings, binding_types);
     let buffers = buffer_locals(function, bindings, binding_types);
     if arrays.is_empty() || buffers.is_empty() {
@@ -65,9 +65,9 @@ pub(in crate::fixups) fn collect_for_function(
 }
 
 fn array_locals(
-    function: FunctionId,
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
+    function: FunctionId<'db>,
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
 ) -> BTreeMap<String, ArrayLocal> {
     bindings
         .iter()
@@ -86,9 +86,9 @@ fn array_locals(
 }
 
 fn buffer_locals(
-    function: FunctionId,
-    bindings: &[BindingFact],
-    binding_types: &[BindingTypeFact],
+    function: FunctionId<'db>,
+    bindings: &[BindingFact<'db>],
+    binding_types: &[BindingTypeFact<'db>],
 ) -> BTreeMap<String, BufferLocal> {
     bindings
         .iter()

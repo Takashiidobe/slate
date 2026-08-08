@@ -35,35 +35,74 @@ pub(super) mod walk;
 
 pub(super) const GENERATED_C_STRING_READ_CALLEE: &str = "std::ffi::CStr::from_ptr";
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct FunctionId(pub(super) usize);
+/// Interned on the function's own name: same name -> same id, regardless of
+/// what else in the program changed, so untouched functions keep a stable
+/// id across edits with no hand-rolled counter/invalidation bookkeeping.
+#[salsa::interned(debug)]
+pub(super) struct FunctionId {
+    #[returns(ref)]
+    pub(super) name: String,
+}
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct BindingId(pub(super) usize);
+/// Interned on (function, name, kind, path): a declaration keeps the same
+/// id across edits as long as its own declaration site is unchanged, no
+/// matter what else in the program (including other bindings in the same
+/// function) changed.
+#[salsa::interned(debug)]
+pub(super) struct BindingId {
+    pub(super) function: FunctionId<'db>,
+    #[returns(ref)]
+    pub(super) name: String,
+    pub(super) kind: BindingKind,
+    pub(super) path: AstPath,
+}
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct LoopId(pub(super) usize);
+/// Interned on (function, kind, path), mirroring BindingId.
+#[salsa::interned(debug)]
+pub(super) struct LoopId {
+    pub(super) function: FunctionId<'db>,
+    pub(super) kind: LoopKind,
+    pub(super) path: AstPath,
+}
+
+macro_rules! interned_ord {
+    ($ty:ident) => {
+        impl PartialOrd for $ty<'_> {
+            fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+                Some(self.cmp(other))
+            }
+        }
+        impl Ord for $ty<'_> {
+            fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+                salsa::plumbing::AsId::as_id(self).cmp(&salsa::plumbing::AsId::as_id(other))
+            }
+        }
+    };
+}
+interned_ord!(FunctionId);
+interned_ord!(BindingId);
+interned_ord!(LoopId);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct SignatureId(pub(super) usize);
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct Site {
-    pub(super) function: FunctionId,
+    pub(super) function: FunctionId<'db>,
     pub(super) path: AstPath,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct FunctionFact {
-    pub(super) id: FunctionId,
+    pub(super) id: FunctionId<'db>,
     pub(super) name: String,
     pub(super) item_index: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct BindingFact {
-    pub(super) id: BindingId,
-    pub(super) function: FunctionId,
+    pub(super) id: BindingId<'db>,
+    pub(super) function: FunctionId<'db>,
     pub(super) name: String,
     pub(super) kind: BindingKind,
     pub(super) path: AstPath,
@@ -71,14 +110,14 @@ pub(super) struct BindingFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct BindingTypeFact {
-    pub(super) binding: BindingId,
+    pub(super) binding: BindingId<'db>,
     pub(super) ty: Type,
     pub(super) rendered: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct AtomicLocalFact {
-    pub(super) function: FunctionId,
+    pub(super) function: FunctionId<'db>,
     pub(super) name: String,
     pub(super) ty: AtomicType,
 }
@@ -91,7 +130,7 @@ pub(super) struct AtomicGlobalFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct LazyInitSingletonFact {
-    pub(super) function: FunctionId,
+    pub(super) function: FunctionId<'db>,
     pub(super) flag_name: String,
     pub(super) payload_name: String,
     pub(super) payload_ty: Type,
@@ -121,9 +160,9 @@ pub(super) struct AnonymousStructFieldFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct BufferPointerFieldFact {
-    pub(super) site: Site,
-    pub(super) buffer: BindingId,
-    pub(super) array: BindingId,
+    pub(super) site: Site<'db>,
+    pub(super) buffer: BindingId<'db>,
+    pub(super) array: BindingId<'db>,
     pub(super) field: String,
     pub(super) index: usize,
 }
@@ -136,16 +175,16 @@ pub(super) enum BindingKind {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct LoopFact {
-    pub(super) id: LoopId,
-    pub(super) function: FunctionId,
+    pub(super) id: LoopId<'db>,
+    pub(super) function: FunctionId<'db>,
     pub(super) kind: LoopKind,
     pub(super) path: AstPath,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct BorrowAliasFact {
-    pub(super) function: FunctionId,
-    pub(super) binding: BindingId,
+    pub(super) function: FunctionId<'db>,
+    pub(super) binding: BindingId<'db>,
     pub(super) state: BorrowAliasState,
     pub(super) reasons: BTreeSet<BorrowAliasReason>,
     pub(super) uses: Vec<BorrowAliasUseFact>,
@@ -159,8 +198,8 @@ pub(super) struct BorrowAliasUseFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct DefUseFact {
-    pub(super) function: FunctionId,
-    pub(super) binding: BindingId,
+    pub(super) function: FunctionId<'db>,
+    pub(super) binding: BindingId<'db>,
     pub(super) definition: AstPath,
     pub(super) reads: Vec<AstPath>,
     pub(super) writes: Vec<AstPath>,
@@ -169,7 +208,7 @@ pub(super) struct DefUseFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct EffectFact {
-    pub(super) site: Site,
+    pub(super) site: Site<'db>,
     pub(super) subject: EffectSubject,
     pub(super) purity: Purity,
     pub(super) effects: BTreeSet<EffectKind>,
@@ -177,7 +216,7 @@ pub(super) struct EffectFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct ControlFlowFact {
-    pub(super) site: Site,
+    pub(super) site: Site<'db>,
     pub(super) subject: ControlFlowSubject,
     pub(super) reachable: bool,
     pub(super) falls_through: bool,
@@ -189,17 +228,17 @@ pub(super) struct ControlFlowFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CastFact {
-    pub(super) site: Site,
+    pub(super) site: Site<'db>,
     pub(super) from: Option<Type>,
     pub(super) to: Type,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct NullCheckDominanceFact {
-    pub(super) function: FunctionId,
-    pub(super) binding: BindingId,
-    pub(super) deref_site: Site,
-    pub(super) guard_site: Option<Site>,
+    pub(super) function: FunctionId<'db>,
+    pub(super) binding: BindingId<'db>,
+    pub(super) deref_site: Site<'db>,
+    pub(super) guard_site: Option<Site<'db>>,
     pub(super) proof: NullCheckProof,
 }
 
@@ -212,14 +251,14 @@ pub(super) enum NullCheckProof {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct PointerOptionSafetyFact {
-    pub(super) function: FunctionId,
-    pub(super) binding: BindingId,
+    pub(super) function: FunctionId<'db>,
+    pub(super) binding: BindingId<'db>,
     pub(super) eligible: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct PointerComparisonFact {
-    pub(super) site: Site,
+    pub(super) site: Site<'db>,
     pub(super) kind: PointerComparisonKind,
 }
 
@@ -238,8 +277,8 @@ pub(super) struct StructFieldOwnershipFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct OptionBoxLocalCandidate {
-    pub(super) function: FunctionId,
-    pub(super) binding: BindingId,
+    pub(super) function: FunctionId<'db>,
+    pub(super) binding: BindingId<'db>,
     pub(super) name: String,
     pub(super) elem_ty: Type,
     pub(super) decl_path: AstPath,
@@ -262,7 +301,7 @@ pub(super) enum OptionBoxAssignKind {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct OptionBoxComparison {
-    pub(super) function: FunctionId,
+    pub(super) function: FunctionId<'db>,
     pub(super) if_stmt_path: AstPath,
     pub(super) lhs: String,
     pub(super) rhs: String,
@@ -271,7 +310,7 @@ pub(super) struct OptionBoxComparison {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct PlaceFact {
-    pub(super) site: Site,
+    pub(super) site: Site<'db>,
     pub(super) access: PlaceAccess,
     pub(super) kind: PlaceKind,
     pub(super) readable: bool,
@@ -281,8 +320,8 @@ pub(super) struct PlaceFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct ValueFact {
-    pub(super) site: Site,
-    pub(super) subject: ValueSubject,
+    pub(super) site: Site<'db>,
+    pub(super) subject: ValueSubject<'db>,
     pub(super) value: ConstValue,
 }
 
@@ -290,7 +329,7 @@ pub(super) struct ValueFact {
 pub(super) struct CallSignatureFact {
     pub(super) id: SignatureId,
     pub(super) name: String,
-    pub(super) source: CallSignatureSource,
+    pub(super) source: CallSignatureSource<'db>,
     pub(super) params: Vec<CallParamFact>,
     pub(super) variadic: bool,
     pub(super) ret: Option<Type>,
@@ -298,7 +337,7 @@ pub(super) struct CallSignatureFact {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum CallSignatureSource {
-    Function(FunctionId),
+    Function(FunctionId<'db>),
     Extern {
         item_index: usize,
         decl_index: usize,
@@ -312,8 +351,8 @@ pub(super) struct CallParamFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CallsiteFact {
-    pub(super) site: Site,
-    pub(super) callee: CallCallee,
+    pub(super) site: Site<'db>,
+    pub(super) callee: CallCallee<'db>,
     pub(super) args: Vec<CallArgFact>,
     pub(super) ret: Option<Type>,
 }
@@ -322,7 +361,7 @@ pub(super) struct CallsiteFact {
 pub(super) enum CallCallee {
     Direct {
         name: String,
-        signature: Option<CallSignatureFact>,
+        signature: Option<CallSignatureFact<'db>>,
         identity: crate::function_identity::FunctionIdentity,
     },
     Indirect,
@@ -347,7 +386,7 @@ pub(super) enum CallArgPinning {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum ValueSubject {
     Expr,
-    Binding(BindingId),
+    Binding(BindingId<'db>),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -364,8 +403,8 @@ pub(super) enum ConstValue {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringBufferFact {
-    pub(super) site: Site,
-    pub(super) binding: BindingId,
+    pub(super) site: Site<'db>,
+    pub(super) binding: BindingId<'db>,
     pub(super) kind: StringBufferKind,
     pub(super) provenance: StringBufferProvenance,
     pub(super) bytes: Option<Vec<u8>>,
@@ -378,8 +417,8 @@ pub(super) struct StringBufferFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct AsciiNumericStringFact {
-    pub(super) site: Site,
-    pub(super) binding: BindingId,
+    pub(super) site: Site<'db>,
+    pub(super) binding: BindingId<'db>,
     pub(super) sign: AsciiNumericSign,
     pub(super) digits: usize,
 }
@@ -437,8 +476,8 @@ pub(super) enum StringBufferRejection {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringPointerViewFact {
-    pub(super) site: Site,
-    pub(super) source: BindingId,
+    pub(super) site: Site<'db>,
+    pub(super) source: BindingId<'db>,
     pub(super) mutable: bool,
     pub(super) kind: StringPointerViewKind,
 }
@@ -452,46 +491,46 @@ pub(super) enum StringPointerViewKind {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringLibcUseFact {
-    pub(super) site: Site,
+    pub(super) site: Site<'db>,
     pub(super) callee: StringLibcFunction,
-    pub(super) pointer_args: Vec<BindingId>,
+    pub(super) pointer_args: Vec<BindingId<'db>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringLiftPlanFact {
-    pub(super) site: Site,
-    pub(super) binding: BindingId,
+    pub(super) site: Site<'db>,
+    pub(super) binding: BindingId<'db>,
     pub(super) recovery: StringRecoveryCandidate,
     pub(super) remove_assignment: Option<AstPath>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringParamLiftFact {
-    pub(super) callee: FunctionId,
-    pub(super) param: BindingId,
+    pub(super) callee: FunctionId<'db>,
+    pub(super) param: BindingId<'db>,
     pub(super) index: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct StringCopyRewriteFact {
-    pub(super) site: Site,
-    pub(super) dst: BindingId,
-    pub(super) rewrite: StringCopyRewrite,
+    pub(super) site: Site<'db>,
+    pub(super) dst: BindingId<'db>,
+    pub(super) rewrite: StringCopyRewrite<'db>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CStringLiteralFact {
-    pub(super) function: FunctionId,
+    pub(super) function: FunctionId<'db>,
     pub(super) receiver_path: AstPath,
     pub(super) bytes: Vec<u8>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct FileOwnershipFact {
-    pub(super) function: FunctionId,
-    pub(super) handle: BindingId,
-    pub(super) open_temp: BindingId,
-    pub(super) close_temp: Option<BindingId>,
+    pub(super) function: FunctionId<'db>,
+    pub(super) handle: BindingId<'db>,
+    pub(super) open_temp: BindingId<'db>,
+    pub(super) close_temp: Option<BindingId<'db>>,
     pub(super) handle_path: AstPath,
     pub(super) open_path: AstPath,
     pub(super) assign_path: AstPath,
@@ -530,19 +569,19 @@ pub(super) enum FileUseKind {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum StringCopyRewrite {
     AssignLiteral(String),
-    AssignOwned(BindingId),
+    AssignOwned(BindingId<'db>),
     PushLiteral(String),
-    PushOwned(BindingId),
+    PushOwned(BindingId<'db>),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct HeapOwnershipFact {
-    pub(super) function: FunctionId,
-    pub(super) pointer: BindingId,
-    pub(super) allocation_temp: BindingId,
-    pub(super) size_temp: Option<BindingId>,
-    pub(super) free_temp: Option<BindingId>,
-    pub(super) aliases: Vec<BindingId>,
+    pub(super) function: FunctionId<'db>,
+    pub(super) pointer: BindingId<'db>,
+    pub(super) allocation_temp: BindingId<'db>,
+    pub(super) size_temp: Option<BindingId<'db>>,
+    pub(super) free_temp: Option<BindingId<'db>>,
+    pub(super) aliases: Vec<BindingId<'db>>,
     pub(super) pointer_path: AstPath,
     pub(super) allocation_path: AstPath,
     pub(super) assign_path: AstPath,
@@ -553,7 +592,7 @@ pub(super) struct HeapOwnershipFact {
     pub(super) init: HeapInitKind,
     pub(super) read_safety: HeapReadSafety,
     pub(super) uses: Vec<HeapUseFact>,
-    pub(super) reallocations: Vec<HeapReallocFact>,
+    pub(super) reallocations: Vec<HeapReallocFact<'db>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -579,25 +618,25 @@ pub(super) enum AllocProvenance {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CalleeAllocSummaryFact {
-    pub(super) function: FunctionId,
+    pub(super) function: FunctionId<'db>,
     pub(super) provenance: AllocProvenance,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct InterproceduralAllocEligibilityFact {
-    pub(super) function: FunctionId,
+    pub(super) function: FunctionId<'db>,
     pub(super) elem_ty: Type,
     pub(super) allocation: HeapAllocationKind,
     pub(super) extent: HeapExtent,
     pub(super) init: HeapInitKind,
     pub(super) eligible: bool,
-    pub(super) chain: Vec<FunctionId>,
+    pub(super) chain: Vec<FunctionId<'db>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct InterproceduralAllocCallerFact {
-    pub(super) callee: FunctionId,
-    pub(super) caller: FunctionId,
+    pub(super) callee: FunctionId<'db>,
+    pub(super) caller: FunctionId<'db>,
     pub(super) pointer_name: String,
     pub(super) decl_path: AstPath,
     pub(super) call_temp_path: AstPath,
@@ -647,9 +686,9 @@ pub(super) enum HeapUseKind {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct HeapReallocFact {
-    pub(super) source_temp: Option<BindingId>,
-    pub(super) allocation_temp: BindingId,
-    pub(super) size_temp: Option<BindingId>,
+    pub(super) source_temp: Option<BindingId<'db>>,
+    pub(super) allocation_temp: BindingId<'db>,
+    pub(super) size_temp: Option<BindingId<'db>>,
     pub(super) allocation_path: AstPath,
     pub(super) assign_path: AstPath,
     pub(super) new_extent: HeapExtent,
@@ -666,7 +705,7 @@ pub(super) enum HeapResizeKind {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct PrintfCallFact {
-    pub(super) site: Site,
+    pub(super) site: Site<'db>,
     pub(super) format: Option<Vec<u8>>,
     pub(super) arg_paths: Vec<AstPath>,
     pub(super) arg_facts: Vec<PrintfArgFact>,
@@ -760,33 +799,33 @@ pub(super) enum AtomicPlaceAccess {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct PtrLenSliceFact {
-    pub(super) caller: FunctionId,
-    pub(super) callee: FunctionId,
-    pub(super) ptr_param: BindingId,
-    pub(super) len_param: Option<BindingId>,
+    pub(super) caller: FunctionId<'db>,
+    pub(super) callee: FunctionId<'db>,
+    pub(super) ptr_param: BindingId<'db>,
+    pub(super) len_param: Option<BindingId<'db>>,
     pub(super) mutable: bool,
     pub(super) elem_ty: Type,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct ArrayElementPointerOriginFact {
-    pub(super) site: Site,
-    pub(super) pointer: BindingId,
-    pub(super) base: BindingId,
+    pub(super) site: Site<'db>,
+    pub(super) pointer: BindingId<'db>,
+    pub(super) base: BindingId<'db>,
     pub(super) index: Expr,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct LoopSite {
-    pub(super) function: FunctionId,
-    pub(super) loop_id: LoopId,
+    pub(super) function: FunctionId<'db>,
+    pub(super) loop_id: LoopId<'db>,
     pub(super) loop_path: AstPath,
     pub(super) body_path: AstPath,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CountedLoopFact {
-    pub(super) site: LoopSite,
+    pub(super) site: LoopSite<'db>,
     pub(super) bound: Expr,
     pub(super) start: CountedLoopStart,
     pub(super) step: CountedLoopStep,
@@ -795,9 +834,9 @@ pub(super) struct CountedLoopFact {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct CountedSliceLoopFact {
-    pub(super) site: LoopSite,
-    pub(super) index: BindingId,
-    pub(super) slice: BindingId,
+    pub(super) site: LoopSite<'db>,
+    pub(super) index: BindingId<'db>,
+    pub(super) slice: BindingId<'db>,
     pub(super) start: CountedLoopStart,
     pub(super) bound: CountedLoopBound,
     pub(super) step: CountedLoopStep,
@@ -945,11 +984,11 @@ pub(in crate::fixups) fn def_use_query_path(path: &AstPath) -> AstPath {
     )
 }
 
-pub(in crate::fixups) fn binding_by_param_index(
-    bindings: &[BindingFact],
-    function: FunctionId,
+pub(in crate::fixups) fn binding_by_param_index<'db>(
+    bindings: &[BindingFact<'db>],
+    function: FunctionId<'db>,
     index: usize,
-) -> Option<BindingId> {
+) -> Option<BindingId<'db>> {
     bindings
         .iter()
         .find(|binding| {
@@ -959,12 +998,12 @@ pub(in crate::fixups) fn binding_by_param_index(
         .map(|binding| binding.id)
 }
 
-pub(in crate::fixups) fn binding_by_local_path(
-    bindings: &[BindingFact],
-    function: FunctionId,
+pub(in crate::fixups) fn binding_by_local_path<'db>(
+    bindings: &[BindingFact<'db>],
+    function: FunctionId<'db>,
     name: &str,
     path: &AstPath,
-) -> Option<BindingId> {
+) -> Option<BindingId<'db>> {
     bindings
         .iter()
         .find(|binding| {
@@ -976,11 +1015,11 @@ pub(in crate::fixups) fn binding_by_local_path(
         .map(|binding| binding.id)
 }
 
-pub(in crate::fixups) fn binding_named(
-    bindings: &[BindingFact],
-    function: FunctionId,
+pub(in crate::fixups) fn binding_named<'db>(
+    bindings: &[BindingFact<'db>],
+    function: FunctionId<'db>,
     name: &str,
-) -> Option<BindingId> {
+) -> Option<BindingId<'db>> {
     bindings
         .iter()
         .rev()
@@ -988,9 +1027,9 @@ pub(in crate::fixups) fn binding_named(
         .map(|binding| binding.id)
 }
 
-pub(in crate::fixups) fn binding_type(
-    binding_types: &[BindingTypeFact],
-    binding: BindingId,
+pub(in crate::fixups) fn binding_type<'db>(
+    binding_types: &[BindingTypeFact<'db>],
+    binding: BindingId<'db>,
 ) -> Option<&str> {
     binding_types
         .iter()
@@ -998,9 +1037,9 @@ pub(in crate::fixups) fn binding_type(
         .map(|fact| fact.rendered.as_str())
 }
 
-pub(in crate::fixups) fn binding_type_ast(
-    binding_types: &[BindingTypeFact],
-    binding: BindingId,
+pub(in crate::fixups) fn binding_type_ast<'db>(
+    binding_types: &[BindingTypeFact<'db>],
+    binding: BindingId<'db>,
 ) -> Option<&Type> {
     binding_types
         .iter()
@@ -1008,25 +1047,25 @@ pub(in crate::fixups) fn binding_type_ast(
         .map(|fact| &fact.ty)
 }
 
-pub(in crate::fixups) fn def_use_of(
-    def_use: &[DefUseFact],
-    binding: BindingId,
-) -> Option<&DefUseFact> {
+pub(in crate::fixups) fn def_use_of<'db>(
+    def_use: &[DefUseFact<'db>],
+    binding: BindingId<'db>,
+) -> Option<&DefUseFact<'db>> {
     def_use.iter().find(|fact| fact.binding == binding)
 }
 
-pub(in crate::fixups) fn string_buffer(
-    string_buffers: &[StringBufferFact],
-    binding: BindingId,
-) -> Option<&StringBufferFact> {
+pub(in crate::fixups) fn string_buffer<'db>(
+    string_buffers: &[StringBufferFact<'db>],
+    binding: BindingId<'db>,
+) -> Option<&StringBufferFact<'db>> {
     string_buffers.iter().find(|fact| fact.binding == binding)
 }
 
-pub(in crate::fixups) fn string_pointer_view<'a>(
-    string_pointer_views: &'a [StringPointerViewFact],
-    function: FunctionId,
+pub(in crate::fixups) fn string_pointer_view<'a, 'db>(
+    string_pointer_views: &'a [StringPointerViewFact<'db>],
+    function: FunctionId<'db>,
     path: &AstPath,
-) -> Option<&'a StringPointerViewFact> {
+) -> Option<&'a StringPointerViewFact<'db>> {
     string_pointer_views
         .iter()
         .find(|fact| fact.site.function == function && &fact.site.path == path)
@@ -1039,13 +1078,13 @@ pub(in crate::fixups) fn string_pointer_view<'a>(
 /// count. The name filter matters because multiple differently-named
 /// bindings read within the same statement (e.g. two pointer arguments
 /// of one call) share that same coarse read path.
-pub(in crate::fixups) fn binding_read_under(
-    def_use: &[DefUseFact],
-    bindings: &[BindingFact],
-    function: FunctionId,
+pub(in crate::fixups) fn binding_read_under<'db>(
+    def_use: &[DefUseFact<'db>],
+    bindings: &[BindingFact<'db>],
+    function: FunctionId<'db>,
     name: &str,
     path: &AstPath,
-) -> Option<BindingId> {
+) -> Option<BindingId<'db>> {
     let path = def_use_query_path(path);
     def_use
         .iter()
@@ -1062,19 +1101,19 @@ pub(in crate::fixups) fn binding_read_under(
         .map(|fact| fact.binding)
 }
 
-pub(in crate::fixups) fn local_binding_at<'a>(
-    bindings: &'a [BindingFact],
-    function: FunctionId,
+pub(in crate::fixups) fn local_binding_at<'a, 'db>(
+    bindings: &'a [BindingFact<'db>],
+    function: FunctionId<'db>,
     path: &AstPath,
-) -> Option<&'a BindingFact> {
+) -> Option<&'a BindingFact<'db>> {
     bindings.iter().find(|binding| {
         binding.function == function && binding.kind == BindingKind::Local && &binding.path == path
     })
 }
 
-pub(in crate::fixups) fn binding_name(
-    bindings: &[BindingFact],
-    binding: BindingId,
+pub(in crate::fixups) fn binding_name<'db>(
+    bindings: &[BindingFact<'db>],
+    binding: BindingId<'db>,
 ) -> Option<&str> {
     bindings
         .iter()
@@ -1082,21 +1121,21 @@ pub(in crate::fixups) fn binding_name(
         .map(|fact| fact.name.as_str())
 }
 
-pub(in crate::fixups) fn string_buffer_at<'a>(
-    string_buffers: &'a [StringBufferFact],
-    function: FunctionId,
+pub(in crate::fixups) fn string_buffer_at<'a, 'db>(
+    string_buffers: &'a [StringBufferFact<'db>],
+    function: FunctionId<'db>,
     path: &AstPath,
-) -> Option<&'a StringBufferFact> {
+) -> Option<&'a StringBufferFact<'db>> {
     string_buffers
         .iter()
         .find(|fact| fact.site.function == function && &fact.site.path == path)
 }
 
-pub(in crate::fixups) fn string_libc_use<'a>(
-    string_libc_uses: &'a [StringLibcUseFact],
-    function: FunctionId,
+pub(in crate::fixups) fn string_libc_use<'a, 'db>(
+    string_libc_uses: &'a [StringLibcUseFact<'db>],
+    function: FunctionId<'db>,
     path: &AstPath,
-) -> Option<&'a StringLibcUseFact> {
+) -> Option<&'a StringLibcUseFact<'db>> {
     string_libc_uses
         .iter()
         .find(|fact| fact.site.function == function && &fact.site.path == path)

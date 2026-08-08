@@ -8,10 +8,10 @@ use crate::fixups::facts::{
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{BinOp, Expr, FnDef, IndentStmt, RustValue, Stmt, Type};
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
-) -> (Vec<OptionBoxLocalCandidate>, Vec<OptionBoxComparison>) {
+    bindings: &[BindingFact<'db>],
+) -> (Vec<OptionBoxLocalCandidate<'db>>, Vec<OptionBoxComparison<'db>>) {
     let let_defs = collect_let_defs(&f.body);
     let candidates = local_candidates_for_function(function, f, bindings);
     let candidate_names: BTreeSet<String> = candidates.iter().map(|c| c.name.clone()).collect();
@@ -30,10 +30,10 @@ pub(in crate::fixups) fn collect_for_function(
 fn collect_comparisons(
     body: &[IndentStmt],
     path: &mut Vec<PathSegment>,
-    function: FunctionId,
+    function: FunctionId<'db>,
     candidate_names: &BTreeSet<String>,
     let_defs: &BTreeMap<String, Expr>,
-    comparisons: &mut Vec<OptionBoxComparison>,
+    comparisons: &mut Vec<OptionBoxComparison<'db>>,
 ) {
     for (index, indent) in body.iter().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
@@ -108,10 +108,10 @@ fn comparison_shape(
 }
 
 fn local_candidates_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
-) -> Vec<OptionBoxLocalCandidate> {
+    bindings: &[BindingFact<'db>],
+) -> Vec<OptionBoxLocalCandidate<'db>> {
     let let_defs = collect_let_defs(&f.body);
     let mut candidates = Vec::new();
     for (index, indent) in f.body.iter().enumerate() {

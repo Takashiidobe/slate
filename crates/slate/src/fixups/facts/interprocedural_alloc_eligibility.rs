@@ -17,20 +17,20 @@ struct ResolvedSummary {
 }
 
 pub(in crate::fixups) struct FunctionSummary<'a> {
-    pub(in crate::fixups) id: FunctionId,
+    pub(in crate::fixups) id: FunctionId<'db>,
     pub(in crate::fixups) name: &'a str,
     pub(in crate::fixups) body: &'a [IndentStmt],
-    pub(in crate::fixups) bindings: &'a [BindingFact],
-    pub(in crate::fixups) callee_alloc_summary: Option<&'a CalleeAllocSummaryFact>,
+    pub(in crate::fixups) bindings: &'a [BindingFact<'db>],
+    pub(in crate::fixups) callee_alloc_summary: Option<&'a CalleeAllocSummaryFact<'db>>,
 }
 pub(in crate::fixups) fn collect(
     functions: &[FunctionSummary],
 ) -> (
-    Vec<InterproceduralAllocEligibilityFact>,
-    Vec<InterproceduralAllocCallerFact>,
+    Vec<InterproceduralAllocEligibilityFact<'db>>,
+    Vec<InterproceduralAllocCallerFact<'db>>,
 ) {
-    let mut by_name: BTreeMap<&str, FunctionId> = BTreeMap::new();
-    let mut by_function: BTreeMap<FunctionId, &CalleeAllocSummaryFact> = BTreeMap::new();
+    let mut by_name: BTreeMap<&str, FunctionId<'db>> = BTreeMap::new();
+    let mut by_function: BTreeMap<FunctionId<'db>, &CalleeAllocSummaryFact<'db>> = BTreeMap::new();
     for summary in functions {
         by_name.insert(summary.name, summary.id);
         if let Some(fact) = summary.callee_alloc_summary {
@@ -41,7 +41,7 @@ pub(in crate::fixups) fn collect(
     // Resolve every function that has a provenance fact to its ultimate (root, summary),
     // walking Direct/PassThrough links -- the chain itself falls out as a by-product below,
     // rather than needing its own separately-tracked fact.
-    let mut memo: BTreeMap<FunctionId, Option<(ResolvedSummary, FunctionId)>> = BTreeMap::new();
+    let mut memo: BTreeMap<FunctionId<'db>, Option<(ResolvedSummary, FunctionId<'db>)>> = BTreeMap::new();
     for function in by_function.keys() {
         resolve_root(
             *function,
@@ -51,19 +51,19 @@ pub(in crate::fixups) fn collect(
             &mut BTreeSet::new(),
         );
     }
-    let resolved: BTreeMap<FunctionId, (ResolvedSummary, FunctionId)> = memo
+    let resolved: BTreeMap<FunctionId<'db>, (ResolvedSummary, FunctionId<'db>)> = memo
         .into_iter()
         .filter_map(|(function, outcome)| outcome.map(|outcome| (function, outcome)))
         .collect();
 
-    let mut chain_of: BTreeMap<FunctionId, Vec<FunctionId>> = BTreeMap::new();
+    let mut chain_of: BTreeMap<FunctionId<'db>, Vec<FunctionId<'db>>> = BTreeMap::new();
     for (function, (_, root)) in &resolved {
         if function != root {
             chain_of.entry(*root).or_default().push(*function);
         }
     }
 
-    let by_id: BTreeMap<FunctionId, &FunctionSummary> = functions
+    let by_id: BTreeMap<FunctionId<'db>, &FunctionSummary> = functions
         .iter()
         .map(|summary| (summary.id, summary))
         .collect();
@@ -122,12 +122,12 @@ pub(in crate::fixups) fn collect(
 }
 
 fn resolve_root(
-    function: FunctionId,
-    by_function: &BTreeMap<FunctionId, &CalleeAllocSummaryFact>,
-    by_name: &BTreeMap<&str, FunctionId>,
-    memo: &mut BTreeMap<FunctionId, Option<(ResolvedSummary, FunctionId)>>,
-    visited: &mut BTreeSet<FunctionId>,
-) -> Option<(ResolvedSummary, FunctionId)> {
+    function: FunctionId<'db>,
+    by_function: &BTreeMap<FunctionId<'db>, &CalleeAllocSummaryFact<'db>>,
+    by_name: &BTreeMap<&str, FunctionId<'db>>,
+    memo: &mut BTreeMap<FunctionId<'db>, Option<(ResolvedSummary, FunctionId<'db>)>>,
+    visited: &mut BTreeSet<FunctionId<'db>>,
+) -> Option<(ResolvedSummary, FunctionId<'db>)> {
     if let Some(cached) = memo.get(&function) {
         return cached.clone();
     }
@@ -152,7 +152,7 @@ fn resolve_root(
             function,
         )),
         AllocProvenance::PassThrough { callees } => {
-            let mut agreed: Option<(ResolvedSummary, FunctionId)> = None;
+            let mut agreed: Option<(ResolvedSummary, FunctionId<'db>)> = None;
             for callee_name in callees {
                 let callee = *by_name.get(callee_name.as_str())?;
                 let resolved = resolve_root(callee, by_function, by_name, memo, visited)?;
@@ -170,7 +170,7 @@ fn resolve_root(
 }
 
 struct CallerRewritePlan {
-    caller: FunctionId,
+    caller: FunctionId<'db>,
     pointer_name: String,
     decl_path: AstPath,
     call_temp_path: AstPath,
@@ -180,8 +180,8 @@ struct CallerRewritePlan {
 fn caller_calls_for_callee(
     caller: &FunctionSummary,
     callee_name: &str,
-    resolved: &BTreeMap<FunctionId, (ResolvedSummary, FunctionId)>,
-    by_name: &BTreeMap<&str, FunctionId>,
+    resolved: &BTreeMap<FunctionId<'db>, (ResolvedSummary, FunctionId<'db>)>,
+    by_name: &BTreeMap<&str, FunctionId<'db>>,
 ) -> (bool, Vec<CallerRewritePlan>) {
     let mut ok = true;
     let mut plans = Vec::new();
@@ -227,8 +227,8 @@ struct CallAllocation {
 
 fn call_allocation_temp(
     stmt: &Stmt,
-    resolved: &BTreeMap<FunctionId, (ResolvedSummary, FunctionId)>,
-    by_name: &BTreeMap<&str, FunctionId>,
+    resolved: &BTreeMap<FunctionId<'db>, (ResolvedSummary, FunctionId<'db>)>,
+    by_name: &BTreeMap<&str, FunctionId<'db>>,
 ) -> Option<CallAllocation> {
     let Stmt::Let {
         name,
@@ -264,8 +264,8 @@ fn find_call_allocation(
     caller: &FunctionSummary,
     start: usize,
     pointer_name: &str,
-    resolved: &BTreeMap<FunctionId, (ResolvedSummary, FunctionId)>,
-    by_name: &BTreeMap<&str, FunctionId>,
+    resolved: &BTreeMap<FunctionId<'db>, (ResolvedSummary, FunctionId<'db>)>,
+    by_name: &BTreeMap<&str, FunctionId<'db>>,
 ) -> Option<CallAllocationOutcome> {
     let body = caller.body;
     for allocation_index in start..body.len() {

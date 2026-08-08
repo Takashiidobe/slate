@@ -8,10 +8,10 @@ use crate::rust_ast::{
     AsmOperand, AtomicPlace, Block, Expr, FnDef, Ident, IndentStmt, Pattern, Stmt, UnaryOp,
 };
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
-) -> Vec<DefUseFact> {
+    bindings: &[BindingFact<'db>],
+) -> Vec<DefUseFact<'db>> {
     let mut collector = Collector::new(function, bindings);
     collector.enter_root_scope();
     collector.body(&f.body, &mut Vec::new(), false);
@@ -19,10 +19,10 @@ pub(in crate::fixups) fn collect_for_function(
 }
 
 struct Collector<'a> {
-    function: FunctionId,
-    bindings: &'a [BindingFact],
-    scopes: Vec<BTreeMap<String, Option<BindingId>>>,
-    by_binding: BTreeMap<BindingId, BindingSummary>,
+    function: FunctionId<'db>,
+    bindings: &'a [BindingFact<'db>],
+    scopes: Vec<BTreeMap<String, Option<BindingId<'db>>>>,
+    by_binding: BTreeMap<BindingId<'db>, BindingSummary>,
 }
 
 #[derive(Default)]
@@ -32,7 +32,7 @@ struct BindingSummary {
 }
 
 impl<'a> Collector<'a> {
-    fn new(function: FunctionId, bindings: &'a [BindingFact]) -> Self {
+    fn new(function: FunctionId<'db>, bindings: &'a [BindingFact<'db>]) -> Self {
         Self {
             function,
             bindings,
@@ -57,7 +57,7 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn finish(self) -> Vec<DefUseFact> {
+    fn finish(self) -> Vec<DefUseFact<'db>> {
         self.bindings
             .iter()
             .filter(|binding| binding.function == self.function)
@@ -405,7 +405,7 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId> {
+    fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId<'db>> {
         facts::binding_by_local_path(self.bindings, self.function, name, &AstPath(path.to_vec()))
     }
 
@@ -425,7 +425,7 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn bind(&mut self, name: String, binding: Option<BindingId>) {
+    fn bind(&mut self, name: String, binding: Option<BindingId<'db>>) {
         if let Some(scope) = self.scopes.last_mut() {
             scope.insert(name, binding);
         }
@@ -462,7 +462,7 @@ impl<'a> Collector<'a> {
             .push(AstPath(path.to_vec()));
     }
 
-    fn binding_for_name(&self, name: &str) -> Option<BindingId> {
+    fn binding_for_name(&self, name: &str) -> Option<BindingId<'db>> {
         self.scopes
             .iter()
             .rev()

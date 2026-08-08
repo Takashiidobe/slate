@@ -9,13 +9,13 @@ use crate::rust_ast::{
     AtomicType, Block, Expr, FnDef, IndentStmt, Pattern, Prim, RustValue, Stmt, Type, UnaryOp,
 };
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-    bindings: &[BindingFact],
-    functions: &[FunctionFact],
-    call_signatures: &[CallSignatureFact],
-    callsites: &[CallsiteFact],
-) -> Vec<CastFact> {
+    bindings: &[BindingFact<'db>],
+    functions: &[FunctionFact<'db>],
+    call_signatures: &[CallSignatureFact<'db>],
+    callsites: &[CallsiteFact<'db>],
+) -> Vec<CastFact<'db>> {
     let mut collector = Collector::new(function, bindings, functions, call_signatures, callsites);
     collector.enter_root_scope();
     collector.body(&f.body, &mut Vec::new(), false);
@@ -23,22 +23,22 @@ pub(in crate::fixups) fn collect_for_function(
 }
 
 struct Collector<'a> {
-    function: FunctionId,
-    bindings: &'a [BindingFact],
-    functions: &'a [FunctionFact],
-    call_signatures: &'a [CallSignatureFact],
-    callsites: &'a [CallsiteFact],
+    function: FunctionId<'db>,
+    bindings: &'a [BindingFact<'db>],
+    functions: &'a [FunctionFact<'db>],
+    call_signatures: &'a [CallSignatureFact<'db>],
+    callsites: &'a [CallsiteFact<'db>],
     scopes: Vec<BTreeMap<String, Option<Type>>>,
-    casts: Vec<CastFact>,
+    casts: Vec<CastFact<'db>>,
 }
 
 impl<'a> Collector<'a> {
     fn new(
-        function: FunctionId,
-        bindings: &'a [BindingFact],
-        functions: &'a [FunctionFact],
-        call_signatures: &'a [CallSignatureFact],
-        callsites: &'a [CallsiteFact],
+        function: FunctionId<'db>,
+        bindings: &'a [BindingFact<'db>],
+        functions: &'a [FunctionFact<'db>],
+        call_signatures: &'a [CallSignatureFact<'db>],
+        callsites: &'a [CallsiteFact<'db>],
     ) -> Self {
         Self {
             function,

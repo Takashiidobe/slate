@@ -7,9 +7,9 @@ use crate::fixups::facts::{AtomicGlobalFact, AtomicLocalFact, FunctionId, Static
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::rust_ast::{AtomicPlace, AtomicType, Expr, FnDef, IndentStmt, Prim, Stmt, Type};
 pub(in crate::fixups) fn collect_for_function(
-    function: FunctionId,
+    function: FunctionId<'db>,
     f: &FnDef,
-) -> Vec<AtomicLocalFact> {
+) -> Vec<AtomicLocalFact<'db>> {
     promotable_locals(&f.body)
         .into_iter()
         .map(|(name, ty)| AtomicLocalFact { function, name, ty })
