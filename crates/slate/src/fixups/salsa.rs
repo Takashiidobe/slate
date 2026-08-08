@@ -1,9 +1,11 @@
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 
 use crate::fixups::facts::{
-    self, AstPath, BindingFact, BindingId, BindingTypeFact, CallSignatureFact, CallSignatureSource,
-    CallsiteFact, CastFact, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
-    EffectSubject, FixupFacts, FunctionFact, FunctionId, LoopFact, ValueFact,
+    self, ArrayElementPointerOriginFact, AstPath, BindingFact, BindingId, BindingTypeFact,
+    BorrowAliasFact, BorrowAliasReason, BorrowAliasState, CallSignatureFact, CallSignatureSource,
+    CallsiteFact, CastFact, ControlFlowFact, ControlFlowSubject, CountedLoopFact,
+    CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionFact,
+    FunctionId, LoopFact, NullCheckDominanceFact, PlaceFact, ValueFact,
 };
 use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{FnDef, Item, Program};
@@ -105,6 +107,54 @@ impl FunctionInput {
             ..FixupFacts::default()
         };
         facts::casts::collect_for_function(*self.function(db), self.body(db), &local_facts)
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn places(self, db: &dyn FixupDb) -> Vec<PlaceFact> {
+        facts::places::collect_for_function(*self.function(db), self.body(db))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn control_flow(self, db: &dyn FixupDb) -> Vec<ControlFlowFact> {
+        facts::control_flow::collect_for_function(*self.function(db), self.body(db))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn borrow_alias(self, db: &dyn FixupDb) -> Vec<BorrowAliasFact> {
+        let local_facts = FixupFacts {
+            bindings: self.bindings(db).clone(),
+            ..FixupFacts::default()
+        };
+        facts::borrow_alias::collect_for_function(*self.function(db), self.body(db), &local_facts)
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn array_element_pointer_origins(self, db: &dyn FixupDb) -> Vec<ArrayElementPointerOriginFact> {
+        let local_facts = FixupFacts {
+            bindings: self.bindings(db).clone(),
+            binding_types: self.binding_types(db).clone(),
+            def_use: self.def_use(db).clone(),
+            ..FixupFacts::default()
+        };
+        facts::array_element_pointer_origin::collect_for_function(
+            *self.function(db),
+            self.body(db),
+            &local_facts,
+        )
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn null_check_dominance(self, db: &dyn FixupDb) -> Vec<NullCheckDominanceFact> {
+        let local_facts = FixupFacts {
+            bindings: self.bindings(db).clone(),
+            control_flow: self.control_flow(db).clone(),
+            ..FixupFacts::default()
+        };
+        facts::null_check_dominance::collect_for_function(
+            *self.function(db),
+            self.body(db),
+            &local_facts,
+        )
     }
 }
 
@@ -345,6 +395,94 @@ impl SalsaFacts {
             .casts(&self.db)
             .iter()
             .find(|fact| &fact.site.path == path)
+    }
+
+    pub(in crate::fixups) fn place(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&PlaceFact> {
+        let input = *self.functions.get(&function)?;
+        input
+            .places(&self.db)
+            .iter()
+            .find(|fact| &fact.site.path == path)
+    }
+
+    pub(in crate::fixups) fn control_flow(
+        &self,
+        function: FunctionId,
+        subject: ControlFlowSubject,
+        path: &AstPath,
+    ) -> Option<&ControlFlowFact> {
+        let input = *self.functions.get(&function)?;
+        input
+            .control_flow(&self.db)
+            .iter()
+            .find(|fact| fact.subject == subject && &fact.site.path == path)
+    }
+
+    pub(in crate::fixups) fn borrow_alias_reasons(
+        &self,
+        function: FunctionId,
+        binding: BindingId,
+    ) -> Option<&BTreeSet<BorrowAliasReason>> {
+        let input = *self.functions.get(&function)?;
+        input
+            .borrow_alias(&self.db)
+            .iter()
+            .find(|fact| fact.binding == binding)
+            .map(|fact| &fact.reasons)
+    }
+
+    pub(in crate::fixups) fn binding_requires_mut(
+        &self,
+        function: FunctionId,
+        binding: BindingId,
+    ) -> bool {
+        let Some(&input) = self.functions.get(&function) else {
+            return false;
+        };
+        let borrow_alias = input.borrow_alias(&self.db);
+        let is_mut = |id: BindingId| {
+            borrow_alias
+                .iter()
+                .find(|fact| fact.binding == id)
+                .is_some_and(|fact| fact.state != BorrowAliasState::ReadOnly)
+        };
+        if is_mut(binding) {
+            return true;
+        }
+        let Some(target) = input.bindings(&self.db).iter().find(|b| b.id == binding) else {
+            return false;
+        };
+        input
+            .bindings(&self.db)
+            .iter()
+            .filter(|other| other.name == target.name)
+            .any(|other| is_mut(other.id))
+    }
+
+    pub(in crate::fixups) fn array_element_pointer_origins(
+        &self,
+        function: FunctionId,
+    ) -> &[ArrayElementPointerOriginFact] {
+        let Some(&input) = self.functions.get(&function) else {
+            return &[];
+        };
+        input.array_element_pointer_origins(&self.db)
+    }
+
+    pub(in crate::fixups) fn null_check_dominance_at(
+        &self,
+        function: FunctionId,
+        deref_path: &AstPath,
+    ) -> Option<&NullCheckDominanceFact> {
+        let input = *self.functions.get(&function)?;
+        input
+            .null_check_dominance(&self.db)
+            .iter()
+            .find(|fact| facts::walk::paths_overlap(&fact.deref_site.path.0, &deref_path.0))
     }
 }
 

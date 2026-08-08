@@ -4,11 +4,12 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AsciiNumericSign, AstPath, BindingId, BindingKind, BorrowAliasReason, CallArgPinning,
-    CallCallee, CalleeAllocSummaryFact, CastFact, ConstValue, ControlFlowSubject, CountedLoopFact,
-    CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionId,
-    InterproceduralAllocEligibilityFact, NulTermination, NullCheckProof, OptionBoxAssignKind,
-    PathSegment, PointerComparisonKind, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
+    ArrayElementPointerOriginFact, AsciiNumericSign, AstPath, BindingId, BindingKind,
+    BorrowAliasReason, CallArgPinning, CallCallee, CalleeAllocSummaryFact, CastFact, ConstValue,
+    ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact,
+    EffectFact, EffectSubject, FixupFacts, FunctionId, InterproceduralAllocEligibilityFact,
+    NulTermination, NullCheckDominanceFact, NullCheckProof, OptionBoxAssignKind, PathSegment,
+    PlaceFact, PointerComparisonKind, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
     StringBufferKind, StringCopyRewrite, StringLibcUseFact, StringPointerViewFact,
     StringRecoveryCandidate, StructFieldOwnershipFact, ValueSubject,
 };
@@ -423,6 +424,77 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
+    fn place_fact(&self, function: FunctionId, path: &AstPath) -> Option<&PlaceFact> {
+        match self.salsa {
+            Some(salsa) => salsa.place(function, path),
+            None => self.facts.place(function, path),
+        }
+    }
+
+    fn control_flow_fact(
+        &self,
+        function: FunctionId,
+        subject: ControlFlowSubject,
+        path: &AstPath,
+    ) -> Option<&ControlFlowFact> {
+        match self.salsa {
+            Some(salsa) => salsa.control_flow(function, subject, path),
+            None => self.facts.control_flow(function, subject, path),
+        }
+    }
+
+    fn binding_requires_mut_fact(&self, function: FunctionId, binding: BindingId) -> bool {
+        match self.salsa {
+            Some(salsa) => salsa.binding_requires_mut(function, binding),
+            None => self.facts.binding_requires_mut(binding),
+        }
+    }
+
+    fn borrow_alias_reasons_fact(
+        &self,
+        function: FunctionId,
+        binding: BindingId,
+    ) -> Option<BTreeSet<BorrowAliasReason>> {
+        match self.salsa {
+            Some(salsa) => salsa.borrow_alias_reasons(function, binding).cloned(),
+            None => self
+                .facts
+                .borrow_alias
+                .iter()
+                .find(|fact| fact.binding == binding)
+                .map(|fact| fact.reasons.clone()),
+        }
+    }
+
+    fn array_element_pointer_origin_facts(
+        &self,
+        function: FunctionId,
+    ) -> Vec<&ArrayElementPointerOriginFact> {
+        match self.salsa {
+            Some(salsa) => salsa
+                .array_element_pointer_origins(function)
+                .iter()
+                .collect(),
+            None => self
+                .facts
+                .array_element_pointer_origins
+                .iter()
+                .filter(|fact| fact.site.function == function)
+                .collect(),
+        }
+    }
+
+    fn null_check_dominance_at(
+        &self,
+        function: FunctionId,
+        deref_path: &AstPath,
+    ) -> Option<&NullCheckDominanceFact> {
+        match self.salsa {
+            Some(salsa) => salsa.null_check_dominance_at(function, deref_path),
+            None => self.facts.null_check_dominance_at(function, deref_path),
+        }
+    }
+
     pub(in crate::fixups) fn all_calls(&self) -> impl Iterator<Item = &CallRecord> {
         self.calls.values().flatten()
     }
@@ -673,8 +745,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             ));
         };
         let reachable = self
-            .facts
-            .control_flow(function, ControlFlowSubject::Stmt, &statement.path)
+            .control_flow_fact(function, ControlFlowSubject::Stmt, &statement.path)
             .is_some_and(|fact| fact.reachable);
         Ok(Proof::new(
             reachable,
@@ -737,7 +808,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         binding: &BindingRef,
     ) -> QueryResult<bool> {
         let predicate = Predicate::BindingRequiresMut;
-        let required = self.facts.binding_requires_mut(binding.id);
+        let required = match self.facts.function_by_item_index(binding.item_index) {
+            Some(function) => self.binding_requires_mut_fact(function, binding.id),
+            None => self.facts.binding_requires_mut(binding.id),
+        };
         Ok(Proof::new(
             required,
             vec![Evidence {
@@ -753,12 +827,15 @@ impl<'snapshot> QueryContext<'snapshot> {
         binding: &BindingRef,
     ) -> QueryResult<Option<BTreeSet<BorrowAliasReason>>> {
         let predicate = Predicate::BorrowAliasReasons;
-        let reasons = self
-            .facts
-            .borrow_alias
-            .iter()
-            .find(|fact| fact.binding == binding.id)
-            .map(|fact| fact.reasons.clone());
+        let reasons = match self.facts.function_by_item_index(binding.item_index) {
+            Some(function) => self.borrow_alias_reasons_fact(function, binding.id),
+            None => self
+                .facts
+                .borrow_alias
+                .iter()
+                .find(|fact| fact.binding == binding.id)
+                .map(|fact| fact.reasons.clone()),
+        };
         let evidence = vec![Evidence {
             predicate,
             site: expression_site(binding.item_index, &binding.definition.0),
@@ -1630,8 +1707,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             )
         })?;
         let fact = self
-            .facts
-            .place(function, &expression.site.fact_path)
+            .place_fact(function, &expression.site.fact_path)
             .ok_or_else(|| {
                 Rejection::new(
                     predicate,
@@ -2059,10 +2135,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(fact) = self
-            .facts
-            .null_check_dominance_at(function, &deref_site.path)
-        else {
+        let Some(fact) = self.null_check_dominance_at(function, &deref_site.path) else {
             return Err(Rejection::new(
                 predicate,
                 Some(deref_site.clone()),
@@ -2701,10 +2774,8 @@ impl<'snapshot> QueryContext<'snapshot> {
             ));
         };
         let mut origins = self
-            .facts
-            .array_element_pointer_origins
-            .iter()
-            .filter(|fact| fact.site.function == function)
+            .array_element_pointer_origin_facts(function)
+            .into_iter()
             .filter_map(|fact| {
                 Some((
                     self.facts.binding_name(fact.pointer)?.to_string(),

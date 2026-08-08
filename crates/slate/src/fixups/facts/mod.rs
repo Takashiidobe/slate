@@ -21,7 +21,6 @@ pub(crate) mod goto;
 pub(super) mod heap_ownership;
 pub(super) mod interprocedural_alloc_eligibility;
 pub(super) mod lazy_singleton;
-pub(super) mod loop_shapes;
 pub(super) mod null_check_dominance;
 pub(super) mod option_box_locals;
 pub(super) mod places;
@@ -86,8 +85,6 @@ pub(super) struct FixupFacts {
     pub(super) lazy_init_singletons: Vec<LazyInitSingletonFact>,
     pub(super) counted_loops: Vec<CountedLoopFact>,
     pub(super) counted_slice_loops: Vec<CountedSliceLoopFact>,
-    pub(super) loop_shapes: Vec<LoopShapeFact>,
-    pub(super) loop_shape_rejections: Vec<LoopShapeRejectionFact>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -852,76 +849,6 @@ pub(super) struct CountedSliceLoopFact {
     pub(super) access: SliceLoopAccess,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct LoopShapeFact {
-    pub(super) site: LoopSite,
-    pub(super) kind: LoopShapeKind,
-    pub(super) induction: Option<BindingId>,
-    pub(super) accumulators: Vec<BindingId>,
-    pub(super) collections: Vec<BindingId>,
-    pub(super) mutation_targets: Vec<BindingId>,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum LoopShapeKind {
-    Counted { access: SliceLoopAccess },
-    Reduction { op: ReductionOp },
-    Search { result: SearchResult },
-    Copy,
-    Fill,
-    Sentinel { target: SentinelTarget },
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum ReductionOp {
-    Add,
-    Mul,
-    BitAnd,
-    BitOr,
-    BitXor,
-    And,
-    Or,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum SearchResult {
-    BreaksOnMatch,
-    AssignsFlag,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum SentinelTarget {
-    IndexedCollection,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct LoopShapeRejectionFact {
-    pub(super) function: FunctionId,
-    pub(super) loop_id: LoopId,
-    pub(super) attempted: LoopShapeKindTag,
-    pub(super) reason: LoopShapeRejection,
-    pub(super) loop_path: AstPath,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum LoopShapeKindTag {
-    Counted,
-    Reduction,
-    Search,
-    Copy,
-    Fill,
-    Sentinel,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum LoopShapeRejection {
-    MissingCollection,
-    MissingInduction,
-    MissingMutation,
-    MultipleMutations,
-    UnsupportedControlFlow,
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) enum CountedLoopStart {
     Zero,
@@ -1565,7 +1492,6 @@ pub(super) fn analyze(program: &Program) -> AnalyzedProgram<'_> {
     lazy_singleton::collect_facts(program, &mut facts);
     buffer_cursor::collect_facts(program, &mut facts);
     counted_loop::collect_facts(program, &mut facts);
-    loop_shapes::collect_facts(program, &mut facts);
     AnalyzedProgram { program, facts }
 }
 

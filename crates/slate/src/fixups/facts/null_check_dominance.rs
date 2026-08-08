@@ -24,7 +24,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
     facts.null_check_dominance = all;
 }
 
-fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
     facts: &FixupFacts,
