@@ -2,8 +2,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::{
     self, AsciiNumericSign, AsciiNumericStringFact, AstPath, BindingFact, BindingId, BindingKind,
-    BindingTypeFact, CallCallee, CallSignatureSource, ConstValue, DefUseFact, FixupFacts,
-    FunctionId, GENERATED_C_STRING_READ_CALLEE, NulTermination, PathSegment, PrintfCallFact, Site,
+    BindingTypeFact, CallCallee, CallSignatureSource, ConstValue, DefUseFact, FunctionId,
+    GENERATED_C_STRING_READ_CALLEE, NulTermination, PathSegment, PrintfCallFact, Site,
     StringBufferFact, StringBufferKind, StringBufferProvenance, StringBufferRejection,
     StringCopyRewrite, StringCopyRewriteFact, StringLibcFunction, StringLibcUseFact,
     StringLiftPlanFact, StringParamLiftFact, StringPointerViewFact, StringPointerViewKind,
@@ -12,36 +12,8 @@ use crate::fixups::facts::{
 use crate::fixups::facts::{CallsiteFact, walk};
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
-    Block, Expr, FnDef, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
+    Block, Expr, FnDef, IndentStmt, Pattern, Prim, RustValue, Stmt, Type, UnaryOp,
 };
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.string_buffers.clear();
-    facts.ascii_numeric_strings.clear();
-    facts.string_pointer_views.clear();
-    facts.string_libc_uses.clear();
-
-    let mut buffers = Vec::new();
-    let mut pointer_views = Vec::new();
-    let mut libc_uses = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        let collected = collect_for_function(function, f, &facts.bindings, &facts.binding_types);
-        buffers.extend(collected.buffers);
-        pointer_views.extend(collected.pointer_views);
-        libc_uses.extend(collected.libc_uses);
-    }
-
-    facts.ascii_numeric_strings = collect_ascii_numeric_strings(&buffers);
-    facts.string_buffers = buffers;
-    facts.string_pointer_views = pointer_views;
-    facts.string_libc_uses = libc_uses;
-}
 
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
@@ -80,34 +52,6 @@ fn ascii_numeric_token(bytes: &[u8]) -> Option<(AsciiNumericSign, usize)> {
         _ => (AsciiNumericSign::None, bytes),
     };
     (!digits.is_empty() && digits.iter().all(u8::is_ascii_digit)).then_some((sign, digits.len()))
-}
-
-pub(in crate::fixups) fn collect_rewrite_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.string_lift_plans.clear();
-    facts.string_copy_rewrites.clear();
-
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        let snapshot = RewriteSnapshot {
-            bindings: &facts.bindings,
-            def_use: &facts.def_use,
-            values: &facts.values,
-            string_buffers: &facts.string_buffers,
-            string_pointer_views: &facts.string_pointer_views,
-            string_libc_uses: &facts.string_libc_uses,
-            printf_calls: &facts.printf_calls,
-            callsites: &facts.callsites,
-            string_param_lifts: &facts.string_param_lifts,
-        };
-        let (plans, rewrites) = collect_rewrite_facts_for_function(function, f, &snapshot);
-        facts.string_lift_plans.extend(plans);
-        facts.string_copy_rewrites.extend(rewrites);
-    }
 }
 
 pub(in crate::fixups) struct RewriteSnapshot<'a> {

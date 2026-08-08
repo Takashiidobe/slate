@@ -2,33 +2,10 @@ use std::collections::BTreeMap;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    self, AstPath, BindingFact, ControlFlowFact, ControlFlowSubject, FixupFacts, FunctionId,
+    self, AstPath, BindingFact, ControlFlowFact, ControlFlowSubject, FunctionId,
     NullCheckDominanceFact, NullCheckProof, PathSegment, Site,
 };
-use crate::rust_ast::{
-    BinOp, Block, Expr, FnDef, IndentStmt, Item, Program, RustValue, Stmt, UnaryOp,
-};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.null_check_dominance.clear();
-    let mut all = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        all.extend(collect_for_function(
-            function,
-            f,
-            &facts.bindings,
-            &facts.control_flow,
-        ));
-    }
-    facts.null_check_dominance = all;
-}
-
+use crate::rust_ast::{BinOp, Block, Expr, FnDef, IndentStmt, RustValue, Stmt, UnaryOp};
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,

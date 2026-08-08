@@ -1,22 +1,6 @@
 use crate::fixups::facts::walk;
-use crate::fixups::facts::{AstPath, CStringLiteralFact, FixupFacts, FunctionId, PathSegment};
-use crate::rust_ast::{Expr, FnDef, Item, Prim, Program, Type};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.c_string_literals.clear();
-    let mut out = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        out.extend(collect_for_function(function, f));
-    }
-    facts.c_string_literals = out;
-}
-
+use crate::fixups::facts::{AstPath, CStringLiteralFact, FunctionId, PathSegment};
+use crate::rust_ast::{Expr, FnDef, Prim, Type};
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,

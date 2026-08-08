@@ -1,27 +1,9 @@
 use crate::fixups::facts::heap_ownership::allocation_temp;
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AllocProvenance, AstPath, CalleeAllocSummaryFact, FixupFacts, FunctionId, PathSegment,
+    AllocProvenance, AstPath, CalleeAllocSummaryFact, FunctionId, PathSegment,
 };
-use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, Stmt, Type};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.callee_alloc_summaries.clear();
-    let mut all = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        if let Some(summary) = collect_for_function(function, f) {
-            all.push(summary);
-        }
-    }
-    facts.callee_alloc_summaries = all;
-}
-
+use crate::rust_ast::{Expr, FnDef, IndentStmt, Stmt, Type};
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,

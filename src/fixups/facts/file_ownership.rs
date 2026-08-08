@@ -3,27 +3,10 @@ use std::collections::BTreeSet;
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     self, AstPath, BindingFact, BindingId, FileOpenMode, FileOwnershipFact, FileUseFact,
-    FileUseKind, FixupFacts, FunctionId, PathSegment,
+    FileUseKind, FunctionId, PathSegment,
 };
 use crate::function_identity::{Known, known_call};
-use crate::rust_ast::{
-    BinOp, Expr, IndentStmt, Item, Path, Program, RustValue, Stmt, Type, UnaryOp,
-};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    let mut all = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        all.extend(collect_for_function(function, &f.body, &facts.bindings));
-    }
-    facts.file_ownership = all;
-}
-
+use crate::rust_ast::{BinOp, Expr, IndentStmt, Path, RustValue, Stmt, Type, UnaryOp};
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     body: &[IndentStmt],

@@ -2,45 +2,10 @@ use std::collections::BTreeSet;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    self, AstPath, BindingFact, BindingTypeFact, FixupFacts, FunctionId, PathSegment,
-    PointerComparisonFact, PointerComparisonKind, PointerOptionSafetyFact, Site,
+    self, AstPath, BindingFact, BindingTypeFact, FunctionId, PathSegment, PointerComparisonFact,
+    PointerComparisonKind, PointerOptionSafetyFact, Site,
 };
-use crate::rust_ast::{
-    BinOp, CLibType, Expr, FnDef, IndentStmt, Item, Program, RustValue, Stmt, Type,
-};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.pointer_option_safety.clear();
-    facts.pointer_comparisons.clear();
-    let union_records = union_record_names(program);
-    let mut safety = Vec::new();
-    let mut comparisons = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        safety.extend(collect_safety_for_function(
-            function,
-            f,
-            &facts.bindings,
-            &facts.binding_types,
-            &union_records,
-        ));
-        collect_comparisons_for_function(
-            function,
-            f,
-            &facts.bindings,
-            &facts.binding_types,
-            &mut comparisons,
-        );
-    }
-    facts.pointer_option_safety = safety;
-    facts.pointer_comparisons = comparisons;
-}
-
+use crate::rust_ast::{BinOp, CLibType, Expr, FnDef, IndentStmt, RustValue, Stmt, Type};
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
@@ -52,17 +17,6 @@ pub(in crate::fixups) fn collect_for_function(
     let mut comparisons = Vec::new();
     collect_comparisons_for_function(function, f, bindings, binding_types, &mut comparisons);
     (safety, comparisons)
-}
-
-pub(in crate::fixups) fn union_record_names(program: &Program) -> BTreeSet<String> {
-    program
-        .items
-        .iter()
-        .filter_map(|item| match item {
-            Item::Record(record) if record.is_union => Some(record.name.clone()),
-            _ => None,
-        })
-        .collect()
 }
 
 fn collect_safety_for_function(

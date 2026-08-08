@@ -1,15 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::fixups::facts::{FixupFacts, StructFieldOwnershipFact};
-use crate::rust_ast::{Item, Program, RecordDef, Type};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.struct_field_ownership = collect(program.items.iter().filter_map(|item| match item {
-        Item::Record(record) => Some(record),
-        _ => None,
-    }));
-}
-
+use crate::fixups::facts::StructFieldOwnershipFact;
+use crate::rust_ast::{RecordDef, Type};
 pub(in crate::fixups) fn collect<'a>(
     records: impl Iterator<Item = &'a RecordDef>,
 ) -> Vec<StructFieldOwnershipFact> {

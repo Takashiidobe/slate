@@ -2,36 +2,12 @@ use std::collections::BTreeMap;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingFact, BindingKind, CallSignatureFact, CallsiteFact, CastFact, FixupFacts,
-    FunctionFact, FunctionId, PathSegment, Site,
+    AstPath, BindingFact, BindingKind, CallSignatureFact, CallsiteFact, CastFact, FunctionFact,
+    FunctionId, PathSegment, Site,
 };
 use crate::rust_ast::{
-    AtomicType, Block, Expr, FnDef, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt,
-    Type, UnaryOp,
+    AtomicType, Block, Expr, FnDef, IndentStmt, Pattern, Prim, RustValue, Stmt, Type, UnaryOp,
 };
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.casts.clear();
-    let mut all = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        all.extend(collect_for_function(
-            function,
-            f,
-            &facts.bindings,
-            &facts.functions,
-            &facts.call_signatures,
-            &facts.callsites,
-        ));
-    }
-    facts.casts = all;
-}
-
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,

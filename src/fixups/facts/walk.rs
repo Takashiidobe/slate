@@ -1,10 +1,15 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
-use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
+use crate::fixups::facts::{
+    AstPath, BindingFact, BindingId, BindingKind, BindingTypeFact, FunctionFact, FunctionId,
+    LoopFact, LoopId, LoopKind, PathSegment,
+};
 pub(in crate::fixups) use crate::fixups::support::walk::{
     nested_bodies_with_path, nested_body_vecs_with_path, with_path_segment,
 };
-use crate::rust_ast::{AsmOperand, Block, Expr, FnDef, IndentStmt, InlineAsm, Item, Program, Stmt};
+use crate::rust_ast::{
+    AsmOperand, Block, Expr, FnDef, IndentStmt, InlineAsm, Item, Program, Stmt, Type,
+};
 
 pub(in crate::fixups) fn body_exprs(body: &[IndentStmt], f: &mut impl FnMut(&Expr)) {
     for stmt in body {
@@ -1016,22 +1021,322 @@ fn target_expr_at<'a>(expr: &'a Expr, path: &[PathSegment]) -> Option<&'a Expr> 
 
 pub(in crate::fixups) type Bodies<'a> = BTreeMap<FunctionId, &'a FnDef>;
 
-pub(in crate::fixups) fn bodies_from_program<'a>(
-    program: &'a Program,
-    facts: &FixupFacts,
-) -> Bodies<'a> {
-    program
-        .items
-        .iter()
-        .enumerate()
-        .filter_map(|(item_index, item)| {
+#[derive(Debug, Default, Clone)]
+pub(in crate::fixups) struct BaseWalk {
+    pub(in crate::fixups) functions: Vec<FunctionFact>,
+    pub(in crate::fixups) bindings: Vec<BindingFact>,
+    pub(in crate::fixups) binding_types: Vec<BindingTypeFact>,
+    pub(in crate::fixups) loops: Vec<LoopFact>,
+}
+
+impl BaseWalk {
+    pub(in crate::fixups) fn new(program: &Program) -> Self {
+        let mut base = Self::default();
+        Collector::new(&mut base).program(program);
+        base
+    }
+
+    pub(in crate::fixups) fn function_by_item_index(
+        &self,
+        item_index: usize,
+    ) -> Option<FunctionId> {
+        self.functions
+            .iter()
+            .find(|function| function.item_index == item_index)
+            .map(|function| function.id)
+    }
+
+    pub(in crate::fixups) fn function_item_index(&self, function: FunctionId) -> Option<usize> {
+        self.functions
+            .iter()
+            .find(|fact| fact.id == function)
+            .map(|fact| fact.item_index)
+    }
+
+    pub(in crate::fixups) fn function_name(&self, function: FunctionId) -> Option<&str> {
+        self.functions
+            .iter()
+            .find(|fact| fact.id == function)
+            .map(|fact| fact.name.as_str())
+    }
+
+    pub(in crate::fixups) fn splice_function(&mut self, program: &Program, function: FunctionId) {
+        let Some(item_index) = self.function_item_index(function) else {
+            return;
+        };
+        let Some(Item::Fn(f)) = program.items.get(item_index) else {
+            return;
+        };
+        self.purge_function(function);
+        Collector::resume(self).function(function, f);
+    }
+
+    pub(in crate::fixups) fn remove_items(&mut self, item_indices: &[usize]) {
+        let mut sorted = item_indices.to_vec();
+        sorted.sort_unstable();
+        sorted.dedup();
+        for item_index in sorted.into_iter().rev() {
+            self.remove_item(item_index);
+        }
+    }
+
+    fn remove_item(&mut self, item_index: usize) {
+        if let Some(function) = self.function_by_item_index(item_index) {
+            self.purge_function(function);
+            self.functions.retain(|fact| fact.id != function);
+        }
+        for fact in &mut self.functions {
+            if fact.item_index > item_index {
+                fact.item_index -= 1;
+            }
+        }
+    }
+
+    fn purge_function(&mut self, function: FunctionId) {
+        self.bindings.retain(|binding| binding.function != function);
+        let live_bindings: BTreeSet<BindingId> =
+            self.bindings.iter().map(|binding| binding.id).collect();
+        self.binding_types
+            .retain(|binding_type| live_bindings.contains(&binding_type.binding));
+        self.loops
+            .retain(|loop_fact| loop_fact.function != function);
+    }
+}
+
+struct Collector<'a> {
+    base: &'a mut BaseWalk,
+    next_binding: usize,
+    next_loop: usize,
+}
+
+impl<'a> Collector<'a> {
+    /// For a fresh whole-program walk, where `bindings`/`loops` only ever
+    /// grow by appending - `Vec::len()` is a safe, O(1) source of the next
+    /// id.
+    fn new(base: &'a mut BaseWalk) -> Self {
+        let next_binding = base.bindings.len();
+        let next_loop = base.loops.len();
+        Self {
+            base,
+            next_binding,
+            next_loop,
+        }
+    }
+
+    /// For re-deriving one function's bindings/loops after removing its
+    /// stale entries from the middle of `bindings`/`loops` (incremental
+    /// splicing - see `BaseWalk::splice_function`). `Vec::len()` is not
+    /// safe there: it can be smaller than an id already held by some
+    /// *other* function's surviving entry, since that entry's position
+    /// shifted down when the removed entries were spliced out from
+    /// earlier in the vec. Scans once for the true maximum instead - paid
+    /// per splice, not per push.
+    fn resume(base: &'a mut BaseWalk) -> Self {
+        let next_binding = base.bindings.iter().map(|b| b.id.0 + 1).max().unwrap_or(0);
+        let next_loop = base.loops.iter().map(|l| l.id.0 + 1).max().unwrap_or(0);
+        Self {
+            base,
+            next_binding,
+            next_loop,
+        }
+    }
+
+    fn program(&mut self, program: &Program) {
+        for (item_index, item) in program.items.iter().enumerate() {
             let Item::Fn(f) = item else {
-                return None;
+                continue;
             };
-            let function = facts.function_by_item_index(item_index)?;
-            Some((function, f))
-        })
-        .collect()
+            let function = self.push_function(f.name.clone(), item_index);
+            self.function(function, f);
+        }
+    }
+
+    /// Bindings, binding types, and loops for one function, given an
+    /// already-assigned `FunctionId` - independent of any other function's
+    /// facts. Incremental splicing needs to re-derive one function's
+    /// bindings/loops in place without a whole-program walk; it must not
+    /// call `push_function`, which assigns a fresh `FunctionId` - only
+    /// `program()` does that, for a function seen for the first time.
+    fn function(&mut self, function: FunctionId, f: &FnDef) {
+        for (index, param) in f.params.iter().enumerate() {
+            self.push_binding(
+                function,
+                param.name.clone(),
+                BindingKind::Param { index },
+                AstPath::default(),
+                Some(param.ty.clone()),
+            );
+        }
+        self.body(function, &f.body, &mut Vec::new());
+    }
+
+    fn push_function(&mut self, name: String, item_index: usize) -> FunctionId {
+        let id = FunctionId(self.base.functions.len());
+        self.base.functions.push(FunctionFact {
+            id,
+            name,
+            item_index,
+        });
+        id
+    }
+
+    fn push_binding(
+        &mut self,
+        function: FunctionId,
+        name: String,
+        kind: BindingKind,
+        path: AstPath,
+        ty: Option<Type>,
+    ) -> BindingId {
+        let id = BindingId(self.next_binding);
+        self.next_binding += 1;
+        self.base.bindings.push(BindingFact {
+            id,
+            function,
+            name,
+            kind,
+            path,
+        });
+        if let Some(ty) = ty {
+            let ty = ty.peel_aligned().clone();
+            self.base.binding_types.push(BindingTypeFact {
+                binding: id,
+                rendered: ty.render(),
+                ty,
+            });
+        }
+        id
+    }
+
+    fn push_loop(&mut self, function: FunctionId, kind: LoopKind, path: AstPath) -> LoopId {
+        let id = LoopId(self.next_loop);
+        self.next_loop += 1;
+        self.base.loops.push(LoopFact {
+            id,
+            function,
+            kind,
+            path,
+        });
+        id
+    }
+
+    fn body(&mut self, function: FunctionId, body: &[IndentStmt], path: &mut Vec<PathSegment>) {
+        for (index, indent) in body.iter().enumerate() {
+            path.push(PathSegment::Stmt(index));
+            self.stmt(function, &indent.stmt, path);
+            path.pop();
+        }
+    }
+
+    fn block(&mut self, function: FunctionId, block: &Block, path: &mut Vec<PathSegment>) {
+        self.body(function, &block.stmts, path);
+    }
+
+    fn stmt(&mut self, function: FunctionId, stmt: &Stmt, path: &mut Vec<PathSegment>) {
+        match stmt {
+            Stmt::Let { name, ty, .. } => {
+                self.push_binding(
+                    function,
+                    name.clone(),
+                    BindingKind::Local,
+                    AstPath(path.clone()),
+                    ty.clone(),
+                );
+            }
+            Stmt::LetIf {
+                name,
+                ty,
+                then_body,
+                else_body,
+                ..
+            } => {
+                self.push_binding(
+                    function,
+                    name.clone(),
+                    BindingKind::Local,
+                    AstPath(path.clone()),
+                    ty.clone(),
+                );
+                path.push(PathSegment::Then);
+                self.body(function, then_body, path);
+                path.pop();
+                path.push(PathSegment::Else);
+                self.body(function, else_body, path);
+                path.pop();
+            }
+            Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                path.push(PathSegment::Then);
+                self.body(function, then_body, path);
+                path.pop();
+                path.push(PathSegment::Else);
+                self.body(function, else_body, path);
+                path.pop();
+            }
+            Stmt::Loop { body, .. } => {
+                self.push_loop(function, LoopKind::Loop, AstPath(path.clone()));
+                path.push(PathSegment::LoopBody);
+                self.body(function, body, path);
+                path.pop();
+            }
+            Stmt::For { pat, body, .. } => {
+                self.push_loop(function, LoopKind::For, AstPath(path.clone()));
+                self.push_binding(
+                    function,
+                    pat.clone(),
+                    BindingKind::Local,
+                    AstPath(path.clone()),
+                    None,
+                );
+                path.push(PathSegment::ForBody);
+                self.body(function, body, path);
+                path.pop();
+            }
+            Stmt::Scope { body } => {
+                path.push(PathSegment::ScopeBody);
+                self.body(function, body, path);
+                path.pop();
+            }
+            Stmt::LabeledBlock { body, .. } => {
+                path.push(PathSegment::LabeledBody);
+                self.body(function, body, path);
+                path.pop();
+            }
+            Stmt::Match { arms, .. } => {
+                for (index, arm) in arms.iter().enumerate() {
+                    path.push(PathSegment::MatchArm(index));
+                    self.body(function, &arm.body, path);
+                    path.pop();
+                }
+            }
+            Stmt::Unsafe { body } => {
+                path.push(PathSegment::UnsafeBody);
+                self.block(function, body, path);
+                path.pop();
+            }
+            Stmt::While { body, .. } => {
+                self.push_loop(function, LoopKind::While, AstPath(path.clone()));
+                path.push(PathSegment::WhileBody);
+                self.block(function, body, path);
+                path.pop();
+            }
+            Stmt::Block(body) => {
+                path.push(PathSegment::BlockBody);
+                self.block(function, body, path);
+                path.pop();
+            }
+            Stmt::Assign { .. }
+            | Stmt::CompoundAssign { .. }
+            | Stmt::InlineAsm(_)
+            | Stmt::Expr(_)
+            | Stmt::Return(_)
+            | Stmt::Break(_)
+            | Stmt::Continue(_) => {}
+        }
+    }
 }
 
 pub(in crate::fixups) fn expr_at_body_path<'a>(

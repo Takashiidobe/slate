@@ -2,29 +2,12 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    self, AstPath, BindingFact, BindingId, BindingKind, ConstValue, FixupFacts, FunctionId,
-    PathSegment, Site, ValueFact, ValueSubject,
+    self, AstPath, BindingFact, BindingId, BindingKind, ConstValue, FunctionId, PathSegment, Site,
+    ValueFact, ValueSubject,
 };
 use crate::rust_ast::{
-    BinOp, Block, Expr, FnDef, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type,
-    UnaryOp,
+    BinOp, Block, Expr, FnDef, IndentStmt, Pattern, Prim, RustValue, Stmt, Type, UnaryOp,
 };
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.values.clear();
-    let mut all = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        all.extend(collect_for_function(function, f, &facts.bindings));
-    }
-    facts.values = all;
-}
-
 /// Values for one function's body, independent of any other function's
 /// facts - the entry point `slate-04q.75.56.8` (incremental facts) needs to
 /// re-derive one function's values without a whole-program walk.

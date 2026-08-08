@@ -1,13 +1,11 @@
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    self, AstPath, BindingFact, BindingId, FixupFacts, FunctionId, HeapAllocationKind, HeapExtent,
+    self, AstPath, BindingFact, BindingId, FunctionId, HeapAllocationKind, HeapExtent,
     HeapInitKind, HeapOwnershipFact, HeapReadSafety, HeapReallocFact, HeapResizeKind, HeapUseFact,
     HeapUseKind, PathSegment,
 };
 use crate::function_identity::{Known, known_call};
-use crate::rust_ast::{
-    BinOp, Block, Expr, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
-};
+use crate::rust_ast::{BinOp, Block, Expr, IndentStmt, Prim, RustValue, Stmt, Type, UnaryOp};
 use std::collections::BTreeSet;
 
 pub(super) type OwnedHeapUses = (
@@ -18,22 +16,6 @@ pub(super) type OwnedHeapUses = (
     Vec<HeapReallocFact>,
     HeapReadSafety,
 );
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.heap_ownership.clear();
-    let mut all = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        all.extend(collect_for_function(function, &f.body, &facts.bindings));
-    }
-    facts.heap_ownership = all;
-}
-
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     body: &[IndentStmt],

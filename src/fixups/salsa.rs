@@ -6,7 +6,7 @@ use crate::fixups::facts::{
     BorrowAliasReason, BorrowAliasState, BufferPointerFieldFact, CStringLiteralFact, CallArgFact,
     CallSignatureFact, CalleeAllocSummaryFact, CallsiteFact, CastFact, ControlFlowFact,
     ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
-    EffectSubject, FileOwnershipFact, FixupFacts, FunctionFact, FunctionId, HeapOwnershipFact,
+    EffectSubject, FileOwnershipFact, FunctionFact, FunctionId, HeapOwnershipFact,
     InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LazyInitSingletonFact,
     LoopFact, NullCheckDominanceFact, OptionBoxComparison, OptionBoxLocalCandidate, PlaceFact,
     PointerComparisonFact, PointerOptionSafetyFact, PrintfCallFact, PtrLenSliceFact, SignatureId,
@@ -539,38 +539,17 @@ enum Dirty {
     Everything,
 }
 
-fn splice_incremental_facts(
-    pre_edit_facts: &FixupFacts,
-    program: &Program,
-    touched: &TouchedItems,
-) -> FixupFacts {
-    let mut updated = pre_edit_facts.clone();
-    if !touched.removed.is_empty() {
-        updated.remove_items(&touched.removed);
-    }
-    for &item_index in &touched.in_place {
-        if let Some(function) = pre_edit_facts.function_by_item_index(item_index) {
-            updated.splice_function(program, function);
-        }
-    }
-    if !touched.in_place.is_empty() || !touched.removed.is_empty() {
-        facts::casts::collect_facts(program, &mut updated);
-        facts::lazy_singleton::collect_facts(program, &mut updated);
-    }
-    updated
-}
-
 pub(in crate::fixups) struct SalsaFacts {
     db: Database,
     functions: HashMap<FunctionId, FunctionInput>,
     all_functions: AllFunctions,
     definitions: Option<DefinitionsInput>,
-    facts: FixupFacts,
+    base: facts::walk::BaseWalk,
     dirty: Dirty,
 }
 
 impl SalsaFacts {
-    pub(in crate::fixups) fn new(facts: FixupFacts) -> Self {
+    pub(in crate::fixups) fn new_empty() -> Self {
         let db = Database::default();
         let all_functions = AllFunctions::new(&db, Vec::new());
         Self {
@@ -578,13 +557,9 @@ impl SalsaFacts {
             functions: HashMap::new(),
             all_functions,
             definitions: None,
-            facts,
+            base: facts::walk::BaseWalk::default(),
             dirty: Dirty::Clean,
         }
-    }
-
-    pub(in crate::fixups) fn new_empty() -> Self {
-        Self::new(FixupFacts::default())
     }
 
     pub(in crate::fixups) fn mark_touched(&mut self, touched: &TouchedItems) {
@@ -606,15 +581,27 @@ impl SalsaFacts {
         self.dirty = Dirty::Everything;
     }
 
-    pub(in crate::fixups) fn resolve(&mut self, program: &Program) -> FixupFacts {
+    pub(in crate::fixups) fn resolve(&mut self, program: &Program) {
         match std::mem::replace(&mut self.dirty, Dirty::Clean) {
             Dirty::Clean => {}
             Dirty::Everything => {
-                self.facts = facts::analyze(program).facts;
+                self.base = facts::walk::BaseWalk::new(program);
                 self.sync_all(program);
             }
             Dirty::Touched(touched) => {
-                self.facts = splice_incremental_facts(&self.facts, program, &touched);
+                let pre_edit_functions = self.base.functions.clone();
+                if !touched.removed.is_empty() {
+                    self.base.remove_items(&touched.removed);
+                }
+                for &item_index in &touched.in_place {
+                    if let Some(function) = pre_edit_functions
+                        .iter()
+                        .find(|fact| fact.item_index == item_index)
+                        .map(|fact| fact.id)
+                    {
+                        self.base.splice_function(program, function);
+                    }
+                }
                 if touched.removed.is_empty() {
                     self.sync_touched(program, &touched);
                 } else {
@@ -622,12 +609,11 @@ impl SalsaFacts {
                 }
             }
         }
-        self.facts.clone()
     }
 
     fn sync_all(&mut self, program: &Program) {
         self.sync_definitions(program);
-        let function_facts = self.facts.functions.clone();
+        let function_facts = self.base.functions.clone();
         for function_fact in &function_facts {
             self.sync_function(program, function_fact);
         }
@@ -639,7 +625,7 @@ impl SalsaFacts {
     fn sync_touched(&mut self, program: &Program, touched: &TouchedItems) {
         for &item_index in &touched.in_place {
             if let Some(function_fact) = self
-                .facts
+                .base
                 .functions
                 .iter()
                 .find(|fact| fact.item_index == item_index)
@@ -650,7 +636,7 @@ impl SalsaFacts {
         }
         for &item_index in &touched.removed {
             if let Some(function_fact) = self
-                .facts
+                .base
                 .functions
                 .iter()
                 .find(|fact| fact.item_index == item_index)
@@ -741,14 +727,14 @@ impl SalsaFacts {
             return;
         };
         let bindings: Vec<BindingFact> = self
-            .facts
+            .base
             .bindings
             .iter()
             .filter(|binding| binding.function == function_fact.id)
             .cloned()
             .collect();
         let binding_types: Vec<BindingTypeFact> = self
-            .facts
+            .base
             .binding_types
             .iter()
             .filter(|binding_type| {
@@ -759,7 +745,7 @@ impl SalsaFacts {
             .cloned()
             .collect();
         let loops: Vec<LoopFact> = self
-            .facts
+            .base
             .loops
             .iter()
             .filter(|loop_fact| loop_fact.function == function_fact.id)
@@ -1003,18 +989,29 @@ impl SalsaFacts {
     }
 
     pub(in crate::fixups) fn binding_requires_mut_by_binding(&self, binding: BindingId) -> bool {
-        self.facts.binding_requires_mut(binding)
+        let Some(function) = self.functions.iter().find_map(|(&function, &input)| {
+            input
+                .bindings(&self.db)
+                .iter()
+                .any(|fact| fact.id == binding)
+                .then_some(function)
+        }) else {
+            return false;
+        };
+        self.binding_requires_mut(function, binding)
     }
 
     pub(in crate::fixups) fn borrow_alias_reasons_by_binding(
         &self,
         binding: BindingId,
     ) -> Option<BTreeSet<BorrowAliasReason>> {
-        self.facts
-            .borrow_alias
-            .iter()
-            .find(|fact| fact.binding == binding)
-            .map(|fact| fact.reasons.clone())
+        self.functions.values().find_map(|&input| {
+            input
+                .borrow_alias(&self.db)
+                .iter()
+                .find(|fact| fact.binding == binding)
+                .map(|fact| fact.reasons.clone())
+        })
     }
 
     pub(in crate::fixups) fn binding_requires_mut(
@@ -1270,19 +1267,19 @@ impl SalsaFacts {
         &self,
         item_index: usize,
     ) -> Option<FunctionId> {
-        self.facts.function_by_item_index(item_index)
+        self.base.function_by_item_index(item_index)
     }
 
     pub(in crate::fixups) fn function_item_index(&self, function: FunctionId) -> Option<usize> {
-        self.facts.function_item_index(function)
+        self.base.function_item_index(function)
     }
 
     pub(in crate::fixups) fn function_name(&self, function: FunctionId) -> Option<&str> {
-        self.facts.function_name(function)
+        self.base.function_name(function)
     }
 
     pub(in crate::fixups) fn function_by_name(&self, name: &str) -> Option<FunctionId> {
-        self.facts
+        self.base
             .functions
             .iter()
             .find(|fact| fact.name == name)
@@ -1290,11 +1287,11 @@ impl SalsaFacts {
     }
 
     pub(in crate::fixups) fn function_facts(&self) -> &[FunctionFact] {
-        &self.facts.functions
+        &self.base.functions
     }
 
     pub(in crate::fixups) fn binding_facts(&self) -> &[BindingFact] {
-        &self.facts.bindings
+        &self.base.bindings
     }
 
     pub(in crate::fixups) fn binding_by_local_path(
@@ -1303,22 +1300,22 @@ impl SalsaFacts {
         name: &str,
         path: &AstPath,
     ) -> Option<BindingId> {
-        self.facts.binding_by_local_path(function, name, path)
+        facts::binding_by_local_path(&self.base.bindings, function, name, path)
     }
 
     pub(in crate::fixups) fn binding_type(&self, binding: BindingId) -> Option<&str> {
-        self.facts.binding_type(binding)
+        facts::binding_type(&self.base.binding_types, binding)
     }
 
     pub(in crate::fixups) fn binding_type_ast(
         &self,
         binding: BindingId,
     ) -> Option<&crate::rust_ast::Type> {
-        self.facts.binding_type_ast(binding)
+        facts::binding_type_ast(&self.base.binding_types, binding)
     }
 
     pub(in crate::fixups) fn binding_name(&self, binding: BindingId) -> Option<&str> {
-        self.facts.binding_name(binding)
+        facts::binding_name(&self.base.bindings, binding)
     }
 
     pub(in crate::fixups) fn bindings_read_under(
@@ -1327,7 +1324,25 @@ impl SalsaFacts {
         name: &str,
         path: &AstPath,
     ) -> Vec<BindingId> {
-        self.facts.bindings_read_under(function, name, path)
+        let Some(&input) = self.functions.get(&function) else {
+            return Vec::new();
+        };
+        let query_path = facts::def_use_query_path(path);
+        let bindings = input.bindings(&self.db);
+        input
+            .def_use(&self.db)
+            .iter()
+            .filter(|fact| {
+                bindings
+                    .iter()
+                    .any(|binding| binding.id == fact.binding && binding.name == name)
+                    && fact
+                        .reads
+                        .iter()
+                        .any(|read| facts::walk::paths_overlap(&read.0, &query_path.0))
+            })
+            .map(|fact| fact.binding)
+            .collect()
     }
 
     pub(in crate::fixups) fn bindings_written_under(
@@ -1336,7 +1351,25 @@ impl SalsaFacts {
         name: &str,
         path: &AstPath,
     ) -> Vec<BindingId> {
-        self.facts.bindings_written_under(function, name, path)
+        let Some(&input) = self.functions.get(&function) else {
+            return Vec::new();
+        };
+        let query_path = facts::def_use_query_path(path);
+        let bindings = input.bindings(&self.db);
+        input
+            .def_use(&self.db)
+            .iter()
+            .filter(|fact| {
+                bindings
+                    .iter()
+                    .any(|binding| binding.id == fact.binding && binding.name == name)
+                    && fact
+                        .writes
+                        .iter()
+                        .any(|write| facts::walk::paths_overlap(&write.0, &query_path.0))
+            })
+            .map(|fact| fact.binding)
+            .collect()
     }
 
     pub(in crate::fixups) fn binding_names_and_types(
@@ -1374,75 +1407,5 @@ impl SalsaFacts {
         path: &AstPath,
     ) -> Option<&facts::StringPointerViewFact> {
         facts::string_pointer_view(self.string_pointer_views(function), function, path)
-    }
-}
-
-// do not delete: fact-build timing harness for the slate-kby1 salsa migration.
-// covers the acceptance criterion on slate-kby1.1 and gives the same signal
-// for each later phase (slate-kby1.3 through .6). keep it until that epic
-// tree is closed and its numbers are re-verified against e2e (nextest) green
-// at each phase, per slate-kby1's own migration doc (docs/salsa-migration.md).
-#[cfg(test)]
-mod temp_bench {
-    use std::path::Path;
-    use std::time::Instant;
-
-    use super::SalsaFacts;
-    use crate::fixups::facts;
-    use crate::fixups::query::TouchedItems;
-
-    #[test]
-    fn timing() {
-        let (_, program) =
-            crate::api::lowered_program(Path::new("tests/fixtures/function_provenance.c")).unwrap();
-
-        let legacy_start = Instant::now();
-        let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
-        let legacy_cold = legacy_start.elapsed();
-
-        let legacy_start = Instant::now();
-        let _ = facts::analyze(&program);
-        let legacy_repeat = legacy_start.elapsed();
-
-        println!("functions in fixture: {}", facts.functions.len());
-
-        let read_all = |salsa_facts: &SalsaFacts| {
-            for function in &facts.functions {
-                for binding in facts.bindings.iter().filter(|b| b.function == function.id) {
-                    let _ = salsa_facts.def_use(function.id, binding.id);
-                }
-            }
-        };
-
-        let salsa_cold_start = Instant::now();
-        let mut salsa_facts = SalsaFacts::new(facts::FixupFacts::default());
-        salsa_facts.mark_everything_dirty();
-        salsa_facts.resolve(&program);
-        read_all(&salsa_facts);
-        let salsa_cold = salsa_cold_start.elapsed();
-
-        let salsa_full_resync_start = Instant::now();
-        salsa_facts.mark_everything_dirty();
-        salsa_facts.resolve(&program);
-        read_all(&salsa_facts);
-        let salsa_full_resync = salsa_full_resync_start.elapsed();
-
-        let touched_function = facts.functions.first().unwrap();
-        let touched = TouchedItems {
-            in_place: vec![touched_function.item_index],
-            removed: Vec::new(),
-            unbounded: false,
-        };
-        let touched_start = Instant::now();
-        salsa_facts.mark_touched(&touched);
-        salsa_facts.resolve(&program);
-        read_all(&salsa_facts);
-        let touched_one = touched_start.elapsed();
-
-        println!("legacy facts::analyze (cold):        {legacy_cold:?}");
-        println!("legacy facts::analyze (repeat):       {legacy_repeat:?}");
-        println!("salsa cold (sync_all + read all):     {salsa_cold:?}");
-        println!("salsa full unconditional re-sync:     {salsa_full_resync:?}");
-        println!("salsa sync_touched, 1 of N touched:   {touched_one:?}");
     }
 }

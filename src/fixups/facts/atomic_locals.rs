@@ -3,54 +3,9 @@
 //! direct method calls.
 
 use crate::fixups::facts::walk::Bodies;
-use crate::fixups::facts::{
-    AtomicGlobalFact, AtomicLocalFact, FixupFacts, FunctionId, StaticDeclFact, walk,
-};
+use crate::fixups::facts::{AtomicGlobalFact, AtomicLocalFact, FunctionId, StaticDeclFact, walk};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
-use crate::rust_ast::{
-    AtomicPlace, AtomicType, Expr, FnDef, IndentStmt, Item, Prim, Program, Stmt, Type,
-};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.atomic_locals.clear();
-    facts.atomic_globals.clear();
-    let mut all = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        all.extend(collect_for_function(function, f));
-    }
-    facts.atomic_locals = all;
-    let bodies = walk::bodies_from_program(program, facts);
-    facts.atomic_globals = compute_atomic_globals(&statics_from_program(program), &bodies);
-}
-
-fn statics_from_program(program: &Program) -> Vec<StaticDeclFact> {
-    program
-        .items
-        .iter()
-        .filter_map(|item| match item {
-            Item::Static {
-                name,
-                mutable,
-                ty,
-                init,
-                ..
-            } => Some(StaticDeclFact {
-                name: name.clone(),
-                mutable: *mutable,
-                ty: ty.clone(),
-                init: init.clone(),
-            }),
-            _ => None,
-        })
-        .collect()
-}
-
+use crate::rust_ast::{AtomicPlace, AtomicType, Expr, FnDef, IndentStmt, Prim, Stmt, Type};
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,

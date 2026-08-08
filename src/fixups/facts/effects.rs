@@ -2,27 +2,10 @@ use std::collections::BTreeSet;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, EffectFact, EffectKind, EffectSubject, FixupFacts, FunctionId, PathSegment, Purity,
-    Site,
+    AstPath, EffectFact, EffectKind, EffectSubject, FunctionId, PathSegment, Purity, Site,
 };
 use crate::function_identity::{Known, known_call};
-use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Item, Program, Stmt, UnaryOp};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.effects.clear();
-    let mut all = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        all.extend(collect_for_function(function, f));
-    }
-    facts.effects = all;
-}
-
+use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Stmt, UnaryOp};
 /// Effects for one function's body, independent of any other function's
 /// facts - the entry point `slate-04q.75.56.8` (incremental facts) needs to
 /// re-derive one function's effects without a whole-program walk.
