@@ -1936,6 +1936,7 @@ fn definition_matches(item: &Item, definition: &DefinitionSite) -> bool {
         (Item::Enum(definition_item), DefinitionKind::Enum) => {
             definition_item.name == definition.name
         }
+        (Item::Static { name, .. }, DefinitionKind::Static) => *name == definition.name,
         _ => false,
     }
 }

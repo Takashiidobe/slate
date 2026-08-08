@@ -419,6 +419,10 @@ fn cross_tu_globals() {
         ),
         "the defining module must export external-linkage functions as stable C ABI symbols"
     );
+    assert!(
+        state_rs.contains("pub static mut unreferenced_global"),
+        "an externally-linked global must survive unused_items pruning even with no in-project references"
+    );
     assert_binary_sections(&work.join("c_bin"), &[".slate_data", ".slate_fn"]);
     assert_binary_sections(
         &support::rs_project_bin_path(&work, "globals"),

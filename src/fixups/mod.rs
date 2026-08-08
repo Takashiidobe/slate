@@ -1093,6 +1093,17 @@ fn apply_with_logger(
         incremental.set_program(&program);
         report.changed
     });
+    step!(program, Pass::UnusedItems, {
+        let plan = {
+            let query = query::QueryContext::new(&program, &incremental);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::unused_items::rewrite());
+            builder.finish()
+        };
+        let report = plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
+        report.changed
+    });
     let _ = debug_done;
     program.clone()
 }

@@ -164,6 +164,7 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 62. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function.
 63. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main`.
 64. `prune_unused_definitions` - delete now-dead known libc `extern` declarations and generated support modules.
+65. `unused_items` (rerun) - catch struct/record/enum definitions that only became dead after `unused_params` and `prune_unused_definitions` dropped their last reference.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
 because later groups can create new opportunities for earlier ones; re-running
