@@ -1,38 +1,38 @@
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) \
- || defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
-# define MINSIGSTKSZ 2048
-# define SIGSTKSZ 8192
+#define MINSIGSTKSZ 2048
+#define SIGSTKSZ    8192
 #endif
 
 typedef unsigned long __riscv_mc_gp_state[32];
 
 struct __riscv_mc_f_ext_state {
-	unsigned int __f[32];
-	unsigned int __fcsr;
+  unsigned int __f[32];
+  unsigned int __fcsr;
 };
 
 struct __riscv_mc_d_ext_state {
-	unsigned long long __f[32];
-	unsigned int __fcsr;
+  unsigned long long __f[32];
+  unsigned int       __fcsr;
 };
 
 struct __riscv_mc_q_ext_state {
-	unsigned long long __f[64] __attribute__((__aligned__(16)));
-	unsigned int __fcsr;
-	unsigned int __reserved[3];
+  unsigned long long __f[64] __attribute__((__aligned__(16)));
+  unsigned int       __fcsr;
+  unsigned int       __reserved[3];
 };
 
 union __riscv_mc_fp_state {
-	struct __riscv_mc_f_ext_state __f;
-	struct __riscv_mc_d_ext_state __d;
-	struct __riscv_mc_q_ext_state __q;
+  struct __riscv_mc_f_ext_state __f;
+  struct __riscv_mc_d_ext_state __d;
+  struct __riscv_mc_q_ext_state __q;
 };
 
 typedef struct mcontext_t {
-	__riscv_mc_gp_state __gregs;
-	union __riscv_mc_fp_state __fpregs;
+  __riscv_mc_gp_state       __gregs;
+  union __riscv_mc_fp_state __fpregs;
 } mcontext_t;
 
 #if defined(_GNU_SOURCE)
@@ -47,28 +47,27 @@ typedef struct mcontext_t {
 #endif
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
-typedef unsigned long greg_t;
-typedef unsigned long gregset_t[32];
+typedef unsigned long             greg_t;
+typedef unsigned long             gregset_t[32];
 typedef union __riscv_mc_fp_state fpregset_t;
 struct sigcontext {
-	gregset_t gregs;
-	fpregset_t fpregs;
+  gregset_t  gregs;
+  fpregset_t fpregs;
 };
 #endif
 
 struct sigaltstack {
-	void *ss_sp;
-	int ss_flags;
-	size_t ss_size;
+  void  *ss_sp;
+  int    ss_flags;
+  size_t ss_size;
 };
 
-typedef struct __ucontext
-{
-	unsigned long uc_flags;
-	struct __ucontext *uc_link;
-	stack_t uc_stack;
-	sigset_t uc_sigmask;
-	mcontext_t uc_mcontext;
+typedef struct __ucontext {
+  unsigned long      uc_flags;
+  struct __ucontext *uc_link;
+  stack_t            uc_stack;
+  sigset_t           uc_sigmask;
+  mcontext_t         uc_mcontext;
 } ucontext_t;
 
 #define SA_NOCLDSTOP 1
@@ -82,16 +81,16 @@ typedef struct __ucontext
 
 #endif
 
-#define SIGHUP     1
-#define SIGINT     2
-#define SIGQUIT    3
-#define SIGILL     4
-#define SIGTRAP    5
-#define SIGABRT    6
-#define SIGIOT     SIGABRT
-#define SIGBUS     7
-#define SIGFPE     8
-#define SIGKILL    9
+#define SIGHUP    1
+#define SIGINT    2
+#define SIGQUIT   3
+#define SIGILL    4
+#define SIGTRAP   5
+#define SIGABRT   6
+#define SIGIOT    SIGABRT
+#define SIGBUS    7
+#define SIGFPE    8
+#define SIGKILL   9
 #define SIGUSR1   10
 #define SIGSEGV   11
 #define SIGUSR2   12
@@ -117,4 +116,4 @@ typedef struct __ucontext
 #define SIGSYS    31
 #define SIGUNUSED SIGSYS
 
-#define _NSIG     65
+#define _NSIG 65

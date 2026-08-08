@@ -1,9 +1,9 @@
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) \
- || defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #define MINSIGSTKSZ 2048
-#define SIGSTKSZ 8192
+#define SIGSTKSZ    8192
 #endif
 
 #ifdef _GNU_SOURCE
@@ -50,56 +50,56 @@ enum { REG_SS = 18 };
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 typedef int greg_t, gregset_t[19];
 typedef struct _fpstate {
-	unsigned long cw, sw, tag, ipoff, cssel, dataoff, datasel;
-	struct {
-		unsigned short significand[4], exponent;
-	} _st[8];
-	unsigned long status;
+  unsigned long cw, sw, tag, ipoff, cssel, dataoff, datasel;
+  struct {
+    unsigned short significand[4], exponent;
+  } _st[8];
+  unsigned long status;
 } *fpregset_t;
 struct sigcontext {
-	unsigned short gs, __gsh, fs, __fsh, es, __esh, ds, __dsh;
-	unsigned long edi, esi, ebp, esp, ebx, edx, ecx, eax;
-	unsigned long trapno, err, eip;
-	unsigned short cs, __csh;
-	unsigned long eflags, esp_at_signal;
-	unsigned short ss, __ssh;
-	struct _fpstate *fpstate;
-	unsigned long oldmask, cr2;
+  unsigned short   gs, __gsh, fs, __fsh, es, __esh, ds, __dsh;
+  unsigned long    edi, esi, ebp, esp, ebx, edx, ecx, eax;
+  unsigned long    trapno, err, eip;
+  unsigned short   cs, __csh;
+  unsigned long    eflags, esp_at_signal;
+  unsigned short   ss, __ssh;
+  struct _fpstate *fpstate;
+  unsigned long    oldmask, cr2;
 };
 typedef struct {
-	gregset_t gregs;
-	fpregset_t fpregs;
-	unsigned long oldmask, cr2;
+  gregset_t     gregs;
+  fpregset_t    fpregs;
+  unsigned long oldmask, cr2;
 } mcontext_t;
 #else
 typedef struct {
-	unsigned __space[22];
+  unsigned __space[22];
 } mcontext_t;
 #endif
 
 struct sigaltstack {
-	void *ss_sp;
-	int ss_flags;
-	size_t ss_size;
+  void  *ss_sp;
+  int    ss_flags;
+  size_t ss_size;
 };
 
 typedef struct __ucontext {
-	unsigned long uc_flags;
-	struct __ucontext *uc_link;
-	stack_t uc_stack;
-	mcontext_t uc_mcontext;
-	sigset_t uc_sigmask;
-	unsigned long __fpregs_mem[28];
+  unsigned long      uc_flags;
+  struct __ucontext *uc_link;
+  stack_t            uc_stack;
+  mcontext_t         uc_mcontext;
+  sigset_t           uc_sigmask;
+  unsigned long      __fpregs_mem[28];
 } ucontext_t;
 
-#define SA_NOCLDSTOP  1
-#define SA_NOCLDWAIT  2
-#define SA_SIGINFO    4
-#define SA_ONSTACK    0x08000000
-#define SA_RESTART    0x10000000
-#define SA_NODEFER    0x40000000
-#define SA_RESETHAND  0x80000000
-#define SA_RESTORER   0x04000000
+#define SA_NOCLDSTOP 1
+#define SA_NOCLDWAIT 2
+#define SA_SIGINFO   4
+#define SA_ONSTACK   0x08000000
+#define SA_RESTART   0x10000000
+#define SA_NODEFER   0x40000000
+#define SA_RESETHAND 0x80000000
+#define SA_RESTORER  0x04000000
 
 #endif
 
@@ -139,4 +139,3 @@ typedef struct __ucontext {
 #define SIGUNUSED SIGSYS
 
 #define _NSIG 65
-

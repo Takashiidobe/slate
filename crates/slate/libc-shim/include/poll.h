@@ -18,19 +18,19 @@
 #define POLLWRBAND 0x200
 #endif
 #ifndef POLLMSG
-#define POLLMSG    0x400
-#define POLLRDHUP  0x2000
+#define POLLMSG   0x400
+#define POLLRDHUP 0x2000
 #endif
 
 typedef unsigned long nfds_t;
 
 struct pollfd {
-	int fd;
-	short events;
-	short revents;
+  int   fd;
+  short events;
+  short revents;
 };
 
-int poll (struct pollfd *, nfds_t, int);
+int poll(struct pollfd *, nfds_t, int);
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #define __NEED_time_t
@@ -45,6 +45,5 @@ int ppoll(struct pollfd *, nfds_t, const struct timespec *, const sigset_t *);
 __REDIR(ppoll, __ppoll_time64);
 #endif
 #endif
-
 
 #endif

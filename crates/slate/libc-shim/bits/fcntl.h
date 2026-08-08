@@ -2,7 +2,8 @@
 #define _SLATE_BITS_FCNTL_H
 
 #if !defined(_SLATE_LIBC)
-#error "Never include <bits/fcntl.h> directly; include a standard header instead."
+#error                                                                         \
+    "Never include <bits/fcntl.h> directly; include a standard header instead."
 #endif
 
 #if defined(__SLATE_ARCH_AARCH64)

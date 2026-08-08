@@ -2,7 +2,8 @@
 #define _SLATE_BITS_USER_H
 
 #if !defined(_SLATE_LIBC)
-#error "Never include <bits/user.h> directly; include a standard header instead."
+#error                                                                         \
+    "Never include <bits/user.h> directly; include a standard header instead."
 #endif
 
 #if defined(__SLATE_ARCH_AARCH64)

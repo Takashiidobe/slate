@@ -1,50 +1,50 @@
-#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) \
- || defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #define MINSIGSTKSZ 2048
-#define SIGSTKSZ 8192
+#define SIGSTKSZ    8192
 #endif
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 typedef int greg_t, gregset_t[18];
 typedef struct sigcontext {
-	unsigned long trap_no, error_code, oldmask;
-	unsigned long arm_r0, arm_r1, arm_r2, arm_r3;
-	unsigned long arm_r4, arm_r5, arm_r6, arm_r7;
-	unsigned long arm_r8, arm_r9, arm_r10, arm_fp;
-	unsigned long arm_ip, arm_sp, arm_lr, arm_pc;
-	unsigned long arm_cpsr, fault_address;
+  unsigned long trap_no, error_code, oldmask;
+  unsigned long arm_r0, arm_r1, arm_r2, arm_r3;
+  unsigned long arm_r4, arm_r5, arm_r6, arm_r7;
+  unsigned long arm_r8, arm_r9, arm_r10, arm_fp;
+  unsigned long arm_ip, arm_sp, arm_lr, arm_pc;
+  unsigned long arm_cpsr, fault_address;
 } mcontext_t;
 #else
 typedef struct {
-	unsigned long __regs[21];
+  unsigned long __regs[21];
 } mcontext_t;
 #endif
 
 struct sigaltstack {
-	void *ss_sp;
-	int ss_flags;
-	size_t ss_size;
+  void  *ss_sp;
+  int    ss_flags;
+  size_t ss_size;
 };
 
 typedef struct __ucontext {
-	unsigned long uc_flags;
-	struct __ucontext *uc_link;
-	stack_t uc_stack;
-	mcontext_t uc_mcontext;
-	sigset_t uc_sigmask;
-	unsigned long long uc_regspace[64];
+  unsigned long      uc_flags;
+  struct __ucontext *uc_link;
+  stack_t            uc_stack;
+  mcontext_t         uc_mcontext;
+  sigset_t           uc_sigmask;
+  unsigned long long uc_regspace[64];
 } ucontext_t;
 
-#define SA_NOCLDSTOP  1
-#define SA_NOCLDWAIT  2
-#define SA_SIGINFO    4
-#define SA_ONSTACK    0x08000000
-#define SA_RESTART    0x10000000
-#define SA_NODEFER    0x40000000
-#define SA_RESETHAND  0x80000000
-#define SA_RESTORER   0x04000000
+#define SA_NOCLDSTOP 1
+#define SA_NOCLDWAIT 2
+#define SA_SIGINFO   4
+#define SA_ONSTACK   0x08000000
+#define SA_RESTART   0x10000000
+#define SA_NODEFER   0x40000000
+#define SA_RESETHAND 0x80000000
+#define SA_RESTORER  0x04000000
 
 #endif
 

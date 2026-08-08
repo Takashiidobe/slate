@@ -30,14 +30,14 @@
 #define st_mtime st_mtim.tv_sec
 #define st_ctime st_ctim.tv_sec
 
-#define S_IFMT  0170000
+#define S_IFMT 0170000
 
-#define S_IFDIR 0040000
-#define S_IFCHR 0020000
-#define S_IFBLK 0060000
-#define S_IFREG 0100000
-#define S_IFIFO 0010000
-#define S_IFLNK 0120000
+#define S_IFDIR  0040000
+#define S_IFCHR  0020000
+#define S_IFBLK  0060000
+#define S_IFREG  0100000
+#define S_IFIFO  0010000
+#define S_IFLNK  0120000
 #define S_IFSOCK 0140000
 
 #define S_TYPEISMQ(buf)  0
@@ -74,70 +74,70 @@
 #define UTIME_NOW  0x3fffffff
 #define UTIME_OMIT 0x3ffffffe
 
-int stat(const char *__restrict, struct stat *__restrict);
-int fstat(int, struct stat *);
-int lstat(const char *__restrict, struct stat *__restrict);
-int fstatat(int, const char *__restrict, struct stat *__restrict, int);
-int chmod(const char *, mode_t);
-int fchmod(int, mode_t);
-int fchmodat(int, const char *, mode_t, int);
+int    stat(const char *__restrict, struct stat *__restrict);
+int    fstat(int, struct stat *);
+int    lstat(const char *__restrict, struct stat *__restrict);
+int    fstatat(int, const char *__restrict, struct stat *__restrict, int);
+int    chmod(const char *, mode_t);
+int    fchmod(int, mode_t);
+int    fchmodat(int, const char *, mode_t, int);
 mode_t umask(mode_t);
-int mkdir(const char *, mode_t);
-int mkfifo(const char *, mode_t);
-int mkdirat(int, const char *, mode_t);
-int mkfifoat(int, const char *, mode_t);
+int    mkdir(const char *, mode_t);
+int    mkfifo(const char *, mode_t);
+int    mkdirat(int, const char *, mode_t);
+int    mkfifoat(int, const char *, mode_t);
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 int mknod(const char *, mode_t, dev_t);
 int mknodat(int, const char *, mode_t, dev_t);
 #endif
 
-int futimens(int, const struct timespec [2]);
-int utimensat(int, const char *, const struct timespec [2], int);
+int futimens(int, const struct timespec[2]);
+int utimensat(int, const char *, const struct timespec[2], int);
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 int lchmod(const char *, mode_t);
-#define S_IREAD S_IRUSR
+#define S_IREAD  S_IRUSR
 #define S_IWRITE S_IWUSR
-#define S_IEXEC S_IXUSR
+#define S_IEXEC  S_IXUSR
 #endif
 
 #if defined(_GNU_SOURCE)
-#define STATX_TYPE 1U
-#define STATX_MODE 2U
-#define STATX_NLINK 4U
-#define STATX_UID 8U
-#define STATX_GID 0x10U
-#define STATX_ATIME 0x20U
-#define STATX_MTIME 0x40U
-#define STATX_CTIME 0x80U
-#define STATX_INO 0x100U
-#define STATX_SIZE 0x200U
-#define STATX_BLOCKS 0x400U
-#define STATX_BASIC_STATS 0x7ffU
-#define STATX_BTIME 0x800U
-#define STATX_ALL 0xfffU
-#define STATX_MNT_ID 0x1000U
-define STATX_DIOALIGN 0x2000U
+#define STATX_TYPE          1U
+#define STATX_MODE          2U
+#define STATX_NLINK         4U
+#define STATX_UID           8U
+#define STATX_GID           0x10U
+#define STATX_ATIME         0x20U
+#define STATX_MTIME         0x40U
+#define STATX_CTIME         0x80U
+#define STATX_INO           0x100U
+#define STATX_SIZE          0x200U
+#define STATX_BLOCKS        0x400U
+#define STATX_BASIC_STATS   0x7ffU
+#define STATX_BTIME         0x800U
+#define STATX_ALL           0xfffU
+#define STATX_MNT_ID        0x1000U
+define STATX_DIOALIGN       0x2000U
 #define STATX_MNT_ID_UNIQUE 0x4000U
-#define STATX_SUBVOL 0x8000U
-#define STATX_WRITE_ATOMIC 0x10000U
+#define STATX_SUBVOL        0x8000U
+#define STATX_WRITE_ATOMIC  0x10000U
 #endif
 
 #if defined(_LARGEFILE64_SOURCE)
-#define stat64 stat
-#define fstat64 fstat
-#define lstat64 lstat
-#define fstatat64 fstatat
-#define blkcnt64_t blkcnt_t
+#define stat64       stat
+#define fstat64      fstat
+#define lstat64      lstat
+#define fstatat64    fstatat
+#define blkcnt64_t   blkcnt_t
 #define fsblkcnt64_t fsblkcnt_t
 #define fsfilcnt64_t fsfilcnt_t
-#define ino64_t ino_t
-#define off64_t off_t
+#define ino64_t      ino_t
+#define off64_t      off_t
 #endif
 
 #if _REDIR_TIME64
-__REDIR(stat, __stat_time64);
+    __REDIR(stat, __stat_time64);
 __REDIR(fstat, __fstat_time64);
 __REDIR(lstat, __lstat_time64);
 __REDIR(fstatat, __fstatat_time64);
