@@ -1,35 +1,12 @@
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    self, AstPath, FixupFacts, FunctionId, NulTermination, PathSegment, PrintfArgFact,
-    PrintfCallFact, Site, StringBufferFact, StringBufferProvenance, StringBufferRejection,
-    StringPointerViewFact,
+    self, AstPath, FunctionId, NulTermination, PathSegment, PrintfArgFact, PrintfCallFact, Site,
+    StringBufferFact, StringBufferProvenance, StringBufferRejection, StringPointerViewFact,
 };
 use crate::function_identity::{Known, known_call};
-use crate::rust_ast::{
-    Block, Expr, FnDef, FnParam, IndentStmt, Item, Program, RustValue, Stmt, Type,
-};
+use crate::rust_ast::{Block, Expr, FnDef, FnParam, IndentStmt, RustValue, Stmt, Type};
 use ordered_float::OrderedFloat;
 use std::collections::BTreeMap;
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    let mut calls = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        calls.extend(collect_for_function(
-            function,
-            f,
-            &facts.string_buffers,
-            &facts.string_pointer_views,
-        ));
-    }
-    facts.printf_calls = calls;
-}
-
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,

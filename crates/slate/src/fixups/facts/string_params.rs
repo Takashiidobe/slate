@@ -3,11 +3,11 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::walk::Bodies;
 use crate::fixups::facts::{
     self, AstPath, BindingFact, BindingId, BindingKind, BindingTypeFact, CallCallee, DefUseFact,
-    FixupFacts, FunctionId, StringBufferFact, StringBufferKind, StringLibcFunction,
-    StringLibcUseFact, StringParamLiftFact,
+    FunctionId, StringBufferFact, StringBufferKind, StringLibcFunction, StringLibcUseFact,
+    StringParamLiftFact,
 };
 use crate::fixups::facts::{CallSignatureSource, CallsiteFact, walk};
-use crate::rust_ast::{Expr, FnDef, Prim, Program, Type, Visibility};
+use crate::rust_ast::{Expr, FnDef, Prim, Type, Visibility};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 struct Key {
@@ -21,24 +21,6 @@ pub(in crate::fixups) struct Candidate {
     function_name: String,
     index: usize,
 }
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    let bodies = walk::bodies_from_program(program, facts);
-    let snapshot = Snapshot {
-        bindings: &facts.bindings,
-        binding_types: &facts.binding_types,
-        def_use: &facts.def_use,
-        callsites: &facts.callsites,
-        string_buffers: &facts.string_buffers,
-        string_libc_uses: &facts.string_libc_uses,
-    };
-    facts.string_param_lifts = compute(
-        &bodies,
-        &snapshot,
-        collect_candidates(&bodies, &facts.bindings),
-    );
-}
-
 pub(in crate::fixups) struct Snapshot<'a> {
     pub(in crate::fixups) bindings: &'a [BindingFact],
     pub(in crate::fixups) binding_types: &'a [BindingTypeFact],
@@ -115,13 +97,6 @@ pub(in crate::fixups) fn compute(
             param: candidate.key.param,
             index: candidate.index,
         })
-        .collect()
-}
-
-fn collect_candidates(bodies: &Bodies, bindings: &[BindingFact]) -> Vec<Candidate> {
-    bodies
-        .iter()
-        .flat_map(|(&function, &f)| candidates_for_function(function, f, bindings))
         .collect()
 }
 

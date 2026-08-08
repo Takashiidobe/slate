@@ -2,11 +2,11 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::heap_ownership;
 use crate::fixups::facts::{
-    self, AllocProvenance, AstPath, BindingFact, CalleeAllocSummaryFact, FixupFacts, FunctionId,
+    self, AllocProvenance, AstPath, BindingFact, CalleeAllocSummaryFact, FunctionId,
     HeapAllocationKind, HeapExtent, HeapInitKind, HeapReadSafety, InterproceduralAllocCallerFact,
     InterproceduralAllocEligibilityFact, PathSegment,
 };
-use crate::rust_ast::{Expr, IndentStmt, Item, Program, Stmt, Type};
+use crate::rust_ast::{Expr, IndentStmt, Stmt, Type};
 
 #[derive(Debug, Clone)]
 struct ResolvedSummary {
@@ -23,44 +23,6 @@ pub(in crate::fixups) struct FunctionSummary<'a> {
     pub(in crate::fixups) bindings: &'a [BindingFact],
     pub(in crate::fixups) callee_alloc_summary: Option<&'a CalleeAllocSummaryFact>,
 }
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    let mut bindings_by_function: BTreeMap<FunctionId, Vec<BindingFact>> = BTreeMap::new();
-    for binding in &facts.bindings {
-        bindings_by_function
-            .entry(binding.function)
-            .or_default()
-            .push(binding.clone());
-    }
-    let mut summaries_by_function: BTreeMap<FunctionId, &CalleeAllocSummaryFact> = facts
-        .callee_alloc_summaries
-        .iter()
-        .map(|fact| (fact.function, fact))
-        .collect();
-
-    let mut functions = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        functions.push(FunctionSummary {
-            id: function,
-            name: f.name.as_str(),
-            body: &f.body,
-            bindings: bindings_by_function
-                .get(&function)
-                .map_or(&[][..], |v| v.as_slice()),
-            callee_alloc_summary: summaries_by_function.remove(&function),
-        });
-    }
-    let (eligibility, callers) = collect(&functions);
-    facts.interprocedural_alloc_eligibility = eligibility;
-    facts.interprocedural_alloc_callers = callers;
-}
-
 pub(in crate::fixups) fn collect(
     functions: &[FunctionSummary],
 ) -> (

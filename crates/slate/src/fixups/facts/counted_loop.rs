@@ -3,30 +3,11 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     self, AstPath, BindingFact, BindingId, CountedLoopBound, CountedLoopFact, CountedLoopIndexUse,
-    CountedLoopStart, CountedLoopStep, CountedSliceLoopFact, FixupFacts, FunctionId, LoopFact,
-    LoopId, LoopKind, LoopSite, PathSegment, SliceLoopAccess,
+    CountedLoopStart, CountedLoopStep, CountedSliceLoopFact, FunctionId, LoopFact, LoopId,
+    LoopKind, LoopSite, PathSegment, SliceLoopAccess,
 };
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
-use crate::rust_ast::{
-    BinOp, Expr, FnDef, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type,
-};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.counted_loops.clear();
-    facts.counted_slice_loops.clear();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        let (counted, sliced) = collect_for_function(function, f, &facts.bindings, &facts.loops);
-        facts.counted_loops.extend(counted);
-        facts.counted_slice_loops.extend(sliced);
-    }
-}
-
+use crate::rust_ast::{BinOp, Expr, FnDef, Ident, IndentStmt, RustValue, Stmt, Type};
 /// Counted (and counted-slice) loops for one function's body, independent
 /// of any other function's facts - the entry point `slate-04q.75.56.8`
 /// (incremental facts) needs to re-derive one function's loop facts

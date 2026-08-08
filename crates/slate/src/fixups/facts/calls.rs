@@ -3,44 +3,13 @@ use std::collections::BTreeMap;
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     self, AstPath, BindingFact, BindingId, BindingKind, CallArgFact, CallArgPinning, CallCallee,
-    CallParamFact, CallSignatureFact, CallSignatureSource, CallsiteFact, FixupFacts, FunctionId,
-    PathSegment, SignatureId, Site,
+    CallParamFact, CallSignatureFact, CallSignatureSource, CallsiteFact, FunctionId, PathSegment,
+    SignatureId, Site,
 };
 use crate::function_identity::FunctionIdentity;
 use crate::rust_ast::{
     Block, Expr, ExternDecl, ExternFnDecl, FnDef, FnParam, IndentStmt, Item, Pattern, Program, Stmt,
 };
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.call_signatures.clear();
-    facts.callsites.clear();
-
-    let signatures = collect_signatures(program, facts);
-    let by_name = signatures
-        .iter()
-        .map(|signature| (signature.name.clone(), signature.id))
-        .collect::<BTreeMap<_, _>>();
-    let mut callsites = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        callsites.extend(collect_callsites_for_function(
-            function,
-            &f.body,
-            &facts.bindings,
-            &signatures,
-            &by_name,
-        ));
-    }
-
-    facts.call_signatures = signatures;
-    facts.callsites = callsites;
-}
-
 pub(in crate::fixups) fn collect_callsites_for_function(
     function: FunctionId,
     f_body: &[IndentStmt],
@@ -52,46 +21,6 @@ pub(in crate::fixups) fn collect_callsites_for_function(
     collector.enter_root_scope();
     collector.body(f_body, &mut Vec::new(), false);
     collector.callsites
-}
-
-fn collect_signatures(program: &Program, facts: &FixupFacts) -> Vec<CallSignatureFact> {
-    let mut signatures = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        match item {
-            Item::Fn(f) => {
-                let Some(function) = facts.function_by_item_index(item_index) else {
-                    continue;
-                };
-                push_signature(&mut signatures, local_call_signature(function, f));
-            }
-            Item::ExternBlock { decls, .. } => {
-                push_extern_signatures(item_index, decls, &mut signatures)
-            }
-            Item::Cfg { item, .. } => {
-                collect_cfg_signature(item, item_index, facts, &mut signatures)
-            }
-            _ => {}
-        }
-    }
-    signatures
-}
-
-fn collect_cfg_signature(
-    item: &Item,
-    item_index: usize,
-    facts: &FixupFacts,
-    signatures: &mut Vec<CallSignatureFact>,
-) {
-    match item {
-        Item::Fn(f) => {
-            if let Some(function) = facts.function_by_item_index(item_index) {
-                push_signature(signatures, local_call_signature(function, f));
-            }
-        }
-        Item::ExternBlock { decls, .. } => push_extern_signatures(item_index, decls, signatures),
-        Item::Cfg { item, .. } => collect_cfg_signature(item, item_index, facts, signatures),
-        _ => {}
-    }
 }
 
 fn push_extern_signatures(

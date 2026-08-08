@@ -9,7 +9,7 @@ use crate::fixups::facts::{
     BufferPointerFieldFact, CStringLiteralFact, CallArgFact, CallArgPinning, CallCallee,
     CalleeAllocSummaryFact, CallsiteFact, CastFact, ConstValue, ControlFlowFact,
     ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
-    EffectSubject, FileOwnershipFact, FixupFacts, FunctionFact, FunctionId, HeapOwnershipFact,
+    EffectSubject, FileOwnershipFact, FunctionFact, FunctionId, HeapOwnershipFact,
     InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LazyInitSingletonFact,
     NulTermination, NullCheckDominanceFact, NullCheckProof, OptionBoxAssignKind,
     OptionBoxComparison, OptionBoxLocalCandidate, PathSegment, PlaceFact, PointerComparisonFact,
@@ -141,11 +141,6 @@ pub(in crate::fixups) struct CallRecord {
 
 pub(in crate::fixups) struct QueryContext<'snapshot> {
     program: &'snapshot Program,
-    #[expect(
-        dead_code,
-        reason = "kept on the constructor signature until slate-kby1.6.4 collapses the ~20 fixups/mod.rs QueryContext::new call sites"
-    )]
-    facts: &'snapshot FixupFacts,
     calls: BTreeMap<(CallTarget, usize), Vec<CallRecord>>,
     calls_by_site: BTreeMap<ExprSite, CallRecord>,
     expression_sites: Vec<ExprSite>,
@@ -156,13 +151,13 @@ pub(in crate::fixups) struct QueryContext<'snapshot> {
     symbol_uses: BTreeMap<String, Vec<usize>>,
     use_domain_complete: bool,
     cache: QueryCache<'snapshot>,
-    salsa: Option<&'snapshot SalsaFacts>,
+    salsa: &'snapshot SalsaFacts,
 }
 
 impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn new(
         program: &'snapshot Program,
-        facts: &'snapshot FixupFacts,
+        salsa: &'snapshot SalsaFacts,
     ) -> Self {
         let mut calls: BTreeMap<(CallTarget, usize), Vec<CallRecord>> = BTreeMap::new();
         let mut calls_by_site = BTreeMap::new();
@@ -270,7 +265,6 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
         Self {
             program,
-            facts,
             calls,
             calls_by_site,
             expression_sites,
@@ -281,18 +275,12 @@ impl<'snapshot> QueryContext<'snapshot> {
             symbol_uses,
             use_domain_complete,
             cache: QueryCache::default(),
-            salsa: None,
+            salsa,
         }
-    }
-
-    pub(in crate::fixups) fn with_salsa(mut self, salsa: &'snapshot SalsaFacts) -> Self {
-        self.salsa = Some(salsa);
-        self
     }
 
     fn salsa(&self) -> &'snapshot SalsaFacts {
         self.salsa
-            .expect("QueryContext is always constructed with .with_salsa()")
     }
 
     fn def_use_fact(&self, function: FunctionId, binding: BindingId) -> Option<&DefUseFact> {

@@ -3,33 +3,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::fixups::facts::walk::{self, Bodies};
 use crate::fixups::facts::{
     self, AstPath, BindingFact, BindingId, BindingKind, BindingTypeFact, CallCallee, CallsiteFact,
-    DefUseFact, FixupFacts, FunctionId, PathSegment, PtrLenSliceFact,
+    DefUseFact, FunctionId, PathSegment, PtrLenSliceFact,
 };
-use crate::rust_ast::{
-    Block, Expr, FnDef, IndentStmt, Prim, Program, RustValue, Stmt, Type, UnaryOp,
-};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    let bodies = walk::bodies_from_program(program, facts);
-    let function_by_name: BTreeMap<String, FunctionId> = facts
-        .functions
-        .iter()
-        .map(|function| (function.name.clone(), function.id))
-        .collect();
-    let snapshot = Snapshot {
-        bindings: &facts.bindings,
-        binding_types: &facts.binding_types,
-        def_use: &facts.def_use,
-        callsites: &facts.callsites,
-        function_by_name: &function_by_name,
-    };
-    facts.ptr_len_slices = compute(
-        &bodies,
-        &snapshot,
-        collect_candidates(&bodies, &facts.bindings),
-    );
-}
-
+use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Prim, RustValue, Stmt, Type, UnaryOp};
 pub(in crate::fixups) struct Snapshot<'a> {
     pub(in crate::fixups) bindings: &'a [BindingFact],
     pub(in crate::fixups) binding_types: &'a [BindingTypeFact],
@@ -136,14 +112,6 @@ pub(in crate::fixups) struct Candidate {
 enum LengthSource {
     Const(u64),
     Bound(BindingId),
-}
-
-fn collect_candidates(bodies: &Bodies, bindings: &[BindingFact]) -> Vec<Candidate> {
-    let mut candidates = Vec::new();
-    for (&function, &f) in bodies {
-        candidates.extend(candidates_for_function(function, f, bindings));
-    }
-    candidates
 }
 
 pub(in crate::fixups) fn candidates_for_function(

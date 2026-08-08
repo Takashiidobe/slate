@@ -2,26 +2,9 @@ use std::collections::BTreeSet;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, ControlFlowExit, ControlFlowFact, ControlFlowSubject, FixupFacts, FunctionId,
-    PathSegment, Site,
+    AstPath, ControlFlowExit, ControlFlowFact, ControlFlowSubject, FunctionId, PathSegment, Site,
 };
-use crate::rust_ast::{Block, FnDef, IndentStmt, Item, Label, Program, Stmt};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.control_flow.clear();
-    let mut all = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        all.extend(collect_for_function(function, f));
-    }
-    facts.control_flow = all;
-}
-
+use crate::rust_ast::{Block, FnDef, IndentStmt, Label, Stmt};
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,

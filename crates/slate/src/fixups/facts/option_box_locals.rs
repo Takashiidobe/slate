@@ -2,32 +2,11 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    self, AstPath, BindingFact, FixupFacts, FunctionId, OptionBoxAssignKind, OptionBoxAssignment,
+    self, AstPath, BindingFact, FunctionId, OptionBoxAssignKind, OptionBoxAssignment,
     OptionBoxComparison, OptionBoxLocalCandidate, PathSegment,
 };
 use crate::function_identity::{Known, known_call};
-use crate::rust_ast::{BinOp, Expr, FnDef, IndentStmt, Item, Program, RustValue, Stmt, Type};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.option_box_locals.clear();
-    facts.option_box_comparisons.clear();
-    let mut all = Vec::new();
-    let mut all_comparisons = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        let (candidates, comparisons) = collect_for_function(function, f, &facts.bindings);
-        all.extend(candidates);
-        all_comparisons.extend(comparisons);
-    }
-    facts.option_box_locals = all;
-    facts.option_box_comparisons = all_comparisons;
-}
-
+use crate::rust_ast::{BinOp, Expr, FnDef, IndentStmt, RustValue, Stmt, Type};
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,

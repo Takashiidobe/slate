@@ -1,31 +1,10 @@
 use std::collections::BTreeMap;
 
 use crate::fixups::facts::{
-    self, AstPath, BindingFact, BindingId, BindingTypeFact, BufferPointerFieldFact, FixupFacts,
-    FunctionId, PathSegment, Site,
+    self, AstPath, BindingFact, BindingId, BindingTypeFact, BufferPointerFieldFact, FunctionId,
+    PathSegment, Site,
 };
-use crate::rust_ast::{Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.buffer_pointer_fields.clear();
-    let mut all = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        all.extend(collect_for_function(
-            function,
-            &f.body,
-            &facts.bindings,
-            &facts.binding_types,
-        ));
-    }
-    facts.buffer_pointer_fields = all;
-}
-
+use crate::rust_ast::{Expr, Ident, IndentStmt, RustValue, Stmt, Type};
 #[derive(Clone)]
 struct ArrayLocal {
     binding: BindingId,

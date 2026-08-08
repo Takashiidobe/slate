@@ -1,13 +1,5 @@
-use crate::fixups::facts::{AnonymousStructFact, AnonymousStructFieldFact, FixupFacts};
-use crate::rust_ast::{Item, Program, RecordDef};
-
-pub(super) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.anonymous_structs = collect(program.items.iter().filter_map(|item| match item {
-        Item::Record(record) => Some(record),
-        _ => None,
-    }));
-}
-
+use crate::fixups::facts::{AnonymousStructFact, AnonymousStructFieldFact};
+use crate::rust_ast::RecordDef;
 pub(in crate::fixups) fn collect<'a>(
     records: impl Iterator<Item = &'a RecordDef>,
 ) -> Vec<AnonymousStructFact> {

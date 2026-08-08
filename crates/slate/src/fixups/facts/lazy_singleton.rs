@@ -20,45 +20,10 @@
 
 use std::collections::BTreeMap;
 
-use crate::fixups::facts::walk::{self, Bodies};
-use crate::fixups::facts::{FixupFacts, FunctionId, LazyInitSingletonFact, StaticDeclFact};
+use crate::fixups::facts::walk::Bodies;
+use crate::fixups::facts::{FunctionId, LazyInitSingletonFact, StaticDeclFact};
 use crate::fixups::idents::stmt_ident_count;
-use crate::rust_ast::{
-    BinOp, Expr, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
-};
-
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    let bodies = walk::bodies_from_program(program, facts);
-    let statics = statics_from_program(program);
-    let shapes: BTreeMap<FunctionId, (String, String, Expr)> = bodies
-        .iter()
-        .filter_map(|(&function, &f)| match_body(&f.body).map(|shape| (function, shape)))
-        .collect();
-    facts.lazy_init_singletons = compute(&shapes, &bodies, &statics);
-}
-
-fn statics_from_program(program: &Program) -> Vec<StaticDeclFact> {
-    program
-        .items
-        .iter()
-        .filter_map(|item| match item {
-            Item::Static {
-                name,
-                mutable,
-                ty,
-                init,
-                ..
-            } => Some(StaticDeclFact {
-                name: name.clone(),
-                mutable: *mutable,
-                ty: ty.clone(),
-                init: init.clone(),
-            }),
-            _ => None,
-        })
-        .collect()
-}
-
+use crate::rust_ast::{BinOp, Expr, IndentStmt, Prim, RustValue, Stmt, Type, UnaryOp};
 pub(in crate::fixups) fn compute(
     shapes: &BTreeMap<FunctionId, (String, String, Expr)>,
     bodies: &Bodies,
