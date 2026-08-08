@@ -8,12 +8,12 @@ use crate::fixups::facts::{
     BindingId, BindingKind, BorrowAliasReason, BufferPointerFieldFact, CallArgFact, CallArgPinning,
     CallCallee, CalleeAllocSummaryFact, CallsiteFact, CastFact, ConstValue, ControlFlowFact,
     ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
-    EffectSubject, FixupFacts, FunctionId, HeapOwnershipFact, InterproceduralAllocCallerFact,
-    InterproceduralAllocEligibilityFact, LazyInitSingletonFact, NulTermination,
-    NullCheckDominanceFact, NullCheckProof, OptionBoxAssignKind, OptionBoxComparison,
-    OptionBoxLocalCandidate, PathSegment, PlaceFact, PointerComparisonFact, PointerComparisonKind,
-    PointerOptionSafetyFact, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
-    StringBufferKind, StringCopyRewrite, StringLibcUseFact, StringParamLiftFact,
+    EffectSubject, FileOwnershipFact, FixupFacts, FunctionId, HeapOwnershipFact,
+    InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LazyInitSingletonFact,
+    NulTermination, NullCheckDominanceFact, NullCheckProof, OptionBoxAssignKind,
+    OptionBoxComparison, OptionBoxLocalCandidate, PathSegment, PlaceFact, PointerComparisonFact,
+    PointerComparisonKind, PointerOptionSafetyFact, PrintfCallFact, PtrLenSliceFact, Purity,
+    StringBufferFact, StringBufferKind, StringCopyRewrite, StringLibcUseFact, StringParamLiftFact,
     StringPointerViewFact, StringRecoveryCandidate, StructFieldOwnershipFact, ValueSubject,
 };
 use crate::fixups::salsa::SalsaFacts;
@@ -550,6 +550,18 @@ impl<'snapshot> QueryContext<'snapshot> {
             None => self
                 .facts
                 .heap_ownership
+                .iter()
+                .filter(|fact| fact.function == function)
+                .collect(),
+        }
+    }
+
+    fn file_ownership_fact_list(&self, function: FunctionId) -> Vec<&FileOwnershipFact> {
+        match self.salsa {
+            Some(salsa) => salsa.file_ownership(function).iter().collect(),
+            None => self
+                .facts
+                .file_ownership
                 .iter()
                 .filter(|fact| fact.function == function)
                 .collect(),
@@ -4764,12 +4776,7 @@ query_cache! {
             path: path.clone(),
         };
         let mut owners = Vec::new();
-        for fact in self
-            .facts
-            .file_ownership
-            .iter()
-            .filter(|fact| fact.function == function.id)
-        {
+        for fact in self.file_ownership_fact_list(function.id) {
             let Some(handle) = binding(fact.handle) else {
                 return Err(Rejection::new(
                     predicate,
