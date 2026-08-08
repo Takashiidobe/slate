@@ -1,0 +1,21 @@
+[package]
+name = "triplers"
+version = "0.1.1"
+edition = "2024"
+license = "MIT"
+description = "library for parsing, manipulating, and serializing target triples."
+repository = "https://gitlab.com/viraven/triplers"
+documentation = "https://docs.rs/triplers"
+readme = "README.md"
+keywords = ["target-triple", "llvm", "no-std", "architecture"]
+categories = ["no-std", "parsing", "development-tools"]
+
+[dependencies]
+strum = {version = "0.28.0", features = ["derive"], default-features = false}
+strum_macros = "0.28.0"
+serde = {version = "1.0", default-features = false, features = ["derive"], optional = true}
+
+[features]
+default = ["std"]
+std = []
+serde = ["dep:serde"]

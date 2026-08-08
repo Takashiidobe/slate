@@ -45,6 +45,24 @@ fn recorded_cfgs(doc: &Value) -> Vec<String> {
 }
 
 #[test]
+fn records_msvc_slate_target_features() {
+    let src = cfg_fixtures_dir().join("slate_msvc_target.c");
+    let output = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("record-cfg")
+        .arg(src)
+        .env("SLATE_TARGET", "x86_64-pc-windows-msvc")
+        .output()
+        .expect("record MSVC Slate target");
+    assert!(
+        output.status.success(),
+        "record-cfg failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let doc: Value = serde_json::from_slice(&output.stdout).expect("record-cfg output is JSON");
+    assert_eq!(doc["directives"][0]["active"], true);
+}
+
+#[test]
 fn record_cfg_exposes_the_directive_ledger() {
     let doc = record_cfg("feature_nested.c", &[]);
     let directives = doc["directives"].as_array().expect("directives array");

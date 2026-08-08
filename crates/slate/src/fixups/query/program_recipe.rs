@@ -1,7 +1,8 @@
 use std::collections::BTreeMap;
 
+use crate::fixups::facts::FunctionId;
 use crate::fixups::facts::atomic_locals::place_local_target;
-use crate::fixups::facts::{FixupFacts, FunctionId};
+use crate::fixups::salsa::SalsaFacts;
 use crate::fixups::support::walk;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known, known_call};
 use crate::rust_ast::{
@@ -31,7 +32,7 @@ pub(in crate::fixups) fn rewrite_anonymous_structs(
         fact_path: Default::default(),
     });
     let mut replacement = query.snapshot_program().clone();
-    if !apply_anonymous_structs(&mut replacement, query.snapshot_facts(), structs.structs) {
+    if !apply_anonymous_structs(&mut replacement, query.snapshot_salsa(), structs.structs) {
         return Err(Rejection::new(
             Predicate::AnonymousStructDomain,
             site,
@@ -712,7 +713,7 @@ pub(in crate::fixups) fn rewrite_sort_search(
 
 fn apply_anonymous_structs(
     program: &mut Program,
-    facts: &FixupFacts,
+    salsa: &SalsaFacts,
     structs: Vec<AnonymousStructPlan>,
 ) -> bool {
     let plans = structs
@@ -723,7 +724,7 @@ fn apply_anonymous_structs(
     let global_types = global_types(program);
     let mut changed = false;
     for item in &mut program.items {
-        changed |= rewrite_item(item, &plans, &record_fields, &global_types, facts);
+        changed |= rewrite_item(item, &plans, &record_fields, &global_types, salsa);
     }
     changed
 }
@@ -762,7 +763,7 @@ fn rewrite_item(
     plans: &BTreeMap<String, AnonymousStructPlan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
     global_types: &BTreeMap<String, Type>,
-    facts: &FixupFacts,
+    salsa: &SalsaFacts,
 ) -> bool {
     match item {
         Item::Record(record) => {
@@ -791,18 +792,14 @@ fn rewrite_item(
             true
         }
         Item::Fn(function) => {
-            let function_id = facts
-                .functions
-                .iter()
-                .find(|fact| fact.name == function.name)
-                .map(|fact| fact.id);
+            let function_id = salsa.function_by_name(&function.name);
             rewrite_fn(
                 function,
                 function_id,
                 plans,
                 record_fields,
                 global_types,
-                facts,
+                salsa,
             )
         }
         Item::Static { ty, init, .. } | Item::Const { ty, init, .. } => {
@@ -828,7 +825,7 @@ fn rewrite_item(
             }
             changed
         }
-        Item::Cfg { item, .. } => rewrite_item(item, plans, record_fields, global_types, facts),
+        Item::Cfg { item, .. } => rewrite_item(item, plans, record_fields, global_types, salsa),
         Item::ExternBlock { decls, .. } => {
             let mut changed = false;
             for decl in decls {
@@ -864,11 +861,11 @@ fn rewrite_fn(
     plans: &BTreeMap<String, AnonymousStructPlan>,
     record_fields: &BTreeMap<String, BTreeMap<String, Type>>,
     global_types: &BTreeMap<String, Type>,
-    facts: &FixupFacts,
+    salsa: &SalsaFacts,
 ) -> bool {
     let mut local_types = global_types.clone();
     if let Some(function_id) = function_id {
-        local_types.extend(local_anonymous_types(function_id, facts));
+        local_types.extend(local_anonymous_types(function_id, salsa));
     }
     let mut changed = false;
     for param in &mut function.params {
@@ -881,15 +878,11 @@ fn rewrite_fn(
     changed
 }
 
-fn local_anonymous_types(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, Type> {
-    facts
-        .bindings
-        .iter()
-        .filter(|binding| binding.function == function)
-        .filter_map(|binding| {
-            let rendered = facts.binding_type(binding.id)?;
-            Some((binding.name.clone(), Type::parse(rendered)))
-        })
+fn local_anonymous_types(function: FunctionId, salsa: &SalsaFacts) -> BTreeMap<String, Type> {
+    salsa
+        .binding_names_and_types(function)
+        .into_iter()
+        .map(|(name, rendered)| (name, Type::parse(&rendered)))
         .collect()
 }
 

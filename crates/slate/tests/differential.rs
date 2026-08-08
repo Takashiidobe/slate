@@ -85,6 +85,28 @@ fn generated_differential() {
 }
 
 #[test]
+fn explicit_targets_define_slate_feature_macros() {
+    let fixture = fixtures_dir().join("target_feature_macros.c");
+    for (target, expected) in [
+        ("x86_64-unknown-linux-gnu", "EXPECT_LINUX_GLIBC_X86_64"),
+        ("aarch64-unknown-linux-musl", "EXPECT_LINUX_MUSL_AARCH64"),
+        ("riscv64-unknown-linux-gnu", "EXPECT_LINUX_GLIBC_RISCV64"),
+    ] {
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+            .args(["translate", &format!("-D{expected}=1")])
+            .arg(&fixture)
+            .env("SLATE_TARGET", target)
+            .output()
+            .expect("run Slate for explicit target");
+        assert!(
+            output.status.success(),
+            "target {target} failed:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}
+
+#[test]
 fn function_alias_lowers_to_forwarding_wrapper() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-alias-function");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

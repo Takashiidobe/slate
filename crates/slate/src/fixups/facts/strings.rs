@@ -55,7 +55,9 @@ pub(in crate::fixups) fn collect_for_function(
     collector.finish()
 }
 
-fn collect_ascii_numeric_strings(buffers: &[StringBufferFact]) -> Vec<AsciiNumericStringFact> {
+pub(in crate::fixups) fn collect_ascii_numeric_strings(
+    buffers: &[StringBufferFact],
+) -> Vec<AsciiNumericStringFact> {
     buffers
         .iter()
         .filter_map(|buffer| {

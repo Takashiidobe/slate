@@ -5,11 +5,11 @@ use std::marker::PhantomData;
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AnonymousStructFact, ArrayElementPointerOriginFact, AsciiNumericSign, AstPath,
-    AtomicGlobalFact, AtomicLocalFact, BindingId, BindingKind, BorrowAliasReason,
+    AtomicGlobalFact, AtomicLocalFact, BindingFact, BindingId, BindingKind, BorrowAliasReason,
     BufferPointerFieldFact, CStringLiteralFact, CallArgFact, CallArgPinning, CallCallee,
     CalleeAllocSummaryFact, CallsiteFact, CastFact, ConstValue, ControlFlowFact,
     ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
-    EffectSubject, FileOwnershipFact, FixupFacts, FunctionId, HeapOwnershipFact,
+    EffectSubject, FileOwnershipFact, FixupFacts, FunctionFact, FunctionId, HeapOwnershipFact,
     InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LazyInitSingletonFact,
     NulTermination, NullCheckDominanceFact, NullCheckProof, OptionBoxAssignKind,
     OptionBoxComparison, OptionBoxLocalCandidate, PathSegment, PlaceFact, PointerComparisonFact,
@@ -141,6 +141,10 @@ pub(in crate::fixups) struct CallRecord {
 
 pub(in crate::fixups) struct QueryContext<'snapshot> {
     program: &'snapshot Program,
+    #[expect(
+        dead_code,
+        reason = "kept on the constructor signature until slate-kby1.6.4 collapses the ~20 fixups/mod.rs QueryContext::new call sites"
+    )]
     facts: &'snapshot FixupFacts,
     calls: BTreeMap<(CallTarget, usize), Vec<CallRecord>>,
     calls_by_site: BTreeMap<ExprSite, CallRecord>,
@@ -286,11 +290,13 @@ impl<'snapshot> QueryContext<'snapshot> {
         self
     }
 
+    fn salsa(&self) -> &'snapshot SalsaFacts {
+        self.salsa
+            .expect("QueryContext is always constructed with .with_salsa()")
+    }
+
     fn def_use_fact(&self, function: FunctionId, binding: BindingId) -> Option<&DefUseFact> {
-        match self.salsa {
-            Some(salsa) => salsa.def_use(function, binding),
-            None => self.facts.def_use(binding),
-        }
+        self.salsa().def_use(function, binding)
     }
 
     fn effect_fact(
@@ -299,10 +305,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         subject: EffectSubject,
         path: &AstPath,
     ) -> Option<&EffectFact> {
-        match self.salsa {
-            Some(salsa) => salsa.effect(function, subject, path),
-            None => self.facts.effect(function, subject, path),
-        }
+        self.salsa().effect(function, subject, path)
     }
 
     fn values_at(
@@ -311,19 +314,12 @@ impl<'snapshot> QueryContext<'snapshot> {
         subject: ValueSubject,
         path: &AstPath,
     ) -> Vec<ConstValue> {
-        match self.salsa {
-            Some(salsa) => salsa
-                .values_for(function)
-                .iter()
-                .filter(|fact| fact.subject == subject && &fact.site.path == path)
-                .map(|fact| fact.value.clone())
-                .collect(),
-            None => self
-                .facts
-                .values_at(function, subject, path)
-                .cloned()
-                .collect(),
-        }
+        self.salsa()
+            .values_for(function)
+            .iter()
+            .filter(|fact| fact.subject == subject && &fact.site.path == path)
+            .map(|fact| fact.value.clone())
+            .collect()
     }
 
     fn value_matches(
@@ -332,15 +328,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         subject: ValueSubject,
         value: ConstValue,
     ) -> bool {
-        match self.salsa {
-            Some(salsa) => salsa
-                .values_for(function)
-                .iter()
-                .any(|fact| fact.subject == subject && fact.value == value),
-            None => self.facts.values.iter().any(|fact| {
-                fact.site.function == function && fact.subject == subject && fact.value == value
-            }),
-        }
+        self.salsa()
+            .values_for(function)
+            .iter()
+            .any(|fact| fact.subject == subject && fact.value == value)
     }
 
     fn string_buffer_fact_at(
@@ -348,17 +339,11 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         path: &AstPath,
     ) -> Option<&StringBufferFact> {
-        match self.salsa {
-            Some(salsa) => salsa.string_buffer_at(function, path),
-            None => self.facts.string_buffer_at(function, path),
-        }
+        self.salsa().string_buffer_at(function, path)
     }
 
     fn string_buffer_fact(&self, binding: BindingId) -> Option<&StringBufferFact> {
-        match self.salsa {
-            Some(salsa) => salsa.string_buffer(binding),
-            None => self.facts.string_buffer(binding),
-        }
+        self.salsa().string_buffer(binding)
     }
 
     fn string_pointer_view_facts(
@@ -366,19 +351,11 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         binding: BindingId,
     ) -> Vec<&StringPointerViewFact> {
-        match self.salsa {
-            Some(salsa) => salsa
-                .string_pointer_views(function)
-                .iter()
-                .filter(|view| view.source == binding)
-                .collect(),
-            None => self
-                .facts
-                .string_pointer_views
-                .iter()
-                .filter(|view| view.site.function == function && view.source == binding)
-                .collect(),
-        }
+        self.salsa()
+            .string_pointer_views(function)
+            .iter()
+            .filter(|view| view.source == binding)
+            .collect()
     }
 
     fn string_libc_use_fact(
@@ -386,10 +363,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         path: &AstPath,
     ) -> Option<&StringLibcUseFact> {
-        match self.salsa {
-            Some(salsa) => salsa.string_libc_use(function, path),
-            None => self.facts.string_libc_use(function, path),
-        }
+        self.salsa().string_libc_use(function, path)
     }
 
     fn counted_loop_fact(
@@ -397,14 +371,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         loop_path: &AstPath,
     ) -> Option<&CountedLoopFact> {
-        match self.salsa {
-            Some(salsa) => salsa.counted_loop(function, loop_path),
-            None => {
-                self.facts.counted_loops.iter().find(|fact| {
-                    fact.site.function == function && fact.site.loop_path == *loop_path
-                })
-            }
-        }
+        self.salsa().counted_loop(function, loop_path)
     }
 
     fn counted_slice_loop_fact(
@@ -412,28 +379,15 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         loop_path: &AstPath,
     ) -> Option<&CountedSliceLoopFact> {
-        match self.salsa {
-            Some(salsa) => salsa.counted_slice_loop(function, loop_path),
-            None => {
-                self.facts.counted_slice_loops.iter().find(|fact| {
-                    fact.site.function == function && fact.site.loop_path == *loop_path
-                })
-            }
-        }
+        self.salsa().counted_slice_loop(function, loop_path)
     }
 
     fn cast_fact_at(&self, function: FunctionId, path: &AstPath) -> Option<&CastFact> {
-        match self.salsa {
-            Some(salsa) => salsa.cast_at(function, path),
-            None => self.facts.cast_at(function, path),
-        }
+        self.salsa().cast_at(function, path)
     }
 
     fn place_fact(&self, function: FunctionId, path: &AstPath) -> Option<&PlaceFact> {
-        match self.salsa {
-            Some(salsa) => salsa.place(function, path),
-            None => self.facts.place(function, path),
-        }
+        self.salsa().place(function, path)
     }
 
     fn control_flow_fact(
@@ -442,17 +396,11 @@ impl<'snapshot> QueryContext<'snapshot> {
         subject: ControlFlowSubject,
         path: &AstPath,
     ) -> Option<&ControlFlowFact> {
-        match self.salsa {
-            Some(salsa) => salsa.control_flow(function, subject, path),
-            None => self.facts.control_flow(function, subject, path),
-        }
+        self.salsa().control_flow(function, subject, path)
     }
 
     fn binding_requires_mut_fact(&self, function: FunctionId, binding: BindingId) -> bool {
-        match self.salsa {
-            Some(salsa) => salsa.binding_requires_mut(function, binding),
-            None => self.facts.binding_requires_mut(binding),
-        }
+        self.salsa().binding_requires_mut(function, binding)
     }
 
     fn borrow_alias_reasons_fact(
@@ -460,33 +408,19 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         binding: BindingId,
     ) -> Option<BTreeSet<BorrowAliasReason>> {
-        match self.salsa {
-            Some(salsa) => salsa.borrow_alias_reasons(function, binding).cloned(),
-            None => self
-                .facts
-                .borrow_alias
-                .iter()
-                .find(|fact| fact.binding == binding)
-                .map(|fact| fact.reasons.clone()),
-        }
+        self.salsa()
+            .borrow_alias_reasons(function, binding)
+            .cloned()
     }
 
     fn array_element_pointer_origin_facts(
         &self,
         function: FunctionId,
     ) -> Vec<&ArrayElementPointerOriginFact> {
-        match self.salsa {
-            Some(salsa) => salsa
-                .array_element_pointer_origins(function)
-                .iter()
-                .collect(),
-            None => self
-                .facts
-                .array_element_pointer_origins
-                .iter()
-                .filter(|fact| fact.site.function == function)
-                .collect(),
-        }
+        self.salsa()
+            .array_element_pointer_origins(function)
+            .iter()
+            .collect()
     }
 
     fn null_check_dominance_at(
@@ -494,146 +428,78 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         deref_path: &AstPath,
     ) -> Option<&NullCheckDominanceFact> {
-        match self.salsa {
-            Some(salsa) => salsa.null_check_dominance_at(function, deref_path),
-            None => self.facts.null_check_dominance_at(function, deref_path),
-        }
+        self.salsa().null_check_dominance_at(function, deref_path)
     }
 
     fn atomic_local_facts(&self) -> Vec<&AtomicLocalFact> {
-        match self.salsa {
-            Some(salsa) => salsa.atomic_locals().iter().collect(),
-            None => self.facts.atomic_locals.iter().collect(),
-        }
+        self.salsa().atomic_locals().iter().collect()
     }
 
     fn option_box_local_candidate_facts(
         &self,
         function: FunctionId,
     ) -> Vec<&OptionBoxLocalCandidate> {
-        match self.salsa {
-            Some(salsa) => salsa.option_box_local_candidates(function).iter().collect(),
-            None => self
-                .facts
-                .option_box_locals
-                .iter()
-                .filter(|candidate| candidate.function == function)
-                .collect(),
-        }
+        self.salsa()
+            .option_box_local_candidates(function)
+            .iter()
+            .collect()
     }
 
     fn option_box_comparison_facts(&self, function: FunctionId) -> Vec<&OptionBoxComparison> {
-        match self.salsa {
-            Some(salsa) => salsa.option_box_comparisons(function).iter().collect(),
-            None => self
-                .facts
-                .option_box_comparisons
-                .iter()
-                .filter(|comparison| comparison.function == function)
-                .collect(),
-        }
+        self.salsa()
+            .option_box_comparisons(function)
+            .iter()
+            .collect()
     }
 
     fn buffer_pointer_field_facts(&self, function: FunctionId) -> Vec<&BufferPointerFieldFact> {
-        match self.salsa {
-            Some(salsa) => salsa.buffer_pointer_fields(function).iter().collect(),
-            None => self
-                .facts
-                .buffer_pointer_fields
-                .iter()
-                .filter(|fact| fact.site.function == function)
-                .collect(),
-        }
+        self.salsa()
+            .buffer_pointer_fields(function)
+            .iter()
+            .collect()
     }
 
     fn heap_ownership_fact_list(&self, function: FunctionId) -> Vec<&HeapOwnershipFact> {
-        match self.salsa {
-            Some(salsa) => salsa.heap_ownership(function).iter().collect(),
-            None => self
-                .facts
-                .heap_ownership
-                .iter()
-                .filter(|fact| fact.function == function)
-                .collect(),
-        }
+        self.salsa().heap_ownership(function).iter().collect()
     }
 
     fn file_ownership_fact_list(&self, function: FunctionId) -> Vec<&FileOwnershipFact> {
-        match self.salsa {
-            Some(salsa) => salsa.file_ownership(function).iter().collect(),
-            None => self
-                .facts
-                .file_ownership
-                .iter()
-                .filter(|fact| fact.function == function)
-                .collect(),
-        }
+        self.salsa().file_ownership(function).iter().collect()
     }
 
     fn printf_call_fact(&self, function: FunctionId, path: &AstPath) -> Option<PrintfCallFact> {
-        match self.salsa {
-            Some(salsa) => salsa
-                .printf_calls(function)
-                .iter()
-                .find(|fact| &fact.site.path == path)
-                .cloned(),
-            None => self.facts.printf_call(function, path).cloned(),
-        }
+        self.salsa()
+            .printf_calls(function)
+            .iter()
+            .find(|fact| &fact.site.path == path)
+            .cloned()
     }
 
     fn callee_alloc_summary_fact(&self, function: FunctionId) -> Option<&CalleeAllocSummaryFact> {
-        match self.salsa {
-            Some(salsa) => salsa.callee_alloc_summary(function),
-            None => self
-                .facts
-                .callee_alloc_summaries
-                .iter()
-                .find(|summary| summary.function == function),
-        }
+        self.salsa().callee_alloc_summary(function)
     }
 
     fn interprocedural_alloc_eligibility_fact(
         &self,
         function: FunctionId,
     ) -> Option<InterproceduralAllocEligibilityFact> {
-        match self.salsa {
-            Some(salsa) => {
-                let (eligibility, _) = salsa.interprocedural_alloc();
-                eligibility
-                    .iter()
-                    .find(|fact| fact.function == function)
-                    .cloned()
-            }
-            None => self
-                .facts
-                .interprocedural_alloc_eligibility
-                .iter()
-                .find(|fact| fact.function == function)
-                .cloned(),
-        }
+        let (eligibility, _) = self.salsa().interprocedural_alloc();
+        eligibility
+            .iter()
+            .find(|fact| fact.function == function)
+            .cloned()
     }
 
     fn interprocedural_alloc_caller_facts(
         &self,
         function: FunctionId,
     ) -> Vec<InterproceduralAllocCallerFact> {
-        match self.salsa {
-            Some(salsa) => {
-                let (_, callers) = salsa.interprocedural_alloc();
-                callers
-                    .iter()
-                    .filter(|caller| caller.callee == function)
-                    .cloned()
-                    .collect()
-            }
-            None => self
-                .facts
-                .interprocedural_alloc_callers
-                .iter()
-                .filter(|caller| caller.callee == function)
-                .cloned()
-                .collect(),
-        }
+        let (_, callers) = self.salsa().interprocedural_alloc();
+        callers
+            .iter()
+            .filter(|caller| caller.callee == function)
+            .cloned()
+            .collect()
     }
 
     fn pointer_option_safety_of(
@@ -641,10 +507,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         binding: BindingId,
     ) -> Option<&PointerOptionSafetyFact> {
-        match self.salsa {
-            Some(salsa) => salsa.pointer_option_safety_of(function, binding),
-            None => self.facts.pointer_option_safety_of(function, binding),
-        }
+        self.salsa().pointer_option_safety_of(function, binding)
     }
 
     #[expect(
@@ -656,10 +519,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         path: &AstPath,
     ) -> Option<&PointerComparisonFact> {
-        match self.salsa {
-            Some(salsa) => salsa.pointer_comparison_at(function, path),
-            None => self.facts.pointer_comparison_at(function, path),
-        }
+        self.salsa().pointer_comparison_at(function, path)
     }
 
     #[expect(
@@ -667,17 +527,11 @@ impl<'snapshot> QueryContext<'snapshot> {
         reason = "query API surface not yet wired into a fixup rule"
     )]
     fn struct_field_ownership_fact_list(&self) -> Vec<&StructFieldOwnershipFact> {
-        match self.salsa {
-            Some(salsa) => salsa.struct_field_ownership().iter().collect(),
-            None => self.facts.struct_field_ownership.iter().collect(),
-        }
+        self.salsa().struct_field_ownership().iter().collect()
     }
 
     fn callsite_fact(&self, function: FunctionId, path: &AstPath) -> Option<CallsiteFact> {
-        match self.salsa {
-            Some(salsa) => salsa.callsite(function, path),
-            None => self.facts.callsite(function, path).cloned(),
-        }
+        self.salsa().callsite(function, path)
     }
 
     fn call_arg_fact(
@@ -685,41 +539,23 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         path: &AstPath,
     ) -> Option<(CallsiteFact, CallArgFact)> {
-        match self.salsa {
-            Some(salsa) => salsa.call_arg_at(function, path),
-            None => self
-                .facts
-                .call_arg_at(function, path)
-                .map(|(callsite, arg)| (callsite.clone(), arg.clone())),
-        }
+        self.salsa().call_arg_at(function, path)
     }
 
     fn ptr_len_slice_facts(&self) -> &[PtrLenSliceFact] {
-        match self.salsa {
-            Some(salsa) => salsa.ptr_len_slices(),
-            None => &self.facts.ptr_len_slices,
-        }
+        self.salsa().ptr_len_slices()
     }
 
     fn string_param_lift_facts(&self) -> &[StringParamLiftFact] {
-        match self.salsa {
-            Some(salsa) => salsa.string_param_lifts(),
-            None => &self.facts.string_param_lifts,
-        }
+        self.salsa().string_param_lifts()
     }
 
     fn anonymous_struct_facts(&self) -> &[AnonymousStructFact] {
-        match self.salsa {
-            Some(salsa) => salsa.anonymous_structs(),
-            None => &self.facts.anonymous_structs,
-        }
+        self.salsa().anonymous_structs()
     }
 
     fn lazy_init_singleton_facts(&self) -> &[LazyInitSingletonFact] {
-        match self.salsa {
-            Some(salsa) => salsa.lazy_init_singletons(),
-            None => &self.facts.lazy_init_singletons,
-        }
+        self.salsa().lazy_init_singletons()
     }
 
     fn liftable_string_bindings_fact(
@@ -727,10 +563,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         recovery: StringRecoveryCandidate,
     ) -> BTreeSet<BindingId> {
-        match self.salsa {
-            Some(salsa) => salsa.liftable_string_bindings(function, recovery),
-            None => self.facts.liftable_string_bindings(function, recovery),
-        }
+        self.salsa().liftable_string_bindings(function, recovery)
     }
 
     fn string_use_allowed_fact(
@@ -741,21 +574,12 @@ impl<'snapshot> QueryContext<'snapshot> {
         recovery: StringRecoveryCandidate,
         liftable: &BTreeSet<BindingId>,
     ) -> bool {
-        match self.salsa {
-            Some(salsa) => {
-                salsa.string_use_allowed(function, use_path, binding, recovery, liftable)
-            }
-            None => self
-                .facts
-                .string_use_allowed(function, use_path, binding, recovery, liftable),
-        }
+        self.salsa()
+            .string_use_allowed(function, use_path, binding, recovery, liftable)
     }
 
     fn atomic_global_facts(&self) -> &[AtomicGlobalFact] {
-        match self.salsa {
-            Some(salsa) => salsa.atomic_globals(),
-            None => &self.facts.atomic_globals,
-        }
+        self.salsa().atomic_globals()
     }
 
     fn c_string_literal_fact(
@@ -763,26 +587,15 @@ impl<'snapshot> QueryContext<'snapshot> {
         function: FunctionId,
         receiver_path: &AstPath,
     ) -> Option<&CStringLiteralFact> {
-        match self.salsa {
-            Some(salsa) => salsa.c_string_literal(function, receiver_path),
-            None => self.facts.c_string_literal(function, receiver_path),
-        }
+        self.salsa().c_string_literal(function, receiver_path)
     }
 
     fn string_copy_rewrite_facts(&self, function: FunctionId) -> Vec<&StringCopyRewriteFact> {
-        match self.salsa {
-            Some(salsa) => salsa
-                .string_copy_rewrites(function)
-                .iter()
-                .filter(|fact| fact.site.function == function)
-                .collect(),
-            None => self
-                .facts
-                .string_copy_rewrites
-                .iter()
-                .filter(|fact| fact.site.function == function)
-                .collect(),
-        }
+        self.salsa()
+            .string_copy_rewrites(function)
+            .iter()
+            .filter(|fact| fact.site.function == function)
+            .collect()
     }
 
     pub(in crate::fixups) fn all_calls(&self) -> impl Iterator<Item = &CallRecord> {
@@ -794,7 +607,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 
     pub(in crate::fixups) fn call_arg_types(&self, call: &CallRecord) -> Vec<Option<Type>> {
-        let Some(function) = self.facts.function_by_item_index(call.site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(call.site.item_index) else {
             return vec![None; call.args.len()];
         };
         call.args
@@ -833,7 +646,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         let predicate = Predicate::Binding;
         let site = expression_site(item_index, &definition.0);
         let function = self
-            .facts
+            .salsa()
             .function_by_item_index(item_index)
             .ok_or_else(|| {
                 Rejection::new(
@@ -844,7 +657,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 )
             })?;
         let id = self
-            .facts
+            .salsa()
             .binding_by_local_path(function, name, definition)
             .ok_or_else(|| {
                 Rejection::new(
@@ -865,14 +678,14 @@ impl<'snapshot> QueryContext<'snapshot> {
             BindingRef {
                 item_index,
                 function_name: self
-                    .facts
+                    .salsa()
                     .function_name(function)
                     .unwrap_or_default()
                     .to_string(),
                 name: name.to_string(),
                 definition: definition.clone(),
                 kind: BindingCategory::Local,
-                ty: self.facts.binding_type_ast(id).cloned(),
+                ty: self.salsa().binding_type_ast(id).cloned(),
                 id,
             },
             evidence,
@@ -885,7 +698,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     ) -> QueryResult<BindingDefUse> {
         let predicate = Predicate::DefUse;
         let site = expression_site(binding.item_index, &binding.definition.0);
-        let function = self.facts.function_by_item_index(binding.item_index);
+        let function = self.salsa().function_by_item_index(binding.item_index);
         let fact = function
             .and_then(|function| self.def_use_fact(function, binding.id))
             .ok_or_else(|| {
@@ -1025,7 +838,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     ) -> QueryResult<bool> {
         let predicate = Predicate::StatementReachable;
         let site = statement_evidence_site(statement);
-        let Some(function) = self.facts.function_by_item_index(statement.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(statement.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site),
@@ -1078,7 +891,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn binding_value(&self, binding: &BindingRef) -> ResolvedValue {
         let usage = self
-            .facts
+            .salsa()
             .function_by_item_index(binding.item_index)
             .and_then(|function| self.def_use_fact(function, binding.id))
             .map(|fact| Usage {
@@ -1097,9 +910,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         binding: &BindingRef,
     ) -> QueryResult<bool> {
         let predicate = Predicate::BindingRequiresMut;
-        let required = match self.facts.function_by_item_index(binding.item_index) {
+        let required = match self.salsa().function_by_item_index(binding.item_index) {
             Some(function) => self.binding_requires_mut_fact(function, binding.id),
-            None => self.facts.binding_requires_mut(binding.id),
+            None => self.salsa().binding_requires_mut_by_binding(binding.id),
         };
         Ok(Proof::new(
             required,
@@ -1116,14 +929,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         binding: &BindingRef,
     ) -> QueryResult<Option<BTreeSet<BorrowAliasReason>>> {
         let predicate = Predicate::BorrowAliasReasons;
-        let reasons = match self.facts.function_by_item_index(binding.item_index) {
+        let reasons = match self.salsa().function_by_item_index(binding.item_index) {
             Some(function) => self.borrow_alias_reasons_fact(function, binding.id),
-            None => self
-                .facts
-                .borrow_alias
-                .iter()
-                .find(|fact| fact.binding == binding.id)
-                .map(|fact| fact.reasons.clone()),
+            None => self.salsa().borrow_alias_reasons_by_binding(binding.id),
         };
         let evidence = vec![Evidence {
             predicate,
@@ -1197,15 +1005,15 @@ impl<'snapshot> QueryContext<'snapshot> {
         def_path: &AstPath,
         name: &str,
     ) -> ResolvedValue {
-        let Some(function) = self.facts.function_by_item_index(item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(item_index) else {
             return ResolvedValue {
                 ty: None,
                 usage: None,
                 purity: None,
             };
         };
-        let binding = self.facts.binding_by_local_path(function, name, def_path);
-        let ty = binding.and_then(|binding| self.facts.binding_type_ast(binding).cloned());
+        let binding = self.salsa().binding_by_local_path(function, name, def_path);
+        let ty = binding.and_then(|binding| self.salsa().binding_type_ast(binding).cloned());
         let usage = binding
             .and_then(|binding| self.def_use_fact(function, binding))
             .map(|uses| Usage {
@@ -1738,7 +1546,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         let predicate = Predicate::ExpressionEffects;
         let site = statement_evidence_site(statement);
         let function = self
-            .facts
+            .salsa()
             .function_by_item_index(statement.item_index)
             .ok_or_else(|| {
                 Rejection::new(
@@ -1778,7 +1586,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         &self,
         statement: &StatementRef,
     ) -> QueryResult<Option<ExpressionEffects>> {
-        let Some(function) = self.facts.function_by_item_index(statement.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(statement.item_index) else {
             return Ok(Proof::new(None, Vec::new()));
         };
         let Some(fact) = self.effect_fact(function, EffectSubject::Stmt, &statement.path) else {
@@ -2104,9 +1912,9 @@ impl<'snapshot> QueryContext<'snapshot> {
                 let function = self.function(&expression.site);
                 function
                     .and_then(|function| {
-                        self.facts
+                        self.salsa()
                             .callsite(function, &expression.site.fact_path)
-                            .or_else(|| self.facts.callsite(function, &expression.site.path))
+                            .or_else(|| self.salsa().callsite(function, &expression.site.path))
                     })
                     .and_then(|call| call.ret.clone())
             }
@@ -2150,9 +1958,9 @@ impl<'snapshot> QueryContext<'snapshot> {
             )
         })?;
         let mut candidates =
-            self.facts
+            self.salsa()
                 .bindings_read_under(function, name.as_str(), &expression.site.fact_path);
-        candidates.extend(self.facts.bindings_written_under(
+        candidates.extend(self.salsa().bindings_written_under(
             function,
             name.as_str(),
             &expression.site.fact_path,
@@ -2198,7 +2006,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn binding_uses(&self, binding: &BindingRef) -> QueryResult<BindingUses> {
         let predicate = Predicate::BindingUses;
         let function = self
-            .facts
+            .salsa()
             .function_by_item_index(binding.item_index)
             .ok_or_else(|| {
                 Rejection::new(
@@ -2221,10 +2029,10 @@ impl<'snapshot> QueryContext<'snapshot> {
                 continue;
             }
             let reads = self
-                .facts
+                .salsa()
                 .bindings_read_under(function, name.as_str(), &site.fact_path);
             let writes =
-                self.facts
+                self.salsa()
                     .bindings_written_under(function, name.as_str(), &site.fact_path);
             let read = reads.as_slice() == [binding.id];
             let write = writes.as_slice() == [binding.id];
@@ -2384,7 +2192,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     /// structural matching before consulting this.
     pub(in crate::fixups) fn cast_at(&self, site: &ExprSite) -> QueryResult<CastFact> {
         let predicate = Predicate::Cast;
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site.clone()),
@@ -2416,7 +2224,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         deref_site: &ExprSite,
     ) -> QueryResult<NullCheckDominance> {
         let predicate = Predicate::NullCheckDominance;
-        let Some(function) = self.facts.function_by_item_index(deref_site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(deref_site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(deref_site.clone()),
@@ -2433,7 +2241,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             ));
         };
         let matches_binding = self
-            .facts
+            .salsa()
             .binding_name(fact.binding)
             .is_some_and(|name| name == binding.name);
         if !matches_binding {
@@ -2465,7 +2273,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         binding: &BindingRef,
     ) -> QueryResult<()> {
         let predicate = Predicate::PointerOptionSafety;
-        let Some(function) = self.facts.function_by_item_index(binding.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(binding.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(expression_site(binding.item_index, &binding.definition.0)),
@@ -2473,10 +2281,11 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(resolved) =
-            self.facts
-                .binding_by_local_path(function, binding.name.as_str(), &binding.definition)
-        else {
+        let Some(resolved) = self.salsa().binding_by_local_path(
+            function,
+            binding.name.as_str(),
+            &binding.definition,
+        ) else {
             return Err(Rejection::new(
                 predicate,
                 Some(expression_site(binding.item_index, &binding.definition.0)),
@@ -2517,7 +2326,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         site: &ExprSite,
     ) -> QueryResult<PointerComparisonKind> {
         let predicate = Predicate::PointerComparisonKind;
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site.clone()),
@@ -2543,7 +2352,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn callsite_at(&self, site: &ExprSite) -> QueryResult<CallCallee> {
         let predicate = Predicate::Callsite;
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site.clone()),
@@ -2577,7 +2386,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         site: &ExprSite,
     ) -> QueryResult<(CallArgPinning, bool, Option<Type>)> {
         let predicate = Predicate::CallArgumentPinning;
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site.clone()),
@@ -2612,7 +2421,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn printf_call_at(&self, site: &ExprSite) -> QueryResult<PrintfCallFact> {
         let predicate = Predicate::PrintfCall;
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site.clone()),
@@ -2683,7 +2492,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn c_string_literal(&self, site: &ExprSite) -> QueryResult<Vec<u8>> {
         let predicate = Predicate::CStringLiteral;
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site.clone()),
@@ -2719,7 +2528,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     ) -> QueryResult<StringBufferFact> {
         let predicate = Predicate::StringBuffer;
         let evidence_site = expression_site(site.item_index, &site.path.0);
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -2752,7 +2561,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     ) -> QueryResult<Vec<ExprSite>> {
         let predicate = Predicate::ReadPath;
         let evidence_site = expression_site(site.item_index, &site.path.0);
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -2760,7 +2569,10 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(binding) = self.facts.binding_by_local_path(function, name, &site.path) else {
+        let Some(binding) = self
+            .salsa()
+            .binding_by_local_path(function, name, &site.path)
+        else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -2769,8 +2581,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             ));
         };
         let sites = self
-            .facts
-            .def_use(binding)
+            .def_use_fact(function, binding)
             .map(|uses| {
                 uses.reads
                     .iter()
@@ -2796,7 +2607,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     ) -> QueryResult<Vec<ExprSite>> {
         let predicate = Predicate::ReadPath;
         let evidence_site = expression_site(site.item_index, &site.path.0);
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -2804,7 +2615,10 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(binding) = self.facts.binding_by_local_path(function, name, &site.path) else {
+        let Some(binding) = self
+            .salsa()
+            .binding_by_local_path(function, name, &site.path)
+        else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -2835,7 +2649,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         recovery: StringRecoveryCandidate,
     ) -> QueryResult<bool> {
         let predicate = Predicate::StringUse;
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(use_site.clone()),
@@ -2843,7 +2657,10 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(binding) = self.facts.binding_by_local_path(function, name, &site.path) else {
+        let Some(binding) = self
+            .salsa()
+            .binding_by_local_path(function, name, &site.path)
+        else {
             return Err(Rejection::new(
                 predicate,
                 Some(use_site.clone()),
@@ -2869,7 +2686,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     ) -> QueryResult<Vec<StringCopySite>> {
         let predicate = Predicate::ReadPath;
         let evidence_site = expression_site(site.item_index, &site.path.0);
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -2877,7 +2694,10 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(binding) = self.facts.binding_by_local_path(function, name, &site.path) else {
+        let Some(binding) = self
+            .salsa()
+            .binding_by_local_path(function, name, &site.path)
+        else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -2939,7 +2759,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn string_libc_use(&self, site: &ExprSite) -> QueryResult<StringLibcUse> {
         let predicate = Predicate::StringLibcUse;
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site.clone()),
@@ -2991,7 +2811,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         let predicate = Predicate::AsciiNumericSign;
         let site = expression_site(binding.item_index, &binding.definition.0);
         let Some(sign) = self
-            .facts
+            .salsa()
             .ascii_numeric_string(binding.id)
             .map(|fact| fact.sign)
         else {
@@ -3013,7 +2833,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn binding_constant_zero(&self, binding: &BindingRef) -> QueryResult<()> {
         let predicate = Predicate::ValueGuard;
         let site = expression_site(binding.item_index, &binding.definition.0);
-        let Some(function) = self.facts.function_by_item_index(binding.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(binding.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site),
@@ -3049,7 +2869,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     ) -> QueryResult<ArrayElementPointerOrigin> {
         let predicate = Predicate::ArrayElementPointerOrigin;
         let evidence_site = expression_site(site.item_index, &site.path.0);
-        let Some(function) = self.facts.function_by_item_index(site.item_index) else {
+        let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
                 predicate,
                 Some(evidence_site),
@@ -3062,10 +2882,10 @@ impl<'snapshot> QueryContext<'snapshot> {
             .into_iter()
             .filter_map(|fact| {
                 Some((
-                    self.facts.binding_name(fact.pointer)?.to_string(),
+                    self.salsa().binding_name(fact.pointer)?.to_string(),
                     ArrayElementPointerOrigin {
-                        pointer_name: self.facts.binding_name(fact.pointer)?.to_string(),
-                        base_name: self.facts.binding_name(fact.base)?.to_string(),
+                        pointer_name: self.salsa().binding_name(fact.pointer)?.to_string(),
+                        base_name: self.salsa().binding_name(fact.base)?.to_string(),
                         index: fact.index.clone(),
                     },
                 ))
@@ -3125,8 +2945,8 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.program
     }
 
-    pub(super) fn snapshot_facts(&self) -> &'snapshot FixupFacts {
-        self.facts
+    pub(super) fn snapshot_salsa(&self) -> &'snapshot SalsaFacts {
+        self.salsa()
     }
 
     pub(in crate::fixups) fn expr(&self, site: &ExprSite) -> Option<&'snapshot Expr> {
@@ -3138,8 +2958,8 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 
     pub(in crate::fixups) fn all_functions(&self) -> Vec<FunctionRef> {
-        self.facts
-            .functions
+        self.salsa()
+            .function_facts()
             .iter()
             .filter_map(|fact| {
                 let Item::Fn(function) = unwrap_cfg(self.program.items.get(fact.item_index)?)
@@ -3156,15 +2976,15 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 
     pub(in crate::fixups) fn all_bindings(&self) -> Vec<BindingRef> {
-        self.facts
-            .bindings
+        self.salsa()
+            .binding_facts()
             .iter()
             .filter_map(|binding| {
-                let item_index = self.facts.function_item_index(binding.function)?;
+                let item_index = self.salsa().function_item_index(binding.function)?;
                 Some(BindingRef {
                     item_index,
                     function_name: self
-                        .facts
+                        .salsa()
                         .function_name(binding.function)
                         .unwrap_or_default()
                         .to_string(),
@@ -3174,7 +2994,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                         BindingKind::Param { index } => BindingCategory::Parameter { index },
                         BindingKind::Local => BindingCategory::Local,
                     },
-                    ty: self.facts.binding_type_ast(binding.id).cloned(),
+                    ty: self.salsa().binding_type_ast(binding.id).cloned(),
                     id: binding.id,
                 })
             })
@@ -3818,7 +3638,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn function(&self, site: &ExprSite) -> Option<FunctionId> {
         self.program.items.get(site.item_index)?;
-        self.facts.function_by_item_index(site.item_index)
+        self.salsa().function_by_item_index(site.item_index)
     }
 
     fn count_matches_source_len(&self, source: &ByteSource<'snapshot>, count: &ExprSite) -> bool {
@@ -3843,10 +3663,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             )
         })?;
         let mut values = BTreeSet::new();
-        for value in self
-            .facts
-            .values_at(function, ValueSubject::Expr, &site.fact_path)
-        {
+        for value in &self.values_at(function, ValueSubject::Expr, &site.fact_path) {
             match convert(value) {
                 Ok(Some(value)) => {
                     values.insert(value);
@@ -4124,8 +3941,8 @@ query_cache! {
             )
         })?;
         let pointer = self
-            .facts
-            .string_pointer_view(function, &site.fact_path)
+            .salsa()
+            .string_pointer_view_at(function, &site.fact_path)
             .ok_or_else(|| {
                 Rejection::new(
                     predicate,
@@ -4145,8 +3962,7 @@ query_cache! {
                     Vec::new(),
                 )
             })?;
-        let name = self
-            .facts
+        let name = self.salsa()
             .binding_name(pointer.source)
             .ok_or_else(|| {
                 Rejection::new(
@@ -4165,7 +3981,7 @@ query_cache! {
                 Vec::new(),
             ));
         }
-        let ty = self.facts.binding_type_ast(pointer.source).ok_or_else(|| {
+        let ty = self.salsa().binding_type_ast(pointer.source).ok_or_else(|| {
             Rejection::new(
                 predicate,
                 Some(site.clone()),
@@ -4485,7 +4301,7 @@ query_cache! {
     {
         let predicate = Predicate::CountedLoop;
         let evidence_site = statement_evidence_site(statement);
-        let function = self.facts.function_by_item_index(statement.item_index).ok_or_else(|| {
+        let function = self.salsa().function_by_item_index(statement.item_index).ok_or_else(|| {
             Rejection::new(
                 predicate,
                 Some(evidence_site.clone()),
@@ -4520,7 +4336,7 @@ query_cache! {
     {
         let predicate = Predicate::CountedSliceLoop;
         let evidence_site = statement_evidence_site(statement);
-        let function = self.facts.function_by_item_index(statement.item_index).ok_or_else(|| {
+        let function = self.salsa().function_by_item_index(statement.item_index).ok_or_else(|| {
             Rejection::new(
                 predicate,
                 Some(evidence_site.clone()),
@@ -4582,7 +4398,7 @@ query_cache! {
         let predicate = Predicate::LazySingletonDomain;
         let mut singletons = Vec::new();
         for singleton in self.lazy_init_singleton_facts() {
-            let Some(function_item_index) = self.facts.function_item_index(singleton.function)
+            let Some(function_item_index) = self.salsa().function_item_index(singleton.function)
             else {
                 return Err(Rejection::new(
                     predicate,
@@ -4591,7 +4407,7 @@ query_cache! {
                     Vec::new(),
                 ));
             };
-            let Some(function_name) = self.facts.function_name(singleton.function) else {
+            let Some(function_name) = self.salsa().function_name(singleton.function) else {
                 return Err(Rejection::new(
                     predicate,
                     None,
@@ -4658,7 +4474,7 @@ query_cache! {
         let predicate = Predicate::AtomicPromotionDomain;
         let mut locals = Vec::new();
         for fact in self.atomic_local_facts() {
-            let Some(function_item_index) = self.facts.function_item_index(fact.function) else {
+            let Some(function_item_index) = self.salsa().function_item_index(fact.function) else {
                 return Err(Rejection::new(
                     predicate,
                     None,
@@ -4915,7 +4731,8 @@ query_cache! {
     {
         let predicate = Predicate::PtrLenSlice;
         let slices = self.ptr_len_slice_facts();
-        let plans = ptr_len_plans_from_facts(slices, self.facts);
+        let plans =
+            ptr_len_plans_from_facts(slices, self.salsa().function_facts(), self.salsa().binding_facts());
         let site = expression_site(plans.first().map_or(0, |plan| plan.item_index), &[]);
         if plans.is_empty() {
             return Err(Rejection::new(
@@ -5260,7 +5077,7 @@ query_cache! {
             .filter_map(|fact| {
                 let buffer = bindings.iter().find(|binding| binding.id == fact.buffer)?.clone();
                 let array = bindings.iter().find(|binding| binding.id == fact.array)?.clone();
-                let array_len = self.facts.binding_type(fact.array)
+                let array_len = self.salsa().binding_type(fact.array)
                     .and_then(buffer_cursor_array_len_from_rendered_type)?;
                 Some(BufferPointerField {
                     buffer,
@@ -6172,7 +5989,11 @@ fn qualified_path(path: &crate::rust_ast::Path) -> String {
         .join("::")
 }
 
-fn ptr_len_plans_from_facts(slices: &[PtrLenSliceFact], facts: &FixupFacts) -> Vec<PtrLenPlan> {
+fn ptr_len_plans_from_facts(
+    slices: &[PtrLenSliceFact],
+    functions: &[FunctionFact],
+    bindings: &[BindingFact],
+) -> Vec<PtrLenPlan> {
     let mut grouped = BTreeMap::<(FunctionId, BindingId), Vec<&PtrLenSliceFact>>::new();
     for fact in slices {
         grouped
@@ -6182,14 +6003,10 @@ fn ptr_len_plans_from_facts(slices: &[PtrLenSliceFact], facts: &FixupFacts) -> V
     }
     let mut plans = Vec::new();
     for ((function, ptr_param), calls) in grouped {
-        let Some(function_fact) = facts.functions.iter().find(|fact| fact.id == function) else {
+        let Some(function_fact) = functions.iter().find(|fact| fact.id == function) else {
             continue;
         };
-        let Some(ptr_binding) = facts
-            .bindings
-            .iter()
-            .find(|binding| binding.id == ptr_param)
-        else {
+        let Some(ptr_binding) = bindings.iter().find(|binding| binding.id == ptr_param) else {
             continue;
         };
         let BindingKind::Param { index: ptr_index } = ptr_binding.kind else {

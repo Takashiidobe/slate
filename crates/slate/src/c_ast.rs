@@ -405,6 +405,7 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
 
 fn run_clang_ast_dump(src: &Path, extra_args: &[String]) -> Result<(String, PluginEvents), String> {
     let mut cmd = Command::new(clang());
+    let target_args = crate::cir::emit::target_args()?;
     cmd.args([
         "-std=c23",
         "-Xclang",
@@ -430,7 +431,7 @@ fn run_clang_ast_dump(src: &Path, extra_args: &[String]) -> Result<(String, Plug
         }
     }
     let out = cmd
-        .args(crate::cir::emit::target_args())
+        .args(target_args)
         .args(extra_args)
         .arg(src)
         .output()
