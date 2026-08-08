@@ -1,7 +1,7 @@
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{AstPath, CStringLiteralFact, FunctionId, PathSegment};
 use crate::rust_ast::{Expr, FnDef, Prim, Type};
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
 ) -> Vec<CStringLiteralFact<'db>> {

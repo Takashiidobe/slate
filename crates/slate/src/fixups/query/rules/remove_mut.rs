@@ -14,9 +14,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
         .case("droppable_mut", rewrite_case)
 }
 
-fn rewrite_case(
+fn rewrite_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
+    function: &FunctionRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let mut replacement = case
         .fact(|query| query.function_snapshot(function))?
@@ -60,9 +60,9 @@ fn rewrite_case(
     Ok(EditSet::replace_function(function.clone(), replacement))
 }
 
-fn param_can_drop_mut(
+fn param_can_drop_mut<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
 ) -> Result<bool, Rejection> {
     if !case.fact(|query| query.binding_requires_mut(binding))? {
         return Ok(true);

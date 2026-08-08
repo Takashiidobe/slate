@@ -6,7 +6,7 @@ use crate::fixups::facts::{
     BorrowAliasUseFact, BorrowAliasUseKind, FunctionId, PathSegment,
 };
 use crate::rust_ast::{AsmOperand, Block, Expr, FnDef, Ident, IndentStmt, Stmt, UnaryOp};
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],
@@ -16,7 +16,7 @@ pub(in crate::fixups) fn collect_for_function(
     collector.finish()
 }
 
-struct Collector<'a> {
+struct Collector<'db, 'a> {
     function: FunctionId<'db>,
     bindings: &'a [BindingFact<'db>],
     by_binding: BTreeMap<BindingId<'db>, BindingSummary>,
@@ -28,7 +28,7 @@ struct BindingSummary {
     uses: Vec<BorrowAliasUseFact>,
 }
 
-impl<'a> Collector<'a> {
+impl<'db, 'a> Collector<'db, 'a> {
     fn new(function: FunctionId<'db>, bindings: &'a [BindingFact<'db>]) -> Self {
         Self {
             function,

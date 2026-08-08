@@ -12,7 +12,7 @@ use crate::rust_ast::{BinOp, Expr, FnDef, Ident, IndentStmt, RustValue, Stmt, Ty
 /// of any other function's facts - the entry point `slate-04q.75.56.8`
 /// (incremental facts) needs to re-derive one function's loop facts
 /// without a whole-program walk.
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],
@@ -31,7 +31,7 @@ pub(in crate::fixups) fn collect_for_function(
     (collector.counted_loops, collector.counted_slice_loops)
 }
 
-struct Collector<'a> {
+struct Collector<'db, 'a> {
     function: FunctionId<'db>,
     bindings: &'a [BindingFact<'db>],
     loops: &'a [LoopFact<'db>],
@@ -41,8 +41,12 @@ struct Collector<'a> {
     counted_slice_loops: Vec<CountedSliceLoopFact<'db>>,
 }
 
-impl<'a> Collector<'a> {
-    fn new(function: FunctionId<'db>, bindings: &'a [BindingFact<'db>], loops: &'a [LoopFact<'db>]) -> Self {
+impl<'db, 'a> Collector<'db, 'a> {
+    fn new(
+        function: FunctionId<'db>,
+        bindings: &'a [BindingFact<'db>],
+        loops: &'a [LoopFact<'db>],
+    ) -> Self {
         Self {
             function,
             bindings,
@@ -310,7 +314,7 @@ impl<'a> Collector<'a> {
     }
 }
 
-struct SliceLoopRange {
+struct SliceLoopRange<'db> {
     slice: BindingId<'db>,
     body_start: usize,
     increment_stmt: usize,
@@ -357,11 +361,11 @@ fn canonical_counted_range<'a>(
     })
 }
 
-fn canonical_slice_loop_range(
+fn canonical_slice_loop_range<'db>(
     body: &[IndentStmt],
     index_name: &str,
-    collector: &Collector<'_>,
-) -> Option<SliceLoopRange> {
+    collector: &Collector<'db, '_>,
+) -> Option<SliceLoopRange<'db>> {
     let range = canonical_counted_range(body, index_name)?;
     let slice = match range.bound {
         Expr::Var(len) => collector
@@ -384,7 +388,7 @@ fn canonical_slice_loop_range(
     })
 }
 
-fn indexed_body_slice(
+fn indexed_body_slice<'db>(
     body: &[IndentStmt],
     index_name: &str,
     slices: &BTreeMap<String, BindingId<'db>>,
@@ -435,7 +439,7 @@ fn is_straight_line_stmt(stmt: &Stmt) -> bool {
     }
 }
 
-fn analyze_loop_body(
+fn analyze_loop_body<'db>(
     body: &[IndentStmt],
     index_name: &Ident,
     expected_slice: BindingId<'db>,
@@ -473,7 +477,7 @@ fn analyze_loop_body(
     Some((access, index_use))
 }
 
-struct BodyAnalysis {
+struct BodyAnalysis<'db> {
     primary_index: String,
     index_names: BTreeSet<String>,
     slices: BTreeSet<BindingId<'db>>,
@@ -481,7 +485,7 @@ struct BodyAnalysis {
     index_used_directly: bool,
 }
 
-impl BodyAnalysis {
+impl<'db> BodyAnalysis<'db> {
     fn new(index_name: &Ident) -> Self {
         Self {
             primary_index: index_name.as_str().to_string(),
@@ -497,10 +501,10 @@ impl BodyAnalysis {
     }
 }
 
-fn analyze_stmt(
+fn analyze_stmt<'db>(
     stmt: &Stmt,
     slices: &BTreeMap<String, BindingId<'db>>,
-    state: &mut BodyAnalysis,
+    state: &mut BodyAnalysis<'db>,
 ) -> bool {
     match stmt {
         Stmt::Let {
@@ -555,10 +559,10 @@ fn analyze_stmt(
     }
 }
 
-fn analyze_body(
+fn analyze_body<'db>(
     body: &[IndentStmt],
     slices: &BTreeMap<String, BindingId<'db>>,
-    state: &mut BodyAnalysis,
+    state: &mut BodyAnalysis<'db>,
 ) -> bool {
     for indent in body {
         if let Stmt::Let {
@@ -584,11 +588,11 @@ enum AccessMode {
     Mutate,
 }
 
-fn analyze_expr(
+fn analyze_expr<'db>(
     expr: &Expr,
     mode: AccessMode,
     slices: &BTreeMap<String, BindingId<'db>>,
-    state: &mut BodyAnalysis,
+    state: &mut BodyAnalysis<'db>,
 ) -> bool {
     match expr {
         Expr::Var(name) if name.as_str() == state.primary_index => {

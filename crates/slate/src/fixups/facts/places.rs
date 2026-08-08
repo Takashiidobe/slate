@@ -4,7 +4,10 @@ use crate::fixups::facts::{
     PlaceProjection, PlaceRoot, Site, VolatileAccess,
 };
 use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Stmt, UnaryOp};
-pub(in crate::fixups) fn collect_for_function(function: FunctionId<'db>, f: &FnDef) -> Vec<PlaceFact<'db>> {
+pub(in crate::fixups) fn collect_for_function<'db>(
+    function: FunctionId<'db>,
+    f: &FnDef,
+) -> Vec<PlaceFact<'db>> {
     let mut collector = Collector {
         function,
         places: Vec::new(),
@@ -13,12 +16,12 @@ pub(in crate::fixups) fn collect_for_function(function: FunctionId<'db>, f: &FnD
     collector.places
 }
 
-struct Collector {
+struct Collector<'db> {
     function: FunctionId<'db>,
     places: Vec<PlaceFact<'db>>,
 }
 
-impl Collector {
+impl<'db> Collector<'db> {
     fn body(&mut self, body: &[IndentStmt], path: &mut Vec<PathSegment>) {
         for (index, indent) in body.iter().enumerate() {
             walk::with_path_segment(path, PathSegment::Stmt(index), |path| {

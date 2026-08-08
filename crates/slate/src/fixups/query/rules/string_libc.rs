@@ -106,9 +106,9 @@ fn usize_call_edit(
     Ok(EditSet::replace_expression(edit_target(call), replacement))
 }
 
-fn source_for_binding(
+fn source_for_binding<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
 ) -> Result<Source, Rejection> {
     let buffer = case.fact(|query| query.string_buffer(&binding.value_site()))?;
     let kind = string_kind_for_buffer(buffer.kind).ok_or_else(|| case.reject())?;
@@ -550,10 +550,10 @@ fn strtod_case(
     )
 }
 
-fn numeric_parse_edit(
+fn numeric_parse_edit<'db>(
     case: &mut ItemCaseContext<'_, '_>,
     call: &CallRecord,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
     helper: &str,
     target: ParseTarget,
 ) -> Result<EditSet, Rejection> {
@@ -598,9 +598,9 @@ enum IntegerParseTarget {
     U64,
 }
 
-fn direct_numeric_parse(
+fn direct_numeric_parse<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
     source: &str,
     target: IntegerParseTarget,
 ) -> Result<Expr, Rejection> {

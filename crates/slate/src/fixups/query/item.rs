@@ -37,7 +37,7 @@ pub(in crate::fixups) enum QueryDomain {
 }
 
 pub(in crate::fixups) enum QueryItem<'snapshot> {
-    Binding(BindingRef),
+    Binding(BindingRef<'snapshot>),
     Definition(&'snapshot DefinitionSite),
     #[expect(
         dead_code,
@@ -50,13 +50,13 @@ pub(in crate::fixups) enum QueryItem<'snapshot> {
         reason = "query API surface not yet wired into a fixup rule"
     )]
     Field(super::FieldRef),
-    Function(FunctionRef),
+    Function(FunctionRef<'snapshot>),
     #[expect(
         dead_code,
         reason = "query API surface not yet wired into a fixup rule"
     )]
     MatchArm(super::MatchArmRef),
-    Parameter(super::ParameterRef),
+    Parameter(super::ParameterRef<'snapshot>),
     Program(super::ProgramRef),
     Statement(StatementRef),
     #[expect(
@@ -68,7 +68,7 @@ pub(in crate::fixups) enum QueryItem<'snapshot> {
         dead_code,
         reason = "query API surface not yet wired into a fixup rule"
     )]
-    TypeUse(super::TypeUseRef),
+    TypeUse(super::TypeUseRef<'snapshot>),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -166,10 +166,14 @@ impl<const N: usize> StatementMatch<N> {
 }
 
 pub(in crate::fixups) trait Matcher {
-    type Capture: MatchCapture;
+    type Capture<'db>: MatchCapture;
 
     fn domain(&self) -> QueryDomain;
-    fn matches(&self, query: &QueryContext<'_>, item: &QueryItem<'_>) -> Option<Self::Capture>;
+    fn matches<'db>(
+        &self,
+        query: &QueryContext<'_>,
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>>;
 }
 
 pub(in crate::fixups) trait MatchCapture: Clone {
@@ -202,7 +206,7 @@ impl MatchCapture for CallRecord {
     }
 }
 
-impl MatchCapture for FunctionRef {
+impl<'db> MatchCapture for FunctionRef<'db> {
     fn anchor(&self) -> Anchor {
         Anchor::Function {
             item_index: self.item_index,
@@ -219,7 +223,7 @@ impl MatchCapture for super::ProgramRef {
     }
 }
 
-impl MatchCapture for BindingRef {
+impl<'db> MatchCapture for BindingRef<'db> {
     fn anchor(&self) -> Anchor {
         Anchor::Binding {
             item_index: self.item_index,
@@ -229,7 +233,7 @@ impl MatchCapture for BindingRef {
     }
 }
 
-impl MatchCapture for super::ParameterRef {
+impl<'db> MatchCapture for super::ParameterRef<'db> {
     fn anchor(&self) -> Anchor {
         self.binding.anchor()
     }
@@ -273,7 +277,7 @@ impl MatchCapture for super::EnumVariantRef {
     }
 }
 
-impl MatchCapture for super::TypeUseRef {
+impl<'db> MatchCapture for super::TypeUseRef<'db> {
     fn anchor(&self) -> Anchor {
         match self {
             super::TypeUseRef::FunctionReturn(function) => function.anchor(),
@@ -289,20 +293,20 @@ impl<const N: usize> MatchCapture for StatementMatch<N> {
     }
 }
 
-type ItemCaseFn<C> = for<'case, 'snapshot> fn(
+type ItemCaseFn<M> = for<'case, 'snapshot> fn(
     &mut ItemCaseContext<'case, 'snapshot>,
-    &C,
+    &<M as Matcher>::Capture<'snapshot>,
 ) -> Result<EditSet, Rejection>;
 
-struct DeclarativeItemCase<C> {
+struct DeclarativeItemCase<M: Matcher> {
     name: String,
-    apply: ItemCaseFn<C>,
+    apply: ItemCaseFn<M>,
 }
 
 pub(in crate::fixups) struct QueryRule<M: Matcher> {
     identity: RuleIdentity,
     matcher: M,
-    cases: Vec<DeclarativeItemCase<M::Capture>>,
+    cases: Vec<DeclarativeItemCase<M>>,
     ordered_non_overlapping: bool,
 }
 
@@ -316,11 +320,7 @@ impl<M: Matcher> QueryRule<M> {
         }
     }
 
-    pub(in crate::fixups) fn case(
-        mut self,
-        name: impl Into<String>,
-        apply: ItemCaseFn<M::Capture>,
-    ) -> Self {
+    pub(in crate::fixups) fn case(mut self, name: impl Into<String>, apply: ItemCaseFn<M>) -> Self {
         self.cases.push(DeclarativeItemCase {
             name: name.into(),
             apply,
@@ -400,7 +400,7 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
 
     pub(in crate::fixups) fn replace_function_body(
         &self,
-        target: FunctionRef,
+        target: FunctionRef<'_>,
         body: FunctionBodyRecipe,
     ) -> Result<EditSet, Rejection> {
         let mut replacement = self
@@ -478,7 +478,7 @@ pub(in crate::fixups) enum AnchoredEdit {
         replacement: Option<DefinitionReplacement>,
     },
     Function {
-        target: FunctionRef,
+        target: FunctionEditTarget,
         replacement: crate::rust_ast::FnDef,
     },
     Expression {
@@ -521,6 +521,12 @@ pub(in crate::fixups) enum DefinitionReplacement {
 pub(in crate::fixups) struct EditSet {
     edits: Vec<AnchoredEdit>,
     evidence: Vec<Evidence>,
+}
+
+#[derive(Clone)]
+pub(in crate::fixups) struct FunctionEditTarget {
+    item_index: usize,
+    name: String,
 }
 
 impl EditSet {
@@ -630,12 +636,15 @@ impl EditSet {
     }
 
     pub(in crate::fixups) fn replace_function(
-        target: FunctionRef,
+        target: FunctionRef<'_>,
         replacement: crate::rust_ast::FnDef,
     ) -> Self {
         Self {
             edits: vec![AnchoredEdit::Function {
-                target,
+                target: FunctionEditTarget {
+                    item_index: target.item_index,
+                    name: target.name,
+                },
                 replacement,
             }],
             evidence: Vec::new(),
@@ -1632,7 +1641,7 @@ fn apply_expression_edits(
 
 struct PlannedFunctionEdit {
     identity: RuleCaseIdentity,
-    target: FunctionRef,
+    target: FunctionEditTarget,
     replacement: crate::rust_ast::FnDef,
     evidence: Vec<Evidence>,
     rejected_cases: Vec<CaseRejection>,
@@ -2323,7 +2332,11 @@ mod tests {
         assert_eq!(report.touched.in_place, vec![0]);
     }
 
-    fn function_ref(salsa: &SalsaFacts, item_index: usize, name: &str) -> FunctionRef {
+    fn function_ref<'db>(
+        salsa: &'db SalsaFacts,
+        item_index: usize,
+        name: &str,
+    ) -> FunctionRef<'db> {
         FunctionRef {
             item_index,
             name: name.into(),

@@ -61,8 +61,8 @@ pub(in crate::fixups) struct NullCheckDominance {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct OptionBoxLocalPlanInput {
-    pub(in crate::fixups) binding: BindingRef,
+pub(in crate::fixups) struct OptionBoxLocalPlanInput<'db> {
+    pub(in crate::fixups) binding: BindingRef<'db>,
     pub(in crate::fixups) elem_ty: Type,
     pub(in crate::fixups) decl_stmt: StatementRef,
     pub(in crate::fixups) assignments: Vec<OptionBoxAssignmentInput>,
@@ -85,8 +85,8 @@ pub(in crate::fixups) struct OptionBoxComparisonInput {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct InterproceduralAllocCallerInput {
-    pub(in crate::fixups) caller: FunctionRef,
+pub(in crate::fixups) struct InterproceduralAllocCallerInput<'db> {
+    pub(in crate::fixups) caller: FunctionRef<'db>,
     pub(in crate::fixups) pointer_name: String,
     pub(in crate::fixups) decl_stmt: StatementRef,
     pub(in crate::fixups) call_temp_stmt: StatementRef,
@@ -217,7 +217,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             expression_roles
                 .entry(child_site(&call.site, 0))
                 .or_default()
-                .insert(ExpressionRole::CallCallee<'db>);
+                .insert(ExpressionRole::CallCallee);
             for (index, argument) in call.args.iter().enumerate() {
                 expression_roles
                     .entry(argument.clone())
@@ -244,23 +244,27 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.salsa
     }
 
-    fn def_use_fact(&self, function: FunctionId<'db>, binding: BindingId<'db>) -> Option<&DefUseFact<'db>> {
+    fn def_use_fact(
+        &self,
+        function: FunctionId<'snapshot>,
+        binding: BindingId<'snapshot>,
+    ) -> Option<&DefUseFact<'snapshot>> {
         self.salsa().def_use(function, binding)
     }
 
     fn effect_fact(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         subject: EffectSubject,
         path: &AstPath,
-    ) -> Option<&EffectFact<'db>> {
+    ) -> Option<&EffectFact<'snapshot>> {
         self.salsa().effect(function, subject, path)
     }
 
     fn values_at(
         &self,
-        function: FunctionId<'db>,
-        subject: ValueSubject<'db>,
+        function: FunctionId<'snapshot>,
+        subject: ValueSubject<'snapshot>,
         path: &AstPath,
     ) -> Vec<ConstValue> {
         self.salsa()
@@ -273,8 +277,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn value_matches(
         &self,
-        function: FunctionId<'db>,
-        subject: ValueSubject<'db>,
+        function: FunctionId<'snapshot>,
+        subject: ValueSubject<'snapshot>,
         value: ConstValue,
     ) -> bool {
         self.salsa()
@@ -285,21 +289,24 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn string_buffer_fact_at(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         path: &AstPath,
-    ) -> Option<&StringBufferFact<'db>> {
+    ) -> Option<&StringBufferFact<'snapshot>> {
         self.salsa().string_buffer_at(function, path)
     }
 
-    fn string_buffer_fact(&self, binding: BindingId<'db>) -> Option<&StringBufferFact<'db>> {
+    fn string_buffer_fact(
+        &self,
+        binding: BindingId<'snapshot>,
+    ) -> Option<&StringBufferFact<'snapshot>> {
         self.salsa().string_buffer(binding)
     }
 
     fn string_pointer_view_facts(
         &self,
-        function: FunctionId<'db>,
-        binding: BindingId<'db>,
-    ) -> Vec<&StringPointerViewFact<'db>> {
+        function: FunctionId<'snapshot>,
+        binding: BindingId<'snapshot>,
+    ) -> Vec<&StringPointerViewFact<'snapshot>> {
         self.salsa()
             .string_pointer_views(function)
             .iter()
@@ -309,53 +316,65 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn string_libc_use_fact(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         path: &AstPath,
-    ) -> Option<&StringLibcUseFact<'db>> {
+    ) -> Option<&StringLibcUseFact<'snapshot>> {
         self.salsa().string_libc_use(function, path)
     }
 
     fn counted_loop_fact(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         loop_path: &AstPath,
-    ) -> Option<&CountedLoopFact<'db>> {
+    ) -> Option<&CountedLoopFact<'snapshot>> {
         self.salsa().counted_loop(function, loop_path)
     }
 
     fn counted_slice_loop_fact(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         loop_path: &AstPath,
-    ) -> Option<&CountedSliceLoopFact<'db>> {
+    ) -> Option<&CountedSliceLoopFact<'snapshot>> {
         self.salsa().counted_slice_loop(function, loop_path)
     }
 
-    fn cast_fact_at(&self, function: FunctionId<'db>, path: &AstPath) -> Option<&CastFact<'db>> {
+    fn cast_fact_at(
+        &self,
+        function: FunctionId<'snapshot>,
+        path: &AstPath,
+    ) -> Option<&CastFact<'snapshot>> {
         self.salsa().cast_at(function, path)
     }
 
-    fn place_fact(&self, function: FunctionId<'db>, path: &AstPath) -> Option<&PlaceFact<'db>> {
+    fn place_fact(
+        &self,
+        function: FunctionId<'snapshot>,
+        path: &AstPath,
+    ) -> Option<&PlaceFact<'snapshot>> {
         self.salsa().place(function, path)
     }
 
     fn control_flow_fact(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         subject: ControlFlowSubject,
         path: &AstPath,
-    ) -> Option<&ControlFlowFact<'db>> {
+    ) -> Option<&ControlFlowFact<'snapshot>> {
         self.salsa().control_flow(function, subject, path)
     }
 
-    fn binding_requires_mut_fact(&self, function: FunctionId<'db>, binding: BindingId<'db>) -> bool {
+    fn binding_requires_mut_fact(
+        &self,
+        function: FunctionId<'snapshot>,
+        binding: BindingId<'snapshot>,
+    ) -> bool {
         self.salsa().binding_requires_mut(function, binding)
     }
 
     fn borrow_alias_reasons_fact(
         &self,
-        function: FunctionId<'db>,
-        binding: BindingId<'db>,
+        function: FunctionId<'snapshot>,
+        binding: BindingId<'snapshot>,
     ) -> Option<BTreeSet<BorrowAliasReason>> {
         self.salsa()
             .borrow_alias_reasons(function, binding)
@@ -364,8 +383,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn array_element_pointer_origin_facts(
         &self,
-        function: FunctionId<'db>,
-    ) -> Vec<&ArrayElementPointerOriginFact<'db>> {
+        function: FunctionId<'snapshot>,
+    ) -> Vec<&ArrayElementPointerOriginFact<'snapshot>> {
         self.salsa()
             .array_element_pointer_origins(function)
             .iter()
@@ -374,49 +393,65 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn null_check_dominance_at(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         deref_path: &AstPath,
-    ) -> Option<&NullCheckDominanceFact<'db>> {
+    ) -> Option<&NullCheckDominanceFact<'snapshot>> {
         self.salsa().null_check_dominance_at(function, deref_path)
     }
 
-    fn atomic_local_facts(&self) -> Vec<&AtomicLocalFact<'db>> {
+    fn atomic_local_facts(&self) -> Vec<&AtomicLocalFact<'snapshot>> {
         self.salsa().atomic_locals().iter().collect()
     }
 
     fn option_box_local_candidate_facts(
         &self,
-        function: FunctionId<'db>,
-    ) -> Vec<&OptionBoxLocalCandidate<'db>> {
+        function: FunctionId<'snapshot>,
+    ) -> Vec<&OptionBoxLocalCandidate<'snapshot>> {
         self.salsa()
             .option_box_local_candidates(function)
             .iter()
             .collect()
     }
 
-    fn option_box_comparison_facts(&self, function: FunctionId<'db>) -> Vec<&OptionBoxComparison<'db>> {
+    fn option_box_comparison_facts(
+        &self,
+        function: FunctionId<'snapshot>,
+    ) -> Vec<&OptionBoxComparison<'snapshot>> {
         self.salsa()
             .option_box_comparisons(function)
             .iter()
             .collect()
     }
 
-    fn buffer_pointer_field_facts(&self, function: FunctionId<'db>) -> Vec<&BufferPointerFieldFact<'db>> {
+    fn buffer_pointer_field_facts(
+        &self,
+        function: FunctionId<'snapshot>,
+    ) -> Vec<&BufferPointerFieldFact<'snapshot>> {
         self.salsa()
             .buffer_pointer_fields(function)
             .iter()
             .collect()
     }
 
-    fn heap_ownership_fact_list(&self, function: FunctionId<'db>) -> Vec<&HeapOwnershipFact<'db>> {
+    fn heap_ownership_fact_list(
+        &self,
+        function: FunctionId<'snapshot>,
+    ) -> Vec<&HeapOwnershipFact<'snapshot>> {
         self.salsa().heap_ownership(function).iter().collect()
     }
 
-    fn file_ownership_fact_list(&self, function: FunctionId<'db>) -> Vec<&FileOwnershipFact<'db>> {
+    fn file_ownership_fact_list(
+        &self,
+        function: FunctionId<'snapshot>,
+    ) -> Vec<&FileOwnershipFact<'snapshot>> {
         self.salsa().file_ownership(function).iter().collect()
     }
 
-    fn printf_call_fact(&self, function: FunctionId<'db>, path: &AstPath) -> Option<PrintfCallFact<'db>> {
+    fn printf_call_fact(
+        &self,
+        function: FunctionId<'snapshot>,
+        path: &AstPath,
+    ) -> Option<PrintfCallFact<'snapshot>> {
         self.salsa()
             .printf_calls(function)
             .iter()
@@ -424,14 +459,17 @@ impl<'snapshot> QueryContext<'snapshot> {
             .cloned()
     }
 
-    fn callee_alloc_summary_fact(&self, function: FunctionId<'db>) -> Option<&CalleeAllocSummaryFact<'db>> {
+    fn callee_alloc_summary_fact(
+        &self,
+        function: FunctionId<'snapshot>,
+    ) -> Option<&CalleeAllocSummaryFact<'snapshot>> {
         self.salsa().callee_alloc_summary(function)
     }
 
     fn interprocedural_alloc_eligibility_fact(
         &self,
-        function: FunctionId<'db>,
-    ) -> Option<InterproceduralAllocEligibilityFact<'db>> {
+        function: FunctionId<'snapshot>,
+    ) -> Option<InterproceduralAllocEligibilityFact<'snapshot>> {
         let (eligibility, _) = self.salsa().interprocedural_alloc();
         eligibility
             .iter()
@@ -441,8 +479,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn interprocedural_alloc_caller_facts(
         &self,
-        function: FunctionId<'db>,
-    ) -> Vec<InterproceduralAllocCallerFact<'db>> {
+        function: FunctionId<'snapshot>,
+    ) -> Vec<InterproceduralAllocCallerFact<'snapshot>> {
         let (_, callers) = self.salsa().interprocedural_alloc();
         callers
             .iter()
@@ -453,9 +491,9 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn pointer_option_safety_of(
         &self,
-        function: FunctionId<'db>,
-        binding: BindingId<'db>,
-    ) -> Option<&PointerOptionSafetyFact<'db>> {
+        function: FunctionId<'snapshot>,
+        binding: BindingId<'snapshot>,
+    ) -> Option<&PointerOptionSafetyFact<'snapshot>> {
         self.salsa().pointer_option_safety_of(function, binding)
     }
 
@@ -465,9 +503,9 @@ impl<'snapshot> QueryContext<'snapshot> {
     )]
     fn pointer_comparison_at(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         path: &AstPath,
-    ) -> Option<&PointerComparisonFact<'db>> {
+    ) -> Option<&PointerComparisonFact<'snapshot>> {
         self.salsa().pointer_comparison_at(function, path)
     }
 
@@ -479,23 +517,27 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.salsa().struct_field_ownership().iter().collect()
     }
 
-    fn callsite_fact(&self, function: FunctionId<'db>, path: &AstPath) -> Option<CallsiteFact<'db>> {
+    fn callsite_fact(
+        &self,
+        function: FunctionId<'snapshot>,
+        path: &AstPath,
+    ) -> Option<CallsiteFact<'snapshot>> {
         self.salsa().callsite(function, path)
     }
 
     fn call_arg_fact(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         path: &AstPath,
-    ) -> Option<(CallsiteFact<'db>, CallArgFact)> {
+    ) -> Option<(CallsiteFact<'snapshot>, CallArgFact)> {
         self.salsa().call_arg_at(function, path)
     }
 
-    fn ptr_len_slice_facts(&self) -> &[PtrLenSliceFact<'db>] {
+    fn ptr_len_slice_facts(&self) -> &[PtrLenSliceFact<'snapshot>] {
         self.salsa().ptr_len_slices()
     }
 
-    fn string_param_lift_facts(&self) -> &[StringParamLiftFact<'db>] {
+    fn string_param_lift_facts(&self) -> &[StringParamLiftFact<'snapshot>] {
         self.salsa().string_param_lifts()
     }
 
@@ -503,25 +545,25 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.salsa().anonymous_structs()
     }
 
-    fn lazy_init_singleton_facts(&self) -> &[LazyInitSingletonFact<'db>] {
+    fn lazy_init_singleton_facts(&self) -> &[LazyInitSingletonFact<'snapshot>] {
         self.salsa().lazy_init_singletons()
     }
 
     fn liftable_string_bindings_fact(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         recovery: StringRecoveryCandidate,
-    ) -> BTreeSet<BindingId<'db>> {
+    ) -> BTreeSet<BindingId<'snapshot>> {
         self.salsa().liftable_string_bindings(function, recovery)
     }
 
     fn string_use_allowed_fact(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         use_path: &AstPath,
-        binding: BindingId<'db>,
+        binding: BindingId<'snapshot>,
         recovery: StringRecoveryCandidate,
-        liftable: &BTreeSet<BindingId<'db>>,
+        liftable: &BTreeSet<BindingId<'snapshot>>,
     ) -> bool {
         self.salsa()
             .string_use_allowed(function, use_path, binding, recovery, liftable)
@@ -533,13 +575,16 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn c_string_literal_fact(
         &self,
-        function: FunctionId<'db>,
+        function: FunctionId<'snapshot>,
         receiver_path: &AstPath,
-    ) -> Option<&CStringLiteralFact<'db>> {
+    ) -> Option<&CStringLiteralFact<'snapshot>> {
         self.salsa().c_string_literal(function, receiver_path)
     }
 
-    fn string_copy_rewrite_facts(&self, function: FunctionId<'db>) -> Vec<&StringCopyRewriteFact<'db>> {
+    fn string_copy_rewrite_facts(
+        &self,
+        function: FunctionId<'snapshot>,
+    ) -> Vec<&StringCopyRewriteFact<'snapshot>> {
         self.salsa()
             .string_copy_rewrites(function)
             .iter()
@@ -591,7 +636,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         item_index: usize,
         definition: &AstPath,
         name: &str,
-    ) -> QueryResult<BindingRef> {
+    ) -> QueryResult<BindingRef<'snapshot>> {
         let predicate = Predicate::Binding;
         let site = expression_site(item_index, &definition.0);
         let function = self
@@ -634,7 +679,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 name: name.to_string(),
                 definition: definition.clone(),
                 kind: BindingCategory::Local,
-                ty: self.salsa().binding_type_ast(id).cloned(),
+                ty: self.salsa().binding_type_ast(id),
                 id,
             },
             evidence,
@@ -643,8 +688,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn binding_def_use(
         &self,
-        binding: &BindingRef,
-    ) -> QueryResult<BindingDefUse> {
+        binding: &BindingRef<'snapshot>,
+    ) -> QueryResult<BindingDefUse<'snapshot>> {
         let predicate = Predicate::DefUse;
         let site = expression_site(binding.item_index, &binding.definition.0);
         let function = self.salsa().function_by_item_index(binding.item_index);
@@ -704,7 +749,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn binding_initializer(
         &self,
-        binding: &BindingRef,
+        binding: &BindingRef<'snapshot>,
     ) -> QueryResult<ExpressionRef> {
         let statement = StatementRef {
             item_index: binding.item_index,
@@ -838,7 +883,10 @@ impl<'snapshot> QueryContext<'snapshot> {
             .then_some(UseSiteRef::Statement(statement))
     }
 
-    pub(in crate::fixups) fn binding_value(&self, binding: &BindingRef) -> ResolvedValue {
+    pub(in crate::fixups) fn binding_value(
+        &self,
+        binding: &BindingRef<'snapshot>,
+    ) -> ResolvedValue {
         let usage = self
             .salsa()
             .function_by_item_index(binding.item_index)
@@ -856,7 +904,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn binding_requires_mut(
         &self,
-        binding: &BindingRef,
+        binding: &BindingRef<'snapshot>,
     ) -> QueryResult<bool> {
         let predicate = Predicate::BindingRequiresMut;
         let required = match self.salsa().function_by_item_index(binding.item_index) {
@@ -875,7 +923,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn borrow_alias_reasons(
         &self,
-        binding: &BindingRef,
+        binding: &BindingRef<'snapshot>,
     ) -> QueryResult<Option<BTreeSet<BorrowAliasReason>>> {
         let predicate = Predicate::BorrowAliasReasons;
         let reasons = match self.salsa().function_by_item_index(binding.item_index) {
@@ -893,7 +941,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(reasons, evidence))
     }
 
-    pub(in crate::fixups) fn binding_type(&self, binding: &BindingRef) -> QueryResult<Type> {
+    pub(in crate::fixups) fn binding_type(
+        &self,
+        binding: &BindingRef<'snapshot>,
+    ) -> QueryResult<Type> {
         let predicate = Predicate::ExpressionType;
         let site = expression_site(binding.item_index, &binding.definition.0);
         let ty = binding.ty.clone().ok_or_else(|| {
@@ -918,7 +969,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         dead_code,
         reason = "query API surface not yet wired into a fixup rule"
     )]
-    pub(in crate::fixups) fn binding_usage(&self, binding: &BindingRef) -> QueryResult<Usage> {
+    pub(in crate::fixups) fn binding_usage(
+        &self,
+        binding: &BindingRef<'snapshot>,
+    ) -> QueryResult<Usage> {
         let proof = self.binding_def_use(binding)?;
         let usage = Usage {
             reads: proof.value.reads.len(),
@@ -933,7 +987,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     )]
     pub(in crate::fixups) fn binding_resolved_value(
         &self,
-        binding: &BindingRef,
+        binding: &BindingRef<'snapshot>,
     ) -> QueryResult<ResolvedValue> {
         let (ty, mut evidence) = self.binding_type(binding)?.into_parts();
         let (usage, usage_evidence) = self.binding_usage(binding)?.into_parts();
@@ -962,7 +1016,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             };
         };
         let binding = self.salsa().binding_by_local_path(function, name, def_path);
-        let ty = binding.and_then(|binding| self.salsa().binding_type_ast(binding).cloned());
+        let ty = binding.and_then(|binding| self.salsa().binding_type_ast(binding));
         let usage = binding
             .and_then(|binding| self.def_use_fact(function, binding))
             .map(|uses| Usage {
@@ -1194,7 +1248,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         &self,
         declaration: &StatementRef,
         statement: &StatementRef,
-    ) -> QueryResult<BindingUses> {
+    ) -> QueryResult<BindingUses<'snapshot>> {
         let (binding, mut evidence) = self.statement_binding(declaration)?.into_parts();
         let (uses, uses_evidence) = self
             .binding_uses_in_statement(&binding, statement)?
@@ -1469,7 +1523,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn statement_binding(
         &self,
         statement: &StatementRef,
-    ) -> QueryResult<BindingRef> {
+    ) -> QueryResult<BindingRef<'snapshot>> {
         let proof = self.statement(statement)?;
         let name = match &proof.value.stmt {
             Stmt::Let { name, .. } | Stmt::LetIf { name, .. } => name,
@@ -1888,7 +1942,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn expression_binding(
         &self,
         expression: &ExpressionRef,
-    ) -> QueryResult<BindingRef> {
+    ) -> QueryResult<BindingRef<'snapshot>> {
         let predicate = Predicate::Binding;
         let Some(Expr::Var(name)) = self.expr(&expression.site) else {
             return Err(Rejection::new(
@@ -1952,7 +2006,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn binding_uses(&self, binding: &BindingRef) -> QueryResult<BindingUses> {
+    pub(in crate::fixups) fn binding_uses(
+        &self,
+        binding: &BindingRef<'snapshot>,
+    ) -> QueryResult<BindingUses<'snapshot>> {
         let predicate = Predicate::BindingUses;
         let function = self
             .salsa()
@@ -2058,9 +2115,9 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn binding_uses_in_statement(
         &self,
-        binding: &BindingRef,
+        binding: &BindingRef<'snapshot>,
         statement: &StatementRef,
-    ) -> QueryResult<BindingUses> {
+    ) -> QueryResult<BindingUses<'snapshot>> {
         let (mut uses, mut evidence) = self.binding_uses(binding)?.into_parts();
         uses.uses.retain(|usage| match &usage.site {
             UseSiteRef::Expression(expression) => {
@@ -2095,9 +2152,9 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn binding_uses_in_expression(
         &self,
-        binding: &BindingRef,
+        binding: &BindingRef<'snapshot>,
         expression: &ExpressionRef,
-    ) -> QueryResult<BindingUses> {
+    ) -> QueryResult<BindingUses<'snapshot>> {
         let (mut uses, mut evidence) = self.binding_uses(binding)?.into_parts();
         uses.uses.retain(|usage| match &usage.site {
             UseSiteRef::Expression(use_expression) => use_expression
@@ -2139,7 +2196,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     /// The recorded from/to types of the cast Clang's CIR observed at `site`,
     /// independent of any particular rewrite's shape - callers do their own
     /// structural matching before consulting this.
-    pub(in crate::fixups) fn cast_at(&self, site: &ExprSite) -> QueryResult<CastFact<'db>> {
+    pub(in crate::fixups) fn cast_at(&self, site: &ExprSite) -> QueryResult<CastFact<'snapshot>> {
         let predicate = Predicate::Cast;
         let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
@@ -2169,7 +2226,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn null_check_dominates(
         &self,
-        binding: &BindingRef,
+        binding: &BindingRef<'snapshot>,
         deref_site: &ExprSite,
     ) -> QueryResult<NullCheckDominance> {
         let predicate = Predicate::NullCheckDominance;
@@ -2219,7 +2276,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn pointer_option_eligible(
         &self,
-        binding: &BindingRef,
+        binding: &BindingRef<'snapshot>,
     ) -> QueryResult<()> {
         let predicate = Predicate::PointerOptionSafety;
         let Some(function) = self.salsa().function_by_item_index(binding.item_index) else {
@@ -2299,7 +2356,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(fact.kind, evidence))
     }
 
-    pub(in crate::fixups) fn callsite_at(&self, site: &ExprSite) -> QueryResult<CallCallee<'db>> {
+    pub(in crate::fixups) fn callsite_at(
+        &self,
+        site: &ExprSite,
+    ) -> QueryResult<CallCallee<'snapshot>> {
         let predicate = Predicate::Callsite;
         let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
@@ -2368,7 +2428,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         ))
     }
 
-    pub(in crate::fixups) fn printf_call_at(&self, site: &ExprSite) -> QueryResult<PrintfCallFact<'db>> {
+    pub(in crate::fixups) fn printf_call_at(
+        &self,
+        site: &ExprSite,
+    ) -> QueryResult<PrintfCallFact<'snapshot>> {
         let predicate = Predicate::PrintfCall;
         let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
@@ -2474,7 +2537,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn string_buffer(
         &self,
         site: &ValueSite,
-    ) -> QueryResult<StringBufferFact<'db>> {
+    ) -> QueryResult<StringBufferFact<'snapshot>> {
         let predicate = Predicate::StringBuffer;
         let evidence_site = expression_site(site.item_index, &site.path.0);
         let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
@@ -2632,7 +2695,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         &self,
         site: &ValueSite,
         name: &str,
-    ) -> QueryResult<Vec<StringCopySite>> {
+    ) -> QueryResult<Vec<StringCopySite<'snapshot>>> {
         let predicate = Predicate::ReadPath;
         let evidence_site = expression_site(site.item_index, &site.path.0);
         let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
@@ -2661,7 +2724,8 @@ impl<'snapshot> QueryContext<'snapshot> {
             .into_iter()
             .filter(|fact| fact.dst == binding)
         {
-            let resolve = |source: BindingId<'db>| bindings.iter().find(|b| b.id == source).cloned();
+            let resolve =
+                |source: BindingId<'snapshot>| bindings.iter().find(|b| b.id == source).cloned();
             let action = match &fact.rewrite {
                 StringCopyRewrite::AssignLiteral(text) => {
                     StringCopyAction::AssignLiteral(text.clone())
@@ -2706,7 +2770,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(sites, evidence))
     }
 
-    pub(in crate::fixups) fn string_libc_use(&self, site: &ExprSite) -> QueryResult<StringLibcUse> {
+    pub(in crate::fixups) fn string_libc_use(
+        &self,
+        site: &ExprSite,
+    ) -> QueryResult<StringLibcUse<'snapshot>> {
         let predicate = Predicate::StringLibcUse;
         let Some(function) = self.salsa().function_by_item_index(site.item_index) else {
             return Err(Rejection::new(
@@ -2755,7 +2822,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn ascii_numeric_sign(
         &self,
-        binding: &BindingRef,
+        binding: &BindingRef<'snapshot>,
     ) -> QueryResult<AsciiNumericSign> {
         let predicate = Predicate::AsciiNumericSign;
         let site = expression_site(binding.item_index, &binding.definition.0);
@@ -2779,7 +2846,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(sign, evidence))
     }
 
-    pub(in crate::fixups) fn binding_constant_zero(&self, binding: &BindingRef) -> QueryResult<()> {
+    pub(in crate::fixups) fn binding_constant_zero(
+        &self,
+        binding: &BindingRef<'snapshot>,
+    ) -> QueryResult<()> {
         let predicate = Predicate::ValueGuard;
         let site = expression_site(binding.item_index, &binding.definition.0);
         let Some(function) = self.salsa().function_by_item_index(binding.item_index) else {
@@ -2906,7 +2976,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.definitions.values().flatten()
     }
 
-    pub(in crate::fixups) fn all_functions(&self) -> Vec<FunctionRef> {
+    pub(in crate::fixups) fn all_functions(&self) -> Vec<FunctionRef<'snapshot>> {
         self.salsa()
             .function_facts()
             .iter()
@@ -2924,7 +2994,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             .collect()
     }
 
-    pub(in crate::fixups) fn all_bindings(&self) -> Vec<BindingRef> {
+    pub(in crate::fixups) fn all_bindings(&self) -> Vec<BindingRef<'snapshot>> {
         self.salsa()
             .binding_facts()
             .iter()
@@ -2943,7 +3013,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                         BindingKind::Param { index } => BindingCategory::Parameter { index },
                         BindingKind::Local => BindingCategory::Local,
                     },
-                    ty: self.salsa().binding_type_ast(binding.id).cloned(),
+                    ty: self.salsa().binding_type_ast(binding.id),
                     id: binding.id,
                 })
             })
@@ -2952,7 +3022,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn function_def(
         &self,
-        function: &FunctionRef,
+        function: &FunctionRef<'snapshot>,
     ) -> Option<&'snapshot FnDef> {
         let Item::Fn(definition) = unwrap_cfg(self.program.items.get(function.item_index)?) else {
             return None;
@@ -2962,8 +3032,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn parameter_function(
         &self,
-        parameter: &ParameterRef,
-    ) -> QueryResult<FunctionRef> {
+        parameter: &ParameterRef<'snapshot>,
+    ) -> QueryResult<FunctionRef<'snapshot>> {
         let predicate = Predicate::Function;
         let site = expression_site(
             parameter.binding.item_index,
@@ -3003,8 +3073,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn parameter_uses(
         &self,
-        parameter: &ParameterRef,
-    ) -> QueryResult<BindingUses> {
+        parameter: &ParameterRef<'snapshot>,
+    ) -> QueryResult<BindingUses<'snapshot>> {
         if self.parameter_def(parameter).is_none() {
             return Err(Rejection::new(
                 Predicate::BindingUses,
@@ -3021,7 +3091,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn direct_calls(
         &self,
-        function: &FunctionRef,
+        function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<CallRecord>> {
         let (_, mut evidence) = self.function_snapshot(function)?.into_parts();
         let calls = self
@@ -3046,7 +3116,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn function_reachability(
         &self,
-        function: &FunctionRef,
+        function: &FunctionRef<'snapshot>,
     ) -> QueryResult<FunctionReachability> {
         let (definition, mut evidence) = self.function_snapshot(function)?.into_parts();
         let direct_calls = self.direct_calls(function)?;
@@ -3074,8 +3144,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn function_call_domain(
         &self,
-        function: &FunctionRef,
-    ) -> QueryResult<FunctionCallDomain> {
+        function: &FunctionRef<'snapshot>,
+    ) -> QueryResult<FunctionCallDomain<'snapshot>> {
         let predicate = Predicate::FunctionCallDomain;
         let site = expression_site(function.item_index, &[]);
         let (reachability, mut evidence) = self.function_reachability(function)?.into_parts();
@@ -3157,7 +3227,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn definition_function(
         &self,
         definition: &DefinitionSite,
-    ) -> QueryResult<FunctionRef> {
+    ) -> QueryResult<FunctionRef<'snapshot>> {
         let predicate = Predicate::Function;
         let site = definition_evidence_site(definition);
         let function = self
@@ -3189,7 +3259,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn function_snapshot(
         &self,
-        function: &FunctionRef,
+        function: &FunctionRef<'snapshot>,
     ) -> QueryResult<&'snapshot FnDef> {
         let predicate = Predicate::Function;
         let site = expression_site(function.item_index, &[]);
@@ -3215,7 +3285,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn dispatch_regions(
         &self,
-        function: &FunctionRef,
+        function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<DispatchRegion>> {
         let (definition, mut evidence) = self.function_snapshot(function)?.into_parts();
         let regions = crate::fixups::facts::goto::recognize_dispatch_loops(&definition.body)
@@ -3305,7 +3375,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn va_list_alias(
         &self,
-        function: &FunctionRef,
+        function: &FunctionRef<'snapshot>,
     ) -> QueryResult<VaListAlias> {
         let predicate = Predicate::VaListAlias;
         let site = expression_site(function.item_index, &[]);
@@ -3414,8 +3484,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn function_bindings(
         &self,
-        function: &FunctionRef,
-    ) -> QueryResult<Vec<BindingRef>> {
+        function: &FunctionRef<'snapshot>,
+    ) -> QueryResult<Vec<BindingRef<'snapshot>>> {
         let mut proof = self.function_snapshot(function)?;
         let bindings = self
             .all_bindings()
@@ -3427,7 +3497,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn function_expressions(
         &self,
-        function: &FunctionRef,
+        function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<ExpressionRef>> {
         let mut proof = self.function_snapshot(function)?;
         let expressions = self
@@ -3453,7 +3523,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         statement_container_at(&function.body, container_path)?.get(*index..)
     }
 
-    pub(in crate::fixups) fn all_parameters(&self) -> Vec<ParameterRef> {
+    pub(in crate::fixups) fn all_parameters(&self) -> Vec<ParameterRef<'snapshot>> {
         self.all_bindings()
             .into_iter()
             .filter_map(|binding| {
@@ -3540,7 +3610,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         dead_code,
         reason = "query API surface not yet wired into a fixup rule"
     )]
-    pub(in crate::fixups) fn type_use(&self, type_use: &TypeUseRef) -> Option<&'snapshot Type> {
+    pub(in crate::fixups) fn type_use(
+        &self,
+        type_use: &TypeUseRef<'snapshot>,
+    ) -> Option<&'snapshot Type> {
         match type_use {
             TypeUseRef::FunctionReturn(function) => self.function_def(function)?.ret.as_ref(),
             TypeUseRef::Parameter(parameter) => Some(&self.parameter_def(parameter)?.ty),
@@ -3585,7 +3658,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             .sum()
     }
 
-    fn function(&self, site: &ExprSite) -> Option<FunctionId<'db>> {
+    fn function(&self, site: &ExprSite) -> Option<FunctionId<'snapshot>> {
         self.program.items.get(site.item_index)?;
         self.salsa().function_by_item_index(site.item_index)
     }
@@ -3946,7 +4019,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         let buffer = self.string_buffer_fact(pointer.source);
         let representation = buffer
             .map(|buffer| representation_for_buffer(buffer.kind))
-            .or_else(|| representation_for_type(ty))
+            .or_else(|| representation_for_type(&ty))
             .ok_or_else(|| {
                 Rejection::new(
                     predicate,
@@ -3960,7 +4033,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         } else {
             PointerMutability::Const
         };
-        let extent = byte_extent(ty);
+        let extent = byte_extent(&ty);
         let evidence = vec![
             Evidence {
                 predicate,
@@ -4252,7 +4325,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn counted_loop(
         &self,
         statement: &StatementRef,
-    ) -> QueryResult<CountedLoopFact<'db>> {
+    ) -> QueryResult<CountedLoopFact<'snapshot>> {
         let predicate = Predicate::CountedLoop;
         let evidence_site = statement_evidence_site(statement);
         let function = self
@@ -4291,7 +4364,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn counted_slice_loop(
         &self,
         statement: &StatementRef,
-    ) -> QueryResult<SliceLoopFact> {
+    ) -> QueryResult<SliceLoopFact<'snapshot>> {
         let predicate = Predicate::CountedSliceLoop;
         let evidence_site = statement_evidence_site(statement);
         let function = self
@@ -4484,8 +4557,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn heap_ownership_facts(
         &self,
-        function: &FunctionRef,
-    ) -> QueryResult<HeapOwnershipFacts> {
+        function: &FunctionRef<'snapshot>,
+    ) -> QueryResult<HeapOwnershipFacts<'snapshot>> {
         let predicate = Predicate::HeapOwnershipFacts;
         let site = expression_site(function.item_index, &[]);
         let bindings = self.all_bindings();
@@ -4623,8 +4696,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn file_ownership_facts(
         &self,
-        function: &FunctionRef,
-    ) -> QueryResult<FileOwnershipFacts> {
+        function: &FunctionRef<'snapshot>,
+    ) -> QueryResult<FileOwnershipFacts<'snapshot>> {
         let predicate = Predicate::FileOwnershipFacts;
         let site = expression_site(function.item_index, &[]);
         let bindings = self.all_bindings();
@@ -4700,8 +4773,8 @@ impl<'snapshot> QueryContext<'snapshot> {
         let slices = self.ptr_len_slice_facts();
         let plans = ptr_len_plans_from_facts(
             slices,
-            self.salsa().function_facts(),
-            self.salsa().binding_facts(),
+            &self.salsa().function_facts(),
+            &self.salsa().binding_facts(),
         );
         let site = expression_site(plans.first().map_or(0, |plan| plan.item_index), &[]);
         if plans.is_empty() {
@@ -4745,8 +4818,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn callee_alloc_summary(
         &self,
-        function: &FunctionRef,
-    ) -> QueryResult<CalleeAllocSummaryFact<'db>> {
+        function: &FunctionRef<'snapshot>,
+    ) -> QueryResult<CalleeAllocSummaryFact<'snapshot>> {
         let predicate = Predicate::CalleeAllocSummary;
         let site = expression_site(function.item_index, &[]);
         let Some(summary) = self.callee_alloc_summary_fact(function.id).cloned() else {
@@ -4769,8 +4842,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn interprocedural_alloc_eligibility(
         &self,
-        function: &FunctionRef,
-    ) -> QueryResult<InterproceduralAllocEligibilityFact<'db>> {
+        function: &FunctionRef<'snapshot>,
+    ) -> QueryResult<InterproceduralAllocEligibilityFact<'snapshot>> {
         let predicate = Predicate::InterproceduralAllocEligibility;
         let site = expression_site(function.item_index, &[]);
         let Some(fact) = self.interprocedural_alloc_eligibility_fact(function.id) else {
@@ -4794,8 +4867,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn interprocedural_alloc_chain(
         &self,
-        function: &FunctionRef,
-    ) -> QueryResult<Vec<FunctionRef>> {
+        function: &FunctionRef<'snapshot>,
+    ) -> QueryResult<Vec<FunctionRef<'snapshot>>> {
         let predicate = Predicate::InterproceduralAllocEligibility;
         let site = expression_site(function.item_index, &[]);
         let Some(fact) = self.interprocedural_alloc_eligibility_fact(function.id) else {
@@ -4836,8 +4909,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn interprocedural_alloc_callers(
         &self,
-        function: &FunctionRef,
-    ) -> QueryResult<Vec<InterproceduralAllocCallerInput>> {
+        function: &FunctionRef<'snapshot>,
+    ) -> QueryResult<Vec<InterproceduralAllocCallerInput<'snapshot>>> {
         let predicate = Predicate::InterproceduralAllocCallers;
         let site = expression_site(function.item_index, &[]);
         let functions = self.all_functions();
@@ -4885,8 +4958,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn option_box_local_candidates(
         &self,
-        function: &FunctionRef,
-    ) -> QueryResult<Vec<OptionBoxLocalPlanInput>> {
+        function: &FunctionRef<'snapshot>,
+    ) -> QueryResult<Vec<OptionBoxLocalPlanInput<'snapshot>>> {
         let predicate = Predicate::OptionBoxLocalCandidates;
         let site = expression_site(function.item_index, &[]);
         let bindings = self.all_bindings();
@@ -4955,7 +5028,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn option_box_comparisons(
         &self,
-        function: &FunctionRef,
+        function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<OptionBoxComparisonInput>> {
         let predicate = Predicate::OptionBoxComparisons;
         let site = expression_site(function.item_index, &[]);
@@ -4984,7 +5057,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn string_param_lift_indices(
         &self,
-        function: &FunctionRef,
+        function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<usize>> {
         let predicate = Predicate::StringParamLift;
         let site = expression_site(function.item_index, &[]);
@@ -5013,7 +5086,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn calls_in(
         &self,
-        function: &FunctionRef,
+        function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<CallRecord>> {
         let (_, evidence) = self.function_snapshot(function)?.into_parts();
         let calls = self
@@ -5024,7 +5097,10 @@ impl<'snapshot> QueryContext<'snapshot> {
         Ok(Proof::new(calls, evidence))
     }
 
-    pub(in crate::fixups) fn function_by_name(&self, name: &str) -> QueryResult<FunctionRef> {
+    pub(in crate::fixups) fn function_by_name(
+        &self,
+        name: &str,
+    ) -> QueryResult<FunctionRef<'snapshot>> {
         let predicate = Predicate::Function;
         let site = expression_site(0, &[]);
         let function = self
@@ -5051,8 +5127,8 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn buffer_pointer_fields(
         &self,
-        function: &FunctionRef,
-    ) -> QueryResult<BufferPointerFields> {
+        function: &FunctionRef<'snapshot>,
+    ) -> QueryResult<BufferPointerFields<'snapshot>> {
         let predicate = Predicate::BufferPointerFields;
         let site = expression_site(function.item_index, &[]);
         let bindings = self.all_bindings();
@@ -5071,6 +5147,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 let array_len = self
                     .salsa()
                     .binding_type(fact.array)
+                    .as_deref()
                     .and_then(buffer_cursor_array_len_from_rendered_type)?;
                 Some(BufferPointerField {
                     buffer,
@@ -5987,12 +6064,13 @@ fn qualified_path(path: &crate::rust_ast::Path) -> String {
         .join("::")
 }
 
-fn ptr_len_plans_from_facts(
+fn ptr_len_plans_from_facts<'db>(
     slices: &[PtrLenSliceFact<'db>],
     functions: &[FunctionFact<'db>],
     bindings: &[BindingFact<'db>],
 ) -> Vec<PtrLenPlan> {
-    let mut grouped = BTreeMap::<(FunctionId<'db>, BindingId<'db>), Vec<&PtrLenSliceFact<'db>>>::new();
+    let mut grouped =
+        BTreeMap::<(FunctionId<'db>, BindingId<'db>), Vec<&PtrLenSliceFact<'db>>>::new();
     for fact in slices {
         grouped
             .entry((fact.callee, fact.ptr_param))

@@ -22,9 +22,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
     .ordered_non_overlapping()
 }
 
-fn inline_case(
+fn inline_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let decl_ref = StatementRef {
         item_index: binding.item_index,

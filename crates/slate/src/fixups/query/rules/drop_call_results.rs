@@ -24,9 +24,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
     .case("unused_call_result", drop_case)
 }
 
-fn drop_case(
+fn drop_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let uses = case.fact(|query| query.binding_uses(binding))?;
     case.require(

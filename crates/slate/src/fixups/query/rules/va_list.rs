@@ -11,9 +11,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
     .case("unique_alias", rewrite_case)
 }
 
-fn rewrite_case(
+fn rewrite_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
+    function: &FunctionRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let alias = case.fact(|query| query.va_list_alias(function))?;
     let mut replacement = case

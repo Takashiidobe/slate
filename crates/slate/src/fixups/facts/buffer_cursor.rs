@@ -6,12 +6,12 @@ use crate::fixups::facts::{
 };
 use crate::rust_ast::{Expr, Ident, IndentStmt, RustValue, Stmt, Type};
 #[derive(Clone)]
-struct ArrayLocal {
+struct ArrayLocal<'db> {
     binding: BindingId<'db>,
 }
 
 #[derive(Clone)]
-struct BufferLocal {
+struct BufferLocal<'db> {
     binding: BindingId<'db>,
 }
 
@@ -21,7 +21,7 @@ struct PointerSource {
     index: usize,
 }
 
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
     bindings: &[BindingFact<'db>],
@@ -64,11 +64,11 @@ pub(in crate::fixups) fn collect_for_function(
     out
 }
 
-fn array_locals(
+fn array_locals<'db>(
     function: FunctionId<'db>,
     bindings: &[BindingFact<'db>],
     binding_types: &[BindingTypeFact<'db>],
-) -> BTreeMap<String, ArrayLocal> {
+) -> BTreeMap<String, ArrayLocal<'db>> {
     bindings
         .iter()
         .filter(|binding| binding.function == function)
@@ -85,11 +85,11 @@ fn array_locals(
         .collect()
 }
 
-fn buffer_locals(
+fn buffer_locals<'db>(
     function: FunctionId<'db>,
     bindings: &[BindingFact<'db>],
     binding_types: &[BindingTypeFact<'db>],
-) -> BTreeMap<String, BufferLocal> {
+) -> BTreeMap<String, BufferLocal<'db>> {
     bindings
         .iter()
         .filter(|binding| binding.function == function)

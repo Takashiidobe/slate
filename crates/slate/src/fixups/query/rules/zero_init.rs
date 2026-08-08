@@ -27,23 +27,23 @@ pub(in crate::fixups) fn deferred() -> QueryRule<Binding> {
         .ordered_non_overlapping()
 }
 
-fn direct_case(
+fn direct_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
 ) -> Result<EditSet, Rejection> {
     apply(case, binding, false)
 }
 
-fn deferred_case(
+fn deferred_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
 ) -> Result<EditSet, Rejection> {
     apply(case, binding, true)
 }
 
-fn apply(
+fn apply<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
     cross_effects: bool,
 ) -> Result<EditSet, Rejection> {
     let declaration_ref = StatementRef {

@@ -19,17 +19,17 @@ pub(in crate::fixups) struct FnCall<Cx = ()> {
 }
 
 impl Matcher for FnCall {
-    type Capture = super::CallRecord;
+    type Capture<'db> = super::CallRecord;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::Expression
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::Expression(expression) = item else {
             return None;
         };
@@ -50,17 +50,17 @@ impl Matcher for FnCall {
 pub(in crate::fixups) struct AssignmentValue;
 
 impl Matcher for AssignmentValue {
-    type Capture = ExpressionRef;
+    type Capture<'db> = ExpressionRef;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::Expression
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::Expression(expression) = item else {
             return None;
         };
@@ -84,17 +84,17 @@ impl WholeProgram {
 }
 
 impl Matcher for WholeProgram {
-    type Capture = ProgramRef;
+    type Capture<'db> = ProgramRef;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::Program
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::Program(program) = item else {
             return None;
         };
@@ -112,17 +112,17 @@ pub(in crate::fixups) struct ExprPattern {
 }
 
 impl Matcher for ExprPattern {
-    type Capture = ExpressionRef;
+    type Capture<'db> = ExpressionRef;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::Expression
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::Expression(expression) = item else {
             return None;
         };
@@ -151,17 +151,17 @@ pub(in crate::fixups) struct Definition<Cx = ()> {
 }
 
 impl Matcher for Definition {
-    type Capture = super::DefinitionSite;
+    type Capture<'db> = super::DefinitionSite;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::Definition
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         _query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::Definition(definition) = item else {
             return None;
         };
@@ -183,17 +183,17 @@ pub(in crate::fixups) struct Function {
 }
 
 impl Matcher for Function {
-    type Capture = super::FunctionRef;
+    type Capture<'db> = super::FunctionRef<'db>;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::Function
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::Function(function) = item else {
             return None;
         };
@@ -232,17 +232,17 @@ pub(in crate::fixups) struct Parameter {
 }
 
 impl Matcher for Parameter {
-    type Capture = ParameterRef;
+    type Capture<'db> = ParameterRef<'db>;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::Parameter
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::Parameter(parameter) = item else {
             return None;
         };
@@ -268,17 +268,17 @@ pub(in crate::fixups) struct StatementContainer {
 }
 
 impl Matcher for StatementContainer {
-    type Capture = StatementContainerRef;
+    type Capture<'db> = StatementContainerRef;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::StatementContainer
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::StatementContainer(container) = item else {
             return None;
         };
@@ -299,17 +299,17 @@ pub(in crate::fixups) struct MatchArm {
 }
 
 impl Matcher for MatchArm {
-    type Capture = MatchArmRef;
+    type Capture<'db> = MatchArmRef;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::MatchArm
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::MatchArm(arm) = item else {
             return None;
         };
@@ -331,17 +331,17 @@ pub(in crate::fixups) struct RecordField {
 }
 
 impl Matcher for RecordField {
-    type Capture = FieldRef;
+    type Capture<'db> = FieldRef;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::Field
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::Field(field) = item else {
             return None;
         };
@@ -365,17 +365,17 @@ pub(in crate::fixups) struct EnumVariant {
 }
 
 impl Matcher for EnumVariant {
-    type Capture = EnumVariantRef;
+    type Capture<'db> = EnumVariantRef;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::EnumVariant
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::EnumVariant(variant) = item else {
             return None;
         };
@@ -398,17 +398,17 @@ pub(in crate::fixups) struct TypeUse {
 }
 
 impl Matcher for TypeUse {
-    type Capture = TypeUseRef;
+    type Capture<'db> = TypeUseRef<'db>;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::TypeUse
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::TypeUse(type_use) = item else {
             return None;
         };
@@ -431,17 +431,17 @@ pub(in crate::fixups) struct Binding {
 }
 
 impl Matcher for Binding {
-    type Capture = super::BindingRef;
+    type Capture<'db> = super::BindingRef<'db>;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::Binding
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::Binding(binding) = item else {
             return None;
         };
@@ -492,17 +492,17 @@ impl<const N: usize> StatementSequence<N> {
 }
 
 impl<const N: usize> Matcher for StatementSequence<N> {
-    type Capture = StatementMatch<N>;
+    type Capture<'db> = StatementMatch<N>;
 
     fn domain(&self) -> QueryDomain {
         QueryDomain::Statement
     }
 
-    fn matches(
+    fn matches<'db>(
         &self,
         query: &super::QueryContext<'_>,
-        item: &QueryItem<'_>,
-    ) -> Option<Self::Capture> {
+        item: &QueryItem<'db>,
+    ) -> Option<Self::Capture<'db>> {
         let QueryItem::Statement(site) = item else {
             return None;
         };

@@ -6,7 +6,7 @@ use crate::fixups::facts::walk::Bodies;
 use crate::fixups::facts::{AtomicGlobalFact, AtomicLocalFact, FunctionId, StaticDeclFact, walk};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::rust_ast::{AtomicPlace, AtomicType, Expr, FnDef, IndentStmt, Prim, Stmt, Type};
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
 ) -> Vec<AtomicLocalFact<'db>> {

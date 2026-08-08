@@ -18,9 +18,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
     .case("resolved", rewrite_case)
 }
 
-fn rewrite_case(
+fn rewrite_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
+    function: &FunctionRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let fields = case.fact(|query| query.buffer_pointer_fields(function))?;
     let bindings = case.fact(|query| query.function_bindings(function))?;

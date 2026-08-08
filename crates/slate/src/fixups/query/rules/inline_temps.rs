@@ -30,23 +30,23 @@ pub(in crate::fixups) fn late() -> QueryRule<Binding> {
         .ordered_non_overlapping()
 }
 
-fn early_case(
+fn early_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
 ) -> Result<EditSet, Rejection> {
     apply(case, binding, Phase::Early)
 }
 
-fn late_case(
+fn late_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
 ) -> Result<EditSet, Rejection> {
     apply(case, binding, Phase::Late)
 }
 
-fn apply(
+fn apply<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
     phase: Phase,
 ) -> Result<EditSet, Rejection> {
     let initializer = case.fact(|query| query.binding_initializer(binding))?;

@@ -14,9 +14,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
         .case("spillable_params", rewrite_case)
 }
 
-fn rewrite_case(
+fn rewrite_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
+    function: &FunctionRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let mut replacement = case
         .fact(|query| query.function_snapshot(function))?
@@ -56,10 +56,10 @@ struct Spill {
     store_index: usize,
 }
 
-fn spill_candidate(
+fn spill_candidate<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
-    bindings: &[BindingRef],
+    function: &FunctionRef<'db>,
+    bindings: &[BindingRef<'db>],
     param_index: usize,
     claimed: &[String],
 ) -> Option<Spill> {

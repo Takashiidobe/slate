@@ -24,7 +24,7 @@ use crate::fixups::facts::walk::Bodies;
 use crate::fixups::facts::{FunctionId, LazyInitSingletonFact, StaticDeclFact};
 use crate::fixups::idents::stmt_ident_count;
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Prim, RustValue, Stmt, Type, UnaryOp};
-pub(in crate::fixups) fn compute(
+pub(in crate::fixups) fn compute<'db>(
     shapes: &BTreeMap<FunctionId<'db>, (String, String, Expr)>,
     bodies: &Bodies,
     statics: &[StaticDeclFact],

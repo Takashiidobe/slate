@@ -4,7 +4,7 @@ use crate::fixups::facts::{
     AllocProvenance, AstPath, CalleeAllocSummaryFact, FunctionId, PathSegment,
 };
 use crate::rust_ast::{Expr, FnDef, IndentStmt, Stmt, Type};
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
 ) -> Option<CalleeAllocSummaryFact<'db>> {

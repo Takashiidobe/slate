@@ -10,7 +10,7 @@ use crate::function_identity::FunctionIdentity;
 use crate::rust_ast::{
     Block, Expr, ExternDecl, ExternFnDecl, FnDef, FnParam, IndentStmt, Item, Pattern, Program, Stmt,
 };
-pub(in crate::fixups) fn collect_callsites_for_function(
+pub(in crate::fixups) fn collect_callsites_for_function<'db>(
     function: FunctionId<'db>,
     f_body: &[IndentStmt],
     bindings: &[BindingFact<'db>],
@@ -23,7 +23,7 @@ pub(in crate::fixups) fn collect_callsites_for_function(
     collector.callsites
 }
 
-fn push_extern_signatures(
+fn push_extern_signatures<'db>(
     item_index: usize,
     decls: &[ExternDecl],
     signatures: &mut Vec<CallSignatureFact<'db>>,
@@ -36,7 +36,9 @@ fn push_extern_signatures(
     }
 }
 
-pub(in crate::fixups) fn collect_extern_signatures(program: &Program) -> Vec<CallSignatureFact<'db>> {
+pub(in crate::fixups) fn collect_extern_signatures<'db>(
+    program: &Program,
+) -> Vec<CallSignatureFact<'db>> {
     let mut signatures = Vec::new();
     for (item_index, item) in program.items.iter().enumerate() {
         collect_extern_signatures_from_item(item, item_index, &mut signatures);
@@ -44,7 +46,7 @@ pub(in crate::fixups) fn collect_extern_signatures(program: &Program) -> Vec<Cal
     signatures
 }
 
-fn collect_extern_signatures_from_item(
+fn collect_extern_signatures_from_item<'db>(
     item: &Item,
     item_index: usize,
     signatures: &mut Vec<CallSignatureFact<'db>>,
@@ -56,7 +58,7 @@ fn collect_extern_signatures_from_item(
     }
 }
 
-pub(in crate::fixups) fn local_call_signature(
+pub(in crate::fixups) fn local_call_signature<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
 ) -> CallSignatureFact<'db> {
@@ -70,7 +72,7 @@ pub(in crate::fixups) fn local_call_signature(
     }
 }
 
-fn extern_call_signature(
+fn extern_call_signature<'db>(
     item_index: usize,
     decl_index: usize,
     f: &ExternFnDecl,
@@ -88,7 +90,10 @@ fn extern_call_signature(
     }
 }
 
-fn push_signature(signatures: &mut Vec<CallSignatureFact<'db>>, mut fact: CallSignatureFact<'db>) {
+fn push_signature<'db>(
+    signatures: &mut Vec<CallSignatureFact<'db>>,
+    mut fact: CallSignatureFact<'db>,
+) {
     fact.id = SignatureId(signatures.len());
     signatures.push(fact);
 }
@@ -102,7 +107,7 @@ fn params_from_fn_params(params: &[FnParam]) -> Vec<CallParamFact> {
         .collect()
 }
 
-struct Collector<'a> {
+struct Collector<'db, 'a> {
     function: FunctionId<'db>,
     bindings: &'a [BindingFact<'db>],
     signatures: &'a [CallSignatureFact<'db>],
@@ -111,7 +116,7 @@ struct Collector<'a> {
     callsites: Vec<CallsiteFact<'db>>,
 }
 
-impl<'a> Collector<'a> {
+impl<'db, 'a> Collector<'db, 'a> {
     fn new(
         function: FunctionId<'db>,
         bindings: &'a [BindingFact<'db>],
