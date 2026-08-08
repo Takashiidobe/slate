@@ -3,6 +3,37 @@
 
 #include <features.h>
 
+/* Provide minimal fallback for union sigval and struct sigevent when feature
+ * macros are not enabled. This keeps aio.h usable even without POSIX/GNU/BSD
+ * feature macros present in the compile environment. */
+#define __NEED_pid_t
+#include <bits/types.h>
+
+#ifndef __DEFINED_sigval
+union sigval {
+  int   sival_int;
+  void *sival_ptr;
+};
+#define __DEFINED_sigval
+#endif
+
+#ifndef __DEFINED_struct_sigevent
+struct sigevent {
+  union sigval sigev_value;
+  int          sigev_signo;
+  int          sigev_notify;
+  union {
+    char  __pad[64 - 2 * sizeof(int) - sizeof(union sigval)];
+    pid_t sigev_notify_thread_id;
+    struct {
+      void (*sigev_notify_function)(union sigval);
+      void *sigev_notify_attributes; /* opaque fallback for pthread_attr_t */
+    } __sev_thread;
+  } __sev_fields;
+};
+#define __DEFINED_struct_sigevent
+#endif
+
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 

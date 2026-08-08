@@ -3,7 +3,6 @@
 
 #include <features.h>
 
-#include <bits/poll.h>
 
 #define POLLIN     0x001
 #define POLLPRI    0x002
