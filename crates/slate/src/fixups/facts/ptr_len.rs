@@ -1,9 +1,9 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk::{self, Bodies};
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, CallCallee, CallsiteFact, FixupFacts, FunctionId, PathSegment,
-    PtrLenSliceFact,
+    self, AstPath, BindingFact, BindingId, BindingKind, BindingTypeFact, CallCallee, CallsiteFact,
+    DefUseFact, FixupFacts, FunctionId, PathSegment, PtrLenSliceFact,
 };
 use crate::rust_ast::{
     Block, Expr, FnDef, IndentStmt, Prim, Program, RustValue, Stmt, Type, UnaryOp,
@@ -11,12 +11,63 @@ use crate::rust_ast::{
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     let bodies = walk::bodies_from_program(program, facts);
-    facts.ptr_len_slices = compute(&bodies, facts, collect_candidates(&bodies, facts));
+    let function_by_name: BTreeMap<String, FunctionId> = facts
+        .functions
+        .iter()
+        .map(|function| (function.name.clone(), function.id))
+        .collect();
+    let snapshot = Snapshot {
+        bindings: &facts.bindings,
+        binding_types: &facts.binding_types,
+        def_use: &facts.def_use,
+        callsites: &facts.callsites,
+        function_by_name: &function_by_name,
+    };
+    facts.ptr_len_slices = compute(
+        &bodies,
+        &snapshot,
+        collect_candidates(&bodies, &facts.bindings),
+    );
+}
+
+pub(in crate::fixups) struct Snapshot<'a> {
+    pub(in crate::fixups) bindings: &'a [BindingFact],
+    pub(in crate::fixups) binding_types: &'a [BindingTypeFact],
+    pub(in crate::fixups) def_use: &'a [DefUseFact],
+    pub(in crate::fixups) callsites: &'a [CallsiteFact],
+    pub(in crate::fixups) function_by_name: &'a BTreeMap<String, FunctionId>,
+}
+
+impl<'a> Snapshot<'a> {
+    fn def_use(&self, binding: BindingId) -> Option<&DefUseFact> {
+        facts::def_use_of(self.def_use, binding)
+    }
+
+    fn binding_by_param_index(&self, function: FunctionId, index: usize) -> Option<BindingId> {
+        facts::binding_by_param_index(self.bindings, function, index)
+    }
+
+    fn binding_named(&self, function: FunctionId, name: &str) -> Option<BindingId> {
+        facts::binding_named(self.bindings, function, name)
+    }
+
+    fn binding_read_under(
+        &self,
+        function: FunctionId,
+        name: &str,
+        path: &AstPath,
+    ) -> Option<BindingId> {
+        facts::binding_read_under(self.def_use, self.bindings, function, name, path)
+    }
+
+    fn binding_type(&self, binding: BindingId) -> Option<&str> {
+        facts::binding_type(self.binding_types, binding)
+    }
 }
 
 pub(in crate::fixups) fn compute(
     bodies: &Bodies,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     candidates: Vec<Candidate>,
 ) -> Vec<PtrLenSliceFact> {
     let mut active = candidates
@@ -87,10 +138,10 @@ enum LengthSource {
     Bound(BindingId),
 }
 
-fn collect_candidates(bodies: &Bodies, facts: &FixupFacts) -> Vec<Candidate> {
+fn collect_candidates(bodies: &Bodies, bindings: &[BindingFact]) -> Vec<Candidate> {
     let mut candidates = Vec::new();
     for (&function, &f) in bodies {
-        candidates.extend(candidates_for_function(function, f, facts));
+        candidates.extend(candidates_for_function(function, f, bindings));
     }
     candidates
 }
@@ -98,21 +149,21 @@ fn collect_candidates(bodies: &Bodies, facts: &FixupFacts) -> Vec<Candidate> {
 pub(in crate::fixups) fn candidates_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
 ) -> Vec<Candidate> {
     let mut candidates = Vec::new();
     for (ptr_index, ptr_param) in f.params.iter().enumerate() {
         let Type::Ptr { mutable, inner } = &ptr_param.ty else {
             continue;
         };
-        let Some(ptr) = facts.binding_by_param_index(function, ptr_index) else {
+        let Some(ptr) = facts::binding_by_param_index(bindings, function, ptr_index) else {
             continue;
         };
         for (len_index, len_param) in f.params.iter().enumerate() {
             if ptr_index == len_index || !is_integer_type(&len_param.ty) {
                 continue;
             }
-            let Some(len) = facts.binding_by_param_index(function, len_index) else {
+            let Some(len) = facts::binding_by_param_index(bindings, function, len_index) else {
                 continue;
             };
             candidates.push(Candidate {
@@ -153,7 +204,7 @@ fn is_integer_type(ty: &Type) -> bool {
 fn candidate_is_sound(
     bodies: &Bodies,
     candidate: &Candidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
 ) -> bool {
     facts
@@ -169,7 +220,7 @@ fn candidate_is_sound(
 fn len_reads_are_length_uses(
     bodies: &Bodies,
     candidate: &Candidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
 ) -> bool {
     let Some(def_use) = facts.def_use(candidate.key.len) else {
@@ -190,7 +241,7 @@ fn len_reads_are_length_uses(
 fn collect_length_use_paths(
     bodies: &Bodies,
     candidate: &Candidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
     allowed: &mut Vec<AstPath>,
 ) {
@@ -219,7 +270,7 @@ fn collect_bounded_loop_paths(
     body: &[IndentStmt],
     function: FunctionId,
     candidate: &Candidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     path: &mut Vec<PathSegment>,
     allowed: &mut Vec<AstPath>,
 ) {
@@ -234,7 +285,7 @@ fn collect_bounded_loop_paths_in_stmt(
     stmt: &Stmt,
     function: FunctionId,
     candidate: &Candidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     path: &mut Vec<PathSegment>,
     allowed: &mut Vec<AstPath>,
 ) {
@@ -326,7 +377,7 @@ fn range_ends_at_binding(
     function: FunctionId,
     path: &AstPath,
     binding: BindingId,
-    facts: &FixupFacts,
+    facts: &Snapshot,
 ) -> bool {
     let Expr::Range { end, .. } = expr else {
         return false;
@@ -344,7 +395,7 @@ fn lowered_loop_index(
     body: &[IndentStmt],
     function: FunctionId,
     candidate: &Candidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     loop_path: &[PathSegment],
 ) -> Option<String> {
     for (index, indent) in body.iter().enumerate() {
@@ -380,7 +431,7 @@ fn loop_bound_index(
     function: FunctionId,
     path: &AstPath,
     len: BindingId,
-    facts: &FixupFacts,
+    facts: &Snapshot,
 ) -> Option<String> {
     let Expr::Unary {
         op: UnaryOp::Not,
@@ -539,18 +590,13 @@ fn pointer_offset_expr(expr: &Expr, aliases: &PointerIndexAliases) -> bool {
 fn call_forwards_pair(
     callsite: &CallsiteFact,
     candidate: &Candidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
 ) -> bool {
     let CallCallee::Direct { name, .. } = &callsite.callee else {
         return false;
     };
-    let Some(callee) = facts
-        .functions
-        .iter()
-        .find(|function| function.name == *name)
-        .map(|function| function.id)
-    else {
+    let Some(&callee) = facts.function_by_name.get(name.as_str()) else {
         return false;
     };
     active
@@ -563,7 +609,7 @@ fn call_forwards_to_key(
     callsite: &CallsiteFact,
     candidate: &Candidate,
     target: Key,
-    facts: &FixupFacts,
+    facts: &Snapshot,
 ) -> bool {
     let Some(ptr_index) = param_index(facts, target.ptr) else {
         return false;
@@ -596,7 +642,7 @@ fn call_forwards_to_key(
     ptr_ok && len_ok
 }
 
-fn param_index(facts: &FixupFacts, binding: BindingId) -> Option<usize> {
+fn param_index(facts: &Snapshot, binding: BindingId) -> Option<usize> {
     facts
         .bindings
         .iter()
@@ -610,7 +656,7 @@ fn param_index(facts: &FixupFacts, binding: BindingId) -> Option<usize> {
 fn all_callers_prove(
     bodies: &Bodies,
     candidate: &Candidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
 ) -> bool {
     let calls = matching_callsites(facts, &candidate.function_name).collect::<Vec<_>>();
@@ -622,7 +668,7 @@ fn all_callers_prove(
 
 fn proven_constant_extent_calls(
     bodies: &Bodies,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
 ) -> Vec<PtrLenSliceFact> {
     let mut out = Vec::new();
@@ -791,7 +837,7 @@ fn collect_constant_pointer_extents_stmt(stmt: &Stmt, ptr_name: &str, bounds: &m
 fn all_callers_prove_pointer_extent(
     bodies: &Bodies,
     candidate: &PointerCandidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
 ) -> bool {
     let calls = matching_callsites(facts, &candidate.function_name).collect::<Vec<_>>();
@@ -805,7 +851,7 @@ fn call_proves_pointer_extent(
     bodies: &Bodies,
     callsite: &CallsiteFact,
     candidate: &PointerCandidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
 ) -> bool {
     let Some(ptr_arg) = callsite
@@ -833,7 +879,7 @@ fn call_proves_pointer_extent(
     )
 }
 
-fn proven_pointer_calls(facts: &FixupFacts, candidate: &PointerCandidate) -> Vec<PtrLenSliceFact> {
+fn proven_pointer_calls(facts: &Snapshot, candidate: &PointerCandidate) -> Vec<PtrLenSliceFact> {
     matching_callsites(facts, &candidate.function_name)
         .map(|callsite| PtrLenSliceFact {
             caller: callsite.site.function,
@@ -847,7 +893,7 @@ fn proven_pointer_calls(facts: &FixupFacts, candidate: &PointerCandidate) -> Vec
 }
 
 fn matching_callsites<'a>(
-    facts: &'a FixupFacts,
+    facts: &Snapshot<'a>,
     function_name: &'a str,
 ) -> impl Iterator<Item = &'a CallsiteFact> {
     facts
@@ -863,7 +909,7 @@ fn call_proves_pair(
     bodies: &Bodies,
     callsite: &CallsiteFact,
     candidate: &Candidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
 ) -> bool {
     let Some(ptr_arg) = callsite
@@ -918,7 +964,7 @@ fn pointer_length_source(
     expr: &Expr,
     function: FunctionId,
     path: &AstPath,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
     depth: u32,
 ) -> Option<LengthSource> {
@@ -938,7 +984,7 @@ fn binding_length_source(
     bodies: &Bodies,
     binding: BindingId,
     function: FunctionId,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
     depth: u32,
 ) -> Option<LengthSource> {
@@ -984,7 +1030,7 @@ fn resolve_len_binding(
     expr: &Expr,
     function: FunctionId,
     path: &AstPath,
-    facts: &FixupFacts,
+    facts: &Snapshot,
 ) -> Option<BindingId> {
     let Expr::Var(name) = peel_cast(expr) else {
         return None;
@@ -1027,7 +1073,7 @@ fn integer_value(expr: &Expr) -> Option<u64> {
     }
 }
 
-fn proven_calls(facts: &FixupFacts, candidate: &Candidate) -> Vec<PtrLenSliceFact> {
+fn proven_calls(facts: &Snapshot, candidate: &Candidate) -> Vec<PtrLenSliceFact> {
     matching_callsites(facts, &candidate.function_name)
         .map(|callsite| PtrLenSliceFact {
             caller: callsite.site.function,

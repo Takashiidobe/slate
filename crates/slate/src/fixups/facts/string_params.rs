@@ -2,8 +2,9 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk::Bodies;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, CallCallee, FixupFacts, FunctionId, StringBufferKind,
-    StringLibcFunction, StringParamLiftFact,
+    self, AstPath, BindingFact, BindingId, BindingKind, BindingTypeFact, CallCallee, DefUseFact,
+    FixupFacts, FunctionId, StringBufferFact, StringBufferKind, StringLibcFunction,
+    StringLibcUseFact, StringParamLiftFact,
 };
 use crate::fixups::facts::{CallSignatureSource, CallsiteFact, walk};
 use crate::rust_ast::{Expr, FnDef, Prim, Program, Type, Visibility};
@@ -23,12 +24,64 @@ pub(in crate::fixups) struct Candidate {
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     let bodies = walk::bodies_from_program(program, facts);
-    facts.string_param_lifts = compute(&bodies, facts, collect_candidates(&bodies, facts));
+    let snapshot = Snapshot {
+        bindings: &facts.bindings,
+        binding_types: &facts.binding_types,
+        def_use: &facts.def_use,
+        callsites: &facts.callsites,
+        string_buffers: &facts.string_buffers,
+        string_libc_uses: &facts.string_libc_uses,
+    };
+    facts.string_param_lifts = compute(
+        &bodies,
+        &snapshot,
+        collect_candidates(&bodies, &facts.bindings),
+    );
+}
+
+pub(in crate::fixups) struct Snapshot<'a> {
+    pub(in crate::fixups) bindings: &'a [BindingFact],
+    pub(in crate::fixups) binding_types: &'a [BindingTypeFact],
+    pub(in crate::fixups) def_use: &'a [DefUseFact],
+    pub(in crate::fixups) callsites: &'a [CallsiteFact],
+    pub(in crate::fixups) string_buffers: &'a [StringBufferFact],
+    pub(in crate::fixups) string_libc_uses: &'a [StringLibcUseFact],
+}
+
+impl<'a> Snapshot<'a> {
+    fn def_use(&self, binding: BindingId) -> Option<&DefUseFact> {
+        facts::def_use_of(self.def_use, binding)
+    }
+
+    fn binding_named(&self, function: FunctionId, name: &str) -> Option<BindingId> {
+        facts::binding_named(self.bindings, function, name)
+    }
+
+    fn binding_read_under(
+        &self,
+        function: FunctionId,
+        name: &str,
+        path: &AstPath,
+    ) -> Option<BindingId> {
+        facts::binding_read_under(self.def_use, self.bindings, function, name, path)
+    }
+
+    fn binding_type(&self, binding: BindingId) -> Option<&str> {
+        facts::binding_type(self.binding_types, binding)
+    }
+
+    fn string_buffer(&self, binding: BindingId) -> Option<&StringBufferFact> {
+        facts::string_buffer(self.string_buffers, binding)
+    }
+
+    fn local_binding_at(&self, function: FunctionId, path: &AstPath) -> Option<&BindingFact> {
+        facts::local_binding_at(self.bindings, function, path)
+    }
 }
 
 pub(in crate::fixups) fn compute(
     bodies: &Bodies,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     candidates: Vec<Candidate>,
 ) -> Vec<StringParamLiftFact> {
     let mut active = candidates
@@ -65,17 +118,17 @@ pub(in crate::fixups) fn compute(
         .collect()
 }
 
-fn collect_candidates(bodies: &Bodies, facts: &FixupFacts) -> Vec<Candidate> {
+fn collect_candidates(bodies: &Bodies, bindings: &[BindingFact]) -> Vec<Candidate> {
     bodies
         .iter()
-        .flat_map(|(&function, &f)| candidates_for_function(function, f, facts))
+        .flat_map(|(&function, &f)| candidates_for_function(function, f, bindings))
         .collect()
 }
 
 pub(in crate::fixups) fn candidates_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
 ) -> Vec<Candidate> {
     if f.name == "main" || f.unsafe_ || f.abi.is_some() || !matches!(f.vis, Visibility::Private) {
         return Vec::new();
@@ -87,7 +140,7 @@ pub(in crate::fixups) fn candidates_for_function(
             if !is_char_ptr(&param.ty) {
                 return None;
             }
-            let binding = facts.binding_by_param_index(function, index)?;
+            let binding = facts::binding_by_param_index(bindings, function, index)?;
             Some(Candidate {
                 key: Key {
                     function,
@@ -102,7 +155,7 @@ pub(in crate::fixups) fn candidates_for_function(
 
 fn all_uses_allow_lift(
     candidate: &Candidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     by_function: &BTreeMap<(FunctionId, usize), Key>,
     active: &BTreeSet<Key>,
 ) -> bool {
@@ -149,7 +202,7 @@ fn all_uses_allow_lift(
 fn libc_use_allows(
     function: FunctionId,
     aliases: &BTreeSet<BindingId>,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     read: &AstPath,
     active: &BTreeSet<Key>,
 ) -> bool {
@@ -166,7 +219,7 @@ fn libc_use_allows(
 fn internal_call_allows(
     function: FunctionId,
     _aliases: &BTreeSet<BindingId>,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     by_function: &BTreeMap<(FunctionId, usize), Key>,
     active: &BTreeSet<Key>,
     read: &AstPath,
@@ -187,7 +240,7 @@ fn internal_call_allows(
 fn all_callers_prove_arg(
     bodies: &Bodies,
     candidate: &Candidate,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
 ) -> bool {
     let calls = facts
@@ -229,7 +282,7 @@ fn expr_is_liftable_source(
     expr: &Expr,
     function: FunctionId,
     path: &AstPath,
-    facts: &FixupFacts,
+    facts: &Snapshot,
     active: &BTreeSet<Key>,
 ) -> bool {
     match peel_pointer_view(expr) {
@@ -243,7 +296,7 @@ fn expr_is_liftable_source(
 }
 
 fn binding_is_liftable_source(
-    facts: &FixupFacts,
+    facts: &Snapshot,
     binding: BindingId,
     active: &BTreeSet<Key>,
 ) -> bool {
@@ -266,7 +319,7 @@ fn binding_is_liftable_source(
 }
 
 fn local_aliases_active_param(
-    facts: &FixupFacts,
+    facts: &Snapshot,
     binding: BindingId,
     active: &BTreeSet<Key>,
 ) -> bool {
@@ -284,7 +337,7 @@ fn local_aliases_active_param(
     })
 }
 
-fn direct_alias_at(function: FunctionId, facts: &FixupFacts, path: &AstPath) -> Option<BindingId> {
+fn direct_alias_at(function: FunctionId, facts: &Snapshot, path: &AstPath) -> Option<BindingId> {
     let alias = facts.local_binding_at(function, path)?;
     let ty = facts.binding_type(alias.id).map(Type::parse)?;
     is_char_ptr(&ty).then_some(alias.id)
