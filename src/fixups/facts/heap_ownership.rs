@@ -21,6 +21,7 @@ pub(super) type OwnedHeapUses = (
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.heap_ownership.clear();
+    let mut all = Vec::new();
     for (item_index, item) in program.items.iter().enumerate() {
         let Item::Fn(f) = item else {
             continue;
@@ -28,11 +29,17 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        collect_body(function, &f.body, facts);
+        all.extend(collect_for_function(function, &f.body, facts));
     }
+    facts.heap_ownership = all;
 }
 
-fn collect_body(function: FunctionId, body: &[IndentStmt], facts: &mut FixupFacts) {
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    body: &[IndentStmt],
+    facts: &FixupFacts,
+) -> Vec<HeapOwnershipFact> {
+    let mut out = Vec::new();
     for (index, pair) in body.windows(2).enumerate() {
         let Some((pointer_name, elem_ty)) = null_pointer_decl(&pair[0].stmt) else {
             continue;
@@ -47,7 +54,7 @@ fn collect_body(function: FunctionId, body: &[IndentStmt], facts: &mut FixupFact
         else {
             continue;
         };
-        facts.heap_ownership.push(HeapOwnershipFact {
+        out.push(HeapOwnershipFact {
             function,
             pointer,
             allocation_temp: candidate.allocation_temp,
@@ -67,6 +74,7 @@ fn collect_body(function: FunctionId, body: &[IndentStmt], facts: &mut FixupFact
             reallocations: candidate.reallocations,
         });
     }
+    out
 }
 
 pub(super) struct Candidate {

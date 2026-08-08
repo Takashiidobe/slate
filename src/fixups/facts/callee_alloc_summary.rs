@@ -15,14 +15,17 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        if let Some(summary) = summarize_function(function, f) {
+        if let Some(summary) = collect_for_function(function, f) {
             all.push(summary);
         }
     }
     facts.callee_alloc_summaries = all;
 }
 
-fn summarize_function(function: FunctionId, f: &FnDef) -> Option<CalleeAllocSummaryFact> {
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+) -> Option<CalleeAllocSummaryFact> {
     let Some(Type::Ptr { inner: elem_ty, .. }) = &f.ret else {
         return None;
     };

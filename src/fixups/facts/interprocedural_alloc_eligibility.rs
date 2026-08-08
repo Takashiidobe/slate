@@ -2,11 +2,11 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::heap_ownership;
 use crate::fixups::facts::{
-    AllocProvenance, AstPath, CalleeAllocSummaryFact, FixupFacts, FunctionId, HeapAllocationKind,
-    HeapExtent, HeapInitKind, HeapReadSafety, InterproceduralAllocCallerFact,
+    AllocProvenance, AstPath, BindingFact, CalleeAllocSummaryFact, FixupFacts, FunctionId,
+    HeapAllocationKind, HeapExtent, HeapInitKind, HeapReadSafety, InterproceduralAllocCallerFact,
     InterproceduralAllocEligibilityFact, PathSegment,
 };
-use crate::rust_ast::{Expr, FnDef, IndentStmt, Item, Program, Stmt, Type};
+use crate::rust_ast::{Expr, IndentStmt, Item, Program, Stmt, Type};
 
 #[derive(Debug, Clone)]
 struct ResolvedSummary {
@@ -16,12 +16,29 @@ struct ResolvedSummary {
     init: HeapInitKind,
 }
 
-pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.interprocedural_alloc_eligibility.clear();
-    facts.interprocedural_alloc_callers.clear();
+pub(in crate::fixups) struct FunctionSummary<'a> {
+    pub(in crate::fixups) id: FunctionId,
+    pub(in crate::fixups) name: &'a str,
+    pub(in crate::fixups) body: &'a [IndentStmt],
+    pub(in crate::fixups) bindings: &'a [BindingFact],
+    pub(in crate::fixups) callee_alloc_summary: Option<&'a CalleeAllocSummaryFact>,
+}
 
-    let mut fn_defs: BTreeMap<FunctionId, (String, &FnDef)> = BTreeMap::new();
-    let mut by_name: BTreeMap<String, FunctionId> = BTreeMap::new();
+pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
+    let mut bindings_by_function: BTreeMap<FunctionId, Vec<BindingFact>> = BTreeMap::new();
+    for binding in &facts.bindings {
+        bindings_by_function
+            .entry(binding.function)
+            .or_default()
+            .push(binding.clone());
+    }
+    let mut summaries_by_function: BTreeMap<FunctionId, &CalleeAllocSummaryFact> = facts
+        .callee_alloc_summaries
+        .iter()
+        .map(|fact| (fact.function, fact))
+        .collect();
+
+    let mut functions = Vec::new();
     for (item_index, item) in program.items.iter().enumerate() {
         let Item::Fn(f) = item else {
             continue;
@@ -29,15 +46,35 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        fn_defs.insert(function, (f.name.clone(), f));
-        by_name.insert(f.name.clone(), function);
+        functions.push(FunctionSummary {
+            id: function,
+            name: f.name.as_str(),
+            body: &f.body,
+            bindings: bindings_by_function
+                .get(&function)
+                .map_or(&[][..], |v| v.as_slice()),
+            callee_alloc_summary: summaries_by_function.remove(&function),
+        });
     }
+    let (eligibility, callers) = collect(&functions);
+    facts.interprocedural_alloc_eligibility = eligibility;
+    facts.interprocedural_alloc_callers = callers;
+}
 
-    let by_function: BTreeMap<FunctionId, &CalleeAllocSummaryFact> = facts
-        .callee_alloc_summaries
-        .iter()
-        .map(|fact| (fact.function, fact))
-        .collect();
+pub(in crate::fixups) fn collect(
+    functions: &[FunctionSummary],
+) -> (
+    Vec<InterproceduralAllocEligibilityFact>,
+    Vec<InterproceduralAllocCallerFact>,
+) {
+    let mut by_name: BTreeMap<&str, FunctionId> = BTreeMap::new();
+    let mut by_function: BTreeMap<FunctionId, &CalleeAllocSummaryFact> = BTreeMap::new();
+    for summary in functions {
+        by_name.insert(summary.name, summary.id);
+        if let Some(fact) = summary.callee_alloc_summary {
+            by_function.insert(summary.id, fact);
+        }
+    }
 
     // Resolve every function that has a provenance fact to its ultimate (root, summary),
     // walking Direct/PassThrough links -- the chain itself falls out as a by-product below,
@@ -64,6 +101,11 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         }
     }
 
+    let by_id: BTreeMap<FunctionId, &FunctionSummary> = functions
+        .iter()
+        .map(|summary| (summary.id, summary))
+        .collect();
+
     let mut all = Vec::new();
     let mut all_callers = Vec::new();
     for (root, (summary, resolved_root)) in &resolved {
@@ -71,26 +113,20 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
             continue;
         }
         let chain = chain_of.get(root).cloned().unwrap_or_default();
-        let mut members: Vec<String> = chain
+        let mut members: Vec<&str> = chain
             .iter()
-            .filter_map(|id| fn_defs.get(id).map(|(name, _)| name.clone()))
+            .filter_map(|id| by_id.get(id).map(|summary| summary.name))
             .collect();
-        if let Some((name, _)) = fn_defs.get(root) {
-            members.push(name.clone());
+        if let Some(root_summary) = by_id.get(root) {
+            members.push(root_summary.name);
         }
 
         let mut eligible = true;
         let mut callers = Vec::new();
         for member_name in &members {
-            for (caller_id, (_, caller_def)) in &fn_defs {
-                let (ok, mut found) = caller_calls_for_callee(
-                    *caller_id,
-                    caller_def,
-                    member_name,
-                    &resolved,
-                    &by_name,
-                    facts,
-                );
+            for caller in functions {
+                let (ok, mut found) =
+                    caller_calls_for_callee(caller, member_name, &resolved, &by_name);
                 eligible &= ok;
                 callers.append(&mut found);
             }
@@ -120,14 +156,13 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
             chain,
         });
     }
-    facts.interprocedural_alloc_eligibility = all;
-    facts.interprocedural_alloc_callers = all_callers;
+    (all, all_callers)
 }
 
 fn resolve_root(
     function: FunctionId,
     by_function: &BTreeMap<FunctionId, &CalleeAllocSummaryFact>,
-    by_name: &BTreeMap<String, FunctionId>,
+    by_name: &BTreeMap<&str, FunctionId>,
     memo: &mut BTreeMap<FunctionId, Option<(ResolvedSummary, FunctionId)>>,
     visited: &mut BTreeSet<FunctionId>,
 ) -> Option<(ResolvedSummary, FunctionId)> {
@@ -181,39 +216,31 @@ struct CallerRewritePlan {
 }
 
 fn caller_calls_for_callee(
-    caller_id: FunctionId,
-    caller_def: &FnDef,
+    caller: &FunctionSummary,
     callee_name: &str,
     resolved: &BTreeMap<FunctionId, (ResolvedSummary, FunctionId)>,
-    by_name: &BTreeMap<String, FunctionId>,
-    facts: &FixupFacts,
+    by_name: &BTreeMap<&str, FunctionId>,
 ) -> (bool, Vec<CallerRewritePlan>) {
     let mut ok = true;
     let mut plans = Vec::new();
     let mut index = 0;
-    while index < caller_def.body.len() {
+    while index < caller.body.len() {
         let Some((pointer_name, _elem_ty)) =
-            heap_ownership::null_pointer_decl(&caller_def.body[index].stmt)
+            heap_ownership::null_pointer_decl(&caller.body[index].stmt)
         else {
             index += 1;
             continue;
         };
-        let Some(outcome) = find_call_allocation(
-            caller_id,
-            &caller_def.body,
-            facts,
-            index + 1,
-            pointer_name,
-            resolved,
-            by_name,
-        ) else {
+        let Some(outcome) =
+            find_call_allocation(caller, index + 1, pointer_name, resolved, by_name)
+        else {
             index += 1;
             continue;
         };
         if outcome.callee_name == callee_name {
             if outcome.eligible {
                 plans.push(CallerRewritePlan {
-                    caller: caller_id,
+                    caller: caller.id,
                     pointer_name: pointer_name.to_string(),
                     decl_path: AstPath(vec![PathSegment::Stmt(index)]),
                     call_temp_path: AstPath(vec![PathSegment::Stmt(outcome.call_temp_index)]),
@@ -239,7 +266,7 @@ struct CallAllocation {
 fn call_allocation_temp(
     stmt: &Stmt,
     resolved: &BTreeMap<FunctionId, (ResolvedSummary, FunctionId)>,
-    by_name: &BTreeMap<String, FunctionId>,
+    by_name: &BTreeMap<&str, FunctionId>,
 ) -> Option<CallAllocation> {
     let Stmt::Let {
         name,
@@ -272,14 +299,17 @@ struct CallAllocationOutcome {
 }
 
 fn find_call_allocation(
-    function: FunctionId,
-    body: &[IndentStmt],
-    facts: &FixupFacts,
+    caller: &FunctionSummary,
     start: usize,
     pointer_name: &str,
     resolved: &BTreeMap<FunctionId, (ResolvedSummary, FunctionId)>,
-    by_name: &BTreeMap<String, FunctionId>,
+    by_name: &BTreeMap<&str, FunctionId>,
 ) -> Option<CallAllocationOutcome> {
+    let local_facts = FixupFacts {
+        bindings: caller.bindings.to_vec(),
+        ..FixupFacts::default()
+    };
+    let body = caller.body;
     for allocation_index in start..body.len() {
         let Some(call_alloc) =
             call_allocation_temp(&body[allocation_index].stmt, resolved, by_name)
@@ -288,7 +318,7 @@ fn find_call_allocation(
         };
         let allocation_path = AstPath(vec![PathSegment::Stmt(allocation_index)]);
         let Some(allocation_temp) =
-            facts.binding_by_local_path(function, &call_alloc.temp_name, &allocation_path)
+            local_facts.binding_by_local_path(caller.id, &call_alloc.temp_name, &allocation_path)
         else {
             continue;
         };
@@ -317,9 +347,9 @@ fn find_call_allocation(
                 reallocations: Vec::new(),
             };
             let outcome = heap_ownership::heap_uses_are_owned(
-                function,
+                caller.id,
                 body,
-                facts,
+                &local_facts,
                 pointer_name,
                 &candidate,
             );

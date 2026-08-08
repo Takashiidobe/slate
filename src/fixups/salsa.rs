@@ -3,11 +3,12 @@ use std::collections::{BTreeSet, HashMap};
 use crate::fixups::facts::{
     self, ArrayElementPointerOriginFact, AstPath, AtomicLocalFact, BindingFact, BindingId,
     BindingTypeFact, BorrowAliasFact, BorrowAliasReason, BorrowAliasState, BufferPointerFieldFact,
-    CallSignatureFact, CallSignatureSource, CallsiteFact, CastFact, ControlFlowFact,
-    ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
-    EffectSubject, FixupFacts, FunctionFact, FunctionId, LoopFact, NullCheckDominanceFact,
-    OptionBoxComparison, OptionBoxLocalCandidate, PlaceFact, PointerComparisonFact,
-    PointerOptionSafetyFact, StructFieldOwnershipFact, ValueFact,
+    CallSignatureFact, CallSignatureSource, CalleeAllocSummaryFact, CallsiteFact, CastFact,
+    ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact,
+    EffectFact, EffectSubject, FixupFacts, FunctionFact, FunctionId, HeapOwnershipFact,
+    InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LoopFact,
+    NullCheckDominanceFact, OptionBoxComparison, OptionBoxLocalCandidate, PlaceFact,
+    PointerComparisonFact, PointerOptionSafetyFact, StructFieldOwnershipFact, ValueFact,
 };
 use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{EnumDef, FnDef, Item, Program, RecordDef, StructDef};
@@ -238,6 +239,24 @@ impl FunctionInput {
             &self.body(db).body,
             &local_facts,
         )
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn heap_ownership(self, db: &dyn FixupDb) -> Vec<HeapOwnershipFact> {
+        let local_facts = FixupFacts {
+            bindings: self.bindings(db).clone(),
+            ..FixupFacts::default()
+        };
+        facts::heap_ownership::collect_for_function(
+            *self.function(db),
+            &self.body(db).body,
+            &local_facts,
+        )
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn callee_alloc_summary(self, db: &dyn FixupDb) -> Option<CalleeAllocSummaryFact> {
+        facts::callee_alloc_summary::collect_for_function(*self.function(db), self.body(db))
     }
 }
 
@@ -675,6 +694,43 @@ impl SalsaFacts {
             return &[];
         };
         input.buffer_pointer_fields(&self.db)
+    }
+
+    pub(in crate::fixups) fn heap_ownership(&self, function: FunctionId) -> &[HeapOwnershipFact] {
+        let Some(&input) = self.functions.get(&function) else {
+            return &[];
+        };
+        input.heap_ownership(&self.db)
+    }
+
+    pub(in crate::fixups) fn callee_alloc_summary(
+        &self,
+        function: FunctionId,
+    ) -> Option<&CalleeAllocSummaryFact> {
+        let input = *self.functions.get(&function)?;
+        input.callee_alloc_summary(&self.db).as_ref()
+    }
+
+    pub(in crate::fixups) fn interprocedural_alloc(
+        &self,
+    ) -> (
+        Vec<InterproceduralAllocEligibilityFact>,
+        Vec<InterproceduralAllocCallerFact>,
+    ) {
+        let functions: Vec<facts::interprocedural_alloc_eligibility::FunctionSummary> = self
+            .functions
+            .values()
+            .map(
+                |&input| facts::interprocedural_alloc_eligibility::FunctionSummary {
+                    id: *input.function(&self.db),
+                    name: input.body(&self.db).name.as_str(),
+                    body: &input.body(&self.db).body,
+                    bindings: input.bindings(&self.db),
+                    callee_alloc_summary: input.callee_alloc_summary(&self.db).as_ref(),
+                },
+            )
+            .collect();
+        facts::interprocedural_alloc_eligibility::collect(&functions)
     }
 
     #[expect(

@@ -8,10 +8,11 @@ use crate::fixups::facts::{
     BindingKind, BorrowAliasReason, BufferPointerFieldFact, CallArgPinning, CallCallee,
     CalleeAllocSummaryFact, CastFact, ConstValue, ControlFlowFact, ControlFlowSubject,
     CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject, FixupFacts,
-    FunctionId, InterproceduralAllocEligibilityFact, NulTermination, NullCheckDominanceFact,
-    NullCheckProof, OptionBoxAssignKind, OptionBoxComparison, OptionBoxLocalCandidate, PathSegment,
-    PlaceFact, PointerComparisonFact, PointerComparisonKind, PointerOptionSafetyFact,
-    PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
+    FunctionId, HeapOwnershipFact, InterproceduralAllocCallerFact,
+    InterproceduralAllocEligibilityFact, NulTermination, NullCheckDominanceFact, NullCheckProof,
+    OptionBoxAssignKind, OptionBoxComparison, OptionBoxLocalCandidate, PathSegment, PlaceFact,
+    PointerComparisonFact, PointerComparisonKind, PointerOptionSafetyFact, PrintfCallFact,
+    PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
     StringLibcUseFact, StringPointerViewFact, StringRecoveryCandidate, StructFieldOwnershipFact,
     ValueSubject,
 };
@@ -539,6 +540,71 @@ impl<'snapshot> QueryContext<'snapshot> {
                 .buffer_pointer_fields
                 .iter()
                 .filter(|fact| fact.site.function == function)
+                .collect(),
+        }
+    }
+
+    fn heap_ownership_fact_list(&self, function: FunctionId) -> Vec<&HeapOwnershipFact> {
+        match self.salsa {
+            Some(salsa) => salsa.heap_ownership(function).iter().collect(),
+            None => self
+                .facts
+                .heap_ownership
+                .iter()
+                .filter(|fact| fact.function == function)
+                .collect(),
+        }
+    }
+
+    fn callee_alloc_summary_fact(&self, function: FunctionId) -> Option<&CalleeAllocSummaryFact> {
+        match self.salsa {
+            Some(salsa) => salsa.callee_alloc_summary(function),
+            None => self
+                .facts
+                .callee_alloc_summaries
+                .iter()
+                .find(|summary| summary.function == function),
+        }
+    }
+
+    fn interprocedural_alloc_eligibility_fact(
+        &self,
+        function: FunctionId,
+    ) -> Option<InterproceduralAllocEligibilityFact> {
+        match self.salsa {
+            Some(salsa) => {
+                let (eligibility, _) = salsa.interprocedural_alloc();
+                eligibility
+                    .into_iter()
+                    .find(|fact| fact.function == function)
+            }
+            None => self
+                .facts
+                .interprocedural_alloc_eligibility
+                .iter()
+                .find(|fact| fact.function == function)
+                .cloned(),
+        }
+    }
+
+    fn interprocedural_alloc_caller_facts(
+        &self,
+        function: FunctionId,
+    ) -> Vec<InterproceduralAllocCallerFact> {
+        match self.salsa {
+            Some(salsa) => {
+                let (_, callers) = salsa.interprocedural_alloc();
+                callers
+                    .into_iter()
+                    .filter(|caller| caller.callee == function)
+                    .collect()
+            }
+            None => self
+                .facts
+                .interprocedural_alloc_callers
+                .iter()
+                .filter(|caller| caller.callee == function)
+                .cloned()
                 .collect(),
         }
     }
@@ -4524,11 +4590,7 @@ query_cache! {
             path: path.clone(),
         };
         let mut owners = Vec::new();
-        for fact in self
-            .facts
-            .heap_ownership
-            .iter()
-            .filter(|fact| fact.function == function.id)
+        for fact in self.heap_ownership_fact_list(function.id)
         {
             let Some(pointer) = binding(fact.pointer) else {
                 return Err(Rejection::new(
@@ -4780,13 +4842,7 @@ query_cache! {
     {
         let predicate = Predicate::CalleeAllocSummary;
         let site = expression_site(function.item_index, &[]);
-        let Some(summary) = self
-            .facts
-            .callee_alloc_summaries
-            .iter()
-            .find(|summary| summary.function == function.id)
-            .cloned()
-        else {
+        let Some(summary) = self.callee_alloc_summary_fact(function.id).cloned() else {
             return Err(Rejection::new(
                 predicate,
                 Some(site),
@@ -4809,13 +4865,7 @@ query_cache! {
     {
         let predicate = Predicate::InterproceduralAllocEligibility;
         let site = expression_site(function.item_index, &[]);
-        let Some(fact) = self
-            .facts
-            .interprocedural_alloc_eligibility
-            .iter()
-            .find(|fact| fact.function == function.id)
-            .cloned()
-        else {
+        let Some(fact) = self.interprocedural_alloc_eligibility_fact(function.id) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site),
@@ -4839,12 +4889,7 @@ query_cache! {
     {
         let predicate = Predicate::InterproceduralAllocEligibility;
         let site = expression_site(function.item_index, &[]);
-        let Some(fact) = self
-            .facts
-            .interprocedural_alloc_eligibility
-            .iter()
-            .find(|fact| fact.function == function.id)
-        else {
+        let Some(fact) = self.interprocedural_alloc_eligibility_fact(function.id) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site),
@@ -4884,12 +4929,7 @@ query_cache! {
         let site = expression_site(function.item_index, &[]);
         let functions = self.all_functions();
         let mut inputs = Vec::new();
-        for caller_fact in self
-            .facts
-            .interprocedural_alloc_callers
-            .iter()
-            .filter(|caller| caller.callee == function.id)
-        {
+        for caller_fact in self.interprocedural_alloc_caller_facts(function.id) {
             let Some(caller_ref) = functions
                 .iter()
                 .find(|candidate| candidate.id == caller_fact.caller)
