@@ -945,7 +945,9 @@ fn address_of_array_elements_use_safe_indexes() {
     assert!(!rust.contains("unsafe { *p }"));
     assert!(!rust.contains("unsafe { *q }"));
     assert!(!rust.contains(".offset_from("));
-    assert!(rust.contains("read_pointer(pointer)"));
+    assert!(rust.contains("fn read_pointer(pointer: &mut i32) -> i32"));
+    assert!(!rust.contains("unsafe { *pointer }"));
+    assert!(rust.contains("read_pointer(&mut values[0])"));
 
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("fixup-debug")

@@ -20,7 +20,7 @@ use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
     Attr, Block, Expr, ExternDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem, IndentStmt,
     Item, MatchArm, Method, Pattern, Prim, Program, RecordDef, RustValue, Stmt, StructDef,
-    StructFields, TraitBound, Type, Visibility,
+    StructFields, TraitBound, Type, UnaryOp, Visibility,
 };
 
 use super::item::StatementRef;
@@ -2707,6 +2707,22 @@ impl<'snapshot> QueryContext<'snapshot> {
     ) -> Option<ExpressionKind> {
         let parent = self.expression_parents.get(&expression.site)?;
         self.expr(parent).map(expression_kind)
+    }
+
+    pub(in crate::fixups) fn is_bare_pointer_dereference(
+        &self,
+        expression: &ExpressionRef,
+    ) -> bool {
+        let Some(parent) = self.expression_parents.get(&expression.site) else {
+            return false;
+        };
+        matches!(
+            self.expr(parent),
+            Some(Expr::Unary {
+                op: UnaryOp::Deref,
+                ..
+            })
+        )
     }
 
     pub(in crate::fixups) fn ancestor_expression_kinds(

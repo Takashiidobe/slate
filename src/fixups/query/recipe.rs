@@ -1276,7 +1276,7 @@ fn rewrite_option_box_guard(body: &mut [IndentStmt], plan: &OptionBoxLocalPlan) 
     };
 }
 
-fn strip_redundant_unsafe(body: &mut Vec<IndentStmt>, name: &str) {
+pub(in crate::fixups) fn strip_redundant_unsafe(body: &mut Vec<IndentStmt>, name: &str) {
     let mut index = 0;
     while index < body.len() {
         if let Stmt::Unsafe { body: block } = &body[index].stmt

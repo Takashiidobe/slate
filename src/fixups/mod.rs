@@ -871,6 +871,39 @@ fn apply_with_logger(
         incremental.set_program(&program);
     });
 
+    step!(program, Pass::ArrayElementPointerParamHoist, {
+        let plan = {
+            let query = query::QueryContext::new(&program, &incremental);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(
+                &query,
+                &query::rules::array_element_pointer_param_hoist::rewrite(),
+            );
+            builder.finish()
+        };
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
+    });
+
+    step!(program, Pass::DeadLocals, {
+        loop {
+            let plan = {
+                let query = query::QueryContext::new(&program, &incremental);
+                let mut builder = query::ItemPlanBuilder::new();
+                builder.add_rule(
+                    &query,
+                    &query::rules::dead_locals::rewrite(Pass::DeadLocals),
+                );
+                builder.finish()
+            };
+            let report = plan.apply(&mut program, &incremental, logger);
+            incremental.set_program(&program);
+            if !report.changed {
+                break;
+            }
+        }
+    });
+
     step!(program, Pass::BufferCursor, {
         let plan = {
             let query = query::QueryContext::new(&program, &incremental);

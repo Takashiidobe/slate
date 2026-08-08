@@ -132,9 +132,14 @@ parses the generic-form CIR op-tree.
 
 **Read before making changes**
 
+- [docs/writing-a-fixup.md](docs/writing-a-fixup.md) — start here for any new
+  or migrated rewrite: how to pick a rewrite shape and wire a new pass into
+  the pipeline end to end.
 - [docs/fixups.md](docs/fixups.md) — the
   preferred query-driven interface for supported expression and definition
-  rewrites. Read this before writing or migrating a rewrite.
+  rewrites: matcher/`EditSet` mechanics in depth.
+- [docs/facts.md](docs/facts.md) — the read-only analysis layer fixups
+  consume instead of re-deriving facts by hand.
 - [docs/architecture.md](docs/architecture.md) — sources, the two IRs, the
   pipeline, and why CIR over LLVM IR.
 - [docs/passes.md](docs/passes.md) — the pass catalog: what runs, in what order.

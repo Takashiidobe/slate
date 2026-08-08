@@ -78,7 +78,7 @@ are whatever it actually read, not a hand-maintained list.
 
 - `FixupFacts` (`facts/mod.rs:45`, since deleted): one `Vec<XFact>` field per
   collector output; every fact carried a `Site { function: FunctionId, path:
-  AstPath }` or bare `FunctionId`/`BindingId`, scanned linearly by callers.
+AstPath }` or bare `FunctionId`/`BindingId`, scanned linearly by callers.
 - `FunctionId` (`facts/mod.rs:93`) was already the right stable key: assigned
   once, in traversal order, the first time a function is seen
   (`Collector::push_function`), and never reused or renumbered — only
@@ -341,7 +341,7 @@ Phase 0-3 per-family migrations happened close to this plan. Phase 4
   (`ProgramInput` in `src/fixups/salsa.rs`), not a per-function
   `HashMap<FunctionId, FunctionInput>` registry with hand-maintained
   `AllFunctions`. `FunctionInput` is a `#[salsa::interned]` `(ProgramInput,
-  FunctionId)` key instead of its own `#[salsa::input]`; its body, base-walk
+FunctionId)` key instead of its own `#[salsa::input]`; its body, base-walk
   bindings, binding types, and loops are all tracked fns derived from
   `ProgramInput`, not separately-set fields.
 - **`TouchedItems`-driven diffing (the "Bridging" section above) was never
