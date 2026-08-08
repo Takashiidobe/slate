@@ -1,1 +1,1 @@
-#error "<sys/vt.h> is not yet defined"
+#include <bits/vt.h>

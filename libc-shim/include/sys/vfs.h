@@ -1,1 +1,1 @@
-#error "<sys/vfs.h> is not yet defined"
+#include <sys/statfs.h>

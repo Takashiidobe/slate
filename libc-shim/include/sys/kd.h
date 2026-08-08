@@ -1,1 +1,1 @@
-#error "<sys/kd.h> is not yet defined"
+#include <bits/kd.h>
