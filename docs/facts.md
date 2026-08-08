@@ -7,15 +7,13 @@ definition/use, provenance, loop shape, string/heap/file ownership, and more —
 that rewrite passes query instead of re-deriving the same information by
 re-walking the tree. Facts are computed and memoized by
 [salsa](https://github.com/salsa-rs/salsa): `src/fixups/salsa.rs`'s
-`SalsaFacts` owns a `#[salsa::db]` `Database`, one `#[salsa::input]
-FunctionInput` per function (body plus the base-walk bindings/binding
-types/loops), an `AllFunctions` singleton for whole-program reductions, and a
-`DefinitionsInput` singleton for record/struct/enum/extern-signature/static
-declarations. Each collector below is one or more `#[salsa::tracked]` methods
-on `FunctionInput` (per-function facts) or `AllFunctions`/`DefinitionsInput`
-(whole-program facts); salsa reruns only the tracked fns whose inputs actually
-changed and backdates (skips invalidating dependents) when a rerun's output is
-value-equal to before.
+`SalsaFacts` owns a `#[salsa::db]` `Database` and a singleton `ProgramInput`.
+`FunctionInput` is an interned `(ProgramInput, FunctionId)` key whose body and
+base-walk bindings, binding types, and loops are derived by tracked methods.
+Whole-program function and definition reductions are tracked methods on
+`ProgramInput`; no externally synchronized fact inputs are retained. Salsa
+reruns only the tracked functions whose inputs changed and backdates (skips
+invalidating dependents) when a rerun's output is value-equal to before.
 
 This doc is a reference for what each collector proves and which rewrite pass
 (named as in passes.md's [pass sequence](passes.md#the-pass-sequence)) reads
@@ -130,8 +128,8 @@ existing collector uses:
    needs as parameters — never a whole facts struct.
 3. Add a `#[salsa::tracked]` method calling it: on `impl FunctionInput` in
    `src/fixups/salsa.rs` for a per-function fact (see `def_use`, `effects`,
-   ... for the template), or on `impl AllFunctions`/`impl DefinitionsInput`
-   for a whole-program one (see `callsites`, `lazy_init_singletons`, ...). A
+   ... for the template), or on `impl ProgramInput` for a whole-program one
+   (see `callsites`, `lazy_init_singletons`, ...). A
    whole-program tracked fn that needs one function's data narrowly should
    filter a wider tracked fn's output down (see `own_callsites`) rather than
    depending on the whole reduction directly, to avoid invalidating every
