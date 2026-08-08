@@ -1126,8 +1126,85 @@ fn feature_cfg(macro_name: &str) -> Option<Cfg> {
     }
 }
 
+fn slate_target_cfg(macro_name: &str) -> Option<Cfg> {
+    if let Some(value) = macro_name.strip_prefix("__SLATE_ARCH_") {
+        return Some(opt(
+            "target_arch",
+            match value {
+                "X86_64" => "x86_64",
+                "X86" => "x86",
+                "ARM" => "arm",
+                "AARCH64" => "aarch64",
+                "RISCV64" => "riscv64",
+                "RISCV32" => "riscv32",
+                _ => return None,
+            },
+        ));
+    }
+    if let Some(value) = macro_name.strip_prefix("__SLATE_VENDOR_") {
+        return Some(opt(
+            "target_vendor",
+            match value {
+                "UNKNOWN" => "unknown",
+                "PC" => "pc",
+                "APPLE" => "apple",
+                _ => return None,
+            },
+        ));
+    }
+    if let Some(value) = macro_name.strip_prefix("__SLATE_KERNEL_") {
+        return Some(opt(
+            "target_os",
+            match value {
+                "LINUX" => "linux",
+                "WINDOWS" => "windows",
+                "DARWIN" => "macos",
+                _ => return None,
+            },
+        ));
+    }
+    if let Some(value) = macro_name.strip_prefix("__SLATE_LIBC_") {
+        return match value {
+            "GLIBC" => Some(opt("target_env", "gnu")),
+            "MUSL" => Some(opt("target_env", "musl")),
+            "MINGW" => Some(opt("target_env", "gnu")),
+            "MSVC" => Some(opt("target_env", "msvc")),
+            // no Rust target_env distinguishes a generic libc; treat as unconstrained
+            "GENERIC" => Some(Cfg::All(Vec::new())),
+            _ => None,
+        };
+    }
+    if macro_name.starts_with("__SLATE_OBJ_") {
+        // object format (ELF/COFF/Mach-O) has no matching Rust cfg; unconstrained
+        return Some(Cfg::All(Vec::new()));
+    }
+    if let Some(value) = macro_name.strip_prefix("__SLATE_WORDSIZE_") {
+        return Some(opt(
+            "target_pointer_width",
+            match value {
+                "64" => "64",
+                "32" => "32",
+                _ => return None,
+            },
+        ));
+    }
+    if let Some(value) = macro_name.strip_prefix("__SLATE_ENDIAN_") {
+        return Some(opt(
+            "target_endian",
+            match value {
+                "LITTLE" => "little",
+                "BIG" => "big",
+                _ => return None,
+            },
+        ));
+    }
+    None
+}
+
 fn macro_cfg(macro_name: &str) -> Option<Cfg> {
-    known_cfg(macro_name).or_else(|| feature_cfg(macro_name))
+    known_cfg(macro_name)
+        .or_else(|| slate_target_cfg(macro_name))
+        .or_else(|| feature_cfg(macro_name))
 }
 
 pub fn pred_to_cfg(expr: &PredExpr) -> Option<Cfg> {
@@ -1148,15 +1225,27 @@ enum CfgList {
 }
 
 fn combine_cfg(items: &[PredExpr], keyword: CfgList) -> Option<Cfg> {
+    let is_true = |cfg: &Cfg| matches!(cfg, Cfg::All(v) if v.is_empty());
+    let is_false = |cfg: &Cfg| matches!(cfg, Cfg::Any(v) if v.is_empty());
     let mut atoms: Vec<Cfg> = Vec::new();
     for item in items {
         let cfg = pred_to_cfg(item)?;
+        match keyword {
+            CfgList::All if is_true(&cfg) => continue,
+            CfgList::All if is_false(&cfg) => return Some(Cfg::Any(Vec::new())),
+            CfgList::Any if is_false(&cfg) => continue,
+            CfgList::Any if is_true(&cfg) => return Some(Cfg::All(Vec::new())),
+            _ => {}
+        }
         if !atoms.contains(&cfg) {
             atoms.push(cfg);
         }
     }
     match atoms.len() {
-        0 => None,
+        0 => Some(match keyword {
+            CfgList::All => Cfg::All(Vec::new()),
+            CfgList::Any => Cfg::Any(Vec::new()),
+        }),
         1 => Some(atoms.remove(0)),
         _ => Some(match keyword {
             CfgList::Any => Cfg::Any(atoms),
