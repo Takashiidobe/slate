@@ -2,16 +2,26 @@
 
 `src/fixups/facts/` is the analysis layer between baseline lowering and the
 fixup passes described in [passes.md](passes.md). It never mutates the AST: it
-reads an already-lowered `Program` and produces `FixupFacts`, a flat bag of
-records — purity, definition/use, provenance, loop shape, string/heap/file
-ownership, and more — that rewrite passes query instead of re-deriving the
-same information by re-walking the tree.
+reads an already-lowered `Program` and produces facts — purity,
+definition/use, provenance, loop shape, string/heap/file ownership, and more —
+that rewrite passes query instead of re-deriving the same information by
+re-walking the tree. Facts are computed and memoized by
+[salsa](https://github.com/salsa-rs/salsa): `src/fixups/salsa.rs`'s
+`SalsaFacts` owns a `#[salsa::db]` `Database`, one `#[salsa::input]
+FunctionInput` per function (body plus the base-walk bindings/binding
+types/loops), an `AllFunctions` singleton for whole-program reductions, and a
+`DefinitionsInput` singleton for record/struct/enum/extern-signature/static
+declarations. Each collector below is one or more `#[salsa::tracked]` methods
+on `FunctionInput` (per-function facts) or `AllFunctions`/`DefinitionsInput`
+(whole-program facts); salsa reruns only the tracked fns whose inputs actually
+changed and backdates (skips invalidating dependents) when a rerun's output is
+value-equal to before.
 
 This doc is a reference for what each collector proves and which rewrite pass
 (named as in passes.md's [pass sequence](passes.md#the-pass-sequence)) reads
-it. _"A rewrite should consume `FixupFacts` plus local
-AST shape; if it needs information that is not already in `FixupFacts`, add a
-fact collector first."_
+it. _"A rewrite should consume facts plus local AST shape; if it needs
+information that is not already available as a fact, add a fact collector
+first."_
 
 ## Why a separate layer
 
@@ -20,11 +30,12 @@ before moving, dropping, or folding code they need to know things the AST
 shape alone doesn't answer - "is this expression pure," "is this the last
 read of this binding," "does this pointer alias anything else," "did this
 buffer ever get indexed." Answering those per-pass, by hand, is exactly the
-kind of pass-local walker `writing-a-fixup.md` warns against. `FixupFacts`
-computes each answer once, in one dedicated module, so every pass gets the
-same answer through the same query methods on `FixupFacts` (`def_use`,
-`effect`, `place`, `has_value`, `string_buffer`, ...; see the full list in
-`src/fixups/facts/mod.rs`).
+kind of pass-local walker `writing-a-fixup.md` warns against. Each fact is
+computed once, in one dedicated module, so every pass gets the same answer
+through the same query methods on `QueryContext` (`def_use`, `effect`,
+`place`, `has_value`, `string_buffer`, ...; see the full list in
+`src/fixups/query/context.rs`), which is itself a thin, `#[salsa::tracked]`
+memoization-backed adapter over `SalsaFacts`.
 
 ## Addressing scheme
 
@@ -33,18 +44,21 @@ value between rewrites, so borrows wouldn't survive. Instead every fact keys
 off small, `Copy`, structural identifiers:
 
 - **`FunctionId` / `BindingId` / `LoopId` / `SignatureId`** — dense indices
-  assigned once, in traversal order, by the initial `Collector::program` pass
-  in `src/fixups/facts/mod.rs` (functions and their parameter/local bindings,
-  loop headers, call signatures). Later collectors look bindings up by
-  `(function, name)` or `(function, declaration path)` rather than re-minting
-  IDs.
+  assigned once, in traversal order, by the base program walk
+  (`facts::walk::BaseWalk` in `src/fixups/facts/walk.rs`; functions and their
+  parameter/local bindings, loop headers, call signatures). `BaseWalk` also
+  drives `SalsaFacts`'s incremental re-sync: an edited function gets its ids
+  re-derived in place (stable for every other function), so `FunctionId`
+  stays a valid `#[salsa::input]` key across `Program` revisions. Later
+  collectors look bindings up by `(function, name)` or `(function,
+  declaration path)` rather than re-minting IDs.
 - **`AstPath` / `PathSegment`** — a route from a function body down to a
   specific statement or expression (`Stmt(2)`, `Then`, `LoopBody`,
   `MatchArm(0)`, `Expr(1)`, ...). A `Site { function, path }` is "this fact is
   about the node at this path in this function." Because rewrites preserve
   statement order except where they explicitly restructure it, a path
   computed by one collector still resolves correctly for the next, within the
-  same `analyze()` snapshot.
+  same `Program` revision.
 - **`walk::paths_overlap`** — reads are sometimes recorded at whole-statement
   granularity (a call argument's read is attributed to the enclosing
   statement) while a query needs a narrower path (the specific argument
@@ -57,14 +71,17 @@ to `src/fixups/support/walk.rs`, which rewrite passes use instead.
 
 ## Collectors
 
-Listed in the order `facts::analyze` runs them (`src/fixups/facts/mod.rs`).
-"Consumed by" names rewrite passes from [passes.md](passes.md); a pass can
-also be a producer for a later collector, noted where relevant.
+Listed in dependency order (a collector that reads another's output is listed
+after it); unlike the old whole-program `facts::analyze` sweep, salsa has no
+fixed global run order — each `#[salsa::tracked]` fn resolves its own
+dependencies lazily, on first read, and only reruns the ones an edit actually
+invalidated. "Consumed by" names rewrite passes from [passes.md](passes.md); a
+pass can also be a producer for a later collector, noted where relevant.
 
 | #   | Module                              | Fact struct(s)                                                                             | Proves                                                                                                                                                                                                                                   | Consumed by                                                                                                                                                            |
 | --- | ----------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | `anonymous_structs`                 | `AnonymousStructFact`                                                                      | Which synthesized `anon_*` records are repeated anonymous-struct shapes, and the hoisted name/field list to replace them with                                                                                                            | `anonymous_structs`                                                                                                                                                    |
-| 2   | `borrow_alias`                      | `BorrowAliasFact`, `BorrowAliasUseFact`                                                    | Per binding: whether every use is read-only, uniquely-mutated, or the value/address has escaped (borrowed, raw-ptr-derived, passed to an unknown call)                                                                                   | `remove_mut` (via `FixupFacts::binding_requires_mut`)                                                                                                                  |
+| 2   | `borrow_alias`                      | `BorrowAliasFact`, `BorrowAliasUseFact`                                                    | Per binding: whether every use is read-only, uniquely-mutated, or the value/address has escaped (borrowed, raw-ptr-derived, passed to an unknown call)                                                                                   | `remove_mut` (via `SalsaFacts::binding_requires_mut`)                                                                                                                  |
 | 3   | `def_use`                           | `DefUseFact`                                                                               | Per binding: its definition path, every read/write path, and its last use                                                                                                                                                                | `param_spills`, `zero_init`, `drop_call_results`, `nullable_pointer`, `retval`, `call_args`, `atomic_compare_exchange`, `remove_mut`, `printf_format`                  |
 | 4   | `effects`                           | `EffectFact`, `Purity`, `EffectKind`                                                       | Whether an expression/statement is pure enough to move or duplicate, and what side effect it has if not (volatile access, atomic access, unknown call, ...)                                                                              | `inline_temps` (early/late), `call_args`, `dead_locals`, `drop_call_results`                                                                                           |
 | 5   | `control_flow`                      | `ControlFlowFact`                                                                          | Per statement/block: reachability, whether it falls through, its exit set (`return`/`break`/`continue`), and whether it has one clean exit an expression form could replace                                                              | `retval`                                                                                                                                                               |
@@ -93,29 +110,38 @@ also be a producer for a later collector, noted where relevant.
 `goto` (`src/fixups/facts/goto.rs`) is a related but separate case: it is a
 front-end-agnostic CFG library (`CfgNode`/`CfgEdge`, dominators, natural
 loops, SCCs) used directly by the `goto`-structuring pass
-(`src/fixups/rewrite/goto.rs`) to rebuild structured control flow from a
-label/jump dispatch loop. It is not a `FixupFacts` field and is not populated
-by `facts::analyze` — the `goto` pass runs first, before facts exist at all
-(see `structure_goto` in `src/fixups/mod.rs`), and builds its own CFG
-straight from the AST each time it runs.
+(`src/fixups/query/rules/goto.rs`) to rebuild structured control flow from a
+label/jump dispatch loop. It is not backed by any `#[salsa::tracked]` fact —
+the `goto` pass runs first, before any other fact is read (see `Pass::Goto` in
+`src/fixups/mod.rs`), and builds its own CFG straight from the AST each time
+it runs.
 
 ## Adding a fact
 
 Add a new module under `src/fixups/facts/`, following the shape every
 existing collector uses:
 
-1. Define the fact struct(s) in `src/fixups/facts/mod.rs` and add a field to
-   `FixupFacts` for them (plus a lookup method next to the existing ones —
-   `string_buffer`, `def_use`, `place`, ...).
-2. Write `pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts)`
-   in the new module, walking with `src/fixups/facts/walk.rs` helpers (or
-   reusing another collector's already-built maps, the way `ptr_len` consumes
-   `CallsiteFact` from `calls`).
-3. Register the call in `facts::analyze` (`src/fixups/facts/mod.rs`), after
-   any collector it depends on.
-4. Consume it from a rewrite pass through `&FixupFacts`, never by re-walking
-   the tree by hand.
+1. Define the fact struct(s) in `src/fixups/facts/mod.rs`.
+2. Write `pub(in crate::fixups) fn collect_for_function(function: FunctionId, f: &FnDef, ...) -> Vec<XFact>`
+   in the new module, walking with `src/fixups/facts/walk.rs` helpers, for a
+   fact that only needs its own function's data. If the fact genuinely needs
+   other functions' data (a call graph, a whole-program reduction), write
+   `compute(...)`/`collect(...)` instead, taking whatever slices/maps it
+   needs as parameters — never a whole facts struct.
+3. Add a `#[salsa::tracked]` method calling it: on `impl FunctionInput` in
+   `src/fixups/salsa.rs` for a per-function fact (see `def_use`, `effects`,
+   ... for the template), or on `impl AllFunctions`/`impl DefinitionsInput`
+   for a whole-program one (see `callsites`, `lazy_init_singletons`, ...). A
+   whole-program tracked fn that needs one function's data narrowly should
+   filter a wider tracked fn's output down (see `own_callsites`) rather than
+   depending on the whole reduction directly, to avoid invalidating every
+   function whenever any one function's data changes.
+4. Add a lookup method on `SalsaFacts` next to the existing ones
+   (`string_buffer`, `def_use`, `place`, ...).
+5. Consume it from a rewrite pass through `QueryContext`/`SalsaFacts`, never
+   by re-walking the tree by hand.
 
-Keep collectors read-only and side-effect-free: `collect_facts` must not
-mutate `program`. If a pass needs the AST changed, that belongs in
-`src/fixups/rewrite/`, driven by the facts this layer already computed.
+Keep collectors read-only and side-effect-free: `collect_for_function`/
+`compute`/`collect` must not mutate the AST. If a pass needs the AST changed,
+that belongs in `src/fixups/query/rules/`, driven by the facts this layer
+already computed.

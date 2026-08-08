@@ -1,5 +1,4 @@
-use std::cell::RefCell;
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet};
 use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
@@ -46,42 +45,6 @@ use super::{
     StringCopySite, StringLibcUse, SwitchDispatch, TypeUseRef, Usage, UseSiteRef, VaListAlias,
     ValueSite,
 };
-
-macro_rules! query_cache {
-    ($(
-        $(#[$attr:meta])*
-        fn $name:ident(& $slf:tt $(, $arg:ident : $arg_ty:ty)*) -> QueryResult<$ret:ty>;
-        key: $key_ty:ty = $key:expr;
-        $body:block
-    )*) => {
-        #[derive(Default)]
-        struct QueryCache<'snapshot> {
-            $($(#[$attr])* $name: RefCell<HashMap<$key_ty, QueryResult<$ret>>>,)*
-        }
-
-        impl<'snapshot> QueryContext<'snapshot> {
-            $(
-                $(#[$attr])*
-                pub(in crate::fixups) fn $name(&$slf, $($arg: $arg_ty),*) -> QueryResult<$ret> {
-                    cached(&$slf.cache.$name, $key, || $body)
-                }
-            )*
-        }
-    };
-}
-
-fn cached<K, V>(cache: &RefCell<HashMap<K, V>>, key: K, compute: impl FnOnce() -> V) -> V
-where
-    K: Eq + std::hash::Hash + Clone,
-    V: Clone,
-{
-    if let Some(hit) = cache.borrow().get(&key) {
-        return hit.clone();
-    }
-    let value = compute();
-    cache.borrow_mut().insert(key, value.clone());
-    value
-}
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(in crate::fixups) enum CallTarget {
@@ -150,7 +113,6 @@ pub(in crate::fixups) struct QueryContext<'snapshot> {
     definitions: BTreeMap<DefinitionSelector, Vec<DefinitionSite>>,
     symbol_uses: BTreeMap<String, Vec<usize>>,
     use_domain_complete: bool,
-    cache: QueryCache<'snapshot>,
     salsa: &'snapshot SalsaFacts,
 }
 
@@ -274,7 +236,6 @@ impl<'snapshot> QueryContext<'snapshot> {
             definitions,
             symbol_uses,
             use_domain_complete,
-            cache: QueryCache::default(),
             salsa,
         }
     }
@@ -3724,10 +3685,8 @@ fn statement_container_at<'body>(
     }
 }
 
-query_cache! {
-    fn anonymous_structs(&self) -> QueryResult<AnonymousStructSet>;
-    key: () = ();
-    {
+impl<'snapshot> QueryContext<'snapshot> {
+    pub(in crate::fixups) fn anonymous_structs(&self) -> QueryResult<AnonymousStructSet> {
         let anonymous_structs = self.anonymous_struct_facts();
         let records = self
             .program
@@ -3827,9 +3786,10 @@ query_cache! {
         Ok(Proof::new(AnonymousStructSet { structs }, evidence))
     }
 
-    fn definition_users(&self, definition: &DefinitionSite) -> QueryResult<DefinitionUsers>;
-    key: DefinitionLocation = definition.location.clone();
-    {
+    pub(in crate::fixups) fn definition_users(
+        &self,
+        definition: &DefinitionSite,
+    ) -> QueryResult<DefinitionUsers> {
         let users = self.count_definition_users(
             definition,
             &BTreeSet::from([definition.location.item_index()]),
@@ -3863,9 +3823,10 @@ query_cache! {
         ))
     }
 
-    fn definition_group_users(&self, group: &DefinitionGroup) -> QueryResult<DefinitionGroupUsers>;
-    key: DefinitionGroup = group.clone();
-    {
+    pub(in crate::fixups) fn definition_group_users(
+        &self,
+        group: &DefinitionGroup,
+    ) -> QueryResult<DefinitionGroupUsers> {
         let definitions = self.definitions_in_group(group);
         let definition_items = definitions
             .iter()
@@ -3916,9 +3877,10 @@ query_cache! {
         ))
     }
 
-    fn byte_source(&self, site: &ExprSite) -> QueryResult<ByteSource<'snapshot>>;
-    key: ExprSite = site.clone();
-    {
+    pub(in crate::fixups) fn byte_source(
+        &self,
+        site: &ExprSite,
+    ) -> QueryResult<ByteSource<'snapshot>> {
         let predicate = Predicate::ByteSource;
         let function = self.function(site).ok_or_else(|| {
             Rejection::new(
@@ -3950,7 +3912,8 @@ query_cache! {
                     Vec::new(),
                 )
             })?;
-        let name = self.salsa()
+        let name = self
+            .salsa()
             .binding_name(pointer.source)
             .ok_or_else(|| {
                 Rejection::new(
@@ -3969,14 +3932,17 @@ query_cache! {
                 Vec::new(),
             ));
         }
-        let ty = self.salsa().binding_type_ast(pointer.source).ok_or_else(|| {
-            Rejection::new(
-                predicate,
-                Some(site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            )
-        })?;
+        let ty = self
+            .salsa()
+            .binding_type_ast(pointer.source)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
         let buffer = self.string_buffer_fact(pointer.source);
         let representation = buffer
             .map(|buffer| representation_for_buffer(buffer.kind))
@@ -4029,9 +3995,7 @@ query_cache! {
         ))
     }
 
-    fn const_u8(&self, site: &ExprSite) -> QueryResult<u8>;
-    key: ExprSite = site.clone();
-    {
+    pub(in crate::fixups) fn const_u8(&self, site: &ExprSite) -> QueryResult<u8> {
         let values = self.constant_values(Predicate::ConstantU8, site, |value| match value {
             ConstValue::Integer(value) => u8::try_from(*value)
                 .map(Some)
@@ -4061,9 +4025,7 @@ query_cache! {
         ))
     }
 
-    fn const_usize(&self, site: &ExprSite) -> QueryResult<usize>;
-    key: ExprSite = site.clone();
-    {
+    pub(in crate::fixups) fn const_usize(&self, site: &ExprSite) -> QueryResult<usize> {
         let values = self.constant_values(Predicate::ConstantUsize, site, |value| match value {
             ConstValue::Integer(value) => usize::try_from(*value)
                 .map(Some)
@@ -4092,9 +4054,11 @@ query_cache! {
         ))
     }
 
-    fn full_byte_view(&self, source: &ByteSource<'snapshot>, count: &ExprSite) -> QueryResult<ByteView<'snapshot>>;
-    key: (ExprSite, ExprSite) = (source.site.clone(), count.clone());
-    {
+    pub(in crate::fixups) fn full_byte_view(
+        &self,
+        source: &ByteSource<'snapshot>,
+        count: &ExprSite,
+    ) -> QueryResult<ByteView<'snapshot>> {
         let constant = self.const_usize(count);
         if let (ByteExtent::Constant(extent), Ok(count_proof)) = (source.extent, &constant) {
             if extent != count_proof.value {
@@ -4144,9 +4108,10 @@ query_cache! {
         ))
     }
 
-    fn first_nul(&self, source: &ByteSource<'snapshot>) -> QueryResult<NulPosition>;
-    key: BindingId = source.binding;
-    {
+    pub(in crate::fixups) fn first_nul(
+        &self,
+        source: &ByteSource<'snapshot>,
+    ) -> QueryResult<NulPosition> {
         let predicate = Predicate::FirstNul;
         let Some(buffer) = self.string_buffer_fact(source.binding) else {
             return Err(Rejection::new(
@@ -4208,9 +4173,11 @@ query_cache! {
         ))
     }
 
-    fn prefix_contains(&self, count: &ExprSite, nul: NulPosition) -> QueryResult<()>;
-    key: (ExprSite, NulPosition) = (count.clone(), nul);
-    {
+    pub(in crate::fixups) fn prefix_contains(
+        &self,
+        count: &ExprSite,
+        nul: NulPosition,
+    ) -> QueryResult<()> {
         let count_proof = self.const_usize(count)?;
         let count_stable = self.pure(count)?;
         let NulPosition::Constant(nul) = nul else {
@@ -4243,9 +4210,7 @@ query_cache! {
         Ok(Proof::new((), evidence))
     }
 
-    fn pure(&self, site: &ExprSite) -> QueryResult<StableExpr>;
-    key: ExprSite = site.clone();
-    {
+    pub(in crate::fixups) fn pure(&self, site: &ExprSite) -> QueryResult<StableExpr> {
         let predicate = Predicate::MovablePure;
         let function = self.function(site).ok_or_else(|| {
             Rejection::new(
@@ -4284,19 +4249,23 @@ query_cache! {
         ))
     }
 
-    fn counted_loop(&self, statement: &StatementRef) -> QueryResult<CountedLoopFact>;
-    key: StatementRef = statement.clone();
-    {
+    pub(in crate::fixups) fn counted_loop(
+        &self,
+        statement: &StatementRef,
+    ) -> QueryResult<CountedLoopFact> {
         let predicate = Predicate::CountedLoop;
         let evidence_site = statement_evidence_site(statement);
-        let function = self.salsa().function_by_item_index(statement.item_index).ok_or_else(|| {
-            Rejection::new(
-                predicate,
-                Some(evidence_site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            )
-        })?;
+        let function = self
+            .salsa()
+            .function_by_item_index(statement.item_index)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(evidence_site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
         let Some(fact) = self.counted_loop_fact(function, &statement.path) else {
             return Err(Rejection::new(
                 predicate,
@@ -4319,19 +4288,23 @@ query_cache! {
         ))
     }
 
-    fn counted_slice_loop(&self, statement: &StatementRef) -> QueryResult<SliceLoopFact>;
-    key: StatementRef = statement.clone();
-    {
+    pub(in crate::fixups) fn counted_slice_loop(
+        &self,
+        statement: &StatementRef,
+    ) -> QueryResult<SliceLoopFact> {
         let predicate = Predicate::CountedSliceLoop;
         let evidence_site = statement_evidence_site(statement);
-        let function = self.salsa().function_by_item_index(statement.item_index).ok_or_else(|| {
-            Rejection::new(
-                predicate,
-                Some(evidence_site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            )
-        })?;
+        let function = self
+            .salsa()
+            .function_by_item_index(statement.item_index)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(evidence_site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
         let Some(fact) = self.counted_slice_loop_fact(function, &statement.path) else {
             return Err(Rejection::new(
                 predicate,
@@ -4341,7 +4314,10 @@ query_cache! {
             ));
         };
         let bindings = self.all_bindings();
-        let Some(index) = bindings.iter().find(|binding| binding.id == fact.index).cloned()
+        let Some(index) = bindings
+            .iter()
+            .find(|binding| binding.id == fact.index)
+            .cloned()
         else {
             return Err(Rejection::new(
                 predicate,
@@ -4350,7 +4326,10 @@ query_cache! {
                 Vec::new(),
             ));
         };
-        let Some(slice) = bindings.iter().find(|binding| binding.id == fact.slice).cloned()
+        let Some(slice) = bindings
+            .iter()
+            .find(|binding| binding.id == fact.slice)
+            .cloned()
         else {
             return Err(Rejection::new(
                 predicate,
@@ -4380,9 +4359,7 @@ query_cache! {
         ))
     }
 
-    fn lazy_singletons(&self) -> QueryResult<LazySingletonSet>;
-    key: () = ();
-    {
+    pub(in crate::fixups) fn lazy_singletons(&self) -> QueryResult<LazySingletonSet> {
         let predicate = Predicate::LazySingletonDomain;
         let mut singletons = Vec::new();
         for singleton in self.lazy_init_singleton_facts() {
@@ -4443,7 +4420,9 @@ query_cache! {
             });
         }
         let site = expression_site(
-            singletons.first().map_or(0, |plan| plan.function_item_index),
+            singletons
+                .first()
+                .map_or(0, |plan| plan.function_item_index),
             &[],
         );
         let evidence = vec![Evidence {
@@ -4456,9 +4435,7 @@ query_cache! {
         Ok(Proof::new(LazySingletonSet { singletons }, evidence))
     }
 
-    fn atomic_promotions(&self) -> QueryResult<AtomicPromotionSet>;
-    key: () = ();
-    {
+    pub(in crate::fixups) fn atomic_promotions(&self) -> QueryResult<AtomicPromotionSet> {
         let predicate = Predicate::AtomicPromotionDomain;
         let mut locals = Vec::new();
         for fact in self.atomic_local_facts() {
@@ -4493,7 +4470,10 @@ query_cache! {
         }
         let evidence = vec![Evidence {
             predicate,
-            site: expression_site(locals.first().map_or(0, |plan| plan.function_item_index), &[]),
+            site: expression_site(
+                locals.first().map_or(0, |plan| plan.function_item_index),
+                &[],
+            ),
             detail: EvidenceDetail::AtomicPromotionDomain {
                 locals: locals.len(),
                 globals: globals.len(),
@@ -4502,9 +4482,10 @@ query_cache! {
         Ok(Proof::new(AtomicPromotionSet { locals, globals }, evidence))
     }
 
-    fn heap_ownership_facts(&self, function: &FunctionRef) -> QueryResult<HeapOwnershipFacts>;
-    key: FunctionId = function.id;
-    {
+    pub(in crate::fixups) fn heap_ownership_facts(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<HeapOwnershipFacts> {
         let predicate = Predicate::HeapOwnershipFacts;
         let site = expression_site(function.item_index, &[]);
         let bindings = self.all_bindings();
@@ -4514,8 +4495,7 @@ query_cache! {
             path: path.clone(),
         };
         let mut owners = Vec::new();
-        for fact in self.heap_ownership_fact_list(function.id)
-        {
+        for fact in self.heap_ownership_fact_list(function.id) {
             let Some(pointer) = binding(fact.pointer) else {
                 return Err(Rejection::new(
                     predicate,
@@ -4641,9 +4621,10 @@ query_cache! {
         Ok(Proof::new(HeapOwnershipFacts { owners }, evidence))
     }
 
-    fn file_ownership_facts(&self, function: &FunctionRef) -> QueryResult<FileOwnershipFacts>;
-    key: FunctionId = function.id;
-    {
+    pub(in crate::fixups) fn file_ownership_facts(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<FileOwnershipFacts> {
         let predicate = Predicate::FileOwnershipFacts;
         let site = expression_site(function.item_index, &[]);
         let bindings = self.all_bindings();
@@ -4714,13 +4695,14 @@ query_cache! {
         Ok(Proof::new(FileOwnershipFacts { owners }, evidence))
     }
 
-    fn ptr_len_slices(&self) -> QueryResult<PtrLenPlanSet>;
-    key: () = ();
-    {
+    pub(in crate::fixups) fn ptr_len_slices(&self) -> QueryResult<PtrLenPlanSet> {
         let predicate = Predicate::PtrLenSlice;
         let slices = self.ptr_len_slice_facts();
-        let plans =
-            ptr_len_plans_from_facts(slices, self.salsa().function_facts(), self.salsa().binding_facts());
+        let plans = ptr_len_plans_from_facts(
+            slices,
+            self.salsa().function_facts(),
+            self.salsa().binding_facts(),
+        );
         let site = expression_site(plans.first().map_or(0, |plan| plan.item_index), &[]);
         if plans.is_empty() {
             return Err(Rejection::new(
@@ -4738,10 +4720,13 @@ query_cache! {
         Ok(Proof::new(PtrLenPlanSet { plans }, evidence))
     }
 
-    #[expect(dead_code, reason = "query API surface not yet wired into a fixup rule")]
-    fn struct_field_ownership_facts(&self) -> QueryResult<Vec<StructFieldOwnershipFact>>;
-    key: () = ();
-    {
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
+    pub(in crate::fixups) fn struct_field_ownership_facts(
+        &self,
+    ) -> QueryResult<Vec<StructFieldOwnershipFact>> {
         let predicate = Predicate::StructFieldOwnership;
         let fields: Vec<StructFieldOwnershipFact> = self
             .struct_field_ownership_fact_list()
@@ -4758,9 +4743,10 @@ query_cache! {
         Ok(Proof::new(fields, evidence))
     }
 
-    fn callee_alloc_summary(&self, function: &FunctionRef) -> QueryResult<CalleeAllocSummaryFact>;
-    key: FunctionId = function.id;
-    {
+    pub(in crate::fixups) fn callee_alloc_summary(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<CalleeAllocSummaryFact> {
         let predicate = Predicate::CalleeAllocSummary;
         let site = expression_site(function.item_index, &[]);
         let Some(summary) = self.callee_alloc_summary_fact(function.id).cloned() else {
@@ -4781,9 +4767,10 @@ query_cache! {
         Ok(Proof::new(summary, evidence))
     }
 
-    fn interprocedural_alloc_eligibility(&self, function: &FunctionRef) -> QueryResult<InterproceduralAllocEligibilityFact>;
-    key: FunctionId = function.id;
-    {
+    pub(in crate::fixups) fn interprocedural_alloc_eligibility(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<InterproceduralAllocEligibilityFact> {
         let predicate = Predicate::InterproceduralAllocEligibility;
         let site = expression_site(function.item_index, &[]);
         let Some(fact) = self.interprocedural_alloc_eligibility_fact(function.id) else {
@@ -4805,9 +4792,10 @@ query_cache! {
         Ok(Proof::new(fact, evidence))
     }
 
-    fn interprocedural_alloc_chain(&self, function: &FunctionRef) -> QueryResult<Vec<FunctionRef>>;
-    key: FunctionId = function.id;
-    {
+    pub(in crate::fixups) fn interprocedural_alloc_chain(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<Vec<FunctionRef>> {
         let predicate = Predicate::InterproceduralAllocEligibility;
         let site = expression_site(function.item_index, &[]);
         let Some(fact) = self.interprocedural_alloc_eligibility_fact(function.id) else {
@@ -4821,7 +4809,10 @@ query_cache! {
         let functions = self.all_functions();
         let mut chain = Vec::new();
         for member in &fact.chain {
-            let Some(member_ref) = functions.iter().find(|candidate| candidate.id == *member).cloned()
+            let Some(member_ref) = functions
+                .iter()
+                .find(|candidate| candidate.id == *member)
+                .cloned()
             else {
                 return Err(Rejection::new(
                     predicate,
@@ -4843,9 +4834,10 @@ query_cache! {
         Ok(Proof::new(chain, evidence))
     }
 
-    fn interprocedural_alloc_callers(&self, function: &FunctionRef) -> QueryResult<Vec<InterproceduralAllocCallerInput>>;
-    key: FunctionId = function.id;
-    {
+    pub(in crate::fixups) fn interprocedural_alloc_callers(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<Vec<InterproceduralAllocCallerInput>> {
         let predicate = Predicate::InterproceduralAllocCallers;
         let site = expression_site(function.item_index, &[]);
         let functions = self.all_functions();
@@ -4891,9 +4883,10 @@ query_cache! {
         Ok(Proof::new(inputs, evidence))
     }
 
-    fn option_box_local_candidates(&self, function: &FunctionRef) -> QueryResult<Vec<OptionBoxLocalPlanInput>>;
-    key: FunctionId = function.id;
-    {
+    pub(in crate::fixups) fn option_box_local_candidates(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<Vec<OptionBoxLocalPlanInput>> {
         let predicate = Predicate::OptionBoxLocalCandidates;
         let site = expression_site(function.item_index, &[]);
         let bindings = self.all_bindings();
@@ -4960,9 +4953,10 @@ query_cache! {
         Ok(Proof::new(inputs, evidence))
     }
 
-    fn option_box_comparisons(&self, function: &FunctionRef) -> QueryResult<Vec<OptionBoxComparisonInput>>;
-    key: FunctionId = function.id;
-    {
+    pub(in crate::fixups) fn option_box_comparisons(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<Vec<OptionBoxComparisonInput>> {
         let predicate = Predicate::OptionBoxComparisons;
         let site = expression_site(function.item_index, &[]);
         let inputs: Vec<OptionBoxComparisonInput> = self
@@ -4988,9 +4982,10 @@ query_cache! {
         Ok(Proof::new(inputs, evidence))
     }
 
-    fn string_param_lift_indices(&self, function: &FunctionRef) -> QueryResult<Vec<usize>>;
-    key: FunctionId = function.id;
-    {
+    pub(in crate::fixups) fn string_param_lift_indices(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<Vec<usize>> {
         let predicate = Predicate::StringParamLift;
         let site = expression_site(function.item_index, &[]);
         let mut indices = self
@@ -5016,9 +5011,10 @@ query_cache! {
         Ok(Proof::new(indices, evidence))
     }
 
-    fn calls_in(&self, function: &FunctionRef) -> QueryResult<Vec<CallRecord>>;
-    key: FunctionId = function.id;
-    {
+    pub(in crate::fixups) fn calls_in(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<Vec<CallRecord>> {
         let (_, evidence) = self.function_snapshot(function)?.into_parts();
         let calls = self
             .all_calls()
@@ -5028,9 +5024,7 @@ query_cache! {
         Ok(Proof::new(calls, evidence))
     }
 
-    fn function_by_name(&self, name: &str) -> QueryResult<FunctionRef>;
-    key: String = name.to_string();
-    {
+    pub(in crate::fixups) fn function_by_name(&self, name: &str) -> QueryResult<FunctionRef> {
         let predicate = Predicate::Function;
         let site = expression_site(0, &[]);
         let function = self
@@ -5055,17 +5049,28 @@ query_cache! {
         Ok(Proof::new(function, evidence))
     }
 
-    fn buffer_pointer_fields(&self, function: &FunctionRef) -> QueryResult<BufferPointerFields>;
-    key: FunctionId = function.id;
-    {
+    pub(in crate::fixups) fn buffer_pointer_fields(
+        &self,
+        function: &FunctionRef,
+    ) -> QueryResult<BufferPointerFields> {
         let predicate = Predicate::BufferPointerFields;
         let site = expression_site(function.item_index, &[]);
         let bindings = self.all_bindings();
-        let fields = self.buffer_pointer_field_facts(function.id).into_iter()
+        let fields = self
+            .buffer_pointer_field_facts(function.id)
+            .into_iter()
             .filter_map(|fact| {
-                let buffer = bindings.iter().find(|binding| binding.id == fact.buffer)?.clone();
-                let array = bindings.iter().find(|binding| binding.id == fact.array)?.clone();
-                let array_len = self.salsa().binding_type(fact.array)
+                let buffer = bindings
+                    .iter()
+                    .find(|binding| binding.id == fact.buffer)?
+                    .clone();
+                let array = bindings
+                    .iter()
+                    .find(|binding| binding.id == fact.array)?
+                    .clone();
+                let array_len = self
+                    .salsa()
+                    .binding_type(fact.array)
                     .and_then(buffer_cursor_array_len_from_rendered_type)?;
                 Some(BufferPointerField {
                     buffer,
@@ -5079,19 +5084,24 @@ query_cache! {
             })
             .collect::<Vec<_>>();
         if fields.is_empty() {
-            return Err(Rejection::new(predicate, Some(site), RejectionReason::MissingEvidence, Vec::new()));
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
         }
         let evidence = vec![Evidence {
             predicate,
             site,
-            detail: EvidenceDetail::BufferPointerFields { fields: fields.len() },
+            detail: EvidenceDetail::BufferPointerFields {
+                fields: fields.len(),
+            },
         }];
         Ok(Proof::new(BufferPointerFields { fields }, evidence))
     }
 
-    fn reference_domain(&self) -> QueryResult<ReferenceDomain>;
-    key: () = ();
-    {
+    pub(in crate::fixups) fn reference_domain(&self) -> QueryResult<ReferenceDomain> {
         let predicate = Predicate::ReferenceDomain;
         let site = expression_site(0, &[]);
         if !self.use_domain_complete {

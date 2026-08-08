@@ -50,7 +50,7 @@ The lowerer is the only stage that knows CIR op semantics. It emits **structured
 possible — favor a new enum variant over a `String` bridge, so the compiler
 enforces exhaustiveness and fixups can pattern-match the shape. If the AST cannot
 express something, add the node to `src/rust_ast.rs`. Fixups follow the same rule
-([writing-a-fixup.md](writing-a-fixup.md)).
+([fixups.md](fixups.md)).
 
 ### fixups
 
@@ -61,19 +61,22 @@ the CIR visitor unless the baseline lowering itself is wrong.
 
 The fixups directory is split by concern:
 
-- **`src/fixups/facts/`** — read-only analysis. `facts::analyze(program)`
-  returns `AnalyzedProgram { program, facts }`, where `facts: FixupFacts`
-  aggregates per-function analyses (definition/use, effects/purity, control
-  flow, casts, loop shapes, pointer/string/heap provenance, and more — one
-  module per concern, `src/fixups/facts/mod.rs` orchestrates them). Fact
+- **`src/fixups/facts/`** — read-only analysis, computed and memoized by
+  salsa (`src/fixups/salsa.rs`'s `SalsaFacts`): one `#[salsa::tracked]` method
+  per per-function analysis (definition/use, effects/purity, control flow,
+  casts, loop shapes, pointer/string/heap provenance, and more — one module
+  per concern, `src/fixups/facts/mod.rs` re-exports them), plus
+  whole-program reductions on `AllFunctions`/`DefinitionsInput`. Fact
   collectors walk the tree with the shared, immutable walkers in
   `src/fixups/facts/walk.rs`. See [facts.md](facts.md) for what each
   collector proves and which pass below consumes it.
-- **`src/fixups/rewrite/`** — the actual AST-to-AST rewrite passes. Each
-  `fixup(...)` takes the AST to rewrite plus `&FixupFacts` (and, for
-  per-function passes, the `Function` fact record) and mutates in place,
-  usually returning whether it changed anything. Rewrites share the mutable,
-  path-aware walkers in `src/fixups/support/walk.rs`.
+- **`src/fixups/query/rules/`** — the actual AST-to-AST rewrite passes,
+  written against the query engine described in [fixups.md](fixups.md). Each
+  rule queries `QueryContext` (a thin adapter over `SalsaFacts`) for the facts
+  and evidence a case needs, then returns a typed `EditSet`; the shared
+  `ItemPlanBuilder`/`Plan` machinery in `src/fixups/query/` applies it.
+  Rewrites that mutate in place share the mutable, path-aware walkers in
+  `src/fixups/support/walk.rs`.
 - **`src/fixups/idents.rs`** — ident-occurrence counting, used to prove a
   binding is single-use or dead before folding or dropping it.
 - **`src/fixups/trace.rs`** — structured debug logging for `fixup-debug`.
@@ -81,12 +84,14 @@ The fixups directory is split by concern:
   `fixup-debug` uses the collecting logger and renders pass summaries,
   rewrite events, snippets, and facts.
 
-`apply` is a straight-line sequence, not a scheduler: it calls `facts::analyze`
-again whenever an earlier rewrite could have invalidated the facts a later pass
-needs, and re-runs several passes through `to_fixpoint_items` or
-`to_fixpoint_items_with_facts` since one fold can expose another. Order matters — see
-[writing-a-fixup.md](writing-a-fixup.md#register-the-pass) for how to place a
-new pass in that sequence.
+`apply` is a straight-line sequence, not a scheduler: after each pass it marks
+the items that pass touched (or marks everything dirty, for passes that can't
+report a precise touched set) on the shared `SalsaFacts` incremental tracker,
+so the next fact-dependent pass's `incremental.resolve(&program)` resyncs only
+what actually needs it. Several passes re-run through
+`to_fixpoint_program_with_facts` since one fold can expose another. Order
+matters — see [fixups.md](fixups.md) for the rule-authoring contract and
+`src/fixups/mod.rs`'s `apply_with_logger` for how passes are sequenced.
 
 ### The pass sequence
 
@@ -245,9 +250,9 @@ A fixup improves already-correct Rust. Examples: `printf -> println!`,
 collapsing retval temps, inlining single-use temps, or recovering `for` loops.
 
 See [adding-features.md](adding-features.md) for the split between baseline
-language work and fixups, and [writing-a-fixup.md](writing-a-fixup.md) for the
-AST-to-AST pass recipe. A fixup must start from generated Rust that already
-passes differential testing.
+language work and fixups, and [fixups.md](fixups.md) for the AST-to-AST pass
+recipe. A fixup must start from generated Rust that already passes
+differential testing.
 
 For `printf -> println!`, only rewrite when the callee is known, the format
 argument is a constant C string, every format specifier is supported, and Rust
