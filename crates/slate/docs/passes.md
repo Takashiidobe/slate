@@ -147,21 +147,23 @@ makes no change; facts-backed runners explicitly recompute facts each round.
 45. `mem_cmp` - recover a `memcmp(a, b, n)` compared against `0` with `==`/`!=` into `a[..n] == b[..n]` (or `a == b` for full-length compares), when the buffers, length, and comparison shape are all provable.
 46. `dead_locals` - remove locals made dead by pointer-copy recovery.
 47. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing.
-48. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops.
-49. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage.
-50. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites.
-51. `zero_init` (`cross_effects = true`) - re-run the zero-init fusion, now allowed to cross intervening effects.
-52. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange`.
-53. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery.
-54. `assert_recovery` - recover `assert!(cond)` from the shim `assert()` macro's lowered `if cond { .. } else { abort(); .. }` guard, preserving the guard's result binding if it's still read elsewhere.
-55. `var_aliases` - inline a `let b = a;` alias into its single later use (including the temp `assert_recovery` may leave behind).
-56. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches.
-57. `libc_exit` - rewrite known direct `libc::exit` calls to `std::process::exit`.
-58. `unused_items` - remove dead top-level struct/record/enum definitions.
-59. `unused_params` - drop a function parameter that's never read and rewrite every direct call site to match.
-60. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function.
-61. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main`.
-62. `prune_unused_definitions` - delete now-dead known libc `extern` declarations and generated support modules.
+48. `array_element_pointer_param_hoist` - when a raw-pointer parameter is only ever bare-dereferenced in its callee and every known call site's argument is provably `&base[i]`/`addr_of_mut!(base[i])`, hoist the parameter to `&T`/`&mut T` and rewrite each call site to pass `&base[i]`/`&mut base[i]` directly, atomically across the function's full call domain.
+49. `dead_locals` - re-run dead-local removal to drop pointer locals left unreferenced by the scalar pointer hoist.
+50. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops.
+51. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage.
+52. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites.
+53. `zero_init` (`cross_effects = true`) - re-run the zero-init fusion, now allowed to cross intervening effects.
+54. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange`.
+55. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery.
+56. `assert_recovery` - recover `assert!(cond)` from the shim `assert()` macro's lowered `if cond { .. } else { abort(); .. }` guard, preserving the guard's result binding if it's still read elsewhere.
+57. `var_aliases` - inline a `let b = a;` alias into its single later use (including the temp `assert_recovery` may leave behind).
+58. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches.
+59. `libc_exit` - rewrite known direct `libc::exit` calls to `std::process::exit`.
+60. `unused_items` - remove dead top-level struct/record/enum definitions.
+61. `unused_params` - drop a function parameter that's never read and rewrite every direct call site to match.
+62. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function.
+63. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main`.
+64. `prune_unused_definitions` - delete now-dead known libc `extern` declarations and generated support modules.
 
 The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
 because later groups can create new opportunities for earlier ones; re-running

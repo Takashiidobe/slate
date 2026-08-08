@@ -364,6 +364,13 @@ impl<'snapshot> ItemCaseContext<'_, 'snapshot> {
         self.query.expr(site)
     }
 
+    pub(in crate::fixups) fn is_bare_pointer_dereference(
+        &self,
+        expression: &ExpressionRef,
+    ) -> bool {
+        self.query.is_bare_pointer_dereference(expression)
+    }
+
     pub(in crate::fixups) fn call_args<const N: usize>(&self, call: &CallRecord) -> [ExprSite; N] {
         assert_eq!(N, call.args.len());
         std::array::from_fn(|index| call.args[index].clone())

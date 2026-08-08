@@ -14,13 +14,13 @@ runs. The command installs no global tool and is safe to rerun.
 
 The ignored output is entirely under `target/`:
 
-| Path | Contents |
-| --- | --- |
-| `target/msvc-tools` | pinned xwin executable and repository-local Cargo home |
-| `target/msvc-xwin-cache` | pinned manifest plus Microsoft download and unpack cache |
-| `target/msvc-sysroot/crt/include` | Microsoft CRT headers |
-| `target/msvc-sysroot/sdk/include/ucrt` | Windows SDK UCRT headers |
-| `target/msvc-sysroot/include-roots.json` | machine-readable target and include roots |
+| Path                                     | Contents                                                 |
+| ---------------------------------------- | -------------------------------------------------------- |
+| `target/msvc-tools`                      | pinned xwin executable and repository-local Cargo home   |
+| `target/msvc-xwin-cache`                 | pinned manifest plus Microsoft download and unpack cache |
+| `target/msvc-sysroot/crt/include`        | Microsoft CRT headers                                    |
+| `target/msvc-sysroot/sdk/include/ucrt`   | Windows SDK UCRT headers                                 |
+| `target/msvc-sysroot/include-roots.json` | machine-readable target and include roots                |
 
 The script removes splatted libraries and the UM, WinRT, and C++/WinRT include
 trees. It finishes by asking the configured CIR Clang to parse `vcruntime.h`

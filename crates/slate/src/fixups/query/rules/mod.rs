@@ -1,5 +1,6 @@
 pub(in crate::fixups) mod anonymous_structs;
 pub(in crate::fixups) mod array_element_pointer_origin;
+pub(in crate::fixups) mod array_element_pointer_param_hoist;
 pub(in crate::fixups) mod assert_recovery;
 pub(in crate::fixups) mod atomic_compare_exchange;
 pub(in crate::fixups) mod atomic_locals;
