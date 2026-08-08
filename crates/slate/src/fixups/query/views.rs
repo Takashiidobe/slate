@@ -11,20 +11,20 @@ use crate::rust_ast::{AtomicType, Expr, IndentStmt, Pattern, Type};
 
 use super::item::StatementRef;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct AtomicPromotionSet {
     pub(super) locals: Vec<AtomicLocalPromotion>,
     pub(super) globals: Vec<AtomicGlobalPromotion>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(super) struct AtomicLocalPromotion {
     pub(super) function_item_index: usize,
     pub(super) name: String,
     pub(super) ty: AtomicType,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(super) struct AtomicGlobalPromotion {
     pub(super) name: String,
     pub(super) ty: AtomicType,
@@ -84,7 +84,7 @@ pub(in crate::fixups) struct ResolvedValue {
     pub(in crate::fixups) purity: Option<Purity>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct BindingRef<'db> {
     pub(in crate::fixups) item_index: usize,
     pub(in crate::fixups) function_name: String,
@@ -104,13 +104,13 @@ impl<'db> BindingRef<'db> {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) enum BindingCategory {
     Parameter { index: usize },
     Local,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct FunctionRef<'db> {
     pub(in crate::fixups) item_index: usize,
     pub(in crate::fixups) name: String,
@@ -284,7 +284,7 @@ pub(in crate::fixups) struct ExprSite {
     pub(super) fact_path: AstPath,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
 pub(in crate::fixups) enum DefinitionLocation {
     Item(usize),
     ExternDecl {
@@ -325,7 +325,7 @@ pub(in crate::fixups) struct DefinitionSelector {
     pub(in crate::fixups) name: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct DefinitionSite {
     pub(in crate::fixups) location: DefinitionLocation,
     pub(in crate::fixups) kind: DefinitionKind,
@@ -349,13 +349,13 @@ pub(in crate::fixups) struct DefinitionGroupUsers {
     pub(in crate::fixups) site: ExprSite,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct ItemReferences {
     pub(in crate::fixups) item_index: usize,
     pub(in crate::fixups) symbols: BTreeSet<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct ReferenceDomain {
     pub(in crate::fixups) definitions: Vec<DefinitionSite>,
     pub(in crate::fixups) items: Vec<ItemReferences>,
@@ -406,7 +406,7 @@ pub(in crate::fixups) enum NulPosition {
     ByteLength,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct ByteSource<'snapshot> {
     pub(in crate::fixups) site: ExprSite,
     pub(in crate::fixups) name: String,
@@ -417,7 +417,7 @@ pub(in crate::fixups) struct ByteSource<'snapshot> {
     pub(super) snapshot: PhantomData<&'snapshot ()>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct ByteView<'snapshot> {
     pub(in crate::fixups) source: ByteSource<'snapshot>,
     pub(in crate::fixups) extent: ByteExtent,
@@ -442,12 +442,12 @@ pub(in crate::fixups) struct ValueSite {
     pub(in crate::fixups) path: AstPath,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct LazySingletonSet {
     pub(super) singletons: Vec<LazySingletonPlan>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(super) struct LazySingletonPlan {
     pub(super) function_item_index: usize,
     pub(super) payload_item_index: usize,
@@ -458,7 +458,7 @@ pub(super) struct LazySingletonPlan {
     pub(super) flag_name: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct HeapOwnershipFacts<'db> {
     pub(in crate::fixups) owners: Vec<HeapOwnership<'db>>,
 }
@@ -470,7 +470,7 @@ pub(in crate::fixups) struct ArrayElementPointerOrigin {
     pub(in crate::fixups) index: Expr,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct HeapOwnership<'db> {
     pub(in crate::fixups) pointer: BindingRef<'db>,
     pub(in crate::fixups) allocation_temp: BindingRef<'db>,
@@ -490,13 +490,13 @@ pub(in crate::fixups) struct HeapOwnership<'db> {
     pub(in crate::fixups) reallocations: Vec<HeapReallocation<'db>>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct HeapUse {
     pub(in crate::fixups) statement: StatementRef,
     pub(in crate::fixups) kind: HeapUseKind,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct HeapReallocation<'db> {
     pub(in crate::fixups) source_temp: Option<BindingRef<'db>>,
     pub(in crate::fixups) allocation_temp: BindingRef<'db>,
@@ -508,12 +508,12 @@ pub(in crate::fixups) struct HeapReallocation<'db> {
     pub(in crate::fixups) resize: HeapResizeKind,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct PtrLenPlanSet {
     pub(super) plans: Vec<PtrLenPlan>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(super) struct PtrLenPlan {
     pub(super) item_index: usize,
     pub(super) function_name: String,
@@ -529,7 +529,7 @@ pub(in crate::fixups) enum Phase {
     Late,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct BufferPointerField<'db> {
     pub(in crate::fixups) buffer: BindingRef<'db>,
     pub(in crate::fixups) array: BindingRef<'db>,
@@ -537,17 +537,17 @@ pub(in crate::fixups) struct BufferPointerField<'db> {
     pub(in crate::fixups) array_len: usize,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct BufferPointerFields<'db> {
     pub(in crate::fixups) fields: Vec<BufferPointerField<'db>>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct FileOwnershipFacts<'db> {
     pub(in crate::fixups) owners: Vec<FileOwnership<'db>>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct FileOwnership<'db> {
     pub(in crate::fixups) handle: BindingRef<'db>,
     pub(in crate::fixups) handle_statement: StatementRef,
@@ -557,13 +557,13 @@ pub(in crate::fixups) struct FileOwnership<'db> {
     pub(in crate::fixups) uses: Vec<FileUse>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct FileUse {
     pub(in crate::fixups) statement: StatementRef,
     pub(in crate::fixups) kind: FileUseKind,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct SliceLoopFact<'db> {
     pub(in crate::fixups) index: BindingRef<'db>,
     pub(in crate::fixups) slice: BindingRef<'db>,

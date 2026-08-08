@@ -12,7 +12,7 @@ use super::{
 
 pub(in crate::fixups) type QueryResult<T> = Result<Proof<T>, Rejection>;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct Proof<T> {
     pub(in crate::fixups) value: T,
     pub(in crate::fixups) evidence: Vec<Evidence>,
@@ -350,7 +350,7 @@ pub(in crate::fixups) enum EvidenceDetail {
     },
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct Rejection {
     pub(in crate::fixups) predicate: Predicate,
     pub(in crate::fixups) site: Option<ExprSite>,
