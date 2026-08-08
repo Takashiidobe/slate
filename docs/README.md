@@ -98,3 +98,7 @@ Target selection can be shared across the CIR and AST Clang invocations with
 
 The external pinned Microsoft CRT and UCRT header oracle used for MSVC work is
 bootstrapped under `target/`; see [msvc-sysroot.md](msvc-sysroot.md).
+
+The macOS ABI oracle uses an externally installed SDK plus pinned Apple public
+Libc and XNU sources under `target/`; see
+[macos-sdk-oracle.md](macos-sdk-oracle.md).
