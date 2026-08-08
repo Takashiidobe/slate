@@ -9,8 +9,8 @@ use crate::fixups::facts::{
     HeapOwnershipFact, InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact,
     LazyInitSingletonFact, LoopFact, NullCheckDominanceFact, OptionBoxComparison,
     OptionBoxLocalCandidate, PlaceFact, PointerComparisonFact, PointerOptionSafetyFact,
-    PtrLenSliceFact, SignatureId, StaticDeclFact, StringParamLiftFact, StructFieldOwnershipFact,
-    ValueFact,
+    PrintfCallFact, PtrLenSliceFact, SignatureId, StaticDeclFact, StringParamLiftFact,
+    StructFieldOwnershipFact, ValueFact,
 };
 use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{EnumDef, Expr, FnDef, Item, Program, RecordDef, StructDef};
@@ -282,6 +282,17 @@ impl FunctionInput {
             &self.body(db).body,
             &local_facts,
         )
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn printf_calls(self, db: &dyn FixupDb) -> Vec<PrintfCallFact> {
+        let strings = self.strings(db);
+        let local_facts = FixupFacts {
+            string_buffers: strings.buffers.clone(),
+            string_pointer_views: strings.pointer_views.clone(),
+            ..FixupFacts::default()
+        };
+        facts::printf::collect_for_function(*self.function(db), self.body(db), &local_facts)
     }
 
     #[salsa::tracked(returns(ref))]
@@ -966,6 +977,13 @@ impl SalsaFacts {
             return &[];
         };
         input.file_ownership(&self.db)
+    }
+
+    pub(in crate::fixups) fn printf_calls(&self, function: FunctionId) -> &[PrintfCallFact] {
+        let Some(&input) = self.functions.get(&function) else {
+            return &[];
+        };
+        input.printf_calls(&self.db)
     }
 
     pub(in crate::fixups) fn callee_alloc_summary(

@@ -568,6 +568,17 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
+    fn printf_call_fact(&self, function: FunctionId, path: &AstPath) -> Option<PrintfCallFact> {
+        match self.salsa {
+            Some(salsa) => salsa
+                .printf_calls(function)
+                .iter()
+                .find(|fact| &fact.site.path == path)
+                .cloned(),
+            None => self.facts.printf_call(function, path).cloned(),
+        }
+    }
+
     fn callee_alloc_summary_fact(&self, function: FunctionId) -> Option<&CalleeAllocSummaryFact> {
         match self.salsa {
             Some(salsa) => salsa.callee_alloc_summary(function),
@@ -2545,9 +2556,8 @@ impl<'snapshot> QueryContext<'snapshot> {
             ));
         };
         let Some(fact) = self
-            .facts
-            .printf_call(function, &site.fact_path)
-            .or_else(|| self.facts.printf_call(function, &site.path))
+            .printf_call_fact(function, &site.fact_path)
+            .or_else(|| self.printf_call_fact(function, &site.path))
         else {
             return Err(Rejection::new(
                 predicate,
@@ -2564,7 +2574,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 known_format: fact.format.is_some(),
             },
         }];
-        Ok(Proof::new(fact.clone(), evidence))
+        Ok(Proof::new(fact, evidence))
     }
 
     pub(in crate::fixups) fn has_printf_extern(&self) -> bool {

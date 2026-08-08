@@ -4,12 +4,13 @@ use crate::fixups::facts::{
     Site, StringBufferProvenance, StringBufferRejection,
 };
 use crate::function_identity::{Known, known_call};
-use crate::rust_ast::{Block, Expr, FnParam, IndentStmt, Item, Program, RustValue, Stmt, Type};
+use crate::rust_ast::{
+    Block, Expr, FnDef, FnParam, IndentStmt, Item, Program, RustValue, Stmt, Type,
+};
 use ordered_float::OrderedFloat;
 use std::collections::BTreeMap;
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.printf_calls.clear();
     let mut calls = Vec::new();
     for (item_index, item) in program.items.iter().enumerate() {
         let Item::Fn(f) = item else {
@@ -18,17 +19,27 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut env = PrintfEnv::from_params(&f.params);
-        body(
-            function,
-            &f.body,
-            &mut env,
-            &mut Vec::new(),
-            &mut calls,
-            facts,
-        );
+        calls.extend(collect_for_function(function, f, facts));
     }
     facts.printf_calls = calls;
+}
+
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &FixupFacts,
+) -> Vec<PrintfCallFact> {
+    let mut calls = Vec::new();
+    let mut env = PrintfEnv::from_params(&f.params);
+    body(
+        function,
+        &f.body,
+        &mut env,
+        &mut Vec::new(),
+        &mut calls,
+        facts,
+    );
+    calls
 }
 
 fn body(
