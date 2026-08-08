@@ -1053,16 +1053,6 @@ pub(in crate::fixups) struct RawLoop {
     path: AstPath,
 }
 
-pub(in crate::fixups) fn erase_binding(fact: &BindingFact<'_>) -> RawBinding {
-    RawBinding {
-        id: fact.id.as_id(),
-        function: fact.function.as_id(),
-        name: fact.name.clone(),
-        kind: fact.kind,
-        path: fact.path.clone(),
-    }
-}
-
 pub(in crate::fixups) fn hydrate_binding<'db>(raw: &RawBinding) -> BindingFact<'db> {
     BindingFact {
         id: BindingId::from_id(raw.id),
@@ -1073,28 +1063,11 @@ pub(in crate::fixups) fn hydrate_binding<'db>(raw: &RawBinding) -> BindingFact<'
     }
 }
 
-pub(in crate::fixups) fn erase_binding_type(fact: &BindingTypeFact<'_>) -> RawBindingType {
-    RawBindingType {
-        binding: fact.binding.as_id(),
-        ty: fact.ty.clone(),
-        rendered: fact.rendered.clone(),
-    }
-}
-
 pub(in crate::fixups) fn hydrate_binding_type<'db>(raw: &RawBindingType) -> BindingTypeFact<'db> {
     BindingTypeFact {
         binding: BindingId::from_id(raw.binding),
         ty: raw.ty.clone(),
         rendered: raw.rendered.clone(),
-    }
-}
-
-pub(in crate::fixups) fn erase_loop(fact: &LoopFact<'_>) -> RawLoop {
-    RawLoop {
-        id: fact.id.as_id(),
-        function: fact.function.as_id(),
-        kind: fact.kind,
-        path: fact.path.clone(),
     }
 }
 
@@ -1107,7 +1080,7 @@ pub(in crate::fixups) fn hydrate_loop<'db>(raw: &RawLoop) -> LoopFact<'db> {
     }
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub(in crate::fixups) struct BaseWalk {
     functions: Vec<RawFunction>,
     bindings: Vec<RawBinding>,
