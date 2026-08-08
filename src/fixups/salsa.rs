@@ -1,12 +1,12 @@
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use crate::fixups::facts::{
-    self, AnonymousStructFact, ArrayElementPointerOriginFact, AstPath, AtomicGlobalFact,
-    AtomicLocalFact, BindingFact, BindingId, BindingTypeFact, BorrowAliasFact, BorrowAliasReason,
-    BorrowAliasState, BufferPointerFieldFact, CStringLiteralFact, CallArgFact, CallSignatureFact,
-    CalleeAllocSummaryFact, CallsiteFact, CastFact, ControlFlowFact, ControlFlowSubject,
-    CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject,
-    FileOwnershipFact, FixupFacts, FunctionFact, FunctionId, HeapOwnershipFact,
+    self, AnonymousStructFact, ArrayElementPointerOriginFact, AsciiNumericStringFact, AstPath,
+    AtomicGlobalFact, AtomicLocalFact, BindingFact, BindingId, BindingTypeFact, BorrowAliasFact,
+    BorrowAliasReason, BorrowAliasState, BufferPointerFieldFact, CStringLiteralFact, CallArgFact,
+    CallSignatureFact, CalleeAllocSummaryFact, CallsiteFact, CastFact, ControlFlowFact,
+    ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
+    EffectSubject, FileOwnershipFact, FixupFacts, FunctionFact, FunctionId, HeapOwnershipFact,
     InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LazyInitSingletonFact,
     LoopFact, NullCheckDominanceFact, OptionBoxComparison, OptionBoxLocalCandidate, PlaceFact,
     PointerComparisonFact, PointerOptionSafetyFact, PrintfCallFact, PtrLenSliceFact, SignatureId,
@@ -277,6 +277,11 @@ impl FunctionInput {
             &strings.buffers,
             &strings.pointer_views,
         )
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn ascii_numeric_strings(self, db: &dyn FixupDb) -> Vec<AsciiNumericStringFact> {
+        facts::strings::collect_ascii_numeric_strings(&self.strings(db).buffers)
     }
 
     #[salsa::tracked(returns(ref))]
@@ -993,6 +998,21 @@ impl SalsaFacts {
             .map(|fact| &fact.reasons)
     }
 
+    pub(in crate::fixups) fn binding_requires_mut_by_binding(&self, binding: BindingId) -> bool {
+        self.facts.binding_requires_mut(binding)
+    }
+
+    pub(in crate::fixups) fn borrow_alias_reasons_by_binding(
+        &self,
+        binding: BindingId,
+    ) -> Option<BTreeSet<BorrowAliasReason>> {
+        self.facts
+            .borrow_alias
+            .iter()
+            .find(|fact| fact.binding == binding)
+            .map(|fact| fact.reasons.clone())
+    }
+
     pub(in crate::fixups) fn binding_requires_mut(
         &self,
         function: FunctionId,
@@ -1240,6 +1260,116 @@ impl SalsaFacts {
             return &[];
         };
         self.all_functions.atomic_globals(&self.db, definitions)
+    }
+
+    pub(in crate::fixups) fn function_by_item_index(
+        &self,
+        item_index: usize,
+    ) -> Option<FunctionId> {
+        self.facts.function_by_item_index(item_index)
+    }
+
+    pub(in crate::fixups) fn function_item_index(&self, function: FunctionId) -> Option<usize> {
+        self.facts.function_item_index(function)
+    }
+
+    pub(in crate::fixups) fn function_name(&self, function: FunctionId) -> Option<&str> {
+        self.facts.function_name(function)
+    }
+
+    pub(in crate::fixups) fn function_by_name(&self, name: &str) -> Option<FunctionId> {
+        self.facts
+            .functions
+            .iter()
+            .find(|fact| fact.name == name)
+            .map(|fact| fact.id)
+    }
+
+    pub(in crate::fixups) fn function_facts(&self) -> &[FunctionFact] {
+        &self.facts.functions
+    }
+
+    pub(in crate::fixups) fn binding_facts(&self) -> &[BindingFact] {
+        &self.facts.bindings
+    }
+
+    pub(in crate::fixups) fn binding_by_local_path(
+        &self,
+        function: FunctionId,
+        name: &str,
+        path: &AstPath,
+    ) -> Option<BindingId> {
+        self.facts.binding_by_local_path(function, name, path)
+    }
+
+    pub(in crate::fixups) fn binding_type(&self, binding: BindingId) -> Option<&str> {
+        self.facts.binding_type(binding)
+    }
+
+    pub(in crate::fixups) fn binding_type_ast(
+        &self,
+        binding: BindingId,
+    ) -> Option<&crate::rust_ast::Type> {
+        self.facts.binding_type_ast(binding)
+    }
+
+    pub(in crate::fixups) fn binding_name(&self, binding: BindingId) -> Option<&str> {
+        self.facts.binding_name(binding)
+    }
+
+    pub(in crate::fixups) fn bindings_read_under(
+        &self,
+        function: FunctionId,
+        name: &str,
+        path: &AstPath,
+    ) -> Vec<BindingId> {
+        self.facts.bindings_read_under(function, name, path)
+    }
+
+    pub(in crate::fixups) fn bindings_written_under(
+        &self,
+        function: FunctionId,
+        name: &str,
+        path: &AstPath,
+    ) -> Vec<BindingId> {
+        self.facts.bindings_written_under(function, name, path)
+    }
+
+    pub(in crate::fixups) fn binding_names_and_types(
+        &self,
+        function: FunctionId,
+    ) -> Vec<(String, String)> {
+        let Some(&input) = self.functions.get(&function) else {
+            return Vec::new();
+        };
+        input
+            .bindings(&self.db)
+            .iter()
+            .filter_map(|binding| {
+                let rendered = facts::binding_type(input.binding_types(&self.db), binding.id)?;
+                Some((binding.name.clone(), rendered.to_string()))
+            })
+            .collect()
+    }
+
+    pub(in crate::fixups) fn ascii_numeric_string(
+        &self,
+        binding: BindingId,
+    ) -> Option<&AsciiNumericStringFact> {
+        self.functions.values().find_map(|&input| {
+            input
+                .ascii_numeric_strings(&self.db)
+                .iter()
+                .find(|fact| fact.binding == binding)
+        })
+    }
+
+    pub(in crate::fixups) fn string_pointer_view_at(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&facts::StringPointerViewFact> {
+        facts::string_pointer_view(self.string_pointer_views(function), function, path)
     }
 }
 

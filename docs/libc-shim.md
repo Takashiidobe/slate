@@ -13,6 +13,26 @@ to our include dir). We used to compile with clang's provided libc
   across targets, say `fenv_t` which controls the floating point
   environment and link to your current stdlib:
 
+## Target feature contract
+
+Slate parses `SLATE_TARGET`, or its own Cargo build target when that variable is
+unset, and defines exactly one macro in each family before Clang reads the shim:
+
+| Family              | Examples                                                |
+| ------------------- | ------------------------------------------------------- |
+| `__SLATE_ARCH_`     | `X86`, `X86_64`, `ARM`, `AARCH64`, `RISCV32`, `RISCV64` |
+| `__SLATE_VENDOR_`   | `UNKNOWN`, `PC`, `APPLE`                                |
+| `__SLATE_KERNEL_`   | `LINUX`, `WINDOWS`, `DARWIN`                            |
+| `__SLATE_LIBC_`     | `GLIBC`, `MUSL`, `MINGW`, `MSVC`, `GENERIC`             |
+| `__SLATE_OBJ_`      | `ELF`, `COFF`, `MACHO`                                  |
+| `__SLATE_WORDSIZE_` | `32`, `64`                                              |
+| `__SLATE_ENDIAN_`   | `LITTLE`, `BIG`                                         |
+
+`features.h` rejects missing, conflicting, and unsupported selections. The
+target environment and libc are not interchangeable: a GNU Linux target maps
+to `__SLATE_LIBC_GLIBC`, while a GNU Windows target maps to
+`__SLATE_LIBC_MINGW`.
+
 For safety across libcs:
 
 `strerror_r` is defined as such for our libc:

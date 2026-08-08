@@ -57,7 +57,7 @@ are whatever it actually read, not a hand-maintained list.
 - **Real map/reduce for interprocedural facts.** `heap_ownership`-shaped
   families become "recompute this function's local contribution; the
   program-wide reduction only re-touches functions whose local contribution's
-  *value* changed" — not "rerun over everything," which is the honest
+  _value_ changed" — not "rerun over everything," which is the honest
   description of what `Everything`/full `facts::analyze` does today.
 - **No `mark_everything_dirty` cliff at legacy-pass boundaries.** Because
   salsa resolves lazily at read time, a legacy pass that can't report a
@@ -182,7 +182,7 @@ fn heap_ownership_program(db: &dyn FixupDb) -> Arc<Vec<HeapOwnershipFact>> {
 ```
 
 Editing one function only recomputes that function's `local_*`; the reduce
-step only re-touches functions whose `local_*` *value* changed — provided the
+step only re-touches functions whose `local_*` _value_ changed — provided the
 per-function contribution type implements `Eq` so salsa can backdate it. Most
 `FixupFacts` structs already derive `PartialEq, Eq` (spot-checked
 `facts/mod.rs`); a few don't (e.g. `BindingTypeFact` at `facts/mod.rs:129`,
@@ -298,7 +298,7 @@ salsa-backed flow — mirroring `04q.75`'s own closing acceptance criterion
   not a verified audit — confirm each collector's actual cross-function
   dependencies (or lack of them) when its migration child is picked up, the
   same way `slate-kby1.1` already flags `def_use`/`effects` specifically for
-  being *provably* bucket-1.
+  being _provably_ bucket-1.
 
 ## Suggested beads children under `slate-kby1`
 

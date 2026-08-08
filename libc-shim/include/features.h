@@ -3,16 +3,44 @@
 
 #define _SLATE_LIBC 1
 
-#if defined(__SLATE_ARCH_UNKNOWN)
-#error "Slate only supports x86_64, x86_32, aarch64, arm32, riscv64, riscv32."
+#if defined(__SLATE_ARCH_X86_64) + defined(__SLATE_ARCH_X86) +                 \
+        defined(__SLATE_ARCH_AARCH64) + defined(__SLATE_ARCH_ARM) +            \
+        defined(__SLATE_ARCH_RISCV64) + defined(__SLATE_ARCH_RISCV32) !=       \
+    1
+#error "Slate requires one supported target architecture."
 #endif
 
-#if !defined(__SLATE_LITTLE_ENDIAN) && !defined(__SLATE_BIG_ENDIAN)
-#error "Slate must know to compile for big endian or little endian."
+#if defined(__SLATE_VENDOR_UNKNOWN) + defined(__SLATE_VENDOR_PC) +             \
+        defined(__SLATE_VENDOR_APPLE) !=                                       \
+    1
+#error "Slate requires one supported target vendor."
 #endif
 
-#if !defined(__SLATE_LIBC_MUSL) && !defined(__SLATE_LIBC_GNU)
-#define __SLATE_LIBC_GENERIC
+#if defined(__SLATE_KERNEL_LINUX) + defined(__SLATE_KERNEL_WINDOWS) +          \
+        defined(__SLATE_KERNEL_DARWIN) !=                                      \
+    1
+#error "Slate requires one supported target kernel."
+#endif
+
+#if defined(__SLATE_LIBC_GLIBC) + defined(__SLATE_LIBC_MUSL) +                 \
+        defined(__SLATE_LIBC_MINGW) + defined(__SLATE_LIBC_MSVC) +             \
+        defined(__SLATE_LIBC_GENERIC) !=                                       \
+    1
+#error "Slate requires one supported target libc."
+#endif
+
+#if defined(__SLATE_OBJ_ELF) + defined(__SLATE_OBJ_COFF) +                     \
+        defined(__SLATE_OBJ_MACHO) !=                                          \
+    1
+#error "Slate requires one supported target object format."
+#endif
+
+#if defined(__SLATE_WORDSIZE_64) + defined(__SLATE_WORDSIZE_32) != 1
+#error "Slate requires one supported target word size."
+#endif
+
+#if defined(__SLATE_ENDIAN_LITTLE) + defined(__SLATE_ENDIAN_BIG) != 1
+#error "Slate requires one target byte order."
 #endif
 
 #if defined(_ALL_SOURCE) && !defined(_GNU_SOURCE)

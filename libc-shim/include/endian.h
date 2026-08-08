@@ -32,7 +32,7 @@
 
 /* Fall back to slate-provided or default little-endian if still unset. */
 #ifndef __BYTE_ORDER
-#if defined(__SLATE_BIG_ENDIAN) || defined(__BIG_ENDIAN__)
+#if defined(__SLATE_ENDIAN_BIG) || defined(__BIG_ENDIAN__)
 #define __BYTE_ORDER __BIG_ENDIAN
 #else
 #define __BYTE_ORDER __LITTLE_ENDIAN

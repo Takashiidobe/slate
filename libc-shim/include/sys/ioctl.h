@@ -111,7 +111,7 @@
 #define SIOCDEVPRIVATE   0x89F0
 #define SIOCPROTOPRIVATE 0x89E0
 
-#if defined(__SLATE_LIBC_GNU)
+#if defined(__SLATE_LIBC_GLIBC)
 int ioctl(int, unsigned long, ...);
 #elif defined(__SLATE_LIBC_MUSL)
 int ioctl(int, int, ...);

@@ -1,0 +1,82 @@
+stages:
+  - lint
+  - test
+  - doc
+
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/.cargo
+  RUSTFLAGS: "-D warnings"
+
+cache:
+  paths:
+    - .cargo/
+    - target/
+
+# Use the latest stable Rust as the base image
+.default-rust: &default-rust
+  image: rust:latest
+  before_script:
+    - rustc --version
+    - cargo --version
+
+# Formatting check
+rustfmt:
+  stage: lint
+  <<: *default-rust
+  script:
+    - rustup component add rustfmt
+    - cargo fmt -- --check
+  allow_failure: false
+
+# Clippy lints
+clippy:
+  stage: lint
+  <<: *default-rust
+  script:
+    - rustup component add clippy
+    - cargo clippy --all-targets --all-features
+  allow_failure: false
+
+# Test with default features (std enabled)
+test-default:
+  stage: test
+  <<: *default-rust
+  script:
+    - cargo test --verbose
+
+# Test with serde feature only
+test-serde:
+  stage: test
+  <<: *default-rust
+  script:
+    - cargo test --verbose --features serde
+
+# Test with all features (std + serde)
+test-all-features:
+  stage: test
+  <<: *default-rust
+  script:
+    - cargo test --verbose --all-features
+
+# Nightly test
+nightly:
+  stage: test
+  image: rustlang/rust:nightly
+  allow_failure: true
+  script:
+    - cargo test --verbose --all-features
+  cache:
+    paths:
+      - .cargo/
+      - target/
+
+# Build documentation
+docs:
+  stage: doc
+  <<: *default-rust
+  script:
+    - cargo doc --no-deps --all-features
+  artifacts:
+    paths:
+      - target/doc/
+    expire_in: 1 week

@@ -51,6 +51,15 @@ impl Architecture {
             Architecture::Riscv32 => "riscv32",
         }
     }
+
+    fn wordsize_define(&self) -> &'static str {
+        match self {
+            Architecture::X86 | Architecture::Arm | Architecture::Riscv32 => "__SLATE_WORDSIZE_32",
+            Architecture::X86_64 | Architecture::Aarch64 | Architecture::Riscv64 => {
+                "__SLATE_WORDSIZE_64"
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -86,12 +95,20 @@ impl TestConfig {
         let mut defines = vec![
             "-D_SLATE_LIBC".to_string(),
             format!("-D{}", self.arch.arch_define()),
-            "-D__SLATE_LITTLE_ENDIAN".to_string(),
+            "-D__SLATE_VENDOR_UNKNOWN".to_string(),
+            "-D__SLATE_KERNEL_LINUX".to_string(),
+            "-D__SLATE_OBJ_ELF".to_string(),
+            format!("-D{}", self.arch.wordsize_define()),
+            "-D__SLATE_ENDIAN_LITTLE".to_string(),
         ];
 
-        if matches!(self.libc, LibcVariant::Glibc) {
-            defines.push("-D__SLATE_LIBC_GLIBC".to_string());
-        }
+        defines.push(
+            match self.libc {
+                LibcVariant::Musl => "-D__SLATE_LIBC_MUSL",
+                LibcVariant::Glibc => "-D__SLATE_LIBC_GLIBC",
+            }
+            .to_string(),
+        );
 
         defines
     }

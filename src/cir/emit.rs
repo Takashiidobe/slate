@@ -14,6 +14,7 @@
 use std::collections::BTreeMap;
 use std::path::Path;
 use std::process::{Command, Stdio};
+use triplers::{ArchPart, Canonicalizable, Env, Kernel, Triple, Vendor};
 
 fn home() -> String {
     std::env::var("HOME").expect("HOME not set")
@@ -103,62 +104,156 @@ fn system_fallback_include_dirs() -> Vec<String> {
     .clone()
 }
 
-pub fn target_args() -> Vec<String> {
-    let mut args = libc_shim_args();
+#[derive(Clone)]
+struct TargetFeatures {
+    names: Vec<String>,
+}
 
-    let slate_target = std::env::var("SLATE_TARGET")
+impl TargetFeatures {
+    fn define_args(&self) -> Vec<String> {
+        self.names
+            .iter()
+            .map(|name| format!("-D{name}=1"))
+            .collect()
+    }
+
+    fn undef_args(&self) -> Vec<String> {
+        self.names.iter().map(|name| format!("-U{name}")).collect()
+    }
+}
+
+fn feature_suffix(value: &str) -> String {
+    value
+        .chars()
+        .map(|c| {
+            if c.is_ascii_alphanumeric() {
+                c.to_ascii_uppercase()
+            } else {
+                '_'
+            }
+        })
+        .collect()
+}
+
+fn arch_name(arch: ArchPart) -> Result<&'static str, String> {
+    match arch {
+        ArchPart::X86(_) => Ok("x86"),
+        ArchPart::Amd64(_) => Ok("x86_64"),
+        ArchPart::Arm(_) => Ok("arm"),
+        ArchPart::Aarch64(_) => Ok("aarch64"),
+        ArchPart::Riscv(riscv) => Ok(riscv.canonicalize()),
+        _ => Err(format!("unsupported Slate target architecture {arch:?}")),
+    }
+}
+
+fn libc_name(triple: &Triple) -> &'static str {
+    let env = triple.env.map(|env| env.canonicalize());
+    if triple.kernel == Kernel::Win32 {
+        return match triple.env {
+            Some(Env::MSVC) => "msvc",
+            Some(Env::GNU) | Some(Env::LLVM) => "mingw",
+            _ => "generic",
+        };
+    }
+    if triple.kernel == Kernel::Linux && env.is_some_and(|env| env.starts_with("gnu")) {
+        return "glibc";
+    }
+    if env.is_some_and(|env| env.starts_with("musl")) {
+        return "musl";
+    }
+    match triple.env {
+        Some(Env::Android) => "bionic",
+        Some(Env::Mlibc) => "mlibc",
+        _ => "generic",
+    }
+}
+
+fn vendor_name(vendor: Option<Vendor>) -> Result<&'static str, String> {
+    match vendor {
+        None | Some(Vendor::Unknown) => Ok("unknown"),
+        Some(Vendor::PC) => Ok("pc"),
+        Some(Vendor::Apple) => Ok("apple"),
+        Some(vendor) => Err(format!("unsupported Slate target vendor {vendor:?}")),
+    }
+}
+
+fn kernel_name(kernel: Kernel) -> Result<&'static str, String> {
+    match kernel {
+        Kernel::Linux | Kernel::Win32 | Kernel::Darwin => Ok(kernel.canonicalize()),
+        _ => Err(format!("unsupported Slate target kernel {kernel:?}")),
+    }
+}
+
+fn object_name(triple: &Triple) -> &'static str {
+    if let Some(obj) = triple.obj {
+        return obj.canonicalize();
+    }
+    match triple.kernel {
+        Kernel::Win32 => "coff",
+        Kernel::Darwin
+        | Kernel::MacOSX
+        | Kernel::IOS
+        | Kernel::TvOS
+        | Kernel::WatchOS
+        | Kernel::VisionOS
+        | Kernel::XROS => "macho",
+        Kernel::WASI | Kernel::WASIp1 | Kernel::WASIp2 | Kernel::WASIp3 => "wasm",
+        _ => "elf",
+    }
+}
+
+fn target_features(target: &str) -> Result<TargetFeatures, String> {
+    let triple = Triple::parse(target).map_err(|e| format!("invalid target `{target}`: {e}"))?;
+    let arch = arch_name(triple.arch)?;
+    let vendor = vendor_name(triple.vendor)?;
+    let kernel = kernel_name(triple.kernel)?;
+    let libc = libc_name(&triple);
+    let obj = object_name(&triple);
+    let wordsize = triple.bitness().to_string();
+    let endian = "little";
+    let values = [
+        ("ARCH", arch),
+        ("VENDOR", vendor),
+        ("KERNEL", kernel),
+        ("LIBC", libc),
+        ("OBJ", obj),
+        ("WORDSIZE", &wordsize),
+        ("ENDIAN", endian),
+    ];
+    Ok(TargetFeatures {
+        names: values
+            .into_iter()
+            .map(|(family, value)| format!("__SLATE_{family}_{}", feature_suffix(value)))
+            .collect(),
+    })
+}
+
+fn active_target() -> String {
+    std::env::var("SLATE_TARGET")
         .ok()
-        .filter(|t| !t.trim().is_empty());
+        .filter(|target| !target.trim().is_empty())
+        .unwrap_or_else(|| env!("SLATE_BUILD_TARGET").to_string())
+}
 
-    let libc = match &slate_target {
-        Some(t) if t.contains("musl") => "musl",
-        Some(t) if t.contains("gnu") => "gnu",
-        _ => env!("SLATE_TARGET_ENV"),
-    };
+pub fn target_override_args(target: &str) -> Result<Vec<String>, String> {
+    let mut args = target_features(&active_target())?.undef_args();
+    args.extend(target_features(target)?.define_args());
+    args.push("-target".into());
+    args.push(target.into());
+    Ok(args)
+}
 
-    let arch = match &slate_target {
-        Some(t) if t.contains("x86_64") => "x86_64",
-        Some(t) if t.contains("aarch64") => "aarch64",
-        Some(_) => "unknown",
-        None => match env!("SLATE_TARGET_ARCH") {
-            "x86_64" => "x86_64",
-            "aarch64" => "aarch64",
-            _ => "unknown",
-        },
-    };
-
-    // need to grab big endian targets from an explicit SLATE_TARGET string later
-    if slate_target.is_none() && env!("SLATE_TARGET_ENDIAN") == "big" {
-        args.push("-D__SLATE_BIG_ENDIAN=1".into());
-    } else {
-        args.push("-D__SLATE_LITTLE_ENDIAN=1".into());
-    }
-
-    if libc == "musl" {
-        args.push("-D__SLATE_LIBC_MUSL=1".into());
-    } else if libc == "gnu" {
-        args.push("-D__SLATE_LIBC_GNU=1".into());
-    } else {
-        args.push("-D__SLATE_LIBC_GENERIC=1".into());
-    }
-
-    if arch == "x86_64" {
-        args.push("-D__SLATE_ARCH_X86_64=1".into());
-    } else if arch == "aarch64" {
-        args.push("-D__SLATE_ARCH_AARCH64=1".into());
-    } else {
-        args.push("-D__SLATE_ARCH_UNKNOWN=1".into());
-    }
-
-    if let Some(target) = slate_target {
-        args.push("-target".into());
-        args.push(target);
-    }
+pub fn target_args() -> Result<Vec<String>, String> {
+    let mut args = libc_shim_args();
+    let target = active_target();
+    args.extend(target_features(&target)?.define_args());
+    args.push("-target".into());
+    args.push(target);
 
     if let Ok(extra) = std::env::var("SLATE_CLANG_ARGS") {
         args.extend(extra.split_whitespace().map(str::to_string));
     }
-    args
+    Ok(args)
 }
 
 /// Query the macro environment Clang predefines for `extra_args` (target,
@@ -167,7 +262,7 @@ pub fn target_args() -> Vec<String> {
 pub fn predefined_macros(extra_args: &[String]) -> Result<BTreeMap<String, String>, String> {
     let out = Command::new(clang())
         .args(["-dM", "-E", "-x", "c"])
-        .args(target_args())
+        .args(target_args()?)
         .args(extra_args)
         .arg("/dev/null")
         .output()
@@ -200,6 +295,7 @@ pub fn emit_generic(src: &Path) -> Result<String, String> {
 
 pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<String, String> {
     let mut cmd = Command::new(clang());
+    let target_args = target_args()?;
     cmd.args([
         "-fclangir",
         "-emit-cir",
@@ -210,7 +306,7 @@ pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<Strin
         "-o",
         "-",
     ])
-    .args(target_args())
+    .args(target_args)
     .args(extra_args)
     .arg(src)
     .stderr(Stdio::piped());

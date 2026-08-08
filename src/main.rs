@@ -284,37 +284,19 @@ struct TargetVariant {
 }
 
 fn target_variants() -> Vec<TargetVariant> {
-    let all_arch_macros = [
-        "__SLATE_ARCH_X86_64",
-        "__SLATE_ARCH_X86",
-        "__SLATE_ARCH_AARCH64",
-        "__SLATE_ARCH_ARM",
-        "__SLATE_ARCH_RISCV64",
-        "__SLATE_ARCH_RISCV32",
-        "__SLATE_ARCH_UNKNOWN",
-    ];
     let mut variants = Vec::new();
-    for (arch, triple, arch_macro) in [
-        ("x86_64", "x86_64-linux-gnu", "__SLATE_ARCH_X86_64"),
-        ("aarch64", "aarch64-linux-gnu", "__SLATE_ARCH_AARCH64"),
-        ("riscv64", "riscv64-linux-gnu", "__SLATE_ARCH_RISCV64"),
+    for (arch, triple) in [
+        ("x86_64", "x86_64-linux-gnu"),
+        ("aarch64", "aarch64-linux-gnu"),
+        ("riscv64", "riscv64-linux-gnu"),
     ] {
-        let mut args = vec!["-target".to_string(), triple.to_string()];
-        for macro_name in all_arch_macros {
-            args.push(format!("-U{macro_name}"));
-        }
-        args.push(format!("-D{arch_macro}=1"));
-        args.push("-U__SLATE_BIG_ENDIAN".to_string());
-        args.push("-D__SLATE_LITTLE_ENDIAN=1".to_string());
-        args.push("-U__SLATE_LIBC_MUSL".to_string());
-        args.push("-U__SLATE_LIBC_GENERIC".to_string());
-        args.push("-D__SLATE_LIBC_GNU=1".to_string());
         variants.push(TargetVariant {
             cfg: rust_ast::Cfg::Opt {
                 key: "target_arch".into(),
                 value: arch.into(),
             },
-            clang_args: args,
+            clang_args: cir::emit::target_override_args(triple)
+                .expect("built-in Slate target variant is valid"),
         });
     }
     variants
