@@ -11,6 +11,12 @@ use crate::fixups::facts::{
     StaticDeclFact, StringCopyRewriteFact, StringLiftPlanFact, StringParamLiftFact,
     StringRecoveryCandidate, StructFieldOwnershipFact, ValueFact,
 };
+use crate::fixups::query::{
+    AtomicPromotionSet, BufferPointerFields, ByteSource, ByteView, CallRecord, ExprSite,
+    FunctionRef, InterproceduralAllocCallerInput, LazySingletonSet, NulPosition,
+    OptionBoxComparisonInput, OptionBoxLocalPlanInput, PtrLenPlanSet, QueryResult, ReferenceDomain,
+    SliceLoopFact, StableExpr, StatementRef,
+};
 use crate::rust_ast::{Expr, FnDef, Item, Program};
 use salsa::Setter;
 use std::collections::{BTreeMap, BTreeSet};
@@ -47,12 +53,12 @@ pub(in crate::fixups) struct FunctionInput<'db> {
 #[salsa::tracked]
 impl<'db> ProgramInput {
     #[salsa::tracked(returns(ref))]
-    fn base_walk(self, db: &dyn FixupDb) -> facts::walk::BaseWalk {
+    pub(in crate::fixups) fn base_walk(self, db: &dyn FixupDb) -> facts::walk::BaseWalk {
         facts::walk::BaseWalk::new(db, self.program(db))
     }
 
     #[salsa::tracked(returns(ref))]
-    fn functions(self, db: &'db dyn FixupDb) -> Vec<FunctionInput<'db>> {
+    pub(in crate::fixups) fn functions(self, db: &'db dyn FixupDb) -> Vec<FunctionInput<'db>> {
         self.base_walk(db)
             .function_facts()
             .into_iter()
@@ -102,7 +108,10 @@ impl<'db> ProgramInput {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn struct_field_ownership(self, db: &dyn FixupDb) -> Vec<StructFieldOwnershipFact> {
+    pub(in crate::fixups) fn struct_field_ownership(
+        self,
+        db: &dyn FixupDb,
+    ) -> Vec<StructFieldOwnershipFact> {
         facts::struct_field_ownership::collect(self.program(db).items.iter().filter_map(|item| {
             match item {
                 Item::Record(record) => Some(record),
@@ -129,7 +138,7 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn body(self, db: &dyn FixupDb) -> FnDef {
+    pub(in crate::fixups) fn body(self, db: &dyn FixupDb) -> FnDef {
         let name = self.function(db).name(db);
         self.program(db)
             .program(db)
@@ -143,7 +152,7 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn bindings_typed(self, db: &'db dyn FixupDb) -> Vec<BindingFact<'db>> {
+    pub(in crate::fixups) fn bindings_typed(self, db: &'db dyn FixupDb) -> Vec<BindingFact<'db>> {
         self.program(db)
             .base_walk(db)
             .binding_facts()
@@ -153,7 +162,10 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn binding_types_typed(self, db: &'db dyn FixupDb) -> Vec<BindingTypeFact<'db>> {
+    pub(in crate::fixups) fn binding_types_typed(
+        self,
+        db: &'db dyn FixupDb,
+    ) -> Vec<BindingTypeFact<'db>> {
         let bindings: BTreeSet<_> = self.bindings_typed(db).iter().map(|fact| fact.id).collect();
         self.program(db)
             .base_walk(db)
@@ -183,12 +195,12 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn effects(self, db: &dyn FixupDb) -> Vec<EffectFact<'db>> {
+    pub(in crate::fixups) fn effects(self, db: &dyn FixupDb) -> Vec<EffectFact<'db>> {
         facts::effects::collect_for_function(self.function_id(db), self.body(db))
     }
 
     #[salsa::tracked(returns(ref))]
-    fn values(self, db: &dyn FixupDb) -> Vec<ValueFact<'db>> {
+    pub(in crate::fixups) fn values(self, db: &dyn FixupDb) -> Vec<ValueFact<'db>> {
         facts::values::collect_for_function(
             self.function_id(db),
             self.body(db),
@@ -197,7 +209,7 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn strings(self, db: &dyn FixupDb) -> facts::strings::Collected<'db> {
+    pub(in crate::fixups) fn strings(self, db: &dyn FixupDb) -> facts::strings::Collected<'db> {
         facts::strings::collect_for_function(
             self.function_id(db),
             self.body(db),
@@ -207,7 +219,7 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn counted_loops(
+    pub(in crate::fixups) fn counted_loops(
         self,
         db: &dyn FixupDb,
     ) -> (Vec<CountedLoopFact<'db>>, Vec<CountedSliceLoopFact<'db>>) {
@@ -309,7 +321,7 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn atomic_locals(self, db: &dyn FixupDb) -> Vec<AtomicLocalFact<'db>> {
+    pub(in crate::fixups) fn atomic_locals(self, db: &dyn FixupDb) -> Vec<AtomicLocalFact<'db>> {
         facts::atomic_locals::collect_for_function(self.function_id(db), self.body(db))
     }
 
@@ -332,7 +344,7 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn option_box(
+    pub(in crate::fixups) fn option_box(
         self,
         db: &dyn FixupDb,
     ) -> (
@@ -347,7 +359,10 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn buffer_pointer_fields(self, db: &dyn FixupDb) -> Vec<BufferPointerFieldFact<'db>> {
+    pub(in crate::fixups) fn buffer_pointer_fields(
+        self,
+        db: &dyn FixupDb,
+    ) -> Vec<BufferPointerFieldFact<'db>> {
         facts::buffer_cursor::collect_for_function(
             self.function_id(db),
             &self.body(db).body,
@@ -357,7 +372,7 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn heap_ownership(self, db: &dyn FixupDb) -> Vec<HeapOwnershipFact<'db>> {
+    pub(in crate::fixups) fn heap_ownership(self, db: &dyn FixupDb) -> Vec<HeapOwnershipFact<'db>> {
         facts::heap_ownership::collect_for_function(
             self.function_id(db),
             &self.body(db).body,
@@ -366,7 +381,7 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn file_ownership(self, db: &dyn FixupDb) -> Vec<FileOwnershipFact<'db>> {
+    pub(in crate::fixups) fn file_ownership(self, db: &dyn FixupDb) -> Vec<FileOwnershipFact<'db>> {
         facts::file_ownership::collect_for_function(
             self.function_id(db),
             &self.body(db).body,
@@ -391,7 +406,10 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn callee_alloc_summary(self, db: &dyn FixupDb) -> Option<CalleeAllocSummaryFact<'db>> {
+    pub(in crate::fixups) fn callee_alloc_summary(
+        self,
+        db: &dyn FixupDb,
+    ) -> Option<CalleeAllocSummaryFact<'db>> {
         facts::callee_alloc_summary::collect_for_function(self.function_id(db), self.body(db))
     }
 
@@ -460,7 +478,7 @@ impl<'db> FunctionInput<'db> {
 #[salsa::tracked]
 impl<'db> ProgramInput {
     #[salsa::tracked(returns(ref))]
-    fn atomic_locals(self, db: &dyn FixupDb) -> Vec<AtomicLocalFact<'db>> {
+    pub(in crate::fixups) fn atomic_locals(self, db: &dyn FixupDb) -> Vec<AtomicLocalFact<'db>> {
         self.functions(db)
             .iter()
             .flat_map(|&input| input.atomic_locals(db).iter().cloned())
@@ -468,7 +486,7 @@ impl<'db> ProgramInput {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn interprocedural_alloc(
+    pub(in crate::fixups) fn interprocedural_alloc(
         self,
         db: &dyn FixupDb,
     ) -> (
@@ -536,7 +554,7 @@ impl<'db> ProgramInput {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn ptr_len_slices(
+    pub(in crate::fixups) fn ptr_len_slices(
         self,
         db: &dyn FixupDb,
         definitions: ProgramInput,
@@ -573,7 +591,7 @@ impl<'db> ProgramInput {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn string_param_lifts(
+    pub(in crate::fixups) fn string_param_lifts(
         self,
         db: &dyn FixupDb,
         definitions: ProgramInput,
@@ -614,7 +632,7 @@ impl<'db> ProgramInput {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn lazy_init_singletons(
+    pub(in crate::fixups) fn lazy_init_singletons(
         self,
         db: &dyn FixupDb,
         definitions: ProgramInput,
@@ -638,7 +656,11 @@ impl<'db> ProgramInput {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn atomic_globals(self, db: &dyn FixupDb, definitions: ProgramInput) -> Vec<AtomicGlobalFact> {
+    pub(in crate::fixups) fn atomic_globals(
+        self,
+        db: &dyn FixupDb,
+        definitions: ProgramInput,
+    ) -> Vec<AtomicGlobalFact> {
         let bodies: facts::walk::Bodies = self
             .functions(db)
             .iter()
@@ -662,6 +684,179 @@ impl SalsaFacts {
 
     pub(in crate::fixups) fn set_program(&mut self, program: &Program) {
         self.program.set_program(&mut self.db).to(program.clone());
+    }
+
+    pub(in crate::fixups) fn byte_source<'db>(
+        &'db self,
+        site: &ExprSite,
+    ) -> QueryResult<ByteSource<'db>> {
+        self.program.byte_source(&self.db, site.clone()).clone()
+    }
+
+    pub(in crate::fixups) fn const_u8(&self, site: &ExprSite) -> QueryResult<u8> {
+        self.program.const_u8(&self.db, site.clone()).clone()
+    }
+
+    pub(in crate::fixups) fn const_usize(&self, site: &ExprSite) -> QueryResult<usize> {
+        self.program.const_usize(&self.db, site.clone()).clone()
+    }
+
+    pub(in crate::fixups) fn pure(&self, site: &ExprSite) -> QueryResult<StableExpr> {
+        self.program.pure(&self.db, site.clone()).clone()
+    }
+
+    pub(in crate::fixups) fn full_byte_view<'db>(
+        &'db self,
+        source: &ByteSource<'_>,
+        count: &ExprSite,
+    ) -> QueryResult<ByteView<'db>> {
+        self.program
+            .full_byte_view(&self.db, source.site.clone(), count.clone())
+            .clone()
+    }
+
+    pub(in crate::fixups) fn first_nul(&self, source: &ByteSource<'_>) -> QueryResult<NulPosition> {
+        self.program
+            .first_nul(&self.db, source.site.clone())
+            .clone()
+    }
+
+    pub(in crate::fixups) fn prefix_contains(
+        &self,
+        count: &ExprSite,
+        nul: NulPosition,
+    ) -> QueryResult<()> {
+        self.program
+            .prefix_contains(&self.db, count.clone(), nul)
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_counted_loop<'db>(
+        &'db self,
+        statement: &StatementRef,
+    ) -> QueryResult<CountedLoopFact<'db>> {
+        self.program
+            .counted_loop(&self.db, statement.clone())
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_counted_slice_loop<'db>(
+        &'db self,
+        statement: &StatementRef,
+    ) -> QueryResult<SliceLoopFact<'db>> {
+        self.program
+            .counted_slice_loop(&self.db, statement.clone())
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_lazy_singletons(&self) -> QueryResult<LazySingletonSet> {
+        self.program.lazy_singletons(&self.db).clone()
+    }
+
+    pub(in crate::fixups) fn proof_atomic_promotions(&self) -> QueryResult<AtomicPromotionSet> {
+        self.program.atomic_promotions(&self.db).clone()
+    }
+
+    pub(in crate::fixups) fn proof_callee_alloc_summary<'db>(
+        &'db self,
+        function: &FunctionRef<'_>,
+    ) -> QueryResult<CalleeAllocSummaryFact<'db>> {
+        self.program
+            .callee_alloc_summary(&self.db, function.item_index)
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_interprocedural_alloc_eligibility<'db>(
+        &'db self,
+        function: &FunctionRef<'_>,
+    ) -> QueryResult<InterproceduralAllocEligibilityFact<'db>> {
+        self.program
+            .interprocedural_alloc_eligibility(&self.db, function.item_index)
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_interprocedural_alloc_chain<'db>(
+        &'db self,
+        function: &FunctionRef<'_>,
+    ) -> QueryResult<Vec<FunctionRef<'db>>> {
+        self.program
+            .interprocedural_alloc_chain(&self.db, function.item_index)
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_interprocedural_alloc_callers<'db>(
+        &'db self,
+        function: &FunctionRef<'_>,
+    ) -> QueryResult<Vec<InterproceduralAllocCallerInput<'db>>> {
+        self.program
+            .interprocedural_alloc_callers(&self.db, function.item_index)
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_ptr_len_slices(&self) -> QueryResult<PtrLenPlanSet> {
+        self.program.ptr_len_slice_plans(&self.db).clone()
+    }
+
+    pub(in crate::fixups) fn proof_struct_field_ownership(
+        &self,
+    ) -> QueryResult<Vec<StructFieldOwnershipFact>> {
+        self.program.proof_struct_field_ownership(&self.db).clone()
+    }
+
+    pub(in crate::fixups) fn proof_string_param_lift_indices(
+        &self,
+        function: &FunctionRef<'_>,
+    ) -> QueryResult<Vec<usize>> {
+        self.program
+            .string_param_lift_indices(&self.db, function.item_index)
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_function_by_name<'db>(
+        &'db self,
+        name: &str,
+    ) -> QueryResult<FunctionRef<'db>> {
+        self.program
+            .proof_function_by_name(&self.db, name.to_string())
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_option_box_local_candidates<'db>(
+        &'db self,
+        function: &FunctionRef<'_>,
+    ) -> QueryResult<Vec<OptionBoxLocalPlanInput<'db>>> {
+        self.program
+            .option_box_local_candidates(&self.db, function.item_index)
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_option_box_comparisons(
+        &self,
+        function: &FunctionRef<'_>,
+    ) -> QueryResult<Vec<OptionBoxComparisonInput>> {
+        self.program
+            .option_box_comparisons(&self.db, function.item_index)
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_buffer_pointer_fields<'db>(
+        &'db self,
+        function: &FunctionRef<'_>,
+    ) -> QueryResult<BufferPointerFields<'db>> {
+        self.program
+            .proof_buffer_pointer_fields(&self.db, function.item_index)
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_calls_in(
+        &self,
+        function: &FunctionRef<'_>,
+    ) -> QueryResult<Vec<CallRecord>> {
+        self.program.calls_in(&self.db, function.item_index).clone()
+    }
+
+    pub(in crate::fixups) fn proof_reference_domain(&self) -> QueryResult<ReferenceDomain> {
+        self.program.reference_domain(&self.db).clone()
     }
 
     fn function_input<'db>(&'db self, function: FunctionId<'_>) -> Option<FunctionInput<'db>> {

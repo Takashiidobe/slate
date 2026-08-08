@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::marker::PhantomData;
 
-use crate::fixups::facts::walk;
+use crate::fixups::facts::{self, walk};
 use crate::fixups::facts::{
     AnonymousStructFact, ArrayElementPointerOriginFact, AsciiNumericSign, AstPath,
     AtomicGlobalFact, AtomicLocalFact, BindingFact, BindingId, BindingKind, BorrowAliasReason,
@@ -17,7 +17,7 @@ use crate::fixups::facts::{
     StringLibcUseFact, StringParamLiftFact, StringPointerViewFact, StringRecoveryCandidate,
     StructFieldOwnershipFact, ValueSubject,
 };
-use crate::fixups::salsa::SalsaFacts;
+use crate::fixups::salsa::{FixupDb, FunctionInput, ProgramInput, SalsaFacts};
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
     Attr, Block, Expr, ExternDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem, IndentStmt,
@@ -46,7 +46,7 @@ use super::{
     ValueSite,
 };
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, salsa::SalsaValue)]
 pub(in crate::fixups) enum CallTarget {
     Known(Known),
     Generated(String),
@@ -60,7 +60,7 @@ pub(in crate::fixups) struct NullCheckDominance {
     pub(in crate::fixups) guard_stmt: Option<StatementRef>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct OptionBoxLocalPlanInput<'db> {
     pub(in crate::fixups) binding: BindingRef<'db>,
     pub(in crate::fixups) elem_ty: Type,
@@ -69,14 +69,14 @@ pub(in crate::fixups) struct OptionBoxLocalPlanInput<'db> {
     pub(in crate::fixups) deref_sites: Vec<ExprSite>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct OptionBoxAssignmentInput {
     pub(in crate::fixups) stmt: StatementRef,
     pub(in crate::fixups) kind: OptionBoxAssignKind,
     pub(in crate::fixups) alloc_source: Option<StatementRef>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct OptionBoxComparisonInput {
     pub(in crate::fixups) if_stmt: StatementRef,
     pub(in crate::fixups) lhs: String,
@@ -84,7 +84,7 @@ pub(in crate::fixups) struct OptionBoxComparisonInput {
     pub(in crate::fixups) negate: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct InterproceduralAllocCallerInput<'db> {
     pub(in crate::fixups) caller: FunctionRef<'db>,
     pub(in crate::fixups) pointer_name: String,
@@ -93,7 +93,7 @@ pub(in crate::fixups) struct InterproceduralAllocCallerInput<'db> {
     pub(in crate::fixups) free_stmt: Option<StatementRef>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct CallRecord {
     pub(in crate::fixups) site: ExprSite,
     pub(in crate::fixups) trivial_unsafe_site: Option<ExprSite>,
@@ -114,6 +114,1265 @@ pub(in crate::fixups) struct QueryContext<'snapshot> {
     symbol_uses: BTreeMap<String, Vec<usize>>,
     use_domain_complete: bool,
     salsa: &'snapshot SalsaFacts,
+}
+
+#[salsa::tracked]
+impl<'db> ProgramInput {
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn byte_source(
+        self,
+        db: &'db dyn FixupDb,
+        site: ExprSite,
+    ) -> QueryResult<ByteSource<'db>> {
+        let predicate = Predicate::ByteSource;
+        let function = function_input_at(self, db, site.item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let pointer = function
+            .strings(db)
+            .pointer_views
+            .iter()
+            .find(|pointer| {
+                pointer.site.function == function.function(db)
+                    && pointer.site.path == site.fact_path
+            })
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::UnsupportedShape,
+                    Vec::new(),
+                )
+            })?;
+        let (shape_name, shape_mutable) =
+            walk::target_expr_at_path(self.program(db), site.item_index, &site.path)
+                .and_then(stable_pointer_source)
+                .ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::UnsupportedShape,
+                        Vec::new(),
+                    )
+                })?;
+        let name = self
+            .functions(db)
+            .iter()
+            .find_map(|input| facts::binding_name(input.bindings_typed(db), pointer.source))
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?
+            .to_string();
+        if shape_name != name || shape_mutable != pointer.mutable {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
+        let ty = self
+            .functions(db)
+            .iter()
+            .find_map(|input| {
+                facts::binding_type_ast(input.binding_types_typed(db), pointer.source).cloned()
+            })
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        let buffer = self.functions(db).iter().find_map(|input| {
+            input
+                .strings(db)
+                .buffers
+                .iter()
+                .find(|buffer| buffer.binding == pointer.source)
+        });
+        let representation = buffer
+            .map(|buffer| representation_for_buffer(buffer.kind))
+            .or_else(|| representation_for_type(&ty))
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::UnsupportedShape,
+                    Vec::new(),
+                )
+            })?;
+        let mutability = if pointer.mutable {
+            PointerMutability::Mut
+        } else {
+            PointerMutability::Const
+        };
+        let extent = byte_extent(&ty);
+        let evidence = vec![
+            Evidence {
+                predicate,
+                site: site.clone(),
+                detail: EvidenceDetail::Binding { name: name.clone() },
+            },
+            Evidence {
+                predicate,
+                site: site.clone(),
+                detail: EvidenceDetail::PointerView {
+                    representation,
+                    mutability,
+                },
+            },
+            Evidence {
+                predicate,
+                site: site.clone(),
+                detail: EvidenceDetail::Extent(extent),
+            },
+        ];
+        Ok(Proof::new(
+            ByteSource {
+                site,
+                name,
+                representation,
+                mutability,
+                extent,
+                binding: pointer.source,
+                snapshot: PhantomData,
+            },
+            evidence,
+        ))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn const_u8(self, db: &dyn FixupDb, site: ExprSite) -> QueryResult<u8> {
+        let values = constant_values(
+            self,
+            db,
+            Predicate::ConstantU8,
+            &site,
+            |value| match value {
+                ConstValue::Integer(value) => u8::try_from(*value)
+                    .map(Some)
+                    .map_err(|_| RejectionReason::OutOfRange),
+                ConstValue::Usize(value) => u8::try_from(*value)
+                    .map(Some)
+                    .map_err(|_| RejectionReason::OutOfRange),
+                ConstValue::Zero => Ok(Some(0)),
+                _ => Ok(None),
+            },
+        )?;
+        if values.len() != 1 {
+            return Err(Rejection::new(
+                Predicate::ConstantU8,
+                Some(site),
+                RejectionReason::Ambiguous,
+                Vec::new(),
+            ));
+        }
+        let value = values[0];
+        Ok(Proof::new(
+            value,
+            vec![Evidence {
+                predicate: Predicate::ConstantU8,
+                site,
+                detail: EvidenceDetail::ConstantU8(value),
+            }],
+        ))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn const_usize(
+        self,
+        db: &dyn FixupDb,
+        site: ExprSite,
+    ) -> QueryResult<usize> {
+        let values = constant_values(
+            self,
+            db,
+            Predicate::ConstantUsize,
+            &site,
+            |value| match value {
+                ConstValue::Integer(value) => usize::try_from(*value)
+                    .map(Some)
+                    .map_err(|_| RejectionReason::OutOfRange),
+                ConstValue::Usize(value) => Ok(Some(*value)),
+                ConstValue::Zero => Ok(Some(0)),
+                ConstValue::ArrayLength(value) => Ok(Some(*value)),
+                _ => Ok(None),
+            },
+        )?;
+        if values.len() != 1 {
+            return Err(Rejection::new(
+                Predicate::ConstantUsize,
+                Some(site),
+                RejectionReason::Ambiguous,
+                Vec::new(),
+            ));
+        }
+        let value = values[0];
+        Ok(Proof::new(
+            value,
+            vec![Evidence {
+                predicate: Predicate::ConstantUsize,
+                site,
+                detail: EvidenceDetail::ConstantUsize(value),
+            }],
+        ))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn pure(
+        self,
+        db: &dyn FixupDb,
+        site: ExprSite,
+    ) -> QueryResult<StableExpr> {
+        let predicate = Predicate::MovablePure;
+        let function = function_input_at(self, db, site.item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let effect = function
+            .effects(db)
+            .iter()
+            .find(|fact| {
+                fact.subject == EffectSubject::Expr
+                    && (fact.site.path == site.path || fact.site.path == site.fact_path)
+            })
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        if effect.purity != Purity::MovablePure {
+            return Err(Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
+        Ok(Proof::new(
+            StableExpr { site: site.clone() },
+            vec![Evidence {
+                predicate,
+                site,
+                detail: EvidenceDetail::MovablePure,
+            }],
+        ))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn full_byte_view(
+        self,
+        db: &'db dyn FixupDb,
+        source_site: ExprSite,
+        count: ExprSite,
+    ) -> QueryResult<ByteView<'db>> {
+        let source = self.byte_source(db, source_site).clone()?.value;
+        let constant = self.const_usize(db, count.clone()).clone();
+        if let (ByteExtent::Constant(extent), Ok(count_proof)) = (source.extent, &constant) {
+            if extent != count_proof.value {
+                return Err(Rejection::new(
+                    Predicate::FullByteView,
+                    Some(count),
+                    RejectionReason::Contradicted,
+                    count_proof.evidence.clone(),
+                ));
+            }
+            let mut evidence = count_proof.evidence.clone();
+            evidence.extend(self.pure(db, count).clone()?.evidence);
+            evidence.push(Evidence {
+                predicate: Predicate::FullByteView,
+                site: source.site.clone(),
+                detail: EvidenceDetail::Extent(source.extent),
+            });
+            return Ok(Proof::new(
+                ByteView {
+                    extent: source.extent,
+                    source,
+                },
+                evidence,
+            ));
+        }
+        if walk::target_expr_at_path(self.program(db), count.item_index, &count.path)
+            .is_some_and(|expr| count_matches_source_len(&source, expr))
+        {
+            return Ok(Proof::new(
+                ByteView {
+                    extent: source.extent,
+                    source,
+                },
+                vec![Evidence {
+                    predicate: Predicate::FullByteView,
+                    site: count,
+                    detail: EvidenceDetail::SourceLength,
+                }],
+            ));
+        }
+        let evidence = constant
+            .map(|proof| proof.evidence)
+            .unwrap_or_else(|rejection| rejection.evidence);
+        Err(Rejection::new(
+            Predicate::FullByteView,
+            Some(count),
+            RejectionReason::MissingEvidence,
+            evidence,
+        ))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn first_nul(
+        self,
+        db: &'db dyn FixupDb,
+        source_site: ExprSite,
+    ) -> QueryResult<NulPosition> {
+        let predicate = Predicate::FirstNul;
+        let source = self.byte_source(db, source_site);
+        let source = source.as_ref().map_err(Clone::clone)?;
+        let buffer = self
+            .functions(db)
+            .iter()
+            .find_map(|input| {
+                input
+                    .strings(db)
+                    .buffers
+                    .iter()
+                    .find(|buffer| buffer.binding == source.value.binding)
+            })
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(source.value.site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        if buffer.interior_nul {
+            return Err(Rejection::new(
+                predicate,
+                Some(source.value.site.clone()),
+                RejectionReason::Contradicted,
+                Vec::new(),
+            ));
+        }
+        if !buffer.ascii_only {
+            let reason = if buffer.bytes.is_some() {
+                RejectionReason::Contradicted
+            } else {
+                RejectionReason::MissingEvidence
+            };
+            return Err(Rejection::new(
+                predicate,
+                Some(source.value.site.clone()),
+                reason,
+                Vec::new(),
+            ));
+        }
+        if !matches!(
+            buffer.nul_termination,
+            NulTermination::Terminated | NulTermination::AllZero
+        ) {
+            let reason = if buffer.nul_termination == NulTermination::Unterminated {
+                RejectionReason::Contradicted
+            } else {
+                RejectionReason::MissingEvidence
+            };
+            return Err(Rejection::new(
+                predicate,
+                Some(source.value.site.clone()),
+                reason,
+                Vec::new(),
+            ));
+        }
+        let position = buffer
+            .bytes
+            .as_ref()
+            .map(|bytes| NulPosition::Constant(bytes.len()))
+            .unwrap_or(NulPosition::ByteLength);
+        Ok(Proof::new(
+            position,
+            vec![Evidence {
+                predicate,
+                site: source.value.site.clone(),
+                detail: EvidenceDetail::NulPosition(position),
+            }],
+        ))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn prefix_contains(
+        self,
+        db: &dyn FixupDb,
+        count: ExprSite,
+        nul: NulPosition,
+    ) -> QueryResult<()> {
+        let count_proof = self.const_usize(db, count.clone()).clone()?;
+        let count_stable = self.pure(db, count.clone()).clone()?;
+        let NulPosition::Constant(nul) = nul else {
+            return Err(Rejection::new(
+                Predicate::PrefixContains,
+                Some(count),
+                RejectionReason::MissingEvidence,
+                count_proof.evidence,
+            ));
+        };
+        if nul >= count_proof.value {
+            return Err(Rejection::new(
+                Predicate::PrefixContains,
+                Some(count),
+                RejectionReason::Contradicted,
+                count_proof.evidence,
+            ));
+        }
+        let count_value = count_proof.value;
+        let mut evidence = count_proof.evidence;
+        evidence.extend(count_stable.evidence);
+        evidence.push(Evidence {
+            predicate: Predicate::PrefixContains,
+            site: count.clone(),
+            detail: EvidenceDetail::PrefixContains {
+                count: count_value,
+                nul,
+            },
+        });
+        Ok(Proof::new((), evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn counted_loop(
+        self,
+        db: &'db dyn FixupDb,
+        statement: StatementRef,
+    ) -> QueryResult<CountedLoopFact<'db>> {
+        let predicate = Predicate::CountedLoop;
+        let evidence_site = statement_evidence_site(&statement);
+        let function = function_input_at(self, db, statement.item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(evidence_site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let fact = function
+            .counted_loops(db)
+            .0
+            .iter()
+            .find(|fact| fact.site.loop_path == statement.path)
+            .cloned()
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(evidence_site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        Ok(Proof::new(
+            fact.clone(),
+            vec![Evidence {
+                predicate,
+                site: evidence_site,
+                detail: EvidenceDetail::CountedLoop {
+                    start: fact.start,
+                    step: fact.step,
+                    index_use: fact.index_use,
+                },
+            }],
+        ))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn counted_slice_loop(
+        self,
+        db: &'db dyn FixupDb,
+        statement: StatementRef,
+    ) -> QueryResult<SliceLoopFact<'db>> {
+        let predicate = Predicate::CountedSliceLoop;
+        let evidence_site = statement_evidence_site(&statement);
+        let function = function_input_at(self, db, statement.item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(evidence_site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let fact = function
+            .counted_loops(db)
+            .1
+            .iter()
+            .find(|fact| fact.site.loop_path == statement.path)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(evidence_site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        let bindings = all_binding_refs(self, db);
+        let index = bindings
+            .iter()
+            .find(|binding| binding.id == fact.index)
+            .cloned()
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(evidence_site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                )
+            })?;
+        let slice = bindings
+            .iter()
+            .find(|binding| binding.id == fact.slice)
+            .cloned()
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(evidence_site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                )
+            })?;
+        Ok(Proof::new(
+            SliceLoopFact {
+                index,
+                slice,
+                start: fact.start,
+                bound: fact.bound,
+                step: fact.step,
+                index_use: fact.index_use,
+                access: fact.access,
+            },
+            vec![Evidence {
+                predicate,
+                site: evidence_site,
+                detail: EvidenceDetail::CountedSliceLoop {
+                    index_use: fact.index_use,
+                    access: fact.access,
+                },
+            }],
+        ))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn lazy_singletons(
+        self,
+        db: &dyn FixupDb,
+    ) -> QueryResult<LazySingletonSet> {
+        let predicate = Predicate::LazySingletonDomain;
+        let mut singletons = Vec::new();
+        for singleton in self.lazy_init_singletons(db, self) {
+            let Some(function_item_index) =
+                self.base_walk(db).function_item_index(singleton.function)
+            else {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            let Some(function_name) = self.base_walk(db).function_name(singleton.function) else {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            if !matches!(self.program(db).items.get(function_item_index), Some(Item::Fn(f)) if f.name == function_name)
+            {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::Contradicted,
+                    Vec::new(),
+                ));
+            }
+            let Some(payload_item_index) =
+                static_item_index(self.program(db), &singleton.payload_name)
+            else {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            let Some(flag_item_index) = static_item_index(self.program(db), &singleton.flag_name)
+            else {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            singletons.push(LazySingletonPlan {
+                function_item_index,
+                payload_item_index,
+                payload_name: singleton.payload_name.clone(),
+                payload_ty: singleton.payload_ty.clone(),
+                init_expr: singleton.init_expr.clone(),
+                flag_item_index,
+                flag_name: singleton.flag_name.clone(),
+            });
+        }
+        let site = expression_site(
+            singletons
+                .first()
+                .map_or(0, |plan| plan.function_item_index),
+            &[],
+        );
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::LazySingletonDomain {
+                singletons: singletons.len(),
+            },
+        }];
+        Ok(Proof::new(LazySingletonSet { singletons }, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn atomic_promotions(
+        self,
+        db: &dyn FixupDb,
+    ) -> QueryResult<AtomicPromotionSet> {
+        let predicate = Predicate::AtomicPromotionDomain;
+        let mut locals = Vec::new();
+        for fact in self.atomic_locals(db) {
+            let Some(function_item_index) = self.base_walk(db).function_item_index(fact.function)
+            else {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            };
+            locals.push(AtomicLocalPromotion {
+                function_item_index,
+                name: fact.name.clone(),
+                ty: fact.ty,
+            });
+        }
+        let mut globals = Vec::new();
+        for fact in self.atomic_globals(db, self) {
+            if !static_exists(&self.program(db).items, &fact.name) {
+                return Err(Rejection::new(
+                    predicate,
+                    None,
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            }
+            globals.push(AtomicGlobalPromotion {
+                name: fact.name.clone(),
+                ty: fact.ty,
+            });
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site: expression_site(
+                locals.first().map_or(0, |plan| plan.function_item_index),
+                &[],
+            ),
+            detail: EvidenceDetail::AtomicPromotionDomain {
+                locals: locals.len(),
+                globals: globals.len(),
+            },
+        }];
+        Ok(Proof::new(AtomicPromotionSet { locals, globals }, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn callee_alloc_summary(
+        self,
+        db: &'db dyn FixupDb,
+        item_index: usize,
+    ) -> QueryResult<CalleeAllocSummaryFact<'db>> {
+        let predicate = Predicate::CalleeAllocSummary;
+        let site = expression_site(item_index, &[]);
+        let function = function_input_at(self, db, item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let summary = function.callee_alloc_summary(db).clone().ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::CalleeAllocSummary {
+                function: function.function(db).name(db).to_string(),
+            },
+        }];
+        Ok(Proof::new(summary, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn interprocedural_alloc_eligibility(
+        self,
+        db: &'db dyn FixupDb,
+        item_index: usize,
+    ) -> QueryResult<InterproceduralAllocEligibilityFact<'db>> {
+        let predicate = Predicate::InterproceduralAllocEligibility;
+        let site = expression_site(item_index, &[]);
+        let function = function_input_at(self, db, item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let id = function.function(db);
+        let fact = self
+            .interprocedural_alloc(db)
+            .0
+            .iter()
+            .find(|fact| fact.function == id)
+            .cloned()
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::InterproceduralAllocEligibility {
+                function: id.name(db).to_string(),
+                eligible: fact.eligible,
+            },
+        }];
+        Ok(Proof::new(fact, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn interprocedural_alloc_chain(
+        self,
+        db: &'db dyn FixupDb,
+        item_index: usize,
+    ) -> QueryResult<Vec<FunctionRef<'db>>> {
+        let predicate = Predicate::InterproceduralAllocEligibility;
+        let site = expression_site(item_index, &[]);
+        let eligibility = self
+            .interprocedural_alloc_eligibility(db, item_index)
+            .clone()?;
+        let functions = all_function_refs(self, db);
+        let mut chain = Vec::new();
+        for member in &eligibility.value.chain {
+            let member_ref = functions
+                .iter()
+                .find(|candidate| candidate.id == *member)
+                .cloned()
+                .ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?;
+            chain.push(member_ref);
+        }
+        Ok(Proof::new(chain, eligibility.evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn interprocedural_alloc_callers(
+        self,
+        db: &'db dyn FixupDb,
+        item_index: usize,
+    ) -> QueryResult<Vec<InterproceduralAllocCallerInput<'db>>> {
+        let predicate = Predicate::InterproceduralAllocCallers;
+        let site = expression_site(item_index, &[]);
+        let function = function_input_at(self, db, item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let id = function.function(db);
+        let functions = all_function_refs(self, db);
+        let mut inputs = Vec::new();
+        for caller_fact in self
+            .interprocedural_alloc(db)
+            .1
+            .iter()
+            .filter(|fact| fact.callee == id)
+        {
+            let caller_ref = functions
+                .iter()
+                .find(|candidate| candidate.id == caller_fact.caller)
+                .cloned()
+                .ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?;
+            inputs.push(InterproceduralAllocCallerInput {
+                pointer_name: caller_fact.pointer_name.clone(),
+                decl_stmt: StatementRef {
+                    item_index: caller_ref.item_index,
+                    path: caller_fact.decl_path.clone(),
+                },
+                call_temp_stmt: StatementRef {
+                    item_index: caller_ref.item_index,
+                    path: caller_fact.call_temp_path.clone(),
+                },
+                free_stmt: caller_fact.free_path.as_ref().map(|path| StatementRef {
+                    item_index: caller_ref.item_index,
+                    path: path.clone(),
+                }),
+                caller: caller_ref,
+            });
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::InterproceduralAllocCallers {
+                function: id.name(db).to_string(),
+                callers: inputs.len(),
+            },
+        }];
+        Ok(Proof::new(inputs, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn ptr_len_slice_plans(
+        self,
+        db: &'db dyn FixupDb,
+    ) -> QueryResult<PtrLenPlanSet> {
+        let predicate = Predicate::PtrLenSlice;
+        let plans = ptr_len_plans_from_facts(
+            self.ptr_len_slices(db, self),
+            &self.base_walk(db).function_facts(),
+            &self.base_walk(db).binding_facts(),
+        );
+        let site = expression_site(plans.first().map_or(0, |plan| plan.item_index), &[]);
+        if plans.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::PtrLenSlice { plans: plans.len() },
+        }];
+        Ok(Proof::new(PtrLenPlanSet { plans }, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn proof_struct_field_ownership(
+        self,
+        db: &dyn FixupDb,
+    ) -> QueryResult<Vec<StructFieldOwnershipFact>> {
+        let predicate = Predicate::StructFieldOwnership;
+        let fields = self.struct_field_ownership(db).clone();
+        let evidence = vec![Evidence {
+            predicate,
+            site: expression_site(0, &[]),
+            detail: EvidenceDetail::StructFieldOwnership {
+                fields: fields.len(),
+            },
+        }];
+        Ok(Proof::new(fields, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn string_param_lift_indices(
+        self,
+        db: &'db dyn FixupDb,
+        item_index: usize,
+    ) -> QueryResult<Vec<usize>> {
+        let predicate = Predicate::StringParamLift;
+        let site = expression_site(item_index, &[]);
+        let function = function_input_at(self, db, item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let mut indices = self
+            .string_param_lifts(db, self)
+            .iter()
+            .filter(|fact| fact.callee == function.function(db))
+            .map(|fact| fact.index)
+            .collect::<Vec<_>>();
+        indices.sort_unstable();
+        if indices.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::StringParamLift,
+        }];
+        Ok(Proof::new(indices, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn proof_function_by_name(
+        self,
+        db: &'db dyn FixupDb,
+        name: String,
+    ) -> QueryResult<FunctionRef<'db>> {
+        let predicate = Predicate::Function;
+        let site = expression_site(0, &[]);
+        let function = all_function_refs(self, db)
+            .into_iter()
+            .find(|function| function.name == name)
+            .ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::MissingEvidence,
+                    Vec::new(),
+                )
+            })?;
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::Function {
+                name: function.name.clone(),
+            },
+        }];
+        Ok(Proof::new(function, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn option_box_local_candidates(
+        self,
+        db: &'db dyn FixupDb,
+        item_index: usize,
+    ) -> QueryResult<Vec<OptionBoxLocalPlanInput<'db>>> {
+        let predicate = Predicate::OptionBoxLocalCandidates;
+        let site = expression_site(item_index, &[]);
+        let function = function_input_at(self, db, item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let bindings = all_binding_refs(self, db);
+        let mut inputs = Vec::new();
+        for candidate in &function.option_box(db).0 {
+            let binding = bindings
+                .iter()
+                .find(|binding| binding.id == candidate.binding)
+                .cloned()
+                .ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?;
+            let assignments = candidate
+                .assignments
+                .iter()
+                .map(|assignment| OptionBoxAssignmentInput {
+                    stmt: StatementRef {
+                        item_index,
+                        path: assignment.path.clone(),
+                    },
+                    kind: assignment.kind,
+                    alloc_source: assignment.alloc_source.as_ref().map(|path| StatementRef {
+                        item_index,
+                        path: path.clone(),
+                    }),
+                })
+                .collect();
+            let deref_sites = candidate
+                .deref_paths
+                .iter()
+                .map(|path| expression_site(item_index, &path.0))
+                .collect();
+            inputs.push(OptionBoxLocalPlanInput {
+                binding,
+                elem_ty: candidate.elem_ty.clone(),
+                decl_stmt: StatementRef {
+                    item_index,
+                    path: candidate.decl_path.clone(),
+                },
+                assignments,
+                deref_sites,
+            });
+        }
+        if inputs.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::OptionBoxLocalCandidates {
+                count: inputs.len(),
+            },
+        }];
+        Ok(Proof::new(inputs, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn option_box_comparisons(
+        self,
+        db: &'db dyn FixupDb,
+        item_index: usize,
+    ) -> QueryResult<Vec<OptionBoxComparisonInput>> {
+        let predicate = Predicate::OptionBoxComparisons;
+        let site = expression_site(item_index, &[]);
+        let function = function_input_at(self, db, item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let inputs = function
+            .option_box(db)
+            .1
+            .iter()
+            .map(|comparison| OptionBoxComparisonInput {
+                if_stmt: StatementRef {
+                    item_index,
+                    path: comparison.if_stmt_path.clone(),
+                },
+                lhs: comparison.lhs.clone(),
+                rhs: comparison.rhs.clone(),
+                negate: comparison.negate,
+            })
+            .collect::<Vec<_>>();
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::OptionBoxComparisons {
+                count: inputs.len(),
+            },
+        }];
+        Ok(Proof::new(inputs, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn proof_buffer_pointer_fields(
+        self,
+        db: &'db dyn FixupDb,
+        item_index: usize,
+    ) -> QueryResult<BufferPointerFields<'db>> {
+        let predicate = Predicate::BufferPointerFields;
+        let site = expression_site(item_index, &[]);
+        let function = function_input_at(self, db, item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let bindings = all_binding_refs(self, db);
+        let fields = function
+            .buffer_pointer_fields(db)
+            .iter()
+            .filter_map(|fact| {
+                let buffer = bindings
+                    .iter()
+                    .find(|binding| binding.id == fact.buffer)?
+                    .clone();
+                let array = bindings
+                    .iter()
+                    .find(|binding| binding.id == fact.array)?
+                    .clone();
+                let array_len = facts::binding_type(function.binding_types_typed(db), fact.array)
+                    .and_then(buffer_cursor_array_len_from_rendered_type)?;
+                Some(BufferPointerField {
+                    buffer,
+                    array,
+                    assignment: StatementRef {
+                        item_index,
+                        path: fact.site.path.clone(),
+                    },
+                    array_len,
+                })
+            })
+            .collect::<Vec<_>>();
+        if fields.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::BufferPointerFields {
+                fields: fields.len(),
+            },
+        }];
+        Ok(Proof::new(BufferPointerFields { fields }, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn calls_in(
+        self,
+        db: &'db dyn FixupDb,
+        item_index: usize,
+    ) -> QueryResult<Vec<CallRecord>> {
+        let predicate = Predicate::Function;
+        let site = expression_site(item_index, &[]);
+        let function = function_input_at(self, db, item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let mut calls = Vec::new();
+        walk::body_exprs_with_path(
+            &function.body(db).body,
+            &mut Vec::new(),
+            &mut |expr, path| {
+                let Expr::Call {
+                    func,
+                    args,
+                    binding,
+                } = expr
+                else {
+                    return;
+                };
+                let call_site = expression_site(item_index, path);
+                let target = call_target(func, binding);
+                let evidence = vec![Evidence {
+                    predicate: Predicate::Call,
+                    site: call_site.clone(),
+                    detail: EvidenceDetail::IndexedCall {
+                        target: target.clone(),
+                        arity: args.len(),
+                    },
+                }];
+                calls.push(CallRecord {
+                    trivial_unsafe_site: trivial_unsafe_site(self.program(db), &call_site),
+                    site: call_site.clone(),
+                    target,
+                    args: (0..args.len())
+                        .map(|index| child_site(&call_site, index + 1))
+                        .collect(),
+                    evidence,
+                });
+            },
+        );
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::Function {
+                name: function.function(db).name(db).to_string(),
+            },
+        }];
+        Ok(Proof::new(calls, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn reference_domain(
+        self,
+        db: &dyn FixupDb,
+    ) -> QueryResult<ReferenceDomain> {
+        let predicate = Predicate::ReferenceDomain;
+        let site = expression_site(0, &[]);
+        let mut definitions = BTreeMap::<DefinitionSelector, Vec<DefinitionSite>>::new();
+        let mut complete = true;
+        for (item_index, item) in self.program(db).items.iter().enumerate() {
+            index_definitions(item, item_index, &mut definitions);
+            complete &= item_use_domain_complete(item);
+        }
+        if !complete {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::IncompleteDomain,
+                Vec::new(),
+            ));
+        }
+        let definitions = definitions.into_values().flatten().collect::<Vec<_>>();
+        let items = self
+            .program(db)
+            .items
+            .iter()
+            .enumerate()
+            .map(|(item_index, item)| ItemReferences {
+                item_index,
+                symbols: unused_item_refs(item),
+            })
+            .collect::<Vec<_>>();
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::ReferenceDomain {
+                definitions: definitions.len(),
+                items: items.len(),
+            },
+        }];
+        Ok(Proof::new(ReferenceDomain { definitions, items }, evidence))
+    }
 }
 
 impl<'snapshot> QueryContext<'snapshot> {
@@ -3954,177 +5213,15 @@ impl<'snapshot> QueryContext<'snapshot> {
         &self,
         site: &ExprSite,
     ) -> QueryResult<ByteSource<'snapshot>> {
-        let predicate = Predicate::ByteSource;
-        let function = self.function(site).ok_or_else(|| {
-            Rejection::new(
-                predicate,
-                Some(site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            )
-        })?;
-        let pointer = self
-            .salsa()
-            .string_pointer_view_at(function, &site.fact_path)
-            .ok_or_else(|| {
-                Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::UnsupportedShape,
-                    Vec::new(),
-                )
-            })?;
-        let (shape_name, shape_mutable) = self
-            .expr(site)
-            .and_then(stable_pointer_source)
-            .ok_or_else(|| {
-                Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::UnsupportedShape,
-                    Vec::new(),
-                )
-            })?;
-        let name = self
-            .salsa()
-            .binding_name(pointer.source)
-            .ok_or_else(|| {
-                Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::MissingEvidence,
-                    Vec::new(),
-                )
-            })?
-            .to_string();
-        if shape_name != name || shape_mutable != pointer.mutable {
-            return Err(Rejection::new(
-                predicate,
-                Some(site.clone()),
-                RejectionReason::Contradicted,
-                Vec::new(),
-            ));
-        }
-        let ty = self
-            .salsa()
-            .binding_type_ast(pointer.source)
-            .ok_or_else(|| {
-                Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::MissingEvidence,
-                    Vec::new(),
-                )
-            })?;
-        let buffer = self.string_buffer_fact(pointer.source);
-        let representation = buffer
-            .map(|buffer| representation_for_buffer(buffer.kind))
-            .or_else(|| representation_for_type(&ty))
-            .ok_or_else(|| {
-                Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::UnsupportedShape,
-                    Vec::new(),
-                )
-            })?;
-        let mutability = if pointer.mutable {
-            PointerMutability::Mut
-        } else {
-            PointerMutability::Const
-        };
-        let extent = byte_extent(&ty);
-        let evidence = vec![
-            Evidence {
-                predicate,
-                site: site.clone(),
-                detail: EvidenceDetail::Binding { name: name.clone() },
-            },
-            Evidence {
-                predicate,
-                site: site.clone(),
-                detail: EvidenceDetail::PointerView {
-                    representation,
-                    mutability,
-                },
-            },
-            Evidence {
-                predicate,
-                site: site.clone(),
-                detail: EvidenceDetail::Extent(extent),
-            },
-        ];
-        Ok(Proof::new(
-            ByteSource {
-                site: site.clone(),
-                name,
-                representation,
-                mutability,
-                extent,
-                binding: pointer.source,
-                snapshot: PhantomData,
-            },
-            evidence,
-        ))
+        return self.salsa().byte_source(site);
     }
 
     pub(in crate::fixups) fn const_u8(&self, site: &ExprSite) -> QueryResult<u8> {
-        let values = self.constant_values(Predicate::ConstantU8, site, |value| match value {
-            ConstValue::Integer(value) => u8::try_from(*value)
-                .map(Some)
-                .map_err(|_| RejectionReason::OutOfRange),
-            ConstValue::Usize(value) => u8::try_from(*value)
-                .map(Some)
-                .map_err(|_| RejectionReason::OutOfRange),
-            ConstValue::Zero => Ok(Some(0)),
-            _ => Ok(None),
-        })?;
-        if values.len() != 1 {
-            return Err(Rejection::new(
-                Predicate::ConstantU8,
-                Some(site.clone()),
-                RejectionReason::Ambiguous,
-                Vec::new(),
-            ));
-        }
-        let value = *values.first().unwrap();
-        Ok(Proof::new(
-            value,
-            vec![Evidence {
-                predicate: Predicate::ConstantU8,
-                site: site.clone(),
-                detail: EvidenceDetail::ConstantU8(value),
-            }],
-        ))
+        return self.salsa().const_u8(site);
     }
 
     pub(in crate::fixups) fn const_usize(&self, site: &ExprSite) -> QueryResult<usize> {
-        let values = self.constant_values(Predicate::ConstantUsize, site, |value| match value {
-            ConstValue::Integer(value) => usize::try_from(*value)
-                .map(Some)
-                .map_err(|_| RejectionReason::OutOfRange),
-            ConstValue::Usize(value) => Ok(Some(*value)),
-            ConstValue::Zero => Ok(Some(0)),
-            ConstValue::ArrayLength(value) => Ok(Some(*value)),
-            _ => Ok(None),
-        })?;
-        if values.len() != 1 {
-            return Err(Rejection::new(
-                Predicate::ConstantUsize,
-                Some(site.clone()),
-                RejectionReason::Ambiguous,
-                Vec::new(),
-            ));
-        }
-        let value = *values.first().unwrap();
-        Ok(Proof::new(
-            value,
-            vec![Evidence {
-                predicate: Predicate::ConstantUsize,
-                site: site.clone(),
-                detail: EvidenceDetail::ConstantUsize(value),
-            }],
-        ))
+        return self.salsa().const_usize(site);
     }
 
     pub(in crate::fixups) fn full_byte_view(
@@ -4132,118 +5229,14 @@ impl<'snapshot> QueryContext<'snapshot> {
         source: &ByteSource<'snapshot>,
         count: &ExprSite,
     ) -> QueryResult<ByteView<'snapshot>> {
-        let constant = self.const_usize(count);
-        if let (ByteExtent::Constant(extent), Ok(count_proof)) = (source.extent, &constant) {
-            if extent != count_proof.value {
-                return Err(Rejection::new(
-                    Predicate::FullByteView,
-                    Some(count.clone()),
-                    RejectionReason::Contradicted,
-                    count_proof.evidence.clone(),
-                ));
-            }
-            let mut evidence = count_proof.evidence.clone();
-            evidence.extend(self.pure(count)?.evidence);
-            evidence.push(Evidence {
-                predicate: Predicate::FullByteView,
-                site: source.site.clone(),
-                detail: EvidenceDetail::Extent(source.extent),
-            });
-            return Ok(Proof::new(
-                ByteView {
-                    source: source.clone(),
-                    extent: source.extent,
-                },
-                evidence,
-            ));
-        }
-        if self.count_matches_source_len(source, count) {
-            return Ok(Proof::new(
-                ByteView {
-                    source: source.clone(),
-                    extent: source.extent,
-                },
-                vec![Evidence {
-                    predicate: Predicate::FullByteView,
-                    site: count.clone(),
-                    detail: EvidenceDetail::SourceLength,
-                }],
-            ));
-        }
-        let evidence = constant
-            .map(|proof| proof.evidence)
-            .unwrap_or_else(|rejection| rejection.evidence);
-        Err(Rejection::new(
-            Predicate::FullByteView,
-            Some(count.clone()),
-            RejectionReason::MissingEvidence,
-            evidence,
-        ))
+        return self.salsa().full_byte_view(source, count);
     }
 
     pub(in crate::fixups) fn first_nul(
         &self,
         source: &ByteSource<'snapshot>,
     ) -> QueryResult<NulPosition> {
-        let predicate = Predicate::FirstNul;
-        let Some(buffer) = self.string_buffer_fact(source.binding) else {
-            return Err(Rejection::new(
-                predicate,
-                Some(source.site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        if buffer.interior_nul {
-            return Err(Rejection::new(
-                predicate,
-                Some(source.site.clone()),
-                RejectionReason::Contradicted,
-                Vec::new(),
-            ));
-        }
-        if !buffer.ascii_only {
-            let reason = if buffer.bytes.is_some() {
-                RejectionReason::Contradicted
-            } else {
-                RejectionReason::MissingEvidence
-            };
-            return Err(Rejection::new(
-                predicate,
-                Some(source.site.clone()),
-                reason,
-                Vec::new(),
-            ));
-        }
-        if !matches!(
-            buffer.nul_termination,
-            NulTermination::Terminated | NulTermination::AllZero
-        ) {
-            let reason = if buffer.nul_termination == NulTermination::Unterminated {
-                RejectionReason::Contradicted
-            } else {
-                RejectionReason::MissingEvidence
-            };
-            return Err(Rejection::new(
-                predicate,
-                Some(source.site.clone()),
-                reason,
-                Vec::new(),
-            ));
-        }
-        let position = buffer
-            .bytes
-            .as_ref()
-            .map(|bytes| NulPosition::Constant(bytes.len()))
-            .unwrap_or(NulPosition::ByteLength);
-        Ok(Proof::new(
-            position,
-            vec![Evidence {
-                predicate,
-                site: source.site.clone(),
-                detail: EvidenceDetail::NulPosition(position),
-            }],
-        ))
+        return self.salsa().first_nul(source);
     }
 
     pub(in crate::fixups) fn prefix_contains(
@@ -4251,308 +5244,33 @@ impl<'snapshot> QueryContext<'snapshot> {
         count: &ExprSite,
         nul: NulPosition,
     ) -> QueryResult<()> {
-        let count_proof = self.const_usize(count)?;
-        let count_stable = self.pure(count)?;
-        let NulPosition::Constant(nul) = nul else {
-            return Err(Rejection::new(
-                Predicate::PrefixContains,
-                Some(count.clone()),
-                RejectionReason::MissingEvidence,
-                count_proof.evidence,
-            ));
-        };
-        if nul >= count_proof.value {
-            return Err(Rejection::new(
-                Predicate::PrefixContains,
-                Some(count.clone()),
-                RejectionReason::Contradicted,
-                count_proof.evidence,
-            ));
-        }
-        let count_value = count_proof.value;
-        let mut evidence = count_proof.evidence;
-        evidence.extend(count_stable.evidence);
-        evidence.push(Evidence {
-            predicate: Predicate::PrefixContains,
-            site: count.clone(),
-            detail: EvidenceDetail::PrefixContains {
-                count: count_value,
-                nul,
-            },
-        });
-        Ok(Proof::new((), evidence))
+        return self.salsa().prefix_contains(count, nul);
     }
 
     pub(in crate::fixups) fn pure(&self, site: &ExprSite) -> QueryResult<StableExpr> {
-        let predicate = Predicate::MovablePure;
-        let function = self.function(site).ok_or_else(|| {
-            Rejection::new(
-                predicate,
-                Some(site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            )
-        })?;
-        let effect = self
-            .effect_fact(function, EffectSubject::Expr, &site.path)
-            .or_else(|| self.effect_fact(function, EffectSubject::Expr, &site.fact_path))
-            .ok_or_else(|| {
-                Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::MissingEvidence,
-                    Vec::new(),
-                )
-            })?;
-        if effect.purity != Purity::MovablePure {
-            return Err(Rejection::new(
-                predicate,
-                Some(site.clone()),
-                RejectionReason::Contradicted,
-                Vec::new(),
-            ));
-        }
-        Ok(Proof::new(
-            StableExpr { site: site.clone() },
-            vec![Evidence {
-                predicate,
-                site: site.clone(),
-                detail: EvidenceDetail::MovablePure,
-            }],
-        ))
+        return self.salsa().pure(site);
     }
 
     pub(in crate::fixups) fn counted_loop(
         &self,
         statement: &StatementRef,
     ) -> QueryResult<CountedLoopFact<'snapshot>> {
-        let predicate = Predicate::CountedLoop;
-        let evidence_site = statement_evidence_site(statement);
-        let function = self
-            .salsa()
-            .function_by_item_index(statement.item_index)
-            .ok_or_else(|| {
-                Rejection::new(
-                    predicate,
-                    Some(evidence_site.clone()),
-                    RejectionReason::MissingEvidence,
-                    Vec::new(),
-                )
-            })?;
-        let Some(fact) = self.counted_loop_fact(function, &statement.path) else {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        Ok(Proof::new(
-            fact.clone(),
-            vec![Evidence {
-                predicate,
-                site: evidence_site,
-                detail: EvidenceDetail::CountedLoop {
-                    start: fact.start,
-                    step: fact.step,
-                    index_use: fact.index_use,
-                },
-            }],
-        ))
+        return self.salsa().proof_counted_loop(statement);
     }
 
     pub(in crate::fixups) fn counted_slice_loop(
         &self,
         statement: &StatementRef,
     ) -> QueryResult<SliceLoopFact<'snapshot>> {
-        let predicate = Predicate::CountedSliceLoop;
-        let evidence_site = statement_evidence_site(statement);
-        let function = self
-            .salsa()
-            .function_by_item_index(statement.item_index)
-            .ok_or_else(|| {
-                Rejection::new(
-                    predicate,
-                    Some(evidence_site.clone()),
-                    RejectionReason::MissingEvidence,
-                    Vec::new(),
-                )
-            })?;
-        let Some(fact) = self.counted_slice_loop_fact(function, &statement.path) else {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let bindings = self.all_bindings();
-        let Some(index) = bindings
-            .iter()
-            .find(|binding| binding.id == fact.index)
-            .cloned()
-        else {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::IncompleteDomain,
-                Vec::new(),
-            ));
-        };
-        let Some(slice) = bindings
-            .iter()
-            .find(|binding| binding.id == fact.slice)
-            .cloned()
-        else {
-            return Err(Rejection::new(
-                predicate,
-                Some(evidence_site),
-                RejectionReason::IncompleteDomain,
-                Vec::new(),
-            ));
-        };
-        Ok(Proof::new(
-            SliceLoopFact {
-                index,
-                slice,
-                start: fact.start,
-                bound: fact.bound,
-                step: fact.step,
-                index_use: fact.index_use,
-                access: fact.access,
-            },
-            vec![Evidence {
-                predicate,
-                site: evidence_site,
-                detail: EvidenceDetail::CountedSliceLoop {
-                    index_use: fact.index_use,
-                    access: fact.access,
-                },
-            }],
-        ))
+        return self.salsa().proof_counted_slice_loop(statement);
     }
 
     pub(in crate::fixups) fn lazy_singletons(&self) -> QueryResult<LazySingletonSet> {
-        let predicate = Predicate::LazySingletonDomain;
-        let mut singletons = Vec::new();
-        for singleton in self.lazy_init_singleton_facts() {
-            let Some(function_item_index) = self.salsa().function_item_index(singleton.function)
-            else {
-                return Err(Rejection::new(
-                    predicate,
-                    None,
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            let Some(function_name) = self.salsa().function_name(singleton.function) else {
-                return Err(Rejection::new(
-                    predicate,
-                    None,
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            if !matches!(
-                self.program.items.get(function_item_index),
-                Some(Item::Fn(f)) if f.name == function_name
-            ) {
-                return Err(Rejection::new(
-                    predicate,
-                    None,
-                    RejectionReason::Contradicted,
-                    Vec::new(),
-                ));
-            }
-            let Some(payload_item_index) = static_item_index(self.program, &singleton.payload_name)
-            else {
-                return Err(Rejection::new(
-                    predicate,
-                    None,
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            let Some(flag_item_index) = static_item_index(self.program, &singleton.flag_name)
-            else {
-                return Err(Rejection::new(
-                    predicate,
-                    None,
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            singletons.push(LazySingletonPlan {
-                function_item_index,
-                payload_item_index,
-                payload_name: singleton.payload_name.clone(),
-                payload_ty: singleton.payload_ty.clone(),
-                init_expr: singleton.init_expr.clone(),
-                flag_item_index,
-                flag_name: singleton.flag_name.clone(),
-            });
-        }
-        let site = expression_site(
-            singletons
-                .first()
-                .map_or(0, |plan| plan.function_item_index),
-            &[],
-        );
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::LazySingletonDomain {
-                singletons: singletons.len(),
-            },
-        }];
-        Ok(Proof::new(LazySingletonSet { singletons }, evidence))
+        return self.salsa().proof_lazy_singletons();
     }
 
     pub(in crate::fixups) fn atomic_promotions(&self) -> QueryResult<AtomicPromotionSet> {
-        let predicate = Predicate::AtomicPromotionDomain;
-        let mut locals = Vec::new();
-        for fact in self.atomic_local_facts() {
-            let Some(function_item_index) = self.salsa().function_item_index(fact.function) else {
-                return Err(Rejection::new(
-                    predicate,
-                    None,
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            locals.push(AtomicLocalPromotion {
-                function_item_index,
-                name: fact.name.clone(),
-                ty: fact.ty,
-            });
-        }
-        let mut globals = Vec::new();
-        for fact in self.atomic_global_facts() {
-            if !static_exists(&self.program.items, &fact.name) {
-                return Err(Rejection::new(
-                    predicate,
-                    None,
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            }
-            globals.push(AtomicGlobalPromotion {
-                name: fact.name.clone(),
-                ty: fact.ty,
-            });
-        }
-        let evidence = vec![Evidence {
-            predicate,
-            site: expression_site(
-                locals.first().map_or(0, |plan| plan.function_item_index),
-                &[],
-            ),
-            detail: EvidenceDetail::AtomicPromotionDomain {
-                locals: locals.len(),
-                globals: globals.len(),
-            },
-        }];
-        Ok(Proof::new(AtomicPromotionSet { locals, globals }, evidence))
+        return self.salsa().proof_atomic_promotions();
     }
 
     pub(in crate::fixups) fn heap_ownership_facts(
@@ -4769,28 +5487,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 
     pub(in crate::fixups) fn ptr_len_slices(&self) -> QueryResult<PtrLenPlanSet> {
-        let predicate = Predicate::PtrLenSlice;
-        let slices = self.ptr_len_slice_facts();
-        let plans = ptr_len_plans_from_facts(
-            slices,
-            &self.salsa().function_facts(),
-            &self.salsa().binding_facts(),
-        );
-        let site = expression_site(plans.first().map_or(0, |plan| plan.item_index), &[]);
-        if plans.is_empty() {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        }
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::PtrLenSlice { plans: plans.len() },
-        }];
-        Ok(Proof::new(PtrLenPlanSet { plans }, evidence))
+        return self.salsa().proof_ptr_len_slices();
     }
 
     #[expect(
@@ -4800,415 +5497,83 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn struct_field_ownership_facts(
         &self,
     ) -> QueryResult<Vec<StructFieldOwnershipFact>> {
-        let predicate = Predicate::StructFieldOwnership;
-        let fields: Vec<StructFieldOwnershipFact> = self
-            .struct_field_ownership_fact_list()
-            .into_iter()
-            .cloned()
-            .collect();
-        let evidence = vec![Evidence {
-            predicate,
-            site: expression_site(0, &[]),
-            detail: EvidenceDetail::StructFieldOwnership {
-                fields: fields.len(),
-            },
-        }];
-        Ok(Proof::new(fields, evidence))
+        return self.salsa().proof_struct_field_ownership();
     }
 
     pub(in crate::fixups) fn callee_alloc_summary(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<CalleeAllocSummaryFact<'snapshot>> {
-        let predicate = Predicate::CalleeAllocSummary;
-        let site = expression_site(function.item_index, &[]);
-        let Some(summary) = self.callee_alloc_summary_fact(function.id).cloned() else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::CalleeAllocSummary {
-                function: function.name.clone(),
-            },
-        }];
-        Ok(Proof::new(summary, evidence))
+        return self.salsa().proof_callee_alloc_summary(function);
     }
 
     pub(in crate::fixups) fn interprocedural_alloc_eligibility(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<InterproceduralAllocEligibilityFact<'snapshot>> {
-        let predicate = Predicate::InterproceduralAllocEligibility;
-        let site = expression_site(function.item_index, &[]);
-        let Some(fact) = self.interprocedural_alloc_eligibility_fact(function.id) else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::InterproceduralAllocEligibility {
-                function: function.name.clone(),
-                eligible: fact.eligible,
-            },
-        }];
-        Ok(Proof::new(fact, evidence))
+        return self
+            .salsa()
+            .proof_interprocedural_alloc_eligibility(function);
     }
 
     pub(in crate::fixups) fn interprocedural_alloc_chain(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<FunctionRef<'snapshot>>> {
-        let predicate = Predicate::InterproceduralAllocEligibility;
-        let site = expression_site(function.item_index, &[]);
-        let Some(fact) = self.interprocedural_alloc_eligibility_fact(function.id) else {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        };
-        let functions = self.all_functions();
-        let mut chain = Vec::new();
-        for member in &fact.chain {
-            let Some(member_ref) = functions
-                .iter()
-                .find(|candidate| candidate.id == *member)
-                .cloned()
-            else {
-                return Err(Rejection::new(
-                    predicate,
-                    Some(site),
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            chain.push(member_ref);
-        }
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::InterproceduralAllocEligibility {
-                function: function.name.clone(),
-                eligible: fact.eligible,
-            },
-        }];
-        Ok(Proof::new(chain, evidence))
+        return self.salsa().proof_interprocedural_alloc_chain(function);
     }
 
     pub(in crate::fixups) fn interprocedural_alloc_callers(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<InterproceduralAllocCallerInput<'snapshot>>> {
-        let predicate = Predicate::InterproceduralAllocCallers;
-        let site = expression_site(function.item_index, &[]);
-        let functions = self.all_functions();
-        let mut inputs = Vec::new();
-        for caller_fact in self.interprocedural_alloc_caller_facts(function.id) {
-            let Some(caller_ref) = functions
-                .iter()
-                .find(|candidate| candidate.id == caller_fact.caller)
-                .cloned()
-            else {
-                return Err(Rejection::new(
-                    predicate,
-                    Some(site),
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            inputs.push(InterproceduralAllocCallerInput {
-                pointer_name: caller_fact.pointer_name.clone(),
-                decl_stmt: StatementRef {
-                    item_index: caller_ref.item_index,
-                    path: caller_fact.decl_path.clone(),
-                },
-                call_temp_stmt: StatementRef {
-                    item_index: caller_ref.item_index,
-                    path: caller_fact.call_temp_path.clone(),
-                },
-                free_stmt: caller_fact.free_path.as_ref().map(|path| StatementRef {
-                    item_index: caller_ref.item_index,
-                    path: path.clone(),
-                }),
-                caller: caller_ref,
-            });
-        }
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::InterproceduralAllocCallers {
-                function: function.name.clone(),
-                callers: inputs.len(),
-            },
-        }];
-        Ok(Proof::new(inputs, evidence))
+        return self.salsa().proof_interprocedural_alloc_callers(function);
     }
 
     pub(in crate::fixups) fn option_box_local_candidates(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<OptionBoxLocalPlanInput<'snapshot>>> {
-        let predicate = Predicate::OptionBoxLocalCandidates;
-        let site = expression_site(function.item_index, &[]);
-        let bindings = self.all_bindings();
-        let mut inputs = Vec::new();
-        for candidate in self.option_box_local_candidate_facts(function.id) {
-            let Some(binding) = bindings
-                .iter()
-                .find(|binding| binding.id == candidate.binding)
-                .cloned()
-            else {
-                return Err(Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            let assignments = candidate
-                .assignments
-                .iter()
-                .map(|assignment| OptionBoxAssignmentInput {
-                    stmt: StatementRef {
-                        item_index: function.item_index,
-                        path: assignment.path.clone(),
-                    },
-                    kind: assignment.kind,
-                    alloc_source: assignment.alloc_source.as_ref().map(|path| StatementRef {
-                        item_index: function.item_index,
-                        path: path.clone(),
-                    }),
-                })
-                .collect();
-            let deref_sites = candidate
-                .deref_paths
-                .iter()
-                .map(|path| expression_site(function.item_index, &path.0))
-                .collect();
-            inputs.push(OptionBoxLocalPlanInput {
-                binding,
-                elem_ty: candidate.elem_ty.clone(),
-                decl_stmt: StatementRef {
-                    item_index: function.item_index,
-                    path: candidate.decl_path.clone(),
-                },
-                assignments,
-                deref_sites,
-            });
-        }
-        if inputs.is_empty() {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        }
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::OptionBoxLocalCandidates {
-                count: inputs.len(),
-            },
-        }];
-        Ok(Proof::new(inputs, evidence))
+        return self.salsa().proof_option_box_local_candidates(function);
     }
 
     pub(in crate::fixups) fn option_box_comparisons(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<OptionBoxComparisonInput>> {
-        let predicate = Predicate::OptionBoxComparisons;
-        let site = expression_site(function.item_index, &[]);
-        let inputs: Vec<OptionBoxComparisonInput> = self
-            .option_box_comparison_facts(function.id)
-            .into_iter()
-            .map(|comparison| OptionBoxComparisonInput {
-                if_stmt: StatementRef {
-                    item_index: function.item_index,
-                    path: comparison.if_stmt_path.clone(),
-                },
-                lhs: comparison.lhs.clone(),
-                rhs: comparison.rhs.clone(),
-                negate: comparison.negate,
-            })
-            .collect();
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::OptionBoxComparisons {
-                count: inputs.len(),
-            },
-        }];
-        Ok(Proof::new(inputs, evidence))
+        return self.salsa().proof_option_box_comparisons(function);
     }
 
     pub(in crate::fixups) fn string_param_lift_indices(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<usize>> {
-        let predicate = Predicate::StringParamLift;
-        let site = expression_site(function.item_index, &[]);
-        let mut indices = self
-            .string_param_lift_facts()
-            .iter()
-            .filter(|fact| fact.callee == function.id)
-            .map(|fact| fact.index)
-            .collect::<Vec<_>>();
-        indices.sort_unstable();
-        if indices.is_empty() {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        }
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::StringParamLift,
-        }];
-        Ok(Proof::new(indices, evidence))
+        return self.salsa().proof_string_param_lift_indices(function);
     }
 
     pub(in crate::fixups) fn calls_in(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<CallRecord>> {
-        let (_, evidence) = self.function_snapshot(function)?.into_parts();
-        let calls = self
-            .all_calls()
-            .filter(|call| call.site.item_index == function.item_index)
-            .cloned()
-            .collect::<Vec<_>>();
-        Ok(Proof::new(calls, evidence))
+        return self.salsa().proof_calls_in(function);
     }
 
     pub(in crate::fixups) fn function_by_name(
         &self,
         name: &str,
     ) -> QueryResult<FunctionRef<'snapshot>> {
-        let predicate = Predicate::Function;
-        let site = expression_site(0, &[]);
-        let function = self
-            .all_functions()
-            .into_iter()
-            .find(|function| function.name == name)
-            .ok_or_else(|| {
-                Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::MissingEvidence,
-                    Vec::new(),
-                )
-            })?;
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::Function {
-                name: function.name.clone(),
-            },
-        }];
-        Ok(Proof::new(function, evidence))
+        return self.salsa().proof_function_by_name(name);
     }
 
     pub(in crate::fixups) fn buffer_pointer_fields(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<BufferPointerFields<'snapshot>> {
-        let predicate = Predicate::BufferPointerFields;
-        let site = expression_site(function.item_index, &[]);
-        let bindings = self.all_bindings();
-        let fields = self
-            .buffer_pointer_field_facts(function.id)
-            .into_iter()
-            .filter_map(|fact| {
-                let buffer = bindings
-                    .iter()
-                    .find(|binding| binding.id == fact.buffer)?
-                    .clone();
-                let array = bindings
-                    .iter()
-                    .find(|binding| binding.id == fact.array)?
-                    .clone();
-                let array_len = self
-                    .salsa()
-                    .binding_type(fact.array)
-                    .as_deref()
-                    .and_then(buffer_cursor_array_len_from_rendered_type)?;
-                Some(BufferPointerField {
-                    buffer,
-                    array,
-                    assignment: StatementRef {
-                        item_index: function.item_index,
-                        path: fact.site.path.clone(),
-                    },
-                    array_len,
-                })
-            })
-            .collect::<Vec<_>>();
-        if fields.is_empty() {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        }
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::BufferPointerFields {
-                fields: fields.len(),
-            },
-        }];
-        Ok(Proof::new(BufferPointerFields { fields }, evidence))
+        return self.salsa().proof_buffer_pointer_fields(function);
     }
 
     pub(in crate::fixups) fn reference_domain(&self) -> QueryResult<ReferenceDomain> {
-        let predicate = Predicate::ReferenceDomain;
-        let site = expression_site(0, &[]);
-        if !self.use_domain_complete {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::IncompleteDomain,
-                Vec::new(),
-            ));
-        }
-        let definitions = self.all_definitions().cloned().collect::<Vec<_>>();
-        let items = self
-            .program
-            .items
-            .iter()
-            .enumerate()
-            .map(|(item_index, item)| ItemReferences {
-                item_index,
-                symbols: unused_item_refs(item),
-            })
-            .collect::<Vec<_>>();
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::ReferenceDomain {
-                definitions: definitions.len(),
-                items: items.len(),
-            },
-        }];
-        Ok(Proof::new(ReferenceDomain { definitions, items }, evidence))
+        return self.salsa().proof_reference_domain();
     }
 }
 
@@ -6238,6 +6603,116 @@ fn stable_pointer_source(expr: &Expr) -> Option<(&str, bool)> {
             Some((name.as_str(), method == "as_mut_ptr"))
         }
     }
+}
+
+fn function_input_at<'db>(
+    program: ProgramInput,
+    db: &'db dyn FixupDb,
+    item_index: usize,
+) -> Option<FunctionInput<'db>> {
+    let function = program.base_walk(db).function_by_item_index(item_index)?;
+    program
+        .functions(db)
+        .iter()
+        .copied()
+        .find(|input| input.function(db) == function)
+}
+
+fn constant_values<T: Ord>(
+    program: ProgramInput,
+    db: &dyn FixupDb,
+    predicate: Predicate,
+    site: &ExprSite,
+    convert: impl Fn(&ConstValue) -> Result<Option<T>, RejectionReason>,
+) -> Result<Vec<T>, Rejection> {
+    let function = function_input_at(program, db, site.item_index).ok_or_else(|| {
+        Rejection::new(
+            predicate,
+            Some(site.clone()),
+            RejectionReason::MissingEvidence,
+            Vec::new(),
+        )
+    })?;
+    let mut values = BTreeSet::new();
+    for value in function
+        .values(db)
+        .iter()
+        .filter(|fact| fact.subject == ValueSubject::Expr && fact.site.path == site.fact_path)
+        .map(|fact| &fact.value)
+    {
+        match convert(value) {
+            Ok(Some(value)) => {
+                values.insert(value);
+            }
+            Ok(None) => {}
+            Err(reason) => {
+                return Err(Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    reason,
+                    Vec::new(),
+                ));
+            }
+        }
+    }
+    if values.is_empty() {
+        return Err(Rejection::new(
+            predicate,
+            Some(site.clone()),
+            RejectionReason::MissingEvidence,
+            Vec::new(),
+        ));
+    }
+    Ok(values.into_iter().collect())
+}
+
+fn all_binding_refs<'db>(program: ProgramInput, db: &'db dyn FixupDb) -> Vec<BindingRef<'db>> {
+    program
+        .functions(db)
+        .iter()
+        .flat_map(|input| {
+            let function = input.function(db);
+            let item_index = program
+                .base_walk(db)
+                .function_item_index(function)
+                .unwrap_or_default();
+            let function_name = function.name(db).to_string();
+            input
+                .bindings_typed(db)
+                .iter()
+                .map(move |binding| BindingRef {
+                    item_index,
+                    function_name: function_name.clone(),
+                    name: binding.name.clone(),
+                    definition: binding.path.clone(),
+                    kind: match binding.kind {
+                        BindingKind::Param { index } => BindingCategory::Parameter { index },
+                        BindingKind::Local => BindingCategory::Local,
+                    },
+                    ty: facts::binding_type_ast(input.binding_types_typed(db), binding.id).cloned(),
+                    id: binding.id,
+                })
+        })
+        .collect()
+}
+
+fn all_function_refs<'db>(program: ProgramInput, db: &'db dyn FixupDb) -> Vec<FunctionRef<'db>> {
+    program
+        .base_walk(db)
+        .function_facts()
+        .into_iter()
+        .filter_map(|fact| {
+            let Item::Fn(function) = unwrap_cfg(program.program(db).items.get(fact.item_index)?)
+            else {
+                return None;
+            };
+            Some(FunctionRef {
+                item_index: fact.item_index,
+                name: function.name.clone(),
+                id: fact.id,
+            })
+        })
+        .collect()
 }
 
 fn pointer_method() -> NullaryMethodCall {

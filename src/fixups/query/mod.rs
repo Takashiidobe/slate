@@ -30,7 +30,8 @@ mod views;
 
 use context::default_value;
 pub(in crate::fixups) use context::{
-    CallRecord, CallTarget, InterproceduralAllocCallerInput, OptionBoxLocalPlanInput, QueryContext,
+    CallRecord, CallTarget, InterproceduralAllocCallerInput, OptionBoxComparisonInput,
+    OptionBoxLocalPlanInput, QueryContext,
 };
 pub(in crate::fixups) use field::Field;
 pub(in crate::fixups) use item::{
