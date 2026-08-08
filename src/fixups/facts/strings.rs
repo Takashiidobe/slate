@@ -1,6 +1,5 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AsciiNumericSign, AsciiNumericStringFact, AstPath, BindingId, BindingKind, CallCallee,
     CallSignatureSource, ConstValue, FixupFacts, FunctionId, GENERATED_C_STRING_READ_CALLEE,
@@ -9,6 +8,7 @@ use crate::fixups::facts::{
     StringLibcUseFact, StringLiftPlanFact, StringPointerViewFact, StringPointerViewKind,
     StringRecoveryCandidate, ValueSubject,
 };
+use crate::fixups::facts::{CallsiteFact, walk};
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
     Block, Expr, FnDef, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type, UnaryOp,
@@ -42,13 +42,6 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
     facts.string_libc_uses = libc_uses;
 }
 
-/// String buffers, pointer views, and libc uses for one function's body,
-/// independent of any other function's facts - the entry point
-/// `slate-04q.75.56.8` (incremental facts) needs to re-derive one
-/// function's string facts without a whole-program walk.
-/// `ascii_numeric_strings` is deliberately not part of this: it's derived
-/// from the *whole* buffers list after every function has been collected,
-/// not per-function.
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
@@ -534,7 +527,7 @@ pub(super) fn use_allowed(
             && path_starts_with(&use_path.0, &callsite.site.path.0)
             && callsite.args.iter().any(|arg| {
                 paths_overlap(&use_path.0, &arg.path.0)
-                    && direct_callee_function(facts, callsite).is_some_and(|callee| {
+                    && direct_callee_function(callsite).is_some_and(|callee| {
                         facts.string_param_lifts.iter().any(|lift| {
                             lift.callee == callee && lift.index == arg.slot && lift.param != binding
                         })
@@ -865,18 +858,15 @@ fn paths_overlap(a: &[PathSegment], b: &[PathSegment]) -> bool {
     path_starts_with(a, b) || path_starts_with(b, a)
 }
 
-fn direct_callee_function(
-    facts: &FixupFacts,
-    callsite: &crate::fixups::facts::CallsiteFact,
-) -> Option<FunctionId> {
+fn direct_callee_function(callsite: &CallsiteFact) -> Option<FunctionId> {
     let CallCallee::Direct {
         signature: Some(signature),
         ..
-    } = callsite.callee
+    } = &callsite.callee
     else {
         return None;
     };
-    match facts.call_signatures.get(signature.0)?.source {
+    match signature.source {
         CallSignatureSource::Function(function) => Some(function),
         CallSignatureSource::Extern { .. } => None,
     }
