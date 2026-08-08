@@ -1,7 +1,8 @@
 use std::collections::BTreeMap;
 
 use crate::fixups::facts::walk;
-use crate::fixups::facts::{AstPath, FixupFacts, PathSegment};
+use crate::fixups::facts::{AstPath, PathSegment};
+use crate::fixups::salsa::SalsaFacts;
 use crate::fixups::support::walk as mut_walk;
 use crate::fixups::trace::{
     Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact, function_path_location,
@@ -1124,7 +1125,7 @@ impl ItemPlan {
     pub(in crate::fixups) fn apply(
         self,
         program: &mut Program,
-        facts: &FixupFacts,
+        salsa: &SalsaFacts,
         logger: &mut dyn TraceLogger,
     ) -> ItemApplyReport {
         let planned = self.plan.edits.len();
@@ -1277,7 +1278,7 @@ impl ItemPlan {
         applied_edits += apply_expression_edits(
             &mut updated,
             expression_edits,
-            facts,
+            salsa,
             logger,
             &mut diagnostics,
             &mut touched,
@@ -1287,7 +1288,7 @@ impl ItemPlan {
                 edits: statement_edits,
                 applied: 0,
                 touched: TouchedItems::none(),
-                facts,
+                salsa,
                 logger,
             };
             for (item_index, item) in updated.items.iter_mut().enumerate() {
@@ -1570,7 +1571,7 @@ struct PlannedExpressionEdit {
 fn apply_expression_edits(
     program: &mut Program,
     mut edits: BTreeMap<(usize, AstPath), PlannedExpressionEdit>,
-    facts: &FixupFacts,
+    salsa: &SalsaFacts,
     logger: &mut dyn TraceLogger,
     diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
     touched: &mut TouchedItems,
@@ -1601,10 +1602,10 @@ fn apply_expression_edits(
                     &edit.evidence,
                     &edit.rejected_cases,
                     TraceChange {
-                        location: facts
+                        location: salsa
                             .function_by_item_index(item_index)
                             .map(|function| {
-                                function_path_location(facts, function, &edit.target.path.0)
+                                function_path_location(salsa, function, &edit.target.path.0)
                             })
                             .unwrap_or_else(|| path_location(&edit.target.path.0)),
                         label: "expr",
@@ -1817,7 +1818,7 @@ struct ApplyState<'a> {
     edits: BTreeMap<StatementRange, PlannedStatementEdit>,
     applied: usize,
     touched: TouchedItems,
-    facts: &'a FixupFacts,
+    salsa: &'a SalsaFacts,
     logger: &'a mut dyn TraceLogger,
 }
 
@@ -1867,7 +1868,7 @@ fn apply_body(
                 &edit.rejected_cases,
                 &before,
                 &replacement,
-                state.facts,
+                state.salsa,
             ));
         }
         body.splice(edit.target.start..edit.target.end, replacement);
@@ -1897,11 +1898,11 @@ fn rewrite_event(
     rejected_cases: &[CaseRejection],
     before: &[IndentStmt],
     after: &[IndentStmt],
-    facts: &FixupFacts,
+    salsa: &SalsaFacts,
 ) -> RewriteEvent {
-    let location = facts
+    let location = salsa
         .function_by_item_index(target.item_index)
-        .map(|function| function_path_location(facts, function, &target.path.0))
+        .map(|function| function_path_location(salsa, function, &target.path.0))
         .unwrap_or_else(|| path_location(&target.path.0));
     let mut trace_facts = vec![
         fact("query_rule", identity.rule.name.clone()),
@@ -2177,9 +2178,16 @@ fn log_diagnostic(logger: &mut dyn TraceLogger, diagnostic: &PlanDiagnostic<Edit
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::fixups::facts;
+    use crate::fixups::salsa::SalsaFacts;
     use crate::fixups::trace::NoopLogger;
     use crate::rust_ast::{FnDef, RustValue, Stmt, Visibility};
+
+    fn test_salsa(program: &Program) -> SalsaFacts {
+        let mut salsa = SalsaFacts::new_empty();
+        salsa.mark_everything_dirty();
+        salsa.resolve(program);
+        salsa
+    }
 
     fn function(body: Vec<IndentStmt>) -> Item {
         named_function("test", body)
@@ -2281,9 +2289,9 @@ mod tests {
         edit.push_replace_statement(0, AstPath(vec![PathSegment::Stmt(4)]), None);
         let valid = EditSet::replace_expression(expression_site(1), Expr::Value(RustValue::I64(3)));
         let plan = item_plan_from(vec![edit, valid]);
-        let facts = facts::analyze(&program).facts;
+        let salsa = test_salsa(&program);
 
-        let report = plan.apply(&mut program, &facts, &mut NoopLogger);
+        let report = plan.apply(&mut program, &salsa, &mut NoopLogger);
 
         assert_ne!(program.emit(), before);
         assert_eq!(program.emit(), "fn test() {\n    1;\n    3;\n}\n");
@@ -2306,20 +2314,20 @@ mod tests {
         edit.push_replace_statement(0, AstPath(vec![PathSegment::Stmt(0)]), None);
         edit.push_replace_expression(expression_site(2), Expr::Value(RustValue::I64(4)));
         let plan = item_plan(edit);
-        let facts = facts::analyze(&program).facts;
+        let salsa = test_salsa(&program);
 
-        let report = plan.apply(&mut program, &facts, &mut NoopLogger);
+        let report = plan.apply(&mut program, &salsa, &mut NoopLogger);
 
         assert_eq!(program.emit(), "fn test() {\n    2;\n    4;\n}\n");
         assert_eq!(report.applied, 1);
         assert_eq!(report.touched.in_place, vec![0]);
     }
 
-    fn function_ref(facts: &facts::FixupFacts, item_index: usize, name: &str) -> FunctionRef {
+    fn function_ref(salsa: &SalsaFacts, item_index: usize, name: &str) -> FunctionRef {
         FunctionRef {
             item_index,
             name: name.into(),
-            id: facts.function_by_item_index(item_index).unwrap(),
+            id: salsa.function_by_item_index(item_index).unwrap(),
         }
     }
 
@@ -2332,8 +2340,8 @@ mod tests {
             ],
             ..Program::default()
         };
-        let facts = facts::analyze(&program).facts;
-        let target = function_ref(&facts, 1, "callee");
+        let salsa = test_salsa(&program);
+        let target = function_ref(&salsa, 1, "callee");
         let replacement = FnDef {
             attrs: Vec::new(),
             vis: Visibility::Private,
@@ -2352,7 +2360,7 @@ mod tests {
         );
         let plan = item_plan(edit);
 
-        let report = plan.apply(&mut program, &facts, &mut NoopLogger);
+        let report = plan.apply(&mut program, &salsa, &mut NoopLogger);
 
         assert_eq!(
             program.emit(),
@@ -2372,8 +2380,8 @@ mod tests {
             ..Program::default()
         };
         let before = program.emit();
-        let facts = facts::analyze(&program).facts;
-        let target = function_ref(&facts, 1, "callee");
+        let salsa = test_salsa(&program);
+        let target = function_ref(&salsa, 1, "callee");
         let replacement = FnDef {
             attrs: Vec::new(),
             vis: Visibility::Private,
@@ -2393,7 +2401,7 @@ mod tests {
         );
         let plan = item_plan(edit);
 
-        let report = plan.apply(&mut program, &facts, &mut NoopLogger);
+        let report = plan.apply(&mut program, &salsa, &mut NoopLogger);
 
         assert_eq!(program.emit(), before);
         assert_eq!(report.applied, 0);
@@ -2420,9 +2428,9 @@ mod tests {
             TouchedItems::unbounded(),
         );
         let plan = item_plan(edit);
-        let facts = facts::analyze(&program).facts;
+        let salsa = test_salsa(&program);
 
-        let report = plan.apply(&mut program, &facts, &mut NoopLogger);
+        let report = plan.apply(&mut program, &salsa, &mut NoopLogger);
 
         assert_eq!(program.emit(), "fn test() {\n    2;\n}\n");
         assert_eq!(report.applied, 1);

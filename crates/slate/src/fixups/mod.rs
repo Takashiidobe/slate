@@ -131,7 +131,7 @@ fn apply_with_logger(
                     builder.add_rule(&query, &query::rules::goto::rewrite());
                     builder.finish()
                 };
-                plan.apply(program, facts, logger).changed
+                plan.apply(program, salsa, logger).changed
             },
         );
         incremental.mark_everything_dirty();
@@ -144,7 +144,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::switch::flat());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::EarlyInlineTemps, {
@@ -156,7 +156,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::inline_temps::early());
                 builder.finish()
             };
-            plan.apply(program, facts, logger).changed
+            plan.apply(program, salsa, logger).changed
         });
         incremental.mark_everything_dirty();
     });
@@ -168,7 +168,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::anonymous_structs::program());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -179,7 +179,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::param_spills::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::ZeroInit, {
@@ -193,7 +193,7 @@ fn apply_with_logger(
                     builder.add_rule(&query, &query::rules::zero_init::direct());
                     builder.finish()
                 };
-                plan.apply(program, facts, logger).changed
+                plan.apply(program, salsa, logger).changed
             },
         );
         incremental.mark_everything_dirty();
@@ -207,7 +207,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::struct_field_init::rewrite());
                 builder.finish()
             };
-            let report = plan.apply(&mut program, &facts, logger);
+            let report = plan.apply(&mut program, &incremental, logger);
             incremental.mark_touched(&report.touched);
             if !report.changed {
                 break;
@@ -226,7 +226,7 @@ fn apply_with_logger(
                 );
                 builder.finish()
             };
-            let report = plan.apply(&mut program, &facts, logger);
+            let report = plan.apply(&mut program, &incremental, logger);
             incremental.mark_touched(&report.touched);
             if !report.changed {
                 break;
@@ -242,7 +242,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::compound_assign::temp_backed());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -253,7 +253,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::swap::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     step!(program, Pass::ForContinue, {
@@ -267,7 +267,7 @@ fn apply_with_logger(
                     builder.add_rule(&query, &query::rules::for_continue::rewrite());
                     builder.finish()
                 };
-                plan.apply(program, facts, logger).changed
+                plan.apply(program, salsa, logger).changed
             },
         );
         incremental.mark_everything_dirty();
@@ -284,7 +284,7 @@ fn apply_with_logger(
                 );
                 builder.finish()
             };
-            let report = plan.apply(&mut program, &facts, logger);
+            let report = plan.apply(&mut program, &incremental, logger);
             incremental.mark_touched(&report.touched);
             if !report.changed {
                 break;
@@ -299,7 +299,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::constant_index_casts::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -310,7 +310,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::unnecessary_casts::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     step!(program, Pass::CallArgs, {
@@ -324,7 +324,7 @@ fn apply_with_logger(
                     builder.add_rule(&query, &query::rules::call_args::rewrite());
                     builder.finish()
                 };
-                plan.apply(program, facts, logger).changed
+                plan.apply(program, salsa, logger).changed
             },
         );
         incremental.mark_everything_dirty();
@@ -337,7 +337,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::sprintf_format::calls());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -348,7 +348,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::retval::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -359,7 +359,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::final_return_temps::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -370,7 +370,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::lazy_singleton::program());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -381,7 +381,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::drop_call_results::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -392,7 +392,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::string_lift::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     step!(program, Pass::StringParams, {
@@ -404,7 +404,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::string_params::rewrite());
                 builder.finish()
             };
-            let report = plan.apply(&mut program, &facts, logger);
+            let report = plan.apply(&mut program, &incremental, logger);
             if !report.changed {
                 break;
             }
@@ -419,7 +419,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::ptr_len::program());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -430,7 +430,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::slice_index::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -441,7 +441,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::slice_loop::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         if report.changed {
             late_loop_cleanup(&mut program, Pass::SliceLoop, logger);
             incremental.mark_everything_dirty();
@@ -457,7 +457,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::slice_reduce::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         if report.changed {
             late_loop_cleanup(&mut program, Pass::SliceReduce, logger);
         }
@@ -472,7 +472,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::range_loop::rewrite());
                 builder.finish()
             };
-            let report = plan.apply(&mut program, &facts, logger);
+            let report = plan.apply(&mut program, &incremental, logger);
             if report.changed {
                 late_loop_cleanup(&mut program, Pass::RangeLoop, logger);
                 incremental.mark_everything_dirty();
@@ -489,7 +489,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::va_list::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -500,7 +500,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::remove_mut::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -511,7 +511,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::string_copy::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::StringParams, {
@@ -523,7 +523,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::string_params::rewrite());
                 builder.finish()
             };
-            let report = plan.apply(&mut program, &facts, logger);
+            let report = plan.apply(&mut program, &incremental, logger);
             if !report.changed {
                 break;
             }
@@ -538,7 +538,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::remove_mut::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -549,7 +549,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::string_libc::calls());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         runtime::ensure_numeric_parse(&mut program);
         incremental.mark_everything_dirty();
     });
@@ -563,7 +563,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::ctype_libc::classify());
                 builder.finish()
             };
-            plan.apply(&mut program, &facts, logger);
+            plan.apply(&mut program, &incremental, logger);
             incremental.mark_everything_dirty();
         }
     });
@@ -575,7 +575,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::sort_search::program());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -586,7 +586,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::heap_ownership::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -597,7 +597,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::option_box_locals::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -611,7 +611,7 @@ fn apply_with_logger(
             );
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     step!(program, Pass::DeadLocals, {
@@ -626,7 +626,7 @@ fn apply_with_logger(
                 );
                 builder.finish()
             };
-            let report = plan.apply(&mut program, &facts, logger);
+            let report = plan.apply(&mut program, &incremental, logger);
             incremental.mark_touched(&report.touched);
             if !report.changed {
                 break;
@@ -641,7 +641,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::remove_mut::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -652,7 +652,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::printf_format::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         let facts = incremental.resolve(&program);
         let plan = {
             let query = query::QueryContext::new(&program, &facts).with_salsa(&incremental);
@@ -660,7 +660,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::printf_format::fallback());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -672,7 +672,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::printf_stream::fputs_calls());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::StringParams, {
@@ -684,7 +684,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::string_params::rewrite());
                 builder.finish()
             };
-            let report = plan.apply(&mut program, &facts, logger);
+            let report = plan.apply(&mut program, &incremental, logger);
             if !report.changed {
                 break;
             }
@@ -699,7 +699,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::remove_mut::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -710,7 +710,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::string_libc::calls());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         runtime::ensure_numeric_parse(&mut program);
         incremental.mark_everything_dirty();
     });
@@ -724,7 +724,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::ctype_libc::classify());
                 builder.finish()
             };
-            plan.apply(&mut program, &facts, logger);
+            plan.apply(&mut program, &incremental, logger);
             incremental.mark_everything_dirty();
         }
     });
@@ -736,7 +736,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::c_strings::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -747,7 +747,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::stdio::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -758,7 +758,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::perror::calls());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::MemchrPreludeFixupCalls, {
@@ -769,7 +769,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::memchr::calls());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
         report.changed
     });
@@ -784,7 +784,7 @@ fn apply_with_logger(
                     builder.add_rule(&query, &query::rules::nullable_pointer::rewrite());
                     builder.finish()
                 };
-                plan.apply(program, facts, logger).changed
+                plan.apply(program, salsa, logger).changed
             },
         );
         incremental.mark_everything_dirty();
@@ -797,7 +797,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::string_lift::rewrite_c_strings());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     step!(program, Pass::MemchrPrelude, {
@@ -808,7 +808,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::memchr::helper());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
         report.changed
     });
@@ -821,7 +821,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::inline_temps::late());
                 builder.finish()
             };
-            plan.apply(program, facts, logger).changed
+            plan.apply(program, salsa, logger).changed
         });
         incremental.mark_everything_dirty();
     });
@@ -834,7 +834,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::ptr_copy::calls());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::MemMove, {
@@ -846,7 +846,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::mem_move::calls());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::MemSet, {
@@ -858,7 +858,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::mem_set::calls());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::MemCmp, {
@@ -869,7 +869,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::mem_cmp::calls());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::DeadLocals, {
@@ -884,7 +884,7 @@ fn apply_with_logger(
                 );
                 builder.finish()
             };
-            let report = plan.apply(&mut program, &facts, logger);
+            let report = plan.apply(&mut program, &incremental, logger);
             incremental.mark_touched(&report.touched);
             if !report.changed {
                 break;
@@ -902,7 +902,7 @@ fn apply_with_logger(
             );
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -913,7 +913,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::buffer_cursor::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     let facts = incremental.resolve(&program);
@@ -924,7 +924,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::atomic_locals::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::LateInlineTemps, {
@@ -936,7 +936,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::inline_temps::late());
                 builder.finish()
             };
-            plan.apply(program, facts, logger).changed
+            plan.apply(program, salsa, logger).changed
         });
         incremental.mark_everything_dirty();
     });
@@ -951,7 +951,7 @@ fn apply_with_logger(
                     builder.add_rule(&query, &query::rules::zero_init::deferred());
                     builder.finish()
                 };
-                plan.apply(program, facts, logger).changed
+                plan.apply(program, salsa, logger).changed
             },
         );
         incremental.mark_everything_dirty();
@@ -964,7 +964,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::slice_swap::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
     });
     step!(program, Pass::AtomicCompareExchange, {
@@ -978,7 +978,7 @@ fn apply_with_logger(
                     builder.add_rule(&query, &query::rules::atomic_compare_exchange::rewrite());
                     builder.finish()
                 };
-                plan.apply(program, facts, logger).changed
+                plan.apply(program, salsa, logger).changed
             },
         );
         incremental.mark_everything_dirty();
@@ -991,7 +991,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::remove_mut::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::AssertRecovery, {
@@ -1005,7 +1005,7 @@ fn apply_with_logger(
                     builder.add_rule(&query, &query::rules::assert_recovery::rewrite());
                     builder.finish()
                 };
-                plan.apply(program, facts, logger).changed
+                plan.apply(program, salsa, logger).changed
             },
         );
         incremental.mark_everything_dirty();
@@ -1019,7 +1019,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::var_aliases::rewrite());
                 builder.finish()
             };
-            let report = plan.apply(&mut program, &facts, logger);
+            let report = plan.apply(&mut program, &incremental, logger);
             incremental.mark_touched(&report.touched);
             if !report.changed {
                 break;
@@ -1037,7 +1037,7 @@ fn apply_with_logger(
                     builder.add_rule(&query, &query::rules::constant_conditions::rewrite());
                     builder.finish()
                 };
-                plan.apply(program, facts, logger).changed
+                plan.apply(program, salsa, logger).changed
             },
         );
         incremental.mark_everything_dirty();
@@ -1050,7 +1050,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::libc_exit::calls());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
         report.changed
     });
@@ -1062,7 +1062,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::unused_items::rewrite());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
         report.changed
     });
@@ -1075,7 +1075,7 @@ fn apply_with_logger(
                 builder.add_rule(&query, &query::rules::unused_params::rewrite());
                 builder.finish()
             };
-            let report = plan.apply(&mut program, &facts, logger);
+            let report = plan.apply(&mut program, &incremental, logger);
             incremental.mark_touched(&report.touched);
             if !report.changed {
                 break;
@@ -1090,7 +1090,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::final_returns::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     step!(program, Pass::MainZeroExit, {
@@ -1101,7 +1101,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::main_zero_exit::rewrite());
             builder.finish()
         };
-        plan.apply(&mut program, &facts, logger);
+        plan.apply(&mut program, &incremental, logger);
         incremental.mark_everything_dirty();
     });
     let facts = incremental.resolve(&program);
@@ -1113,7 +1113,7 @@ fn apply_with_logger(
             builder.add_rule(&query, &query::rules::support::unused_numeric_parse());
             builder.finish()
         };
-        let report = plan.apply(&mut program, &facts, logger);
+        let report = plan.apply(&mut program, &incremental, logger);
         incremental.mark_touched(&report.touched);
         report.changed
     });
@@ -1128,7 +1128,7 @@ fn to_fixpoint_program_with_facts(
 ) {
     let mut completed_rounds = 0;
     while limit.permits(completed_rounds) {
-        let mut round_salsa = salsa::SalsaFacts::new(facts::FixupFacts::default());
+        let mut round_salsa = salsa::SalsaFacts::new_empty();
         round_salsa.mark_everything_dirty();
         let facts = round_salsa.resolve(program);
         completed_rounds += 1;
@@ -1155,7 +1155,7 @@ impl FixpointLimit {
 
 fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceLogger) {
     loop {
-        let mut round_salsa = salsa::SalsaFacts::new(facts::FixupFacts::default());
+        let mut round_salsa = salsa::SalsaFacts::new_empty();
         round_salsa.mark_everything_dirty();
         let facts = round_salsa.resolve(program);
         let plan = {
@@ -1165,7 +1165,7 @@ fn late_loop_cleanup(program: &mut Program, pass: Pass, logger: &mut impl TraceL
             builder.add_rule(&query, &query::rules::dead_locals::rewrite(pass));
             builder.finish()
         };
-        let report = plan.apply(program, &facts, logger);
+        let report = plan.apply(program, &round_salsa, logger);
         if !report.changed {
             break;
         }
