@@ -5,16 +5,14 @@ use crate::fixups::facts::{self, walk};
 use crate::fixups::facts::{
     AnonymousStructFact, ArrayElementPointerOriginFact, AsciiNumericSign, AstPath,
     AtomicGlobalFact, AtomicLocalFact, BindingFact, BindingId, BindingKind, BorrowAliasReason,
-    BufferPointerFieldFact, CStringLiteralFact, CallArgFact, CallArgPinning, CallCallee,
-    CalleeAllocSummaryFact, CallsiteFact, CastFact, ConstValue, ControlFlowFact,
-    ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
-    EffectSubject, FileOwnershipFact, FunctionFact, FunctionId, HeapOwnershipFact,
-    InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LazyInitSingletonFact,
-    NulTermination, NullCheckDominanceFact, NullCheckProof, OptionBoxAssignKind,
-    OptionBoxComparison, OptionBoxLocalCandidate, PathSegment, PlaceFact, PointerComparisonFact,
-    PointerComparisonKind, PointerOptionSafetyFact, PrintfCallFact, PtrLenSliceFact, Purity,
-    StringBufferFact, StringBufferKind, StringCopyRewrite, StringCopyRewriteFact,
-    StringLibcUseFact, StringParamLiftFact, StringPointerViewFact, StringRecoveryCandidate,
+    CStringLiteralFact, CallArgFact, CallArgPinning, CallCallee, CalleeAllocSummaryFact,
+    CallsiteFact, CastFact, ConstValue, ControlFlowFact, ControlFlowSubject, CountedLoopFact,
+    DefUseFact, EffectFact, EffectSubject, FunctionFact, FunctionId,
+    InterproceduralAllocEligibilityFact, LazyInitSingletonFact, NulTermination,
+    NullCheckDominanceFact, NullCheckProof, OptionBoxAssignKind, PathSegment, PlaceFact,
+    PointerComparisonFact, PointerComparisonKind, PointerOptionSafetyFact, PrintfCallFact,
+    PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
+    StringCopyRewriteFact, StringLibcUseFact, StringPointerViewFact, StringRecoveryCandidate,
     StructFieldOwnershipFact, ValueSubject,
 };
 use crate::fixups::salsa::{FixupDb, FunctionInput, ProgramInput, SalsaFacts};
@@ -1373,6 +1371,431 @@ impl<'db> ProgramInput {
         }];
         Ok(Proof::new(ReferenceDomain { definitions, items }, evidence))
     }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn proof_anonymous_structs(
+        self,
+        db: &dyn FixupDb,
+    ) -> QueryResult<AnonymousStructSet> {
+        let anonymous_structs = self.anonymous_structs(db);
+        let records = self
+            .program(db)
+            .items
+            .iter()
+            .enumerate()
+            .filter_map(|(item_index, item)| match item {
+                Item::Record(record) if !record.is_union && record.name.starts_with("anon_") => {
+                    Some((item_index, record))
+                }
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        let generated = anonymous_structs
+            .iter()
+            .map(|fact| fact.generated_name.as_str())
+            .collect::<BTreeSet<_>>();
+        let originals = anonymous_structs
+            .iter()
+            .map(|fact| fact.original_name.as_str())
+            .collect::<BTreeSet<_>>();
+        let record_names = records
+            .iter()
+            .map(|(_, record)| record.name.as_str())
+            .collect::<BTreeSet<_>>();
+        let occupied = self
+            .program(db)
+            .items
+            .iter()
+            .filter_map(item_type_name)
+            .collect::<BTreeSet<_>>();
+        let conflicts = generated.intersection(&occupied).count()
+            + anonymous_structs.len().saturating_sub(generated.len())
+            + anonymous_structs.len().saturating_sub(originals.len())
+            + records.len().saturating_sub(record_names.len());
+        let complete = !records.is_empty()
+            && records.len() == anonymous_structs.len()
+            && conflicts == 0
+            && anonymous_structs.iter().all(|fact| {
+                records.iter().any(|(_, record)| {
+                    record.name == fact.original_name
+                        && record.fields.len() == fact.fields.len()
+                        && record
+                            .fields
+                            .iter()
+                            .zip(&fact.fields)
+                            .all(|(field, fact)| field.name.as_str() == fact.name)
+                })
+            });
+        let site = expression_site(records.first().map_or(0, |(index, _)| *index), &[]);
+        let evidence = vec![Evidence {
+            predicate: Predicate::AnonymousStructDomain,
+            site: site.clone(),
+            detail: EvidenceDetail::AnonymousStructDomain {
+                records: records.len(),
+                facts: anonymous_structs.len(),
+                conflicts,
+                complete,
+            },
+        }];
+        if !complete {
+            return Err(Rejection::new(
+                Predicate::AnonymousStructDomain,
+                Some(site),
+                RejectionReason::IncompleteDomain,
+                evidence,
+            ));
+        }
+        let structs = anonymous_structs
+            .iter()
+            .map(|fact| {
+                let item_index = records
+                    .iter()
+                    .find_map(|(item_index, record)| {
+                        (record.name == fact.original_name).then_some(*item_index)
+                    })
+                    .unwrap();
+                AnonymousStructPlan {
+                    item_index,
+                    original_name: fact.original_name.clone(),
+                    generated_name: fact.generated_name.clone(),
+                    fields: fact
+                        .fields
+                        .iter()
+                        .map(|field| AnonymousStructField {
+                            name: field.name.clone(),
+                            ty: field.ty.clone(),
+                        })
+                        .collect(),
+                }
+            })
+            .collect();
+        Ok(Proof::new(AnonymousStructSet { structs }, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn definition_users(
+        self,
+        db: &dyn FixupDb,
+        definition: DefinitionSite,
+    ) -> QueryResult<DefinitionUsers> {
+        let DefinitionIndex {
+            symbol_uses,
+            use_domain_complete,
+            ..
+        } = definition_index(self.program(db));
+        let definition_items = BTreeSet::from([definition.location.item_index()]);
+        let users = count_definition_users(&definition, &definition_items, &symbol_uses);
+        let complete = use_domain_complete && !definition.externally_reachable;
+        let site = definition_evidence_site(&definition);
+        let evidence = vec![Evidence {
+            predicate: Predicate::ZeroUsers,
+            site: site.clone(),
+            detail: EvidenceDetail::UseDomain {
+                name: definition.name.clone(),
+                users,
+                complete,
+            },
+        }];
+        if !complete {
+            return Err(Rejection::new(
+                Predicate::ZeroUsers,
+                Some(site),
+                RejectionReason::IncompleteDomain,
+                evidence,
+            ));
+        }
+        Ok(Proof::new(
+            DefinitionUsers {
+                definition,
+                users,
+                site,
+            },
+            evidence,
+        ))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn definition_group_users(
+        self,
+        db: &dyn FixupDb,
+        group: DefinitionGroup,
+    ) -> QueryResult<DefinitionGroupUsers> {
+        let DefinitionIndex {
+            definitions,
+            symbol_uses,
+            use_domain_complete,
+        } = definition_index(self.program(db));
+        let definitions = definitions
+            .values()
+            .flatten()
+            .filter(|definition| definition.group.as_ref() == Some(&group))
+            .cloned()
+            .collect::<Vec<_>>();
+        let definition_items = definitions
+            .iter()
+            .map(|definition| definition.location.item_index())
+            .collect::<BTreeSet<_>>();
+        let users = definitions
+            .iter()
+            .map(|definition| count_definition_users(definition, &definition_items, &symbol_uses))
+            .sum();
+        let complete = !definitions.is_empty()
+            && use_domain_complete
+            && definitions
+                .iter()
+                .all(|definition| !definition.externally_reachable);
+        let site = definitions
+            .first()
+            .map(definition_evidence_site)
+            .unwrap_or_else(|| expression_site(0, &[]));
+        let evidence = vec![Evidence {
+            predicate: Predicate::ZeroGroupUsers,
+            site: site.clone(),
+            detail: EvidenceDetail::GroupUseDomain {
+                group: group.clone(),
+                definitions: definitions.len(),
+                users,
+                complete,
+            },
+        }];
+        if !complete {
+            return Err(Rejection::new(
+                Predicate::ZeroGroupUsers,
+                Some(site),
+                RejectionReason::IncompleteDomain,
+                evidence,
+            ));
+        }
+        Ok(Proof::new(
+            DefinitionGroupUsers { group, users, site },
+            evidence,
+        ))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn proof_heap_ownership(
+        self,
+        db: &'db dyn FixupDb,
+        item_index: usize,
+    ) -> QueryResult<HeapOwnershipFacts<'db>> {
+        let predicate = Predicate::HeapOwnershipFacts;
+        let site = expression_site(item_index, &[]);
+        let function = function_input_at(self, db, item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let bindings = all_binding_refs(self, db);
+        let binding = |id| bindings.iter().find(|binding| binding.id == id).cloned();
+        let statement = |path: &AstPath| StatementRef {
+            item_index,
+            path: path.clone(),
+        };
+        let mut owners = Vec::new();
+        for fact in function.heap_ownership(db) {
+            let pointer = binding(fact.pointer).ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                )
+            })?;
+            let allocation_temp = binding(fact.allocation_temp).ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                )
+            })?;
+            let size_temp = match fact.size_temp {
+                Some(id) => Some(binding(id).ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?),
+                None => None,
+            };
+            let free_temp = match fact.free_temp {
+                Some(id) => Some(binding(id).ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?),
+                None => None,
+            };
+            let aliases = fact
+                .aliases
+                .iter()
+                .map(|id| binding(*id))
+                .collect::<Option<Vec<_>>>()
+                .ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?;
+            let reallocations = fact
+                .reallocations
+                .iter()
+                .map(|realloc| {
+                    Some(HeapReallocation {
+                        source_temp: match realloc.source_temp {
+                            Some(id) => Some(binding(id)?),
+                            None => None,
+                        },
+                        allocation_temp: binding(realloc.allocation_temp)?,
+                        size_temp: match realloc.size_temp {
+                            Some(id) => Some(binding(id)?),
+                            None => None,
+                        },
+                        allocation_statement: statement(&realloc.allocation_path),
+                        assignment_statement: statement(&realloc.assign_path),
+                        new_extent: realloc.new_extent.clone(),
+                        init: realloc.init,
+                        resize: realloc.resize,
+                    })
+                })
+                .collect::<Option<Vec<_>>>()
+                .ok_or_else(|| {
+                    Rejection::new(
+                        predicate,
+                        Some(site.clone()),
+                        RejectionReason::IncompleteDomain,
+                        Vec::new(),
+                    )
+                })?;
+            owners.push(HeapOwnership {
+                pointer,
+                allocation_temp,
+                size_temp,
+                free_temp,
+                aliases,
+                pointer_statement: statement(&fact.pointer_path),
+                allocation_statement: statement(&fact.allocation_path),
+                assignment_statement: statement(&fact.assign_path),
+                free_statement: statement(&fact.free_path),
+                elem_ty: fact.elem_ty.clone(),
+                allocation: fact.allocation,
+                extent: fact.extent.clone(),
+                init: fact.init,
+                read_safety: fact.read_safety,
+                uses: fact
+                    .uses
+                    .iter()
+                    .map(|usage| HeapUse {
+                        statement: statement(&usage.path),
+                        kind: usage.kind.clone(),
+                    })
+                    .collect(),
+                reallocations,
+            });
+        }
+        if owners.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::HeapOwnershipFacts {
+                owners: owners.len(),
+            },
+        }];
+        Ok(Proof::new(HeapOwnershipFacts { owners }, evidence))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn proof_file_ownership(
+        self,
+        db: &'db dyn FixupDb,
+        item_index: usize,
+    ) -> QueryResult<FileOwnershipFacts<'db>> {
+        let predicate = Predicate::FileOwnershipFacts;
+        let site = expression_site(item_index, &[]);
+        let function = function_input_at(self, db, item_index).ok_or_else(|| {
+            Rejection::new(
+                predicate,
+                Some(site.clone()),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            )
+        })?;
+        let bindings = all_binding_refs(self, db);
+        let binding = |id| bindings.iter().find(|binding| binding.id == id).cloned();
+        let statement = |path: &AstPath| StatementRef {
+            item_index,
+            path: path.clone(),
+        };
+        let mut owners = Vec::new();
+        for fact in function.file_ownership(db) {
+            let handle = binding(fact.handle).ok_or_else(|| {
+                Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                )
+            })?;
+            if binding(fact.open_temp).is_none()
+                || fact.close_temp.is_some_and(|id| binding(id).is_none())
+            {
+                return Err(Rejection::new(
+                    predicate,
+                    Some(site.clone()),
+                    RejectionReason::IncompleteDomain,
+                    Vec::new(),
+                ));
+            }
+            owners.push(FileOwnership {
+                handle,
+                handle_statement: statement(&fact.handle_path),
+                open_statement: statement(&fact.open_path),
+                assign_statement: statement(&fact.assign_path),
+                mode: fact.mode,
+                uses: fact
+                    .uses
+                    .iter()
+                    .map(|usage| FileUse {
+                        statement: statement(&usage.path),
+                        kind: usage.kind,
+                    })
+                    .collect(),
+            });
+        }
+        if owners.is_empty() {
+            return Err(Rejection::new(
+                predicate,
+                Some(site),
+                RejectionReason::MissingEvidence,
+                Vec::new(),
+            ));
+        }
+        let evidence = vec![Evidence {
+            predicate,
+            site,
+            detail: EvidenceDetail::FileOwnershipFacts {
+                owners: owners.len(),
+            },
+        }];
+        Ok(Proof::new(FileOwnershipFacts { owners }, evidence))
+    }
 }
 
 impl<'snapshot> QueryContext<'snapshot> {
@@ -1554,13 +1977,6 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.salsa().string_buffer_at(function, path)
     }
 
-    fn string_buffer_fact(
-        &self,
-        binding: BindingId<'snapshot>,
-    ) -> Option<&StringBufferFact<'snapshot>> {
-        self.salsa().string_buffer(binding)
-    }
-
     fn string_pointer_view_facts(
         &self,
         function: FunctionId<'snapshot>,
@@ -1579,22 +1995,6 @@ impl<'snapshot> QueryContext<'snapshot> {
         path: &AstPath,
     ) -> Option<&StringLibcUseFact<'snapshot>> {
         self.salsa().string_libc_use(function, path)
-    }
-
-    fn counted_loop_fact(
-        &self,
-        function: FunctionId<'snapshot>,
-        loop_path: &AstPath,
-    ) -> Option<&CountedLoopFact<'snapshot>> {
-        self.salsa().counted_loop(function, loop_path)
-    }
-
-    fn counted_slice_loop_fact(
-        &self,
-        function: FunctionId<'snapshot>,
-        loop_path: &AstPath,
-    ) -> Option<&CountedSliceLoopFact<'snapshot>> {
-        self.salsa().counted_slice_loop(function, loop_path)
     }
 
     fn cast_fact_at(
@@ -1662,50 +2062,6 @@ impl<'snapshot> QueryContext<'snapshot> {
         self.salsa().atomic_locals().iter().collect()
     }
 
-    fn option_box_local_candidate_facts(
-        &self,
-        function: FunctionId<'snapshot>,
-    ) -> Vec<&OptionBoxLocalCandidate<'snapshot>> {
-        self.salsa()
-            .option_box_local_candidates(function)
-            .iter()
-            .collect()
-    }
-
-    fn option_box_comparison_facts(
-        &self,
-        function: FunctionId<'snapshot>,
-    ) -> Vec<&OptionBoxComparison<'snapshot>> {
-        self.salsa()
-            .option_box_comparisons(function)
-            .iter()
-            .collect()
-    }
-
-    fn buffer_pointer_field_facts(
-        &self,
-        function: FunctionId<'snapshot>,
-    ) -> Vec<&BufferPointerFieldFact<'snapshot>> {
-        self.salsa()
-            .buffer_pointer_fields(function)
-            .iter()
-            .collect()
-    }
-
-    fn heap_ownership_fact_list(
-        &self,
-        function: FunctionId<'snapshot>,
-    ) -> Vec<&HeapOwnershipFact<'snapshot>> {
-        self.salsa().heap_ownership(function).iter().collect()
-    }
-
-    fn file_ownership_fact_list(
-        &self,
-        function: FunctionId<'snapshot>,
-    ) -> Vec<&FileOwnershipFact<'snapshot>> {
-        self.salsa().file_ownership(function).iter().collect()
-    }
-
     fn printf_call_fact(
         &self,
         function: FunctionId<'snapshot>,
@@ -1716,36 +2072,6 @@ impl<'snapshot> QueryContext<'snapshot> {
             .iter()
             .find(|fact| &fact.site.path == path)
             .cloned()
-    }
-
-    fn callee_alloc_summary_fact(
-        &self,
-        function: FunctionId<'snapshot>,
-    ) -> Option<&CalleeAllocSummaryFact<'snapshot>> {
-        self.salsa().callee_alloc_summary(function)
-    }
-
-    fn interprocedural_alloc_eligibility_fact(
-        &self,
-        function: FunctionId<'snapshot>,
-    ) -> Option<InterproceduralAllocEligibilityFact<'snapshot>> {
-        let (eligibility, _) = self.salsa().interprocedural_alloc();
-        eligibility
-            .iter()
-            .find(|fact| fact.function == function)
-            .cloned()
-    }
-
-    fn interprocedural_alloc_caller_facts(
-        &self,
-        function: FunctionId<'snapshot>,
-    ) -> Vec<InterproceduralAllocCallerFact<'snapshot>> {
-        let (_, callers) = self.salsa().interprocedural_alloc();
-        callers
-            .iter()
-            .filter(|caller| caller.callee == function)
-            .cloned()
-            .collect()
     }
 
     fn pointer_option_safety_of(
@@ -1794,10 +2120,6 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn ptr_len_slice_facts(&self) -> &[PtrLenSliceFact<'snapshot>] {
         self.salsa().ptr_len_slices()
-    }
-
-    fn string_param_lift_facts(&self) -> &[StringParamLiftFact<'snapshot>] {
-        self.salsa().string_param_lifts()
     }
 
     fn anonymous_struct_facts(&self) -> &[AnonymousStructFact] {
@@ -4896,79 +5218,9 @@ impl<'snapshot> QueryContext<'snapshot> {
             .collect()
     }
 
-    fn count_definition_users(
-        &self,
-        definition: &DefinitionSite,
-        definition_items: &BTreeSet<usize>,
-    ) -> usize {
-        definition
-            .symbols
-            .iter()
-            .map(|symbol| {
-                self.symbol_uses
-                    .get(symbol)
-                    .map(|uses| {
-                        uses.iter()
-                            .filter(|item_index| !definition_items.contains(item_index))
-                            .count()
-                    })
-                    .unwrap_or(0)
-            })
-            .sum()
-    }
-
     fn function(&self, site: &ExprSite) -> Option<FunctionId<'snapshot>> {
         self.program.items.get(site.item_index)?;
         self.salsa().function_by_item_index(site.item_index)
-    }
-
-    fn count_matches_source_len(&self, source: &ByteSource<'snapshot>, count: &ExprSite) -> bool {
-        let Some(count) = self.expr(count) else {
-            return false;
-        };
-        count_matches_source_len(source, count)
-    }
-
-    fn constant_values<T: Ord>(
-        &self,
-        predicate: Predicate,
-        site: &ExprSite,
-        convert: impl Fn(&ConstValue) -> Result<Option<T>, RejectionReason>,
-    ) -> Result<Vec<T>, Rejection> {
-        let function = self.function(site).ok_or_else(|| {
-            Rejection::new(
-                predicate,
-                Some(site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            )
-        })?;
-        let mut values = BTreeSet::new();
-        for value in &self.values_at(function, ValueSubject::Expr, &site.fact_path) {
-            match convert(value) {
-                Ok(Some(value)) => {
-                    values.insert(value);
-                }
-                Ok(None) => {}
-                Err(reason) => {
-                    return Err(Rejection::new(
-                        predicate,
-                        Some(site.clone()),
-                        reason,
-                        Vec::new(),
-                    ));
-                }
-            }
-        }
-        if values.is_empty() {
-            return Err(Rejection::new(
-                predicate,
-                Some(site.clone()),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        }
-        Ok(values.into_iter().collect())
     }
 }
 
@@ -5019,209 +5271,36 @@ fn statement_container_at<'body>(
 
 impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn anonymous_structs(&self) -> QueryResult<AnonymousStructSet> {
-        let anonymous_structs = self.anonymous_struct_facts();
-        let records = self
-            .program
-            .items
-            .iter()
-            .enumerate()
-            .filter_map(|(item_index, item)| match item {
-                Item::Record(record) if !record.is_union && record.name.starts_with("anon_") => {
-                    Some((item_index, record))
-                }
-                _ => None,
-            })
-            .collect::<Vec<_>>();
-        let generated = anonymous_structs
-            .iter()
-            .map(|fact| fact.generated_name.as_str())
-            .collect::<BTreeSet<_>>();
-        let originals = anonymous_structs
-            .iter()
-            .map(|fact| fact.original_name.as_str())
-            .collect::<BTreeSet<_>>();
-        let record_names = records
-            .iter()
-            .map(|(_, record)| record.name.as_str())
-            .collect::<BTreeSet<_>>();
-        let occupied = self
-            .program
-            .items
-            .iter()
-            .filter_map(item_type_name)
-            .collect::<BTreeSet<_>>();
-        let conflicts = generated.intersection(&occupied).count()
-            + anonymous_structs.len().saturating_sub(generated.len())
-            + anonymous_structs.len().saturating_sub(originals.len())
-            + records.len().saturating_sub(record_names.len());
-        let complete = !records.is_empty()
-            && records.len() == anonymous_structs.len()
-            && conflicts == 0
-            && anonymous_structs.iter().all(|fact| {
-                records.iter().any(|(_, record)| {
-                    record.name == fact.original_name
-                        && record.fields.len() == fact.fields.len()
-                        && record
-                            .fields
-                            .iter()
-                            .zip(&fact.fields)
-                            .all(|(field, fact)| field.name.as_str() == fact.name)
-                })
-            });
-        let site = ExprSite {
-            item_index: records.first().map(|(index, _)| *index).unwrap_or(0),
-            path: AstPath(Vec::new()),
-            fact_path: AstPath(Vec::new()),
-        };
-        let evidence = vec![Evidence {
-            predicate: Predicate::AnonymousStructDomain,
-            site: site.clone(),
-            detail: EvidenceDetail::AnonymousStructDomain {
-                records: records.len(),
-                facts: anonymous_structs.len(),
-                conflicts,
-                complete,
-            },
-        }];
-        if !complete {
-            return Err(Rejection::new(
-                Predicate::AnonymousStructDomain,
-                Some(site),
-                RejectionReason::IncompleteDomain,
-                evidence,
-            ));
-        }
-        let structs = anonymous_structs
-            .iter()
-            .map(|fact| {
-                let item_index = records
-                    .iter()
-                    .find_map(|(item_index, record)| {
-                        (record.name == fact.original_name).then_some(*item_index)
-                    })
-                    .unwrap();
-                AnonymousStructPlan {
-                    item_index,
-                    original_name: fact.original_name.clone(),
-                    generated_name: fact.generated_name.clone(),
-                    fields: fact
-                        .fields
-                        .iter()
-                        .map(|field| AnonymousStructField {
-                            name: field.name.clone(),
-                            ty: field.ty.clone(),
-                        })
-                        .collect(),
-                }
-            })
-            .collect();
-        Ok(Proof::new(AnonymousStructSet { structs }, evidence))
+        self.salsa().proof_anonymous_structs()
     }
 
     pub(in crate::fixups) fn definition_users(
         &self,
         definition: &DefinitionSite,
     ) -> QueryResult<DefinitionUsers> {
-        let users = self.count_definition_users(
-            definition,
-            &BTreeSet::from([definition.location.item_index()]),
-        );
-        let complete = self.use_domain_complete && !definition.externally_reachable;
-        let evidence = vec![Evidence {
-            predicate: Predicate::ZeroUsers,
-            site: definition_evidence_site(definition),
-            detail: EvidenceDetail::UseDomain {
-                name: definition.name.clone(),
-                users,
-                complete,
-            },
-        }];
-        if !complete {
-            return Err(Rejection::new(
-                Predicate::ZeroUsers,
-                Some(definition_evidence_site(definition)),
-                RejectionReason::IncompleteDomain,
-                evidence,
-            ));
-        }
-        let site = definition_evidence_site(definition);
-        Ok(Proof::new(
-            DefinitionUsers {
-                definition: definition.clone(),
-                users,
-                site,
-            },
-            evidence,
-        ))
+        self.salsa().proof_definition_users(definition)
     }
 
     pub(in crate::fixups) fn definition_group_users(
         &self,
         group: &DefinitionGroup,
     ) -> QueryResult<DefinitionGroupUsers> {
-        let definitions = self.definitions_in_group(group);
-        let definition_items = definitions
-            .iter()
-            .map(|definition| definition.location.item_index())
-            .collect::<BTreeSet<_>>();
-        let users = definitions
-            .iter()
-            .map(|definition| self.count_definition_users(definition, &definition_items))
-            .sum();
-        let complete = !definitions.is_empty()
-            && self.use_domain_complete
-            && definitions
-                .iter()
-                .all(|definition| !definition.externally_reachable);
-        let site = definitions
-            .first()
-            .map(definition_evidence_site)
-            .unwrap_or_else(|| ExprSite {
-                item_index: 0,
-                path: AstPath(Vec::new()),
-                fact_path: AstPath(Vec::new()),
-            });
-        let evidence = vec![Evidence {
-            predicate: Predicate::ZeroGroupUsers,
-            site: site.clone(),
-            detail: EvidenceDetail::GroupUseDomain {
-                group: group.clone(),
-                definitions: definitions.len(),
-                users,
-                complete,
-            },
-        }];
-        if !complete {
-            return Err(Rejection::new(
-                Predicate::ZeroGroupUsers,
-                Some(site),
-                RejectionReason::IncompleteDomain,
-                evidence,
-            ));
-        }
-        Ok(Proof::new(
-            DefinitionGroupUsers {
-                group: group.clone(),
-                users,
-                site,
-            },
-            evidence,
-        ))
+        self.salsa().proof_definition_group_users(group)
     }
 
     pub(in crate::fixups) fn byte_source(
         &self,
         site: &ExprSite,
     ) -> QueryResult<ByteSource<'snapshot>> {
-        return self.salsa().byte_source(site);
+        self.salsa().byte_source(site)
     }
 
     pub(in crate::fixups) fn const_u8(&self, site: &ExprSite) -> QueryResult<u8> {
-        return self.salsa().const_u8(site);
+        self.salsa().const_u8(site)
     }
 
     pub(in crate::fixups) fn const_usize(&self, site: &ExprSite) -> QueryResult<usize> {
-        return self.salsa().const_usize(site);
+        self.salsa().const_usize(site)
     }
 
     pub(in crate::fixups) fn full_byte_view(
@@ -5229,14 +5308,14 @@ impl<'snapshot> QueryContext<'snapshot> {
         source: &ByteSource<'snapshot>,
         count: &ExprSite,
     ) -> QueryResult<ByteView<'snapshot>> {
-        return self.salsa().full_byte_view(source, count);
+        self.salsa().full_byte_view(source, count)
     }
 
     pub(in crate::fixups) fn first_nul(
         &self,
         source: &ByteSource<'snapshot>,
     ) -> QueryResult<NulPosition> {
-        return self.salsa().first_nul(source);
+        self.salsa().first_nul(source)
     }
 
     pub(in crate::fixups) fn prefix_contains(
@@ -5244,250 +5323,55 @@ impl<'snapshot> QueryContext<'snapshot> {
         count: &ExprSite,
         nul: NulPosition,
     ) -> QueryResult<()> {
-        return self.salsa().prefix_contains(count, nul);
+        self.salsa().prefix_contains(count, nul)
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn pure(&self, site: &ExprSite) -> QueryResult<StableExpr> {
-        return self.salsa().pure(site);
+        self.salsa().pure(site)
     }
 
     pub(in crate::fixups) fn counted_loop(
         &self,
         statement: &StatementRef,
     ) -> QueryResult<CountedLoopFact<'snapshot>> {
-        return self.salsa().proof_counted_loop(statement);
+        self.salsa().proof_counted_loop(statement)
     }
 
     pub(in crate::fixups) fn counted_slice_loop(
         &self,
         statement: &StatementRef,
     ) -> QueryResult<SliceLoopFact<'snapshot>> {
-        return self.salsa().proof_counted_slice_loop(statement);
+        self.salsa().proof_counted_slice_loop(statement)
     }
 
     pub(in crate::fixups) fn lazy_singletons(&self) -> QueryResult<LazySingletonSet> {
-        return self.salsa().proof_lazy_singletons();
+        self.salsa().proof_lazy_singletons()
     }
 
     pub(in crate::fixups) fn atomic_promotions(&self) -> QueryResult<AtomicPromotionSet> {
-        return self.salsa().proof_atomic_promotions();
+        self.salsa().proof_atomic_promotions()
     }
 
     pub(in crate::fixups) fn heap_ownership_facts(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<HeapOwnershipFacts<'snapshot>> {
-        let predicate = Predicate::HeapOwnershipFacts;
-        let site = expression_site(function.item_index, &[]);
-        let bindings = self.all_bindings();
-        let binding = |id| bindings.iter().find(|binding| binding.id == id).cloned();
-        let statement = |path: &AstPath| StatementRef {
-            item_index: function.item_index,
-            path: path.clone(),
-        };
-        let mut owners = Vec::new();
-        for fact in self.heap_ownership_fact_list(function.id) {
-            let Some(pointer) = binding(fact.pointer) else {
-                return Err(Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            let Some(allocation_temp) = binding(fact.allocation_temp) else {
-                return Err(Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            let size_temp = match fact.size_temp {
-                Some(id) => Some(binding(id).ok_or_else(|| {
-                    Rejection::new(
-                        predicate,
-                        Some(site.clone()),
-                        RejectionReason::IncompleteDomain,
-                        Vec::new(),
-                    )
-                })?),
-                None => None,
-            };
-            let free_temp = match fact.free_temp {
-                Some(id) => Some(binding(id).ok_or_else(|| {
-                    Rejection::new(
-                        predicate,
-                        Some(site.clone()),
-                        RejectionReason::IncompleteDomain,
-                        Vec::new(),
-                    )
-                })?),
-                None => None,
-            };
-            let aliases = fact
-                .aliases
-                .iter()
-                .map(|id| binding(*id))
-                .collect::<Option<Vec<_>>>()
-                .ok_or_else(|| {
-                    Rejection::new(
-                        predicate,
-                        Some(site.clone()),
-                        RejectionReason::IncompleteDomain,
-                        Vec::new(),
-                    )
-                })?;
-            let reallocations = fact
-                .reallocations
-                .iter()
-                .map(|realloc| {
-                    Some(HeapReallocation {
-                        source_temp: match realloc.source_temp {
-                            Some(id) => Some(binding(id)?),
-                            None => None,
-                        },
-                        allocation_temp: binding(realloc.allocation_temp)?,
-                        size_temp: match realloc.size_temp {
-                            Some(id) => Some(binding(id)?),
-                            None => None,
-                        },
-                        allocation_statement: statement(&realloc.allocation_path),
-                        assignment_statement: statement(&realloc.assign_path),
-                        new_extent: realloc.new_extent.clone(),
-                        init: realloc.init,
-                        resize: realloc.resize,
-                    })
-                })
-                .collect::<Option<Vec<_>>>()
-                .ok_or_else(|| {
-                    Rejection::new(
-                        predicate,
-                        Some(site.clone()),
-                        RejectionReason::IncompleteDomain,
-                        Vec::new(),
-                    )
-                })?;
-            owners.push(HeapOwnership {
-                pointer,
-                allocation_temp,
-                size_temp,
-                free_temp,
-                aliases,
-                pointer_statement: statement(&fact.pointer_path),
-                allocation_statement: statement(&fact.allocation_path),
-                assignment_statement: statement(&fact.assign_path),
-                free_statement: statement(&fact.free_path),
-                elem_ty: fact.elem_ty.clone(),
-                allocation: fact.allocation,
-                extent: fact.extent.clone(),
-                init: fact.init,
-                read_safety: fact.read_safety,
-                uses: fact
-                    .uses
-                    .iter()
-                    .map(|usage| HeapUse {
-                        statement: statement(&usage.path),
-                        kind: usage.kind.clone(),
-                    })
-                    .collect(),
-                reallocations,
-            });
-        }
-        if owners.is_empty() {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        }
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::HeapOwnershipFacts {
-                owners: owners.len(),
-            },
-        }];
-        Ok(Proof::new(HeapOwnershipFacts { owners }, evidence))
+        self.salsa().proof_heap_ownership(function)
     }
 
     pub(in crate::fixups) fn file_ownership_facts(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<FileOwnershipFacts<'snapshot>> {
-        let predicate = Predicate::FileOwnershipFacts;
-        let site = expression_site(function.item_index, &[]);
-        let bindings = self.all_bindings();
-        let binding = |id| bindings.iter().find(|binding| binding.id == id).cloned();
-        let statement = |path: &AstPath| StatementRef {
-            item_index: function.item_index,
-            path: path.clone(),
-        };
-        let mut owners = Vec::new();
-        for fact in self.file_ownership_fact_list(function.id) {
-            let Some(handle) = binding(fact.handle) else {
-                return Err(Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            if binding(fact.open_temp).is_none() {
-                return Err(Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            };
-            if let Some(id) = fact.close_temp
-                && binding(id).is_none()
-            {
-                return Err(Rejection::new(
-                    predicate,
-                    Some(site.clone()),
-                    RejectionReason::IncompleteDomain,
-                    Vec::new(),
-                ));
-            }
-            owners.push(FileOwnership {
-                handle,
-                handle_statement: statement(&fact.handle_path),
-                open_statement: statement(&fact.open_path),
-                assign_statement: statement(&fact.assign_path),
-                mode: fact.mode,
-                uses: fact
-                    .uses
-                    .iter()
-                    .map(|usage| FileUse {
-                        statement: statement(&usage.path),
-                        kind: usage.kind,
-                    })
-                    .collect(),
-            });
-        }
-        if owners.is_empty() {
-            return Err(Rejection::new(
-                predicate,
-                Some(site),
-                RejectionReason::MissingEvidence,
-                Vec::new(),
-            ));
-        }
-        let evidence = vec![Evidence {
-            predicate,
-            site,
-            detail: EvidenceDetail::FileOwnershipFacts {
-                owners: owners.len(),
-            },
-        }];
-        Ok(Proof::new(FileOwnershipFacts { owners }, evidence))
+        self.salsa().proof_file_ownership(function)
     }
 
     pub(in crate::fixups) fn ptr_len_slices(&self) -> QueryResult<PtrLenPlanSet> {
-        return self.salsa().proof_ptr_len_slices();
+        self.salsa().proof_ptr_len_slices()
     }
 
     #[expect(
@@ -5497,83 +5381,82 @@ impl<'snapshot> QueryContext<'snapshot> {
     pub(in crate::fixups) fn struct_field_ownership_facts(
         &self,
     ) -> QueryResult<Vec<StructFieldOwnershipFact>> {
-        return self.salsa().proof_struct_field_ownership();
+        self.salsa().proof_struct_field_ownership()
     }
 
     pub(in crate::fixups) fn callee_alloc_summary(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<CalleeAllocSummaryFact<'snapshot>> {
-        return self.salsa().proof_callee_alloc_summary(function);
+        self.salsa().proof_callee_alloc_summary(function)
     }
 
     pub(in crate::fixups) fn interprocedural_alloc_eligibility(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<InterproceduralAllocEligibilityFact<'snapshot>> {
-        return self
-            .salsa()
-            .proof_interprocedural_alloc_eligibility(function);
+        self.salsa()
+            .proof_interprocedural_alloc_eligibility(function)
     }
 
     pub(in crate::fixups) fn interprocedural_alloc_chain(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<FunctionRef<'snapshot>>> {
-        return self.salsa().proof_interprocedural_alloc_chain(function);
+        self.salsa().proof_interprocedural_alloc_chain(function)
     }
 
     pub(in crate::fixups) fn interprocedural_alloc_callers(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<InterproceduralAllocCallerInput<'snapshot>>> {
-        return self.salsa().proof_interprocedural_alloc_callers(function);
+        self.salsa().proof_interprocedural_alloc_callers(function)
     }
 
     pub(in crate::fixups) fn option_box_local_candidates(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<OptionBoxLocalPlanInput<'snapshot>>> {
-        return self.salsa().proof_option_box_local_candidates(function);
+        self.salsa().proof_option_box_local_candidates(function)
     }
 
     pub(in crate::fixups) fn option_box_comparisons(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<OptionBoxComparisonInput>> {
-        return self.salsa().proof_option_box_comparisons(function);
+        self.salsa().proof_option_box_comparisons(function)
     }
 
     pub(in crate::fixups) fn string_param_lift_indices(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<usize>> {
-        return self.salsa().proof_string_param_lift_indices(function);
+        self.salsa().proof_string_param_lift_indices(function)
     }
 
     pub(in crate::fixups) fn calls_in(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<Vec<CallRecord>> {
-        return self.salsa().proof_calls_in(function);
+        self.salsa().proof_calls_in(function)
     }
 
     pub(in crate::fixups) fn function_by_name(
         &self,
         name: &str,
     ) -> QueryResult<FunctionRef<'snapshot>> {
-        return self.salsa().proof_function_by_name(name);
+        self.salsa().proof_function_by_name(name)
     }
 
     pub(in crate::fixups) fn buffer_pointer_fields(
         &self,
         function: &FunctionRef<'snapshot>,
     ) -> QueryResult<BufferPointerFields<'snapshot>> {
-        return self.salsa().proof_buffer_pointer_fields(function);
+        self.salsa().proof_buffer_pointer_fields(function)
     }
 
     pub(in crate::fixups) fn reference_domain(&self) -> QueryResult<ReferenceDomain> {
-        return self.salsa().proof_reference_domain();
+        self.salsa().proof_reference_domain()
     }
 }
 
@@ -6713,6 +6596,49 @@ fn all_function_refs<'db>(program: ProgramInput, db: &'db dyn FixupDb) -> Vec<Fu
             })
         })
         .collect()
+}
+
+struct DefinitionIndex {
+    definitions: BTreeMap<DefinitionSelector, Vec<DefinitionSite>>,
+    symbol_uses: BTreeMap<String, Vec<usize>>,
+    use_domain_complete: bool,
+}
+
+fn definition_index(program: &Program) -> DefinitionIndex {
+    let mut definitions = BTreeMap::new();
+    let mut symbol_uses = BTreeMap::new();
+    let mut use_domain_complete = true;
+    for (item_index, item) in program.items.iter().enumerate() {
+        index_definitions(item, item_index, &mut definitions);
+        index_item_uses(item, item_index, &mut symbol_uses);
+        use_domain_complete &= item_use_domain_complete(item);
+    }
+    DefinitionIndex {
+        definitions,
+        symbol_uses,
+        use_domain_complete,
+    }
+}
+
+fn count_definition_users(
+    definition: &DefinitionSite,
+    definition_items: &BTreeSet<usize>,
+    symbol_uses: &BTreeMap<String, Vec<usize>>,
+) -> usize {
+    definition
+        .symbols
+        .iter()
+        .map(|symbol| {
+            symbol_uses
+                .get(symbol)
+                .map(|uses| {
+                    uses.iter()
+                        .filter(|item_index| !definition_items.contains(item_index))
+                        .count()
+                })
+                .unwrap_or(0)
+        })
+        .sum()
 }
 
 fn pointer_method() -> NullaryMethodCall {

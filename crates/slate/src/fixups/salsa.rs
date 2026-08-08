@@ -12,10 +12,11 @@ use crate::fixups::facts::{
     StringRecoveryCandidate, StructFieldOwnershipFact, ValueFact,
 };
 use crate::fixups::query::{
-    AtomicPromotionSet, BufferPointerFields, ByteSource, ByteView, CallRecord, ExprSite,
-    FunctionRef, InterproceduralAllocCallerInput, LazySingletonSet, NulPosition,
-    OptionBoxComparisonInput, OptionBoxLocalPlanInput, PtrLenPlanSet, QueryResult, ReferenceDomain,
-    SliceLoopFact, StableExpr, StatementRef,
+    AnonymousStructSet, AtomicPromotionSet, BufferPointerFields, ByteSource, ByteView, CallRecord,
+    DefinitionGroup, DefinitionGroupUsers, DefinitionSite, DefinitionUsers, ExprSite,
+    FileOwnershipFacts, FunctionRef, HeapOwnershipFacts, InterproceduralAllocCallerInput,
+    LazySingletonSet, NulPosition, OptionBoxComparisonInput, OptionBoxLocalPlanInput,
+    PtrLenPlanSet, QueryResult, ReferenceDomain, SliceLoopFact, StableExpr, StatementRef,
 };
 use crate::rust_ast::{Expr, FnDef, Item, Program};
 use salsa::Setter;
@@ -121,7 +122,7 @@ impl<'db> ProgramInput {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn anonymous_structs(self, db: &dyn FixupDb) -> Vec<AnonymousStructFact> {
+    pub(in crate::fixups) fn anonymous_structs(self, db: &dyn FixupDb) -> Vec<AnonymousStructFact> {
         facts::anonymous_structs::collect(self.program(db).items.iter().filter_map(
             |item| match item {
                 Item::Record(record) => Some(record),
@@ -701,6 +702,10 @@ impl SalsaFacts {
         self.program.const_usize(&self.db, site.clone()).clone()
     }
 
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
     pub(in crate::fixups) fn pure(&self, site: &ExprSite) -> QueryResult<StableExpr> {
         self.program.pure(&self.db, site.clone()).clone()
     }
@@ -859,6 +864,46 @@ impl SalsaFacts {
         self.program.reference_domain(&self.db).clone()
     }
 
+    pub(in crate::fixups) fn proof_anonymous_structs(&self) -> QueryResult<AnonymousStructSet> {
+        self.program.proof_anonymous_structs(&self.db).clone()
+    }
+
+    pub(in crate::fixups) fn proof_definition_users(
+        &self,
+        definition: &DefinitionSite,
+    ) -> QueryResult<DefinitionUsers> {
+        self.program
+            .definition_users(&self.db, definition.clone())
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_definition_group_users(
+        &self,
+        group: &DefinitionGroup,
+    ) -> QueryResult<DefinitionGroupUsers> {
+        self.program
+            .definition_group_users(&self.db, group.clone())
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_heap_ownership<'db>(
+        &'db self,
+        function: &FunctionRef<'_>,
+    ) -> QueryResult<HeapOwnershipFacts<'db>> {
+        self.program
+            .proof_heap_ownership(&self.db, function.item_index)
+            .clone()
+    }
+
+    pub(in crate::fixups) fn proof_file_ownership<'db>(
+        &'db self,
+        function: &FunctionRef<'_>,
+    ) -> QueryResult<FileOwnershipFacts<'db>> {
+        self.program
+            .proof_file_ownership(&self.db, function.item_index)
+            .clone()
+    }
+
     fn function_input<'db>(&'db self, function: FunctionId<'_>) -> Option<FunctionInput<'db>> {
         let name = function.name(&self.db);
         self.program
@@ -911,19 +956,6 @@ impl SalsaFacts {
             .buffers
             .iter()
             .find(|buffer| &buffer.site.path == path)
-    }
-
-    pub(in crate::fixups) fn string_buffer(
-        &self,
-        binding: BindingId<'_>,
-    ) -> Option<&facts::StringBufferFact<'_>> {
-        self.program.functions(&self.db).iter().find_map(|&input| {
-            input
-                .strings(&self.db)
-                .buffers
-                .iter()
-                .find(|buffer| buffer.binding == binding)
-        })
     }
 
     pub(in crate::fixups) fn string_pointer_views(
@@ -1003,32 +1035,6 @@ impl SalsaFacts {
         &input
             .string_rewrite_facts(&self.db, self.program, self.program)
             .1
-    }
-
-    pub(in crate::fixups) fn counted_loop(
-        &self,
-        function: FunctionId<'_>,
-        loop_path: &AstPath,
-    ) -> Option<&CountedLoopFact<'_>> {
-        let input = self.function_input(function)?;
-        input
-            .counted_loops(&self.db)
-            .0
-            .iter()
-            .find(|fact| &fact.site.loop_path == loop_path)
-    }
-
-    pub(in crate::fixups) fn counted_slice_loop(
-        &self,
-        function: FunctionId<'_>,
-        loop_path: &AstPath,
-    ) -> Option<&CountedSliceLoopFact<'_>> {
-        let input = self.function_input(function)?;
-        input
-            .counted_loops(&self.db)
-            .1
-            .iter()
-            .find(|fact| &fact.site.loop_path == loop_path)
     }
 
     pub(in crate::fixups) fn cast_at(
@@ -1206,56 +1212,6 @@ impl SalsaFacts {
             .find(|fact| &fact.receiver_path == receiver_path)
     }
 
-    pub(in crate::fixups) fn option_box_local_candidates(
-        &self,
-        function: FunctionId<'_>,
-    ) -> &[OptionBoxLocalCandidate<'_>] {
-        let Some(input) = self.function_input(function) else {
-            return &[];
-        };
-        &input.option_box(&self.db).0
-    }
-
-    pub(in crate::fixups) fn option_box_comparisons(
-        &self,
-        function: FunctionId<'_>,
-    ) -> &[OptionBoxComparison<'_>] {
-        let Some(input) = self.function_input(function) else {
-            return &[];
-        };
-        &input.option_box(&self.db).1
-    }
-
-    pub(in crate::fixups) fn buffer_pointer_fields(
-        &self,
-        function: FunctionId<'_>,
-    ) -> &[BufferPointerFieldFact<'_>] {
-        let Some(input) = self.function_input(function) else {
-            return &[];
-        };
-        input.buffer_pointer_fields(&self.db)
-    }
-
-    pub(in crate::fixups) fn heap_ownership(
-        &self,
-        function: FunctionId<'_>,
-    ) -> &[HeapOwnershipFact<'_>] {
-        let Some(input) = self.function_input(function) else {
-            return &[];
-        };
-        input.heap_ownership(&self.db)
-    }
-
-    pub(in crate::fixups) fn file_ownership(
-        &self,
-        function: FunctionId<'_>,
-    ) -> &[FileOwnershipFact<'_>] {
-        let Some(input) = self.function_input(function) else {
-            return &[];
-        };
-        input.file_ownership(&self.db)
-    }
-
     pub(in crate::fixups) fn printf_calls(
         &self,
         function: FunctionId<'_>,
@@ -1264,23 +1220,6 @@ impl SalsaFacts {
             return &[];
         };
         input.printf_calls(&self.db)
-    }
-
-    pub(in crate::fixups) fn callee_alloc_summary(
-        &self,
-        function: FunctionId<'_>,
-    ) -> Option<&CalleeAllocSummaryFact<'_>> {
-        let input = self.function_input(function)?;
-        input.callee_alloc_summary(&self.db).as_ref()
-    }
-
-    pub(in crate::fixups) fn interprocedural_alloc(
-        &self,
-    ) -> &(
-        Vec<InterproceduralAllocEligibilityFact<'_>>,
-        Vec<InterproceduralAllocCallerFact<'_>>,
-    ) {
-        self.program.interprocedural_alloc(&self.db)
     }
 
     pub(in crate::fixups) fn callsites(&self) -> &[CallsiteFact<'_>] {
@@ -1318,10 +1257,6 @@ impl SalsaFacts {
 
     pub(in crate::fixups) fn ptr_len_slices(&self) -> &[PtrLenSliceFact<'_>] {
         self.program.ptr_len_slices(&self.db, self.program)
-    }
-
-    pub(in crate::fixups) fn string_param_lifts(&self) -> &[StringParamLiftFact<'_>] {
-        self.program.string_param_lifts(&self.db, self.program)
     }
 
     pub(in crate::fixups) fn lazy_init_singletons(&self) -> &[LazyInitSingletonFact<'_>] {
@@ -1383,12 +1318,6 @@ impl SalsaFacts {
     ) -> Option<BindingId<'db>> {
         let input = self.function_input(function)?;
         facts::binding_by_local_path(input.bindings_typed(&self.db), function, name, path)
-    }
-
-    pub(in crate::fixups) fn binding_type(&self, binding: BindingId<'_>) -> Option<String> {
-        self.program.functions(&self.db).iter().find_map(|&input| {
-            facts::binding_type(input.binding_types_typed(&self.db), binding).map(str::to_string)
-        })
     }
 
     pub(in crate::fixups) fn binding_type_ast(
@@ -1488,13 +1417,5 @@ impl SalsaFacts {
                 .iter()
                 .find(|fact| fact.binding == binding)
         })
-    }
-
-    pub(in crate::fixups) fn string_pointer_view_at<'db>(
-        &'db self,
-        function: FunctionId<'db>,
-        path: &AstPath,
-    ) -> Option<&'db facts::StringPointerViewFact<'db>> {
-        facts::string_pointer_view(self.string_pointer_views(function), function, path)
     }
 }

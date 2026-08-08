@@ -325,7 +325,7 @@ pub(in crate::fixups) struct DefinitionSelector {
     pub(in crate::fixups) name: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, salsa::SalsaValue)]
 pub(in crate::fixups) struct DefinitionSite {
     pub(in crate::fixups) location: DefinitionLocation,
     pub(in crate::fixups) kind: DefinitionKind,
@@ -335,14 +335,14 @@ pub(in crate::fixups) struct DefinitionSite {
     pub(super) externally_reachable: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct DefinitionUsers {
     pub(in crate::fixups) definition: DefinitionSite,
     pub(in crate::fixups) users: usize,
     pub(in crate::fixups) site: ExprSite,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct DefinitionGroupUsers {
     pub(in crate::fixups) group: DefinitionGroup,
     pub(in crate::fixups) users: usize,
@@ -361,12 +361,12 @@ pub(in crate::fixups) struct ReferenceDomain {
     pub(in crate::fixups) items: Vec<ItemReferences>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(in crate::fixups) struct AnonymousStructSet {
     pub(super) structs: Vec<AnonymousStructPlan>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(super) struct AnonymousStructPlan {
     pub(super) item_index: usize,
     pub(super) original_name: String,
@@ -374,7 +374,7 @@ pub(super) struct AnonymousStructPlan {
     pub(super) fields: Vec<AnonymousStructField>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
 pub(super) struct AnonymousStructField {
     pub(super) name: String,
     pub(super) ty: Type,
