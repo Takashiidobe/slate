@@ -1,5 +1,5 @@
-#ifndef _SYS_SYSMACROS_H
-#define _SYS_SYSMACROS_H
+#ifndef _SLATE_SYS_SYSMACROS_H
+#define _SLATE_SYS_SYSMACROS_H
 
 #define major(x)                                                               \
   ((unsigned)((((x) >> 31 >> 1) & 0xfffff000) | (((x) >> 8) & 0x00000fff)))

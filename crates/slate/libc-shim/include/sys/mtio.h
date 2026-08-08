@@ -1,5 +1,5 @@
-#ifndef _SYS_MTIO_H
-#define _SYS_MTIO_H
+#ifndef _SLATE_SYS_MTIO_H
+#define _SLATE_SYS_MTIO_H
 
 #include <sys/ioctl.h>
 #include <sys/types.h>

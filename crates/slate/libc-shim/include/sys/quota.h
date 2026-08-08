@@ -1,5 +1,5 @@
-#ifndef _SYS_QUOTA_H
-#define _SYS_QUOTA_H
+#ifndef _SLATE_SYS_QUOTA_H
+#define _SLATE_SYS_QUOTA_H
 
 #include <stdint.h>
 

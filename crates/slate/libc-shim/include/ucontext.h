@@ -1,5 +1,5 @@
-#ifndef _UCONTEXT_H
-#define _UCONTEXT_H
+#ifndef _SLATE_UCONTEXT_H
+#define _SLATE_UCONTEXT_H
 
 #include <features.h>
 

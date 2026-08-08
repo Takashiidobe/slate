@@ -1,5 +1,5 @@
-#ifndef _SYS_TIMEX_H
-#define _SYS_TIMEX_H
+#ifndef _SLATE_SYS_TIMEX_H
+#define _SLATE_SYS_TIMEX_H
 
 #define __NEED_clockid_t
 

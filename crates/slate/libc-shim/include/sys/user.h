@@ -1,5 +1,5 @@
-#ifndef _SYS_USER_H
-#define _SYS_USER_H
+#ifndef _SLATE_SYS_USER_H
+#define _SLATE_SYS_USER_H
 
 #include <limits.h>
 #include <stdint.h>
