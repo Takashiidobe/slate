@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use crate::fixups::facts::{
     AstPath, BindingFact, BindingId, BindingKind, BindingTypeFact, FunctionFact, FunctionId,
@@ -1120,9 +1120,7 @@ impl BaseWalk {
         db: &dyn crate::fixups::salsa::FixupDb,
         program: &Program,
     ) -> Self {
-        let mut base = Self::default();
-        Collector::new(db, &mut base).program(program);
-        base
+        Collector::new(db).collect(program)
     }
 
     pub(in crate::fixups) fn function_by_item_index(
@@ -1183,69 +1181,24 @@ impl BaseWalk {
     pub(in crate::fixups) fn loop_facts<'db>(&self) -> Vec<LoopFact<'db>> {
         self.loops.iter().map(hydrate_loop).collect()
     }
-
-    pub(in crate::fixups) fn splice_function(
-        &mut self,
-        db: &dyn crate::fixups::salsa::FixupDb,
-        program: &Program,
-        function: FunctionId<'_>,
-    ) {
-        let id = function.as_id();
-        let Some(item_index) = self.function_item_index(function) else {
-            return;
-        };
-        let Some(Item::Fn(f)) = program.items.get(item_index) else {
-            return;
-        };
-        self.purge_function(id);
-        Collector::new(db, self).function(id, f);
-    }
-
-    pub(in crate::fixups) fn remove_items(&mut self, item_indices: &[usize]) {
-        let mut sorted = item_indices.to_vec();
-        sorted.sort_unstable();
-        sorted.dedup();
-        for item_index in sorted.into_iter().rev() {
-            self.remove_item(item_index);
-        }
-    }
-
-    fn remove_item(&mut self, item_index: usize) {
-        if let Some(id) = self
-            .functions
-            .iter()
-            .find(|fact| fact.item_index == item_index)
-            .map(|fact| fact.id)
-        {
-            self.purge_function(id);
-            self.functions.retain(|fact| fact.id != id);
-        }
-        for fact in &mut self.functions {
-            if fact.item_index > item_index {
-                fact.item_index -= 1;
-            }
-        }
-    }
-
-    fn purge_function(&mut self, function: salsa::Id) {
-        self.bindings.retain(|binding| binding.function != function);
-        let live_bindings: BTreeSet<salsa::Id> =
-            self.bindings.iter().map(|binding| binding.id).collect();
-        self.binding_types
-            .retain(|binding_type| live_bindings.contains(&binding_type.binding));
-        self.loops
-            .retain(|loop_fact| loop_fact.function != function);
-    }
 }
 
 struct Collector<'a> {
     db: &'a dyn crate::fixups::salsa::FixupDb,
-    base: &'a mut BaseWalk,
+    base: BaseWalk,
 }
 
 impl<'a> Collector<'a> {
-    fn new(db: &'a dyn crate::fixups::salsa::FixupDb, base: &'a mut BaseWalk) -> Self {
-        Self { db, base }
+    fn new(db: &'a dyn crate::fixups::salsa::FixupDb) -> Self {
+        Self {
+            db,
+            base: BaseWalk::default(),
+        }
+    }
+
+    fn collect(mut self, program: &Program) -> BaseWalk {
+        self.program(program);
+        self.base
     }
 
     fn program(&mut self, program: &Program) {
@@ -1258,12 +1211,6 @@ impl<'a> Collector<'a> {
         }
     }
 
-    /// Bindings, binding types, and loops for one function, given an
-    /// already-assigned function id - independent of any other function's
-    /// facts. Incremental splicing needs to re-derive one function's
-    /// bindings/loops in place without a whole-program walk; it must not
-    /// call `push_function`, which interns a (possibly fresh) function id -
-    /// only `program()` does that, for a function seen for the first time.
     fn function(&mut self, function: salsa::Id, f: &FnDef) {
         for (index, param) in f.params.iter().enumerate() {
             self.push_binding(
