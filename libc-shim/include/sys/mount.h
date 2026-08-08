@@ -1,5 +1,5 @@
-#ifndef _SYS_MOUNT_H
-#define _SYS_MOUNT_H
+#ifndef _SLATE_SYS_MOUNT_H
+#define _SLATE_SYS_MOUNT_H
 
 #include <sys/ioctl.h>
 

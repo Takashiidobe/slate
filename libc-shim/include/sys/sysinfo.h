@@ -1,5 +1,5 @@
-#ifndef _SYS_SYSINFO_H
-#define _SYS_SYSINFO_H
+#ifndef _SLATE_SYS_SYSINFO_H
+#define _SLATE_SYS_SYSINFO_H
 
 #define SI_LOAD_SHIFT 16
 

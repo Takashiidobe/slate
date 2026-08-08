@@ -1,5 +1,5 @@
-#ifndef _SYS_REG_H
-#define _SYS_REG_H
+#ifndef _SLATE_SYS_REG_H
+#define _SLATE_SYS_REG_H
 
 #include <limits.h>
 #include <unistd.h>

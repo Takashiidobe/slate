@@ -1,5 +1,5 @@
-#ifndef _SYS_SENDFILE_H
-#define _SYS_SENDFILE_H
+#ifndef _SLATE_SYS_SENDFILE_H
+#define _SLATE_SYS_SENDFILE_H
 
 #include <features.h>
 #include <unistd.h>

@@ -10,6 +10,35 @@
 
 #define __PDP_ENDIAN 3412
 
+/* Define sane byte-order constants if the compiler/target doesn't provide them.
+ */
+#ifndef __LITTLE_ENDIAN
+#define __LITTLE_ENDIAN 1234
+#endif
+#ifndef __BIG_ENDIAN
+#define __BIG_ENDIAN 4321
+#endif
+
+/* Prefer compiler-provided ordering macros when available. */
+#if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) &&                \
+    defined(__ORDER_LITTLE_ENDIAN__)
+#undef __BYTE_ORDER
+#define __BYTE_ORDER __BYTE_ORDER__
+#undef __BIG_ENDIAN
+#define __BIG_ENDIAN __ORDER_BIG_ENDIAN__
+#undef __LITTLE_ENDIAN
+#define __LITTLE_ENDIAN __ORDER_LITTLE_ENDIAN__
+#endif
+
+/* Fall back to slate-provided or default little-endian if still unset. */
+#ifndef __BYTE_ORDER
+#if defined(__SLATE_BIG_ENDIAN) || defined(__BIG_ENDIAN__)
+#define __BYTE_ORDER __BIG_ENDIAN
+#else
+#define __BYTE_ORDER __LITTLE_ENDIAN
+#endif
+#endif
+
 #define BIG_ENDIAN    __BIG_ENDIAN
 #define LITTLE_ENDIAN __LITTLE_ENDIAN
 #define PDP_ENDIAN    __PDP_ENDIAN

@@ -1,5 +1,5 @@
-#ifndef _SYS_PROCFS_H
-#define _SYS_PROCFS_H
+#ifndef _SLATE_SYS_PROCFS_H
+#define _SLATE_SYS_PROCFS_H
 
 #include <sys/time.h>
 #include <sys/types.h>
