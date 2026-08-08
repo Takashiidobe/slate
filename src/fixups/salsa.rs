@@ -583,6 +583,10 @@ impl SalsaFacts {
         }
     }
 
+    pub(in crate::fixups) fn new_empty() -> Self {
+        Self::new(FixupFacts::default())
+    }
+
     pub(in crate::fixups) fn mark_touched(&mut self, touched: &TouchedItems) {
         if touched.unbounded {
             self.dirty = Dirty::Everything;

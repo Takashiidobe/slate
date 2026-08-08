@@ -1,4 +1,5 @@
-use crate::fixups::facts::{FixupFacts, FunctionId, PathSegment};
+use crate::fixups::facts::{FunctionId, PathSegment};
+use crate::fixups::salsa::SalsaFacts;
 use crate::rust_ast::{Block, IndentStmt, Item, Program, Stmt};
 use std::fmt::Write;
 
@@ -324,12 +325,12 @@ pub(in crate::fixups) fn path_location(path: &[PathSegment]) -> TraceLocation {
 }
 
 pub(in crate::fixups) fn function_path_location(
-    facts: &FixupFacts,
+    salsa: &SalsaFacts,
     function: FunctionId,
     path: &[PathSegment],
 ) -> TraceLocation {
     TraceLocation {
-        function: facts.function_name(function).map(str::to_owned),
+        function: salsa.function_name(function).map(str::to_owned),
         ast_path: Some(path_to_string(path)),
         ..TraceLocation::default()
     }
