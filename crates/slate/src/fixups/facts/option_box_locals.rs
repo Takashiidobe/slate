@@ -20,23 +20,32 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let let_defs = collect_let_defs(&f.body);
-        let candidates = collect_for_function(function, f, facts);
-        let candidate_names: BTreeSet<String> = candidates.iter().map(|c| c.name.clone()).collect();
-        let mut comparisons = Vec::new();
-        collect_comparisons(
-            &f.body,
-            &mut Vec::new(),
-            function,
-            &candidate_names,
-            &let_defs,
-            &mut comparisons,
-        );
+        let (candidates, comparisons) = collect_for_function(function, f, facts);
         all.extend(candidates);
         all_comparisons.extend(comparisons);
     }
     facts.option_box_locals = all;
     facts.option_box_comparisons = all_comparisons;
+}
+
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &FixupFacts,
+) -> (Vec<OptionBoxLocalCandidate>, Vec<OptionBoxComparison>) {
+    let let_defs = collect_let_defs(&f.body);
+    let candidates = local_candidates_for_function(function, f, facts);
+    let candidate_names: BTreeSet<String> = candidates.iter().map(|c| c.name.clone()).collect();
+    let mut comparisons = Vec::new();
+    collect_comparisons(
+        &f.body,
+        &mut Vec::new(),
+        function,
+        &candidate_names,
+        &let_defs,
+        &mut comparisons,
+    );
+    (candidates, comparisons)
 }
 
 fn collect_comparisons(
@@ -119,7 +128,7 @@ fn comparison_shape(
     }
 }
 
-fn collect_for_function(
+fn local_candidates_for_function(
     function: FunctionId,
     f: &FnDef,
     facts: &FixupFacts,

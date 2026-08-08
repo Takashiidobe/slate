@@ -9,10 +9,11 @@ use crate::fixups::facts::{
     ConstValue, ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact,
     DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionId,
     InterproceduralAllocEligibilityFact, NulTermination, NullCheckDominanceFact, NullCheckProof,
-    OptionBoxAssignKind, PathSegment, PlaceFact, PointerComparisonFact, PointerComparisonKind,
-    PointerOptionSafetyFact, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
-    StringBufferKind, StringCopyRewrite, StringLibcUseFact, StringPointerViewFact,
-    StringRecoveryCandidate, StructFieldOwnershipFact, ValueSubject,
+    OptionBoxAssignKind, OptionBoxComparison, OptionBoxLocalCandidate, PathSegment, PlaceFact,
+    PointerComparisonFact, PointerComparisonKind, PointerOptionSafetyFact, PrintfCallFact,
+    PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
+    StringLibcUseFact, StringPointerViewFact, StringRecoveryCandidate, StructFieldOwnershipFact,
+    ValueSubject,
 };
 use crate::fixups::salsa::SalsaFacts;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
@@ -500,6 +501,33 @@ impl<'snapshot> QueryContext<'snapshot> {
         match self.salsa {
             Some(salsa) => salsa.atomic_locals(),
             None => self.facts.atomic_locals.iter().collect(),
+        }
+    }
+
+    fn option_box_local_candidate_facts(
+        &self,
+        function: FunctionId,
+    ) -> Vec<&OptionBoxLocalCandidate> {
+        match self.salsa {
+            Some(salsa) => salsa.option_box_local_candidates(function).iter().collect(),
+            None => self
+                .facts
+                .option_box_locals
+                .iter()
+                .filter(|candidate| candidate.function == function)
+                .collect(),
+        }
+    }
+
+    fn option_box_comparison_facts(&self, function: FunctionId) -> Vec<&OptionBoxComparison> {
+        match self.salsa {
+            Some(salsa) => salsa.option_box_comparisons(function).iter().collect(),
+            None => self
+                .facts
+                .option_box_comparisons
+                .iter()
+                .filter(|comparison| comparison.function == function)
+                .collect(),
         }
     }
 
@@ -4897,12 +4925,7 @@ query_cache! {
         let site = expression_site(function.item_index, &[]);
         let bindings = self.all_bindings();
         let mut inputs = Vec::new();
-        for candidate in self
-            .facts
-            .option_box_locals
-            .iter()
-            .filter(|candidate| candidate.function == function.id)
-        {
+        for candidate in self.option_box_local_candidate_facts(function.id) {
             let Some(binding) = bindings
                 .iter()
                 .find(|binding| binding.id == candidate.binding)
@@ -4970,10 +4993,8 @@ query_cache! {
         let predicate = Predicate::OptionBoxComparisons;
         let site = expression_site(function.item_index, &[]);
         let inputs: Vec<OptionBoxComparisonInput> = self
-            .facts
-            .option_box_comparisons
-            .iter()
-            .filter(|comparison| comparison.function == function.id)
+            .option_box_comparison_facts(function.id)
+            .into_iter()
             .map(|comparison| OptionBoxComparisonInput {
                 if_stmt: StatementRef {
                     item_index: function.item_index,
