@@ -1,11 +1,12 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::fixups::facts::walk::Bodies;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, CallCallee, FixupFacts, FunctionId, StringBufferKind,
     StringLibcFunction, StringParamLiftFact,
 };
 use crate::fixups::facts::{CallSignatureSource, CallsiteFact, walk};
-use crate::rust_ast::{Expr, Item, Prim, Program, Type, Visibility};
+use crate::rust_ast::{Expr, FnDef, Prim, Program, Type, Visibility};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 struct Key {
@@ -13,17 +14,23 @@ struct Key {
     param: BindingId,
 }
 
-#[derive(Debug, Clone)]
-struct Candidate {
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct Candidate {
     key: Key,
     function_name: String,
     index: usize,
 }
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.string_param_lifts.clear();
+    let bodies = walk::bodies_from_program(program, facts);
+    facts.string_param_lifts = compute(&bodies, facts, collect_candidates(&bodies, facts));
+}
 
-    let candidates = collect_candidates(program, facts);
+pub(in crate::fixups) fn compute(
+    bodies: &Bodies,
+    facts: &FixupFacts,
+    candidates: Vec<Candidate>,
+) -> Vec<StringParamLiftFact> {
     let mut active = candidates
         .iter()
         .map(|candidate| candidate.key)
@@ -40,14 +47,14 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
                 return false;
             };
             all_uses_allow_lift(candidate, facts, &by_function, &before)
-                && all_callers_prove_arg(program, candidate, facts, &before)
+                && all_callers_prove_arg(bodies, candidate, facts, &before)
         });
         if active == before {
             break;
         }
     }
 
-    facts.string_param_lifts = candidates
+    candidates
         .into_iter()
         .filter(|candidate| active.contains(&candidate.key))
         .map(|candidate| StringParamLiftFact {
@@ -55,47 +62,41 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
             param: candidate.key.param,
             index: candidate.index,
         })
-        .collect();
+        .collect()
 }
 
-fn collect_candidates(program: &Program, facts: &FixupFacts) -> Vec<Candidate> {
-    program
-        .items
+fn collect_candidates(bodies: &Bodies, facts: &FixupFacts) -> Vec<Candidate> {
+    bodies
+        .iter()
+        .flat_map(|(&function, &f)| candidates_for_function(function, f, facts))
+        .collect()
+}
+
+pub(in crate::fixups) fn candidates_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &FixupFacts,
+) -> Vec<Candidate> {
+    if f.name == "main" || f.unsafe_ || f.abi.is_some() || !matches!(f.vis, Visibility::Private) {
+        return Vec::new();
+    }
+    f.params
         .iter()
         .enumerate()
-        .filter_map(|(item_index, item)| {
-            let Item::Fn(f) = item else {
-                return None;
-            };
-            if f.name == "main"
-                || f.unsafe_
-                || f.abi.is_some()
-                || !matches!(f.vis, Visibility::Private)
-            {
+        .filter_map(|(index, param)| {
+            if !is_char_ptr(&param.ty) {
                 return None;
             }
-            let function = facts.function_by_item_index(item_index)?;
-            Some(
-                f.params
-                    .iter()
-                    .enumerate()
-                    .filter_map(move |(index, param)| {
-                        if !is_char_ptr(&param.ty) {
-                            return None;
-                        }
-                        let binding = facts.binding_by_param_index(function, index)?;
-                        Some(Candidate {
-                            key: Key {
-                                function,
-                                param: binding,
-                            },
-                            function_name: f.name.clone(),
-                            index,
-                        })
-                    }),
-            )
+            let binding = facts.binding_by_param_index(function, index)?;
+            Some(Candidate {
+                key: Key {
+                    function,
+                    param: binding,
+                },
+                function_name: f.name.clone(),
+                index,
+            })
         })
-        .flatten()
         .collect()
 }
 
@@ -184,7 +185,7 @@ fn internal_call_allows(
 }
 
 fn all_callers_prove_arg(
-    program: &Program,
+    bodies: &Bodies,
     candidate: &Candidate,
     facts: &FixupFacts,
     active: &BTreeSet<Key>,
@@ -202,7 +203,7 @@ fn all_callers_prove_arg(
             let Some(arg) = callsite.args.iter().find(|arg| arg.slot == candidate.index) else {
                 return false;
             };
-            let expr = walk::expr_at_path(facts, program, callsite.site.function, &arg.path);
+            let expr = walk::expr_at_body_path(bodies, callsite.site.function, &arg.path);
 
             expr.is_some_and(|expr| {
                 expr_is_liftable_source(expr, callsite.site.function, &arg.path, facts, active)

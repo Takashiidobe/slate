@@ -1,18 +1,24 @@
 use std::collections::BTreeSet;
 
-use crate::fixups::facts::walk;
+use crate::fixups::facts::walk::{self, Bodies};
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, CallCallee, CallsiteFact, FixupFacts, FunctionId, PathSegment,
     PtrLenSliceFact,
 };
 use crate::rust_ast::{
-    Block, Expr, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
+    Block, Expr, FnDef, IndentStmt, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.ptr_len_slices.clear();
+    let bodies = walk::bodies_from_program(program, facts);
+    facts.ptr_len_slices = compute(&bodies, facts, collect_candidates(&bodies, facts));
+}
 
-    let candidates = collect_candidates(program, facts);
+pub(in crate::fixups) fn compute(
+    bodies: &Bodies,
+    facts: &FixupFacts,
+    candidates: Vec<Candidate>,
+) -> Vec<PtrLenSliceFact> {
     let mut active = candidates
         .iter()
         .map(|candidate| candidate.key)
@@ -24,22 +30,20 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
             candidates
                 .iter()
                 .find(|candidate| candidate.key == *key)
-                .is_some_and(|candidate| candidate_is_sound(program, candidate, facts, &before))
+                .is_some_and(|candidate| candidate_is_sound(bodies, candidate, facts, &before))
         });
         if active == before {
             break;
         }
     }
 
-    facts.ptr_len_slices = candidates
+    let mut slices: Vec<PtrLenSliceFact> = candidates
         .iter()
         .filter(|candidate| active.contains(&candidate.key))
         .flat_map(|candidate| proven_calls(facts, candidate))
         .collect();
-    facts
-        .ptr_len_slices
-        .extend(proven_constant_extent_calls(program, facts, &active));
-    facts.ptr_len_slices.sort_by_key(|fact| {
+    slices.extend(proven_constant_extent_calls(bodies, facts, &active));
+    slices.sort_by_key(|fact| {
         (
             fact.caller,
             fact.callee,
@@ -47,7 +51,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
             fact.len_param.unwrap_or(BindingId(usize::MAX)),
         )
     });
-    facts.ptr_len_slices.dedup_by_key(|fact| {
+    slices.dedup_by_key(|fact| {
         (
             fact.caller,
             fact.callee,
@@ -55,17 +59,18 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
             fact.len_param.unwrap_or(BindingId(usize::MAX)),
         )
     });
+    slices
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-struct Key {
+pub(in crate::fixups) struct Key {
     function: FunctionId,
     ptr: BindingId,
     len: BindingId,
 }
 
-#[derive(Clone)]
-struct Candidate {
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::fixups) struct Candidate {
     key: Key,
     function_name: String,
     ptr_index: usize,
@@ -82,40 +87,44 @@ enum LengthSource {
     Bound(BindingId),
 }
 
-fn collect_candidates(program: &Program, facts: &FixupFacts) -> Vec<Candidate> {
+fn collect_candidates(bodies: &Bodies, facts: &FixupFacts) -> Vec<Candidate> {
     let mut candidates = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
+    for (&function, &f) in bodies {
+        candidates.extend(candidates_for_function(function, f, facts));
+    }
+    candidates
+}
+
+pub(in crate::fixups) fn candidates_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &FixupFacts,
+) -> Vec<Candidate> {
+    let mut candidates = Vec::new();
+    for (ptr_index, ptr_param) in f.params.iter().enumerate() {
+        let Type::Ptr { mutable, inner } = &ptr_param.ty else {
             continue;
         };
-        let Some(function) = facts.function_by_item_index(item_index) else {
+        let Some(ptr) = facts.binding_by_param_index(function, ptr_index) else {
             continue;
         };
-        for (ptr_index, ptr_param) in f.params.iter().enumerate() {
-            let Type::Ptr { mutable, inner } = &ptr_param.ty else {
+        for (len_index, len_param) in f.params.iter().enumerate() {
+            if ptr_index == len_index || !is_integer_type(&len_param.ty) {
                 continue;
-            };
-            let Some(ptr) = facts.binding_by_param_index(function, ptr_index) else {
-                continue;
-            };
-            for (len_index, len_param) in f.params.iter().enumerate() {
-                if ptr_index == len_index || !is_integer_type(&len_param.ty) {
-                    continue;
-                }
-                let Some(len) = facts.binding_by_param_index(function, len_index) else {
-                    continue;
-                };
-                candidates.push(Candidate {
-                    key: Key { function, ptr, len },
-                    function_name: f.name.clone(),
-                    ptr_index,
-                    len_index,
-                    ptr_name: ptr_param.name.to_string(),
-                    len_name: len_param.name.to_string(),
-                    mutable: *mutable && pointer_param_mutated(&f.body, ptr_param.name.as_str()),
-                    elem: (**inner).clone(),
-                });
             }
+            let Some(len) = facts.binding_by_param_index(function, len_index) else {
+                continue;
+            };
+            candidates.push(Candidate {
+                key: Key { function, ptr, len },
+                function_name: f.name.clone(),
+                ptr_index,
+                len_index,
+                ptr_name: ptr_param.name.to_string(),
+                len_name: len_param.name.to_string(),
+                mutable: *mutable && pointer_param_mutated(&f.body, ptr_param.name.as_str()),
+                elem: (**inner).clone(),
+            });
         }
     }
     candidates
@@ -142,7 +151,7 @@ fn is_integer_type(ty: &Type) -> bool {
 }
 
 fn candidate_is_sound(
-    program: &Program,
+    bodies: &Bodies,
     candidate: &Candidate,
     facts: &FixupFacts,
     active: &BTreeSet<Key>,
@@ -153,12 +162,12 @@ fn candidate_is_sound(
         && facts
             .def_use(candidate.key.len)
             .is_some_and(|def_use| def_use.writes.is_empty())
-        && len_reads_are_length_uses(program, candidate, facts, active)
-        && all_callers_prove(program, candidate, facts, active)
+        && len_reads_are_length_uses(bodies, candidate, facts, active)
+        && all_callers_prove(bodies, candidate, facts, active)
 }
 
 fn len_reads_are_length_uses(
-    program: &Program,
+    bodies: &Bodies,
     candidate: &Candidate,
     facts: &FixupFacts,
     active: &BTreeSet<Key>,
@@ -170,7 +179,7 @@ fn len_reads_are_length_uses(
         return false;
     }
     let mut allowed = Vec::new();
-    collect_length_use_paths(program, candidate, facts, active, &mut allowed);
+    collect_length_use_paths(bodies, candidate, facts, active, &mut allowed);
     def_use.reads.iter().all(|read| {
         allowed
             .iter()
@@ -179,15 +188,13 @@ fn len_reads_are_length_uses(
 }
 
 fn collect_length_use_paths(
-    program: &Program,
+    bodies: &Bodies,
     candidate: &Candidate,
     facts: &FixupFacts,
     active: &BTreeSet<Key>,
     allowed: &mut Vec<AstPath>,
 ) {
-    if let Some(item_index) = facts.function_item_index(candidate.key.function)
-        && let Some(Item::Fn(f)) = program.items.get(item_index)
-    {
+    if let Some(&f) = bodies.get(&candidate.key.function) {
         collect_bounded_loop_paths(
             &f.body,
             candidate.key.function,
@@ -601,7 +608,7 @@ fn param_index(facts: &FixupFacts, binding: BindingId) -> Option<usize> {
 }
 
 fn all_callers_prove(
-    program: &Program,
+    bodies: &Bodies,
     candidate: &Candidate,
     facts: &FixupFacts,
     active: &BTreeSet<Key>,
@@ -610,22 +617,16 @@ fn all_callers_prove(
     !calls.is_empty()
         && calls
             .iter()
-            .all(|callsite| call_proves_pair(program, callsite, candidate, facts, active))
+            .all(|callsite| call_proves_pair(bodies, callsite, candidate, facts, active))
 }
 
 fn proven_constant_extent_calls(
-    program: &Program,
+    bodies: &Bodies,
     facts: &FixupFacts,
     active: &BTreeSet<Key>,
 ) -> Vec<PtrLenSliceFact> {
     let mut out = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
-            continue;
-        };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
+    for (&function, &f) in bodies {
         for (ptr_index, param) in f.params.iter().enumerate() {
             let Type::Ptr { mutable, inner } = &param.ty else {
                 continue;
@@ -652,7 +653,7 @@ fn proven_constant_extent_calls(
                 elem: (**inner).clone(),
                 bound: *bound,
             };
-            if all_callers_prove_pointer_extent(program, &candidate, facts, active) {
+            if all_callers_prove_pointer_extent(bodies, &candidate, facts, active) {
                 out.extend(proven_pointer_calls(facts, &candidate));
             }
         }
@@ -788,7 +789,7 @@ fn collect_constant_pointer_extents_stmt(stmt: &Stmt, ptr_name: &str, bounds: &m
 }
 
 fn all_callers_prove_pointer_extent(
-    program: &Program,
+    bodies: &Bodies,
     candidate: &PointerCandidate,
     facts: &FixupFacts,
     active: &BTreeSet<Key>,
@@ -797,11 +798,11 @@ fn all_callers_prove_pointer_extent(
     !calls.is_empty()
         && calls
             .iter()
-            .all(|callsite| call_proves_pointer_extent(program, callsite, candidate, facts, active))
+            .all(|callsite| call_proves_pointer_extent(bodies, callsite, candidate, facts, active))
 }
 
 fn call_proves_pointer_extent(
-    program: &Program,
+    bodies: &Bodies,
     callsite: &CallsiteFact,
     candidate: &PointerCandidate,
     facts: &FixupFacts,
@@ -814,13 +815,13 @@ fn call_proves_pointer_extent(
     else {
         return false;
     };
-    let Some(ptr_expr) = walk::expr_at_path(facts, program, callsite.site.function, &ptr_arg.path)
+    let Some(ptr_expr) = walk::expr_at_body_path(bodies, callsite.site.function, &ptr_arg.path)
     else {
         return false;
     };
     matches!(
         pointer_length_source(
-            program,
+            bodies,
             ptr_expr,
             callsite.site.function,
             &ptr_arg.path,
@@ -859,7 +860,7 @@ fn matching_callsites<'a>(
 }
 
 fn call_proves_pair(
-    program: &Program,
+    bodies: &Bodies,
     callsite: &CallsiteFact,
     candidate: &Candidate,
     facts: &FixupFacts,
@@ -879,16 +880,16 @@ fn call_proves_pair(
     else {
         return false;
     };
-    let Some(ptr_expr) = walk::expr_at_path(facts, program, callsite.site.function, &ptr_arg.path)
+    let Some(ptr_expr) = walk::expr_at_body_path(bodies, callsite.site.function, &ptr_arg.path)
     else {
         return false;
     };
-    let Some(len_expr) = walk::expr_at_path(facts, program, callsite.site.function, &len_arg.path)
+    let Some(len_expr) = walk::expr_at_body_path(bodies, callsite.site.function, &len_arg.path)
     else {
         return false;
     };
     let Some(source) = pointer_length_source(
-        program,
+        bodies,
         ptr_expr,
         callsite.site.function,
         &ptr_arg.path,
@@ -913,7 +914,7 @@ const MAX_ALIAS_DEPTH: u32 = 8;
 /// points at: either a compile-time-constant array length, or the identity of
 /// another binding proven (by an active candidate) to carry the same length.
 fn pointer_length_source(
-    program: &Program,
+    bodies: &Bodies,
     expr: &Expr,
     function: FunctionId,
     path: &AstPath,
@@ -930,11 +931,11 @@ fn pointer_length_source(
     let binding = facts
         .binding_read_under(function, name.as_str(), path)
         .or_else(|| facts.binding_named(function, name.as_str()))?;
-    binding_length_source(program, binding, function, facts, active, depth)
+    binding_length_source(bodies, binding, function, facts, active, depth)
 }
 
 fn binding_length_source(
-    program: &Program,
+    bodies: &Bodies,
     binding: BindingId,
     function: FunctionId,
     facts: &FixupFacts,
@@ -960,9 +961,9 @@ fn binding_length_source(
     {
         return None;
     }
-    let init = walk::expr_at_path(facts, program, function, &local.path)?;
+    let init = walk::expr_at_body_path(bodies, function, &local.path)?;
     pointer_length_source(
-        program,
+        bodies,
         init,
         function,
         &local.path,

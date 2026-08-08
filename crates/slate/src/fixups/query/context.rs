@@ -4,17 +4,17 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    ArrayElementPointerOriginFact, AsciiNumericSign, AstPath, AtomicLocalFact, BindingId,
-    BindingKind, BorrowAliasReason, BufferPointerFieldFact, CallArgFact, CallArgPinning,
+    AnonymousStructFact, ArrayElementPointerOriginFact, AsciiNumericSign, AstPath, AtomicLocalFact,
+    BindingId, BindingKind, BorrowAliasReason, BufferPointerFieldFact, CallArgFact, CallArgPinning,
     CallCallee, CalleeAllocSummaryFact, CallsiteFact, CastFact, ConstValue, ControlFlowFact,
     ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
     EffectSubject, FixupFacts, FunctionId, HeapOwnershipFact, InterproceduralAllocCallerFact,
-    InterproceduralAllocEligibilityFact, NulTermination, NullCheckDominanceFact, NullCheckProof,
-    OptionBoxAssignKind, OptionBoxComparison, OptionBoxLocalCandidate, PathSegment, PlaceFact,
-    PointerComparisonFact, PointerComparisonKind, PointerOptionSafetyFact, PrintfCallFact,
-    PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
-    StringLibcUseFact, StringPointerViewFact, StringRecoveryCandidate, StructFieldOwnershipFact,
-    ValueSubject,
+    InterproceduralAllocEligibilityFact, LazyInitSingletonFact, NulTermination,
+    NullCheckDominanceFact, NullCheckProof, OptionBoxAssignKind, OptionBoxComparison,
+    OptionBoxLocalCandidate, PathSegment, PlaceFact, PointerComparisonFact, PointerComparisonKind,
+    PointerOptionSafetyFact, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
+    StringBufferKind, StringCopyRewrite, StringLibcUseFact, StringParamLiftFact,
+    StringPointerViewFact, StringRecoveryCandidate, StructFieldOwnershipFact, ValueSubject,
 };
 use crate::fixups::salsa::SalsaFacts;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
@@ -500,7 +500,7 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     fn atomic_local_facts(&self) -> Vec<&AtomicLocalFact> {
         match self.salsa {
-            Some(salsa) => salsa.atomic_locals(),
+            Some(salsa) => salsa.atomic_locals().iter().collect(),
             None => self.facts.atomic_locals.iter().collect(),
         }
     }
@@ -575,8 +575,9 @@ impl<'snapshot> QueryContext<'snapshot> {
             Some(salsa) => {
                 let (eligibility, _) = salsa.interprocedural_alloc();
                 eligibility
-                    .into_iter()
+                    .iter()
                     .find(|fact| fact.function == function)
+                    .cloned()
             }
             None => self
                 .facts
@@ -595,8 +596,9 @@ impl<'snapshot> QueryContext<'snapshot> {
             Some(salsa) => {
                 let (_, callers) = salsa.interprocedural_alloc();
                 callers
-                    .into_iter()
+                    .iter()
                     .filter(|caller| caller.callee == function)
+                    .cloned()
                     .collect()
             }
             None => self
@@ -664,6 +666,34 @@ impl<'snapshot> QueryContext<'snapshot> {
                 .facts
                 .call_arg_at(function, path)
                 .map(|(callsite, arg)| (callsite.clone(), arg.clone())),
+        }
+    }
+
+    fn ptr_len_slice_facts(&self) -> &[PtrLenSliceFact] {
+        match self.salsa {
+            Some(salsa) => salsa.ptr_len_slices(),
+            None => &self.facts.ptr_len_slices,
+        }
+    }
+
+    fn string_param_lift_facts(&self) -> &[StringParamLiftFact] {
+        match self.salsa {
+            Some(salsa) => salsa.string_param_lifts(),
+            None => &self.facts.string_param_lifts,
+        }
+    }
+
+    fn anonymous_struct_facts(&self) -> &[AnonymousStructFact] {
+        match self.salsa {
+            Some(salsa) => salsa.anonymous_structs(),
+            None => &self.facts.anonymous_structs,
+        }
+    }
+
+    fn lazy_init_singleton_facts(&self) -> &[LazyInitSingletonFact] {
+        match self.salsa {
+            Some(salsa) => salsa.lazy_init_singletons(),
+            None => &self.facts.lazy_init_singletons,
         }
     }
 
@@ -2982,15 +3012,15 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 
     pub(in crate::fixups) fn has_anonymous_structs(&self) -> bool {
-        !self.facts.anonymous_structs.is_empty()
+        !self.anonymous_struct_facts().is_empty()
     }
 
     pub(in crate::fixups) fn has_lazy_singletons(&self) -> bool {
-        !self.facts.lazy_init_singletons.is_empty()
+        !self.lazy_init_singleton_facts().is_empty()
     }
 
     pub(in crate::fixups) fn has_ptr_len_slices(&self) -> bool {
-        !self.facts.ptr_len_slices.is_empty()
+        !self.ptr_len_slice_facts().is_empty()
     }
 
     pub(in crate::fixups) fn has_sort_search_calls(&self) -> bool {
@@ -3808,6 +3838,7 @@ query_cache! {
     fn anonymous_structs(&self) -> QueryResult<AnonymousStructSet>;
     key: () = ();
     {
+        let anonymous_structs = self.anonymous_struct_facts();
         let records = self
             .program
             .items
@@ -3820,15 +3851,11 @@ query_cache! {
                 _ => None,
             })
             .collect::<Vec<_>>();
-        let generated = self
-            .facts
-            .anonymous_structs
+        let generated = anonymous_structs
             .iter()
             .map(|fact| fact.generated_name.as_str())
             .collect::<BTreeSet<_>>();
-        let originals = self
-            .facts
-            .anonymous_structs
+        let originals = anonymous_structs
             .iter()
             .map(|fact| fact.original_name.as_str())
             .collect::<BTreeSet<_>>();
@@ -3843,21 +3870,13 @@ query_cache! {
             .filter_map(item_type_name)
             .collect::<BTreeSet<_>>();
         let conflicts = generated.intersection(&occupied).count()
-            + self
-                .facts
-                .anonymous_structs
-                .len()
-                .saturating_sub(generated.len())
-            + self
-                .facts
-                .anonymous_structs
-                .len()
-                .saturating_sub(originals.len())
+            + anonymous_structs.len().saturating_sub(generated.len())
+            + anonymous_structs.len().saturating_sub(originals.len())
             + records.len().saturating_sub(record_names.len());
         let complete = !records.is_empty()
-            && records.len() == self.facts.anonymous_structs.len()
+            && records.len() == anonymous_structs.len()
             && conflicts == 0
-            && self.facts.anonymous_structs.iter().all(|fact| {
+            && anonymous_structs.iter().all(|fact| {
                 records.iter().any(|(_, record)| {
                     record.name == fact.original_name
                         && record.fields.len() == fact.fields.len()
@@ -3878,7 +3897,7 @@ query_cache! {
             site: site.clone(),
             detail: EvidenceDetail::AnonymousStructDomain {
                 records: records.len(),
-                facts: self.facts.anonymous_structs.len(),
+                facts: anonymous_structs.len(),
                 conflicts,
                 complete,
             },
@@ -3891,9 +3910,7 @@ query_cache! {
                 evidence,
             ));
         }
-        let structs = self
-            .facts
-            .anonymous_structs
+        let structs = anonymous_structs
             .iter()
             .map(|fact| {
                 let item_index = records
@@ -4479,7 +4496,7 @@ query_cache! {
     {
         let predicate = Predicate::LazySingletonDomain;
         let mut singletons = Vec::new();
-        for singleton in &self.facts.lazy_init_singletons {
+        for singleton in self.lazy_init_singleton_facts() {
             let Some(function_item_index) = self.facts.function_item_index(singleton.function)
             else {
                 return Err(Rejection::new(
@@ -4817,7 +4834,8 @@ query_cache! {
     key: () = ();
     {
         let predicate = Predicate::PtrLenSlice;
-        let plans = ptr_len_plans_from_facts(self.facts);
+        let slices = self.ptr_len_slice_facts();
+        let plans = ptr_len_plans_from_facts(slices, self.facts);
         let site = expression_site(plans.first().map_or(0, |plan| plan.item_index), &[]);
         if plans.is_empty() {
             return Err(Rejection::new(
@@ -5091,8 +5109,7 @@ query_cache! {
         let predicate = Predicate::StringParamLift;
         let site = expression_site(function.item_index, &[]);
         let mut indices = self
-            .facts
-            .string_param_lifts
+            .string_param_lift_facts()
             .iter()
             .filter(|fact| fact.callee == function.id)
             .map(|fact| fact.index)
@@ -6075,9 +6092,9 @@ fn qualified_path(path: &crate::rust_ast::Path) -> String {
         .join("::")
 }
 
-fn ptr_len_plans_from_facts(facts: &FixupFacts) -> Vec<PtrLenPlan> {
+fn ptr_len_plans_from_facts(slices: &[PtrLenSliceFact], facts: &FixupFacts) -> Vec<PtrLenPlan> {
     let mut grouped = BTreeMap::<(FunctionId, BindingId), Vec<&PtrLenSliceFact>>::new();
-    for fact in &facts.ptr_len_slices {
+    for fact in slices {
         grouped
             .entry((fact.callee, fact.ptr_param))
             .or_default()
