@@ -2,7 +2,10 @@
 //! address, so the rewrite can give it native `AtomicN` storage and safe
 //! direct method calls.
 
-use crate::fixups::facts::{AtomicLocalFact, FixupFacts, FunctionId, walk};
+use crate::fixups::facts::walk::Bodies;
+use crate::fixups::facts::{
+    AtomicGlobalFact, AtomicLocalFact, FixupFacts, FunctionId, StaticDeclFact, walk,
+};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::rust_ast::{
     AtomicPlace, AtomicType, Expr, FnDef, IndentStmt, Item, Prim, Program, Stmt, Type,
@@ -22,10 +25,30 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         all.extend(collect_for_function(function, f));
     }
     facts.atomic_locals = all;
-    facts.atomic_globals = promotable_globals(program)
-        .into_iter()
-        .map(|(name, ty)| crate::fixups::facts::AtomicGlobalFact { name, ty })
-        .collect();
+    let bodies = walk::bodies_from_program(program, facts);
+    facts.atomic_globals = compute_atomic_globals(&statics_from_program(program), &bodies);
+}
+
+fn statics_from_program(program: &Program) -> Vec<StaticDeclFact> {
+    program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            Item::Static {
+                name,
+                mutable,
+                ty,
+                init,
+                ..
+            } => Some(StaticDeclFact {
+                name: name.clone(),
+                mutable: *mutable,
+                ty: ty.clone(),
+                init: init.clone(),
+            }),
+            _ => None,
+        })
+        .collect()
 }
 
 pub(in crate::fixups) fn collect_for_function(
@@ -70,41 +93,49 @@ fn promotable_locals(body: &[IndentStmt]) -> Vec<(String, AtomicType)> {
         .collect()
 }
 
-fn promotable_globals(program: &Program) -> Vec<(String, AtomicType)> {
+pub(in crate::fixups) fn compute_atomic_globals(
+    statics: &[StaticDeclFact],
+    bodies: &Bodies,
+) -> Vec<AtomicGlobalFact> {
+    promotable_globals(statics, bodies)
+        .into_iter()
+        .map(|(name, ty)| AtomicGlobalFact { name, ty })
+        .collect()
+}
+
+fn promotable_globals(statics: &[StaticDeclFact], bodies: &Bodies) -> Vec<(String, AtomicType)> {
     let mut decls = Vec::new();
-    for item in &program.items {
-        if let Item::Static {
-            mutable: true,
-            name,
-            ty: Type::Prim(prim),
-            ..
-        } = item
+    for static_decl in statics {
+        if static_decl.mutable
+            && let Type::Prim(prim) = &static_decl.ty
             && let Some(atomic_ty) = prim_atomic_type(*prim)
         {
-            decls.push((name.clone(), atomic_ty));
+            decls.push((static_decl.name.clone(), atomic_ty));
         }
     }
     decls
         .into_iter()
         .filter(|(name, ty)| {
-            if program
-                .items
-                .iter()
-                .any(|item| item_declares_local(item, name))
-            {
+            if bodies.values().any(|f| body_declares_local(&f.body, name)) {
                 return false;
             }
-            let total: usize = program
-                .items
-                .iter()
-                .map(|item| item_ident_count(item, name))
+            let mut total: usize = bodies
+                .values()
+                .map(|f| {
+                    f.body
+                        .iter()
+                        .map(|indent| stmt_ident_count(&indent.stmt, name))
+                        .sum::<usize>()
+                })
                 .sum();
+            total += statics
+                .iter()
+                .filter(|static_decl| &static_decl.name != name)
+                .map(|static_decl| expr_ident_count(&static_decl.init, name))
+                .sum::<usize>();
             let mut qualifying = 0usize;
             let mut mismatched = false;
-            for item in &program.items {
-                let Item::Fn(f) = item else {
-                    continue;
-                };
+            for f in bodies.values() {
                 walk::body_exprs(&f.body, &mut |expr| match atomic_ptr_local(expr) {
                     Some((global, node_ty)) if global == name => {
                         if node_ty == Some(*ty) {
@@ -164,14 +195,6 @@ fn collect_decls(body: &[IndentStmt], decls: &mut Vec<(String, AtomicType)>) {
     }
 }
 
-fn item_declares_local(item: &Item, name: &str) -> bool {
-    match item {
-        Item::Fn(f) => body_declares_local(&f.body, name),
-        Item::Cfg { item, .. } => item_declares_local(item, name),
-        _ => false,
-    }
-}
-
 fn body_declares_local(body: &[IndentStmt], name: &str) -> bool {
     body.iter().any(|indent| match &indent.stmt {
         Stmt::Let { name: local, .. } => local == name,
@@ -200,30 +223,6 @@ fn body_declares_local(body: &[IndentStmt], name: &str) -> bool {
         Stmt::Match { arms, .. } => arms.iter().any(|arm| body_declares_local(&arm.body, name)),
         _ => false,
     })
-}
-
-fn item_ident_count(item: &Item, name: &str) -> usize {
-    match item {
-        Item::Fn(f) => f
-            .body
-            .iter()
-            .map(|indent| stmt_ident_count(&indent.stmt, name))
-            .sum(),
-        Item::Static {
-            name: static_name,
-            ty: _,
-            init,
-            ..
-        } => {
-            if static_name == name {
-                0
-            } else {
-                expr_ident_count(init, name)
-            }
-        }
-        Item::Cfg { item, .. } => item_ident_count(item, name),
-        _ => 0,
-    }
 }
 
 /// The promoted local an atomic place points at, when the place is exactly

@@ -1,6 +1,6 @@
 use crate::fixups::facts::walk;
-use crate::fixups::facts::{AstPath, CStringLiteralFact, FixupFacts, PathSegment};
-use crate::rust_ast::{Expr, Item, Prim, Program, Type};
+use crate::fixups::facts::{AstPath, CStringLiteralFact, FixupFacts, FunctionId, PathSegment};
+use crate::rust_ast::{Expr, FnDef, Item, Prim, Program, Type};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.c_string_literals.clear();
@@ -12,17 +12,26 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        walk::body_exprs_with_path(&f.body, &mut Vec::new(), &mut |expr, path| {
-            if let Some(bytes) = c_string_literal_payload(expr) {
-                out.push(CStringLiteralFact {
-                    function,
-                    receiver_path: receiver_path(path),
-                    bytes,
-                });
-            }
-        });
+        out.extend(collect_for_function(function, f));
     }
     facts.c_string_literals = out;
+}
+
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+) -> Vec<CStringLiteralFact> {
+    let mut out = Vec::new();
+    walk::body_exprs_with_path(&f.body, &mut Vec::new(), &mut |expr, path| {
+        if let Some(bytes) = c_string_literal_payload(expr) {
+            out.push(CStringLiteralFact {
+                function,
+                receiver_path: receiver_path(path),
+                bytes,
+            });
+        }
+    });
+    out
 }
 
 fn c_string_literal_payload(expr: &Expr) -> Option<Vec<u8>> {

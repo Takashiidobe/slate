@@ -1124,6 +1124,36 @@ pub(in crate::fixups) fn local_binding_at<'a>(
     })
 }
 
+pub(in crate::fixups) fn binding_name(
+    bindings: &[BindingFact],
+    binding: BindingId,
+) -> Option<&str> {
+    bindings
+        .iter()
+        .find(|fact| fact.id == binding)
+        .map(|fact| fact.name.as_str())
+}
+
+pub(in crate::fixups) fn string_buffer_at<'a>(
+    string_buffers: &'a [StringBufferFact],
+    function: FunctionId,
+    path: &AstPath,
+) -> Option<&'a StringBufferFact> {
+    string_buffers
+        .iter()
+        .find(|fact| fact.site.function == function && &fact.site.path == path)
+}
+
+pub(in crate::fixups) fn string_libc_use<'a>(
+    string_libc_uses: &'a [StringLibcUseFact],
+    function: FunctionId,
+    path: &AstPath,
+) -> Option<&'a StringLibcUseFact> {
+    string_libc_uses
+        .iter()
+        .find(|fact| fact.site.function == function && &fact.site.path == path)
+}
+
 impl FixupFacts {
     pub(super) fn function_by_item_index(&self, item_index: usize) -> Option<FunctionId> {
         self.functions
@@ -1240,10 +1270,7 @@ impl FixupFacts {
     }
 
     pub(super) fn binding_name(&self, binding: BindingId) -> Option<&str> {
-        self.bindings
-            .iter()
-            .find(|fact| fact.id == binding)
-            .map(|fact| fact.name.as_str())
+        binding_name(&self.bindings, binding)
     }
 
     pub(super) fn bindings_read_under(
@@ -1418,9 +1445,7 @@ impl FixupFacts {
         function: FunctionId,
         path: &AstPath,
     ) -> Option<&StringBufferFact> {
-        self.string_buffers
-            .iter()
-            .find(|fact| fact.site.function == function && &fact.site.path == path)
+        string_buffer_at(&self.string_buffers, function, path)
     }
 
     pub(super) fn string_pointer_view(
@@ -1439,7 +1464,18 @@ impl FixupFacts {
         recovery: StringRecoveryCandidate,
         liftable: &BTreeSet<BindingId>,
     ) -> bool {
-        strings::use_allowed(function, use_path, self, binding, recovery, liftable)
+        let snapshot = strings::RewriteSnapshot {
+            bindings: &self.bindings,
+            def_use: &self.def_use,
+            values: &self.values,
+            string_buffers: &self.string_buffers,
+            string_pointer_views: &self.string_pointer_views,
+            string_libc_uses: &self.string_libc_uses,
+            printf_calls: &self.printf_calls,
+            callsites: &self.callsites,
+            string_param_lifts: &self.string_param_lifts,
+        };
+        strings::use_allowed(function, use_path, &snapshot, binding, recovery, liftable)
     }
 
     pub(super) fn liftable_string_bindings(
@@ -1459,9 +1495,7 @@ impl FixupFacts {
         function: FunctionId,
         path: &AstPath,
     ) -> Option<&StringLibcUseFact> {
-        self.string_libc_uses
-            .iter()
-            .find(|fact| fact.site.function == function && &fact.site.path == path)
+        string_libc_use(&self.string_libc_uses, function, path)
     }
 
     pub(super) fn null_check_dominance_at(
