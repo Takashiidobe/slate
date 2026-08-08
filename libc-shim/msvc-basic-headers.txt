@@ -4,8 +4,10 @@ errno.h
 float.h
 limits.h
 stdarg.h
+signal.h
 stddef.h
 stdint.h
 stdio.h
 stdlib.h
 string.h
+time.h

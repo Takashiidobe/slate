@@ -7,16 +7,59 @@
 mod support;
 
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
 }
 
-fn fixtures() -> Vec<(String, PathBuf)> {
-    let dir = fixtures_dir();
-    let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
-    let mut fixtures = Vec::new();
-    for entry in std::fs::read_dir(&dir).expect("read fixtures dir") {
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum FixtureFlavor {
+    Default,
+    Msvc,
+}
+
+impl FixtureFlavor {
+    fn target(self) -> Option<&'static str> {
+        match self {
+            FixtureFlavor::Default => None,
+            FixtureFlavor::Msvc => Some("x86_64-pc-windows-msvc"),
+        }
+    }
+
+    fn shim_defines(self) -> &'static [&'static str] {
+        match self {
+            FixtureFlavor::Default => &[],
+            FixtureFlavor::Msvc => &[
+                "-D_SLATE_LIBC",
+                "-D__SLATE_ARCH_X86_64",
+                "-D__SLATE_VENDOR_PC",
+                "-D__SLATE_KERNEL_WINDOWS",
+                "-D__SLATE_LIBC_MSVC",
+                "-D__SLATE_OBJ_COFF",
+                "-D__SLATE_WORDSIZE_64",
+                "-D__SLATE_ENDIAN_LITTLE",
+            ],
+        }
+    }
+}
+
+struct Fixture {
+    name: String,
+    path: PathBuf,
+    flavor: FixtureFlavor,
+}
+
+fn collect_fixtures(
+    dir: &Path,
+    flavor: FixtureFlavor,
+    selected: &Option<String>,
+    out: &mut Vec<Fixture>,
+) {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+    for entry in entries {
         let path = entry.expect("dir entry").path();
         if path.extension().and_then(|e| e.to_str()) != Some("c") {
             continue;
@@ -25,10 +68,96 @@ fn fixtures() -> Vec<(String, PathBuf)> {
         if selected.as_ref().is_some_and(|selected| selected != &name) {
             continue;
         }
-        fixtures.push((name, path));
+        out.push(Fixture { name, path, flavor });
     }
-    fixtures.sort_by(|a, b| a.0.cmp(&b.0));
+}
+
+fn fixtures() -> Vec<Fixture> {
+    let dir = fixtures_dir();
+    let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
+    let mut fixtures = Vec::new();
+    collect_fixtures(&dir, FixtureFlavor::Default, &selected, &mut fixtures);
+    collect_fixtures(
+        &dir.join("msvc"),
+        FixtureFlavor::Msvc,
+        &selected,
+        &mut fixtures,
+    );
+    fixtures.sort_by(|a, b| a.name.cmp(&b.name));
     fixtures
+}
+
+fn clang() -> String {
+    std::env::var("SLATE_CLANG").unwrap_or_else(|_| {
+        std::path::PathBuf::from(std::env::var("HOME").unwrap_or_default())
+            .join("llvm-project/build-cir/bin/clang")
+            .to_string_lossy()
+            .into_owned()
+    })
+}
+
+fn libc_shim_dir() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/include")
+}
+
+fn xwin_sysroot_dirs() -> Option<(PathBuf, PathBuf)> {
+    let sysroot = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/msvc-sysroot");
+    let crt = sysroot.join("crt/include");
+    let ucrt = sysroot.join("sdk/include/ucrt");
+    if !crt.is_dir() || !ucrt.is_dir() {
+        return None;
+    }
+    Some((crt, ucrt))
+}
+
+fn compile_for_target(
+    name: &str,
+    target: &str,
+    isystem_dirs: &[PathBuf],
+    defines: &[&str],
+    source: &Path,
+) -> Result<(), String> {
+    let cache_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-cache");
+    std::fs::create_dir_all(&cache_root).unwrap();
+    let object_file = cache_root.join(format!("msvc_fixture_{name}.o"));
+    let mut cmd = Command::new(clang());
+    cmd.args(["-xc", "-c", "-nostdlibinc"])
+        .arg(format!("--target={target}"))
+        .arg("-o")
+        .arg(&object_file);
+    for dir in isystem_dirs {
+        cmd.arg("-isystem").arg(dir);
+    }
+    cmd.args(defines);
+    cmd.arg(source);
+    let output = cmd
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", clang()))?;
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).into_owned());
+    }
+    Ok(())
+}
+
+fn run_cross_target_fixture(
+    name: &str,
+    flavor: FixtureFlavor,
+    target: &str,
+    path: &Path,
+) -> Result<(), String> {
+    compile_for_target(
+        name,
+        target,
+        &[libc_shim_dir()],
+        flavor.shim_defines(),
+        path,
+    )
+    .map_err(|e| format!("libc-shim compile failed:\n{e}"))?;
+    if let Some((crt, ucrt)) = xwin_sysroot_dirs() {
+        compile_for_target(&format!("{name}_xwin"), target, &[crt, ucrt], &[], path)
+            .map_err(|e| format!("xwin oracle compile failed:\n{e}"))?;
+    }
+    Ok(())
 }
 
 #[test]
@@ -43,23 +172,28 @@ fn generated_differential() {
         fixtures_dir()
     );
 
-    let translated = support::parallel_map(&fixtures, |(name, c_src)| {
-        let generated = tmp.join(format!("{name}.generated.rs"));
-        support::translate(c_src, &generated).map(|()| support::Case {
-            name: name.clone(),
-            c_src: c_src.clone(),
+    let mut failures = Vec::new();
+
+    let default_fixtures: Vec<&Fixture> = fixtures
+        .iter()
+        .filter(|f| f.flavor == FixtureFlavor::Default)
+        .collect();
+    let translated = support::parallel_map(&default_fixtures, |f| {
+        let generated = tmp.join(format!("{}.generated.rs", f.name));
+        support::translate(&f.path, &generated).map(|()| support::Case {
+            name: f.name.clone(),
+            c_src: f.path.clone(),
             rs_src: generated,
             config: support::RunConfig::default(),
         })
     });
     let mut cases = Vec::new();
-    let mut failures = Vec::new();
-    for ((name, _), result) in fixtures.iter().zip(translated) {
+    for (f, result) in default_fixtures.iter().zip(translated) {
         match result {
             Ok(case) => cases.push(case),
             Err(e) => {
-                eprintln!("FAIL  {name}");
-                failures.push(format!("[{name}] {e}"));
+                eprintln!("FAIL  {}", f.name);
+                failures.push(format!("[{}] {e}", f.name));
             }
         }
     }
@@ -70,6 +204,23 @@ fn generated_differential() {
             Err(e) => {
                 eprintln!("FAIL  {name}");
                 failures.push(format!("[{name}] {e}"));
+            }
+        }
+    }
+
+    let cross_target_fixtures: Vec<&Fixture> = fixtures
+        .iter()
+        .filter(|f| f.flavor != FixtureFlavor::Default)
+        .collect();
+    let cross_target_results = support::parallel_map(&cross_target_fixtures, |f| {
+        run_cross_target_fixture(&f.name, f.flavor, f.flavor.target().unwrap(), &f.path)
+    });
+    for (f, result) in cross_target_fixtures.iter().zip(cross_target_results) {
+        match result {
+            Ok(()) => eprintln!("ok    {} ({:?})", f.name, f.flavor),
+            Err(e) => {
+                eprintln!("FAIL  {} ({:?})", f.name, f.flavor);
+                failures.push(format!("[{} ({:?})] {e}", f.name, f.flavor));
             }
         }
     }
@@ -108,7 +259,7 @@ fn explicit_targets_define_slate_feature_macros() {
 
 #[test]
 fn msvc_llp64_fixture_translates_with_target_abi_types() {
-    let fixture = fixtures_dir().join("msvc_llp64.c");
+    let fixture = fixtures_dir().join("msvc/llp64.c");
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .args(["translate", fixture.to_str().unwrap()])
         .env("SLATE_TARGET", "x86_64-pc-windows-msvc")

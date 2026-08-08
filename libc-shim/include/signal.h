@@ -3,6 +3,15 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+
+#include <bits/msvc/signal.h>
+
+_crt_signal_t signal(int, _crt_signal_t);
+int           raise(int);
+
+#else
+
 #if !defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE) &&                    \
     !defined(_XOPEN_SOURCE) && !defined(_GNU_SOURCE) && !defined(_BSD_SOURCE)
 #define __NEED_pid_t
@@ -322,5 +331,7 @@ int  raise(int);
 __REDIR(sigtimedwait, __sigtimedwait_time64);
 #endif
 #endif
+
+#endif /* __SLATE_LIBC_MSVC */
 
 #endif
