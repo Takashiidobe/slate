@@ -3,7 +3,7 @@ use crate::fixups::facts::{
     AstPath, AtomicPlaceAccess, FixupFacts, FunctionId, PathSegment, PlaceAccess, PlaceFact,
     PlaceKind, PlaceProjection, PlaceRoot, Site, VolatileAccess,
 };
-use crate::rust_ast::{Block, Expr, IndentStmt, Item, Program, Stmt, UnaryOp};
+use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Item, Program, Stmt, UnaryOp};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.places.clear();
@@ -15,14 +15,18 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut collector = Collector {
-            function,
-            places: Vec::new(),
-        };
-        collector.body(&f.body, &mut Vec::new());
-        all.extend(collector.places);
+        all.extend(collect_for_function(function, f));
     }
     facts.places = all;
+}
+
+pub(in crate::fixups) fn collect_for_function(function: FunctionId, f: &FnDef) -> Vec<PlaceFact> {
+    let mut collector = Collector {
+        function,
+        places: Vec::new(),
+    };
+    collector.body(&f.body, &mut Vec::new());
+    collector.places
 }
 
 struct Collector {

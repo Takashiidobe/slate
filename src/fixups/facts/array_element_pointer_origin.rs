@@ -4,7 +4,9 @@ use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     ArrayElementPointerOriginFact, AstPath, BindingId, FixupFacts, FunctionId, PathSegment, Site,
 };
-use crate::rust_ast::{Block, Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
+use crate::rust_ast::{
+    Block, Expr, FnDef, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type,
+};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.array_element_pointer_origins.clear();
@@ -16,13 +18,21 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut collector = Collector::new(function, facts);
-        collector.enter_scope();
-        collector.body(&f.body, &mut Vec::new(), false);
-        collector.exit_scope();
-        all.extend(collector.finish());
+        all.extend(collect_for_function(function, f, facts));
     }
     facts.array_element_pointer_origins = all;
+}
+
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &FixupFacts,
+) -> Vec<ArrayElementPointerOriginFact> {
+    let mut collector = Collector::new(function, facts);
+    collector.enter_scope();
+    collector.body(&f.body, &mut Vec::new(), false);
+    collector.exit_scope();
+    collector.finish()
 }
 
 struct Collector<'a> {

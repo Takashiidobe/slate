@@ -5,7 +5,7 @@ use crate::fixups::facts::{
     AstPath, ControlFlowExit, ControlFlowFact, ControlFlowSubject, FixupFacts, FunctionId,
     PathSegment, Site,
 };
-use crate::rust_ast::{Block, IndentStmt, Item, Label, Program, Stmt};
+use crate::rust_ast::{Block, FnDef, IndentStmt, Item, Label, Program, Stmt};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.control_flow.clear();
@@ -17,14 +17,21 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut collector = Collector {
-            function,
-            facts: Vec::new(),
-        };
-        collector.body(&f.body, &mut Vec::new(), true);
-        all.extend(collector.facts);
+        all.extend(collect_for_function(function, f));
     }
     facts.control_flow = all;
+}
+
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+) -> Vec<ControlFlowFact> {
+    let mut collector = Collector {
+        function,
+        facts: Vec::new(),
+    };
+    collector.body(&f.body, &mut Vec::new(), true);
+    collector.facts
 }
 
 struct Collector {
