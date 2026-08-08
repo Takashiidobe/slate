@@ -4,12 +4,13 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    ArrayElementPointerOriginFact, AsciiNumericSign, AstPath, BindingId, BindingKind,
-    BorrowAliasReason, CallArgPinning, CallCallee, CalleeAllocSummaryFact, CastFact, ConstValue,
-    ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact,
-    EffectFact, EffectSubject, FixupFacts, FunctionId, InterproceduralAllocEligibilityFact,
-    NulTermination, NullCheckDominanceFact, NullCheckProof, OptionBoxAssignKind, PathSegment,
-    PlaceFact, PointerComparisonKind, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
+    ArrayElementPointerOriginFact, AsciiNumericSign, AstPath, AtomicLocalFact, BindingId,
+    BindingKind, BorrowAliasReason, CallArgPinning, CallCallee, CalleeAllocSummaryFact, CastFact,
+    ConstValue, ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact,
+    DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionId,
+    InterproceduralAllocEligibilityFact, NulTermination, NullCheckDominanceFact, NullCheckProof,
+    OptionBoxAssignKind, PathSegment, PlaceFact, PointerComparisonFact, PointerComparisonKind,
+    PointerOptionSafetyFact, PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact,
     StringBufferKind, StringCopyRewrite, StringLibcUseFact, StringPointerViewFact,
     StringRecoveryCandidate, StructFieldOwnershipFact, ValueSubject,
 };
@@ -492,6 +493,50 @@ impl<'snapshot> QueryContext<'snapshot> {
         match self.salsa {
             Some(salsa) => salsa.null_check_dominance_at(function, deref_path),
             None => self.facts.null_check_dominance_at(function, deref_path),
+        }
+    }
+
+    fn atomic_local_facts(&self) -> Vec<&AtomicLocalFact> {
+        match self.salsa {
+            Some(salsa) => salsa.atomic_locals(),
+            None => self.facts.atomic_locals.iter().collect(),
+        }
+    }
+
+    fn pointer_option_safety_of(
+        &self,
+        function: FunctionId,
+        binding: BindingId,
+    ) -> Option<&PointerOptionSafetyFact> {
+        match self.salsa {
+            Some(salsa) => salsa.pointer_option_safety_of(function, binding),
+            None => self.facts.pointer_option_safety_of(function, binding),
+        }
+    }
+
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
+    fn pointer_comparison_at(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&PointerComparisonFact> {
+        match self.salsa {
+            Some(salsa) => salsa.pointer_comparison_at(function, path),
+            None => self.facts.pointer_comparison_at(function, path),
+        }
+    }
+
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
+    fn struct_field_ownership_fact_list(&self) -> Vec<&StructFieldOwnershipFact> {
+        match self.salsa {
+            Some(salsa) => salsa.struct_field_ownership().iter().collect(),
+            None => self.facts.struct_field_ownership.iter().collect(),
         }
     }
 
@@ -2195,7 +2240,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(fact) = self.facts.pointer_option_safety_of(function, resolved) else {
+        let Some(fact) = self.pointer_option_safety_of(function, resolved) else {
             return Err(Rejection::new(
                 predicate,
                 Some(expression_site(binding.item_index, &binding.definition.0)),
@@ -2236,7 +2281,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(fact) = self.facts.pointer_comparison_at(function, &site.path) else {
+        let Some(fact) = self.pointer_comparison_at(function, &site.path) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site.clone()),
@@ -2834,7 +2879,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 
     pub(in crate::fixups) fn has_atomic_promotions(&self) -> bool {
-        !self.facts.atomic_locals.is_empty() || !self.facts.atomic_globals.is_empty()
+        !self.atomic_local_facts().is_empty() || !self.facts.atomic_globals.is_empty()
     }
 
     pub(super) fn snapshot_program(&self) -> &'snapshot Program {
@@ -4386,7 +4431,7 @@ query_cache! {
     {
         let predicate = Predicate::AtomicPromotionDomain;
         let mut locals = Vec::new();
-        for fact in &self.facts.atomic_locals {
+        for fact in self.atomic_local_facts() {
             let Some(function_item_index) = self.facts.function_item_index(fact.function) else {
                 return Err(Rejection::new(
                     predicate,
@@ -4675,7 +4720,11 @@ query_cache! {
     key: () = ();
     {
         let predicate = Predicate::StructFieldOwnership;
-        let fields = self.facts.struct_field_ownership.clone();
+        let fields: Vec<StructFieldOwnershipFact> = self
+            .struct_field_ownership_fact_list()
+            .into_iter()
+            .cloned()
+            .collect();
         let evidence = vec![Evidence {
             predicate,
             site: expression_site(0, &[]),

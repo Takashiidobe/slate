@@ -1,18 +1,20 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::{FixupFacts, StructFieldOwnershipFact};
-use crate::rust_ast::{Item, Program, Type};
+use crate::rust_ast::{Item, Program, RecordDef, Type};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.struct_field_ownership = analyze(program);
+    facts.struct_field_ownership = collect(program.items.iter().filter_map(|item| match item {
+        Item::Record(record) => Some(record),
+        _ => None,
+    }));
 }
 
-fn analyze(program: &Program) -> Vec<StructFieldOwnershipFact> {
+pub(in crate::fixups) fn collect<'a>(
+    records: impl Iterator<Item = &'a RecordDef>,
+) -> Vec<StructFieldOwnershipFact> {
     let mut candidates: Vec<(String, String, String)> = Vec::new();
-    for item in &program.items {
-        let Item::Record(record) = item else {
-            continue;
-        };
+    for record in records {
         for field in &record.fields {
             if let Some(pointee) = pointer_to_record(&field.ty) {
                 candidates.push((
