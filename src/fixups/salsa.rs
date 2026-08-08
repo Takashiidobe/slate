@@ -5,8 +5,9 @@ use crate::fixups::facts::{
     BindingTypeFact, BorrowAliasFact, BorrowAliasReason, BorrowAliasState, CallSignatureFact,
     CallSignatureSource, CallsiteFact, CastFact, ControlFlowFact, ControlFlowSubject,
     CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject, FixupFacts,
-    FunctionFact, FunctionId, LoopFact, NullCheckDominanceFact, PlaceFact, PointerComparisonFact,
-    PointerOptionSafetyFact, StructFieldOwnershipFact, ValueFact,
+    FunctionFact, FunctionId, LoopFact, NullCheckDominanceFact, OptionBoxComparison,
+    OptionBoxLocalCandidate, PlaceFact, PointerComparisonFact, PointerOptionSafetyFact,
+    StructFieldOwnershipFact, ValueFact,
 };
 use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{EnumDef, FnDef, Item, Program, RecordDef, StructDef};
@@ -206,6 +207,22 @@ impl FunctionInput {
             self.body(db),
             &local_facts,
             definitions.union_records(db),
+        )
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn option_box(
+        self,
+        db: &dyn FixupDb,
+    ) -> (Vec<OptionBoxLocalCandidate>, Vec<OptionBoxComparison>) {
+        let local_facts = FixupFacts {
+            bindings: self.bindings(db).clone(),
+            ..FixupFacts::default()
+        };
+        facts::option_box_locals::collect_for_function(
+            *self.function(db),
+            self.body(db),
+            &local_facts,
         )
     }
 }
@@ -614,6 +631,26 @@ impl SalsaFacts {
             .1
             .iter()
             .find(|fact| &fact.site.path == path)
+    }
+
+    pub(in crate::fixups) fn option_box_local_candidates(
+        &self,
+        function: FunctionId,
+    ) -> &[OptionBoxLocalCandidate] {
+        let Some(&input) = self.functions.get(&function) else {
+            return &[];
+        };
+        &input.option_box(&self.db).0
+    }
+
+    pub(in crate::fixups) fn option_box_comparisons(
+        &self,
+        function: FunctionId,
+    ) -> &[OptionBoxComparison] {
+        let Some(&input) = self.functions.get(&function) else {
+            return &[];
+        };
+        &input.option_box(&self.db).1
     }
 
     #[expect(
