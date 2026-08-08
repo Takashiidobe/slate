@@ -2,8 +2,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, FixupFacts, FunctionId, OptionBoxAssignKind, OptionBoxAssignment, OptionBoxComparison,
-    OptionBoxLocalCandidate, PathSegment,
+    self, AstPath, BindingFact, FixupFacts, FunctionId, OptionBoxAssignKind, OptionBoxAssignment,
+    OptionBoxComparison, OptionBoxLocalCandidate, PathSegment,
 };
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{BinOp, Expr, FnDef, IndentStmt, Item, Program, RustValue, Stmt, Type};
@@ -20,7 +20,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let (candidates, comparisons) = collect_for_function(function, f, facts);
+        let (candidates, comparisons) = collect_for_function(function, f, &facts.bindings);
         all.extend(candidates);
         all_comparisons.extend(comparisons);
     }
@@ -31,10 +31,10 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
 ) -> (Vec<OptionBoxLocalCandidate>, Vec<OptionBoxComparison>) {
     let let_defs = collect_let_defs(&f.body);
-    let candidates = local_candidates_for_function(function, f, facts);
+    let candidates = local_candidates_for_function(function, f, bindings);
     let candidate_names: BTreeSet<String> = candidates.iter().map(|c| c.name.clone()).collect();
     let mut comparisons = Vec::new();
     collect_comparisons(
@@ -131,7 +131,7 @@ fn comparison_shape(
 fn local_candidates_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
 ) -> Vec<OptionBoxLocalCandidate> {
     let let_defs = collect_let_defs(&f.body);
     let mut candidates = Vec::new();
@@ -151,7 +151,7 @@ fn local_candidates_for_function(
         if !is_null_expr(init) {
             continue;
         }
-        let Some(binding) = facts.binding_named(function, name.as_str()) else {
+        let Some(binding) = facts::binding_named(bindings, function, name.as_str()) else {
             continue;
         };
         let decl_path = AstPath(vec![PathSegment::Stmt(index)]);

@@ -2,8 +2,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BorrowAliasFact, BorrowAliasReason, BorrowAliasState, BorrowAliasUseFact,
-    BorrowAliasUseKind, FixupFacts, FunctionId, PathSegment,
+    AstPath, BindingFact, BindingId, BorrowAliasFact, BorrowAliasReason, BorrowAliasState,
+    BorrowAliasUseFact, BorrowAliasUseKind, FixupFacts, FunctionId, PathSegment,
 };
 use crate::rust_ast::{
     AsmOperand, Block, Expr, FnDef, Ident, IndentStmt, Item, Program, Stmt, UnaryOp,
@@ -19,7 +19,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        all.extend(collect_for_function(function, f, facts));
+        all.extend(collect_for_function(function, f, &facts.bindings));
     }
     facts.borrow_alias = all;
 }
@@ -27,16 +27,16 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
 ) -> Vec<BorrowAliasFact> {
-    let mut collector = Collector::new(function, facts);
+    let mut collector = Collector::new(function, bindings);
     collector.body(&f.body, &mut Vec::new());
     collector.finish()
 }
 
 struct Collector<'a> {
     function: FunctionId,
-    facts: &'a FixupFacts,
+    bindings: &'a [BindingFact],
     by_binding: BTreeMap<BindingId, BindingSummary>,
 }
 
@@ -47,17 +47,16 @@ struct BindingSummary {
 }
 
 impl<'a> Collector<'a> {
-    fn new(function: FunctionId, facts: &'a FixupFacts) -> Self {
+    fn new(function: FunctionId, bindings: &'a [BindingFact]) -> Self {
         Self {
             function,
-            facts,
+            bindings,
             by_binding: BTreeMap::new(),
         }
     }
 
     fn finish(self) -> Vec<BorrowAliasFact> {
-        self.facts
-            .bindings
+        self.bindings
             .iter()
             .filter(|binding| binding.function == self.function)
             .filter_map(|binding| {
@@ -498,8 +497,7 @@ impl<'a> Collector<'a> {
     }
 
     fn binding_for_name(&self, name: &str) -> Option<BindingId> {
-        self.facts
-            .bindings
+        self.bindings
             .iter()
             .find(|binding| binding.function == self.function && binding.name == name)
             .map(|binding| binding.id)

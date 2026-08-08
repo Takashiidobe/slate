@@ -1,7 +1,8 @@
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, FixupFacts, FunctionId, NulTermination, PathSegment, PrintfArgFact, PrintfCallFact,
-    Site, StringBufferProvenance, StringBufferRejection,
+    self, AstPath, FixupFacts, FunctionId, NulTermination, PathSegment, PrintfArgFact,
+    PrintfCallFact, Site, StringBufferFact, StringBufferProvenance, StringBufferRejection,
+    StringPointerViewFact,
 };
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
@@ -19,7 +20,12 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        calls.extend(collect_for_function(function, f, facts));
+        calls.extend(collect_for_function(
+            function,
+            f,
+            &facts.string_buffers,
+            &facts.string_pointer_views,
+        ));
     }
     facts.printf_calls = calls;
 }
@@ -27,7 +33,8 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    string_buffers: &[StringBufferFact],
+    string_pointer_views: &[StringPointerViewFact],
 ) -> Vec<PrintfCallFact> {
     let mut calls = Vec::new();
     let mut env = PrintfEnv::from_params(&f.params);
@@ -37,7 +44,8 @@ pub(in crate::fixups) fn collect_for_function(
         &mut env,
         &mut Vec::new(),
         &mut calls,
-        facts,
+        string_buffers,
+        string_pointer_views,
     );
     calls
 }
@@ -48,11 +56,20 @@ fn body(
     env: &mut PrintfEnv,
     path: &mut Vec<PathSegment>,
     calls: &mut Vec<PrintfCallFact>,
-    facts: &FixupFacts,
+    string_buffers: &[StringBufferFact],
+    string_pointer_views: &[StringPointerViewFact],
 ) {
     for (index, indent) in body.iter().enumerate() {
         walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
-            stmt(function, &indent.stmt, env, path, calls, facts);
+            stmt(
+                function,
+                &indent.stmt,
+                env,
+                path,
+                calls,
+                string_buffers,
+                string_pointer_views,
+            );
         });
         env.update_after_stmt(&indent.stmt);
     }
@@ -64,13 +81,30 @@ fn visit_block(
     env: &PrintfEnv,
     path: &mut Vec<PathSegment>,
     calls: &mut Vec<PrintfCallFact>,
-    facts: &FixupFacts,
+    string_buffers: &[StringBufferFact],
+    string_pointer_views: &[StringPointerViewFact],
 ) {
     let mut block_env = env.clone();
-    body(function, &block.stmts, &mut block_env, path, calls, facts);
+    body(
+        function,
+        &block.stmts,
+        &mut block_env,
+        path,
+        calls,
+        string_buffers,
+        string_pointer_views,
+    );
     if let Some(tail) = &block.tail {
         walk::with_path_segment(path, PathSegment::BlockTail, |path| {
-            visit_expr(function, tail, &block_env, path, calls, facts);
+            visit_expr(
+                function,
+                tail,
+                &block_env,
+                path,
+                calls,
+                string_buffers,
+                string_pointer_views,
+            );
         });
     }
 }
@@ -81,12 +115,21 @@ fn stmt(
     env: &PrintfEnv,
     path: &mut Vec<PathSegment>,
     calls: &mut Vec<PrintfCallFact>,
-    facts: &FixupFacts,
+    string_buffers: &[StringBufferFact],
+    string_pointer_views: &[StringPointerViewFact],
 ) {
     match stmt {
         Stmt::Let { init, .. } => {
             if let Some(init) = init {
-                visit_expr(function, init, env, path, calls, facts);
+                visit_expr(
+                    function,
+                    init,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                );
             }
         }
         Stmt::LetIf {
@@ -97,91 +140,265 @@ fn stmt(
             else_value,
             ..
         } => {
-            visit_expr(function, cond, env, path, calls, facts);
+            visit_expr(
+                function,
+                cond,
+                env,
+                path,
+                calls,
+                string_buffers,
+                string_pointer_views,
+            );
             let mut then_env = env.clone();
             let mut else_env = env.clone();
             walk::with_path_segment(path, PathSegment::Then, |path| {
-                body(function, then_body, &mut then_env, path, calls, facts);
-                visit_expr(function, then_value, &then_env, path, calls, facts);
+                body(
+                    function,
+                    then_body,
+                    &mut then_env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                );
+                visit_expr(
+                    function,
+                    then_value,
+                    &then_env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                );
             });
             walk::with_path_segment(path, PathSegment::Else, |path| {
-                body(function, else_body, &mut else_env, path, calls, facts);
-                visit_expr(function, else_value, &else_env, path, calls, facts);
+                body(
+                    function,
+                    else_body,
+                    &mut else_env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                );
+                visit_expr(
+                    function,
+                    else_value,
+                    &else_env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                );
             });
         }
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
-            visit_expr(function, target, env, path, calls, facts);
-            visit_expr(function, value, env, path, calls, facts);
+            visit_expr(
+                function,
+                target,
+                env,
+                path,
+                calls,
+                string_buffers,
+                string_pointer_views,
+            );
+            visit_expr(
+                function,
+                value,
+                env,
+                path,
+                calls,
+                string_buffers,
+                string_pointer_views,
+            );
         }
         Stmt::InlineAsm(_) => {}
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
-            visit_expr(function, expr, env, path, calls, facts)
-        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => visit_expr(
+            function,
+            expr,
+            env,
+            path,
+            calls,
+            string_buffers,
+            string_pointer_views,
+        ),
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
         Stmt::If {
             cond,
             then_body,
             else_body,
         } => {
-            visit_expr(function, cond, env, path, calls, facts);
+            visit_expr(
+                function,
+                cond,
+                env,
+                path,
+                calls,
+                string_buffers,
+                string_pointer_views,
+            );
             let mut then_env = env.clone();
             let mut else_env = env.clone();
             walk::with_path_segment(path, PathSegment::Then, |path| {
-                body(function, then_body, &mut then_env, path, calls, facts)
+                body(
+                    function,
+                    then_body,
+                    &mut then_env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Else, |path| {
-                body(function, else_body, &mut else_env, path, calls, facts)
+                body(
+                    function,
+                    else_body,
+                    &mut else_env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Stmt::Loop { body: nested, .. } => {
             let mut nested_env = env.clone();
             walk::with_path_segment(path, PathSegment::LoopBody, |path| {
-                body(function, nested, &mut nested_env, path, calls, facts)
+                body(
+                    function,
+                    nested,
+                    &mut nested_env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Stmt::For {
             iter, body: nested, ..
         } => {
-            visit_expr(function, iter, env, path, calls, facts);
+            visit_expr(
+                function,
+                iter,
+                env,
+                path,
+                calls,
+                string_buffers,
+                string_pointer_views,
+            );
             let mut nested_env = env.clone();
             walk::with_path_segment(path, PathSegment::ForBody, |path| {
-                body(function, nested, &mut nested_env, path, calls, facts)
+                body(
+                    function,
+                    nested,
+                    &mut nested_env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Stmt::Scope { body: nested } => {
             let mut nested_env = env.clone();
             walk::with_path_segment(path, PathSegment::ScopeBody, |path| {
-                body(function, nested, &mut nested_env, path, calls, facts)
+                body(
+                    function,
+                    nested,
+                    &mut nested_env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Stmt::LabeledBlock { body: nested, .. } => {
             let mut nested_env = env.clone();
             walk::with_path_segment(path, PathSegment::LabeledBody, |path| {
-                body(function, nested, &mut nested_env, path, calls, facts)
+                body(
+                    function,
+                    nested,
+                    &mut nested_env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Stmt::Unsafe { body: nested } => {
             walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
-                visit_block(function, nested, env, path, calls, facts)
+                visit_block(
+                    function,
+                    nested,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Stmt::While { cond, body: nested } => {
-            visit_expr(function, cond, env, path, calls, facts);
+            visit_expr(
+                function,
+                cond,
+                env,
+                path,
+                calls,
+                string_buffers,
+                string_pointer_views,
+            );
             walk::with_path_segment(path, PathSegment::WhileBody, |path| {
-                visit_block(function, nested, env, path, calls, facts)
+                visit_block(
+                    function,
+                    nested,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Stmt::Block(nested) => {
             walk::with_path_segment(path, PathSegment::BlockBody, |path| {
-                visit_block(function, nested, env, path, calls, facts)
+                visit_block(
+                    function,
+                    nested,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Stmt::Match { expr: value, arms } => {
-            visit_expr(function, value, env, path, calls, facts);
+            visit_expr(
+                function,
+                value,
+                env,
+                path,
+                calls,
+                string_buffers,
+                string_pointer_views,
+            );
             for (index, arm) in arms.iter().enumerate() {
                 let mut arm_env = env.clone();
                 walk::with_path_segment(path, PathSegment::MatchArm(index), |path| {
-                    body(function, &arm.body, &mut arm_env, path, calls, facts);
+                    body(
+                        function,
+                        &arm.body,
+                        &mut arm_env,
+                        path,
+                        calls,
+                        string_buffers,
+                        string_pointer_views,
+                    );
                 });
             }
         }
@@ -194,7 +411,8 @@ fn visit_expr(
     env: &PrintfEnv,
     path: &mut Vec<PathSegment>,
     calls: &mut Vec<PrintfCallFact>,
-    facts: &FixupFacts,
+    string_buffers: &[StringBufferFact],
+    string_pointer_views: &[StringPointerViewFact],
 ) {
     if let Expr::Call { args, .. } = expr
         && let Some(known @ (Known::Printf | Known::FPrintf | Known::SPrintf | Known::SNPrintf)) =
@@ -217,7 +435,12 @@ fn visit_expr(
                     const_string: const_c_string_arg(arg, env).or_else(|| {
                         let mut arg_path = path.to_vec();
                         arg_path.push(PathSegment::Expr(index + 1));
-                        proven_local_c_string_arg(function, facts, &arg_path)
+                        proven_local_c_string_arg(
+                            function,
+                            string_buffers,
+                            string_pointer_views,
+                            &arg_path,
+                        )
                     }),
                     const_char: const_c_char_arg(arg, env),
                     const_float: const_float_arg(arg, env),
@@ -259,42 +482,114 @@ fn visit_expr(
         | Expr::AddrOf { expr: inner, .. }
         | Expr::Transmute { expr: inner, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, inner, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    inner,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::Binary { lhs, rhs, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, lhs, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    lhs,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                visit_expr(function, rhs, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    rhs,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::Range { start, end } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, start, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    start,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                visit_expr(function, end, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    end,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::Call { func, args, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, func, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    func,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             for (index, arg) in args.iter().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
-                    visit_expr(function, arg, env, path, calls, facts)
+                    visit_expr(
+                        function,
+                        arg,
+                        env,
+                        path,
+                        calls,
+                        string_buffers,
+                        string_pointer_views,
+                    )
                 });
             }
         }
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, recv, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    recv,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             for (index, arg) in args.iter().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
-                    visit_expr(function, arg, env, path, calls, facts)
+                    visit_expr(
+                        function,
+                        arg,
+                        env,
+                        path,
+                        calls,
+                        string_buffers,
+                        string_pointer_views,
+                    )
                 });
             }
         }
@@ -302,58 +597,146 @@ fn visit_expr(
         | Expr::TupleField { base, .. }
         | Expr::ArrayPtr { array: base, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, base, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    base,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::Index { base, index } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, base, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    base,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                visit_expr(function, index, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    index,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::StructLit { fields, .. } => {
             for (index, (_, value)) in fields.iter().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index), |path| {
-                    visit_expr(function, value, env, path, calls, facts)
+                    visit_expr(
+                        function,
+                        value,
+                        env,
+                        path,
+                        calls,
+                        string_buffers,
+                        string_pointer_views,
+                    )
                 });
             }
         }
         Expr::TupleStructLit { fields, .. } => {
             for (index, value) in fields.iter().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index), |path| {
-                    visit_expr(function, value, env, path, calls, facts)
+                    visit_expr(
+                        function,
+                        value,
+                        env,
+                        path,
+                        calls,
+                        string_buffers,
+                        string_pointer_views,
+                    )
                 });
             }
         }
         Expr::ArrayLit(elems) | Expr::VecLit(elems) | Expr::Macro { args: elems, .. } => {
             for (index, elem) in elems.iter().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index), |path| {
-                    visit_expr(function, elem, env, path, calls, facts)
+                    visit_expr(
+                        function,
+                        elem,
+                        env,
+                        path,
+                        calls,
+                        string_buffers,
+                        string_pointer_views,
+                    )
                 });
             }
         }
         Expr::ArrayRepeat { elem, .. } | Expr::Closure { body: elem, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, elem, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    elem,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::VecRepeat { elem, len } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, elem, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    elem,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                visit_expr(function, len, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    len,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::Match { expr: value, arms } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, value, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    value,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             for (index, arm) in arms.iter().enumerate() {
                 walk::with_path_segment(path, PathSegment::Expr(index + 1), |path| {
-                    visit_expr(function, &arm.value, env, path, calls, facts)
+                    visit_expr(
+                        function,
+                        &arm.value,
+                        env,
+                        path,
+                        calls,
+                        string_buffers,
+                        string_pointer_views,
+                    )
                 });
             }
         }
@@ -363,61 +746,173 @@ fn visit_expr(
             else_expr,
         } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, cond, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    cond,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                visit_expr(function, then_expr, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    then_expr,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                visit_expr(function, else_expr, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    else_expr,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::Block(block) => {
             walk::with_path_segment(path, PathSegment::BlockBody, |path| {
-                visit_block(function, block, env, path, calls, facts)
+                visit_block(
+                    function,
+                    block,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::Unsafe(block) => {
             walk::with_path_segment(path, PathSegment::UnsafeBody, |path| {
-                visit_block(function, block, env, path, calls, facts)
+                visit_block(
+                    function,
+                    block,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::CopyNonoverlapping { src, dst, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, src, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    src,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                visit_expr(function, dst, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    dst,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::PtrCopy {
             src, dst, count, ..
         } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, src, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    src,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                visit_expr(function, dst, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    dst,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                visit_expr(function, count, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    count,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::WriteBytes { dst, val, count } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, dst, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    dst,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                visit_expr(function, val, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    val,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                visit_expr(function, count, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    count,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
             if let Some(ptr) = place.ptr_expr() {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    visit_expr(function, ptr, env, path, calls, facts)
+                    visit_expr(
+                        function,
+                        ptr,
+                        env,
+                        path,
+                        calls,
+                        string_buffers,
+                        string_pointer_views,
+                    )
                 });
             }
         }
@@ -426,16 +921,40 @@ fn visit_expr(
         | Expr::AtomicSwap { place, value, .. } => {
             if let Some(ptr) = place.ptr_expr() {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    visit_expr(function, ptr, env, path, calls, facts)
+                    visit_expr(
+                        function,
+                        ptr,
+                        env,
+                        path,
+                        calls,
+                        string_buffers,
+                        string_pointer_views,
+                    )
                 });
             }
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                visit_expr(function, value, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    value,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::AtomicNew { value, .. } => {
             walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                visit_expr(function, value, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    value,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
         Expr::AtomicCompareExchange {
@@ -446,14 +965,38 @@ fn visit_expr(
         } => {
             if let Some(ptr) = place.ptr_expr() {
                 walk::with_path_segment(path, PathSegment::Expr(0), |path| {
-                    visit_expr(function, ptr, env, path, calls, facts)
+                    visit_expr(
+                        function,
+                        ptr,
+                        env,
+                        path,
+                        calls,
+                        string_buffers,
+                        string_pointer_views,
+                    )
                 });
             }
             walk::with_path_segment(path, PathSegment::Expr(1), |path| {
-                visit_expr(function, expected, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    expected,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
             walk::with_path_segment(path, PathSegment::Expr(2), |path| {
-                visit_expr(function, desired, env, path, calls, facts)
+                visit_expr(
+                    function,
+                    desired,
+                    env,
+                    path,
+                    calls,
+                    string_buffers,
+                    string_pointer_views,
+                )
             });
         }
     }
@@ -486,13 +1029,14 @@ fn const_c_string_arg(arg: &Expr, env: &PrintfEnv) -> Option<String> {
 
 fn proven_local_c_string_arg(
     function: FunctionId,
-    facts: &FixupFacts,
+    string_buffers: &[StringBufferFact],
+    string_pointer_views: &[StringPointerViewFact],
     path: &[PathSegment],
 ) -> Option<String> {
-    let source = facts
-        .string_pointer_view(function, &AstPath(path.to_vec()))
-        .map(|view| view.source)?;
-    let buffer = facts.string_buffer(source)?;
+    let source =
+        facts::string_pointer_view(string_pointer_views, function, &AstPath(path.to_vec()))
+            .map(|view| view.source)?;
+    let buffer = facts::string_buffer(string_buffers, source)?;
     if buffer
         .rejections
         .contains(&StringBufferRejection::EscapedToCall)

@@ -1,7 +1,8 @@
 use std::collections::BTreeMap;
 
 use crate::fixups::facts::{
-    AstPath, BindingId, BufferPointerFieldFact, FixupFacts, FunctionId, PathSegment, Site,
+    self, AstPath, BindingFact, BindingId, BindingTypeFact, BufferPointerFieldFact, FixupFacts,
+    FunctionId, PathSegment, Site,
 };
 use crate::rust_ast::{Expr, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type};
 
@@ -15,7 +16,12 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        all.extend(collect_for_function(function, &f.body, facts));
+        all.extend(collect_for_function(
+            function,
+            &f.body,
+            &facts.bindings,
+            &facts.binding_types,
+        ));
     }
     facts.buffer_pointer_fields = all;
 }
@@ -39,10 +45,11 @@ struct PointerSource {
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
 ) -> Vec<BufferPointerFieldFact> {
-    let arrays = array_locals(function, facts);
-    let buffers = buffer_locals(function, facts);
+    let arrays = array_locals(function, bindings, binding_types);
+    let buffers = buffer_locals(function, bindings, binding_types);
     if arrays.is_empty() || buffers.is_empty() {
         return Vec::new();
     }
@@ -78,13 +85,16 @@ pub(in crate::fixups) fn collect_for_function(
     out
 }
 
-fn array_locals(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, ArrayLocal> {
-    facts
-        .bindings
+fn array_locals(
+    function: FunctionId,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
+) -> BTreeMap<String, ArrayLocal> {
+    bindings
         .iter()
         .filter(|binding| binding.function == function)
         .filter_map(|binding| {
-            let ty = facts.binding_type(binding.id)?;
+            let ty = facts::binding_type(binding_types, binding.id)?;
             array_len_from_rendered_type(ty)?;
             Some((
                 binding.name.clone(),
@@ -96,14 +106,16 @@ fn array_locals(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, Ar
         .collect()
 }
 
-fn buffer_locals(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, BufferLocal> {
-    facts
-        .bindings
+fn buffer_locals(
+    function: FunctionId,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
+) -> BTreeMap<String, BufferLocal> {
+    bindings
         .iter()
         .filter(|binding| binding.function == function)
         .filter(|binding| {
-            facts
-                .binding_type(binding.id)
+            facts::binding_type(binding_types, binding.id)
                 .is_some_and(|ty| !ty.starts_with('[') && !ty.starts_with('*'))
         })
         .map(|binding| {

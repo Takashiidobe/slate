@@ -997,6 +997,93 @@ fn def_use_query_path(path: &AstPath) -> AstPath {
     )
 }
 
+pub(in crate::fixups) fn binding_by_param_index(
+    bindings: &[BindingFact],
+    function: FunctionId,
+    index: usize,
+) -> Option<BindingId> {
+    bindings
+        .iter()
+        .find(|binding| {
+            binding.function == function
+                && matches!(binding.kind, BindingKind::Param { index: i } if i == index)
+        })
+        .map(|binding| binding.id)
+}
+
+pub(in crate::fixups) fn binding_by_local_path(
+    bindings: &[BindingFact],
+    function: FunctionId,
+    name: &str,
+    path: &AstPath,
+) -> Option<BindingId> {
+    bindings
+        .iter()
+        .find(|binding| {
+            binding.function == function
+                && binding.name == name
+                && binding.kind == BindingKind::Local
+                && &binding.path == path
+        })
+        .map(|binding| binding.id)
+}
+
+pub(in crate::fixups) fn binding_named(
+    bindings: &[BindingFact],
+    function: FunctionId,
+    name: &str,
+) -> Option<BindingId> {
+    bindings
+        .iter()
+        .rev()
+        .find(|binding| binding.function == function && binding.name == name)
+        .map(|binding| binding.id)
+}
+
+pub(in crate::fixups) fn binding_type(
+    binding_types: &[BindingTypeFact],
+    binding: BindingId,
+) -> Option<&str> {
+    binding_types
+        .iter()
+        .find(|fact| fact.binding == binding)
+        .map(|fact| fact.rendered.as_str())
+}
+
+pub(in crate::fixups) fn binding_type_ast(
+    binding_types: &[BindingTypeFact],
+    binding: BindingId,
+) -> Option<&Type> {
+    binding_types
+        .iter()
+        .find(|fact| fact.binding == binding)
+        .map(|fact| &fact.ty)
+}
+
+pub(in crate::fixups) fn def_use_of(
+    def_use: &[DefUseFact],
+    binding: BindingId,
+) -> Option<&DefUseFact> {
+    def_use.iter().find(|fact| fact.binding == binding)
+}
+
+pub(in crate::fixups) fn string_buffer(
+    string_buffers: &[StringBufferFact],
+    binding: BindingId,
+) -> Option<&StringBufferFact> {
+    string_buffers.iter().find(|fact| fact.binding == binding)
+}
+
+pub(in crate::fixups) fn string_pointer_view<'a>(
+    string_pointer_views: &'a [StringPointerViewFact],
+    function: FunctionId,
+    path: &AstPath,
+) -> Option<&'a StringPointerViewFact> {
+    string_pointer_views
+        .iter()
+        .find(|fact| fact.site.function == function && &fact.site.path == path)
+}
+
 impl FixupFacts {
     pub(super) fn function_by_item_index(&self, item_index: usize) -> Option<FunctionId> {
         self.functions
@@ -1031,19 +1118,26 @@ impl FixupFacts {
         // bindings by name+path against `self.bindings`, so it must
         // already reflect this function's current body before they run.
         Collector::resume(self).function(function, f);
-        self.borrow_alias
-            .extend(borrow_alias::collect_for_function(function, f, self));
+        self.borrow_alias.extend(borrow_alias::collect_for_function(
+            function,
+            f,
+            &self.bindings,
+        ));
         self.def_use
-            .extend(def_use::collect_for_function(function, f, self));
+            .extend(def_use::collect_for_function(function, f, &self.bindings));
         self.effects
             .extend(effects::collect_for_function(function, f));
         self.values
-            .extend(values::collect_for_function(function, f, self));
-        let collected = strings::collect_for_function(function, f, self);
+            .extend(values::collect_for_function(function, f, &self.bindings));
+        let collected =
+            strings::collect_for_function(function, f, &self.bindings, &self.binding_types);
         self.string_buffers.extend(collected.buffers);
         self.string_pointer_views.extend(collected.pointer_views);
         self.string_libc_uses.extend(collected.libc_uses);
-        counted_loop::collect_for_function(function, f, self);
+        let (counted, sliced) =
+            counted_loop::collect_for_function(function, f, &self.bindings, &self.loops);
+        self.counted_loops.extend(counted);
+        self.counted_slice_loops.extend(sliced);
     }
 
     pub(super) fn remove_items(&mut self, item_indices: &[usize]) {
@@ -1101,13 +1195,7 @@ impl FixupFacts {
         function: FunctionId,
         index: usize,
     ) -> Option<BindingId> {
-        self.bindings
-            .iter()
-            .find(|binding| {
-                binding.function == function
-                    && matches!(binding.kind, BindingKind::Param { index: i } if i == index)
-            })
-            .map(|binding| binding.id)
+        binding_by_param_index(&self.bindings, function, index)
     }
 
     pub(super) fn binding_by_local_path(
@@ -1116,15 +1204,7 @@ impl FixupFacts {
         name: &str,
         path: &AstPath,
     ) -> Option<BindingId> {
-        self.bindings
-            .iter()
-            .find(|binding| {
-                binding.function == function
-                    && binding.name == name
-                    && binding.kind == BindingKind::Local
-                    && &binding.path == path
-            })
-            .map(|binding| binding.id)
+        binding_by_local_path(&self.bindings, function, name, path)
     }
 
     pub(super) fn binding_name(&self, binding: BindingId) -> Option<&str> {
@@ -1136,11 +1216,7 @@ impl FixupFacts {
 
     /// Most-recently-declared binding named `name` in `function`.
     pub(super) fn binding_named(&self, function: FunctionId, name: &str) -> Option<BindingId> {
-        self.bindings
-            .iter()
-            .rev()
-            .find(|binding| binding.function == function && binding.name == name)
-            .map(|binding| binding.id)
+        binding_named(&self.bindings, function, name)
     }
 
     /// The binding named `name` with a recorded read overlapping `path`, if
@@ -1234,17 +1310,11 @@ impl FixupFacts {
     }
 
     pub(super) fn binding_type(&self, binding: BindingId) -> Option<&str> {
-        self.binding_types
-            .iter()
-            .find(|fact| fact.binding == binding)
-            .map(|fact| fact.rendered.as_str())
+        binding_type(&self.binding_types, binding)
     }
 
     pub(super) fn binding_type_ast(&self, binding: BindingId) -> Option<&Type> {
-        self.binding_types
-            .iter()
-            .find(|fact| fact.binding == binding)
-            .map(|fact| &fact.ty)
+        binding_type_ast(&self.binding_types, binding)
     }
 
     pub(super) fn binding_requires_mut(&self, binding: BindingId) -> bool {
@@ -1271,7 +1341,7 @@ impl FixupFacts {
     }
 
     pub(super) fn def_use(&self, binding: BindingId) -> Option<&DefUseFact> {
-        self.def_use.iter().find(|fact| fact.binding == binding)
+        def_use_of(&self.def_use, binding)
     }
 
     pub(super) fn effect(
@@ -1346,9 +1416,7 @@ impl FixupFacts {
     }
 
     pub(super) fn string_buffer(&self, binding: BindingId) -> Option<&StringBufferFact> {
-        self.string_buffers
-            .iter()
-            .find(|fact| fact.binding == binding)
+        string_buffer(&self.string_buffers, binding)
     }
 
     pub(super) fn ascii_numeric_string(
@@ -1375,9 +1443,7 @@ impl FixupFacts {
         function: FunctionId,
         path: &AstPath,
     ) -> Option<&StringPointerViewFact> {
-        self.string_pointer_views
-            .iter()
-            .find(|fact| fact.site.function == function && &fact.site.path == path)
+        string_pointer_view(&self.string_pointer_views, function, path)
     }
 
     pub(super) fn string_use_allowed(

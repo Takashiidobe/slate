@@ -2,8 +2,8 @@ use std::collections::BTreeMap;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, ControlFlowSubject, FixupFacts, FunctionId, NullCheckDominanceFact, NullCheckProof,
-    PathSegment, Site,
+    self, AstPath, BindingFact, ControlFlowFact, ControlFlowSubject, FixupFacts, FunctionId,
+    NullCheckDominanceFact, NullCheckProof, PathSegment, Site,
 };
 use crate::rust_ast::{
     BinOp, Block, Expr, FnDef, IndentStmt, Item, Program, RustValue, Stmt, UnaryOp,
@@ -19,7 +19,12 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        all.extend(collect_for_function(function, f, facts));
+        all.extend(collect_for_function(
+            function,
+            f,
+            &facts.bindings,
+            &facts.control_flow,
+        ));
     }
     facts.null_check_dominance = all;
 }
@@ -27,11 +32,13 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    control_flow: &[ControlFlowFact],
 ) -> Vec<NullCheckDominanceFact> {
     let mut collector = Collector {
         function,
-        facts,
+        bindings,
+        control_flow,
         bool_defs: BTreeMap::new(),
         results: Vec::new(),
     };
@@ -53,7 +60,8 @@ struct ProvenEntry {
 
 struct Collector<'a> {
     function: FunctionId,
-    facts: &'a FixupFacts,
+    bindings: &'a [BindingFact],
+    control_flow: &'a [ControlFlowFact],
     bool_defs: BTreeMap<String, Expr>,
     results: Vec<NullCheckDominanceFact>,
 }
@@ -278,7 +286,7 @@ impl<'a> Collector<'a> {
     }
 
     fn then_branch_always_exits(&self, then_path: &AstPath) -> bool {
-        self.facts.control_flow.iter().any(|fact| {
+        self.control_flow.iter().any(|fact| {
             fact.site.function == self.function
                 && &fact.site.path == then_path
                 && fact.subject == ControlFlowSubject::Body
@@ -302,7 +310,7 @@ impl<'a> Collector<'a> {
     }
 
     fn record_deref(&mut self, name: &str, path: &[PathSegment], proven: &Proven) {
-        let Some(binding) = self.facts.binding_named(self.function, name) else {
+        let Some(binding) = facts::binding_named(self.bindings, self.function, name) else {
             return;
         };
         let Some(entry) = proven.entries.get(name) else {

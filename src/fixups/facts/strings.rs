@@ -1,12 +1,12 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::{
-    AsciiNumericSign, AsciiNumericStringFact, AstPath, BindingId, BindingKind, CallCallee,
-    CallSignatureSource, ConstValue, FixupFacts, FunctionId, GENERATED_C_STRING_READ_CALLEE,
-    NulTermination, PathSegment, Site, StringBufferFact, StringBufferKind, StringBufferProvenance,
-    StringBufferRejection, StringCopyRewrite, StringCopyRewriteFact, StringLibcFunction,
-    StringLibcUseFact, StringLiftPlanFact, StringPointerViewFact, StringPointerViewKind,
-    StringRecoveryCandidate, ValueSubject,
+    self, AsciiNumericSign, AsciiNumericStringFact, AstPath, BindingFact, BindingId, BindingKind,
+    BindingTypeFact, CallCallee, CallSignatureSource, ConstValue, FixupFacts, FunctionId,
+    GENERATED_C_STRING_READ_CALLEE, NulTermination, PathSegment, Site, StringBufferFact,
+    StringBufferKind, StringBufferProvenance, StringBufferRejection, StringCopyRewrite,
+    StringCopyRewriteFact, StringLibcFunction, StringLibcUseFact, StringLiftPlanFact,
+    StringPointerViewFact, StringPointerViewKind, StringRecoveryCandidate, ValueSubject,
 };
 use crate::fixups::facts::{CallsiteFact, walk};
 use crate::function_identity::{Known, known_call};
@@ -30,7 +30,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let collected = collect_for_function(function, f, facts);
+        let collected = collect_for_function(function, f, &facts.bindings, &facts.binding_types);
         buffers.extend(collected.buffers);
         pointer_views.extend(collected.pointer_views);
         libc_uses.extend(collected.libc_uses);
@@ -45,9 +45,10 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
 ) -> Collected {
-    let mut collector = Collector::new(function, facts);
+    let mut collector = Collector::new(function, bindings, binding_types);
     collector.enter_root_scope();
     collector.body(&f.body, &mut Vec::new(), false);
     collector.finish()
@@ -893,7 +894,8 @@ pub(in crate::fixups) struct Collected {
 
 struct Collector<'a> {
     function: FunctionId,
-    facts: &'a FixupFacts,
+    bindings: &'a [BindingFact],
+    binding_types: &'a [BindingTypeFact],
     scopes: Vec<BTreeMap<String, Option<BindingId>>>,
     summaries: BTreeMap<BindingId, BufferSummary>,
     pointer_views: Vec<StringPointerViewFact>,
@@ -920,10 +922,15 @@ struct LiteralBytes {
 }
 
 impl<'a> Collector<'a> {
-    fn new(function: FunctionId, facts: &'a FixupFacts) -> Self {
+    fn new(
+        function: FunctionId,
+        bindings: &'a [BindingFact],
+        binding_types: &'a [BindingTypeFact],
+    ) -> Self {
         Self {
             function,
-            facts,
+            bindings,
+            binding_types,
             scopes: Vec::new(),
             summaries: BTreeMap::new(),
             pointer_views: Vec::new(),
@@ -934,7 +941,6 @@ impl<'a> Collector<'a> {
     fn enter_root_scope(&mut self) {
         self.scopes.push(BTreeMap::new());
         let params: Vec<_> = self
-            .facts
             .bindings
             .iter()
             .filter(|binding| binding.function == self.function)
@@ -945,9 +951,7 @@ impl<'a> Collector<'a> {
             .collect();
         for (name, id) in params {
             self.bind(name, Some(id));
-            if let Some(ty) = self
-                .facts
-                .binding_type(id)
+            if let Some(ty) = facts::binding_type(self.binding_types, id)
                 .map(Type::parse)
                 .as_ref()
                 .and_then(lifted_kind)
@@ -1341,8 +1345,7 @@ impl<'a> Collector<'a> {
     }
 
     fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId> {
-        self.facts
-            .binding_by_local_path(self.function, name, &AstPath(path.to_vec()))
+        facts::binding_by_local_path(self.bindings, self.function, name, &AstPath(path.to_vec()))
     }
 
     fn summary_for_binding(
