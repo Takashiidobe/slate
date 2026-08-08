@@ -4,14 +4,19 @@ use crate::fixups::trace::Pass;
 
 use super::super::{Definition, DefinitionKind, EditSet, Field, QueryRule, ReferenceDomain};
 
-fn type_definition_matcher() -> Definition {
+fn is_prunable_kind(kind: DefinitionKind) -> bool {
+    matches!(
+        kind,
+        DefinitionKind::Struct
+            | DefinitionKind::Record
+            | DefinitionKind::Enum
+            | DefinitionKind::Static
+    )
+}
+
+fn unused_item_matcher() -> Definition {
     Definition {
-        kind: Field::predicate(|kind: &DefinitionKind, _: &()| {
-            matches!(
-                kind,
-                DefinitionKind::Struct | DefinitionKind::Record | DefinitionKind::Enum
-            )
-        }),
+        kind: Field::predicate(|kind: &DefinitionKind, _: &()| is_prunable_kind(*kind)),
         ..Default::default()
     }
 }
@@ -19,27 +24,23 @@ fn type_definition_matcher() -> Definition {
 pub(in crate::fixups) fn rewrite() -> QueryRule<Definition> {
     QueryRule::new(
         Pass::UnusedItems,
-        "prune_unused_type_definition",
-        type_definition_matcher(),
+        "prune_unused_item",
+        unused_item_matcher(),
     )
     .case("unreachable", |case, definition| {
+        case.require(!definition.externally_reachable)?;
         let domain = case.fact(|query| query.reference_domain())?;
-        let live = live_type_definitions(&domain);
+        let live = live_definitions(&domain);
         case.require(!live.contains(&definition.location.item_index()))?;
         Ok(EditSet::delete_definition(definition.clone()))
     })
 }
 
-fn live_type_definitions(domain: &ReferenceDomain) -> BTreeSet<usize> {
+fn live_definitions(domain: &ReferenceDomain) -> BTreeSet<usize> {
     let candidates = domain
         .definitions
         .iter()
-        .filter(|definition| {
-            matches!(
-                definition.kind,
-                DefinitionKind::Struct | DefinitionKind::Record | DefinitionKind::Enum
-            )
-        })
+        .filter(|definition| is_prunable_kind(definition.kind) && !definition.externally_reachable)
         .map(|definition| (definition.location.item_index(), definition))
         .collect::<BTreeMap<_, _>>();
     let symbols = candidates
@@ -59,14 +60,14 @@ fn live_type_definitions(domain: &ReferenceDomain) -> BTreeSet<usize> {
     let mut live = BTreeSet::new();
     for item in &domain.items {
         if !candidates.contains_key(&item.item_index) {
-            mark_referenced_types(&item.symbols, &symbols, &mut live);
+            mark_referenced(&item.symbols, &symbols, &mut live);
         }
     }
     let mut pending = live.iter().copied().collect::<Vec<_>>();
     while let Some(item_index) = pending.pop() {
         let before = live.len();
         if let Some(item_references) = references.get(&item_index) {
-            mark_referenced_types(item_references, &symbols, &mut live);
+            mark_referenced(item_references, &symbols, &mut live);
         }
         if live.len() != before {
             pending = live.iter().copied().collect();
@@ -75,7 +76,7 @@ fn live_type_definitions(domain: &ReferenceDomain) -> BTreeSet<usize> {
     live
 }
 
-fn mark_referenced_types(
+fn mark_referenced(
     references: &BTreeSet<String>,
     symbols: &BTreeMap<&str, usize>,
     live: &mut BTreeSet<usize>,

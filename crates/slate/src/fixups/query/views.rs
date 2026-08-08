@@ -311,6 +311,7 @@ pub(in crate::fixups) enum DefinitionKind {
     Struct,
     Record,
     Enum,
+    Static,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

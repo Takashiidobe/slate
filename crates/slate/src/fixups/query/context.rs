@@ -18,9 +18,9 @@ use crate::fixups::facts::{
 use crate::fixups::salsa::{FixupDb, FunctionInput, ProgramInput, SalsaFacts};
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use crate::rust_ast::{
-    Attr, Block, Expr, ExternDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem, IndentStmt,
-    Item, MatchArm, Method, Pattern, Prim, Program, RecordDef, RustValue, Stmt, StructDef,
-    StructFields, TraitBound, Type, UnaryOp, Visibility,
+    AtomicPlace, Attr, Block, Expr, ExternDecl, FnDef, FnParam, GenericParam, ImplBlock, ImplItem,
+    IndentStmt, Item, MatchArm, Method, Pattern, Prim, Program, RecordDef, RustValue, Stmt,
+    StructDef, StructFields, TraitBound, Type, UnaryOp, Visibility,
 };
 
 use super::item::StatementRef;
@@ -5609,6 +5609,25 @@ fn index_definitions(
                 .or_default()
                 .push(site);
         }
+        Item::Static {
+            attrs, vis, name, ..
+        } => {
+            let site = DefinitionSite {
+                location: DefinitionLocation::Item(item_index),
+                kind: DefinitionKind::Static,
+                name: name.clone(),
+                symbols: vec![name.clone()],
+                group: None,
+                externally_reachable: *vis == Visibility::Pub || attrs.iter().any(exporting_attr),
+            };
+            definitions
+                .entry(DefinitionSelector {
+                    kind: site.kind,
+                    name: site.name.clone(),
+                })
+                .or_default()
+                .push(site);
+        }
         Item::ExternBlock { decls, .. } => {
             for (decl_index, decl) in decls.iter().enumerate() {
                 let (kind, name, group) = match decl {
@@ -6030,6 +6049,15 @@ fn unused_item_collect_pattern_refs(pattern: &Pattern, refs: &mut BTreeSet<Strin
     }
 }
 
+fn unused_item_collect_atomic_place_refs(place: &AtomicPlace, refs: &mut BTreeSet<String>) {
+    match place {
+        AtomicPlace::Ptr(ptr) => unused_item_collect_expr_refs(ptr, refs),
+        AtomicPlace::Local(name) => {
+            refs.insert(name.as_str().to_owned());
+        }
+    }
+}
+
 fn unused_item_collect_expr_refs(expr: &Expr, refs: &mut BTreeSet<String>) {
     match expr {
         Expr::Var(name) => {
@@ -6057,16 +6085,12 @@ fn unused_item_collect_expr_refs(expr: &Expr, refs: &mut BTreeSet<String>) {
         }
         Expr::Block(block) | Expr::Unsafe(block) => unused_item_collect_block_refs(block, refs),
         Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
-            if let Some(ptr) = place.ptr_expr() {
-                unused_item_collect_expr_refs(ptr, refs);
-            }
+            unused_item_collect_atomic_place_refs(place, refs);
         }
         Expr::AtomicStore { place, value, .. }
         | Expr::AtomicFetch { place, value, .. }
         | Expr::AtomicSwap { place, value, .. } => {
-            if let Some(ptr) = place.ptr_expr() {
-                unused_item_collect_expr_refs(ptr, refs);
-            }
+            unused_item_collect_atomic_place_refs(place, refs);
             unused_item_collect_expr_refs(value, refs);
         }
         Expr::AtomicCompareExchange {
@@ -6075,9 +6099,7 @@ fn unused_item_collect_expr_refs(expr: &Expr, refs: &mut BTreeSet<String>) {
             desired,
             ..
         } => {
-            if let Some(ptr) = place.ptr_expr() {
-                unused_item_collect_expr_refs(ptr, refs);
-            }
+            unused_item_collect_atomic_place_refs(place, refs);
             unused_item_collect_expr_refs(expected, refs);
             unused_item_collect_expr_refs(desired, refs);
         }

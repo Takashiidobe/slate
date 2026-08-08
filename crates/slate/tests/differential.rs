@@ -2184,6 +2184,9 @@ fn unused_type_definitions_are_pruned_but_reachable_ones_survive() {
     assert!(!rust.contains("truly_dead"));
     assert!(rust.contains("enum color"));
     assert!(rust.contains("color::GREEN as u32"));
+
+    assert!(!rust.contains("hidden_static"));
+    assert!(rust.contains("live_static"));
 }
 
 #[test]
