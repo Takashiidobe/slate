@@ -26,7 +26,7 @@ struct sigevent {
     char  __pad[64 - 2 * sizeof(int) - sizeof(union sigval)];
     pid_t sigev_notify_thread_id;
     struct {
-      void (*sigev_notify_function)(union sigval);
+      void  (*sigev_notify_function)(union sigval);
       void *sigev_notify_attributes; /* opaque fallback for pthread_attr_t */
     } __sev_thread;
   } __sev_fields;

@@ -1,4 +1,3 @@
-
 #ifndef _SLATE_LIBINTL_H
 #define _SLATE_LIBINTL_H
 
