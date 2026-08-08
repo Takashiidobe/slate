@@ -1,1 +1,2 @@
-#error "<sys/poll.h> is not yet defined"
+#warning redirecting incorrect #include <sys/poll.h> to <poll.h>
+#include <poll.h>

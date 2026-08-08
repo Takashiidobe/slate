@@ -1,1 +1,2 @@
-#error "<sys/signal.h> is not yet defined"
+#warning redirecting incorrect #include <sys/signal.h> to <signal.h>
+#include <signal.h>
