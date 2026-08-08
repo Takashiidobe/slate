@@ -107,7 +107,7 @@ pub(in crate::fixups) fn fallback() -> QueryRule<WholeProgram> {
         Ok(EditSet::replace_program(
             program.clone(),
             rewrite.replacement,
-            rewrite.touched,
+            rewrite.removed,
         ))
     })
 }

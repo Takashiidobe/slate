@@ -10,7 +10,6 @@ use crate::rust_ast::{
     Ident, ImplItem, IndentStmt, Item, Program, Repr, Stmt, StructDef, StructFields, Type, UnaryOp,
 };
 
-use super::plan::TouchedItems;
 use super::{
     AnonymousStructPlan, AnonymousStructSet, AtomicPromotionSet, Evidence, EvidenceDetail,
     ExprSite, LazySingletonPlan, LazySingletonSet, Predicate, Proof, PtrLenPlan, PtrLenPlanSet,
@@ -19,7 +18,7 @@ use super::{
 
 pub(in crate::fixups) struct ProgramReplacement {
     pub(in crate::fixups) replacement: Program,
-    pub(in crate::fixups) touched: TouchedItems,
+    pub(in crate::fixups) removed: Vec<usize>,
 }
 
 pub(in crate::fixups) fn rewrite_anonymous_structs(
@@ -43,7 +42,7 @@ pub(in crate::fixups) fn rewrite_anonymous_structs(
     Ok(Proof::new(
         ProgramReplacement {
             replacement,
-            touched: TouchedItems::unbounded(),
+            removed: Vec::new(),
         },
         Vec::new(),
     ))
@@ -70,7 +69,7 @@ pub(in crate::fixups) fn rewrite_atomic_locals(
     Ok(Proof::new(
         ProgramReplacement {
             replacement,
-            touched: TouchedItems::unbounded(),
+            removed: Vec::new(),
         },
         Vec::new(),
     ))
@@ -266,23 +265,15 @@ pub(in crate::fixups) fn rewrite_lazy_singletons(
             Vec::new(),
         ));
     }
-    let touched = TouchedItems {
-        in_place: set
-            .singletons
-            .iter()
-            .flat_map(|plan| [plan.function_item_index, plan.payload_item_index])
-            .collect(),
-        removed: set
-            .singletons
-            .iter()
-            .map(|plan| plan.flag_item_index)
-            .collect(),
-        unbounded: false,
-    };
+    let removed = set
+        .singletons
+        .iter()
+        .map(|plan| plan.flag_item_index)
+        .collect();
     Ok(Proof::new(
         ProgramReplacement {
             replacement,
-            touched,
+            removed,
         },
         Vec::new(),
     ))
@@ -303,7 +294,7 @@ pub(in crate::fixups) fn rewrite_printf_fallback(
     Ok(Proof::new(
         ProgramReplacement {
             replacement,
-            touched: TouchedItems::unbounded(),
+            removed: Vec::new(),
         },
         Vec::new(),
     ))
@@ -674,7 +665,7 @@ pub(in crate::fixups) fn rewrite_ptr_len(
     Ok(Proof::new(
         ProgramReplacement {
             replacement,
-            touched: TouchedItems::unbounded(),
+            removed: Vec::new(),
         },
         Vec::new(),
     ))
@@ -705,7 +696,7 @@ pub(in crate::fixups) fn rewrite_sort_search(
     Ok(Proof::new(
         ProgramReplacement {
             replacement,
-            touched: TouchedItems::unbounded(),
+            removed: Vec::new(),
         },
         evidence,
     ))

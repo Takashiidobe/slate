@@ -10,9 +10,7 @@ use crate::fixups::trace::{
 };
 use crate::rust_ast::{Expr, ExternDecl, IndentStmt, Item, Program};
 
-use super::plan::{
-    EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit, TouchedItems,
-};
+use super::plan::{EditTarget, Plan, PlanBuilder, PlanDiagnostic, PlanSite, PlannedEdit};
 use super::rewrite::{evidence_trace_fact, predicate_name, rejection_name};
 use super::{
     BindingRef, CallRecord, CaseRejection, DefinitionKind, DefinitionLocation, DefinitionSite,
@@ -471,7 +469,7 @@ pub(in crate::fixups) enum AnchoredEdit {
     Program {
         target: super::ProgramRef,
         replacement: Program,
-        touched: TouchedItems,
+        removed: Vec<usize>,
     },
     Definition {
         target: DefinitionSite,
@@ -550,13 +548,13 @@ impl EditSet {
     pub(in crate::fixups) fn replace_program(
         target: super::ProgramRef,
         replacement: Program,
-        touched: TouchedItems,
+        removed: Vec<usize>,
     ) -> Self {
         Self {
             edits: vec![AnchoredEdit::Program {
                 target,
                 replacement,
-                touched,
+                removed,
             }],
             evidence: Vec::new(),
         }
@@ -1177,12 +1175,12 @@ impl ItemPlan {
                     AnchoredEdit::Program {
                         target,
                         replacement,
-                        touched,
+                        removed,
                     } => program_edits.push(PlannedProgramEdit {
                         identity: identity.clone(),
                         target,
                         replacement,
-                        touched,
+                        removed,
                         evidence: edit.evidence.clone(),
                         rejected_cases: rejected_cases.clone(),
                     }),
@@ -1276,13 +1274,13 @@ impl ItemPlan {
         }
         let mut updated = program.clone();
         let mut applied_edits = 0;
-        let mut touched = TouchedItems::none();
+        let mut removed = Vec::new();
         applied_edits += apply_program_edits(
             &mut updated,
             program_edits,
             logger,
             &mut diagnostics,
-            &mut touched,
+            &mut removed,
         );
         applied_edits += apply_expression_edits(
             &mut updated,
@@ -1290,13 +1288,11 @@ impl ItemPlan {
             salsa,
             logger,
             &mut diagnostics,
-            &mut touched,
         );
-        let (statement_applied, statement_touched, missing_statements) = {
+        let (statement_applied, missing_statements) = {
             let mut state = ApplyState {
                 edits: statement_edits,
                 applied: 0,
-                touched: TouchedItems::none(),
                 salsa,
                 logger,
             };
@@ -1312,48 +1308,35 @@ impl ItemPlan {
                     apply_body(item_index, &mut function.body, &mut Vec::new(), &mut state);
                 }
             }
-            (state.applied, state.touched, state.edits)
+            (state.applied, state.edits)
         };
         applied_edits += statement_applied;
-        touched.in_place.extend(statement_touched.in_place);
-        touched.removed.extend(statement_touched.removed);
-        touched.unbounded |= statement_touched.unbounded;
         for (_, edit) in missing_statements {
             diagnostics.push(PlanDiagnostic::MissingTarget {
                 contender: edit.identity,
                 target: EditSetSite(vec![Anchor::Statements(edit.target)]),
             });
         }
-        applied_edits += apply_function_edits(
-            &mut updated,
-            function_edits,
-            logger,
-            &mut diagnostics,
-            &mut touched,
-        );
+        applied_edits +=
+            apply_function_edits(&mut updated, function_edits, logger, &mut diagnostics);
         applied_edits += apply_definition_edits(
             &mut updated,
             definition_edits,
             logger,
             &mut diagnostics,
-            &mut touched,
+            &mut removed,
         );
         applied_edits += apply_item_insertions(
             &mut updated,
             item_insertions,
             logger,
             &mut diagnostics,
-            &mut touched,
+            &removed,
         );
-        touched.in_place.sort_unstable();
-        touched.in_place.dedup();
-        touched.removed.sort_unstable();
-        touched.removed.dedup();
         let applied = if applied_edits == expected_edits {
             *program = updated;
             accepted_sets
         } else {
-            touched = TouchedItems::none();
             0
         };
         ItemApplyReport {
@@ -1361,7 +1344,6 @@ impl ItemPlan {
             planned,
             applied,
             diagnostics,
-            touched,
         }
     }
 }
@@ -1519,7 +1501,7 @@ struct PlannedProgramEdit {
     identity: RuleCaseIdentity,
     target: super::ProgramRef,
     replacement: Program,
-    touched: TouchedItems,
+    removed: Vec<usize>,
     evidence: Vec<Evidence>,
     rejected_cases: Vec<CaseRejection>,
 }
@@ -1529,7 +1511,7 @@ fn apply_program_edits(
     edits: Vec<PlannedProgramEdit>,
     logger: &mut dyn TraceLogger,
     diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
-    touched: &mut TouchedItems,
+    removed: &mut Vec<usize>,
 ) -> usize {
     let mut applied = 0;
     for edit in edits {
@@ -1561,9 +1543,7 @@ fn apply_program_edits(
             },
         );
         *program = edit.replacement;
-        touched.in_place.extend(edit.touched.in_place);
-        touched.removed.extend(edit.touched.removed);
-        touched.unbounded |= edit.touched.unbounded;
+        removed.extend(edit.removed);
         applied += 1;
     }
     applied
@@ -1583,7 +1563,6 @@ fn apply_expression_edits(
     salsa: &SalsaFacts,
     logger: &mut dyn TraceLogger,
     diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
-    touched: &mut TouchedItems,
 ) -> usize {
     let mut applied = 0;
     for (item_index, item) in program.items.iter_mut().enumerate() {
@@ -1623,7 +1602,6 @@ fn apply_expression_edits(
                     },
                 );
                 applied += 1;
-                touched.in_place.push(item_index);
                 false
             },
         );
@@ -1652,7 +1630,6 @@ fn apply_function_edits(
     edits: Vec<PlannedFunctionEdit>,
     logger: &mut dyn TraceLogger,
     diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
-    touched: &mut TouchedItems,
 ) -> usize {
     let mut applied = 0;
     for edit in edits {
@@ -1687,7 +1664,6 @@ fn apply_function_edits(
             },
         );
         applied += 1;
-        touched.in_place.push(edit.target.item_index);
     }
     applied
 }
@@ -1722,7 +1698,7 @@ fn apply_definition_edits(
     edits: Vec<PlannedDefinitionEdit>,
     logger: &mut dyn TraceLogger,
     diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
-    touched: &mut TouchedItems,
+    removed: &mut Vec<usize>,
 ) -> usize {
     let mut by_item = BTreeMap::<usize, Vec<PlannedDefinitionEdit>>::new();
     for edit in edits {
@@ -1752,13 +1728,12 @@ fn apply_definition_edits(
                 None => {
                     program.items.remove(item_index);
                     log_definition_edit(logger, &edit, before, None);
-                    touched.removed.push(item_index);
+                    removed.push(item_index);
                 }
                 Some(DefinitionReplacement::Item(replacement)) => {
                     program.items[item_index] = replacement.clone();
                     let after = item_snippet(&program.items[item_index]);
                     log_definition_edit(logger, &edit, before, Some(after));
-                    touched.in_place.push(item_index);
                 }
                 Some(DefinitionReplacement::ExternDecl(_)) => unreachable!(),
             }
@@ -1769,7 +1744,6 @@ fn apply_definition_edits(
             diagnostics.extend(edits.into_iter().map(missing_definition));
             continue;
         };
-        let mut any_changed = false;
         for edit in edits {
             let DefinitionLocation::ExternDecl { decl_index, .. } = edit.target.location else {
                 unreachable!()
@@ -1795,13 +1769,10 @@ fn apply_definition_edits(
             };
             log_definition_edit(logger, &edit, before, after);
             applied += 1;
-            any_changed = true;
         }
         if decls.is_empty() {
             program.items.remove(item_index);
-            touched.removed.push(item_index);
-        } else if any_changed {
-            touched.in_place.push(item_index);
+            removed.push(item_index);
         }
     }
     applied
@@ -1826,7 +1797,6 @@ struct PlannedStatementEdit {
 struct ApplyState<'a> {
     edits: BTreeMap<StatementRange, PlannedStatementEdit>,
     applied: usize,
-    touched: TouchedItems,
     salsa: &'a SalsaFacts,
     logger: &'a mut dyn TraceLogger,
 }
@@ -1882,7 +1852,6 @@ fn apply_body(
         }
         body.splice(edit.target.start..edit.target.end, replacement);
         state.applied += 1;
-        state.touched.in_place.push(item_index);
     }
 }
 
@@ -1897,8 +1866,6 @@ pub(in crate::fixups) struct ItemApplyReport {
     pub(in crate::fixups) applied: usize,
     #[cfg_attr(not(test), expect(dead_code, reason = "read only by tests"))]
     pub(super) diagnostics: Vec<PlanDiagnostic<EditSetSite>>,
-    #[cfg_attr(not(test), expect(dead_code, reason = "read only by tests"))]
-    pub(in crate::fixups) touched: TouchedItems,
 }
 
 fn rewrite_event(
@@ -2014,10 +1981,9 @@ fn apply_item_insertions(
     mut edits: Vec<PlannedItemInsertion>,
     logger: &mut dyn TraceLogger,
     diagnostics: &mut Vec<PlanDiagnostic<EditSetSite>>,
-    touched: &mut TouchedItems,
+    removed: &[usize],
 ) -> usize {
     edits.sort_by_key(|edit| std::cmp::Reverse(edit.index));
-    let removed = touched.removed.clone();
     let mut applied = 0;
     let mut inserted = 0;
     for edit in edits {
@@ -2054,7 +2020,6 @@ fn apply_item_insertions(
         );
         applied += 1;
         inserted += inserted_now;
-        touched.unbounded = true;
     }
     applied
 }
@@ -2306,7 +2271,6 @@ mod tests {
         assert_eq!(program.emit(), "fn test() {\n    1;\n    3;\n}\n");
         assert!(report.changed);
         assert_eq!(report.applied, 1);
-        assert_eq!(report.touched.in_place, vec![0]);
         assert!(matches!(
             report.diagnostics.last(),
             Some(PlanDiagnostic::MissingTarget { .. })
@@ -2329,7 +2293,6 @@ mod tests {
 
         assert_eq!(program.emit(), "fn test() {\n    2;\n    4;\n}\n");
         assert_eq!(report.applied, 1);
-        assert_eq!(report.touched.in_place, vec![0]);
     }
 
     fn function_ref<'db>(
@@ -2380,7 +2343,6 @@ mod tests {
             "fn caller() {\n    4;\n}\n\nfn callee() {\n    3;\n}\n"
         );
         assert_eq!(report.applied, 1);
-        assert_eq!(report.touched.in_place, vec![0, 1]);
     }
 
     #[test]
@@ -2438,7 +2400,7 @@ mod tests {
         let edit = EditSet::replace_program(
             super::super::ProgramRef { expected_len: 1 },
             replacement,
-            TouchedItems::unbounded(),
+            Vec::new(),
         );
         let plan = item_plan(edit);
         let salsa = test_salsa(&program);
@@ -2447,7 +2409,6 @@ mod tests {
 
         assert_eq!(program.emit(), "fn test() {\n    2;\n}\n");
         assert_eq!(report.applied, 1);
-        assert!(report.touched.unbounded);
     }
 
     #[test]
@@ -2458,7 +2419,7 @@ mod tests {
                 items: vec![function(vec![statement(2)])],
                 ..Program::default()
             },
-            TouchedItems::unbounded(),
+            Vec::new(),
         );
         edit.push_replace_expression(expression_site(0), Expr::Value(RustValue::I64(3)));
 
