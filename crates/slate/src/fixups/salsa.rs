@@ -528,15 +528,44 @@ impl AllFunctions {
     }
 }
 
+enum Dirty {
+    Clean,
+    Touched(TouchedItems),
+    Everything,
+}
+
+fn splice_incremental_facts(
+    pre_edit_facts: &FixupFacts,
+    program: &Program,
+    touched: &TouchedItems,
+) -> FixupFacts {
+    let mut updated = pre_edit_facts.clone();
+    if !touched.removed.is_empty() {
+        updated.remove_items(&touched.removed);
+    }
+    for &item_index in &touched.in_place {
+        if let Some(function) = pre_edit_facts.function_by_item_index(item_index) {
+            updated.splice_function(program, function);
+        }
+    }
+    if !touched.in_place.is_empty() || !touched.removed.is_empty() {
+        facts::casts::collect_facts(program, &mut updated);
+        facts::lazy_singleton::collect_facts(program, &mut updated);
+    }
+    updated
+}
+
 pub(in crate::fixups) struct SalsaFacts {
     db: Database,
     functions: HashMap<FunctionId, FunctionInput>,
     all_functions: AllFunctions,
     definitions: Option<DefinitionsInput>,
+    facts: FixupFacts,
+    dirty: Dirty,
 }
 
 impl SalsaFacts {
-    pub(in crate::fixups) fn new() -> Self {
+    pub(in crate::fixups) fn new(facts: FixupFacts) -> Self {
         let db = Database::default();
         let all_functions = AllFunctions::new(&db, Vec::new());
         Self {
@@ -544,41 +573,75 @@ impl SalsaFacts {
             functions: HashMap::new(),
             all_functions,
             definitions: None,
+            facts,
+            dirty: Dirty::Clean,
         }
     }
 
-    pub(in crate::fixups) fn sync_all(&mut self, program: &Program, facts: &FixupFacts) {
+    pub(in crate::fixups) fn mark_touched(&mut self, touched: &TouchedItems) {
+        if touched.unbounded {
+            self.dirty = Dirty::Everything;
+            return;
+        }
+        if touched.in_place.is_empty() && touched.removed.is_empty() {
+            return;
+        }
+        match &mut self.dirty {
+            Dirty::Everything => {}
+            Dirty::Clean => self.dirty = Dirty::Touched(touched.clone()),
+            Dirty::Touched(existing) => existing.merge(touched.clone()),
+        }
+    }
+
+    pub(in crate::fixups) fn mark_everything_dirty(&mut self) {
+        self.dirty = Dirty::Everything;
+    }
+
+    pub(in crate::fixups) fn resolve(&mut self, program: &Program) -> FixupFacts {
+        match std::mem::replace(&mut self.dirty, Dirty::Clean) {
+            Dirty::Clean => {}
+            Dirty::Everything => {
+                self.facts = facts::analyze(program).facts;
+                self.sync_all(program);
+            }
+            Dirty::Touched(touched) => {
+                self.facts = splice_incremental_facts(&self.facts, program, &touched);
+                if touched.removed.is_empty() {
+                    self.sync_touched(program, &touched);
+                } else {
+                    self.sync_all(program);
+                }
+            }
+        }
+        self.facts.clone()
+    }
+
+    fn sync_all(&mut self, program: &Program) {
         self.sync_definitions(program);
-        for function_fact in &facts.functions {
-            self.sync_function(program, facts, function_fact);
+        let function_facts = self.facts.functions.clone();
+        for function_fact in &function_facts {
+            self.sync_function(program, function_fact);
         }
         self.functions
-            .retain(|id, _| facts.functions.iter().any(|fact| fact.id == *id));
+            .retain(|id, _| function_facts.iter().any(|fact| fact.id == *id));
         self.sync_all_functions();
     }
 
-    pub(in crate::fixups) fn sync_touched(
-        &mut self,
-        pre_edit_facts: &FixupFacts,
-        program: &Program,
-        touched: &TouchedItems,
-    ) {
-        let facts = pre_edit_facts;
-        if touched.unbounded {
-            self.sync_all(program, facts);
-            return;
-        }
+    fn sync_touched(&mut self, program: &Program, touched: &TouchedItems) {
         for &item_index in &touched.in_place {
-            if let Some(function_fact) = facts
+            if let Some(function_fact) = self
+                .facts
                 .functions
                 .iter()
                 .find(|fact| fact.item_index == item_index)
+                .cloned()
             {
-                self.sync_function(program, facts, function_fact);
+                self.sync_function(program, &function_fact);
             }
         }
         for &item_index in &touched.removed {
-            if let Some(function_fact) = facts
+            if let Some(function_fact) = self
+                .facts
                 .functions
                 .iter()
                 .find(|fact| fact.item_index == item_index)
@@ -664,22 +727,19 @@ impl SalsaFacts {
         }
     }
 
-    fn sync_function(
-        &mut self,
-        program: &Program,
-        facts: &FixupFacts,
-        function_fact: &FunctionFact,
-    ) {
+    fn sync_function(&mut self, program: &Program, function_fact: &FunctionFact) {
         let Some(Item::Fn(body)) = program.items.get(function_fact.item_index) else {
             return;
         };
-        let bindings: Vec<BindingFact> = facts
+        let bindings: Vec<BindingFact> = self
+            .facts
             .bindings
             .iter()
             .filter(|binding| binding.function == function_fact.id)
             .cloned()
             .collect();
-        let binding_types: Vec<BindingTypeFact> = facts
+        let binding_types: Vec<BindingTypeFact> = self
+            .facts
             .binding_types
             .iter()
             .filter(|binding_type| {
@@ -689,7 +749,8 @@ impl SalsaFacts {
             })
             .cloned()
             .collect();
-        let loops: Vec<LoopFact> = facts
+        let loops: Vec<LoopFact> = self
+            .facts
             .loops
             .iter()
             .filter(|loop_fact| loop_fact.function == function_fact.id)
@@ -1220,13 +1281,15 @@ mod temp_bench {
         };
 
         let salsa_cold_start = Instant::now();
-        let mut salsa_facts = SalsaFacts::new();
-        salsa_facts.sync_all(&program, &facts);
+        let mut salsa_facts = SalsaFacts::new(facts::FixupFacts::default());
+        salsa_facts.mark_everything_dirty();
+        salsa_facts.resolve(&program);
         read_all(&salsa_facts);
         let salsa_cold = salsa_cold_start.elapsed();
 
         let salsa_full_resync_start = Instant::now();
-        salsa_facts.sync_all(&program, &facts);
+        salsa_facts.mark_everything_dirty();
+        salsa_facts.resolve(&program);
         read_all(&salsa_facts);
         let salsa_full_resync = salsa_full_resync_start.elapsed();
 
@@ -1237,7 +1300,8 @@ mod temp_bench {
             unbounded: false,
         };
         let touched_start = Instant::now();
-        salsa_facts.sync_touched(&facts, &program, &touched);
+        salsa_facts.mark_touched(&touched);
+        salsa_facts.resolve(&program);
         read_all(&salsa_facts);
         let touched_one = touched_start.elapsed();
 
