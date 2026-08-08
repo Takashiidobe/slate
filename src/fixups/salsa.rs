@@ -1,16 +1,17 @@
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use crate::fixups::facts::{
-    self, AnonymousStructFact, ArrayElementPointerOriginFact, AstPath, AtomicLocalFact,
-    BindingFact, BindingId, BindingTypeFact, BorrowAliasFact, BorrowAliasReason, BorrowAliasState,
-    BufferPointerFieldFact, CallArgFact, CallSignatureFact, CalleeAllocSummaryFact, CallsiteFact,
-    CastFact, ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact,
-    DefUseFact, EffectFact, EffectSubject, FileOwnershipFact, FixupFacts, FunctionFact, FunctionId,
-    HeapOwnershipFact, InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact,
-    LazyInitSingletonFact, LoopFact, NullCheckDominanceFact, OptionBoxComparison,
-    OptionBoxLocalCandidate, PlaceFact, PointerComparisonFact, PointerOptionSafetyFact,
-    PrintfCallFact, PtrLenSliceFact, SignatureId, StaticDeclFact, StringParamLiftFact,
-    StructFieldOwnershipFact, ValueFact,
+    self, AnonymousStructFact, ArrayElementPointerOriginFact, AstPath, AtomicGlobalFact,
+    AtomicLocalFact, BindingFact, BindingId, BindingTypeFact, BorrowAliasFact, BorrowAliasReason,
+    BorrowAliasState, BufferPointerFieldFact, CStringLiteralFact, CallArgFact, CallSignatureFact,
+    CalleeAllocSummaryFact, CallsiteFact, CastFact, ControlFlowFact, ControlFlowSubject,
+    CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject,
+    FileOwnershipFact, FixupFacts, FunctionFact, FunctionId, HeapOwnershipFact,
+    InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LazyInitSingletonFact,
+    LoopFact, NullCheckDominanceFact, OptionBoxComparison, OptionBoxLocalCandidate, PlaceFact,
+    PointerComparisonFact, PointerOptionSafetyFact, PrintfCallFact, PtrLenSliceFact, SignatureId,
+    StaticDeclFact, StringCopyRewriteFact, StringLiftPlanFact, StringParamLiftFact,
+    StringRecoveryCandidate, StructFieldOwnershipFact, ValueFact,
 };
 use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{EnumDef, Expr, FnDef, Item, Program, RecordDef, StructDef};
@@ -305,6 +306,37 @@ impl FunctionInput {
     fn lazy_singleton_shape(self, db: &dyn FixupDb) -> Option<(String, String, Expr)> {
         facts::lazy_singleton::match_body(&self.body(db).body)
     }
+
+    #[salsa::tracked(returns(ref))]
+    fn c_string_literals(self, db: &dyn FixupDb) -> Vec<CStringLiteralFact> {
+        facts::c_strings::collect_for_function(*self.function(db), self.body(db))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn string_rewrite_facts(
+        self,
+        db: &dyn FixupDb,
+        all_functions: AllFunctions,
+        definitions: DefinitionsInput,
+    ) -> (Vec<StringLiftPlanFact>, Vec<StringCopyRewriteFact>) {
+        let strings = self.strings(db);
+        let snapshot = facts::strings::RewriteSnapshot {
+            bindings: self.bindings(db),
+            def_use: self.def_use(db),
+            values: self.values(db),
+            string_buffers: &strings.buffers,
+            string_pointer_views: &strings.pointer_views,
+            string_libc_uses: &strings.libc_uses,
+            printf_calls: self.printf_calls(db),
+            callsites: all_functions.callsites(db, definitions),
+            string_param_lifts: all_functions.string_param_lifts(db, definitions),
+        };
+        facts::strings::collect_rewrite_facts_for_function(
+            *self.function(db),
+            self.body(db),
+            &snapshot,
+        )
+    }
 }
 
 #[salsa::tracked]
@@ -479,6 +511,20 @@ impl AllFunctions {
             })
             .collect();
         facts::lazy_singleton::compute(&shapes, &bodies, definitions.statics(db))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn atomic_globals(
+        self,
+        db: &dyn FixupDb,
+        definitions: DefinitionsInput,
+    ) -> Vec<AtomicGlobalFact> {
+        let bodies: facts::walk::Bodies = self
+            .functions(db)
+            .iter()
+            .map(|&input| (*input.function(db), input.body(db)))
+            .collect();
+        facts::atomic_locals::compute_atomic_globals(definitions.statics(db), &bodies)
     }
 }
 
@@ -751,6 +797,64 @@ impl SalsaFacts {
             .find(|libc| &libc.site.path == path)
     }
 
+    pub(in crate::fixups) fn liftable_string_bindings(
+        &self,
+        function: FunctionId,
+        recovery: StringRecoveryCandidate,
+    ) -> BTreeSet<BindingId> {
+        let (Some(&input), Some(definitions)) = (self.functions.get(&function), self.definitions)
+        else {
+            return BTreeSet::new();
+        };
+        input
+            .string_rewrite_facts(&self.db, self.all_functions, definitions)
+            .0
+            .iter()
+            .filter(|plan| plan.recovery == recovery)
+            .map(|plan| plan.binding)
+            .collect()
+    }
+
+    pub(in crate::fixups) fn string_use_allowed(
+        &self,
+        function: FunctionId,
+        use_path: &AstPath,
+        binding: BindingId,
+        recovery: StringRecoveryCandidate,
+        liftable: &BTreeSet<BindingId>,
+    ) -> bool {
+        let (Some(&input), Some(definitions)) = (self.functions.get(&function), self.definitions)
+        else {
+            return false;
+        };
+        let strings = input.strings(&self.db);
+        let snapshot = facts::strings::RewriteSnapshot {
+            bindings: input.bindings(&self.db),
+            def_use: input.def_use(&self.db),
+            values: input.values(&self.db),
+            string_buffers: &strings.buffers,
+            string_pointer_views: &strings.pointer_views,
+            string_libc_uses: &strings.libc_uses,
+            printf_calls: input.printf_calls(&self.db),
+            callsites: self.all_functions.callsites(&self.db, definitions),
+            string_param_lifts: self.all_functions.string_param_lifts(&self.db, definitions),
+        };
+        facts::strings::use_allowed(function, use_path, &snapshot, binding, recovery, liftable)
+    }
+
+    pub(in crate::fixups) fn string_copy_rewrites(
+        &self,
+        function: FunctionId,
+    ) -> &[StringCopyRewriteFact] {
+        let (Some(&input), Some(definitions)) = (self.functions.get(&function), self.definitions)
+        else {
+            return &[];
+        };
+        &input
+            .string_rewrite_facts(&self.db, self.all_functions, definitions)
+            .1
+    }
+
     pub(in crate::fixups) fn counted_loop(
         &self,
         function: FunctionId,
@@ -914,6 +1018,18 @@ impl SalsaFacts {
             .find(|fact| &fact.site.path == path)
     }
 
+    pub(in crate::fixups) fn c_string_literal(
+        &self,
+        function: FunctionId,
+        receiver_path: &AstPath,
+    ) -> Option<&CStringLiteralFact> {
+        let input = *self.functions.get(&function)?;
+        input
+            .c_string_literals(&self.db)
+            .iter()
+            .find(|fact| &fact.receiver_path == receiver_path)
+    }
+
     pub(in crate::fixups) fn option_box_local_candidates(
         &self,
         function: FunctionId,
@@ -1056,6 +1172,13 @@ impl SalsaFacts {
             return &[];
         };
         definitions.anonymous_structs(&self.db)
+    }
+
+    pub(in crate::fixups) fn atomic_globals(&self) -> &[AtomicGlobalFact] {
+        let Some(definitions) = self.definitions else {
+            return &[];
+        };
+        self.all_functions.atomic_globals(&self.db, definitions)
     }
 }
 

@@ -4,17 +4,19 @@ use std::marker::PhantomData;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AnonymousStructFact, ArrayElementPointerOriginFact, AsciiNumericSign, AstPath, AtomicLocalFact,
-    BindingId, BindingKind, BorrowAliasReason, BufferPointerFieldFact, CallArgFact, CallArgPinning,
-    CallCallee, CalleeAllocSummaryFact, CallsiteFact, CastFact, ConstValue, ControlFlowFact,
+    AnonymousStructFact, ArrayElementPointerOriginFact, AsciiNumericSign, AstPath,
+    AtomicGlobalFact, AtomicLocalFact, BindingId, BindingKind, BorrowAliasReason,
+    BufferPointerFieldFact, CStringLiteralFact, CallArgFact, CallArgPinning, CallCallee,
+    CalleeAllocSummaryFact, CallsiteFact, CastFact, ConstValue, ControlFlowFact,
     ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
     EffectSubject, FileOwnershipFact, FixupFacts, FunctionId, HeapOwnershipFact,
     InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LazyInitSingletonFact,
     NulTermination, NullCheckDominanceFact, NullCheckProof, OptionBoxAssignKind,
     OptionBoxComparison, OptionBoxLocalCandidate, PathSegment, PlaceFact, PointerComparisonFact,
     PointerComparisonKind, PointerOptionSafetyFact, PrintfCallFact, PtrLenSliceFact, Purity,
-    StringBufferFact, StringBufferKind, StringCopyRewrite, StringLibcUseFact, StringParamLiftFact,
-    StringPointerViewFact, StringRecoveryCandidate, StructFieldOwnershipFact, ValueSubject,
+    StringBufferFact, StringBufferKind, StringCopyRewrite, StringCopyRewriteFact,
+    StringLibcUseFact, StringParamLiftFact, StringPointerViewFact, StringRecoveryCandidate,
+    StructFieldOwnershipFact, ValueSubject,
 };
 use crate::fixups::salsa::SalsaFacts;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
@@ -717,6 +719,69 @@ impl<'snapshot> QueryContext<'snapshot> {
         match self.salsa {
             Some(salsa) => salsa.lazy_init_singletons(),
             None => &self.facts.lazy_init_singletons,
+        }
+    }
+
+    fn liftable_string_bindings_fact(
+        &self,
+        function: FunctionId,
+        recovery: StringRecoveryCandidate,
+    ) -> BTreeSet<BindingId> {
+        match self.salsa {
+            Some(salsa) => salsa.liftable_string_bindings(function, recovery),
+            None => self.facts.liftable_string_bindings(function, recovery),
+        }
+    }
+
+    fn string_use_allowed_fact(
+        &self,
+        function: FunctionId,
+        use_path: &AstPath,
+        binding: BindingId,
+        recovery: StringRecoveryCandidate,
+        liftable: &BTreeSet<BindingId>,
+    ) -> bool {
+        match self.salsa {
+            Some(salsa) => {
+                salsa.string_use_allowed(function, use_path, binding, recovery, liftable)
+            }
+            None => self
+                .facts
+                .string_use_allowed(function, use_path, binding, recovery, liftable),
+        }
+    }
+
+    fn atomic_global_facts(&self) -> &[AtomicGlobalFact] {
+        match self.salsa {
+            Some(salsa) => salsa.atomic_globals(),
+            None => &self.facts.atomic_globals,
+        }
+    }
+
+    fn c_string_literal_fact(
+        &self,
+        function: FunctionId,
+        receiver_path: &AstPath,
+    ) -> Option<&CStringLiteralFact> {
+        match self.salsa {
+            Some(salsa) => salsa.c_string_literal(function, receiver_path),
+            None => self.facts.c_string_literal(function, receiver_path),
+        }
+    }
+
+    fn string_copy_rewrite_facts(&self, function: FunctionId) -> Vec<&StringCopyRewriteFact> {
+        match self.salsa {
+            Some(salsa) => salsa
+                .string_copy_rewrites(function)
+                .iter()
+                .filter(|fact| fact.site.function == function)
+                .collect(),
+            None => self
+                .facts
+                .string_copy_rewrites
+                .iter()
+                .filter(|fact| fact.site.function == function)
+                .collect(),
         }
     }
 
@@ -2626,7 +2691,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let Some(fact) = self.facts.c_string_literal(function, &site.path) else {
+        let Some(fact) = self.c_string_literal_fact(function, &site.path) else {
             return Err(Rejection::new(
                 predicate,
                 Some(site.clone()),
@@ -2786,10 +2851,9 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        let liftable = self.facts.liftable_string_bindings(function, recovery);
+        let liftable = self.liftable_string_bindings_fact(function, recovery);
         let allowed =
-            self.facts
-                .string_use_allowed(function, &use_site.path, binding, recovery, &liftable);
+            self.string_use_allowed_fact(function, &use_site.path, binding, recovery, &liftable);
         let evidence = vec![Evidence {
             predicate,
             site: use_site.clone(),
@@ -2824,10 +2888,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         let bindings = self.all_bindings();
         let mut sites = Vec::new();
         for fact in self
-            .facts
-            .string_copy_rewrites
-            .iter()
-            .filter(|fact| fact.site.function == function && fact.dst == binding)
+            .string_copy_rewrite_facts(function)
+            .into_iter()
+            .filter(|fact| fact.dst == binding)
         {
             let resolve = |source: BindingId| bindings.iter().find(|b| b.id == source).cloned();
             let action = match &fact.rewrite {
@@ -3055,7 +3118,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 
     pub(in crate::fixups) fn has_atomic_promotions(&self) -> bool {
-        !self.atomic_local_facts().is_empty() || !self.facts.atomic_globals.is_empty()
+        !self.atomic_local_facts().is_empty() || !self.atomic_global_facts().is_empty()
     }
 
     pub(super) fn snapshot_program(&self) -> &'snapshot Program {
@@ -4610,7 +4673,7 @@ query_cache! {
             });
         }
         let mut globals = Vec::new();
-        for fact in &self.facts.atomic_globals {
+        for fact in self.atomic_global_facts() {
             if !static_exists(&self.program.items, &fact.name) {
                 return Err(Rejection::new(
                     predicate,

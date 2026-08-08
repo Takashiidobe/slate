@@ -2,11 +2,12 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::{
     self, AsciiNumericSign, AsciiNumericStringFact, AstPath, BindingFact, BindingId, BindingKind,
-    BindingTypeFact, CallCallee, CallSignatureSource, ConstValue, FixupFacts, FunctionId,
-    GENERATED_C_STRING_READ_CALLEE, NulTermination, PathSegment, Site, StringBufferFact,
-    StringBufferKind, StringBufferProvenance, StringBufferRejection, StringCopyRewrite,
-    StringCopyRewriteFact, StringLibcFunction, StringLibcUseFact, StringLiftPlanFact,
-    StringPointerViewFact, StringPointerViewKind, StringRecoveryCandidate, ValueSubject,
+    BindingTypeFact, CallCallee, CallSignatureSource, ConstValue, DefUseFact, FixupFacts,
+    FunctionId, GENERATED_C_STRING_READ_CALLEE, NulTermination, PathSegment, PrintfCallFact, Site,
+    StringBufferFact, StringBufferKind, StringBufferProvenance, StringBufferRejection,
+    StringCopyRewrite, StringCopyRewriteFact, StringLibcFunction, StringLibcUseFact,
+    StringLiftPlanFact, StringParamLiftFact, StringPointerViewFact, StringPointerViewKind,
+    StringRecoveryCandidate, ValueFact, ValueSubject,
 };
 use crate::fixups::facts::{CallsiteFact, walk};
 use crate::function_identity::{Known, known_call};
@@ -90,28 +91,86 @@ pub(in crate::fixups) fn collect_rewrite_facts(program: &Program, facts: &mut Fi
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut plans = Vec::new();
-        let mut rewrites = Vec::new();
-        let consts = const_usize_temps(function, facts);
-        collect_body_rewrite_facts(
-            function,
-            &f.body,
-            &mut Vec::new(),
-            facts,
-            &consts,
-            &mut plans,
-            &mut rewrites,
-        );
+        let snapshot = RewriteSnapshot {
+            bindings: &facts.bindings,
+            def_use: &facts.def_use,
+            values: &facts.values,
+            string_buffers: &facts.string_buffers,
+            string_pointer_views: &facts.string_pointer_views,
+            string_libc_uses: &facts.string_libc_uses,
+            printf_calls: &facts.printf_calls,
+            callsites: &facts.callsites,
+            string_param_lifts: &facts.string_param_lifts,
+        };
+        let (plans, rewrites) = collect_rewrite_facts_for_function(function, f, &snapshot);
         facts.string_lift_plans.extend(plans);
         facts.string_copy_rewrites.extend(rewrites);
     }
+}
+
+pub(in crate::fixups) struct RewriteSnapshot<'a> {
+    pub(in crate::fixups) bindings: &'a [BindingFact],
+    pub(in crate::fixups) def_use: &'a [DefUseFact],
+    pub(in crate::fixups) values: &'a [ValueFact],
+    pub(in crate::fixups) string_buffers: &'a [StringBufferFact],
+    pub(in crate::fixups) string_pointer_views: &'a [StringPointerViewFact],
+    pub(in crate::fixups) string_libc_uses: &'a [StringLibcUseFact],
+    pub(in crate::fixups) printf_calls: &'a [PrintfCallFact],
+    pub(in crate::fixups) callsites: &'a [CallsiteFact],
+    pub(in crate::fixups) string_param_lifts: &'a [StringParamLiftFact],
+}
+
+impl<'a> RewriteSnapshot<'a> {
+    fn def_use(&self, binding: BindingId) -> Option<&DefUseFact> {
+        facts::def_use_of(self.def_use, binding)
+    }
+
+    fn string_buffer_at(&self, function: FunctionId, path: &AstPath) -> Option<&StringBufferFact> {
+        facts::string_buffer_at(self.string_buffers, function, path)
+    }
+
+    fn string_pointer_view(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&StringPointerViewFact> {
+        facts::string_pointer_view(self.string_pointer_views, function, path)
+    }
+
+    fn string_libc_use(&self, function: FunctionId, path: &AstPath) -> Option<&StringLibcUseFact> {
+        facts::string_libc_use(self.string_libc_uses, function, path)
+    }
+
+    fn binding_name(&self, binding: BindingId) -> Option<&str> {
+        facts::binding_name(self.bindings, binding)
+    }
+}
+
+pub(in crate::fixups) fn collect_rewrite_facts_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &RewriteSnapshot,
+) -> (Vec<StringLiftPlanFact>, Vec<StringCopyRewriteFact>) {
+    let mut plans = Vec::new();
+    let mut rewrites = Vec::new();
+    let consts = const_usize_temps(function, facts);
+    collect_body_rewrite_facts(
+        function,
+        &f.body,
+        &mut Vec::new(),
+        facts,
+        &consts,
+        &mut plans,
+        &mut rewrites,
+    );
+    (plans, rewrites)
 }
 
 fn collect_body_rewrite_facts(
     function: FunctionId,
     body: &[IndentStmt],
     path: &mut Vec<PathSegment>,
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     consts: &BTreeMap<String, usize>,
     plans: &mut Vec<StringLiftPlanFact>,
     rewrites: &mut Vec<StringCopyRewriteFact>,
@@ -204,7 +263,7 @@ fn collect_nested_rewrite_facts(
     function: FunctionId,
     body: &[IndentStmt],
     path: &mut Vec<PathSegment>,
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     consts: &BTreeMap<String, usize>,
     plans: &mut Vec<StringLiftPlanFact>,
     rewrites: &mut Vec<StringCopyRewriteFact>,
@@ -266,7 +325,7 @@ fn liftable_bindings(
     function: FunctionId,
     body: &[IndentStmt],
     path: &[PathSegment],
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     recovery: StringRecoveryCandidate,
     consts: &BTreeMap<String, usize>,
 ) -> BTreeSet<BindingId> {
@@ -320,7 +379,7 @@ struct LiftCandidate {
 
 struct LiftContext<'a> {
     function: FunctionId,
-    facts: &'a FixupFacts,
+    facts: &'a RewriteSnapshot<'a>,
     liftable: &'a BTreeSet<BindingId>,
     consts: &'a BTreeMap<String, usize>,
 }
@@ -329,7 +388,7 @@ fn lift_plan_for_binding(
     function: FunctionId,
     body: &[IndentStmt],
     path: &[PathSegment],
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     binding: BindingId,
     recovery: StringRecoveryCandidate,
 ) -> Option<StringLiftPlanFact> {
@@ -356,7 +415,7 @@ fn lift_plan_for_binding(
 fn lift_candidate_at(
     function: FunctionId,
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     path: &[PathSegment],
     recovery: StringRecoveryCandidate,
 ) -> Option<LiftCandidate> {
@@ -400,7 +459,7 @@ fn collect_copy_rewrites(
     function: FunctionId,
     body: &[IndentStmt],
     path: &[PathSegment],
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     consts: &BTreeMap<String, usize>,
     liftable: &BTreeSet<BindingId>,
     rewrites: &mut Vec<StringCopyRewriteFact>,
@@ -458,7 +517,7 @@ fn stmt_allows_lift(
 }
 
 fn binding_uses_under(
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     function: FunctionId,
     binding: BindingId,
     prefix: &[PathSegment],
@@ -494,10 +553,10 @@ fn binding_uses_under(
     uses
 }
 
-pub(super) fn use_allowed(
+pub(in crate::fixups) fn use_allowed(
     function: FunctionId,
     use_path: &AstPath,
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     binding: BindingId,
     recovery: StringRecoveryCandidate,
     liftable: &BTreeSet<BindingId>,
@@ -568,7 +627,7 @@ pub(super) fn use_allowed(
 fn printf_allows_lift(
     function: FunctionId,
     printf: &crate::fixups::facts::PrintfCallFact,
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     binding: BindingId,
     liftable: &BTreeSet<BindingId>,
 ) -> bool {
@@ -593,7 +652,7 @@ fn printf_allows_lift(
 
 fn all_printf_string_args_allow_lift(
     function: FunctionId,
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     binding: BindingId,
     liftable: &BTreeSet<BindingId>,
 ) -> bool {
@@ -622,7 +681,7 @@ fn all_printf_string_args_allow_lift(
 
 fn printf_string_arg_allows_lift(
     function: FunctionId,
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     binding: BindingId,
     liftable: &BTreeSet<BindingId>,
     arg: &crate::fixups::facts::PrintfArgFact,
@@ -638,7 +697,7 @@ fn copy_rewrite_for_expr(
     function: FunctionId,
     expr: &Expr,
     path: &[PathSegment],
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     liftable: &BTreeSet<BindingId>,
     consts: &BTreeMap<String, usize>,
 ) -> Option<(BindingId, StringCopyRewrite)> {
@@ -702,7 +761,7 @@ fn copy_source_rewrite(
     function: FunctionId,
     expr: &Expr,
     path: &[PathSegment],
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
     liftable: &BTreeSet<BindingId>,
     push: bool,
 ) -> Option<StringCopyRewrite> {
@@ -728,14 +787,14 @@ fn copy_source_rewrite(
 fn pointer_view_binding(
     function: FunctionId,
     path: &[PathSegment],
-    facts: &FixupFacts,
+    facts: &RewriteSnapshot,
 ) -> Option<BindingId> {
     facts
         .string_pointer_view(function, &AstPath(path.to_vec()))
         .map(|view| view.source)
 }
 
-fn const_usize_temps(function: FunctionId, facts: &FixupFacts) -> BTreeMap<String, usize> {
+fn const_usize_temps(function: FunctionId, facts: &RewriteSnapshot) -> BTreeMap<String, usize> {
     facts
         .values
         .iter()
