@@ -510,9 +510,6 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<S
     }
     write_long_double_shim(project)?;
 
-    // `--keep-going` lets other bins finish when one fails to compile, but a
-    // prior successful build's binary would otherwise linger at this path and
-    // get silently reused by the differential runner, masking the failure.
     for case in cases {
         let _ = std::fs::remove_file(multi_bin_batch_path(project, &case.name));
     }
