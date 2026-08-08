@@ -366,7 +366,7 @@ pub(super) struct CallsiteFact {
 pub(super) enum CallCallee {
     Direct {
         name: String,
-        signature: Option<SignatureId>,
+        signature: Option<CallSignatureFact>,
         identity: crate::function_identity::FunctionIdentity,
     },
     Indirect,

@@ -1,14 +1,15 @@
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use crate::fixups::facts::{
     self, ArrayElementPointerOriginFact, AstPath, AtomicLocalFact, BindingFact, BindingId,
     BindingTypeFact, BorrowAliasFact, BorrowAliasReason, BorrowAliasState, BufferPointerFieldFact,
-    CallSignatureFact, CallSignatureSource, CalleeAllocSummaryFact, CallsiteFact, CastFact,
+    CallArgFact, CallSignatureFact, CalleeAllocSummaryFact, CallsiteFact, CastFact,
     ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact,
     EffectFact, EffectSubject, FixupFacts, FunctionFact, FunctionId, HeapOwnershipFact,
     InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LoopFact,
     NullCheckDominanceFact, OptionBoxComparison, OptionBoxLocalCandidate, PlaceFact,
-    PointerComparisonFact, PointerOptionSafetyFact, StructFieldOwnershipFact, ValueFact,
+    PointerComparisonFact, PointerOptionSafetyFact, SignatureId, StructFieldOwnershipFact,
+    ValueFact,
 };
 use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{EnumDef, FnDef, Item, Program, RecordDef, StructDef};
@@ -40,10 +41,6 @@ pub(in crate::fixups) struct FunctionInput {
     pub(in crate::fixups) binding_types: Vec<BindingTypeFact>,
     #[returns(ref)]
     pub(in crate::fixups) loops: Vec<LoopFact>,
-    #[returns(ref)]
-    pub(in crate::fixups) call_signatures: Vec<CallSignatureFact>,
-    #[returns(ref)]
-    pub(in crate::fixups) callsites: Vec<CallsiteFact>,
 }
 
 #[salsa::input]
@@ -54,6 +51,8 @@ pub(in crate::fixups) struct DefinitionsInput {
     pub(in crate::fixups) structs: Vec<StructDef>,
     #[returns(ref)]
     pub(in crate::fixups) enums: Vec<EnumDef>,
+    #[returns(ref)]
+    pub(in crate::fixups) extern_call_signatures: Vec<CallSignatureFact>,
 }
 
 #[salsa::tracked]
@@ -124,6 +123,11 @@ impl FunctionInput {
     }
 
     #[salsa::tracked(returns(ref))]
+    fn local_call_signature(self, db: &dyn FixupDb) -> CallSignatureFact {
+        facts::calls::local_call_signature(*self.function(db), self.body(db))
+    }
+
+    #[salsa::tracked(returns(ref))]
     fn casts(self, db: &dyn FixupDb) -> Vec<CastFact> {
         let local_facts = FixupFacts {
             bindings: self.bindings(db).clone(),
@@ -132,8 +136,7 @@ impl FunctionInput {
                 name: self.body(db).name.clone(),
                 item_index: 0,
             }],
-            call_signatures: self.call_signatures(db).clone(),
-            callsites: self.callsites(db).clone(),
+            call_signatures: vec![self.local_call_signature(db).clone()],
             ..FixupFacts::default()
         };
         facts::casts::collect_for_function(*self.function(db), self.body(db), &local_facts)
@@ -340,14 +343,24 @@ impl SalsaFacts {
                 _ => None,
             })
             .collect();
+        let extern_call_signatures = facts::calls::collect_extern_signatures(program);
         match self.definitions {
             Some(input) => {
                 input.set_records(&mut self.db).to(records);
                 input.set_structs(&mut self.db).to(structs);
                 input.set_enums(&mut self.db).to(enums);
+                input
+                    .set_extern_call_signatures(&mut self.db)
+                    .to(extern_call_signatures);
             }
             None => {
-                self.definitions = Some(DefinitionsInput::new(&self.db, records, structs, enums));
+                self.definitions = Some(DefinitionsInput::new(
+                    &self.db,
+                    records,
+                    structs,
+                    enums,
+                    extern_call_signatures,
+                ));
             }
         }
     }
@@ -383,26 +396,12 @@ impl SalsaFacts {
             .filter(|loop_fact| loop_fact.function == function_fact.id)
             .cloned()
             .collect();
-        let callsites: Vec<CallsiteFact> = facts
-            .callsites
-            .iter()
-            .filter(|callsite| callsite.site.function == function_fact.id)
-            .cloned()
-            .collect();
-        let call_signatures: Vec<CallSignatureFact> = facts
-            .call_signatures
-            .iter()
-            .filter(|signature| signature.source == CallSignatureSource::Function(function_fact.id))
-            .cloned()
-            .collect();
         match self.functions.get(&function_fact.id) {
             Some(&input) => {
                 input.set_body(&mut self.db).to(body.clone());
                 input.set_bindings(&mut self.db).to(bindings);
                 input.set_binding_types(&mut self.db).to(binding_types);
                 input.set_loops(&mut self.db).to(loops);
-                input.set_call_signatures(&mut self.db).to(call_signatures);
-                input.set_callsites(&mut self.db).to(callsites);
             }
             None => {
                 let input = FunctionInput::new(
@@ -412,8 +411,6 @@ impl SalsaFacts {
                     bindings,
                     binding_types,
                     loops,
-                    call_signatures,
-                    callsites,
                 );
                 self.functions.insert(function_fact.id, input);
             }
@@ -731,6 +728,75 @@ impl SalsaFacts {
             )
             .collect();
         facts::interprocedural_alloc_eligibility::collect(&functions)
+    }
+
+    fn call_signature_table(&self) -> (Vec<CallSignatureFact>, BTreeMap<String, SignatureId>) {
+        let mut functions: Vec<(&FunctionId, &FunctionInput)> = self.functions.iter().collect();
+        functions.sort_by_key(|(id, _)| **id);
+        let mut signatures: Vec<CallSignatureFact> = functions
+            .into_iter()
+            .map(|(_, input)| input.local_call_signature(&self.db).clone())
+            .collect();
+        if let Some(definitions) = self.definitions {
+            signatures.extend(definitions.extern_call_signatures(&self.db).iter().cloned());
+        }
+        for (index, signature) in signatures.iter_mut().enumerate() {
+            signature.id = SignatureId(index);
+        }
+        let by_name = signatures
+            .iter()
+            .map(|signature| (signature.name.clone(), signature.id))
+            .collect();
+        (signatures, by_name)
+    }
+
+    pub(in crate::fixups) fn callsites(&self) -> Vec<CallsiteFact> {
+        let (signatures, by_name) = self.call_signature_table();
+        let mut functions: Vec<(&FunctionId, &FunctionInput)> = self.functions.iter().collect();
+        functions.sort_by_key(|(id, _)| **id);
+        let mut all = Vec::new();
+        for (&function, &input) in functions {
+            let local_facts = FixupFacts {
+                bindings: input.bindings(&self.db).clone(),
+                ..FixupFacts::default()
+            };
+            all.extend(facts::calls::collect_callsites_for_function(
+                function,
+                &input.body(&self.db).body,
+                &local_facts,
+                &signatures,
+                &by_name,
+            ));
+        }
+        all
+    }
+
+    pub(in crate::fixups) fn callsite(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<CallsiteFact> {
+        self.callsites()
+            .into_iter()
+            .find(|fact| fact.site.function == function && &fact.site.path == path)
+    }
+
+    pub(in crate::fixups) fn call_arg_at(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<(CallsiteFact, CallArgFact)> {
+        self.callsites().into_iter().find_map(|callsite| {
+            if callsite.site.function != function {
+                return None;
+            }
+            callsite
+                .args
+                .iter()
+                .find(|arg| &arg.path == path)
+                .cloned()
+                .map(|arg| (callsite.clone(), arg))
+        })
     }
 
     #[expect(

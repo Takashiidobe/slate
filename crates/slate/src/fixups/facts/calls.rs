@@ -8,7 +8,7 @@ use crate::fixups::facts::{
 };
 use crate::function_identity::FunctionIdentity;
 use crate::rust_ast::{
-    Block, Expr, ExternDecl, FnParam, IndentStmt, Item, Pattern, Program, Stmt, Type,
+    Block, Expr, ExternDecl, ExternFnDecl, FnDef, FnParam, IndentStmt, Item, Pattern, Program, Stmt,
 };
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
@@ -28,14 +28,30 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        let mut collector = Collector::new(function, facts, &signatures, &by_name);
-        collector.enter_root_scope();
-        collector.body(&f.body, &mut Vec::new(), false);
-        callsites.extend(collector.callsites);
+        callsites.extend(collect_callsites_for_function(
+            function,
+            &f.body,
+            facts,
+            &signatures,
+            &by_name,
+        ));
     }
 
     facts.call_signatures = signatures;
     facts.callsites = callsites;
+}
+
+pub(in crate::fixups) fn collect_callsites_for_function(
+    function: FunctionId,
+    f_body: &[IndentStmt],
+    facts: &FixupFacts,
+    signatures: &[CallSignatureFact],
+    by_name: &BTreeMap<String, SignatureId>,
+) -> Vec<CallsiteFact> {
+    let mut collector = Collector::new(function, facts, signatures, by_name);
+    collector.enter_root_scope();
+    collector.body(f_body, &mut Vec::new(), false);
+    collector.callsites
 }
 
 fn collect_signatures(program: &Program, facts: &FixupFacts) -> Vec<CallSignatureFact> {
@@ -46,32 +62,10 @@ fn collect_signatures(program: &Program, facts: &FixupFacts) -> Vec<CallSignatur
                 let Some(function) = facts.function_by_item_index(item_index) else {
                     continue;
                 };
-                push_signature(
-                    &mut signatures,
-                    f.name.clone(),
-                    CallSignatureSource::Function(function),
-                    params_from_fn_params(&f.params),
-                    false,
-                    f.ret.clone(),
-                );
+                push_signature(&mut signatures, local_call_signature(function, f));
             }
             Item::ExternBlock { decls, .. } => {
-                for (decl_index, decl) in decls.iter().enumerate() {
-                    let ExternDecl::Fn(f) = decl else {
-                        continue;
-                    };
-                    push_signature(
-                        &mut signatures,
-                        f.name.clone(),
-                        CallSignatureSource::Extern {
-                            item_index,
-                            decl_index,
-                        },
-                        params_from_fn_params(&f.params),
-                        f.variadic,
-                        f.ret.clone(),
-                    );
-                }
+                push_extern_signatures(item_index, decls, &mut signatures)
             }
             Item::Cfg { item, .. } => {
                 collect_cfg_signature(item, item_index, facts, &mut signatures)
@@ -91,56 +85,86 @@ fn collect_cfg_signature(
     match item {
         Item::Fn(f) => {
             if let Some(function) = facts.function_by_item_index(item_index) {
-                push_signature(
-                    signatures,
-                    f.name.clone(),
-                    CallSignatureSource::Function(function),
-                    params_from_fn_params(&f.params),
-                    false,
-                    f.ret.clone(),
-                );
+                push_signature(signatures, local_call_signature(function, f));
             }
         }
-        Item::ExternBlock { decls, .. } => {
-            for (decl_index, decl) in decls.iter().enumerate() {
-                let ExternDecl::Fn(f) = decl else {
-                    continue;
-                };
-                push_signature(
-                    signatures,
-                    f.name.clone(),
-                    CallSignatureSource::Extern {
-                        item_index,
-                        decl_index,
-                    },
-                    params_from_fn_params(&f.params),
-                    f.variadic,
-                    f.ret.clone(),
-                );
-            }
-        }
+        Item::ExternBlock { decls, .. } => push_extern_signatures(item_index, decls, signatures),
         Item::Cfg { item, .. } => collect_cfg_signature(item, item_index, facts, signatures),
         _ => {}
     }
 }
 
-fn push_signature(
+fn push_extern_signatures(
+    item_index: usize,
+    decls: &[ExternDecl],
     signatures: &mut Vec<CallSignatureFact>,
-    name: String,
-    source: CallSignatureSource,
-    params: Vec<CallParamFact>,
-    variadic: bool,
-    ret: Option<Type>,
 ) {
-    let id = SignatureId(signatures.len());
-    signatures.push(CallSignatureFact {
-        id,
-        name,
-        source,
-        params,
-        variadic,
-        ret,
-    });
+    for (decl_index, decl) in decls.iter().enumerate() {
+        let ExternDecl::Fn(f) = decl else {
+            continue;
+        };
+        push_signature(signatures, extern_call_signature(item_index, decl_index, f));
+    }
+}
+
+/// Whole-program extern function signatures only (no `Item::Fn` entries) -- used to seed
+/// `DefinitionsInput`, which never needs resyncing on a per-function edit the way
+/// `local_call_signature` does.
+pub(in crate::fixups) fn collect_extern_signatures(program: &Program) -> Vec<CallSignatureFact> {
+    let mut signatures = Vec::new();
+    for (item_index, item) in program.items.iter().enumerate() {
+        collect_extern_signatures_from_item(item, item_index, &mut signatures);
+    }
+    signatures
+}
+
+fn collect_extern_signatures_from_item(
+    item: &Item,
+    item_index: usize,
+    signatures: &mut Vec<CallSignatureFact>,
+) {
+    match item {
+        Item::ExternBlock { decls, .. } => push_extern_signatures(item_index, decls, signatures),
+        Item::Cfg { item, .. } => collect_extern_signatures_from_item(item, item_index, signatures),
+        _ => {}
+    }
+}
+
+pub(in crate::fixups) fn local_call_signature(
+    function: FunctionId,
+    f: &FnDef,
+) -> CallSignatureFact {
+    CallSignatureFact {
+        id: SignatureId(0),
+        name: f.name.clone(),
+        source: CallSignatureSource::Function(function),
+        params: params_from_fn_params(&f.params),
+        variadic: false,
+        ret: f.ret.clone(),
+    }
+}
+
+fn extern_call_signature(
+    item_index: usize,
+    decl_index: usize,
+    f: &ExternFnDecl,
+) -> CallSignatureFact {
+    CallSignatureFact {
+        id: SignatureId(0),
+        name: f.name.clone(),
+        source: CallSignatureSource::Extern {
+            item_index,
+            decl_index,
+        },
+        params: params_from_fn_params(&f.params),
+        variadic: f.variadic,
+        ret: f.ret.clone(),
+    }
+}
+
+fn push_signature(signatures: &mut Vec<CallSignatureFact>, mut fact: CallSignatureFact) {
+    fact.id = SignatureId(signatures.len());
+    signatures.push(fact);
 }
 
 fn params_from_fn_params(params: &[FnParam]) -> Vec<CallParamFact> {
@@ -501,7 +525,10 @@ impl<'a> Collector<'a> {
         let (callee, signature) = match expr {
             Expr::Call { func, binding, .. } => match &**func {
                 Expr::Var(name) => {
-                    let signature = self.by_name.get(name.as_str()).copied();
+                    let signature = self
+                        .by_name
+                        .get(name.as_str())
+                        .and_then(|id| self.signatures.get(id.0));
                     let identity = match binding {
                         crate::function_identity::CallBinding::Direct { identity, .. } => *identity,
                         crate::function_identity::CallBinding::Indirect
@@ -512,10 +539,10 @@ impl<'a> Collector<'a> {
                     (
                         CallCallee::Direct {
                             name: name.as_str().to_string(),
-                            signature,
+                            signature: signature.cloned(),
                             identity,
                         },
-                        signature.and_then(|id| self.signatures.get(id.0)),
+                        signature,
                     )
                 }
                 _ => (CallCallee::Indirect, None),

@@ -5,10 +5,10 @@ use std::marker::PhantomData;
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     ArrayElementPointerOriginFact, AsciiNumericSign, AstPath, AtomicLocalFact, BindingId,
-    BindingKind, BorrowAliasReason, BufferPointerFieldFact, CallArgPinning, CallCallee,
-    CalleeAllocSummaryFact, CastFact, ConstValue, ControlFlowFact, ControlFlowSubject,
-    CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject, FixupFacts,
-    FunctionId, HeapOwnershipFact, InterproceduralAllocCallerFact,
+    BindingKind, BorrowAliasReason, BufferPointerFieldFact, CallArgFact, CallArgPinning,
+    CallCallee, CalleeAllocSummaryFact, CallsiteFact, CastFact, ConstValue, ControlFlowFact,
+    ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
+    EffectSubject, FixupFacts, FunctionId, HeapOwnershipFact, InterproceduralAllocCallerFact,
     InterproceduralAllocEligibilityFact, NulTermination, NullCheckDominanceFact, NullCheckProof,
     OptionBoxAssignKind, OptionBoxComparison, OptionBoxLocalCandidate, PathSegment, PlaceFact,
     PointerComparisonFact, PointerComparisonKind, PointerOptionSafetyFact, PrintfCallFact,
@@ -646,6 +646,27 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
     }
 
+    fn callsite_fact(&self, function: FunctionId, path: &AstPath) -> Option<CallsiteFact> {
+        match self.salsa {
+            Some(salsa) => salsa.callsite(function, path),
+            None => self.facts.callsite(function, path).cloned(),
+        }
+    }
+
+    fn call_arg_fact(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<(CallsiteFact, CallArgFact)> {
+        match self.salsa {
+            Some(salsa) => salsa.call_arg_at(function, path),
+            None => self
+                .facts
+                .call_arg_at(function, path)
+                .map(|(callsite, arg)| (callsite.clone(), arg.clone())),
+        }
+    }
+
     pub(in crate::fixups) fn all_calls(&self) -> impl Iterator<Item = &CallRecord> {
         self.calls.values().flatten()
     }
@@ -661,8 +682,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         call.args
             .iter()
             .map(|arg| {
-                self.facts
-                    .call_arg_at(function, &arg.path)
+                self.call_arg_fact(function, &arg.path)
                     .and_then(|(_, arg_fact)| arg_fact.declared_ty.clone())
             })
             .collect()
@@ -2414,9 +2434,8 @@ impl<'snapshot> QueryContext<'snapshot> {
             ));
         };
         let Some(fact) = self
-            .facts
-            .callsite(function, &site.fact_path)
-            .or_else(|| self.facts.callsite(function, &site.path))
+            .callsite_fact(function, &site.fact_path)
+            .or_else(|| self.callsite_fact(function, &site.path))
         else {
             return Err(Rejection::new(
                 predicate,
@@ -2449,9 +2468,8 @@ impl<'snapshot> QueryContext<'snapshot> {
             ));
         };
         let Some((_, arg)) = self
-            .facts
-            .call_arg_at(function, &site.fact_path)
-            .or_else(|| self.facts.call_arg_at(function, &site.path))
+            .call_arg_fact(function, &site.fact_path)
+            .or_else(|| self.call_arg_fact(function, &site.path))
         else {
             return Err(Rejection::new(
                 predicate,

@@ -1,10 +1,10 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     AstPath, BindingId, BindingKind, CallCallee, FixupFacts, FunctionId, StringBufferKind,
     StringLibcFunction, StringParamLiftFact,
 };
+use crate::fixups::facts::{CallSignatureSource, CallsiteFact, walk};
 use crate::rust_ast::{Expr, Item, Prim, Program, Type, Visibility};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -176,7 +176,7 @@ fn internal_call_allows(
             && walk::path_starts_with(&read.0, &callsite.site.path.0)
             && callsite.args.iter().any(|arg| {
                 walk::paths_overlap(&read.0, &arg.path.0)
-                    && direct_callee_function(facts, callsite)
+                    && direct_callee_function(callsite)
                         .and_then(|callee| by_function.get(&(callee, arg.slot)))
                         .is_some_and(|target| active.contains(target))
             })
@@ -210,20 +210,17 @@ fn all_callers_prove_arg(
         })
 }
 
-fn direct_callee_function(
-    facts: &FixupFacts,
-    callsite: &crate::fixups::facts::CallsiteFact,
-) -> Option<FunctionId> {
+fn direct_callee_function(callsite: &CallsiteFact) -> Option<FunctionId> {
     let CallCallee::Direct {
         signature: Some(signature),
         ..
-    } = callsite.callee
+    } = &callsite.callee
     else {
         return None;
     };
-    match facts.call_signatures.get(signature.0)?.source {
-        crate::fixups::facts::CallSignatureSource::Function(function) => Some(function),
-        crate::fixups::facts::CallSignatureSource::Extern { .. } => None,
+    match signature.source {
+        CallSignatureSource::Function(function) => Some(function),
+        CallSignatureSource::Extern { .. } => None,
     }
 }
 
