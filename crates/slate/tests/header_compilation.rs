@@ -126,7 +126,7 @@ fn generate_header_test_program() -> Result<String, String> {
         let entry = entry.map_err(|e| format!("Failed to read dir entry: {}", e))?;
         let path = entry.path();
 
-        if path.is_file() && path.extension().map_or(false, |ext| ext == "h") {
+        if path.is_file() && path.extension().is_some_and(|ext| ext == "h") {
             let name = path
                 .file_name()
                 .and_then(|n| n.to_str())

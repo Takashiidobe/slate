@@ -95,3 +95,6 @@ and `SLATE_CIR_OPT`.
 
 Target selection can be shared across the CIR and AST Clang invocations with
 `SLATE_TARGET=<triple>` and extra flags in `SLATE_CLANG_ARGS`.
+
+The external pinned Microsoft CRT and UCRT header oracle used for MSVC work is
+bootstrapped under `target/`; see [msvc-sysroot.md](msvc-sysroot.md).
