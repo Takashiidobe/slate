@@ -5,13 +5,13 @@ use std::marker::PhantomData;
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
     ArrayElementPointerOriginFact, AsciiNumericSign, AstPath, AtomicLocalFact, BindingId,
-    BindingKind, BorrowAliasReason, CallArgPinning, CallCallee, CalleeAllocSummaryFact, CastFact,
-    ConstValue, ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact,
-    DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionId,
-    InterproceduralAllocEligibilityFact, NulTermination, NullCheckDominanceFact, NullCheckProof,
-    OptionBoxAssignKind, OptionBoxComparison, OptionBoxLocalCandidate, PathSegment, PlaceFact,
-    PointerComparisonFact, PointerComparisonKind, PointerOptionSafetyFact, PrintfCallFact,
-    PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
+    BindingKind, BorrowAliasReason, BufferPointerFieldFact, CallArgPinning, CallCallee,
+    CalleeAllocSummaryFact, CastFact, ConstValue, ControlFlowFact, ControlFlowSubject,
+    CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject, FixupFacts,
+    FunctionId, InterproceduralAllocEligibilityFact, NulTermination, NullCheckDominanceFact,
+    NullCheckProof, OptionBoxAssignKind, OptionBoxComparison, OptionBoxLocalCandidate, PathSegment,
+    PlaceFact, PointerComparisonFact, PointerComparisonKind, PointerOptionSafetyFact,
+    PrintfCallFact, PtrLenSliceFact, Purity, StringBufferFact, StringBufferKind, StringCopyRewrite,
     StringLibcUseFact, StringPointerViewFact, StringRecoveryCandidate, StructFieldOwnershipFact,
     ValueSubject,
 };
@@ -527,6 +527,18 @@ impl<'snapshot> QueryContext<'snapshot> {
                 .option_box_comparisons
                 .iter()
                 .filter(|comparison| comparison.function == function)
+                .collect(),
+        }
+    }
+
+    fn buffer_pointer_field_facts(&self, function: FunctionId) -> Vec<&BufferPointerFieldFact> {
+        match self.salsa {
+            Some(salsa) => salsa.buffer_pointer_fields(function).iter().collect(),
+            None => self
+                .facts
+                .buffer_pointer_fields
+                .iter()
+                .filter(|fact| fact.site.function == function)
                 .collect(),
         }
     }
@@ -5089,8 +5101,7 @@ query_cache! {
         let predicate = Predicate::BufferPointerFields;
         let site = expression_site(function.item_index, &[]);
         let bindings = self.all_bindings();
-        let fields = self.facts.buffer_pointer_fields.iter()
-            .filter(|fact| fact.site.function == function.id)
+        let fields = self.buffer_pointer_field_facts(function.id).into_iter()
             .filter_map(|fact| {
                 let buffer = bindings.iter().find(|binding| binding.id == fact.buffer)?.clone();
                 let array = bindings.iter().find(|binding| binding.id == fact.array)?.clone();
