@@ -102,3 +102,6 @@ bootstrapped under `target/`; see [msvc-sysroot.md](msvc-sysroot.md).
 The macOS ABI oracle uses an externally installed SDK plus pinned Apple public
 Libc and XNU sources under `target/`; see
 [macos-sdk-oracle.md](macos-sdk-oracle.md).
+
+The Android Bionic ABI oracle uses a pinned Android NDK and explicit API level;
+see [android-ndk-oracle.md](android-ndk-oracle.md).
