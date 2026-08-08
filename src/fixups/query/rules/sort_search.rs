@@ -13,7 +13,7 @@ pub(in crate::fixups) fn program() -> QueryRule<WholeProgram> {
         Ok(EditSet::replace_program(
             program.clone(),
             rewrite.replacement,
-            rewrite.touched,
+            rewrite.removed,
         ))
     })
 }

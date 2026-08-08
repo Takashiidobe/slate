@@ -14,7 +14,7 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<WholeProgram> {
         Ok(EditSet::replace_program(
             program.clone(),
             rewrite.replacement,
-            rewrite.touched,
+            rewrite.removed,
         ))
     })
 }

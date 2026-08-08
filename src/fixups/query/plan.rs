@@ -142,23 +142,3 @@ pub(super) struct Plan<E: EditTarget> {
     pub(super) edits: Vec<PlannedEdit<E>>,
     pub(super) diagnostics: Vec<PlanDiagnostic<E::Site>>,
 }
-
-#[derive(Debug, Clone, Default)]
-pub(in crate::fixups) struct TouchedItems {
-    pub(in crate::fixups) in_place: Vec<usize>,
-    pub(in crate::fixups) removed: Vec<usize>,
-    pub(in crate::fixups) unbounded: bool,
-}
-
-impl TouchedItems {
-    pub(in crate::fixups) fn none() -> Self {
-        Self::default()
-    }
-
-    pub(in crate::fixups) fn unbounded() -> Self {
-        Self {
-            unbounded: true,
-            ..Self::default()
-        }
-    }
-}
