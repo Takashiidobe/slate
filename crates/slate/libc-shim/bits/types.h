@@ -340,6 +340,15 @@ typedef __regoff_t regoff_t;
 #endif
 #undef __NEED_regoff_t
 
+#if defined(__NEED_struct_timeval) && !defined(__DEFINED_struct_timeval)
+struct timeval {
+  __time_t      tv_sec;   /* seconds */
+  __suseconds_t tv_usec;  /* microseconds */
+};
+#define __DEFINED_struct_timeval
+#endif
+#undef __NEED_struct_timeval
+
 #if defined(__NEED_struct_timespec) && !defined(__DEFINED_struct_timespec)
 struct timespec {
   __time_t tv_sec;

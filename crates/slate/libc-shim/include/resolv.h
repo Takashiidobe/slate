@@ -57,9 +57,14 @@
 #include <arpa/nameser.h>
 #include <netinet/in.h>
 #include <stdio.h>
-#include <sys/cdefs.h>
 #include <sys/param.h>
 #include <sys/types.h>
+
+/* Minimal typedef for res_state used by resolver APIs. */
+#ifndef _SLATE_RES_STATE
+#define _SLATE_RES_STATE
+typedef struct __res_state *res_state;
+#endif
 
 /*
  * Global defines and variables for resolver stub.
