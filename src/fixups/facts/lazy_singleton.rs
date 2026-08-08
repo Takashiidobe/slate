@@ -18,52 +18,81 @@
 //! trailing return. Both counts are checked program-wide, so any other use of
 //! either static anywhere leaves the function on the baseline path.
 
-use crate::fixups::facts::{FixupFacts, LazyInitSingletonFact};
+use std::collections::BTreeMap;
+
+use crate::fixups::facts::walk::{self, Bodies};
+use crate::fixups::facts::{FixupFacts, FunctionId, LazyInitSingletonFact, StaticDeclFact};
 use crate::fixups::idents::stmt_ident_count;
 use crate::rust_ast::{
     BinOp, Expr, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
 };
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
-    facts.lazy_init_singletons.clear();
+    let bodies = walk::bodies_from_program(program, facts);
+    let statics = statics_from_program(program);
+    let shapes: BTreeMap<FunctionId, (String, String, Expr)> = bodies
+        .iter()
+        .filter_map(|(&function, &f)| match_body(&f.body).map(|shape| (function, shape)))
+        .collect();
+    facts.lazy_init_singletons = compute(&shapes, &bodies, &statics);
+}
+
+fn statics_from_program(program: &Program) -> Vec<StaticDeclFact> {
+    program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            Item::Static {
+                name,
+                mutable,
+                ty,
+                init,
+                ..
+            } => Some(StaticDeclFact {
+                name: name.clone(),
+                mutable: *mutable,
+                ty: ty.clone(),
+                init: init.clone(),
+            }),
+            _ => None,
+        })
+        .collect()
+}
+
+pub(in crate::fixups) fn compute(
+    shapes: &BTreeMap<FunctionId, (String, String, Expr)>,
+    bodies: &Bodies,
+    statics: &[StaticDeclFact],
+) -> Vec<LazyInitSingletonFact> {
     let mut all = Vec::new();
-    for (item_index, item) in program.items.iter().enumerate() {
-        let Item::Fn(f) = item else {
+    for (&function, (flag_name, payload_name, init_expr)) in shapes {
+        let Some(payload_ty) = static_item_type(statics, payload_name) else {
             continue;
         };
-        let Some(function) = facts.function_by_item_index(item_index) else {
-            continue;
-        };
-        let Some((flag_name, payload_name, init_expr)) = match_body(&f.body) else {
-            continue;
-        };
-        let Some(payload_ty) = static_item_type(program, &payload_name) else {
-            continue;
-        };
-        if static_item_type(program, &flag_name).is_none() {
+        if static_item_type(statics, flag_name).is_none() {
             continue;
         }
-        if program_ident_count(program, &flag_name) != 2
-            || program_ident_count(program, &payload_name) != 2
+        if program_ident_count(bodies, statics, flag_name) != 2
+            || program_ident_count(bodies, statics, payload_name) != 2
         {
             continue;
         }
         all.push(LazyInitSingletonFact {
             function,
-            flag_name,
-            payload_name,
+            flag_name: flag_name.clone(),
+            payload_name: payload_name.clone(),
             payload_ty,
-            init_expr,
+            init_expr: init_expr.clone(),
         });
     }
-    facts.lazy_init_singletons = all;
+    all
 }
 
 /// Matches when `body` is exactly `[guard, return]`, where `guard` is either
 /// a `Stmt::Scope` wrapping the three-statement guard-check shape or that
 /// shape unwrapped at the top level, and `return` reads the payload the
 /// guard just initialized.
-fn match_body(body: &[IndentStmt]) -> Option<(String, String, Expr)> {
+pub(in crate::fixups) fn match_body(body: &[IndentStmt]) -> Option<(String, String, Expr)> {
     let (guard, rest) = split_guard(body)?;
     let (flag_name, then_body) = match guard {
         [check, cond, branch] => {
@@ -334,45 +363,32 @@ fn expr_references(expr: &Expr, name: &str) -> bool {
     crate::fixups::idents::expr_ident_count(expr, name) > 0
 }
 
-fn static_item_type(program: &Program, name: &str) -> Option<Type> {
-    program.items.iter().find_map(|item| match item {
-        Item::Static {
-            name: static_name,
-            mutable: true,
-            ty,
-            ..
-        } if static_name == name => Some(ty.clone()),
-        _ => None,
-    })
-}
-
-fn program_ident_count(program: &Program, name: &str) -> usize {
-    program
-        .items
+fn static_item_type(statics: &[StaticDeclFact], name: &str) -> Option<Type> {
+    statics
         .iter()
-        .map(|item| item_ident_count(item, name))
-        .sum()
+        .find(|decl| decl.mutable && decl.name == name)
+        .map(|decl| decl.ty.clone())
 }
 
-fn item_ident_count(item: &Item, name: &str) -> usize {
-    match item {
-        Item::Fn(f) => f
-            .body
-            .iter()
-            .map(|indent| stmt_ident_count(&indent.stmt, name))
-            .sum(),
-        Item::Static {
-            name: static_name,
-            init,
-            ..
-        } => {
-            if static_name == name {
+fn program_ident_count(bodies: &Bodies, statics: &[StaticDeclFact], name: &str) -> usize {
+    let function_count: usize = bodies
+        .values()
+        .map(|f| {
+            f.body
+                .iter()
+                .map(|indent| stmt_ident_count(&indent.stmt, name))
+                .sum::<usize>()
+        })
+        .sum();
+    let static_count: usize = statics
+        .iter()
+        .map(|decl| {
+            if decl.name == name {
                 0
             } else {
-                crate::fixups::idents::expr_ident_count(init, name)
+                crate::fixups::idents::expr_ident_count(&decl.init, name)
             }
-        }
-        Item::Cfg { item, .. } => item_ident_count(item, name),
-        _ => 0,
-    }
+        })
+        .sum();
+    function_count + static_count
 }

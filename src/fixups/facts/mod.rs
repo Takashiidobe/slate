@@ -151,6 +151,14 @@ pub(super) struct LazyInitSingletonFact {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(super) struct StaticDeclFact {
+    pub(super) name: String,
+    pub(super) mutable: bool,
+    pub(super) ty: Type,
+    pub(super) init: Expr,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(super) struct AnonymousStructFact {
     pub(super) original_name: String,
     pub(super) generated_name: String,

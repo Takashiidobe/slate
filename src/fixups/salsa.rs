@@ -1,18 +1,18 @@
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use crate::fixups::facts::{
-    self, ArrayElementPointerOriginFact, AstPath, AtomicLocalFact, BindingFact, BindingId,
-    BindingTypeFact, BorrowAliasFact, BorrowAliasReason, BorrowAliasState, BufferPointerFieldFact,
-    CallArgFact, CallSignatureFact, CalleeAllocSummaryFact, CallsiteFact, CastFact,
-    ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact,
-    EffectFact, EffectSubject, FixupFacts, FunctionFact, FunctionId, HeapOwnershipFact,
-    InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LoopFact,
-    NullCheckDominanceFact, OptionBoxComparison, OptionBoxLocalCandidate, PlaceFact,
-    PointerComparisonFact, PointerOptionSafetyFact, SignatureId, StructFieldOwnershipFact,
-    ValueFact,
+    self, AnonymousStructFact, ArrayElementPointerOriginFact, AstPath, AtomicLocalFact,
+    BindingFact, BindingId, BindingTypeFact, BorrowAliasFact, BorrowAliasReason, BorrowAliasState,
+    BufferPointerFieldFact, CallArgFact, CallSignatureFact, CalleeAllocSummaryFact, CallsiteFact,
+    CastFact, ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact,
+    DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionFact, FunctionId, HeapOwnershipFact,
+    InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LazyInitSingletonFact,
+    LoopFact, NullCheckDominanceFact, OptionBoxComparison, OptionBoxLocalCandidate, PlaceFact,
+    PointerComparisonFact, PointerOptionSafetyFact, PtrLenSliceFact, SignatureId, StaticDeclFact,
+    StringParamLiftFact, StructFieldOwnershipFact, ValueFact,
 };
 use crate::fixups::query::TouchedItems;
-use crate::rust_ast::{EnumDef, FnDef, Item, Program, RecordDef, StructDef};
+use crate::rust_ast::{EnumDef, Expr, FnDef, Item, Program, RecordDef, StructDef};
 use salsa::Setter;
 
 #[salsa::db]
@@ -44,6 +44,12 @@ pub(in crate::fixups) struct FunctionInput {
 }
 
 #[salsa::input]
+pub(in crate::fixups) struct AllFunctions {
+    #[returns(ref)]
+    pub(in crate::fixups) functions: Vec<FunctionInput>,
+}
+
+#[salsa::input]
 pub(in crate::fixups) struct DefinitionsInput {
     #[returns(ref)]
     pub(in crate::fixups) records: Vec<RecordDef>,
@@ -53,6 +59,8 @@ pub(in crate::fixups) struct DefinitionsInput {
     pub(in crate::fixups) enums: Vec<EnumDef>,
     #[returns(ref)]
     pub(in crate::fixups) extern_call_signatures: Vec<CallSignatureFact>,
+    #[returns(ref)]
+    pub(in crate::fixups) statics: Vec<StaticDeclFact>,
 }
 
 #[salsa::tracked]
@@ -69,6 +77,11 @@ impl DefinitionsInput {
     #[salsa::tracked(returns(ref))]
     fn struct_field_ownership(self, db: &dyn FixupDb) -> Vec<StructFieldOwnershipFact> {
         facts::struct_field_ownership::collect(self.records(db).iter())
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn anonymous_structs(self, db: &dyn FixupDb) -> Vec<AnonymousStructFact> {
+        facts::anonymous_structs::collect(self.records(db).iter())
     }
 }
 
@@ -261,19 +274,226 @@ impl FunctionInput {
     fn callee_alloc_summary(self, db: &dyn FixupDb) -> Option<CalleeAllocSummaryFact> {
         facts::callee_alloc_summary::collect_for_function(*self.function(db), self.body(db))
     }
+
+    #[salsa::tracked(returns(ref))]
+    fn ptr_len_candidates(self, db: &dyn FixupDb) -> Vec<facts::ptr_len::Candidate> {
+        let local_facts = FixupFacts {
+            bindings: self.bindings(db).clone(),
+            ..FixupFacts::default()
+        };
+        facts::ptr_len::candidates_for_function(*self.function(db), self.body(db), &local_facts)
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn string_param_candidates(self, db: &dyn FixupDb) -> Vec<facts::string_params::Candidate> {
+        let local_facts = FixupFacts {
+            bindings: self.bindings(db).clone(),
+            ..FixupFacts::default()
+        };
+        facts::string_params::candidates_for_function(
+            *self.function(db),
+            self.body(db),
+            &local_facts,
+        )
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn lazy_singleton_shape(self, db: &dyn FixupDb) -> Option<(String, String, Expr)> {
+        facts::lazy_singleton::match_body(&self.body(db).body)
+    }
+}
+
+#[salsa::tracked]
+impl AllFunctions {
+    #[salsa::tracked(returns(ref))]
+    fn atomic_locals(self, db: &dyn FixupDb) -> Vec<AtomicLocalFact> {
+        self.functions(db)
+            .iter()
+            .flat_map(|&input| input.atomic_locals(db).iter().cloned())
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn interprocedural_alloc(
+        self,
+        db: &dyn FixupDb,
+    ) -> (
+        Vec<InterproceduralAllocEligibilityFact>,
+        Vec<InterproceduralAllocCallerFact>,
+    ) {
+        let functions: Vec<facts::interprocedural_alloc_eligibility::FunctionSummary> = self
+            .functions(db)
+            .iter()
+            .map(
+                |&input| facts::interprocedural_alloc_eligibility::FunctionSummary {
+                    id: *input.function(db),
+                    name: input.body(db).name.as_str(),
+                    body: &input.body(db).body,
+                    bindings: input.bindings(db),
+                    callee_alloc_summary: input.callee_alloc_summary(db).as_ref(),
+                },
+            )
+            .collect();
+        facts::interprocedural_alloc_eligibility::collect(&functions)
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn call_signature_table(
+        self,
+        db: &dyn FixupDb,
+        definitions: DefinitionsInput,
+    ) -> (Vec<CallSignatureFact>, BTreeMap<String, SignatureId>) {
+        let mut signatures: Vec<CallSignatureFact> = self
+            .functions(db)
+            .iter()
+            .map(|&input| input.local_call_signature(db).clone())
+            .collect();
+        signatures.extend(definitions.extern_call_signatures(db).iter().cloned());
+        for (index, signature) in signatures.iter_mut().enumerate() {
+            signature.id = SignatureId(index);
+        }
+        let by_name = signatures
+            .iter()
+            .map(|signature| (signature.name.clone(), signature.id))
+            .collect();
+        (signatures, by_name)
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn callsites(self, db: &dyn FixupDb, definitions: DefinitionsInput) -> Vec<CallsiteFact> {
+        let (signatures, by_name) = self.call_signature_table(db, definitions);
+        let mut all = Vec::new();
+        for &input in self.functions(db) {
+            let local_facts = FixupFacts {
+                bindings: input.bindings(db).clone(),
+                ..FixupFacts::default()
+            };
+            all.extend(facts::calls::collect_callsites_for_function(
+                *input.function(db),
+                &input.body(db).body,
+                &local_facts,
+                signatures,
+                by_name,
+            ));
+        }
+        all
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn ptr_len_slices(
+        self,
+        db: &dyn FixupDb,
+        definitions: DefinitionsInput,
+    ) -> Vec<PtrLenSliceFact> {
+        let bodies: facts::walk::Bodies = self
+            .functions(db)
+            .iter()
+            .map(|&input| (*input.function(db), input.body(db)))
+            .collect();
+        let candidates: Vec<facts::ptr_len::Candidate> = self
+            .functions(db)
+            .iter()
+            .flat_map(|&input| input.ptr_len_candidates(db).iter().cloned())
+            .collect();
+        let mut bindings = Vec::new();
+        let mut binding_types = Vec::new();
+        let mut def_use = Vec::new();
+        for &input in self.functions(db) {
+            bindings.extend(input.bindings(db).iter().cloned());
+            binding_types.extend(input.binding_types(db).iter().cloned());
+            def_use.extend(input.def_use(db).iter().cloned());
+        }
+        let snapshot = FixupFacts {
+            bindings,
+            binding_types,
+            def_use,
+            callsites: self.callsites(db, definitions).clone(),
+            ..FixupFacts::default()
+        };
+        facts::ptr_len::compute(&bodies, &snapshot, candidates)
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn string_param_lifts(
+        self,
+        db: &dyn FixupDb,
+        definitions: DefinitionsInput,
+    ) -> Vec<StringParamLiftFact> {
+        let bodies: facts::walk::Bodies = self
+            .functions(db)
+            .iter()
+            .map(|&input| (*input.function(db), input.body(db)))
+            .collect();
+        let candidates: Vec<facts::string_params::Candidate> = self
+            .functions(db)
+            .iter()
+            .flat_map(|&input| input.string_param_candidates(db).iter().cloned())
+            .collect();
+        let mut bindings = Vec::new();
+        let mut binding_types = Vec::new();
+        let mut def_use = Vec::new();
+        let mut string_buffers = Vec::new();
+        let mut string_libc_uses = Vec::new();
+        for &input in self.functions(db) {
+            bindings.extend(input.bindings(db).iter().cloned());
+            binding_types.extend(input.binding_types(db).iter().cloned());
+            def_use.extend(input.def_use(db).iter().cloned());
+            let strings = input.strings(db);
+            string_buffers.extend(strings.buffers.iter().cloned());
+            string_libc_uses.extend(strings.libc_uses.iter().cloned());
+        }
+        let snapshot = FixupFacts {
+            bindings,
+            binding_types,
+            def_use,
+            string_buffers,
+            string_libc_uses,
+            callsites: self.callsites(db, definitions).clone(),
+            ..FixupFacts::default()
+        };
+        facts::string_params::compute(&bodies, &snapshot, candidates)
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn lazy_init_singletons(
+        self,
+        db: &dyn FixupDb,
+        definitions: DefinitionsInput,
+    ) -> Vec<LazyInitSingletonFact> {
+        let bodies: facts::walk::Bodies = self
+            .functions(db)
+            .iter()
+            .map(|&input| (*input.function(db), input.body(db)))
+            .collect();
+        let shapes: BTreeMap<FunctionId, (String, String, Expr)> = self
+            .functions(db)
+            .iter()
+            .filter_map(|&input| {
+                input
+                    .lazy_singleton_shape(db)
+                    .clone()
+                    .map(|shape| (*input.function(db), shape))
+            })
+            .collect();
+        facts::lazy_singleton::compute(&shapes, &bodies, definitions.statics(db))
+    }
 }
 
 pub(in crate::fixups) struct SalsaFacts {
     db: Database,
     functions: HashMap<FunctionId, FunctionInput>,
+    all_functions: AllFunctions,
     definitions: Option<DefinitionsInput>,
 }
 
 impl SalsaFacts {
     pub(in crate::fixups) fn new() -> Self {
+        let db = Database::default();
+        let all_functions = AllFunctions::new(&db, Vec::new());
         Self {
-            db: Database::default(),
+            db,
             functions: HashMap::new(),
+            all_functions,
             definitions: None,
         }
     }
@@ -285,6 +505,7 @@ impl SalsaFacts {
         }
         self.functions
             .retain(|id, _| facts.functions.iter().any(|fact| fact.id == *id));
+        self.sync_all_functions();
     }
 
     pub(in crate::fixups) fn sync_touched(
@@ -316,6 +537,14 @@ impl SalsaFacts {
                 self.functions.remove(&function_fact.id);
             }
         }
+        self.sync_all_functions();
+    }
+
+    fn sync_all_functions(&mut self) {
+        let mut sorted: Vec<(&FunctionId, &FunctionInput)> = self.functions.iter().collect();
+        sorted.sort_by_key(|(id, _)| **id);
+        let functions: Vec<FunctionInput> = sorted.into_iter().map(|(_, &input)| input).collect();
+        self.all_functions.set_functions(&mut self.db).to(functions);
     }
 
     fn sync_definitions(&mut self, program: &Program) {
@@ -344,6 +573,25 @@ impl SalsaFacts {
             })
             .collect();
         let extern_call_signatures = facts::calls::collect_extern_signatures(program);
+        let statics: Vec<StaticDeclFact> = program
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                Item::Static {
+                    name,
+                    mutable,
+                    ty,
+                    init,
+                    ..
+                } => Some(StaticDeclFact {
+                    name: name.clone(),
+                    mutable: *mutable,
+                    ty: ty.clone(),
+                    init: init.clone(),
+                }),
+                _ => None,
+            })
+            .collect();
         match self.definitions {
             Some(input) => {
                 input.set_records(&mut self.db).to(records);
@@ -352,6 +600,7 @@ impl SalsaFacts {
                 input
                     .set_extern_call_signatures(&mut self.db)
                     .to(extern_call_signatures);
+                input.set_statics(&mut self.db).to(statics);
             }
             None => {
                 self.definitions = Some(DefinitionsInput::new(
@@ -360,6 +609,7 @@ impl SalsaFacts {
                     structs,
                     enums,
                     extern_call_signatures,
+                    statics,
                 ));
             }
         }
@@ -624,11 +874,8 @@ impl SalsaFacts {
             .find(|fact| facts::walk::paths_overlap(&fact.deref_site.path.0, &deref_path.0))
     }
 
-    pub(in crate::fixups) fn atomic_locals(&self) -> Vec<&AtomicLocalFact> {
-        self.functions
-            .values()
-            .flat_map(|&input| input.atomic_locals(&self.db).iter())
-            .collect()
+    pub(in crate::fixups) fn atomic_locals(&self) -> &[AtomicLocalFact] {
+        self.all_functions.atomic_locals(&self.db)
     }
 
     pub(in crate::fixups) fn pointer_option_safety_of(
@@ -710,65 +957,18 @@ impl SalsaFacts {
 
     pub(in crate::fixups) fn interprocedural_alloc(
         &self,
-    ) -> (
+    ) -> &(
         Vec<InterproceduralAllocEligibilityFact>,
         Vec<InterproceduralAllocCallerFact>,
     ) {
-        let functions: Vec<facts::interprocedural_alloc_eligibility::FunctionSummary> = self
-            .functions
-            .values()
-            .map(
-                |&input| facts::interprocedural_alloc_eligibility::FunctionSummary {
-                    id: *input.function(&self.db),
-                    name: input.body(&self.db).name.as_str(),
-                    body: &input.body(&self.db).body,
-                    bindings: input.bindings(&self.db),
-                    callee_alloc_summary: input.callee_alloc_summary(&self.db).as_ref(),
-                },
-            )
-            .collect();
-        facts::interprocedural_alloc_eligibility::collect(&functions)
+        self.all_functions.interprocedural_alloc(&self.db)
     }
 
-    fn call_signature_table(&self) -> (Vec<CallSignatureFact>, BTreeMap<String, SignatureId>) {
-        let mut functions: Vec<(&FunctionId, &FunctionInput)> = self.functions.iter().collect();
-        functions.sort_by_key(|(id, _)| **id);
-        let mut signatures: Vec<CallSignatureFact> = functions
-            .into_iter()
-            .map(|(_, input)| input.local_call_signature(&self.db).clone())
-            .collect();
-        if let Some(definitions) = self.definitions {
-            signatures.extend(definitions.extern_call_signatures(&self.db).iter().cloned());
-        }
-        for (index, signature) in signatures.iter_mut().enumerate() {
-            signature.id = SignatureId(index);
-        }
-        let by_name = signatures
-            .iter()
-            .map(|signature| (signature.name.clone(), signature.id))
-            .collect();
-        (signatures, by_name)
-    }
-
-    pub(in crate::fixups) fn callsites(&self) -> Vec<CallsiteFact> {
-        let (signatures, by_name) = self.call_signature_table();
-        let mut functions: Vec<(&FunctionId, &FunctionInput)> = self.functions.iter().collect();
-        functions.sort_by_key(|(id, _)| **id);
-        let mut all = Vec::new();
-        for (&function, &input) in functions {
-            let local_facts = FixupFacts {
-                bindings: input.bindings(&self.db).clone(),
-                ..FixupFacts::default()
-            };
-            all.extend(facts::calls::collect_callsites_for_function(
-                function,
-                &input.body(&self.db).body,
-                &local_facts,
-                &signatures,
-                &by_name,
-            ));
-        }
-        all
+    pub(in crate::fixups) fn callsites(&self) -> &[CallsiteFact] {
+        let Some(definitions) = self.definitions else {
+            return &[];
+        };
+        self.all_functions.callsites(&self.db, definitions)
     }
 
     pub(in crate::fixups) fn callsite(
@@ -777,8 +977,9 @@ impl SalsaFacts {
         path: &AstPath,
     ) -> Option<CallsiteFact> {
         self.callsites()
-            .into_iter()
+            .iter()
             .find(|fact| fact.site.function == function && &fact.site.path == path)
+            .cloned()
     }
 
     pub(in crate::fixups) fn call_arg_at(
@@ -786,7 +987,7 @@ impl SalsaFacts {
         function: FunctionId,
         path: &AstPath,
     ) -> Option<(CallsiteFact, CallArgFact)> {
-        self.callsites().into_iter().find_map(|callsite| {
+        self.callsites().iter().find_map(|callsite| {
             if callsite.site.function != function {
                 return None;
             }
@@ -799,6 +1000,28 @@ impl SalsaFacts {
         })
     }
 
+    pub(in crate::fixups) fn ptr_len_slices(&self) -> &[PtrLenSliceFact] {
+        let Some(definitions) = self.definitions else {
+            return &[];
+        };
+        self.all_functions.ptr_len_slices(&self.db, definitions)
+    }
+
+    pub(in crate::fixups) fn string_param_lifts(&self) -> &[StringParamLiftFact] {
+        let Some(definitions) = self.definitions else {
+            return &[];
+        };
+        self.all_functions.string_param_lifts(&self.db, definitions)
+    }
+
+    pub(in crate::fixups) fn lazy_init_singletons(&self) -> &[LazyInitSingletonFact] {
+        let Some(definitions) = self.definitions else {
+            return &[];
+        };
+        self.all_functions
+            .lazy_init_singletons(&self.db, definitions)
+    }
+
     #[expect(
         dead_code,
         reason = "query API surface not yet wired into a fixup rule"
@@ -808,6 +1031,13 @@ impl SalsaFacts {
             return &[];
         };
         definitions.struct_field_ownership(&self.db)
+    }
+
+    pub(in crate::fixups) fn anonymous_structs(&self) -> &[AnonymousStructFact] {
+        let Some(definitions) = self.definitions else {
+            return &[];
+        };
+        definitions.anonymous_structs(&self.db)
     }
 }
 

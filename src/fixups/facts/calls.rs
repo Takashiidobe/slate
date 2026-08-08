@@ -107,9 +107,6 @@ fn push_extern_signatures(
     }
 }
 
-/// Whole-program extern function signatures only (no `Item::Fn` entries) -- used to seed
-/// `DefinitionsInput`, which never needs resyncing on a per-function edit the way
-/// `local_call_signature` does.
 pub(in crate::fixups) fn collect_extern_signatures(program: &Program) -> Vec<CallSignatureFact> {
     let mut signatures = Vec::new();
     for (item_index, item) in program.items.iter().enumerate() {

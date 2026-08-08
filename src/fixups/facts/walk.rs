@@ -1,8 +1,10 @@
+use std::collections::BTreeMap;
+
 use crate::fixups::facts::{AstPath, FixupFacts, FunctionId, PathSegment};
 pub(in crate::fixups) use crate::fixups::support::walk::{
     nested_bodies_with_path, nested_body_vecs_with_path, with_path_segment,
 };
-use crate::rust_ast::{AsmOperand, Block, Expr, IndentStmt, InlineAsm, Item, Program, Stmt};
+use crate::rust_ast::{AsmOperand, Block, Expr, FnDef, IndentStmt, InlineAsm, Item, Program, Stmt};
 
 pub(in crate::fixups) fn body_exprs(body: &[IndentStmt], f: &mut impl FnMut(&Expr)) {
     for stmt in body {
@@ -1012,23 +1014,39 @@ fn target_expr_at<'a>(expr: &'a Expr, path: &[PathSegment]) -> Option<&'a Expr> 
     }
 }
 
-/// Resolves an `AstPath` back to the `Expr` it was recorded from. Needed
-/// because the callback walkers above use HRTB closures, which can't hand
-/// back a reference tied to the caller's lifetime.
-pub(in crate::fixups) fn expr_at_path<'a>(
-    facts: &FixupFacts,
+pub(in crate::fixups) type Bodies<'a> = BTreeMap<FunctionId, &'a FnDef>;
+
+pub(in crate::fixups) fn bodies_from_program<'a>(
     program: &'a Program,
+    facts: &FixupFacts,
+) -> Bodies<'a> {
+    program
+        .items
+        .iter()
+        .enumerate()
+        .filter_map(|(item_index, item)| {
+            let Item::Fn(f) = item else {
+                return None;
+            };
+            let function = facts.function_by_item_index(item_index)?;
+            Some((function, f))
+        })
+        .collect()
+}
+
+pub(in crate::fixups) fn expr_at_body_path<'a>(
+    bodies: &Bodies<'a>,
     function: FunctionId,
     path: &AstPath,
 ) -> Option<&'a Expr> {
-    let item_index = facts.function_item_index(function)?;
-    let Item::Fn(f) = &program.items[item_index] else {
-        return None;
-    };
+    let &f = bodies.get(&function)?;
     expr_in_body(&f.body, &path.0)
 }
 
-fn expr_in_body<'a>(body: &'a [IndentStmt], path: &[PathSegment]) -> Option<&'a Expr> {
+pub(in crate::fixups) fn expr_in_body<'a>(
+    body: &'a [IndentStmt],
+    path: &[PathSegment],
+) -> Option<&'a Expr> {
     let [PathSegment::Stmt(index), rest @ ..] = path else {
         return None;
     };
