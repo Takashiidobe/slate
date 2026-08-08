@@ -2,9 +2,11 @@
 //! address, so the rewrite can give it native `AtomicN` storage and safe
 //! direct method calls.
 
-use crate::fixups::facts::{AtomicLocalFact, FixupFacts, walk};
+use crate::fixups::facts::{AtomicLocalFact, FixupFacts, FunctionId, walk};
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
-use crate::rust_ast::{AtomicPlace, AtomicType, Expr, IndentStmt, Item, Prim, Program, Stmt, Type};
+use crate::rust_ast::{
+    AtomicPlace, AtomicType, Expr, FnDef, IndentStmt, Item, Prim, Program, Stmt, Type,
+};
 
 pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts) {
     facts.atomic_locals.clear();
@@ -17,15 +19,23 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        for (name, ty) in promotable_locals(&f.body) {
-            all.push(AtomicLocalFact { function, name, ty });
-        }
+        all.extend(collect_for_function(function, f));
     }
     facts.atomic_locals = all;
     facts.atomic_globals = promotable_globals(program)
         .into_iter()
         .map(|(name, ty)| crate::fixups::facts::AtomicGlobalFact { name, ty })
         .collect();
+}
+
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+) -> Vec<AtomicLocalFact> {
+    promotable_locals(&f.body)
+        .into_iter()
+        .map(|(name, ty)| AtomicLocalFact { function, name, ty })
+        .collect()
 }
 
 /// A local is promotable when it is declared `let mut <name>: <int> = <init>;`

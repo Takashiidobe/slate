@@ -34,7 +34,19 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
     facts.pointer_comparisons = comparisons;
 }
 
-fn union_record_names(program: &Program) -> BTreeSet<String> {
+pub(in crate::fixups) fn collect_for_function(
+    function: FunctionId,
+    f: &FnDef,
+    facts: &FixupFacts,
+    union_records: &BTreeSet<String>,
+) -> (Vec<PointerOptionSafetyFact>, Vec<PointerComparisonFact>) {
+    let safety = collect_safety_for_function(function, f, facts, union_records);
+    let mut comparisons = Vec::new();
+    collect_comparisons_for_function(function, f, facts, &mut comparisons);
+    (safety, comparisons)
+}
+
+pub(in crate::fixups) fn union_record_names(program: &Program) -> BTreeSet<String> {
     program
         .items
         .iter()

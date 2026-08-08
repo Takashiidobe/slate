@@ -1,14 +1,15 @@
 use std::collections::{BTreeSet, HashMap};
 
 use crate::fixups::facts::{
-    self, ArrayElementPointerOriginFact, AstPath, BindingFact, BindingId, BindingTypeFact,
-    BorrowAliasFact, BorrowAliasReason, BorrowAliasState, CallSignatureFact, CallSignatureSource,
-    CallsiteFact, CastFact, ControlFlowFact, ControlFlowSubject, CountedLoopFact,
-    CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject, FixupFacts, FunctionFact,
-    FunctionId, LoopFact, NullCheckDominanceFact, PlaceFact, ValueFact,
+    self, ArrayElementPointerOriginFact, AstPath, AtomicLocalFact, BindingFact, BindingId,
+    BindingTypeFact, BorrowAliasFact, BorrowAliasReason, BorrowAliasState, CallSignatureFact,
+    CallSignatureSource, CallsiteFact, CastFact, ControlFlowFact, ControlFlowSubject,
+    CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject, FixupFacts,
+    FunctionFact, FunctionId, LoopFact, NullCheckDominanceFact, PlaceFact, PointerComparisonFact,
+    PointerOptionSafetyFact, StructFieldOwnershipFact, ValueFact,
 };
 use crate::fixups::query::TouchedItems;
-use crate::rust_ast::{FnDef, Item, Program};
+use crate::rust_ast::{EnumDef, FnDef, Item, Program, RecordDef, StructDef};
 use salsa::Setter;
 
 #[salsa::db]
@@ -41,6 +42,33 @@ pub(in crate::fixups) struct FunctionInput {
     pub(in crate::fixups) call_signatures: Vec<CallSignatureFact>,
     #[returns(ref)]
     pub(in crate::fixups) callsites: Vec<CallsiteFact>,
+}
+
+#[salsa::input]
+pub(in crate::fixups) struct DefinitionsInput {
+    #[returns(ref)]
+    pub(in crate::fixups) records: Vec<RecordDef>,
+    #[returns(ref)]
+    pub(in crate::fixups) structs: Vec<StructDef>,
+    #[returns(ref)]
+    pub(in crate::fixups) enums: Vec<EnumDef>,
+}
+
+#[salsa::tracked]
+impl DefinitionsInput {
+    #[salsa::tracked(returns(ref))]
+    fn union_records(self, db: &dyn FixupDb) -> BTreeSet<String> {
+        self.records(db)
+            .iter()
+            .filter(|record| record.is_union)
+            .map(|record| record.name.clone())
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn struct_field_ownership(self, db: &dyn FixupDb) -> Vec<StructFieldOwnershipFact> {
+        facts::struct_field_ownership::collect(self.records(db).iter())
+    }
 }
 
 #[salsa::tracked]
@@ -156,11 +184,36 @@ impl FunctionInput {
             &local_facts,
         )
     }
+
+    #[salsa::tracked(returns(ref))]
+    fn atomic_locals(self, db: &dyn FixupDb) -> Vec<AtomicLocalFact> {
+        facts::atomic_locals::collect_for_function(*self.function(db), self.body(db))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn pointer_option_safety(
+        self,
+        db: &dyn FixupDb,
+        definitions: DefinitionsInput,
+    ) -> (Vec<PointerOptionSafetyFact>, Vec<PointerComparisonFact>) {
+        let local_facts = FixupFacts {
+            bindings: self.bindings(db).clone(),
+            binding_types: self.binding_types(db).clone(),
+            ..FixupFacts::default()
+        };
+        facts::pointer_option_safety::collect_for_function(
+            *self.function(db),
+            self.body(db),
+            &local_facts,
+            definitions.union_records(db),
+        )
+    }
 }
 
 pub(in crate::fixups) struct SalsaFacts {
     db: Database,
     functions: HashMap<FunctionId, FunctionInput>,
+    definitions: Option<DefinitionsInput>,
 }
 
 impl SalsaFacts {
@@ -168,10 +221,12 @@ impl SalsaFacts {
         Self {
             db: Database::default(),
             functions: HashMap::new(),
+            definitions: None,
         }
     }
 
     pub(in crate::fixups) fn sync_all(&mut self, program: &Program, facts: &FixupFacts) {
+        self.sync_definitions(program);
         for function_fact in &facts.functions {
             self.sync_function(program, facts, function_fact);
         }
@@ -206,6 +261,43 @@ impl SalsaFacts {
                 .find(|fact| fact.item_index == item_index)
             {
                 self.functions.remove(&function_fact.id);
+            }
+        }
+    }
+
+    fn sync_definitions(&mut self, program: &Program) {
+        let records: Vec<RecordDef> = program
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                Item::Record(record) => Some(record.clone()),
+                _ => None,
+            })
+            .collect();
+        let structs: Vec<StructDef> = program
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                Item::Struct(s) => Some(s.clone()),
+                _ => None,
+            })
+            .collect();
+        let enums: Vec<EnumDef> = program
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                Item::Enum(e) => Some(e.clone()),
+                _ => None,
+            })
+            .collect();
+        match self.definitions {
+            Some(input) => {
+                input.set_records(&mut self.db).to(records);
+                input.set_structs(&mut self.db).to(structs);
+                input.set_enums(&mut self.db).to(enums);
+            }
+            None => {
+                self.definitions = Some(DefinitionsInput::new(&self.db, records, structs, enums));
             }
         }
     }
@@ -483,6 +575,56 @@ impl SalsaFacts {
             .null_check_dominance(&self.db)
             .iter()
             .find(|fact| facts::walk::paths_overlap(&fact.deref_site.path.0, &deref_path.0))
+    }
+
+    pub(in crate::fixups) fn atomic_locals(&self) -> Vec<&AtomicLocalFact> {
+        self.functions
+            .values()
+            .flat_map(|&input| input.atomic_locals(&self.db).iter())
+            .collect()
+    }
+
+    pub(in crate::fixups) fn pointer_option_safety_of(
+        &self,
+        function: FunctionId,
+        binding: BindingId,
+    ) -> Option<&PointerOptionSafetyFact> {
+        let input = *self.functions.get(&function)?;
+        let definitions = self.definitions?;
+        input
+            .pointer_option_safety(&self.db, definitions)
+            .0
+            .iter()
+            .find(|fact| fact.binding == binding)
+    }
+
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
+    pub(in crate::fixups) fn pointer_comparison_at(
+        &self,
+        function: FunctionId,
+        path: &AstPath,
+    ) -> Option<&PointerComparisonFact> {
+        let input = *self.functions.get(&function)?;
+        let definitions = self.definitions?;
+        input
+            .pointer_option_safety(&self.db, definitions)
+            .1
+            .iter()
+            .find(|fact| &fact.site.path == path)
+    }
+
+    #[expect(
+        dead_code,
+        reason = "query API surface not yet wired into a fixup rule"
+    )]
+    pub(in crate::fixups) fn struct_field_ownership(&self) -> &[StructFieldOwnershipFact] {
+        let Some(definitions) = self.definitions else {
+            return &[];
+        };
+        definitions.struct_field_ownership(&self.db)
     }
 }
 
