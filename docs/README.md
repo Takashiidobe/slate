@@ -107,3 +107,6 @@ Libc and XNU sources under `target/`; see
 
 The Android Bionic ABI oracle uses a pinned Android NDK and explicit API level;
 see [android-ndk-oracle.md](android-ndk-oracle.md).
+
+The FreeBSD libc ABI oracle uses pinned amd64 and arm64 base-system release
+artifacts; see [freebsd-libc-oracle.md](freebsd-libc-oracle.md).
