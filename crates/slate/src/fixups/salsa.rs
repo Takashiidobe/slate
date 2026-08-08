@@ -34,6 +34,12 @@ impl salsa::Database for Database {}
 #[salsa::db]
 impl FixupDb for Database {}
 
+#[salsa::input(singleton)]
+pub(in crate::fixups) struct ProgramInput {
+    #[returns(ref)]
+    pub(in crate::fixups) program: Program,
+}
+
 #[salsa::input]
 pub(in crate::fixups) struct FunctionInput {
     pub(in crate::fixups) function: salsa::Id,
@@ -675,6 +681,7 @@ enum Dirty {
 
 pub(in crate::fixups) struct SalsaFacts {
     db: Database,
+    program: ProgramInput,
     functions: HashMap<salsa::Id, FunctionInput>,
     all_functions: AllFunctions,
     definitions: Option<DefinitionsInput>,
@@ -685,9 +692,11 @@ pub(in crate::fixups) struct SalsaFacts {
 impl SalsaFacts {
     pub(in crate::fixups) fn new_empty() -> Self {
         let db = Database::default();
+        let program = ProgramInput::new(&db, Program::default());
         let all_functions = AllFunctions::new(&db, Vec::new());
         Self {
             db,
+            program,
             functions: HashMap::new(),
             all_functions,
             definitions: None,
@@ -718,29 +727,10 @@ impl SalsaFacts {
     pub(in crate::fixups) fn resolve(&mut self, program: &Program) {
         match std::mem::replace(&mut self.dirty, Dirty::Clean) {
             Dirty::Clean => {}
-            Dirty::Everything => {
+            Dirty::Touched(_) | Dirty::Everything => {
+                self.program.set_program(&mut self.db).to(program.clone());
                 self.base = facts::walk::BaseWalk::new(&self.db, program);
                 self.sync_all(program);
-            }
-            Dirty::Touched(touched) => {
-                let pre_edit_functions = self.base.function_facts();
-                if !touched.removed.is_empty() {
-                    self.base.remove_items(&touched.removed);
-                }
-                for &item_index in &touched.in_place {
-                    if let Some(function) = pre_edit_functions
-                        .iter()
-                        .find(|fact| fact.item_index == item_index)
-                        .map(|fact| fact.id)
-                    {
-                        self.base.splice_function(&self.db, program, function);
-                    }
-                }
-                if touched.removed.is_empty() {
-                    self.sync_touched(program, &touched);
-                } else {
-                    self.sync_all(program);
-                }
             }
         }
     }
@@ -754,27 +744,6 @@ impl SalsaFacts {
         let live: std::collections::HashSet<salsa::Id> =
             function_facts.iter().map(|fact| fact.id.as_id()).collect();
         self.functions.retain(|id, _| live.contains(id));
-        self.sync_all_functions();
-    }
-
-    fn sync_touched(&mut self, program: &Program, touched: &TouchedItems) {
-        let function_facts = self.base.function_facts();
-        for &item_index in &touched.in_place {
-            if let Some(function_fact) = function_facts
-                .iter()
-                .find(|fact| fact.item_index == item_index)
-            {
-                self.sync_function(program, function_fact);
-            }
-        }
-        for &item_index in &touched.removed {
-            if let Some(function_fact) = function_facts
-                .iter()
-                .find(|fact| fact.item_index == item_index)
-            {
-                self.functions.remove(&function_fact.id.as_id());
-            }
-        }
         self.sync_all_functions();
     }
 
