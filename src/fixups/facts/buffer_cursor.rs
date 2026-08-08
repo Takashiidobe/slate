@@ -15,7 +15,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        all.extend(collect_function(function, &f.body, facts));
+        all.extend(collect_for_function(function, &f.body, facts));
     }
     facts.buffer_pointer_fields = all;
 }
@@ -36,7 +36,7 @@ struct PointerSource {
     index: usize,
 }
 
-fn collect_function(
+pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     body: &[IndentStmt],
     facts: &FixupFacts,

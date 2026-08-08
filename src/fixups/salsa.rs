@@ -2,12 +2,12 @@ use std::collections::{BTreeSet, HashMap};
 
 use crate::fixups::facts::{
     self, ArrayElementPointerOriginFact, AstPath, AtomicLocalFact, BindingFact, BindingId,
-    BindingTypeFact, BorrowAliasFact, BorrowAliasReason, BorrowAliasState, CallSignatureFact,
-    CallSignatureSource, CallsiteFact, CastFact, ControlFlowFact, ControlFlowSubject,
-    CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact, EffectSubject, FixupFacts,
-    FunctionFact, FunctionId, LoopFact, NullCheckDominanceFact, OptionBoxComparison,
-    OptionBoxLocalCandidate, PlaceFact, PointerComparisonFact, PointerOptionSafetyFact,
-    StructFieldOwnershipFact, ValueFact,
+    BindingTypeFact, BorrowAliasFact, BorrowAliasReason, BorrowAliasState, BufferPointerFieldFact,
+    CallSignatureFact, CallSignatureSource, CallsiteFact, CastFact, ControlFlowFact,
+    ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
+    EffectSubject, FixupFacts, FunctionFact, FunctionId, LoopFact, NullCheckDominanceFact,
+    OptionBoxComparison, OptionBoxLocalCandidate, PlaceFact, PointerComparisonFact,
+    PointerOptionSafetyFact, StructFieldOwnershipFact, ValueFact,
 };
 use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{EnumDef, FnDef, Item, Program, RecordDef, StructDef};
@@ -222,6 +222,20 @@ impl FunctionInput {
         facts::option_box_locals::collect_for_function(
             *self.function(db),
             self.body(db),
+            &local_facts,
+        )
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn buffer_pointer_fields(self, db: &dyn FixupDb) -> Vec<BufferPointerFieldFact> {
+        let local_facts = FixupFacts {
+            bindings: self.bindings(db).clone(),
+            binding_types: self.binding_types(db).clone(),
+            ..FixupFacts::default()
+        };
+        facts::buffer_cursor::collect_for_function(
+            *self.function(db),
+            &self.body(db).body,
             &local_facts,
         )
     }
@@ -651,6 +665,16 @@ impl SalsaFacts {
             return &[];
         };
         &input.option_box(&self.db).1
+    }
+
+    pub(in crate::fixups) fn buffer_pointer_fields(
+        &self,
+        function: FunctionId,
+    ) -> &[BufferPointerFieldFact] {
+        let Some(&input) = self.functions.get(&function) else {
+            return &[];
+        };
+        input.buffer_pointer_fields(&self.db)
     }
 
     #[expect(
