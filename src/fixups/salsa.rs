@@ -11,7 +11,6 @@ use crate::fixups::facts::{
     StaticDeclFact, StringCopyRewriteFact, StringLiftPlanFact, StringParamLiftFact,
     StringRecoveryCandidate, StructFieldOwnershipFact, ValueFact,
 };
-use crate::fixups::query::TouchedItems;
 use crate::rust_ast::{Expr, FnDef, Item, Program};
 use salsa::Setter;
 use std::collections::{BTreeMap, BTreeSet};
@@ -649,55 +648,20 @@ impl<'db> ProgramInput {
     }
 }
 
-enum Dirty {
-    Clean,
-    Touched(TouchedItems),
-    Everything,
-}
-
 pub(in crate::fixups) struct SalsaFacts {
     db: Database,
     program: ProgramInput,
-    dirty: Dirty,
 }
 
 impl SalsaFacts {
     pub(in crate::fixups) fn new_empty() -> Self {
         let db = Database::default();
         let program = ProgramInput::new(&db, Program::default());
-        Self {
-            db,
-            program,
-            dirty: Dirty::Clean,
-        }
+        Self { db, program }
     }
 
-    pub(in crate::fixups) fn mark_touched(&mut self, touched: &TouchedItems) {
-        if touched.unbounded {
-            self.dirty = Dirty::Everything;
-            return;
-        }
-        if touched.in_place.is_empty() && touched.removed.is_empty() {
-            return;
-        }
-        match &mut self.dirty {
-            Dirty::Everything => {}
-            Dirty::Clean => self.dirty = Dirty::Touched(touched.clone()),
-            Dirty::Touched(existing) => existing.merge(touched.clone()),
-        }
-    }
-
-    pub(in crate::fixups) fn mark_everything_dirty(&mut self) {
-        self.dirty = Dirty::Everything;
-    }
-
-    pub(in crate::fixups) fn resolve(&mut self, program: &Program) {
-        match std::mem::replace(&mut self.dirty, Dirty::Clean) {
-            Dirty::Clean => {}
-            Dirty::Touched(_) | Dirty::Everything => {
-                self.program.set_program(&mut self.db).to(program.clone());
-            }
-        }
+    pub(in crate::fixups) fn set_program(&mut self, program: &Program) {
+        self.program.set_program(&mut self.db).to(program.clone());
     }
 
     fn function_input<'db>(&'db self, function: FunctionId<'_>) -> Option<FunctionInput<'db>> {

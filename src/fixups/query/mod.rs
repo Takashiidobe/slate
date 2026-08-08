@@ -44,7 +44,6 @@ pub(in crate::fixups) use patterns::{
     AssignmentValue, Binding, Definition, ExprPattern, ExternFn, FnCall, Function, LetStmtPattern,
     Local, LoopStmtPattern, NullaryMethodCall, Parameter, StatementSequence, Value, WholeProgram,
 };
-pub(in crate::fixups) use plan::TouchedItems;
 use printf::{PrintfStream, printf_macro, sprintf_format_expr, sprintf_worst_case_len};
 pub(in crate::fixups) use program_recipe::{
     rewrite_anonymous_structs, rewrite_atomic_locals, rewrite_lazy_singletons,

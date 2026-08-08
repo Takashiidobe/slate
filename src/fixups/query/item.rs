@@ -1897,6 +1897,7 @@ pub(in crate::fixups) struct ItemApplyReport {
     pub(in crate::fixups) applied: usize,
     #[cfg_attr(not(test), expect(dead_code, reason = "read only by tests"))]
     pub(super) diagnostics: Vec<PlanDiagnostic<EditSetSite>>,
+    #[cfg_attr(not(test), expect(dead_code, reason = "read only by tests"))]
     pub(in crate::fixups) touched: TouchedItems,
 }
 
@@ -2193,8 +2194,7 @@ mod tests {
 
     fn test_salsa(program: &Program) -> SalsaFacts {
         let mut salsa = SalsaFacts::new_empty();
-        salsa.mark_everything_dirty();
-        salsa.resolve(program);
+        salsa.set_program(program);
         salsa
     }
 
