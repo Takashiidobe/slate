@@ -16,9 +16,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
     .case("trailing_zero_exit", trailing_zero_exit_case)
 }
 
-fn trailing_zero_exit_case(
+fn trailing_zero_exit_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
+    function: &FunctionRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let definition = case.fact(|query| query.function_snapshot(function))?;
     let Some(last_index) = definition.body.len().checked_sub(1) else {

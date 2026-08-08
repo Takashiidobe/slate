@@ -112,9 +112,9 @@ fn rewrite_case(
     Ok(edits)
 }
 
-fn replace_fill_call_with_declaration(
+fn replace_fill_call_with_declaration<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    buf_binding: &BindingRef,
+    buf_binding: &BindingRef<'db>,
     buf_mutable: bool,
     fill_stmt: &StatementRef,
     format_expr: Expr,
@@ -185,9 +185,9 @@ fn replace_fill_call_with_declaration(
     Ok(())
 }
 
-fn require_no_buffer_use_before_fill(
+fn require_no_buffer_use_before_fill<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    buf_binding: &BindingRef,
+    buf_binding: &BindingRef<'db>,
     fill_var_site: &ExprSite,
     fill_stmt: &StatementRef,
 ) -> Result<(), Rejection> {
@@ -211,9 +211,9 @@ fn require_no_buffer_use_before_fill(
     Ok(())
 }
 
-fn reconcile_other_uses(
+fn reconcile_other_uses<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    buf_binding: &BindingRef,
+    buf_binding: &BindingRef<'db>,
     fill_var_site: &ExprSite,
     edits: &mut EditSet,
 ) -> Result<(), Rejection> {
@@ -345,9 +345,9 @@ fn resolve_const_u64(
     Err(case.reject())
 }
 
-fn zero_buffer_declaration(
+fn zero_buffer_declaration<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    buf_binding: &BindingRef,
+    buf_binding: &BindingRef<'db>,
 ) -> Result<(u64, bool), Rejection> {
     let def_stmt = StatementRef {
         item_index: buf_binding.item_index,

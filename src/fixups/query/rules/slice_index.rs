@@ -11,9 +11,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
     .case("rewrite", rewrite_case)
 }
 
-fn rewrite_case(
+fn rewrite_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
+    function: &FunctionRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let mut replacement = case
         .fact(|query| query.function_snapshot(function))?

@@ -7,7 +7,7 @@ use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{Block, Expr, FnDef, FnParam, IndentStmt, RustValue, Stmt, Type};
 use ordered_float::OrderedFloat;
 use std::collections::BTreeMap;
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     string_buffers: &[StringBufferFact<'db>],
@@ -27,7 +27,7 @@ pub(in crate::fixups) fn collect_for_function(
     calls
 }
 
-fn body(
+fn body<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
     env: &mut PrintfEnv,
@@ -52,7 +52,7 @@ fn body(
     }
 }
 
-fn visit_block(
+fn visit_block<'db>(
     function: FunctionId<'db>,
     block: &Block,
     env: &PrintfEnv,
@@ -86,7 +86,7 @@ fn visit_block(
     }
 }
 
-fn stmt(
+fn stmt<'db>(
     function: FunctionId<'db>,
     stmt: &Stmt,
     env: &PrintfEnv,
@@ -382,7 +382,7 @@ fn stmt(
     }
 }
 
-fn visit_expr(
+fn visit_expr<'db>(
     function: FunctionId<'db>,
     expr: &Expr,
     env: &PrintfEnv,
@@ -1004,7 +1004,7 @@ fn const_c_string_arg(arg: &Expr, env: &PrintfEnv) -> Option<String> {
     String::from_utf8(bytes).ok()
 }
 
-fn proven_local_c_string_arg(
+fn proven_local_c_string_arg<'db>(
     function: FunctionId<'db>,
     string_buffers: &[StringBufferFact<'db>],
     string_pointer_views: &[StringPointerViewFact<'db>],

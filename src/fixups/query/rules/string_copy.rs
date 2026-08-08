@@ -19,9 +19,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
     .case("owned_string", rewrite_case)
 }
 
-fn rewrite_case(
+fn rewrite_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let buffer = case.fact(|query| query.string_buffer(&binding.value_site()))?;
     case.require(

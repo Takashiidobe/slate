@@ -6,7 +6,8 @@ use crate::fixups::facts::{
     NullCheckDominanceFact, NullCheckProof, PathSegment, Site,
 };
 use crate::rust_ast::{BinOp, Block, Expr, FnDef, IndentStmt, RustValue, Stmt, UnaryOp};
-pub(in crate::fixups) fn collect_for_function(
+
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],
@@ -25,17 +26,17 @@ pub(in crate::fixups) fn collect_for_function(
 }
 
 #[derive(Default, Clone)]
-struct Proven {
-    entries: BTreeMap<String, ProvenEntry>,
+struct Proven<'a> {
+    entries: BTreeMap<String, ProvenEntry<'a>>,
 }
 
 #[derive(Clone)]
-struct ProvenEntry {
+struct ProvenEntry<'db> {
     guard_site: Option<Site<'db>>,
     proof: NullCheckProof,
 }
 
-struct Collector<'a> {
+struct Collector<'db, 'a> {
     function: FunctionId<'db>,
     bindings: &'a [BindingFact<'db>],
     control_flow: &'a [ControlFlowFact<'db>],
@@ -43,8 +44,8 @@ struct Collector<'a> {
     results: Vec<NullCheckDominanceFact<'db>>,
 }
 
-impl<'a> Collector<'a> {
-    fn body(&mut self, body: &[IndentStmt], path: &mut Vec<PathSegment>, proven: &mut Proven) {
+impl<'db, 'a> Collector<'db, 'a> {
+    fn body(&mut self, body: &[IndentStmt], path: &mut Vec<PathSegment>, proven: &mut Proven<'db>) {
         for (index, indent) in body.iter().enumerate() {
             walk::with_path_segment(path, PathSegment::Stmt(index), |path| {
                 self.stmt(&indent.stmt, path, proven);
@@ -52,14 +53,14 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn block(&mut self, block: &Block, path: &mut Vec<PathSegment>, proven: &mut Proven) {
+    fn block(&mut self, block: &Block, path: &mut Vec<PathSegment>, proven: &mut Proven<'db>) {
         self.body(&block.stmts, path, proven);
         if let Some(tail) = &block.tail {
             self.expr(tail, path, proven);
         }
     }
 
-    fn stmt(&mut self, stmt: &Stmt, path: &mut Vec<PathSegment>, proven: &mut Proven) {
+    fn stmt(&mut self, stmt: &Stmt, path: &mut Vec<PathSegment>, proven: &mut Proven<'db>) {
         match stmt {
             Stmt::Let { name, init, .. } => {
                 if let Some(init) = init {
@@ -201,7 +202,7 @@ impl<'a> Collector<'a> {
         then_body: &[IndentStmt],
         else_body: &[IndentStmt],
         path: &mut Vec<PathSegment>,
-        proven: &mut Proven,
+        proven: &mut Proven<'db>,
     ) {
         let guard_site = Site {
             function: self.function,
@@ -286,7 +287,7 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn record_deref(&mut self, name: &str, path: &[PathSegment], proven: &Proven) {
+    fn record_deref(&mut self, name: &str, path: &[PathSegment], proven: &Proven<'db>) {
         let Some(binding) = facts::binding_named(self.bindings, self.function, name) else {
             return;
         };
@@ -305,7 +306,7 @@ impl<'a> Collector<'a> {
         });
     }
 
-    fn expr(&mut self, expr: &Expr, path: &mut Vec<PathSegment>, proven: &Proven) {
+    fn expr(&mut self, expr: &Expr, path: &mut Vec<PathSegment>, proven: &Proven<'db>) {
         if let Expr::Unary {
             op: UnaryOp::Deref,
             expr: inner,

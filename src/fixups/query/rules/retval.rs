@@ -15,9 +15,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
         .case("collapse", rewrite_case)
 }
 
-fn rewrite_case(
+fn rewrite_case<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
+    function: &FunctionRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let mut replacement = case
         .fact(|query| query.function_snapshot(function))?
@@ -35,9 +35,9 @@ fn rewrite_case(
     Ok(EditSet::replace_function(function.clone(), replacement))
 }
 
-fn collapse_return_slots(
+fn collapse_return_slots<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
+    function: &FunctionRef<'db>,
     body: &mut Vec<IndentStmt>,
     path: &mut Vec<PathSegment>,
 ) -> bool {
@@ -156,9 +156,9 @@ fn use_within(
     }
 }
 
-fn collapse_main_exit_slots(
+fn collapse_main_exit_slots<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
+    function: &FunctionRef<'db>,
     body: &mut Vec<IndentStmt>,
     path: &mut Vec<PathSegment>,
 ) -> bool {
@@ -174,9 +174,9 @@ fn collapse_main_exit_slots(
     changed
 }
 
-fn collapse_main_exit_slot(
+fn collapse_main_exit_slot<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
+    function: &FunctionRef<'db>,
     body: &mut Vec<IndentStmt>,
     path: &[PathSegment],
 ) -> bool {

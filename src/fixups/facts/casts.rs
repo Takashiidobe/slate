@@ -8,7 +8,7 @@ use crate::fixups::facts::{
 use crate::rust_ast::{
     AtomicType, Block, Expr, FnDef, IndentStmt, Pattern, Prim, RustValue, Stmt, Type, UnaryOp,
 };
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],
@@ -22,7 +22,7 @@ pub(in crate::fixups) fn collect_for_function(
     collector.casts
 }
 
-struct Collector<'a> {
+struct Collector<'db, 'a> {
     function: FunctionId<'db>,
     bindings: &'a [BindingFact<'db>],
     functions: &'a [FunctionFact<'db>],
@@ -32,7 +32,7 @@ struct Collector<'a> {
     casts: Vec<CastFact<'db>>,
 }
 
-impl<'a> Collector<'a> {
+impl<'db, 'a> Collector<'db, 'a> {
     fn new(
         function: FunctionId<'db>,
         bindings: &'a [BindingFact<'db>],

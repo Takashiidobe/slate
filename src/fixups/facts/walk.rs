@@ -10,6 +10,7 @@ pub(in crate::fixups) use crate::fixups::support::walk::{
 use crate::rust_ast::{
     AsmOperand, Block, Expr, FnDef, IndentStmt, InlineAsm, Item, Program, Stmt, Type,
 };
+use salsa::plumbing::{AsId, FromId};
 
 pub(in crate::fixups) fn body_exprs(body: &[IndentStmt], f: &mut impl FnMut(&Expr)) {
     for stmt in body {
@@ -1019,56 +1020,185 @@ fn target_expr_at<'a>(expr: &'a Expr, path: &[PathSegment]) -> Option<&'a Expr> 
     }
 }
 
-pub(in crate::fixups) type Bodies<'a> = BTreeMap<FunctionId<'db>, &'a FnDef>;
+pub(in crate::fixups) type Bodies<'a, 'db> = BTreeMap<FunctionId<'db>, &'a FnDef>;
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+struct RawFunction {
+    id: salsa::Id,
+    name: String,
+    item_index: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(in crate::fixups) struct RawBinding {
+    pub(in crate::fixups) id: salsa::Id,
+    function: salsa::Id,
+    name: String,
+    kind: BindingKind,
+    path: AstPath,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(in crate::fixups) struct RawBindingType {
+    binding: salsa::Id,
+    ty: Type,
+    rendered: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(in crate::fixups) struct RawLoop {
+    id: salsa::Id,
+    function: salsa::Id,
+    kind: LoopKind,
+    path: AstPath,
+}
+
+pub(in crate::fixups) fn erase_binding(fact: &BindingFact<'_>) -> RawBinding {
+    RawBinding {
+        id: fact.id.as_id(),
+        function: fact.function.as_id(),
+        name: fact.name.clone(),
+        kind: fact.kind,
+        path: fact.path.clone(),
+    }
+}
+
+pub(in crate::fixups) fn hydrate_binding<'db>(raw: &RawBinding) -> BindingFact<'db> {
+    BindingFact {
+        id: BindingId::from_id(raw.id),
+        function: FunctionId::from_id(raw.function),
+        name: raw.name.clone(),
+        kind: raw.kind,
+        path: raw.path.clone(),
+    }
+}
+
+pub(in crate::fixups) fn erase_binding_type(fact: &BindingTypeFact<'_>) -> RawBindingType {
+    RawBindingType {
+        binding: fact.binding.as_id(),
+        ty: fact.ty.clone(),
+        rendered: fact.rendered.clone(),
+    }
+}
+
+pub(in crate::fixups) fn hydrate_binding_type<'db>(raw: &RawBindingType) -> BindingTypeFact<'db> {
+    BindingTypeFact {
+        binding: BindingId::from_id(raw.binding),
+        ty: raw.ty.clone(),
+        rendered: raw.rendered.clone(),
+    }
+}
+
+pub(in crate::fixups) fn erase_loop(fact: &LoopFact<'_>) -> RawLoop {
+    RawLoop {
+        id: fact.id.as_id(),
+        function: fact.function.as_id(),
+        kind: fact.kind,
+        path: fact.path.clone(),
+    }
+}
+
+pub(in crate::fixups) fn hydrate_loop<'db>(raw: &RawLoop) -> LoopFact<'db> {
+    LoopFact {
+        id: LoopId::from_id(raw.id),
+        function: FunctionId::from_id(raw.function),
+        kind: raw.kind,
+        path: raw.path.clone(),
+    }
+}
 
 #[derive(Debug, Default, Clone)]
 pub(in crate::fixups) struct BaseWalk {
-    pub(in crate::fixups) functions: Vec<FunctionFact<'db>>,
-    pub(in crate::fixups) bindings: Vec<BindingFact<'db>>,
-    pub(in crate::fixups) binding_types: Vec<BindingTypeFact<'db>>,
-    pub(in crate::fixups) loops: Vec<LoopFact<'db>>,
+    functions: Vec<RawFunction>,
+    bindings: Vec<RawBinding>,
+    binding_types: Vec<RawBindingType>,
+    loops: Vec<RawLoop>,
 }
 
 impl BaseWalk {
-    pub(in crate::fixups) fn new(program: &Program) -> Self {
+    pub(in crate::fixups) fn new(
+        db: &dyn crate::fixups::salsa::FixupDb,
+        program: &Program,
+    ) -> Self {
         let mut base = Self::default();
-        Collector::new(&mut base).program(program);
+        Collector::new(db, &mut base).program(program);
         base
     }
 
     pub(in crate::fixups) fn function_by_item_index(
         &self,
         item_index: usize,
-    ) -> Option<FunctionId<'db>> {
+    ) -> Option<FunctionId<'_>> {
         self.functions
             .iter()
             .find(|function| function.item_index == item_index)
-            .map(|function| function.id)
+            .map(|function| FunctionId::from_id(function.id))
     }
 
-    pub(in crate::fixups) fn function_item_index(&self, function: FunctionId<'db>) -> Option<usize> {
+    pub(in crate::fixups) fn function_item_index(&self, function: FunctionId<'_>) -> Option<usize> {
+        let id = function.as_id();
         self.functions
             .iter()
-            .find(|fact| fact.id == function)
+            .find(|fact| fact.id == id)
             .map(|fact| fact.item_index)
     }
 
-    pub(in crate::fixups) fn function_name(&self, function: FunctionId<'db>) -> Option<&str> {
+    pub(in crate::fixups) fn function_name(&self, function: FunctionId<'_>) -> Option<&str> {
+        let id = function.as_id();
         self.functions
             .iter()
-            .find(|fact| fact.id == function)
+            .find(|fact| fact.id == id)
             .map(|fact| fact.name.as_str())
     }
 
-    pub(in crate::fixups) fn splice_function(&mut self, program: &Program, function: FunctionId<'db>) {
+    pub(in crate::fixups) fn function_by_name(&self, name: &str) -> Option<FunctionId<'_>> {
+        self.functions
+            .iter()
+            .find(|fact| fact.name == name)
+            .map(|fact| FunctionId::from_id(fact.id))
+    }
+
+    pub(in crate::fixups) fn function_facts<'db>(&self) -> Vec<FunctionFact<'db>> {
+        self.functions
+            .iter()
+            .map(|raw| FunctionFact {
+                id: FunctionId::from_id(raw.id),
+                name: raw.name.clone(),
+                item_index: raw.item_index,
+            })
+            .collect()
+    }
+
+    pub(in crate::fixups) fn binding_facts<'db>(&self) -> Vec<BindingFact<'db>> {
+        self.bindings.iter().map(hydrate_binding).collect()
+    }
+
+    pub(in crate::fixups) fn binding_type_facts<'db>(&self) -> Vec<BindingTypeFact<'db>> {
+        self.binding_types
+            .iter()
+            .map(hydrate_binding_type)
+            .collect()
+    }
+
+    pub(in crate::fixups) fn loop_facts<'db>(&self) -> Vec<LoopFact<'db>> {
+        self.loops.iter().map(hydrate_loop).collect()
+    }
+
+    pub(in crate::fixups) fn splice_function(
+        &mut self,
+        db: &dyn crate::fixups::salsa::FixupDb,
+        program: &Program,
+        function: FunctionId<'_>,
+    ) {
+        let id = function.as_id();
         let Some(item_index) = self.function_item_index(function) else {
             return;
         };
         let Some(Item::Fn(f)) = program.items.get(item_index) else {
             return;
         };
-        self.purge_function(function);
-        Collector::resume(self).function(function, f);
+        self.purge_function(id);
+        Collector::new(db, self).function(id, f);
     }
 
     pub(in crate::fixups) fn remove_items(&mut self, item_indices: &[usize]) {
@@ -1081,9 +1211,14 @@ impl BaseWalk {
     }
 
     fn remove_item(&mut self, item_index: usize) {
-        if let Some(function) = self.function_by_item_index(item_index) {
-            self.purge_function(function);
-            self.functions.retain(|fact| fact.id != function);
+        if let Some(id) = self
+            .functions
+            .iter()
+            .find(|fact| fact.item_index == item_index)
+            .map(|fact| fact.id)
+        {
+            self.purge_function(id);
+            self.functions.retain(|fact| fact.id != id);
         }
         for fact in &mut self.functions {
             if fact.item_index > item_index {
@@ -1092,9 +1227,9 @@ impl BaseWalk {
         }
     }
 
-    fn purge_function(&mut self, function: FunctionId<'db>) {
+    fn purge_function(&mut self, function: salsa::Id) {
         self.bindings.retain(|binding| binding.function != function);
-        let live_bindings: BTreeSet<BindingId<'db>> =
+        let live_bindings: BTreeSet<salsa::Id> =
             self.bindings.iter().map(|binding| binding.id).collect();
         self.binding_types
             .retain(|binding_type| live_bindings.contains(&binding_type.binding));
@@ -1104,41 +1239,13 @@ impl BaseWalk {
 }
 
 struct Collector<'a> {
+    db: &'a dyn crate::fixups::salsa::FixupDb,
     base: &'a mut BaseWalk,
-    next_binding: usize,
-    next_loop: usize,
 }
 
 impl<'a> Collector<'a> {
-    /// For a fresh whole-program walk, where `bindings`/`loops` only ever
-    /// grow by appending - `Vec::len()` is a safe, O(1) source of the next
-    /// id.
-    fn new(base: &'a mut BaseWalk) -> Self {
-        let next_binding = base.bindings.len();
-        let next_loop = base.loops.len();
-        Self {
-            base,
-            next_binding,
-            next_loop,
-        }
-    }
-
-    /// For re-deriving one function's bindings/loops after removing its
-    /// stale entries from the middle of `bindings`/`loops` (incremental
-    /// splicing - see `BaseWalk::splice_function`). `Vec::len()` is not
-    /// safe there: it can be smaller than an id already held by some
-    /// *other* function's surviving entry, since that entry's position
-    /// shifted down when the removed entries were spliced out from
-    /// earlier in the vec. Scans once for the true maximum instead - paid
-    /// per splice, not per push.
-    fn resume(base: &'a mut BaseWalk) -> Self {
-        let next_binding = base.bindings.iter().map(|b| b.id.0 + 1).max().unwrap_or(0);
-        let next_loop = base.loops.iter().map(|l| l.id.0 + 1).max().unwrap_or(0);
-        Self {
-            base,
-            next_binding,
-            next_loop,
-        }
+    fn new(db: &'a dyn crate::fixups::salsa::FixupDb, base: &'a mut BaseWalk) -> Self {
+        Self { db, base }
     }
 
     fn program(&mut self, program: &Program) {
@@ -1152,12 +1259,12 @@ impl<'a> Collector<'a> {
     }
 
     /// Bindings, binding types, and loops for one function, given an
-    /// already-assigned `FunctionId<'db>` - independent of any other function's
+    /// already-assigned function id - independent of any other function's
     /// facts. Incremental splicing needs to re-derive one function's
     /// bindings/loops in place without a whole-program walk; it must not
-    /// call `push_function`, which assigns a fresh `FunctionId<'db>` - only
-    /// `program()` does that, for a function seen for the first time.
-    fn function(&mut self, function: FunctionId<'db>, f: &FnDef) {
+    /// call `push_function`, which interns a (possibly fresh) function id -
+    /// only `program()` does that, for a function seen for the first time.
+    fn function(&mut self, function: salsa::Id, f: &FnDef) {
         for (index, param) in f.params.iter().enumerate() {
             self.push_binding(
                 function,
@@ -1170,9 +1277,9 @@ impl<'a> Collector<'a> {
         self.body(function, &f.body, &mut Vec::new());
     }
 
-    fn push_function(&mut self, name: String, item_index: usize) -> FunctionId<'db> {
-        let id = FunctionId<'db>(self.base.functions.len());
-        self.base.functions.push(FunctionFact {
+    fn push_function(&mut self, name: String, item_index: usize) -> salsa::Id {
+        let id = FunctionId::new(self.db, name.clone()).as_id();
+        self.base.functions.push(RawFunction {
             id,
             name,
             item_index,
@@ -1182,15 +1289,21 @@ impl<'a> Collector<'a> {
 
     fn push_binding(
         &mut self,
-        function: FunctionId<'db>,
+        function: salsa::Id,
         name: String,
         kind: BindingKind,
         path: AstPath,
         ty: Option<Type>,
-    ) -> BindingId<'db> {
-        let id = BindingId<'db>(self.next_binding);
-        self.next_binding += 1;
-        self.base.bindings.push(BindingFact {
+    ) -> salsa::Id {
+        let id = BindingId::new(
+            self.db,
+            FunctionId::from_id(function),
+            name.clone(),
+            kind,
+            path.clone(),
+        )
+        .as_id();
+        self.base.bindings.push(RawBinding {
             id,
             function,
             name,
@@ -1199,7 +1312,7 @@ impl<'a> Collector<'a> {
         });
         if let Some(ty) = ty {
             let ty = ty.peel_aligned().clone();
-            self.base.binding_types.push(BindingTypeFact {
+            self.base.binding_types.push(RawBindingType {
                 binding: id,
                 rendered: ty.render(),
                 ty,
@@ -1208,10 +1321,9 @@ impl<'a> Collector<'a> {
         id
     }
 
-    fn push_loop(&mut self, function: FunctionId<'db>, kind: LoopKind, path: AstPath) -> LoopId<'db> {
-        let id = LoopId<'db>(self.next_loop);
-        self.next_loop += 1;
-        self.base.loops.push(LoopFact {
+    fn push_loop(&mut self, function: salsa::Id, kind: LoopKind, path: AstPath) -> salsa::Id {
+        let id = LoopId::new(self.db, FunctionId::from_id(function), kind, path.clone()).as_id();
+        self.base.loops.push(RawLoop {
             id,
             function,
             kind,
@@ -1220,7 +1332,7 @@ impl<'a> Collector<'a> {
         id
     }
 
-    fn body(&mut self, function: FunctionId<'db>, body: &[IndentStmt], path: &mut Vec<PathSegment>) {
+    fn body(&mut self, function: salsa::Id, body: &[IndentStmt], path: &mut Vec<PathSegment>) {
         for (index, indent) in body.iter().enumerate() {
             path.push(PathSegment::Stmt(index));
             self.stmt(function, &indent.stmt, path);
@@ -1228,11 +1340,11 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn block(&mut self, function: FunctionId<'db>, block: &Block, path: &mut Vec<PathSegment>) {
+    fn block(&mut self, function: salsa::Id, block: &Block, path: &mut Vec<PathSegment>) {
         self.body(function, &block.stmts, path);
     }
 
-    fn stmt(&mut self, function: FunctionId<'db>, stmt: &Stmt, path: &mut Vec<PathSegment>) {
+    fn stmt(&mut self, function: salsa::Id, stmt: &Stmt, path: &mut Vec<PathSegment>) {
         match stmt {
             Stmt::Let { name, ty, .. } => {
                 self.push_binding(
@@ -1339,11 +1451,11 @@ impl<'a> Collector<'a> {
     }
 }
 
-pub(in crate::fixups) fn expr_at_body_path<'a>(
-    bodies: &Bodies<'a>,
+pub(in crate::fixups) fn expr_at_body_path<'db, 'a>(
+    bodies: &Bodies<'db, 'a>,
     function: FunctionId<'db>,
     path: &AstPath,
-) -> Option<&'a Expr> {
+) -> Option<&'db Expr> {
     let &f = bodies.get(&function)?;
     expr_in_body(&f.body, &path.0)
 }

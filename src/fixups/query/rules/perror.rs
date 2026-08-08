@@ -111,8 +111,8 @@ fn adjacent_call_guard(
 /// bound to a temp, itself bound from a comparison against a call result)
 /// back to the call that can have set errno, proving at each hop that nothing
 /// between that hop's declaration and `boundary` could have touched errno.
-fn find_guarding_call(
-    case: &mut ItemCaseContext<'_, '_>,
+fn find_guarding_call<'db>(
+    case: &mut ItemCaseContext<'_, 'db>,
     expr: &ExpressionRef,
     boundary: &StatementRef,
 ) -> Result<(), Rejection> {
@@ -120,7 +120,7 @@ fn find_guarding_call(
     let [guard] = dependencies.as_slice() else {
         return Err(case.reject());
     };
-    let binding: BindingRef = case.fact(|query| query.expression_binding(guard))?;
+    let binding: BindingRef<'db> = case.fact(|query| query.expression_binding(guard))?;
     let (source, decl_stmt) = resolve_binding_source(case, &binding)?;
     let source_effects = case.fact(|query| query.expression_effects(&source))?;
     require_no_call_effects_between(case, &decl_stmt, boundary)?;
@@ -134,9 +134,9 @@ fn find_guarding_call(
 /// stores the real value in a separate `Stmt::Assign` (e.g. `let mut rc: i32
 /// = 0; rc = remove(..);`), so a binding's meaningful source is its sole
 /// reassignment when one exists, not its declaration's own initializer.
-fn resolve_binding_source(
+fn resolve_binding_source<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
 ) -> Result<(ExpressionRef, StatementRef), Rejection> {
     let uses = case.fact(|query| query.binding_uses(binding))?;
     let writes = uses

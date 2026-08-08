@@ -19,9 +19,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
     .case("chain", nullable_pointer_case)
 }
 
-fn nullable_pointer_case(
-    case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
+fn nullable_pointer_case<'db>(
+    case: &mut ItemCaseContext<'_, 'db>,
+    function: &FunctionRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let body = case
         .fact(|query| query.function_snapshot(function))?
@@ -34,10 +34,10 @@ fn nullable_pointer_case(
     case.replace_function_body(function.clone(), rewrite_nullable_pointer(body, plan))
 }
 
-fn find_plan(
-    case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
-    bindings: &[BindingRef],
+fn find_plan<'db>(
+    case: &mut ItemCaseContext<'_, 'db>,
+    function: &FunctionRef<'db>,
+    bindings: &[BindingRef<'db>],
     body: &[IndentStmt],
     path: &mut Vec<PathSegment>,
 ) -> Option<NullablePointerPlan> {
@@ -58,10 +58,10 @@ fn find_plan(
     None
 }
 
-fn find_plan_in_stmt(
-    case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
-    bindings: &[BindingRef],
+fn find_plan_in_stmt<'db>(
+    case: &mut ItemCaseContext<'_, 'db>,
+    function: &FunctionRef<'db>,
+    bindings: &[BindingRef<'db>],
     stmt: &Stmt,
     path: &mut Vec<PathSegment>,
 ) -> Option<NullablePointerPlan> {
@@ -111,10 +111,10 @@ fn find_plan_in_stmt(
     }
 }
 
-fn plan_for_producer(
-    case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
-    bindings: &[BindingRef],
+fn plan_for_producer<'db>(
+    case: &mut ItemCaseContext<'_, 'db>,
+    function: &FunctionRef<'db>,
+    bindings: &[BindingRef<'db>],
     body: &[IndentStmt],
     producer_index: usize,
     body_path: &[PathSegment],
@@ -176,19 +176,19 @@ fn plan_for_producer(
     })
 }
 
-struct AliasSource {
+struct AliasSource<'db> {
     name: String,
-    binding: BindingRef,
+    binding: BindingRef<'db>,
 }
 
 #[expect(
     clippy::too_many_arguments,
     reason = "alias-edge analysis carries function, binding, and two site refs together"
 )]
-fn collect_alias_chain(
-    case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
-    bindings: &[BindingRef],
+fn collect_alias_chain<'db>(
+    case: &mut ItemCaseContext<'_, 'db>,
+    function: &FunctionRef<'db>,
+    bindings: &[BindingRef<'db>],
     body: &[IndentStmt],
     body_path: &[PathSegment],
     producer_index: usize,
@@ -250,15 +250,15 @@ fn collect_alias_chain(
     Some(aliases)
 }
 
-fn alias_edge(
-    case: &mut ItemCaseContext<'_, '_>,
-    function: &FunctionRef,
-    bindings: &[BindingRef],
+fn alias_edge<'db>(
+    case: &mut ItemCaseContext<'_, 'db>,
+    function: &FunctionRef<'db>,
+    bindings: &[BindingRef<'db>],
     body: &[IndentStmt],
     body_path: &[PathSegment],
     stmt_index: usize,
     source_name: &str,
-) -> Option<Option<(AliasSource, Vec<usize>)>> {
+) -> Option<Option<(AliasSource<'db>, Vec<usize>)>> {
     match &body[stmt_index].stmt {
         Stmt::Assign { target, value } => {
             let Expr::Var(alias_name) = target else {
@@ -318,9 +318,9 @@ fn alias_edge(
     }
 }
 
-fn all_writes_within(
+fn all_writes_within<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
     body_path: &[PathSegment],
     stmt_index: usize,
 ) -> Option<bool> {
@@ -355,12 +355,12 @@ fn all_writes_within(
     Some(total_writes == writes_here)
 }
 
-fn declared_before(
-    bindings: &[BindingRef],
+fn declared_before<'db>(
+    bindings: &[BindingRef<'db>],
     container: &[PathSegment],
     name: &str,
     before_index: usize,
-) -> Option<BindingRef> {
+) -> Option<BindingRef<'db>> {
     bindings
         .iter()
         .filter(|binding| binding.name == name)

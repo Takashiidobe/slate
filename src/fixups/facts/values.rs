@@ -11,7 +11,7 @@ use crate::rust_ast::{
 /// Values for one function's body, independent of any other function's
 /// facts - the entry point `slate-04q.75.56.8` (incremental facts) needs to
 /// re-derive one function's values without a whole-program walk.
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],
@@ -22,7 +22,7 @@ pub(in crate::fixups) fn collect_for_function(
     collector.values
 }
 
-struct Collector<'a> {
+struct Collector<'db, 'a> {
     function: FunctionId<'db>,
     bindings: &'a [BindingFact<'db>],
     scopes: Vec<BTreeMap<String, Option<BindingId<'db>>>>,
@@ -30,7 +30,7 @@ struct Collector<'a> {
     values: Vec<ValueFact<'db>>,
 }
 
-impl<'a> Collector<'a> {
+impl<'db, 'a> Collector<'db, 'a> {
     fn new(function: FunctionId<'db>, bindings: &'a [BindingFact<'db>]) -> Self {
         Self {
             function,

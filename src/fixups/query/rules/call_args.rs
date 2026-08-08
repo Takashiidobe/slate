@@ -22,9 +22,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
         .ordered_non_overlapping()
 }
 
-fn inline_call_arg(
+fn inline_call_arg<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
 ) -> Result<EditSet, Rejection> {
     let initializer = case.fact(|query| query.binding_initializer(binding))?;
     let uses = case.fact(|query| query.binding_uses(binding))?;

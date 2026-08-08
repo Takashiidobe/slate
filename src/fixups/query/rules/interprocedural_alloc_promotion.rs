@@ -74,13 +74,13 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Function> {
     })
 }
 
-fn group_callers_by_function(
+fn group_callers_by_function<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    callers: &[InterproceduralAllocCallerInput],
+    callers: &[InterproceduralAllocCallerInput<'db>],
     kind: HeapOwnershipKind,
     elem_ty: &crate::rust_ast::Type,
-) -> Result<Vec<(FunctionRef, Vec<InterproceduralAllocCallerPlan>)>, Rejection> {
-    let mut grouped: BTreeMap<usize, (FunctionRef, Vec<InterproceduralAllocCallerPlan>)> =
+) -> Result<Vec<(FunctionRef<'db>, Vec<InterproceduralAllocCallerPlan>)>, Rejection> {
+    let mut grouped: BTreeMap<usize, (FunctionRef<'db>, Vec<InterproceduralAllocCallerPlan>)> =
         BTreeMap::new();
     for caller in callers {
         let _ = case.fact(|query| query.statement(&caller.decl_stmt))?;

@@ -6,20 +6,23 @@ use crate::fixups::facts::{
     PointerComparisonKind, PointerOptionSafetyFact, Site,
 };
 use crate::rust_ast::{BinOp, CLibType, Expr, FnDef, IndentStmt, RustValue, Stmt, Type};
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],
     binding_types: &[BindingTypeFact<'db>],
     union_records: &BTreeSet<String>,
-) -> (Vec<PointerOptionSafetyFact<'db>>, Vec<PointerComparisonFact<'db>>) {
+) -> (
+    Vec<PointerOptionSafetyFact<'db>>,
+    Vec<PointerComparisonFact<'db>>,
+) {
     let safety = collect_safety_for_function(function, f, bindings, binding_types, union_records);
     let mut comparisons = Vec::new();
     collect_comparisons_for_function(function, f, bindings, binding_types, &mut comparisons);
     (safety, comparisons)
 }
 
-fn collect_safety_for_function(
+fn collect_safety_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],
@@ -77,7 +80,7 @@ fn check_arithmetic_and_casts(expr: &Expr, disqualified: &mut BTreeSet<String>) 
     }
 }
 
-fn walk_stmts_for_union_sourcing(
+fn walk_stmts_for_union_sourcing<'db>(
     body: &[IndentStmt],
     bindings: &[BindingFact<'db>],
     binding_types: &[BindingTypeFact<'db>],
@@ -97,7 +100,7 @@ fn walk_stmts_for_union_sourcing(
     }
 }
 
-fn walk_stmt_for_union_sourcing(
+fn walk_stmt_for_union_sourcing<'db>(
     stmt: &Stmt,
     bindings: &[BindingFact<'db>],
     binding_types: &[BindingTypeFact<'db>],
@@ -149,7 +152,7 @@ fn walk_stmt_for_union_sourcing(
     });
 }
 
-fn check_union_source(
+fn check_union_source<'db>(
     name: &str,
     source: &Expr,
     bindings: &[BindingFact<'db>],
@@ -165,7 +168,7 @@ fn check_union_source(
     }
 }
 
-fn is_union_typed(
+fn is_union_typed<'db>(
     base: &Expr,
     bindings: &[BindingFact<'db>],
     binding_types: &[BindingTypeFact<'db>],
@@ -221,7 +224,7 @@ fn is_null_expr(expr: &Expr) -> bool {
     matches!(peel_casts(expr), Expr::Value(RustValue::NullPtr))
 }
 
-fn is_pointer_expr(
+fn is_pointer_expr<'db>(
     bindings: &[BindingFact<'db>],
     binding_types: &[BindingTypeFact<'db>],
     function: FunctionId<'db>,
@@ -235,7 +238,7 @@ fn is_pointer_expr(
         .is_some_and(|ty| matches!(ty, Type::Ptr { .. }))
 }
 
-fn comparison_kind(
+fn comparison_kind<'db>(
     bindings: &[BindingFact<'db>],
     binding_types: &[BindingTypeFact<'db>],
     function: FunctionId<'db>,
@@ -263,7 +266,7 @@ fn comparison_kind(
     None
 }
 
-fn collect_comparisons_for_function(
+fn collect_comparisons_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],

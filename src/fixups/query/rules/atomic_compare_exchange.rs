@@ -36,13 +36,13 @@ fn rewrite_chain(
     ))
 }
 
-fn only_read_within(
-    case: &mut ItemCaseContext<'_, '_>,
+fn only_read_within<'db>(
+    case: &mut ItemCaseContext<'_, 'db>,
     definition: &StatementRef,
     allowed_offsets: &[usize],
     statements: &[StatementRef],
 ) -> Result<(), Rejection> {
-    let binding: BindingRef = case.fact(|query| query.statement_binding(definition))?;
+    let binding: BindingRef<'db> = case.fact(|query| query.statement_binding(definition))?;
     let total: BindingUses = case.fact(|query| query.binding_uses(&binding))?;
     let mut allowed = 0usize;
     for offset in allowed_offsets {

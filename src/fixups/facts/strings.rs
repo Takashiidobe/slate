@@ -15,19 +15,19 @@ use crate::rust_ast::{
     Block, Expr, FnDef, IndentStmt, Pattern, Prim, RustValue, Stmt, Type, UnaryOp,
 };
 
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],
     binding_types: &[BindingTypeFact<'db>],
-) -> Collected {
+) -> Collected<'db> {
     let mut collector = Collector::new(function, bindings, binding_types);
     collector.enter_root_scope();
     collector.body(&f.body, &mut Vec::new(), false);
     collector.finish()
 }
 
-pub(in crate::fixups) fn collect_ascii_numeric_strings(
+pub(in crate::fixups) fn collect_ascii_numeric_strings<'db>(
     buffers: &[StringBufferFact<'db>],
 ) -> Vec<AsciiNumericStringFact<'db>> {
     buffers
@@ -54,7 +54,7 @@ fn ascii_numeric_token(bytes: &[u8]) -> Option<(AsciiNumericSign, usize)> {
     (!digits.is_empty() && digits.iter().all(u8::is_ascii_digit)).then_some((sign, digits.len()))
 }
 
-pub(in crate::fixups) struct RewriteSnapshot<'a> {
+pub(in crate::fixups) struct RewriteSnapshot<'db, 'a> {
     pub(in crate::fixups) bindings: &'a [BindingFact<'db>],
     pub(in crate::fixups) def_use: &'a [DefUseFact<'db>],
     pub(in crate::fixups) values: &'a [ValueFact<'db>],
@@ -66,12 +66,16 @@ pub(in crate::fixups) struct RewriteSnapshot<'a> {
     pub(in crate::fixups) string_param_lifts: &'a [StringParamLiftFact<'db>],
 }
 
-impl<'a> RewriteSnapshot<'a> {
-    fn def_use(&self, binding: BindingId<'db>) -> Option<&DefUseFact<'db>> {
+impl<'db, 'a> RewriteSnapshot<'db, 'a> {
+    fn def_use(&self, binding: BindingId<'db>) -> Option<&'a DefUseFact<'db>> {
         facts::def_use_of(self.def_use, binding)
     }
 
-    fn string_buffer_at(&self, function: FunctionId<'db>, path: &AstPath) -> Option<&StringBufferFact<'db>> {
+    fn string_buffer_at(
+        &self,
+        function: FunctionId<'db>,
+        path: &AstPath,
+    ) -> Option<&'a StringBufferFact<'db>> {
         facts::string_buffer_at(self.string_buffers, function, path)
     }
 
@@ -79,24 +83,31 @@ impl<'a> RewriteSnapshot<'a> {
         &self,
         function: FunctionId<'db>,
         path: &AstPath,
-    ) -> Option<&StringPointerViewFact<'db>> {
+    ) -> Option<&'a StringPointerViewFact<'db>> {
         facts::string_pointer_view(self.string_pointer_views, function, path)
     }
 
-    fn string_libc_use(&self, function: FunctionId<'db>, path: &AstPath) -> Option<&StringLibcUseFact<'db>> {
+    fn string_libc_use(
+        &self,
+        function: FunctionId<'db>,
+        path: &AstPath,
+    ) -> Option<&'a StringLibcUseFact<'db>> {
         facts::string_libc_use(self.string_libc_uses, function, path)
     }
 
-    fn binding_name(&self, binding: BindingId<'db>) -> Option<&str> {
+    fn binding_name(&self, binding: BindingId<'db>) -> Option<&'a str> {
         facts::binding_name(self.bindings, binding)
     }
 }
 
-pub(in crate::fixups) fn collect_rewrite_facts_for_function(
+pub(in crate::fixups) fn collect_rewrite_facts_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
-    facts: &RewriteSnapshot,
-) -> (Vec<StringLiftPlanFact<'db>>, Vec<StringCopyRewriteFact<'db>>) {
+    facts: &RewriteSnapshot<'db, '_>,
+) -> (
+    Vec<StringLiftPlanFact<'db>>,
+    Vec<StringCopyRewriteFact<'db>>,
+) {
     let mut plans = Vec::new();
     let mut rewrites = Vec::new();
     let consts = const_usize_temps(function, facts);
@@ -112,11 +123,11 @@ pub(in crate::fixups) fn collect_rewrite_facts_for_function(
     (plans, rewrites)
 }
 
-fn collect_body_rewrite_facts(
+fn collect_body_rewrite_facts<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
     path: &mut Vec<PathSegment>,
-    facts: &RewriteSnapshot,
+    facts: &RewriteSnapshot<'db, '_>,
     consts: &BTreeMap<String, usize>,
     plans: &mut Vec<StringLiftPlanFact<'db>>,
     rewrites: &mut Vec<StringCopyRewriteFact<'db>>,
@@ -205,11 +216,11 @@ fn collect_body_rewrite_facts(
     collect_copy_rewrites(function, body, path, facts, consts, &owned, rewrites);
 }
 
-fn collect_nested_rewrite_facts(
+fn collect_nested_rewrite_facts<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
     path: &mut Vec<PathSegment>,
-    facts: &RewriteSnapshot,
+    facts: &RewriteSnapshot<'db, '_>,
     consts: &BTreeMap<String, usize>,
     plans: &mut Vec<StringLiftPlanFact<'db>>,
     rewrites: &mut Vec<StringCopyRewriteFact<'db>>,
@@ -267,11 +278,11 @@ fn collect_nested_rewrite_facts(
     }
 }
 
-fn liftable_bindings(
+fn liftable_bindings<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
     path: &[PathSegment],
-    facts: &RewriteSnapshot,
+    facts: &RewriteSnapshot<'db, '_>,
     recovery: StringRecoveryCandidate,
     consts: &BTreeMap<String, usize>,
 ) -> BTreeSet<BindingId<'db>> {
@@ -317,24 +328,24 @@ fn liftable_bindings(
     }
 }
 
-struct LiftCandidate {
+struct LiftCandidate<'db> {
     binding: BindingId<'db>,
     remove_index: Option<usize>,
     remove_assignment: Option<AstPath>,
 }
 
-struct LiftContext<'a> {
+struct LiftContext<'db, 'a, 'facts> {
     function: FunctionId<'db>,
-    facts: &'a RewriteSnapshot<'a>,
+    facts: &'a RewriteSnapshot<'db, 'facts>,
     liftable: &'a BTreeSet<BindingId<'db>>,
     consts: &'a BTreeMap<String, usize>,
 }
 
-fn lift_plan_for_binding(
+fn lift_plan_for_binding<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
     path: &[PathSegment],
-    facts: &RewriteSnapshot,
+    facts: &RewriteSnapshot<'db, '_>,
     binding: BindingId<'db>,
     recovery: StringRecoveryCandidate,
 ) -> Option<StringLiftPlanFact<'db>> {
@@ -358,13 +369,13 @@ fn lift_plan_for_binding(
     None
 }
 
-fn lift_candidate_at(
+fn lift_candidate_at<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
-    facts: &RewriteSnapshot,
+    facts: &RewriteSnapshot<'db, '_>,
     path: &[PathSegment],
     recovery: StringRecoveryCandidate,
-) -> Option<LiftCandidate> {
+) -> Option<LiftCandidate<'db>> {
     let buffer = facts.string_buffer_at(function, &AstPath(path.to_vec()))?;
     if !buffer.candidates.contains(&recovery) {
         return None;
@@ -401,11 +412,11 @@ fn lift_candidate_at(
     })
 }
 
-fn collect_copy_rewrites(
+fn collect_copy_rewrites<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
     path: &[PathSegment],
-    facts: &RewriteSnapshot,
+    facts: &RewriteSnapshot<'db, '_>,
     consts: &BTreeMap<String, usize>,
     liftable: &BTreeSet<BindingId<'db>>,
     rewrites: &mut Vec<StringCopyRewriteFact<'db>>,
@@ -428,8 +439,8 @@ fn collect_copy_rewrites(
     }
 }
 
-fn stmt_allows_lift(
-    ctx: &LiftContext<'_>,
+fn stmt_allows_lift<'db>(
+    ctx: &LiftContext<'db, '_, '_>,
     stmt: &Stmt,
     path: &[PathSegment],
     binding: BindingId<'db>,
@@ -462,7 +473,7 @@ fn stmt_allows_lift(
     })
 }
 
-fn binding_uses_under(
+fn binding_uses_under<'db>(
     facts: &RewriteSnapshot,
     function: FunctionId<'db>,
     binding: BindingId<'db>,
@@ -499,7 +510,7 @@ fn binding_uses_under(
     uses
 }
 
-pub(in crate::fixups) fn use_allowed(
+pub(in crate::fixups) fn use_allowed<'db>(
     function: FunctionId<'db>,
     use_path: &AstPath,
     facts: &RewriteSnapshot,
@@ -570,7 +581,7 @@ pub(in crate::fixups) fn use_allowed(
     })
 }
 
-fn printf_allows_lift(
+fn printf_allows_lift<'db>(
     function: FunctionId<'db>,
     printf: &crate::fixups::facts::PrintfCallFact<'db>,
     facts: &RewriteSnapshot,
@@ -596,7 +607,7 @@ fn printf_allows_lift(
             })
 }
 
-fn all_printf_string_args_allow_lift(
+fn all_printf_string_args_allow_lift<'db>(
     function: FunctionId<'db>,
     facts: &RewriteSnapshot,
     binding: BindingId<'db>,
@@ -625,7 +636,7 @@ fn all_printf_string_args_allow_lift(
         })
 }
 
-fn printf_string_arg_allows_lift(
+fn printf_string_arg_allows_lift<'db>(
     function: FunctionId<'db>,
     facts: &RewriteSnapshot,
     binding: BindingId<'db>,
@@ -639,11 +650,11 @@ fn printf_string_arg_allows_lift(
             .is_some_and(|view| view.source == binding || liftable.contains(&view.source))
 }
 
-fn copy_rewrite_for_expr(
+fn copy_rewrite_for_expr<'db>(
     function: FunctionId<'db>,
     expr: &Expr,
     path: &[PathSegment],
-    facts: &RewriteSnapshot,
+    facts: &RewriteSnapshot<'db, '_>,
     liftable: &BTreeSet<BindingId<'db>>,
     consts: &BTreeMap<String, usize>,
 ) -> Option<(BindingId<'db>, StringCopyRewrite<'db>)> {
@@ -703,11 +714,11 @@ fn copy_rewrite_for_expr(
     }
 }
 
-fn copy_source_rewrite(
+fn copy_source_rewrite<'db>(
     function: FunctionId<'db>,
     expr: &Expr,
     path: &[PathSegment],
-    facts: &RewriteSnapshot,
+    facts: &RewriteSnapshot<'db, '_>,
     liftable: &BTreeSet<BindingId<'db>>,
     push: bool,
 ) -> Option<StringCopyRewrite<'db>> {
@@ -730,17 +741,20 @@ fn copy_source_rewrite(
     })
 }
 
-fn pointer_view_binding(
+fn pointer_view_binding<'db>(
     function: FunctionId<'db>,
     path: &[PathSegment],
-    facts: &RewriteSnapshot,
+    facts: &RewriteSnapshot<'db, '_>,
 ) -> Option<BindingId<'db>> {
     facts
         .string_pointer_view(function, &AstPath(path.to_vec()))
         .map(|view| view.source)
 }
 
-fn const_usize_temps(function: FunctionId<'db>, facts: &RewriteSnapshot) -> BTreeMap<String, usize> {
+fn const_usize_temps<'db>(
+    function: FunctionId<'db>,
+    facts: &RewriteSnapshot,
+) -> BTreeMap<String, usize> {
     facts
         .values
         .iter()
@@ -864,7 +878,7 @@ fn paths_overlap(a: &[PathSegment], b: &[PathSegment]) -> bool {
     path_starts_with(a, b) || path_starts_with(b, a)
 }
 
-fn direct_callee_function(callsite: &CallsiteFact<'db>) -> Option<FunctionId<'db>> {
+fn direct_callee_function<'db>(callsite: &CallsiteFact<'db>) -> Option<FunctionId<'db>> {
     let CallCallee::Direct {
         signature: Some(signature),
         ..
@@ -890,25 +904,26 @@ fn assignment_index(def_path: &[PathSegment], assignment_path: &[PathSegment]) -
     }
 }
 
-#[derive(PartialEq, Eq)]
-pub(in crate::fixups) struct Collected {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(in crate::fixups) struct Collected<'db> {
     pub(in crate::fixups) buffers: Vec<StringBufferFact<'db>>,
     pub(in crate::fixups) pointer_views: Vec<StringPointerViewFact<'db>>,
     pub(in crate::fixups) libc_uses: Vec<StringLibcUseFact<'db>>,
 }
 
-struct Collector<'a> {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+struct Collector<'db, 'a> {
     function: FunctionId<'db>,
     bindings: &'a [BindingFact<'db>],
     binding_types: &'a [BindingTypeFact<'db>],
     scopes: Vec<BTreeMap<String, Option<BindingId<'db>>>>,
-    summaries: BTreeMap<BindingId<'db>, BufferSummary>,
+    summaries: BTreeMap<BindingId<'db>, BufferSummary<'db>>,
     pointer_views: Vec<StringPointerViewFact<'db>>,
     libc_uses: Vec<StringLibcUseFact<'db>>,
 }
 
-#[derive(Clone)]
-struct BufferSummary {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+struct BufferSummary<'db> {
     binding: BindingId<'db>,
     path: AstPath,
     kind: StringBufferKind,
@@ -920,13 +935,14 @@ struct BufferSummary {
     rejections: BTreeSet<StringBufferRejection>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
 struct LiteralBytes {
     bytes: Vec<u8>,
     nul_termination: NulTermination,
     interior_nul: bool,
 }
 
-impl<'a> Collector<'a> {
+impl<'db, 'a> Collector<'db, 'a> {
     fn new(
         function: FunctionId<'db>,
         bindings: &'a [BindingFact<'db>],
@@ -967,7 +983,7 @@ impl<'a> Collector<'a> {
         }
     }
 
-    fn finish(self) -> Collected {
+    fn finish(self) -> Collected<'db> {
         Collected {
             buffers: self
                 .summaries
@@ -1342,11 +1358,13 @@ impl<'a> Collector<'a> {
         let Some(ty) = ty else {
             return;
         };
+        let mut summaries = self.summaries.clone();
         let Some(summary) = self.summary_for_binding(binding, ty, init, AstPath(path.to_vec()))
         else {
             return;
         };
-        self.summaries.insert(binding, summary);
+        summaries.insert(binding, summary);
+        self.summaries = summaries;
     }
 
     fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId<'db>> {
@@ -1359,7 +1377,7 @@ impl<'a> Collector<'a> {
         ty: &Type,
         init: Option<&Expr>,
         path: AstPath,
-    ) -> Option<BufferSummary> {
+    ) -> Option<BufferSummary<'db>> {
         let ty = ty.peel_aligned();
         let init = init.map(Expr::peel_aligned);
         if is_char_array(ty) {
@@ -1574,7 +1592,7 @@ impl<'a> Collector<'a> {
     }
 }
 
-impl BufferSummary {
+impl<'db> BufferSummary<'db> {
     fn new(binding: BindingId<'db>, path: AstPath, kind: StringBufferKind) -> Self {
         Self {
             binding,

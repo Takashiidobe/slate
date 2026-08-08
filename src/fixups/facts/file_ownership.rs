@@ -7,7 +7,7 @@ use crate::fixups::facts::{
 };
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{BinOp, Expr, IndentStmt, Path, RustValue, Stmt, Type, UnaryOp};
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
     bindings: &[BindingFact<'db>],
@@ -44,7 +44,7 @@ pub(in crate::fixups) fn collect_for_function(
     all
 }
 
-struct OpenCandidate {
+struct OpenCandidate<'db> {
     open_index: usize,
     assign_index: usize,
     close_index: usize,
@@ -54,13 +54,13 @@ struct OpenCandidate {
     uses: Vec<FileUseFact>,
 }
 
-fn find_open(
+fn find_open<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
     bindings: &[BindingFact<'db>],
     start: usize,
     handle_name: &str,
-) -> Option<OpenCandidate> {
+) -> Option<OpenCandidate<'db>> {
     for open_index in start..body.len() {
         let Some(open) = fopen_temp(&body[open_index].stmt) else {
             continue;
@@ -149,7 +149,7 @@ fn assigns_opened_handle(stmt: &Stmt, handle_name: &str, open_temp: &str) -> boo
     )
 }
 
-fn file_uses_are_owned(
+fn file_uses_are_owned<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
     bindings: &[BindingFact<'db>],
@@ -235,7 +235,7 @@ fn handle_alias_temp<'a>(stmt: &'a Stmt, names: &BTreeSet<String>) -> Option<&'a
     names.contains(source.as_str()).then_some(name.as_str())
 }
 
-fn close_temp_before(
+fn close_temp_before<'db>(
     function: FunctionId<'db>,
     body: &[IndentStmt],
     bindings: &[BindingFact<'db>],

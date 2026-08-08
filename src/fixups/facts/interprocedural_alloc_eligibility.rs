@@ -16,15 +16,15 @@ struct ResolvedSummary {
     init: HeapInitKind,
 }
 
-pub(in crate::fixups) struct FunctionSummary<'a> {
+pub(in crate::fixups) struct FunctionSummary<'db, 'a> {
     pub(in crate::fixups) id: FunctionId<'db>,
     pub(in crate::fixups) name: &'a str,
     pub(in crate::fixups) body: &'a [IndentStmt],
     pub(in crate::fixups) bindings: &'a [BindingFact<'db>],
     pub(in crate::fixups) callee_alloc_summary: Option<&'a CalleeAllocSummaryFact<'db>>,
 }
-pub(in crate::fixups) fn collect(
-    functions: &[FunctionSummary],
+pub(in crate::fixups) fn collect<'db, 'a>(
+    functions: &[FunctionSummary<'db, 'a>],
 ) -> (
     Vec<InterproceduralAllocEligibilityFact<'db>>,
     Vec<InterproceduralAllocCallerFact<'db>>,
@@ -41,7 +41,8 @@ pub(in crate::fixups) fn collect(
     // Resolve every function that has a provenance fact to its ultimate (root, summary),
     // walking Direct/PassThrough links -- the chain itself falls out as a by-product below,
     // rather than needing its own separately-tracked fact.
-    let mut memo: BTreeMap<FunctionId<'db>, Option<(ResolvedSummary, FunctionId<'db>)>> = BTreeMap::new();
+    let mut memo: BTreeMap<FunctionId<'db>, Option<(ResolvedSummary, FunctionId<'db>)>> =
+        BTreeMap::new();
     for function in by_function.keys() {
         resolve_root(
             *function,
@@ -63,7 +64,7 @@ pub(in crate::fixups) fn collect(
         }
     }
 
-    let by_id: BTreeMap<FunctionId<'db>, &FunctionSummary> = functions
+    let by_id: BTreeMap<FunctionId<'db>, &FunctionSummary<'db, 'a>> = functions
         .iter()
         .map(|summary| (summary.id, summary))
         .collect();
@@ -121,7 +122,7 @@ pub(in crate::fixups) fn collect(
     (all, all_callers)
 }
 
-fn resolve_root(
+fn resolve_root<'db>(
     function: FunctionId<'db>,
     by_function: &BTreeMap<FunctionId<'db>, &CalleeAllocSummaryFact<'db>>,
     by_name: &BTreeMap<&str, FunctionId<'db>>,
@@ -169,7 +170,7 @@ fn resolve_root(
     result
 }
 
-struct CallerRewritePlan {
+struct CallerRewritePlan<'db> {
     caller: FunctionId<'db>,
     pointer_name: String,
     decl_path: AstPath,
@@ -177,12 +178,12 @@ struct CallerRewritePlan {
     free_path: Option<AstPath>,
 }
 
-fn caller_calls_for_callee(
-    caller: &FunctionSummary,
+fn caller_calls_for_callee<'db>(
+    caller: &FunctionSummary<'db, '_>,
     callee_name: &str,
     resolved: &BTreeMap<FunctionId<'db>, (ResolvedSummary, FunctionId<'db>)>,
     by_name: &BTreeMap<&str, FunctionId<'db>>,
-) -> (bool, Vec<CallerRewritePlan>) {
+) -> (bool, Vec<CallerRewritePlan<'db>>) {
     let mut ok = true;
     let mut plans = Vec::new();
     let mut index = 0;
@@ -225,7 +226,7 @@ struct CallAllocation {
     summary: ResolvedSummary,
 }
 
-fn call_allocation_temp(
+fn call_allocation_temp<'db>(
     stmt: &Stmt,
     resolved: &BTreeMap<FunctionId<'db>, (ResolvedSummary, FunctionId<'db>)>,
     by_name: &BTreeMap<&str, FunctionId<'db>>,
@@ -260,8 +261,8 @@ struct CallAllocationOutcome {
     free_index: Option<usize>,
 }
 
-fn find_call_allocation(
-    caller: &FunctionSummary,
+fn find_call_allocation<'db>(
+    caller: &FunctionSummary<'db, '_>,
     start: usize,
     pointer_name: &str,
     resolved: &BTreeMap<FunctionId<'db>, (ResolvedSummary, FunctionId<'db>)>,

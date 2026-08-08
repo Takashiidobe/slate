@@ -28,8 +28,8 @@ struct AssertAbortGuard {
     result_literal: Expr,
 }
 
-fn rewrite_guard(
-    case: &mut ItemCaseContext<'_, '_>,
+fn rewrite_guard<'db>(
+    case: &mut ItemCaseContext<'_, 'db>,
     matched: &StatementMatch<2>,
 ) -> Result<EditSet, Rejection> {
     let [cond_stmt, guard_stmt] = case.statements(matched)?;
@@ -38,7 +38,8 @@ fn rewrite_guard(
     let statements: [StatementRef; 2] = std::array::from_fn(|offset| matched.statement(offset));
     only_used_within(case, &statements[0], &statements[1])?;
 
-    let result_binding: BindingRef = case.fact(|query| query.statement_binding(&statements[1]))?;
+    let result_binding: BindingRef<'db> =
+        case.fact(|query| query.statement_binding(&statements[1]))?;
     let result_uses = case.fact(|query| query.binding_uses(&result_binding))?;
 
     let mut replacement = vec![recover_assert(guard.cond, guard.depth)];
@@ -149,12 +150,12 @@ fn is_temp_name(name: &str) -> bool {
         .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|b| b.is_ascii_digit()))
 }
 
-fn only_used_within(
-    case: &mut ItemCaseContext<'_, '_>,
+fn only_used_within<'db>(
+    case: &mut ItemCaseContext<'_, 'db>,
     definition: &StatementRef,
     only_use: &StatementRef,
 ) -> Result<(), Rejection> {
-    let binding: BindingRef = case.fact(|query| query.statement_binding(definition))?;
+    let binding: BindingRef<'db> = case.fact(|query| query.statement_binding(definition))?;
     let total = case.fact(|query| query.binding_uses(&binding))?;
     let within = case.fact(|query| query.binding_uses_in_statement(&binding, only_use))?;
     case.require(within.uses.len() == total.uses.len())

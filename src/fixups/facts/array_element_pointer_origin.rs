@@ -6,7 +6,7 @@ use crate::fixups::facts::{
     DefUseFact, FunctionId, PathSegment, Site,
 };
 use crate::rust_ast::{Block, Expr, FnDef, Ident, IndentStmt, RustValue, Stmt, Type};
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],
@@ -20,17 +20,17 @@ pub(in crate::fixups) fn collect_for_function(
     collector.finish()
 }
 
-struct Collector<'a> {
+struct Collector<'db, 'a> {
     function: FunctionId<'db>,
     bindings: &'a [BindingFact<'db>],
     binding_types: &'a [BindingTypeFact<'db>],
     def_use: &'a [DefUseFact<'db>],
     scopes: Vec<BTreeMap<String, BindingId<'db>>>,
-    candidates: Vec<Candidate>,
+    candidates: Vec<Candidate<'db>>,
 }
 
 #[derive(Clone)]
-struct Candidate {
+struct Candidate<'db> {
     pointer: BindingId<'db>,
     base: BindingId<'db>,
     index: Expr,
@@ -49,7 +49,7 @@ struct OriginSource {
     index: Expr,
 }
 
-impl<'a> Collector<'a> {
+impl<'db, 'a> Collector<'db, 'a> {
     fn new(
         function: FunctionId<'db>,
         bindings: &'a [BindingFact<'db>],
@@ -295,7 +295,10 @@ impl<'a> Collector<'a> {
     }
 }
 
-fn pointer_write_shape_is_unambiguous(def_use_facts: &[DefUseFact<'db>], candidate: &Candidate) -> bool {
+fn pointer_write_shape_is_unambiguous<'db>(
+    def_use_facts: &[DefUseFact<'db>],
+    candidate: &Candidate,
+) -> bool {
     let Some(def_use) = facts::def_use_of(def_use_facts, candidate.pointer) else {
         return false;
     };
@@ -307,9 +310,9 @@ fn pointer_write_shape_is_unambiguous(def_use_facts: &[DefUseFact<'db>], candida
     }
 }
 
-fn overwritten_init_origin_pointers(
+fn overwritten_init_origin_pointers<'db>(
     def_use: &[DefUseFact<'db>],
-    candidates: &[Candidate],
+    candidates: &[Candidate<'db>],
 ) -> BTreeSet<BindingId<'db>> {
     candidates
         .iter()

@@ -55,9 +55,9 @@ pub(in crate::fixups) fn rewrite() -> QueryRule<Binding> {
     })
 }
 
-fn array_element_read(
+fn array_element_read<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
     expr: &Expr,
     origin: &ArrayElementPointerOrigin,
 ) -> Option<Expr> {
@@ -89,9 +89,9 @@ fn indexed_array_element_pointer(expr: &Expr, origin: &ArrayElementPointerOrigin
     })
 }
 
-fn array_element_pointer_diff(
+fn array_element_pointer_diff<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
     expr: &Expr,
     origin: &ArrayElementPointerOrigin,
 ) -> Option<Expr> {
@@ -119,9 +119,9 @@ fn array_element_pointer_diff(
     })
 }
 
-fn pointer_origin_for(
+fn pointer_origin_for<'db>(
     case: &mut ItemCaseContext<'_, '_>,
-    binding: &BindingRef,
+    binding: &BindingRef<'db>,
     expr: &Expr,
     current: &ArrayElementPointerOrigin,
 ) -> Option<ArrayElementPointerOrigin> {

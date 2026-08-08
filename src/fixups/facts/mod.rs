@@ -83,24 +83,24 @@ interned_ord!(FunctionId);
 interned_ord!(BindingId);
 interned_ord!(LoopId);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
 pub(super) struct SignatureId(pub(super) usize);
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct Site {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct Site<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) path: AstPath,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct FunctionFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct FunctionFact<'db> {
     pub(super) id: FunctionId<'db>,
     pub(super) name: String,
     pub(super) item_index: usize,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct BindingFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct BindingFact<'db> {
     pub(super) id: BindingId<'db>,
     pub(super) function: FunctionId<'db>,
     pub(super) name: String,
@@ -108,15 +108,15 @@ pub(super) struct BindingFact {
     pub(super) path: AstPath,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct BindingTypeFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct BindingTypeFact<'db> {
     pub(super) binding: BindingId<'db>,
     pub(super) ty: Type,
     pub(super) rendered: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct AtomicLocalFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct AtomicLocalFact<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) name: String,
     pub(super) ty: AtomicType,
@@ -128,8 +128,8 @@ pub(super) struct AtomicGlobalFact {
     pub(super) ty: AtomicType,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct LazyInitSingletonFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct LazyInitSingletonFact<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) flag_name: String,
     pub(super) payload_name: String,
@@ -158,8 +158,8 @@ pub(super) struct AnonymousStructFieldFact {
     pub(super) ty: Type,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct BufferPointerFieldFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct BufferPointerFieldFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) buffer: BindingId<'db>,
     pub(super) array: BindingId<'db>,
@@ -173,16 +173,16 @@ pub(super) enum BindingKind {
     Local,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct LoopFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct LoopFact<'db> {
     pub(super) id: LoopId<'db>,
     pub(super) function: FunctionId<'db>,
     pub(super) kind: LoopKind,
     pub(super) path: AstPath,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct BorrowAliasFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct BorrowAliasFact<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) binding: BindingId<'db>,
     pub(super) state: BorrowAliasState,
@@ -196,8 +196,8 @@ pub(super) struct BorrowAliasUseFact {
     pub(super) path: AstPath,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct DefUseFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct DefUseFact<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) binding: BindingId<'db>,
     pub(super) definition: AstPath,
@@ -206,16 +206,16 @@ pub(super) struct DefUseFact {
     pub(super) last_use: Option<AstPath>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct EffectFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct EffectFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) subject: EffectSubject,
     pub(super) purity: Purity,
     pub(super) effects: BTreeSet<EffectKind>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct ControlFlowFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct ControlFlowFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) subject: ControlFlowSubject,
     pub(super) reachable: bool,
@@ -226,15 +226,15 @@ pub(super) struct ControlFlowFact {
     pub(super) expression_eligible: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct CastFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct CastFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) from: Option<Type>,
     pub(super) to: Type,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct NullCheckDominanceFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct NullCheckDominanceFact<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) binding: BindingId<'db>,
     pub(super) deref_site: Site<'db>,
@@ -249,15 +249,15 @@ pub(super) enum NullCheckProof {
     ConstructionNonNull,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct PointerOptionSafetyFact {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct PointerOptionSafetyFact<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) binding: BindingId<'db>,
     pub(super) eligible: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct PointerComparisonFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct PointerComparisonFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) kind: PointerComparisonKind,
 }
@@ -275,8 +275,8 @@ pub(super) struct StructFieldOwnershipFact {
     pub(super) tree_eligible: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct OptionBoxLocalCandidate {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct OptionBoxLocalCandidate<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) binding: BindingId<'db>,
     pub(super) name: String,
@@ -299,8 +299,8 @@ pub(super) enum OptionBoxAssignKind {
     Alloc,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct OptionBoxComparison {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct OptionBoxComparison<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) if_stmt_path: AstPath,
     pub(super) lhs: String,
@@ -308,8 +308,8 @@ pub(super) struct OptionBoxComparison {
     pub(super) negate: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct PlaceFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct PlaceFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) access: PlaceAccess,
     pub(super) kind: PlaceKind,
@@ -318,15 +318,15 @@ pub(super) struct PlaceFact {
     pub(super) ordinary_slot: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct ValueFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct ValueFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) subject: ValueSubject<'db>,
     pub(super) value: ConstValue,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct CallSignatureFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct CallSignatureFact<'db> {
     pub(super) id: SignatureId,
     pub(super) name: String,
     pub(super) source: CallSignatureSource<'db>,
@@ -335,8 +335,8 @@ pub(super) struct CallSignatureFact {
     pub(super) ret: Option<Type>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum CallSignatureSource {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) enum CallSignatureSource<'db> {
     Function(FunctionId<'db>),
     Extern {
         item_index: usize,
@@ -349,16 +349,16 @@ pub(super) struct CallParamFact {
     pub(super) ty: Type,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct CallsiteFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct CallsiteFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) callee: CallCallee<'db>,
     pub(super) args: Vec<CallArgFact>,
     pub(super) ret: Option<Type>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum CallCallee {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) enum CallCallee<'db> {
     Direct {
         name: String,
         signature: Option<CallSignatureFact<'db>>,
@@ -383,8 +383,8 @@ pub(super) enum CallArgPinning {
     UnknownCallee,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum ValueSubject {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) enum ValueSubject<'db> {
     Expr,
     Binding(BindingId<'db>),
 }
@@ -401,8 +401,8 @@ pub(super) enum ConstValue {
     ArrayLength(usize),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct StringBufferFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct StringBufferFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) binding: BindingId<'db>,
     pub(super) kind: StringBufferKind,
@@ -415,8 +415,8 @@ pub(super) struct StringBufferFact {
     pub(super) rejections: BTreeSet<StringBufferRejection>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct AsciiNumericStringFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct AsciiNumericStringFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) binding: BindingId<'db>,
     pub(super) sign: AsciiNumericSign,
@@ -474,8 +474,8 @@ pub(super) enum StringBufferRejection {
     EscapedToCall,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct StringPointerViewFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct StringPointerViewFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) source: BindingId<'db>,
     pub(super) mutable: bool,
@@ -489,44 +489,44 @@ pub(super) enum StringPointerViewKind {
     Array,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct StringLibcUseFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct StringLibcUseFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) callee: StringLibcFunction,
     pub(super) pointer_args: Vec<BindingId<'db>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct StringLiftPlanFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct StringLiftPlanFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) binding: BindingId<'db>,
     pub(super) recovery: StringRecoveryCandidate,
     pub(super) remove_assignment: Option<AstPath>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct StringParamLiftFact {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct StringParamLiftFact<'db> {
     pub(super) callee: FunctionId<'db>,
     pub(super) param: BindingId<'db>,
     pub(super) index: usize,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct StringCopyRewriteFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct StringCopyRewriteFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) dst: BindingId<'db>,
     pub(super) rewrite: StringCopyRewrite<'db>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct CStringLiteralFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct CStringLiteralFact<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) receiver_path: AstPath,
     pub(super) bytes: Vec<u8>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct FileOwnershipFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct FileOwnershipFact<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) handle: BindingId<'db>,
     pub(super) open_temp: BindingId<'db>,
@@ -566,16 +566,16 @@ pub(super) enum FileUseKind {
     Close,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) enum StringCopyRewrite {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) enum StringCopyRewrite<'db> {
     AssignLiteral(String),
     AssignOwned(BindingId<'db>),
     PushLiteral(String),
     PushOwned(BindingId<'db>),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct HeapOwnershipFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct HeapOwnershipFact<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) pointer: BindingId<'db>,
     pub(super) allocation_temp: BindingId<'db>,
@@ -616,14 +616,14 @@ pub(super) enum AllocProvenance {
     },
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct CalleeAllocSummaryFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct CalleeAllocSummaryFact<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) provenance: AllocProvenance,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct InterproceduralAllocEligibilityFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct InterproceduralAllocEligibilityFact<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) elem_ty: Type,
     pub(super) allocation: HeapAllocationKind,
@@ -633,8 +633,8 @@ pub(super) struct InterproceduralAllocEligibilityFact {
     pub(super) chain: Vec<FunctionId<'db>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct InterproceduralAllocCallerFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct InterproceduralAllocCallerFact<'db> {
     pub(super) callee: FunctionId<'db>,
     pub(super) caller: FunctionId<'db>,
     pub(super) pointer_name: String,
@@ -684,8 +684,8 @@ pub(super) enum HeapUseKind {
     Free,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct HeapReallocFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct HeapReallocFact<'db> {
     pub(super) source_temp: Option<BindingId<'db>>,
     pub(super) allocation_temp: BindingId<'db>,
     pub(super) size_temp: Option<BindingId<'db>>,
@@ -703,8 +703,8 @@ pub(super) enum HeapResizeKind {
     SameOrUnknown,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct PrintfCallFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct PrintfCallFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) format: Option<Vec<u8>>,
     pub(super) arg_paths: Vec<AstPath>,
@@ -797,8 +797,8 @@ pub(super) enum AtomicPlaceAccess {
     ReadWrite,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct PtrLenSliceFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct PtrLenSliceFact<'db> {
     pub(super) caller: FunctionId<'db>,
     pub(super) callee: FunctionId<'db>,
     pub(super) ptr_param: BindingId<'db>,
@@ -807,24 +807,24 @@ pub(super) struct PtrLenSliceFact {
     pub(super) elem_ty: Type,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct ArrayElementPointerOriginFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct ArrayElementPointerOriginFact<'db> {
     pub(super) site: Site<'db>,
     pub(super) pointer: BindingId<'db>,
     pub(super) base: BindingId<'db>,
     pub(super) index: Expr,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct LoopSite {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct LoopSite<'db> {
     pub(super) function: FunctionId<'db>,
     pub(super) loop_id: LoopId<'db>,
     pub(super) loop_path: AstPath,
     pub(super) body_path: AstPath,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct CountedLoopFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct CountedLoopFact<'db> {
     pub(super) site: LoopSite<'db>,
     pub(super) bound: Expr,
     pub(super) start: CountedLoopStart,
@@ -832,8 +832,8 @@ pub(super) struct CountedLoopFact {
     pub(super) index_use: CountedLoopIndexUse,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(super) struct CountedSliceLoopFact {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
+pub(super) struct CountedSliceLoopFact<'db> {
     pub(super) site: LoopSite<'db>,
     pub(super) index: BindingId<'db>,
     pub(super) slice: BindingId<'db>,
@@ -1027,37 +1027,37 @@ pub(in crate::fixups) fn binding_named<'db>(
         .map(|binding| binding.id)
 }
 
-pub(in crate::fixups) fn binding_type<'db>(
-    binding_types: &[BindingTypeFact<'db>],
+pub(in crate::fixups) fn binding_type<'a, 'db>(
+    binding_types: &'a [BindingTypeFact<'db>],
     binding: BindingId<'db>,
-) -> Option<&str> {
+) -> Option<&'a str> {
     binding_types
         .iter()
         .find(|fact| fact.binding == binding)
         .map(|fact| fact.rendered.as_str())
 }
 
-pub(in crate::fixups) fn binding_type_ast<'db>(
-    binding_types: &[BindingTypeFact<'db>],
+pub(in crate::fixups) fn binding_type_ast<'a, 'db>(
+    binding_types: &'a [BindingTypeFact<'db>],
     binding: BindingId<'db>,
-) -> Option<&Type> {
+) -> Option<&'a Type> {
     binding_types
         .iter()
         .find(|fact| fact.binding == binding)
         .map(|fact| &fact.ty)
 }
 
-pub(in crate::fixups) fn def_use_of<'db>(
-    def_use: &[DefUseFact<'db>],
+pub(in crate::fixups) fn def_use_of<'a, 'db>(
+    def_use: &'a [DefUseFact<'db>],
     binding: BindingId<'db>,
-) -> Option<&DefUseFact<'db>> {
+) -> Option<&'a DefUseFact<'db>> {
     def_use.iter().find(|fact| fact.binding == binding)
 }
 
-pub(in crate::fixups) fn string_buffer<'db>(
-    string_buffers: &[StringBufferFact<'db>],
+pub(in crate::fixups) fn string_buffer<'a, 'db>(
+    string_buffers: &'a [StringBufferFact<'db>],
     binding: BindingId<'db>,
-) -> Option<&StringBufferFact<'db>> {
+) -> Option<&'a StringBufferFact<'db>> {
     string_buffers.iter().find(|fact| fact.binding == binding)
 }
 
@@ -1111,10 +1111,10 @@ pub(in crate::fixups) fn local_binding_at<'a, 'db>(
     })
 }
 
-pub(in crate::fixups) fn binding_name<'db>(
-    bindings: &[BindingFact<'db>],
+pub(in crate::fixups) fn binding_name<'a, 'db>(
+    bindings: &'a [BindingFact<'db>],
     binding: BindingId<'db>,
-) -> Option<&str> {
+) -> Option<&'a str> {
     bindings
         .iter()
         .find(|fact| fact.id == binding)

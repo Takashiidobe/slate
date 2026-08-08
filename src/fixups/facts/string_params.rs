@@ -9,19 +9,19 @@ use crate::fixups::facts::{
 use crate::fixups::facts::{CallSignatureSource, CallsiteFact, walk};
 use crate::rust_ast::{Expr, FnDef, Prim, Type, Visibility};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-struct Key {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, salsa::SalsaValue)]
+struct Key<'db> {
     function: FunctionId<'db>,
     param: BindingId<'db>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct Candidate {
-    key: Key,
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
+pub(in crate::fixups) struct Candidate<'db> {
+    key: Key<'db>,
     function_name: String,
     index: usize,
 }
-pub(in crate::fixups) struct Snapshot<'a> {
+pub(in crate::fixups) struct Snapshot<'db, 'a> {
     pub(in crate::fixups) bindings: &'a [BindingFact<'db>],
     pub(in crate::fixups) binding_types: &'a [BindingTypeFact<'db>],
     pub(in crate::fixups) def_use: &'a [DefUseFact<'db>],
@@ -30,7 +30,7 @@ pub(in crate::fixups) struct Snapshot<'a> {
     pub(in crate::fixups) string_libc_uses: &'a [StringLibcUseFact<'db>],
 }
 
-impl<'a> Snapshot<'a> {
+impl<'db, 'a> Snapshot<'db, 'a> {
     fn def_use(&self, binding: BindingId<'db>) -> Option<&DefUseFact<'db>> {
         facts::def_use_of(self.def_use, binding)
     }
@@ -56,15 +56,19 @@ impl<'a> Snapshot<'a> {
         facts::string_buffer(self.string_buffers, binding)
     }
 
-    fn local_binding_at(&self, function: FunctionId<'db>, path: &AstPath) -> Option<&BindingFact<'db>> {
+    fn local_binding_at(
+        &self,
+        function: FunctionId<'db>,
+        path: &AstPath,
+    ) -> Option<&BindingFact<'db>> {
         facts::local_binding_at(self.bindings, function, path)
     }
 }
 
-pub(in crate::fixups) fn compute(
+pub(in crate::fixups) fn compute<'db>(
     bodies: &Bodies,
     facts: &Snapshot,
-    candidates: Vec<Candidate>,
+    candidates: Vec<Candidate<'db>>,
 ) -> Vec<StringParamLiftFact<'db>> {
     let mut active = candidates
         .iter()
@@ -100,11 +104,11 @@ pub(in crate::fixups) fn compute(
         .collect()
 }
 
-pub(in crate::fixups) fn candidates_for_function(
+pub(in crate::fixups) fn candidates_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],
-) -> Vec<Candidate> {
+) -> Vec<Candidate<'db>> {
     if f.name == "main" || f.unsafe_ || f.abi.is_some() || !matches!(f.vis, Visibility::Private) {
         return Vec::new();
     }
@@ -128,7 +132,7 @@ pub(in crate::fixups) fn candidates_for_function(
         .collect()
 }
 
-fn all_uses_allow_lift(
+fn all_uses_allow_lift<'db>(
     candidate: &Candidate,
     facts: &Snapshot,
     by_function: &BTreeMap<(FunctionId<'db>, usize), Key>,
@@ -174,7 +178,7 @@ fn all_uses_allow_lift(
     })
 }
 
-fn libc_use_allows(
+fn libc_use_allows<'db>(
     function: FunctionId<'db>,
     aliases: &BTreeSet<BindingId<'db>>,
     facts: &Snapshot,
@@ -191,7 +195,7 @@ fn libc_use_allows(
     })
 }
 
-fn internal_call_allows(
+fn internal_call_allows<'db>(
     function: FunctionId<'db>,
     _aliases: &BTreeSet<BindingId<'db>>,
     facts: &Snapshot,
@@ -239,7 +243,7 @@ fn all_callers_prove_arg(
         })
 }
 
-fn direct_callee_function(callsite: &CallsiteFact<'db>) -> Option<FunctionId<'db>> {
+fn direct_callee_function<'db>(callsite: &CallsiteFact<'db>) -> Option<FunctionId<'db>> {
     let CallCallee::Direct {
         signature: Some(signature),
         ..
@@ -253,7 +257,7 @@ fn direct_callee_function(callsite: &CallsiteFact<'db>) -> Option<FunctionId<'db
     }
 }
 
-fn expr_is_liftable_source(
+fn expr_is_liftable_source<'db>(
     expr: &Expr,
     function: FunctionId<'db>,
     path: &AstPath,
@@ -270,7 +274,7 @@ fn expr_is_liftable_source(
     }
 }
 
-fn binding_is_liftable_source(
+fn binding_is_liftable_source<'db>(
     facts: &Snapshot,
     binding: BindingId<'db>,
     active: &BTreeSet<Key>,
@@ -293,7 +297,7 @@ fn binding_is_liftable_source(
     }) || local_aliases_active_param(facts, binding, active)
 }
 
-fn local_aliases_active_param(
+fn local_aliases_active_param<'db>(
     facts: &Snapshot,
     binding: BindingId<'db>,
     active: &BTreeSet<Key>,
@@ -312,7 +316,11 @@ fn local_aliases_active_param(
     })
 }
 
-fn direct_alias_at(function: FunctionId<'db>, facts: &Snapshot, path: &AstPath) -> Option<BindingId<'db>> {
+fn direct_alias_at<'db>(
+    function: FunctionId<'db>,
+    facts: &'db Snapshot,
+    path: &AstPath,
+) -> Option<BindingId<'db>> {
     let alias = facts.local_binding_at(function, path)?;
     let ty = facts.binding_type(alias.id).map(Type::parse)?;
     is_char_ptr(&ty).then_some(alias.id)

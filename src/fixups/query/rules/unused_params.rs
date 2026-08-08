@@ -68,10 +68,10 @@ fn rewrite_case(
     Ok(edits)
 }
 
-fn defer_to_later_parameter(
+fn defer_to_later_parameter<'db>(
     case: &mut ItemCaseContext<'_, '_>,
     parameter: &ParameterRef,
-    function: &FunctionRef,
+    function: &FunctionRef<'db>,
     calls: &[CallRecord],
 ) -> Result<(), Rejection> {
     let bindings = case.fact(|query| query.function_bindings(function))?;

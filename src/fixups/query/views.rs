@@ -85,17 +85,17 @@ pub(in crate::fixups) struct ResolvedValue {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct BindingRef {
+pub(in crate::fixups) struct BindingRef<'db> {
     pub(in crate::fixups) item_index: usize,
     pub(in crate::fixups) function_name: String,
     pub(in crate::fixups) name: String,
     pub(in crate::fixups) definition: AstPath,
     pub(in crate::fixups) kind: BindingCategory,
     pub(in crate::fixups) ty: Option<Type>,
-    pub(super) id: BindingId,
+    pub(super) id: BindingId<'db>,
 }
 
-impl BindingRef {
+impl<'db> BindingRef<'db> {
     pub(in crate::fixups) fn value_site(&self) -> ValueSite {
         ValueSite {
             item_index: self.item_index,
@@ -111,10 +111,10 @@ pub(in crate::fixups) enum BindingCategory {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct FunctionRef {
+pub(in crate::fixups) struct FunctionRef<'db> {
     pub(in crate::fixups) item_index: usize,
     pub(in crate::fixups) name: String,
-    pub(super) id: crate::fixups::facts::FunctionId,
+    pub(super) id: crate::fixups::facts::FunctionId<'db>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -123,8 +123,8 @@ pub(in crate::fixups) struct ProgramRef {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct ParameterRef {
-    pub(in crate::fixups) binding: BindingRef,
+pub(in crate::fixups) struct ParameterRef<'db> {
+    pub(in crate::fixups) binding: BindingRef<'db>,
     pub(in crate::fixups) index: usize,
 }
 
@@ -135,8 +135,8 @@ pub(in crate::fixups) struct FunctionReachability {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct FunctionCallDomain {
-    pub(in crate::fixups) function: FunctionRef,
+pub(in crate::fixups) struct FunctionCallDomain<'db> {
+    pub(in crate::fixups) function: FunctionRef<'db>,
     pub(in crate::fixups) calls: Vec<super::CallRecord>,
 }
 
@@ -165,9 +165,9 @@ pub(in crate::fixups) struct EnumVariantRef {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) enum TypeUseRef {
-    FunctionReturn(FunctionRef),
-    Parameter(ParameterRef),
+pub(in crate::fixups) enum TypeUseRef<'db> {
+    FunctionReturn(FunctionRef<'db>),
+    Parameter(ParameterRef<'db>),
     Field(FieldRef),
 }
 
@@ -183,8 +183,8 @@ pub(in crate::fixups) enum TypeUseKind {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct BindingDefUse {
-    pub(in crate::fixups) binding: BindingRef,
+pub(in crate::fixups) struct BindingDefUse<'db> {
+    pub(in crate::fixups) binding: BindingRef<'db>,
     pub(in crate::fixups) reads: Vec<UseSiteRef>,
     pub(in crate::fixups) writes: Vec<UseSiteRef>,
 }
@@ -267,8 +267,8 @@ impl BindingUse {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct BindingUses {
-    pub(in crate::fixups) binding: BindingRef,
+pub(in crate::fixups) struct BindingUses<'db> {
+    pub(in crate::fixups) binding: BindingRef<'db>,
     pub(in crate::fixups) uses: Vec<BindingUse>,
 }
 
@@ -413,7 +413,7 @@ pub(in crate::fixups) struct ByteSource<'snapshot> {
     pub(in crate::fixups) representation: ByteRepresentation,
     pub(in crate::fixups) mutability: PointerMutability,
     pub(in crate::fixups) extent: ByteExtent,
-    pub(super) binding: BindingId,
+    pub(super) binding: BindingId<'snapshot>,
     pub(super) snapshot: PhantomData<&'snapshot ()>,
 }
 
@@ -459,8 +459,8 @@ pub(super) struct LazySingletonPlan {
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct HeapOwnershipFacts {
-    pub(in crate::fixups) owners: Vec<HeapOwnership>,
+pub(in crate::fixups) struct HeapOwnershipFacts<'db> {
+    pub(in crate::fixups) owners: Vec<HeapOwnership<'db>>,
 }
 
 #[derive(Debug, Clone)]
@@ -471,12 +471,12 @@ pub(in crate::fixups) struct ArrayElementPointerOrigin {
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct HeapOwnership {
-    pub(in crate::fixups) pointer: BindingRef,
-    pub(in crate::fixups) allocation_temp: BindingRef,
-    pub(in crate::fixups) size_temp: Option<BindingRef>,
-    pub(in crate::fixups) free_temp: Option<BindingRef>,
-    pub(in crate::fixups) aliases: Vec<BindingRef>,
+pub(in crate::fixups) struct HeapOwnership<'db> {
+    pub(in crate::fixups) pointer: BindingRef<'db>,
+    pub(in crate::fixups) allocation_temp: BindingRef<'db>,
+    pub(in crate::fixups) size_temp: Option<BindingRef<'db>>,
+    pub(in crate::fixups) free_temp: Option<BindingRef<'db>>,
+    pub(in crate::fixups) aliases: Vec<BindingRef<'db>>,
     pub(in crate::fixups) pointer_statement: StatementRef,
     pub(in crate::fixups) allocation_statement: StatementRef,
     pub(in crate::fixups) assignment_statement: StatementRef,
@@ -487,7 +487,7 @@ pub(in crate::fixups) struct HeapOwnership {
     pub(in crate::fixups) init: HeapInitKind,
     pub(in crate::fixups) read_safety: HeapReadSafety,
     pub(in crate::fixups) uses: Vec<HeapUse>,
-    pub(in crate::fixups) reallocations: Vec<HeapReallocation>,
+    pub(in crate::fixups) reallocations: Vec<HeapReallocation<'db>>,
 }
 
 #[derive(Debug, Clone)]
@@ -497,10 +497,10 @@ pub(in crate::fixups) struct HeapUse {
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct HeapReallocation {
-    pub(in crate::fixups) source_temp: Option<BindingRef>,
-    pub(in crate::fixups) allocation_temp: BindingRef,
-    pub(in crate::fixups) size_temp: Option<BindingRef>,
+pub(in crate::fixups) struct HeapReallocation<'db> {
+    pub(in crate::fixups) source_temp: Option<BindingRef<'db>>,
+    pub(in crate::fixups) allocation_temp: BindingRef<'db>,
+    pub(in crate::fixups) size_temp: Option<BindingRef<'db>>,
     pub(in crate::fixups) allocation_statement: StatementRef,
     pub(in crate::fixups) assignment_statement: StatementRef,
     pub(in crate::fixups) new_extent: HeapExtent,
@@ -530,26 +530,26 @@ pub(in crate::fixups) enum Phase {
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct BufferPointerField {
-    pub(in crate::fixups) buffer: BindingRef,
-    pub(in crate::fixups) array: BindingRef,
+pub(in crate::fixups) struct BufferPointerField<'db> {
+    pub(in crate::fixups) buffer: BindingRef<'db>,
+    pub(in crate::fixups) array: BindingRef<'db>,
     pub(in crate::fixups) assignment: StatementRef,
     pub(in crate::fixups) array_len: usize,
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct BufferPointerFields {
-    pub(in crate::fixups) fields: Vec<BufferPointerField>,
+pub(in crate::fixups) struct BufferPointerFields<'db> {
+    pub(in crate::fixups) fields: Vec<BufferPointerField<'db>>,
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct FileOwnershipFacts {
-    pub(in crate::fixups) owners: Vec<FileOwnership>,
+pub(in crate::fixups) struct FileOwnershipFacts<'db> {
+    pub(in crate::fixups) owners: Vec<FileOwnership<'db>>,
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct FileOwnership {
-    pub(in crate::fixups) handle: BindingRef,
+pub(in crate::fixups) struct FileOwnership<'db> {
+    pub(in crate::fixups) handle: BindingRef<'db>,
     pub(in crate::fixups) handle_statement: StatementRef,
     pub(in crate::fixups) open_statement: StatementRef,
     pub(in crate::fixups) assign_statement: StatementRef,
@@ -564,9 +564,9 @@ pub(in crate::fixups) struct FileUse {
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct SliceLoopFact {
-    pub(in crate::fixups) index: BindingRef,
-    pub(in crate::fixups) slice: BindingRef,
+pub(in crate::fixups) struct SliceLoopFact<'db> {
+    pub(in crate::fixups) index: BindingRef<'db>,
+    pub(in crate::fixups) slice: BindingRef<'db>,
     pub(in crate::fixups) start: CountedLoopStart,
     pub(in crate::fixups) bound: CountedLoopBound,
     pub(in crate::fixups) step: CountedLoopStep,
@@ -575,21 +575,21 @@ pub(in crate::fixups) struct SliceLoopFact {
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct StringCopySite {
+pub(in crate::fixups) struct StringCopySite<'db> {
     pub(in crate::fixups) statement: StatementRef,
-    pub(in crate::fixups) action: StringCopyAction,
+    pub(in crate::fixups) action: StringCopyAction<'db>,
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) enum StringCopyAction {
+pub(in crate::fixups) enum StringCopyAction<'db> {
     AssignLiteral(String),
-    AssignOwned(BindingRef),
+    AssignOwned(BindingRef<'db>),
     PushLiteral(String),
-    PushOwned(BindingRef),
+    PushOwned(BindingRef<'db>),
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::fixups) struct StringLibcUse {
+pub(in crate::fixups) struct StringLibcUse<'db> {
     pub(in crate::fixups) callee: StringLibcFunction,
-    pub(in crate::fixups) pointer_args: Vec<BindingRef>,
+    pub(in crate::fixups) pointer_args: Vec<BindingRef<'db>>,
 }

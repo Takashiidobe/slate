@@ -5,7 +5,7 @@ use crate::fixups::facts::{
     AstPath, ControlFlowExit, ControlFlowFact, ControlFlowSubject, FunctionId, PathSegment, Site,
 };
 use crate::rust_ast::{Block, FnDef, IndentStmt, Label, Stmt};
-pub(in crate::fixups) fn collect_for_function(
+pub(in crate::fixups) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
 ) -> Vec<ControlFlowFact<'db>> {
@@ -17,7 +17,7 @@ pub(in crate::fixups) fn collect_for_function(
     collector.facts
 }
 
-struct Collector {
+struct Collector<'db> {
     function: FunctionId<'db>,
     facts: Vec<ControlFlowFact<'db>>,
 }
@@ -61,7 +61,7 @@ impl Summary {
     }
 }
 
-impl Collector {
+impl<'db> Collector<'db> {
     fn body(
         &mut self,
         body: &[IndentStmt],

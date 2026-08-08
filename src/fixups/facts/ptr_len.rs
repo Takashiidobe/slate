@@ -6,7 +6,7 @@ use crate::fixups::facts::{
     DefUseFact, FunctionId, PathSegment, PtrLenSliceFact,
 };
 use crate::rust_ast::{Block, Expr, FnDef, IndentStmt, Prim, RustValue, Stmt, Type, UnaryOp};
-pub(in crate::fixups) struct Snapshot<'a> {
+pub(in crate::fixups) struct Snapshot<'db, 'a> {
     pub(in crate::fixups) bindings: &'a [BindingFact<'db>],
     pub(in crate::fixups) binding_types: &'a [BindingTypeFact<'db>],
     pub(in crate::fixups) def_use: &'a [DefUseFact<'db>],
@@ -14,12 +14,16 @@ pub(in crate::fixups) struct Snapshot<'a> {
     pub(in crate::fixups) function_by_name: &'a BTreeMap<String, FunctionId<'db>>,
 }
 
-impl<'a> Snapshot<'a> {
+impl<'db, 'a> Snapshot<'db, 'a> {
     fn def_use(&self, binding: BindingId<'db>) -> Option<&DefUseFact<'db>> {
         facts::def_use_of(self.def_use, binding)
     }
 
-    fn binding_by_param_index(&self, function: FunctionId<'db>, index: usize) -> Option<BindingId<'db>> {
+    fn binding_by_param_index(
+        &self,
+        function: FunctionId<'db>,
+        index: usize,
+    ) -> Option<BindingId<'db>> {
         facts::binding_by_param_index(self.bindings, function, index)
     }
 
@@ -41,10 +45,10 @@ impl<'a> Snapshot<'a> {
     }
 }
 
-pub(in crate::fixups) fn compute(
-    bodies: &Bodies,
-    facts: &Snapshot,
-    candidates: Vec<Candidate>,
+pub(in crate::fixups) fn compute<'db>(
+    bodies: &Bodies<'_, 'db>,
+    facts: &Snapshot<'db, '_>,
+    candidates: Vec<Candidate<'db>>,
 ) -> Vec<PtrLenSliceFact<'db>> {
     let mut active = candidates
         .iter()
@@ -70,35 +74,21 @@ pub(in crate::fixups) fn compute(
         .flat_map(|candidate| proven_calls(facts, candidate))
         .collect();
     slices.extend(proven_constant_extent_calls(bodies, facts, &active));
-    slices.sort_by_key(|fact| {
-        (
-            fact.caller,
-            fact.callee,
-            fact.ptr_param,
-            fact.len_param.unwrap_or(BindingId<'db>(usize::MAX)),
-        )
-    });
-    slices.dedup_by_key(|fact| {
-        (
-            fact.caller,
-            fact.callee,
-            fact.ptr_param,
-            fact.len_param.unwrap_or(BindingId<'db>(usize::MAX)),
-        )
-    });
+    slices.sort_by_key(|fact| (fact.caller, fact.callee, fact.ptr_param, fact.len_param));
+    slices.dedup_by_key(|fact| (fact.caller, fact.callee, fact.ptr_param, fact.len_param));
     slices
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub(in crate::fixups) struct Key {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, salsa::SalsaValue)]
+pub(in crate::fixups) struct Key<'db> {
     function: FunctionId<'db>,
     ptr: BindingId<'db>,
     len: BindingId<'db>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::fixups) struct Candidate {
-    key: Key,
+#[derive(Debug, Clone, PartialEq, Eq, salsa::SalsaValue)]
+pub(in crate::fixups) struct Candidate<'db> {
+    key: Key<'db>,
     function_name: String,
     ptr_index: usize,
     len_index: usize,
@@ -109,16 +99,16 @@ pub(in crate::fixups) struct Candidate {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-enum LengthSource {
+enum LengthSource<'db> {
     Const(u64),
     Bound(BindingId<'db>),
 }
 
-pub(in crate::fixups) fn candidates_for_function(
+pub(in crate::fixups) fn candidates_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
     bindings: &[BindingFact<'db>],
-) -> Vec<Candidate> {
+) -> Vec<Candidate<'db>> {
     let mut candidates = Vec::new();
     for (ptr_index, ptr_param) in f.params.iter().enumerate() {
         let Type::Ptr { mutable, inner } = &ptr_param.ty else {
@@ -234,7 +224,7 @@ fn collect_length_use_paths(
     }
 }
 
-fn collect_bounded_loop_paths(
+fn collect_bounded_loop_paths<'db>(
     body: &[IndentStmt],
     function: FunctionId<'db>,
     candidate: &Candidate,
@@ -249,7 +239,7 @@ fn collect_bounded_loop_paths(
     }
 }
 
-fn collect_bounded_loop_paths_in_stmt(
+fn collect_bounded_loop_paths_in_stmt<'db>(
     stmt: &Stmt,
     function: FunctionId<'db>,
     candidate: &Candidate,
@@ -340,7 +330,7 @@ fn collect_bounded_loop_paths_in_stmt(
     }
 }
 
-fn range_ends_at_binding(
+fn range_ends_at_binding<'db>(
     expr: &Expr,
     function: FunctionId<'db>,
     path: &AstPath,
@@ -359,7 +349,7 @@ fn body_accesses_pointer_index(body: &[IndentStmt], ptr_name: &str, index_name: 
         .any(|indent| stmt_accesses_pointer_index(&indent.stmt, &mut aliases))
 }
 
-fn lowered_loop_index(
+fn lowered_loop_index<'db>(
     body: &[IndentStmt],
     function: FunctionId<'db>,
     candidate: &Candidate,
@@ -394,7 +384,7 @@ fn lowered_loop_index(
     None
 }
 
-fn loop_bound_index(
+fn loop_bound_index<'db>(
     cond: &Expr,
     function: FunctionId<'db>,
     path: &AstPath,
@@ -555,7 +545,7 @@ fn pointer_offset_expr(expr: &Expr, aliases: &PointerIndexAliases) -> bool {
         && matches!(args.as_slice(), [arg] if aliases.is_index(arg))
 }
 
-fn call_forwards_pair(
+fn call_forwards_pair<'db>(
     callsite: &CallsiteFact<'db>,
     candidate: &Candidate,
     facts: &Snapshot,
@@ -573,7 +563,7 @@ fn call_forwards_pair(
         .any(|key| call_forwards_to_key(callsite, candidate, *key, facts))
 }
 
-fn call_forwards_to_key(
+fn call_forwards_to_key<'db>(
     callsite: &CallsiteFact<'db>,
     candidate: &Candidate,
     target: Key,
@@ -610,7 +600,7 @@ fn call_forwards_to_key(
     ptr_ok && len_ok
 }
 
-fn param_index(facts: &Snapshot, binding: BindingId<'db>) -> Option<usize> {
+fn param_index<'db>(facts: &Snapshot, binding: BindingId<'db>) -> Option<usize> {
     facts
         .bindings
         .iter()
@@ -634,10 +624,10 @@ fn all_callers_prove(
             .all(|callsite| call_proves_pair(bodies, callsite, candidate, facts, active))
 }
 
-fn proven_constant_extent_calls(
-    bodies: &Bodies,
-    facts: &Snapshot,
-    active: &BTreeSet<Key>,
+fn proven_constant_extent_calls<'db>(
+    bodies: &Bodies<'_, 'db>,
+    facts: &Snapshot<'db, '_>,
+    active: &BTreeSet<Key<'db>>,
 ) -> Vec<PtrLenSliceFact<'db>> {
     let mut out = Vec::new();
     for (&function, &f) in bodies {
@@ -675,7 +665,7 @@ fn proven_constant_extent_calls(
     out
 }
 
-struct PointerCandidate {
+struct PointerCandidate<'db> {
     function: FunctionId<'db>,
     function_name: String,
     ptr: BindingId<'db>,
@@ -815,7 +805,7 @@ fn all_callers_prove_pointer_extent(
             .all(|callsite| call_proves_pointer_extent(bodies, callsite, candidate, facts, active))
 }
 
-fn call_proves_pointer_extent(
+fn call_proves_pointer_extent<'db>(
     bodies: &Bodies,
     callsite: &CallsiteFact<'db>,
     candidate: &PointerCandidate,
@@ -847,7 +837,10 @@ fn call_proves_pointer_extent(
     )
 }
 
-fn proven_pointer_calls(facts: &Snapshot, candidate: &PointerCandidate) -> Vec<PtrLenSliceFact<'db>> {
+fn proven_pointer_calls<'db>(
+    facts: &Snapshot<'db, '_>,
+    candidate: &PointerCandidate<'db>,
+) -> Vec<PtrLenSliceFact<'db>> {
     matching_callsites(facts, &candidate.function_name)
         .map(|callsite| PtrLenSliceFact {
             caller: callsite.site.function,
@@ -860,8 +853,8 @@ fn proven_pointer_calls(facts: &Snapshot, candidate: &PointerCandidate) -> Vec<P
         .collect()
 }
 
-fn matching_callsites<'a>(
-    facts: &Snapshot<'a>,
+fn matching_callsites<'db, 'a>(
+    facts: &Snapshot<'db, 'a>,
     function_name: &'a str,
 ) -> impl Iterator<Item = &'a CallsiteFact<'db>> {
     facts
@@ -873,7 +866,7 @@ fn matching_callsites<'a>(
         })
 }
 
-fn call_proves_pair(
+fn call_proves_pair<'db>(
     bodies: &Bodies,
     callsite: &CallsiteFact<'db>,
     candidate: &Candidate,
@@ -924,18 +917,15 @@ fn call_proves_pair(
 
 const MAX_ALIAS_DEPTH: u32 = 8;
 
-/// Resolves a pointer-argument expression to a proof of how many elements it
-/// points at: either a compile-time-constant array length, or the identity of
-/// another binding proven (by an active candidate) to carry the same length.
-fn pointer_length_source(
+fn pointer_length_source<'db>(
     bodies: &Bodies,
     expr: &Expr,
     function: FunctionId<'db>,
     path: &AstPath,
-    facts: &Snapshot,
-    active: &BTreeSet<Key>,
+    facts: &'db Snapshot,
+    active: &BTreeSet<Key<'db>>,
     depth: u32,
-) -> Option<LengthSource> {
+) -> Option<LengthSource<'db>> {
     if depth > MAX_ALIAS_DEPTH {
         return None;
     }
@@ -948,14 +938,14 @@ fn pointer_length_source(
     binding_length_source(bodies, binding, function, facts, active, depth)
 }
 
-fn binding_length_source(
+fn binding_length_source<'db>(
     bodies: &Bodies,
     binding: BindingId<'db>,
     function: FunctionId<'db>,
-    facts: &Snapshot,
-    active: &BTreeSet<Key>,
+    facts: &'db Snapshot,
+    active: &BTreeSet<Key<'db>>,
     depth: u32,
-) -> Option<LengthSource> {
+) -> Option<LengthSource<'db>> {
     if let Some(len) = facts.binding_type(binding).and_then(array_len_from_type) {
         return Some(LengthSource::Const(len));
     }
@@ -994,11 +984,11 @@ fn array_len_from_type(rendered: &str) -> Option<u64> {
     }
 }
 
-fn resolve_len_binding(
+fn resolve_len_binding<'db>(
     expr: &Expr,
     function: FunctionId<'db>,
     path: &AstPath,
-    facts: &Snapshot,
+    facts: &'db Snapshot,
 ) -> Option<BindingId<'db>> {
     let Expr::Var(name) = peel_cast(expr) else {
         return None;
@@ -1041,7 +1031,10 @@ fn integer_value(expr: &Expr) -> Option<u64> {
     }
 }
 
-fn proven_calls(facts: &Snapshot, candidate: &Candidate) -> Vec<PtrLenSliceFact<'db>> {
+fn proven_calls<'db>(
+    facts: &Snapshot<'db, '_>,
+    candidate: &Candidate<'db>,
+) -> Vec<PtrLenSliceFact<'db>> {
     matching_callsites(facts, &candidate.function_name)
         .map(|callsite| PtrLenSliceFact {
             caller: callsite.site.function,

@@ -127,9 +127,9 @@ fn ownership_plan(
     })
 }
 
-fn optional_binding_index(
+fn optional_binding_index<'db>(
     case: &ItemCaseContext<'_, '_>,
-    binding: &Option<BindingRef>,
+    binding: &Option<BindingRef<'db>>,
 ) -> Result<Option<usize>, Rejection> {
     let Some(binding) = binding else {
         return Ok(None);
