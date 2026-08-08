@@ -66,7 +66,7 @@ The fixups directory is split by concern:
   per per-function analysis (definition/use, effects/purity, control flow,
   casts, loop shapes, pointer/string/heap provenance, and more — one module
   per concern, `src/fixups/facts/mod.rs` re-exports them), plus
-  whole-program reductions on `AllFunctions`/`DefinitionsInput`. Fact
+  whole-program reductions tracked directly on `ProgramInput`. Fact
   collectors walk the tree with the shared, immutable walkers in
   `src/fixups/facts/walk.rs`. See [facts.md](facts.md) for what each
   collector proves and which pass below consumes it.
