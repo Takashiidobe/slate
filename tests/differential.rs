@@ -16,6 +16,7 @@ fn fixtures_dir() -> PathBuf {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum FixtureFlavor {
     Default,
+    Bionic,
     Msvc,
 }
 
@@ -23,6 +24,7 @@ impl FixtureFlavor {
     fn target(self) -> Option<&'static str> {
         match self {
             FixtureFlavor::Default => None,
+            FixtureFlavor::Bionic => Some("aarch64-linux-android21"),
             FixtureFlavor::Msvc => Some("x86_64-pc-windows-msvc"),
         }
     }
@@ -30,6 +32,19 @@ impl FixtureFlavor {
     fn shim_defines(self) -> &'static [&'static str] {
         match self {
             FixtureFlavor::Default => &[],
+            FixtureFlavor::Bionic => &[
+                "-D_SLATE_LIBC",
+                "-D__SLATE_ARCH_AARCH64",
+                "-D__SLATE_VENDOR_UNKNOWN",
+                "-D__SLATE_KERNEL_LINUX",
+                "-D__SLATE_PLATFORM_ANDROID",
+                "-D__SLATE_LIBC_BIONIC",
+                "-D__SLATE_OBJ_ELF",
+                "-D__SLATE_WORDSIZE_64",
+                "-D__SLATE_ENDIAN_LITTLE",
+                "-D__SLATE_ANDROID_API__=21",
+                "-DEXPECT_AARCH64",
+            ],
             FixtureFlavor::Msvc => &[
                 "-D_SLATE_LIBC",
                 "-D__SLATE_ARCH_X86_64",
@@ -78,6 +93,12 @@ fn fixtures() -> Vec<Fixture> {
     let mut fixtures = Vec::new();
     collect_fixtures(&dir, FixtureFlavor::Default, &selected, &mut fixtures);
     collect_fixtures(
+        &dir.join("bionic"),
+        FixtureFlavor::Bionic,
+        &selected,
+        &mut fixtures,
+    );
+    collect_fixtures(
         &dir.join("msvc"),
         FixtureFlavor::Msvc,
         &selected,
@@ -119,7 +140,7 @@ fn compile_for_target(
 ) -> Result<(), String> {
     let cache_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-cache");
     std::fs::create_dir_all(&cache_root).unwrap();
-    let object_file = cache_root.join(format!("msvc_fixture_{name}.o"));
+    let object_file = cache_root.join(format!("cross_target_fixture_{name}.o"));
     let mut cmd = Command::new(clang());
     cmd.args(["-xc", "-c", "-nostdlibinc"])
         .arg(format!("--target={target}"))
@@ -153,9 +174,80 @@ fn run_cross_target_fixture(
         path,
     )
     .map_err(|e| format!("libc-shim compile failed:\n{e}"))?;
-    if let Some((crt, ucrt)) = xwin_sysroot_dirs() {
+    if flavor == FixtureFlavor::Bionic {
+        let defines = [
+            "-D_SLATE_LIBC",
+            "-D__SLATE_ARCH_X86_64",
+            "-D__SLATE_VENDOR_UNKNOWN",
+            "-D__SLATE_KERNEL_LINUX",
+            "-D__SLATE_PLATFORM_ANDROID",
+            "-D__SLATE_LIBC_BIONIC",
+            "-D__SLATE_OBJ_ELF",
+            "-D__SLATE_WORDSIZE_64",
+            "-D__SLATE_ENDIAN_LITTLE",
+            "-D__SLATE_ANDROID_API__=21",
+            "-DEXPECT_X86_64",
+        ];
+        compile_for_target(
+            &format!("{name}_x86_64"),
+            "x86_64-linux-android21",
+            &[libc_shim_dir()],
+            &defines,
+            path,
+        )
+        .map_err(|e| format!("x86-64 libc-shim compile failed:\n{e}"))?;
+        for (arch, target, defines) in [
+            ("aarch64", "aarch64-linux-android21", flavor.shim_defines()),
+            ("x86_64", "x86_64-linux-android21", defines.as_slice()),
+        ] {
+            if let Some(ndk) = android_ndk_clang() {
+                compile_with_android_ndk(
+                    &ndk,
+                    &format!("{name}_{arch}_ndk"),
+                    target,
+                    defines,
+                    path,
+                )
+                .map_err(|e| format!("{arch} NDK oracle compile failed:\n{e}"))?;
+            }
+        }
+    }
+    if flavor == FixtureFlavor::Msvc
+        && let Some((crt, ucrt)) = xwin_sysroot_dirs()
+    {
         compile_for_target(&format!("{name}_xwin"), target, &[crt, ucrt], &[], path)
             .map_err(|e| format!("xwin oracle compile failed:\n{e}"))?;
+    }
+    Ok(())
+}
+
+fn android_ndk_clang() -> Option<PathBuf> {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/android-ndk-oracle/ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/clang");
+    path.is_file().then_some(path)
+}
+
+fn compile_with_android_ndk(
+    clang: &Path,
+    name: &str,
+    target: &str,
+    defines: &[&str],
+    source: &Path,
+) -> Result<(), String> {
+    let cache_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-cache");
+    std::fs::create_dir_all(&cache_root).unwrap();
+    let object_file = cache_root.join(format!("cross_target_fixture_{name}.o"));
+    let output = Command::new(clang)
+        .args(["-xc", "-c"])
+        .arg(format!("--target={target}"))
+        .arg("-o")
+        .arg(object_file)
+        .args(defines)
+        .arg(source)
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", clang.display()))?;
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).into_owned());
     }
     Ok(())
 }
@@ -254,6 +346,92 @@ fn explicit_targets_define_slate_feature_macros() {
             "target {target} failed:\n{}",
             String::from_utf8_lossy(&output.stderr)
         );
+    }
+}
+
+#[test]
+fn android_targets_require_an_api_level() {
+    let fixture = fixtures_dir().join("bionic/target_features.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate", fixture.to_str().unwrap()])
+        .env("SLATE_TARGET", "aarch64-linux-android")
+        .env_remove("SLATE_ANDROID_API")
+        .output()
+        .expect("translate Android fixture without API level");
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("SLATE_ANDROID_API"));
+}
+
+#[test]
+fn android_targets_reject_invalid_api_levels() {
+    let fixture = fixtures_dir().join("bionic/target_features.c");
+    for api in ["twenty-one", "20"] {
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+            .args(["translate", fixture.to_str().unwrap()])
+            .env("SLATE_TARGET", "aarch64-linux-android")
+            .env("SLATE_ANDROID_API", api)
+            .output()
+            .expect("translate Android fixture with invalid API level");
+        assert!(!output.status.success());
+        assert!(String::from_utf8_lossy(&output.stderr).contains("SLATE_ANDROID_API"));
+    }
+}
+
+#[test]
+fn android_targets_translate_for_both_64_bit_architectures() {
+    let fixture = fixtures_dir().join("bionic/target_features.c");
+    for (target, expected) in [
+        ("aarch64-linux-android", "EXPECT_AARCH64"),
+        ("x86_64-linux-android", "EXPECT_X86_64"),
+    ] {
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+            .args([
+                "translate",
+                &format!("-D{expected}"),
+                fixture.to_str().unwrap(),
+            ])
+            .env("SLATE_TARGET", target)
+            .env("SLATE_ANDROID_API", "21")
+            .output()
+            .expect("translate Android target fixture");
+        assert!(
+            output.status.success(),
+            "target {target} failed:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}
+
+#[test]
+fn android_fundamental_fixture_translates_with_architecture_abi_types() {
+    let fixture = fixtures_dir().join("bionic/fundamental_types.c");
+    for (target, wchar_type) in [
+        ("aarch64-linux-android", "_4: u32"),
+        ("x86_64-linux-android", "_4: i32"),
+    ] {
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+            .args(["translate", fixture.to_str().unwrap()])
+            .env("SLATE_TARGET", target)
+            .env("SLATE_ANDROID_API", "21")
+            .output()
+            .expect("translate Android fundamental fixture");
+        assert!(
+            output.status.success(),
+            "target {target} failed:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
+        assert!(rust.contains("fn bionic_import("));
+        assert!(rust.contains("_0: u64"));
+        assert!(rust.contains("_1: i64"));
+        assert!(rust.contains("_2: i64"));
+        assert!(rust.contains("_3: u64"));
+        assert!(rust.contains(wchar_type));
+        assert!(rust.contains("_5: u32"));
+        assert!(rust.contains("#![feature(f128)]"));
+        assert!(rust.contains("_6: f128"));
+        assert!(!rust.contains("struct LongDouble"));
+        assert!(rust.contains("next_arg::<i32>()"));
     }
 }
 

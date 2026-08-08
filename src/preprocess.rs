@@ -1153,15 +1153,21 @@ fn slate_target_cfg(macro_name: &str) -> Option<Cfg> {
         ));
     }
     if let Some(value) = macro_name.strip_prefix("__SLATE_KERNEL_") {
-        return Some(opt(
-            "target_os",
-            match value {
-                "LINUX" => "linux",
-                "WINDOWS" => "windows",
-                "DARWIN" => "macos",
-                _ => return None,
-            },
-        ));
+        return match value {
+            "LINUX" => Some(Cfg::Any(vec![
+                opt("target_os", "linux"),
+                opt("target_os", "android"),
+            ])),
+            "WINDOWS" => Some(opt("target_os", "windows")),
+            "DARWIN" => Some(opt("target_os", "macos")),
+            _ => None,
+        };
+    }
+    if let Some(value) = macro_name.strip_prefix("__SLATE_PLATFORM_") {
+        return match value {
+            "ANDROID" => Some(opt("target_os", "android")),
+            _ => None,
+        };
     }
     if let Some(value) = macro_name.strip_prefix("__SLATE_LIBC_") {
         return match value {
@@ -1169,6 +1175,7 @@ fn slate_target_cfg(macro_name: &str) -> Option<Cfg> {
             "MUSL" => Some(opt("target_env", "musl")),
             "MINGW" => Some(opt("target_env", "gnu")),
             "MSVC" => Some(opt("target_env", "msvc")),
+            "BIONIC" => Some(Cfg::All(Vec::new())),
             // no Rust target_env distinguishes a generic libc; treat as unconstrained
             "GENERIC" => Some(Cfg::All(Vec::new())),
             _ => None,

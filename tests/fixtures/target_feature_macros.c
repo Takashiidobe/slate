@@ -20,7 +20,7 @@ typedef char invalid_slate_kernel[-1];
 #endif
 #if defined(__SLATE_LIBC_GLIBC) + defined(__SLATE_LIBC_MUSL) +                 \
         defined(__SLATE_LIBC_MINGW) + defined(__SLATE_LIBC_MSVC) +             \
-        defined(__SLATE_LIBC_GENERIC) !=                                       \
+        defined(__SLATE_LIBC_BIONIC) + defined(__SLATE_LIBC_GENERIC) !=         \
     1
 typedef char invalid_slate_libc[-1];
 #endif

@@ -23,7 +23,8 @@ unset, and defines exactly one macro in each family before Clang reads the shim:
 | `__SLATE_ARCH_`     | `X86`, `X86_64`, `ARM`, `AARCH64`, `RISCV32`, `RISCV64` |
 | `__SLATE_VENDOR_`   | `UNKNOWN`, `PC`, `APPLE`                                |
 | `__SLATE_KERNEL_`   | `LINUX`, `WINDOWS`, `DARWIN`                            |
-| `__SLATE_LIBC_`     | `GLIBC`, `MUSL`, `MINGW`, `MSVC`, `GENERIC`             |
+| `__SLATE_LIBC_`     | `GLIBC`, `MUSL`, `MINGW`, `MSVC`, `BIONIC`, `GENERIC`   |
+| `__SLATE_PLATFORM_` | `ANDROID`                                               |
 | `__SLATE_OBJ_`      | `ELF`, `COFF`, `MACHO`                                  |
 | `__SLATE_WORDSIZE_` | `32`, `64`                                              |
 | `__SLATE_ENDIAN_`   | `LITTLE`, `BIG`                                         |
@@ -32,6 +33,32 @@ unset, and defines exactly one macro in each family before Clang reads the shim:
 target environment and libc are not interchangeable: a GNU Linux target maps
 to `__SLATE_LIBC_GLIBC`, while a GNU Windows target maps to
 `__SLATE_LIBC_MINGW`.
+
+## Basic 64-bit Android Bionic profiles
+
+`SLATE_TARGET=aarch64-linux-android` and
+`SLATE_TARGET=x86_64-linux-android` select Android platform, Linux kernel,
+Bionic libc, ELF, LP64, and little-endian profiles. Android targets also require
+`SLATE_ANDROID_API`; the initial supported baseline is API 21. The API is kept
+separate from the Rust target triple and Slate passes the combined Android
+compiler target to Clang.
+
+The tracked public-header manifest is
+`libc-shim/bionic-basic-headers.txt`. It covers the compiler-provided and basic
+freestanding header surface. Fixtures in `tests/fixtures/bionic/` compile
+against the shim for both 64-bit architectures and, when the pinned NDK oracle
+is present under `target/android-ndk-oracle`, against the NDK headers too.
+
+Both profiles use 64-bit pointers and C `long`, 32-bit `int`, 64-bit
+`intmax_t`, unsigned 32-bit `wint_t`, and 16-byte-aligned IEEE binary128
+`long double`. AArch64 uses unsigned 32-bit `wchar_t` and a 32-byte `va_list`
+record. x86-64 uses signed 32-bit `wchar_t` and a 24-byte array-backed
+`va_list`. Slate lowers the binary128 `long double` representation to Rust
+`f128` and preserves the architecture-specific variadic representation exposed
+by CIR.
+
+Android shim compilation does not search host system include directories, so a
+missing Bionic declaration cannot silently resolve to glibc or musl.
 
 ## Basic x86-64 MSVC profile
 

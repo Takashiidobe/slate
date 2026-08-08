@@ -65,6 +65,7 @@ impl Architecture {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum LibcVariant {
+    Bionic,
     Musl,
     Glibc,
     Msvc,
@@ -73,6 +74,7 @@ enum LibcVariant {
 impl LibcVariant {
     fn name(&self) -> &'static str {
         match self {
+            LibcVariant::Bionic => "bionic",
             LibcVariant::Musl => "musl",
             LibcVariant::Glibc => "glibc",
             LibcVariant::Msvc => "msvc",
@@ -117,24 +119,48 @@ impl TestConfig {
             "-D__SLATE_ENDIAN_LITTLE".to_string(),
         ];
 
+        if self.libc == LibcVariant::Bionic {
+            defines.push("-D__SLATE_PLATFORM_ANDROID".to_string());
+        }
+
         defines.push(
             match self.libc {
                 LibcVariant::Musl => "-D__SLATE_LIBC_MUSL",
                 LibcVariant::Glibc => "-D__SLATE_LIBC_GLIBC",
+                LibcVariant::Bionic => "-D__SLATE_LIBC_BIONIC",
                 LibcVariant::Msvc => unreachable!(),
             }
             .to_string(),
         );
+
+        if self.libc == LibcVariant::Bionic {
+            defines.push("-D__SLATE_ANDROID_API__=21".to_string());
+        }
 
         defines
     }
 
     fn target(&self) -> Option<&'static str> {
         match self.libc {
+            LibcVariant::Bionic => Some(match self.arch {
+                Architecture::Aarch64 => "aarch64-linux-android21",
+                Architecture::X86_64 => "x86_64-linux-android21",
+                _ => unreachable!(),
+            }),
             LibcVariant::Msvc => Some("x86_64-pc-windows-msvc"),
             LibcVariant::Musl | LibcVariant::Glibc => None,
         }
     }
+}
+
+fn bionic_headers() -> Vec<String> {
+    let manifest = Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/bionic-basic-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read Bionic header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
 }
 
 fn msvc_headers() -> Vec<String> {
@@ -283,6 +309,22 @@ fn msvc_basic_header_manifest_compiles() {
     }
     let config = TestConfig::new(Architecture::X86_64, LibcVariant::Msvc);
     compile_test_program(&config, &header_program(&headers)).unwrap();
+}
+
+#[test]
+fn bionic_basic_header_manifest_compiles_for_64_bit_targets() {
+    let headers = bionic_headers();
+    for arch in [Architecture::Aarch64, Architecture::X86_64] {
+        let config = TestConfig::new(arch, LibcVariant::Bionic);
+        let includes = headers
+            .iter()
+            .map(|header| format!("#include <{header}>\n"))
+            .collect::<String>();
+        let source = format!(
+            "{includes}\n_Static_assert(sizeof(wchar_t) == 4, \"wchar_t\");\n_Static_assert(__SLATE_ANDROID_API__ == 21, \"API\");\nint main(void) {{ return 0; }}\n"
+        );
+        compile_test_program(&config, &source).unwrap();
+    }
 }
 
 #[test]

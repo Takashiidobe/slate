@@ -2910,7 +2910,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op
             .ty
             .as_deref()
-            .is_some_and(|ty| ty.contains("__va_list_tag"))
+            .is_some_and(|ty| ty.contains("__va_list_tag") || ty.contains("rec___va_list"))
         {
             self.slots.insert(result.clone(), name.clone());
             self.va_places.insert(result.clone(), name.clone());
@@ -3316,7 +3316,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, value, result_ty);
             return;
         }
-        let value = if result_ty == Some("!cir.f128") {
+        let value = if result_ty == Some("!cir.f128") || result_ty.is_some_and(is_quad_long_double)
+        {
             parse_cir_f128_expr(raw).unwrap_or_else(|| Expr::HexFloat("0.0f128".into()))
         } else if result_ty.is_some_and(is_long_double) {
             self.next_long_double_macro_const_expr(op)
@@ -5193,7 +5194,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn float_predicate_operand_expr(&self, operand: &str, ty: Option<&str>) -> Expr {
         let value = self.operand_expr(operand);
         match ty {
-            Some(ty) if is_long_double(ty) => Expr::Field {
+            Some(ty) if is_wrapped_long_double(ty) => Expr::Field {
                 base: Box::new(value),
                 field: "0".into(),
             },
@@ -5972,7 +5973,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     })
                 }
             }
-            _ if is_long_double(result_ty) && !is_long_double(operand_ty) => {
+            _ if is_wrapped_long_double(result_ty) && !is_long_double(operand_ty) => {
                 Val::Expr(Expr::Call {
                     binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
@@ -5982,7 +5983,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     }],
                 })
             }
-            _ if is_long_double(operand_ty) && result_ty == "!cir.bool" => {
+            _ if is_wrapped_long_double(operand_ty) && result_ty == "!cir.bool" => {
                 Val::Expr(Expr::Binary {
                     op: BinOp::Ne,
                     lhs: Box::new(Expr::TupleField {
@@ -5992,7 +5993,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     rhs: Box::new(Expr::Value(0.0.into())),
                 })
             }
-            _ if is_long_double(operand_ty) && !is_long_double(result_ty) => {
+            _ if is_wrapped_long_double(operand_ty) && !is_long_double(result_ty) => {
                 Val::Expr(Expr::Cast {
                     expr: Box::new(Expr::TupleField {
                         base: Box::new(self.operand_expr(src)),
@@ -6405,7 +6406,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let param_types: Vec<Type> = arg_types
             .iter()
             .map(|ty| {
-                if is_long_double(ty) {
+                if is_quad_long_double(ty) {
+                    Type::Prim(Prim::F128)
+                } else if is_long_double(ty) {
                     Type::Prim(Prim::F64)
                 } else {
                     self.parent.rust_type(ty)
@@ -6416,7 +6419,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .iter()
             .zip(param_types.iter())
             .map(|(ty, param_ty)| {
-                if is_long_double(ty) {
+                if is_quad_long_double(ty) {
+                    "lq".to_string()
+                } else if is_long_double(ty) {
                     "ld".to_string()
                 } else {
                     long_double_shim_type_tag(param_ty)
@@ -6447,7 +6452,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .zip(arg_types.iter())
             .enumerate()
             .map(|(i, (arg, ty))| {
-                if is_long_double(ty) {
+                if is_quad_long_double(ty) {
+                    arg.clone()
+                } else if is_long_double(ty) {
                     Expr::Field {
                         base: Box::new(arg.clone()),
                         field: "0".into(),
@@ -8812,6 +8819,14 @@ fn is_long_double(ty: &str) -> bool {
     ty.starts_with("!cir.long_double")
 }
 
+fn is_quad_long_double(ty: &str) -> bool {
+    ty.starts_with("!cir.long_double<!cir.f128>")
+}
+
+fn is_wrapped_long_double(ty: &str) -> bool {
+    is_long_double(ty) && !is_quad_long_double(ty)
+}
+
 fn is_format_string_arg(ty: &str) -> bool {
     matches!(ty, "!cir.ptr<!s8i>" | "!cir.ptr<!u8i>")
 }
@@ -9155,7 +9170,7 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
         Type::Prim(Prim::F32)
     } else if ty == "!cir.double" {
         Type::Prim(Prim::F64)
-    } else if ty == "!cir.f128" {
+    } else if ty == "!cir.f128" || is_quad_long_double(ty) {
         Type::Prim(Prim::F128)
     } else if is_long_double(ty) && crate::cir::emit::uses_msvc_abi() {
         Type::Prim(Prim::F64)
