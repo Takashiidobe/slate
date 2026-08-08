@@ -1,1 +1,1 @@
-#error "<memory.h> is not yet defined"
+#include <string.h>

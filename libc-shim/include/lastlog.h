@@ -1,1 +1,1 @@
-#error "<lastlog.h> is not yet defined"
+#include <utmp.h>
